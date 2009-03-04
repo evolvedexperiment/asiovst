@@ -15,15 +15,15 @@ function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): B
 begin
  result := True;
  case Index of
-  0: TSESimpleLowpassModule.GetModuleProperties(Properties);
-  1: TSESimpleHighpassModule.GetModuleProperties(Properties);
-  2: TSESimpleBandpassModule.GetModuleProperties(Properties);
-  3: TSESimpleNotchModule.GetModuleProperties(Properties);
-  4: TSESimpleLowshelfModule.GetModuleProperties(Properties);
-  5: TSESimpleHighshelfModule.GetModuleProperties(Properties);
-  6: TSESimplePeakModule.GetModuleProperties(Properties);
-  7: TSESimpleAllpassModule.GetModuleProperties(Properties);
-  8: TSESimpleShapeModule.GetModuleProperties(Properties);
+  0: TSEBasicLowpassModule.GetModuleProperties(Properties);
+  1: TSEBasicHighpassModule.GetModuleProperties(Properties);
+  2: TSEBasicBandpassModule.GetModuleProperties(Properties);
+  3: TSEBasicNotchModule.GetModuleProperties(Properties);
+  4: TSEBasicLowshelfModule.GetModuleProperties(Properties);
+  5: TSEBasicHighshelfModule.GetModuleProperties(Properties);
+  6: TSEBasicPeakModule.GetModuleProperties(Properties);
+  7: TSEBasicAllpassModule.GetModuleProperties(Properties);
+  8: TSEBasicShapeModule.GetModuleProperties(Properties);
   else result := False;
  end;;
 end;
@@ -35,15 +35,15 @@ begin
  SEModuleBase := nil;
  if (ProcessType = 1) then
   case Index of
-   0: SEModuleBase := TSESimpleLowpassModule.Create(SEAudioMaster, Reserved);
-   1: SEModuleBase := TSESimpleHighpassModule.Create(SEAudioMaster, Reserved);
-   2: SEModuleBase := TSESimpleBandpassModule.Create(SEAudioMaster, Reserved);
-   3: SEModuleBase := TSESimpleNotchModule.Create(SEAudioMaster, Reserved);
-   4: SEModuleBase := TSESimpleLowshelfModule.Create(SEAudioMaster, Reserved);
-   5: SEModuleBase := TSESimpleHighshelfModule.Create(SEAudioMaster, Reserved);
-   6: SEModuleBase := TSESimplePeakModule.Create(SEAudioMaster, Reserved);
-   7: SEModuleBase := TSESimpleAllpassModule.Create(SEAudioMaster, Reserved);
-   8: SEModuleBase := TSESimpleShapeModule.Create(SEAudioMaster, Reserved);
+   0: SEModuleBase := TSEBasicLowpassModule.Create(SEAudioMaster, Reserved);
+   1: SEModuleBase := TSEBasicHighpassModule.Create(SEAudioMaster, Reserved);
+   2: SEModuleBase := TSEBasicBandpassModule.Create(SEAudioMaster, Reserved);
+   3: SEModuleBase := TSEBasicNotchModule.Create(SEAudioMaster, Reserved);
+   4: SEModuleBase := TSEBasicLowshelfModule.Create(SEAudioMaster, Reserved);
+   5: SEModuleBase := TSEBasicHighshelfModule.Create(SEAudioMaster, Reserved);
+   6: SEModuleBase := TSEBasicPeakModule.Create(SEAudioMaster, Reserved);
+   7: SEModuleBase := TSEBasicAllpassModule.Create(SEAudioMaster, Reserved);
+   8: SEModuleBase := TSEBasicShapeModule.Create(SEAudioMaster, Reserved);
   end;
  if assigned(SEModuleBase)
   then result := SEModuleBase.Effect

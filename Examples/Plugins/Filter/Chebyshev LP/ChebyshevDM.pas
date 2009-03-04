@@ -18,7 +18,7 @@ type
     procedure ParamRippleChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFilter  : array [0..1] of TChebyshev1LP;
+    FFilter  : array [0..1] of TCustomChebyshev1LowpassFilter;
     FResizer : TVstWindowSizer;
   public
     property Resizer: TVstWindowSizer read FResizer;
@@ -37,7 +37,7 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TChebyshev1LP.Create;
+   FFilter[ch] := TChebyshev1LowpassFilterAutomatable.Create;
    FFilter[ch].SetFilterValues(1000, 0, 1);
   end;
 (*

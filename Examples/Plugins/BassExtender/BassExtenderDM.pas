@@ -40,8 +40,8 @@ type
     procedure ParamModeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FLowpass       : Array [0..1, 0..1] of TButterworthLP;
-    FHighpass      : Array [0..1, 0..1] of TButterworthHP;
+    FLowpass       : Array [0..1, 0..1] of TButterworthLowpassFilter;
+    FHighpass      : Array [0..1, 0..1] of TButterworthHighpassFilter;
     FSign          : Single;
     FDivideMix     : Array [0..1] of Single;
     FCompressorMix : Array [0..1] of Single;
@@ -70,10 +70,10 @@ begin
  FBalance[1]       := 1;
  for ch := 0 to numInputs - 1 do
   begin
-   FLowpass[ch, 0]  := TButterworthLP.Create;
-   FLowpass[ch, 1]  := TButterworthLP.Create;
-   FHighpass[ch, 0] := TButterworthHP.Create;
-   FHighpass[ch, 1] := TButterworthHP.Create;
+   FLowpass[ch, 0]  := TButterworthLowpassFilter.Create;
+   FLowpass[ch, 1]  := TButterworthLowpassFilter.Create;
+   FHighpass[ch, 0] := TButterworthHighpassFilter.Create;
+   FHighpass[ch, 1] := TButterworthHighpassFilter.Create;
    FLowpass[ch, 0].SetFilterValues(80, 0);
    FLowpass[ch, 1].SetFilterValues(80, 0);
    FHighpass[ch, 0].SetFilterValues(80, 0);

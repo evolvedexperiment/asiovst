@@ -113,6 +113,10 @@ uses
   function FastTanPart2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCoTan2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -123,6 +127,10 @@ uses
   function FastTanPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCoTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -133,6 +141,10 @@ uses
   function FastTanPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCoTan4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -143,6 +155,10 @@ uses
   function FastTanPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanPInv6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCoTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -927,38 +943,59 @@ begin
  Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
 end;
 
+function FastTanInBounds2Term(const Value: Single): Single;
+begin
+  case round(Value * CFourDivPi32) of
+    0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi32);
+    1 : Result :=  FastTanPInv2Term((CPiHalf32 - Value)      * CFourDivPi32);
+    2 : Result := -FastTanPInv2Term((Value - CPiHalf32)      * CFourDivPi32);
+    3 : Result := -FastTanPart2Term((Pi - Value)             * CFourDivPi32);
+    4 : Result :=  FastTanPart2Term((Value - Pi)             * CFourDivPi32);
+    5 : Result :=  FastTanPInv2Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+    6 : Result := -FastTanPInv2Term((Value - CThreeHalfPi32) * CFourDivPi32);
+    7 : Result := -FastTanPart2Term((CTwo32 - Value)         * CFourDivPi32);
+   else Result :=  FastTanPart2Term(Value                    * CFourDivPi32);
+  end;
+end;
+
+function FastTanInBounds2Term(const Value: Double): Double;
+begin
+  case round(Value * CFourDivPi64) of
+    0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi64);
+    1 : Result :=  FastTanPInv2Term((CPiHalf64 - Value)      * CFourDivPi64);
+    2 : Result := -FastTanPInv2Term((Value - CPiHalf64)      * CFourDivPi64);
+    3 : Result := -FastTanPart2Term((Pi - Value)             * CFourDivPi64);
+    4 : Result :=  FastTanPart2Term((Value - Pi)             * CFourDivPi64);
+    5 : Result :=  FastTanPInv2Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+    6 : Result := -FastTanPInv2Term((Value - CThreeHalfPi64) * CFourDivPi64);
+    7 : Result := -FastTanPart2Term((CTwo64 - Value)         * CFourDivPi64);
+   else Result :=  FastTanPart2Term(Value                    * CFourDivPi64);
+  end;
+end;
+
+function FastCotanInBounds2Term(const Value: Single): Single;
+begin
+  Result := -FastTanInBounds2Term(CPiHalf32 - Value);
+end;
+
+function FastCotanInBounds2Term(const Value: Double): Double;
+begin
+  Result := -FastTanInBounds2Term(CPiHalf64 - Value);
+end;
+
 // WARNING: We do not test for the tangent approaching infinity,
-// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// which it will at x = pi / 2 and x = 3 * pi / 2. If this is a problem
 // in your application, take appropriate action.
 
 function FastTan2Term(const Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi32) of
-   0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi32);
-   1 : Result :=  FastTanPInv2Term((CPiHalf32 - Value)      * CFourDivPi32);
-   2 : Result := -FastTanPInv2Term((Value - CPiHalf32)      * CFourDivPi32);
-   3 : Result := -FastTanPart2Term((Pi - Value)             * CFourDivPi32);
-   4 : Result :=  FastTanPart2Term((Value - Pi)             * CFourDivPi32);
-   5 : Result :=  FastTanPInv2Term((CThreeHalfPi32 - Value) * CFourDivPi32);
-   6 : Result := -FastTanPInv2Term((Value - CThreeHalfPi32) * CFourDivPi32);
-   7 : Result := -FastTanPart2Term((CTwo32 - Value)         * CFourDivPi32);
-  end;
+  Result := FastTanInBounds2Term(Result);
 end;
 
 function FastTan2Term(const Value: Double): Double;
 begin
-  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi64) of
-   0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi64);
-   1 : Result :=  FastTanPInv2Term((CPiHalf64 - Value)      * CFourDivPi64);
-   2 : Result := -FastTanPInv2Term((Value - CPiHalf64)      * CFourDivPi64);
-   3 : Result := -FastTanPart2Term((Pi - Value)             * CFourDivPi64);
-   4 : Result :=  FastTanPart2Term((Value - Pi)             * CFourDivPi64);
-   5 : Result :=  FastTanPInv2Term((CThreeHalfPi64 - Value) * CFourDivPi64);
-   6 : Result := -FastTanPInv2Term((Value - CThreeHalfPi64) * CFourDivPi64);
-   7 : Result := -FastTanPart2Term((CTwo64 - Value)         * CFourDivPi64);
-  end;
+  Result := FastTanInBounds2Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastCotan2Term(const Value: Single): Single;
@@ -998,38 +1035,62 @@ begin
  Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
 end;
 
+function FastTanInBounds3Term(const Value: Single): Single;
+begin
+  case round(Value * CFourDivPi32) of
+    0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi32);
+    1 : Result :=  FastTanPInv3Term((CPiHalf32 - Value)      * CFourDivPi32);
+    2 : Result := -FastTanPInv3Term((Value - CPiHalf32)      * CFourDivPi32);
+    3 : Result := -FastTanPart3Term((Pi - Value)             * CFourDivPi32);
+    4 : Result :=  FastTanPart3Term((Value - Pi)             * CFourDivPi32);
+    5 : Result :=  FastTanPInv3Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+    6 : Result := -FastTanPInv3Term((Value - CThreeHalfPi32) * CFourDivPi32);
+    7 : Result := -FastTanPart3Term((CTwo32 - Value)         * CFourDivPi32);
+   else Result :=  FastTanPart3Term(Value                    * CFourDivPi32);
+  end;
+end;
+
+function FastTanInBounds3Term(const Value: Double): Double;
+begin
+  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
+  case round(Result * CFourDivPi64) of
+    0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi64);
+    1 : Result :=  FastTanPInv3Term((CPiHalf64 - Value)      * CFourDivPi64);
+    2 : Result := -FastTanPInv3Term((Value - CPiHalf64)      * CFourDivPi64);
+    3 : Result := -FastTanPart3Term((Pi - Value)             * CFourDivPi64);
+    4 : Result :=  FastTanPart3Term((Value - Pi)             * CFourDivPi64);
+    5 : Result :=  FastTanPInv3Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+    6 : Result := -FastTanPInv3Term((Value - CThreeHalfPi64) * CFourDivPi64);
+    7 : Result := -FastTanPart3Term((CTwo64 - Value)         * CFourDivPi64);
+   else Result :=  FastTanPart3Term(Value                    * CFourDivPi64);
+  end;
+end;
+
+function FastCotanInBounds3Term(const Value: Single): Single;
+begin
+  Result := -FastTanInBounds3Term(CPiHalf32 - Value);
+end;
+
+function FastCotanInBounds3Term(const Value: Double): Double;
+begin
+  Result := -FastTanInBounds3Term(CPiHalf64 - Value);
+end;
+
 // WARNING: We do not test for the tangent approaching infinity,
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
 
 function FastTan3Term(const Value: Single): Single;
 begin
-  Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi32) of
-   0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi32);
-   1 : Result :=  FastTanPInv3Term((CPiHalf32 - Value)      * CFourDivPi32);
-   2 : Result := -FastTanPInv3Term((Value - CPiHalf32)      * CFourDivPi32);
-   3 : Result := -FastTanPart3Term((Pi - Value)             * CFourDivPi32);
-   4 : Result :=  FastTanPart3Term((Value - Pi)             * CFourDivPi32);
-   5 : Result :=  FastTanPInv3Term((CThreeHalfPi32 - Value) * CFourDivPi32);
-   6 : Result := -FastTanPInv3Term((Value - CThreeHalfPi32) * CFourDivPi32);
-   7 : Result := -FastTanPart3Term((CTwo32 - Value)         * CFourDivPi32);
-  end;
+  // Get rid of values > 2 * pi
+  Result := abs(FastMod(Value, CTwoPi32));
+  Result := FastTanInBounds3Term(Result);
 end;
 
 function FastTan3Term(const Value: Double): Double;
 begin
-  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi64) of
-   0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi64);
-   1 : Result :=  FastTanPInv3Term((CPiHalf64 - Value)      * CFourDivPi64);
-   2 : Result := -FastTanPInv3Term((Value - CPiHalf64)      * CFourDivPi64);
-   3 : Result := -FastTanPart3Term((Pi - Value)             * CFourDivPi64);
-   4 : Result :=  FastTanPart3Term((Value - Pi)             * CFourDivPi64);
-   5 : Result :=  FastTanPInv3Term((CThreeHalfPi64 - Value) * CFourDivPi64);
-   6 : Result := -FastTanPInv3Term((Value - CThreeHalfPi64) * CFourDivPi64);
-   7 : Result := -FastTanPart3Term((CTwo64 - Value)         * CFourDivPi64);
-  end;
+  // Get rid of values > 2 * pi
+  Result := FastTanInBounds3Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastCotan3Term(const Value: Single): Single;
@@ -1073,6 +1134,46 @@ begin
            (Value * (CTan4Term[0] + CTan4Term[1] * Result));
 end;
 
+function FastTanInBounds4Term(const Value: Single): Single;
+begin
+   case round(Value * CFourDivPi32) of
+    0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi32);
+    1 : Result :=  FastTanPInv4Term((CPiHalf32 - Value)      * CFourDivPi32);
+    2 : Result := -FastTanPInv4Term((Value - CPiHalf32)      * CFourDivPi32);
+    3 : Result := -FastTanPart4Term((Pi - Value)             * CFourDivPi32);
+    4 : Result :=  FastTanPart4Term((Value - Pi)             * CFourDivPi32);
+    5 : Result :=  FastTanPInv4Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+    6 : Result := -FastTanPInv4Term((Value - CThreeHalfPi32) * CFourDivPi32);
+    7 : Result := -FastTanPart4Term((CTwo32 - Value)         * CFourDivPi32);
+   else Result :=  FastTanPart4Term(Value                    * CFourDivPi32);
+  end;
+end;
+
+function FastTanInBounds4Term(const Value: Double): Double;
+begin
+  case round(Value * CFourDivPi64) of
+    0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi64);
+    1 : Result :=  FastTanPInv4Term((CPiHalf64 - Value)      * CFourDivPi64);
+    2 : Result := -FastTanPInv4Term((Value - CPiHalf64)      * CFourDivPi64);
+    3 : Result := -FastTanPart4Term((Pi - Value)             * CFourDivPi64);
+    4 : Result :=  FastTanPart4Term((Value - Pi)             * CFourDivPi64);
+    5 : Result :=  FastTanPInv4Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+    6 : Result := -FastTanPInv4Term((Value - CThreeHalfPi64) * CFourDivPi64);
+    7 : Result := -FastTanPart4Term((CTwo64 - Value)         * CFourDivPi64);
+   else Result :=  FastTanPart4Term(Value                    * CFourDivPi64);
+  end;
+end;
+
+function FastCotanInBounds4Term(const Value: Single): Single;
+begin
+  Result := -FastTanInBounds4Term(CPiHalf32 - Value);
+end;
+
+function FastCotanInBounds4Term(const Value: Double): Double;
+begin
+  Result := -FastTanInBounds4Term(CPiHalf64 - Value);
+end;
+
 // WARNING: We do not test for the tangent approaching infinity,
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
@@ -1080,31 +1181,12 @@ end;
 function FastTan4Term(const Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi32) of
-   0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi32);
-   1 : Result :=  FastTanPInv4Term((CPiHalf32 - Value)      * CFourDivPi32);
-   2 : Result := -FastTanPInv4Term((Value - CPiHalf32)      * CFourDivPi32);
-   3 : Result := -FastTanPart4Term((Pi - Value)             * CFourDivPi32);
-   4 : Result :=  FastTanPart4Term((Value - Pi)             * CFourDivPi32);
-   5 : Result :=  FastTanPInv4Term((CThreeHalfPi32 - Value) * CFourDivPi32);
-   6 : Result := -FastTanPInv4Term((Value - CThreeHalfPi32) * CFourDivPi32);
-   7 : Result := -FastTanPart4Term((CTwo32 - Value)         * CFourDivPi32);
-  end;
+  Result := FastTanInBounds4Term(Result);
 end;
 
 function FastTan4Term(const Value: Double): Double;
 begin
-  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi64) of
-   0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi64);
-   1 : Result :=  FastTanPInv4Term((CPiHalf64 - Value)      * CFourDivPi64);
-   2 : Result := -FastTanPInv4Term((Value - CPiHalf64)      * CFourDivPi64);
-   3 : Result := -FastTanPart4Term((Pi - Value)             * CFourDivPi64);
-   4 : Result :=  FastTanPart4Term((Value - Pi)             * CFourDivPi64);
-   5 : Result :=  FastTanPInv4Term((CThreeHalfPi64 - Value) * CFourDivPi64);
-   6 : Result := -FastTanPInv4Term((Value - CThreeHalfPi64) * CFourDivPi64);
-   7 : Result := -FastTanPart4Term((CTwo64 - Value)         * CFourDivPi64);
-  end;
+  Result := FastTanInBounds4Term(abs(FastMod(Value, CTwoPi64))); // Get rid of values > 2 * pi
 end;
 
 function FastCotan4Term(const Value: Single): Single;
@@ -1148,6 +1230,46 @@ begin
    (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
 end;
 
+function FastTanInBounds6Term(const Value: Single): Single;
+begin
+  case round(Value * CFourDivPi32) of
+    0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi32);
+    1 : Result :=  FastTanPInv6Term((CPiHalf32 - Value)      * CFourDivPi32);
+    2 : Result := -FastTanPInv6Term((Value - CPiHalf32)      * CFourDivPi32);
+    3 : Result := -FastTanPart6Term((Pi - Value)             * CFourDivPi32);
+    4 : Result :=  FastTanPart6Term((Value - Pi)             * CFourDivPi32);
+    5 : Result :=  FastTanPInv6Term((CThreeHalfPi32 - Value) * CFourDivPi32);
+    6 : Result := -FastTanPInv6Term((Value - CThreeHalfPi32) * CFourDivPi32);
+    7 : Result := -FastTanPart6Term((CTwo32 - Value)         * CFourDivPi32);
+   else Result :=  FastTanPart6Term(Value                    * CFourDivPi32);
+  end;
+end;
+
+function FastTanInBounds6Term(const Value: Double): Double;
+begin
+  case round(Value * CFourDivPi64) of
+    0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi64);
+    1 : Result :=  FastTanPInv6Term((CPiHalf64 - Value)      * CFourDivPi64);
+    2 : Result := -FastTanPInv6Term((Value - CPiHalf64)      * CFourDivPi64);
+    3 : Result := -FastTanPart6Term((Pi - Value)             * CFourDivPi64);
+    4 : Result :=  FastTanPart6Term((Value - Pi)             * CFourDivPi64);
+    5 : Result :=  FastTanPInv6Term((CThreeHalfPi64 - Value) * CFourDivPi64);
+    6 : Result := -FastTanPInv6Term((Value - CThreeHalfPi64) * CFourDivPi64);
+    7 : Result := -FastTanPart6Term((CTwo64 - Value)         * CFourDivPi64);
+   else Result :=  FastTanPart6Term(Value                    * CFourDivPi64);
+  end;
+end;
+
+function FastCotanInBounds6Term(const Value: Single): Single;
+begin
+  Result := -FastTanInBounds6Term(CPiHalf32 - Value);
+end;
+
+function FastCotanInBounds6Term(const Value: Double): Double;
+begin
+  Result := -FastTanInBounds6Term(CPiHalf64 - Value);
+end;
+
 // WARNING: We do not test for the tangent approaching infinity,
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
@@ -1155,31 +1277,12 @@ end;
 function FastTan6Term(const Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi32) of
-   0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi32);
-   1 : Result :=  FastTanPInv6Term((CPiHalf32 - Value)      * CFourDivPi32);
-   2 : Result := -FastTanPInv6Term((Value - CPiHalf32)      * CFourDivPi32);
-   3 : Result := -FastTanPart6Term((Pi - Value)             * CFourDivPi32);
-   4 : Result :=  FastTanPart6Term((Value - Pi)             * CFourDivPi32);
-   5 : Result :=  FastTanPInv6Term((CThreeHalfPi32 - Value) * CFourDivPi32);
-   6 : Result := -FastTanPInv6Term((Value - CThreeHalfPi32) * CFourDivPi32);
-   7 : Result := -FastTanPart6Term((CTwo32 - Value)         * CFourDivPi32);
-  end;
+  Result := FastTanInBounds6Term(Result);
 end;
 
 function FastTan6Term(const Value: Double): Double;
 begin
-  Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
-  case round(Result * CFourDivPi64) of
-   0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi64);
-   1 : Result :=  FastTanPInv6Term((CPiHalf64 - Value)      * CFourDivPi64);
-   2 : Result := -FastTanPInv6Term((Value - CPiHalf64)      * CFourDivPi64);
-   3 : Result := -FastTanPart6Term((Pi - Value)             * CFourDivPi64);
-   4 : Result :=  FastTanPart6Term((Value - Pi)             * CFourDivPi64);
-   5 : Result :=  FastTanPInv6Term((CThreeHalfPi64 - Value) * CFourDivPi64);
-   6 : Result := -FastTanPInv6Term((Value - CThreeHalfPi64) * CFourDivPi64);
-   7 : Result := -FastTanPart6Term((CTwo64 - Value)         * CFourDivPi64);
-  end;
+  Result := FastTanInBounds6Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
 function FastCotan6Term(const Value: Single): Single;

@@ -7,22 +7,60 @@ interface
 uses
   DAV_Common;
 
-procedure ApplyGaussianWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer); overload;
-procedure ApplyBlackmanHarrisWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer); overload;
-procedure ApplyBlackmanWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer); overload;
-procedure ApplyHanningWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer); overload;
-procedure ApplyHammingWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ApplyHanningWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ApplyHammingWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ApplyBlackmanWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ApplyBlackmanHarrisWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ApplyGaussianWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ApplyKaiserBesselWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer; const Alpha: Single); overload;
 
-procedure ApplyGaussianWindow(var Data : TDAVSingleDynArray); overload;
-procedure ApplyBlackmanWindow(var Data : TDAVSingleDynArray); overload;
-procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray); overload;
-procedure ApplyHanningWindow(var Data : TDAVSingleDynArray); overload;
-procedure ApplyHammingWindow(var Data : TDAVSingleDynArray); overload;
+procedure ApplyHanningWindow(var Data: TDAVSingleDynArray); overload;
+procedure ApplyHammingWindow(var Data: TDAVSingleDynArray); overload;
+procedure ApplyBlackmanWindow(var Data: TDAVSingleDynArray); overload;
+procedure ApplyBlackmanHarrisWindow(var Data: TDAVSingleDynArray); overload;
+procedure ApplyGaussianWindow(var Data: TDAVSingleDynArray); overload;
+procedure ApplyKaiserBesselWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer; const Alpha: Single); overload;
 
 implementation
 
+// Generate window function (Hanning)
+procedure ApplyHanningWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+var
+  i, j : Integer;
+  k    : Double;
+begin
+ j := SampleFrames - 1;
+ k := 1 / j;
+ for i := 0 to j
+  do Data^[i] := Data^[i] * (0.5 * (1.0 - cos(2 * PI * i * k)));
+end;
+
+procedure ApplyHanningWindow(var Data: TDAVSingleDynArray);
+begin
+ ApplyHanningWindow(@Data[0], Length(Data));
+end;
+
+
+// Generate window function (Hamming)
+procedure ApplyHammingWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+var
+  i, j : Integer;
+  k    : Double;
+begin
+ j := SampleFrames - 1;
+ k := 1 / j;
+ for i := 0 to j
+  do Data^[i] := Data^[i] * (0.54 - (0.46 * cos(2 * PI * i * k)));
+end;
+
+procedure ApplyHammingWindow(var Data: TDAVSingleDynArray);
+begin
+ ApplyHammingWindow(@Data[0], Length(Data));
+end;
+
+
 // Generate window function (Gaussian)
-procedure ApplyGaussianWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure ApplyGaussianWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
   i, j : Integer;
 begin
@@ -31,13 +69,14 @@ begin
   do Data^[i] := Data^[i] * (exp(-5.0 / (sqr(j)) * (2 * i - j) * (2 * i - j)));
 end;
 
-procedure ApplyGaussianWindow(var Data : TDAVSingleDynArray);
+procedure ApplyGaussianWindow(var Data: TDAVSingleDynArray);
 begin
  ApplyGaussianWindow(@Data[0], Length(Data));
 end;
 
 
-procedure ApplyBlackmanWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer);
+// Generate window function (Blackman
+procedure ApplyBlackmanWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
   l, i  : Integer;
   f, fm : Double;
@@ -54,14 +93,14 @@ begin
   end;
 end;
 
-procedure ApplyBlackmanWindow(var Data : TDAVSingleDynArray);
+procedure ApplyBlackmanWindow(var Data: TDAVSingleDynArray);
 begin
  ApplyBlackmanWindow(@Data[0], Length(Data));
 end;
 
 
 // Generate window function (Blackman-Harris)
-procedure ApplyBlackmanHarrisWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer);
+procedure ApplyBlackmanHarrisWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
   i, j : Integer;
   k    : Double;
@@ -74,45 +113,60 @@ begin
                            - 0.01168 * cos(6 * PI * (i + 0.5) * k));
 end;
 
-procedure ApplyBlackmanHarrisWindow(var Data : TDAVSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data: TDAVSingleDynArray);
 begin
  ApplyBlackmanHarrisWindow(@Data[0], Length(Data));
 end;
 
 
-// Generate window function (Hanning)
-procedure ApplyHanningWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer);
+function Io(const x: Double): Double
+var
+  y, de   : Double;
+  i       : Integer;
+  xi, sde : Double 
+const 
+  t: Double = 1E-08;
+begin
+ y := 0.5 * x;
+ de := 1.0;
+ result := 1;
+ for i := 1 to 25 do
+  begin
+	 xi := i;
+	 de := de * y/xi;
+	 sde := sqr(de);
+	 e := e + sde;
+	 if (e * t - sde) > 0 
+    then break;
+  end;
+end;
+
+// Generate window function (Kaiser-Bessel)
+procedure ApplyKaiserBesselWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer; const Alpha: Single); overload;
 var
   i, j : Integer;
   k    : Double;
+  bes  : Double;
+  odd  : Integer;
+  xi   : Double; 
+  xind : Double; 
 begin
- j := SampleFrames - 1;
- k := 1 / j;
- for i := 0 to j
-  do Data^[i] := Data^[i] * (0.5 * (1.0 - cos(2 * PI * i * k)));
+ bes := 1.0 / Io(Alpha);
+ odd := SampleFrames mod 2;
+ xind := sqr(nf - 1);
+ for i := 0 to SampleFrames - 1 do
+  begin
+	 if (odd = 1) 
+    then xi = i + 0.5
+	  else xi = i;
+ 	 xi  := 4 * sqr(xi);
+   Data^[i] := Io(Alpha * sqrt(1 - xi/xind)) * bes;
+  end;
 end;
 
-procedure ApplyHanningWindow(var Data : TDAVSingleDynArray);
+procedure ApplyBlackmanHarrisWindow(var Data: TDAVSingleDynArray);
 begin
- ApplyHanningWindow(@Data[0], Length(Data));
-end;
-
-
-// Generate window function (Hamming)
-procedure ApplyHammingWindow(const Data : PDAVSingleFixedArray; const SampleFrames: Integer);
-var
-  i, j : Integer;
-  k    : Double;
-begin
- j := SampleFrames - 1;
- k := 1 / j;
- for i := 0 to j
-  do Data^[i] := Data^[i] * (0.54 - (0.46 * cos(2 * PI * i * k)));
-end;
-
-procedure ApplyHammingWindow(var Data : TDAVSingleDynArray);
-begin
- ApplyHammingWindow(@Data[0], Length(Data));
+ ApplyKaiserBesselWindow(@Data[0], Length(Data));
 end;
 
 end.

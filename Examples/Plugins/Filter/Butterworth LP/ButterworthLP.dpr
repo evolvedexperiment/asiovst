@@ -6,9 +6,9 @@ library ButterworthLP;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
-  Forms,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   ButterworthDM in 'ButterworthDM.pas' {ButterworthLPModule: TVSTModule},
   ButterworthGUI in 'ButterworthGUI.pas' {FmButterworth};
 

@@ -194,7 +194,7 @@ begin
  FFrequency := 1000;
  FOrder := 4;
 
- FFilter := TButterworthLP.Create;
+ FFilter := TButterworthLowpassFilter.Create;
  FFilter.SetFilterValues(FFrequency, 0);
  FFilter.Order := FOrder;
 end;
@@ -270,7 +270,7 @@ begin
  FFrequency := 1000;
  FOrder := 4;
 
- FFilter := TButterworthHP.Create;
+ FFilter := TButterworthHighpassFilter.Create;
  FFilter.SetFilterValues(FFrequency, 0);
  FFilter.Order := FOrder;
 end;

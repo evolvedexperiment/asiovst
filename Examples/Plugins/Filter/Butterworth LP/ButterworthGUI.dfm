@@ -77,7 +77,7 @@ object FmButterworth: TFmButterworth
       CircleColor = 1315880
       Color = 1315880
       CurveMapping = -2.099999904632568000
-      DefaultPosition = 20.000000000000000000
+      DefaultPosition = 20000.000000000000000000
       DialImageIndex = -1
       LineColor = 10526927
       LineWidth = 2
@@ -85,10 +85,11 @@ object FmButterworth: TFmButterworth
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialFrequencyChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
-      Position = 1000.000000000000000000
+      Position = 20000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
     end
@@ -120,6 +121,7 @@ object FmButterworth: TFmButterworth
       Max = 16.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000

@@ -13,19 +13,17 @@ const
 
 type
   TConvoFxDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterMaximumIROrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterIRChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
-    procedure ParameterDampingChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDampingChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FConvolution     : array [0..CNumChannels - 1] of TLowLatencyConvolution32;
     FImpulseResponse : array [0..CNumChannels] of PDAVSingleFixedArray;
@@ -34,7 +32,7 @@ type
     FGain            : Single;
     FIR              : Integer;
     FSemaphore       : Integer;
-    FDampingFilter   : TButterworthLP;
+    FDampingFilter   : TButterworthLowpassFilter;
     procedure UpdateConvolutionIR;
     procedure RenderEnvelopes(const IR: PDAVSingleFixedArray;
       const Length: Integer);
@@ -63,7 +61,7 @@ begin
    FConvolution[Channel].MaximumIRBlockOrder := 18;
   end;
  FGain := 1;
- FDampingFilter := TButterworthLP.Create(1);
+ FDampingFilter := TButterworthLowpassFilter.Create(1);
  Parameter[0] := CeilLog2(InitialDelay);
  Parameter[1] := 18;
  Parameter[2] := 1;

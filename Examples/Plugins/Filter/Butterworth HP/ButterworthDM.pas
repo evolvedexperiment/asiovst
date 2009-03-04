@@ -34,9 +34,9 @@ begin
  for ch := 0 to numInputs - 1 do
   begin
    FFilter[ch] := TButterworthHP.Create;
-   FFilter[ch].SetFilterValues(1000, 0);
+   FFilter[ch].SetFilterValues(20, 0);
   end;
- Parameter[0] := 1000;
+ Parameter[0] := 20;
  Parameter[1] := 2;
 end;
 

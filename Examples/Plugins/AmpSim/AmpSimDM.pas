@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilter;
+  DAV_DSPFilter, DAV_DSPFilterBasics;
 
 type
   TModelType = (mtDI, mtSpeakerSim, mtRadio, mtMesaBoogie1, mtMesaBoogie8,
@@ -36,7 +36,7 @@ type
     FBuffer         : array [0..1] of PDAVSingleFixedArray;
     FMix            : array [0..1] of Double;
     FDelay          : array [0..1] of Integer;
-    FHighPass       : array [0..1] of TSimpleHighpassFilter;
+    FHighPass       : array [0..1] of TBasicHighpassFilter;
     FFilterState    : array [0..1, 0..4] of Double;
     FRndAmt         : Double;
     FLPF, FHPF      : Double;
@@ -321,8 +321,8 @@ begin
  FBufferPosition := 0;
  GetMem(FBuffer[0], FBufferSize * SizeOf(Single));
  GetMem(FBuffer[1], FBufferSize * SizeOf(Single));
- FHighPass[0] := TSimpleHighpassFilter.Create;
- FHighPass[1] := TSimpleHighpassFilter.Create;
+ FHighPass[0] := TBasicHighpassFilter.Create;
+ FHighPass[1] := TBasicHighpassFilter.Create;
 
  {$IFDEF UseGUI}
  Flags := Flags + [effFlagsHasEditor];

@@ -15,11 +15,15 @@ type
     FDownsamplePow  : Integer;
     FDownsampleFak  : Integer;
     FFilterGain     : Double;
-    FAB             : array [0..63] of Double;
+    FOrderInv       : Double;
+    FPiHalfOrderInv : Double;
+    FTanW0          : Double;
+    FCoeffs         : array [0..63] of Double;
     FState          : array [0..63] of Double;
     FStateStack     : array of array [0.. 63] of Double;
     procedure CalculateW0; override;
     class function GetMaxOrder: Cardinal; override;
+    procedure OrderChanged; override;
   public
     constructor Create(const Order: Integer = 0); reintroduce; virtual;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -30,16 +34,13 @@ type
     procedure PushStates; override;
     procedure PopStates; override;
     procedure ResetStatesInt64; override;
-    procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
-    procedure Complex(const Frequency: Double; out Real: Single; out Imaginary: Single); override;
     function Imaginary(const Frequency: Double): Double; override;
-    function Phase(const Frequency: Double): Double; override;
     function Real(const Frequency: Double): Double; override;
     property DownsampleAmount : Integer read FDownsamplePow write SetDownsamplePower;
     property DownsampleFaktor : Integer read FDownsampleFak;
   end;
 
-  TButterworthLP = class(TButterworthFilter)
+  TButterworthLowPassFilter = class(TButterworthFilter)
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
@@ -53,9 +54,9 @@ type
     property Frequency;
     property SampleRate;
   end;
-  TButterworthHighCut = TButterworthLP;
+  TButterworthHighCutFilter = TButterworthLowPassFilter;
 
-  TButterworthHP = class(TButterworthFilter)
+  TButterworthHighpassFilter = class(TButterworthFilter)
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
@@ -70,9 +71,9 @@ type
     property Frequency;
     property SampleRate;
   end;
-  TButterworthLowCut = TButterworthHP;
+  TButterworthLowCut = TButterworthHighpassFilter;
 
-  TButterworthSplit = class(TButterworthFilter)
+  TButterworthSplitBandFilter = class(TButterworthFilter)
   protected
     FKs      : Double;
     FHPState : array [0..63] of Double;
@@ -144,8 +145,7 @@ end;
 procedure TButterworthFilter.CalculateW0;
 begin
  FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
- FSinW0 := sin(FW0);
- if FW0 > 3.1 then FW0 := 3.1;
+ FTanW0 := Tan(FW0 * CHalf64)
 end;
 
 procedure TButterworthFilter.SetFilterValues(const AFrequency, AGain : Single);
@@ -172,66 +172,28 @@ begin
  Complex(Frequency, Temp, result);
 end;
 
-procedure TButterworthFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
-var
-  cw, Divider  : Double;
-  cmplx        : TComplexDouble;
-  i            : Integer;
-begin
- if FOrder = 0 then
-  begin
-   Real := 1;
-   Imaginary := 1;
-  end
- else
-  begin
-   cw := cos(2 * Frequency * pi * SampleRateReciprocal);
-   Divider   := 1 / ( sqr(FAB[3]) - 2 * FAB[3] + sqr(FAB[2]) + 1
-                      + 2 * cw * (FAB[2] * (FAB[3] + 1) + 2 * cw * FAB[3]));
-   Real      := (FAB[0] + FAB[1] * FAB[2] + FAB[0] * FAB[3]
-                + cw * (FAB[1] * (1 + FAB[3]) + FAB[2] * 2 * FAB[0])
-                + (2 * sqr(cw) - 1) * FAB[0] * (FAB[3] + 1)) * Divider;
-   Imaginary := (FAB[1] * (1 - FAB[3])
-                + 2 * cw * FAB[0] * (1 - FAB[3])) * sqrt(1 - sqr(cw)) * Divider;
-   for i := 1 to (FOrder div 2) - 1 do
-    begin
-     Divider   := 1 / ( sqr(FAB[4*i+3]) - 2 * FAB[4*i+3] + sqr(FAB[4*i+2]) + 1
-                + 2 * cw * (FAB[4*i+2] * (FAB[4*i+3] + 1) + 2 * cw * FAB[4*i+3]));
-     cmplx.Re  := (FAB[4*i+0] + FAB[4*i+1] * FAB[4*i+2] + FAB[4*i+0] * FAB[4*i+3]
-                 + cw * (FAB[4*i+1] * (1 + FAB[4*i+3]) + FAB[4*i+2] * 2 * FAB[4*i+0])
-                 + (2*sqr(cw)-1) * FAB[4*i+0] * (FAB[4*i+3] + 1)) * Divider;
-     cmplx.Im := (FAB[4*i+1] * (1 - FAB[4*i+3])
-                 + 2 * cw * (FAB[4*i+0] - FAB[4*i+0] * FAB[4*i+3])) * sqrt(1 - sqr(cw)) * Divider;
-     ComplexMultiplyInplace(Real, Imaginary, cmplx.Re, cmplx.Im);
-    end;
-  end;
-end;
-
-procedure TButterworthFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
-var
-  cmplx : TComplexDouble;
-begin
- Complex(Frequency, cmplx.Re, cmplx.Im);
- Real := cmplx.Re;
- Imaginary := cmplx.Im;
-end;
-
 function TButterworthFilter.MagnitudeSquared(const Frequency: Double): Double;
 begin
  Result := 1;
 end;
 
+procedure TButterworthFilter.OrderChanged;
+begin
+ if FOrder > 0 then
+  begin
+   FOrderInv := 1 / FOrder;
+   FPiHalfOrderInv := PI * CHalf64 * FOrderInv;
+   inherited;
+  end
+ else
+  begin
+   FFilterGain := FGainFactor;
+  end; 
+end;
+
 function TButterworthFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
  result := 20 * Log10(MagnitudeSquared(Frequency));
-end;
-
-function TButterworthFilter.Phase(const Frequency: Double): Double;
-var
-  cmplx : TComplexDouble;
-begin
- Complex(Frequency, cmplx.Re, cmplx.Im);
- Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
 procedure TButterworthFilter.PopStates;
@@ -255,74 +217,78 @@ end;
 
 { TButterworthFilterLP }
 
-constructor TButterworthLP.Create(const Order: Integer = 0);
+constructor TButterworthLowPassFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
 end;
 
-procedure TButterworthLP.CalculateCoefficients;
+procedure TButterworthLowPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
 begin
+ if FOrder = 0 then exit;
  FFilterGain := sqr(FGainFactor);
- K := tan(FW0 * CHalf64); K2 := K * K;
+ K := FTanW0;
+ K2 := K * K;
 
- for i := 0 to (FOrder div 2) - 1 do
+ i := 0;
+ while i < Integer(FOrder) - 1 do
   begin
-   a := -2 * cos((2 * i + Integer(FOrder) + 1) / (2 * FOrder) * PI) * K;
+   a := 2 * sin((i + 1) * FPiHalfOrderInv) * K;
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t * K2;
-   FAB[2 * i    ] := -2 * (K2 - 1) * t;
-   FAB[2 * i + 1] := (a - K2 - 1) * t;
+   FCoeffs[i    ] := -2 * (K2 - 1) * t;
+   FCoeffs[i + 1] := (a - K2 - 1) * t;
+   inc(i, 2);
   end;
- if (FOrder mod 2) = 1 then
+ if i < Integer(FOrder) then
   begin
-   i := ((FOrder + 1) div 2) - 1;
    t := 1 / (K + 1);
    FFilterGain := FFilterGain * t * K;
-   FAB[2 * i] := (1 - K) * t;
+   FCoeffs[i] := (1 - K) * t;
   end;
 end;
 
-function TButterworthLP.MagnitudeSquared(const Frequency: Double): Double;
+function TButterworthLowPassFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   i     : Integer;
   a, cw : Double;
 begin
  cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
- Result := 1;
+ Result := sqr(FFilterGain);
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result * a / (1 + sqr(FAB[2 * i]) +
-       sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] +
-       cw * ((FAB[2 * i] - cw) * FAB[2 * i + 1] - FAB[2 * i]));
+  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
+       sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+       cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw + 2) / (1 + sqr(FAB[2 * i]) - cw * FAB[2 * i]);
+   Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm64 + Abs(sqr(FFilterGain) * Result);
+ Result := CDenorm64 + Abs(Result);
 end;
 
-function TButterworthLP.Phase(const Frequency: Double): Double;
+function TButterworthLowPassFilter.Phase(const Frequency: Double): Double;
 var
-  cw, sw   : Double;
-  Nom, Den : Double;
-  i        : Integer;
+  Cmplx : array [0..1] of TComplexDouble;
+  i     : Integer;
 begin
- GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, sw, cw);
- Nom := 0; Den := 1;
+(*
+  Complex(Frequency, Cmplx[1].Re, Cmplx[1].Im);
+*)
+ GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, Cmplx[0].Im, Cmplx[0].Re);
+ Cmplx[1].Im := 0; Cmplx[1].Re := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   ComplexMultiplyInplace(Den, Nom,
-     (cw * (1 - FAB[2 * i + 1] - FAB[2 * i] + cw * (1 - FAB[2 * i + 1])) - FAB[2 * i]),
-     (sw * (1 + FAB[2 * i + 1]) * (cw + 1)));
+   ComplexMultiplyInplace(Cmplx[1].Re, Cmplx[1].Im,
+     (Cmplx[0].Re * (1 - FCoeffs[2 * i + 1] - FCoeffs[2 * i] + Cmplx[0].Re * (1 - FCoeffs[2 * i + 1])) - FCoeffs[2 * i]),
+     (Cmplx[0].Im * (1 + FCoeffs[2 * i + 1]) * (Cmplx[0].Re + 1)));
   end;
-// Complex(Frequency, Den, Nom);
- Result := ArcTan2(Nom, Den);
+ Result := ArcTan2(Cmplx[1].Im, Cmplx[1].Re);
 end;
 
-procedure TButterworthLP.Complex(const Frequency: Double; out Real,
+procedure TButterworthLowPassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i           : Integer;
@@ -330,19 +296,30 @@ var
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
  Real := FFilterGain;
- Imaginary := FFilterGain;
+ Imaginary := 0;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   Divider   := 1 / (sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] + sqr(FAB[2 * i]) + 1
-                      + 2 * cw * (FAB[2 * i] * (FAB[2 * i + 1] - 1) - 2 * cw * FAB[2 * i + 1]));
-   Real      := (1 - 2 * FAB[2 * i] - FAB[2 * i + 1]
-                + 2 * cw * (1 - FAB[2 * i + 1] - FAB[2 * i])
-                + (2 * sqr(cw) - 1) * (1 - FAB[2 * i + 1])) * Divider * Real;
-   Imaginary := 2 * (1 + FAB[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider * Imaginary;
+(*
+   Divider   := 1 / (sqr(FCoeffs[2 * i + 1] + 1) + sqr(FCoeffs[2 * i])
+                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] - 1) - 2 * cw * FCoeffs[2 * i + 1]));
+   ComplexMultiplyInplace(Real, Imaginary,
+     (1 - 2 * FCoeffs[2 * i] - FCoeffs[2 * i + 1]
+      + 2 * cw * (1 - FCoeffs[2 * i + 1] - FCoeffs[2 * i])
+      + (2 * sqr(cw) - 1) * (1 - FCoeffs[2 * i + 1])) * Divider,
+      + 2 * (1 + FCoeffs[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider);
+*)
+   Divider   := 1 / ( sqr(FCoeffs[2 * i + 1]) - 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
+                    + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] + 1) + 2 * cw * FCoeffs[2 * i + 1]));
+   ComplexMultiplyInplace(Real, Imaginary,
+     (1 + 2 * FCoeffs[2 * i] + FCoeffs[2 * i + 1]
+      + cw * (2 * (1 + FCoeffs[2 * i + 1]) + FCoeffs[2 * i] * 2)
+      + (2 * sqr(cw)-1) * (FCoeffs[2 * i + 1] + 1)) * Divider,
+      (2 * (1 - FCoeffs[2 * i + 1]) + 2 * cw * (1 - FCoeffs[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider);
   end;
 end;
 
-function TButterworthLP.ProcessSample(const Input: Double): Double;
+
+ function TButterworthLowPassFilter.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -353,15 +330,15 @@ begin
   begin
    x := Result;
    Result            :=     x + FState[2 * i];
-   FState[2 * i    ] := 2 * x + FAB[2 * i] * Result + FState[2 * i + 1];
-   FState[2 * i + 1] :=     x + FAB[2 * i + 1] * Result;
+   FState[2 * i    ] := 2 * x + FCoeffs[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=     x + FCoeffs[2 * i + 1] * Result;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
    x             := Result;
    Result        := x + FState[2 * i];
-   FState[2 * i] := x + FAB[2 * i] * Result;
+   FState[2 * i] := x + FCoeffs[2 * i] * Result;
   end;
 {$ELSE}
 asm
@@ -381,13 +358,13 @@ asm
   fadd [eax.FState + ecx * 4].Double
   fld st(0)
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FState + ecx * 4 + 8].Double
   fld st(3)
   fadd st(0), st(0)
   faddp
   fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -405,7 +382,7 @@ asm
   fld st(0)
   fadd [eax.FState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   faddp st(2), st(0)
   fxch
   fstp [eax.FState + ecx * 4].Double
@@ -415,39 +392,41 @@ end;
 
 { TButterworthFilterHP }
 
-constructor TButterworthHP.Create(const Order: Integer = 0);
+constructor TButterworthHighpassFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
- FGainFactor := 1;
  DenormRandom := Random;
 end;
 
-procedure TButterworthHP.CalculateCoefficients;
+procedure TButterworthHighpassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
 begin
+ if FOrder = 0 then exit;
  FFilterGain := sqr(FGainFactor);
- K := tan(FW0 * CHalf64); K2 := K * K;
+ K := FTanW0;
+ K2 := K * K;
 
- for i := 0 to (FOrder div 2) - 1 do
+ i := 0;
+ while i < Integer(FOrder) - 1 do
   begin
-   a := -2 * cos((2 * i + Integer(FOrder) + 1) / (2 * FOrder) * PI) * K;
+   a := 2 * sin((i + 1) * FPiHalfOrderInv) * K;
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;
-   FAB[2 * i    ] := -2 * (K2 - 1) * t;
-   FAB[2 * i + 1] := (a - K2 - 1) * t;
+   FCoeffs[i    ] := -2 * (K2 - 1) * t;
+   FCoeffs[i + 1] := (a - K2 - 1) * t;
+   inc(i, 2);
   end;
- if (FOrder mod 2) = 1 then
+ if i < Integer(FOrder) then
   begin
-   i := ((FOrder + 1) div 2) - 1;
    t := 1 / (K + 1);
    FFilterGain := FFilterGain * t;
-   FAB[2 * i] := (1 - K) * t;
+   FCoeffs[i] := (1 - K) * t;
   end;
 end;
 
-function TButterworthHP.MagnitudeSquared(const Frequency: Double): Double;
+function TButterworthHighpassFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   i     : Integer;
   a, cw : Double;
@@ -456,59 +435,74 @@ begin
  a := sqr(cw - 2);
  Result := 1;
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result * a / (1 + sqr(FAB[2 * i]) + sqr(FAB[2 * i + 1]) +
-       2 * FAB[2 * i + 1] + cw * ((FAB[2 * i] - cw) * FAB[2 * i + 1] - FAB[2 * i]));
+  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) + sqr(FCoeffs[2 * i + 1]) +
+       2 * FCoeffs[2 * i + 1] + cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw - 2) / (1 + sqr(FAB[2 * i]) - cw * FAB[2 * i]);
+   Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
  Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
 end;
 
-function TButterworthHP.Phase(const Frequency: Double): Double;
+function TButterworthHighpassFilter.Phase(const Frequency: Double): Double;
 var
   cw, sw   : Double;
   Nom, Den : Double;
   i        : Integer;
 begin
+(*
+ Complex(Frequency, Den, Nom);
+*)
  GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, sw, cw);
  Nom := 0; Den := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
    ComplexMultiplyInplace(Den, Nom,
-     (cw * (FAB[2 * i + 1] - FAB[2 * i] - 1 + cw * (1 - FAB[2 * i + 1])) + FAB[2 * i]),
-     (sw * (FAB[2 * i + 1] + 1) * (cw - 1)));
+     (cw * (FCoeffs[2 * i + 1] - FCoeffs[2 * i] - 1 + cw * (1 - FCoeffs[2 * i + 1])) + FCoeffs[2 * i]),
+     (sw * (FCoeffs[2 * i + 1] + 1) * (cw - 1)));
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   ComplexMultiplyInplace(Den, Nom, (1 + FAB[2 * i]) * (1 - cw),
-     sw * (FAB[2 * i] - 1));
+   ComplexMultiplyInplace(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - cw),
+     sw * (FCoeffs[2 * i] - 1));
   end;
- Complex(Frequency, Den, Nom);
  Result := ArcTan2(Nom, Den);
 end;
 
-procedure TButterworthHP.Complex(const Frequency: Double; out Real,
+procedure TButterworthHighpassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i           : Integer;
   cw, Divider : Double;
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
+ Real := FFilterGain;
+ Imaginary := 0;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   Divider   := 1 / (sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] + sqr(FAB[2 * i]) + 1
-                      + 2 * cw * (FAB[2 * i] * (FAB[2 * i + 1] - 1) - 2 * cw * FAB[2 * i + 1]));
-   Real      := (1 + 2 * FAB[2 * i] - FAB[2 * i + 1]
-                +        cw     * (2 * (FAB[2 * i + 1] - 1) - FAB[2 * i] * 2)
-                + (2 * sqr(cw) - 1) * (1 - FAB[2 * i + 1])) * Divider;
-   Imaginary := (- 2 * (1 + FAB[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider;
+(*
+   Divider   := 1 / (sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
+                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] - 1) - 2 * cw * FCoeffs[2 * i + 1]));
+   ComplexMultiplyInplace(Real, Imaginary,
+     (1 + 2 * FCoeffs[2 * i] - FCoeffs[2 * i + 1]
+      + 2 * cw * ((FCoeffs[2 * i + 1] - 1) - FCoeffs[2 * i])
+      + (2 * sqr(cw) - 1) * (1 - FCoeffs[2 * i + 1])) * Divider,
+      - 2 * (1 + FCoeffs[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider);
+*)
+   Divider   := 1 / ( sqr(FCoeffs[2 * i + 1]) - 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
+                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] + 1) + 2 * cw * FCoeffs[2 * i + 1]));
+   ComplexMultiplyInplace(Real, Imaginary,
+     (1 -2 * FCoeffs[2 * i] + 1 * FCoeffs[2 * i + 1]
+      +        cw * 2 * (-(1 + FCoeffs[2 * i + 1]) + FCoeffs[2 * i])
+      + (2 * sqr(cw) - 1) * (1 * FCoeffs[2 * i + 1] + 1)) * Divider,
+      (-2 * (1 - FCoeffs[2 * i + 1])
+      + 2 * cw * (1 - FCoeffs[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider);
   end;
 end;
 
-function TButterworthHP.ProcessSample(const Input: Single): Single;
+function TButterworthHighpassFilter.ProcessSample(const Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -519,15 +513,15 @@ begin
   begin
    x := Result;
    Result            :=      x + FState[2 * i];
-   FState[2 * i    ] := -2 * x + FAB[2 * i] * Result + FState[2 * i + 1];
-   FState[2 * i + 1] :=      x + FAB[2 * i + 1] * Result;
+   FState[2 * i    ] := -2 * x + FCoeffs[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=      x + FCoeffs[2 * i + 1] * Result;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i             := ((FOrder + 1) div 2) - 1;
    x             := Result;
    Result        :=  x + FState[2 * i];
-   FState[2 * i] := -x + FAB[2 * i] * Result;
+   FState[2 * i] := -x + FCoeffs[2 * i] * Result;
   end;
 {$ELSE}
 asm
@@ -556,13 +550,13 @@ asm
   fadd [eax.FState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   fsubp
   fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -580,7 +574,7 @@ asm
   fld st(0)
   fadd [eax.FState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fsubrp st(2), st(0)
   fxch
   fstp [eax.FState + ecx * 4].Double
@@ -588,7 +582,7 @@ asm
  {$ENDIF}
 end;
 
-function TButterworthHP.ProcessSample(const Input: Double): Double;
+function TButterworthHighpassFilter.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -599,15 +593,15 @@ begin
   begin
    x := Result;
    Result            :=      x + FState[2 * i];
-   FState[2 * i    ] := -2 * x + FAB[2 * i] * Result + FState[2 * i + 1];
-   FState[2 * i + 1] :=      x + FAB[2 * i + 1] * Result;
+   FState[2 * i    ] := -2 * x + FCoeffs[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=      x + FCoeffs[2 * i + 1] * Result;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i             := ((FOrder + 1) div 2) - 1;
    x             := Result;
    Result        :=  x + FState[2 * i];
-   FState[2 * i] := -x + FAB[2 * i] * Result;
+   FState[2 * i] := -x + FCoeffs[2 * i] * Result;
   end;
 {$ELSE}
 asm
@@ -636,13 +630,13 @@ asm
   fadd [eax.FState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   fsubp
   fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -660,7 +654,7 @@ asm
   fld st(0)
   fadd [eax.FState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fsubrp st(2), st(0)
   fxch
   fstp [eax.FState + ecx * 4].Double
@@ -668,41 +662,41 @@ asm
  {$ENDIF}
 end;
 
-{ TButterworthSplit }
+{ TButterworthSplitBandFilter }
 
-constructor TButterworthSplit.Create(const Order: Integer = 0);
+constructor TButterworthSplitBandFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
  Randomize;
  DenormRandom := Random;
 end;
 
-procedure TButterworthSplit.CalculateCoefficients;
+procedure TButterworthSplitBandFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
 begin
  FFilterGain := sqr(FGainFactor);
- K := tan(FW0 * CHalf64); K2 := K * K; FKs := IntPower(K, FOrder);
+ K := FTanW0; K2 := K * K; FKs := IntPower(K, FOrder);
 
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   a := -2 * cos((2 * i + Integer(FOrder) + 1) / (2 * FOrder) * PI) * K;
+   a := 2 * sin((2 * i + 1) * FPiHalfOrderInv) * K;
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;
-   FAB[2 * i    ] := -2 * (K2 - 1) * t;
-   FAB[2 * i + 1] := (a - K2 - 1) * t;
+   FCoeffs[2 * i    ] := -2 * (K2 - 1) * t;
+   FCoeffs[2 * i + 1] := (a - K2 - 1) * t;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
    t := 1 / (K + 1);
    FFilterGain := FFilterGain * t;
-   FAB[2 * i] := (1 - K) * t;
+   FCoeffs[2 * i] := (1 - K) * t;
   end;
 end;
 
-function TButterworthSplit.MagnitudeSquared(const Frequency: Double): Double;
+function TButterworthSplitBandFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   i  : Integer;
   cw : Double;
@@ -711,20 +705,20 @@ begin
  Result := sqr(FFilterGain) * sqr(FKs);
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   Result := Result * sqr(cw + 2) * sqr(cw - 2) / sqr(1 + sqr(FAB[2 * i]) +
-     sqr(FAB[2 * i + 1]) + 2 * FAB[2 * i + 1] +
-     cw * ((FAB[2 * i] - cw) * FAB[2 * i + 1] - FAB[2 * i]));
+   Result := Result * sqr(cw + 2) * sqr(cw - 2) / sqr(1 + sqr(FCoeffs[2 * i]) +
+     sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+     cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw + 2) * (cw - 2) / sqr(1 + sqr(FAB[2 * i]) - cw * FAB[2 * i]);
+   Result := Result * (cw + 2) * (cw - 2) / sqr(1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
 
  Result := CDenorm64 + Abs(sqr(FFilterGain) * Result);
 end;
 
-procedure TButterworthSplit.ProcessSample(const Input: Single; out Lowpass,
+procedure TButterworthSplitBandFilter.ProcessSample(const Input: Single; out Lowpass,
   Highpass: Single);
 {$IFDEF PUREPASCAL}
 var
@@ -737,24 +731,24 @@ begin
   begin
    x := Lowpass;
    Lowpass             :=      x + FState[2 * i];
-   FState[2 * i    ]   :=  2 * x + FAB[2 * i] * Lowpass + FState[2 * i + 1];
-   FState[2 * i + 1]   :=      x + FAB[2 * i + 1] * Lowpass;
+   FState[2 * i    ]   :=  2 * x + FCoeffs[2 * i] * Lowpass + FState[2 * i + 1];
+   FState[2 * i + 1]   :=      x + FCoeffs[2 * i + 1] * Lowpass;
 
    x := Highpass;
    Highpass            :=      x + FHPState[2 * i];
-   FHPState[2 * i    ] := -2 * x + FAB[2 * i] * Highpass + FHPState[2 * i + 1];
-   FHPState[2 * i + 1] :=      x + FAB[2 * i + 1] * Highpass;
+   FHPState[2 * i    ] := -2 * x + FCoeffs[2 * i] * Highpass + FHPState[2 * i + 1];
+   FHPState[2 * i + 1] :=      x + FCoeffs[2 * i + 1] * Highpass;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
    x               :=  Lowpass;
    Lowpass        :=   x + FState[2 * i];
-   FState[2 * i]   :=  x + FAB[2 * i] * Lowpass;
+   FState[2 * i]   :=  x + FCoeffs[2 * i] * Lowpass;
 
    x               :=  Highpass;
    Highpass        :=  x + FHPState[2 * i];
-   FHPState[2 * i] := -x + FAB[2 * i] * Highpass;
+   FHPState[2 * i] := -x + FCoeffs[2 * i] * Highpass;
   end;
 {$ELSE}
 asm
@@ -790,13 +784,13 @@ asm
   fadd [eax.FState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   faddp
   fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -808,13 +802,13 @@ asm
   fadd [eax.FHPState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FHPState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   fsubp
   fstp [eax.FHPState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -835,7 +829,7 @@ asm
   fld st(0)
   fadd [eax.FState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   faddp st(2), st(0)
   fxch
   fstp [eax.FState + ecx * 4].Double
@@ -845,7 +839,7 @@ asm
   fld st(0)
   fadd [eax.FHPState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fsubrp st(2), st(0)
   fxch
   fstp [eax.FHPState + ecx * 4].Double
@@ -857,7 +851,7 @@ asm
  {$ENDIF}
 end;
 
-procedure TButterworthSplit.ProcessSample(const Input: Double; out Lowpass,
+procedure TButterworthSplitBandFilter.ProcessSample(const Input: Double; out Lowpass,
   Highpass: Double);
 {$IFDEF PUREPASCAL}
 var
@@ -870,24 +864,24 @@ begin
   begin
    x := Lowpass;
    Lowpass             :=      x + FState[2 * i];
-   FState[2 * i    ]   :=  2 * x + FAB[2 * i] * Lowpass + FState[2 * i + 1];
-   FState[2 * i + 1]   :=      x + FAB[2 * i + 1] * Lowpass;
+   FState[2 * i    ]   :=  2 * x + FCoeffs[2 * i] * Lowpass + FState[2 * i + 1];
+   FState[2 * i + 1]   :=      x + FCoeffs[2 * i + 1] * Lowpass;
 
    x := Highpass;
    Highpass            :=      x + FHPState[2 * i];
-   FHPState[2 * i    ] := -2 * x + FAB[2 * i] * Highpass + FHPState[2 * i + 1];
-   FHPState[2 * i + 1] :=      x + FAB[2 * i + 1] * Highpass;
+   FHPState[2 * i    ] := -2 * x + FCoeffs[2 * i] * Highpass + FHPState[2 * i + 1];
+   FHPState[2 * i + 1] :=      x + FCoeffs[2 * i + 1] * Highpass;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
    x               :=  Lowpass;
    Lowpass        :=   x + FState[2 * i];
-   FState[2 * i]   :=  x + FAB[2 * i] * Lowpass;
+   FState[2 * i]   :=  x + FCoeffs[2 * i] * Lowpass;
 
    x               :=  Highpass;
    Highpass        :=  x + FHPState[2 * i];
-   FHPState[2 * i] := -x + FAB[2 * i] * Highpass;
+   FHPState[2 * i] := -x + FCoeffs[2 * i] * Highpass;
   end;
 {$ELSE}
 asm
@@ -923,13 +917,13 @@ asm
   fadd [eax.FState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   faddp
   fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -941,13 +935,13 @@ asm
   fadd [eax.FHPState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fadd [eax.FHPState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   fsubp
   fstp [eax.FHPState + ecx * 4].Double
-  fmul [eax.FAB + ecx * 4 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
@@ -968,7 +962,7 @@ asm
   fld st(0)
   fadd [eax.FState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   faddp st(2), st(0)
   fxch
   fstp [eax.FState + ecx * 4].Double
@@ -978,7 +972,7 @@ asm
   fld st(0)
   fadd [eax.FHPState + ecx * 4].Double
   fld st(0)
-  fmul [eax.FAB + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
   fsubrp st(2), st(0)
   fxch
   fstp [eax.FHPState + ecx * 4].Double

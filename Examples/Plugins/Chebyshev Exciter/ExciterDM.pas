@@ -19,9 +19,9 @@ type
     procedure ParamShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSourceLowpassFilter    : array [0..1, 0..1] of TButterworthLP;
-    FSourceHighpassFilter   : array [0..1, 0..1] of TButterworthHP;
-    FSplitterHighpassFilter : array [0..1, 0..1] of TButterworthHP;
+    FSourceLowpassFilter    : array [0..1, 0..1] of TButterworthLowPassFilter;
+    FSourceHighpassFilter   : array [0..1, 0..1] of TButterworthHighPassFilter;
+    FSplitterHighpassFilter : array [0..1, 0..1] of TButterworthHighPassFilter;
     FMix                    : array [0..1] of Single;
     FOverdriveGain          : Single;
     FChebyshevWaveshaper    : TChebyshevWaveshaperSquarelShape;
@@ -43,9 +43,9 @@ begin
  for ch := 0 to numInputs - 1 do
   for i := 0 to 1 do
    begin
-    FSourceLowpassFilter[ch, i]    := TButterworthLP.Create;
-    FSourceHighpassFilter[ch, i]   := TButterworthHP.Create;
-    FSplitterHighpassFilter[ch, i] := TButterworthHP.Create;
+    FSourceLowpassFilter[ch, i]    := TButterworthLowPassFilter.Create;
+    FSourceHighpassFilter[ch, i]   := TButterworthHighPassFilter.Create;
+    FSplitterHighpassFilter[ch, i] := TButterworthHighPassFilter.Create;
    end;
  FChebyshevWaveshaper := TChebyshevWaveshaperSquarelShape.Create;
 

@@ -4,29 +4,27 @@ library ValueableStereo;
 {$R 'Valueable.res' 'Valueable.rc'}
 
 uses
-  FastMM4,
-  FastMove,
-  Forms,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   VTModuleStereo in 'VTModuleStereo.pas' {VTVSTModule: TVST2Module},
   VTGUIStereo in 'VTGUIStereo.pas' {FmVT};
 
-function Main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TVTVSTModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TVTVSTModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TVTVSTModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

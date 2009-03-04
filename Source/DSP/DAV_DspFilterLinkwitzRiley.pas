@@ -10,9 +10,9 @@ uses
 type
   TLinkwitzRiley = class(TObject)
   private
-    FLowpass    : TButterworthLP;
-    FHighpass   : TButterworthHP;
-    FSplit      : TButterworthSplit;
+    FLowpass    : TButterworthLowpassFilter;
+    FHighpass   : TButterworthHighpassFilter;
+    FSplit      : TButterworthSplitBandFilter;
     FSampleRate : Single;
     FFrequency  : Single;
     FOrder      : Integer;
@@ -45,9 +45,9 @@ uses
 constructor TLinkwitzRiley.Create;
 begin
  inherited;
- FLowpass    := TButterworthLP.Create;
- FHighpass   := TButterworthHP.Create;
- FSplit      := TButterworthSplit.Create;
+ FLowpass    := TButterworthLowpassFilter.Create;
+ FHighpass   := TButterworthHighpassFilter.Create;
+ FSplit      := TButterworthSplitBandFilter.Create;
  FSampleRate := 44100;
  FOrder      := 4;
  FSign       := 1;

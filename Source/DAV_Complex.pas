@@ -110,6 +110,9 @@ procedure ComplexMultiplyInplace(var A: TComplexDouble; const B: TComplexDouble)
 procedure ComplexMultiplyInplace(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 procedure ComplexMultiplyInplace(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
+procedure ComplexMultiply2Inplace(var A: TComplexSingle; const B: TComplexSingle); overload;
+procedure ComplexMultiply2Inplace(var A: TComplexDouble; const B: TComplexDouble); overload;
+
 function ComplexDivide(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexDivide(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexDivide(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -475,6 +478,7 @@ end;
 
 procedure ComplexMultiplyInplace(var A: TComplexDouble;
   const B: TComplexDouble);
+{$IFDEF PUREPASCAL}
 var
   Temp: Double;
 begin
@@ -482,6 +486,108 @@ begin
   A.Re := A.Re * B.Re - A.Im * B.Im;
   A.Im := A.Im * B.Re + Temp * B.Im;
 end;
+{$ELSE}
+asm
+ fld A.Re.Double    // A.Re
+ fld A.Im.Double    // A.Im, A.Re
+ fld B.Re.Double    // B.Re, A.Im, A.Re
+ fld B.Im.Double    // B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fstp A.Re.Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fxch st(2)         // A.Im, B.Re, B.Im, A.Re
+ fmulp              // A.Im * B.Re, B.Im, A.Re
+ fxch st(2)         // B.Im, A.Re, A.Im * B.Re
+ fmulp              // B.Im * A.Re, A.Im * B.Re
+ faddp              // A.Im * B.Re + A.Re * B.Im
+ fstp A.Im.Double   // A.Im := A.Im * B.Re + A.Re * B.Im
+end;
+{$ENDIF}
+
+procedure ComplexMultiply2Inplace(var A: TComplexSingle;
+  const B: TComplexSingle);
+{$IFDEF PUREPASCAL}
+var
+  Temp: Single;
+begin
+  Temp := A.Re;
+  A.Re := A.Re * B.Re - A.Im * B.Im;
+  A.Im := A.Im * B.Re + Temp * B.Im;
+end;
+{$ELSE}
+asm
+ fld  A.Re.Double   // A.Re
+ fmul B.Re.Double   // A.Re * B.Re
+ fld  A.Im.Double   // A.Im, A.Re * B.Re
+ fmul B.Im.Double   // A.Im * B.Im, A.Re * B.Re
+ fsubp              // A.Re * B.Re - A.Im * B.Im = New A.Re
+
+ fld  A.Im.Single   // A.Re, New A.Re
+ fmul B.Re.Single   // A.Re * B.Re, New A.Re
+ fld  A.Re.Single   // A.Im, A.Re * B.Re, New A.Re
+ fmul B.Im.Single   // A.Im * B.Im, A.Re * B.Re, New A.Re
+ faddp              // A.Re * B.Re - A.Im * B.Im = New A.Im, New A.Re
+
+ fld B.Re.Double    // B.Re, A.Im, A.Re
+ fld B.Im.Double    // B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fstp A.Re.Single   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fxch st(2)         // A.Im, B.Re, B.Im, A.Re
+ fmulp              // A.Im * B.Re, B.Im, A.Re
+ fxch st(2)         // B.Im, A.Re, A.Im * B.Re
+ fmulp              // B.Im * A.Re, A.Im * B.Re
+ faddp              // A.Im * B.Re + A.Re * B.Im
+ fstp A.Im.Single   // A.Im := A.Im * B.Re + A.Re * B.Im
+end;
+{$ENDIF}
+
+procedure ComplexMultiply2Inplace(var A: TComplexDouble;
+  const B: TComplexDouble);
+{$IFDEF PUREPASCAL}
+var
+  Temp: Double;
+begin
+  Temp := A.Re;
+  A.Re := A.Re * B.Re - A.Im * B.Im;
+  A.Im := A.Im * B.Re + Temp * B.Im;
+end;
+{$ELSE}
+asm
+ fld  A.Re.Double   // A.Re
+ fmul B.Re.Double   // A.Re * B.Re
+ fld  A.Im.Double   // A.Im, A.Re * B.Re
+ fmul B.Im.Double   // A.Im * B.Im, A.Re * B.Re
+ fsubp              // A.Re * B.Re - A.Im * B.Im = New A.Re
+
+ fld  A.Im.Double   // A.Re, New A.Re
+ fmul B.Re.Double   // A.Re * B.Re, New A.Re
+ fld  A.Re.Double   // A.Im, A.Re * B.Re, New A.Re
+ fmul B.Im.Double   // A.Im * B.Im, A.Re * B.Re, New A.Re
+ faddp              // A.Re * B.Re - A.Im * B.Im = New A.Im, New A.Re
+
+ fld B.Re.Double    // B.Re, A.Im, A.Re
+ fld B.Im.Double    // B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+ fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fstp A.Re.Double   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fxch st(2)         // A.Im, B.Re, B.Im, A.Re
+ fmulp              // A.Im * B.Re, B.Im, A.Re
+ fxch st(2)         // B.Im, A.Re, A.Im * B.Re
+ fmulp              // B.Im * A.Re, A.Im * B.Re
+ faddp              // A.Im * B.Re + A.Re * B.Im
+ fstp A.Im.Double   // A.Im := A.Im * B.Re + A.Re * B.Im
+end;
+{$ENDIF}
 
 procedure ComplexMultiplyInplace(var ARe, AIm: Single;
   const BRe, BIm: Single);

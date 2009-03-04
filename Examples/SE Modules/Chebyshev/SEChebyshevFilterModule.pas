@@ -265,10 +265,11 @@ end;
 
 { TSEStaticChebyshevFilterLPModule }
 
-constructor TSEStaticChebyshevFilterLPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEStaticChebyshevFilterLPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TChebyshev1LP.Create;
+ FFilter := TChebyshev1LowpassFilter.Create;
  FFilter.SetFilterValues(10000 * FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
@@ -283,8 +284,8 @@ end;
 constructor TSEStaticChebyshevFilterHPModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TChebyshev1HP.Create;
- FFilter.SetFilterValues(10000 * FFrequency, 0, 0.1);
+ FFilter := TChebyshev1HighpassFilter.Create;
+ FFilter.SetFilterValues(100 * FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
@@ -394,7 +395,7 @@ constructor TSEAutomatebleChebyshevFilterLPModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TChebyshev1LP.Create;
+ FFilter := TChebyshev1LowpassFilterAutomatable.Create;
  FFilter.SetFilterValues(10000, 0, 0.1);
  FFilter.Order := FOrder;
 end;
@@ -410,7 +411,7 @@ constructor TSEAutomatebleChebyshevFilterHPModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TChebyshev1HP.Create;
+ FFilter := TChebyshev1HighpassFilterAutomatable.Create;
  FFilter.SetFilterValues(10000, 0, 0.1);
  FFilter.Order := FOrder;
 end;

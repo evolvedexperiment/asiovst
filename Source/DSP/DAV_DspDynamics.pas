@@ -629,8 +629,8 @@ type
   protected
     FSideChain   : Double;
     FDuck        : Boolean;
-    FLowCut      : TButterworthHP;
-    FHighCut     : TButterworthLP;
+    FLowCut      : TButterworthHighpassFilter;
+    FHighCut     : TButterworthLowpassFilter;
     procedure SampleRateChanged; override;
     procedure ThresholdChanged; override;
     procedure RangeChanged; override;
@@ -808,8 +808,8 @@ type
     procedure SetHighCut(const Value: Double);
     procedure SetLowCut(const Value: Double);
   protected
-    FLowCut  : TButterworthHP;
-    FHighCut : TButterworthLP;
+    FLowCut  : TButterworthHighpassFilter;
+    FHighCut : TButterworthLowpassFilter;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -1993,8 +1993,8 @@ constructor TAdvancedGate.Create;
 begin
   inherited;
   FGain              := 1;
-  FLowCut            := TButterworthHP.Create;
-  FHighCut           := TButterworthLP.Create;
+  FLowCut            := TButterworthHighpassFilter.Create;
+  FHighCut           := TButterworthLowpassFilter.Create;
   FLowCut.Frequency  := 20;
   FHighCut.Frequency := 20000;
 end;
@@ -2813,8 +2813,8 @@ end;
 constructor TCompressor.Create;
 begin
  inherited;
- FLowCut  := TButterworthHP.Create;
- FHighCut := TButterworthLP.Create;
+ FLowCut  := TButterworthHighpassFilter.Create;
+ FHighCut := TButterworthLowpassFilter.Create;
  FLowCut.Frequency := 20;
  FHighCut.Frequency := 20000;
 end;

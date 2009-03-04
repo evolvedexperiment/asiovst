@@ -361,7 +361,6 @@ end;
 
 procedure TCustomGuiLevelMeter.RedrawBuffer(doBufferFlip: Boolean);
 var
-  i           : Integer;
   DestBarRect : TRect;
   SplitSize   : Single;
   BarPadding  : Single;
@@ -382,8 +381,8 @@ begin
     BarPadding := (1 - FBarWidthPercentage) * SplitSize * 0.5;
 
     if FLevelDirection in [ldirHorizontal, ldirHorizontalInverted]
-     then DestBarRect := Rect(0, Round(SplitSize * i + BarPadding), Width, Round(SplitSize * (i + 1) - BarPadding))
-     else DestBarRect := Rect(Round(SplitSize * i + BarPadding), 0, Round(SplitSize * (i + 1) - BarPadding), Height);
+     then DestBarRect := Rect(0, round(BarPadding), Width, round(Height - BarPadding))
+     else DestBarRect := Rect(round(BarPadding), 0, round(Width - BarPadding), Height);
 
     case FLevelDirection of
       ldirHorizontal:         DrawSingleBarH (DestBarRect, FPeakLevel, FMaximumPeakLevel);

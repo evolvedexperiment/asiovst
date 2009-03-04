@@ -7,27 +7,25 @@ uses
   FastMM4,
   madExcept,
   madLinkDisAsm,
-  Forms,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   PlateReverbModule in 'PlateReverbModule.pas' {PlateReverbVST: TVSTModule},
   PlateReverbGUI in 'PlateReverbGUI.pas' {FmReverb};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TPlateReverbVST.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TPlateReverbVST);
 end;
 
-exports Main name 'main';
-exports Main name 'VstPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TPlateReverbVST);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

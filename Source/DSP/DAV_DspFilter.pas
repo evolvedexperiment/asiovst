@@ -47,11 +47,11 @@ type
     function ProcessSampleASM: Double; virtual;
     function MagnitudeSquared(const Frequency: Double): Double; virtual; abstract;
     function MagnitudeLog10(const Frequency: Double): Double; virtual; abstract;
-    function Phase(const Frequency: Double): Double; virtual; abstract;
+    function Phase(const Frequency: Double): Double; virtual;
     function Real(const Frequency: Double): Double; virtual; abstract;
     function Imaginary(const Frequency: Double): Double; virtual; abstract;
     procedure Complex(const Frequency: Double; out Real, Imaginary : Double); overload; virtual; abstract;
-    procedure Complex(const Frequency: Double; out Real, Imaginary : Single); overload; virtual; abstract;
+    procedure Complex(const Frequency: Double; out Real, Imaginary : Single); overload; virtual;
     procedure ResetStates; virtual; abstract;
     procedure ResetStatesInt64; virtual; abstract;
     procedure Reset; virtual; abstract;
@@ -219,11 +219,12 @@ uses
 
 constructor TCustomFilter.Create;
 begin
- FGain_dB    := 0;
- FGainFactor := 1;
- FSampleRate := 44100;
- FSRR        := 1 / FSampleRate;
- FFrequency  := 1000;
+ FGain_dB           := 0;
+ FGainFactor        := 1;
+ FGainFactorSquared := 1;
+ FSampleRate        := 44100;
+ FSRR               := 1 / FSampleRate;
+ FFrequency         := 1000;
  CalculateW0;
 end;
 
@@ -253,6 +254,17 @@ begin
  FSinW0 := sin(FW0);
  if FW0 > 3.141
   then FW0 := 3.141;
+end;
+
+procedure TCustomFilter.Complex(const Frequency: Double; out Real,
+  Imaginary: Single);
+var
+  Complex64 : TComplexDouble;
+begin
+ inherited;
+ Complex(Frequency, Complex64.Re, Complex64.Im);
+ Real := Complex64.Re;
+ Imaginary := Complex64.Im;
 end;
 
 procedure TCustomFilter.FrequencyChanged;
@@ -291,6 +303,14 @@ begin
  for i := 1 to Length(ImpulseResonse) - 1
   do ImpulseResonse[i] := ProcessSample(0.0);
  PopStates;
+end;
+
+function TCustomFilter.Phase(const Frequency: Double): Double;
+var
+  cmplx : TComplexDouble;
+begin
+ Complex(Frequency, cmplx.Re, cmplx.Im);
+ Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
 function TCustomFilter.ProcessSampleASM: Double;

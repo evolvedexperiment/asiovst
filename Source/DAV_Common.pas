@@ -419,7 +419,7 @@ begin
  if (Value > -300.0)
   then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
   else Result := 0;
-end;
+end;                                                             // e^(x) = 2^(log2(e^x)) = 2^(x / ln(2))
 
 function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}

@@ -3,7 +3,7 @@ unit SEFiltersModule;
 interface
 
 uses
-  DAV_Common, DAV_DSPFilter, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_DSPFilter, DAV_DSPFilterBasics, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -41,55 +41,55 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
-  TSESimpleLowpassModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicLowpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimpleHighpassModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicHighpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimpleBandpassModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicBandpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimpleNotchModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicNotchModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimpleLowshelfModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicLowshelfModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimpleHighshelfModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicHighshelfModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimplePeakModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicPeakModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSESimpleAllpassModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicAllpassModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TShapeFilter = class(TSimplePeakFilter)
+  TShapeFilter = class(TBasicPeakFilter)
   private
     FShape: Double;
     procedure SetShape(const Value: Double);
@@ -100,7 +100,7 @@ type
     property Shape : Double read FShape write SetShape;
   end;
 
-  TSESimpleShapeModule = class(TCustomSEGainFrequencyModule)
+  TSEBasicShapeModule = class(TCustomSEGainFrequencyModule)
   protected
     FShapeBuffer : PDAVSingleFixedArray;
   public
@@ -312,18 +312,18 @@ begin
 end;
 
 
-{ TSESimpleLowpassModule }
+{ TSEBasicLowpassModule }
 
-constructor TSESimpleLowpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicLowpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleLowpassFilter.Create;
+ FFilter := TBasicLowpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleLowpassModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicLowpassModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -339,18 +339,18 @@ begin
   end;
 end;
 
-{ TSESimpleHighpassModule }
+{ TSEBasicHighpassModule }
 
-constructor TSESimpleHighpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicHighpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleHighpassFilter.Create;
+ FFilter := TBasicHighpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleHighpassModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicHighpassModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -366,18 +366,18 @@ begin
   end;
 end;
 
-{ TSESimpleBandpassModule }
+{ TSEBasicBandpassModule }
 
-constructor TSESimpleBandpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicBandpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleBandpass.Create;
+ FFilter := TBasicBandpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleBandpassModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicBandpassModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -393,18 +393,18 @@ begin
   end;
 end;
 
-{ TSESimpleNotchModule }
+{ TSEBasicNotchModule }
 
-constructor TSESimpleNotchModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicNotchModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleNotch.Create;
+ FFilter := TBasicNotchFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleNotchModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicNotchModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -420,18 +420,18 @@ begin
   end;
 end;
 
-{ TSESimpleLowshelfModule }
+{ TSEBasicLowshelfModule }
 
-constructor TSESimpleLowshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicLowshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleLowShelfFilter.Create;
+ FFilter := TBasicLowShelfFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleLowshelfModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicLowshelfModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -447,18 +447,18 @@ begin
   end;
 end;
 
-{ TSESimpleHighshelfModule }
+{ TSEBasicHighshelfModule }
 
-constructor TSESimpleHighshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicHighshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleHighshelfFilter.Create;
+ FFilter := TBasicHighshelfFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleHighshelfModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicHighshelfModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -474,18 +474,18 @@ begin
   end;
 end;
 
-{ TSESimplePeakModule }
+{ TSEBasicPeakModule }
 
-constructor TSESimplePeakModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicPeakModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimplePeakFilter.Create;
+ FFilter := TBasicPeakFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimplePeakModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicPeakModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -501,18 +501,18 @@ begin
   end;
 end;
 
-{ TSESimpleAllpassModule }
+{ TSEBasicAllpassModule }
 
-constructor TSESimpleAllpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicAllpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TSimpleAllpassFilter.Create;
+ FFilter := TBasicAllpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleAllpassModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicAllpassModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -609,9 +609,9 @@ begin
   end;
 end;
 
-{ TSESimpleShapeModule }
+{ TSEBasicShapeModule }
 
-constructor TSESimpleShapeModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+constructor TSEBasicShapeModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
  FFilter := TShapeFilter.Create;
@@ -620,7 +620,7 @@ begin
  FFilter.Bandwidth := 1;
 end;
 
-class procedure TSESimpleShapeModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEBasicShapeModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -636,7 +636,7 @@ begin
   end;
 end;
 
-function TSESimpleShapeModule.GetPinProperties(const Index: Integer;
+function TSEBasicShapeModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
@@ -655,7 +655,7 @@ begin
  end;
 end;
 
-procedure TSESimpleShapeModule.SubProcess(const BufferOffset,
+procedure TSEBasicShapeModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 var
   Input  : PDAVSingleFixedArray;
