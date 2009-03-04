@@ -239,8 +239,12 @@ begin
     Lock;
 
     FChartBufferNeedsRepaint := False;
+    {$IFDEF Delphi10_Up}
     with Margins
      do rct := Rect(Left, Top, Width - Right, Height - Bottom);
+    {$ELSE}
+    rct := Rect(0, 0, Width, Height);
+    {$ENDIF}
 
     Brush.Color := Color;
     Brush.Style := bsSolid;

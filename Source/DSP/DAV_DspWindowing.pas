@@ -19,7 +19,7 @@ procedure ApplyHammingWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyBlackmanWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyBlackmanHarrisWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyGaussianWindow(var Data: TDAVSingleDynArray); overload;
-procedure ApplyKaiserBesselWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer; const Alpha: Single); overload;
+procedure ApplyKaiserBesselWindow(var Data: TDAVSingleDynArray; const Alpha: Single); overload;
 
 implementation
 
@@ -119,24 +119,23 @@ begin
 end;
 
 
-function Io(const x: Double): Double
+function Io(const x: Double): Double;
 var
-  y, de   : Double;
-  i       : Integer;
-  xi, sde : Double 
-const 
-  t: Double = 1E-08;
+  y, de : Double;
+  i     : Integer;
+  sde   : Double;
+const
+  CEpsilon: Double = 1E-08;
 begin
  y := 0.5 * x;
  de := 1.0;
  result := 1;
  for i := 1 to 25 do
   begin
-	 xi := i;
-	 de := de * y/xi;
-	 sde := sqr(de);
-	 e := e + sde;
-	 if (e * t - sde) > 0 
+   de := de * y / i;
+   sde := sqr(de);
+   result := result + sde;
+   if (result * CEpsilon - sde) > 0 
     then break;
   end;
 end;
@@ -144,29 +143,28 @@ end;
 // Generate window function (Kaiser-Bessel)
 procedure ApplyKaiserBesselWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer; const Alpha: Single); overload;
 var
-  i, j : Integer;
-  k    : Double;
+  i    : Integer;
   bes  : Double;
   odd  : Integer;
-  xi   : Double; 
+  xi   : Double;
   xind : Double; 
 begin
  bes := 1.0 / Io(Alpha);
  odd := SampleFrames mod 2;
- xind := sqr(nf - 1);
+ xind := sqr(SampleFrames - 1);
  for i := 0 to SampleFrames - 1 do
   begin
-	 if (odd = 1) 
-    then xi = i + 0.5
-	  else xi = i;
- 	 xi  := 4 * sqr(xi);
+   if (odd = 1) 
+    then xi := i + 0.5
+    else xi := i;
+   xi  := 4 * sqr(xi);
    Data^[i] := Io(Alpha * sqrt(1 - xi/xind)) * bes;
   end;
 end;
 
-procedure ApplyBlackmanHarrisWindow(var Data: TDAVSingleDynArray);
+procedure ApplyKaiserBesselWindow(var Data: TDAVSingleDynArray; const Alpha: Single);
 begin
- ApplyKaiserBesselWindow(@Data[0], Length(Data));
+ ApplyKaiserBesselWindow(@Data[0], Length(Data), Alpha);
 end;
 
 end.

@@ -167,7 +167,7 @@ end;
 
 constructor TDAVUpDownsampling.Create(AOwner: TComponent);
 begin
- FilterClass := TButterworthLP;
+ FilterClass := TButterworthLowPassFilter;
  inherited;
 end;
 
@@ -269,7 +269,7 @@ end;
 
 constructor TDAVUpSampling.Create(AOwner: TComponent);
 begin
- FilterClass := TButterworthLP;
+ FilterClass := TButterworthLowPassFilter;
  inherited;
 end;
 
@@ -337,7 +337,7 @@ end;
 
 constructor TDAVDownSampling.Create(AOwner: TComponent);
 begin
- FilterClass := TButterworthLP;
+ FilterClass := TButterworthLowPassFilter;
  inherited;
 end;
 
