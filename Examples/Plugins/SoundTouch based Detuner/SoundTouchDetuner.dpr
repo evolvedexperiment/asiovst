@@ -1,7 +1,8 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library Adhesive;
+library SoundTouchDetuner;
 
-{$R 'Adhesive.res' 'Adhesive.rc'}
+{$R 'SoundTouchKnob.res' 'SoundTouchKnob.rc'}
+{$R '..\..\..\Bin\SoundTouch.res' '..\..\..\Bin\SoundTouch.RC'}
 
 uses
   FastMM4,
@@ -13,17 +14,17 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  AdhesiveDM in 'AdhesiveDM.pas' {AdhesiveDataModule: TVSTModule},
-  AdhesiveGUI in 'AdhesiveGUI.pas' {FmAdhesive};
+  SoundTouchDetunerDM in 'SoundTouchDetunerDM.pas' {SoundTouchDetunerModule: TVSTModule},
+  SoundTouchDetunerGUI in 'SoundTouchDetunerGUI.pas' {FmSoundTouchDetuner};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TAdhesiveDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TSoundTouchDetunerModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TAdhesiveDataModule);
+ Result := WinampDSPModuleHeader(TSoundTouchDetunerModule);
 end;
 
 exports VstPluginMain name 'main';

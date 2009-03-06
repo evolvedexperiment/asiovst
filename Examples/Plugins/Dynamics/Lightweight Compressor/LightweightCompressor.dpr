@@ -10,10 +10,25 @@ uses
   madListProcesses,
   madListModules,
   FastMove,
+  DAV_WinAmp,
+  DAV_VSTEffect,
   DAV_VSTBasicModule,
   LightweightCompressorDM in 'LightweightCompressorDM.pas' {LightweightCompressorDataModule: TVSTModule},
   LightweightCompressorGUI in 'LightweightCompressorGUI.pas' {FmLightweightCompressor};
 
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- BasicVSTModuleClass := TLightweightCompressorDataModule;
+ Result := VstModuleMain(AudioMasterCallback, TLightweightCompressorDataModule);
+end;
+
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TLightweightCompressorDataModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+
+begin
 end.

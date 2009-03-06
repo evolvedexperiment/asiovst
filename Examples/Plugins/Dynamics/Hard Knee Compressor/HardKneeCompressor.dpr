@@ -6,10 +6,25 @@ library HardKneeCompressor;
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
+  DAV_WinAmp,
+  DAV_VSTEffect,
   DAV_VSTBasicModule,
   HardKneeCompressorDM in 'HardKneeCompressorDM.pas' {SoftKneeCompressorDataModule: TVSTModule},
   HardKneeCompressorGUI in 'HardKneeCompressorGUI.pas' {FmHardKneeCompressor};
 
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- BasicVSTModuleClass := THardKneeCompressorDataModule;
+ Result := VstModuleMain(AudioMasterCallback, THardKneeCompressorDataModule);
+end;
+
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(THardKneeCompressorDataModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+
+begin
 end.
