@@ -23,6 +23,10 @@ object SoundTouchDetunerModule: TSoundTouchDetunerModule
       VSTModule = Owner
     end
     item
+      DisplayName = 'Mid/Side Adventure'
+      VSTModule = Owner
+    end
+    item
       DisplayName = 'Distance Doppler'
       VSTModule = Owner
     end>

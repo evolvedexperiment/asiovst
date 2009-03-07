@@ -38,6 +38,7 @@ object FmSoundTouchDetuner: TFmSoundTouchDetuner
     LineColor = clRed
     LineWidth = 2
     NumGlyphs = 2
+    OnChange = SwEncodingChange
     StitchKind = skHorizontal
     StringList.Strings = (
       'Left / Right'

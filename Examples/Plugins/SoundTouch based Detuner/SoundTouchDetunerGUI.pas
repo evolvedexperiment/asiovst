@@ -41,6 +41,7 @@ type
     procedure DialDetuneBChange(Sender: TObject);
     procedure DialMixAChange(Sender: TObject);
     procedure DialMixBChange(Sender: TObject);
+    procedure SwEncodingChange(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -129,12 +130,25 @@ begin
  UpdateMix(1);
 end;
 
+procedure TFmSoundTouchDetuner.SwEncodingChange(Sender: TObject);
+begin
+ with TSoundTouchDetunerModule(Owner) do
+  begin
+   if round(Parameter[0]) <> SwEncoding.GlyphNr
+    then Parameter[0] := SwEncoding.GlyphNr;
+  end;
+end;
+
 procedure TFmSoundTouchDetuner.DialDetuneAChange(Sender: TObject);
 begin
  with TSoundTouchDetunerModule(Owner) do
   begin
-   if Parameter[1] <> DialDetuneA.Position
-    then Parameter[1] := DialDetuneA.Position
+   if Parameter[1] <> DialDetuneA.Position then
+    begin
+     Parameter[1] := DialDetuneA.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[4] := -Parameter[1];
+    end;
   end;
 end;
 
@@ -142,8 +156,12 @@ procedure TFmSoundTouchDetuner.DialDelayAChange(Sender: TObject);
 begin
  with TSoundTouchDetunerModule(Owner) do
   begin
-   if Parameter[2] <> DialDelayA.Position
-    then Parameter[2] := DialDelayA.Position
+   if Parameter[2] <> DialDelayA.Position then
+    begin
+     Parameter[2] := DialDelayA.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[5] := Parameter[2];
+    end;
   end;
 end;
 
@@ -151,8 +169,12 @@ procedure TFmSoundTouchDetuner.DialMixAChange(Sender: TObject);
 begin
  with TSoundTouchDetunerModule(Owner) do
   begin
-   if Parameter[3] <> DialMixA.Position
-    then Parameter[3] := DialMixA.Position
+   if Parameter[3] <> DialMixA.Position then
+    begin
+     Parameter[3] := DialMixA.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[6] := Parameter[3];
+    end;
   end;
 end;
 
@@ -160,8 +182,12 @@ procedure TFmSoundTouchDetuner.DialDetuneBChange(Sender: TObject);
 begin
  with TSoundTouchDetunerModule(Owner) do
   begin
-   if Parameter[4] <> DialDetuneB.Position
-    then Parameter[4] := DialDetuneB.Position
+   if Parameter[4] <> DialDetuneB.Position then
+    begin
+     Parameter[4] := DialDetuneB.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[1] := -Parameter[4];
+    end;
   end;
 end;
 
@@ -169,8 +195,12 @@ procedure TFmSoundTouchDetuner.DialDelayBChange(Sender: TObject);
 begin
  with TSoundTouchDetunerModule(Owner) do
   begin
-   if Parameter[5] <> DialDelayB.Position
-    then Parameter[5] := DialDelayB.Position
+   if Parameter[5] <> DialDelayB.Position then
+    begin
+     Parameter[5] := DialDelayB.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[2] := Parameter[5];
+    end;
   end;
 end;
 
@@ -178,8 +208,12 @@ procedure TFmSoundTouchDetuner.DialMixBChange(Sender: TObject);
 begin
  with TSoundTouchDetunerModule(Owner) do
   begin
-   if Parameter[6] <> DialMixB.Position
-    then Parameter[6] := DialMixB.Position
+   if Parameter[6] <> DialMixB.Position then
+    begin
+     Parameter[6] := DialMixB.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[3] := Parameter[6];
+    end;
   end;
 end;
 
@@ -203,7 +237,8 @@ end;
 
 procedure TFmSoundTouchDetuner.UpdateEncoding;
 begin
-
+ with TSoundTouchDetunerModule(Owner)
+  do SwEncoding.GlyphNr := round(Parameter[0]);
 end;
 
 procedure TFmSoundTouchDetuner.UpdateMix(const Channel: Integer);

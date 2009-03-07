@@ -66,8 +66,9 @@ begin
  Parameter[8] := 0;
 
  Programs[0].SetParameters(FParameter);
- with Programs[1] do SetParameters([0, -9, 13.5, 52.5, 9, 14.1, 50.0, 1, 0]);
- with Programs[2] do SetParameters([1, 16, 48.2, 13.5, -13, 79.1, 63.5, 1, 0]);
+ with Programs[1] do SetParameters([0, -9, 13.5, 52.5,   9, 14.1, 50.0, 1, 0]);
+ with Programs[2] do SetParameters([1, -6, 23.1, 52.5,   6, 21.6, 50.0, 1, 0]);
+ with Programs[3] do SetParameters([0, 16, 48.2, 13.5, -13, 79.1, 63.5, 1, 0]);
 end;
 
 procedure TSoundTouchDetunerModule.VSTModuleClose(Sender: TObject);
