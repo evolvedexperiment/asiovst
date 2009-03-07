@@ -66,11 +66,13 @@ begin
  FDesiredLatencyIndex := 5;
 
  {$IFDEF Use_IPPS}
+ {$IFNDEF Registered}
  if CSepMagic <> 2 * $29A2A826
   then raise Exception.Create(RCStrSynthEditOnly);
  VSTHostParams.Opcode := 32;
  if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
   then raise Exception.Create(RCStrSynthEditOnly);
+ {$ENDIF}
  {$ENDIF}
 end;
 
