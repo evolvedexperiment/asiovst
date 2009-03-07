@@ -1,4 +1,4 @@
-unit SoundTouchDetunerGUI;
+unit SplitHarmonizerGUI;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   ExtCtrls, DAV_GuiPanel;
 
 type
-  TFmSoundTouchDetuner = class(TForm)
+  TFmSplitHarmonizer = class(TForm)
     DialDelayA: TGuiDial;
     DialDelayB: TGuiDial;
     DialDetuneA: TGuiDial;
@@ -54,11 +54,11 @@ type
 implementation
 
 uses
-  Math, PngImage, SoundTouchDetunerDM, DAV_VSTModuleWithPrograms;
+  Math, PngImage, SplitHarmonizerDM, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 
-procedure TFmSoundTouchDetuner.FormCreate(Sender: TObject);
+procedure TFmSplitHarmonizer.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   x, y   : Integer;
@@ -114,12 +114,12 @@ begin
  end;
 end;
 
-procedure TFmSoundTouchDetuner.FormPaint(Sender: TObject);
+procedure TFmSplitHarmonizer.FormPaint(Sender: TObject);
 begin
  Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
-procedure TFmSoundTouchDetuner.FormShow(Sender: TObject);
+procedure TFmSplitHarmonizer.FormShow(Sender: TObject);
 begin
  UpdateEncoding;
  UpdateSemitones(0);
@@ -130,18 +130,18 @@ begin
  UpdateMix(1);
 end;
 
-procedure TFmSoundTouchDetuner.SwEncodingChange(Sender: TObject);
+procedure TFmSplitHarmonizer.SwEncodingChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if round(Parameter[0]) <> SwEncoding.GlyphNr
     then Parameter[0] := SwEncoding.GlyphNr;
   end;
 end;
 
-procedure TFmSoundTouchDetuner.DialDetuneAChange(Sender: TObject);
+procedure TFmSplitHarmonizer.DialDetuneAChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if Parameter[1] <> DialDetuneA.Position then
     begin
@@ -152,9 +152,9 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.DialDelayAChange(Sender: TObject);
+procedure TFmSplitHarmonizer.DialDelayAChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if Parameter[2] <> DialDelayA.Position then
     begin
@@ -165,9 +165,9 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.DialMixAChange(Sender: TObject);
+procedure TFmSplitHarmonizer.DialMixAChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if Parameter[3] <> DialMixA.Position then
     begin
@@ -178,9 +178,9 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.DialDetuneBChange(Sender: TObject);
+procedure TFmSplitHarmonizer.DialDetuneBChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if Parameter[4] <> DialDetuneB.Position then
     begin
@@ -191,9 +191,9 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.DialDelayBChange(Sender: TObject);
+procedure TFmSplitHarmonizer.DialDelayBChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if Parameter[5] <> DialDelayB.Position then
     begin
@@ -204,9 +204,9 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.DialMixBChange(Sender: TObject);
+procedure TFmSplitHarmonizer.DialMixBChange(Sender: TObject);
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    if Parameter[6] <> DialMixB.Position then
     begin
@@ -217,12 +217,12 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.UpdateDelay(const Channel: Integer);
+procedure TFmSplitHarmonizer.UpdateDelay(const Channel: Integer);
 var
   Dial  : TGuiDial;
   Labl  : TGuiLabel;
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    case Channel of
     0 : begin Dial := DialDelayA; Labl := LbDelayAValue; end;
@@ -235,18 +235,18 @@ begin
   end;
 end;
 
-procedure TFmSoundTouchDetuner.UpdateEncoding;
+procedure TFmSplitHarmonizer.UpdateEncoding;
 begin
- with TSoundTouchDetunerModule(Owner)
+ with TSplitHarmonizerModule(Owner)
   do SwEncoding.GlyphNr := round(Parameter[0]);
 end;
 
-procedure TFmSoundTouchDetuner.UpdateMix(const Channel: Integer);
+procedure TFmSplitHarmonizer.UpdateMix(const Channel: Integer);
 var
   Dial  : TGuiDial;
   Labl  : TGuiLabel;
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    case Channel of
     0 : begin Dial := DialMixA; Labl := LbMixAValue; end;
@@ -255,16 +255,16 @@ begin
    end;
    if Dial.Position <> Parameter[3 + 3 * Channel]
     then Dial.Position := Parameter[3 + 3 * Channel];
-   Labl.Caption := FloatToStrF(RoundTo(Parameter[3 + 3 * Channel], -1), ffGeneral, 4, 4) + ' %';
+   Labl.Caption := FloatToStrF(RoundTo(50 + 0.5 * Parameter[3 + 3 * Channel], -1), ffGeneral, 4, 4) + ' %';
   end;
 end;
 
-procedure TFmSoundTouchDetuner.UpdateSemitones(const Channel: Integer);
+procedure TFmSplitHarmonizer.UpdateSemitones(const Channel: Integer);
 var
   Dial  : TGuiDial;
   Labl  : TGuiLabel;
 begin
- with TSoundTouchDetunerModule(Owner) do
+ with TSplitHarmonizerModule(Owner) do
   begin
    case Channel of
     0 : begin Dial := DialDetuneA; Labl := LbDetuneAValue; end;

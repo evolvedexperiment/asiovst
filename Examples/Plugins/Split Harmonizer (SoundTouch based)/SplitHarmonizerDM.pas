@@ -1,4 +1,4 @@
-unit SoundTouchDetunerDM;
+unit SplitHarmonizerDM;
 
 interface
 
@@ -10,7 +10,7 @@ const
   CInputDelay = 5248;
 
 type
-  TSoundTouchDetunerModule = class(TVSTModule)
+  TSplitHarmonizerModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -42,9 +42,9 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, SoundTouchDetunerGUI, DAV_VSTCustomModule, DAV_VSTPrograms;
+  Math, Dialogs, SplitHarmonizerGUI, DAV_VSTCustomModule, DAV_VSTPrograms;
 
-procedure TSoundTouchDetunerModule.VSTModuleOpen(Sender: TObject);
+procedure TSplitHarmonizerModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -71,7 +71,7 @@ begin
  with Programs[3] do SetParameters([0, 16, 48.2, 13.5, -13, 79.1, 63.5, 1, 0]);
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleClose(Sender: TObject);
+procedure TSplitHarmonizerModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -79,79 +79,79 @@ begin
   do FreeAndNil(FSoundTouch[Channel]);
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleCreate(Sender: TObject);
+procedure TSplitHarmonizerModule.VSTModuleCreate(Sender: TObject);
 begin
  InitialDelay := CInputDelay;
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TSplitHarmonizerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmSoundTouchDetuner.Create(Self);
+  GUI := TFmSplitHarmonizer.Create(Self);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterSemiTonesAChange(
+procedure TSplitHarmonizerModule.ParameterSemiTonesAChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FSoundTouch[0].Pitch := Power(2, Value / 1200);
- if EditorForm is TFmSoundTouchDetuner
-  then TFmSoundTouchDetuner(EditorForm).UpdateSemitones(0);
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateSemitones(0);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterSemiTonesBChange(
+procedure TSplitHarmonizerModule.ParameterSemiTonesBChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FSoundTouch[1].Pitch := Power(2, Value / 1200);
- if EditorForm is TFmSoundTouchDetuner
-  then TFmSoundTouchDetuner(EditorForm).UpdateSemitones(1);
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateSemitones(1);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterUseAntiAliasChange(
+procedure TSplitHarmonizerModule.ParameterUseAntiAliasChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FSoundTouch[0].UseAntiAliasFilter := Value > 0.5;
  FSoundTouch[1].UseAntiAliasFilter := Value > 0.5;
 end;
 
-procedure TSoundTouchDetunerModule.ParameterUseQuickSeekChange(
+procedure TSplitHarmonizerModule.ParameterUseQuickSeekChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FSoundTouch[0].UseQuickSeek := Value > 0.5;
  FSoundTouch[1].UseQuickSeek := Value > 0.5;
 end;
 
-procedure TSoundTouchDetunerModule.ParameterDelayAChange(
+procedure TSplitHarmonizerModule.ParameterDelayAChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FDelayLine[0, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
- if EditorForm is TFmSoundTouchDetuner
-  then TFmSoundTouchDetuner(EditorForm).UpdateDelay(0);
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateDelay(0);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterDelayBChange(
+procedure TSplitHarmonizerModule.ParameterDelayBChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FDelayLine[1, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
- if EditorForm is TFmSoundTouchDetuner
-  then TFmSoundTouchDetuner(EditorForm).UpdateDelay(1);
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateDelay(1);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterMixLeftChange(
+procedure TSplitHarmonizerModule.ParameterMixLeftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[0] := 0.01 * Value;
- if EditorForm is TFmSoundTouchDetuner
-  then TFmSoundTouchDetuner(EditorForm).UpdateMix(0);
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateMix(0);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterMixRightChange(
+procedure TSplitHarmonizerModule.ParameterMixRightChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[1] := 0.01 * Value;
- if EditorForm is TFmSoundTouchDetuner
-  then TFmSoundTouchDetuner(EditorForm).UpdateMix(1);
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateMix(1);
 end;
 
-procedure TSoundTouchDetunerModule.ParameterEncodeChange(
+procedure TSplitHarmonizerModule.ParameterEncodeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  case round(Value) of
@@ -167,7 +167,7 @@ begin
  OnProcessReplacing := OnProcess;
 end;
 
-procedure TSoundTouchDetunerModule.ParameterEncodeDisplay(
+procedure TSplitHarmonizerModule.ParameterEncodeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -176,7 +176,7 @@ begin
  end;
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleProcessLR(const Inputs,
+procedure TSplitHarmonizerModule.VSTModuleProcessLR(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel : Integer;
@@ -199,7 +199,7 @@ begin
   end;
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleProcessReplacing64LR(const Inputs,
+procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64LR(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel : Integer;
@@ -222,7 +222,7 @@ begin
   end;
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleProcessMS(const Inputs,
+procedure TSplitHarmonizerModule.VSTModuleProcessMS(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel : Integer;
@@ -252,7 +252,7 @@ begin
   end;
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleProcessReplacing64MS(const Inputs,
+procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64MS(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel : Integer;
@@ -282,7 +282,7 @@ begin
   end;
 end;
 
-procedure TSoundTouchDetunerModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TSplitHarmonizerModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   Channel : Integer;

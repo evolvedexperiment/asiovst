@@ -1,4 +1,4 @@
-object FmSoundTouchDetuner: TFmSoundTouchDetuner
+object FmSplitHarmonizer: TFmSplitHarmonizer
   Left = 286
   Top = 77
   BorderStyle = bsNone
@@ -67,8 +67,8 @@ object FmSoundTouchDetuner: TFmSoundTouchDetuner
       DialImageIndex = -1
       LineColor = 15133420
       LineWidth = 3
-      Max = 100.000000000000000000
-      Min = -100.000000000000000000
+      Max = 20.000000000000000000
+      Min = -20.000000000000000000
       NumGlyphs = 65
       OnChange = DialDetuneAChange
       PointerAngles.Start = 225
@@ -121,7 +121,7 @@ object FmSoundTouchDetuner: TFmSoundTouchDetuner
       DialImageIndex = -1
       LineColor = 15133420
       LineWidth = 3
-      Max = 200.000000000000000000
+      Max = 80.000000000000000000
       Min = 0.001000000047497451
       NumGlyphs = 65
       OnChange = DialDelayAChange
@@ -213,8 +213,8 @@ object FmSoundTouchDetuner: TFmSoundTouchDetuner
       DialImageIndex = -1
       LineColor = 15133420
       LineWidth = 3
-      Max = 100.000000000000000000
-      Min = -100.000000000000000000
+      Max = 20.000000000000000000
+      Min = -20.000000000000000000
       NumGlyphs = 65
       OnChange = DialDetuneBChange
       PointerAngles.Start = 225
@@ -267,7 +267,7 @@ object FmSoundTouchDetuner: TFmSoundTouchDetuner
       DialImageIndex = -1
       LineColor = 15133420
       LineWidth = 3
-      Max = 200.000000000000000000
+      Max = 80.000000000000000000
       Min = 0.001000000047497451
       NumGlyphs = 65
       OnChange = DialDelayBChange

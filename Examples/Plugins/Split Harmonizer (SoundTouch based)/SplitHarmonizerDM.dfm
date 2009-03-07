@@ -1,4 +1,4 @@
-object SoundTouchDetunerModule: TSoundTouchDetunerModule
+object SplitHarmonizerModule: TSplitHarmonizerModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]

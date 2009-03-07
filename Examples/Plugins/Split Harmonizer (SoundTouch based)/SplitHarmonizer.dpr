@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library SoundTouchDetuner;
+library SplitHarmonizer;
 
 {$R 'SoundTouchKnob.res' 'SoundTouchKnob.rc'}
 {$R '..\..\..\Bin\SoundTouch.res' '..\..\..\Bin\SoundTouch.RC'}
@@ -14,17 +14,17 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  SoundTouchDetunerDM in 'SoundTouchDetunerDM.pas' {SoundTouchDetunerModule: TVSTModule},
-  SoundTouchDetunerGUI in 'SoundTouchDetunerGUI.pas' {FmSoundTouchDetuner};
+  SplitHarmonizerDM in 'SplitHarmonizerDM.pas' {SplitHarmonizerModule: TVSTModule},
+  SplitHarmonizerGUI in 'SplitHarmonizerGUI.pas' {FmSplitHarmonizer};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TSoundTouchDetunerModule);
+ Result := VstModuleMain(AudioMasterCallback, TSplitHarmonizerModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TSoundTouchDetunerModule);
+ Result := WinampDSPModuleHeader(TSplitHarmonizerModule);
 end;
 
 exports VstPluginMain name 'main';
