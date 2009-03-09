@@ -1,17 +1,16 @@
 object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
-  Version = '1.0.2'
+  Version = '1.0.0'
   EffectName = 'Smooth Multiband Compressor'
   ProductName = 'DAV Dynamic Examples'
   VendorName = 'Delphi ASIO & VST Project'
-  VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
-  UniqueID = 'DVLC'
+  UniqueID = 'DSML'
   ShellPlugins = <>
   Programs = <
     item
@@ -442,6 +441,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
+      OnCustomParameterDisplay = ParameterVolumeDisplay
     end>
   ParameterCategories = <
     item

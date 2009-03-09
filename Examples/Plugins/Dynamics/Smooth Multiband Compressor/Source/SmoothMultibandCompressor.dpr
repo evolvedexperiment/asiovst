@@ -14,7 +14,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   SmoothMultibandCompressorDM in 'SmoothMultibandCompressorDM.pas' {SmoothMultibandCompressorDataModule: TVSTModule},
-  SmoothMultibandCompressorGUI in 'SmoothMultibandCompressorGUI.pas' {FmSmoothMultibandCompressor};
+  SmoothMultibandCompressorGUI in 'SmoothMultibandCompressorGUI.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

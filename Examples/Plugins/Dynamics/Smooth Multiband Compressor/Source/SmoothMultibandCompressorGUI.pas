@@ -106,8 +106,6 @@ implementation
 uses
   Math, GR32_Backends, SmoothMultibandCompressorDM, DAV_VSTModuleWithPrograms;
 
-{$R *.DFM}
-
 procedure TFmSmoothMultibandCompressor.FormCreate(Sender: TObject);
 var
   tmp   : TPNGGraphic;
@@ -125,8 +123,7 @@ begin
  ControlStyle    := ControlStyle + [csOpaque];
  FBackground[1]  := TBitmap32.Create;
  FBackground[0]  := TBitmap32.Create;
- FBackground[0].MasterAlpha := $20;
- FBackground[0].DrawMode := dmBlend;
+ FBackground[0].Font.Name := 'Arial';
  FAnimateFrame := 0;
 
  if not Assigned(GBG) then
@@ -138,12 +135,17 @@ begin
      tmp.LoadFromStream(RS);
      GBG := TVerticallyStitchedBitmap32.Create;
      GBG.Assign(tmp);
+
     finally
      RS.Free;
     end;
    finally
     tmp.Free;
    end;
+
+   GRectStage[0, 6] := Rect(620, 109, 698, 170);
+   GRectStage[1, 6] := Rect(620, 216, 698, 277);
+   GRectStage[2, 6] := Rect(620, 318, 698, 379);
   end;
 
  if not Assigned(GKnob) then
@@ -206,9 +208,6 @@ begin
       GRectStage[Stage, Param].Bottom := GRectStage[Stage, Param].Top + GKnob.RealHeight;
      end;
 
-   GRectStage[0, 6].TopLeft := Point(618, 107);
-   GRectStage[1, 6].TopLeft := Point(618, 217);
-   GRectStage[2, 6].TopLeft := Point(618, 317);
   end;
 
   if not Assigned(GSoftClip) then
@@ -297,22 +296,24 @@ begin
    SetFocus;
 
    if PtInRect(GRectTop[0], Pt) then
-    if ssShift in Shift
+    if ssCtrl in Shift
      then Parameter[0] := 500
      else FEditValue := edLow
     else
    if PtInRect(GRectTop[1], Pt) then
-    if ssShift in Shift
+    if ssCtrl in Shift
      then Parameter[1] := 2500
      else FEditValue := edHigh
     else
    if PtInRect(GRectTop[2], Pt) then
-    if ssShift in Shift
+    if ssCtrl in Shift
      then Parameter[2] := 0
      else FEditValue := edVolume
     else
    if PtInRect(GRectTop[3], Pt)  then
     begin
+     FBackground[0].DrawMode := dmOpaque;
+     FBackground[0].DrawTo(FBackground[1]);
      Parameter[2] := 1 - round(Parameter[2]);
      FAnimateFrame := -$20;
     end else
@@ -321,90 +322,55 @@ begin
      FStage := Stage;
      if PtInRect(GRectStage[FStage, 0], Pt)  then
       begin
-       if ssShift in Shift
+       if ssCtrl in Shift
         then Parameter[5 + Stage * 6] := -10
         else FEditValue := edThreshold;
        break;
       end else
      if PtInRect(GRectStage[FStage, 1], Pt)  then
       begin
-       if ssShift in Shift
+       if ssCtrl in Shift
         then Parameter[6 + Stage * 6] := 4
         else FEditValue := edRatio;
        break;
       end else
      if PtInRect(GRectStage[FStage, 2], Pt)  then
       begin
-       if ssShift in Shift
+       if ssCtrl in Shift
         then Parameter[3 + Stage * 6] := 5
         else FEditValue := edAttack;
        break;
       end else
      if PtInRect(GRectStage[FStage, 3], Pt)  then
       begin
-       if ssShift in Shift
+       if ssCtrl in Shift
         then Parameter[4 + Stage * 6] := 50
         else FEditValue := edRelease;
        break;
       end else
      if PtInRect(GRectStage[FStage, 4], Pt)  then
       begin
-       if ssShift in Shift
+       if ssCtrl in Shift
         then Parameter[7 + Stage * 6] := 1
         else FEditValue := edKnee;
        break;
       end else
      if PtInRect(GRectStage[FStage, 5], Pt)  then
       begin
-       if ssShift in Shift
+       if ssCtrl in Shift
         then Parameter[8 + Stage * 6] := 3
         else FEditValue := edMakeUpGain;
        break;
       end;
     end;
-(*
-   if PtInRect(FRectSwitch[0], Pt, GRatios[0]) then
-    begin
-     if y <  55 then Parameter[4] := 3 else
-     if y <  82 then Parameter[4] := 2 else
-     if y < 108 then Parameter[4] := 1
-      else Parameter[4] := 0;
-     FBackground[0].DrawMode := dmOpaque;
-     FBackground[0].DrawTo(FBackground[1]);
-     FBackground[0].DrawMode := dmBlend;
-     FAnimateValue := avRatio;
-    end else
-   if PtInRect(FRectSwitch[1], Pt, GRatios[0]) then
-    begin
-     pml := Round(Parameter[5]);
-     FBackground[0].DrawMode := dmOpaque;
-     FBackground[0].DrawTo(FBackground[1]);
-     FBackground[0].DrawMode := dmBlend;
-     FAnimateValue := avMeter;
-     if y <  55 then pml := (pml and $FFFFFFFE) else
-     if y <  82 then pml := 1 or (pml and $FFFFFFFE) else
-     if y < 108
-      then ChangeSkin
-      else pml := ((not pml) and $2) or (pml and $FFFFFFFD);
-     Parameter[5] := pml;
-    end else
-   if PtInRect(FRectAbout, Pt) then
-    begin
-     FBackground[0].DrawMode := dmOpaque;
-     FBackground[0].DrawTo(FBackground[1]);
-     FBackground[0].DrawMode := dmBlend;
-     FBackground[0].Draw(0, 0, GAbout);
-     FAnimateFrame := 0;
-     FAnimateValue := avAbout;
-     OnMouseDown := AboutMouseDown;
-     OnMouseMove := nil;
-    end;
-*)
-   ;
 
    if FEditValue in [edLow, edHigh, edVolume, edAttack, edRelease, edThreshold,
-     edRatio, edKnee, edMakeUpGain]
-    then Screen.Cursor := crNone;
+     edRatio, edKnee, edMakeUpGain] then
+    begin
+     FBackground[0].DrawMode := dmOpaque;
+     FBackground[0].DrawTo(FBackground[1]);
+     Screen.Cursor := crNone;
+    end;
  end;
 (*
  FBackground[0].RenderText(x, y, IntToStr(X) +', ' + IntToStr(Y), 0, clWhite32);
@@ -425,7 +391,7 @@ begin
              begin
               Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
               s := Parameter[0];
-              if ssCtrl in Shift
+              if ssAlt in Shift
                then s := s * Power(2, 5E-3 * (Pt.Y - Y))
                else s := s * Power(2, 0.01 * (Pt.Y - Y)) * Power(2, 5E-3 * (X - Pt.X));
               with ParameterProperties[0]
@@ -435,7 +401,7 @@ begin
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                s := Parameter[1];
-               if ssCtrl in Shift
+               if ssAlt in Shift
                 then s := s * Power(2, 5E-3 * (Pt.Y - Y))
                 else s := s * Power(2, 0.01 * (Pt.Y - Y)) * Power(2, 5E-3 * (X - Pt.X));
                with ParameterProperties[1]
@@ -445,7 +411,7 @@ begin
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                s := Parameter[21];
-               if ssCtrl in Shift
+               if ssAlt in Shift
                 then s := s + 0.002 * (Pt.Y - Y)
                 else s := s + 0.016 * (Pt.Y - Y) - 0.002 * (Pt.X - X);
                with ParameterProperties[21]
@@ -455,7 +421,7 @@ begin
                  begin
                   Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                   s := Parameter[5 + FStage * 6];
-                  if ssCtrl in Shift
+                  if ssAlt in Shift
                    then s := s + 0.01 * (Pt.Y - Y)
                    else s := s + 0.05 * (Pt.Y - Y) - 0.01 * (Pt.X - X);
                   with ParameterProperties[5 + FStage * 6]
@@ -465,9 +431,9 @@ begin
              begin
               Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
               s := Parameter[6 + FStage * 6];
-              if ssCtrl in Shift
+              if ssAlt in Shift
                then s := s * Power(2, 2E-3 * (Pt.Y - Y))
-               else s := s * Power(2, 0.006 * (Pt.Y - Y)) * Power(2, 2E-3 * (Pt.X - X));
+               else s := s * Power(2, 0.008 * (Pt.Y - Y)) * Power(2, 2E-3 * (Pt.X - X));
               with ParameterProperties[6 + FStage * 6]
                do Parameter[6 + FStage * 6] := Limit(s, Min, Max);
              end;
@@ -475,7 +441,7 @@ begin
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                s := Parameter[3 + FStage * 6];
-               if ssCtrl in Shift
+               if ssAlt in Shift
                 then s := s * Power(2, 5E-3 * (Pt.Y - Y))
                 else s := s * Power(2, 0.01 * (Pt.Y - Y)) * Power(2, 5E-3 * (Pt.X - X));
                with ParameterProperties[3 + FStage * 6]
@@ -485,7 +451,7 @@ begin
                 begin
                  Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                  s := Parameter[4 + FStage * 6];
-                 if ssCtrl in Shift
+                 if ssAlt in Shift
                   then s := s * Power(2, 5E-3 * (Pt.Y - Y))
                   else s := s * Power(2, 0.01 * (Pt.Y - Y)) * Power(2, 5E-3 * (Pt.X - X));
                  with ParameterProperties[4 + FStage * 6]
@@ -495,7 +461,7 @@ begin
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                s := Parameter[7 + FStage * 6];
-               if ssCtrl in Shift
+               if ssAlt in Shift
                 then s := s + 0.002 * (Pt.Y - Y)
                 else s := s + 0.016 * (Pt.Y - Y) - 0.002 * (Pt.X - X);
                with ParameterProperties[7 + FStage * 6]
@@ -505,7 +471,7 @@ begin
                 begin
                  Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
                  s := Parameter[8 + FStage * 6];
-                 if ssCtrl in Shift
+                 if ssAlt in Shift
                   then s := s + 0.01 * (Pt.Y - Y)
                   else s := s + 0.05 * (Pt.Y - Y) - 0.01 * (Pt.X - X);
                  with ParameterProperties[8 + FStage * 6]
@@ -521,7 +487,7 @@ begin
    SetCursorPos(Pt.X, Pt.Y);
    FAnimateFrame := -$10;
    Invalidate;
-   Sleep(5);
+   Sleep(3);
    Application.ProcessMessages;
    OnMouseMove := FormMouseMove;
   end;
@@ -538,11 +504,52 @@ end;
 procedure TFmSmoothMultibandCompressor.FormMouseWheel(Sender: TObject;
   Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
   var Handled: Boolean);
+var
+  Stage : Integer;  
 begin
  MousePos := ScreenToClient(MousePos);
  if PtInRect(GRectTop[0], MousePos) then FEditValue := edLow else
  if PtInRect(GRectTop[1], MousePos) then FEditValue := edHigh else
- if PtInRect(GRectTop[2], MousePos) then FEditValue := edVolume;
+ if PtInRect(GRectTop[2], MousePos) then FEditValue := edVolume else
+ for Stage := 0 to Length(GRectStage) - 1 do
+  begin
+   if PtInRect(GRectStage[Stage, 0], MousePos)  then
+    begin
+     FEditValue := edThreshold;
+     FStage := Stage;
+     break;
+    end else
+   if PtInRect(GRectStage[Stage, 1], MousePos)  then
+    begin
+     FEditValue := edRatio;
+     FStage := Stage;
+     break;
+    end else
+   if PtInRect(GRectStage[Stage, 4], MousePos)  then
+    begin
+     FEditValue := edKnee;
+     FStage := Stage;
+     break;
+    end else
+   if PtInRect(GRectStage[Stage, 5], MousePos)  then
+    begin
+     FEditValue := edMakeUpGain;
+     FStage := Stage;
+     break;
+    end else
+   if PtInRect(GRectStage[Stage, 2], MousePos)  then
+    begin
+     FEditValue := edAttack;
+     FStage := Stage;
+     break;
+    end else
+   if PtInRect(GRectStage[Stage, 3], MousePos)  then
+    begin
+     FEditValue := edRelease;
+     FStage := Stage;
+     break;
+    end;
+  end;
 
  if WheelDelta > 0
   then FormMouseMove(Sender, Shift + [ssAlt, ssLeft], MousePos.X, MousePos.Y - 10)
@@ -557,6 +564,7 @@ begin
   else
    begin
     FBackground[0].MasterAlpha := $80 + 2 * FAnimateFrame;
+    FBackground[0].DrawMode := dmBlend;
     FBackground[0].DrawTo(FBackground[1]);
     FBackground[1].DrawTo(Canvas.Handle, 0, 0);
     inc(FAnimateFrame);
@@ -569,36 +577,13 @@ begin
   begin
    BeginUpdate;
    SetSize(ClientWidth, ClientHeight);
-   DrawAll;
    EndUpdate;
   end;
- FBackground[1].Assign(FBackground[0]);
 end;
 
 procedure TFmSmoothMultibandCompressor.FormShow(Sender: TObject);
 begin
- UpdateLowAttack;
- UpdateLowAutoMakeUpGain;
- UpdateLowKnee;
- UpdateLowMakeUp;
- UpdateLowRatio;
- UpdateLowRelease;
- UpdateLowThreshold;
- UpdateMidAttack;
- UpdateMidAutoMakeUpGain;
- UpdateMidKnee;
- UpdateMidMakeUp;
- UpdateMidRatio;
- UpdateMidRelease;
- UpdateMidThreshold;
- UpdateHighAttack;
- UpdateHighAutoMakeUpGain;
- UpdateHighKnee;
- UpdateHighMakeUp;
- UpdateHighRatio;
- UpdateHighRelease;
- UpdateHighThreshold;
- UpdateLimit;
+ DrawAll;
 end;
 
 procedure TFmSmoothMultibandCompressor.TimerTimer(Sender: TObject);
@@ -646,6 +631,7 @@ begin
   finally
    EndUpdate;
   end;
+ FBackground[1].Assign(FBackground[0]);
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawLowFrequency;
@@ -700,7 +686,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[1] + ' ' + ParameterLabel[1];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 4, $FFC1CAD1);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FFC1CAD1);
   finally
    EndUpdate;
   end;
@@ -728,7 +714,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[21] + ' ' + ParameterLabel[21];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 4, $FFC1CAD1);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FFC1CAD1);
   finally
    EndUpdate;
   end;
@@ -777,7 +763,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[5 + Stage * 6] + ' ' + ParameterLabel[5 + Stage * 6];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4C4847);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
   end;
@@ -806,7 +792,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[6 + Stage * 6] + ' : 1';
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 1, $FF4C4847);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
   end;
@@ -835,7 +821,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[3 + Stage * 6] + ' ' + ParameterLabel[3 + Stage * 6];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 2, $FF4C4847);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
   end;
@@ -864,7 +850,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[4 + Stage * 6] + ' ' + ParameterLabel[4 + Stage * 6];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 3, $FF4C4847);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
   end;
@@ -893,7 +879,7 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[7 + Stage * 6] + ' ' + ParameterLabel[7 + Stage * 6];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 4, $FF4C4847);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
   end;
@@ -922,15 +908,51 @@ begin
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
    t := ParameterDisplay[8 + Stage * 6] + ' ' + ParameterLabel[8 + Stage * 6];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, -1, $FF4C4847);
+   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawGraph(const Stage: Integer);
+var
+  i : Integer;
+  r : TRect;
+  n : Single;
+  s : Single;
+const
+  COneSixty : Single = 1 / 60;
 begin
+ with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
+  with LightweightCompressor[Stage] do
+   begin
+    BeginUpdate;
+    try
+     r := GRectStage[Stage, 6];
+     Draw(r, r, GBG);
 
+     s := 60 / (r.Bottom - r.Top);
+     PenColor := $DF6289A8;
+
+     i := r.Left;
+
+     repeat
+      n := CharacteristicCurve_dB(-54 + (i - r.Left) * s);
+      n := r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty);
+      inc(i)
+     until n < r.Bottom;
+     MoveToF(i, Limit(n - 1, r.Top, r.Bottom - 1));
+     while i < r.Right do
+      begin
+       n := CharacteristicCurve_dB(-54 + (i - r.Left) * s);
+       if n > 6 then PenColor := SetAlpha(PenColor, round($DF - (n - 6) * 2));
+       LineToFS(i, Limit(r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty), r.Top, r.Bottom - 1));
+       inc(i);
+      end;
+    finally
+     EndUpdate;
+    end;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawAutoGain(const Stage: Integer);
@@ -983,21 +1005,25 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateLowThreshold;
 begin
  DrawThreshold(0);
+ DrawGraph(0);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateLowRatio;
 begin
  DrawRatio(0);
+ DrawGraph(0);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateLowKnee;
 begin
  DrawKnee(0);
+ DrawGraph(0);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateLowMakeUp;
 begin
  DrawMakeUpGain(0);
+ DrawGraph(0);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateLowAutoMakeUpGain;
@@ -1018,6 +1044,7 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateMidThreshold;
 begin
  DrawThreshold(1);
+ DrawGraph(1);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateOutputGain;
@@ -1028,16 +1055,19 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateMidRatio;
 begin
  DrawRatio(1);
+ DrawGraph(1);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateMidKnee;
 begin
  DrawKnee(1);
+ DrawGraph(1);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateMidMakeUp;
 begin
  DrawMakeUpGain(1);
+ DrawGraph(1);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateMidAutoMakeUpGain;
@@ -1058,21 +1088,25 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateHighThreshold;
 begin
  DrawThreshold(2);
+ DrawGraph(2);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateHighRatio;
 begin
  DrawRatio(2);
+ DrawGraph(2);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateHighKnee;
 begin
  DrawKnee(2);
+ DrawGraph(2);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateHighMakeUp;
 begin
  DrawMakeUpGain(2);
+ DrawGraph(2);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateHighAutoMakeUpGain;
