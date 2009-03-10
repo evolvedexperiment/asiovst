@@ -7,6 +7,9 @@ uses
   DAV_DspDynamics, DAV_DspFilterLinearPhaseCrossover, DAV_DspDelayLines;
 
 type
+  TBandState = (bsBypass, bsMute, bsSmooth, bsClipped);
+  TBandStates = set of TBandState;
+  
   TSmoothMultibandCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -25,7 +28,6 @@ type
     procedure ParameterKneeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterAutoMakeUpGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -34,21 +36,24 @@ type
     procedure ParameterHighChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterVolumeDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterVolumeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterStateChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLightweightCompressor : array [0..2] of TLightweightSoftKneeCompressor;
     FDelayLine             : array [0..1] of TDelayLineSamples32;
     FLinearPhaseCrossover  : array [0..1, 0..1] of TLinearPhaseCrossover;
+    FStates                : array [0..2] of TBandStates;
     FMidiLearnParameter    : Integer;
     function GetLightweightCompressor(Index: Integer): TLightweightSoftKneeCompressor;
     procedure ChooseProcess;
     function GetAutoGain(Index: Integer): Boolean;
     procedure SetAutoGain(Index: Integer; const Value: Boolean);
+    function GetBandStates(Index: Integer): TBandStates;
   public
     property LightweightCompressor[Index: Integer]: TLightweightSoftKneeCompressor read GetLightweightCompressor;
     property AutoGain[Index: Integer]: Boolean read GetAutoGain write SetAutoGain;
-    property MidiLearnParameter: Integer read FMidiLearnParameter write FMidiLearnParameter; 
+    property MidiLearnParameter: Integer read FMidiLearnParameter write FMidiLearnParameter;
+    property BandStates[Index: Integer]: TBandStates read GetBandStates;
   end;
 
 implementation
@@ -327,6 +332,14 @@ begin
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
+function TSmoothMultibandCompressorDataModule.GetBandStates(
+  Index: Integer): TBandStates;
+begin
+ if Index in [0..2]
+  then result := FStates[Index]
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+end;
+
 procedure TSmoothMultibandCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
@@ -424,11 +437,34 @@ begin
    end;
 end;
 
-procedure TSmoothMultibandCompressorDataModule.ParameterAutoMakeUpGainChange(
+procedure TSmoothMultibandCompressorDataModule.ParameterStateChange(
   Sender: TObject; const Index: Integer; var Value: Single);
-//var Band : Integer;
+var
+  Band  : Integer;
+  State : Cardinal;
 begin
-// Band := (Index - 9) div 6;
+ Band := (Index - 9) div 6;
+ State := round(Value);
+ if (State and 1) > 0
+  then FStates[Band] := FStates[Band] + [bsBypass]
+  else FStates[Band] := FStates[Band] - [bsBypass];
+ if (State and 2) > 0
+  then FStates[Band] := FStates[Band] + [bsMute]
+  else FStates[Band] := FStates[Band] - [bsMute];
+ if (State and 4) > 0
+  then FStates[Band] := FStates[Band] + [bsSmooth]
+  else FStates[Band] := FStates[Band] - [bsSmooth];
+ if (State and 8) > 0
+  then FStates[Band] := FStates[Band] + [bsClipped]
+  else FStates[Band] := FStates[Band] - [bsClipped];
+
+ if EditorForm is TFmSmoothMultibandCompressor then
+  with TFmSmoothMultibandCompressor(EditorForm) do
+   case Band of
+    0: UpdateLowState;
+    1: UpdateMidState;
+    2: UpdateHighState;
+   end;
 end;
 
 procedure TSmoothMultibandCompressorDataModule.VSTModuleProcessMono(const Inputs,

@@ -194,6 +194,22 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Low State'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      ReportVST2Properties = True
+      ShortLabel = 'L State'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterStateChange
+    end
+    item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
@@ -309,6 +325,22 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mid State'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 7.000000000000000000
+      MaxInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'M State'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterStateChange
+    end
+    item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
@@ -422,6 +454,22 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'High State'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 7.000000000000000000
+      MaxInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'H State'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterStateChange
     end
     item
       Curve = ctLinear

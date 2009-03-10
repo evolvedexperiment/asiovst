@@ -62,7 +62,7 @@ type
     procedure DrawRatio(const Stage: Integer);
     procedure DrawKnee(const Stage: Integer);
     procedure DrawMakeUpGain(const Stage: Integer);
-    procedure DrawAutoGain(const Stage: Integer);
+    procedure DrawState(const Stage: Integer);
     procedure DrawSoftClip;
     procedure DrawGraph(const Stage: Integer);
   public
@@ -77,6 +77,7 @@ type
     procedure UpdateLowRatio;
     procedure UpdateLowRelease;
     procedure UpdateLowThreshold;
+    procedure UpdateLowState;
     procedure UpdateMidAttack;
     procedure UpdateMidAutoMakeUpGain;
     procedure UpdateMidKnee;
@@ -84,6 +85,7 @@ type
     procedure UpdateMidRatio;
     procedure UpdateMidRelease;
     procedure UpdateMidThreshold;
+    procedure UpdateMidState;
     procedure UpdateHighAttack;
     procedure UpdateHighAutoMakeUpGain;
     procedure UpdateHighKnee;
@@ -91,6 +93,7 @@ type
     procedure UpdateHighRatio;
     procedure UpdateHighRelease;
     procedure UpdateHighThreshold;
+    procedure UpdateHighState;
   end;
 
 var
@@ -268,9 +271,6 @@ begin
    end;
 
  FEditValue := edNone;
-
-
-
 end;
 
 procedure TFmSmoothMultibandCompressor.FormDestroy(Sender: TObject);
@@ -295,6 +295,12 @@ begin
    Pt := Point(X, Y);
    SetFocus;
 
+   if (x < 10) and (y < 10) then
+    begin
+     FBackground[0].DrawMode := dmOpaque;
+     FBackground[0].DrawTo(FBackground[1]);
+     Screen.Cursor := crNone;
+    end;
    if PtInRect(GRectTop[0], Pt) then
     if ssCtrl in Shift
      then Parameter[0] := 500
@@ -323,44 +329,54 @@ begin
      if PtInRect(GRectStage[FStage, 0], Pt)  then
       begin
        if ssCtrl in Shift
-        then Parameter[5 + Stage * 6] := -10
+        then Parameter[5 + Stage * 7] := -10
         else FEditValue := edThreshold;
        break;
       end else
      if PtInRect(GRectStage[FStage, 1], Pt)  then
       begin
        if ssCtrl in Shift
-        then Parameter[6 + Stage * 6] := 4
+        then Parameter[6 + Stage * 7] := 4
         else FEditValue := edRatio;
        break;
       end else
      if PtInRect(GRectStage[FStage, 2], Pt)  then
       begin
        if ssCtrl in Shift
-        then Parameter[3 + Stage * 6] := 5
+        then Parameter[3 + Stage * 7] := 5
         else FEditValue := edAttack;
        break;
       end else
      if PtInRect(GRectStage[FStage, 3], Pt)  then
       begin
        if ssCtrl in Shift
-        then Parameter[4 + Stage * 6] := 50
+        then Parameter[4 + Stage * 7] := 50
         else FEditValue := edRelease;
        break;
       end else
      if PtInRect(GRectStage[FStage, 4], Pt)  then
       begin
        if ssCtrl in Shift
-        then Parameter[7 + Stage * 6] := 1
+        then Parameter[7 + Stage * 7] := 1
         else FEditValue := edKnee;
        break;
       end else
      if PtInRect(GRectStage[FStage, 5], Pt)  then
       begin
        if ssCtrl in Shift
-        then Parameter[8 + Stage * 6] := 3
+        then Parameter[8 + Stage * 7] := 3
         else FEditValue := edMakeUpGain;
        break;
+      end else
+     if PtInRect(GRectStage[FStage, 7], Pt)  then
+      begin
+       FBackground[0].DrawMode := dmOpaque;
+       FBackground[0].DrawTo(FBackground[1]);
+       if bsSmooth in BandStates[Stage]
+        then Parameter[9 + Stage * 7] := 0
+        else Parameter[9 + Stage * 7] := 4;
+       FAnimateFrame := -$20;
+       Exit;
       end;
     end;
 
@@ -382,8 +398,10 @@ end;
 procedure TFmSmoothMultibandCompressor.FormMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var
-  s  : Single;
-  Pt : TPoint;
+  s     : Single;
+  Pt    : TPoint;
+  Param : Integer;
+  Stage : Integer;
 begin
  with TSmoothMultibandCompressorDataModule(Owner) do
   case FEditValue of
@@ -419,63 +437,111 @@ begin
               end;
    edThreshold: with GRectStage[FStage, 0] do
                  begin
+                  Param := 5 + FStage * 7;
                   Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-                  s := Parameter[5 + FStage * 6];
+                  s := Parameter[Param];
                   if ssAlt in Shift
                    then s := s + 0.01 * (Pt.Y - Y)
                    else s := s + 0.05 * (Pt.Y - Y) - 0.01 * (Pt.X - X);
-                  with ParameterProperties[5 + FStage * 6]
-                   do Parameter[5 + FStage * 6] := Limit(s, Min, Max);
+                  if not (ssShift in Shift) then
+                   with ParameterProperties[Param]
+                    do Parameter[Param] := Limit(s, Min, Max) else
+                   for Stage := 0 to 2 do
+                    begin
+                     Param := 5 + Stage * 7;
+                     with ParameterProperties[Param]
+                      do Parameter[Param] := Limit(s, Min, Max);
+                    end;
                  end;
    edRatio: with GRectStage[FStage, 1] do
              begin
+              Param := 6 + FStage * 7;
               Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-              s := Parameter[6 + FStage * 6];
+              s := Parameter[Param];
               if ssAlt in Shift
                then s := s * Power(2, 2E-3 * (Pt.Y - Y))
                else s := s * Power(2, 0.008 * (Pt.Y - Y)) * Power(2, 2E-3 * (Pt.X - X));
-              with ParameterProperties[6 + FStage * 6]
-               do Parameter[6 + FStage * 6] := Limit(s, Min, Max);
+              if not (ssShift in Shift) then
+               with ParameterProperties[Param]
+                do Parameter[Param] := Limit(s, Min, Max) else
+               for Stage := 0 to 2 do
+                begin
+                 Param := 6 + Stage * 7;
+                 with ParameterProperties[Param]
+                  do Parameter[Param] := Limit(s, Min, Max);
+                end;
              end;
    edAttack: with GRectStage[FStage, 2] do
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-               s := Parameter[3 + FStage * 6];
+               Param := 3 + FStage * 7;
+               s := Parameter[Param];
                if ssAlt in Shift
                 then s := s * Power(2, 5E-3 * (Pt.Y - Y))
                 else s := s * Power(2, 0.01 * (Pt.Y - Y)) * Power(2, 5E-3 * (Pt.X - X));
-               with ParameterProperties[3 + FStage * 6]
-                do Parameter[3 + FStage * 6] := Limit(s, Min, Max);
+               if not (ssShift in Shift) then
+                with ParameterProperties[Param]
+                 do Parameter[Param] := Limit(s, Min, Max) else
+                for Stage := 0 to 2 do
+                 begin
+                  Param := 3 + Stage * 7;
+                  with ParameterProperties[Param]
+                   do Parameter[Param] := Limit(s, Min, Max);
+                 end;
               end;
    edRelease: with GRectStage[FStage, 3] do
                 begin
                  Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-                 s := Parameter[4 + FStage * 6];
+                 Param := 4 + FStage * 7;
+                 s := Parameter[Param];
                  if ssAlt in Shift
                   then s := s * Power(2, 5E-3 * (Pt.Y - Y))
                   else s := s * Power(2, 0.01 * (Pt.Y - Y)) * Power(2, 5E-3 * (Pt.X - X));
-                 with ParameterProperties[4 + FStage * 6]
-                  do Parameter[4 + FStage * 6] := Limit(s, Min, Max);
+                 if not (ssShift in Shift) then
+                  with ParameterProperties[Param]
+                   do Parameter[Param] := Limit(s, Min, Max) else
+                  for Stage := 0 to 2 do
+                   begin
+                    Param := 4 + Stage * 7;
+                    with ParameterProperties[Param]
+                     do Parameter[Param] := Limit(s, Min, Max);
+                   end;
                 end;
    edKnee: with GRectStage[FStage, 4] do
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-               s := Parameter[7 + FStage * 6];
+               Param := 7 + FStage * 7;
+               s := Parameter[Param];
                if ssAlt in Shift
                 then s := s + 0.002 * (Pt.Y - Y)
                 else s := s + 0.016 * (Pt.Y - Y) - 0.002 * (Pt.X - X);
-               with ParameterProperties[7 + FStage * 6]
-                do Parameter[7 + FStage * 6] := Limit(s, Min, Max);
+               if not (ssShift in Shift) then
+                with ParameterProperties[Param]
+                 do Parameter[Param] := Limit(s, Min, Max) else
+                for Stage := 0 to 2 do
+                 begin
+                  Param := 7 + Stage * 7;
+                  with ParameterProperties[Param]
+                   do Parameter[Param] := Limit(s, Min, Max);
+                 end;
               end;
    edMakeUpGain: with GRectStage[FStage, 5] do
                 begin
                  Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-                 s := Parameter[8 + FStage * 6];
+                 Param := 8 + FStage * 7;
+                 s := Parameter[Param];
                  if ssAlt in Shift
                   then s := s + 0.01 * (Pt.Y - Y)
                   else s := s + 0.05 * (Pt.Y - Y) - 0.01 * (Pt.X - X);
-                 with ParameterProperties[8 + FStage * 6]
-                  do Parameter[8 + FStage * 6] := Limit(s, Min, Max);
+                 if not (ssShift in Shift) then
+                  with ParameterProperties[Param]
+                   do Parameter[Param] := Limit(s, Min, Max) else
+                  for Stage := 0 to 2 do
+                   begin
+                    Param := 8 + Stage * 7;
+                    with ParameterProperties[Param]
+                     do Parameter[Param] := Limit(s, Min, Max);
+                   end;
                 end;
   end;
 
@@ -625,7 +691,7 @@ begin
      DrawRelease(Stage);
      DrawKnee(Stage);
      DrawMakeUpGain(Stage);
-     DrawAutoGain(Stage);
+     DrawState(Stage);
      DrawGraph(Stage);
     end;
   finally
@@ -749,8 +815,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[5 + Stage * 6]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[5 + Stage * 6]));
+   with ParameterProperties[5 + Stage * 7]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[5 + Stage * 7]));
    if i < 0 then i := 0
     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
    r := GRectStage[Stage, 0];
@@ -762,7 +828,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[5 + Stage * 6] + ' ' + ParameterLabel[5 + Stage * 6];
+   t := ParameterDisplay[5 + Stage * 7] + ' ' + ParameterLabel[5 + Stage * 7];
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
@@ -778,8 +844,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[6 + Stage * 6]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[6 + Stage * 6]));
+   with ParameterProperties[6 + Stage * 7]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[6 + Stage * 7]));
    if i < 0 then i := 0
     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
    r := GRectStage[Stage, 1];
@@ -791,7 +857,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[6 + Stage * 6] + ' : 1';
+   t := ParameterDisplay[6 + Stage * 7] + ' : 1';
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
@@ -807,8 +873,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[3 + Stage * 6]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[3 + Stage * 6]));
+   with ParameterProperties[3 + Stage * 7]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[3 + Stage * 7]));
    if i < 0 then i := 0
     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
    r := GRectStage[Stage, 2];
@@ -820,7 +886,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[3 + Stage * 6] + ' ' + ParameterLabel[3 + Stage * 6];
+   t := ParameterDisplay[3 + Stage * 7] + ' ' + ParameterLabel[3 + Stage * 7];
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
@@ -836,8 +902,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[4 + Stage * 6]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[4 + Stage * 6]));
+   with ParameterProperties[4 + Stage * 7]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[4 + Stage * 7]));
    if i < 0 then i := 0
     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
    r := GRectStage[Stage, 3];
@@ -849,7 +915,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[4 + Stage * 6] + ' ' + ParameterLabel[4 + Stage * 6];
+   t := ParameterDisplay[4 + Stage * 7] + ' ' + ParameterLabel[4 + Stage * 7];
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
@@ -865,8 +931,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[7 + Stage * 6]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[7 + Stage * 6]));
+   with ParameterProperties[7 + Stage * 7]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[7 + Stage * 7]));
    if i < 0 then i := 0
     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
    r := GRectStage[Stage, 4];
@@ -878,7 +944,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[7 + Stage * 6] + ' ' + ParameterLabel[7 + Stage * 6];
+   t := ParameterDisplay[7 + Stage * 7] + ' ' + ParameterLabel[7 + Stage * 7];
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
@@ -894,8 +960,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[8 + Stage * 6]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[8 + Stage * 6]));
+   with ParameterProperties[8 + Stage * 7]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[8 + Stage * 7]));
    if i < 0 then i := 0
     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
    r := GRectStage[Stage, 5];
@@ -907,7 +973,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[8 + Stage * 6] + ' ' + ParameterLabel[8 + Stage * 6];
+   t := ParameterDisplay[8 + Stage * 7] + ' ' + ParameterLabel[8 + Stage * 7];
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
   finally
    EndUpdate;
@@ -955,7 +1021,7 @@ begin
    end;
 end;
 
-procedure TFmSmoothMultibandCompressor.DrawAutoGain(const Stage: Integer);
+procedure TFmSmoothMultibandCompressor.DrawState(const Stage: Integer);
 var
   i : Integer;
   r : TRect;
@@ -963,11 +1029,7 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   i := random(2);
-(*
-   with ParameterProperties[2]
-    do i := Round((GSoftClip.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[2]));
-*)
+   i := Integer(bsSmooth in BandStates[Stage]);
    if i < 0 then i := 0
     else if i >= GAutoGain.NumGlyphs then i := GAutoGain.NumGlyphs - 1;
    r := GRectStage[Stage, 7];
@@ -1000,6 +1062,11 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateLowRelease;
 begin
  DrawRelease(0);
+end;
+
+procedure TFmSmoothMultibandCompressor.UpdateLowState;
+begin
+ DrawState(0);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateLowThreshold;
@@ -1039,6 +1106,11 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateMidRelease;
 begin
  DrawRelease(1);
+end;
+
+procedure TFmSmoothMultibandCompressor.UpdateMidState;
+begin
+ DrawState(1);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateMidThreshold;
@@ -1083,6 +1155,11 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateHighRelease;
 begin
  DrawRelease(2);
+end;
+
+procedure TFmSmoothMultibandCompressor.UpdateHighState;
+begin
+ DrawState(2);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateHighThreshold;
