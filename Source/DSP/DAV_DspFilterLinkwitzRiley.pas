@@ -5,10 +5,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspFilter, DAV_DspButterworthFilter;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspButterworthFilter;
 
 type
-  TLinkwitzRiley = class(TObject)
+  TLinkwitzRiley = class(TDspSampleRateDependent)
   private
     FLowpass    : TButterworthLowpassFilter;
     FHighpass   : TButterworthHighpassFilter;

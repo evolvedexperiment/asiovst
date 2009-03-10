@@ -85,11 +85,11 @@ const
 begin
  l  := SampleFrames - 1;
  fm := 1 / l;
- for i:=0 to l do
+ for i := 0 to l do
   begin
    // using the chebyshev polynom identity to get rid of the cos(2*x)
    f := cos((2 * PI * i) * fm);
-   Data^[i]:= Data^[i] * (CBlackman[0] + f * (CBlackman[1] + CBlackman[2] * f));
+   Data^[i] := Data^[i] * (CBlackman[0] + f * (CBlackman[1] + CBlackman[2] * f));
   end;
 end;
 
