@@ -4,6 +4,8 @@ interface
 
 type
   THalfFloat = Word;
+  TDAVHalfFloatFixedArray = array [0..0] of THalfFloat;
+  PDAVHalfFloatFixedArray = ^TDAVHalfFloatFixedArray;
 
 function FastSingleToHalfFloat(const Value: Single): THalfFloat;
 function FastHalfFloatToSingle(const Value: THalfFloat): Single;

@@ -2,6 +2,8 @@ unit DAV_AudioFileAU;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, SysUtils, DAV_Common, DAV_AudioFile;
 
