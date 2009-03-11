@@ -30,30 +30,30 @@ implementation
 
 constructor TOcatveDivider.Create;
 begin
- fPhaseSign   := 1;
- fPhaseFactor := 1;
+ FPhaseSign   := 1;
+ FPhaseFactor := 1;
  FShape[0]    := 0.5;
  FShape[1]    := 0.5;
 end;
 
 function TOcatveDivider.ProcessSample(Input: Single): Single;
 begin
- if Input * fPhaseSign < 0 then     // Octave Divider
+ if Input * FPhaseSign < 0 then     // Octave Divider
   begin
-   fPhaseSign := -fPhaseSign;
-   if fPhaseSign < 0 then fPhaseFactor := -fPhaseFactor;
+   FPhaseSign := -FPhaseSign;
+   if FPhaseSign < 0 then FPhaseFactor := -FPhaseFactor;
   end;
- result := fPhaseFactor * (FShape[0] + FShape[1] * Input);
+ result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
 end;
 
 function TOcatveDivider.ProcessSample(Input: Double): Double;
 begin
- if Input * fPhaseSign < 0 then
+ if Input * FPhaseSign < 0 then
   begin
-   fPhaseSign := -fPhaseSign;
-   if fPhaseSign < 0 then fPhaseFactor := -fPhaseFactor;
+   FPhaseSign := -FPhaseSign;
+   if FPhaseSign < 0 then FPhaseFactor := -FPhaseFactor;
   end;
- result := fPhaseFactor * (FShape[0] + FShape[1] * Input);
+ result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
 end;
 
 procedure TOcatveDivider.SetShape(Value: Single);

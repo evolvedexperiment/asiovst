@@ -44,6 +44,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Color = 6908265
       CurveMapping = -2.099999904632568000
       DefaultPosition = 20.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 116222
       LineWidth = 2
@@ -92,6 +93,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 64
       Color = 6908265
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 116222
       LineWidth = 2
@@ -154,6 +156,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Width = 64
       Height = 64
       Color = 6908265
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 116222
       LineWidth = 2
@@ -187,6 +190,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Height = 64
       Color = 6908265
       DefaultPosition = 16.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 116222
       LineWidth = 2
@@ -229,5 +233,10 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
     end
+  end
+  object DIL: TGuiDialImageList
+    DialImages = <>
+    Left = 16
+    Top = 24
   end
 end

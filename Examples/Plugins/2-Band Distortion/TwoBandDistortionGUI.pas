@@ -22,6 +22,7 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControl: TGuiPanel;
+    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -84,10 +85,16 @@ begin
   RS := TResourceStream.Create(hInstance, 'TwoBandKnob', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
-   DialFreq.DialBitmap.Assign(PngBmp);
-   DialOrder.DialBitmap.Assign(PngBmp);
-   DialHighDist.DialBitmap.Assign(PngBmp);
-   DialLowDist.DialBitmap.Assign(PngBmp);
+   with DIL.DialImages.Add do
+    begin
+     DialBitmap.Canvas.Brush.Color := $696969;
+     DialBitmap.Assign(PngBmp);
+     NumGlyphs := 65;
+    end;
+   DialFreq.DialImageIndex := 0;
+   DialOrder.DialImageIndex := 0;
+   DialHighDist.DialImageIndex := 0;
+   DialLowDist.DialImageIndex := 0;
   finally
    RS.Free;
   end;

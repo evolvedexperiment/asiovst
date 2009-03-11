@@ -99,7 +99,7 @@ type
     property numPrograms: Integer read FEffect.numPrograms write SetNumPrograms stored false;
     property CurrentProgram: Integer read FCurProgram write SetProgram;
     property CurrentProgramName: string read GetCurrentProgramName write SetCurrentProgramName;
-    property Chunk: TMemoryStream read fChunkData write fChunkData;
+    property Chunk: TMemoryStream read FChunkData;
     property Programs: TVstPrograms read FVstPrograms write SetVstPrograms;
     property ProgramByName[ProgramName: string]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
@@ -188,8 +188,9 @@ begin
       then result := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
       else result := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
 
-    if Assigned(FParameterProperties[Index].OnCustomParameterDisplay)
-     then FParameterProperties[Index].OnCustomParameterDisplay(Self, Index, result);
+    with FParameterProperties[Index] do
+     if Assigned(OnCustomParameterDisplay)
+      then OnCustomParameterDisplay(Self, Index, result);
    end;
 
  if FTruncateStrings and (Length(result) > 8)
@@ -813,7 +814,11 @@ end;
 function TVSTModuleWithPrograms.GetParameter(Index: Integer): Single;
 begin
  if (effFlagsProgramChunks in FEffect.EffectFlags)
-  then Result := FOnGetChunkParamEvent(Self, Index)
+  then
+   begin
+    assert(assigned(FOnGetChunkParamEvent));
+    Result := FOnGetChunkParamEvent(Self, Index)
+   end
   else
    if numPrograms > 0
     then Result := Programs[FCurProgram].Parameter[Index]
