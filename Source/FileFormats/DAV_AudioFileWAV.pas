@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_WaveFileTypes,
-  DAV_ChunkClasses, DAV_ChunkWaveFile;
+  DAV_ChunkClasses, DAV_ChunkWaveFile, DAV_ChannelDataCoder;
 
 type
   TWaveChunkType = (ctFormat, ctFact, ctData);

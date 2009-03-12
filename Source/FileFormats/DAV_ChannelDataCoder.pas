@@ -13,34 +13,40 @@ type
 
   TDitherType = (dtNone, dtUniform, dtTriangular, dtGauss);
 
-  TCustomChannel32DataCoder = class
+  TCustomChannelDataCoder = class
   private
-    FSampleFrames: Cardinal;
     procedure SetChannelCount(const Value: Cardinal);
     procedure SetBlockSize(const Value: Cardinal);
     procedure SetSampleFrames(const Value: Cardinal);
   protected
     FBlockSize    : Cardinal;
     FBlockBuffer  : PDAVByteArray;
+    FSampleFrames : Cardinal;
     FChannelCount : Cardinal;
-    FChannelArray : array of PDAVSingleFixedArray;
-    procedure BlockSizeChanged; virtual;
-    procedure ReallocateChannelMemory; virtual;
-    procedure ChannelCountChanged; virtual;
-    procedure SampleFramesChanged; virtual; abstract;
     function CorectBlocksize(const Value: Cardinal): Cardinal; virtual;
+    procedure BlockSizeChanged; virtual;
+    procedure ReallocateChannelMemory; virtual; abstract;
+    procedure ChannelCountChanged; virtual; abstract;
+    procedure SampleFramesChanged; virtual; abstract;
   public
     constructor Create; virtual;
+    procedure SetBlockSizeAndChannelCount(const BlockSize, ChannelCount: Cardinal); virtual;
+
     procedure LoadFromStream(const Stream: TStream); virtual; abstract;
     procedure SaveToStream(const Stream: TStream); virtual; abstract;
     procedure LoadFromPointer(const Data: Pointer); virtual; abstract;
     procedure SaveToPointer(const Data: Pointer); virtual; abstract;
 
-    procedure SetBlockSizeAndChannelCount(const BlockSize, ChannelCount: Cardinal); virtual;
-
     property ChannelCount: Cardinal read FChannelCount write SetChannelCount;
     property BlockSize: Cardinal read FBlockSize write SetBlockSize;
     property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames;
+  end;
+
+  TCustomChannel32DataCoder = class(TCustomChannelDataCoder)
+  protected
+    FChannelArray : array of PDAVSingleFixedArray;
+    procedure ChannelCountChanged; override;
+    procedure ReallocateChannelMemory; override;
   end;
 
   TCustomPCMChannel32DataCoder = class(TCustomChannel32DataCoder)
@@ -112,40 +118,34 @@ implementation
 uses
   SysUtils;
 
-{ TCustomChannel32DataCoder }
 
-constructor TCustomChannel32DataCoder.Create;
+{ TCustomChannelDataCoder }
+
+constructor TCustomChannelDataCoder.Create;
 begin
  FBlockSize := 16384;
  FChannelCount := 2;
  BlockSizeChanged;
 end;
 
-procedure TCustomChannel32DataCoder.ReallocateChannelMemory;
-var
-  i : Integer;
-begin
- for i := 0 to Length(FChannelArray) - 1
-  do ReallocMem(FChannelArray[i], FSampleFrames * SizeOf(Single));
-end;
-
-procedure TCustomChannel32DataCoder.BlockSizeChanged;
+procedure TCustomChannelDataCoder.BlockSizeChanged;
 begin
  ReallocMem(FBlockBuffer, FBlockSize);
 end;
 
-procedure TCustomChannel32DataCoder.ChannelCountChanged;
+procedure TCustomChannelDataCoder.SetBlockSizeAndChannelCount(const BlockSize,
+  ChannelCount: Cardinal);
 begin
- SetLength(FChannelArray, FChannelCount);
- ReallocateChannelMemory;
+ Self.ChannelCount := ChannelCount;
+ Self.BlockSize := BlockSize;
 end;
 
-function TCustomChannel32DataCoder.CorectBlocksize(const Value: Cardinal): Cardinal;
+function TCustomChannelDataCoder.CorectBlocksize(const Value: Cardinal): Cardinal;
 begin
  result := Value;
 end;
 
-procedure TCustomChannel32DataCoder.SetBlockSize(const Value: Cardinal);
+procedure TCustomChannelDataCoder.SetBlockSize(const Value: Cardinal);
 var
   CorrectedBlocksize: Cardinal;
 begin
@@ -157,7 +157,7 @@ begin
   end;
 end;
 
-procedure TCustomChannel32DataCoder.SetChannelCount(const Value: Cardinal);
+procedure TCustomChannelDataCoder.SetChannelCount(const Value: Cardinal);
 begin
  if FChannelCount <> Value then
   begin
@@ -166,7 +166,7 @@ begin
   end;
 end;
 
-procedure TCustomChannel32DataCoder.SetSampleFrames(const Value: Cardinal);
+procedure TCustomChannelDataCoder.SetSampleFrames(const Value: Cardinal);
 begin
  if FSampleFrames <> Value then
   begin
@@ -175,11 +175,20 @@ begin
   end;
 end;
 
-procedure TCustomChannel32DataCoder.SetBlockSizeAndChannelCount(const BlockSize,
-  ChannelCount: Cardinal);
+{ TCustomChannel32DataCoder }
+
+procedure TCustomChannel32DataCoder.ChannelCountChanged;
 begin
- Self.ChannelCount := ChannelCount;
- Self.BlockSize := BlockSize;
+ SetLength(FChannelArray, FChannelCount);
+ ReallocateChannelMemory;
+end;
+
+procedure TCustomChannel32DataCoder.ReallocateChannelMemory;
+var
+  i : Integer;
+begin
+ for i := 0 to Length(FChannelArray) - 1
+  do ReallocMem(FChannelArray[i], FSampleFrames * SizeOf(Single));
 end;
 
 { TCustomPCMChannel32DataCoder }

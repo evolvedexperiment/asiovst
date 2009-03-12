@@ -252,18 +252,21 @@ end;
 procedure TCustomChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
-  if cfSizeFirst in ChunkFlags then
-   begin
-    // order known from PNG
-    Read(FChunkSize, 4);
-    Read(FChunkName, 4);
-   end
-  else
-   begin
-    // order known from WAVE, AIFF, etc.
-    Read(FChunkName, 4);
-    Read(FChunkSize, 4);
-   end;
+  begin
+   assert(Position <= Size + 8);
+   if cfSizeFirst in ChunkFlags then
+    begin
+     // order known from PNG
+     Read(FChunkSize, 4);
+     Read(FChunkName, 4);
+    end
+   else
+    begin
+     // order known from WAVE, AIFF, etc.
+     Read(FChunkName, 4);
+     Read(FChunkSize, 4);
+    end;
+  end;
 
  // eventually flip bytes
  if cfReversedByteOrder in ChunkFlags
@@ -991,6 +994,10 @@ begin
  inherited;
  SetLength(FText, FChunkSize);
  Stream.Read(FText[1], Length(FText));
+
+ // eventually skip padded zeroes
+ if cfPadSize in ChunkFlags
+  then Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
 procedure TCustomTextChunk.SaveToStream(Stream: TStream);

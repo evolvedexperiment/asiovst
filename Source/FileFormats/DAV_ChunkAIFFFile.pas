@@ -12,7 +12,27 @@ const
 
 type
    TAIFFCompressionType = (ctNotAvailable, ctNone, ctACE2, ctACE8, ctMACE3,
-                           ctMACE6, ctUnknown);
+                           ctMACE6, ctALAW, ctUnknown);
+
+  TAIFFDefinedChunk = class(TDefinedChunk)
+  public
+    constructor Create; override;
+  end;
+
+  TAIFFFixedDefinedChunk = class(TFixedDefinedChunk)
+  public
+    constructor Create; override;
+  end;
+
+  TAIFFUnknownChunk = class(TUnknownChunk)
+  public
+    constructor Create; override;
+  end;
+
+  TAIFFTextChunk = class(TCustomTextChunk)
+  public
+    constructor Create; override;
+  end;
 
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// Common Chunk ///////////////////////////////
@@ -25,10 +45,11 @@ type
     SampleRate      : Extended;
   end;
 
-  TAIFFCommonChunk = class(TDefinedChunk) // 'COMM'
+  TAIFFCommonChunk = class(TAIFFDefinedChunk) // 'COMM'
   private
-    FCompressionType: TAIFFCompressionType;
-    FCompressionName: string;
+    FCompressionType      : TAIFFCompressionType;
+    FCompressionName      : string;
+    FForceReadCompression : Boolean;
     procedure SetChannels(const Value: SmallInt);
     procedure SetSampleRate(const Value: Extended);
     procedure SetSampleSize(const Value: SmallInt);
@@ -48,6 +69,7 @@ type
     property SampleSize: SmallInt read AIFFCommonRecord.SampleSize write SetSampleSize;
     property SampleRate: Extended read AIFFCommonRecord.SampleRate write SetSampleRate;
     property Compression: TAIFFCompressionType read FCompressionType write SetCompressionType;
+    property ForceReadCompression: Boolean read FForceReadCompression write FForceReadCompression;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -58,7 +80,7 @@ type
     FormType: TChunkName; // type of file
   end;
 
-  TAIFFFormChunk = class(TFixedDefinedChunk)
+  TAIFFFormChunk = class(TAIFFFixedDefinedChunk)
   private
     function GetFormType: string;
     procedure SetFormType(Value: string);
@@ -81,7 +103,7 @@ type
     TimeStamp : Cardinal;  // date of format version
   end;
 
-  TAIFFFormatVersionChunk = class(TFixedDefinedChunk)
+  TAIFFFormatVersionChunk = class(TAIFFFixedDefinedChunk)
   private
     procedure SetTimeStamp(const Value: Cardinal);
   protected
@@ -105,7 +127,7 @@ type
     BlockSize : Cardinal;
   end;
 
-  TAIFFSoundDataChunk = class(TDefinedChunk) // 'SSND'
+  TAIFFSoundDataChunk = class(TAIFFDefinedChunk) // 'SSND'
   private
     procedure CalculateChunkSize;
   protected
@@ -124,7 +146,7 @@ type
   ////////////////////////////// Marker Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TMarkerID = Byte;
+  TMarkerID = Smallint;
 
   TAIFFMarkerRecord = packed record
     MarkerID   : TMarkerID;
@@ -151,7 +173,7 @@ type
     property MarkerName: string read FMarkerName write FMarkerName;
   end;
 
-  TAIFFMarkerChunk = class(TDefinedChunk) // 'MARK'
+  TAIFFMarkerChunk = class(TAIFFDefinedChunk) // 'MARK'
   private
     FMarkers : TOwnedCollection;
     procedure CalculateChunkSize;
@@ -197,7 +219,7 @@ type
     property Comment: string read FComment write FComment;
   end;
 
-  TAIFFCommentChunk = class(TDefinedChunk) // 'COMT'
+  TAIFFCommentChunk = class(TAIFFDefinedChunk) // 'COMT'
   private
     FComments : TOwnedCollection;
     procedure CalculateChunkSize;
@@ -230,7 +252,7 @@ type
     ReleaseLoop  : TMarkerID;
   end;
 
-  TAIFFInstrumentChunk = class(TFixedDefinedChunk)
+  TAIFFInstrumentChunk = class(TAIFFFixedDefinedChunk)
   private
     procedure SetDetune(Value: ShortInt);
     procedure SetHighVelocity(const Value: Byte);
@@ -262,7 +284,7 @@ type
   /////////////////////////////// MIDI Chunk /////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFMIDIChunk = class(TDefinedChunk)
+  TAIFFMIDIChunk = class(TAIFFDefinedChunk)
   private
     function GetMIDIData(index: Integer): Byte;
     procedure SetMIDIData(index: Integer; const Value: Byte);
@@ -285,7 +307,7 @@ type
     AESChannelStatusData : array [0..23] of char;
   end;
 
-  TAIFFAudioRecordingChunk = class(TFixedDefinedChunk) // 'AESD'
+  TAIFFAudioRecordingChunk = class(TAIFFFixedDefinedChunk) // 'AESD'
   private
     function GetAESChannelStatusData: string;
     procedure SetAESChannelStatusData(const Value: string);
@@ -304,7 +326,7 @@ type
   ////////////////////// Application Specific Chunk //////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFApplicationSpecificChunk = class(TDefinedChunk) // 'APPL'
+  TAIFFApplicationSpecificChunk = class(TAIFFDefinedChunk) // 'APPL'
   private
     function GetApplicationSignature: string;
     function GetData(index: Integer): Byte;
@@ -330,28 +352,60 @@ type
   ////////////////////////////// Text Chunks /////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TAIFFNameChunk = class(TCustomTextChunk)
+  TAIFFNameChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   end;
 
-  TAIFFAuthorChunk = class(TCustomTextChunk)
+  TAIFFAuthorChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   end;
 
-  TAIFFCopyrightChunk = class(TCustomTextChunk)
+  TAIFFCopyrightChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   end;
 
-  TAIFFAnnotationChunk = class(TCustomTextChunk)
+  TAIFFAnnotationChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   end;
 
 
 implementation
+
+{ TAIFFDefinedChunk }
+
+constructor TAIFFDefinedChunk.Create;
+begin
+ inherited;
+ FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
+end;
+
+{ TAIFFFixedDefinedChunk }
+
+constructor TAIFFFixedDefinedChunk.Create;
+begin
+ inherited;
+ FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
+end;
+
+{ TAIFFUnknownChunk }
+
+constructor TAIFFUnknownChunk.Create;
+begin
+ inherited;
+ FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
+end;
+
+{ TAIFFTextChunk }
+
+constructor TAIFFTextChunk.Create;
+begin
+ inherited;
+ FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
+end;
 
 { TAIFFCommonChunk }
 
@@ -360,7 +414,6 @@ begin
  inherited;
 
  // set defaults
-
  with AIFFCommonRecord do
   begin
    Channels       := 1;       // one channel
@@ -370,7 +423,7 @@ begin
   end;
  FCompressionType := ctNotAvailable;
 
- CalculateChunkSize; 
+ CalculateChunkSize;
 end;
 
 class function TAIFFCommonChunk.GetClassChunkName: TChunkName;
@@ -398,7 +451,9 @@ end;
 
 procedure TAIFFCommonChunk.LoadFromStream(Stream: TStream);
 var
-  CompTypeID :TChunkName;
+  CompTypeID : TChunkName;
+  CompStrLen : Byte;
+  CompString : string;
 begin
  inherited;
  with Stream do
@@ -416,24 +471,28 @@ begin
     end;
 
    // exit if no addition information are available
-   if FChunkSize = SizeOf(TAIFFCommonRecord) then
+   if (FChunkSize = SizeOf(TAIFFCommonRecord)) and not FForceReadCompression then
     begin
      Compression := ctNotAvailable;
-     exit;
+     Exit;
     end;
 
    // read additional compression information
    Read(CompTypeID, SizeOf(TChunkName));
-   FlipLong(CompTypeID);
    if CompTypeID = 'NONE' then FCompressionType := ctNone else
+   if CompTypeID = 'ALAW' then FCompressionType := ctALAW else
    if CompTypeID = 'ACE2' then FCompressionType := ctACE2 else
    if CompTypeID = 'ACE8' then FCompressionType := ctACE8 else
    if CompTypeID = 'MAC3' then FCompressionType := ctMACE3 else
    if CompTypeID = 'MAC8' then FCompressionType := ctMACE6
     else FCompressionType := ctUnknown;
 
-   // set position to end of chunk
-   Position := Position + FChunkSize - SizeOf(TAIFFCommonRecord) - SizeOf(TChunkName);
+   Read(CompStrLen, 1);
+   SetLength(CompString, CompStrLen);
+   Read(CompString[1], CompStrLen);
+
+   // eventually zero pad chunk
+   if CompStrLen mod 2 = 0 then Position := Position + 1;
   end;
 end;
 
@@ -529,6 +588,7 @@ begin
   begin
    FormType := 'AIFF';
   end;
+ StartAddress := @AIFFFormRecord;
 end;
 
 procedure TAIFFFormChunk.AssignTo(Dest: TPersistent);
@@ -572,6 +632,7 @@ begin
   begin
    TimeStamp := AIFCVersion1;
   end;
+ StartAddress := @AIFFFormatVersionRecord;
 end;
 
 procedure TAIFFFormatVersionChunk.AssignTo(Dest: TPersistent);
@@ -686,17 +747,24 @@ end;
 
 procedure TAIFFMarkerItem.LoadFromStream(Stream: TStream);
 var
-  StringSize : Integer;
+  StringSize: Byte;
 begin
  with Stream do
   begin
    // read marker header
    Read(MarkerRecord, SizeOf(TAIFFMarkerRecord));
 
+   FlipWord(MarkerRecord.MarkerID);
+   FlipWord(MarkerRecord.Position);
+
    // now read the marker string
    Read(StringSize, SizeOf(Byte));
+
    SetLength(FMarkerName, StringSize);
    Read(FMarkerName[1], StringSize);
+
+   // add pad byte if necessary
+   if StringSize mod 2 = 0 then Position := Position + 1;
   end;
 end;
 
@@ -775,13 +843,16 @@ end;
 
 procedure TAIFFMarkerChunk.LoadFromStream(Stream: TStream);
 var
-  MarkerCount, i : Integer;
+  i           : Integer;
+  MarkerCount : Word;
 begin
  inherited;
  with Stream do
   begin
    // load number of markers
-   Read(MarkerCount, SizeOf(Byte));
+   Read(MarkerCount, SizeOf(Word));
+   FlipWord(MarkerCount);
+   assert(MarkerCount < (FChunkSize div SizeOf(TAIFFMarkerRecord)));
 
    // clear existing markers
    FMarkers.Clear;
@@ -791,8 +862,6 @@ begin
     with TAIFFMarkerItem(FMarkers.Add)
      do LoadFromStream(Stream);
 
-   // set position to end of chunk
-   Position := Position + FChunkSize - SizeOf(Byte);
   end;
 end;
 
@@ -976,6 +1045,7 @@ begin
    HighVelocity := 127;
    Gain         := 0;
   end;
+ StartAddress := @AIFFInstrumentRecord;
 end;
 
 procedure TAIFFInstrumentChunk.AssignTo(Dest: TPersistent);
@@ -1253,7 +1323,7 @@ end;
 
 class function TAIFFCopyrightChunk.GetClassChunkName: TChunkName;
 begin
- result := '[c] ';
+ result := '(c) ';
 end;
 
 { TAIFFAnnotationChunk }
