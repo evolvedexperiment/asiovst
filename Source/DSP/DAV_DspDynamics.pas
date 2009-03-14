@@ -717,6 +717,8 @@ type
     procedure KneeChanged; override;
     procedure ThresholdChanged; override;
     procedure AutoMakeUpChanged; override;
+    procedure CalculateAttackFactor; override;
+    procedure CalculateReleaseFactor; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample(const Input: Double): Double; override;
@@ -737,6 +739,33 @@ type
     FThrshlddB     : Single;
     FKneeFactor    : Single;
     FPrevAbsSample : Double;
+    procedure RatioChanged; override;
+    procedure KneeChanged; override;
+    procedure ThresholdChanged; override;
+    procedure AutoMakeUpChanged; override;
+    procedure CalculateAttackFactor; override;
+    procedure CalculateReleaseFactor; override;
+  public
+    function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+    function ProcessSample(const Input: Double): Double; override;
+    function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
+    procedure InputSample(const Input: Double); override;
+    function GainSample(const Input: Double): Double; override;
+  published
+    property MakeUpGain_dB;
+    property Knee_dB;
+  end;
+
+  TLightweightSoftKneeFeedbackLikeCompressor = class(TCustomKneeCompressor)
+  private
+    procedure CalculateKneeFactor;
+    procedure CalculateAutoMakeUpGain;
+  protected
+    FRatioFactor        : Single;
+    FThrshlddB          : Single;
+    FKneeFactor         : Single;
+    FAttackSampleCycle  : Single;
+    FReleaseSampleCycle : Single;
     procedure RatioChanged; override;
     procedure KneeChanged; override;
     procedure ThresholdChanged; override;
@@ -2215,6 +2244,18 @@ end;
 
 { TLightweightSoftKneeCompressor }
 
+procedure TLightweightSoftKneeCompressor.CalculateAttackFactor;
+begin
+  if FAttack = 0 then FAttackFactor := 0
+  else FAttackFactor := 1 - FastPower2MinError3( -1 / (FAttack * 0.001 * SampleRate));
+end;
+
+procedure TLightweightSoftKneeCompressor.CalculateReleaseFactor;
+begin
+  if FRelease = 0 then FReleaseFactor := 0
+  else FReleaseFactor := FastPower2MinError3(-1 / (FRelease * 0.001 * SampleRate));
+end;
+
 procedure TLightweightSoftKneeCompressor.KneeChanged;
 begin
  inherited;
@@ -2253,7 +2294,7 @@ end;
 procedure TLightweightSoftKneeCompressor.ThresholdChanged;
 begin
  inherited;
- FThrshlddB := Threshold_dB / CFactor2IndB32;
+ FThrshlddB := Threshold_dB * CdBtoAmpExpGain32;
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
 end;
@@ -2289,6 +2330,7 @@ begin
  if Temp > FPeak
   then FPeak := FPeak + (Temp - FPeak) * FAttackFactor;
  FPeak := Temp + (FPeak - Temp) * FReleaseFactor;
+
 
 (*
  if Temp > FPeak then
@@ -2421,13 +2463,13 @@ end;
 procedure TLightweightSoftKneeFeedbackCompressor.CalculateAttackFactor;
 begin
   if FAttack = 0 then FAttackFactor := 0
-  else FAttackFactor := 1 - exp( -ln2 / (FAttack * 0.001 * SampleRate * FRatio));
+  else FAttackFactor := 1 - FastPower2MinError3(-1 / (FAttack * 0.001 * SampleRate * FRatio));
 end;
 
 procedure TLightweightSoftKneeFeedbackCompressor.CalculateReleaseFactor;
 begin
   if FRelease = 0 then FReleaseFactor := 0
-  else FReleaseFactor := exp( -ln2 / (FRelease * 0.001 * SampleRate * FRatio));
+  else FReleaseFactor := FastPower2MinError3(-1 / (FRelease * 0.001 * SampleRate * FRatio));
 end;
 
 procedure TLightweightSoftKneeFeedbackCompressor.KneeChanged;
@@ -2471,7 +2513,7 @@ end;
 procedure TLightweightSoftKneeFeedbackCompressor.ThresholdChanged;
 begin
  inherited;
- FThrshlddB := Threshold_dB / CFactor2IndB32;
+ FThrshlddB := Threshold_dB * CdBtoAmpExpGain32;
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
 end;
@@ -2504,13 +2546,244 @@ var
 begin
  Temp := CDenorm32 + FPrevAbsSample;
 
+(*
+
+ if FPeak < FThreshold
+  then FAttackFactor := 1 - FastPower2MinError3(-1 / (FAttack * 0.001 * SampleRate))
+  else FAttackFactor := 1 - FastPower2MinError3(-1 / (FAttack * 0.001 * SampleRate * FRatio));
+
+ if FPeak < FThreshold
+  then FReleaseFactor := FastPower2MinError3(-1 / (FRelease * 0.001 * SampleRate))
+  else FReleaseFactor := FastPower2MinError3(-1 / (FRelease * 0.001 * SampleRate * FRatio));
+*)
+
+
  if Temp > FPeak
-  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor;
- FPeak := Temp + (FPeak - Temp) * FReleaseFactor;
+  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor
+  else FPeak := Temp + (FPeak - Temp) * FReleaseFactor;
 
  Temp  := FRatioFactor * (FastLog2ContinousError5(FPeak) - FThrshlddB);
  FGain := FastPower2MinError3(Temp - FastSqrtBab2(sqr(Temp) + FKneeFactor));
- FPrevAbsSample := FGain * abs(Input);
+
+ FPrevAbsSample := abs(FGain * Input);
+end;
+{$ELSE}
+var
+  CastedSingle : Single;
+  IntCast      : Integer absolute CastedSingle;
+asm
+ // Temp := CDenorm32 + abs(Input);
+ mov   edx, eax               // edx = Self
+ fld   [edx.FPrevAbsSample]
+ fabs
+ fadd  CDenorm32              // Stack: temp
+
+ fcom  [edx.FPeak].Double     // Stack: temp
+ fstsw ax
+ sahf
+ jbe   @Release
+@Attack:
+ fsub  [edx.FPeak]
+ fmul  [edx.FAttackFactor]
+ fadd  [edx.FPeak]
+ fst   [edx.FPeak]
+ jmp   @AmpTodB
+@Release:
+ fld   [edx.FPeak]            // Stack: FPeak, temp
+ fsub  st(0), st(1)           // Stack: (FPeak - temp), temp
+ fmul  [edx.FReleaseFactor]   // Stack: (FPeak - temp) * FReleaseFactor, temp
+ faddp                        // Stack: (FPeak - temp) * FReleaseFactor + temp
+ fst   [edx.FPeak]
+
+@AmpTodB:
+ fstp  IntCast                // Stack: (empty)
+ mov   eax, IntCast
+ mov   ecx, eax               // copy eax to ecx
+ and   eax, $807fffff
+ add   eax, $3f800000
+ mov   IntCast, eax
+ fld   CastedSingle
+ fmul  [CSoftKnee        ].Single
+ fadd  [CSoftKnee + 4    ].Single
+ fmul  CastedSingle
+ fadd  [CSoftKnee + 4 * 2].Single
+ fmul  CastedSingle
+ fadd  [CSoftKnee + 4 * 3].Single
+ fmul  CastedSingle
+ fadd  [CSoftKnee + 4 * 4].Single
+
+ shr   ecx, $17
+ and   ecx, $000000ff
+ sub   ecx, $00000080
+ mov   IntCast, ecx
+ fild  IntCast
+ faddp
+
+
+ fsub  [edx.FThrshlddB]       // Stack : Temp
+ fmul  [edx.FRatioFactor]
+
+ // FGain := FastPower2MinError3(CHalf32 * (FMkpdB - Temp - FastSqrtBab2(sqr(Temp) + FKneeFactor)));
+ fld   st(0)                   // Stack : Temp, Temp
+ fmul  st(0), st(0)
+ fadd  [edx.FKneeFactor]       // Stack : Temp * Temp + FKneeFactor, Temp
+ fld   st(0)                   // Stack : Intemp, Intemp, Temp
+ fst   CastedSingle            // Stack : Intemp, Intemp, Temp
+
+ mov   eax, IntCast
+ sub   eax, $00800000
+ shr   eax, 1
+ add   eax, $20000000
+ mov   IntCast, eax
+ fdiv  CastedSingle            // Stack: Intemp / CastedSingle, Intemp, Temp
+ fadd  CastedSingle            // Stack: newresult = CastedSingle + Intemp / CastedSingle, Intemp, Temp
+ fld   st(0)                   // Stack: newresult, newresult, Intemp, Temp
+ fmul  CQuarter32              // Stack: CQuarter32 * newresult, newresult, Intemp, Temp
+ fxch                          // Stack: newresult, CQuarter32 * newresult, Intemp, Temp
+ fdivp st(2), st(0)            // Stack: Intemp / newresult, CQuarter32 * newresult, Temp
+ faddp                         // Stack: Intemp / newresult + CQuarter32 * newresult, Temp
+
+ fsubp                         // Stack: Temp + SqrtTemp
+
+ fld   st(0)                   // Stack: temp, temp
+ frndint                       // Stack: round(temp), temp
+
+ fist  IntCast                 // Stack: round(temp), temp
+ fsubp                         // Stack: newtemp = temp - round(temp)
+
+ mov   eax, IntCast
+ add   eax, $7F
+ shl   eax, $17
+ mov   IntCast, eax
+
+ fld   st(0)                      // Stack: newtemp, newtemp
+ fmul  [CSoftKnee + 4 * 5].Single // Stack: CP2MinError3[2] * newtemp, newtemp
+ fadd  [CSoftKnee + 4 * 6].Single // Stack: CP2MinError3[1] + (CP2MinError3[2] * newtemp), newtemp
+ fmul  st(0), st(1)               // Stack: newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+ fadd  [CSoftKnee + 4 * 7].Single // Stack: CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)), newtemp
+ fmulp                            // Stack: newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+ fld1
+ faddp                            // Stack: 1 + newtemp * (CP2MinError3[0] + newtemp * (CP2MinError3[1] + (CP2MinError3[2] * newtemp)))
+ fmul  CastedSingle
+
+ fst  [edx.FGain]
+ fmul Input
+ fstp [edx.FPrevAbsSample]
+end;
+{$ENDIF}
+
+function TLightweightSoftKneeFeedbackCompressor.ProcessSample(const Input: Double): Double;
+begin
+ InputSample(Input);
+ result := FGain * FMakeUpGain * Input;
+end;
+
+
+{ TLightweightSoftKneeFeedbackLikeCompressor }
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateAttackFactor;
+begin
+ if FAttack <= 0
+  then raise Exception.Create('Attack time must be larger than zero!')
+  else
+   begin
+    FAttackSampleCycle := -1 / (FAttack * 0.001 * SampleRate);
+    FAttackFactor := 1 - FastPower2MinError3(FAttackSampleCycle);
+   end;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateReleaseFactor;
+begin
+ if FRelease <= 0
+  then raise Exception.Create('Release time must be larger than zero!')
+  else
+   begin
+    FReleaseSampleCycle := -1 / (FRelease * 0.001 * SampleRate);
+    FReleaseFactor := FastPower2MinError3(FReleaseSampleCycle);
+   end;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.KneeChanged;
+begin
+ inherited;
+ CalculateKneeFactor;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.RatioChanged;
+begin
+ inherited;
+ FRatioFactor := CHalf32 * (1 / Ratio - 1);
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.AutoMakeUpChanged;
+begin
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain
+  else CalculateMakeUpGain;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateAutoMakeUpGain;
+var
+  Temp: Single;
+begin
+ Temp := -FThreshold_dB * FRatioFactor;
+ FMakeUpGain_dB := FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) - Temp;
+ CalculateMakeUpGain;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateKneeFactor;
+begin
+ FKneeFactor := sqr(CdBtoAmpExpGain32 * FKnee_dB);
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.ThresholdChanged;
+begin
+ inherited;
+ FThrshlddB := Threshold_dB * CdBtoAmpExpGain32;
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain;
+end;
+
+function TLightweightSoftKneeFeedbackLikeCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
+begin
+ result := PeakLevel;
+ result := FRatioFactor * (FastLog2ContinousError5(result) - FThrshlddB);
+ result := FastPower2MinError3(result - FastSqrtBab2(sqr(result) + FKneeFactor));
+end;
+
+function TLightweightSoftKneeFeedbackLikeCompressor.CharacteristicCurve_dB(
+  const InputLevel_dB: Double): Double;
+var
+  Temp: Single;
+begin
+ Temp   := FRatioFactor * (InputLevel_dB - FThreshold_dB);
+ result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
+end;
+
+function TLightweightSoftKneeFeedbackLikeCompressor.GainSample(const Input: Double): Double;
+begin
+ result := FGain * FMakeUpGain * Input;
+end;
+
+procedure TLightweightSoftKneeFeedbackLikeCompressor.InputSample(const Input: Double);
+{$IFNDEF XPUREPASCAL}
+var
+  Temp  : array [0..1] of Single;
+begin
+ Temp[0] := CDenorm32 + abs(Input);
+
+ if Temp[0] > FPeak
+  then FPeak := FPeak + (Temp[0] - FPeak) * FAttackFactor
+  else FPeak := Temp[0] + (FPeak - Temp[0]) * FReleaseFactor;
+
+ Temp[0] := FRatioFactor * (FastLog2ContinousError5(FPeak) - FThrshlddB);
+ Temp[1] := FastSqrtBab2(sqr(Temp[0]) + FKneeFactor);
+ FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
+ Temp[1] := 2 * Temp[1] / ((FRatio + 1) * Temp[1] + (FRatio - 1) * Temp[0]);
+ FAttackFactor := 1 - FastPower2MinError3(Temp[1] * FAttackSampleCycle);
+ FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
 end;
 {$ELSE}
 var
@@ -2615,7 +2888,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeFeedbackCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeFeedbackLikeCompressor.ProcessSample(const Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
