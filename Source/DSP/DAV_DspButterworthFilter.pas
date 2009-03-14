@@ -104,6 +104,8 @@ const
 constructor TButterworthFilter.Create(const Order: Integer = 0);
 begin
  FOrder := Order;
+ OrderChanged;
+
  FDownsamplePow := 0;
  FDownsampleFak := 1;
  inherited Create;

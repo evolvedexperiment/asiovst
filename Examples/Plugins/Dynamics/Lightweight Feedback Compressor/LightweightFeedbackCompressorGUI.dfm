@@ -22,8 +22,8 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     Top = 120
     Width = 36
     Height = 36
-    CurveMapping = -1.799999952316284000
-    DefaultPosition = -15.000000000000000000
+    CurveMapping = 0.899999976158142100
+    DefaultPosition = -20.000000000000000000
     DialImageList = GuiDialImageList
     DialImageIndex = -1
     LineColor = 14277598
@@ -35,6 +35,7 @@ object FmLightweightFeedbackCompressor: TFmLightweightFeedbackCompressor
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
+    Position = -20.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
   end

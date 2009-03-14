@@ -428,12 +428,12 @@ begin
    edVolume: with GRectTop[2] do
               begin
                Pt := Point((3 * Left + Right) div 4, (3 * Top + Bottom) div 4);
-               s := Parameter[21];
+               s := Parameter[24];
                if ssAlt in Shift
                 then s := s + 0.002 * (Pt.Y - Y)
                 else s := s + 0.016 * (Pt.Y - Y) - 0.002 * (Pt.X - X);
-               with ParameterProperties[21]
-                do Parameter[21] := Limit(s, Min, Max);
+               with ParameterProperties[24]
+                do Parameter[24] := Limit(s, Min, Max);
               end;
    edThreshold: with GRectStage[FStage, 0] do
                  begin
@@ -767,8 +767,8 @@ begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
   try
    BeginUpdate;
-   with ParameterProperties[21]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[21]));
+   with ParameterProperties[24]
+    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[24]));
    i := Limit(i, 0, GKnob.NumGlyphs - 1);
    r := GRectTop[2];
    Draw(r, r, GBG);
@@ -779,7 +779,7 @@ begin
    r.Right  := r.Left + 32;
    r.Left   := r.Left - 32;
    Draw(r, r, GBG);
-   t := ParameterDisplay[21] + ' ' + ParameterLabel[21];
+   t := ParameterDisplay[24] + ' ' + ParameterLabel[24];
    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FFC1CAD1);
   finally
    EndUpdate;

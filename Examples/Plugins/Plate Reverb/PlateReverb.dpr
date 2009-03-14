@@ -5,6 +5,7 @@ library PlateReverb;
 
 uses
   FastMM4,
+  FastMove,
   madExcept,
   madLinkDisAsm,
   DAV_WinAmp,

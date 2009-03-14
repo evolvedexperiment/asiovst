@@ -34,12 +34,12 @@ type
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FLightweightFeedbackCompressor : array [0..1] of TLightweightSoftKneeFeedbackCompressor;
-    function GetLightweightFeedbackCompressor(Index: Integer): TLightweightSoftKneeFeedbackCompressor;
+    FLightweightFeedbackCompressor : array [0..1] of TCustomCompressor;
+    function GetLightweightFeedbackCompressor(Index: Integer): TCustomCompressor;
     procedure ChooseProcess;
   public
     function EvaluateCharacteristic(const Input: Single): Single;
-    property LightweightFeedbackCompressor[Index: Integer]: TLightweightSoftKneeFeedbackCompressor read GetLightweightFeedbackCompressor;
+    property LightweightFeedbackCompressor[Index: Integer]: TCustomCompressor read GetLightweightFeedbackCompressor;
   end;
 
 implementation
@@ -217,7 +217,7 @@ begin
   then TFmLightweightFeedbackCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
 
-function TLightweightFeedbackCompressorDataModule.GetLightweightFeedbackCompressor(Index: Integer): TLightweightSoftKneeFeedbackCompressor;
+function TLightweightFeedbackCompressorDataModule.GetLightweightFeedbackCompressor(Index: Integer): TCustomCompressor;
 begin
  if Index in [0..Length(FLightweightFeedbackCompressor) - 1]
   then result := FLightweightFeedbackCompressor[Index]

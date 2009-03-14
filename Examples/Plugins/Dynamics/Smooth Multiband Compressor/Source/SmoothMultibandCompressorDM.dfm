@@ -488,7 +488,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnParameterChange = ParameterMixChange
+      OnParameterChange = ParameterVolumeChange
       OnCustomParameterDisplay = ParameterVolumeDisplay
     end>
   ParameterCategories = <
