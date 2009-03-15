@@ -9,6 +9,8 @@ uses
   DAV_ChunkClasses, DAV_ChunkWaveFile, DAV_ChannelDataCoder;
 
 type
+  EWavError = class(Exception);
+
   TWaveChunkType = (ctFormat, ctFact, ctData);
   TWaveChunkTypes = set of TWaveChunkType;
 
@@ -107,10 +109,12 @@ type
     property ChannelCount;
     property SampleCount;
     property TotalTime;
+(*
     property OnLoadData32;
     property OnLoadData64;
     property OnSaveData32;
     property OnSaveData64;
+*)
     property BitsPerSample;
     property BytesPerSample;
     property Encoding;
@@ -272,7 +276,7 @@ label
 begin
  for i := 0 to Length(WaveChunkClasses) - 1 do
   if WaveChunkClasses[i] = AWaveChunkClass then goto FoundFilter;
- raise Exception.Create(AWaveChunkClass.ClassName + ' has not been registered');
+ raise EWavError.Create(AWaveChunkClass.ClassName + ' has not been registered');
 
  FoundFilter:
 
@@ -300,7 +304,7 @@ begin
   begin
    TheClass := WaveChunkClassByName(Value);
    if TheClass = nil then
-    raise Exception.Create(Value + ' has not been registered');
+    raise EWavError.Create(Value + ' has not been registered');
   end;
 
  FWaveChunkClass := TheClass;
@@ -487,17 +491,17 @@ begin
    // check whether file is a resource interchange file format ('RIFF')
    Read(ChunkName, 4);
    if ChunkName <> 'RIFF'
-    then raise Exception.Create(rcRIFFChunkNotFound);
+    then raise EWavError.Create(rcRIFFChunkNotFound);
 
    // check whether the real file size match the filesize stored inside the RIFF chunk
    Read(ChunkSize, 4);
    if (ChunkSize <> Size - Position) and not (ChunkSize = $FFFFFFFF)
-    then raise Exception.Create(rcRIFFSizeMismatch);
+    then raise EWavError.Create(rcRIFFSizeMismatch);
 
    // now specify the RIFF file to be a WAVE file
    Read(ChunkName, 4);
    if ChunkName <> 'WAVE'
-    then raise Exception.Create(rcWAVEChunkNotFound);
+    then raise EWavError.Create(rcWAVEChunkNotFound);
 
    // start parsing here
    ChunksReaded := [];
@@ -508,7 +512,7 @@ begin
      Read(ChunkName, 4);
      if ChunkName = 'fmt ' then
       if ctFormat in ChunksReaded
-       then raise Exception.Create(rcFMTChunkDublicate)
+       then raise EWavError.Create(rcFMTChunkDublicate)
        else
         begin
          FFormatChunk.LoadFromStream(Stream);
@@ -516,7 +520,7 @@ begin
         end else
      if ChunkName = 'fact' then
       if ctFact in ChunksReaded
-       then raise Exception.Create(rcFACTChunkDublicate)
+       then raise EWavError.Create(rcFACTChunkDublicate)
        else
         begin
          // check whether fact chunk has already been created
@@ -534,7 +538,7 @@ begin
         end else
      if ChunkName = 'data' then
       if ctData in ChunksReaded
-       then raise Exception.Create(rcDATAChunkDublicate)
+       then raise EWavError.Create(rcDATAChunkDublicate)
        else
         begin
          Read(DataSize, 4);
