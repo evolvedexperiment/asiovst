@@ -283,18 +283,19 @@ begin
  if cfReversedByteOrder in ChunkFlags
   then FlipLong(TempSize);
 
- if cfSizeFirst in ChunkFlags then
-  begin
-   // order known from PNG
-   Write(TempSize, 4);
-   Write(FChunkName[0], 4);
-  end
- else
-  begin
-   // order known from WAVE, AIFF, etc.
-   Write(FChunkName[0], 4);
-   Write(TempSize, 4);
-  end;
+ with Stream do
+  if cfSizeFirst in ChunkFlags then
+   begin
+    // order known from PNG
+    Write(TempSize, 4);
+    Write(FChunkName[0], 4);
+   end
+  else
+   begin
+    // order known from WAVE, AIFF, etc.
+    Write(FChunkName[0], 4);
+    Write(TempSize, 4);
+   end;
 end;
 
 procedure TCustomChunk.SetChunkName(const Value: string);
@@ -518,7 +519,7 @@ end;
 
 procedure TFixedDefinedChunk.SaveToStream(Stream: TStream);
 var
-  BytesWritten: Integer;
+  BytesWritten: Cardinal;
 begin
  FChunkSize := GetClassChunkSize;
  inherited;
@@ -947,7 +948,7 @@ begin
 
      // read checksum
      FDataStream.Read(CheckSum, 4);
-//     assert(Checksum = SubChunk.CalculateChecksum);
+     assert(Checksum = SubChunk.CalculateChecksum);
     end;
   end;
 end;
@@ -1001,10 +1002,18 @@ begin
 end;
 
 procedure TCustomTextChunk.SaveToStream(Stream: TStream);
+var
+  i : Integer;
 begin
  FChunkSize := Length(FText);
+
  inherited;
  Stream.Write(FText[1], FChunkSize);
+
+ // eventually skip padded zeroes
+ if (cfPadSize in ChunkFlags)
+  then Stream.Position := Stream.Position + CalculateZeroPad;
+
 end;
 
 procedure TCustomTextChunk.SetText(const Value: string);

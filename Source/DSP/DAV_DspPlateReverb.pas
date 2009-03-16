@@ -9,8 +9,6 @@ uses
 const
   CInternalSampleRate : Single = 29761;
 
-{$DEFINE PUREPASCAL}
-
 type
   TDiffusor = class(TDspObject)
   private
@@ -85,14 +83,14 @@ type
     procedure SetModulation(const Value: Single);
     procedure SetPreDelay(const Value: Single);
   protected
-    FResampleAllpass    : array [0..2] of TFirstOrderAllpassFilter;
-    FResampleFilters    : array [0..2] of TButterworthLowpassFilter;
+    FResampleFilter     : TButterworthLowpassFilter;
     FLowpass            : array [0..1] of TButterworthLowpassFilter;
     FHighpass           : array [0..1] of TButterworthHighpassFilter;
     FDiffusors          : array [0..5] of TDiffusor;
     FDelays             : array [0..3] of TDelayLineSamples32;
     FModulatedDiffusors : array [0..1] of TModulatedDiffusor;
     FLastOutput         : array [0..1] of Single;
+    FBuffer             : array [0..1] of TDAV4SingleArray;
     FCurrentOutput      : array [0..1] of Single;
     FPreDelayBuffer     : PDAVSingleFixedArray;
     FInternalPDBufSize  : Integer;
@@ -391,12 +389,7 @@ end;
 constructor TPlateReverb.Create;
 begin
  inherited;
- FResampleAllpass[0] := TFirstOrderAllpassFilter.Create;
- FResampleAllpass[1] := TFirstOrderAllpassFilter.Create;
- FResampleAllpass[2] := TFirstOrderAllpassFilter.Create;
- FResampleFilters[0] := TButterworthLowpassFilter.Create(2);
- FResampleFilters[1] := TButterworthLowpassFilter.Create(1);
- FResampleFilters[2] := TButterworthLowpassFilter.Create(1);
+ FResampleFilter := TButterworthLowpassFilter.Create(2);
 
 // FPreDelay := TDelayLineSamples32.Create(12);
  FDecay := 0.5;
@@ -432,12 +425,7 @@ end;
 
 destructor TPlateReverb.Destroy;
 begin
- FreeAndNil(FResampleAllpass[0]);
- FreeAndNil(FResampleAllpass[1]);
- FreeAndNil(FResampleAllpass[2]);
- FreeAndNil(FResampleFilters[0]);
- FreeAndNil(FResampleFilters[1]);
- FreeAndNil(FResampleFilters[2]);
+ FreeAndNil(FResampleFilter);
  FreeAndNil(FLowpass[0]);
  FreeAndNil(FLowpass[1]);
  FreeAndNil(FDelays[0]);
@@ -462,12 +450,8 @@ begin
  inherited;
  ResizePreDelayBuffer;
  FResampleFactor := CInternalSampleRate / SampleRate;
- FResampleFilters[0].SampleRate := SampleRate;
- FResampleFilters[0].Frequency := 0.95 * CHalf32 * CInternalSampleRate;
- FResampleFilters[1].SampleRate := SampleRate;
- FResampleFilters[1].Frequency := 0.95 * CHalf32 * CInternalSampleRate;
- FResampleFilters[2].SampleRate := SampleRate;
- FResampleFilters[2].Frequency := 0.95 * CHalf32 * CInternalSampleRate;
+ FResampleFilter.SampleRate := SampleRate;
+ FResampleFilter.Frequency := 0.9 * CHalf32 * CInternalSampleRate;
 end;
 
 procedure TPlateReverb.SetDamping(const Value: Single);
@@ -565,68 +549,69 @@ function TPlateReverb.ProcessSample(const Input: Single): Single;
 var
   Temp : Single;
 begin
- Temp := FResampleFilters[0].ProcessSample(CDenorm32 + Input);
+ Temp := FResampleFilter.ProcessSample(CDenorm32 + Input);
+
+ FPreDelayBuffer[FPreDelayBufferPos] := Temp;
+ inc(FPreDelayBufferPos);
+ if FPreDelayBufferPos = 3
+  then Move(FPreDelayBuffer[0], FPreDelayBuffer[FPreDelayBufferSize], 3 * SizeOf(Single)) else
+ if FPreDelayBufferPos >= FPreDelayBufferSize
+  then FPreDelayBufferPos := 0;
 
  while FResamplePos >= 1 do
   begin
    FResamplePos := FResamplePos - 1;
+   FCurrentInput := Hermite32_asm(1 - FResamplePos, @FPreDelayBuffer[FPreDelayBufferPos]);
 
-   FCurrentInput := Hermite32_asm(FResamplePos, @FPreDelayBuffer[FPreDelayBufferPos]);
-   FPreDelayBuffer[FPreDelayBufferPos] := Temp;
-   inc(FPreDelayBufferPos);
-   if FPreDelayBufferPos = 3
-    then Move(FPreDelayBuffer[0], FPreDelayBuffer[FPreDelayBufferSize], 3 * SizeOf(Single)) else
-   if FPreDelayBufferPos >= FPreDelayBufferSize
-    then FPreDelayBufferPos := 0;
+   move(FBuffer[0, 0], FBuffer[0, 1], 3 * SizeOf(Single));
+   move(FBuffer[1, 0], FBuffer[1, 1], 3 * SizeOf(Single));
+
+   FBuffer[0, 0] := FCurrentInput;
+   FBuffer[1, 0] := FCurrentInput;
 
    Temp := FDiffusors[0].ProcessSample(
            FDiffusors[1].ProcessSample(
            FDiffusors[2].ProcessSample(
            FDiffusors[3].ProcessSample(FCurrentInput))));
 
-   FCurrentOutput[0] := FLastOutput[1] + Temp;
-   FCurrentOutput[1] := FLastOutput[0] + Temp;
+   FBuffer[0, 0]  := FLastOutput[1] + Temp;
+   FBuffer[1, 0]  := FLastOutput[0] + Temp;
 
-   FLastOutput[1]    := FHighpass[0].ProcessSample(
-                        FDelays[1].ProcessSample(
-                        FDiffusors[4].ProcessSample(
-                        FDecay *
-                        FLowpass[0].ProcessSample(
-                        FDelays[0].ProcessSample(
-                        FModulatedDiffusors[0].ProcessSample(
-                        CDenorm32 + FCurrentOutput[0]))))));
-   FLastOutput[0]    := FHighpass[1].ProcessSample(
-                        FDelays[3].ProcessSample(
-                        FDiffusors[5].ProcessSample(
-                        FDecay *
-                        FLowpass[1].ProcessSample(
-                        FDelays[2].ProcessSample(
-                        FModulatedDiffusors[1].ProcessSample(
-                        CDenorm32 + FCurrentOutput[1]))))));
+   FLastOutput[1] := FHighpass[0].ProcessSample(
+                     FDelays[1].ProcessSample(
+                     FDiffusors[4].ProcessSample(
+                     FDecay *
+                     FLowpass[0].ProcessSample(
+                     FDelays[0].ProcessSample(
+                     FModulatedDiffusors[0].ProcessSample(
+                     CDenorm32 + FBuffer[0, 0]))))));
+   FLastOutput[0] := FHighpass[1].ProcessSample(
+                     FDelays[3].ProcessSample(
+                     FDiffusors[5].ProcessSample(
+                     FDecay *
+                     FLowpass[1].ProcessSample(
+                     FDelays[2].ProcessSample(
+                     FModulatedDiffusors[1].ProcessSample(
+                     CDenorm32 + FBuffer[1, 0]))))));
 
-   FCurrentOutput[0] := 0.6 * (FDelays[2].Sample[266] +
-                               FDelays[2].Sample[2974] -
-                               FDiffusors[5].Sample[1913] +
-                               FDelays[3].Sample[1996] -
-                               FDelays[0].Sample[1990] -
-                               FDiffusors[4].Sample[187] -
-                               FDelays[1].Sample[1066]);
+   FBuffer[0, 0] := 0.6 * (FDelays[2].Sample[266] +
+                           FDelays[2].Sample[2974] -
+                           FDiffusors[5].Sample[1913] +
+                           FDelays[3].Sample[1996] -
+                           FDelays[0].Sample[1990] -
+                           FDiffusors[4].Sample[187] -
+                           FDelays[1].Sample[1066]);
 
-   FCurrentOutput[1] := 0.6 * (FDelays[0].Sample[333] +
-                               FDelays[0].Sample[3627] -
-                               FDiffusors[4].Sample[1228] +
-                               FDelays[1].Sample[2673] -
-                               FDelays[2].Sample[2111] -
-                               FDiffusors[5].Sample[335] -
-                               FDelays[3].Sample[121]);
-
+   FBuffer[1, 0] := 0.6 * (FDelays[0].Sample[333] +
+                           FDelays[0].Sample[3627] -
+                           FDiffusors[4].Sample[1228] +
+                           FDelays[1].Sample[2673] -
+                           FDelays[2].Sample[2111] -
+                           FDiffusors[5].Sample[335] -
+                           FDelays[3].Sample[121]);
   end;
- FResampleAllpass[1].Frequency := CHalf32 * FResamplePos;
- FResampleAllpass[2].Frequency := CHalf32 * FResamplePos;
- FCurrentOutput[0] := FResampleAllpass[1].ProcessSample(
-                      FResampleFilters[1].ProcessSample(FCurrentOutput[0]));
- FCurrentOutput[1] := FResampleAllpass[2].ProcessSample(
-                      FResampleFilters[2].ProcessSample(FCurrentOutput[1]));
+ FCurrentOutput[0] := Hermite32_asm(1 - FResamplePos, @FBuffer[0, 0]);
+ FCurrentOutput[1] := Hermite32_asm(1 - FResamplePos, @FBuffer[1, 0]);
  FResamplePos := FResamplePos + FResampleFactor;
 
  result := CHalf32 * (FCurrentOutput[0] + FCurrentOutput[1]);

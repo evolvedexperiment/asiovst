@@ -11,8 +11,9 @@ const
   AIFCVersion1 = $A2805140;
 
 type
-   TAIFFCompressionType = (ctNotAvailable, ctNone, ctACE2, ctACE8, ctMACE3,
-                           ctMACE6, ctALAW, ctUnknown);
+   TAIFFCompressionType = (ctNotAvailable, ctNone, ctFL32, ctFL64, ctACE2,
+                           ctACE8, ctMACE3, ctMACE6, ctALAW, ctULAW, ctG722,
+                           ctG726, ctG728, ctGSM, ctUnknown);
 
   TAIFFDefinedChunk = class(TDefinedChunk)
   public
@@ -33,7 +34,6 @@ type
   public
     constructor Create; override;
   end;
-
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// Common Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -355,21 +355,29 @@ type
   TAIFFNameChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
+  published
+    property Name: string read FText write FText;
   end;
 
   TAIFFAuthorChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
+  published
+    property Author: string read FText write FText;
   end;
 
   TAIFFCopyrightChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
+  published
+    property Copyright: string read FText write FText;
   end;
 
   TAIFFAnnotationChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
+  published
+    property Annotation: string read FText write FText;
   end;
 
 
@@ -481,6 +489,14 @@ begin
    Read(CompTypeID, SizeOf(TChunkName));
    if CompTypeID = 'NONE' then FCompressionType := ctNone else
    if CompTypeID = 'ALAW' then FCompressionType := ctALAW else
+   if CompTypeID = 'alaw' then FCompressionType := ctALAW else
+   if CompTypeID = 'ULAW' then FCompressionType := ctULAW else
+   if CompTypeID = 'fl32' then FCompressionType := ctFL32 else
+   if CompTypeID = 'fl64' then FCompressionType := ctFL64 else
+   if CompTypeID = 'G722' then FCompressionType := ctG722 else
+   if CompTypeID = 'G726' then FCompressionType := ctG726 else
+   if CompTypeID = 'G728' then FCompressionType := ctG728 else
+   if CompTypeID = 'GSM ' then FCompressionType := ctGSM  else
    if CompTypeID = 'ACE2' then FCompressionType := ctACE2 else
    if CompTypeID = 'ACE8' then FCompressionType := ctACE8 else
    if CompTypeID = 'MAC3' then FCompressionType := ctMACE3 else
@@ -525,6 +541,14 @@ begin
          ctACE8 : CompressionTypeID := 'ACE8';
         ctMACE3 : CompressionTypeID := 'MAC3';
         ctMACE6 : CompressionTypeID := 'MAC6';
+         ctALAW : CompressionTypeID := 'ALAW';
+         ctULAW : CompressionTypeID := 'ULAW';
+         ctFL32 : CompressionTypeID := 'fl32';
+         ctFL64 : CompressionTypeID := 'fl64';
+         ctG722 : CompressionTypeID := 'G722';
+         ctG726 : CompressionTypeID := 'G726';
+         ctG728 : CompressionTypeID := 'G728';
+          ctGSM : CompressionTypeID := 'GSM ';
       ctUnknown : raise Exception.Create('Not supported');
      end;
      Write(CompressionTypeID, SizeOf(TChunkName));
@@ -555,6 +579,14 @@ begin
             ctACE8 : FCompressionName := 'ACE 8-to-1';
            ctMACE3 : FCompressionName := 'MACE 3-to-1';
            ctMACE6 : FCompressionName := 'MACE 6-to-1';
+            ctALAW : FCompressionName := 'A-Law';
+            ctULAW : FCompressionName := 'µ-Law';
+            ctFL32 : FCompressionName := 'Floating Point 32 (Single)';
+            ctFL64 : FCompressionName := 'Floating Point 64 (Double)';
+            ctG722 : FCompressionName := 'G.722';
+            ctG726 : FCompressionName := 'G.726';
+            ctG728 : FCompressionName := 'G.728';
+             ctGSM : FCompressionName := 'GSM';
    end;
   end;
 end;
@@ -1103,7 +1135,7 @@ begin
  if Value = 0   then raise Exception.Create('Velocity must be larger than 0');
  if Value > 127 then raise Exception.Create('Velocity must be smaller than 127');
  with AIFFInstrumentRecord do
-  if Value <> Detune then
+  if Value <> HighVelocity then
    begin
     HighVelocity := Value;
    end;
@@ -1124,7 +1156,7 @@ begin
  if Value = 0   then raise Exception.Create('Velocity must be larger than 0');
  if Value > 127 then raise Exception.Create('Velocity must be smaller than 127');
  with AIFFInstrumentRecord do
-  if Value <> Detune then
+  if Value <> LowVelocity then
    begin
     LowVelocity := Value;
    end;

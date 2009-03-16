@@ -10,6 +10,8 @@ uses
 type
   TDAVByteArray = array [0..0] of Byte;
   PDAVByteArray = ^TDAVByteArray;
+  TDAVSmallIntArray = array [0..0] of Smallint;
+  PDAVSmallIntArray = ^TDAVSmallIntArray;
 
   TDitherType = (dtNone, dtUniform, dtTriangular, dtGauss);
 
@@ -23,7 +25,7 @@ type
     FBlockBuffer  : PDAVByteArray;
     FSampleFrames : Cardinal;
     FChannelCount : Cardinal;
-    function CorectBlocksize(const Value: Cardinal): Cardinal; virtual;
+    function CorrectBlocksize(const Value: Cardinal): Cardinal; virtual;
     procedure BlockSizeChanged; virtual;
     procedure ReallocateChannelMemory; virtual; abstract;
     procedure ChannelCountChanged; virtual; abstract;
@@ -62,28 +64,45 @@ type
 
   TCustomChannel32DataCoderFixed = class(TCustomPCMChannel32DataCoder)
   private
-    FDitherType: TDitherType;
     procedure SetDitherType(const Value: TDitherType);
+    procedure SetBits(const Value: Byte);
+    procedure SetSampleSize(const Value: Byte);
+    procedure CalculateScaleFactors;
+  protected
+    FDitherType  : TDitherType;
+    FBits        : Byte;
+    FSampleSize  : Byte;
+    FScaleFactor : Array [0..1] of Single;
+    procedure BitsChanged; virtual;
+    procedure SampleSizeChanged; virtual;
   public
     constructor Create; override;
+    procedure SetBitsAndSampleSize(const Bits, SampleSize: Byte);
     property Dither: TDitherType read FDitherType write SetDitherType default dtNone;
+    property Bits: Byte read FBits write SetBits;
+    property SampleSize: Byte read FSampleSize write SetSampleSize;
   end;
 
-  TChannel32DataCoderFixed32 = class(TCustomChannel32DataCoderFixed)
+  TChannel32DataCoderFixed = class(TCustomChannel32DataCoderFixed)
   private
+    procedure CalculateSampleFrames;
+    procedure CalculateBlockSize;
   protected
-    function CorectBlocksize(const Value: Cardinal): Cardinal; override;
+    function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
+  published
+    property Dither;
+    property Bits;
   end;
 
   TChannel32DataCoderFloat16 = class(TCustomPCMChannel32DataCoder)
   private
   protected
-    function CorectBlocksize(const Value: Cardinal): Cardinal; override;
+    function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
@@ -94,7 +113,7 @@ type
   TChannel32DataCoderFloat32 = class(TCustomPCMChannel32DataCoder)
   private
   protected
-    function CorectBlocksize(const Value: Cardinal): Cardinal; override;
+    function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
@@ -105,7 +124,7 @@ type
   TChannel32DataCoderFloat64 = class(TCustomPCMChannel32DataCoder)
   private
   protected
-    function CorectBlocksize(const Value: Cardinal): Cardinal; override;
+    function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
@@ -125,6 +144,7 @@ constructor TCustomChannelDataCoder.Create;
 begin
  FBlockSize := 16384;
  FChannelCount := 2;
+ ChannelCountChanged;
  BlockSizeChanged;
 end;
 
@@ -140,7 +160,7 @@ begin
  Self.BlockSize := BlockSize;
 end;
 
-function TCustomChannelDataCoder.CorectBlocksize(const Value: Cardinal): Cardinal;
+function TCustomChannelDataCoder.CorrectBlocksize(const Value: Cardinal): Cardinal;
 begin
  result := Value;
 end;
@@ -149,7 +169,7 @@ procedure TCustomChannelDataCoder.SetBlockSize(const Value: Cardinal);
 var
   CorrectedBlocksize: Cardinal;
 begin
- CorrectedBlocksize := CorectBlocksize(Value);
+ CorrectedBlocksize := CorrectBlocksize(Value);
  if FBlockSize <> CorrectedBlocksize then
   begin
    FBlockSize := CorrectedBlocksize;
@@ -195,7 +215,7 @@ end;
 
 procedure TCustomPCMChannel32DataCoder.LoadFromStream(const Stream: TStream);
 begin
- Stream.Read(FBlockBuffer, FBlockSize);
+ Stream.Read(FBlockBuffer^[0], FBlockSize);
  DeinterleaveData;
 end;
 
@@ -221,8 +241,62 @@ end;
 
 constructor TCustomChannel32DataCoderFixed.Create;
 begin
- inherited;
  FDitherType := dtNone;
+ FBits       := 32;
+ FSampleSize := 4;
+ inherited;
+ CalculateScaleFactors;
+end;
+
+procedure TCustomChannel32DataCoderFixed.CalculateScaleFactors;
+begin
+ FScaleFactor[0] := (1 shl Bits - 1) - 1;
+ FScaleFactor[1] := 1 / FScaleFactor[0];
+end;
+
+procedure TCustomChannel32DataCoderFixed.BitsChanged;
+begin
+ if Bits > 8 * SampleSize then
+  begin
+   FSampleSize := (Bits + 7) div 8;
+   SampleSizeChanged;
+  end;
+ CalculateScaleFactors;
+end;
+
+procedure TCustomChannel32DataCoderFixed.SampleSizeChanged;
+begin
+ if Bits > 8 * SampleSize then
+  begin
+   FBits := SampleSize * 8;
+   BitsChanged;
+  end;
+ SampleFramesChanged;
+end;
+
+procedure TCustomChannel32DataCoderFixed.SetBits(const Value: Byte);
+begin
+ if Bits <> Value then
+  begin
+   FBits := Value;
+   BitsChanged;
+  end;
+end;
+
+procedure TCustomChannel32DataCoderFixed.SetBitsAndSampleSize(const Bits,
+  SampleSize: Byte);
+begin
+ if (Bits > 8 * SampleSize)
+  then raise Exception.Create('Number of bits must fit into the sample size!');
+
+ FBits := Bits;
+ FSampleSize := SampleSize;
+
+ if BlockSize <> CorrectBlocksize(BlockSize)
+  then BlockSize := CorrectBlocksize(BlockSize)
+  else BlockSizeChanged;
+
+ CalculateScaleFactors;
 end;
 
 procedure TCustomChannel32DataCoderFixed.SetDitherType(const Value: TDitherType);
@@ -233,58 +307,85 @@ begin
   end;
 end;
 
-{ TChannel32DataCoderFixed32 }
+procedure TCustomChannel32DataCoderFixed.SetSampleSize(const Value: Byte);
+begin
+ if SampleSize <> Value then
+  begin
+   FSampleSize := Value;
+   SampleSizeChanged;
+  end;
+end;
 
-function TChannel32DataCoderFixed32.CorectBlocksize(const Value: Cardinal): Cardinal;
+{ TChannel32DataCoderFixed }
+
+function TChannel32DataCoderFixed.CorrectBlocksize(const Value: Cardinal): Cardinal;
 var
   Granularity : Cardinal;
 begin
- Granularity := ChannelCount * SizeOf(Integer);
- result := Granularity * ((Value + Granularity - 1) div Granularity);
+ Granularity := ChannelCount * SampleSize;
+ result := Granularity * (Value div Granularity);
 end;
 
-procedure TChannel32DataCoderFixed32.DeinterleaveData;
+procedure TChannel32DataCoderFixed.InterleaveData;
 var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(SampleFrames = FBlocksize * FChannelCount * SizeOf(Integer));
+ assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
  assert(Length(FChannelArray) = Integer(FChannelCount));
- for Sample := 0 to FSampleFrames - 1 do
-  for Channel := 0 to FChannelCount
-   do PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(FChannelArray[Channel]^[Sample] * MaxInt);
+ case SampleSize of
+  2: for Sample := 0 to FSampleFrames - 1 do
+      for Channel := 0 to FChannelCount
+       do PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+  4: for Sample := 0 to FSampleFrames - 1 do
+      for Channel := 0 to FChannelCount
+       do PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+ end;
 end;
 
-procedure TChannel32DataCoderFixed32.InterleaveData;
+procedure TChannel32DataCoderFixed.DeinterleaveData;
 var
   Sample  : Cardinal;
   Channel : Cardinal;
-const
-  CMaxIntInv : Single = 1 / MaxInt;
 begin
- assert(SampleFrames = FBlocksize * FChannelCount * SizeOf(Integer));
+ assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
  assert(Length(FChannelArray) = Integer(FChannelCount));
- for Sample := 0 to FSampleFrames - 1 do
-  for Channel := 0 to FChannelCount
-   do FChannelArray[Channel]^[Sample] := PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * CMaxIntInv;
+ case SampleSize of
+  2: for Channel := 0 to FChannelCount - 1 do
+      for Sample := 0 to FSampleFrames - 1
+       do FChannelArray[Channel]^[Sample] := PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * FScaleFactor[1];
+  4: for Channel := 0 to FChannelCount - 1 do
+      for Sample := 0 to FSampleFrames - 1
+       do FChannelArray[Channel]^[Sample] := PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * FScaleFactor[1];
+ end;
 end;
 
-procedure TChannel32DataCoderFixed32.BlockSizeChanged;
+procedure TChannel32DataCoderFixed.CalculateSampleFrames;
+begin
+ SampleFrames := FBlockSize div FChannelCount div SampleSize;
+end;
+
+procedure TChannel32DataCoderFixed.CalculateBlockSize;
+begin
+ BlockSize := FSampleFrames * ChannelCount * SampleSize;
+end;
+
+procedure TChannel32DataCoderFixed.BlockSizeChanged;
 begin
  inherited;
- SampleFrames := FBlockSize div FChannelCount div SizeOf(Integer);
+ CalculateSampleFrames;
 end;
 
-procedure TChannel32DataCoderFixed32.SampleFramesChanged;
+procedure TChannel32DataCoderFixed.SampleFramesChanged;
 begin
- BlockSize := FSampleFrames * ChannelCount * SizeOf(Integer);
+ CalculateBlockSize;
  ReallocateChannelMemory;
 end;
 
 
 { TChannel32DataCoderFloat16 }
 
-function TChannel32DataCoderFloat16.CorectBlocksize(
+function TChannel32DataCoderFloat16.CorrectBlocksize(
   const Value: Cardinal): Cardinal;
 var
   Granularity : Cardinal;
@@ -331,7 +432,7 @@ end;
 
 { TChannel32DataCoderFloat32 }
 
-function TChannel32DataCoderFloat32.CorectBlocksize(const Value: Cardinal): Cardinal;
+function TChannel32DataCoderFloat32.CorrectBlocksize(const Value: Cardinal): Cardinal;
 var
   Granularity : Cardinal;
 begin
@@ -377,7 +478,7 @@ end;
 
 { TChannel32DataCoderFloat64 }
 
-function TChannel32DataCoderFloat64.CorectBlocksize(const Value: Cardinal): Cardinal;
+function TChannel32DataCoderFloat64.CorrectBlocksize(const Value: Cardinal): Cardinal;
 var
   Granularity : Cardinal;
 begin

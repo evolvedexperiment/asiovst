@@ -27,11 +27,11 @@ type
     FReadHeaderOnly  : Boolean;
   protected
     function GetChannels: Cardinal; virtual; abstract;
-    function GetSampleCount: Cardinal; virtual; abstract;
+    function GetSampleFrames: Cardinal; virtual; abstract;
     function GetSampleRate: Double; virtual; abstract;
     function GetTotalTime: Double; virtual;
     procedure SetChannels(const Value: Cardinal); virtual; abstract;
-    procedure SetSampleCount(const Value: Cardinal); virtual; abstract;
+    procedure SetSampleFrames(const Value: Cardinal); virtual; abstract;
     procedure SetSampleRate(const Value: Double); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
@@ -46,8 +46,8 @@ type
     property ReadHeaderOnly: Boolean read FReadHeaderOnly write FReadHeaderOnly;
     property SampleRate: Double read GetSampleRate write SetSampleRate;
     property ChannelCount: Cardinal read GetChannels write SetChannels;
-    property SampleCount: Cardinal read GetSampleCount write SetSampleCount;
-    property TotalTime: Double read GetTotalTime; // = SampleCount / SampleRate
+    property SampleFrames: Cardinal read GetSampleFrames write SetSampleFrames;
+    property TotalTime: Double read GetTotalTime; // = SampleFrames / SampleRate
 
     property OnEncode: TChannelData32CodingEvent read FOnEncode write FOnEncode;
     property OnDecode: TChannelData32CodingEvent read FOnDecode write FOnDecode;
@@ -71,7 +71,7 @@ end;
 
 function TCustomAudioFile.GetTotalTime: Double;
 begin
- result := SampleCount / SampleRate;
+ result := SampleFrames / SampleRate;
 end;
 
 procedure TCustomAudioFile.LoadFromFile(const FileName: TFileName);

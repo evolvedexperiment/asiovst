@@ -33,9 +33,10 @@ type
     constructor Create(Collection: TCollection); override;
     {$ENDIF}
     destructor Destroy; override;
-    function ParameterCount: integer;
-    procedure SetParameterCount(const Value: integer);
+    function ParameterCount: Integer;
+    procedure SetParameterCount(const Value: Integer);
     procedure SetParameters(const Parameters: array of Single);
+    procedure CopyParameters(const ProgramNr: Integer);
     property Parameter[AIndex: Integer]: Single read GetParameter write SetParameter;
     property Chunk: TMemoryStream read FChunkData write FChunkData;
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
@@ -149,6 +150,12 @@ begin
   else inherited;
 end;
 
+procedure TCustomVstProgram.CopyParameters(const ProgramNr: Integer);
+begin
+ with TVSTModuleWithPrograms(FVSTModule)
+  do SetParameters(Programs[ProgramNr].FParameter);
+end;
+
 procedure TCustomVstProgram.SetParameter(AIndex: Integer; AValue: Single);
 begin
  assert(FVSTModule is TVSTModuleWithPrograms);
@@ -181,6 +188,7 @@ procedure TCustomVstProgram.SetParameters(const Parameters: array of Single);
 var
   i : Integer;
 begin
+ if Length(Parameters) = 0 then exit;
  if Length(Parameters) > ParameterCount
   then raise Exception.CreateFmt(RCStrParameterMismatch, [Length(Parameters)]);
  for i := 0 to Length(Parameters) - 1

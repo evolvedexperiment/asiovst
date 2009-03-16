@@ -724,7 +724,7 @@ end;
 procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; const Value: Single);
 begin
  if (Index >= numParams) or (Index >= FParameterProperties.Count) then Exit;
- setParameter(Index, Value);
+ SetParameter(Index, Value);
  if Assigned(FParameterProperties[Index]) then
   with FParameterProperties[Index] do
    if CanBeAutomated and not FIsHostAutomation
