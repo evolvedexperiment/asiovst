@@ -425,7 +425,7 @@ begin
   begin
    if SampleFrames = 0 then exit;
    HlfHght := FOSFactor * FHalfHeight;
-   PixelPerSample := FOSFactor * Self.Width / SampleFrames;
+   PixelPerSample := FOSFactor * Self.Width / (SampleFrames - 1);
    Pen.Width := FOSFactor * FLineWidth;
    Pen.Color := FLineColor;
 

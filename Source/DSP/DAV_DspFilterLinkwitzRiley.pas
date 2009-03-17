@@ -25,7 +25,7 @@ type
     procedure FrequencyChanged; virtual;
     procedure OrderChanged; virtual;
   public
-    constructor Create; virtual;
+    constructor Create(const Order: Integer = 4); virtual;
     destructor Destroy; override;
     procedure ProcessSample(const Input: Single; out Low, High: Single); overload;
     procedure ProcessSample(const Input: Double; out Low, High: Double); overload;
@@ -42,14 +42,14 @@ uses
 
 { TLinkwitzRiley }
 
-constructor TLinkwitzRiley.Create;
+constructor TLinkwitzRiley.Create(const Order: Integer = 4);
 begin
- inherited;
+ inherited Create;
  FLowpass    := TButterworthLowpassFilter.Create;
  FHighpass   := TButterworthHighpassFilter.Create;
  FSplit      := TButterworthSplitBandFilter.Create;
  FSampleRate := 44100;
- FOrder      := 4;
+ FOrder      := Order;
  FSign       := 1;
  FFrequency  := 1000;
  FrequencyChanged;

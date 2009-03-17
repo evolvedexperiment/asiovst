@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspDynamics;
+  DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
   TLightweightFeedbackCompressorDataModule = class(TVSTModule)

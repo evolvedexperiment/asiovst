@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspDynamics;
+  DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
   TLightweightGateDataModule = class(TVSTModule)
@@ -26,11 +26,11 @@ type
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FLightweightGate : array [0..1] of TLightweightSoftKneeCompressor;
-    function GetLightweightGate(Index: Integer): TLightweightSoftKneeCompressor;
+    FLightweightGate : array [0..1] of TCustomKneeCompressor;
+    function GetLightweightGate(Index: Integer): TCustomKneeCompressor;
   public
     function EvaluateCharacteristic(const Input: Single): Single;
-    property LightweightGate[Index: Integer]: TLightweightSoftKneeCompressor read GetLightweightGate;
+    property LightweightGate[Index: Integer]: TCustomKneeCompressor read GetLightweightGate;
   end;
 
 implementation
@@ -139,7 +139,7 @@ begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TLightweightSoftKneeCompressor;
+function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TCustomKneeCompressor;
 begin
  if Index in [0..Length(FLightweightGate) - 1]
   then result := FLightweightGate[Index]

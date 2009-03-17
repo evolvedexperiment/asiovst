@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspFilter, DAV_DspFilterLinkwitzRiley, DAV_DspDynamics;
+  DAV_DspFilter, DAV_DspFilterLinkwitzRiley, DAV_DspDynamics,
+  DAV_DspLightweightDynamics;
 
 type
   TBandState = (bsNone, bsMute, bsBypass); 

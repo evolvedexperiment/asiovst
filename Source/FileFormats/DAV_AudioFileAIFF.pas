@@ -43,6 +43,7 @@ type
     function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
     function GetSampleFrames: Cardinal; override;
+    function CreateDataCoder: TCustomChannelDataCoder;
 
     procedure ProcessAESDChunk(const Stream: TStream); virtual;
     procedure ProcessANNOChunk(const Stream: TStream); virtual;
@@ -639,13 +640,38 @@ begin
   end;
 end;
 
+function TCustomAudioFileAIFF.CreateDataCoder: TCustomChannelDataCoder;
+begin
+ case FCommonChunk.Compression of
+  ctNotAvailable, ctNone:
+   begin
+    result := TChannel32DataCoderFixed.Create;
+    result.BlockSize := 16384;
+    result.ChannelCount := FCommonChunk.Channels;
+    with TChannel32DataCoderFixed(result), FCommonChunk
+     do SetBitsAndSampleSize(SampleSize, (SampleSize + 7) div 8);
+   end;
+   ctFL32:
+    begin
+     result := TChannel32DataCoderFloat32.Create;
+     result.BlockSize := 16384;
+    end;
+   ctFL64:
+    begin
+     result := TChannel32DataCoderFloat64.Create;
+     result.BlockSize := 16384;
+    end;
+  else result := nil;  
+ end;
+end;
+
 procedure TCustomAudioFileAIFF.ReadAudioDataFromStream(const Stream: TStream);
 var
   Offset      : Integer;
   BlockAlign  : Integer;
   DataDecoder : TCustomChannelDataCoder;
   Samples     : Integer;
-begin 
+begin
  with Stream do
   begin
    Position := FAudioDataPosition;
@@ -661,17 +687,8 @@ begin
    // advance offset
    Position := Position + Offset;
 
-   case FCommonChunk.Compression of
-    ctNotAvailable, ctNone:
-     begin
-      DataDecoder := TChannel32DataCoderFixed.Create;
-      DataDecoder.BlockSize := 16384;
-      DataDecoder.ChannelCount := FCommonChunk.Channels;
-      with TChannel32DataCoderFixed(DataDecoder), FCommonChunk
-       do SetBitsAndSampleSize(SampleSize, (SampleSize + 7) div 8);
-     end;
-    else exit;
-   end;
+   DataDecoder := CreateDataCoder;
+   if not assigned(DataDecoder) then exit;
 
    with DataDecoder do
     try
@@ -679,13 +696,13 @@ begin
      while Samples + SampleFrames <= FCommonChunk.SampleFrames do
       begin
        LoadFromStream(Stream);
-
+       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder);
        Samples := Samples + SampleFrames;
       end;
 
       SampleFrames := FCommonChunk.SampleFrames - Samples;
       LoadFromStream(Stream);
-
+      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder);
     finally
      FreeAndNil(DataDecoder);
     end;
@@ -694,8 +711,11 @@ end;
 
 procedure TCustomAudioFileAIFF.WriteAudioDataToStream(const Stream: TStream);
 var
-  ChunkName : TChunkName;
-  ChunkSize : Cardinal;
+  ChunkName   : TChunkName;
+  ChunkSize   : Cardinal;
+  ChunkEnd    : Cardinal;
+  DataDecoder : TCustomChannelDataCoder;
+  Samples     : Integer;
 const
   CZero: Cardinal = 0;
 begin
@@ -713,7 +733,33 @@ begin
 
     Write(CZero, 4); // offset
     Write(CZero, 4); // block align
-    
+
+    with FCommonChunk
+     do ChunkEnd := Position + SampleFrames * (SampleSize div 8) * Channels;
+
+    DataDecoder := CreateDataCoder;
+    if not assigned(DataDecoder) then exit;
+
+    with DataDecoder do
+     try
+      Samples   := 0;
+      while Samples + SampleFrames <= FCommonChunk.SampleFrames do
+       begin
+        if assigned(FOnEncode) then FOnEncode(Self, DataDecoder);
+        SaveToStream(Stream);
+
+        Samples := Samples + SampleFrames;
+       end;
+
+       SampleFrames := FCommonChunk.SampleFrames - Samples;
+       if assigned(FOnEncode) then FOnEncode(Self, DataDecoder);
+       SaveToStream(Stream);
+      finally
+      FreeAndNil(DataDecoder);
+     end;
+
+    assert(Stream.Position = ChunkEnd);
+    Position := ChunkEnd; 
    end;
 end;
 

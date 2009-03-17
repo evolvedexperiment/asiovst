@@ -4,7 +4,7 @@ unit DAV_TestAudioFileAIFF;
   Delphi DUnit Testfall
   ----------------------
   Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der 
+  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der
   getesteten Unit korrekt eingerichtet und aufgerufen werden.
 
 }
@@ -12,7 +12,7 @@ unit DAV_TestAudioFileAIFF;
 interface
 
 uses
-  TestFramework, DAV_ChunkClasses, DAV_ChunkAIFFFile, Classes, DAV_Common, Contnrs, 
+  TestFramework, DAV_ChunkClasses, DAV_ChunkAIFFFile, Classes, DAV_Common, Contnrs,
   SysUtils, DAV_ChannelDataCoder, DAV_AudioFileAIFF, DAV_AudioFile;
 
 type
@@ -25,6 +25,7 @@ type
     procedure TearDown; override;
   published
     procedure TestScanning;
+    procedure TestBasicWriting;
   end;
 
 implementation
@@ -62,6 +63,25 @@ begin
   finally
    // Must free up resources used by these successful finds
    FindClose(SR);
+  end;
+end;
+
+procedure TestAudioFileAIFF.TestBasicWriting;
+var
+  TempStream : TMemoryStream;
+begin
+ TempStream := TMemoryStream.Create;
+ with TempStream do
+  try
+   FAudioFileAIFF.Name := 'Test';
+   FAudioFileAIFF.Author := 'That''s me';
+   FAudioFileAIFF.Copyright := 'That''s also me';
+   FAudioFileAIFF.SampleFrames := 100;
+   FAudioFileAIFF.SaveToStream(TempStream);
+   TempStream.Position := 0;
+   FAudioFileAIFF.LoadFromStream(TempStream);
+  finally
+   Free;
   end;
 end;
 

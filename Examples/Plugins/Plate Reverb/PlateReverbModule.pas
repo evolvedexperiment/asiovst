@@ -56,9 +56,8 @@ begin
  Parameter[7] := 50;
 
  // default preset
- Programs[0].SetParameters(FParameter);
- Programs[1].SetParameters(FParameter);
- Programs[2].SetParameters(FParameter);
+ Programs[1].CopyParameters(0);
+ Programs[2].CopyParameters(0);
 
 (*
  // preset 1

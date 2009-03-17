@@ -1,4 +1,4 @@
-unit LightweightCompressorDM;
+unit LightweightUpwardCompressorDM;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
-  TLightweightCompressorDataModule = class(TVSTModule)
+  TLightweightUpwardCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -35,11 +35,11 @@ type
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCompressor : array [0..1] of TCustomKneeCompressor;
-    function GetLightweightCompressor(Index: Integer): TCustomKneeCompressor;
+    function GetLightweightUpwardCompressor(Index: Integer): TCustomKneeCompressor;
     procedure ChooseProcess;
   public
     function EvaluateCharacteristic(const Input: Single): Single;
-    property LightweightCompressor[Index: Integer]: TCustomKneeCompressor read GetLightweightCompressor;
+    property LightweightUpwardCompressor[Index: Integer]: TCustomKneeCompressor read GetLightweightUpwardCompressor;
   end;
 
 implementation
@@ -47,9 +47,9 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LightweightCompressorGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Approximations, LightweightUpwardCompressorGUI, DAV_VSTModuleWithPrograms;
 
-procedure TLightweightCompressorDataModule.VSTModuleOpen(Sender: TObject);
+procedure TLightweightUpwardCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
@@ -67,7 +67,7 @@ const
 begin
  for Channel := 0 to Length(FCompressor) - 1 do
   begin
-   FCompressor[Channel] := TLightweightSoftKneeCompressor.Create;
+   FCompressor[Channel] := TLightweightSoftKneeUpwardCompressor.Create;
    FCompressor[Channel].SampleRate := SampleRate;
   end;
 
@@ -87,30 +87,30 @@ begin
   do Programs[Channel].SetParameters(CPresets[Channel]);
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleClose(Sender: TObject);
+procedure TLightweightUpwardCompressorDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FCompressor[0]);
  FreeAndNil(FCompressor[1]);
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+procedure TLightweightUpwardCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmLightweightCompressor.Create(Self);
+  GUI := TFmLightweightUpwardCompressor.Create(Self);
 end;
 
-function TLightweightCompressorDataModule.EvaluateCharacteristic(
+function TLightweightUpwardCompressorDataModule.EvaluateCharacteristic(
   const Input: Single): Single;
 begin
  result:= FCompressor[0].CharacteristicCurve_dB(Input);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterMixChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Value := 100;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterTimeLabel(
+procedure TLightweightUpwardCompressorDataModule.ParameterTimeLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -122,7 +122,7 @@ begin
   then PreDefined := 's';
 end;
 
-procedure TLightweightCompressorDataModule.ParameterTimeDisplay(
+procedure TLightweightUpwardCompressorDataModule.ParameterTimeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Val : Single;
@@ -135,40 +135,40 @@ begin
   else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterMakeUpGainDisplay(
+procedure TLightweightUpwardCompressorDataModule.ParameterMakeUpGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterMakeUpGainChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].MakeUpGain_dB := Value;
  FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateMakeUp;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateMakeUp;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterThresholdDisplay(
+procedure TLightweightUpwardCompressorDataModule.ParameterThresholdDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterRatioDisplay(
+procedure TLightweightUpwardCompressorDataModule.ParameterRatioDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterKneeDisplay(
+procedure TLightweightUpwardCompressorDataModule.ParameterKneeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterOnOffDisplay(
+procedure TLightweightUpwardCompressorDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -177,23 +177,23 @@ begin
  end;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterStereoChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterStereoChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateStereo;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateStereo;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterLimitChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterLimitChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateLimit;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateLimit;
 end;
 
-procedure TLightweightCompressorDataModule.ChooseProcess;
+procedure TLightweightUpwardCompressorDataModule.ChooseProcess;
 begin
  case round(Parameter[7]) of
   0 : case round(Parameter[6]) of
@@ -208,68 +208,68 @@ begin
  OnProcessReplacing := OnProcess;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterAutoMakeUpGainChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].AutoMakeUp := Boolean(round(Value));
  FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateAutoMakeUpGain;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
 
-function TLightweightCompressorDataModule.GetLightweightCompressor(Index: Integer): TCustomKneeCompressor;
+function TLightweightUpwardCompressorDataModule.GetLightweightUpwardCompressor(Index: Integer): TCustomKneeCompressor;
 begin
  if Index in [0..Length(FCompressor) - 1]
   then result := FCompressor[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
-procedure TLightweightCompressorDataModule.ParameterAttackChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].Attack := Value;
  FCompressor[1].Attack := FCompressor[0].Attack;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateAttack;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateAttack;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterReleaseChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].Release := Value;
  FCompressor[1].Release := FCompressor[0].Release;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateRelease;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateRelease;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterThresholdChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].Threshold_dB := Value;
  FCompressor[1].Threshold_dB := Value;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateThreshold;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateThreshold;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterRatioChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].Ratio := Value;
  FCompressor[1].Ratio := Value;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateRatio;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateRatio;
 end;
 
-procedure TLightweightCompressorDataModule.ParameterKneeChange(
+procedure TLightweightUpwardCompressorDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FCompressor[0].Knee_dB := Value;
  FCompressor[1].Knee_dB := Value;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateKnee;
+ if EditorForm is TFmLightweightUpwardCompressor
+  then TFmLightweightUpwardCompressor(EditorForm).UpdateKnee;
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleProcessStereo(const Inputs,
+procedure TLightweightUpwardCompressorDataModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -281,7 +281,7 @@ begin
   end;
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleProcessMono(const Inputs,
+procedure TLightweightUpwardCompressorDataModule.VSTModuleProcessMono(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -297,7 +297,7 @@ begin
   end;
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleProcessStereoSoftClip(const Inputs,
+procedure TLightweightUpwardCompressorDataModule.VSTModuleProcessStereoSoftClip(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -309,7 +309,7 @@ begin
   end;
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
+procedure TLightweightUpwardCompressorDataModule.VSTModuleProcessMonoSoftClip(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -325,7 +325,7 @@ begin
   end;
 end;
 
-procedure TLightweightCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TLightweightUpwardCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
  FCompressor[0].SampleRate := SampleRate;

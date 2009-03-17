@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspDynamics, DAV_DspButterworthFilter;
+  DAV_DspLightweightDynamics, DAV_DspButterworthFilter;
 
 type
   TAdhesiveDataModule = class(TVSTModule)
@@ -37,7 +37,7 @@ type
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FCompressor : TLightweightSoftKneeCompressor;
-    FFilter     : TButterworthHP;
+    FFilter     : TButterworthHighpassFilter;
     FMix        : array [0..1] of Single;
     procedure ChooseProcess;
     procedure MixChanged;
@@ -70,7 +70,7 @@ const
 begin
  FCompressor := TLightweightSoftKneeCompressor.Create;
  FCompressor.SampleRate := SampleRate;
- FFilter := TButterworthHP.Create;
+ FFilter := TButterworthHighpassFilter.Create;
  FFilter.SampleRate := SampleRate;
  FFilter.Order := 3;
 

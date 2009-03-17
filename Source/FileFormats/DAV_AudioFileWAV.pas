@@ -86,13 +86,13 @@ type
     function GetEncoding: TAudioEncoding; virtual;
     function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
-    function GetSampleCount: Cardinal; override;
+    function GetSampleFrames: Cardinal; override;
 
     procedure SetBitsPerSample(const Value: Byte); virtual;
     procedure SetEncoding(const Value: TAudioEncoding); virtual;
     procedure SetChannels(const Value: Cardinal); override;
     procedure SetSampleRate(const Value: Double); override;
-    procedure SetSampleCount(const Value: Cardinal); override;
+    procedure SetSampleFrames(const Value: Cardinal); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -107,7 +107,7 @@ type
   published
     property SampleRate;
     property ChannelCount;
-    property SampleCount;
+    property SampleFrames;
     property TotalTime;
 (*
     property OnLoadData32;
@@ -398,7 +398,7 @@ begin
  result := FFormatChunk.Channels;
 end;
 
-function TCustomAudioFileWAV.GetSampleCount: Cardinal;
+function TCustomAudioFileWAV.GetSampleFrames: Cardinal;
 begin
  result := FTotalNrOfSamples;
 end;
@@ -455,7 +455,7 @@ begin
 
 end;
 
-procedure TCustomAudioFileWAV.SetSampleCount(const Value: Cardinal);
+procedure TCustomAudioFileWAV.SetSampleFrames(const Value: Cardinal);
 begin
  if FTotalNrOfSamples <> Value then
   begin
@@ -530,7 +530,7 @@ begin
            LoadFromStream(Stream);
 
            // now only use the sample count information
-           FTotalNrOfSamples := SampleCount;
+           FTotalNrOfSamples := SampleFrames;
           finally
            Free;
           end;
@@ -588,7 +588,7 @@ begin
    if FFormatChunk.FormatTag <> etPCM then
     with TFactChunk.Create do
      try
-      SampleCount := FTotalNrOfSamples;
+      SampleFrames := FTotalNrOfSamples;
       SaveToStream(Stream);
      finally
       Free;

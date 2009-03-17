@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, DAV_Common, DAV_ChannelDataCoder;
 
 type
-  TChannelData32CodingEvent = procedure(Self: TObject; const Coder: TCustomChannel32DataCoder) of object;
+  TChannelData32CodingEvent = procedure(Sender: TObject; const Coder: TCustomChannelDataCoder) of object;
 
   {$IFDEF Delphi5}
   TAudioEncoding = (aeInteger, aeFloat, aeMP3, aeACM, aeADPCM,
@@ -21,11 +21,10 @@ type
 
   TCustomAudioFile = class(TComponent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
-    FOnEncode        : TChannelData32CodingEvent;
-    FOnDecode        : TChannelData32CodingEvent;
-
-    FReadHeaderOnly  : Boolean;
+    FReadHeaderOnly : Boolean;
   protected
+    FOnEncode : TChannelData32CodingEvent;
+    FOnDecode : TChannelData32CodingEvent;
     function GetChannels: Cardinal; virtual; abstract;
     function GetSampleFrames: Cardinal; virtual; abstract;
     function GetSampleRate: Double; virtual; abstract;
@@ -91,7 +90,9 @@ procedure TCustomAudioFile.SaveToFile(const FileName: TFileName);
 var
   FileStream : TFileStream;
 begin
- FileStream := TFileStream.Create(FileName, fmOpenRead);
+ if FileExists(FileName)
+  then FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
+  else FileStream := TFileStream.Create(FileName, fmCreate);
  with FileStream do
   try
    SaveToStream(FileStream);

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspDynamics;
+  DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
   TLightweightLimiterDataModule = class(TVSTModule)
@@ -33,12 +33,12 @@ type
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FLightweightLimiter : array [0..1] of TLightweightSoftKneeLimiter;
-    function GetLightweightLimiter(Index: Integer): TLightweightSoftKneeLimiter;
+    FLightweightLimiter : array [0..1] of TCustomKneeLimiter;
+    function GetLightweightLimiter(Index: Integer): TCustomKneeLimiter;
     procedure ChooseProcess;
   public
     function EvaluateCharacteristic(const Input: Single): Single;
-    property LightweightLimiter[Index: Integer]: TLightweightSoftKneeLimiter read GetLightweightLimiter;
+    property LightweightLimiter[Index: Integer]: TCustomKneeLimiter read GetLightweightLimiter;
   end;
 
 implementation
@@ -215,7 +215,7 @@ begin
   then TFmLightweightLimiter(EditorForm).UpdateAutoMakeUpGain;
 end;
 
-function TLightweightLimiterDataModule.GetLightweightLimiter(Index: Integer): TLightweightSoftKneeLimiter;
+function TLightweightLimiterDataModule.GetLightweightLimiter(Index: Integer): TCustomKneeLimiter;
 begin
  if Index in [0..Length(FLightweightLimiter) - 1]
   then result := FLightweightLimiter[Index]

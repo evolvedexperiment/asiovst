@@ -163,24 +163,23 @@ begin
     CRLF +
     'uses ' + CRLF +
     '  Forms,' + CRLF +
+    '  DAV_WinAmp,' + CRLF +
     '  DAV_VSTEffect,' + CRLF +
-    '  DAV_VSTModule;' + CRLF +
+    '  DAV_VSTBasicModule;' + CRLF +
     CRLF +
-    'function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + CRLF +
+    'function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;' + CRLF +
     'begin' + CRLF +
-    '  try' + CRLF +
-    '    with T' + FConfig.PluginFormName + '.Create(Application) do' + CRLF +
-    '     begin' + CRLF +
-    '      AudioMaster := AudioMasterCallback;' + CRLF +
-    '      Result := Effect;' + CRLF +
-    '     end;' + CRLF +
-    '  except' + CRLF +
-    '    Result := nil;' + CRLF +
-    '  end;' + CRLF +
+    '  Result := VstModuleMain(AudioMasterCallback, T' + FConfig.PluginFormName + ');' + CRLF +
     'end;' + CRLF +
     CRLF +
-    'exports Main name ''main'';' + CRLF +
-    'exports Main name ''VSTPluginMain'';' + CRLF +
+    'function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;' + CRLF +
+    'begin' + CRLF +
+    '  Result := WinampDSPModuleHeader(T' + FConfig.PluginFormName + ');' + CRLF +
+    'end;' + CRLF +
+    CRLF +
+    'exports VstPluginMain name ''main'';' + CRLF +
+    'exports VstPluginMain name ''VSTPluginMain'';' + CRLF +
+    'exports WinampDSPGetHeader name ''winampDSPGetHeader2'';' + CRLF +
     CRLF +
     'begin' + CRLF +
     'end.';

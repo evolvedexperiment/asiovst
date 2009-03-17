@@ -1,7 +1,7 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library LightweightGate;
+library LightweightUpwardCompressor;
 
-{$R 'Gate.res' 'Gate.rc'}
+{$R 'Compressor.res' 'Compressor.rc'}
 
 uses
   FastMM4,
@@ -13,17 +13,17 @@ uses
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  LightweightGateDM in 'LightweightGateDM.pas' {LightweightGateDataModule: TVSTModule},
-  LightweightGateGUI in 'LightweightGateGUI.pas' {FmLightweightGate};
+  LightweightUpwardCompressorDM in 'LightweightUpwardCompressorDM.pas' {LightweightUpwardCompressorDataModule: TVSTModule},
+  LightweightUpwardCompressorGUI in 'LightweightUpwardCompressorGUI.pas' {FmLightweightUpwardCompressor};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TLightweightGateDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TLightweightUpwardCompressorDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TLightweightGateDataModule);
+ Result := WinampDSPModuleHeader(TLightweightUpwardCompressorDataModule);
 end;
 
 exports VstPluginMain name 'main';
