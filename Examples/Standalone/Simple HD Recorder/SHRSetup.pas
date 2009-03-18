@@ -1,6 +1,6 @@
 unit SHRSetup;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 

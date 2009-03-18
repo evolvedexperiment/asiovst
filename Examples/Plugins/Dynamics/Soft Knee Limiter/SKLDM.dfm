@@ -7,11 +7,16 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'SKLi'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear

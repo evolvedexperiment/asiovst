@@ -4,10 +4,11 @@ unit AnalyserForm;
 
 interface
 
-uses {$IFDEF FPC} LCLIntf, LResources, TAGraph,
-     {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
-     SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DAV_Common,
-     Chart, Spin, Buttons, ExtCtrls, DAV_DspFilter, DAV_ASIOHost;
+uses
+  {$IFDEF FPC} LCLIntf, LResources, TAGraph,
+  {$ELSE} Windows, TeeProcs, TeEngine, Series, {$ENDIF}
+  SysUtils, Classes, Controls, Forms, StdCtrls, ComCtrls, DAV_Common, Chart,
+  Spin, Buttons, ExtCtrls, DAV_DspFilter, DAV_DspFilterBasics, DAV_ASIOHost;
 
 const
   CNumFrequencies = 32;
@@ -47,7 +48,7 @@ type
     procedure RB_SlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
   private
-    FFilterArray : Array [0..CNumFrequencies - 1] of TSimpleBandpass;
+    FFilterArray : Array [0..CNumFrequencies - 1] of TBasicBandpassFilter;
     FFilterRMS   : Array [0..CNumFrequencies - 1] of Single;
     FChannelNr   : Integer;
     FSpeedConst  : TDAV2SingleArray;
@@ -99,7 +100,7 @@ begin
 
  for i := 0 to cNumFrequencies - 1 do
   begin
-   FFilterArray[i] := TSimpleBandpass.Create;
+   FFilterArray[i] := TBasicBandpassFilter.Create;
    with FFilterArray[i] do
     begin
      SampleRate := 44100;
@@ -107,13 +108,13 @@ begin
      Bandwidth := 1;
      Frequency := cThirdOctaveFrequencies[i];
      {$IFNDEF FPC}
-     if Frequency<1000
-      then BarSeries.Add(0,FloatToStr(Frequency)+' Hz')
-      else BarSeries.Add(0,FloatToStr(0.001*Frequency)+' kHz');
+     if Frequency < 1000
+      then BarSeries.Add(0,FloatToStr(Frequency) + ' Hz')
+      else BarSeries.Add(0,FloatToStr(0.001 * Frequency) + ' kHz');
      {$ELSE}
-     if Frequency<1000
-      then AnalyserChart.AddBar(FloatToStr(Frequency)+' Hz', 0, $000000FF)
-      else AnalyserChart.AddBar(FloatToStr(0.001*Frequency)+' kHz', 0, $000000FF);
+     if Frequency < 1000
+      then AnalyserChart.AddBar(FloatToStr(Frequency) + ' Hz', 0, $000000FF)
+      else AnalyserChart.AddBar(FloatToStr(0.001 * Frequency) + ' kHz', 0, $000000FF);
      {$ENDIF}
     end;
   end;
@@ -133,22 +134,22 @@ begin
   finally
    Free;
   end;
- for i := 0 to cNumFrequencies-1 do FFilterArray[i].Free;
+ for i := 0 to cNumFrequencies - 1 do FreeAndNil(FFilterArray[i]);
 end;
 
 procedure TFmAnalyser.RB_FastClick(Sender: TObject);
 begin
- FSpeedConst[0] := 0.99; FSpeedConst[1] := 1-FSpeedConst[0];
+ FSpeedConst[0] := 0.99; FSpeedConst[1] := 1 - FSpeedConst[0];
 end;
 
 procedure TFmAnalyser.RB_MediumClick(Sender: TObject);
 begin
- FSpeedConst[0] := 0.999; FSpeedConst[1] := 1-FSpeedConst[0];
+ FSpeedConst[0] := 0.999; FSpeedConst[1] := 1 - FSpeedConst[0];
 end;
 
 procedure TFmAnalyser.RB_SlowClick(Sender: TObject);
 begin
- FSpeedConst[0] := 0.9999; FSpeedConst[1] := 1-FSpeedConst[0];
+ FSpeedConst[0] := 0.9999; FSpeedConst[1] := 1 - FSpeedConst[0];
 end;
 
 procedure TFmAnalyser.SEFullscaleGainChange(Sender: TObject);

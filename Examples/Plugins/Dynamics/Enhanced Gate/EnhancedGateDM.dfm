@@ -8,11 +8,16 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out, vcdBypass]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'EAGa'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear

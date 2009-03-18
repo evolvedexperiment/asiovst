@@ -7,13 +7,25 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DCWS'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Preset 1'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Preset 2'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -31,6 +43,7 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
       VSTModule = Owner
       OnParameterChange = ParamVolumeChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

@@ -8,14 +8,19 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   ProcessingMode = pmBlockSave
   BlockModeOverlap = 512
   InitialDelay = 768
   IORatio = 1.000000000000000000
   UniqueID = 'LPHP'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic

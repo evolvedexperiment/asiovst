@@ -45,6 +45,9 @@ begin
  Parameter[1] := 2;
  Parameter[2] := 10;
  Parameter[3] := 10;
+
+ Programs[1].CopyParameters(0);
+ Programs[2].CopyParameters(0);
 end;
 
 procedure TTwoBandDistortionDataModule.VSTModuleClose(Sender: TObject);

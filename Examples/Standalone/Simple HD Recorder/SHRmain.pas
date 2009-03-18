@@ -63,7 +63,7 @@ var
 implementation
 
 uses
-  Math, IniFiles, WaveIOX, SHRSetup;
+  Math, IniFiles, WaveIOX, DAV_GuiCommon, SHRSetup;
 
 {$R *.dfm}
 

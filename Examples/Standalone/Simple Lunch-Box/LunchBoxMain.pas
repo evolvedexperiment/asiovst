@@ -1,6 +1,6 @@
 unit LunchBoxMain;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 interface
 
@@ -65,7 +65,7 @@ type
     N4: TMenuItem;
     OpenDialog: TOpenDialog;
     SaveMIDIDialog: TSaveDialog;
-    SaveWDAVialog: TSaveDialog;
+    SaveWAVDialog: TSaveDialog;
     SEBar: TSpinEdit;
     SETempo: TSpinEdit;
     TBVolume: TTrackBar;
@@ -114,44 +114,44 @@ type
     procedure SETempoChange(Sender: TObject);
     procedure TBVolumeChange(Sender: TObject);
   private
-    fMetAngle       : TComplexDouble;
-    fMetPosition    : TComplexDouble;
-    fFlangeAngle    : TComplexDouble;
-    fFlangePosition : TComplexDouble;
-    fFlange         : Boolean;
-    fRobotize       : Boolean;
-    fRecRev         : Boolean;
-    fRealtimeVST    : Boolean;
-    fBeatPos        : Integer;
-    fVolume         : Single;
-    fSamplesPerBeat : Single;
-    fSamplesCount   : Single;
-    fMetroVolume    : T2SingleArray;
-    fFlangeBuffer   : TDAVArrayOfSingleDynArray;
-    fRobotBuffer    : TDAVArrayOfSingleDynArray;
-    fRecRevBuffer   : TDAVArrayOfSingleDynArray;
-    fRobotPos       : Integer;
-    fDelayBuffer    : TDAVArrayOfSingleDynArray;
-    fDelayPos       : array of Integer;
-    fDelayLength    : array of Integer;
-    fDelayVolume    : T2SingleArray;
-    fPatPos         : Integer;
-    fMaxPatSamples  : Integer;
-    fEventList      : TLunchBoxEventList;
-    fInputEnvs      : T2DoubleArray;
-    fInputDCs       : T2DoubleArray;
-    fInputFilter    : Array [0..1] of TInputFilter;
+    FMetAngle       : TComplexDouble;
+    FMetPosition    : TComplexDouble;
+    FFlangeAngle    : TComplexDouble;
+    FFlangePosition : TComplexDouble;
+    FFlange         : Boolean;
+    FRobotize       : Boolean;
+    FRecRev         : Boolean;
+    FRealtimeVST    : Boolean;
+    FBeatPos        : Integer;
+    FVolume         : Single;
+    FSamplesPerBeat : Single;
+    FSamplesCount   : Single;
+    FMetroVolume    : TDAV2SingleArray;
+    FFlangeBuffer   : TDAVArrayOfSingleDynArray;
+    FRobotBuffer    : TDAVArrayOfSingleDynArray;
+    FRecRevBuffer   : TDAVArrayOfSingleDynArray;
+    FRobotPos       : Integer;
+    FDelayBuffer    : TDAVArrayOfSingleDynArray;
+    FDelayPos       : array of Integer;
+    FDelayLength    : array of Integer;
+    FDelayVolume    : TDAV2SingleArray;
+    FPatPos         : Integer;
+    FMaxPatSamples  : Integer;
+    FEventList      : TLunchBoxEventList;
+    FInputEnvs      : TDAV2DoubleArray;
+    FInputDCs       : TDAV2DoubleArray;
+    FInputFilter    : Array [0..1] of TInputFilter;
 
-    VSTInBuffer     : TDAVArrayOfSingleDynArray;
-    VSTOutBuffer    : TDAVArrayOfSingleDynArray;
+    FVSTInBuffer    : TDAVArrayOfSingleDynArray;
+    FVSTOutBuffer   : TDAVArrayOfSingleDynArray;
     procedure CalculateSineAngles;
     procedure CreateSample(Index: Integer; Amplitude : Double = 1);
     procedure Requantize;
     procedure AdjustDelayLength;
     procedure RenderOutput(Buffer: TDAVArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
   public
-    property PatternPosition : Integer read fPatPos write fPatPos;
-    property EventList : TLunchBoxEventList read fEventList;
+    property PatternPosition : Integer read FPatPos write FPatPos;
+    property EventList : TLunchBoxEventList read FEventList;
   end;
 
 var
@@ -164,7 +164,9 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses Math, inifiles, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
+uses
+  Math, IniFiles, DAV_Approximations, WaveIOX, LunchBoxSetup, LunchBoxAbout,
+  LunchBoxVST;
 
 procedure TFmLunchBox.FormActivate(Sender: TObject);
 begin
@@ -178,19 +180,19 @@ end;
 
 procedure TFmLunchBox.FormDestroy(Sender: TObject);
 begin
- fEventList.Free;
+ FEventList.Free;
 end;
 
 procedure TFmLunchBox.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
  case Key of
-  86 : fRobotize := True;
-  66 : fRecRev := True;
-  78 : fFlange := True;
+  86 : FRobotize := True;
+  66 : FRecRev := True;
+  78 : FFlange := True;
   79 : CBOverdrive.Checked := not CBOverdrive.Checked;
   80 : CBDelay.Checked := not CBDelay.Checked;
-  82 : fRealtimeVST := True;
+  82 : FRealtimeVST := True;
  end;
 end;
 
@@ -198,10 +200,10 @@ procedure TFmLunchBox.FormKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
  case Key of
-  86 : fRobotize := False;
-  66 : fRecRev := False;
-  78 : fFlange := False;
-  82 : fRealtimeVST := False;
+  86 : FRobotize := False;
+  66 : FRecRev := False;
+  78 : FFlange := False;
+  82 : FRealtimeVST := False;
  end;
 end;
 
@@ -223,21 +225,21 @@ var
   Buffer : TDAVArrayOfSingleDynArray;
   i      : Integer;
 begin
- if SaveWDAVialog.Execute then
+ if SaveWAVDialog.Execute then
   begin
    ASIOHost.Active := False;
    SetLength(Buffer, 2);
-   SetLength(Buffer[0], 2 * fMaxPatSamples);
-   SetLength(Buffer[1], 2 * fMaxPatSamples);
-   fSamplesCount := 0; fPatPos := 0;
-   for i := 0 to Length(fDelayBuffer) - 1  do FillChar(fDelayBuffer[i, 0],Length(fDelayBuffer[i])*SizeOf(Single),0);
-   for i := 0 to Length(fFlangeBuffer) - 1 do FillChar(fFlangeBuffer[i, 0],Length(fFlangeBuffer[i])*SizeOf(Single),0);
-   for i := 0 to Length(fRobotBuffer) - 1  do FillChar(fRobotBuffer[i, 0],Length(fRobotBuffer[i])*SizeOf(Single),0);
-   for i := 0 to Length(fRecRevBuffer) - 1 do FillChar(fRecRevBuffer[i, 0],Length(fRecRevBuffer[i])*SizeOf(Single),0);
-   for i := 0 to fEventList.Count - 1 do fEventList.Items[i].NoteOff;
-   RenderOutput(Buffer, 2 * fMaxPatSamples,false);
-   SaveWAVFileSeparateStereo(SaveWDAVialog.FileName, @Buffer[0,0], @Buffer[1,0],Round(ASIOHost.SampleRate),2,16,2*fMaxPatSamples);
-   fSamplesCount := 0; fPatPos := 0;
+   SetLength(Buffer[0], 2 * FMaxPatSamples);
+   SetLength(Buffer[1], 2 * FMaxPatSamples);
+   FSamplesCount := 0; FPatPos := 0;
+   for i := 0 to Length(FDelayBuffer) - 1  do FillChar(FDelayBuffer[i, 0],Length(FDelayBuffer[i])*SizeOf(Single),0);
+   for i := 0 to Length(FFlangeBuffer) - 1 do FillChar(FFlangeBuffer[i, 0],Length(FFlangeBuffer[i])*SizeOf(Single),0);
+   for i := 0 to Length(FRobotBuffer) - 1  do FillChar(FRobotBuffer[i, 0],Length(FRobotBuffer[i])*SizeOf(Single),0);
+   for i := 0 to Length(FRecRevBuffer) - 1 do FillChar(FRecRevBuffer[i, 0],Length(FRecRevBuffer[i])*SizeOf(Single),0);
+   for i := 0 to FEventList.Count - 1 do FEventList.Items[i].NoteOff;
+   RenderOutput(Buffer, 2 * FMaxPatSamples,false);
+   SaveWAVFileSeparateStereo(SaveWAVDialog.FileName, @Buffer[0,0], @Buffer[1,0],Round(ASIOHost.SampleRate),2,16,2*FMaxPatSamples);
+   FSamplesCount := 0; FPatPos := 0;
    ASIOHost.Active := True;
   end;
 end;
@@ -252,7 +254,7 @@ end;
 
 procedure TFmLunchBox.MINewBeatClick(Sender: TObject);
 begin
- fEventList.Clear;
+ FEventList.Clear;
  CBKit.ItemIndex := 0;
  CBKit.OnChange(Sender);
  CBStyle.ItemIndex := 0;
@@ -292,7 +294,7 @@ end;
 
 procedure TFmLunchBox.SEBarChange(Sender: TObject);
 begin
- fMaxPatSamples := Round(fSamplesPerBeat*4*SEBar.Value);
+ FMaxPatSamples := Round(FSamplesPerBeat*4*SEBar.Value);
 end;
 
 procedure TFmLunchBox.SETempoChange(Sender: TObject);
@@ -300,36 +302,36 @@ var
   i : Integer;
   R : Double;
 begin
- R := fSamplesPerBeat;
- fSamplesPerBeat := 60 / SETempo.Value*ASIOHost.SampleRate;
- R := fSamplesPerBeat / R;
- for i := 0 to fEventList.Count - 1
-  do fEventList[i].PatternPosition := round(fEventList[i].PatternPosition*r);
- fMaxPatSamples := Round(fSamplesPerBeat * 4 * SEBar.Value);
+ R := FSamplesPerBeat;
+ FSamplesPerBeat := 60 / SETempo.Value*ASIOHost.SampleRate;
+ R := FSamplesPerBeat / R;
+ for i := 0 to FEventList.Count - 1
+  do FEventList[i].PatternPosition := round(FEventList[i].PatternPosition*r);
+ FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
  AdjustDelayLength;
 end;
 
 procedure TFmLunchBox.TBVolumeChange(Sender: TObject);
 begin
- fMetroVolume[1] := TBVolume.Position * 0.01;
+ FMetroVolume[1] := TBVolume.Position * 0.01;
 end;
 
 procedure TFmLunchBox.CalculateSineAngles;
 begin
- GetSinCos(2 * Pi * 1000 / ASIOHost.SampleRate, fMetAngle.Im, fMetAngle.Re);
- fMetPosition.Re := 1;
- fMetPosition.Im := 0;
+ GetSinCos(2 * Pi * 1000 / ASIOHost.SampleRate, FMetAngle.Im, FMetAngle.Re);
+ FMetPosition.Re := 1;
+ FMetPosition.Im := 0;
 
- GetSinCos(Pi / ASIOHost.SampleRate, fFlangeAngle.Im, fFlangeAngle.Re);
- fFlangePosition.Re := 1;
- fFlangePosition.Im := 0;
+ GetSinCos(Pi / ASIOHost.SampleRate, FFlangeAngle.Im, FFlangeAngle.Re);
+ FFlangePosition.Re := 1;
+ FFlangePosition.Im := 0;
 end;
 
 procedure TFmLunchBox.CBDelayClick(Sender: TObject);
 begin
  if CBDelay.Checked
-  then fDelayVolume[0] := 0.3
-  else fDelayVolume[0] := 0;
+  then FDelayVolume[0] := 0.3
+  else FDelayVolume[0] := 0;
 end;
 
 procedure TFmLunchBox.CBKitChange(Sender: TObject);
@@ -387,7 +389,7 @@ end;
 
 procedure TFmLunchBox.CBMetronomeClick(Sender: TObject);
 begin
- fMetroVolume[1] := Integer(CBMetronome.Checked) * TBVolume.Position * 0.01;
+ FMetroVolume[1] := Integer(CBMetronome.Checked) * TBVolume.Position * 0.01;
  TBVolume.Visible := CBMetronome.Checked;
 end;
 
@@ -396,23 +398,23 @@ var
   Fl       : TSearchRec;
   done     : Boolean;
 begin
- fEventList := TLunchBoxEventList.Create;
- fSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
- fMaxPatSamples := Round(fSamplesPerBeat * 4 * SEBar.Value);
- fSamplesCount := 0;
- fMetroVolume[0] := 1;
- fMetroVolume[1] := Integer(CBMetronome.Checked) * TBVolume.Position * 0.01;
- fMetPosition.Re := 1;
- fMetPosition.Im := 0;
- fVolume := 1;
- fRobotPos := 0;
- fDelayVolume[1] := 0;
- fInputDCs[0] := -1E-3;
- fInputDCs[1] := 0.1;
- fInputEnvs[0] := 0.1;
- fInputEnvs[1] := 0.1;
- fInputFilter[0] := TInputFilterLP.Create;
- with fInputFilter[0] do
+ FEventList := TLunchBoxEventList.Create;
+ FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
+ FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
+ FSamplesCount := 0;
+ FMetroVolume[0] := 1;
+ FMetroVolume[1] := Integer(CBMetronome.Checked) * TBVolume.Position * 0.01;
+ FMetPosition.Re := 1;
+ FMetPosition.Im := 0;
+ FVolume := 1;
+ FRobotPos := 0;
+ FDelayVolume[1] := 0;
+ FInputDCs[0] := -1E-3;
+ FInputDCs[1] := 0.1;
+ FInputEnvs[0] := 0.1;
+ FInputEnvs[1] := 0.1;
+ FInputFilter[0] := TInputFilterLP.Create;
+ with FInputFilter[0] do
   begin
    SampleRate := ASIOHost.SampleRate;
    SetFilterValues(150,-1,0.5);
@@ -439,8 +441,8 @@ begin
 
  CalculateSineAngles;
 
- SetLength(VSTInBuffer,2);
- SetLength(VSTOutBuffer,2);
+ SetLength(FVSTInBuffer,2);
+ SetLength(FVSTOutBuffer,2);
 
  with TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI') do
   try
@@ -458,12 +460,12 @@ begin
  nn := TLunchBoxSample.Create(Index);
  with nn do
   begin
-   PatternPosition := fPatPos;
+   PatternPosition := FPatPos;
    SampleRate := sqr(ASIOHost.SampleRate) / FmSetup.SESampleRate.Value;
    Frequency := Samples[Index].SampleRate / SampleRate;
    NoteOn(Amplitude);
   end;
- fEventList.Add(nn)
+ FEventList.Add(nn)
 end;
 
 procedure TFmLunchBox.DrumPadClick(Sender: TObject);
@@ -479,17 +481,17 @@ var
 begin
  i := 0;
  if Button = mbRight then
-  while i < fEventList.Count do
+  while i < FEventList.Count do
    begin
-    if fEventList[i].SampleIndex = TButton(Sender).Tag
-     then fEventList.Delete(i)
+    if FEventList[i].SampleIndex = TButton(Sender).Tag
+     then FEventList.Delete(i)
      else inc(i);
    end;
 end;
 
 procedure TFmLunchBox.BtClearClick(Sender: TObject);
 begin
- fEventList.Clear;
+ FEventList.Clear;
 end;
 
 procedure TFmLunchBox.BtExitClick(Sender: TObject);
@@ -500,37 +502,37 @@ end;
 procedure TFmLunchBox.BtFlangeMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- fFlange := True;
+ FFlange := True;
 end;
 
 procedure TFmLunchBox.BtFlangeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- fFlange := False;
+ FFlange := False;
 end;
 
 procedure TFmLunchBox.BtRecRevMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- fRecRev := True;
+ FRecRev := True;
 end;
 
 procedure TFmLunchBox.BtRecRevMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- fRecRev := False;
+ FRecRev := False;
 end;
 
 procedure TFmLunchBox.BtRobotizeMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
- fRobotize := True;
+ FRobotize := True;
 end;
 
 procedure TFmLunchBox.BtRobotizeMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
- fRobotize := False;
+ FRobotize := False;
 end;
 
 procedure TFmLunchBox.Requantize;
@@ -539,15 +541,15 @@ var i : Integer;
 begin
  case CBQuantize.ItemIndex of
   0 : q := 1;
-  1 : q := 1 / fSamplesPerBeat;
-  2 : q := 2 / fSamplesPerBeat;
-  3 : q := 4 / fSamplesPerBeat;
+  1 : q := 1 / FSamplesPerBeat;
+  2 : q := 2 / FSamplesPerBeat;
+  3 : q := 4 / FSamplesPerBeat;
   else exit;
  end;
- for i := 0 to fEventList.Count - 1 do
-  with fEventList.Items[i] do
+ for i := 0 to FEventList.Count - 1 do
+  with FEventList.Items[i] do
    begin
-    PatternPosition := round(round(PatternPosition * q) / q) mod fMaxPatSamples;
+    PatternPosition := round(round(PatternPosition * q) / q) mod FMaxPatSamples;
    end;
 end;
 
@@ -558,18 +560,18 @@ var
 begin
  for i := 0 to BufferLength - 1 do
   begin
-   for j := 0 to fEventList.Count - 1 do
+   for j := 0 to FEventList.Count - 1 do
     begin
-     if fPatPos = fEventList.Items[j].PatternPosition
-      then fEventList.Items[j].NoteOn(1);
-     if fEventList.Items[j].IsPlaying
-      then Buffer[0, i] := Buffer[0, i] + fEventList.Items[j].Process;
+     if FPatPos = FEventList.Items[j].PatternPosition
+      then FEventList.Items[j].NoteOn(1);
+     if FEventList.Items[j].IsPlaying
+      then Buffer[0, i] := Buffer[0, i] + FEventList.Items[j].Process;
     end;
-   inc(fPatPos);
-   if (fPatPos >= fMaxPatSamples) and Loop then
+   inc(FPatPos);
+   if (FPatPos >= FMaxPatSamples) and Loop then
     begin
-     fPatPos := 0;
-//     fSamplesCount := fSamplesPerBeat; fBeatPos := 4;
+     FPatPos := 0;
+//     FSamplesCount := FSamplesPerBeat; FBeatPos := 4;
      Requantize;
     end;
   end;
@@ -580,69 +582,69 @@ begin
  if CBOverdrive.Checked then
   for j := 0 to Length(Buffer) - 1 do
    for i := 0 to BufferLength - 1
-    do Buffer[j,i] := 0.3 * Tanh2c(12 * Buffer[j, i]);
+    do Buffer[j,i] := 0.3 * FastTanhOpt4TermFPU(12 * Buffer[j, i]);
 
  // Apply Flange
- if fFlange then
+ if FFlange then
   for i := 0 to BufferLength - 1 do
    begin
     for j := 0 to Length(Buffer) - 1 do
      begin
       tmp := Buffer[j, i];
       if (i mod 2) = 0
-       then Buffer[j, i] := Buffer[j, i] - fFlangePosition.Re * fFlangeBuffer[j, 1]
-       else Buffer[j, i] := Buffer[j, i] - fFlangePosition.Im * fFlangeBuffer[j, 2];
-      fFlangeBuffer[j, 2] := fFlangeBuffer[j, 1];
-      fFlangeBuffer[j, 1] := fFlangeBuffer[j, 0];
-      fFlangeBuffer[j, 0] := tmp;
+       then Buffer[j, i] := Buffer[j, i] - FFlangePosition.Re * FFlangeBuffer[j, 1]
+       else Buffer[j, i] := Buffer[j, i] - FFlangePosition.Im * FFlangeBuffer[j, 2];
+      FFlangeBuffer[j, 2] := FFlangeBuffer[j, 1];
+      FFlangeBuffer[j, 1] := FFlangeBuffer[j, 0];
+      FFlangeBuffer[j, 0] := tmp;
      end;
-    tmp := fFlangePosition.Re * fFlangeAngle.Re - fFlangePosition.Im * fFlangeAngle.Im;
-    fFlangePosition.Im := fFlangePosition.Im * fFlangeAngle.Re + fFlangePosition.Re * fFlangeAngle.Im;
-    fFlangePosition.Re := tmp;
+    tmp := FFlangePosition.Re * FFlangeAngle.Re - FFlangePosition.Im * FFlangeAngle.Im;
+    FFlangePosition.Im := FFlangePosition.Im * FFlangeAngle.Re + FFlangePosition.Re * FFlangeAngle.Im;
+    FFlangePosition.Re := tmp;
    end;
 
  // Apply Robotize
- if fRobotize then
+ if FRobotize then
   for i := 0 to BufferLength - 1 do
    begin
     for j := 0 to Length(Buffer)-1 do
      begin
-      fRobotBuffer[j,fRobotPos] := 0.7 * fRobotBuffer[j,fRobotPos] + 0.6 * Buffer[j,i];
-      Buffer[j,i] := fRobotBuffer[j,fRobotPos];
+      FRobotBuffer[j,FRobotPos] := 0.7 * FRobotBuffer[j,FRobotPos] + 0.6 * Buffer[j,i];
+      Buffer[j,i] := FRobotBuffer[j,FRobotPos];
      end;
-    if fRobotPos<Length(fRobotBuffer[0])
-     then inc(fRobotPos)
-     else fRobotPos := 0;
+    if FRobotPos<Length(FRobotBuffer[0])
+     then inc(FRobotPos)
+     else FRobotPos := 0;
     end;
 
- if fRecRev then
+ if FRecRev then
   for j := 0 to Length(Buffer) - 1 do
    begin
-    SetLength(fRecRevBuffer[j], Length(fRecRevBuffer[j]) + BufferLength);
-    Move(Buffer[j, 0], fRecRevBuffer[j, Length(fRecRevBuffer[j]) - BufferLength], BufferLength * SizeOf(Single));
+    SetLength(FRecRevBuffer[j], Length(FRecRevBuffer[j]) + BufferLength);
+    Move(Buffer[j, 0], FRecRevBuffer[j, Length(FRecRevBuffer[j]) - BufferLength], BufferLength * SizeOf(Single));
    end else
- if Length(fRecRevBuffer[0]) > 0 then
+ if Length(FRecRevBuffer[0]) > 0 then
   for j := 0 to Length(Buffer) - 1 do
    begin
     for i := 0 to BufferLength - 1
-     do Buffer[j, i] := Buffer[j, i] + fRecRevBuffer[j, Length(fRecRevBuffer[j]) - i - 1];
-    SetLength(fRecRevBuffer[j], Length(fRecRevBuffer[j]) - BufferLength);
+     do Buffer[j, i] := Buffer[j, i] + FRecRevBuffer[j, Length(FRecRevBuffer[j]) - i - 1];
+    SetLength(FRecRevBuffer[j], Length(FRecRevBuffer[j]) - BufferLength);
    end;
 
  for i := 0 to BufferLength - 1 do
   begin
    for j := 0 to Length(Buffer) - 1 do
     begin
-     Buffer[j, i] := Buffer[j, i] + fDelayVolume[1] * fDelayBuffer[j, fDelayPos[j]];
-     fDelayBuffer[j, fDelayPos[j]] := Buffer[j, i];
-     inc(fDelayPos[j]);
-     if fDelayPos[j] >= fDelayLength[j]
-      then fDelayPos[j] := 0;
+     Buffer[j, i] := Buffer[j, i] + FDelayVolume[1] * FDelayBuffer[j, FDelayPos[j]];
+     FDelayBuffer[j, FDelayPos[j]] := Buffer[j, i];
+     inc(FDelayPos[j]);
+     if FDelayPos[j] >= FDelayLength[j]
+      then FDelayPos[j] := 0;
     end;
-   fDelayVolume[1] := 0.9999 * fDelayVolume[1] + 0.0001 * fDelayVolume[0];
+   FDelayVolume[1] := 0.9999 * FDelayVolume[1] + 0.0001 * FDelayVolume[0];
   end;
 
- if VSTHost[0].Active and fRealtimeVST
+ if VSTHost[0].Active and FRealtimeVST
   then VSTHost[0].ProcessReplacing(@Buffer[0],@Buffer[0],BufferLength);
  if VSTHost[1].Active
   then VSTHost[1].ProcessReplacing(@Buffer[0],@Buffer[0],BufferLength);
@@ -651,26 +653,26 @@ begin
  if Loop then
   for i := 0 to BufferLength - 1 do
    begin
-    tmp := fMetPosition.Re * fMetAngle.Re - fMetPosition.Im * fMetAngle.Im;
-    fMetPosition.Im := fMetPosition.Im * fMetAngle.Re + fMetPosition.Re * fMetAngle.Im;
-    fMetPosition.Re := tmp;
+    tmp := FMetPosition.Re * FMetAngle.Re - FMetPosition.Im * FMetAngle.Im;
+    FMetPosition.Im := FMetPosition.Im * FMetAngle.Re + FMetPosition.Re * FMetAngle.Im;
+    FMetPosition.Re := tmp;
 
-    if fBeatPos = 0 then tmp := 2 * sqr(tmp) - 1;
-    tmp := fVolume * tmp * fMetroVolume[0];
-    fMetroVolume[0] := 0.995 * fMetroVolume[0];
-    fSamplesCount   := fSamplesCount + 1;
-    if fSamplesCount > fSamplesPerBeat then
+    if FBeatPos = 0 then tmp := 2 * sqr(tmp) - 1;
+    tmp := FVolume * tmp * FMetroVolume[0];
+    FMetroVolume[0] := 0.995 * FMetroVolume[0];
+    FSamplesCount   := FSamplesCount + 1;
+    if FSamplesCount > FSamplesPerBeat then
      begin
-      fMetroVolume[0] := 1;
-      fSamplesCount   := fSamplesCount - fSamplesPerBeat;
-      fMetPosition.Re := 1;
-      fMetPosition.Im := 0;
-      if fBeatPos < 3
-       then inc(fBeatPos)
-       else begin fBeatPos := 0; fRecRev := False; end;
+      FMetroVolume[0] := 1;
+      FSamplesCount   := FSamplesCount - FSamplesPerBeat;
+      FMetPosition.Re := 1;
+      FMetPosition.Im := 0;
+      if FBeatPos < 3
+       then inc(FBeatPos)
+       else begin FBeatPos := 0; FRecRev := False; end;
      end;
     for j := 0 to Length(Buffer) - 1
-     do Buffer[j, i] := Buffer[j, i] + tmp * fMetroVolume[1];
+     do Buffer[j, i] := Buffer[j, i] + tmp * FMetroVolume[1];
    end;
 end;
 
@@ -684,33 +686,33 @@ begin
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
    t := 5E-3 + InBuffer[0, i];
-   d := 0.5 * (t + fInputDCs[0]);
-   fInputDCs[0] := t;
+   d := 0.5 * (t + FInputDCs[0]);
+   FInputDCs[0] := t;
 
    d := abs(d);
-   fInputEnvs[0] := 0.99995 * fInputEnvs[0];
-   if d > fInputEnvs[0] then fInputEnvs[0] := d;
+   FInputEnvs[0] := 0.99995 * FInputEnvs[0];
+   if d > FInputEnvs[0] then FInputEnvs[0] := d;
 
-   fInputEnvs[1] := 0.99995 * fInputEnvs[1];
-   if d > fInputEnvs[1]
-    then fInputEnvs[1] := fInputEnvs[1] + 0.5*(d - fInputEnvs[1]);
+   FInputEnvs[1] := 0.99995 * FInputEnvs[1];
+   if d > FInputEnvs[1]
+    then FInputEnvs[1] := FInputEnvs[1] + 0.5*(d - FInputEnvs[1]);
 
-   t := fInputEnvs[0] / fInputEnvs[1] - 1;
-   d := abs(t - fInputDCs[1]);
-   fInputDCs[1] := t;
+   t := FInputEnvs[0] / FInputEnvs[1] - 1;
+   d := abs(t - FInputDCs[1]);
+   FInputDCs[1] := t;
 
    if d > 0.15 then
     begin
      CreateSample(Random(9), min(d - 0.15, 1));
-     fInputEnvs[1] := fInputEnvs[0];
-     fInputDCs[1] := 0;
+     FInputEnvs[1] := FInputEnvs[0];
+     FInputDCs[1] := 0;
     end;
   end;
 
 (*
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
-   OutBuffer[0,i] := fInputFilter[0].ProcessSample(OutBuffer[0,i]+1E-32);
+   OutBuffer[0,i] := FInputFilter[0].ProcessSample(OutBuffer[0,i]+1E-32);
    OutBuffer[1,i] := OutBuffer[0,i];
 //   z := fHPFilterArray[j].ProcessSample(d+1E-32);
   end;
@@ -722,22 +724,22 @@ var
   i : Integer;
 begin
  VSTHost.BlockSize := ASIOHost.BufferSize;
- SetLength(VSTInBuffer[0],  VSTHost.BlockSize);
- SetLength(VSTInBuffer[1],  VSTHost.BlockSize);
- SetLength(VSTOutBuffer[0], VSTHost.BlockSize);
- SetLength(VSTOutBuffer[1], VSTHost.BlockSize);
- SetLength(fRecRevBuffer, ASIOHost.OutputChannelCount);
- SetLength(fFlangeBuffer, ASIOHost.OutputChannelCount);
- for i := 0 to Length(fFlangeBuffer) - 1
-  do SetLength(fFlangeBuffer[i],4);
- SetLength(fRobotBuffer,ASIOHost.OutputChannelCount);
- for i := 0 to Length(fRobotBuffer) - 1
-  do SetLength(fRobotBuffer[i],512);
- fRobotPos := 0;
+ SetLength(FVSTInBuffer[0],  VSTHost.BlockSize);
+ SetLength(FVSTInBuffer[1],  VSTHost.BlockSize);
+ SetLength(FVSTOutBuffer[0], VSTHost.BlockSize);
+ SetLength(FVSTOutBuffer[1], VSTHost.BlockSize);
+ SetLength(FRecRevBuffer, ASIOHost.OutputChannelCount);
+ SetLength(FFlangeBuffer, ASIOHost.OutputChannelCount);
+ for i := 0 to Length(FFlangeBuffer) - 1
+  do SetLength(FFlangeBuffer[i],4);
+ SetLength(FRobotBuffer,ASIOHost.OutputChannelCount);
+ for i := 0 to Length(FRobotBuffer) - 1
+  do SetLength(FRobotBuffer[i],512);
+ FRobotPos := 0;
 
- SetLength(fDelayBuffer, ASIOHost.OutputChannelCount);
- SetLength(fDelayLength, ASIOHost.OutputChannelCount);
- SetLength(fDelayPos, ASIOHost.OutputChannelCount);
+ SetLength(FDelayBuffer, ASIOHost.OutputChannelCount);
+ SetLength(FDelayLength, ASIOHost.OutputChannelCount);
+ SetLength(FDelayPos, ASIOHost.OutputChannelCount);
  AdjustDelayLength;
 end;
 
@@ -745,21 +747,21 @@ procedure TFmLunchBox.AdjustDelayLength;
 var
   i : Integer;
 begin
- for i := 0 to Length(fDelayBuffer) - 1 do
+ for i := 0 to Length(FDelayBuffer) - 1 do
   begin
    if i mod 2 = 0
-    then fDelayLength[i] := Round(1.5 * fSamplesPerBeat)
-    else fDelayLength[i] := Round(fSamplesPerBeat);
-   SetLength(fDelayBuffer[i], fDelayLength[i]);
-   fDelayPos[i] := 0;
+    then FDelayLength[i] := Round(1.5 * FSamplesPerBeat)
+    else FDelayLength[i] := Round(FSamplesPerBeat);
+   SetLength(FDelayBuffer[i], FDelayLength[i]);
+   FDelayPos[i] := 0;
   end;
 end;
 
 procedure TFmLunchBox.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- fSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
- fMaxPatSamples := Round(fSamplesPerBeat * 4 * SEBar.Value);
- fInputFilter[0].SampleRate := ASIOHost.SampleRate;
+ FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
+ FMaxPatSamples := Round(FSamplesPerBeat * 4 * SEBar.Value);
+ FInputFilter[0].SampleRate := ASIOHost.SampleRate;
  CalculateSineAngles;
 end;
 

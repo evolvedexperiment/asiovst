@@ -888,8 +888,8 @@ begin
     Flags := 0;
     dumpBytes := aStream.Size;
     sysexDump := aStream.Memory;
-    resvd1 := nil;
-    resvd2 := nil;
+    Reserved1 := nil;
+    Reserved2 := nil;
    end;
  finally
   FDataSection.Release;

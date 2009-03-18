@@ -87,8 +87,14 @@ begin
 
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
+
+ // Parameters and Programs
  Parameter[0] := 100;
  Parameter[1] := 16000;
+ Programs[1].CopyParameters(0);
+ Programs[2].CopyParameters(0);
+
+ // finally calculate the first filter kernel
  CalculateFilterKernel;
 end;
 
