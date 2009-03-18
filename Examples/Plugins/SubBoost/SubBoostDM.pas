@@ -28,8 +28,8 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    FInputFilter  : TButterworthLP;
-    FOutputFilter : TButterworthLP;
+    FInputFilter  : TButterworthLowPassFilter;
+    FOutputFilter : TButterworthLowPassFilter;
 
     FPhi          : Single;
     FEnv          : Single;
@@ -54,8 +54,8 @@ uses
 
 procedure TSubBoostDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FInputFilter  := TButterworthLP.Create;
- FOutputFilter := TButterworthLP.Create;
+ FInputFilter  := TButterworthLowPassFilter.Create;
+ FOutputFilter := TButterworthLowPassFilter.Create;
  FOutputFilter.Order := 1;
 
  Parameter[0] :=  0;    // Type

@@ -11,7 +11,7 @@ uses
   Forms,
   DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   GranularPitchShifterDM in 'GranularPitchShifterDM.pas' {GranularPitchShifterModule: TVSTModule},
   GranularPitchShifterGUI in 'GranularPitchShifterGUI.pas' {FmGranularPitchShifter};
 

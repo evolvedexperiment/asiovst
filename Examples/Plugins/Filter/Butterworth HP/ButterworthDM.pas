@@ -17,7 +17,7 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFilter  : array [0..1] of TButterworthHP;
+    FFilter  : array [0..1] of TButterworthHighpassFilter;
   end;
 
 implementation
@@ -33,7 +33,7 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TButterworthHP.Create;
+   FFilter[ch] := TButterworthHighpassFilter.Create;
    FFilter[ch].SetFilterValues(20, 0);
   end;
  Parameter[0] := 20;

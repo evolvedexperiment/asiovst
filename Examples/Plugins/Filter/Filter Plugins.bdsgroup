@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{6E011940-D7B9-4238-BBA8-CF6FD8881785}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    <Projects>
+      <Projects Name="BugpassLite.dll">Bugpass\BugpassLite.bdsproj</Projects>
+      <Projects Name="ButterworthHP.dll">Butterworth HP\ButterworthHP.bdsproj</Projects>
+      <Projects Name="ButterworthLP.dll">Butterworth LP\ButterworthLP.bdsproj</Projects>
+      <Projects Name="ChebyshevHP.dll">Chebyshev HP\ChebyshevHP.bdsproj</Projects>
+      <Projects Name="ChebyshevLP.dll">Chebyshev LP\ChebyshevLP.bdsproj</Projects>
+      <Projects Name="GraphicEQ.dll">Graphic EQ\GraphicEQ.bdsproj</Projects>
+      <Projects Name="LinearPhaseHP.dll">Linear Phase HP\LinearPhaseHP.bdsproj</Projects>
+      <Projects Name="LinearPhaseLP.dll">Linear Phase LP\LinearPhaseLP.bdsproj</Projects>
+      <Projects Name="LinearPhaseCrossover.dll">LinearPhase Crossover\LinearPhaseCrossover.bdsproj</Projects>
+      <Projects Name="LinkwitzRiley.dll">Linkwitz-Riley\LinkwitzRiley.bdsproj</Projects>
+      <Projects Name="ParametriQLite.dll">Parametri-Q Lite\ParametriQLite.bdsproj</Projects>
+      <Projects Name="UniQuE.dll">UniQuE\UniQuE.bdsproj</Projects>
+      <Projects Name="Valueable.dll">Valueable\Valueable.bdsproj</Projects>
+      <Projects Name="ValueableStereo.dll">Valueable\ValueableStereo.bdsproj</Projects>
+      <Projects Name="Targets">BugpassLite.dll ButterworthHP.dll ButterworthLP.dll ChebyshevHP.dll ChebyshevLP.dll GraphicEQ.dll LinearPhaseHP.dll LinearPhaseLP.dll LinearPhaseCrossover.dll LinkwitzRiley.dll ParametriQLite.dll UniQuE.dll Valueable.dll ValueableStereo.dll</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>

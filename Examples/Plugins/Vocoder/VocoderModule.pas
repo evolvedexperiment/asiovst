@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
-  VocoderVoice, VoiceList, DAV_DspChebyshevFilter, DAV_DspFilter;
+  VocoderVoice, VoiceList, DAV_DspChebyshevFilter, DAV_DspFilter,
+  DAV_DspFilterBasics;
 
 const
   CNumFrequencies = 32;
@@ -24,10 +25,10 @@ type
     procedure VocSynthVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocVocoderVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FAnalysisFiltersLP : Array [0..cNumFrequencies - 1] of TChebyshev1LP;
-    FAnalysisFiltersHP : Array [0..cNumFrequencies - 1] of TChebyshev1HP;
+    FAnalysisFiltersLP : Array [0..cNumFrequencies - 1] of TChebyshev1LowpassFilter;
+    FAnalysisFiltersHP : Array [0..cNumFrequencies - 1] of TChebyshev1HighpassFilter;
     FAnalysisRMS       : Array [0..cNumFrequencies - 1] of Single;
-    FSynthesisFilters  : Array [0..cNumFrequencies - 1] of TSimpleBandpass;
+    FSynthesisFilters  : Array [0..cNumFrequencies - 1] of TBasicBandpassFilter;
     FDownSampler       : Integer;
     FDownSampleMax     : Integer;
     FVolFactors        : Array [0..2] of Double;
@@ -53,7 +54,7 @@ begin
  FDownSampler := 0;
  for i := 0 to CNumFrequencies - 1 do
   begin
-   FAnalysisFiltersLP[i] := TChebyshev1LP.Create;
+   FAnalysisFiltersLP[i] := TChebyshev1LowpassFilter.Create;
    with FAnalysisFiltersLP[i] do
     begin
      SampleRate := 44100;
@@ -64,7 +65,7 @@ begin
      CalculateCoefficients;
     end;
 
-   FAnalysisFiltersHP[i] := TChebyshev1HP.Create;
+   FAnalysisFiltersHP[i] := TChebyshev1HighpassFilter.Create;
    with FAnalysisFiltersHP[i] do
     begin
      SampleRate := 44100;
@@ -73,7 +74,7 @@ begin
      CalculateCoefficients;
     end;
 
-   FSynthesisFilters[i] := TSimpleBandpass.Create;
+   FSynthesisFilters[i] := TBasicBandpassFilter.Create;
    with FSynthesisFilters[i] do
     begin
      SampleRate := 44100;

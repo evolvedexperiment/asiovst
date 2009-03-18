@@ -10,8 +10,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   LinearPhaseDM in 'LinearPhaseDM.pas' {LinearPhaseDataModule: TVSTModule},
-  LinearPhaseGUI in 'LinearPhaseGUI.pas' {FmLinearPhase},
-  DAV_DspFftReal2ComplexCuda in '..\..\..\..\Source\DSP\DAV_DspFftReal2ComplexCuda.pas';
+  LinearPhaseGUI in 'LinearPhaseGUI.pas' {FmLinearPhase};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

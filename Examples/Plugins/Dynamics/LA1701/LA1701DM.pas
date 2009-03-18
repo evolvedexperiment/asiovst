@@ -42,7 +42,7 @@ type
     FLevelFallOff_ms    : Double;
     FLevelFallOffFactor : Double;
     FMix                : array [0..1] of Double;
-    FHighpass           : TButterworthHP;
+    FHighpass           : TButterworthHighpassFilter;
     function GetGRReduction: Double;
     function GetInLevel_dB: Double;
     function GetOutLevel_dB: Double;
@@ -69,7 +69,7 @@ uses
 procedure TLA1701DataModule.VSTModuleOpen(Sender: TObject);
 begin
  FLA1701s  := TLevelingAmplifier.Create;
- FHighpass := TButterworthHP.Create;
+ FHighpass := TButterworthHighpassFilter.Create;
  with FHighpass do
   begin
    SampleRate := Samplerate;
