@@ -242,6 +242,8 @@ begin
                        while FSemaphore > 0 do;
                        Inc(FSemaphore);
                        try
+                        if 5 + FDesiredLatencyIndex >= FConvolver.MaximumIRBlockOrder
+                         then FDesiredLatencyIndex := FConvolver.MaximumIRBlockOrder - 5;
                         FConvolver.MinimumIRBlockOrder := 5 + FDesiredLatencyIndex;
                        finally
                         Dec(FSemaphore);
