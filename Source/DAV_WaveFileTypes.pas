@@ -12,29 +12,29 @@ type
 {$ELSE}
   TWavEncoding = (
     etUnknown              =  $0,
-    etPCM                  =  $1,
-    etMSADPCM              =  $2,
-    etPCMFLOAT             =  $3,
+    etPcm                  =  $1,
+    etMsAdPcm              =  $2,
+    etPcmFloat             =  $3,
     etCompaqVSELP          =  $4,
-    etIBMCVSD              =  $5,
-    etALAW                 =  $6,
-    etMuLAW                =  $7,
+    etIbmCVSD              =  $5,
+    etALaw                 =  $6,
+    etMuLaw                =  $7,
     etMicrosoftDTS         =  $8,
     etDRM                  =  $9,
     etWMA9Speech           =  $A,
     etWMRTVoice            =  $B,
-    etOKIADPCM             = $10,
-    etDVIADPCM             = $11,
-    etMediaSpaceADPCM      = $12,
-    etSierraADPCM          = $13,
-    etG723ADPCM            = $14,
+    etOKIAdPcm             = $10,
+    etDVIAdPcm             = $11,
+    etMediaSpaceAdPcm      = $12,
+    etSierraAdPcm          = $13,
+    etG723AdPcm            = $14,
     etDIGISTD              = $15,
     etDIGIFIX              = $16,
-    etDiaLogicADPCM        = $17,
-    etMVADPCM              = $18,
+    etDiaLogicAdPcm        = $17,
+    etMVAdPcm              = $18,
     etHPCU                 = $19,
     etHPDynamicVoice       = $1A,
-    etYamahaADPCM          = $20,
+    etYamahaAdPcm          = $20,
     etSONARC               = $21,
     etTrueSpeech           = $22,
     etECHOSC1              = $23,
@@ -46,21 +46,21 @@ type
     etDolbyAC2             = $30,
     etGSM610               = $31,
     etMSNAudio             = $32,
-    etAntexADPCME          = $33,
+    etAntexAdPcmE          = $33,
     etResVQLPC1            = $34,
     etResVQLPC2            = $35,
-    etDigiADPCM            = $36,
+    etDigiAdPcm            = $36,
     etResCR10              = $37,
-    etVBXADPCM             = $38,
-    etIMAADPCM             = $39,
+    etVBXAdPcm             = $38,
+    etIMAAdPcm             = $39,
     etECHOSC3              = $3A,
-    etRockwellADPCM        = $3B,
+    etRockwellAdPcm        = $3B,
     etDIGITALK             = $3C,
     etXebecMultimedia      = $3D,
-    etG721ADPCM            = $40,
+    etG721AdPcm            = $40,
     etAntexG728CELP        = $41,
     etMicrosoftMSG723      = $42,
-    etIBMAVCADPCM          = $43,
+    etIBMAVCAdPcm          = $43,
     etITU_TG726            = $45,
     etRT23orPAC            = $51,
     etMPEG                 = $50,
@@ -72,11 +72,11 @@ type
     etESSTechPCM           = $61,
     etVoxwareInc           = $62,
     CanopusATRAC           = $63,
-    etAPICOMG726ADPCM      = $64,
-    etAPICOMG722ADPCM      = $65,
+    etAPICOMG726AdPcm      = $64,
+    etAPICOMG722AdPcm      = $65,
     etMicrosoftDSAT        = $66,
     etMSDSATDISPLAY        = $67,
-    etXboxADPCM            = $69,
+    etXboxAdPcm            = $69,
     etVoxwareAC8           = $70,
     etVoxwareAC10          = $71,
     etVoxwareAC16          = $72,
@@ -99,14 +99,14 @@ type
     etItrdSystemsAudio     = $88,
     etOnlive               = $89,
     etM_FTSX20             = $8A,
-    etITSASG721ADPCM       = $8B,
+    etITSASG721AdPcm       = $8B,
     etConvediaG729         = $8C,
     etNSpC_Inc             = $8D,
     etSiemensSBC24         = $91,
     etSF_DolbyAC3APDIF     = $92,
     etMediaSonicG723       = $93,
     etProsody8kbps         = $94,
-    etZyXELADPCM           = $97,
+    etZyXELAdPcm           = $97,
     etPhilipsLPCBB         = $98,
     etStuderProPacked      = $99,
     etMaldenPhonyTalk      = $A0,
@@ -117,16 +117,16 @@ type
     etNECAAC               = $B0,
     etExtended             = $FE,
     etAAC                  = $FF,
-    etRhetorexADPCM        = $100,
+    etRhetorexAdPcm        = $100,
     etIBMuLaw              = $101,
     etIBMaLaw              = $102,
-    etIBMADPCM             = $103,
+    etIBMAdPcm             = $103,
     etVivoG723             = $111,
     etVivoSiren            = $112,
     etCELP                 = $120,
     etGRUNDIG              = $121,
     etDigitalG723          = $123,
-    etSanyoLD_ADPCM        = $125,
+    etSanyoLD_AdPcm        = $125,
     etSiproLabACEPLNET     = $130,
     etSL_ACELP4800         = $131,
     etSL_ACELP8V3          = $132,
@@ -134,7 +134,7 @@ type
     etSL_G729A             = $134,
     etSL_Kelvin            = $135,
     etVoiceAgeAMR          = $136,
-    etG726ADPCM            = $140,
+    etG726AdPcm            = $140,
     etQC_PureVoice         = $150,
     etQC_HalfRate          = $151,
     etRZS_TUBGSM           = $155,
@@ -143,7 +143,7 @@ type
     etWMA_ProV9            = $162,
     etWMA_LosslessV9       = $163,
     etWMAProOverSPDIF      = $164,
-    etUNISYS_ADPCM         = $170,
+    etUNISYS_AdPcm         = $170,
     etUNISYS_ULAW          = $171,
     etUNISYS_ALAW          = $172,
     etUNISYS_16K           = $173,
@@ -151,13 +151,13 @@ type
     etSYC701_G726L         = $175,
     etSYC701_CELP54        = $176,
     etSYC701_CELP68        = $177,
-    etKA_ADPCM             = $178,
+    etKA_AdPcm             = $178,
     etIISMPEG2AAC          = $180,
     etDTS_DS               = $190,
-    etCreativeADPCM        = $200,
+    etCreativeAdPcm        = $200,
     etFastSpeech8          = $202,
     etFastSpeech10         = $203,
-    etUHERADPCM            = $210,
+    etUHERAdPcm            = $210,
     etUleadDVACM_A         = $215,
     etUleadDVACM_B         = $216,
     etQuarterdeckCorp      = $220,
@@ -173,7 +173,7 @@ type
     etSonySPC              = $273,
     etTELUM_TelumInc       = $280,
     etTELUMIA_TelumInc     = $281,
-    etNVS_ADPCM            = $285,
+    etNVS_AdPcm            = $285,
     etFMTownsSND           = $300,
     etFujitsu1             = $301,
     etFujitsu2             = $302,
@@ -196,7 +196,7 @@ type
     etYMPEGAlpha           = $700,
     etClearJumpLiteWav     = $8AE,
     etOLIGSM               = $1000,
-    etOLIADPCM             = $1001,
+    etOLIAdPcm             = $1001,
     etOLICELP              = $1002,
     etOLISBC               = $1003,
     etOLIOPR               = $1004,
@@ -211,7 +211,7 @@ type
     etVoxWareRT24          = $181C,
     etLucentAX24000P       = $181E,
     etSF_LOSSLESS          = $1971,
-    etITI_ADPCM            = $1979,
+    etITI_AdPcm            = $1979,
     etLucentSX8300P        = $1C07,
     etLucentSX5363S        = $1C0C, // G.723 complient
     etCUseeMeDigiTalk      = $1F03,
@@ -269,28 +269,28 @@ type
     SamplesPerBlock : Word;      // number of samples per channel per Block
     ChMask          : Integer;
     ExtFormat       : Word;
-    ADPCMCoeffs     : Word;
+    AdPcmCoeffs     : Word;
     GUIDrest        : TGUID;     // was array [0..71] of Byte;
   end;
 
-  TWavADPCMCoefficientSet = packed record
+  TWavAdPcmCoefficientSet = packed record
     Coefficient : array [0..1] of SmallInt;
   end;
 
-  TWavADPCMInfoEx =  packed record
+  TWavAdPcmInfoEx =  packed record
     SamplesPerBlock : Word;
     NumCoeff        : Word;
-    CoefSets        : array [0..35] of TWavADPCMCoefficientSet; // is that enough?
+    CoefSets        : array [0..35] of TWavAdPcmCoefficientSet; // is that enough?
   end;
 
-  TADPCM_State = packed record
+  TAdPcm_State = packed record
     PrevSamp_l : SmallInt;
     Index_l    : Byte;
     PrevSamp_r : SmallInt;
     Index_r    : Byte;
   end;
 
-  TADPCM_MS = packed record
+  TAdPcm_Ms = packed record
     Predictor : array[0..1] of Byte;
     Delta     : array[0..1] of SmallInt;
     Samp1     : array[0..1] of SmallInt;

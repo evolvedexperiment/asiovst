@@ -12,6 +12,16 @@ type
   /////////////////////////////// Misc. Chunks ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
+  TWavDefinedChunk = class(TDefinedChunk)
+  public
+    constructor Create; override;
+  end;
+
+  TWavFixedDefinedChunk = class(TFixedDefinedChunk)
+  public
+    constructor Create; override;
+  end;
+
   TWavUnknownChunk = class(TUnknownChunk)
   public
     constructor Create; override;
@@ -682,6 +692,14 @@ type
   end;
 
 implementation
+
+{ TWavFixedDefinedChunk }
+
+constructor TWavFixedDefinedChunk.Create;
+begin
+ inherited;
+ ChunkFlags := ChunkFlags + [cfPadSize];
+end;
 
 { TWavUnknownChunk }
 
@@ -1593,6 +1611,14 @@ begin
   if Length(Value) < SizeOf(UserDef)
    then Move(Value[1], UserDef, Length(Value))
    else Move(Value[1], UserDef, SizeOf(UserDef));
+end;
+
+{ TWavDefinedChunk }
+
+constructor TWavDefinedChunk.Create;
+begin
+  inherited;
+
 end;
 
 end.

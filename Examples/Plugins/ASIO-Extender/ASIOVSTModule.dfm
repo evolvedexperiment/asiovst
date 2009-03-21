@@ -5,7 +5,6 @@ object ASIOVSTModule: TASIOVSTModule
   EffectName = 'ASIO Extender'
   ProductName = 'DAV Tools Examples'
   VendorName = 'Delphi ASIO & VST Project'
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Init'
@@ -34,9 +33,11 @@ object ASIOVSTModule: TASIOVSTModule
       OnParameterChange = ASIODriverChange
       OnCustomParameterDisplay = ASIODriverDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
+  OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 251

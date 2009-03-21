@@ -82,6 +82,9 @@ type
 //    FCartChunk        : PCartRecord;
 //    FFileTags         : TObjectList;
     FBytesPerSample   : Integer;
+    procedure ReadAudioDataFromStream(const Stream: TStream);
+    procedure WriteAudioDataToStream(const Stream: TStream);
+    procedure ReadItaHeaderChunk(const Stream: TStream);
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -98,6 +101,7 @@ type
     procedure CheckHeader(const Stream: TStream); virtual;
     procedure ParseChunkInformation(const Stream: TStream);
 
+    function CreateDataCoder: TCustomChannelDataCoder;
     procedure ReadFactChunk(const Stream: TStream);
     procedure ReadFormatChunk(const Stream: TStream);
     procedure ReadDataChunk(const Stream: TStream);
@@ -109,6 +113,7 @@ type
     procedure ReadDispChunk(const Stream: TStream);
     procedure ReadCartChunk(const Stream: TStream);
     procedure ReadMextChunk(const Stream: TStream);
+    procedure ReadAFSPChunk(const Stream: TStream);
     procedure ReadLevelChunk(const Stream: TStream);
     procedure ReadAuxChunk(const Stream: TStream);
     procedure ReadSilentChunk(const Stream: TStream);
@@ -554,8 +559,10 @@ begin
      if ChunkName = 'mext' then ReadMextChunk(Stream) else
      if ChunkName = 'levl' then ReadLevelChunk(Stream) else
      if ChunkName = 'aux ' then ReadAuxChunk(Stream) else
+     if ChunkName = 'afsp' then ReadAFSPChunk(Stream) else
      if ChunkName = 'slnt' then ReadSilentChunk(Stream) else
      if ChunkName = 'plst' then ReadPlaylistChunk(Stream) else
+     if ChunkName = 'itah' then ReadItaHeaderChunk(Stream) else
      if ChunkName = 'labl' then ReadLableChunk(Stream) else
      if ChunkName = 'SyLp' then ReadUnknownChunk(Stream) else
      if ChunkName = 'Smpl' then ReadSampleChunk(Stream) else
@@ -614,9 +621,21 @@ begin
    then raise EWavError.Create(rcDATAChunkDublicate)
    else
     begin
+//     FDataPositions
+     Position := Position + 4;
      Read(DataSize, 4);
-     Position := Position + DataSize;
+     Position := Position + DataSize; // + (DataSize + 1) and $1;
     end
+end;
+
+procedure TCustomAudioFileWAV.ReadItaHeaderChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.ReadAuxChunk(const Stream: TStream);
@@ -749,6 +768,16 @@ begin
   end;
 end;
 
+procedure TCustomAudioFileWAV.ReadAFSPChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
 procedure TCustomAudioFileWAV.ReadSampleChunk(const Stream: TStream);
 begin
  with Stream, TWavUnknownChunk.Create do
@@ -842,6 +871,130 @@ begin
    Position := ChunkStart + ChunkSize;
   end;
 end;
+
+function TCustomAudioFileWAV.CreateDataCoder: TCustomChannelDataCoder;
+begin
+ case FFormatChunk.FormatTag of
+  etPcm:
+   begin
+    result := TChannel32DataCoderFixed.Create;
+    result.BlockSize := 16384;
+    result.ChannelCount := FFormatChunk.Channels;
+    with TChannel32DataCoderFixed(result), FFormatChunk
+     do SetBitsAndSampleSize(SampleSize, (SampleSize + 7) div 8);
+   end;
+  etPcmFloat:
+    begin
+     result := TChannel32DataCoderFloat32.Create;
+     result.BlockSize := 16384;
+    end;
+  else result := nil;
+ end;
+end;
+
+procedure TCustomAudioFileWAV.ReadAudioDataFromStream(const Stream: TStream);
+var
+  Offset      : Integer;
+  BlockAlign  : Integer;
+  DataDecoder : TCustomChannelDataCoder;
+  Samples     : Integer;
+begin
+ with Stream do
+  begin
+(*
+   Position := FAudioDataPosition;
+
+   // read offset
+   Read(Offset, 4);
+   FlipLong(Offset);
+
+   // read block align (even if it is not used here)
+   Read(BlockAlign, 4);
+   FlipLong(BlockAlign);
+
+   // advance offset
+   Position := Position + Offset;
+
+   DataDecoder := CreateDataCoder;
+   if not assigned(DataDecoder) then exit;
+
+   with DataDecoder do
+    try
+     Samples   := 0;
+     while Samples + SampleFrames <= FCommonChunk.SampleFrames do
+      begin
+       LoadFromStream(Stream);
+       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder);
+       Samples := Samples + SampleFrames;
+      end;
+
+      SampleFrames := FCommonChunk.SampleFrames - Samples;
+      LoadFromStream(Stream);
+      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder);
+    finally
+     FreeAndNil(DataDecoder);
+    end;
+*)
+  end;
+end;
+
+procedure TCustomAudioFileWAV.WriteAudioDataToStream(const Stream: TStream);
+var
+  ChunkName   : TChunkName;
+  ChunkSize   : Cardinal;
+  ChunkEnd    : Cardinal;
+  DataDecoder : TCustomChannelDataCoder;
+  Samples     : Integer;
+const
+  CZero: Cardinal = 0;
+begin
+(*
+ // check if sample
+ if SampleFrames > 0 then
+  with Stream do
+   begin
+    // ToDo: write data here!
+    ChunkName := 'SSND';
+    Write(ChunkName, 4);
+
+    ChunkSize := 8 + FCommonChunk.SampleFrames * FCommonChunk.Channels *
+      (FCommonChunk.SampleSize + 7) div 8;
+    Write(ChunkSize, 4);
+
+    Write(CZero, 4); // offset
+    Write(CZero, 4); // block align
+
+    with FCommonChunk
+     do ChunkEnd := Position + SampleFrames * (SampleSize div 8) * Channels;
+
+    DataDecoder := CreateDataCoder;
+    if not assigned(DataDecoder) then exit;
+
+    with DataDecoder do
+     try
+      Samples   := 0;
+      while Samples + SampleFrames <= FCommonChunk.SampleFrames do
+       begin
+        if assigned(FOnEncode) then FOnEncode(Self, DataDecoder);
+        SaveToStream(Stream);
+
+        Samples := Samples + SampleFrames;
+       end;
+
+       SampleFrames := FCommonChunk.SampleFrames - Samples;
+       if assigned(FOnEncode) then FOnEncode(Self, DataDecoder);
+       SaveToStream(Stream);
+      finally
+      FreeAndNil(DataDecoder);
+     end;
+
+    assert(Stream.Position = ChunkEnd);
+    Position := ChunkEnd;
+   end;
+*)
+end;
+
+
 
 initialization
 //  RegisterWaveChunk(TQualityChunk);
