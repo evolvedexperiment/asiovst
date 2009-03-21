@@ -691,7 +691,20 @@ type
     property dbLevelReference: Integer read CartRecord.dbLevelReference write CartRecord.dbLevelReference;
   end;
 
+  TWavSDA8Chunk = class(TUnknownChunk)
+  public
+    constructor Create; override;
+  end;
+
 implementation
+
+{ TWavDefinedChunk }
+
+constructor TWavDefinedChunk.Create;
+begin
+ inherited;
+ ChunkFlags := ChunkFlags + [cfPadSize];
+end;
 
 { TWavFixedDefinedChunk }
 
@@ -1613,12 +1626,12 @@ begin
    else Move(Value[1], UserDef, SizeOf(UserDef));
 end;
 
-{ TWavDefinedChunk }
+{ TWavSDA8Chunk }
 
-constructor TWavDefinedChunk.Create;
+constructor TWavSDA8Chunk.Create;
 begin
-  inherited;
-
+ inherited;
+ ChunkFlags := ChunkFlags + [cfPadSize, cfReversedByteOrder];
 end;
 
 end.
