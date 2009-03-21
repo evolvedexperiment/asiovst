@@ -25,6 +25,7 @@ type
     procedure TearDown; override;
   published
     procedure TestScanning;
+    procedure TestBasicWriting;
   end;
 
 implementation
@@ -54,7 +55,7 @@ begin
     try
      FAudioFileWav.LoadFromFile(SR.Name)
     except
-     on e: EWavError do MessageDlg(e.Message, mtError, [mbOK], 0);
+     on e: EWavError do MessageDlg(SR.Name + ': ' + e.Message, mtError, [mbOK], 0);
      else succeed := False;
     end;
     Check(succeed, 'Error loading file: ' + SR.Name);
@@ -62,6 +63,27 @@ begin
   finally
    // Must free up resources used by these successful finds
    FindClose(SR);
+  end;
+end;
+
+procedure TestAudioFileWav.TestBasicWriting;
+var
+  TempStream : TMemoryStream;
+begin
+ TempStream := TMemoryStream.Create;
+ with TempStream do
+  try
+   FAudioFileWAV.Name := 'Test';
+(*
+   FAudioFileWAV.Author := 'That''s me';
+   FAudioFileWAV.Copyright := 'That''s also me';
+*)
+   FAudioFileWAV.SampleFrames := 100;
+   FAudioFileWAV.SaveToStream(TempStream);
+   TempStream.Position := 0;
+   FAudioFileWAV.LoadFromStream(TempStream);
+  finally
+   Free;
   end;
 end;
 

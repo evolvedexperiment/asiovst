@@ -56,7 +56,6 @@ type
     procedure ProcessINSTChunk(const Stream: TStream); virtual;
     procedure ProcessMARKChunk(const Stream: TStream); virtual;
     procedure ProcessNAMEChunk(const Stream: TStream); virtual;
-    procedure ProcessNONEChunk(const Stream: TStream); virtual;
     procedure ProcessSSNDChunk(const Stream: TStream); virtual;
     procedure ProcessUnknownChunk(const Stream: TStream); virtual;
 
@@ -322,7 +321,12 @@ begin
    // start parsing here
    while Stream.Position < ChunkEnd do
     begin
+     // read chunk name
      Read(ChunkName, 4);
+
+     // set position to chunk start
+     Position := Position - 4;
+
      if ChunkName = 'FVER' then ProcessFVERChunk(Stream) else
      if ChunkName = 'COMM' then ProcessCOMMChunk(Stream) else
      if ChunkName = 'SSND' then ProcessSSNDChunk(Stream) else
@@ -352,9 +356,6 @@ begin
    if assigned(FVersionChunk)
     then raise EAIFFError.Create(RCStrOneVersionChunkOnly);
 
-   // set position to chunk start
-   Position := Position - 4;
-
    FVersionChunk := TAIFFFormatVersionChunk.Create;
    FVersionChunk.LoadFromStream(Stream);
   end;
@@ -364,8 +365,8 @@ procedure TCustomAudioFileAIFF.ProcessCOMMChunk(const Stream: TStream);
 begin
  with Stream do
   begin
+
    // load common chunk
-   Position := Position - 4;
    FCommonChunk.ForceReadCompression := FIsCompressed;
    FCommonChunk.LoadFromStream(Stream);
   end;
@@ -373,10 +374,13 @@ end;
 
 procedure TCustomAudioFileAIFF.ProcessSSNDChunk(const Stream: TStream);
 var
-  DataSize     : Cardinal;
+  DataSize : Cardinal;
 begin
  with Stream do
   begin
+   // skip chunk name
+   Position := Position + 4;
+
    Read(DataSize, 4);
    FlipLong(DataSize);
 
@@ -397,9 +401,6 @@ begin
    if assigned(FCommentChunk)
     then raise EAIFFError.Create(RCStrOneCommentChunkOnly);
 
-   // set position to chunk start
-   Position := Position - 4;
-
    if acsComment in FAiffChunkScans then
     begin
      // load comment chunk
@@ -416,9 +417,6 @@ begin
   begin
    if assigned(FMarkerChunk)
     then raise EAIFFError.Create(RCStrOneMarkerChunkOnly);
-
-   // set position to chunk start
-   Position := Position - 4;
 
    if acsMarker in FAiffChunkScans then
     begin
@@ -437,9 +435,6 @@ begin
    if assigned(FInstrumentChunk)
     then raise EAIFFError.Create(RCStrOneInstrumentChunkOnly);
 
-   // set position to chunk start
-   Position := Position - 4;
-
    if acsInstrument in FAiffChunkScans then
     begin
      // load instrument chunk
@@ -450,23 +445,10 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAIFF.ProcessNONEChunk(const Stream: TStream);
-begin
- with Stream, TAIFFUnknownChunk.Create do
-  try
-   exit;
-   Position := Position - 4;
-   LoadFromStream(Stream);
-  finally
-   Free;
-  end;
-end;
-
 procedure TCustomAudioFileAIFF.ProcessAPPLChunk(const Stream: TStream);
 begin
  with Stream, TAIFFUnknownChunk.Create do
   try
-   Position := Position - 4;
    LoadFromStream(Stream);
   finally
    Free;
@@ -479,9 +461,6 @@ begin
   begin
    if assigned(FAudioRecordingChunk)
     then raise EAIFFError.Create(RCStrOneAESChunkOnly);
-
-   // set position to chunk start
-   Position := Position - 4;
 
    if acsAudioRecording in FAiffChunkScans then
     begin
@@ -500,9 +479,6 @@ begin
    if assigned(FNameChunk)
     then raise EAIFFError.Create(RCStrOneNameChunkOnly);
 
-   // set position to chunk start
-   Position := Position - 4;
-
    if acsName in FAiffChunkScans then
     begin
      // load name chunk
@@ -519,9 +495,6 @@ begin
   begin
    if assigned(FAuthorChunk)
     then raise EAIFFError.Create(RCStrOneAuthorChunkOnly);
-
-   // set position to chunk start
-   Position := Position - 4;
 
    if acsAuthor in FAiffChunkScans then
     begin
@@ -540,9 +513,6 @@ begin
    if assigned(FCopyrightChunk)
     then raise EAIFFError.Create(RCStrOneCopyrightChunkOnly);
 
-   // set position to chunk start
-   Position := Position - 4;
-
    if acsCopyright in FAiffChunkScans then
     begin
      // load comment chunk
@@ -557,7 +527,6 @@ procedure TCustomAudioFileAIFF.ProcessANNOChunk(const Stream: TStream);
 begin
  with Stream, TAIFFUnknownChunk.Create do
   try
-   Position := Position - 4;
    LoadFromStream(Stream);
   finally
    Free;
@@ -568,7 +537,6 @@ procedure TCustomAudioFileAIFF.ProcessUnknownChunk(const Stream: TStream);
 begin
  with Stream, TAIFFUnknownChunk.Create do
   try
-   Position := Position - 4;
    LoadFromStream(Stream);
   finally
    Free;

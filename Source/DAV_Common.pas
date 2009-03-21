@@ -123,6 +123,7 @@ type
   function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Compare4(S1, S2 : PChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   // dB stuff
   function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -404,6 +405,20 @@ begin
  if Dotted then Result := Result * 1.5;
  if Triads then Result := Result / 3;
 end;
+
+function Compare4(S1, S2: PChar): Boolean;
+var
+  i, Diff : Byte;
+begin
+ Result := False;
+ for i := 0 to 3 do
+  begin
+   Diff := Byte(S1[i]) - Byte(S2[i]);
+   if not (Diff in [0, 32, 224]) then Exit;
+  end;
+ Result := True;
+end;
+
 
 // Convert a value in dB's to a linear amplitude
 function dB_to_Amp(const Value: Single): Single;

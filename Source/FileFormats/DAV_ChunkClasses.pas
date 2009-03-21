@@ -1002,8 +1002,6 @@ begin
 end;
 
 procedure TCustomTextChunk.SaveToStream(Stream: TStream);
-var
-  i : Integer;
 begin
  FChunkSize := Length(FText);
 
@@ -1013,7 +1011,6 @@ begin
  // eventually skip padded zeroes
  if (cfPadSize in ChunkFlags)
   then Stream.Position := Stream.Position + CalculateZeroPad;
-
 end;
 
 procedure TCustomTextChunk.SetText(const Value: string);

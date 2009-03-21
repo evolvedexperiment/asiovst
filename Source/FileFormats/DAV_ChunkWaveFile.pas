@@ -9,6 +9,15 @@ uses
 
 type
   ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////// Misc. Chunks ///////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  TWavUnknownChunk = class(TUnknownChunk)
+  public
+    constructor Create; override;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// Format Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
@@ -674,6 +683,14 @@ type
 
 implementation
 
+{ TWavUnknownChunk }
+
+constructor TWavUnknownChunk.Create;
+begin
+ inherited;
+ ChunkFlags := ChunkFlags + [cfPadSize];
+end;
+
 { TFormatChunk }
 
 constructor TFormatChunk.Create;
@@ -704,7 +721,7 @@ end;
 
 procedure TFormatChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(TWavFormatRecord) + SizeOf(Word) + Length(FFormatSpecific);
+ FChunkSize := SizeOf(TWavFormatRecord) + SizeOf(Word) + Length(FFormatSpecific);
 end;
 
 procedure TFormatChunk.LoadFromStream(Stream: TStream);
@@ -715,20 +732,20 @@ begin
  with Stream do
   begin
    // make sure the chunk size is at least the header size
-   assert(fChunkSize >= SizeOf(TWavFormatRecord));
+   assert(FChunkSize >= SizeOf(TWavFormatRecord));
    Read(WaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // check whether format specific data can be found:
-   if fChunkSize <= SizeOf(TWavFormatRecord) then exit;
+   if FChunkSize <= SizeOf(TWavFormatRecord) then exit;
    Read(FormatSpecificBytes, SizeOf(Word));
 
    // read format specific bytes
-   assert(fChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
+   assert(FChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
    SetLength(FFormatSpecific, FormatSpecificBytes);
    Read(FFormatSpecific[0], FormatSpecificBytes);
 
    // move position to the end of this chunk
-   Position := Position + fChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
+   Position := Position + FChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
   end;
 end;
 
@@ -904,7 +921,7 @@ begin
  inherited;
  with Stream do
   begin
-   SetLength(fText, fChunkSize - SizeOf(Cardinal));
+   SetLength(fText, FChunkSize - SizeOf(Cardinal));
    Read(fCueID, SizeOf(Cardinal));
    Read(fText[1], Length(fText));
   end;
@@ -917,7 +934,7 @@ begin
  with Stream do
   begin
    Write(fCueID, SizeOf(Cardinal));
-   Write(fText[1], fChunkSize);
+   Write(fText[1], FChunkSize);
   end;
 end;
 
@@ -929,7 +946,7 @@ end;
 
 procedure TCustomCuedTextChunk.CalculateChunkSize;
 begin
- fChunkSize := Length(fText) + SizeOf(Cardinal);
+ FChunkSize := Length(fText) + SizeOf(Cardinal);
 end;
 
 { TLabelChunk }
@@ -950,7 +967,7 @@ end;
 
 procedure TLabeledTextChunk.CalculateChunkSize;
 begin
- fChunkSize := Length(fText) + SizeOf(TLabeledTextRecord);
+ FChunkSize := Length(fText) + SizeOf(TLabeledTextRecord);
 end;
 
 procedure TLabeledTextChunk.AssignTo(Dest: TPersistent);
@@ -968,7 +985,7 @@ begin
  inherited;
  with Stream do
   begin
-   SetLength(fText, fChunkSize - SizeOf(TLabeledTextRecord));
+   SetLength(fText, FChunkSize - SizeOf(TLabeledTextRecord));
    Read(LabeledTextRecord, SizeOf(TLabeledTextRecord));
    Read(fText[1], Length(fText));
   end;
@@ -981,7 +998,7 @@ begin
  with Stream do
   begin
    Write(LabeledTextRecord, SizeOf(TLabeledTextRecord));
-   Write(fText[1], fChunkSize);
+   Write(fText[1], FChunkSize);
   end;
 end;
 
@@ -1009,7 +1026,7 @@ end;
 
 procedure TCuedFileChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(fCueID) +  SizeOf(fMediaType) + Length(fBinaryData);
+ FChunkSize := SizeOf(fCueID) +  SizeOf(fMediaType) + Length(fBinaryData);
 end;
 
 procedure TCuedFileChunk.LoadFromStream(Stream: TStream);
@@ -1021,7 +1038,7 @@ begin
    Read(fMediaType, SizeOf(fMediaType));
 
    // read binary data:
-   SetLength(fBinaryData, fChunkSize - SizeOf(fCueID) - SizeOf(fMediaType));
+   SetLength(fBinaryData, FChunkSize - SizeOf(fCueID) - SizeOf(fMediaType));
    Read(fBinaryData[0], Length(fBinaryData));
   end;
 end;
@@ -1075,7 +1092,7 @@ end;
 
 procedure TPlaylistChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TPlaylistSegmentRecord);
+ FChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TPlaylistSegmentRecord);
 end;
 
 procedure TPlaylistChunk.LoadFromStream(Stream: TStream);
@@ -1158,7 +1175,7 @@ end;
 
 procedure TCueChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TCuePointRecord);
+ FChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TCuePointRecord);
 end;
 
 procedure TCueChunk.LoadFromStream(Stream: TStream);
@@ -1240,7 +1257,7 @@ end;
 
 procedure TSamplerChunk.CalculateChunkSize;
 begin
- fChunkSize := SizeOf(TSamplerRecord) +
+ FChunkSize := SizeOf(TSamplerRecord) +
                SamplerRecord.NumSampleLoops * SizeOf(TLoopRecord) +
                SamplerRecord.SamplerData;
 end;
@@ -1273,8 +1290,8 @@ begin
      do Read(LoopRecord, SizeOf(TLoopRecord));
 
    // read rest, should only be SamplerRecord.SamplerData
-   assert(fChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
-   Position := Position + fChunkSize - SizeOf(TSamplerRecord);
+   assert(FChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
+   Position := Position + FChunkSize - SizeOf(TSamplerRecord);
   end;
 end;
 

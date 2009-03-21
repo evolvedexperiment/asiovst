@@ -75,6 +75,7 @@ type
 
   TCustomAudioFileWAV = class(TCustomAudioFile)
   private
+    FChunkSize        : Cardinal;
     FTotalNrOfSamples : Cardinal;
     FFormatChunk      : TFormatChunk;
 //    FBextChunk        : PBextRecord;
@@ -93,6 +94,29 @@ type
     procedure SetChannels(const Value: Cardinal); override;
     procedure SetSampleRate(const Value: Double); override;
     procedure SetSampleFrames(const Value: Cardinal); override;
+
+    procedure CheckHeader(const Stream: TStream); virtual;
+    procedure ParseChunkInformation(const Stream: TStream);
+
+    procedure ReadFactChunk(const Stream: TStream);
+    procedure ReadFormatChunk(const Stream: TStream);
+    procedure ReadDataChunk(const Stream: TStream);
+    procedure ReadBextChunk(const Stream: TStream);
+    procedure ReadCueChunk(const Stream: TStream);
+    procedure ReadJunkChunk(const Stream: TStream);
+    procedure ReadPeakChunk(const Stream: TStream);
+    procedure ReadListChunk(const Stream: TStream);
+    procedure ReadDispChunk(const Stream: TStream);
+    procedure ReadCartChunk(const Stream: TStream);
+    procedure ReadMextChunk(const Stream: TStream);
+    procedure ReadLevelChunk(const Stream: TStream);
+    procedure ReadAuxChunk(const Stream: TStream);
+    procedure ReadSilentChunk(const Stream: TStream);
+    procedure ReadPlaylistChunk(const Stream: TStream);
+    procedure ReadLableChunk(const Stream: TStream);
+    procedure ReadSampleChunk(const Stream: TStream);
+    procedure ReadPadChunk(const Stream: TStream);
+    procedure ReadUnknownChunk(const Stream: TStream);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -475,17 +499,10 @@ begin
    end;
 end;
 
-// Load/Save
-
-procedure TCustomAudioFileWAV.LoadFromStream(Stream: TStream);
+procedure TCustomAudioFileWAV.CheckHeader(const Stream: TStream);
 var
-  ChunkName    : TChunkName;
-  ChunkSize    : Cardinal;
-  ChunkEnd     : Cardinal;
-  DataSize     : Cardinal;
-  ChunksReaded : TWaveChunkTypes;
+  ChunkName : TChunkName;
 begin
- inherited;
  with Stream do
   begin
    // check whether file is a resource interchange file format ('RIFF')
@@ -494,67 +511,281 @@ begin
     then raise EWavError.Create(rcRIFFChunkNotFound);
 
    // check whether the real file size match the filesize stored inside the RIFF chunk
-   Read(ChunkSize, 4);
-   if (ChunkSize <> Size - Position) and not (ChunkSize = $FFFFFFFF)
+   Read(FChunkSize, 4);
+   if (FChunkSize > Size - Position) and not (FChunkSize = $FFFFFFFF)
     then raise EWavError.Create(rcRIFFSizeMismatch);
 
    // now specify the RIFF file to be a WAVE file
    Read(ChunkName, 4);
    if ChunkName <> 'WAVE'
     then raise EWavError.Create(rcWAVEChunkNotFound);
+  end;
+end;
 
+procedure TCustomAudioFileWAV.ParseChunkInformation(const Stream: TStream);
+var
+  ChunkName    : TChunkName;
+  ChunkEnd     : Cardinal;
+  ChunksReaded : TWaveChunkTypes;
+begin
+ with Stream do
+  begin
    // start parsing here
    ChunksReaded := [];
 
-   ChunkEnd := Position + ChunkSize - 4;
+   ChunkEnd := Position + FChunkSize - 4;
    while Position < ChunkEnd do
     begin
+     // read chunk name
      Read(ChunkName, 4);
-     if ChunkName = 'fmt ' then
-      if ctFormat in ChunksReaded
-       then raise EWavError.Create(rcFMTChunkDublicate)
-       else
-        begin
-         FFormatChunk.LoadFromStream(Stream);
-         ChunksReaded := ChunksReaded + [ctFormat];
-        end else
-     if ChunkName = 'fact' then
-      if ctFact in ChunksReaded
-       then raise EWavError.Create(rcFACTChunkDublicate)
-       else
-        begin
-         // check whether fact chunk has already been created
-         with TFactChunk.Create do
-          try
-           // now load fact chunk
-           LoadFromStream(Stream);
 
-           // now only use the sample count information
-           FTotalNrOfSamples := SampleFrames;
-          finally
-           Free;
-          end;
-         ChunksReaded := ChunksReaded + [ctFact];
-        end else
-     if ChunkName = 'data' then
-      if ctData in ChunksReaded
-       then raise EWavError.Create(rcDATAChunkDublicate)
-       else
-        begin
-         Read(DataSize, 4);
-         Position := Position + DataSize;
-        end
-     else
-      begin
-       with TUnknownChunk.Create do
-        try
-         LoadFromStream(Stream);
-        finally
-         Free;
-        end;
-      end;
+     // read chunk position
+     Position := Position - 4;
+
+     if ChunkName = 'fmt ' then ReadFormatChunk(Stream) else
+     if ChunkName = 'fact' then ReadFactChunk(Stream) else
+     if ChunkName = 'junk' then ReadJunkChunk(Stream) else
+     if ChunkName = 'cue ' then ReadCueChunk(Stream) else
+     if ChunkName = 'PEAK' then ReadPeakChunk(Stream) else
+     if ChunkName = 'LIST' then ReadListChunk(Stream) else
+     if ChunkName = 'DISP' then ReadDispChunk(Stream) else
+     if ChunkName = 'cart' then ReadCartChunk(Stream) else
+     if ChunkName = 'bext' then ReadBextChunk(Stream) else
+     if ChunkName = 'mext' then ReadMextChunk(Stream) else
+     if ChunkName = 'levl' then ReadLevelChunk(Stream) else
+     if ChunkName = 'aux ' then ReadAuxChunk(Stream) else
+     if ChunkName = 'slnt' then ReadSilentChunk(Stream) else
+     if ChunkName = 'plst' then ReadPlaylistChunk(Stream) else
+     if ChunkName = 'labl' then ReadLableChunk(Stream) else
+     if ChunkName = 'SyLp' then ReadUnknownChunk(Stream) else
+     if ChunkName = 'Smpl' then ReadSampleChunk(Stream) else
+     if ChunkName = 'pad ' then ReadPadChunk(Stream) else
+     if ChunkName = 'data' then ReadDataChunk(Stream)
+      else ReadUnknownChunk(Stream);
     end;
   end;
+end;
+
+procedure TCustomAudioFileWAV.ReadFormatChunk(const Stream: TStream);
+var
+  ChunksReaded : TWaveChunkTypes;
+begin
+ with Stream do
+  if ctFormat in ChunksReaded
+   then raise EWavError.Create(rcFMTChunkDublicate)
+   else
+    begin
+     FFormatChunk.LoadFromStream(Stream);
+     ChunksReaded := ChunksReaded + [ctFormat];
+    end;
+end;
+
+procedure TCustomAudioFileWAV.ReadFactChunk(const Stream: TStream);
+var
+  ChunksReaded : TWaveChunkTypes;
+begin
+ with Stream do
+  if ctFact in ChunksReaded
+   then raise EWavError.Create(rcFACTChunkDublicate)
+   else
+    begin
+     // check whether fact chunk has already been created
+     with TFactChunk.Create do
+      try
+       // now load fact chunk
+       LoadFromStream(Stream);
+
+       // now only use the sample count information
+       FTotalNrOfSamples := SampleFrames;
+      finally
+       Free;
+      end;
+     ChunksReaded := ChunksReaded + [ctFact];
+    end;
+end;
+
+procedure TCustomAudioFileWAV.ReadDataChunk(const Stream: TStream);
+var
+  DataSize     : Cardinal;
+  ChunksReaded : TWaveChunkTypes;
+begin
+ with Stream do
+  if ctData in ChunksReaded
+   then raise EWavError.Create(rcDATAChunkDublicate)
+   else
+    begin
+     Read(DataSize, 4);
+     Position := Position + DataSize;
+    end
+end;
+
+procedure TCustomAudioFileWAV.ReadAuxChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadDispChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadBextChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadCartChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadCueChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadJunkChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadLableChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadLevelChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadListChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadMextChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadPadChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadPeakChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadPlaylistChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadSampleChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadSilentChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.ReadUnknownChunk(const Stream: TStream);
+begin
+ with Stream, TWavUnknownChunk.Create do
+  try
+   LoadFromStream(Stream);
+  finally
+   Free;
+  end;
+end;
+
+// Load/Save
+
+procedure TCustomAudioFileWAV.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ CheckHeader(Stream);
+ ParseChunkInformation(Stream);
 end;
 
 procedure TCustomAudioFileWAV.SaveToStream(Stream: TStream);
@@ -603,7 +834,7 @@ begin
 *)
 
    // finally write filesize
-   ChunkSize := Position - ChunkStart;
+   ChunkSize := Position - (ChunkStart + 8);
    Position  := ChunkStart + 4;
    Write(ChunkSize, 4);
 
