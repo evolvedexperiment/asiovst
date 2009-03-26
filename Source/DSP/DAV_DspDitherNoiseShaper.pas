@@ -157,7 +157,7 @@ begin
  FHistoryPos := 8;
 end;
 
-function TDitherNoiseShaper.ProcessInteger(Input: Double):Integer;
+function TDitherNoiseShaper.ProcessInteger(Input: Double): Integer;
 begin
  // scale input to bit range
  Input := FBitMul * Input;

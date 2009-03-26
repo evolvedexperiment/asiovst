@@ -525,6 +525,7 @@ type
   TCustomTimeConstantRatioDynamics = class(TCustomTimeConstantDynamics)
   private
     procedure SetRatio(const Value: Double);
+    procedure CalculateInverseRatio;
   protected
     FRatio               : Double;
     FRatioReciprocal     : Double;
@@ -1363,12 +1364,17 @@ end;
 
 constructor TCustomTimeConstantRatioDynamics.Create;
 begin
-  inherited;
-  FRatio := 1;
-  RatioChanged;
+ FRatio := 1;
+ CalculateInverseRatio;
+ inherited;
 end;
 
 procedure TCustomTimeConstantRatioDynamics.RatioChanged;
+begin
+ CalculateInverseRatio;
+end;
+
+procedure TCustomTimeConstantRatioDynamics.CalculateInverseRatio;
 begin
  FRatioReciprocal :=  1 / Ratio;
 end;
@@ -1863,13 +1869,13 @@ end;
 
 procedure TSimpleFeedbackCompressor.CalculateAttackFactor;
 begin
-  if FAttack = 0 then FAttackFactor := 0
+ if FAttack = 0 then FAttackFactor := 0
   else FAttackFactor := 1 - exp( -ln2 / (FAttack * 0.001 * SampleRate * FRatioReciprocal));
 end;
 
 procedure TSimpleFeedbackCompressor.CalculateReleaseFactor;
 begin
-  if FRelease = 0 then FReleaseFactor := 0
+ if FRelease = 0 then FReleaseFactor := 0
   else FReleaseFactor := exp( -ln2 / (FRelease * 0.001 * SampleRate * FRatioReciprocal));
 end;
 

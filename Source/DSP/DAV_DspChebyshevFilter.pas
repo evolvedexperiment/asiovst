@@ -930,7 +930,7 @@ var
   i     : Integer;
   a, cw : Double;
 begin
- cw     := 2 * FastCosInBounds3Term(2 * Frequency * pi * fSRR);
+ cw     := 2 * FastCosInBounds4Term(2 * Frequency * pi * fSRR);
  a      := sqr(cw - 2);
  Result := sqr(FFilterGain);
 

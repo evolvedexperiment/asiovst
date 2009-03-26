@@ -17,7 +17,7 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFilter  : array [0..1] of TButterworthLowPassFilter;
+    FFilter: array [0..1] of TButterworthLowPassFilter;
   end;
 
 implementation
@@ -62,10 +62,8 @@ begin
     then FFilter[ch].Order := round(Value);
   end;
  if EditorForm is TFmButterworth then
-  with TFmButterworth(EditorForm) do
-   begin
-    UpdateOrder;
-   end;
+  with TFmButterworth(EditorForm)
+   do UpdateOrder;
 end;
 
 procedure TButterworthLPModule.ParamFrequencyChange(
@@ -77,10 +75,8 @@ begin
   if assigned(FFilter[ch])
    then FFilter[ch].Frequency := Value;
  if EditorForm is TFmButterworth then
-  with TFmButterworth(EditorForm) do
-   begin
-    UpdateFrequency;
-   end;
+  with TFmButterworth(EditorForm)
+   do UpdateFrequency;
 end;
 
 procedure TButterworthLPModule.VSTModuleProcess(const Inputs,

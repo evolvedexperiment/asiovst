@@ -240,7 +240,7 @@ end;
 
 destructor TDelayLineTime32.Destroy;
 begin
- assert(FBuffer[BufferSize - 1] = 0);
+// assert(FBuffer[BufferSize - 1] = 0);
  Dispose(FBuffer);
  inherited;
 end;

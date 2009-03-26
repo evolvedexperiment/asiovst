@@ -27,6 +27,7 @@ type
     procedure FrequencyBarMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure FrequencyBarMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FrequencyBarMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure FormShow(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
     FMouseEdit       : TMouseEdit;
@@ -77,6 +78,11 @@ end;
 procedure TFmBugpassLite.FormDestroy(Sender: TObject);
 begin
  FreeAndNil(FBackgrounBitmap);
+end;
+
+procedure TFmBugpassLite.FormShow(Sender: TObject);
+begin
+ UpdateFrequencyBar;
 end;
 
 procedure TFmBugpassLite.FormPaint(Sender: TObject);

@@ -288,6 +288,8 @@ constructor TDspChorus32.Create;
 begin
  inherited;
  FBuffer32 := nil;
+ FRealBufSize := 8;
+ UpdateBuffer;
 end;
 
 destructor TDspChorus32.Destroy;
@@ -320,6 +322,9 @@ var
   d, m : Double;
 begin
  inherited;
+
+ // make sure the buffer has been allocated (e.g. not nil)
+ assert(FBuffer32 <> nil);
 
  // get delayed dry output
  result := (1 - FMix) * FBuffer32[FBufferOutPos];
@@ -362,6 +367,8 @@ constructor TDspChorus64.Create;
 begin
  inherited;
  FBuffer64 := nil;
+ FRealBufSize := 8;
+ UpdateBuffer;
 end;
 
 destructor TDspChorus64.Destroy;
@@ -394,6 +401,9 @@ var
   d, m : Double;
 begin
  inherited;
+
+ // make sure the buffer has been allocated (e.g. not nil)
+ assert(FBuffer64 <> nil);
 
  // get delayed dry output
  result := (1 - FMix) * FBuffer64[FBufferOutPos];

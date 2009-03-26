@@ -872,7 +872,7 @@ end;
 procedure TBiquadIIRFilter.PushStates;
 begin
  SetLength(FStateStack,Length(FStateStack)+1);
- if Length(FStateStack)>1
+ if Length(FStateStack) > 1
   then Move(FStateStack[0,0],FStateStack[1,0], (Length(FStateStack)-1)*Length(FStateStack[0])*SizeOf(Double));
  Move(FState[0],FStateStack[0,0],Length(FStateStack[0])*SizeOf(Double));
 end;

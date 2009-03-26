@@ -2,7 +2,7 @@ object FmBugpassLite: TFmBugpassLite
   Left = 425
   Top = 147
   BorderStyle = bsNone
-  Caption = 'Linear Phase Lowpass'
+  Caption = 'Bugpass Lite'
   ClientHeight = 173
   ClientWidth = 325
   Color = 14733494
@@ -16,6 +16,7 @@ object FmBugpassLite: TFmBugpassLite
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
+  OnShow = FormShow
   DesignSize = (
     325
     173)

@@ -800,11 +800,9 @@ end;
 procedure TSEModuleBase.SetProcess(const Value: TSE2ProcessEvent);
 begin
  if @FOnProcessEvent <> @Value then
-  begin
-   if assigned(Value)
-    then FOnProcessEvent := Value
-    else FOnProcessEvent := ProcessIdle;
-  end;
+  if assigned(Value)
+   then FOnProcessEvent := Value
+   else FOnProcessEvent := ProcessIdle;
 end;
 
 procedure TSEModuleBase.VoiceReset(Future: Integer);

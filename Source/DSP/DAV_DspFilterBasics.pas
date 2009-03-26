@@ -97,12 +97,12 @@ end;
 
 function TBasicGainFilter.ProcessSample(const Input: Double): Double;
 begin
- result := Input * sqr(FGainFactorSquared);
+ result := Input * sqr(FGainFactor);
 end;
 
 function TBasicGainFilter.ProcessSampleASM: Double;
 asm
- fmul [eax.FGainFactorSquared].Double
+ fmul [eax.FGainFactor].Double
 end;
 
 { TBasicPeakFilter }

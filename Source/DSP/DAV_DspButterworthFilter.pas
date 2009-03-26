@@ -8,7 +8,7 @@ uses
   DAV_DspFilter, DAV_Common;
 
 type
-  TButterworthFilter = class(TCustomOrderFilter)
+  TCustomButterworthFilter = class(TCustomOrderFilter)
   private
     procedure SetDownsamplePower(Value: Integer);
   protected
@@ -40,7 +40,7 @@ type
     property DownsampleFaktor : Integer read FDownsampleFak;
   end;
 
-  TButterworthLowPassFilter = class(TButterworthFilter)
+  TButterworthLowPassFilter = class(TCustomButterworthFilter)
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
@@ -56,7 +56,7 @@ type
   end;
   TButterworthHighCutFilter = TButterworthLowPassFilter;
 
-  TButterworthHighpassFilter = class(TButterworthFilter)
+  TButterworthHighpassFilter = class(TCustomButterworthFilter)
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
@@ -73,7 +73,7 @@ type
   end;
   TButterworthLowCut = TButterworthHighpassFilter;
 
-  TButterworthSplitBandFilter = class(TButterworthFilter)
+  TButterworthSplitBandFilter = class(TCustomButterworthFilter)
   protected
     FKs      : Double;
     FHPState : array [0..63] of Double;
@@ -101,7 +101,7 @@ const
   CDenorm32      : Single = 1E-24;
   CDenorm64      : Double = 1E-34;
 
-constructor TButterworthFilter.Create(const Order: Integer = 0);
+constructor TCustomButterworthFilter.Create(const Order: Integer = 0);
 begin
  FOrder := Order;
  OrderChanged;
@@ -112,28 +112,28 @@ begin
  CalculateCoefficients;
 end;
 
-class function TButterworthFilter.GetMaxOrder: Cardinal;
+class function TCustomButterworthFilter.GetMaxOrder: Cardinal;
 begin
  result := 64;
 end;
 
-procedure TButterworthFilter.Reset;
+procedure TCustomButterworthFilter.Reset;
 begin
  Gain := 0;
 end;
 
-procedure TButterworthFilter.ResetStates;
+procedure TCustomButterworthFilter.ResetStates;
 begin
  FillChar(FState[0], FOrder * SizeOf(Double), 0);
 end;
 
-procedure TButterworthFilter.ResetStatesInt64;
+procedure TCustomButterworthFilter.ResetStatesInt64;
 begin
  PInt64(@FState[0])^ := 0;
  PInt64(@FState[1])^ := 0;
 end;
 
-procedure TButterworthFilter.SetDownsamplePower(Value: Integer);
+procedure TCustomButterworthFilter.SetDownsamplePower(Value: Integer);
 begin
  if Value < 0 then Value := 0;
  if FDownsamplePow <> Value then
@@ -144,13 +144,13 @@ begin
   end;
 end;
 
-procedure TButterworthFilter.CalculateW0;
+procedure TCustomButterworthFilter.CalculateW0;
 begin
  FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
  FTanW0 := Tan(FW0 * CHalf64)
 end;
 
-procedure TButterworthFilter.SetFilterValues(const AFrequency, AGain : Single);
+procedure TCustomButterworthFilter.SetFilterValues(const AFrequency, AGain : Single);
 const
   ln10_0025 : Double = 5.7564627325E-2;
 begin
@@ -160,26 +160,26 @@ begin
  CalculateW0;
 end;
 
-function TButterworthFilter.Real(const Frequency: Double): Double;
+function TCustomButterworthFilter.Real(const Frequency: Double): Double;
 var
   Temp: Double;
 begin
  Complex(Frequency, result, Temp);
 end;
 
-function TButterworthFilter.Imaginary(const Frequency: Double): Double;
+function TCustomButterworthFilter.Imaginary(const Frequency: Double): Double;
 var
   Temp: Double;
 begin
  Complex(Frequency, Temp, result);
 end;
 
-function TButterworthFilter.MagnitudeSquared(const Frequency: Double): Double;
+function TCustomButterworthFilter.MagnitudeSquared(const Frequency: Double): Double;
 begin
  Result := 1;
 end;
 
-procedure TButterworthFilter.OrderChanged;
+procedure TCustomButterworthFilter.OrderChanged;
 begin
  if FOrder > 0 then
   begin
@@ -193,12 +193,12 @@ begin
   end; 
 end;
 
-function TButterworthFilter.MagnitudeLog10(const Frequency: Double): Double;
+function TCustomButterworthFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
  result := 20 * Log10(MagnitudeSquared(Frequency));
 end;
 
-procedure TButterworthFilter.PopStates;
+procedure TCustomButterworthFilter.PopStates;
 begin
  if Length(FStateStack) > 0 then
   begin
@@ -209,7 +209,7 @@ begin
   end;
 end;
 
-procedure TButterworthFilter.PushStates;
+procedure TCustomButterworthFilter.PushStates;
 begin
  SetLength(FStateStack, Length(FStateStack) + 1);
  if Length(FStateStack) > 1

@@ -8,7 +8,7 @@ uses
   DAV_DspFilter, DAV_Common;
 
 type
-  TBesselFilter = class(TCustomOrderFilter)
+  TCustomBesselFilter = class(TCustomOrderFilter)
   private
     procedure SetDownsamplePower(Value: Integer);
   protected
@@ -40,7 +40,7 @@ type
     property DownsampleFaktor : Integer read FDownsampleFak;
   end;
 
-  TBesselLP = class(TBesselFilter)
+  TBesselLowpassFilter = class(TCustomBesselFilter)
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
@@ -48,16 +48,16 @@ type
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
   end;
-  TBesselHighCut = TBesselLP;
+  TBesselHighCut = TBesselLowpassFilter;
 
-  TBesselHP = class(TBesselFilter)
+  TBesselHighpassFilter = class(TCustomBesselFilter)
   public
     constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
   end;
-  TBesselLowCut = TBesselHP;
+  TBesselLowCut = TBesselHighpassFilter;
 
 implementation
 
@@ -68,7 +68,7 @@ implementation
 uses
   Math, Dialogs, SysUtils, DAV_Complex;
 
-constructor TBesselFilter.Create;
+constructor TCustomBesselFilter.Create;
 begin
  inherited;
  FDownsamplePow := 0;
@@ -76,28 +76,28 @@ begin
  CalculateCoefficients;
 end;
 
-class function TBesselFilter.GetMaxOrder: Cardinal;
+class function TCustomBesselFilter.GetMaxOrder: Cardinal;
 begin
  result := 64;
 end;
 
-procedure TBesselFilter.Reset;
+procedure TCustomBesselFilter.Reset;
 begin
  Gain := 0;
 end;
 
-procedure TBesselFilter.ResetStates;
+procedure TCustomBesselFilter.ResetStates;
 begin
  FillChar(FState[0], FOrder * SizeOf(Double), 0);
 end;
 
-procedure TBesselFilter.ResetStatesInt64;
+procedure TCustomBesselFilter.ResetStatesInt64;
 begin
  PInt64(@FState[0])^ := 0;
  PInt64(@FState[1])^ := 0;
 end;
 
-procedure TBesselFilter.SetDownsamplePower(Value: Integer);
+procedure TCustomBesselFilter.SetDownsamplePower(Value: Integer);
 begin
  if Value < 0 then Value := 0;
  if FDownsamplePow <> Value then
@@ -108,14 +108,14 @@ begin
   end;
 end;
 
-procedure TBesselFilter.CalculateW0;
+procedure TCustomBesselFilter.CalculateW0;
 begin
  fW0 := 2 * Pi * fSRR * (fFrequency * FDownsampleFak);
  fSinW0 := sin(fW0);
  if fW0 > 3.1 then fW0 := 3.1;
 end;
 
-procedure TBesselFilter.SetFilterValues(const AFrequency, AGain : Single);
+procedure TCustomBesselFilter.SetFilterValues(const AFrequency, AGain : Single);
 begin
  fFrequency := AFrequency;
  FGain_dB := AGain;
@@ -123,20 +123,20 @@ begin
  CalculateW0;
 end;
 
-function TBesselFilter.Real(const Frequency: Double): Double;
+function TCustomBesselFilter.Real(const Frequency: Double): Double;
 var
   Temp : Double;
 begin
  Complex(Frequency, result, Temp);
 end;
 
-function TBesselFilter.Imaginary(const Frequency: Double): Double;
+function TCustomBesselFilter.Imaginary(const Frequency: Double): Double;
 var Temp : Double;
 begin
  Complex(Frequency, Temp, result);
 end;
 
-procedure TBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
+procedure TCustomBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
 (*var cw, Divider  : Double;
     cmplx        : TComplexDouble;
     i            : Integer;*)
@@ -174,7 +174,7 @@ begin
 *)
 end;
 
-procedure TBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
+procedure TCustomBesselFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
 var
   cmplx : TComplexDouble;
 begin
@@ -183,17 +183,17 @@ begin
  Imaginary := cmplx.Im;
 end;
 
-function TBesselFilter.MagnitudeSquared(const Frequency: Double): Double;
+function TCustomBesselFilter.MagnitudeSquared(const Frequency: Double): Double;
 begin
  Result := 1;
 end;
 
-function TBesselFilter.MagnitudeLog10(const Frequency: Double): Double;
+function TCustomBesselFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
  result := 20 * Log10(MagnitudeSquared(Frequency));
 end;
 
-function TBesselFilter.Phase(const Frequency: Double): Double;
+function TCustomBesselFilter.Phase(const Frequency: Double): Double;
 var
   cmplx : TComplexDouble;
 begin
@@ -201,7 +201,7 @@ begin
  Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
-procedure TBesselFilter.PopStates;
+procedure TCustomBesselFilter.PopStates;
 begin
  if Length(FStateStack) > 0 then
   begin
@@ -212,7 +212,7 @@ begin
   end;
 end;
 
-procedure TBesselFilter.PushStates;
+procedure TCustomBesselFilter.PushStates;
 begin
  SetLength(FStateStack, Length(FStateStack) + 1);
  if Length(FStateStack) > 1
@@ -222,7 +222,7 @@ end;
 
 { TBesselFilterLP }
 
-constructor TBesselLP.Create;
+constructor TBesselLowpassFilter.Create;
 begin
  inherited Create;
  Order := 6;
@@ -247,8 +247,9 @@ begin
  result := Factorial(2 * Order - Term) / (IntPower(2, Order - Term) * Factorial(Term) * Factorial(Order - Term));
 end;
 
-procedure TBesselLP.CalculateCoefficients;
-var K, t  : Double;
+procedure TBesselLowpassFilter.CalculateCoefficients;
+var
+  K, t: Double;
 begin
 // ShowMessage(FloatToStr(CalculateReverseBesselPolynomial0(6)));
 
@@ -302,7 +303,7 @@ begin
   end;
 end;
 
-function TBesselLP.MagnitudeSquared(const Frequency: Double): Double;
+function TBesselLowpassFilter.MagnitudeSquared(const Frequency: Double): Double;
 (*var
   i    : Integer;
   a,cw : Double;*)
@@ -322,11 +323,11 @@ begin
 *)
 end;
 
-function TBesselLP.Phase(const Frequency: Double): Double;
+function TBesselLowpassFilter.Phase(const Frequency: Double): Double;
 (*var cw, sw, Nom, Den : Double;
     i : Integer;*)
 begin
-  Result:=0; // dummy
+  Result := 0; // dummy
 (*
  GetSinCos(2*Frequency*pi*fSRR,sw,cw);
  Nom := sw * fAB[0] * 2 * (fAB[3] -1) * (1 + cw);
@@ -340,9 +341,10 @@ begin
 *)
 end;
 
-function TBesselLP.ProcessSample(const Input: Double): Double;
+function TBesselLowpassFilter.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
 begin
  result    := FA[0] * Input + FState[0];
  for i := 1 to FOrder - 1
@@ -380,13 +382,13 @@ end;
 
 { TBesselFilterHP }
 
-constructor TBesselHP.Create;
+constructor TBesselHighpassFilter.Create;
 begin
  inherited Create;
  fGainFactor:=1;
 end;
 
-procedure TBesselHP.CalculateCoefficients;
+procedure TBesselHighpassFilter.CalculateCoefficients;
 var K, t  : Double;
 begin
  K := tan(fW0 * 0.5);
@@ -423,7 +425,7 @@ begin
   end;
 end;
 
-function TBesselHP.MagnitudeSquared(const Frequency: Double): Double;
+function TBesselHighpassFilter.MagnitudeSquared(const Frequency: Double): Double;
 (*var
   i    : Integer;
   a,cw : Double;*)
@@ -443,7 +445,7 @@ begin
 *)
 end;
 
-function TBesselHP.ProcessSample(const Input: Double): Double;
+function TBesselHighpassFilter.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
