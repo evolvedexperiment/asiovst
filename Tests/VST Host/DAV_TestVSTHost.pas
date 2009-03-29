@@ -54,6 +54,9 @@ type
     procedure TestPassiveSamplerateChanges;
     procedure TestActiveBlocksizeChanges;
     procedure TestPassiveBlocksizeChanges;
+    procedure TestCanDoUnknownTokens;
+    procedure TestInvalidOpcodes;
+    procedure TestInvalidParameters;
   end;
 
   // Test methods for class TVstHost
@@ -73,6 +76,8 @@ type
     procedure TestDenormals;
     procedure TestHandleNANs;
     procedure TestProcess;
+    procedure TestProcessDoubleReplacing;
+    procedure TestSmallBlocksizes;
 
     property BlockSize: Integer read FBlockSize write SetBlockSize;
   end;
@@ -80,7 +85,7 @@ type
 implementation
 
 uses
-  Math, SplashScreen, Forms, Controls;
+  Math, Forms, Controls, SplashScreen, DAV_VSTEffect;
 
 function RemoveFileExt(const FileName: string): string;
 var
@@ -131,6 +136,17 @@ end;
 
 { TVstPluginBasicTests }
 
+procedure TVstPluginBasicTests.TestMultipleOpenCloseCycles;
+var
+  i : Integer;
+begin
+ for i := 0 to 9 do
+  begin
+   FVstHost[0].Active := True;
+   FVstHost[0].Active := False;
+  end;
+end;
+
 procedure TVstPluginBasicTests.TestMultipleInstances;
 var
   i, j : Integer;
@@ -151,45 +167,6 @@ begin
    j := random(FVstHost.VstPlugIns.Count);
    FVstHost[j].Close;
    FVstHost.VstPlugIns.Delete(j);
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestMultipleOpenCloseCycles;
-var
-  i : Integer;
-begin
- for i := 0 to 9 do
-  begin
-   FVstHost[0].Active := True;
-   FVstHost[0].Active := False;
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestActiveSamplerateChanges;
-var
-  d : Single;
-begin
- // Test Active Samplerate Change
- FVstHost[0].Active := True;
- d := 1;
- while d <= 1411200 do
-  begin
-   FVstHost[0].SetSampleRate(d);
-   d := d * 1.1;
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestPassiveSamplerateChanges;
-var
-  d : Single;
-begin
- // Test Passive Samplerate Change
- FVstHost[0].Active := False;
- d := 1;
- while d <= 1411200 do
-  begin
-   FVstHost[0].SetSampleRate(d);
-   d := d * 1.1;
   end;
 end;
 
@@ -236,6 +213,34 @@ begin
   end;
 end;
 
+procedure TVstPluginBasicTests.TestActiveSamplerateChanges;
+var
+  d : Single;
+begin
+ // Test Active Samplerate Change
+ FVstHost[0].Active := True;
+ d := 1;
+ while d <= 1411200 do
+  begin
+   FVstHost[0].SetSampleRate(d);
+   d := d * 1.1;
+  end;
+end;
+
+procedure TVstPluginBasicTests.TestPassiveSamplerateChanges;
+var
+  d : Single;
+begin
+ // Test Passive Samplerate Change
+ FVstHost[0].Active := False;
+ d := 1;
+ while d <= 1411200 do
+  begin
+   FVstHost[0].SetSampleRate(d);
+   d := d * 1.1;
+  end;
+end;
+
 procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
 var
   i : Integer;
@@ -269,6 +274,91 @@ begin
 
  // large odd block sizes
  for i := 1 to 64 do FVstHost[0].SetBlockSize(1025 * i);
+end;
+
+procedure TVstPluginBasicTests.TestCanDoUnknownTokens;
+var
+  TestCanDo : string;
+  CharCnt   : Integer;
+begin
+ // Test empty CanDo text
+ FVstHost[0].VstCanDo('');
+
+ // Test long CanDo text
+ TestCanDo := '2zcrfo3874zrbiwrbgrvsdrgbviwztvi374vöowiurzbi4t7zviw74tvposihfopit';
+ FVstHost[0].VstCanDo(TestCanDo);
+
+ // test very long CanDo text!
+ TestCanDo := '';
+ for CharCnt := 0 to 1111
+  do TestCanDo := TestCanDo + Char(1 + Random(200));
+ FVstHost[0].VstCanDo(TestCanDo);
+end;
+
+procedure TVstPluginBasicTests.TestInvalidOpcodes;
+var
+  i : Integer;
+begin
+ FVstHost[0].VstDispatch(effSetEditKnobMode, 0, 3);
+ FVstHost[0].VstDispatch(effSetViewPosition, -249824962529, -300013512459);
+ FVstHost[0].VstDispatch(effSetSpeakerArrangement);
+ FVstHost[0].VstDispatch(effOfflineNotify);
+ FVstHost[0].VstDispatch(effOfflinePrepare);
+ FVstHost[0].VstDispatch(effOfflineRun);
+ FVstHost[0].VstDispatch(effSetSampleRate, 0, 0, nil, 0);
+ FVstHost[0].VstDispatch(effSetSampleRate, 0, 0, nil, -44100);
+
+ FVstHost[0].VstDispatch(effShellGetNextPlugin);
+ for i := 128 to 2000
+  do FVstHost[0].VstDispatch(TDispatcherOpcode(i));
+end;
+
+procedure TVstPluginBasicTests.TestInvalidParameters;
+begin
+ with FVstHost[0] do
+  begin
+   // get invalid parameter
+   GetParameter(numParams);
+
+   // get completely invalid parameter
+   GetParameter(numParams + random(MaxInt - numParams));
+
+   // set invalid value
+   SetParameter(0, 10);
+
+   // set invalid parameter and invalid value
+   SetParameter(numParams, 10);
+
+   // set completely invalid parameter and invalid value
+   SetParameter(numParams + random(MaxInt - numParams), 10);
+
+   // set completely invalid parameter and denormal value
+   SetParameter(numParams + random(MaxInt - numParams), MinSingle);
+
+   // get invalid parameter display
+   GetParamDisplay(numParams);
+
+   // get completely invalid parameter display
+   GetParamDisplay(numParams + random(MaxInt - numParams));
+
+   // get invalid parameter label
+   GetParamLabel(numParams);
+
+   // get completely invalid parameter label
+   GetParamLabel(numParams + random(MaxInt - numParams));
+
+   // get invalid parameter name
+   GetParamName(numParams);
+
+   // get completely invalid parameter name
+   GetParamName(numParams + random(MaxInt - numParams));
+
+   // get invalid parameter properties
+   GetParameterProperties(numParams);
+
+   // get completely invalid parameter properties
+   GetParameterProperties(numParams + random(MaxInt - numParams));
+  end;
 end;
 
 
@@ -331,6 +421,7 @@ begin
    Active := True;
    SetSampleRate(44100);
    SetBlockSize(FBlocksize);
+   StartProcess;
   end;
 end;
 
@@ -338,13 +429,17 @@ procedure TVstPluginIOTests.TearDown;
 var
   Channel : Integer;
 begin
- inherited;
-
  // dispose memory
  for Channel := 0 to Length(FInput)  - 1 do Dispose(FInput[Channel]);
  for Channel := 0 to Length(FOutput) - 1 do Dispose(FOutput[Channel]);
 
- FVstHost[0].Active := False;
+ with FVstHost[0] do
+  begin
+   StartProcess;
+   Active := False;
+  end;
+
+ inherited;
 end;
 
 procedure TVstPluginIOTests.TestDenormals;
@@ -358,7 +453,7 @@ begin
  with FVstHost[0] do
   begin
    // build impulse
-   for Channel := 0 to numInputs - 1 do FInput[Channel, 0] := 1;
+   for Channel := 0 to numInputs - 1 do FInput[Channel, 0] := 1E-6;
 
    Cnt := 0;
    repeat
@@ -381,27 +476,45 @@ begin
      then ProgramNr := random(numPrograms)
      else break;
     inc(Cnt);
-    for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 1;
+    for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 1E-6;
    until Cnt >= 4;
   end;
 end;
 
-procedure TVstPluginIOTests.TestProcess;
-begin
-
-end;
-
 procedure TVstPluginIOTests.TestHandleDataBeyondBlocksizeChanges;
-var
-  Channel : Integer;
 begin
  with FVstHost[0] do
   begin
+   BlockSize := round(FBlocksize * 0.111);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 10);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 8);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 6);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 4);
    ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 2);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize * 2);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize * 3);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize * 4);
+  end;
+end;
+
+procedure TVstPluginIOTests.TestProcess;
+var
+  Channel : Integer;
+  Sample  : Integer;
+  Cnt     : Integer;
+begin
+ for Channel := 0 to Length(FInput) - 1 do
+  for Sample := 0 to FBlockSize - 1
+   do FInput[Channel, Sample] := 2 * random - 1;
+ with FVstHost[0] do
+  begin
+   for Cnt := 0 to 10
+    do Process(@FInput[0], @FOutput[0], random(FBlocksize));
+  end;
+end;
+
+procedure TVstPluginIOTests.TestProcessDoubleReplacing;
+begin
+ with FVstHost[0] do
+  begin
+   ProcessDoubleReplacing(@FInput[0], @FOutput[0], BlockSize div 2);
   end;
 end;
 
@@ -409,14 +522,11 @@ procedure TVstPluginIOTests.TestHandleNANs;
 var
   Channel : Integer;
   Sample  : Integer;
-  IsDen   : Boolean;
-const
-  FBlocksize = 8192;
 begin
  with FVstHost[0] do
   begin
    // build impulse
-   for Channel := 0 to numInputs - 1 do FInput[Channel, 0] := NaN;
+   for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := NaN;
 
    // search and test for NAN
    ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
@@ -471,6 +581,19 @@ begin
       end;
   finally
     MethodEnumerator.free;
+  end;
+end;
+
+procedure TVstPluginIOTests.TestSmallBlocksizes;
+begin
+ with FVstHost[0] do
+  begin
+   BlockSize := 5;
+   ProcessReplacing(@FInput[0], @FOutput[0], 1);
+   ProcessReplacing(@FInput[0], @FOutput[0], 2);
+   ProcessReplacing(@FInput[0], @FOutput[0], 3);
+   ProcessReplacing(@FInput[0], @FOutput[0], 4);
+   ProcessReplacing(@FInput[0], @FOutput[0], 5);
   end;
 end;
 

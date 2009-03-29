@@ -248,9 +248,9 @@ object FmSplashScreen: TFmSplashScreen
     Left = 56
     Top = 8
     Width = 220
-    Height = 22
+    Height = 26
     AntiAlias = gaaLinear3x
-    Caption = 'VST Host DUnit Test'
+    Caption = 'VST Plugin Unit Test'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -21
@@ -277,9 +277,9 @@ object FmSplashScreen: TFmSplashScreen
   object LbDUnitAbout: TLabel
     Left = 56
     Top = 50
-    Width = 220
+    Width = 265
     Height = 11
-    Caption = 'DUnit is an Xtreme testing framework similar to JUnit'
+    Caption = 'DUnit was used as an Xtreme testing framework similar to JUnit'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -9
