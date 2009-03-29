@@ -19,7 +19,8 @@ uses
   TestFramework,
   GUITestRunner,
   TextTestRunner,
-  DAV_TestVSTHost in 'DAV_TestVSTHost.pas';
+  DAV_TestVSTHost in 'DAV_TestVSTHost.pas',
+  SplashScreen in 'SplashScreen.pas' {FmSplashScreen};
 
 {$R *.RES}
 

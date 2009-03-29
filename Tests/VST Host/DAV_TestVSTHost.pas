@@ -16,13 +16,35 @@ uses
   Messages, Dialogs, DAV_Common, DAV_VSTHost;
 
 type
+  TTestVstSuite = class(TTestSuite)
+  private
+    FVstPluginName : TFileName;
+    procedure SetVstPluginName(const Value: TFileName);
+  public
+    procedure AddTests(testClass: TTestCaseClass); override;
+  published
+    property VstPluginName: TFileName read FVstPluginName write SetVstPluginName;
+  end;
+
+
   // Test methods for class TVstHost
-  TTestVstPlugin = class(TTestCase)
-  strict private
-    FVstHost: TVstHost;
+  TCustomTestVstPlugin = class(TTestCase)
+  private
+    FVstPluginName : TFileName;
+    procedure SetVstPluginName(const Value: TFileName);
+  protected
+    FVstHost : TVstHost;
   public
     procedure SetUp; override;
     procedure TearDown; override;
+    constructor Create(MethodName: string); override;
+    destructor Destroy; override;
+  published
+    property VstPluginName: TFileName read FVstPluginName write SetVstPluginName;
+  end;
+
+  // Test methods for class TVstHost
+  TVstPluginBasicTests = class(TCustomTestVstPlugin)
   published
     procedure TestMultipleOpenCloseCycles;
     procedure TestMultipleInstances;
@@ -32,10 +54,33 @@ type
     procedure TestPassiveSamplerateChanges;
     procedure TestActiveBlocksizeChanges;
     procedure TestPassiveBlocksizeChanges;
+  end;
+
+  // Test methods for class TVstHost
+  TVstPluginIOTests = class(TCustomTestVstPlugin)
+  private
+    FInput     : array of PDavSingleFixedArray;
+    FOutput    : array of PDavSingleFixedArray;
+    FBlockSize : Integer;
+    procedure SetBlockSize(const Value: Integer);
+    procedure SetupBuffers;
+  public
+    constructor Create(MethodName: string); override;
+    procedure SetUp; override;
+    procedure TearDown; override;
+  published
     procedure TestHandleDataBeyondBlocksizeChanges;
+    procedure TestDenormals;
+    procedure TestHandleNANs;
+    procedure TestProcess;
+
+    property BlockSize: Integer read FBlockSize write SetBlockSize;
   end;
 
 implementation
+
+uses
+  Math, SplashScreen, Forms, Controls;
 
 function RemoveFileExt(const FileName: string): string;
 var
@@ -47,48 +92,50 @@ begin
    else Result := '';
 end;
 
-procedure TTestVstPlugin.SetUp;
-var
-  TestDLL : TFileName;
 
+{ TCustomTestVstPlugin }
+
+constructor TCustomTestVstPlugin.Create(MethodName: string);
 begin
+ inherited Create(MethodName);
  FVstHost := TVstHost.Create(nil);
- with FVstHost.VstPlugIns.Add do
-  begin
-   TestDLL := RemoveFileExt(ExtractFileName(ParamStr(0))) + 'DLL';
-
-   if not FileExists(TestDLL) then
-    with TOpenDialog.Create(nil) do
-     try
-      Filter := 'VST Plugins (*.dll)|*.dll';
-      DefaultExt := 'dll';
-      InitialDir := FVstHost.PlugInDir;
-      Options := Options + [ofFileMustExist];
-      if Execute
-       then TestDLL := FileName
-       else Exit;
-     finally
-      Free;
-     end;
-
-   if FileExists(TestDLL) then
-    begin
-     LoadFromFile(TestDLL);
-    end
-  end;
+ if ParamStr(0) <> '' then FVstPluginName := ParamStr(0); 
 end;
 
-procedure TTestVstPlugin.TearDown;
+destructor TCustomTestVstPlugin.Destroy;
 begin
  FreeAndNil(FVstHost);
+ inherited;
+end;
+
+procedure TCustomTestVstPlugin.SetUp;
+begin
+ with FVstHost.VstPlugIns.Add do
+  if FileExists(FVstPluginName)
+   then LoadFromFile(FVstPluginName)
+   else raise Exception.Create('VST Plugin not found: ' + FVstPluginName);
+end;
+
+procedure TCustomTestVstPlugin.SetVstPluginName(const Value: TFileName);
+begin
+ if not FileExists(Value)
+  then raise Exception.Create('Specified VST plugin does not exist: ' + Value);
+ if FVstPluginName <> Value then FVstPluginName := Value;
+end;
+
+procedure TCustomTestVstPlugin.TearDown;
+begin
+ FVstHost.VstPlugIns.Clear;
 end;
 
 
-procedure TTestVstPlugin.TestMultipleInstances;
+{ TVstPluginBasicTests }
+
+procedure TVstPluginBasicTests.TestMultipleInstances;
 var
   i, j : Integer;
 const
-  CInstantCount = 129;
+  CInstantCount = 33;
 begin
  // open instances
  for i := 1 to CInstantCount do
@@ -107,7 +154,7 @@ begin
   end;
 end;
 
-procedure TTestVstPlugin.TestMultipleOpenCloseCycles;
+procedure TVstPluginBasicTests.TestMultipleOpenCloseCycles;
 var
   i : Integer;
 begin
@@ -118,7 +165,7 @@ begin
   end;
 end;
 
-procedure TTestVstPlugin.TestActiveSamplerateChanges;
+procedure TVstPluginBasicTests.TestActiveSamplerateChanges;
 var
   d : Single;
 begin
@@ -132,7 +179,7 @@ begin
   end;
 end;
 
-procedure TTestVstPlugin.TestPassiveSamplerateChanges;
+procedure TVstPluginBasicTests.TestPassiveSamplerateChanges;
 var
   d : Single;
 begin
@@ -146,7 +193,7 @@ begin
   end;
 end;
 
-procedure TTestVstPlugin.TestActiveParameterSweeps;
+procedure TVstPluginBasicTests.TestActiveParameterSweeps;
 var
   Param : Integer;
   Value : Single;
@@ -168,7 +215,7 @@ begin
   end;
 end;
 
-procedure TTestVstPlugin.TestPassiveParameterSweeps;
+procedure TVstPluginBasicTests.TestPassiveParameterSweeps;
 var
   Param : Integer;
   Value : Single;
@@ -189,23 +236,26 @@ begin
   end;
 end;
 
-procedure TTestVstPlugin.TestActiveBlocksizeChanges;
+procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
 var
   i : Integer;
 begin
- FVstHost[0].Active := True;
+ with FVstHost[0] do
+  begin
+   Active := True;
 
- // small block sizes
- for i := 0 to 64 do FVstHost[0].SetBlockSize(i);
+   // small block sizes
+   for i := 0 to 64 do SetBlockSize(i);
 
- // medium odd block sizes
- for i := 1 to 64 do FVstHost[0].SetBlockSize(19 * i);
+   // medium odd block sizes
+   for i := 1 to 64 do SetBlockSize(19 * i);
 
- // large odd block sizes
- for i := 1 to 64 do FVstHost[0].SetBlockSize(1025 * i);
+   // large odd block sizes
+   for i := 1 to 64 do SetBlockSize(1025 * i);
+  end;
 end;
 
-procedure TTestVstPlugin.TestPassiveBlocksizeChanges;
+procedure TVstPluginBasicTests.TestPassiveBlocksizeChanges;
 var
   i : Integer;
 begin
@@ -221,51 +271,250 @@ begin
  for i := 1 to 64 do FVstHost[0].SetBlockSize(1025 * i);
 end;
 
-procedure TTestVstPlugin.TestHandleDataBeyondBlocksizeChanges;
+
+{ TVstPluginIOTests }
+
+function IsDenormal(const Value: Single): Boolean;
 var
-  Input   : array of PDavSingleFixedArray;
-  Output  : array of PDavSingleFixedArray;
-  Channel : Integer;
-const
-  CBlocksize = 8192;
+  IntCast     : Integer absolute Value;
 begin
+ result := (IntCast and $7F800000 = 0) and (IntCast and $007FFFFF <> 0);
+end;
+
+constructor TVstPluginIOTests.Create(MethodName: string);
+begin
+ FBlockSize := 8192;
+ inherited;
+end;
+
+procedure TVstPluginIOTests.SetBlockSize(const Value: Integer);
+begin
+ if FBlockSize <> Value then
+  begin
+   FBlockSize := Value;
+   SetupBuffers;
+  end;
+end;
+
+procedure TVstPluginIOTests.SetupBuffers;
+var
+  Channel : Integer;
+begin
+ assert(FBlocksize > 0);
+ with FVstHost[0] do
+  begin
+   // setup inputs
+   SetLength(FInput, numInputs);
+   for Channel := 0 to numInputs - 1 do
+    begin
+     ReallocMem(FInput[Channel], FBlocksize * SizeOf(Single));
+     FillChar(FInput[Channel]^, FBlocksize * SizeOf(Single), 0);
+    end;
+
+   // setup outputs
+   SetLength(FOutput, numOutputs);
+   for Channel := 0 to numOutputs - 1 do
+    begin
+     ReallocMem(FOutput[Channel], FBlocksize * SizeOf(Single));
+     FillChar(FOutput[Channel]^, FBlocksize * SizeOf(Single), 0);
+    end;
+  end;
+end;
+
+procedure TVstPluginIOTests.SetUp;
+begin
+ inherited;
+ SetupBuffers;
+
  with FVstHost[0] do
   begin
    Active := True;
    SetSampleRate(44100);
-   SetBlockSize(CBlocksize);
+   SetBlockSize(FBlocksize);
+  end;
+end;
 
-   // setup inputs
-   SetLength(Input, numInputs);
-   for Channel := 0 to numInputs - 1 do
-    begin
-     ReallocMem(Input[Channel], 4 * CBlocksize * SizeOf(Single));
-     FillChar(Input[Channel]^, 4 * CBlocksize * SizeOf(Single), 0);
-    end;
+procedure TVstPluginIOTests.TearDown;
+var
+  Channel : Integer;
+begin
+ inherited;
 
-   // setup outputs
-   SetLength(Output, numOutputs);
+ // dispose memory
+ for Channel := 0 to Length(FInput)  - 1 do Dispose(FInput[Channel]);
+ for Channel := 0 to Length(FOutput) - 1 do Dispose(FOutput[Channel]);
+
+ FVstHost[0].Active := False;
+end;
+
+procedure TVstPluginIOTests.TestDenormals;
+var
+  Count   : Integer;
+  Channel : Integer;
+  Sample  : Integer;
+  IsDen   : Boolean;
+  Cnt     : Integer;
+begin
+ with FVstHost[0] do
+  begin
+   // build impulse
+   for Channel := 0 to numInputs - 1 do FInput[Channel, 0] := 1;
+
+   Cnt := 0;
+   repeat
+    // search and test for denormals
+    IsDen := False;
+    for Count := 0 to 8 do
+     begin
+      ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
+      for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 0;
+      for Channel := 0 to Length(FOutput) - 1 do
+       begin
+        for Sample := 0 to FBlocksize - 1 do
+         if IsDenormal(FOutput[Channel, Sample])
+          then IsDen := True;
+       end;
+      if IsDen then break;
+     end;
+    CheckFalse(IsDen, 'Denormal found! (in program ' + IntToStr(ProgramNr));
+    if numPrograms > 0
+     then ProgramNr := random(numPrograms)
+     else break;
+    inc(Cnt);
+    for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 1;
+   until Cnt >= 4;
+  end;
+end;
+
+procedure TVstPluginIOTests.TestProcess;
+begin
+
+end;
+
+procedure TVstPluginIOTests.TestHandleDataBeyondBlocksizeChanges;
+var
+  Channel : Integer;
+begin
+ with FVstHost[0] do
+  begin
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 2);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize * 2);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize * 3);
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize * 4);
+  end;
+end;
+
+procedure TVstPluginIOTests.TestHandleNANs;
+var
+  Channel : Integer;
+  Sample  : Integer;
+  IsDen   : Boolean;
+const
+  FBlocksize = 8192;
+begin
+ with FVstHost[0] do
+  begin
+   // build impulse
+   for Channel := 0 to numInputs - 1 do FInput[Channel, 0] := NaN;
+
+   // search and test for NAN
+   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
    for Channel := 0 to numOutputs - 1 do
     begin
-     ReallocMem(Output[Channel], 4 * CBlocksize * SizeOf(Single));
-     FillChar(Output[Channel]^, 4 * CBlocksize * SizeOf(Single), 0);
+     for Sample := 1 to FBlocksize - 1 do
+      if IsNaN(FOutput[Channel, Sample]) then
+       begin
+        Fail('NaN error propagation found!!!');
+        Break;
+       end;
+     if IsNaN(FOutput[Channel, 0]) then
+      begin
+       Fail('NaN not handled at all!');
+       Break;
+      end;
     end;
+  end;
+end;
 
-   ProcessReplacing(@Input[0], @Output[0], CBlocksize div 2);
-   ProcessReplacing(@Input[0], @Output[0], CBlocksize);
-   ProcessReplacing(@Input[0], @Output[0], CBlocksize * 2);
-   ProcessReplacing(@Input[0], @Output[0], CBlocksize * 3);
-   ProcessReplacing(@Input[0], @Output[0], CBlocksize * 4);
+{ TTestVstSuite }
 
-   for Channel := 0 to numInputs - 1  do Dispose(Input[Channel]);
-   for Channel := 0 to numOutputs - 1 do Dispose(Output[Channel]);
+procedure TTestVstSuite.SetVstPluginName(const Value: TFileName);
+begin
+ if not FileExists(Value)
+  then raise Exception.Create('Specified VST plugin does not exist: ' + Value);
+ if FVstPluginName <> Value then
+  begin
+   FVstPluginName := Value;
+  end;
+end;
 
-   Active := False;
+procedure TTestVstSuite.AddTests(testClass: TTestCaseClass);
+var
+  MethodIter       : Integer;
+  NameOfMethod     : string;
+  MethodEnumerator : TMethodEnumerator;
+  TestCase         : TTestCase;
+begin
+  { call on the method enumerator to get the names of the test
+    cases in the testClass }
+  MethodEnumerator := nil;
+  try
+    MethodEnumerator := TMethodEnumerator.Create(testClass);
+    { make sure we add each test case  to the list of tests }
+    for MethodIter := 0 to MethodEnumerator.Methodcount-1 do
+      begin
+        NameOfMethod := MethodEnumerator.nameOfMethod[MethodIter];
+        TestCase := testClass.Create(NameOfMethod);
+        (TestCase as TCustomTestVstPlugin).VstPluginName := FVstPluginName;
+        self.addTest(TestCase as ITest);
+      end;
+  finally
+    MethodEnumerator.free;
+  end;
+end;
+
+procedure EnumerateVstPlugins;
+var
+  SR   : TSearchRec;
+  TS   : TTestVstSuite;
+  Hndl : HMODULE;
+begin
+ with TFmSplashScreen.Create(nil) do
+  try
+   Show;
+   if FindFirst('*.dll', faAnyFile, SR) = 0 then
+    try
+     repeat
+      try
+       LbScannedPlugin.Caption := SR.Name;
+//       Invalidate;
+       Application.ProcessMessages;
+       Hndl := LoadLibrary(PChar(SR.Name));
+       if (GetProcAddress(Hndl, 'VSTMain') <> nil) or
+          (GetProcAddress(Hndl, 'main') <> nil) then
+        begin
+         TS := TTestVstSuite.Create(SR.Name);
+         TS.VstPluginName := SR.Name;
+         TS.AddTests(TVstPluginBasicTests);
+         TS.AddTests(TVstPluginIOTests);
+         RegisterTest(TS);
+        end;
+      except
+      end;
+     until FindNext(SR) <> 0;
+    finally
+     // Must free up resources used by these successful finds
+     FindClose(SR);
+    end;
+  finally
+   Free;
   end;
 end;
 
 initialization
-  RegisterTest(TTestVstPlugin.Suite);
+  if ParamStr(0) <> ''
+   then EnumerateVstPlugins
+   else RegisterTest(TVstPluginBasicTests.Suite);
 
 end.
-
