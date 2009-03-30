@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspGranularPitchshifter,
-  DAV_DspButterworthFilter;
+  DAV_DspLightweightDynamics, DAV_DspButterworthFilter;
 
 const
   CNumChannels = 2;
@@ -90,9 +90,13 @@ end;
 procedure TChunkDemoDataModule.ParameterBetaChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor.Ratio        := 2 + sqr(0.01 * Value) * 98;
- FCompressor.Knee_dB      := 0.1 * Value;
- FCompressor.Threshold_dB := -20 + 0.1 * Value;
+ if assigned(FCompressor) then
+  with FCompressor do
+   begin
+    Ratio        := 2 + sqr(0.01 * Value) * 98;
+    Knee_dB      := 0.1 * Value;
+    Threshold_dB := -20 + 0.1 * Value;
+   end;
 
  Chunk.Position := Index * SizeOf(Single);
  Chunk.Write(Value, SizeOf(Single));
@@ -107,7 +111,8 @@ procedure TChunkDemoDataModule.ParameterGammaChange(
 begin
  FMix[2] := 0.01 * Value;
  FMix[3] := 1 - FMix[2];
- FCompressor.MakeUpGain_dB := 0.2 * Value;
+ if assigned(FCompressor)
+  then FCompressor.MakeUpGain_dB := 0.2 * Value;
 
  Chunk.Position := Index * SizeOf(Single);
  Chunk.Write(Value, SizeOf(Single));
@@ -137,9 +142,8 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNumChannels - 1 do
-  begin
-   FCrossover[Channel].Frequency := sqr(sqr(0.01 * Value)) * 20000;
-  end;
+  if assigned(FCrossover[Channel])
+   then FCrossover[Channel].Frequency := sqr(sqr(0.01 * Value)) * 20000;
 
  Chunk.Position := Index * SizeOf(Single);
  Chunk.Write(Value, SizeOf(Single));

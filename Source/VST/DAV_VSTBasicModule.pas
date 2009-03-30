@@ -7,8 +7,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Forms, DAV_Common, DAV_VSTEffect,
-  DAV_WinAmp;
+  Classes, Forms, Sysutils, DAV_Common, DAV_VSTEffect, DAV_WinAmp;
 
 type
   TBasicVSTModuleClass = class of TBasicVSTModule;
@@ -219,6 +218,8 @@ type
     {$ENDIF}
   end;
 
+  EVstError = class(Exception);
+
 function DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode;
   const Index, Value: Integer; const ptr: pointer;
   const opt: Single): Integer; cdecl;
@@ -258,7 +259,7 @@ function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
 implementation
 
 uses
-  Math, Sysutils;
+  Math;
 
 function VstModuleMain(AudioMasterCallback: TAudioMasterCallbackFunc;
   const BasicVSTModuleClass: TBasicVSTModuleClass): PVSTEffect;
@@ -368,7 +369,7 @@ procedure TBasicVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 begin
   FAudioMaster := AM;
   if FAudioMaster(nil, audioMasterVersion, 0, 0, nil, 0) = 0 then
-    raise Exception.Create('AudioMaster Error');
+    raise EVstError.Create('AudioMaster Error');
 end;
 
 
@@ -1231,7 +1232,7 @@ begin Result := 0; end;
 
 // effect functions
 
-function DispatchEffectFunc(Effect: PVSTEffect; OpCode : TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
+function DispatchEffectFunc(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
 begin
  if assigned(Effect) and (TObject(Effect^.vObject) is TBasicVSTModule) then
   with TBasicVSTModule(Effect^.vObject) do
@@ -1321,7 +1322,7 @@ begin
      effGetNumMidiOutputChannels:  Result := HostCallGetNumMidiOutputChannels(Index, Value, ptr, opt);
      else
        try
-         raise Exception.Create('Unknown OpCode');
+         raise EVstError.Create('Unknown OpCode');
        except
          Result := 0;
        end;
@@ -1346,25 +1347,151 @@ begin
 end;
 
 procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+{$IFDEF PUREPASCAL}
 begin
- assert(assigned(Effect));
+ if not assigned(Effect) or (SampleFrames = 0) then exit;
  if TObject(Effect^.vObject) is TBasicVSTModule
   then TBasicVSTModule(Effect^.vObject).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
+{$ELSE}
+asm
+  push ebx
+
+  // test SampleFrames <> 0
+  mov eax, SampleFrames
+  test eax, eax
+  jz @end
+
+  // test Effect <> 0
+  mov ebx, Effect
+  test ebx, ebx
+  jz @end
+
+  // test Effect^.vObject <> 0
+  mov ebx, [ebx + $40]
+  test ebx, ebx
+  jz @end
+
+  // test Outputs <> 0
+  mov ecx, [Outputs]
+  test ecx, ecx
+  jz @end
+
+  // test Inputs <> 0
+  mov edx, [Inputs]
+  test edx, edx
+  jz @end
+
+  // push SampleFrames on stack
+  push eax
+  mov eax, ebx
+  mov ebx, [eax]
+
+  // call HostCallProcess
+  call dword ptr [ebx + $00000230] // [TBasicVSTModule(ebx).HostCallProcess]
+
+ @end:
+  pop ebx
+end;
+{$ENDIF}
 
 procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+{$IFDEF PUREPASCAL}
 begin
- assert(assigned(Effect));
+ if not assigned(Effect) or (SampleFrames = 0) then exit;
  if TObject(Effect^.vObject) is TBasicVSTModule
   then TBasicVSTModule(Effect^.vObject).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
 end;
+{$ELSE}
+asm
+  push ebx
+
+  // test SampleFrames <> 0
+  mov eax, SampleFrames
+  test eax, eax
+  jz @end
+
+  // test Effect <> 0
+  mov ebx, Effect
+  test ebx, ebx
+  jz @end
+
+  // test Effect^.vObject <> 0
+  mov ebx, [ebx + $40]
+  test ebx, ebx
+  jz @end
+
+  // test Outputs <> 0
+  mov ecx, [Outputs]
+  test ecx, ecx
+  jz @end
+
+  // test Inputs <> 0
+  mov edx, [Inputs]
+  test edx, edx
+  jz @end
+
+  // push SampleFrames on stack
+  push eax
+  mov eax, ebx
+  mov ebx, [eax]
+
+  // call HostCallProcessReplacing (damn hack!!!)
+  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+
+ @end:
+  pop ebx
+end;
+{$ENDIF}
 
 procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+{$IFDEF PUREPASCAL}
 begin
- assert(assigned(Effect));
+ if not assigned(Effect) or (SampleFrames = 0) then exit;
  if TObject(Effect^.vObject) is TBasicVSTModule
   then TBasicVSTModule(Effect^.vObject).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
 end;
+{$ELSE}
+asm
+  push ebx
+
+  // test SampleFrames <> 0
+  mov eax, SampleFrames
+  test eax, eax
+  jz @end
+
+  // test Effect <> 0
+  mov ebx, Effect
+  test ebx, ebx
+  jz @end
+
+  // test Effect^.vObject <> 0
+  mov ebx, [ebx + $40]
+  test ebx, ebx
+  jz @end
+
+  // test Outputs <> 0
+  mov ecx, [Outputs]
+  test ecx, ecx
+  jz @end
+
+  // test Inputs <> 0
+  mov edx, [Inputs]
+  test edx, edx
+  jz @end
+
+  // push SampleFrames on stack
+  push eax
+  mov eax, ebx
+  mov ebx, [eax]
+
+  // call HostCallProcessDoubleReplacing (damn hack!!!)
+  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+
+ @end:
+  pop ebx
+end;
+{$ENDIF}
 
 function GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin

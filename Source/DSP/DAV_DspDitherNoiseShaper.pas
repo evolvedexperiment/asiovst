@@ -45,9 +45,11 @@ begin
  inherited;
  SetLength(FHistory, 2 * FOrder);
  FillChar(FHistory, 2 * FOrder * SizeOf(Double), 0);
- SetBitDepth(16);
- SetDitherType(dtor9Fc);
  FHistoryPos := 8;
+ FBitDepth := 16;
+ FDitherType := dtor9Fc;
+ BitDepthChanged;
+ DitherTypeChanged;
  Randomize;
 end;
 

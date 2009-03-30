@@ -139,7 +139,6 @@ type
     function GetRealQualities: LongInt;
     function GetUniqueID: string;
     function GetVersion: Integer;
-    function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
     procedure InitializeVstEffect;
     procedure SetActive(const Value: Boolean);
     procedure SetVstDllFileName(const Value: TFilename);
@@ -212,6 +211,7 @@ type
     function Identify: Integer;
     function Idle: Integer;
     function KeysRequired: Integer;
+    function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
 
     function OfflineNotify(const VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
     function OfflinePrepare(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
@@ -323,6 +323,7 @@ type
     property VendorString: string read GetVendorString stored False;
     property VendorVersion: Integer read GetVendorVersion stored False default -1;
     property VSTCanDos: TVstCanDos read GetVSTCanDos stored False;
+    property VstEffectPointer: PVstEffect read FVstEffect;
 
     property OnAfterLoad: TNotifyEvent read FOnAfterLoad write FOnAfterLoad;
     property OnAudioMasterAutomate: TVstAutomateEvent read FOnAMAutomate write FOnAMAutomate;

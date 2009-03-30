@@ -18,6 +18,7 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -29,7 +30,6 @@ type
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleClose(Sender: TObject);
   private
     FBufferSize     : Integer;
     FBufferPosition : Integer;
@@ -210,8 +210,11 @@ end;
 
 procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighPass[0].Frequency := Value;
- FHighPass[1].Frequency := FHighPass[0].Frequency;
+ if assigned(FHighPass[0]) then
+  begin
+   FHighPass[0].Frequency := Value;
+   FHighPass[1].Frequency := FHighPass[0].Frequency;
+  end;
  DriveChanged(Parameter[1]);
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
@@ -518,7 +521,6 @@ begin
  if (abs(FilterState[1, 0]) < 1E-10) or (not FStereo)
   then FillChar(FFilterState[1, 0], 5 * SizeOf(Double), 0)
   else Move(FilterState[1, 0], FFilterState[1, 0], 5 * SizeOf(Double));
-
 end;
 
 procedure TComboDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -680,15 +682,17 @@ end;
 
 procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- FHighPass[0].SampleRate := SampleRate;
- FHighPass[1].SampleRate := SampleRate;
+ if assigned(FHighPass[0]) then FHighPass[0].SampleRate := SampleRate;
+ if assigned(FHighPass[1]) then FHighPass[1].SampleRate := SampleRate;
  ModelType := ModelType;
 end;
 
 procedure TComboDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- FillChar(FBuffer[0]^[0], FBufferSize * SizeOf(Single), 0);
- FillChar(FBuffer[1]^[0], FBufferSize * SizeOf(Single), 0);
+ if assigned(FBuffer[0])
+  then FillChar(FBuffer[0]^[0], FBufferSize * SizeOf(Single), 0);
+ if assigned(FBuffer[1])
+  then FillChar(FBuffer[1]^[0], FBufferSize * SizeOf(Single), 0);
  FillChar(FFilterState[0, 0], 10 * SizeOf(Double), 0);
 end;
 

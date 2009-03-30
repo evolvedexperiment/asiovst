@@ -143,8 +143,9 @@ begin
  while FSemaphore > 0 do;
  Inc(FSemaphore);
  try
-  for ch := 0 to numInputs - 1
-   do FLinkwitzRiley[ch].Order := round(Value);
+  for ch := 0 to numInputs - 1 do
+   if assigned(FLinkwitzRiley[ch])
+    then FLinkwitzRiley[ch].Order := round(Value);
  finally
   Dec(FSemaphore);
  end;
@@ -161,8 +162,9 @@ begin
  while FSemaphore > 0 do;
  Inc(FSemaphore);
  try
-  for ch := 0 to numInputs - 1
-   do FLinkwitzRiley[ch].Frequency := Value;
+  for ch := 0 to numInputs - 1 do
+   if assigned(FLinkwitzRiley[ch])
+    then FLinkwitzRiley[ch].Frequency := Value;
  finally
   Dec(FSemaphore);
  end;

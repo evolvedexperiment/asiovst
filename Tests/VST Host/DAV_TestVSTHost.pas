@@ -43,23 +43,25 @@ type
     property VstPluginName: TFileName read FVstPluginName write SetVstPluginName;
   end;
 
-  // Test methods for class TVstHost
+  // Basic test methods for VST Plugins
   TVstPluginBasicTests = class(TCustomTestVstPlugin)
   published
     procedure TestMultipleOpenCloseCycles;
     procedure TestMultipleInstances;
     procedure TestActiveParameterSweeps;
-    procedure TestPassiveParameterSweeps;
+    procedure TestInactiveParameterSweeps;
     procedure TestActiveSamplerateChanges;
-    procedure TestPassiveSamplerateChanges;
+    procedure TestInactiveSamplerateChanges;
     procedure TestActiveBlocksizeChanges;
-    procedure TestPassiveBlocksizeChanges;
+    procedure TestInactiveBlocksizeChanges;
+    procedure TestInactiveProcessReplacing;
     procedure TestCanDoUnknownTokens;
     procedure TestInvalidOpcodes;
     procedure TestInvalidParameters;
+    procedure TestSimpleCubaseTest;
   end;
 
-  // Test methods for class TVstHost
+  // I/O test methods for VST Plugins
   TVstPluginIOTests = class(TCustomTestVstPlugin)
   private
     FInput     : array of PDavSingleFixedArray;
@@ -81,6 +83,44 @@ type
 
     property BlockSize: Integer read FBlockSize write SetBlockSize;
   end;
+
+  TVSTProcessThread = class(TThread)
+  private
+    procedure SetBlockSize(const Value: Integer);
+    procedure SetupBuffers;
+  protected
+    FVSTPlugin : TCustomVstPlugIn;
+    FInput     : array of PDavSingleFixedArray;
+    FOutput    : array of PDavSingleFixedArray;
+    FBlockSize : Integer;
+    FProcessedBlocks  : Integer;
+    procedure Execute; override;
+  public
+    constructor Create(const VSTPlugin: TCustomVstPlugIn); virtual;
+    destructor Destroy; override;
+
+    property ProcessedBlocks: Integer read FProcessedBlocks;
+    property BlockSize: Integer read FBlockSize write SetBlockSize;
+  end;
+
+  // I/O test methods for VST Plugins
+  TVstPluginIOThreadTests = class(TCustomTestVstPlugin)
+  private
+    FVstProcessThread : TVSTProcessThread;
+    FBlockSize        : Integer;
+    procedure SetBlockSize(const Value: Integer);
+  public
+    constructor Create(MethodName: string); override;
+    procedure SetUp; override;
+    procedure TearDown; override;
+  published
+    property BlockSize: Integer read FBlockSize write SetBlockSize;
+
+    procedure TestRandomParameterChangesWhileProcessing;
+    procedure TestSamplerateChangesWhileProcessing;
+    procedure TestProcessCallWhileProcessing;
+  end;
+
 
 implementation
 
@@ -104,7 +144,7 @@ constructor TCustomTestVstPlugin.Create(MethodName: string);
 begin
  inherited Create(MethodName);
  FVstHost := TVstHost.Create(nil);
- if ParamStr(0) <> '' then FVstPluginName := ParamStr(0); 
+ if ParamStr(1) <> '' then FVstPluginName := ParamStr(1);
 end;
 
 destructor TCustomTestVstPlugin.Destroy;
@@ -144,6 +184,15 @@ begin
   begin
    FVstHost[0].Active := True;
    FVstHost[0].Active := False;
+  end;
+end;
+
+procedure TVstPluginBasicTests.TestSimpleCubaseTest;
+begin
+ with FVstHost[0] do
+  begin
+   if numPrograms <= 0
+    then Fail('No programs found, Cubase will probably crash!');
   end;
 end;
 
@@ -192,7 +241,7 @@ begin
   end;
 end;
 
-procedure TVstPluginBasicTests.TestPassiveParameterSweeps;
+procedure TVstPluginBasicTests.TestInactiveParameterSweeps;
 var
   Param : Integer;
   Value : Single;
@@ -213,6 +262,49 @@ begin
   end;
 end;
 
+procedure TVstPluginBasicTests.TestInactiveProcessReplacing;
+var
+  Input   : array of PDavSingleFixedArray;
+  Output  : array of PDavSingleFixedArray;
+  Channel : Integer;
+const
+  CBlockSize = 8192;
+begin
+ // Test Inactive ProcessReplacing
+ with FVstHost[0] do
+  begin
+   Active := True;
+   SetLength(Input, numInputs);
+   for Channel := 0 to numInputs - 1 do
+    begin
+     ReallocMem(Input[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Input[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   // setup outputs
+   SetLength(Output, numOutputs);
+   for Channel := 0 to numOutputs - 1 do
+    begin
+     ReallocMem(Output[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   SetSampleRate(44100);
+   SetBlockSize(CBlockSize);
+
+   StartProcess;
+   Active := False;
+   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+   Active := True;
+   StopProcess;
+
+   Active := False;
+   StartProcess;
+   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+   StopProcess;
+  end;
+end;
+
 procedure TVstPluginBasicTests.TestActiveSamplerateChanges;
 var
   d : Single;
@@ -227,11 +319,11 @@ begin
   end;
 end;
 
-procedure TVstPluginBasicTests.TestPassiveSamplerateChanges;
+procedure TVstPluginBasicTests.TestInactiveSamplerateChanges;
 var
   d : Single;
 begin
- // Test Passive Samplerate Change
+ // Test Inactive Samplerate Change
  FVstHost[0].Active := False;
  d := 1;
  while d <= 1411200 do
@@ -260,7 +352,7 @@ begin
   end;
 end;
 
-procedure TVstPluginBasicTests.TestPassiveBlocksizeChanges;
+procedure TVstPluginBasicTests.TestInactiveBlocksizeChanges;
 var
   i : Integer;
 begin
@@ -300,7 +392,7 @@ var
   i : Integer;
 begin
  FVstHost[0].VstDispatch(effSetEditKnobMode, 0, 3);
- FVstHost[0].VstDispatch(effSetViewPosition, -249824962529, -300013512459);
+ FVstHost[0].VstDispatch(effSetViewPosition, 249824962, 300013512);
  FVstHost[0].VstDispatch(effSetSpeakerArrangement);
  FVstHost[0].VstDispatch(effOfflineNotify);
  FVstHost[0].VstDispatch(effOfflinePrepare);
@@ -433,6 +525,10 @@ begin
  for Channel := 0 to Length(FInput)  - 1 do Dispose(FInput[Channel]);
  for Channel := 0 to Length(FOutput) - 1 do Dispose(FOutput[Channel]);
 
+ // clear channel arrays
+ SetLength(FInput, 0);
+ SetLength(FOutput, 0);
+
  with FVstHost[0] do
   begin
    StartProcess;
@@ -500,6 +596,17 @@ var
   Sample  : Integer;
   Cnt     : Integer;
 begin
+ with FVstHost[0] do
+  begin
+   assert(assigned(VstEffectPointer));
+
+   if not assigned(VstEffectPointer.ProcessDoubleReplacing)
+    then Fail('Process() does not exists');
+
+   // empty process call
+   Process(nil, nil, 0);
+  end;
+
  for Channel := 0 to Length(FInput) - 1 do
   for Sample := 0 to FBlockSize - 1
    do FInput[Channel, Sample] := 2 * random - 1;
@@ -514,6 +621,15 @@ procedure TVstPluginIOTests.TestProcessDoubleReplacing;
 begin
  with FVstHost[0] do
   begin
+   assert(assigned(VstEffectPointer));
+
+   if not assigned(VstEffectPointer.ProcessDoubleReplacing)
+    then Fail('ProcessDoubleReplacing() does not exists');
+
+   // empty process call
+   ProcessDoubleReplacing(nil, nil, 0);
+
+   // process data
    ProcessDoubleReplacing(@FInput[0], @FOutput[0], BlockSize div 2);
   end;
 end;
@@ -545,6 +661,164 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TVstPluginIOTests.TestSmallBlocksizes;
+begin
+ with FVstHost[0] do
+  begin
+   BlockSize := 5;
+   ProcessReplacing(@FInput[0], @FOutput[0], 1);
+   ProcessReplacing(@FInput[0], @FOutput[0], 2);
+   ProcessReplacing(@FInput[0], @FOutput[0], 3);
+   ProcessReplacing(@FInput[0], @FOutput[0], 4);
+   ProcessReplacing(@FInput[0], @FOutput[0], 5);
+  end;
+end;
+
+{ TVSTProcessThread }
+
+constructor TVSTProcessThread.Create(const VSTPlugin: TCustomVstPlugIn);
+begin
+ FVSTPlugin := VSTPlugin;
+ FBlockSize := 8192;
+ FProcessedBlocks := 0;
+ SetupBuffers;
+ inherited Create(True);
+end;
+
+destructor TVSTProcessThread.Destroy;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to Length(FInput) - 1 do Dispose(FInput[Channel]);
+ for Channel := 0 to Length(FOutput) - 1 do Dispose(FOutput[Channel]);
+
+ inherited;
+end;
+
+procedure TVSTProcessThread.Execute;
+begin
+ repeat
+  FVSTPlugin.ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
+  inc(FProcessedBlocks)
+ until Terminated;
+end;
+
+procedure TVSTProcessThread.SetBlockSize(const Value: Integer);
+begin
+ if FBlockSize <> Value then
+  begin
+   FBlockSize := Value;
+   SetupBuffers;
+  end;
+end;
+
+procedure TVSTProcessThread.SetupBuffers;
+var
+  Channel : Integer;
+begin
+ assert(FBlocksize > 0);
+ with FVSTPlugin do
+  begin
+   // setup inputs
+   SetLength(FInput, numInputs);
+   for Channel := 0 to numInputs - 1 do
+    begin
+     ReallocMem(FInput[Channel], FBlocksize * SizeOf(Single));
+     FillChar(FInput[Channel]^, FBlocksize * SizeOf(Single), 0);
+    end;
+
+   // setup outputs
+   SetLength(FOutput, numOutputs);
+   for Channel := 0 to numOutputs - 1 do
+    begin
+     ReallocMem(FOutput[Channel], FBlocksize * SizeOf(Single));
+     FillChar(FOutput[Channel]^, FBlocksize * SizeOf(Single), 0);
+    end;
+  end;
+end;
+
+{ TVstPluginIOThreadTests }
+
+constructor TVstPluginIOThreadTests.Create(MethodName: string);
+begin
+ inherited;
+ FBlockSize := 8192;
+end;
+
+procedure TVstPluginIOThreadTests.SetBlockSize(const Value: Integer);
+begin
+ if FBlockSize <> Value then
+  begin
+   FBlockSize := Value;
+   if assigned(FVstProcessThread)
+    then FVstProcessThread.BlockSize := FBlockSize;
+  end;
+end;
+
+procedure TVstPluginIOThreadTests.SetUp;
+begin
+ inherited;
+ FVstProcessThread := TVSTProcessThread.Create(FVstHost[0]);
+ FVstProcessThread.BlockSize := FBlockSize;
+
+ with FVstHost[0] do
+  begin
+   Active := True;
+   SetSampleRate(44100);
+   SetBlockSize(FBlocksize);
+   StartProcess;
+  end;
+
+ FVstProcessThread.Resume;
+end;
+
+procedure TVstPluginIOThreadTests.TearDown;
+begin
+ with FVstProcessThread do
+  begin
+   Terminate;
+   Resume;
+   WaitFor;
+   Free;
+  end;
+ FVstProcessThread := nil;
+
+ with FVstHost[0] do
+  begin
+   StartProcess;
+   Active := False;
+  end;
+
+ inherited;
+end;
+
+procedure TVstPluginIOThreadTests.TestRandomParameterChangesWhileProcessing;
+var
+  ParamNo : Integer;
+begin
+ with FVstHost[0] do
+  repeat
+   for ParamNo := 0 to numParams - 1
+    do Parameter[ParamNo] := random;
+  until FVstProcessThread.ProcessedBlocks > 10;
+end;
+
+procedure TVstPluginIOThreadTests.TestSamplerateChangesWhileProcessing;
+begin
+ with FVstHost[0] do
+  repeat
+   SetSamplerate(10000 + random(100000));
+  until FVstProcessThread.ProcessedBlocks > 4;
+end;
+
+procedure TVstPluginIOThreadTests.TestProcessCallWhileProcessing;
+begin
+ with FVstHost[0] do
+  repeat
+   Process(nil, nil, 0);
+  until FVstProcessThread.ProcessedBlocks > 4;
 end;
 
 { TTestVstSuite }
@@ -584,19 +858,6 @@ begin
   end;
 end;
 
-procedure TVstPluginIOTests.TestSmallBlocksizes;
-begin
- with FVstHost[0] do
-  begin
-   BlockSize := 5;
-   ProcessReplacing(@FInput[0], @FOutput[0], 1);
-   ProcessReplacing(@FInput[0], @FOutput[0], 2);
-   ProcessReplacing(@FInput[0], @FOutput[0], 3);
-   ProcessReplacing(@FInput[0], @FOutput[0], 4);
-   ProcessReplacing(@FInput[0], @FOutput[0], 5);
-  end;
-end;
-
 procedure EnumerateVstPlugins;
 var
   SR   : TSearchRec;
@@ -621,6 +882,7 @@ begin
          TS.VstPluginName := SR.Name;
          TS.AddTests(TVstPluginBasicTests);
          TS.AddTests(TVstPluginIOTests);
+         TS.AddTests(TVstPluginIOThreadTests);
          RegisterTest(TS);
         end;
       except
@@ -636,8 +898,12 @@ begin
 end;
 
 initialization
-  if ParamStr(0) <> ''
-   then EnumerateVstPlugins
-   else RegisterTest(TVstPluginBasicTests.Suite);
+  if ParamStr(1) <> '' then
+   begin
+    RegisterTest(TVstPluginBasicTests.Suite);
+    RegisterTest(TVstPluginIOTests.Suite);
+    RegisterTest(TVstPluginIOThreadTests.Suite);
+
+   end else EnumerateVstPlugins;
 
 end.

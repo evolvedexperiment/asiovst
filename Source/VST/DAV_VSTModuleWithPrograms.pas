@@ -233,9 +233,9 @@ begin
  if FIsHostAutomation then exit;
 
  FIsHostAutomation := True;
- if ((Index >= numParams) or (Index >= FParameterProperties.Count)) and
-    Assigned(FOnParameterSizeFailed)
-  then FOnParameterSizeFailed(TVSTModuleWithPrograms(Effect^.vObject))
+ if ((Index >= numParams) or (Index >= FParameterProperties.Count)) then
+  if Assigned(FOnParameterSizeFailed)
+   then FOnParameterSizeFailed(TVSTModuleWithPrograms(Effect^.vObject)) else
   else SetParameter(Index, VSTParameter2Parameter(Value, Index));
 
  FIsHostAutomation := False;

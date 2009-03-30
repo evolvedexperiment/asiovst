@@ -90,9 +90,10 @@ begin
  Inc(FSemaphore);
  try
   for Channel := 0 to Length(FConvolution) - 1 do
-   if Value >= FConvolution[Channel].MinimumIRBlockOrder
-    then FConvolution[Channel].MaximumIRBlockOrder := round(Limit(Value, 7, 20))
-    else Value := FConvolution[Channel].MinimumIRBlockOrder;
+   if assigned(FConvolution[Channel]) then
+    if Value >= FConvolution[Channel].MinimumIRBlockOrder
+     then FConvolution[Channel].MaximumIRBlockOrder := round(Limit(Value, 7, 20))
+     else Value := FConvolution[Channel].MinimumIRBlockOrder;
  finally
   Dec(FSemaphore);
  end;
@@ -101,7 +102,8 @@ end;
 procedure TConvoFxDataModule.ParameterDampingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDampingFilter.Frequency := Value;
+ if assigned(FDampingFilter)
+  then FDampingFilter.Frequency := Value;
  FDirty := True;
 
  while FSemaphore > 0 do;
@@ -295,11 +297,12 @@ begin
  Inc(FSemaphore);
  try
   for Channel := 0 to Length(FConvolution) - 1 do
-   begin
-    if Value > FConvolution[Channel].MaximumIRBlockOrder
-     then Value := FConvolution[Channel].MaximumIRBlockOrder;
-    FConvolution[Channel].MinimumIRBlockOrder := round(Value);
-   end;
+   if assigned(FConvolution[Channel]) then
+    begin
+     if Value > FConvolution[Channel].MaximumIRBlockOrder
+      then Value := FConvolution[Channel].MaximumIRBlockOrder;
+     FConvolution[Channel].MinimumIRBlockOrder := round(Value);
+    end;
  finally
   Dec(FSemaphore);
  end;
