@@ -538,11 +538,11 @@ const
   CComClsId     = 'clsid';
 
 function FindDrivervDLL(const ClsIdStr: string; var DrivervDLL: TFileName): Integer;
+{$IFNDEF FPC}
 var
-  {$IFNDEF FPC}
   CharBuffer : array[0..1024] of AnsiChar;
   DriverName : TFileName;
-  {$ENDIF}
+{$ENDIF}
 begin
  Result := -1;
 
@@ -552,9 +552,9 @@ begin
    if OpenKeyReadOnly(CComClsId + '\' + Lowercase(clsidstr) + '\' + CInprocServer) then
     begin
      DrivervDLL := ReadString('');
+     {$IFNDEF FPC}
      if not FileExists(DrivervDLL) then
       begin
-       {$IFNDEF FPC}
        CharBuffer[0] := #0;
        DriverName := ExtractFileName(DrivervDLL);   // backup the value
 
@@ -569,8 +569,8 @@ begin
          if GetWindowsDirectory(CharBuffer, 1023) <> 0
           then DrivervDLL := StrPas(CharBuffer) + '\' + DriverName;
         end;
-       {$ENDIF}
       end;
+     {$ENDIF}
 
      // if driver found set result to zero (no error occured)
      if FileExists(DrivervDLL) then Result := 0;
