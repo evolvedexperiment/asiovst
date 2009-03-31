@@ -48,6 +48,7 @@ contains
   DAV_ComplexData in '..\Source\DAV_ComplexData.pas',
   DAV_CommonRegister in '..\Source\DAV_CommonRegister.pas',
   DAV_DLLLoader in '..\Source\DAV_DLLLoader.pas',
-  DAV_Approximations in '..\Source\DAV_Approximations.pas';
+  DAV_Approximations in '..\Source\DAV_Approximations.pas',
+  DAV_HalfFloat in '..\Source\DAV_HalfFloat.pas';
 
 end.

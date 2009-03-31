@@ -3,6 +3,7 @@ unit DAV_DspButterworthFilter;
 interface
 
 {$I ..\DAV_Compiler.inc}
+{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
   DAV_DspFilter, DAV_Common;

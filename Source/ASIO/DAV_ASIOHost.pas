@@ -533,106 +533,91 @@ resourcestring
   RStrConverterTypeUnknown = 'Converter type unknown';
 
 const
-  ASIODRV_DESC  = 'description';
-  INPROC_SERVER = 'InprocServer32';
-  ASIO_PATH     = 'software\asio';
-  COM_CLSID     = 'clsid';
+  CInprocServer = 'InprocServer32';
+  CAsioPath     = 'software\asio';
+  CComClsId     = 'clsid';
 
-function findDrvPath(const clsidstr: string; var dllpath: string): Integer;
+function FindDrivervDLL(const ClsIdStr: string; var DrivervDLL: TFileName): Integer;
 var
-  reg     : TRegistry;
-  success : Boolean;
   {$IFNDEF FPC}
-  buf     : array[0..1024] of AnsiChar;
-  s       : string;
-  temps   : string;
+  CharBuffer : array[0..1024] of AnsiChar;
+  DriverName : TFileName;
   {$ENDIF}
 begin
  Result := -1;
 
- //CharLowerBuff(clsidstr,strlen(clsidstr));
- reg := TRegistry.Create;
- try
-  reg.RootKey := HKEY_CLASSES_ROOT;
-  success := reg.OpenKeyReadOnly(COM_CLSID + '\' + clsidstr + '\' + INPROC_SERVER);
-  if success then
-   begin
-    dllpath := reg.ReadString('');
-    if (ExtractFilePath(dllpath) = '') and (dllpath <> '') then
-     begin
-      {$IFNDEF FPC}
-      buf[0] := #0;
-      temps := dllpath;   // backup the value
-      if GetSystemDirectory(buf, 1023) <> 0 then   // try the system directory first
-       begin
-        s := buf;
-        dllpath := s + '\' + temps;
-       end;
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CLASSES_ROOT;
+   if OpenKeyReadOnly(CComClsId + '\' + Lowercase(clsidstr) + '\' + CInprocServer) then
+    begin
+     DrivervDLL := ReadString('');
+     if not FileExists(DrivervDLL) then
+      begin
+       {$IFNDEF FPC}
+       CharBuffer[0] := #0;
+       DriverName := ExtractFileName(DrivervDLL);   // backup the value
 
-      if not FileExists(dllpath) then              // try the windows dir if necessary
-       begin
-        buf[0] := #0;
-        if GetWindowsDirectory(buf, 1023) <> 0 then   // try the system directory first
-         begin
-          s := buf;
-          dllpath := s + '\' + temps;
-         end;
-       end;
-      {$ENDIF}
+       // try the system directory first
+       if GetSystemDirectory(CharBuffer, 1023) <> 0
+        then DrivervDLL := StrPas(CharBuffer) + '\' + DriverName;
+
+       // try the windows dir if necessary
+       if not FileExists(DrivervDLL) then
+        begin
+         CharBuffer[0] := #0;
+         if GetWindowsDirectory(CharBuffer, 1023) <> 0
+          then DrivervDLL := StrPas(CharBuffer) + '\' + DriverName;
+        end;
+       {$ENDIF}
       end;
 
-      if FileExists(dllpath) then Result := 0;
-      reg.CloseKey;
-   end;
- finally
-  reg.Free;
- end;
+     // if driver found set result to zero (no error occured)
+     if FileExists(DrivervDLL) then Result := 0;
+     CloseKey;
+    end;
+  finally
+   Free;
+  end;
 end;
 
 procedure ListAsioDrivers(var List: TAsioDriverList);
 var
-   r       : TRegistry;
-   keys    : TStringList;
-   success : Boolean;
-   i       : Integer;
-   id      : string;
-   dllpath : string;
-   count   : Integer;
+  Keys      : TStringList;
+  i         : Integer;
+  ID        : string;
+  DriverDll : TFileName;
 begin
  SetLength(List, 0);
 
- keys := TStringList.Create;
- r := TRegistry.Create;
- try
-  r.RootKey := HKEY_LOCAL_MACHINE;
-  success := r.OpenKeyReadOnly(ASIO_PATH);
-  if success then
-   begin
-    r.GetKeyNames(keys);
-    r.CloseKey;
-   end;
-  count := 0;
-  for i := 0 to keys.Count - 1 do
-   begin
-    success := r.OpenKeyReadOnly(ASIO_PATH + '\' + keys[i]);
-    if success then
-     begin
-      id := r.ReadString(COM_CLSID);
-      if findDrvPath(id, dllpath) = 0 then  // check if the dll exists
-       begin
-        SetLength(List, count+1);
-        List[count].id := StringToGUID(id);
-        StrPLCopy(List[count].name, keys[i], 512);
-        StrPLCopy(List[count].path, dllpath, 512);
-        inc(count);
-       end;
-      r.CloseKey;
-     end;
-   end;
- finally
-  FreeAndNil(keys);
-  FreeAndNil(r);
- end;
+ Keys := TStringList.Create;
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_LOCAL_MACHINE;
+   if OpenKeyReadOnly(CAsioPath) then
+    begin
+     GetKeyNames(Keys);
+     CloseKey;
+    end;
+   for i := 0 to Keys.Count - 1 do
+    begin
+     if OpenKeyReadOnly(CAsioPath + '\' + Keys[i]) then
+      begin
+       id := ReadString(CComClsId);
+       if FindDrivervDLL(id, DriverDll) = 0 then  // check if the dll exists
+        begin
+         SetLength(List, Length(List) + 1);
+         List[Length(List) - 1].id := StringToGUID(id);
+         StrPLCopy(List[Length(List) - 1].Name, Keys[i], 512);
+         StrPLCopy(List[Length(List) - 1].Path, DriverDll, 512);
+        end;
+       CloseKey;
+      end;
+    end;
+  finally
+   FreeAndNil(keys);
+   Free;
+  end;
 end;
 
 {$IFDEF DELPHI5}
@@ -1524,7 +1509,7 @@ function TCustomASIOHostBasic.CanTimeInfo: Boolean;
 begin
  if FDriver = nil
   then Result := False
-  else Result := FDriver.Future(kAsioCanTimeInfo,nil)=ASE_SUCCESS;
+  else Result := FDriver.Future(kAsioCanTimeInfo,nil) = ASE_SUCCESS;
  fASIOCanDos := fASIOCanDos+[acdTimeInfo];
 end;
 
