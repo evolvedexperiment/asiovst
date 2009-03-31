@@ -2,11 +2,14 @@ unit VPSmain;
 
 interface
 
-uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ComCtrls, StdCtrls, DAV_VSTHost;
+{$I DAV_Compiler.Inc}
 
-{$DEFINE UseThreads}
+uses
+  {$IFDEF FPC} LCLIntf, LResources, {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$ELSE} Windows, {$ENDIF} Messages, SysUtils, Classes, Graphics, Controls,
+  Forms, Dialogs, ComCtrls, StdCtrls, DAV_VSTHost;
+
+{-$DEFINE UseThreads}
 
 {$IFDEF UseThreads}
 const
@@ -75,7 +78,9 @@ implementation
 uses
   Registry, FileCtrl;
 
+{$IFNDEF FPC}
 {$R *.dfm}
+{$ENDIF}
 
 {$IFDEF UseThreads}
 
@@ -269,7 +274,6 @@ begin
     FreeAndNil(FThreads[i]);
    end;
 end;
-{$ENDIF}
 
 procedure TFmVSTPluginScanner.ThreadTerminated(Sender: TObject);
 begin
@@ -280,6 +284,7 @@ begin
      then raise Exception(FatalException);
    end;
 end;
+{$ENDIF}
 
 procedure TFmVSTPluginScanner.BtScanClick(Sender: TObject);
 var
@@ -389,5 +394,10 @@ procedure TFmVSTPluginScanner.EdDirectoryClick(Sender: TObject);
 begin
  EdDirectory.SelectAll;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i VPSmain.lrs}
+{$ENDIF}
 
 end.
