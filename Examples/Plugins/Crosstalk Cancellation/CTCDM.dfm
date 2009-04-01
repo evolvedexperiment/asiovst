@@ -17,6 +17,10 @@ object CTCDataModule: TCTCDataModule
     item
       DisplayName = 'Default'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Christian'#39's Space'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
@@ -70,6 +74,7 @@ object CTCDataModule: TCTCDataModule
       MaxInteger = 16
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Steps'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -86,12 +91,115 @@ object CTCDataModule: TCTCDataModule
       MaxInteger = 0
       Min = -15.000000000000000000
       MinInteger = -15
+      ReportVST2Properties = True
       ShortLabel = 'Att.'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParamAttenuationChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Filter Type'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'Filter'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterTypeChange
+      OnCustomParameterDisplay = ParameterFilterTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Filter Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'HS Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterFrequencyChange
+      OnCustomParameterLabel = ParameterFilterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFilterFrequencyDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Filter Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 3.000000000000000000
+      MaxInteger = 3
+      Min = -20.000000000000000000
+      MinInteger = -20
+      ReportVST2Properties = True
+      ShortLabel = 'HS Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Output Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 3.000000000000000000
+      MaxInteger = 3
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Output'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterOutputChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Bypass'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Bypass'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBypassChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'AGC'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'AGC'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

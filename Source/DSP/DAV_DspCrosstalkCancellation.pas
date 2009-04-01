@@ -4,39 +4,35 @@ interface
 
 {$I DAV_Compiler.inc}
 
-(*
-        Loudspeaker
-  +---+            +---+
-  | L |\          /| R |
-  +-+-+  x      x  +-+-+
-     \     \  /       /
-      \     /\      /
-       \  x    x  /
-      +---+    +---+
-      | L | :) | R |
-      +---+    +---+
-       Listener Head
-*)
-
 uses
   DAV_Common, DAV_DspCommon, DAV_DspDelayLines, DAV_DspFilterBasics;
 
 type
+  TCrosstalkFilterType = (cftHighshelf);
+
   TCustomCrosstalkCancellation = class(TDspSampleRateDependent)
   private
     FSpeakerDistance  : Single;
     FListenerDistance : Single;
     FAttenuation      : Single;
     FHeadRadius       : Single;
-    FStageCount       : Cardinal;
+    FStageCount       : Integer;
     FSampleRate       : Single;
+    FCrosstalkFilterType: TCrosstalkFilterType;
+    FCrosstalkFilterFrequency: Single;
+    FCrosstalkFilterGain: Single;
     procedure SetListenerDistance(const Value: Single);
     procedure SetSpeakerDistance(const Value: Single);
-    procedure SetStageCount(const Value: Cardinal);
+    procedure SetStageCount(const Value: Integer);
     procedure SetSampleRate(const Value: Single);
+    procedure SetCrosstalkFilterType(const Value: TCrosstalkFilterType);
+    procedure SetCrosstalkFilterFrequency(const Value: Single);
+    procedure SetCrosstalkFilterGain(const Value: Single);
   protected
     procedure SampleRateChanged; virtual; abstract;
     procedure StageCountChanged; virtual; abstract;
+    procedure CrosstalkFilterFrequencyChanged; virtual; abstract;
+    procedure CrosstalkFilterGainChanged; virtual; abstract;
     procedure ListenerDistanceChanged; virtual;
     procedure SpeakerDistanceChanged; virtual;
   public
@@ -45,12 +41,15 @@ type
     procedure ProcessStereo(const InputLeft, InputRight: Single; var OutputLeft,
       OutputRight: Single); overload; virtual; abstract;
 
-    property SpeakerDistance: Single read FSpeakerDistance write SetSpeakerDistance;
-    property ListenerDistance: Single read FListenerDistance write SetListenerDistance;
-    property HeadRadius: Single read FHeadRadius;
     property Attenuation: Single read FAttenuation write FAttenuation;
-    property StageCount: Cardinal read FStageCount write SetStageCount;
+    property CrosstalkFilterType: TCrosstalkFilterType read FCrosstalkFilterType write SetCrosstalkFilterType;
+    property CrosstalkFilterFrequency: Single read FCrosstalkFilterFrequency write SetCrosstalkFilterFrequency;
+    property CrosstalkFilterGain: Single read FCrosstalkFilterGain write SetCrosstalkFilterGain;
+    property HeadRadius: Single read FHeadRadius;
+    property ListenerDistance: Single read FListenerDistance write SetListenerDistance;
     property SampleRate: Single read FSampleRate write SetSampleRate;
+    property SpeakerDistance: Single read FSpeakerDistance write SetSpeakerDistance;
+    property StageCount: Integer read FStageCount write SetStageCount;
   end;
 
   TCrosstalkCancellation32 = class(TCustomCrosstalkCancellation)
@@ -59,9 +58,12 @@ type
     FCrosstalkFilter : array [0..1] of array of TBasicHighShelfFilter;
 
     procedure CalculateCoefficients; virtual;
+    procedure CalculateCrosstalkFilter; virtual;
     procedure SampleRateChanged; override;
     procedure ListenerDistanceChanged; override;
     procedure SpeakerDistanceChanged; override;
+    procedure CrosstalkFilterFrequencyChanged; override;
+    procedure CrosstalkFilterGainChanged; override;
     procedure StageCountChanged; override;
   public
     constructor Create; override;
@@ -81,11 +83,13 @@ uses
 constructor TCustomCrosstalkCancellation.Create;
 begin
  inherited;
- FHeadRadius       :=   8;
- FSpeakerDistance  := 100;
- FListenerDistance := 100;
- FSampleRate       := 44100;
- FAttenuation      := 0.5;
+ FHeadRadius               :=   8;
+ FSpeakerDistance          := 100;
+ FListenerDistance         := 100;
+ FSampleRate               := 44100;
+ FAttenuation              := 0.5;
+ FCrosstalkFilterFrequency := 1000;
+ FCrosstalkFilterGain      := -10;
  SampleRateChanged;
 end;
 
@@ -93,6 +97,35 @@ procedure TCustomCrosstalkCancellation.ListenerDistanceChanged;
 begin
  if FSpeakerDistance > 2 * FListenerDistance
   then SpeakerDistance := 2 * FListenerDistance;
+end;
+
+procedure TCustomCrosstalkCancellation.SetCrosstalkFilterFrequency(
+  const Value: Single);
+begin
+ if FCrosstalkFilterFrequency <> Value then
+  begin
+   FCrosstalkFilterFrequency := Value;
+   CrosstalkFilterFrequencyChanged;
+  end;
+end;
+
+procedure TCustomCrosstalkCancellation.SetCrosstalkFilterGain(
+  const Value: Single);
+begin
+ if FCrosstalkFilterGain <> Value then
+  begin
+   FCrosstalkFilterGain := Value;
+   CrosstalkFilterGainChanged;
+  end;
+end;
+
+procedure TCustomCrosstalkCancellation.SetCrosstalkFilterType(
+  const Value: TCrosstalkFilterType);
+begin
+ if FCrosstalkFilterType <> Value then
+  begin
+   FCrosstalkFilterType := Value;
+  end;
 end;
 
 procedure TCustomCrosstalkCancellation.SetListenerDistance(const Value: Single);
@@ -122,7 +155,7 @@ begin
   end;
 end;
 
-procedure TCustomCrosstalkCancellation.SetStageCount(const Value: Cardinal);
+procedure TCustomCrosstalkCancellation.SetStageCount(const Value: Integer);
 begin
  if FStageCount <> Value then
   begin
@@ -144,6 +177,7 @@ begin
  inherited;
  FStageCount := 2;
  StageCountChanged;
+ CalculateCrosstalkFilter;
 end;
 
 destructor TCrosstalkCancellation32.Destroy;
@@ -157,6 +191,31 @@ begin
   inherited;
 end;
 
+procedure TCrosstalkCancellation32.CrosstalkFilterFrequencyChanged;
+begin
+ CalculateCrosstalkFilter;
+end;
+
+procedure TCrosstalkCancellation32.CrosstalkFilterGainChanged;
+begin
+ CalculateCrosstalkFilter;
+end;
+
+procedure TCrosstalkCancellation32.CalculateCrosstalkFilter;
+var
+  Channel    : Integer;
+  Stage      : Integer;
+begin
+ for Channel := 0 to Length(FCrosstalkFilter) - 1 do
+  for Stage := 0 to Length(FCrosstalkFilter[Channel]) - 1 do
+   with FCrosstalkFilter[Channel, Stage] do
+    begin
+     Frequency := FCrosstalkFilterFrequency;
+     Gain      := FCrosstalkFilterGain;
+     Bandwidth := 2.775;
+    end;
+end;
+
 procedure TCrosstalkCancellation32.CalculateCoefficients;
 var
   Channel    : Integer;
@@ -165,15 +224,6 @@ var
   DirectDist : Single;
   CTDistance : Single;
 begin
- for Channel := 0 to Length(FCrosstalkFilter) - 1 do
-  for Stage := 0 to Length(FCrosstalkFilter[Channel]) - 1 do
-   with FCrosstalkFilter[Channel, Stage] do
-    begin
-     Frequency := 1400;
-     Bandwidth := 2.775;
-     Gain      := -10;
-    end;
-
  if FListenerDistance < 0.5 * FSpeakerDistance
   then exit;
  assert(FListenerDistance >= 0.5 * FSpeakerDistance);
@@ -215,6 +265,10 @@ begin
   if assigned(FDelayLine[Channel]) then
    for Stage := 0 to Length(FDelayLine[Channel]) - 1
     do FDelayLine[Channel, Stage].Samplerate := SampleRate;
+ for Channel := 0 to Length(FDelayLine) - 1 do
+  if assigned(FCrosstalkFilter[Channel]) then
+   for Stage := 0 to Length(FCrosstalkFilter[Channel]) - 1
+    do FCrosstalkFilter[Channel, Stage].Samplerate := SampleRate;
 end;
 
 procedure TCrosstalkCancellation32.StageCountChanged;

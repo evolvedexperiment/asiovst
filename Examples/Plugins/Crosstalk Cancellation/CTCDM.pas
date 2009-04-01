@@ -8,22 +8,35 @@ uses
 
 type
   TCTCDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamSpeakerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDistanceDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamListenerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamRecursionStepsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamAttenuationChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure ParamDistanceLabel(Sender: TObject; const Index: Integer;
-      var PreDefined: string);
+    procedure ParamDistanceLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOutputChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFilterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFilterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFilterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFilterFrequencyDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterFrequencyLabel(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBypassChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
+    procedure VSTModuleProcessBypass(const Inputs,
+      Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
   private
-    FSemaphore : Integer;
+    FSemaphore  : Integer;
+    FOutputGain : Single;
     FCrosstalkCancellation: TCrosstalkCancellation32;
   public
   end;
@@ -46,8 +59,24 @@ begin
 
  Parameter[0] := 100;
  Parameter[1] := 100;
- Parameter[2] := 3;
- Parameter[3] := -1;
+ Parameter[2] := 8;
+ Parameter[3] := -6;
+ Parameter[4] := 1;
+ Parameter[5] := 1400;
+ Parameter[6] := -10;
+ Parameter[7] := -3;
+
+ with Programs[1] do
+  begin
+   Parameter[0] := 77;
+   Parameter[1] := 65;
+   Parameter[2] := 8;
+   Parameter[3] := -1;
+   Parameter[4] := 1;
+   Parameter[5] := 1000;
+   Parameter[6] := -10;
+   Parameter[7] := -6;
+  end;
 end;
 
 procedure TCTCDataModule.VSTModuleClose(Sender: TObject);
@@ -91,6 +120,74 @@ begin
   else PreDefined := 'cm'
 end;
 
+procedure TCTCDataModule.ParameterFilterTypeDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ case round(Parameter[Index]) of
+  1 : PreDefined := 'Simple Highpass';
+ end;
+end;
+
+procedure TCTCDataModule.ParameterOutputChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FOutputGain := db_to_Amp(Value);
+ if EditorForm is TFmCTC
+  then TFmCTC(EditorForm).UpdateOutputGain;
+end;
+
+procedure TCTCDataModule.ParameterFilterGainChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCrosstalkCancellation)
+  then FCrosstalkCancellation.CrosstalkFilterGain := Value;
+ if EditorForm is TFmCTC
+  then TFmCTC(EditorForm).UpdateFilterGain;
+end;
+
+procedure TCTCDataModule.ParameterFilterFrequencyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCrosstalkCancellation)
+  then FCrosstalkCancellation.CrosstalkFilterFrequency := Value;
+ if EditorForm is TFmCTC
+  then TFmCTC(EditorForm).UpdateFilterFrequency;
+end;
+
+procedure TCTCDataModule.ParameterFilterTypeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCrosstalkCancellation)
+  then FCrosstalkCancellation.CrosstalkFilterGain := Value;
+ if EditorForm is TFmCTC
+  then TFmCTC(EditorForm).UpdateFilterType;
+end;
+
+procedure TCTCDataModule.ParameterFilterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 3, 3)
+  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3);
+end;
+
+procedure TCTCDataModule.ParameterFilterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := 'Hz'
+  else PreDefined := 'kHz';
+end;
+
+procedure TCTCDataModule.ParameterBypassChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if Boolean(round(Value))
+  then OnProcess := VSTModuleProcessBypass
+  else OnProcess := VSTModuleProcess;
+ OnProcessReplacing := OnProcess;
+end;
+
 procedure TCTCDataModule.ParamAttenuationChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -130,10 +227,19 @@ begin
    begin
     FCrosstalkCancellation.ProcessStereo(Inputs[0, Sample], Inputs[1, Sample],
       Outputs[0, Sample], Outputs[1, Sample]);
+    Outputs[0, Sample] := FOutputGain * Outputs[0, Sample];
+    Outputs[1, Sample] := FOutputGain * Outputs[1, Sample];
    end;
  finally
   Dec(FSemaphore);
  end;
+end;
+
+procedure TCTCDataModule.VSTModuleProcessBypass(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+begin
+ move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
+ move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TCTCDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -149,8 +255,8 @@ begin
    begin
     FCrosstalkCancellation.ProcessStereo(Inputs[0, Sample], Inputs[1, Sample],
       Data[0], Data[1]);
-    Outputs[0, Sample] := Data[0];
-    Outputs[1, Sample] := Data[1];
+    Outputs[0, Sample] := FOutputGain * Data[0];
+    Outputs[1, Sample] := FOutputGain * Data[1];
    end;
  finally
   Dec(FSemaphore);
