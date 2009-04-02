@@ -37,9 +37,7 @@ type
     procedure SpeakerDistanceChanged; virtual;
   public
     constructor Create; virtual;
-    procedure ProcessStereo(const Left, Right: Single); overload; virtual; abstract;
-    procedure ProcessStereo(const InputLeft, InputRight: Single; var OutputLeft,
-      OutputRight: Single); overload; virtual; abstract;
+    procedure ProcessStereo(var Left, Right: Single); overload; virtual; abstract;
 
     property Attenuation: Single read FAttenuation write FAttenuation;
     property CrosstalkFilterType: TCrosstalkFilterType read FCrosstalkFilterType write SetCrosstalkFilterType;
@@ -69,8 +67,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessStereo(const Left, Right: Single); overload; override;
-    procedure ProcessStereo(const InputLeft, InputRight: Single; var OutputLeft, OutputRight: Single); overload; override;
+    procedure ProcessStereo(var Left, Right: Single); overload; override;
   end;
 
 implementation
@@ -166,7 +163,7 @@ end;
 
 procedure TCustomCrosstalkCancellation.SpeakerDistanceChanged;
 begin
- if 2 * FListenerDistance > FSpeakerDistance
+ if 2 * FListenerDistance < FSpeakerDistance
   then FListenerDistance := 0.5 * SpeakerDistance;
 end;
 
@@ -212,7 +209,7 @@ begin
     begin
      Frequency := FCrosstalkFilterFrequency;
      Gain      := FCrosstalkFilterGain;
-     Bandwidth := 2.775;
+     Bandwidth := 3.3;
     end;
 end;
 
@@ -304,35 +301,36 @@ begin
  CalculateCoefficients;
 end;
 
-procedure TCrosstalkCancellation32.ProcessStereo(const Left, Right: Single);
-begin
- // not implemented yet!
-(*
- Outputs[0, Sample] := FGains[0, 0] * Inputs[0, Sample] +
-   FGains[0, 1] * FDelayLine[0, 0].ProcessSample(Inputs[1, Sample]);
- Outputs[1, Sample] := FGains[1, 0] * Inputs[1, Sample] +
-   FGains[1, 1] * FDelayLine[1, 0].ProcessSample(Inputs[0, Sample]);
-*)
-
-end;
-
-procedure TCrosstalkCancellation32.ProcessStereo(const InputLeft,
-  InputRight: Single; var OutputLeft, OutputRight: Single);
+procedure TCrosstalkCancellation32.ProcessStereo(var Left, Right: Single);
 var
   Stage   : Integer;
   TempIn  : TDAV2SingleArray;
-  TempOut : TDAV2SingleArray;
+  Temp    : Single;
 begin
+(*
  TempIn[0] := InputLeft;
  TempIn[1] := InputRight;
- TempOut   := TempIn;
  for Stage := 0 to FStageCount - 1 do
   begin
-   TempOut[1] := FDelayLine[0, Stage].ProcessSample(TempIn[1]) - FAttenuation * FCrosstalkFilter[0, Stage].ProcessSample(TempOut[0]);
-   TempOut[0] := FDelayLine[1, Stage].ProcessSample(TempIn[0]) - FAttenuation * FCrosstalkFilter[1, Stage].ProcessSample(TempOut[1]);
+   TempIn[1] := FDelayLine[0, Stage].ProcessSample(TempIn[1]) - FAttenuation * FCrosstalkFilter[0, Stage].ProcessSample(TempIn[0]);
+   TempIn[0] := FDelayLine[1, Stage].ProcessSample(TempIn[0]) - FAttenuation * FCrosstalkFilter[1, Stage].ProcessSample(TempIn[1]);
   end;
- OutputLeft  := TempOut[0];
- OutputRight := TempOut[1];
+ OutputLeft  := TempIn[0];
+ OutputRight := TempIn[1];
+*)
+
+ TempIn[0]   := Left;
+ TempIn[1]   := Right;
+
+ for Stage := 0 to FStageCount - 1 do
+  begin
+   Temp      := FDelayLine[0, Stage].ProcessSample(FAttenuation * FCrosstalkFilter[0, Stage].ProcessSample(-TempIn[1]));
+   TempIn[1] := FDelayLine[1, Stage].ProcessSample(FAttenuation * FCrosstalkFilter[1, Stage].ProcessSample(-TempIn[0]));
+   TempIn[0] := Temp;
+
+   Left  := Left  + TempIn[0];
+   Right := Right + TempIn[1];
+  end;
 end;
 
 end.

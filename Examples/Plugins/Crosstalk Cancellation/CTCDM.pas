@@ -200,8 +200,14 @@ end;
 procedure TCTCDataModule.ParamListenerChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCrosstalkCancellation)
-  then FCrosstalkCancellation.ListenerDistance := Value;
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
+  if assigned(FCrosstalkCancellation)
+   then FCrosstalkCancellation.ListenerDistance := Value;
+ finally
+  Dec(FSemaphore);
+ end;
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateListenerDistance;
 end;
@@ -209,8 +215,14 @@ end;
 procedure TCTCDataModule.ParamSpeakerChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
+ while FSemaphore > 0 do;
+ inc(FSemaphore);
+ try
  if assigned(FCrosstalkCancellation)
   then FCrosstalkCancellation.SpeakerDistance := Value;
+ finally
+  Dec(FSemaphore);
+ end;
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateSpeakerDistance;
 end;
@@ -225,10 +237,9 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    FCrosstalkCancellation.ProcessStereo(Inputs[0, Sample], Inputs[1, Sample],
-      Outputs[0, Sample], Outputs[1, Sample]);
-    Outputs[0, Sample] := FOutputGain * Outputs[0, Sample];
-    Outputs[1, Sample] := FOutputGain * Outputs[1, Sample];
+    Outputs[0, Sample] := FOutputGain * Inputs[0, Sample];
+    Outputs[1, Sample] := FOutputGain * Inputs[1, Sample];
+    FCrosstalkCancellation.ProcessStereo(Outputs[0, Sample], Outputs[1, Sample]);
    end;
  finally
   Dec(FSemaphore);
@@ -253,10 +264,11 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    FCrosstalkCancellation.ProcessStereo(Inputs[0, Sample], Inputs[1, Sample],
-      Data[0], Data[1]);
-    Outputs[0, Sample] := FOutputGain * Data[0];
-    Outputs[1, Sample] := FOutputGain * Data[1];
+    Data[0] := FOutputGain * Inputs[0, Sample];
+    Data[1] := FOutputGain * Inputs[1, Sample];
+    FCrosstalkCancellation.ProcessStereo(Data[0], Data[1]);
+    Outputs[0, Sample] := Data[0];
+    Outputs[1, Sample] := Data[1];
    end;
  finally
   Dec(FSemaphore);
