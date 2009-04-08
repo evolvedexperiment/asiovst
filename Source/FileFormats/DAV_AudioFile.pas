@@ -134,7 +134,7 @@ var
   FileStream : TFileStream;
 begin
  if FileExists(FileName)
-  then FileStream := TFileStream.Create(FileName, fmOpenReadWrite)
+  then FileStream := TFileStream.Create(FileName, fmOpenWrite)
   else FileStream := TFileStream.Create(FileName, fmCreate);
  with FileStream do
   try

@@ -425,6 +425,8 @@ end;
 destructor TCustomAudioFileWAV.Destroy;
 begin
  FreeAndNil(FFormatChunk);
+ if assigned(FFactChunk)
+  then FreeAndNil(FFactChunk);
  inherited;
 end;
 
@@ -1052,7 +1054,7 @@ begin
        if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
        SaveToStream(Stream);
       finally
-      FreeAndNil(DataDecoder);
+      FreeAndNil(DataEncoder);
      end;
 
     assert(Position = ChunkEnd);

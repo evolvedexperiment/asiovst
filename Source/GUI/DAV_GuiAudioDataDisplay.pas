@@ -140,7 +140,7 @@ constructor TCustomGuiAudioDataDisplay.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
-  ControlStyle        := ControlStyle - [csOpaque];
+  ControlStyle        := ControlStyle + [csOpaque];
   FLineColor          := clBlack;
   FSolidColor         := clRed;
   FDisplayedChannel   := -1;
@@ -160,6 +160,7 @@ destructor TCustomGuiAudioDataDisplay.Destroy;
 begin
  FreeAndNil(FCursor);
  FreeAndNil(FBuffer);
+ FreeAndNil(FXAxis);
  inherited;
 end;
 

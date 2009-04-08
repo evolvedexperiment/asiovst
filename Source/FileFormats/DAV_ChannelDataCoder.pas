@@ -15,7 +15,7 @@ type
 
   TDitherType = (dtNone, dtUniform, dtTriangular, dtGauss);
 
-  TCustomChannelDataCoder = class
+  TCustomChannelDataCoder = class(TInterfacedPersistent, IStreamPersist)
   private
     procedure SetChannelCount(const Value: Cardinal);
     procedure SetBlockSize(const Value: Cardinal);
@@ -32,13 +32,14 @@ type
     procedure SampleFramesChanged; virtual; abstract;
   public
     constructor Create; virtual;
+    destructor Destroy; override;
+
     procedure SetBlockSizeAndChannelCount(const BlockSize, ChannelCount: Cardinal); virtual;
 
-    procedure LoadFromStream(const Stream: TStream); virtual; abstract;
-    procedure SaveToStream(const Stream: TStream); virtual; abstract;
+    procedure LoadFromStream(Stream: TStream); virtual; abstract;
+    procedure SaveToStream(Stream: TStream); virtual; abstract;
     procedure LoadFromPointer(const Data: Pointer); virtual; abstract;
     procedure SaveToPointer(const Data: Pointer); virtual; abstract;
-
     property ChannelCount: Cardinal read FChannelCount write SetChannelCount;
     property BlockSize: Cardinal read FBlockSize write SetBlockSize;
     property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames;
@@ -52,6 +53,7 @@ type
     procedure ChannelCountChanged; override;
     procedure ReallocateChannelMemory; override;
   public
+    destructor Destroy; override;
     property ChannelPointer[Index: Integer]: PDAVSingleFixedArray read GetChannelPointer;
   end;
 
@@ -60,8 +62,8 @@ type
     procedure InterleaveData; virtual; abstract;
     procedure DeinterleaveData; virtual; abstract;
   public
-    procedure LoadFromStream(const Stream: TStream); override;
-    procedure SaveToStream(const Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromPointer(const Data: Pointer); override;
     procedure SaveToPointer(const Data: Pointer); override;
   end;
@@ -70,10 +72,7 @@ type
   TCustomChannel32DataCoderFixedPoint = class(TCustomPCMChannel32DataCoder)
   private
     procedure SetDitherType(const Value: TDitherType);
-    procedure CalculateScaleFactors;
     procedure SetByteAlign(const Value: TByteAlign);
-    procedure CalculateSampleFrames;
-    procedure CalculateBlockSize;
   protected
     FDitherType  : TDitherType;
     FBits        : Byte;
@@ -81,6 +80,9 @@ type
     FScaleFactor : Array [0..1] of Single;
     FByteAlign   : TByteAlign;
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
+    procedure CalculateScaleFactors; virtual;
+    procedure CalculateSampleFrames; virtual;
+    procedure CalculateBlockSize; virtual;
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
     procedure ChannelCountChanged; override;
@@ -119,7 +121,7 @@ type
     property Dither;
   end;
 
-  TChannel32DataCoder킠aw = class(TCustomChannel32DataCoderFixedPoint)
+  TChannel32DataCoderMuLaw = class(TCustomChannel32DataCoderFixedPoint)
   protected
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
@@ -172,8 +174,8 @@ type
     procedure EncodeData; virtual; abstract;
     procedure DecodeData; virtual; abstract;
   public
-    procedure LoadFromStream(const Stream: TStream); override;
-    procedure SaveToStream(const Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromPointer(const Data: Pointer); override;
     procedure SaveToPointer(const Data: Pointer); override;
   end;
@@ -214,8 +216,8 @@ type
   TCustomACMChannel32DataCoder = class(TCustomChannel32DataCoder)
   public
     constructor Create; override;
-    procedure LoadFromStream(const Stream: TStream); override;
-    procedure SaveToStream(const Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromPointer(const Data: Pointer); override;
     procedure SaveToPointer(const Data: Pointer); override;
   end;
@@ -228,6 +230,7 @@ type
     procedure ChannelCountChanged; override;
     procedure ReallocateChannelMemory; override;
   public
+    constructor Create; override;
     property ChannelPointer[Index: Integer]: PDAVDoubleFixedArray read GetChannelPointer;
   end;
 
@@ -236,8 +239,8 @@ type
     procedure InterleaveData; virtual; abstract;
     procedure DeinterleaveData; virtual; abstract;
   public
-    procedure LoadFromStream(const Stream: TStream); override;
-    procedure SaveToStream(const Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromPointer(const Data: Pointer); override;
     procedure SaveToPointer(const Data: Pointer); override;
   end;
@@ -317,6 +320,12 @@ begin
  BlockSizeChanged;
 end;
 
+destructor TCustomChannelDataCoder.Destroy;
+begin
+ Dispose(FBlockBuffer);
+ inherited;
+end;
+
 procedure TCustomChannelDataCoder.BlockSizeChanged;
 begin
  ReallocMem(FBlockBuffer, FBlockSize);
@@ -372,6 +381,15 @@ begin
  ReallocateChannelMemory;
 end;
 
+destructor TCustomChannel32DataCoder.Destroy;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to Length(FChannelArray) - 1
+  do Dispose(FChannelArray[Channel]);
+ inherited;
+end;
+
 function TCustomChannel32DataCoder.GetChannelPointer(
   Index: Integer): PDAVSingleFixedArray;
 begin
@@ -390,7 +408,7 @@ end;
 
 { TCustomPCMChannel32DataCoder }
 
-procedure TCustomPCMChannel32DataCoder.LoadFromStream(const Stream: TStream);
+procedure TCustomPCMChannel32DataCoder.LoadFromStream(Stream: TStream);
 begin
  Stream.Read(FBlockBuffer^[0], FBlockSize);
  DeinterleaveData;
@@ -402,7 +420,7 @@ begin
  DeinterleaveData;
 end;
 
-procedure TCustomPCMChannel32DataCoder.SaveToStream(const Stream: TStream);
+procedure TCustomPCMChannel32DataCoder.SaveToStream(Stream: TStream);
 begin
  InterleaveData;
  Stream.Write(FBlockBuffer^[0], FBlockSize);
@@ -570,7 +588,7 @@ begin
       for Sample := 0 to FSampleFrames - 1 do
        begin
         DataInt := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);// shl 8;
-        Move(DataInt, PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel], 3);
+        Move(DataInt, PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel)], 3);
        end;
   4: for Sample := 0 to FSampleFrames - 1 do
       for Channel := 0 to FChannelCount
@@ -601,9 +619,9 @@ begin
        do FChannelArray[Channel]^[Sample] := PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * FScaleFactor[1];
   3: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
-       do FChannelArray[Channel]^[Sample] := (ShortInt(PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel + 2]) shl 16 +
-                                                       PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel + 1]  shl 8 +
-                                                       PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel]) * FScaleFactor[1];
+       do FChannelArray[Channel]^[Sample] := (ShortInt(PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 2]) shl 16 +
+                                                       PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 1]  shl 8 +
+                                                       PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel)]) * FScaleFactor[1];
   4: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
        do FChannelArray[Channel]^[Sample] := PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * FScaleFactor[1];
@@ -791,14 +809,14 @@ begin
 end;
 
 
-{ TChannel32DataCoder킠aw }
+{ TChannel32DataCoderMuLaw }
 
 (*
 http://hazelware.luggle.com/tutorials/mulawcompression.html
 http://www.codeproject.com/KB/security/g711audio.aspx
 *)
 
-constructor TChannel32DataCoder킠aw.Create;
+constructor TChannel32DataCoderMuLaw.Create;
 begin
  FBits        := 8;
  FSampleSize  := 1;
@@ -808,7 +826,7 @@ end;
 const
   CBias : Integer = $84;
   CClip : Integer = 32635;
-  C킠awCompressTable : array [0..255] of Byte =
+  CMuLawCompressTable : array [0..255] of Byte =
     (0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
      4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
      5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -836,19 +854,19 @@ begin
  if Sign <> 0 then Input := -Input;
  if Input > CClip then Input := cClip;
  Input := Input + cBias;
- Exponent := C킠awCompressTable[(Input shr 7) and $FF];
+ Exponent := CMuLawCompressTable[(Input shr 7) and $FF];
  Mantissa := (Input shr (Exponent + 3)) and $0F;
  result := not (sign or (exponent shl 4) or mantissa);
 end;
 
-function Encode킠aw(Input: Single):Single;
+function EncodeMuLaw(Input: Single):Single;
 const
   CS : Single = 0.18033688011112042591999058512524;
 begin
  Result := Sign(Input) * Ln(1 + 255 * abs(Input)) * CS
 end;
 
-procedure TChannel32DataCoder킠aw.InterleaveData;
+procedure TChannel32DataCoderMuLaw.InterleaveData;
 var
   Sample  : Cardinal;
   Channel : Cardinal;
@@ -857,11 +875,11 @@ begin
  assert(Length(FChannelArray) = Integer(FChannelCount));
  for Sample := 0 to FSampleFrames - 1 do
   for Channel := 0 to FChannelCount
-   do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(Encode킠aw(127 + FChannelArray[Channel]^[Sample] * FScaleFactor[0]));
+   do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(EncodeMuLaw(127 + FChannelArray[Channel]^[Sample] * FScaleFactor[0]));
 end;
 
 const
-  C킠awDecompressTable : array [0..255] of SmallInt = (
+  CMuLawDecompressTable : array [0..255] of SmallInt = (
      -32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956,
      -23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764,
      -15996, -15484, -14972, -14460, -13948, -13436, -12924, -12412,
@@ -896,7 +914,7 @@ const
          56,     48,     40,     32,     24,     16,      8,      0
 );
 
-procedure TChannel32DataCoder킠aw.DeinterleaveData;
+procedure TChannel32DataCoderMuLaw.DeinterleaveData;
 var
   Sample  : Cardinal;
   Channel : Cardinal;
@@ -907,7 +925,7 @@ begin
  assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
-   do FChannelArray[Channel]^[Sample] := C킠awDecompressTable[(PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel])] * CScale;
+   do FChannelArray[Channel]^[Sample] := CMuLawDecompressTable[(PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel])] * CScale;
 end;
 
 
@@ -1102,11 +1120,11 @@ end;
 
 procedure TCustomADPCMChannel32DataCoder.LoadFromPointer(const Data: Pointer);
 begin
- Move(Data^, FBlockBuffer, FBlockSize);
+ Move(Data^, FBlockBuffer^[0], FBlockSize);
  DecodeData;
 end;
 
-procedure TCustomADPCMChannel32DataCoder.LoadFromStream(const Stream: TStream);
+procedure TCustomADPCMChannel32DataCoder.LoadFromStream(Stream: TStream);
 begin
  Stream.Read(FBlockBuffer^[0], FBlockSize);
  DecodeData;
@@ -1115,13 +1133,13 @@ end;
 procedure TCustomADPCMChannel32DataCoder.SaveToPointer(const Data: Pointer);
 begin
  EncodeData;
- Move(FBlockBuffer, Data^, FBlockSize);
+ Move(FBlockBuffer^[0], Data^, FBlockSize);
 end;
 
-procedure TCustomADPCMChannel32DataCoder.SaveToStream(const Stream: TStream);
+procedure TCustomADPCMChannel32DataCoder.SaveToStream(Stream: TStream);
 begin
  EncodeData;
- Stream.Write(FBlockBuffer, FBlockSize);
+ Stream.Write(FBlockBuffer^[0], FBlockSize);
 end;
 
 
@@ -1434,11 +1452,11 @@ end;
 
 procedure TCustomACMChannel32DataCoder.LoadFromPointer(const Data: Pointer);
 begin
- Move(Data^, FBlockBuffer, FBlockSize);
+ Move(Data^, FBlockBuffer^[0], FBlockSize);
 // DeinterleaveData;
 end;
 
-procedure TCustomACMChannel32DataCoder.LoadFromStream(const Stream: TStream);
+procedure TCustomACMChannel32DataCoder.LoadFromStream(Stream: TStream);
 begin
  Stream.Read(FBlockBuffer^[0], FBlockSize);
 // DeinterleaveData;
@@ -1447,13 +1465,13 @@ end;
 procedure TCustomACMChannel32DataCoder.SaveToPointer(const Data: Pointer);
 begin
 // InterleaveData;
- Move(FBlockBuffer, Data^, FBlockSize);
+ Move(FBlockBuffer^[0], Data^, FBlockSize);
 end;
 
-procedure TCustomACMChannel32DataCoder.SaveToStream(const Stream: TStream);
+procedure TCustomACMChannel32DataCoder.SaveToStream(Stream: TStream);
 begin
 // InterleaveData;
- Stream.Write(FBlockBuffer, FBlockSize);
+ Stream.Write(FBlockBuffer^[0], FBlockSize);
 end;
 
 
@@ -1464,6 +1482,15 @@ procedure TCustomChannel64DataCoder.ChannelCountChanged;
 begin
  SetLength(FChannelArray, FChannelCount);
  ReallocateChannelMemory;
+end;
+
+constructor TCustomChannel64DataCoder.Create;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to Length(FChannelArray) - 1
+  do Dispose(FChannelArray[Channel]);
+ inherited;
 end;
 
 function TCustomChannel64DataCoder.GetChannelPointer(
@@ -1484,7 +1511,7 @@ end;
 
 { TCustomPCMChannel64DataCoder }
 
-procedure TCustomPCMChannel64DataCoder.LoadFromStream(const Stream: TStream);
+procedure TCustomPCMChannel64DataCoder.LoadFromStream(Stream: TStream);
 begin
  Stream.Read(FBlockBuffer^[0], FBlockSize);
  DeinterleaveData;
@@ -1492,20 +1519,20 @@ end;
 
 procedure TCustomPCMChannel64DataCoder.LoadFromPointer(const Data: Pointer);
 begin
- Move(Data^, FBlockBuffer, FBlockSize);
+ Move(Data^, FBlockBuffer^[0], FBlockSize);
  DeinterleaveData;
 end;
 
-procedure TCustomPCMChannel64DataCoder.SaveToStream(const Stream: TStream);
+procedure TCustomPCMChannel64DataCoder.SaveToStream(Stream: TStream);
 begin
  InterleaveData;
- Stream.Write(FBlockBuffer, FBlockSize);
+ Stream.Write(FBlockBuffer^[0], FBlockSize);
 end;
 
 procedure TCustomPCMChannel64DataCoder.SaveToPointer(const Data: Pointer);
 begin
  InterleaveData;
- Move(FBlockBuffer, Data^, FBlockSize);
+ Move(FBlockBuffer^[0], Data^, FBlockSize);
 end;
 
 { TCustomChannel64DataCoderFixed }
