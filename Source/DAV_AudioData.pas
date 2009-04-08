@@ -37,7 +37,7 @@ interface
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 uses
-  Windows, Classes, DAV_Common;
+  Windows, Classes, SysUtils, DAV_Common, DAV_AudioFile, DAV_ChannelDataCoder;
 
 type
   {$IFDEF DELPHI10_UP} {$region 'SampleRateSource classes'} {$ENDIF}
@@ -324,6 +324,7 @@ type
   private
     FSampleFrames : Cardinal;
     FExternalData : Boolean;
+    FOnDataChanged: TNotifyEvent;
     function GetChannelCount: Integer;
     procedure SetChannelCount(const Value: Integer);
     procedure SetSampleFrames(const Value: Cardinal);
@@ -333,10 +334,20 @@ type
     procedure CreateChannels; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
     property ExternalData: Boolean read FExternalData;
+
+    procedure BeginReadAudioData(Sender: TObject);
+    procedure BeginWriteAudioData(Sender: TObject);
+
+    procedure DataDecoding(Sender: TObject;
+      const Coder: TCustomChannelDataCoder; var Position: Cardinal); virtual; abstract;
+    procedure DataEncoding(Sender: TObject;
+      const Coder: TCustomChannelDataCoder; var Position: Cardinal); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); overload; override;
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); reintroduce; overload; virtual; abstract;
     destructor Destroy; override;
+
+    procedure DataChanged; virtual;
 
     // some processing functions
     procedure Add(Constant: Double); virtual;
@@ -347,9 +358,16 @@ type
     procedure Rectify; virtual;
     procedure RemoveDC; virtual;
 
+    // File I/O
+    procedure LoadFromFile(const FileName: TFileName); virtual;
+    procedure SaveToFile(const FileName: TFileName); virtual;
+
     property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames default 0;
     property Channels: TCustomAudioChannels read FChannels write FChannels;
     property ChannelCount: Integer read GetChannelCount write SetChannelCount;
+
+    // Events
+    property OnDataChanged: TNotifyEvent read FOnDataChanged write FOnDataChanged; 
   end;
 
   TCustomAudioDataCollection32 = class(TCustomAudioDataCollection)
@@ -360,6 +378,11 @@ type
     procedure RebuildChannelList(Sender: TObject);
   protected
     procedure CreateChannels; override;
+    procedure DataDecoding(Sender: TObject;
+      const Coder: TCustomChannelDataCoder; var Position: Cardinal); override;
+    procedure DataEncoding(Sender: TObject;
+      const Coder: TCustomChannelDataCoder; var Position: Cardinal); override;
+
     property ChannelList[index: Integer]: TAudioChannel32 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); override;
@@ -372,6 +395,7 @@ type
     property SampleFrames;
     property SampleRate;
     property SampleRateSource;
+    property OnDataChanged;
   end;
 
   TCustomAudioDataCollection64 = class(TCustomAudioDataCollection)
@@ -382,6 +406,11 @@ type
     procedure RebuildChannelList(Sender: TObject);
   protected
     procedure CreateChannels; override;
+    procedure DataDecoding(Sender: TObject;
+      const Coder: TCustomChannelDataCoder; var Position: Cardinal); override;
+    procedure DataEncoding(Sender: TObject;
+      const Coder: TCustomChannelDataCoder; var Position: Cardinal); override;
+
     property ChannelList[index: Integer]: TAudioChannel64 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); override;
@@ -394,13 +423,17 @@ type
     property SampleFrames;
     property SampleRate;
     property SampleRateSource;
+    property OnDataChanged;
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 implementation
 
 uses
-  SysUtils, Math;
+  Math;
+
+resourcestring
+  RCStrNoAudioFileFormat = 'No audio file format registered';
 
 {$IFDEF DELPHI10_UP} {$region 'SampleRateSource implementation'} {$ENDIF}
 
@@ -1182,6 +1215,12 @@ begin
  CreateChannels;
 end;
 
+procedure TCustomAudioDataCollection.DataChanged;
+begin
+ if assigned(FOnDataChanged)
+  then FOnDataChanged(Self);
+end;
+
 destructor TCustomAudioDataCollection.Destroy;
 begin
  if assigned(FChannels) then FreeAndNil(FChannels);
@@ -1273,6 +1312,76 @@ begin
   end;
 end;
 
+procedure TCustomAudioDataCollection.BeginReadAudioData(Sender: TObject);
+begin
+ SampleFrames := TCustomAudioFile(Sender).SampleFrames;
+ ChannelCount := TCustomAudioFile(Sender).ChannelCount;
+end;
+
+procedure TCustomAudioDataCollection.BeginWriteAudioData(Sender: TObject);
+begin
+ // nothing to do yet, but lock data in the future...
+end;
+
+procedure TCustomAudioDataCollection.LoadFromFile(const FileName: TFileName);
+var
+  i : Integer;
+begin
+ if Length(AudioFileFormats) = 0
+  then raise Exception.Create(RCStrNoAudioFileFormat);
+
+ // search file format that can load the file
+ for i := 0 to Length(AudioFileFormats) - 1 do
+  if AudioFileFormats[i].CanLoad(FileName) then
+   begin
+    with AudioFileFormats[i].Create(Self) do
+     try
+      OnDecode := DataDecoding;
+      OnBeginReadAudioData := BeginReadAudioData;
+      LoadFromFile(FileName);
+     finally
+      Free;
+     end;
+
+    DataChanged;
+
+    // file loaded succesfully, now exit!
+    exit;
+   end;
+
+ // no file format found
+ raise Exception.CreateFmt('Could not load file %s!', [FileName]);
+end;
+
+procedure TCustomAudioDataCollection.SaveToFile(const FileName: TFileName);
+var
+  i : Integer;
+begin
+ if Length(AudioFileFormats) = 0
+  then raise Exception.Create(RCStrNoAudioFileFormat);
+
+ for i := 0 to Length(AudioFileFormats) - 1 do
+  if UpperCase(ExtractFileExt(FileName)) = '.' + AudioFileFormats[i].DefaultExtension then
+   begin
+    with AudioFileFormats[i].Create(Self) do
+     try
+      SampleFrames  := Self.SampleFrames;
+      ChannelCount  := Self.ChannelCount;
+(*
+      BitsPerSample := 24;
+      Encoding      := aeInteger;
+*)
+      OnEncode      := DataEncoding;
+      SaveToFile(FileName);
+     finally
+      Free;
+     end;
+    exit;
+   end;
+
+ raise Exception.CreateFmt('Could not save file %s!', [FileName]);
+end;
+
 procedure TCustomAudioDataCollection.SetChannelCount(const Value: Integer);
 begin
  // delete or add channels until the count matches the desired channel count
@@ -1353,6 +1462,33 @@ begin
  result := ChannelList[Channel].ChannelDataPointer;
 end;
 
+procedure TCustomAudioDataCollection32.DataDecoding(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  for Channel := 0 to ChannelCount - 1
+   do Move(ChannelPointer[Channel]^[0],
+        ChannelList[Channel].ChannelDataPointer^[Position],
+        SampleFrames * SizeOf(Single));
+ // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
+end;
+
+procedure TCustomAudioDataCollection32.DataEncoding(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  for Channel := 0 to ChannelCount - 1
+   do Move(ChannelList[Channel].ChannelDataPointer^[Position],
+        ChannelPointer[Channel]^[0], SampleFrames * SizeOf(Single));
+ // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
+end;
+
 { TCustomAudioDataCollection64 }
 
 constructor TCustomAudioDataCollection64.Create(AOwner: TComponent;
@@ -1384,6 +1520,33 @@ procedure TCustomAudioDataCollection64.CreateChannels;
 begin
  FChannels := TCustomAudioChannels.Create(Self, TAudioChannel64);
  FChannels.OnChanged := RebuildChannelList;
+end;
+
+procedure TCustomAudioDataCollection64.DataDecoding(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ if Coder is TCustomChannel64DataCoder then
+  with TCustomChannel64DataCoder(Coder) do
+   for Channel := 0 to ChannelCount - 1
+    do Move(ChannelPointer[Channel]^[Position],
+         ChannelList[Channel].ChannelDataPointer^[Position],
+         SampleFrames * SizeOf(Single));
+// Position := Position + Coder.SampleFrames; // not necessary, increnmented by caller!
+end;
+
+procedure TCustomAudioDataCollection64.DataEncoding(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ if Coder is TCustomChannel64DataCoder then
+  with TCustomChannel64DataCoder(Coder) do
+   for Channel := 0 to ChannelCount - 1
+    do Move(ChannelList[Channel].ChannelDataPointer^[Position],
+         ChannelPointer[Channel]^[Position], SampleFrames * SizeOf(Single));
+// Position := Position + Coder.SampleFrames; // not necessary, increnmented by caller!
 end;
 
 procedure TCustomAudioDataCollection64.RebuildChannelList(Sender: TObject);

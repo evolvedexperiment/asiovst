@@ -78,11 +78,13 @@ type
     FChunkSize         : Cardinal;
     FTotalNrOfSamples  : Cardinal;
     FFormatChunk       : TFormatChunk;
+    FFactChunk         : TFactChunk;
 //    FBextChunk         : PBextRecord;
 //    FCartChunk         : PCartRecord;
 //    FFileTags          : TObjectList;
     FBytesPerSample    : Integer;
     FAudioDataPosition : Cardinal;
+    FFormatChunkFound  : Boolean;
     procedure ReadAudioDataFromStream(const Stream: TStream);
     procedure WriteAudioDataToStream(const Stream: TStream);
     procedure ReadItaHeaderChunk(const Stream: TStream);
@@ -129,6 +131,13 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    // file format identifier
+    class function DefaultExtension: string; override;
+    class function Description: string; override;
+    class function FileFormatFilter: string; override;
+    class function CanLoad(const Stream: TStream): Boolean; override;
+
     property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
     property BytesPerSample: Integer read FBytesPerSample;
     property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
@@ -140,12 +149,6 @@ type
     property ChannelCount;
     property SampleFrames;
     property TotalTime;
-(*
-    property OnLoadData32;
-    property OnLoadData64;
-    property OnSaveData32;
-    property OnSaveData64;
-*)
     property BitsPerSample;
     property BytesPerSample;
     property Encoding;
@@ -157,12 +160,12 @@ var
 implementation
 
 resourcestring
-  rcRIFFChunkNotFound  = 'This is not a RIFF file!';
-  rcRIFFSizeMismatch   = 'Filesize mismatch';
-  rcWAVEChunkNotFound  = 'This is not a WAVE file!';
-  rcFMTChunkDublicate  = 'One format chunk has already been found!';
-  rcFACTChunkDublicate = 'One fact chunk has already been found!';
-  rcDATAChunkDublicate = 'Only one data chunk supported!';
+  RCRIFFChunkNotFound  = 'This is not a RIFF file!';
+  RCRIFFSizeMismatch   = 'Filesize mismatch';
+  RCWAVEChunkNotFound  = 'This is not a WAVE file!';
+  RCFMTChunkDublicate  = 'More than one format chunk found!';
+  RCFACTChunkDublicate = 'More than one fact chunk found!';
+  RCDATAChunkDublicate = 'Only one data chunk supported!';
 
 function WaveChunkClassByName(Value: string): TWaveChunkClass;
 var
@@ -425,6 +428,44 @@ begin
  inherited;
 end;
 
+class function TCustomAudioFileWAV.DefaultExtension: string;
+begin
+ result := 'WAV';
+end;
+
+class function TCustomAudioFileWAV.Description: string;
+begin
+ result := 'Microsoft RIFF WAVE';
+end;
+
+class function TCustomAudioFileWAV.FileFormatFilter: string;
+begin
+ result := Description + ' (*.' + DefaultExtension + ')|*.wav*'
+end;
+
+class function TCustomAudioFileWAV.CanLoad(const Stream: TStream): Boolean;
+var
+  ChunkName : TChunkName;
+  ChunkSize : Cardinal;
+begin
+ result := False;
+ with Stream do
+  begin
+   // check whether file is a resource interchange file format ('RIFF')
+   Read(ChunkName, 4);
+   if ChunkName <> 'RIFF' then exit;
+
+   // check whether the real file size match the filesize stored inside the RIFF chunk
+   Read(ChunkSize, 4);
+   if (ChunkSize > Size - Position) and not (ChunkSize = $FFFFFFFF) then exit;
+
+   // now specify the RIFF file to be a WAVE file
+   Read(ChunkName, 4);
+   if ChunkName <> 'WAVE' then exit;
+  end;
+ result := True;
+end;
+
 function TCustomAudioFileWAV.GetChannels: Cardinal;
 begin
  result := FFormatChunk.Channels;
@@ -463,7 +504,7 @@ begin
   if BitsPerSample <> Value then
    begin
     BitsPerSample   := Value;
-    FBytesPerSample := (BitsPerSample + 7) div 8; 
+    FBytesPerSample := (BitsPerSample + 7) div 8;
     BlockAlign      := Channels * FBytesPerSample;
     BytesPerSecond  := BlockAlign * SampleRate;
 //    BitsPerSampleChanged;
@@ -534,13 +575,15 @@ procedure TCustomAudioFileWAV.ParseChunkInformation(const Stream: TStream);
 var
   ChunkName    : TChunkName;
   ChunkEnd     : Cardinal;
-  ChunksReaded : TWaveChunkTypes;
 begin
  with Stream do
   begin
-   // start parsing here
-   ChunksReaded := [];
+   // clear all chunks
+   if assigned(FFactChunk) then FreeAndNil(FFactChunk);
 
+   FFormatChunkFound := False;
+
+   // start parsing here
    ChunkEnd := Position + FChunkSize - 4;
    while Position < ChunkEnd do
     begin
@@ -578,41 +621,37 @@ begin
 end;
 
 procedure TCustomAudioFileWAV.ReadFormatChunk(const Stream: TStream);
-var
-  ChunksReaded : TWaveChunkTypes;
 begin
  with Stream do
-  if ctFormat in ChunksReaded
-   then raise EWavError.Create(rcFMTChunkDublicate)
-   else
-    begin
-     FFormatChunk.LoadFromStream(Stream);
-     ChunksReaded := ChunksReaded + [ctFormat];
-    end;
+  begin
+   // check whether format chunk has already been created
+   if FFormatChunkFound
+    then raise Exception.Create(RCFACTChunkDublicate);
+
+   // load format chunk
+   FFormatChunk.LoadFromStream(Stream);
+   FFormatChunkFound := True;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.ReadFactChunk(const Stream: TStream);
-var
-  ChunksReaded : TWaveChunkTypes;
 begin
  with Stream do
-  if ctFact in ChunksReaded
-   then raise EWavError.Create(rcFACTChunkDublicate)
-   else
-    begin
-     // check whether fact chunk has already been created
-     with TFactChunk.Create do
-      try
-       // now load fact chunk
-       LoadFromStream(Stream);
+  begin
+   // check whether fact chunk has already been created
+   if assigned(FFactChunk)
+    then raise Exception.Create(RCFACTChunkDublicate);
 
-       // now only use the sample count information
-       FTotalNrOfSamples := SampleFrames;
-      finally
-       Free;
-      end;
-     ChunksReaded := ChunksReaded + [ctFact];
+   FFactChunk := TFactChunk.Create;
+   with FFactChunk do
+    begin
+     // now load fact chunk
+     LoadFromStream(Stream);
+
+     // now only use the sample count information
+     FTotalNrOfSamples := SampleCount;
     end;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.ReadDataChunk(const Stream: TStream);
@@ -628,6 +667,10 @@ begin
      FAudioDataPosition := Position;
      Position := Position + 4;
      Read(DataSize, 4);
+
+     // eventually set total number of samples
+     if not assigned(FFactChunk)
+      then FTotalNrOfSamples := DataSize div FFormatChunk.BlockAlign;
 
      Position := Position + DataSize;
 
@@ -894,27 +937,37 @@ begin
  case FFormatChunk.FormatTag of
   etPcm:
    begin
-    result := TChannel32DataCoderFixed.Create;
-    result.BlockSize := 16384;
-    result.ChannelCount := FFormatChunk.Channels;
-    with TChannel32DataCoderFixed(result), FFormatChunk
-     do SetBitsAndSampleSize(SampleSize, BlockAlign);
+    result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(result), FFormatChunk
+     do SetBitsAndSampleSize(ValidBitsPerSample, BlockAlign div Channels);
    end;
   etPcmFloat:
-    begin
-     result := TChannel32DataCoderFloat32.Create;
-     result.BlockSize := 16384;
+    case FFormatChunk.BlockAlign div FFormatChunk.Channels of
+      2 : result := TChannel32DataCoderFloat16.Create;
+      4 : result := TChannel32DataCoderFloat32.Create;
+      8 : result := TChannel32DataCoderFloat64.Create;
+     else result := nil
     end;
+  etALaw: result := TChannel32DataCoderALaw.Create;
+  etMuLaw: result := TChannel32DataCoderµLaw.Create;
   else result := nil;
  end;
+
+ // set blocksize
+ if assigned(result) then
+  with result do
+   begin
+    BlockSize := 16384;
+    ChannelCount := FFormatChunk.Channels;
+   end;
 end;
 
 procedure TCustomAudioFileWAV.ReadAudioDataFromStream(const Stream: TStream);
 var
   ChunkName   : TChunkName;
+  ChunkSize   : Cardinal;
   DataDecoder : TCustomChannelDataCoder;
-  DataFrames  : Cardinal;
-  Samples     : Integer;
+  Samples     : Cardinal;
 begin
  with Stream do
   begin
@@ -924,27 +977,32 @@ begin
    Read(ChunkName, 4);
    assert(ChunkName = 'data');
 
-   Read(DataFrames, 4);
+   Read(ChunkSize, 4);
 
    DataDecoder := CreateDataCoder;
    if not assigned(DataDecoder) then exit;
 
+   if assigned(FOnBeginRead)
+    then FOnBeginRead(Self);
+
    with DataDecoder do
     try
-     Samples   := 0;
-     while Samples + SampleFrames < DataFrames do
+     Samples := 0;
+     while Samples + SampleFrames < Self.FTotalNrOfSamples do
       begin
        LoadFromStream(Stream);
-       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder);
+       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+
        Samples := Samples + SampleFrames;
       end;
 
-      SampleFrames := DataFrames - Samples;
+      SampleFrames := Self.FTotalNrOfSamples - Samples;
       LoadFromStream(Stream);
-      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder);
+      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
     finally
      FreeAndNil(DataDecoder);
     end;
+   assert((Stream.Position - FAudioDataPosition - 8) <= ChunkSize);
   end;
 end;
 
@@ -953,8 +1011,8 @@ var
   ChunkName   : TChunkName;
   ChunkSize   : Cardinal;
   ChunkEnd    : Cardinal;
-  DataDecoder : TCustomChannelDataCoder;
-  Samples     : Integer;
+  DataEncoder : TCustomChannelDataCoder;
+  Samples     : Cardinal;
 begin
  // check if sample
  if SampleFrames > 0 then
@@ -962,32 +1020,36 @@ begin
    begin
     FAudioDataPosition := Position;
 
-    // ToDo: write data here!
+    // write 'data' chunk name
     ChunkName := 'data';
     Write(ChunkName, 4);
 
+    // write chunk size
     ChunkSize := FFormatChunk.BlockAlign * SampleFrames;
     Write(ChunkSize, 4);
 
-    with FFormatChunk
-     do ChunkEnd := Stream.Position + BlockAlign * SampleFrames;
+    // calculate chunk end (to ensure the above value is correct)
+    ChunkEnd := Stream.Position + ChunkSize;
 
-    DataDecoder := CreateDataCoder;
-    if not assigned(DataDecoder) then exit;
+    DataEncoder := CreateDataCoder;
+    if not assigned(DataEncoder) then exit;
 
-    with DataDecoder do
+    if assigned(FOnBeginWrite)
+     then FOnBeginWrite(Self);
+
+    with DataEncoder do
      try
-      Samples   := 0;
-      while Samples + SampleFrames <= Self.SampleFrames do
+      Samples := 0;
+      while Samples + SampleFrames < Self.FTotalNrOfSamples do
        begin
-        if assigned(FOnEncode) then FOnEncode(Self, DataDecoder);
+        if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
         SaveToStream(Stream);
 
         Samples := Samples + SampleFrames;
        end;
 
-       SampleFrames := Self.SampleFrames - Samples;
-       if assigned(FOnEncode) then FOnEncode(Self, DataDecoder);
+       SampleFrames := Self.FTotalNrOfSamples - Samples;
+       if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
        SaveToStream(Stream);
       finally
       FreeAndNil(DataDecoder);
@@ -998,9 +1060,8 @@ begin
    end;
 end;
 
-
-
 initialization
+  RegisterFileFormat(TCustomAudioFileWAV);
 //  RegisterWaveChunk(TQualityChunk);
 
 end.

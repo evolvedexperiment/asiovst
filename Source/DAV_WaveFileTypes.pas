@@ -265,12 +265,11 @@ type
     BitsPerSample   : Word;     // = 3, 4, 8, 16 or 32 Bits/sample
   end;
 
-  TWavFormatChunkEx = packed record
+  PWavFormatChunkExtensible = ^TWavFormatChunkExtensible;
+  TWavFormatChunkExtensible = packed record
     SamplesPerBlock : Word;      // number of samples per channel per Block
     ChMask          : Integer;
-    ExtFormat       : Word;
-    AdPcmCoeffs     : Word;
-    GUIDrest        : TGUID;     // was array [0..71] of Byte;
+    GUID            : TGUID;     // was array [0..71] of Byte;
   end;
 
   TWavAdPcmCoefficientSet = packed record

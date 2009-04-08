@@ -8,7 +8,8 @@ uses
   Classes, SysUtils, DAV_Common, DAV_ChannelDataCoder;
 
 type
-  TChannelData32CodingEvent = procedure(Sender: TObject; const Coder: TCustomChannelDataCoder) of object;
+  TCodingEvent = procedure(Sender: TObject;
+    const Coder: TCustomChannelDataCoder; var Position: Cardinal) of object;
 
   {$IFDEF Delphi5}
   TAudioEncoding = (aeInteger, aeFloat, aeMP3, aeACM, aeADPCM,
@@ -23,8 +24,10 @@ type
   private
     FReadHeaderOnly : Boolean;
   protected
-    FOnEncode : TChannelData32CodingEvent;
-    FOnDecode : TChannelData32CodingEvent;
+    FOnEncode     : TCodingEvent;
+    FOnDecode     : TCodingEvent;
+    FOnBeginRead  : TNotifyEvent;
+    FOnBeginWrite : TNotifyEvent;
     function GetChannels: Cardinal; virtual; abstract;
     function GetSampleFrames: Cardinal; virtual; abstract;
     function GetSampleRate: Double; virtual; abstract;
@@ -42,17 +45,45 @@ type
     procedure LoadFromStream(Stream: TStream); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
 
+    // file format identifier
+    class function DefaultExtension: string; virtual; abstract;
+    class function Description: string; virtual; abstract;
+    class function FileFormatFilter: string; virtual; abstract;
+    class function CanLoad(const FileName: TFileName): Boolean; overload; virtual;
+    class function CanLoad(const Stream: TStream): Boolean; overload; virtual; abstract;
+
     property ReadHeaderOnly: Boolean read FReadHeaderOnly write FReadHeaderOnly;
     property SampleRate: Double read GetSampleRate write SetSampleRate;
     property ChannelCount: Cardinal read GetChannels write SetChannels;
     property SampleFrames: Cardinal read GetSampleFrames write SetSampleFrames;
     property TotalTime: Double read GetTotalTime; // = SampleFrames / SampleRate
 
-    property OnEncode: TChannelData32CodingEvent read FOnEncode write FOnEncode;
-    property OnDecode: TChannelData32CodingEvent read FOnDecode write FOnDecode;
+    property OnEncode: TCodingEvent read FOnEncode write FOnEncode;
+    property OnDecode: TCodingEvent read FOnDecode write FOnDecode;
+    property OnBeginReadAudioData: TNotifyEvent read FOnBeginRead write FOnBeginRead;
+    property OnBeginWriteAudioData: TNotifyEvent read FOnBeginWrite write FOnBeginWrite;
   end;
+  TAudioFileClass = class of TCustomAudioFile;
+
+var
+  AudioFileFormats: array of TAudioFileClass;
+
+procedure RegisterFileFormat(AClass: TAudioFileClass);
 
 implementation
+
+procedure RegisterFileFormat(AClass: TAudioFileClass);
+var
+  i : Integer;
+begin
+ // check if file format is already registered
+ for i := 0 to Length(AudioFileFormats) - 1 do
+  if AudioFileFormats[i] = AClass then exit;
+
+ // add file format to list
+ SetLength(AudioFileFormats, Length(AudioFileFormats) + 1);
+ AudioFileFormats[Length(AudioFileFormats) - 1] := AClass;
+end;
 
 { TCustomAudioFile }
 
@@ -66,6 +97,18 @@ destructor TCustomAudioFile.Destroy;
 begin
  // yet empty
  inherited;
+end;
+
+class function TCustomAudioFile.CanLoad(const FileName: TFileName): Boolean;
+var
+  FS : TFileStream;
+begin
+ FS := TFileStream.Create(FileName, fmOpenRead);
+ try
+  result := CanLoad(FS);
+ finally
+  FreeAndNil(FS);
+ end;
 end;
 
 function TCustomAudioFile.GetTotalTime: Double;

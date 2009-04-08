@@ -4,50 +4,74 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ToolWin, ComCtrls, ExtCtrls, DAV_Common, DAV_GuiStaticWaveform,
-  DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_AudioFile, DAV_AudioFileWav,
-  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_ASIOHost, DAV_AudioData,
-  DAV_GuiAudioDataDisplay;
+  Menus, ToolWin, ComCtrls, ExtCtrls, StdCtrls, Buttons, DAV_Common,
+  DAV_GuiStaticWaveform, DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_AudioFile,
+  DAV_AudioData, DAV_AudioFileWav, DAV_AudioFileAIFF, DAV_AudioFileAU,
+  DAV_ASIOHost, DAV_VSTHost, DAV_GuiAudioDataDisplay;
 
 type
   TFmAudioEditor = class(TForm)
     ASIOHost: TASIOHost;
-    BtPause: TToolButton;
-    BtPlay: TToolButton;
+    AudioDataCollection32: TAudioDataCollection32;
+    ControlBar1: TControlBar;
+    GuiAudioDataDisplay: TGuiAudioDataDisplay;
     GuiLevelMeter: TGuiLevelMeter;
     MainMenu: TMainMenu;
+    MIAbout: TMenuItem;
+    MIASIOSetup: TMenuItem;
+    MIEdit: TMenuItem;
     MIExit: TMenuItem;
     MIFile: TMenuItem;
     MIGenerate: TMenuItem;
+    MIHelp: TMenuItem;
     MIInvert: TMenuItem;
+    MINew: TMenuItem;
     MINoise: TMenuItem;
     MINormalize: TMenuItem;
     MIOpen: TMenuItem;
+    MIOptions: TMenuItem;
     MIProcess: TMenuItem;
     MIRectify: TMenuItem;
     MIRemoveDC: TMenuItem;
     MISave: TMenuItem;
     MISaveAs: TMenuItem;
-    MISetup: TMenuItem;
+    MIView: TMenuItem;
     N1: TMenuItem;
+    SpeedButton1: TSpeedButton;
+    Splitter1: TSplitter;
+    ToolBar1: TToolBar;
+    ToolBar2: TToolBar;
+    MIUndo: TMenuItem;
+    MIRedo: TMenuItem;
     N2: TMenuItem;
-    ToolBar: TToolBar;
-    GuiAudioDataDisplay: TGuiAudioDataDisplay;
-    AudioDataCollection32: TAudioDataCollection32;
+    MIAusschneiden: TMenuItem;
+    MIKopieren: TMenuItem;
+    MIPaste: TMenuItem;
+    MIDelete: TMenuItem;
+    N3: TMenuItem;
+    MISelectAll: TMenuItem;
+    MISelectNone: TMenuItem;
+    MIWaveform: TMenuItem;
+    WhiteNoise1: TMenuItem;
+    MIPinkNoise: TMenuItem;
+    VstHost: TVstHost;
+    MIVstSetup: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
-    procedure MISetupClick(Sender: TObject);
+    procedure MIASIOSetupClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
     procedure MISaveAsClick(Sender: TObject);
     procedure MINormalizeClick(Sender: TObject);
-    procedure MINoiseClick(Sender: TObject);
+    procedure MIWhiteNoiseClick(Sender: TObject);
     procedure MIRectifyClick(Sender: TObject);
     procedure MIRemoveDCClick(Sender: TObject);
     procedure MIInvertClick(Sender: TObject);
+    procedure DataChangedHandler(Sender: TObject);
+    procedure MIVstSetupClick(Sender: TObject);
   private
-    fFileName : TFileName;
+    FFileName : TFileName;
   public
-    property FileName: TFileName read fFileName;
+    property FileName: TFileName read FFileName;
   end;
 
 var
@@ -58,7 +82,12 @@ implementation
 {$R *.dfm}
 
 uses
-  WaveIOX, AESetup;
+  WaveIOX, AEAsioSetup, AEVstSetup;
+
+procedure TFmAudioEditor.DataChangedHandler(Sender: TObject);
+begin
+ GuiAudioDataDisplay.Invalidate;
+end;
 
 procedure TFmAudioEditor.FormCreate(Sender: TObject);
 var
@@ -106,7 +135,7 @@ begin
       end;
     end;
 
-   Invalidate
+   GuiAudioDataDisplay.Invalidate;
   end;
 end;
 
@@ -125,7 +154,7 @@ begin
       do chdata^[i] := abs(chdata^[i]);
     end;
 
-   Invalidate
+   GuiAudioDataDisplay.Invalidate;
   end;
 end;
 
@@ -151,7 +180,7 @@ begin
       do chdata^[i] := chdata^[i] - DC;
     end;
 
-   Invalidate
+   GuiAudioDataDisplay.Invalidate;
   end;
 end;
 
@@ -170,11 +199,11 @@ begin
       do chdata^[i] := -chdata^[i];
     end;
 
-   Invalidate
+   GuiAudioDataDisplay.Invalidate;
   end;
 end;
 
-procedure TFmAudioEditor.MINoiseClick(Sender: TObject);
+procedure TFmAudioEditor.MIWhiteNoiseClick(Sender: TObject);
 var
   ch, i  : Integer;
   chdata : PDAVSingleFixedArray;
@@ -190,42 +219,25 @@ begin
       do chdata^[i] := 2 * random - 1;
     end;
 
-   Invalidate
+   GuiAudioDataDisplay.Invalidate;
   end;
 end;
 
 procedure TFmAudioEditor.MIOpenClick(Sender: TObject);
-var
-  AudioFile : TCustomAudioFile;
 begin
  with TOpenDialog.Create(Self) do
   try
    DefaultExt := 'wav';
-   Filter := 'Wave File (*.wav)|*.wav|' +
+   Filter := 'All known files |*.wav;*.aif*;*.au|' +
+             'Wave File (*.wav)|*.wav|' +
              'AIFF File (*.aif)|*.aif*|' +
              'AU File (*.au)|*.au';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Load Audio File';
    if Execute then
     begin
-     fFileName := FileName;
-
-     // select file format
-     case FilterIndex of
-       1 : AudioFile := TCustomAudioFileWAV.Create(Self);
-       2 : AudioFile := TCustomAudioFileAIFF.Create(Self);
-       3 : AudioFile := TCustomAudioFileAU.Create(Self);
-      else raise Exception.Create('file format unknown');
-     end;
-
-     // if file format selected, load file
-     with AudioFile do
-      try
-       LoadFromFile(FileName);
-      finally
-       Free;
-      end;
-      
+     FFileName := FileName;
+     AudioDataCollection32.LoadFromFile(FileName);
     end;
   finally
    Free;
@@ -242,20 +254,20 @@ begin
    Title := 'Save Audio File';
    if Execute then
     begin
-     fFileName := FileName;
-     with TCustomAudioFileWAV.Create(Self) do
-      try
-       SaveToFile(FileName);
-      finally
-       Free;
-      end;
+     FFileName := FileName;
+     AudioDataCollection32.SaveToFile(FileName);
     end;
   finally
    Free;
   end;
 end;
 
-procedure TFmAudioEditor.MISetupClick(Sender: TObject);
+procedure TFmAudioEditor.MIVstSetupClick(Sender: TObject);
+begin
+ FmVstSetup.ShowModal;
+end;
+
+procedure TFmAudioEditor.MIASIOSetupClick(Sender: TObject);
 begin
  FmSetup.ShowModal;
 end;

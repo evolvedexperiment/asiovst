@@ -34,6 +34,7 @@ type
   TFormatChunk = class(TDefinedChunk)
   private
     function GetFormatTag: TWavEncoding;
+    function GetValidBitsPerSample: Word;
     procedure CalculateChunkSize;
     procedure SetBitsPerSample(const Value: Word);
     procedure SetBlockAlign(const Value: Word);
@@ -42,21 +43,24 @@ type
     procedure SetFormatTag(const Value: TWavEncoding);
     procedure SetSampleRate(const Value: Cardinal);
   protected
-    FFormatSpecific: array of Byte;
+    FFormatSpecific   : array of Byte;
+    FFormatExtensible : PWavFormatChunkExtensible;
+    FWaveFormatRecord : TWavFormatRecord;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    WaveFormatRecord : TWavFormatRecord;
     constructor Create; override;
+    destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
     class function GetClassChunkName: TChunkName; override;
   published
     property FormatTag: TWavEncoding read GetFormatTag write SetFormatTag;
-    property Channels: Word read WaveFormatRecord.Channels write SetChannels;
-    property SampleRate: Cardinal read WaveFormatRecord.SampleRate write SetSampleRate;
-    property BytesPerSecond: Cardinal read WaveFormatRecord.BytesPerSecond write SetBytesPerSecond;
-    property BlockAlign: Word read WaveFormatRecord.BlockAlign write SetBlockAlign;
-    property BitsPerSample: Word read WaveFormatRecord.BitsPerSample write SetBitsPerSample;
+    property Channels: Word read FWaveFormatRecord.Channels write SetChannels;
+    property SampleRate: Cardinal read FWaveFormatRecord.SampleRate write SetSampleRate;
+    property BytesPerSecond: Cardinal read FWaveFormatRecord.BytesPerSecond write SetBytesPerSecond;
+    property BlockAlign: Word read FWaveFormatRecord.BlockAlign write SetBlockAlign;
+    property BitsPerSample: Word read FWaveFormatRecord.BitsPerSample write SetBitsPerSample;
+    property ValidBitsPerSample: Word read GetValidBitsPerSample;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -727,7 +731,7 @@ end;
 constructor TFormatChunk.Create;
 begin
  inherited;
- with WaveFormatRecord do
+ with FWaveFormatRecord do
   begin
    FormatTag      := 1;     // PCM encoding by default
    Channels       := 1;     // one channel
@@ -739,12 +743,18 @@ begin
  SetLength(FFormatSpecific, 0);
 end;
 
+destructor TFormatChunk.Destroy;
+begin
+ Dispose(FFormatExtensible);
+ inherited;
+end;
+
 procedure TFormatChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TFormatChunk then
   begin
-   TFormatChunk(Dest).WaveFormatRecord := WaveFormatRecord;
+   TFormatChunk(Dest).FWaveFormatRecord := FWaveFormatRecord;
    SetLength(TFormatChunk(Dest).FFormatSpecific, Length(FFormatSpecific));
    Move(FFormatSpecific[0], TFormatChunk(Dest).FFormatSpecific[0], Length(FFormatSpecific));
   end;
@@ -764,7 +774,7 @@ begin
   begin
    // make sure the chunk size is at least the header size
    assert(FChunkSize >= SizeOf(TWavFormatRecord));
-   Read(WaveFormatRecord, SizeOf(TWavFormatRecord));
+   Read(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // check whether format specific data can be found:
    if FChunkSize <= SizeOf(TWavFormatRecord) then exit;
@@ -772,8 +782,27 @@ begin
 
    // read format specific bytes
    assert(FChunkSize >= SizeOf(TWavFormatRecord) + SizeOf(Word) + FormatSpecificBytes);
-   SetLength(FFormatSpecific, FormatSpecificBytes);
-   Read(FFormatSpecific[0], FormatSpecificBytes);
+
+   // check format extensible
+   if FWaveFormatRecord.FormatTag = $FFFE then
+    begin
+     // check length
+     if FormatSpecificBytes < SizeOf(TWavFormatChunkExtensible)
+      then raise Exception.Create('Extensible format chunk size too small');
+
+     // allocate memory for the extensible format
+     ReallocMem(FFormatExtensible, FormatSpecificBytes);
+
+     // read format extensible part
+     Read(FFormatExtensible^, FormatSpecificBytes);
+    end
+   else
+    begin
+     // assign general format specific data
+     SetLength(FFormatSpecific, FormatSpecificBytes);
+     Read(FFormatSpecific[0], FormatSpecificBytes);
+    end;
+
 
    // move position to the end of this chunk
    Position := Position + FChunkSize - SizeOf(TWavFormatRecord) - SizeOf(Word) - FormatSpecificBytes;
@@ -789,7 +818,7 @@ begin
  with Stream do
   begin
    // write header
-   Write(WaveFormatRecord, SizeOf(TWavFormatRecord));
+   Write(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // write format specific bytes
    FormatSpecificBytes := Length(FFormatSpecific);
@@ -806,61 +835,88 @@ end;
 
 function TFormatChunk.GetFormatTag: TWavEncoding;
 begin
- result := TWavEncoding(WaveFormatRecord.FormatTag);
+ // check if extensible format
+ if (FWaveFormatRecord.FormatTag <> $FFFE) or not assigned(FFormatExtensible)
+  then result := TWavEncoding(FWaveFormatRecord.FormatTag)
+  else move(FFormatExtensible^.GUID, result, SizeOf(Word));
+end;
+
+function TFormatChunk.GetValidBitsPerSample: Word;
+begin
+ if (Length(FFormatSpecific) >= 2) and (FWaveFormatRecord.FormatTag = $FFFE)
+  then Move(FFormatSpecific[0], result, SizeOf(Word))
+  else result := FWaveFormatRecord.BitsPerSample;
 end;
 
 procedure TFormatChunk.SetBitsPerSample(const Value: Word);
 begin
- if WaveFormatRecord.BitsPerSample <> Value then
+ if FWaveFormatRecord.BitsPerSample <> Value then
   begin
    if Value < 2
     then raise Exception.Create('Value must be greater then 1!');
-   WaveFormatRecord.BitsPerSample := Value;
+   FWaveFormatRecord.BitsPerSample := Value;
   end;
 end;
 
 procedure TFormatChunk.SetBlockAlign(const Value: Word);
 begin
- if WaveFormatRecord.BlockAlign <> Value then
+ if FWaveFormatRecord.BlockAlign <> Value then
   begin
    if Value < 1
     then raise Exception.Create('Value must be greater then 0!');
-   WaveFormatRecord.BlockAlign := Value;
+   FWaveFormatRecord.BlockAlign := Value;
   end;
 end;
 
 procedure TFormatChunk.SetBytesPerSecond(const Value: Cardinal);
 begin
- if WaveFormatRecord.BytesPerSecond <> Value then
+ if FWaveFormatRecord.BytesPerSecond <> Value then
   begin
    if Value < 1
     then raise Exception.Create('Value must be greater then 0!');
-   WaveFormatRecord.BytesPerSecond := Value;
+   FWaveFormatRecord.BytesPerSecond := Value;
   end;
 end;
 
 procedure TFormatChunk.SetChannels(const Value: Word);
 begin
- if WaveFormatRecord.Channels <> Value then
+ if FWaveFormatRecord.Channels <> Value then
   begin
    if Value < 1
     then raise Exception.Create('Value must be greater then 0!');
-   WaveFormatRecord.Channels := Value;
+   FWaveFormatRecord.Channels := Value;
   end;
 end;
 
 procedure TFormatChunk.SetFormatTag(const Value: TWavEncoding);
 begin
- WaveFormatRecord.FormatTag := Word(Value);
+ // ensure that the extensible format is used correctly 
+ if assigned(FFormatExtensible) then
+  begin
+   // move current format tag to extensible format tag
+   Move(Value, FFormatExtensible.GUID, SizeOf(Word));
+  end
+ else
+  begin
+   if Value = etExtensible then
+    begin
+     // allocate memory for extensible format
+     ReallocMem(FFormatExtensible, SizeOf(TWavFormatChunkExtensible));
+
+     // move current format tag to extensible format tag
+     Move(FWaveFormatRecord.FormatTag, FFormatExtensible.GUID, SizeOf(Word));
+    end;
+   FWaveFormatRecord.FormatTag := Word(Value);
+  end;
 end;
 
 procedure TFormatChunk.SetSampleRate(const Value: Cardinal);
 begin
- if WaveFormatRecord.SampleRate <> Value then
+ if FWaveFormatRecord.SampleRate <> Value then
   begin
    if Value < 1
     then raise Exception.Create('Value must be greater then 0!');
-   WaveFormatRecord.SampleRate := Value;
+   FWaveFormatRecord.SampleRate := Value;
   end;
 end;
 

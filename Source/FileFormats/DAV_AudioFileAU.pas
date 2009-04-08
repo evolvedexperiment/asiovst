@@ -28,20 +28,20 @@ type
 
   TCustomAudioFileAU = class(TCustomAudioFile)
   private
-    fAUHeader       : TAUHeader;
-    fBytesPerSample : Byte;
+    FAUHeader       : TAUHeader;
+    FBytesPerSample : Byte;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
     function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
-    function GetSampleCount: Cardinal; override;
+    function GetSampleFrames: Cardinal; override;
 
     procedure SetBitsPerSample(const Value: Byte); virtual;
     procedure SetEncoding(const Value: TAudioEncoding); virtual;
     procedure SetChannels(const Value: Cardinal); override;
     procedure SetSampleRate(const Value: Double); override;
-    procedure SetSampleCount(const Value: Cardinal); override;
+    procedure SetSampleFrames(const Value: Cardinal); override;
   public
     constructor Create(AOwner: TComponent); override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -54,12 +54,14 @@ type
   published
     property SampleRate;
     property ChannelCount;
-    property SampleCount;
+    property SampleFrames;
     property TotalTime;
+(*
     property OnLoadData32;
     property OnLoadData64;
     property OnSaveData32;
     property OnSaveData64;
+*)
     property BitsPerSample;
     property Encoding;
   end;
@@ -72,7 +74,7 @@ implementation
 constructor TCustomAudioFileAU.Create(AOwner: TComponent);
 begin
  inherited;
- with fAUHeader do
+ with FAUHeader do
   begin
    Magic      := $646E732E;
    Offset     := 24;
@@ -85,7 +87,7 @@ end;
 
 function TCustomAudioFileAU.GetBitsPerSample: Byte;
 begin
- case fAUHeader.encoding of
+ case FAUHeader.encoding of
     aueISDN : result := 8;
     auePCM8 : result := 8;
    auePCM16 : result := 16;
@@ -101,12 +103,12 @@ end;
 
 function TCustomAudioFileAU.GetChannels: Cardinal;
 begin
- result := fAUHeader.Channels;
+ result := FAUHeader.Channels;
 end;
 
 function TCustomAudioFileAU.GetEncoding: TAudioEncoding;
 begin
- case fAUHeader.Encoding of
+ case FAUHeader.Encoding of
     aueISDN  : Result := aeMuLaw;
     auePCM8,
    auePCM16,
@@ -120,19 +122,19 @@ begin
  end;
 end;
 
-function TCustomAudioFileAU.GetSampleCount: Cardinal;
+function TCustomAudioFileAU.GetSampleFrames: Cardinal;
 begin
- result := fAUHeader.DataSize;
+ result := FAUHeader.DataSize;
 end;
 
 function TCustomAudioFileAU.GetSampleRate: Double;
 begin
- result := fAUHeader.SampleRate;
+ result := FAUHeader.SampleRate;
 end;
 
 procedure TCustomAudioFileAU.SetBitsPerSample(const Value: Byte);
 begin
- with fAUHeader do
+ with FAUHeader do
   begin
    case Value of
      8 : Encoding := auePCM8;
@@ -142,14 +144,14 @@ begin
           then Encoding := auePCM32;
     64 : Encoding := aueIEEE64;
    end;
-   fBytesPerSample := Value shr 3;
+   FBytesPerSample := Value shr 3;
   end;
 end;
 
-procedure TCustomAudioFileAU.SetSampleCount(const Value: Cardinal);
+procedure TCustomAudioFileAU.SetSampleFrames(const Value: Cardinal);
 begin
  inherited;
- with fAUHeader do
+ with FAUHeader do
   if DataSize <> Value then
    begin
     DataSize := Value;
@@ -158,7 +160,7 @@ end;
 
 procedure TCustomAudioFileAU.SetSampleRate(const Value: Double);
 begin
- with fAUHeader do
+ with FAUHeader do
   if Value <> SampleRate then
    begin
     inherited;
@@ -168,7 +170,7 @@ end;
 
 procedure TCustomAudioFileAU.SetChannels(const Value: Cardinal);
 begin
- with fAUHeader do
+ with FAUHeader do
   if Value <> Channels then
    begin
     inherited;
@@ -178,15 +180,15 @@ end;
 
 procedure TCustomAudioFileAU.SetEncoding(const Value: TAudioEncoding);
 begin
- with fAUHeader do
+ with FAUHeader do
   case Value of
-   aeInteger : case fBytesPerSample of
+   aeInteger : case FBytesPerSample of
                 1 : Encoding := auePCM8;
                 2 : Encoding := auePCM16;
                 3 : Encoding := auePCM24;
                 4 : Encoding := auePCM32;
                end;
-   aeFloat   : case fBytesPerSample of
+   aeFloat   : case FBytesPerSample of
                  4 : Encoding := aueIEEE32;
                  8 : Encoding := aueIEEE64;
                 else Encoding := aueIEEE32;
@@ -206,8 +208,8 @@ begin
  with Stream do
   begin
    // Read Header
-   Read(fAUHeader, SizeOf(TAUHeader));
-   with fAUHeader do
+   Read(FAUHeader, SizeOf(TAUHeader));
+   with FAUHeader do
     begin
      FlipLong(Offset);
      FlipLong(DataSize);
@@ -235,7 +237,7 @@ begin
  inherited;
  with Stream do
   begin
-   FlippedHeader := fAUHeader;
+   FlippedHeader := FAUHeader;
 
    // Write Header
    with FlippedHeader do
