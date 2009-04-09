@@ -951,7 +951,7 @@ begin
      else result := nil
     end;
   etALaw: result := TChannel32DataCoderALaw.Create;
-  etMuLaw: result := TChannel32DataCoderµLaw.Create;
+  etMuLaw: result := TChannel32DataCoderMuLaw.Create;
   else result := nil;
  end;
 
