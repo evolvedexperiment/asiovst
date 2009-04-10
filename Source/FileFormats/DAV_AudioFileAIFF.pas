@@ -36,7 +36,6 @@ type
     procedure SetAIFFName(const Value: string);
     procedure SetAuthor(const Value: string);
     procedure SetCopyright(const Value: string);
-    procedure ReadAudioDataFromStream(const Stream: TStream);
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -68,6 +67,7 @@ type
     procedure ReadAndSkipSize(const Stream: TStream);
     procedure CheckHeader(const Stream: TStream);
     procedure ParseChunkInformation(const Stream: TStream);
+    procedure ReadAudioDataFromStream(const Stream: TStream);
     procedure WriteAudioDataToStream(const Stream: TStream);
   public
     constructor Create(AOwner: TComponent); override;
