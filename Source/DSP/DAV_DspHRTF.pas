@@ -84,6 +84,7 @@ type
     procedure SetString(const Index: Integer; const Value: string);
   protected
     FGeneralInformationRecord : THrirGeneralInformationRecord;
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -114,6 +115,7 @@ type
     procedure SetString(const Index: Integer; const Value: string);
   protected
     FSubjectRecord : THrirSubjectRecord;
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -141,6 +143,7 @@ type
     procedure SetRoomType(const Value: string);
   protected
     FRoomRecord : THrirRoomRecord;
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -167,6 +170,7 @@ type
     procedure SetString(const Index: Integer; const Value: string);
   protected
     FMicrophoneRecord : THrirMicrophoneRecord;
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -193,6 +197,7 @@ type
     procedure SetString(const Index: Integer; const Value: string);
   protected
     FOutboardRecord : THrirOutboardRecord;
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -221,6 +226,7 @@ type
     procedure SetMeasuredLength(const Value: Integer);
   protected
     FMeasurementRecord : THrirMeasurementRecord;
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -269,6 +275,7 @@ type
     procedure SetRoomType(const Value: String);
     procedure SetSex(const Value: THrirSexType);
     procedure SetSubjectString(const Index: Integer; const Value: String);
+    function GetHrir(Index: Integer): TCustomHrir;
   protected
     FGeneralInformation     : TCustomHrirGeneralInformation;
     FSubjectInformation     : TCustomHrirSubjectInformation;
@@ -279,7 +286,6 @@ type
     FHrirList               : TObjectList;
     FSampleRate             : Single;
     FInterpolationType      : TInterpolationType;
-    procedure ClearInformationChunks; virtual;
     procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass;
       Stream: TStream); override;
     procedure Interpolate2Hrir(const Azimuth, Polar: Single;
@@ -292,12 +298,15 @@ type
       const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray); overload; virtual;
     procedure FindNearestHrirs(const SpherePos: TSphereVector2D;
       var A, B, C: TCustomHrir);
+    function GetChunkSize: Cardinal; override;
   public
     constructor Create; override;
     destructor Destroy; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SwapChannels;
     procedure Clear;
+    procedure ClearInformationChunks; virtual;
+    procedure ClearHrirs; virtual;
 
     procedure InterpolateHrir(const Azimuth, Polar: Single;
       const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray); overload; virtual;
@@ -312,6 +321,7 @@ type
     class function GetClassChunkName: TChunkName; override;
     procedure AddChunk(Chunk: TCustomChunk); override;
 
+    property Hrir[index: Integer]: TCustomHrir read GetHrir; 
     property Title: String index 0 read GetGeneralInfoString write SetGeneralInfoString;
     property Date: TDateTime read GetDate write SetDate;
     property Context: String index 1 read GetGeneralInfoString write SetGeneralInfoString;
@@ -693,6 +703,14 @@ begin
   end;
 end;
 
+function TCustomHrirGeneralInformation.GetChunkSize: Cardinal;
+begin
+ // calculate chunk size
+ with FGeneralInformationRecord
+  do result := 5 + Byte(Title[0]) + SizeOf(Date) + Byte(Context[0]) +
+                   Byte(Copyright[0]) + Byte(Author[0]) + Byte(Notes[0]);
+end;
+
 class function TCustomHrirGeneralInformation.GetClassChunkName: TChunkName;
 begin
  result := 'hrgi';
@@ -768,10 +786,8 @@ end;
 
 procedure TCustomHrirGeneralInformation.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- with FGeneralInformationRecord
-  do FChunkSize := 5 + Byte(Title[0]) + SizeOf(Date) + Byte(Context[0]) +
-       Byte(Copyright[0]) + Byte(Author[0]) + Byte(Notes[0]);
+ // save current chunk size
+ FChunkSize := GetChunkSize;
 
  // store basic chunk information
  inherited SaveToStream(Stream);
@@ -814,6 +830,13 @@ begin
    Sex  := stUnknown;
    Desc := '';
   end;
+end;
+
+function TCustomHrirSubjectInformation.GetChunkSize: Cardinal;
+begin
+ // calculate chunk size
+ with FSubjectRecord
+  do result := 2 + Byte(ID[0]) + SizeOf(Sex) + Byte(Desc[0]);
 end;
 
 class function TCustomHrirSubjectInformation.GetClassChunkName: TChunkName;
@@ -865,9 +888,8 @@ end;
 
 procedure TCustomHrirSubjectInformation.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- with FSubjectRecord
-  do FChunkSize := 2 + Byte(ID[0]) + SizeOf(Sex) + Byte(Desc[0]);
+ // save current chunk size
+ FChunkSize := GetChunkSize;
 
  // store basic chunk information
  inherited SaveToStream(Stream);
@@ -899,6 +921,13 @@ begin
    Z := 0;
    RoomType := '';
   end;
+end;
+
+function TCustomHrirRoomInformation.GetChunkSize: Cardinal;
+begin
+ // calculate chunk size
+ with FRoomRecord
+  do result := 3 * SizeOf(Single) + Byte(RoomType[0]) + 1;
 end;
 
 class function TCustomHrirRoomInformation.GetClassChunkName: TChunkName;
@@ -938,9 +967,8 @@ end;
 
 procedure TCustomHrirRoomInformation.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- with FRoomRecord
-  do FChunkSize := 3 * SizeOf(Single) + Byte(RoomType[0]) + 1;
+ // save current chunk size
+ FChunkSize := GetChunkSize;
 
  // store basic chunk information
  inherited SaveToStream(Stream);
@@ -990,6 +1018,13 @@ begin
    Manufacturer := '';
    Notes := '';
   end;
+end;
+
+function TCustomHrirMicrophoneInformation.GetChunkSize: Cardinal;
+begin
+ // calculate chunk size
+ with FMicrophoneRecord
+  do result := 3 + Byte(MicType[0]) + Byte(Manufacturer[0]) + Byte(Notes[0]);
 end;
 
 class function TCustomHrirMicrophoneInformation.GetClassChunkName: TChunkName;
@@ -1047,9 +1082,8 @@ end;
 
 procedure TCustomHrirMicrophoneInformation.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- with FMicrophoneRecord
-  do FChunkSize := 3 + Byte(MicType[0]) + Byte(Manufacturer[0]) + Byte(Notes[0]);
+ // save current chunk size
+ FChunkSize := GetChunkSize;
 
  // store basic chunk information
  inherited SaveToStream(Stream);
@@ -1082,6 +1116,13 @@ begin
    Amplifier := '';
    Loudspeaker := '';
   end;
+end;
+
+function TCustomHrirOutboardInformation.GetChunkSize: Cardinal;
+begin
+ with FOutboardRecord
+  do result := 4 + Byte(ADConverter[0]) + Byte(DAConverter[0]) +
+       Byte(Amplifier[0]) + Byte(Loudspeaker[0]);
 end;
 
 class function TCustomHrirOutboardInformation.GetClassChunkName: TChunkName;
@@ -1148,9 +1189,9 @@ end;
 
 procedure TCustomHrirOutboardInformation.SaveToStream(Stream: TStream);
 begin
- with FOutboardRecord
-  do FChunkSize := SizeOf(ADConverter) + SizeOf(DAConverter) +
-       SizeOf(Amplifier) + SizeOf(Loudspeaker);
+ // save current chunk size
+ FChunkSize := GetChunkSize;
+
  inherited;
  with Stream, FOutboardRecord do
   begin
@@ -1186,9 +1227,17 @@ begin
   end;
 end;
 
+function TCustomHrirMeasurementInformation.GetChunkSize: Cardinal;
+begin
+ // calculate chunk size
+ with FMeasurementRecord
+  do result := 2 + SizeOf(Distance) + Byte(MeasurementType[0]) +
+       SizeOf(MeasuredLength) + Byte(ExcitationType[0]);
+end;
+
 class function TCustomHrirMeasurementInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hrmi';
+ result := 'hrme';
 end;
 
 function TCustomHrirMeasurementInformation.GetString(
@@ -1210,32 +1259,30 @@ begin
  with Stream, FMeasurementRecord do
   begin
    // read distance
-   Read(Distance, 1);
+   Read(Distance, SizeOf(Distance));
 
    // read 'MeasurementType' string
    Read(StringSize, 1);
-   assert(StringSize + 1 + SizeOf(Distance) + SizeOf(MeasuredLength) < FChunkSize);
+   assert(StringSize + 2 + SizeOf(Distance) + SizeOf(MeasuredLength) < FChunkSize);
    SetLength(MeasurementType, StringSize);
-   Read(MeasurementType, StringSize);
+   Read(MeasurementType[1], StringSize);
 
    // read measured length
-   Read(MeasuredLength, 1);
+   Read(MeasuredLength, SizeOf(MeasuredLength));
 
    // read 'ExcitationType' string
    Read(StringSize, 1);
-   assert(StringSize + SizeOf(Distance) + SizeOf(MeasuredLength) +
-     Length(MeasurementType) <= FChunkSize);
+   assert(StringSize + 2 + SizeOf(Distance) + SizeOf(MeasuredLength) +
+     Byte(MeasurementType[0]) <= FChunkSize);
    SetLength(ExcitationType, StringSize);
-   Read(ExcitationType, StringSize);
+   Read(ExcitationType[1], StringSize);
   end;
 end;
 
 procedure TCustomHrirMeasurementInformation.SaveToStream(Stream: TStream);
 begin
- // calculate chunk size
- with FMeasurementRecord
-  do FChunkSize := SizeOf(Distance) + SizeOf(MeasurementType) +
-       SizeOf(MeasuredLength) + SizeOf(ExcitationType);
+ // save current chunk size
+ FChunkSize := GetChunkSize;
 
  // store basic chunk information
  inherited SaveToStream(Stream);
@@ -1243,18 +1290,18 @@ begin
  with Stream, FMeasurementRecord do
   begin
    // write distance
-   Write(Distance, 1);
+   Write(Distance, SizeOf(Distance));
 
    // write 'MeasurementType' string
    Write(MeasurementType[0], 1);
-   Write(MeasurementType[1], Integer(MeasurementType[0]));
+   Write(MeasurementType[1], Byte(MeasurementType[0]));
 
    // write measured length
-   Write(MeasuredLength, 1);
+   Write(MeasuredLength, SizeOf(MeasuredLength));
 
    // write 'ExcitationType' string
    Write(ExcitationType[0], 1);
-   Write(ExcitationType[1], Integer(ExcitationType[0]));
+   Write(ExcitationType[1], Byte(ExcitationType[0]));
   end;
 end;
 
@@ -1293,6 +1340,11 @@ destructor TCustomHrtfs.Destroy;
 begin
  FreeAndNil(FHrirList);
  inherited;
+end;
+
+function TCustomHrtfs.GetChunkSize: Cardinal;
+begin
+ result := inherited GetChunkSize;
 end;
 
 class function TCustomHrtfs.GetClassChunkName: TChunkName;
@@ -1337,6 +1389,13 @@ begin
    MoveLeft32(Left, SampleFrames);
    MoveRight32(Right, SampleFrames);
   end;
+end;
+
+function TCustomHrtfs.GetHrir(Index: Integer): TCustomHrir;
+begin
+ if Index in [0..(FHrirList.Count - 1)]
+  then result := TCustomHrir(FHrirList[Index])
+  else result := nil;
 end;
 
 procedure TCustomHrtfs.GetHrirByIndex(const Index: Integer;
@@ -1744,17 +1803,14 @@ procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
 var
   TempData  : Array [0..1] of PDavSingleFixedArray;
   Hrirs     : Array [0..2] of TCustomHrir;
-  HrirDist  : Double;
   HrirPos   : Array [0..2] of TSphereVector2D;
   SpherePos : TSphereVector2D;
-  Dist      : Array [0..2] of Single;
-  DistA     : Array [0..2] of Single;
-  PntD      : Array [0..2] of Single;
-  PntA      : Array [0..2] of Single;
-  Angles    : Array [0..2] of Single;
-  HalfAng   : Array [0..2] of Single;
-  Relations : Array [0..2] of Single;
-  Scale     : Array [0..2] of Single;
+  DistA     : Array [0..2] of Double;
+  PntA      : Array [0..2] of Double;
+  Angles    : Array [0..2] of Double;
+  HalfAng   : Array [0..2] of Double;
+  Relations : Array [0..2] of Double;
+  Scale     : Array [0..2] of Double;
   Sample    : Integer;
 begin
  SpherePos := MakeSphereVector2D(Azimuth, Polar);
@@ -1763,10 +1819,6 @@ begin
  case FInterpolationType of
   itNearest :
    begin
-    // select nearest
-    if Dist[1] < Dist[0]
-     then Hrirs[0] := Hrirs[1];
-
     // move data nearest
     Hrirs[0].MoveLeft32(Left, SampleFrames);
     Hrirs[0].MoveRight32(Right, SampleFrames);
@@ -1777,37 +1829,64 @@ begin
     HrirPos[1] := Hrirs[1].Position;
     HrirPos[2] := Hrirs[2].Position;
 
+    // check if a single Hrir is hit exactly
+    if (SpherePos.Polar = Hrirs[0].Position.Polar) and
+       (SpherePos.Azimuth = Hrirs[0].Position.Azimuth) then
+     begin
+      Hrirs[0].MoveLeft32(Right, SampleFrames);
+      Hrirs[0].MoveRight32(Right, SampleFrames);
+      Exit;
+     end;
+
+    // check only 1D interpolation
+    if ((SpherePos.Polar   = Hrirs[0].Position.Polar) and
+        (SpherePos.Polar   = Hrirs[1].Position.Polar)) or
+       ((SpherePos.Azimuth = Hrirs[0].Position.Azimuth) and
+        (SpherePos.Azimuth = Hrirs[1].Position.Azimuth)) then
+     begin
+      DistA[0] := GetOrthodromicDistance(Hrirs[1].Position, SpherePos);
+      DistA[1] := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
+
+      // calculate wheighting
+      Scale[0] := DistA[0] / DistA[1];
+      Scale[1] := 1 - Scale[0];
+
+      // allocate a temporary buffer
+      GetMem(TempData[0], SampleFrames * SizeOf(Single));
+      try
+       // linear interpolate left
+       Hrirs[0].MoveLeft32(TempData[0], SampleFrames);
+       Hrirs[1].MoveLeft32(Left, SampleFrames);
+       for Sample := 0 to SampleFrames - 1
+        do Left^[Sample] := Scale[0] * TempData[0]^[Sample] + Scale[1] * Left^[Sample];
+
+       // linear interpolate right
+       Hrirs[0].MoveRight32(TempData[0], SampleFrames);
+       Hrirs[1].MoveRight32(Right, SampleFrames);
+       for Sample := 0 to SampleFrames - 1
+        do Right^[Sample] := Scale[0] * TempData[0]^[Sample] + Scale[1] * Right^[Sample];
+      finally
+       Dispose(TempData[0]);
+      end;
+      Exit;
+     end;
+
     // calculate orthodromic angle to desired position
     DistA[0] := GetOrthodromicAngle(Hrirs[0].Position, SpherePos);
     DistA[1] := GetOrthodromicAngle(Hrirs[1].Position, SpherePos);
     DistA[2] := GetOrthodromicAngle(Hrirs[2].Position, SpherePos);
-
-    // calculate distance to desired position
-    Dist[0] := arccos(DistA[0]);
-    Dist[1] := arccos(DistA[1]);
-    Dist[2] := arccos(DistA[2]);
 
     // calculate orthodromic angle between Hrirs
     PntA[0] := GetOrthodromicAngle(Hrirs[1].Position, Hrirs[2].Position);
     PntA[1] := GetOrthodromicAngle(Hrirs[2].Position, Hrirs[0].Position);
     PntA[2] := GetOrthodromicAngle(Hrirs[0].Position, Hrirs[1].Position);
 
-    // calculate distance between Hrirs
-    PntD[0] := arccos(PntA[0]);
-    PntD[1] := arccos(PntA[1]);
-    PntD[2] := arccos(PntA[2]);
-
     // calculate triangle angles (using spherical trigonometry)
     Angles[0] := arccos((PntA[0] - PntA[1] * PntA[2]) / (sqrt(1 - sqr(PntA[1])) * sqrt(1 - sqr(PntA[2]))));
     Angles[1] := arccos((PntA[1] - PntA[2] * PntA[0]) / (sqrt(1 - sqr(PntA[2])) * sqrt(1 - sqr(PntA[0]))));
     Angles[2] := arccos((PntA[2] - PntA[0] * PntA[1]) / (sqrt(1 - sqr(PntA[0])) * sqrt(1 - sqr(PntA[1]))));
 
-(*
-    HalfAng[0] := arccos(Limit((DistA[2] - PntA[1] * DistA[0]) / (sqrt(1 - sqr(PntA[1])) * sqrt(1 - sqr(DistA[0]))));
-    HalfAng[1] := arccos((DistA[0] - PntA[2] * DistA[1]) / (sqrt(1 - sqr(PntA[2])) * sqrt(1 - sqr(DistA[1]))));
-    HalfAng[2] := arccos((DistA[1] - PntA[0] * DistA[2]) / (sqrt(1 - sqr(PntA[0])) * sqrt(1 - sqr(DistA[2]))));
-*)
-
+    // calculate triangle angles between (using spherical trigonometry)
     HalfAng[0] := (DistA[1] - DistA[0] * PntA[2]);
     if HalfAng[0] <> 0
      then HalfAng[0] := arccos(Limit(HalfAng[0] / (sqrt(1 - sqr(DistA[0])) * sqrt(1 - sqr(PntA[2])))));
@@ -1820,18 +1899,20 @@ begin
     if HalfAng[2] <> 0
      then HalfAng[2] := arccos(Limit(HalfAng[2] / (sqrt(1 - sqr(DistA[2])) * sqrt(1 - sqr(PntA[1])))));
 
+    // calculate relations
     Relations[0] := HalfAng[0] / Angles[0];
     Relations[1] := HalfAng[1] / Angles[1];
     Relations[2] := HalfAng[2] / Angles[2];
 
-    Scale[0] := Relations[0] / (Relations[0] + Relations[1] + Relations[2]);
-    Scale[1] := Relations[1] / (Relations[0] + Relations[1] + Relations[2]);
-    Scale[2] := Relations[2] / (Relations[0] + Relations[1] + Relations[2]);
+    // calculate scale factors
+    Scale[0] := (1 - Relations[2]) *  Relations[1];
+    Scale[1] := (1 - Relations[0]) *  Relations[2];
+    Scale[2] := (1 - Relations[1]) *  Relations[0];
 
     // allocate a temporary buffer
-    GetMem(TempData[0], SampleFrames * SizeOf(Double));
+    GetMem(TempData[0], SampleFrames * SizeOf(Single));
     try
-     GetMem(TempData[1], SampleFrames * SizeOf(Double));
+     GetMem(TempData[1], SampleFrames * SizeOf(Single));
      try
       // linear interpolate left
       Hrirs[0].MoveLeft32(TempData[0], SampleFrames);
@@ -1863,14 +1944,16 @@ end;
 procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray);
 var
-  TempData  : PDavSingleFixedArray;
+  TempData  : Array [0..1] of PDavDoubleFixedArray;
   Hrirs     : Array [0..2] of TCustomHrir;
-  HrirDist  : Double;
-  Dist      : Array [0..2] of Single;
-  PntD      : Array [0..2] of Single;
-  Angles    : Array [0..2] of Single;
-  Scale     : Array [0..1] of Single;
+  HrirPos   : Array [0..2] of TSphereVector2D;
   SpherePos : TSphereVector2D;
+  DistA     : Array [0..2] of Double;
+  PntA      : Array [0..2] of Double;
+  Angles    : Array [0..2] of Double;
+  HalfAng   : Array [0..2] of Double;
+  Relations : Array [0..2] of Double;
+  Scale     : Array [0..2] of Double;
   Sample    : Integer;
 begin
  SpherePos := MakeSphereVector2D(Azimuth, Polar);
@@ -1879,23 +1962,80 @@ begin
  case FInterpolationType of
   itNearest :
    begin
-    // select nearest
-    if Dist[1] < Dist[0]
-     then Hrirs[0] := Hrirs[1];
-
     // move data nearest
     Hrirs[0].MoveLeft64(Left, SampleFrames);
     Hrirs[0].MoveRight64(Right, SampleFrames);
    end;
   itLinear :
    begin
-    Dist[0]  := GetOrthodromicDistance(Hrirs[0].Position, SpherePos);
-    Dist[1]  := GetOrthodromicDistance(Hrirs[1].Position, SpherePos);
-    Dist[2]  := GetOrthodromicDistance(Hrirs[2].Position, SpherePos);
+    HrirPos[0] := Hrirs[0].Position;
+    HrirPos[1] := Hrirs[1].Position;
+    HrirPos[2] := Hrirs[2].Position;
 
-    PntD[0]  := GetOrthodromicDistance(Hrirs[1].Position, Hrirs[2].Position);
-    PntD[1]  := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[2].Position);
-    PntD[2]  := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
+    // calculate orthodromic angle to desired position
+    DistA[0] := GetOrthodromicAngle(Hrirs[0].Position, SpherePos);
+    DistA[1] := GetOrthodromicAngle(Hrirs[1].Position, SpherePos);
+    DistA[2] := GetOrthodromicAngle(Hrirs[2].Position, SpherePos);
+
+    // calculate orthodromic angle between Hrirs
+    PntA[0] := GetOrthodromicAngle(Hrirs[1].Position, Hrirs[2].Position);
+    PntA[1] := GetOrthodromicAngle(Hrirs[2].Position, Hrirs[0].Position);
+    PntA[2] := GetOrthodromicAngle(Hrirs[0].Position, Hrirs[1].Position);
+
+    // calculate triangle angles (using spherical trigonometry)
+    Angles[0] := arccos((PntA[0] - PntA[1] * PntA[2]) / (sqrt(1 - sqr(PntA[1])) * sqrt(1 - sqr(PntA[2]))));
+    Angles[1] := arccos((PntA[1] - PntA[2] * PntA[0]) / (sqrt(1 - sqr(PntA[2])) * sqrt(1 - sqr(PntA[0]))));
+    Angles[2] := arccos((PntA[2] - PntA[0] * PntA[1]) / (sqrt(1 - sqr(PntA[0])) * sqrt(1 - sqr(PntA[1]))));
+
+    // calculate triangle angles between (using spherical trigonometry)
+    HalfAng[0] := (DistA[1] - DistA[0] * PntA[2]);
+    if HalfAng[0] <> 0
+     then HalfAng[0] := arccos(Limit(HalfAng[0] / (sqrt(1 - sqr(DistA[0])) * sqrt(1 - sqr(PntA[2])))));
+
+    HalfAng[1] := (DistA[2] - DistA[1] * PntA[0]);
+    if HalfAng[1] <> 0
+     then HalfAng[1] := arccos(Limit(HalfAng[1] / (sqrt(1 - sqr(DistA[1])) * sqrt(1 - sqr(PntA[0])))));
+
+    HalfAng[2] := (DistA[0] - DistA[2] * PntA[1]);
+    if HalfAng[2] <> 0
+     then HalfAng[2] := arccos(Limit(HalfAng[2] / (sqrt(1 - sqr(DistA[2])) * sqrt(1 - sqr(PntA[1])))));
+
+    Relations[0] := HalfAng[0] / Angles[0];
+    Relations[1] := HalfAng[1] / Angles[1];
+    Relations[2] := HalfAng[2] / Angles[2];
+
+    Scale[0] := (1 - Relations[2]) *  Relations[1];
+    Scale[1] := (1 - Relations[0]) *  Relations[2];
+    Scale[2] := (1 - Relations[1]) *  Relations[0];
+
+    // allocate a temporary buffer
+    GetMem(TempData[0], SampleFrames * SizeOf(Double));
+    try
+     GetMem(TempData[1], SampleFrames * SizeOf(Double));
+     try
+      // linear interpolate left
+      Hrirs[0].MoveLeft64(TempData[0], SampleFrames);
+      Hrirs[1].MoveLeft64(TempData[1], SampleFrames);
+      Hrirs[2].MoveLeft64(Left, SampleFrames);
+      for Sample := 0 to SampleFrames - 1
+       do Left^[Sample] := Scale[0] * TempData[0]^[Sample] +
+                           Scale[1] * TempData[1]^[Sample] +
+                           Scale[2] * Left^[Sample];
+
+      // linear interpolate right
+      Hrirs[0].MoveRight64(TempData[0], SampleFrames);
+      Hrirs[1].MoveRight64(TempData[1], SampleFrames);
+      Hrirs[2].MoveRight64(Right, SampleFrames);
+      for Sample := 0 to SampleFrames - 1
+       do Right^[Sample] := Scale[0] * TempData[0]^[Sample] +
+                            Scale[1] * TempData[1]^[Sample] +
+                            Scale[2] * Right^[Sample];
+     finally
+      Dispose(TempData[1]);
+     end;
+    finally
+     Dispose(TempData[0]);
+    end;
    end;
  end;
 end;
@@ -2008,6 +2148,18 @@ begin
  FChunkList.Clear;
 end;
 
+procedure TCustomHrtfs.ClearHrirs;
+var
+  i : Integer;
+begin
+ i := 0;
+ FHrirList.Clear;
+ while i < FChunkList.Count do
+  if FChunkList[i] is TCustomHrir
+   then FChunkList.Delete(i)
+   else inc(i);
+end;
+
 procedure TCustomHrtfs.ClearInformationChunks;
 begin
  if assigned(FGeneralInformation)     then FreeAndNil(FGeneralInformation);
@@ -2020,13 +2172,17 @@ end;
 
 procedure TCustomHrtfs.LoadFromStream(Stream: TStream);
 begin
- FHrirList.Clear;
+ Clear;
+ FGeneralInformation     := nil;
+ FSubjectInformation     := nil;
+ FRoomInformation        := nil;
+ FMicrophoneInformation  := nil;
+ FOutboardInformation    := nil;
+ FMeasurementInformation := nil;
  inherited;
 end;
 
 procedure TCustomHrtfs.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream);
-var
-  Chunk : TCustomChunk;
 begin
  if ChunkClass = TCustomHrirGeneralInformation then
   begin

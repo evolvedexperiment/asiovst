@@ -640,6 +640,7 @@ begin
  with Stream do
   begin
    ChunkEnd := Position + FChunkSize;
+   assert(ChunkEnd <= Stream.Size);
    while Position < ChunkEnd do
     begin
      if cfSizeFirst in ChunkFlags then

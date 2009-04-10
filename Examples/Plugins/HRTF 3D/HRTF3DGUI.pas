@@ -44,7 +44,7 @@ var
   firstRemap, subdivideRemap, bufRemap : TIntegerList;
   t : Int64;
 begin
- rs:=TResourceStream.Create(hInstance, 'Head', RT_RCDATA);
+ rs:=TResourceStream.Create(hInstance, 'Head', '3DS');
  with rs do
   try
    GLHead.LoadFromStream('Head.3DS',rs);

@@ -29,7 +29,7 @@ type
   TCustomAudioFileAU = class(TCustomAudioFile)
   private
     FAUHeader       : TAUHeader;
-    FBytesPerSample : Byte;
+    FBytesPerSample : Byte;          
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -46,6 +46,11 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+    class function DefaultExtension: string; override;
+    class function CanLoad(const Stream: TStream): Boolean; override;
+    class function Description: string; override;
+    class function FileFormatFilter: string; override;
+
     property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
     property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
   end;
@@ -65,11 +70,29 @@ type
     property BitsPerSample;
     property Encoding;
   end;
-    
+
+  EAUError = class(Exception);
 
 implementation
 
 { TCustomAudioFileAU }
+
+class function TCustomAudioFileAU.CanLoad(const Stream: TStream): Boolean;
+var
+  Magic: TChunkName;
+begin
+ result := False;
+ with Stream do
+  begin
+   if Size < SizeOf(TAUHeader)
+    then exit;
+
+   // Read Header
+   Read(Magic, SizeOf(TChunkName));
+   if Magic = '.snd'
+    then result := True;
+  end;
+end;
 
 constructor TCustomAudioFileAU.Create(AOwner: TComponent);
 begin
@@ -85,6 +108,21 @@ begin
   end;
 end;
 
+class function TCustomAudioFileAU.DefaultExtension: string;
+begin
+ result := 'au';
+end;
+
+class function TCustomAudioFileAU.Description: string;
+begin
+ result := 'AU, NeXT/Sun sound file';
+end;
+
+class function TCustomAudioFileAU.FileFormatFilter: string;
+begin
+ result := Description + '|*.au;*.snd';
+end;
+
 function TCustomAudioFileAU.GetBitsPerSample: Byte;
 begin
  case FAUHeader.encoding of
@@ -97,7 +135,7 @@ begin
   aueIEEE64 : result := 64;
    aueADPCM : result := 8;
     aueALaw : result := 8;
-  else raise Exception.Create('Unsupported');
+  else raise EAUError.Create('Unsupported');
  end;
 end;
 
@@ -198,7 +236,7 @@ begin
    aeADPCM   : Encoding := aueADPCM;
    aeALaw    : Encoding := aueALaw;
    aeMuLaw   : Encoding := aueISDN;
-   else raise Exception.Create('Invalid Encoding for *.au!');
+   else raise EAUError.Create('Invalid Encoding for *.au!');
   end;
 end;
 
@@ -219,10 +257,12 @@ begin
 
      // some checks
      if Magic <> $646E732E
-      then raise Exception.Create('Not a Sound file!');
+      then raise EAUError.Create('Not a Sound file!');
      assert(SampleRate > 0);
      assert(Channels > 0);
-     assert(DataSize <= Size - Position);
+
+     if (DataSize > Size - Position)
+      then raise EAUError.Create('Datasize larger than the file!');
     end;
 
    // ToDo: read data...

@@ -493,7 +493,11 @@ begin
         if XPixelPosAsSingle > XPixelPosAsInt then
          begin
           XPixelPosAsInt := Round(XPixelPosAsSingle + 0.5);
-          if MinVal = MaxVal then LineTo(XPixelPosAsInt, HlfHght * Round((1 - MinVal))) else
+          if MinVal = MaxVal then
+           begin
+            LineTo(XPixelPosAsInt, HlfHght * Round((1 - MinVal)));
+           end
+          else
            begin
             o := PenPos.Y - HlfHght;
             if abs(o - MinVal * HlfHght) > abs(o - MaxVal * HlfHght)

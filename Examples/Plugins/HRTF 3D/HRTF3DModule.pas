@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
-  DAV_VSTModule, DAV_DspConvolution, DHRTF, DAV_DspHRTF;
+  DAV_VSTModule, DAV_DspConvolution, DAV_DspHRTF;
 
 type
   TVSTHRTF3DModule = class(TVSTModule)
@@ -15,11 +15,10 @@ type
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
-    FIR           : THRTFArray;
+    FIR           : array [0..1] of PDAVSingleFixedArray;
+    FHRTFs        : THrtfs;
     FLength       : Cardinal;
     FConvolution  : array [0..1] of TLowLatencyConvolution32;
-  public
-    FHRTFs: THRTF;
   end;
 
 implementation
@@ -38,8 +37,8 @@ var
 begin
   FLength := 512;
 
-  SetLength(FIR[0], FLength);
-  SetLength(FIR[1], FLength);
+  GetMem(FIR[0], FLength * SizeOf(Single));
+  GetMem(FIR[1], FLength * SizeOf(Single));
 
   for Channel := 0 to 1 do
    begin
@@ -47,9 +46,9 @@ begin
     FConvolution[Channel].MinimumIRBlockOrder :=  6;
     FConvolution[Channel].MaximumIRBlockOrder := 13;
    end;
-  FHRTFs := THRTF.Create;
+  FHRTFs := THRTFs.Create;
 
-  RS := TResourceStream.Create(hInstance, 'Default', RT_RCDATA);
+  RS := TResourceStream.Create(hInstance, 'Default', 'HRTF');
    try
     FHRTFs.LoadFromStream(RS);
    finally
@@ -61,8 +60,6 @@ begin
 end;
 
 procedure TVSTHRTF3DModule.VST2ModuleClose(Sender: TObject);
-var
-  i: Integer;
 begin
  FreeAndNil(FConvolution);
  FreeAndNil(FHRTFs);
@@ -80,8 +77,6 @@ procedure TVSTHRTF3DModule.VST2ModuleProcess(
   const SampleFrames: Integer);
 var
   Channel : Integer;
-  i       : Integer;
-  t       : Single;
 begin
  for Channel := 0 to 1
   do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], min(BlockSize, SampleFrames));
@@ -95,12 +90,15 @@ end;
 
 procedure TVSTHRTF3DModule.VST2ModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
+const
+  CDeg2Rad = 2 * Pi / 360;
 begin
  if assigned(FHRTFs) then
   begin
-   FHRTFs.GetHRTF(Parameter[0], Parameter[1], 1, FIR);
-   FConvolution[0].LoadImpulseResponse(FIR[0]);
-   FConvolution[1].LoadImpulseResponse(FIR[1]);
+   FHRTFs.InterpolateHrir(Parameter[0] * CDeg2Rad,
+                          Parameter[1] * CDeg2Rad, FLength, FIR[0], FIR[1]);
+   FConvolution[0].LoadImpulseResponse(FIR[0], FLength);
+   FConvolution[1].LoadImpulseResponse(FIR[1], FLength);
   end;
 end;
 
