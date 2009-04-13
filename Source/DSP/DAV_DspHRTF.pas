@@ -37,7 +37,10 @@ type
     procedure CreateBuffers; virtual;
     procedure MoveData32(Destination: PDAVSingleFixedArray; Index: Integer; SampleFrames: Integer); virtual;
     procedure MoveData64(Destination: PDAVDoubleFixedArray; Index: Integer; SampleFrames: Integer); virtual;
+    procedure AssignData32(Source: PDAVSingleFixedArray; Index: Integer; SampleFrames: Integer); virtual;
+    procedure AssignData64(Source: PDAVDoubleFixedArray; Index: Integer; SampleFrames: Integer); virtual;
     function GetChunkSize: Cardinal; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; overload; override;
     constructor Create(Azimuth, Polar: Single; const SampleRate: Single;
@@ -55,6 +58,10 @@ type
     procedure MoveRight32(Destination: PDAVSingleFixedArray; SampleFrames: Integer); virtual;
     procedure MoveLeft64(Destination: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
     procedure MoveRight64(Destination: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
+    procedure AssignLeft32(Source: PDAVSingleFixedArray; SampleFrames: Integer); virtual;
+    procedure AssignLeft64(Source: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
+    procedure AssignRight32(Source: PDAVSingleFixedArray; SampleFrames: Integer); virtual;
+    procedure AssignRight64(Source: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
     class function GetClassChunkName: TChunkName; override;
 
     property Position: TSphereVector2D read GetPosition;
@@ -276,6 +283,7 @@ type
     procedure SetSex(const Value: THrirSexType);
     procedure SetSubjectString(const Index: Integer; const Value: String);
     function GetHrir(Index: Integer): TCustomHrir;
+    function GetHrirCount: Integer;
   protected
     FGeneralInformation     : TCustomHrirGeneralInformation;
     FSubjectInformation     : TCustomHrirSubjectInformation;
@@ -321,7 +329,8 @@ type
     class function GetClassChunkName: TChunkName; override;
     procedure AddChunk(Chunk: TCustomChunk); override;
 
-    property Hrir[index: Integer]: TCustomHrir read GetHrir; 
+    property Hrir[index: Integer]: TCustomHrir read GetHrir;
+    property HrirCount: Integer read GetHrirCount; 
     property Title: String index 0 read GetGeneralInfoString write SetGeneralInfoString;
     property Date: TDateTime read GetDate write SetDate;
     property Context: String index 1 read GetGeneralInfoString write SetGeneralInfoString;
@@ -490,6 +499,19 @@ begin
  FChunkSize := GetChunkSize;
 end;
 
+procedure TCustomHrir.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomHrir then
+  with TCustomHrir(Dest) do
+   begin
+    FHrirHeader := Self.FHrirHeader;
+    CreateBuffers;
+    Self.MoveData32(FBuffer[0], 0, Self.SampleFrames * Self.BytesPerSample);
+    Self.MoveData32(FBuffer[1], 1, Self.SampleFrames * Self.BytesPerSample);
+   end;
+end;
+
 constructor TCustomHrir.Create(Azimuth, Polar: Single;
   const SampleRate: Single; const SampleFrames: Integer;
   const Left, Right: PDAVDoubleFixedArray);
@@ -651,6 +673,73 @@ procedure TCustomHrir.MoveRight64(Destination: PDAVDoubleFixedArray;
   SampleFrames: Integer);
 begin
  MoveData64(Destination, 1, SampleFrames);
+end;
+
+procedure TCustomHrir.AssignData32(Source: PDAVSingleFixedArray; Index,
+  SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ assert(Index in [0..1]);
+
+ // decode
+ case Encoding of
+  heFloat:
+   case BytesPerSample of
+    2 : for Sample := 0 to SampleFrames - 1
+         do PDAVHalfFloatFixedArray(FBuffer[Index])^[Sample] := SingleToHalfFloat(Source^[Sample]);
+    4 : move(Source^[0], FBuffer[Index]^, SampleFrames * SizeOf(Single));
+    8 : for Sample := 0 to SampleFrames - 1
+         do PDAVDoubleFixedArray(FBuffer[Index])^[Sample] := Source^[Sample];
+    else raise Exception.Create('not yet implemented');
+   end;
+  heInteger : raise Exception.Create('not yet implemented');
+ end;
+end;
+
+procedure TCustomHrir.AssignData64(Source: PDAVDoubleFixedArray; Index,
+  SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ assert(Index in [0..1]);
+
+ // decode
+ case Encoding of
+  heFloat:
+   case BytesPerSample of
+    2 : raise Exception.Create('not yet implemented');
+    4 : for Sample := 0 to SampleFrames - 1
+         do PDAVSingleFixedArray(FBuffer[Index])^[Sample] := Source^[Sample];
+    8 : move(Source^[0], FBuffer[Index]^, SampleFrames * SizeOf(Single));
+    else raise Exception.Create('not yet implemented');
+   end;
+  heInteger : raise Exception.Create('not yet implemented');
+ end;
+end;
+
+procedure TCustomHrir.AssignLeft32(Source: PDAVSingleFixedArray;
+  SampleFrames: Integer);
+begin
+ AssignData32(Source, 0, SampleFrames);
+end;
+
+procedure TCustomHrir.AssignRight32(Source: PDAVSingleFixedArray;
+  SampleFrames: Integer);
+begin
+ AssignData32(Source, 1, SampleFrames);
+end;
+
+procedure TCustomHrir.AssignLeft64(Source: PDAVDoubleFixedArray;
+  SampleFrames: Integer);
+begin
+ AssignData64(Source, 0, SampleFrames);
+end;
+
+procedure TCustomHrir.AssignRight64(Source: PDAVDoubleFixedArray;
+  SampleFrames: Integer);
+begin
+ AssignData64(Source, 1, SampleFrames);
 end;
 
 procedure TCustomHrir.LoadFromStream(Stream: TStream);
@@ -1408,6 +1497,11 @@ begin
   end;
 end;
 
+function TCustomHrtfs.GetHrirCount: Integer;
+begin
+ result := FHrirList.Count;
+end;
+
 function TCustomHrtfs.GetMeasuredLength: Integer;
 begin
  if assigned(FMeasurementInformation)
@@ -1848,7 +1942,7 @@ begin
       DistA[1] := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
 
       // calculate wheighting
-      Scale[0] := DistA[0] / DistA[1];
+      Scale[0] := DistA[1] / (DistA[0] - DistA[1]);
       Scale[1] := 1 - Scale[0];
 
       // allocate a temporary buffer
@@ -2048,6 +2142,8 @@ var
   TempHrir    : TCustomHrir;
   Distances   : array [0..2] of Single;
 begin
+ assert(FHrirList.Count > 0);
+
  // initialize with first three HRIRs
  A := TCustomHrir(FHrirList[0]);
  B := TCustomHrir(FHrirList[1]);
@@ -2239,240 +2335,5 @@ begin
    AddChunk(FMeasurementInformation);
   end else inherited;
 end;
-
-
-
-(*
-procedure THRTF.Add(Horizontal, Vertical, Depth: Single; Data: THRTFArray);
-var
-  tc: THRTFContent;
-  i: Integer;
-begin
-  tc := THRTFContent.Create;
-  i := 0;
-  while i < Count do
-    if (Items[i].Vertical = Vertical) and (Items[i].Horizontal = Horizontal) and
-      (Items[i].Depth = Depth) then
-      Delete(i)
-    else
-      Inc(i);
-  SetLength(tc.Data[0], FHRTFFile.HRTFLength);
-  SetLength(tc.Data[1], FHRTFFile.HRTFLength);
-  System.Move(Data[0, 0], tc.Data[0, 0], FHRTFFile.HRTFLength * SizeOf(Single));
-  System.Move(Data[1, 0], tc.Data[1, 0], FHRTFFile.HRTFLength * SizeOf(Single));
-  tc.Depth := Depth;
-  while Vertical > 180 do
-    Vertical := Vertical - 360;
-  while Vertical <= -180 do
-    Vertical := Vertical + 360;
-  tc.Vertical := Vertical;
-  tc.Horizontal := Horizontal;
-  tc.Tag := Count;
-  Add(tc);
-end;
-
-procedure THRTF.RecalcHorizontalHRTF;
-var
-  i, j: Integer;
-  i1, i2: Integer;
-  s1, s2: Single;
-  t: Single;
-begin
-  if Count = 0 then
-    Exit;
-  if Count = 1 then
-    for i := -179 to 180 do
-     begin
-      System.Move(Items[0].Data[0, 0], FHorizontal[i, 0, 0], HRTFLength *
-        SizeOf(Single));
-      System.Move(Items[0].Data[1, 0], FHorizontal[i, 1, 0], HRTFLength *
-        SizeOf(Single));
-     end
-  else
-    for i := -179 to 180 do
-     begin
-      for j := 0 to Count - 1 do
-        if (Items[j].Horizontal = i) and (Items[j].Vertical = 0) then
-          break;
-      if j < Count then
-       begin
-        System.Move(Items[j].Data[0, 0], FHorizontal[i, 0, 0], HRTFLength *
-          SizeOf(Single));
-        System.Move(Items[j].Data[1, 0], FHorizontal[i, 1, 0], HRTFLength *
-          SizeOf(Single));
-       end
-      else
-       begin
-        i1 := 0;
-        s1 := abs((Items[i1].Horizontal) - i);
-        if s1 > 180 then
-          s1 := 360 - s1;
-        for j := 1 to Count - 1 do
-          if (Items[j].Vertical = 0) then
-           begin
-            t := abs((Items[j].Horizontal) - i);
-            if t > 180 then
-              t := 360 - t;
-            if t < s1 then
-             begin
-              i1 := j;
-              s1 := t;
-             end;
-           end;
-        if i1 = 0 then
-          i2 := 1
-        else
-          i2 := 0;
-        while (Items[i2].Vertical <> 0) do
-          Inc(i2);
-        s2 := abs((Items[i2].Horizontal) - i);
-        if s2 > 180 then
-          s2 := 360 - s2;
-        for j := i2 + 1 to Count - 1 do
-          if (Items[j].Vertical = 0) then
-           begin
-            t := abs((Items[j].Horizontal) - i);
-            if t > 180 then
-              t := 360 - t;
-            if (t < s2) and (j <> i1) then
-             begin
-              i2 := j;
-              s2 := t;
-             end;
-           end;
-        t := abs(Items[i1].Horizontal - Items[i2].Horizontal);
-        if t > 180 then
-          t := 360 - t;
-        s1 := abs(i - Items[i1].Horizontal);
-        if s1 > 180 then
-          s1 := 360 - s1;
-        s2 := abs(i - Items[i2].Horizontal);
-        if s2 > 180 then
-          s2 := 360 - s2;
-        s1 := 1 - s1 / t;
-        s2 := 1 - s2 / t;
-        for j := 0 to HRTFLength - 1 do
-         begin
-          FHorizontal[i, 0, j] := s1 * Items[i1].Data[0, j] + s2 * Items[i2].Data[0, j];
-          FHorizontal[i, 1, j] := s1 * Items[i1].Data[1, j] + s2 * Items[i2].Data[1, j];
-         end;
-       end;
-     end;
-end;
-
-procedure THRTF.Delete(Vertical, Horizontal, Depth: Single);
-var
-  i: Integer;
-begin
-  i := 0;
-  while i < Count do
-    if (Items[i].Vertical = Vertical) and (Items[i].Horizontal = Horizontal) and
-      (Items[i].Depth = Depth) then
-      Delete(i)
-    else
-      Inc(i);
-end;
-
-procedure THRTF.GetHRTF(const Horizontal, Vertical, Depth: Single;
-  var HRTF: THRTFArray);
-var
-  i: Integer;
-  t1, t2, t3: Single;
-  i1, i2, i3: Integer;
-  tmps: Single;
-begin
-  if Count = 0 then
-   begin
-    FillChar(HRTF[0, 0], HRTFLength * SizeOf(Single), 0);
-    FillChar(HRTF[1, 0], HRTFLength * SizeOf(Single), 0);
-   end else
-  if Count = 1 then
-   begin
-    System.move(Items[0].Data[0, 0], HRTF[0, 0], HRTFLength * SizeOf(Single));
-    System.move(Items[0].Data[1, 0], HRTF[1, 0], HRTFLength * SizeOf(Single));
-   end else
-  if Count = 2 then
-   begin
-    if (Items[0].Vertical = Vertical) and (Items[0].Horizontal = Horizontal) and
-      (Items[0].Depth = Depth) then
-     begin
-      System.move(Items[0].Data[0, 0], HRTF[0, 0], HRTFLength * SizeOf(Single));
-      System.move(Items[0].Data[1, 0], HRTF[1, 0], HRTFLength * SizeOf(Single));
-     end
-    else if (Items[1].Vertical = Vertical) and
-      (Items[1].Horizontal = Horizontal) and (Items[1].Depth = Depth) then
-     begin
-      System.move(Items[1].Data[0, 0], HRTF[0, 0], HRTFLength * SizeOf(Single));
-      System.move(Items[1].Data[1, 0], HRTF[1, 0], HRTFLength * SizeOf(Single));
-     end
-    else
-     begin
-      Items[0].ValueToTemp :=
-        GetDistance(Vertical, Horizontal, 1, Items[0].Vertical, Items[0].Horizontal, 1);
-      Items[0].ValueToTemp :=
-        GetDistance(Vertical, Horizontal, 1, Items[1].Vertical, Items[1].Horizontal, 1);
-      t1 := Items[1].ValueToTemp / (Items[0].ValueToTemp + Items[1].ValueToTemp);
-      t2 := Items[0].ValueToTemp / (Items[0].ValueToTemp + Items[1].ValueToTemp);
-      for i := 0 to HRTFLength - 1 do
-       begin
-        HRTF[0, i] := t1 * Items[0].Data[0, i] + t2 * Items[1].Data[0, i];
-        HRTF[1, i] := t1 * Items[0].Data[1, i] + t2 * Items[1].Data[1, i];
-       end;
-     end;
-   end
-  else
-   begin
-    i1 := 0;
-    i2 := 1;
-    i3 := 2;
-    for i := 0 to Count - 1 do
-     begin
-      Items[i].ValueToTemp :=
-        GetDistance(Vertical, Horizontal, 1, Items[i].Vertical, Items[i].Horizontal, 1);
-      if Items[i].ValueToTemp < Items[i1].ValueToTemp then
-       begin
-        i3 := i2;
-        i2 := i1;
-        i1 := i;
-       end else
-      if Items[i].ValueToTemp < Items[i2].ValueToTemp then
-       begin
-        i3 := i2;
-        i2 := i;
-       end else
-      if Items[i].ValueToTemp < Items[i3].ValueToTemp then
-        i3 := i;
-      if (Items[i].Vertical = Vertical) and (Items[i].Horizontal = Horizontal) and
-        (Items[i].Depth = Depth) then
-        break;
-     end;
-    if i < Count then
-     begin
-      System.move(Items[i].Data[0, 0], HRTF[0, 0], HRTFLength * SizeOf(Single));
-      System.move(Items[i].Data[1, 0], HRTF[1, 0], HRTFLength * SizeOf(Single));
-     end
-    else
-     begin
-
-      // Method B
-      t1 := 1 / Items[i1].ValueToTemp;
-      t2 := 1 / Items[i2].ValueToTemp;
-      t3 := 1 / Items[i3].ValueToTemp;
-      tmps := 1 / (t1 * t1 + t2 * t2 + t3 * t3);
-      t1 := t1 * t1 * tmps;
-      t2 := t2 * t2 * tmps;
-      t3 := t3 * t3 * tmps;
-
-      for i := 0 to HRTFLength - 1 do
-       begin
-        HRTF[0, i] := t1 * Items[i1].Data[0, i] + t2 * Items[i2].Data[0, i] +
-          t3 * Items[i3].Data[0, i];
-        HRTF[1, i] := t1 * Items[i1].Data[1, i] + t2 * Items[i2].Data[1, i] +
-          t3 * Items[i3].Data[1, i];
-       end;
-     end;
-   end;
-end;
-*)
 
 end.

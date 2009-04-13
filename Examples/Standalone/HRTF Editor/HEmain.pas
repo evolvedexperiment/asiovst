@@ -409,7 +409,7 @@ end;
 
 procedure TFmHRTFEditor.HRTFFileChanged;
 begin
- LbHrtfIndex.Enabled   := FHRTFFile.Count > 0;
+ LbHrtfIndex.Enabled   := FHRTFFile.HrirCount > 0;
  SEHrtfIndex.Enabled   := LbHrtfIndex.Enabled;
  LbAzimuth.Enabled     := LbHrtfIndex.Enabled;
  SEAzimuth.Enabled     := LbHrtfIndex.Enabled;
@@ -419,7 +419,7 @@ begin
  LbAzimuthUnit.Enabled := LbHrtfIndex.Enabled;
 
  if SEHrtfIndex.Enabled
-  then SEHrtfIndex.MaxValue := FHRTFFile.Count - 1;
+  then SEHrtfIndex.MaxValue := FHRTFFile.HrirCount - 1;
 end;
 
 procedure TFmHRTFEditor.MINewClick(Sender: TObject);
@@ -533,7 +533,7 @@ end;
 
 procedure TFmHRTFEditor.SEHrtfIndexChange(Sender: TObject);
 begin
- assert(SEHrtfIndex.Value < FHRTFFile.Count);
+ assert(SEHrtfIndex.Value < FHRTFFile.HrirCount);
  FHRTFFile.GetHrirByIndex(SEHrtfIndex.Value, ADHRIR.SampleFrames,
    ADHRIR[0].ChannelDataPointer, ADHRIR[1].ChannelDataPointer);
  AudioDataDisplayLeft.Invalidate;

@@ -31,6 +31,10 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSGeneralInfo: TTabSheet
       Caption = 'General Information'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         592
         283)
@@ -313,6 +317,10 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSSubjectInfo: TTabSheet
       Caption = 'Subject Information'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         592
         283)
@@ -397,6 +405,10 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSRoomInfo: TTabSheet
       Caption = 'Room Information'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         592
         283)
@@ -495,6 +507,10 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSMicrophoneInfo: TTabSheet
       Caption = 'Microphone Information'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         592
         283)
@@ -550,6 +566,10 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSOutboardInfo: TTabSheet
       Caption = 'Outboard Information'
       ImageIndex = 5
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         592
         283)
@@ -621,6 +641,10 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSMeasurementInfo: TTabSheet
       Caption = 'Measurement Information'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         592
         283)
