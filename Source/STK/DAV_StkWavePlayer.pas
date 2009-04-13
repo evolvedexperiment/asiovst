@@ -9,7 +9,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, SysUtils, DAV_Common, DAV_StkCommon, DAV_StkLfo, WaveIOX;
+  Windows, SysUtils, DAV_Common, DAV_StkCommon, DAV_StkLfo, DAV_AudioFileWAV,
+  DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioData;
 
 type
   TStkWavePlayer = class(TStkLFO)
@@ -106,22 +107,25 @@ end;
 
 procedure TStkWavePlayer.LoadFile(const FileName: TFileName);
 var
-  p: pointer;
-  SampleRate, ch, sz: Longint;
+  ADC : TAudioDataCollection32;
 begin
-  p := LoadWavFile(FileName, SampleRate, ch, sz);
-  if (p <> nil) and (sz > 0) then
-   begin
-    FSampleData := p;
-    FSize := sz;
+  ADC := TAudioDataCollection32.Create(Self);
+  with ADC do
+   try
+    LoadFromFile(FileName);
+    FSize := ADC.SampleFrames;
     FInvSize := 1 / FSize;
-    FLength := FSize  * FSampleRateInv;
+    GetMem(FSampleData, FSize * SizeOf(Single));
+    Move(ADC[0].ChannelDataPointer^[0], FSampleData^[0], FSize * SizeOf(Single));
+    FLength := FSize * FSampleRateInv;
     FLoopstart := 0;
     FLoopend := FSize - 1;
     FStart := 0;
     FEnd := (FSize - 1) * FInvSize;
     FOneShot := True;
     FIsFinished := False;
+   finally
+    FreeAndNil(ADC);
    end;
 end;
 

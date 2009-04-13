@@ -2192,7 +2192,7 @@ begin
         PChannelArray := currentbuffer^.buffers[Index];
         if Assigned(PChannelArray)
          then FInConverters[ch].ic32(PChannelArray,
-                PSingle(ChannelDataPointerList[ch]),
+                PSingle(ChannelDataPointer[ch]),
                 FBufferSize);
         Inc(currentbuffer);
        end;
@@ -2214,7 +2214,7 @@ begin
      // eventually clip data to avoid ugly artifacts caused by the soundcard
      if fPreventClipping <> pcNone then
       for ch := 0 to FOutputChannelCount - 1
-       do fClipPrevent.cb32(PSingle(ChannelDataPointerList[ch]) ,FBufferSize);
+       do fClipPrevent.cb32(PSingle(ChannelDataPointer[ch]) ,FBufferSize);
 
      // convert float data to soundcard dependent format
      currentbuffer := FOutputBuffer;
@@ -2222,7 +2222,7 @@ begin
       begin
        PChannelArray := currentbuffer^.buffers[Index];
        if assigned(PChannelArray)
-        then FOutConverters[ch].oc32(PSingle(ChannelDataPointerList[ch]),
+        then FOutConverters[ch].oc32(PSingle(ChannelDataPointer[ch]),
                PChannelArray, FBufferSize);
        inc(currentbuffer);
       end;

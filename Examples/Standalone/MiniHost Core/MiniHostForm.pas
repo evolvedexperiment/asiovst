@@ -281,7 +281,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Inifiles, Dialogs, ShellAPI, OptionsForm, AboutForm, PlayerForm;
+  Math, Inifiles, Dialogs, ShellAPI, DAV_AudioData, DAV_AudioFileWAV,
+  DAV_AudioFileAIFF, DAV_AudioFileAU, OptionsForm, AboutForm, PlayerForm;
 
 procedure TFmMiniHost.FormCreate(Sender: TObject);
 var
@@ -662,7 +663,7 @@ end;
 
 procedure TFmMiniHost.LoadWAV(const FileName: string);
 begin
- WaveFile.unload;
+ WaveFile.Unload;
  if FileExists(FileName) then
  begin
   WaveFile.Load(FileName);
@@ -1879,17 +1880,17 @@ begin
  FFilename := FileName;
 end;
 
-procedure TWavPlayer.pause;
+procedure TWavPlayer.Pause;
 begin
  FPMode := wpmPause;
 end;
 
-procedure TWavPlayer.play;
+procedure TWavPlayer.Play;
 begin
  FPMode := wpmPlay;
 end;
 
-procedure TWavPlayer.process(var o1, o2: single);
+procedure TWavPlayer.Process(var o1, o2: single);
 var
   next, next2, pp: PSingle;
 begin
@@ -1959,7 +1960,7 @@ begin
   end;
 end;
 
-procedure TWavPlayer.stop;
+procedure TWavPlayer.Stop;
 begin
  FPMode := wpmPause;
  FCnt2 := 0;

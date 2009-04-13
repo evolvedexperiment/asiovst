@@ -6,7 +6,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspConvolution;
+  DAV_DspConvolution, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
+  DAV_AudioData;
 
 type
   TConvolutionDataModule = class(TVSTModule)
@@ -15,10 +16,8 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleCreate(Sender: TObject);
-    procedure ParameterMaximumIROrderChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterLatencyChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMaximumIROrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterLatencyChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FConvolutionClassic    : TConvolution32;
     FConvolutionLowLatency : TLowLatencyConvolution32;
@@ -32,7 +31,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, WaveIOX, ConvolutionGUI;
+  Math, ConvolutionGUI;
 
 procedure TConvolutionDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -90,16 +89,23 @@ end;
 
 procedure TConvolutionDataModule.LoadIR(FileName: TFileName);
 var
-  sr, sz, c : Integer;
-  pt        : PSingle;
+  ADC : TAudioDataCollection32;
 begin
  while FSemaphore > 0 do;
  inc(FSemaphore);
  try
-  pt := LoadWAVFileMono(FileName, sr, c, sz);
+  ADC := TAudioDataCollection32.Create(Self);
+  with ADC do
+   try
+    LoadFromFile(FileName);
 
-  FConvolutionLowLatency.LoadImpulseResponse(@pt^, sz);
-  FConvolutionClassic.LoadImpulseResponse(@pt^, sz);
+    FConvolutionLowLatency.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+    if ADC.ChannelCount > 1
+     then FConvolutionClassic.LoadImpulseResponse(ADC[1].ChannelDataPointer, ADC.SampleFrames)
+     else FConvolutionClassic.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+   finally
+    FreeAndNil(ADC);
+   end;
  finally
   dec(FSemaphore);
  end;

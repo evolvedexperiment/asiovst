@@ -8,7 +8,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
   DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  DAV_VSTModule;
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_VSTModule,
+  DAV_AudioData;
 
 type
   TConvolutionDataModule = class(TVSTModule)
@@ -45,7 +46,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, WaveIOX, DAV_DspWindowing, ConvolutionGUI;
+  Math, DAV_DspWindowing, ConvolutionGUI;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -127,18 +128,24 @@ end;
 
 procedure TConvolutionDataModule.LoadIR(FileName: TFileName);
 var
-  sr, c, sz : Integer;
-  pt        : PSingle;
+  ADC : TAudioDataCollection32;
 begin
  if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
   begin
    while FSemaphore > 0 do;
    inc(FSemaphore);
    try
-    pt := LoadWAVFileMono(FileName, sr, c, sz);
-    IRSize := sz;
-    Move(pt^, FFilterKernel^[0], sz * SizeOf(Single));
-    FillChar(FFilterKernel^[sz], (FFFTSize - sz) * SizeOf(Single), 0);
+    ADC := TAudioDataCollection32.Create(Self);
+    with ADC do
+     try
+      LoadFromFile(FileName);
+
+      IRSize := ADC.SampleFrames;
+      Move(ADC[0].ChannelDataPointer^[0], FFilterKernel^[0], ADC.SampleFrames * SizeOf(Single));
+      FillChar(FFilterKernel^[ADC.SampleFrames], (FFFTSize - ADC.SampleFrames) * SizeOf(Single), 0);
+     finally
+      FreeAndNil(ADC);
+     end;
 
     // calculate frequency
     FFft.PerformFFT(FFilterFreq, FFilterKernel);

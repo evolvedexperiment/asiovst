@@ -9,7 +9,7 @@ uses
   {$ELSE} Windows, Messages, XPMan,{$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
   ExtCtrls, StdCtrls, Menus, Types, Spin, DAV_Common, DAV_Complex, DAV_VSTHost,
-  DAV_ASIOHost, LunchBoxEvent, LunchBoxEventList,
+  DAV_ASIOHost, DAV_AudioData, LunchBoxEvent, LunchBoxEventList,
   LunchBoxInputFilter;
 
 type
@@ -141,6 +141,7 @@ type
     FInputEnvs      : TDAV2DoubleArray;
     FInputDCs       : TDAV2DoubleArray;
     FInputFilter    : Array [0..1] of TInputFilter;
+    FASIOData       : TAudioDataCollection32;
 
     FVSTInBuffer    : TDAVArrayOfSingleDynArray;
     FVSTOutBuffer   : TDAVArrayOfSingleDynArray;
@@ -148,7 +149,7 @@ type
     procedure CreateSample(Index: Integer; Amplitude : Double = 1);
     procedure Requantize;
     procedure AdjustDelayLength;
-    procedure RenderOutput(Buffer: TDAVArrayOfSingleDynArray; BufferLength: Integer; Loop: Boolean);
+    procedure RenderOutput(ADC: TAudioDataCollection32; Loop: Boolean);
   public
     property PatternPosition : Integer read FPatPos write FPatPos;
     property EventList : TLunchBoxEventList read FEventList;
@@ -165,8 +166,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, IniFiles, DAV_Approximations, WaveIOX, LunchBoxSetup, LunchBoxAbout,
-  LunchBoxVST;
+  Math, IniFiles, DAV_Approximations, DAV_AudioFileWAV, DAV_AudioFileAIFF,
+  DAV_AudioFileAU, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
 
 procedure TFmLunchBox.FormActivate(Sender: TObject);
 begin
@@ -180,7 +181,8 @@ end;
 
 procedure TFmLunchBox.FormDestroy(Sender: TObject);
 begin
- FEventList.Free;
+ FreeAndNil(FEventList);
+ FreeAndNil(FASIOData);
 end;
 
 procedure TFmLunchBox.FormKeyDown(Sender: TObject; var Key: Word;
@@ -222,23 +224,27 @@ end;
 
 procedure TFmLunchBox.MIExportWAVClick(Sender: TObject);
 var
-  Buffer : TDAVArrayOfSingleDynArray;
+  ADC    : TAudioDataCollection32;
   i      : Integer;
 begin
  if SaveWAVDialog.Execute then
   begin
    ASIOHost.Active := False;
-   SetLength(Buffer, 2);
-   SetLength(Buffer[0], 2 * FMaxPatSamples);
-   SetLength(Buffer[1], 2 * FMaxPatSamples);
-   FSamplesCount := 0; FPatPos := 0;
-   for i := 0 to Length(FDelayBuffer) - 1  do FillChar(FDelayBuffer[i, 0],Length(FDelayBuffer[i])*SizeOf(Single),0);
-   for i := 0 to Length(FFlangeBuffer) - 1 do FillChar(FFlangeBuffer[i, 0],Length(FFlangeBuffer[i])*SizeOf(Single),0);
-   for i := 0 to Length(FRobotBuffer) - 1  do FillChar(FRobotBuffer[i, 0],Length(FRobotBuffer[i])*SizeOf(Single),0);
-   for i := 0 to Length(FRecRevBuffer) - 1 do FillChar(FRecRevBuffer[i, 0],Length(FRecRevBuffer[i])*SizeOf(Single),0);
-   for i := 0 to FEventList.Count - 1 do FEventList.Items[i].NoteOff;
-   RenderOutput(Buffer, 2 * FMaxPatSamples,false);
-   SaveWAVFileSeparateStereo(SaveWAVDialog.FileName, @Buffer[0,0], @Buffer[1,0],Round(ASIOHost.SampleRate),2,16,2*FMaxPatSamples);
+   ADC := TAudioDataCollection32.Create(Self);
+   try
+    ADC.ChannelCount := 2;
+    ADC.SampleFrames := 2 * FMaxPatSamples;
+    FSamplesCount := 0; FPatPos := 0;
+    for i := 0 to Length(FDelayBuffer) - 1  do FillChar(FDelayBuffer[i, 0],  Length(FDelayBuffer[i])  * SizeOf(Single), 0);
+    for i := 0 to Length(FFlangeBuffer) - 1 do FillChar(FFlangeBuffer[i, 0], Length(FFlangeBuffer[i]) * SizeOf(Single), 0);
+    for i := 0 to Length(FRobotBuffer) - 1  do FillChar(FRobotBuffer[i, 0],  Length(FRobotBuffer[i])  * SizeOf(Single), 0);
+    for i := 0 to Length(FRecRevBuffer) - 1 do FillChar(FRecRevBuffer[i, 0], Length(FRecRevBuffer[i]) * SizeOf(Single), 0);
+    for i := 0 to FEventList.Count - 1 do FEventList.Items[i].NoteOff;
+    RenderOutput(ADC, False);
+    ADC.SaveToFile(SaveWAVDialog.FileName);
+   finally
+    FreeAndNil(ADC);
+   end;
    FSamplesCount := 0; FPatPos := 0;
    ASIOHost.Active := True;
   end;
@@ -336,49 +342,53 @@ end;
 
 procedure TFmLunchBox.CBKitChange(Sender: TObject);
 var
-  sr,c,sz,i : Integer;
-  pt        : PSingle;
-  str       : string;
-  Fl        : TSearchRec;
-  done      : Boolean;
+  i    : Integer;
+  ADC  : TAudioDataCollection32;
+  str  : string;
+  Fl   : TSearchRec;
+  done : Boolean;
 begin
  with TStringList.Create do
   try
    str := ExtractFilePath(Application.ExeName) + '.\sounds\' + CBKit.Text + '.kit';
-   if not fileexists(str) then
+   if not FileExists(str) then
     begin
      done := FindFirst(ExtractFilePath(Application.ExeName) + '.\sounds\*.kit', faAnyFile, Fl) <> 0;
      while not done do
       begin
        with TStringList.Create do
         try
-         LoadFromFile(ExtractFilePath(Application.ExeName)+'.\sounds\'+Fl.Name);
-         if CBKit.Text=Strings[0] then
+         LoadFromFile(ExtractFilePath(Application.ExeName) + '.\sounds\' + Fl.Name);
+         if CBKit.Text = Strings[0] then
           begin
-           str := ExtractFilePath(Application.ExeName)+'.\sounds\'+Fl.Name;
+           str := ExtractFilePath(Application.ExeName) + '.\sounds\' + Fl.Name;
            Break;
           end;
         finally
          Free;
-         done := FindNext(Fl)<>0;
+         done := FindNext(Fl) <> 0;
         end;
       end;
      FindClose(Fl);
-     if not fileexists(str) then exit;
+     if not FileExists(str) then exit;
     end;
    LoadFromFile(str);
    for i := 0 to 8 do
     begin
-     str := ExtractFilePath(Application.ExeName)+'.\sounds\'+Strings[i+1];
+     str := ExtractFilePath(Application.ExeName) + '.\sounds\' + Strings[i + 1];
      if FileExists(str) then
       begin
-       pt := LoadWAVFileMono(str,sr, c, sz);
-       SetLength(Samples[i].Data,sz);
-       Samples[i].SampleRate := sr;
-       for c := 0 to sz - 1 do
-        begin
-         Samples[i].Data[c] := (pt)^;
-         Inc(pt);
+       ADC := TAudioDataCollection32.Create(Self);
+       with ADC do
+        try
+         LoadFromFile(str);
+
+         SetLength(Samples[i].Data, ADC.SampleFrames);
+         Samples[i].SampleRate := ADC.SampleRate;
+
+         System.Move(ADC[0].ChannelDataPointer^[0], Samples[i].Data[0], ADC.SampleFrames * SizeOf(Single));
+        finally
+         FreeAndNil(ADC);
         end;
       end;
     end;
@@ -420,6 +430,9 @@ begin
    SetFilterValues(150,-1,0.5);
    Order := 14;
   end;
+
+ FASIOData := TAudioDataCollection32.Create(Self);
+ FASIOData.ChannelCount := 2;
 
  CBKit.Items.Clear;
  done := FindFirst(ExtractFilePath(Application.ExeName)+'.\sounds\*.kit',faAnyFile,Fl)<>0;
@@ -553,19 +566,19 @@ begin
    end;
 end;
 
-procedure TFmLunchBox.RenderOutput(Buffer: TDAVArrayOfSingleDynArray; BufferLength : Integer; Loop: Boolean);
+procedure TFmLunchBox.RenderOutput(ADC: TAudioDataCollection32; Loop: Boolean);
 var
   i, j : Integer;
   tmp  : Single;
 begin
- for i := 0 to BufferLength - 1 do
+ for i := 0 to ADC.SampleFrames - 1 do
   begin
    for j := 0 to FEventList.Count - 1 do
     begin
      if FPatPos = FEventList.Items[j].PatternPosition
       then FEventList.Items[j].NoteOn(1);
      if FEventList.Items[j].IsPlaying
-      then Buffer[0, i] := Buffer[0, i] + FEventList.Items[j].Process;
+      then ADC[0].ChannelDataPointer^[i] := ADC[0].ChannelDataPointer^[i] + FEventList.Items[j].Process;
     end;
    inc(FPatPos);
    if (FPatPos >= FMaxPatSamples) and Loop then
@@ -576,24 +589,24 @@ begin
     end;
   end;
 
- move(Buffer[0, 0], Buffer[1, 0], BufferLength * SizeOf(Single));
+ Move(ADC[0].ChannelDataPointer^[0], ADC[1].ChannelDataPointer^[0], ADC.SampleFrames * SizeOf(Single));
 
  // Apply Overdrive
  if CBOverdrive.Checked then
-  for j := 0 to Length(Buffer) - 1 do
-   for i := 0 to BufferLength - 1
-    do Buffer[j,i] := 0.3 * FastTanhOpt4TermFPU(12 * Buffer[j, i]);
+  for j := 0 to ADC.ChannelCount - 1 do
+   for i := 0 to ADC.SampleFrames - 1
+    do ADC[j].ChannelDataPointer^[i] := 0.3 * FastTanhOpt4TermFPU(12 * ADC[j].ChannelDataPointer^[i]);
 
  // Apply Flange
  if FFlange then
-  for i := 0 to BufferLength - 1 do
+  for i := 0 to ADC.SampleFrames - 1 do
    begin
-    for j := 0 to Length(Buffer) - 1 do
+    for j := 0 to ADC.ChannelCount - 1 do
      begin
-      tmp := Buffer[j, i];
+      tmp := ADC[j].ChannelDataPointer^[i];
       if (i mod 2) = 0
-       then Buffer[j, i] := Buffer[j, i] - FFlangePosition.Re * FFlangeBuffer[j, 1]
-       else Buffer[j, i] := Buffer[j, i] - FFlangePosition.Im * FFlangeBuffer[j, 2];
+       then ADC[j].ChannelDataPointer^[i] := ADC[j].ChannelDataPointer^[i] - FFlangePosition.Re * FFlangeBuffer[j, 1]
+       else ADC[j].ChannelDataPointer^[i] := ADC[j].ChannelDataPointer^[i] - FFlangePosition.Im * FFlangeBuffer[j, 2];
       FFlangeBuffer[j, 2] := FFlangeBuffer[j, 1];
       FFlangeBuffer[j, 1] := FFlangeBuffer[j, 0];
       FFlangeBuffer[j, 0] := tmp;
@@ -605,38 +618,38 @@ begin
 
  // Apply Robotize
  if FRobotize then
-  for i := 0 to BufferLength - 1 do
+  for i := 0 to ADC.SampleFrames - 1 do
    begin
-    for j := 0 to Length(Buffer)-1 do
+    for j := 0 to ADC.ChannelCount - 1 do
      begin
-      FRobotBuffer[j,FRobotPos] := 0.7 * FRobotBuffer[j,FRobotPos] + 0.6 * Buffer[j,i];
-      Buffer[j,i] := FRobotBuffer[j,FRobotPos];
+      FRobotBuffer[j, FRobotPos] := 0.7 * FRobotBuffer[j, FRobotPos] + 0.6 * ADC[j].ChannelDataPointer^[i];
+      ADC[j].ChannelDataPointer^[i] := FRobotBuffer[j, FRobotPos];
      end;
-    if FRobotPos<Length(FRobotBuffer[0])
+    if FRobotPos < Length(FRobotBuffer[0])
      then inc(FRobotPos)
      else FRobotPos := 0;
     end;
 
  if FRecRev then
-  for j := 0 to Length(Buffer) - 1 do
+  for j := 0 to ADC.ChannelCount - 1 do
    begin
-    SetLength(FRecRevBuffer[j], Length(FRecRevBuffer[j]) + BufferLength);
-    Move(Buffer[j, 0], FRecRevBuffer[j, Length(FRecRevBuffer[j]) - BufferLength], BufferLength * SizeOf(Single));
+    SetLength(FRecRevBuffer[j], Length(FRecRevBuffer[j]) + ADC.SampleFrames);
+    Move(ADC[j].ChannelDataPointer^[0], FRecRevBuffer[j, Length(FRecRevBuffer[j]) - ADC.SampleFrames], ADC.SampleFrames * SizeOf(Single));
    end else
  if Length(FRecRevBuffer[0]) > 0 then
-  for j := 0 to Length(Buffer) - 1 do
+  for j := 0 to ADC.ChannelCount - 1 do
    begin
-    for i := 0 to BufferLength - 1
-     do Buffer[j, i] := Buffer[j, i] + FRecRevBuffer[j, Length(FRecRevBuffer[j]) - i - 1];
-    SetLength(FRecRevBuffer[j], Length(FRecRevBuffer[j]) - BufferLength);
+    for i := 0 to ADC.SampleFrames - 1
+     do ADC[j].ChannelDataPointer^[i] := ADC[j].ChannelDataPointer^[i] + FRecRevBuffer[j, Length(FRecRevBuffer[j]) - i - 1];
+    SetLength(FRecRevBuffer[j], Length(FRecRevBuffer[j]) - ADC.SampleFrames);
    end;
 
- for i := 0 to BufferLength - 1 do
+ for i := 0 to ADC.SampleFrames - 1 do
   begin
-   for j := 0 to Length(Buffer) - 1 do
+   for j := 0 to ADC.ChannelCount - 1 do
     begin
-     Buffer[j, i] := Buffer[j, i] + FDelayVolume[1] * FDelayBuffer[j, FDelayPos[j]];
-     FDelayBuffer[j, FDelayPos[j]] := Buffer[j, i];
+     ADC[j].ChannelDataPointer^[i] := ADC[j].ChannelDataPointer^[i] + FDelayVolume[1] * FDelayBuffer[j, FDelayPos[j]];
+     FDelayBuffer[j, FDelayPos[j]] := ADC[j].ChannelDataPointer^[i];
      inc(FDelayPos[j]);
      if FDelayPos[j] >= FDelayLength[j]
       then FDelayPos[j] := 0;
@@ -645,13 +658,13 @@ begin
   end;
 
  if VSTHost[0].Active and FRealtimeVST
-  then VSTHost[0].ProcessReplacing(@Buffer[0],@Buffer[0],BufferLength);
+  then VSTHost[0].ProcessReplacing(ADC.ChannelDataPointerList, ADC.ChannelDataPointerList, ADC.SampleFrames);
  if VSTHost[1].Active
-  then VSTHost[1].ProcessReplacing(@Buffer[0],@Buffer[0],BufferLength);
+  then VSTHost[1].ProcessReplacing(ADC.ChannelDataPointerList, ADC.ChannelDataPointerList, ADC.SampleFrames);
 
  // Apply Metronome
  if Loop then
-  for i := 0 to BufferLength - 1 do
+  for i := 0 to ADC.SampleFrames - 1 do
    begin
     tmp := FMetPosition.Re * FMetAngle.Re - FMetPosition.Im * FMetAngle.Im;
     FMetPosition.Im := FMetPosition.Im * FMetAngle.Re + FMetPosition.Re * FMetAngle.Im;
@@ -671,8 +684,8 @@ begin
        then inc(FBeatPos)
        else begin FBeatPos := 0; FRecRev := False; end;
      end;
-    for j := 0 to Length(Buffer) - 1
-     do Buffer[j, i] := Buffer[j, i] + tmp * FMetroVolume[1];
+    for j := 0 to ADC.ChannelCount - 1
+     do ADC[j].ChannelDataPointer^[i] := ADC[j].ChannelDataPointer^[i] + tmp * FMetroVolume[1];
    end;
 end;
 
@@ -682,7 +695,13 @@ var
   i    : Integer;
   d, t : Double;
 begin
- RenderOutput(OutBuffer, ASIOHost.BufferSize, True);
+ // render output data
+ FASIOData.SampleFrames := ASIOHost.BufferSize;
+ RenderOutput(FASIOData, True);
+ move(FASIOData[0].ChannelDataPointer^[0], OutBuffer[0], FASIOData.SampleFrames);
+ move(FASIOData[1].ChannelDataPointer^[0], OutBuffer[1], FASIOData.SampleFrames);
+
+ // process input detection
  for i := 0 to ASIOHost.BufferSize - 1 do
   begin
    t := 5E-3 + InBuffer[0, i];
@@ -695,7 +714,7 @@ begin
 
    FInputEnvs[1] := 0.99995 * FInputEnvs[1];
    if d > FInputEnvs[1]
-    then FInputEnvs[1] := FInputEnvs[1] + 0.5*(d - FInputEnvs[1]);
+    then FInputEnvs[1] := FInputEnvs[1] + 0.5 * (d - FInputEnvs[1]);
 
    t := FInputEnvs[0] / FInputEnvs[1] - 1;
    d := abs(t - FInputDCs[1]);

@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,
-  DAV_VSTModule, SimpleSamplerVoice, SimpleSamplerGUI, VoiceList;
+  DAV_VSTModule, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
+  DAV_AudioData, SimpleSamplerVoice, SimpleSamplerGUI, VoiceList;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -30,7 +31,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, WaveIOX;
+  Math;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -39,12 +40,18 @@ end;
 
 procedure TVSTSSModule.LoadFromFile(const FileName: TFileName);
 var
-  sr, c : Integer;
-  pt    : PSingle;
+  ADC : TAudioDataCollection32;
 begin
- pt := LoadWAVFileMono(FileName, sr, c, FSampleLength);
- ReallocMem(FSample, FSampleLength * SizeOf(Single));
- Move(pt^, FSample^[0], FSampleLength * SizeOf(Single));
+ ADC := TAudioDataCollection32.Create(Self);
+ with ADC do
+  try
+   LoadFromFile(FileName);
+   FSampleLength := ADC.SampleFrames;
+   ReallocMem(FSample, FSampleLength * SizeOf(Single));
+   Move(ADC[0].ChannelDataPointer^[0], FSample^[0], FSampleLength * SizeOf(Single));
+  finally
+   FreeAndNil(ADC);
+  end;
 end;
 
 procedure TVSTSSModule.VSTModuleClose(Sender: TObject);

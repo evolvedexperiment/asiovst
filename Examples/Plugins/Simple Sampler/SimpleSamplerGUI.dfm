@@ -48,8 +48,8 @@ object VSTGUI: TVSTGUI
     Height = 121
     DisplayChannels = 1
     NormalizationType = ntOverallChannels
-    Transparent = True
     WaveDrawMode = wdmOutline
+    Transparent = True
   end
   object EditSample: TEdit
     Left = 58
@@ -70,7 +70,9 @@ object VSTGUI: TVSTGUI
   end
   object OpenDialog: TOpenDialog
     DefaultExt = 'wav'
-    Filter = 'Wave Files (*.wav)|*.wav'
+    Filter = 
+      'All known files|*.wav;*.aif*;*.au;*.snd|Wave Files (*.wav)|*.wav' +
+      '|AIFF Files (*.aiff)|*.aif*|AU files (*.au)|*.au;*.snd'
     Title = 'Select a Sample...'
     Left = 8
     Top = 40

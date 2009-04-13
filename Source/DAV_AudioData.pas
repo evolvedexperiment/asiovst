@@ -376,6 +376,7 @@ type
     function GetAudioChannel(index: Integer): TAudioChannel32; virtual;
     function GetChannelDataPointerList(Channel: Integer): PDAVSingleFixedArray;
     procedure RebuildChannelList(Sender: TObject);
+    function GetChannelDataPointerListPointer: Pointer;
   protected
     procedure CreateChannels; override;
     procedure DataDecoding(Sender: TObject;
@@ -386,7 +387,8 @@ type
     property ChannelList[index: Integer]: TAudioChannel32 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); override;
-    property ChannelDataPointerList[Channel: Integer]: PDAVSingleFixedArray read GetChannelDataPointerList;
+    property ChannelDataPointer[Channel: Integer]: PDAVSingleFixedArray read GetChannelDataPointerList;
+    property ChannelDataPointerList: Pointer read GetChannelDataPointerListPointer;
   end;
 
   TAudioDataCollection32 = class(TCustomAudioDataCollection32)
@@ -1460,6 +1462,11 @@ function TCustomAudioDataCollection32.GetChannelDataPointerList(
   Channel: Integer): PDAVSingleFixedArray;
 begin
  result := ChannelList[Channel].ChannelDataPointer;
+end;
+
+function TCustomAudioDataCollection32.GetChannelDataPointerListPointer: Pointer;
+begin
+ result := @FChannelDataPointerList;
 end;
 
 procedure TCustomAudioDataCollection32.DataDecoding(Sender: TObject;

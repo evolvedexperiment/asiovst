@@ -128,13 +128,17 @@ type
   end;
 
   TWavWriter = class(TObject)
+  private
+    FFormat: TWaveFormatEx;
+    FStream: TFilewaveStream;
   public
-    Format: TWaveFormatEx;
-    Stream: TFilewaveStream;
     constructor Create(fn: string; sr, ch, bits: LongInt);
+    destructor Destroy; override;
     procedure WriteFloatData(p: pointer; size: LongInt);
     procedure WriteFloatDataSeparateStereo(p1, p2: pointer; size: LongInt);
-    destructor Destroy; override;
+
+    property Format: TWaveFormatEx read FFormat;
+    property Stream: TFilewaveStream read FStream;
   end;
 
 implementation
@@ -797,37 +801,37 @@ constructor TWavWriter.Create(fn: string; sr, ch, bits: Integer);
 var
   p: PWaveFormatEx;
 begin
-  Format.nChannels := ch;
-  Format.nSamplesPerSec := sr;
+  FFormat.nChannels := ch;
+  FFormat.nSamplesPerSec := sr;
   if bits > 32 then bits := 32;
-  Format.wBitsPerSample := bits;
+  FFormat.wBitsPerSample := bits;
   case bits of
    20, 24 :
     begin
-     Format.nBlockAlign := 3;
-     Format.wFormatTag := WAVE_FORMAT_PCM
+     FFormat.nBlockAlign := 3;
+     FFormat.wFormatTag := WAVE_FORMAT_PCM
     end;
    32 :
     begin
-     Format.nBlockAlign := 4;
-     Format.wFormatTag := 3
+     FFormat.nBlockAlign := 4;
+     FFormat.wFormatTag := 3
     end;
    else
     begin
-     Format.nBlockAlign := (bits + 7) div 8;
-     Format.wFormatTag := WAVE_FORMAT_PCM;
+     FFormat.nBlockAlign := (bits + 7) div 8;
+     FFormat.wFormatTag := WAVE_FORMAT_PCM;
     end;
   end;
-  Format.nAvgBytesPerSec := sr * ch * Format.nBlockAlign;
+  FFormat.nAvgBytesPerSec := sr * ch * FFormat.nBlockAlign;
   p := @format;
-  stream := TFilewaveStream.Create(fn, p);
+  FStream := TFileWaveStream.Create(fn, p);
 end;
 
 destructor TWavWriter.Destroy;
 begin
-  FreeAndNil(stream);
-  Sleep(100);
-  inherited Destroy;
+ FreeAndNil(FStream);
+ Sleep(10);
+ inherited Destroy;
 end;
 
 procedure TWavWriter.WriteFloatData(p: pointer; size: Integer);

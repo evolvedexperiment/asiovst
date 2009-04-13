@@ -82,7 +82,7 @@ implementation
 {$R *.dfm}
 
 uses
-  WaveIOX, AEAsioSetup, AEVstSetup;
+  AEAsioSetup, AEVstSetup;
 
 procedure TFmAudioEditor.DataChangedHandler(Sender: TObject);
 begin
@@ -231,7 +231,7 @@ begin
    Filter := 'All known files |*.wav;*.aif*;*.au|' +
              'Wave File (*.wav)|*.wav|' +
              'AIFF File (*.aif)|*.aif*|' +
-             'AU File (*.au)|*.au';
+             'AU File (*.au)|*.au;*.snd';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Load Audio File';
    if Execute then
@@ -249,7 +249,10 @@ begin
  with TSaveDialog.Create(Self) do
   try
    DefaultExt := 'wav';
-   Filter := 'Wave File (*.wav)|*.wav';
+   Filter := 'All known files |*.wav;*.aif*;*.au|' +
+             'Wave File (*.wav)|*.wav|' +
+             'AIFF File (*.aif)|*.aif*|' +
+             'AU File (*.au)|*.au;*.snd';
    Options := [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing];
    Title := 'Save Audio File';
    if Execute then

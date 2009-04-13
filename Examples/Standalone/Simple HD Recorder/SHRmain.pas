@@ -3,9 +3,9 @@ unit SHRmain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  DAV_Common, DAV_GuiLabel, DAV_GuiButton, DAV_GuiBaseControl, DAV_GuiLED, ExtCtrls,
-  DAV_ASIOHost;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
+  Graphics, DAV_Common, DAV_GuiLabel, DAV_GuiButton, DAV_GuiBaseControl,
+  DAV_GuiLED, DAV_ASIOHost;
 
 type
   TStorageThread = class(TThread)
@@ -63,7 +63,8 @@ var
 implementation
 
 uses
-  Math, IniFiles, WaveIOX, DAV_GuiCommon, SHRSetup;
+  Math, IniFiles, DAV_AudioData, DAV_AudioFileWAV, DAV_AudioFileAIFF,
+  DAV_AudioFileAU, DAV_GuiCommon, WaveIOX, SHRSetup;
 
 {$R *.dfm}
 

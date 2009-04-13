@@ -30,7 +30,8 @@ begin
  with TOpenDialog.Create(Self) do
   try
    DefaultExt := 'wav';
-   Filter := 'Wave (*.wav)|*.wav';
+   Filter := 'All known files|*.wav;*.aif*;*.au;*.snd|Wave files (*.wav)|' +
+     '*.wav|AIFF files (*.aiff)|*aif*|AU files (*.au)|*.au;*.snd';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Select an Impulse Response';
    if Execute then EdFileName.Text := FileName;

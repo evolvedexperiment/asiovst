@@ -30,12 +30,13 @@ begin
  with TOpenDialog.Create(Self) do
   try
    DefaultExt := 'wav';
-   Filter := 'Wave (*.wav)|*.wav';
+   Filter := 'All known files|*.wav;*.aif*;*.au;*.snd|Wave (*.wav)|*.wav|' +
+     'AIFF files (*.aiff)|*.aiff|AU files (*.au)|*.au;*.snd';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Select an Impulse Response';
    if Execute then EdFileName.Text := FileName;
   finally
-   Free; 
+   Free;
   end;
 end;
 
@@ -47,7 +48,7 @@ end;
 
 procedure TFmConvolution.FormShow(Sender: TObject);
 begin
- EdFileName.Text := 'C:\MFW\Bin\Audio\LS-MI.wav';
+ EdFileName.Text := '';
 end;
 
 end.

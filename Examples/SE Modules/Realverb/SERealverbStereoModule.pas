@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  Classes, WaveIOX;
+  Classes;
 
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';

@@ -47,7 +47,7 @@ type
 implementation
 
 uses
-  WaveIOX;
+  DAV_AudioData, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
@@ -243,14 +243,19 @@ end;
 
 procedure TSEConvolutionModule.LoadIR(FileName: TFileName);
 var
-  sr, c, sz : Integer;
-  pt        : PSingle;
+  ADC : TAudioDataCollection32;
 begin
  while FSemaphore > 0 do;
  inc(FSemaphore);
  try
-  pt := LoadWAVFileMono(FileName, sr, c, sz);
-  FConvolver.LoadImpulseResponse(@pt^, sz);
+  ADC := TAudioDataCollection32.Create(nil);
+  with ADC do
+   try
+    LoadFromFile(FileName);
+    FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+   finally
+    FreeAndNil(ADC);
+   end;
  finally
   dec(FSemaphore);
  end;
