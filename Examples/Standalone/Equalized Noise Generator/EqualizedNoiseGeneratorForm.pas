@@ -165,7 +165,7 @@ end;
 procedure TFmASIO.SliderChange(Sender: TObject);
 begin
  with (Sender As TScrollBar)
-  do FEQs[Tag div 11, Tag mod 11].Gain := Position * 0.1;
+  do FEQs[Tag div 11, Tag mod 11].Gain := -Position * 0.1;
 end;
 
 procedure TFmASIO.BtPlayClick(Sender: TObject);
