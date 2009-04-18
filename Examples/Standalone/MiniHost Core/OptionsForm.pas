@@ -40,7 +40,7 @@ type
   end;
 
 var
-  FmOptions: TFmOptions;
+  FmOptions : TFmOptions;
 
 implementation
 

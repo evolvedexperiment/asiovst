@@ -168,8 +168,10 @@ type
 
   TCustomADPCMChannel32DataCoder = class(TCustomChannel32DataCoder)
   private
+(*
     PrevSamp : array [0..1] of SmallInt;
     Index    : array [0..1] of Byte;
+*)
   protected
     procedure EncodeData; virtual; abstract;
     procedure DecodeData; virtual; abstract;
@@ -1155,10 +1157,12 @@ int AdaptCoeff2 [] = { 0, -256, 0, 64, 0, -208, -232 } ;
 *)
 
 procedure TMicrosoftADPCMChannel32DataCoder.DecodeData;
+{
 var
   pos, i     : Integer;
   PredSamp   : Integer;
   ErrorDelta : Integer;
+}
 begin
 (*
  pos := 0;

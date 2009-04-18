@@ -105,7 +105,7 @@ procedure Quit(This_Mod : PWinAmpDSPModule); cdecl;
 implementation
 
 uses
-  Math, SyncObjs, DAV_VSTEffect;
+  Math, SyncObjs, DAV_GuiCommon, DAV_VSTEffect;
 
 var
   WADSPHeader      : TWinAmpDSPheader =
@@ -348,52 +348,38 @@ end;
 
 procedure TFmWinAmpVST.SetScheme;
 var
-  col1, col2, col3, col4 : TColor;
-  c, c1, c2, c3, c4      : Integer;
-  r1, r2, r3, r4         : Integer;
-  g1, g2, g3, g4         : Integer;
-  b1, b2, b3, b4         : Integer;
-var
-  DC: HDC;
+  BMP  : TBitmap;
+  SCL  : PRGB24Array;
+  R    : Integer;
+  G    : Integer;
+  B    : Integer;
+  x, y : Integer;
 begin
- DC := GetDC(0);
- try
-  Col1 := GetPixel(dc, Left + PnGUI.Left + 17, Top + PanelControl.Height + 32);
-  Col2 := GetPixel(dc, Left + PnGUI.Left + 40, Top + PanelControl.Height + 48);
-  Col3 := GetPixel(dc, Left + PnGUI.Left + 16, Top + PanelControl.Height + 62);
-  Col4 := GetPixel(dc, Left + PnGUI.Left + 38, Top + PanelControl.Height + 68);
-  r1 := GetRValue(col1); r2 := GetRValue(col2); r3 := GetRValue(col3); r4 := GetRValue(col4);
-  g1 := GetGValue(col1); g2 := GetGValue(col2); g3 := GetGValue(col3); g4 := GetGValue(col4);
-  b1 := GetBValue(col1); b2 := GetBValue(col2); b3 := GetBValue(col3); b4 := GetBValue(col4);
-  c1 := abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2) + abs(r1 - r3) + abs(g1 - g3) + abs(b1 - b3) + abs(r1 - r4) + abs(g1 - g4) + abs(b1 - b4);
-  c2 := abs(r2 - r1) + abs(g2 - g1) + abs(b2 - b1) + abs(r2 - r3) + abs(g2 - g3) + abs(b2 - b3) + abs(r2 - r4) + abs(g2 - g4) + abs(b2 - b4);
-  c3 := abs(r3 - r1) + abs(g3 - g1) + abs(b3 - b1) + abs(r3 - r2) + abs(g3 - g2) + abs(b3 - b2) + abs(r3 - r4) + abs(g3 - g4) + abs(b3 - b4);
-  c4 := abs(r4 - r1) + abs(g4 - g1) + abs(b4 - b1) + abs(r4 - r2) + abs(g4 - g2) + abs(b4 - b2) + abs(r4 - r3) + abs(g4 - g3) + abs(b4 - b3);
-  if (c1 <= c2) and (c1 <= c3) and (c1 <= c4) then c := col1 else
-  if (c2 <= c1) and (c2 <= c3) and (c2 <= c4) then c := col2 else
-  if (c3 <= c1) and (c4 <= c2) and (c4 <= c4) then c := col3 else c := col4;
-  c1 := GetRValue(c) + GetGValue(c) + GetBValue(c);
-  if c1 < 3*$30 then c := $303030;
-   while c1 > 3*$80 do
+ Application.ProcessMessages;
+ BMP := TBitmap.Create;
+ BMP.PixelFormat := pf24bit;
+ with BMP do
+  try
+   VstHost[0].RenderEditorToBitmap(BMP);
+   SCL := BMP.ScanLine[0];
+   for x := 0 to BMP.Width - 1 do
     begin
-     r1 := GetRValue(c); if r1 > 0 then dec(r1);
-     g1 := GetGValue(c); if g1 > 0 then dec(g1);
-     b1 := GetBValue(c); if b1 > 0 then dec(b1);
-     c := rgb(r1, g1, b1);//$c0c0c0;
-     c1 := GetRValue(c) + GetGValue(c) + GetBValue(c);
-   end;
+     R := R + SCL[x].R;
+     G := G + SCL[x].G;
+     B := B + SCL[x].B;
+    end;
 
-  FColorEdit := rgb(GetRValue(c) div 2, GetGValue(c) div 2, GetBValue(c) div 2);
-//  Font.Color :=
-  FColorBack        := c;
-  FColorBorder      := FColorBack + $00101010;
-  EdVSTName.Color   := FColorEdit;
-  CBPreset.Color    := FColorEdit;
-  FmWinAmpVST.Color := FColorBack;
- finally
-  FColDetected := True;
-  ReleaseDC(0, DC);
- end;
+
+   FColorEdit        := rgb(R div (2 * BMP.Width), G div (2 * BMP.Width), B div (2 * BMP.Width));
+   FColorBack        := rgb(R div BMP.Width, G div BMP.Width, B div BMP.Width);
+   FColorBorder      := rgb(6 * R div (5 * BMP.Width), 6 * G div (5 * BMP.Width), 6 * B div (5 * BMP.Width));
+   EdVSTName.Color   := FColorEdit;
+   CBPreset.Color    := FColorEdit;
+   FmWinAmpVST.Color := FColorBack;
+   FColDetected      := True;
+  finally
+   FreeAndNil(BMP);
+  end;
 end;
 
 procedure TFmWinAmpVST.LoadVSTDLL(VSTDLL : TFileName);

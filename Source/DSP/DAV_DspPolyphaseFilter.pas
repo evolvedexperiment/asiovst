@@ -1,5 +1,8 @@
 unit DAV_DspPolyphaseFilter;
 
+// based on HIIR library by Laurent de Soras
+// see http://ldesoras.free.fr/prod.html for more information
+
 interface
 
 {$I ..\DAV_Compiler.inc}

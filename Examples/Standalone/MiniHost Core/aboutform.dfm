@@ -21,12 +21,12 @@ object FmAbout: TFmAbout
   PixelsPerInch = 96
   TextHeight = 14
   object LbTitle: TLabel
-    Left = 48
+    Left = 46
     Top = 16
-    Width = 121
+    Width = 130
     Height = 14
     Anchors = [akLeft, akTop, akRight]
-    Caption = 'Tobybear MiniHost 1.0'
+    Caption = 'Tobybear MiniHost 1.0.1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
     Font.Height = -11
@@ -42,8 +42,8 @@ object FmAbout: TFmAbout
     Alignment = taCenter
     Anchors = [akLeft, akTop, akRight]
     Caption = 
-      '(C)opyright in 2004-2008 by Tobias Fleischer'#13#10'based on the Delph' +
-      'i VST and ASIO '#13#10'host code by Christian Budde'
+      '(C)opyright in 2004-2009 by Tobias Fleischer'#13#10'based on the Delph' +
+      'i ASIO && VST '#13#10'host code by Christian Budde'
   end
   object LbMail: TLabel
     Left = 40

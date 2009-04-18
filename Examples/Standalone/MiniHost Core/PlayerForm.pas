@@ -87,10 +87,11 @@ uses SysUtils, MiniHostForm, OptionsForm, ShellAPI;
 var FmMiniHost: TFmMiniHost;
 
 procedure TPlayer.WMDropfiles(var msg: TMessage);
-var Size: Integer;
-    Name: pchar;
-    s: string;
-    i, nCount: Integer;
+var
+  Size      : Integer;
+  Name      : pchar;
+  s         : string;
+  i, nCount : Integer;
 begin
  inherited;
  nCount := DragQueryFile(msg.WParam, $FFFFFFFF, nil, 0);
@@ -111,7 +112,8 @@ begin
    s := UpperCase(ExtractFileExt(Strings[0]));
    if (s = '.MID')
     then FmMiniHost.AddMID(Strings[0]) else
-   if (s = '.WAV') then FmMiniHost.AddWAV(Strings[0]);
+   if (s = '.WAV')
+    then FmMiniHost.AddWAV(Strings[0]);
   finally
    Free;
   end;
@@ -133,7 +135,8 @@ begin
 end;
 
 procedure TPlayer.BtMidiRemoveClick(Sender: TObject);
-var i: Integer;
+var
+  i: Integer;
 begin
  if MidiBox.ItemIndex >= 0 then
   begin
@@ -155,8 +158,8 @@ begin
    MIPanicClick(nil);
    if (MidiBox.ItemIndex >= 0) and (MidiBox.Items.Count > 0) then
     begin
-     MidiFile.Filename := pshortstr(MidiBox.Items.objects[MidiBox.itemindex])^;
-     LbMidiFile.Caption := MidiBox.Items[MidiBox.itemindex];
+     MidiFile.Filename := pshortstr(MidiBox.Items.Objects[MidiBox.ItemIndex])^;
+     LbMidiFile.Caption := MidiBox.Items[MidiBox.ItemIndex];
      MidiFile.ReadFile;
      SbTempo.position := MidiFile.Bpm;
      MidiFile.StartPlaying;
@@ -204,8 +207,8 @@ begin
  if (WavBox.ItemIndex >= 0) and (WavBox.Items.Count > 0) then
   with FmMiniHost do
    begin
-    LoadWAV(pshortstr(WavBox.Items.Objects[WavBox.itemindex])^);
-    LbWaveFile.Caption := WavBox.Items[WavBox.itemindex];
+    LoadWAV(pshortstr(WavBox.Items.Objects[WavBox.ItemIndex])^);
+    LbWaveFile.Caption := WavBox.Items[WavBox.ItemIndex];
     StartPlayback2Click(nil);
    end;
 end;

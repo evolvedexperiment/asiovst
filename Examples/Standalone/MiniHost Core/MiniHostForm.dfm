@@ -1,6 +1,6 @@
 object FmMiniHost: TFmMiniHost
-  Left = 215
-  Top = 216
+  Left = 267
+  Top = 206
   AlphaBlendValue = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -2038,11 +2038,7 @@ object FmMiniHost: TFmMiniHost
     VendorVersion = 1
     VstPlugIns = <
       item
-        DisplayName = 'Test'
-        VstOfflineTasks = <>
-      end
-      item
-        DisplayName = 'Test2'
+        DisplayName = 'Default'
         VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000

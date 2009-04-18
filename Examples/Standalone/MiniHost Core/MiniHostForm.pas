@@ -7,8 +7,8 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
-  Menus, SyncObjs, DAV_Common, DAV_VstEffect, WaveIOX, DAV_MidiFile, DAV_MidiIO,
-  DAV_ASIOHost, DAV_VSTHost;
+  Menus, SyncObjs, DAV_Common, DAV_VstEffect, DAV_MidiFile, DAV_MidiIO,
+  DAV_ASIOHost, DAV_VSTHost, WaveIOX, AboutForm;
 
 type
   ShortStr = string[255];
@@ -221,6 +221,11 @@ type
     FVSTPinProps    : array of TVstPinProperties;
     FNumIn,
     FNumOut         : Integer;
+    FColBack        : Boolean;
+    FAboutForm      : TFmAbout;
+
+    FMidiFile       : TMidiFile;
+    FWavWriter      : TWavWriter;
 
     FCurrentASIO    : Integer;
     FCurrentMIDIIn  : Integer;
@@ -239,12 +244,10 @@ type
     procedure MIDIInChange(Sender: TObject);
     procedure MIDIOutChange(Sender: TObject);
     procedure SetPreset(Sender: TObject);
-    procedure PluginResize(Sender: TObject);
     procedure ProcessEvents(Sender: TObject; ev: PVstEvents);
     procedure ProcessNoteOnOff(ch, n, v: byte);
+    function FindBackgroundColor: TColor;
   public
-    MidiFile      : TMidiFile;
-    WavWriter     : TWavWriter;
     procedure AddMID(const FileName: string);
     procedure AddMIDIData(d1, d2, d3: byte; pos: Integer = 0);
     procedure AddWAV(const FileName: string);
@@ -259,6 +262,8 @@ type
     procedure StartAudio;
     procedure StopAudio;
     procedure WMDropFiles(var msg: TMessage); message WM_DROPFILES;
+
+    property MidiFile: TMidiFile read FMidiFile;
   published
     property RecordState: TRecordState read FRecordState write FRecordState;
     property WaveFile: TWavPlayer read FWaveFile;
@@ -282,7 +287,7 @@ implementation
 
 uses
   Math, Inifiles, Dialogs, ShellAPI, DAV_AudioData, DAV_AudioFileWAV,
-  DAV_AudioFileAIFF, DAV_AudioFileAU, OptionsForm, AboutForm, PlayerForm;
+  DAV_AudioFileAIFF, DAV_AudioFileAU, OptionsForm, PlayerForm;
 
 procedure TFmMiniHost.FormCreate(Sender: TObject);
 var
@@ -373,15 +378,10 @@ begin
  with FPanel do
   begin
    Parent := Self;
-   Left := 0;
-   Top := PnStatus.height;
-   Width := 700;
-   Height := 1;
-   Tag := -1;
-   OnResize := PluginResize;
+   Top := PnStatus.Height;
   end;
 
- FmAbout := TFmAbout.Create(Self);
+ ClientHeight := PnStatus.Height;
  FmOptions := TFmOptions.Create(Self);
  FmOptions.Host := Self;
 
@@ -391,9 +391,9 @@ begin
  ININame := GetApplicationDirectory + '\' + ChangeFileExt(GetApplicationFilename, '.ini');
 {$ENDIF}
 
- MidiFile := TMidiFile.create(nil);
- MidiFile.OnMidiEvent := MyMidiEvent;
- MidiFile.ManualCall := True;
+ FMidiFile := TMidiFile.create(nil);
+ FMidiFile.OnMidiEvent := MyMidiEvent;
+ FMidiFile.ManualCall := True;
  FRecordState := rsStop;
 
  try
@@ -517,9 +517,9 @@ begin
  Player.CBMidiPlayMode.ItemIndex := Settings.ReadInteger('MIDI', 'LoopMode', 1);
  Player.CBWavPlayMode.ItemIndex := Settings.ReadInteger('Audio', 'LoopMode', 1);
  WaveFile.looped := Player.CBWavPlayMode.itemindex = 1;
- MidiFile.Filename := Settings.ReadString('MIDI', 'LastFile', '');
- if (MidiFile.filename <> '') and fileexists(MidiFile.filename)
-  and (uppercase(extractfileext(MidiFile.filename))='.MID') then MidiFile.ReadFile;
+ FMidiFile.Filename := Settings.ReadString('MIDI', 'LastFile', '');
+ if (FMidiFile.filename <> '') and fileexists(FMidiFile.filename)
+  and (uppercase(extractfileext(FMidiFile.filename))='.MID') then FMidiFile.ReadFile;
  MidiPlaying := False;
 
  MIDownMixToStereo.Checked := Settings.ReadBool('VST', 'DownmixStereo', False);
@@ -555,6 +555,10 @@ begin
  except
  end;
 
+ // free about form if necessary
+ if assigned(FAboutForm)
+  then FreeAndNil(FAboutForm);
+  
  with TIniFile.Create(ININame) do
   try
    EraseSection('Playlist MIDI');
@@ -592,8 +596,8 @@ begin
    WriteInteger('VST', 'Tempo', FmOptions.SbTempo.position);
    WriteString('VST', 'LastPlugin', VSTHost[0].DLLFilename);
    WriteInteger('VST', 'LastProgram', FCurProg);
-   if Player.MidiBox.Items.Count = 0 then MidiFile.Filename := '';//c
-   WriteString('MIDI', 'LastFile', MidiFile.Filename);
+   if Player.MidiBox.Items.Count = 0 then FMidiFile.Filename := '';//c
+   WriteString('MIDI', 'LastFile', FMidiFile.Filename);
    WriteInteger('MIDI', 'LoopMode', Player.CBMidiPlayMode.itemindex);
    WriteInteger('Audio', 'LoopMode', Player.CBWavPlayMode.itemindex);
    WriteBool('Layout', 'ShowPresetInTitleBar', MIShowPreset.Checked);
@@ -610,11 +614,8 @@ begin
 
  if FPluginLoaded then ClosePlugin;
 
- if Assigned(WavWriter) then
- begin
-  FreeAndNil(WavWriter);
-  WavWriter := nil;
- end;
+ if Assigned(FWavWriter)
+  then FreeAndNil(FWavWriter);
 
  try
   MidiInput.CloseAll;
@@ -622,7 +623,7 @@ begin
  except
  end;
 
- FreeAndNil(MidiFile);
+ FreeAndNil(FMidiFile);
  FreeAndNil(FWaveFile);
  FNumIn := 0;
  FNumOut := 0;
@@ -675,20 +676,18 @@ procedure TFmMiniHost.ClosePlugin;
 var
   i : Integer;
 begin
- MidiFile.StopPlaying;
+ FPanel.Height := 0;
+ FMidiFile.StopPlaying;
  MidiPlaying := False;
  WaveTimer.Enabled := False;
  FProcessing := False;
- 
+
  StopAudio;
  MIPanicClick(nil);
  FRecordState := rsStop;
 
- if assigned(WavWriter) then
-  begin
-   WavWriter.free;
-   WavWriter := nil;
-  end;
+ if assigned(FWavWriter)
+  then FreeAndNil(FWavWriter);
 
  if (VSTHost[0].DLLFileName <> '') and VSTHost[0].Active then
   with VSTHost[0] do
@@ -746,8 +745,8 @@ end;
 
 procedure TFmMiniHost.LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
 var
-  r : ERect;
-  i : Integer;
+  rct : ERect;
+  i   : Integer;
 begin
  if not FileExists(VSTDll) then exit;
  WaveTimer.Enabled := False;
@@ -756,21 +755,6 @@ begin
  sleep(2);
  ClosePlugin;
  sleep(2);
-
- if assigned(FPanel) and (FPanel.Tag = -1)
-  then FreeAndNil(FPanel);
-
- FPanel := TPanel.Create(Self);
- with FPanel do
-  begin
-   Parent := Self;
-   Left := 0;
-   Top := 0;
-   tag := 0;
-   Width := 700;
-   Height := 0;
-   OnResize := PluginResize;
-  end;
 
  VSTHost.BlockSize := ASIOHost.BufferSize;
  VSTHost[0].LoadFromFile(VSTDll);
@@ -783,6 +767,7 @@ begin
   {$ENDIF}
   VSTHost[0].Active := False;
   VSTHost[0].DLLFilename := '';
+  FPanel.Height := 0;
   exit;
  end;
 
@@ -800,11 +785,35 @@ begin
 
    FTitle := GetVendorString + ' ' +  GetEffectName;
    BuildPresetList;
-   r := EditGetRect;
 
-   FPanel.width  := r.right - r.left;
-   FPanel.height := r.bottom - r.top;
-   FPanel.top    := PnStatus.height;
+   if (effFlagsHasEditor in VSTHost[0].EffectOptions) then
+    begin
+     rct := EditGetRect;
+     FPanel.Width  := Rct.Right - Rct.Left;
+     FPanel.Height := Rct.Bottom - Rct.Top;
+     FPanel.Top    := PnStatus.Height;
+
+     // set client width
+     if FPanel.Width < 560 then
+      begin
+       ClientWidth := 560;
+       FPanel.Left := (560 - FPanel.Width) div 2;
+      end
+     else
+      begin
+       ClientWidth := FPanel.Width;
+       FPanel.left := 0;
+      end;
+     ClientHeight := FPanel.Height + PnStatus.Height;
+
+     // find background color ASAP
+     FColBack := False;
+    end
+   else
+    begin
+     FPanel.Width  := 560;
+     FPanel.Height := 480;
+    end;
   except
    raise;
   end;
@@ -825,7 +834,37 @@ begin
  Top := Screen.Height div 2 - Height div 2;
  VSTHost[0].SetProgram(DefaultProgram);
  FmOptions.SbTempoChange(nil);
- Sleep(50);
+end;
+
+function TFmMiniHost.FindBackgroundColor: TColor;
+var
+  BMP     : TBitmap;
+  SCL     : PRGB24Array;
+  R, G, B : Integer;
+  x       : Integer;
+begin
+ // fill background
+ Application.ProcessMessages;
+
+ BMP := TBitmap.Create;
+ BMP.PixelFormat := pf24bit;
+ with BMP do
+  try
+   VSTHost[0].RenderEditorToBitmap(BMP);
+   SCL := BMP.ScanLine[0];
+   R := 0; G := 0; B := 0;
+
+   for x := 0 to BMP.Width - 1 do
+    begin
+     R := R + SCL[x].R;
+     G := G + SCL[x].G;
+     B := B + SCL[x].B;
+    end;
+
+   result := RGB(R div BMP.Width, G div BMP.Width, B div BMP.Width);
+  finally
+   FreeAndNil(BMP);
+  end;
 end;
 
 procedure TFmMiniHost.VSTHostAudioMasterIdle(Sender: TVSTPlugin);
@@ -943,7 +982,7 @@ begin
  (Sender as TMenuItem).Checked := True;
  FProcessing := False;
  MIPanicClick(nil);
- MidiFile.StopPlaying;
+ FMidiFile.StopPlaying;
  MidiPlaying := False;
  StopPlayback2Click(nil);
  StopAudio;
@@ -1297,40 +1336,18 @@ begin
  if PnStatus.Visible then PnStatus.SetFocus;
 end;
 
-procedure TFmMiniHost.PluginResize(Sender: TObject);
-begin
- if not (effFlagsHasEditor in VSTHost[0].EffectOptions) then
- begin
-  FPanel.Width := 700;
-  if (VSTHost[0].DLLFileName = '')
-   then FPanel.Height := 0
-   else FPanel.Height := 90;
- end;
- if FPanel.width < 560 then
-  begin
-   ClientWidth := 560;
-   FPanel.left := (560 - FPanel.width) div 2;
-  end
- else
-  begin
-   ClientWidth := FPanel.width;
-   FPanel.left := 0;
-  end;
- ClientHeight := FPanel.Height + PnStatus.Height;
-end;
-
 procedure TFmMiniHost.MyMidiEvent(event: PMidiEvent);
 begin
- with event^ do
-  if (event and $F0) = $90 then NoteOn(event, data1, data2) else
-  if (event and $F0) = $80 then NoteOff(event, data1)
+ with Event^ do
+  if (Event and $F0) = $90 then NoteOn(event, data1, data2) else
+  if (Event and $F0) = $80 then NoteOff(event, data1)
    else AddMidiData(event, data1, data2);
 end;
 
 procedure TFmMiniHost.StartPlayback1Click(Sender: TObject);
 begin
  MIPanicClick(nil);
- MidiFile.StartPlaying;
+ FMidiFile.StartPlaying;
  MidiPlaying := True;
 end;
 
@@ -1359,11 +1376,8 @@ procedure TFmMiniHost.MIStartRecordingClick(Sender: TObject);
 var s: string;
     i: Integer;
 begin
- if Assigned(WavWriter) then
- begin
-  WavWriter.free;
-  WavWriter := nil;
- end;
+ if Assigned(FWavWriter)
+  then FreeAndNil(FWavWriter);
 
  case Player.CbRecordFormat.ItemIndex of
     0 : i := 16;
@@ -1378,8 +1392,8 @@ begin
  end;
  FTotalFrames := 0;
  if Player.CbRecInMono.Checked
-  then WavWriter := TWavWriter.Create(s, round(ASIOHost.Samplerate), 1, i)
-  else WavWriter := TWavWriter.Create(s, round(ASIOHost.Samplerate), 2, i);
+  then FWavWriter := TWavWriter.Create(s, round(ASIOHost.Samplerate), 1, i)
+  else FWavWriter := TWavWriter.Create(s, round(ASIOHost.Samplerate), 2, i);
  FRecordState := rsRecord;
 end;
 
@@ -1429,7 +1443,7 @@ begin
   Player.LbStatus.Caption :=
    Player.LbStatus.Caption + ' (time: '
    + FloatToStrF(e, ffFixed, 4, 2) + ' sec, size: ' + IntToStr(
-    round(e * WavWriter.Format.nAvgBytesPerSec / 1000))
+    round(e * FWavWriter.Format.nAvgBytesPerSec / 1000))
    + ' kbytes)';
  end;
 
@@ -1437,17 +1451,17 @@ begin
 
  if (MIDIPlaying) then
  begin
-  i := round(100 * MidiFile.GetCurrentPos / MidiFile.GetTrackLength2);
+  i := round(100 * FMidiFile.GetCurrentPos / FMidiFile.GetTrackLength2);
   if i > 100 then i := 100 else if i < 0 then i := 0;
   Player.SbMidiPosition.position := i;
 
-  if (MidiFile.Ready) then
+  if (FMidiFile.Ready) then
   begin
    Player.SbMidiPosition.Position := 0;
    if Player.CBMidiPlayMode.ItemIndex = 1 then
    begin
     MIPanicClick(nil);
-    MidiFile.StartPlaying;
+    FMidiFile.StartPlaying;
    end else
    if (Player.CBMidiPlayMode.ItemIndex = 2) and (Player.MidiBox.Items.Count > 0) then
    begin
@@ -1734,7 +1748,9 @@ end;
 
 procedure TFmMiniHost.MIAboutClick(Sender: TObject);
 begin
- FmAbout.ShowModal;
+ if not assigned(FAboutForm)
+  then FAboutForm := TFmAbout.Create(Self);
+ FAboutForm.ShowModal;
 end;
 
 procedure TFmMiniHost.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1744,15 +1760,12 @@ begin
  FAllowed := False;
  WaveFile.stop;
  WaveFile.Unload;
- MidiFile.StopPlaying;
+ FMidiFile.StopPlaying;
  MidiPlaying := False;
 
  FRecordState := rsStop;
- if assigned(WavWriter) then
- begin
-  WavWriter.free;
-  WavWriter := nil;
- end;
+ if assigned(FWavWriter)
+  then FreeAndNil(FWavWriter);
 end;
 
 procedure TFmMiniHost.MIShowPresetClick(Sender: TObject);
@@ -1770,7 +1783,7 @@ end;
 
 procedure TFmMiniHost.StopPlayback1Click(Sender: TObject);
 begin
- MidiFile.StopPlaying;
+ FMidiFile.StopPlaying;
  MidiPlaying := False;
  MIPanicClick(nil);
 end;
@@ -1783,11 +1796,8 @@ end;
 procedure TFmMiniHost.MIStopRecordingClick(Sender: TObject);
 begin
  FRecordState := rsStop;
- if assigned(WavWriter) then
- begin
-  WavWriter.free;
-  WavWriter := nil;
- end;
+ if assigned(FWavWriter)
+  then FreeAndNil(FWavWriter);
 end;
 
 procedure TFmMiniHost.RenameF1Click(Sender: TObject);
@@ -1804,14 +1814,14 @@ begin
   
  if MidiPlaying then
   begin
-   MidiFile.StopPlaying;
+   FMidiFile.StopPlaying;
    MidiPlaying := False;
    MIPanicClick(nil);
   end
  else
   begin
    MIPanicClick(nil);
-   MIDIFile.StartPlaying;
+   FMidiFile.StartPlaying;
    MidiPlaying := True;
   end;
 end;
@@ -2203,6 +2213,12 @@ procedure TFmMiniHost.IdleTimerTimer(Sender: TObject);
 begin
  VSTHost[0].Idle;
  VSTHost[0].EditIdle;
+ if not FColBack then
+  begin
+   FColBack := True;
+   if VSTHost[0].Active
+    then Self.Color := FindBackgroundColor;
+  end;
 end;
 
 procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
@@ -2216,7 +2232,7 @@ begin
   then exit;
 
  VSTHost.UpdateVstTimeInfo(bs);
- MidiFile.MidiTimer(nil);
+ FMidiFile.MidiTimer(nil);
 
  FDataSection.Acquire;
  try
@@ -2332,11 +2348,10 @@ begin
  if FRecordState = rsRecord then
   begin
    FTotalFrames := FTotalFrames + integer(ASIOHost.buffersize);
-   if wavwriter.Format.nChannels = 1 then
-    WavWriter.WriteFloatData(OutBuffer[ChOfs], bs)
-   else
-    WavWriter.WriteFloatDataSeparateStereo(OutBuffer[ChOfs],
-     OutBuffer[ChOfs + 1], bs);
+   with FWavWriter do
+    if Format.nChannels = 1
+     then WriteFloatData(OutBuffer[ChOfs], bs)
+     else WriteFloatDataSeparateStereo(OutBuffer[ChOfs], OutBuffer[ChOfs + 1], bs);
   end;
 
  // by Daniel: this line messes up, midi data may have changed in the meantime

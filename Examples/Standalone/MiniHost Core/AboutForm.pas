@@ -28,9 +28,6 @@ type
     procedure LbDonateClick(Sender: TObject);
   end;
 
-var
-  FmAbout: TFmAbout;
-
 implementation
 
 {$IFNDEF FPC}
@@ -42,7 +39,7 @@ uses ShellAPI, MiniHostForm;
 procedure TFmAbout.LbWebClick(Sender: TObject);
 begin
 {$IFNDEF FPC}
- ShellExecute(GetDesktopWindow(), 'open',
+ ShellExecute(GetDesktopWindow, 'open',
   PChar('http://www.tobybear.de'), nil, nil, SW_SHOWNORMAL);
 {$ENDIF}
 end;
@@ -50,14 +47,14 @@ end;
 procedure TFmAbout.LbMailClick(Sender: TObject);
 begin
 {$IFNDEF FPC}
- ShellExecute(GetDesktopWindow(), 'open',
+ ShellExecute(GetDesktopWindow, 'open',
   PChar('mailto:tobybear@web.de'), nil, nil, SW_SHOWNORMAL);
 {$ENDIF}
 end;
 
 procedure TFmAbout.BtOKClick(Sender: TObject);
 begin
- close;
+ Close;
 end;
 
 procedure TFmAbout.FormShow(Sender: TObject);
@@ -69,7 +66,7 @@ procedure TFmAbout.LbDonateClick(Sender: TObject);
 begin
  {$IFNDEF FPC}
  ShellExecute(GetDesktopWindow(), 'open',
-  PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
+   PChar('https://www.paypal.com/xclick/business=tobybear%40web.de&item_name=MiniHost'), nil, nil, SW_SHOWNORMAL);
  {$ENDIF}
 end;
 

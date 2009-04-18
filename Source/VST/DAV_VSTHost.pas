@@ -273,6 +273,7 @@ type
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(const x, y: Integer);
     {$IFDEF VstHostGUI}
+    procedure RenderEditorToBitmap(Bitmap: TBitmap);
     procedure SetEditKnobMode(Mode : TKnobMode);
     procedure ShowEdit(Control: TWinControl); overload;
     procedure ShowDefaultEditOld(Control: TWinControl);
@@ -2065,6 +2066,33 @@ begin
        end;
     end;
   except
+  end;
+end;
+
+procedure TCustomVstPlugIn.RenderEditorToBitmap(Bitmap: TBitmap);
+var
+  r : TRect;
+begin
+ // make sure the editor is visible
+ if not assigned(FGUIControl)
+  then raise Exception.Create('Editor not instanciated yet');
+
+ with TCanvas.Create do
+  try
+   Handle := GetWindowDC(GUIControl.Handle);
+   try
+    r := GetRect;
+    Bitmap.Width  := r.Right - r.Left;
+    Bitmap.Height := r.Bottom - r.Top;
+    BitBlt(Bitmap.Canvas.Handle, 0, 0, Bitmap.Width, Bitmap.Height, Handle,
+      r.Left, r.Top, SRCCOPY)
+ //   Bitmap.Canvas.CopyRect(r, c, r);
+   finally
+    ReleaseDC(0, Handle);
+    Handle := 0;
+   end;
+  finally
+   Free;
   end;
 end;
 
