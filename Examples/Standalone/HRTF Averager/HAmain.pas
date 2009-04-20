@@ -2,12 +2,18 @@ unit HAmain;
 
 interface
 
+{$I DAV_Compiler.INC}
+{$DEFINE Use_IPPS}
+
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, StdCtrls, Spin, DAV_GuiAudioDataDisplay, ComCtrls,
-  DAV_DspHrtf, DAV_AudioData, DAV_DspFftReal2Complex;
+  DAV_DspHrtf, DAV_AudioData, DAV_DspFftReal2Complex
+  {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
+  {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
+  THrtfInterpolation = (hiTimeDomain, hiFrequencyDomain);
   TFmHrtfAverager = class(TForm)
     MainMenu: TMainMenu;
     MIFile: TMenuItem;
@@ -38,9 +44,18 @@ type
     procedure SEPolarChange(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    FHRTFFile : THrtfs;
-    FFft      : TFftReal2ComplexNativeFloat32;
+    FHRTFFile          : THrtfs;
+    FHrtfInterpolation : THrtfInterpolation;
+    {$IFDEF Use_IPPS}
+    FFft               : TFftReal2ComplexIPPSFloat32;
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft               : TFftReal2ComplexCUDA32;
+    {$ELSE}
+    FFft               : TFftReal2ComplexNativeFloat32;
+    {$ENDIF}{$ENDIF}
     procedure HRTFFileChanged;
+
+    property HrtfInterpolation: THrtfInterpolation read FHrtfInterpolation write FHrtfInterpolation default hiFrequencyDomain;
   end;
 
 var
@@ -54,12 +69,32 @@ uses
   DAV_Complex, FileCtrl;
 
 const
-  CDegToRad : Single = 2 * Pi / 360;
+  CDegToRad         : Single = 2 * Pi / 360;
+  SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
+  SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
+  SCRoundDown8087CW : Word = $173F; // exceptions disabled
+  SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
+
+procedure DontRaiseExceptionsAndSetFPUcodeword;
+asm
+ fnclex                  // Don't raise pending exceptions enabled by the new flags
+ fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+end;
 
 procedure TFmHrtfAverager.FormCreate(Sender: TObject);
 begin
  FHRTFFile := THrtfs.Create;
- FFft      := TFftReal2ComplexNativeFloat32.Create;
+ {$IFDEF Use_IPPS}
+ FFft := TFftReal2ComplexIPPSFloat32.Create(6);
+ {$ELSE} {$IFDEF Use_CUDA}
+ FFft := TFftReal2ComplexCUDA32.Create(6);
+ {$ELSE}
+ FFft := TFftReal2ComplexNativeFloat32.Create(6);
+ FFft.DataOrder := doPackedComplex;
+ {$ENDIF}{$ENDIF}
+ FHrtfInterpolation := hiFrequencyDomain;
+
+ DontRaiseExceptionsAndSetFPUcodeword;
 end;
 
 procedure TFmHrtfAverager.FormDestroy(Sender: TObject);
@@ -98,6 +133,8 @@ var
   Sample  : Integer;
   Channel : Integer;
   i       : Integer;
+  CurArg  : Double;
+  Phase   : array [0..1] of Double;
   Scale   : array [0..1] of Double;
   FreqDom : array [0..1] of PDAVComplexSingleFixedArray;
 begin
@@ -114,6 +151,10 @@ begin
     try
      // set stereo
      ADC.ChannelCount := 2;
+
+     // nil frequency domain memory pointers
+     FreqDom[0] := nil;
+     FreqDom[1] := nil;
 
      if FindFirst(Dir + '\*.HRTF', 0, SR) = 0 then
       repeat
@@ -158,32 +199,78 @@ begin
              ADC.SampleFrames, ADHRIR[0].ChannelDataPointer,
              ADHRIR[1].ChannelDataPointer);
 
+           // allocate memory for frequency domain
+           ReallocMem(FreqDom[0], (ADHRIR.SampleFrames div 2 + 1) * SizeOf(Single));
+           ReallocMem(FreqDom[1], (ADHRIR.SampleFrames div 2 + 1) * SizeOf(Single));
+           FFft.FFTSize := ADHRIR.SampleFrames;
+
            // actual interpolation
-           GetMem(FreqDom[0], (ADHRIR.SampleFrames div 2 + 1) * SizeOf(Single));
-           GetMem(FreqDom[1], (ADHRIR.SampleFrames div 2 + 1) * SizeOf(Single));
-           try
-            for Sample := 0 to ADHRIR.SampleFrames - 1 do
+           case FHrtfInterpolation of
+            hiTimeDomain :
+             for Channel := 0 to ADHRIR.ChannelCount - 1 do
+              for Sample := 0 to ADHRIR.SampleFrames - 1 do
+               begin
+                ADHRIR[Channel].ChannelDataPointer^[Sample] :=
+                  Scale[0] * ADC[Channel].ChannelDataPointer^[Sample] +
+                  Scale[1] * ADHRIR[Channel].ChannelDataPointer^[Sample];
+               end;
+            hiFrequencyDomain :
              for Channel := 0 to ADHRIR.ChannelCount - 1 do
               begin
-               // ToDo: Perform FFT here -> FreqDom[0]
-               // ToDo: Perform FFT here -> FreqDom[1]
+               FFft.AutoScaleType := astDivideFwdByN;
+               // transferm to frequency domain
+               FFft.PerformFFT(FreqDom[0], ADC[Channel].ChannelDataPointer);
+               FFft.PerformFFT(FreqDom[1], ADHRIR[Channel].ChannelDataPointer);
 
-               ADHRIR[Channel].ChannelDataPointer^[Sample] :=
-                 Scale[0] * ADC[Channel].ChannelDataPointer^[Sample] +
-                 Scale[1] * ADHRIR[Channel].ChannelDataPointer^[Sample];
+               // average DC
+               FreqDom[1]^[0].Re := Scale[0] * FreqDom[0]^[0].Re +
+                                    Scale[1] * FreqDom[1]^[0].Re;
 
-               // ToDo: Perform iFFT here -> ADHRIR[Channel].ChannelDataPointer
+               Phase[0] := 0;
+               Phase[1] := 0;
+
+               for Sample := 1 to (ADHRIR.SampleFrames div 2) - 1 do
+                begin
+                 CurArg := ComplexArgument(FreqDom[0]^[Sample]);
+                 while CurArg + Pi < Phase[0] do CurArg := CurArg + 2 * Pi;
+                 while CurArg - Pi > Phase[0] do CurArg := CurArg - 2 * Pi;
+                 Phase[0] := CurArg;
+
+                 CurArg := ComplexArgument(FreqDom[0]^[Sample]);
+                 while CurArg + Pi < Phase[1] do CurArg := CurArg + 2 * Pi;
+                 while CurArg - Pi > Phase[1] do CurArg := CurArg - 2 * Pi;
+                 Phase[1] := CurArg;
+
+                 FreqDom[1]^[Sample] := ComplexPolar(
+                   Scale[0] * ComplexMagnitude(FreqDom[0]^[Sample]) +
+                   Scale[1] * ComplexMagnitude(FreqDom[1]^[Sample]),
+                   Scale[0] * CurArg + Scale[1] * CurArg);
+                end;
+
+               // average Nyquist
+               FreqDom[1]^[(ADHRIR.SampleFrames div 2)].Re :=
+                 Scale[0] * FreqDom[0]^[(ADHRIR.SampleFrames div 2)].Re +
+                 Scale[1] * FreqDom[1]^[(ADHRIR.SampleFrames div 2)].Re;
+
+               // average Nyquist (alt. coding)
+               FreqDom[1]^[0].Im := Scale[0] * FreqDom[0]^[0].Im +
+                                    Scale[1] * FreqDom[1]^[0].Im;
+
+               // transferm back to time domain
+               FFft.PerformIFFT(FreqDom[1], ADHRIR[Channel].ChannelDataPointer);
               end;
-           finally
-            Dispose(FreqDom[0]);
-            Dispose(FreqDom[1]);
            end;
+
            FHRTFFile.Hrir[i].AssignLeft32(ADHRIR[0].ChannelDataPointer, ADC.SampleFrames);
            FHRTFFile.Hrir[i].AssignRight32(ADHRIR[1].ChannelDataPointer, ADC.SampleFrames);
           end;
         end;
       until FindNext(SR) <> 0;
      FindClose(sr);
+
+     // dispose memory
+     Dispose(FreqDom[0]);
+     Dispose(FreqDom[1]);
     finally
      FreeAndNil(ADC);
     end;
@@ -191,6 +278,7 @@ begin
     FreeAndNil(HRTF);
    end;
   end;
+ StatusBar.SimpleText := '';
  HRTFFileChanged;
 end;
 
@@ -239,6 +327,9 @@ begin
 
  if SEHrtfIndex.Enabled
   then SEHrtfIndex.MaxValue := FHRTFFile.HrirCount - 1;
+
+ AudioDataDisplayLeft.Update;
+ AudioDataDisplayRight.Update;
 end;
 
 end.

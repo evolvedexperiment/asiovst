@@ -17,7 +17,7 @@ type
   private
     procedure SetBinCount(const Value: Integer);
     procedure SetFFTOrder(const Value: Integer);
-    procedure SetFFTSize(l: Integer);
+    procedure SetFFTSize(Value: Integer);
     procedure SetAutoScaleType(const Value: TFftAutoScaleType);
     procedure CalculateOrderDependentValues;
     procedure SetDataOrder(const Value: TFftDataOrder);
@@ -254,13 +254,13 @@ asm
   pop ebx
 end;
 
-procedure TFftReal2Complex.SetFFTSize(l: Integer);
+procedure TFftReal2Complex.SetFFTSize(Value: Integer);
 begin
-  if FFftSize <> l then
+  if FFftSize <> Value then
    begin
-    if abs(round(l) - l) > 1E-10 then
+    if abs(round(Value) - Value) > 1E-10 then
       raise Exception.Create('This FFT only works for a size of 2^n');
-    Order := round(Log2(l));
+    Order := round(Log2(Value));
    end;
 end;
 

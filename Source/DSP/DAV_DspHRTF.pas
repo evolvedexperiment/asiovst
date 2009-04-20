@@ -1927,7 +1927,7 @@ begin
     if (SpherePos.Polar = Hrirs[0].Position.Polar) and
        (SpherePos.Azimuth = Hrirs[0].Position.Azimuth) then
      begin
-      Hrirs[0].MoveLeft32(Right, SampleFrames);
+      Hrirs[0].MoveLeft32(Left, SampleFrames);
       Hrirs[0].MoveRight32(Right, SampleFrames);
       Exit;
      end;
@@ -1941,9 +1941,17 @@ begin
       DistA[0] := GetOrthodromicDistance(Hrirs[1].Position, SpherePos);
       DistA[1] := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
 
+      assert(DistA[0] > 0);
+      assert(DistA[1] > 0);
+
       // calculate wheighting
-      Scale[0] := DistA[1] / (DistA[0] - DistA[1]);
+      Scale[0] := DistA[0] / DistA[1];
       Scale[1] := 1 - Scale[0];
+
+      assert(Scale[0] >= 0);
+      assert(Scale[1] >= 0);
+      assert(Scale[0] <= 1);
+      assert(Scale[1] <= 1);
 
       // allocate a temporary buffer
       GetMem(TempData[0], SampleFrames * SizeOf(Single));
