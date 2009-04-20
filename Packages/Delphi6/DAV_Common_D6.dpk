@@ -1,0 +1,53 @@
+package DAV_Common_D6;
+
+{$R 'DAV_CommonRegister.res'}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $500000}
+{$DESCRIPTION 'ASIO/VST Base Package'}
+{$IMPLICITBUILD OFF}
+
+requires
+  vcl;
+
+contains
+  DAV_Common in '..\..\Source\DAV_Common.pas',
+  DAV_CommonRegister in '..\..\Source\DAV_CommonRegister.pas',
+  CPUDetectionTool in '..\..\Source\CPUDetectionTool.pas',
+  DAV_ProcessingComponent in '..\..\Source\DAV_ProcessingComponent.pas',
+  DAV_BufferMathPascal in '..\..\Source\Math\DAV_BufferMathPascal.pas',
+  DAV_BufferMathAsm in '..\..\Source\Math\DAV_BufferMathAsm.pas',
+  DAV_Complex in '..\..\Source\DAV_Complex.pas',
+  DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
+  DAV_AudioData in '..\..\Source\DAV_AudioData.pas',
+  DAV_ChunkClasses in '..\..\Source\FileFormats\DAV_ChunkClasses.pas',
+  DAV_ChunkWaveFile in '..\..\Source\FileFormats\DAV_ChunkWaveFile.pas',
+  DAV_ChunkAIFFFile in '..\..\Source\FileFormats\DAV_ChunkAIFFFile.pas',
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
+  DAV_AudioFile in '..\..\Source\FileFormats\DAV_AudioFile.pas',
+  DAV_AudioFileWAV in '..\..\Source\FileFormats\DAV_AudioFileWAV.pas',
+  DAV_AudioFileAIFF in '..\..\Source\FileFormats\DAV_AudioFileAIFF.pas',
+  DAV_AudioFileFLAC in '..\..\Source\FileFormats\DAV_AudioFileFLAC.pas',
+  DAV_AudioFileWavePack in '..\..\Source\FileFormats\DAV_AudioFileWavePack.pas',
+  DAV_AudioFileMonkeyAudio in '..\..\Source\FileFormats\DAV_AudioFileMonkeyAudio.pas',
+  DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas';
+
+end.

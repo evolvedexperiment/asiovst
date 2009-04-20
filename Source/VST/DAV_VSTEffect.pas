@@ -1059,7 +1059,7 @@ uses
   Math, SysUtils;
 
 { this function converts four char variables to one LongInt. }
-function FourCharToLong(C1, C2, C3, C4: Char): Longint;
+function FourCharToLong(C1, C2, C3, C4: AnsiChar): Longint;
 begin
   Result := Ord(C4)  + (Ord(C3) shl 8) + (Ord(C2) shl 16) + (Ord(C1) shl 24);
 end;

@@ -304,7 +304,7 @@ type
   ////////////////////////////////////////////////////////////////////////////
 
   TAIFFAudioRecordingRecord = packed record 
-    AESChannelStatusData : array [0..23] of char;
+    AESChannelStatusData : array [0..23] of AnsiChar;
   end;
 
   TAIFFAudioRecordingChunk = class(TAIFFFixedDefinedChunk) // 'AESD'
@@ -1306,7 +1306,7 @@ procedure TAIFFApplicationSpecificChunk.SetData(index: Integer;
   const Value: Byte);
 begin
  if (index >= 0) and (index < Length(FApplicationSignature))
-  then FApplicationSignature[index + 1] := Char(Value);
+  then FApplicationSignature[index + 1] := AnsiChar(Value);
 end;
 
 procedure TAIFFApplicationSpecificChunk.LoadFromStream(Stream: TStream);

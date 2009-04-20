@@ -7,14 +7,22 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
-  CurrentProgramName = 'Init'
+  CurrentProgramName = 'Front'
   InitialDelay = 64
   IORatio = 1.000000000000000000
   UniqueID = 'HR3D'
   ShellPlugins = <>
   Programs = <
     item
-      DisplayName = 'Init'
+      DisplayName = 'Front'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Left'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Right'
       VSTModule = Owner
     end>
   ParameterProperties = <
@@ -22,29 +30,32 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Azimuth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 360.000000000000000000
       MaxInteger = 360
+      ReportVST2Properties = True
       ShortLabel = 'Azmth'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = #176
       VSTModule = Owner
+      OnParameterChange = ParamAzimuthChange
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Polar'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 140.000000000000000000
       MaxInteger = 140
+      ReportVST2Properties = True
       ShortLabel = 'Polar'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = #176
@@ -54,15 +65,16 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Radius'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 2.000000000000000000
       MaxInteger = 2
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Rad'
       SmallStepFloat = 0.500000000000000000
-      SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
       Units = 'm'

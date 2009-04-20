@@ -78,7 +78,7 @@ type
 
   TStrArray = array of string;
 
-  TChunkName = array [0..3] of Char;
+  TChunkName = array [0..3] of AnsiChar;
 
   {$IFDEF Delphi5}
   PCardinal = ^Cardinal;
@@ -123,7 +123,7 @@ type
   function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Compare4(S1, S2 : PChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   // dB stuff
   function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -217,7 +217,7 @@ type
   procedure Msg(m: string; i: Integer); overload;
 
   function FloatWithUnit(const Value: Double):string;
-  function SplitString(S: String; Delimiter: Char): TStrArray;
+  function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
   function MakeGoodFileName(s: string): string;
   {$ENDIF}
 
@@ -406,7 +406,7 @@ begin
  if Triads then Result := Result / 3;
 end;
 
-function Compare4(S1, S2: PChar): Boolean;
+function Compare4(S1, S2: PAnsiChar): Boolean;
 var
   i, Diff : Byte;
 begin
@@ -1070,7 +1070,7 @@ end;
 {$IFNDEF FPC}
 function GetApplicationFilename: string;
 var
-  s : array[0..$7FF] of char;
+  s : array[0..$7FF] of AnsiChar;
 begin
  GetModuleFilename(hInstance, s, SizeOf(s));
  Result := StrPas(s);
@@ -1079,7 +1079,7 @@ end;
 
 function GetApplicationDirectory: string;
 var
-  s : array[0..$7FF] of char;
+  s : array[0..$7FF] of AnsiChar;
 begin
  GetModuleFilename(hInstance, s, SizeOf(s));
  Result := StrPas(s);
@@ -1089,13 +1089,13 @@ end;
 procedure Msg(b: Boolean);
 begin if b then Msg('TRUE') else Msg('FALSE');end;
 procedure Msg(m: string; m2: string = '');
-begin MessageBox(0, PChar(m), PChar(m2), MB_OK); end;
+begin MessageBox(0, PAnsiChar(m), PChar(m2), MB_OK); end;
 procedure Msg(i: Integer);
 begin Msg(IntToStr(i)); end;
 procedure Msg(s: Single);
 begin Msg(FloatToStrF(s, ffFixed, 3, 3)); end;
 procedure Msg(m: string; i:Integer);
-begin MessageBox(0, PChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
+begin MessageBox(0, PAnsiChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
 {$WARNINGS ON}
 
 function FloatWithUnit(const Value: Double): string;
@@ -1107,7 +1107,7 @@ begin
   else result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
 end;
 
-function SplitString(S: String; Delimiter: Char): TStrArray;
+function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 var
   C : Integer;
 begin

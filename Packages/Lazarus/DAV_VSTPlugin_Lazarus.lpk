@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="DAV_VSTPlugin_Lazarus"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="..\..\Source\;..\..\Source\VST\;..\..\Source\Math\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+        <SrcPath Value="..\..\Source\"/>
+      </SearchPaths>
+      <Parsing>
+        <Style Value="1"/>
+        <SyntaxOptions>
+          <SyntaxMode Value="Delphi"/>
+          <CStyleOperator Value="False"/>
+          <AllowLabel Value="False"/>
+          <CPPInline Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Version Minor="3"/>
+    <Files Count="15">
+      <Item1>
+        <Filename Value="..\..\Source\VST\DAV_VstWindowSizer.pas"/>
+        <UnitName Value="DAV_VstWindowSizer"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <UnitName Value="DAV_VSTBasicModule"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\..\Source\VST\DAV_VSTChannels.pas"/>
+        <UnitName Value="DAV_VSTChannels"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <UnitName Value="DAV_VSTCustomModule"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\..\Source\VST\DAV_VSTEffect.pas"/>
+        <UnitName Value="DAV_VSTEffect"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\..\Source\VST\DAV_VSTModule.pas"/>
+        <UnitName Value="DAV_VSTModule"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <UnitName Value="DAV_VSTModuleWithDsp"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\..\Source\VST\DAV_VSTModuleWithMidi.pas"/>
+        <UnitName Value="DAV_VSTModuleWithMidi"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\..\Source\VST\DAV_VSTModuleWithPrograms.pas"/>
+        <UnitName Value="DAV_VSTModuleWithPrograms"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\..\Source\VST\DAV_VSTOfflineTask.pas"/>
+        <UnitName Value="DAV_VSTOfflineTask"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\..\Source\VST\DAV_VSTParameters.pas"/>
+        <UnitName Value="DAV_VSTParameters"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\..\Source\VST\DAV_VSTPrograms.pas"/>
+        <UnitName Value="DAV_VSTPrograms"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\..\Source\VST\DAV_VSTShellPlugins.pas"/>
+        <UnitName Value="DAV_VSTShellPlugins"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\..\Source\Math\DAV_BufferMathPascal.pas"/>
+        <UnitName Value="DAV_BufferMathPascal"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\..\Source\VST\DAV_VSTModuleLazIDE.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="DAV_VSTModuleLazIDE"/>
+      </Item15>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="4">
+      <Item1>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="IDEIntf"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <Package Version="3">
+    <PathDelim Value="\"/>
+    <Name Value="DAV_DSP_Lazarus"/>
+    <CompilerOptions>
+      <Version Value="8"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="..\..\Source\;..\..\Source\ASIO\;..\Resources\;..\..\Source\DSP\"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <CStyleOperator Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <Other>
+        <CompilerPath Value="$(CompPath)"/>
+      </Other>
+    </CompilerOptions>
+    <Version Minor="3"/>
+    <Files Count="21">
+      <Item1>
+        <Filename Value="..\..\Source\DSP\DAV_DspBesselFilter.pas"/>
+        <UnitName Value="DAV_DspBesselFilter"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
+        <UnitName Value="DAV_DspButterworthFilter"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\..\Source\DSP\DAV_DspChebyshevFilter.pas"/>
+        <UnitName Value="DAV_DspChebyshevFilter"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\..\Source\DSP\DAV_DspDFT.pas"/>
+        <UnitName Value="DAV_DspDFT"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\..\Source\DSP\DAV_DspDitherNoiseShaper.pas"/>
+        <UnitName Value="DAV_DspDitherNoiseShaper"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\..\Source\DSP\DAV_DspDynamics.pas"/>
+        <UnitName Value="DAV_DspDynamics"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\..\Source\DSP\DAV_DspFFT.pas"/>
+        <UnitName Value="DAV_DspFFT"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\..\Source\DSP\DAV_DspFilter.pas"/>
+        <UnitName Value="DAV_DspFilter"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\..\Source\DSP\DAV_DspInterpolation.pas"/>
+        <UnitName Value="DAV_DspInterpolation"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\..\Source\DSP\DAV_DspMetronome.pas"/>
+        <UnitName Value="DAV_DspMetronome"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\..\Source\DSP\DAV_DspMinBlep.pas"/>
+        <UnitName Value="DAV_DspMinBlep"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\..\Source\DSP\DAV_DspPhaser.pas"/>
+        <UnitName Value="DAV_DspPhaser"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\..\Source\DSP\DAV_DspRegister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="DAV_DspRegister"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\..\Source\DSP\DAV_DspRemez.pas"/>
+        <UnitName Value="DAV_DspRemez"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\..\Source\DSP\DAV_DspStateVariableFilter.pas"/>
+        <UnitName Value="DAV_DspStateVariableFilter"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\..\Source\DSP\DAV_DspWaveshaper.pas"/>
+        <UnitName Value="DAV_DspWaveshaper"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\..\Source\DSP\DAV_DspWindowing.pas"/>
+        <UnitName Value="DAV_DspWindowing"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\..\Source\DSP\DAV_DSPLevelingAmplifier.pas"/>
+        <UnitName Value="DAV_DSPLevelingAmplifier"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\..\Source\DSP\DAV_DSPUpDownsampling.pas"/>
+        <UnitName Value="DAV_DSPUpDownsampling"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\Resources\DAV_DSPRegister.lrs"/>
+        <Type Value="LRS"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\..\Source\DSP\DAV_DSPLFO.pas"/>
+      </Item21>
+    </Files>
+    <Type Value="RunAndDesignTime"/>
+    <RequiredPkgs Count="3">
+      <Item1>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
+      </Item3>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)\"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <DestinationDirectory Value="$(TestDir)\publishedpackage\"/>
+      <IgnoreBinaries Value="False"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>

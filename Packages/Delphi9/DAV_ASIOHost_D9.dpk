@@ -1,0 +1,43 @@
+package DAV_ASIOHost_D9;
+
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST ON}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $540000}
+{$DESCRIPTION 'ASIO/VST ASIO Host'}
+{$IMPLICITBUILD ON}
+
+requires
+  DAV_Common_D9,
+  vcl,
+  rtl;
+
+contains
+  DAV_ASIO in '..\..\Source\ASIO\DAV_ASIO.pas',
+  DAV_BeRoASIO in '..\..\Source\ASIO\DAV_BeRoASIO.pas',
+  DAV_OpenASIO in '..\..\Source\ASIO\DAV_OpenASIO.pas',
+  DAV_ASIOHost in '..\..\Source\ASIO\DAV_ASIOHost.pas',
+  DAV_ASIOConvert in '..\..\Source\ASIO\DAV_ASIOConvert.pas',
+  DAV_ASIOGenerator in '..\..\Source\ASIO\DAV_ASIOGenerator.pas',
+  DAV_ASIOChannelStrip in '..\..\Source\ASIO\DAV_ASIOChannelStrip.pas',
+  DAV_ASIOMixer in '..\..\Source\ASIO\DAV_ASIOMixer.pas',
+  DAV_ASIORegister in '..\..\Source\ASIO\DAV_ASIORegister.pas';
+
+end.

@@ -14,6 +14,8 @@ type
     procedure VST2ModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure ParamAzimuthChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FIR           : array [0..1] of PDAVSingleFixedArray;
     FHRTFs        : THrtfs;
@@ -57,6 +59,14 @@ begin
  Parameter[0] := 0;
  Parameter[1] := 0;
  Parameter[2] := 0;
+
+ // Preset 1
+ with Programs[1] do
+  begin
+   Parameter[0] := 90;
+   Parameter[1] := 0;
+   Parameter[2] := 0;
+  end;
 end;
 
 procedure TVSTHRTF3DModule.VST2ModuleClose(Sender: TObject);
@@ -80,6 +90,13 @@ var
 begin
  for Channel := 0 to 1
   do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], min(BlockSize, SampleFrames));
+end;
+
+procedure TVSTHRTF3DModule.ParamAzimuthChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if EditorForm is TVSTGUI
+  then TVSTGUI(EditorForm).UpdateAzimuth;
 end;
 
 procedure TVSTHRTF3DModule.VSTModuleSampleRateChange(Sender: TObject;

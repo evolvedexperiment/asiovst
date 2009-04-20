@@ -1,0 +1,54 @@
+package DAV_DSP_D6;
+
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $510000}
+{$DESCRIPTION 'ASIO/VST DSP Package'}
+{$IMPLICITBUILD ON}
+
+requires
+  vcl,
+  rtl,
+  DAV_VstPlugin_D6,
+  DAV_Common_D6;
+
+contains
+  DAV_DspRegister in '..\..\Source\DSP\DAV_DspRegister.pas',
+  DAV_DspBesselFilter in '..\..\Source\DSP\DAV_DspBesselFilter.pas',
+  DAV_DspButterworthFilter in '..\..\Source\DSP\DAV_DspButterworthFilter.pas',
+  DAV_DspChebyshevFilter in '..\..\Source\DSP\DAV_DspChebyshevFilter.pas',
+  DAV_DspDynamics in '..\..\Source\DSP\DAV_DspDynamics.pas',
+  DAV_DspMinBlep in '..\..\Source\DSP\DAV_DspMinBlep.pas',
+  DAV_DspPhaser in '..\..\Source\DSP\DAV_DspPhaser.pas',
+  DAV_DspFilter in '..\..\Source\DSP\DAV_DspFilter.pas',
+  DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas',
+  DAV_DspInterpolation in '..\..\Source\DSP\DAV_DspInterpolation.pas',
+  DAV_DspWindowing in '..\..\Source\DSP\DAV_DspWindowing.pas',
+  DAV_DspFFT in '..\..\Source\DSP\DAV_DspFFT.pas',
+  DAV_DspDFT in '..\..\Source\DSP\DAV_DspDFT.pas',
+  DAV_DspDitherNoiseShaper in '..\..\Source\DSP\DAV_DspDitherNoiseShaper.pas',
+  DAV_DspMetronome in '..\..\Source\DSP\DAV_DspMetronome.pas',
+  DAV_DspRemez in '..\..\Source\DSP\DAV_DspRemez.pas',
+  DAV_DspStateVariableFilter in '..\..\Source\DSP\DAV_DspStateVariableFilter.pas',
+  DAV_DSPUpDownSampling in '..\..\Source\DSP\DAV_DSPUpDownSampling.pas',
+  DAV_DSPSineLFO in '..\..\Source\DSP\DAV_DSPSineLFO.pas';
+
+end.

@@ -831,7 +831,7 @@ begin
   if vcdCockosExtension in FCanDos
    then Result := Integer($BEEF0000)
    else Result := 0;
- if Assigned(FOnCanDo) then FOnCanDo(Self,pchar(ptr));
+ if Assigned(FOnCanDo) then FOnCanDo(Self, PAnsiChar(ptr));
 end;
 
 function TCustomVSTModule.HostCallGetTailSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -969,7 +969,7 @@ begin
  {$IFDEF Debug} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
  if FCurrentVstShellPlugin < FVstShellPlugins.Count then
   begin
-   StrPCopy(pchar(ptr),FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
+   StrPCopy(PAnsiChar(Ptr), FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
    Result := Integer(FVstShellPlugins[FCurrentVstShellPlugin].UniqueID);
    Inc(FCurrentVstShellPlugin);
   end
@@ -1033,7 +1033,7 @@ var
 begin
  for i := 1 to 4 do
   if i <= Length(Value)
-   then FEffect.uniqueID[4 - i] := Value[i]
+   then FEffect.uniqueID[4 - i] := AnsiChar(Value[i])
    else FEffect.uniqueID[4 - i] := #0;
 end;
 
@@ -1279,7 +1279,7 @@ end;
 
 function TCustomVSTModule.GetHostProduct: string;
 var
-  Text : PChar;
+  Text : PAnsiChar;
 begin
  if (FHostProduct = '') or (FHostProduct = 'Unknown') then
   begin
@@ -1304,7 +1304,7 @@ end;
 
 function TCustomVSTModule.GetHostVendor: string;
 var
-  Text : PChar;
+  Text : PAnsiChar;
 begin
  if (FHostVendor = '') or (FHostVendor = 'Unknown') then
   begin
