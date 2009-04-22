@@ -144,8 +144,11 @@ end;
 procedure TLightweightCompressorDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].MakeUpGain_dB := Value;
- FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].MakeUpGain_dB := Value;
+   FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateMakeUp;
 end;
@@ -211,8 +214,11 @@ end;
 procedure TLightweightCompressorDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].AutoMakeUp := Boolean(round(Value));
- FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].AutoMakeUp := Boolean(round(Value));
+   FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
@@ -227,8 +233,12 @@ end;
 procedure TLightweightCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Attack := Value;
- FCompressor[1].Attack := FCompressor[0].Attack;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Attack := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Attack := FCompressor[0].Attack;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateAttack;
 end;
@@ -236,8 +246,12 @@ end;
 procedure TLightweightCompressorDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Release := Value;
- FCompressor[1].Release := FCompressor[0].Release;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Release := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Release := FCompressor[0].Release;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateRelease;
 end;
@@ -245,8 +259,12 @@ end;
 procedure TLightweightCompressorDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Threshold_dB := Value;
- FCompressor[1].Threshold_dB := Value;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Threshold_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Threshold_dB := Value;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateThreshold;
 end;
@@ -254,8 +272,12 @@ end;
 procedure TLightweightCompressorDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Ratio := Value;
- FCompressor[1].Ratio := Value;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Ratio := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Ratio := Value;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateRatio;
 end;
@@ -263,8 +285,12 @@ end;
 procedure TLightweightCompressorDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Knee_dB := Value;
- FCompressor[1].Knee_dB := Value;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Knee_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Knee_dB := Value;
+  end;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateKnee;
 end;
@@ -328,8 +354,8 @@ end;
 procedure TLightweightCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FCompressor[0].SampleRate := SampleRate;
- FCompressor[1].SampleRate := SampleRate;
+ if assigned(FCompressor[0]) then FCompressor[0].SampleRate := SampleRate;
+ if assigned(FCompressor[1]) then FCompressor[1].SampleRate := SampleRate;
 end;
 
 end.

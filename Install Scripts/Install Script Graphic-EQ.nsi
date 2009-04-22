@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;GraphicEQ Installer
+;Graphic-EQ Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "GraphicEQ Installer"
-  OutFile "GraphicEQ_Install.exe"
+  Name "Graphic-EQ Installer"
+  OutFile "Graphic-EQ_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "GraphicEQ"
+  !define PRODUCT_NAME "Graphic-EQ"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,36 +69,36 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "GraphicEQ VST-Plugin" SecProgramFiles
+Section "Graphic-EQ VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\GraphicEQ.dll" "..\Bin\Graphic-EQ.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\GraphicEQ.dll"
+  File "..\Bin\Graphic-EQ.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallGraphicEQ.exe"
-
-
+  WriteUninstaller "$INSTDIR\UninstallGraphic-EQ.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "GraphicEQ VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "GraphicEQ VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\GraphicEQ.dll"
+  Delete "$INSTDIR\Graphic-EQ.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

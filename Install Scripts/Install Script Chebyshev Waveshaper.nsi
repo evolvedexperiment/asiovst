@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "Chebyshev Waveshaper Installer"
-  OutFile "ChebyshevWaveshaper_Install.exe"
+  OutFile "Chebyshev_Waveshaper_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -72,16 +72,16 @@ SetCompressor lzma
 Section "ChebyshevWaveshaper VST-Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\ChebyshevWaveshaper.dll" "..\Bin\Chebyshev Waveshaper.dll"'
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\ChebyshevWaveshaper.dll"
+  File "..\Bin\Chebyshev Waveshaper.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallChebyshevWaveshaper.exe"
-
-
 SectionEnd
 
 ;--------------------------------
@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\ChebyshevWaveshaper.dll"
+  Delete "$INSTDIR\Chebyshev Waveshaper.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
