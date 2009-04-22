@@ -5,6 +5,10 @@ library Adhesive;
 
 uses
   FastMM4,
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   FastMove,
   DAV_WinAmp,
   DAV_VSTEffect,
