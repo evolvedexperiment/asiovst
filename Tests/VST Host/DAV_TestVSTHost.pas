@@ -578,15 +578,22 @@ begin
 end;
 
 procedure TVstPluginIOTests.TestHandleDataBeyondBlocksizeChanges;
+var
+  BlockSizeDecimation : Integer;
+  Channel, Sample     : Integer;
 begin
  with FVstHost[0] do
   begin
-   BlockSize := round(FBlocksize * 0.111);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 10);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 8);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 6);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 4);
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div 2);
+   // notify plugin of smaller blocksize
+   SetBlockSize(FBlocksize div 10);
+
+   for BlockSizeDecimation := 10 downto 2 do
+    begin
+     ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div BlockSizeDecimation);
+     for Channel := 0 to Length(FOutput) - 1 do
+      for Sample := FBlocksize div 10 to FBlocksize - 1
+       do CheckTrue(FOutput[Channel, Sample] = 0, 'Data was processed beyond blocksize');
+    end;
   end;
 end;
 

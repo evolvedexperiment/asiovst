@@ -22,8 +22,6 @@ type
     procedure FormShow(Sender: TObject);
   private
     FBitmap : TBitmap;
-  public
-    { Public-Deklarationen }
   end;
 
 implementation

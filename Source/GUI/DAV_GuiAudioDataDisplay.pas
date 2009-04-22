@@ -105,7 +105,6 @@ type
     property WaveDrawMode;
     property XAxis;
 
-
     {$IFNDEF FPC}
     property OnCanResize;
     {$ENDIF}
@@ -126,7 +125,8 @@ type
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
-//    property OnPaint;
+
+    {$IFDEF DELPHI10_UP}
     {$IFDEF DELPHI10_UP}
     property OnMouseEnter;
     property OnMouseLeave;
