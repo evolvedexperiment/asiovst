@@ -158,7 +158,7 @@ end;
 destructor TVSTModule.Destroy;
 begin
  {$IFNDEF UseDelphi}
- if Assigned(fOnDestroy) then fOnDestroy(Self);
+ if Assigned(FOnDestroy) then FOnDestroy(Self);
  {$ENDIF}
  inherited;
 end;

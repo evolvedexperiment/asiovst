@@ -259,17 +259,24 @@ function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
 implementation
 
 uses
-  Math;
+  Math, Contnrs;
+
+var
+  GVstInstanceList : TObjectList;
 
 function VstModuleMain(AudioMasterCallback: TAudioMasterCallbackFunc;
   const BasicVSTModuleClass: TBasicVSTModuleClass): PVSTEffect;
+var
+  BasicVstModule : TBasicVSTModule;
 begin
  try
-  with BasicVSTModuleClass.Create(Application) do
+  BasicVstModule := BasicVSTModuleClass.Create(Application);
+  with BasicVstModule do
    begin
     AudioMaster := AudioMasterCallback;
     Result := Effect;
    end;
+ GVstInstanceList.Add(BasicVstModule);
  except
   Result := nil;
  end;
@@ -320,12 +327,17 @@ begin
  {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
  with FEffect do
   begin
-   vObject         := Self;
-   magic           := 'PtsV';
+   Magic           := 'PtsV';
    EffectFlags     := [effFlagsCanReplacing];
    reservedForHost := nil;
    resvd2          := nil;
-   user            := Self;
+   {$IFDEF UseAudioEffectPtr}
+   AudioEffectPtr  := Self;
+   User            := nil;
+   {$ELSE}
+   AudioEffectPtr  := nil;
+   User            := Self;
+   {$ENDIF}
    uniqueID        := 'fEoN';
    ioRatio         := 1;
    numParams       := 0;
@@ -982,7 +994,11 @@ begin
   Effect^.Process := @ProcessFuncDummy;
   Effect^.ProcessReplacing := @ProcessFuncDummy;
   Effect^.ProcessDoubleReplacing := @ProcessFuncDummy;
-  Effect^.vObject := nil;
+  {$IFDEF UseAudioEffectPtr}
+  Effect^.AudioEffectPtr := nil;
+  {$ELSE}
+  Effect^.User := nil;
+  {$ENDIF}
   Free;
   Result := 1;
  except
@@ -1234,8 +1250,14 @@ begin Result := 0; end;
 
 function DispatchEffectFunc(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
 begin
- if assigned(Effect) and (TObject(Effect^.vObject) is TBasicVSTModule) then
-  with TBasicVSTModule(Effect^.vObject) do
+ if assigned(Effect) and
+  {$IFDEF UseAudioEffectPtr}
+  (TObject(Effect^.AudioEffectPtr) is TBasicVSTModule) then
+  with TBasicVSTModule(Effect^.AudioEffectPtr) do
+  {$ELSE}
+  (TObject(Effect^.User) is TBasicVSTModule) then
+  with TBasicVSTModule(Effect^.User) do
+  {$ENDIF}
    begin
     HostCallDispatchEffect(OpCode, Index, Value, ptr, opt);
 
@@ -1334,16 +1356,26 @@ end;
 function GetParameterFunc(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
  assert(assigned(Effect));
- if TObject(Effect^.vObject) is TBasicVSTModule
-  then Result := TBasicVSTModule(Effect^.vObject).HostCallGetParameter(Index)
+ {$IFDEF UseAudioEffectPtr}
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+  then Result := TBasicVSTModule(Effect^.AudioEffectPtr).HostCallGetParameter(Index)
+ {$ELSE}
+ if TObject(Effect^.User) is TBasicVSTModule
+  then Result := TBasicVSTModule(Effect^.User).HostCallGetParameter(Index)
+ {$ENDIF}
   else Result := 0;
 end;
 
 procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
 begin
  assert(assigned(Effect));
- if TObject(Effect^.vObject) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.vObject).HostCallSetParameter(Index, Value);
+ {$IFDEF UseAudioEffectPtr}
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallSetParameter(Index, Value);
+ {$ELSE}
+ if TObject(Effect^.User) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.User).HostCallSetParameter(Index, Value);
+ {$ENDIF}
 end;
 
 procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
@@ -1575,5 +1607,11 @@ begin
   FreeAndNil(WinAmpDSPModule^.UserData);
  end;
 end;
+
+initialization
+  GVstInstanceList := TObjectList.Create(False);
+
+finalization
+  FreeAndNil(GVstInstanceList);
 
 end.

@@ -36,6 +36,13 @@
   The default is enabled.}
 {$DEFINE CONVERT_TO_DYNARRAY}
 
+{ To identify VST Plugin datamodules a reference pointer ist stored into the
+  basic TVSTEffect record. The reference an either be stored as 'AudioEffectPtr'
+  or as 'User' pointer. While the original 'AudioEffectPtr' is reserved to
+  store an AudioEffect class instance, the user can be anything.
+  By default the user pointer is used.}
+{.$DEFINE UseAudioEffectPtr}
+
 { Enable this option to create a special "debug.log". While it is not useful
   to be enabled for productional use, it offers some debug possibilities for
   hosts that do not allow any debuggers. The "debug.log" contains information

@@ -55,7 +55,7 @@ type
 implementation
 
 const
-  CMaxMidiEvents = 256;
+  CMaxMidiEvents = 1024;
 
 constructor TVSTModuleWithMidi.Create(AOwner: TComponent);
 var
@@ -79,8 +79,11 @@ var
 begin
  try
   for i := 0 to CMaxMidiEvents - 1 do
-   if assigned(FMidiEvent.Events[i])
-    then FreeMem(FMidiEvent.Events[i]);
+   if assigned(FMidiEvent.Events[i]) then
+    begin
+     Dispose(FMidiEvent.Events[i]);
+     FMidiEvent.Events[i] := nil;
+    end;
  finally
   inherited;
  end;
