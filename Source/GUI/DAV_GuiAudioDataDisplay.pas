@@ -127,8 +127,10 @@ type
     property OnStartDock;
     property OnStartDrag;
 //    property OnPaint;
+    {$IFDEF DELPHI10_UP}
     property OnMouseEnter;
     property OnMouseLeave;
+    {$ENDIF}
   end;
 
 implementation

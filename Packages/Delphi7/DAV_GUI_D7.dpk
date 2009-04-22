@@ -57,6 +57,7 @@ contains
   DAV_GuiGraphXYDesign in '..\..\Source\GUI\DAV_GuiGraphXYDesign.pas',
   DAV_GuiGraphXY in '..\..\Source\GUI\DAV_GuiGraphXY.pas',
   DAV_GuiDesign in '..\..\Source\GUI\DAV_GuiDesign.pas',
-  DAV_GuiDialDesign in '..\..\Source\GUI\DAV_GuiDialDesign.pas';
+  DAV_GuiDialDesign in '..\..\Source\GUI\DAV_GuiDialDesign.pas',
+  DAV_GuiAudioDataDisplayCursor in '..\..\Source\GUI\DAV_GuiAudioDataDisplayCursor.pas';
 
 end.

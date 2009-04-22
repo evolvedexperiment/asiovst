@@ -1,5 +1,6 @@
 package DAV_Common_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -45,6 +46,10 @@ contains
   DAV_AudioFile in '..\..\Source\FileFormats\DAV_AudioFile.pas',
   DAV_AudioFileWAV in '..\..\Source\FileFormats\DAV_AudioFileWAV.pas',
   DAV_AudioFileAIFF in '..\..\Source\FileFormats\DAV_AudioFileAIFF.pas',
-  DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas';
+  DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas',
+  DAV_ChannelDataCoder in '..\..\Source\FileFormats\DAV_ChannelDataCoder.pas',
+  DAV_HalfFloat in '..\..\Source\DAV_HalfFloat.pas',
+  DAV_DLLLoader in '..\..\Source\DAV_DLLLoader.pas',
+  DAV_Approximations in '..\..\Source\DAV_Approximations.pas';
 
 end.
