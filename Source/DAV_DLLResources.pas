@@ -3,14 +3,15 @@ unit DAV_DLLResources;
 interface
 
 uses
-  Windows, Classes, SysUtils, ConTnrs, unitResourceDetails, ImageHlp;
+  Windows, Classes, SysUtils, ConTnrs, ImageHlp;
 
 type
   TPEModule = class;
   TResourceDetails = class;
   TResourceDetailsClass = class of TResourceDetails;
 
-  {$region 'TResourceModule class'}
+  {$IFDEF DELPHI10_UP} {$region 'TResourceModule class'} {$ENDIF}
+
   ///////////////////////////
   // TResourceModule class //
   ///////////////////////////
@@ -46,9 +47,9 @@ type
     property Dirty: Boolean read GetDirty write fDirty;
   end;
 
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'TResourceDetails class'}
+  {$IFDEF DELPHI10_UP} {$region 'TResourceDetails class'} {$ENDIF}
   ////////////////////////////
   // TResourceDetails class //
   ////////////////////////////
@@ -101,9 +102,9 @@ type
     property Tag: Integer read fTag write fTag;
   end;
 
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'TImageSection class'}
+  {$IFDEF DELPHI10_UP} {$region 'TImageSection class'} {$ENDIF}
   /////////////////////////
   // TImageSection class //
   /////////////////////////
@@ -135,9 +136,9 @@ type
     FirstThunk      : DWORD; // Another RVA to a list pointers. Each of these points to their function name
   end;
   PImageImportDirectory = ^TImageImportDirectory;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'TPEModule class'}
+  {$IFDEF DELPHI10_UP} {$region 'TPEModule class'} {$ENDIF}
   /////////////////////
   // TPEModule class //
   /////////////////////
@@ -202,9 +203,9 @@ type
 
     procedure SaveToStream(s: TStream); override;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'TResourceDirectory records'}
+  {$IFDEF DELPHI10_UP} {$region 'TResourceDirectory records'} {$ENDIF}
   ////////////////////////////////////
   // TResourceDirectoryTable record //
   ////////////////////////////////////
@@ -241,9 +242,9 @@ type
     Reserved     : DWORD;
   end;
   PResourceDataEntry = ^TResourceDataEntry;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$region 'TPEResourceModule class'}
+  {$IFDEF DELPHI10_UP} {$region 'TPEResourceModule class'} {$ENDIF}
   /////////////////////////////
   // TPEResourceModule class //
   /////////////////////////////
@@ -269,7 +270,7 @@ type
     function IndexOfResource(details: TResourceDetails): Integer; override;
     procedure SortResources; override;
   end;
-  {$endregion}
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
   EPEException = class(Exception);
 
@@ -284,16 +285,11 @@ type
 
 implementation
 
-{$region 'Local Declarations and Functions'}
-var
-  registeredResourceDetails: array of TResourceDetailsClass;
-  registeredResourceDetailsCount: Integer = 0;
+{$IFDEF DELPHI10_UP} {$region 'Local Declarations and Functions'} {$ENDIF}
 
 resourcestring
   rstNoBaseType = 'Can''t register resource details class with no base type';
   rstNoStreaming = 'Module doesn''t support streaming';
-
-resourcestring
   rstInvalidDOSSignature = 'Invalid DOS signature';
   rstInvalidCOFFSignature = 'Invalid COFF signature';
   rstInvalidOptionalHeader = 'Invalid Windows Image';
@@ -511,9 +507,9 @@ begin
   Result := StrToIntDef(Buffer, GetACP);
 end;
 
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'TResourceDetails implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TResourceDetails implementation'} {$ENDIF}
 { TResourceDetails }
 
 (*----------------------------------------------------------------------*
@@ -667,9 +663,9 @@ begin
   Result := False; // stub
 end;
 
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'TResourceModule implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TResourceModule implementation'} {$ENDIF}
 { TResourceModule }
 
 function TResourceModule.AddResource(details: TResourceDetails): Integer;
@@ -860,9 +856,9 @@ begin
   raise Exception.Create(rstNoStreaming);
 end;
 
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'TPEModule implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TPEModule implementation'} {$ENDIF}
 (*----------------------------------------------------------------------*
  | constructor TPEModule.Create                                          |
  |                                                                      |
@@ -1533,9 +1529,9 @@ begin
 
   s.Seek(0, soFromEnd);
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'TImageSection implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TImageSection implementation'} {$ENDIF}
 { TImageSection }
 
 (*----------------------------------------------------------------------*
@@ -1596,9 +1592,9 @@ begin
   fRawData.Free;
   inherited;
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'TPEResourceModule implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TPEResourceModule implementation'} {$ENDIF}
 { TPEResourceModule }
 
 (*----------------------------------------------------------------------*
@@ -2011,9 +2007,9 @@ begin { Encode }
     root.Free
    end
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-{$region 'TResourceNode implementation'}
+{$IFDEF DELPHI10_UP} {$region 'TResourceNode implementation'} {$ENDIF}
 { TResourceNode }
 
 procedure TResourceNode.Add(const AType, AName: string;
@@ -2152,6 +2148,6 @@ procedure TPEResourceModule.SortResources;
 begin
   fDetailList.Sort(compareDetails);
 end;
-{$endregion}
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 end.
