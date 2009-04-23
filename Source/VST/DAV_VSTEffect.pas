@@ -15,7 +15,8 @@ type
   PPDouble = ^PDouble;
   PVSTEffect = ^TVSTEffect;
 
-{$ALIGN ON}
+  {$ALIGN ON}
+  {$Z4}
   TDispatcherOpcode = (
     effOpen,                  //  0: initialise
     effClose,                 //  1: exit, release all memory and other resources!

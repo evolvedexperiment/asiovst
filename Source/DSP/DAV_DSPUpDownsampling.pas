@@ -237,7 +237,7 @@ begin
  for i := 0 to Length(FFilter) - 1 do
   begin
    oldFilter := FFilter[i];
-   FFilter[i] := FFilterClass.Create;
+   FFilter[i] := FFilterClass.Create(FOrder);
    if assigned(oldFilter)
     then FFilter[i].Assign(oldFilter);
    if FFilter[i] is TCustomChebyshev1Filter then

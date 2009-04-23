@@ -39,6 +39,8 @@ type
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterLimiterChange(Sender: TObject;
       const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
     FLowSplit     : array [0..1] of TLinkwitzRiley;
     FHighSplit    : array [0..1] of TLinkwitzRiley;
@@ -141,10 +143,12 @@ begin
 end;
 
 procedure TMBCDataModule.MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  i : Integer;
 begin
- for i := 0 to 1
-  do FLowSplit[i].Frequency := Value;
+ for i := 0 to Length(FLowSplit) - 1 do
+  if assigned(FLowSplit[i])
+   then FLowSplit[i].Frequency := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -160,13 +164,15 @@ procedure TMBCDataModule.MBCDCLowOrderChange(Sender: TObject; const Index: Integ
 var
   i : Integer;
 begin
- for i := 0 to 1
-  do FLowSplit[i].Order := round(Value);
+ for i := 0 to Length(FLowSplit) - 1 do
+  if assigned(FLowSplit[i])
+   then FLowSplit[i].Order := round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMLowGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLowComp.MakeUpGain_dB := Value;
+ if assigned(FLowComp)
+  then FLowComp.MakeUpGain_dB := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -179,7 +185,8 @@ end;
 
 procedure TMBCDataModule.MBCDMMidGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMidComp.MakeUpGain_dB := Value;
+ if assigned(FMidComp)
+  then FMidComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -191,7 +198,8 @@ end;
 
 procedure TMBCDataModule.MBCDMHighGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighComp.MakeUpGain_dB := Value;
+ if assigned(FHighComp)
+  then FHighComp.MakeUpGain_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -203,7 +211,8 @@ end;
 
 procedure TMBCDataModule.MBCDMLowThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLowComp.Threshold_dB := Value;
+ if assigned(FLowComp)
+  then FLowComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -215,7 +224,8 @@ end;
 
 procedure TMBCDataModule.MBCDMMidThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMidComp.Threshold_dB := Value;
+ if assigned(FMidComp)
+  then FMidComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -227,7 +237,8 @@ end;
 
 procedure TMBCDataModule.MBCDMHighThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighComp.Threshold_dB := Value;
+ if assigned(FHighComp)
+  then FHighComp.Threshold_dB := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -240,7 +251,8 @@ end;
 procedure TMBCDataModule.MBCDMLowRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLowComp.Ratio := Value;
+ if assigned(FLowComp)
+  then FLowComp.Ratio := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -252,7 +264,8 @@ end;
 
 procedure TMBCDataModule.MBCDMMidRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMidComp.Ratio := Value;
+ if assigned(FMidComp)
+  then FMidComp.Ratio := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -264,7 +277,8 @@ end;
 
 procedure TMBCDataModule.MBCDMHighRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighComp.Ratio := Value;
+ if assigned(FHighComp)
+  then FHighComp.Ratio := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -276,7 +290,8 @@ end;
 
 procedure TMBCDataModule.MBCDMLowAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLowComp.Attack := Value;
+ if assigned(FLowComp)
+  then FLowComp.Attack := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -289,7 +304,8 @@ end;
 
 procedure TMBCDataModule.MBCDMMidAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMidComp.Attack := Value;
+ if assigned(FMidComp)
+  then FMidComp.Attack := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -302,7 +318,8 @@ end;
 
 procedure TMBCDataModule.MBCDMHighAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighComp.Attack := Value;
+ if assigned(FHighComp)
+  then FHighComp.Attack := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -315,7 +332,8 @@ end;
 
 procedure TMBCDataModule.MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLowComp.Release := Value;
+ if assigned(FLowComp)
+  then FLowComp.Release := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm)
@@ -324,16 +342,18 @@ end;
 
 procedure TMBCDataModule.MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FMidComp.Release := Value;
+ if assigned(FMidComp)
+  then FMidComp.Release := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm)
-   do UpdateMidRelease; 
+   do UpdateMidRelease;
 end;
 
 procedure TMBCDataModule.MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighComp.Release := Value;
+ if assigned(FHighComp)
+  then FHighComp.Release := Value;
 
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm)
@@ -383,16 +403,18 @@ procedure TMBCDataModule.MBCDCHighOrderChange(Sender: TObject; const Index: Inte
 var
   i : Integer;
 begin
- for i := 0 to 1
-  do FHighSplit[i].Order := round(Value);
+ for i := 0 to Length(FHighSplit) - 1 do
+  if assigned(FHighSplit[i])
+   then FHighSplit[i].Order := round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMHighFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
   i : Integer;
 begin
- for i := 0 to 1
-  do FHighSplit[i].Frequency := Value;
+ for i := 0 to Length(FHighSplit) - 1 do
+  if assigned(FHighSplit[i])
+   then FHighSplit[i].Frequency := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
    begin
@@ -682,6 +704,19 @@ begin
    if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
    FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
+end;
+
+procedure TMBCDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to Length(FLowSplit) - 1 do
+  if assigned(FLowSplit[Channel])
+   then FLowSplit[Channel].SampleRate := SampleRate;
+ for Channel := 0 to Length(FHighSplit) - 1 do
+  if assigned(FHighSplit[Channel])
+   then FHighSplit[Channel].SampleRate := SampleRate;
 end;
 
 procedure TMBCDataModule.VSTModuleProcessDoubleReplacingLimiter(const Inputs,

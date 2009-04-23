@@ -134,20 +134,20 @@ procedure TVSTModuleWithMidi.HostCallProcess(const Inputs, Outputs: PPSingle; co
 begin
   inherited;
   if FMidiEvent.numEvents > 0 then
-  begin
+   begin
     SendVstEventsToHost(FMidiEvent);
     FMidiEvent.numEvents := 0;
-  end;
+   end;
 end;
 
 procedure TVSTModuleWithMidi.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 begin
   inherited;
   if FMidiEvent.numEvents > 0 then
-  begin
+   begin
     SendVstEventsToHost(FMidiEvent);
     FMidiEvent.numEvents := 0;
-  end;
+   end;
 end;
 
 procedure TVSTModuleWithMidi.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);

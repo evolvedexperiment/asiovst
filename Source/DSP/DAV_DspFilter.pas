@@ -75,6 +75,8 @@ type
     procedure OrderChanged; virtual;
     function GetOrder: Cardinal; override;
     procedure SetOrder(const Value: Cardinal); override;
+  public
+    constructor Create(const Order: Integer = 0); reintroduce; virtual;
   end;
 
   TFIRFilterClass = class of TCustomFIRFilter;
@@ -372,6 +374,14 @@ end;
 
 
 { TCustomOrderFilter }
+
+constructor TCustomOrderFilter.Create(const Order: Integer);
+begin
+ FOrder := Order;
+ OrderChanged;
+
+ inherited Create;
+end;
 
 function TCustomOrderFilter.GetOrder: Cardinal;
 begin

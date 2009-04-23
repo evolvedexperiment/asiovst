@@ -430,7 +430,9 @@ begin
  {$IFDEF Debug}
  if not (Opcode in [effIdle, effEditIdle])
   then AddLogMessage(' Opcode: ' + Opcode2String(Opcode) +
-                     ' Value: ' + IntToStr(Value));
+                     ' Index: ' + IntToStr(Index) +
+                     ' Value: ' + IntToStr(Value) +
+                     ' Single: ' + FloatToStr(opt));
  {$ENDIF}
 end;
 
@@ -465,21 +467,21 @@ end;
 
 function TCustomVSTModule.HostCallSetSampleRate(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetSampleRate'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetSampleRate (' + FloatToStr(Opt) + ')'); {$ENDIF}
  setSampleRate(opt);
  Result := 1;
 end;
 
 function TCustomVSTModule.HostCallSetBlockSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetBlockSize'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetBlockSize (' + IntToStr(Value) + ')'); {$ENDIF}
  setBlockSize(Value);
  Result := 0;
 end;
 
 function TCustomVSTModule.HostCallMainsChanged(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallMainsChanged'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallMainsChanged (' + IntToStr(Value) + ')'); {$ENDIF}
  if (Value = 0) then
   if Assigned(FOnSuspend)
    then FOnSuspend(Self)
@@ -584,14 +586,14 @@ end;
 function TCustomVSTModule.HostCallConnectInput(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallConnectInput'); {$ENDIF}
- if Assigned(FOnInConnected) then FOnInConnected(Self,Index,(Value <> 0));
+ if Assigned(FOnInConnected) then FOnInConnected(Self, Index, (Value <> 0));
  Result := 1;
 end;
 
 function TCustomVSTModule.HostCallConnectOutput(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallConnectOutput'); {$ENDIF}
- if Assigned(FOnOutConnected) then FOnOutConnected(Self,Index,(Value <> 0));
+ if Assigned(FOnOutConnected) then FOnOutConnected(Self, Index, (Value <> 0));
  Result := 1;
 end;
 
@@ -749,8 +751,8 @@ function TCustomVSTModule.HostCallSetBypass(const Index, Value: Integer; const p
 begin
   {$IFDEF Debug}
   if Value <> 0
-   then FLog.Add('SoftBypass: On')
-   else FLog.Add('SoftBypass: Off');
+   then AddLogMessage('HostCallSetBypass: On')
+   else AddLogMessage('HostCallSetBypass: Off');
   {$ENDIF}
   if Assigned(FOnSoftBypass) then
    begin
@@ -769,15 +771,15 @@ end;
 function TCustomVSTModule.HostCallGetVendorString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetVendorString'); {$ENDIF}
- StrPCopy(ptr, fVendorName);
+ StrPCopy(ptr, FVendorName);
  Result := 1;
 end;
 
 function TCustomVSTModule.HostCallGetProductString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetProductString'); {$ENDIF}
- if fProductName <> ''
-  then StrPCopy(ptr, fProductName)
+ if FProductName <> ''
+  then StrPCopy(ptr, FProductName)
   else StrPCopy(ptr, FEffectName);
  Result := 1;
 end;
@@ -799,34 +801,34 @@ end;
 function TCustomVSTModule.HostCallCanDo(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result := 0;
- {$IFDEF Debug} AddLogMessage('HostCallCanDo'); {$ENDIF}
- if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos)-1 else
- if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos)-1 else
- if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos)-1 else
- if StrComp(ptr, 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in FCanDos)-1 else
- if StrComp(ptr, 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in FCanDos)-1 else
- if StrComp(ptr, 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in FCanDos)-1 else
- if StrComp(ptr, 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in FCanDos)-1 else
- if StrComp(ptr, 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in FCanDos)-1 else
- if StrComp(ptr, 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in FCanDos)-1 else
- if StrComp(ptr, 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in FCanDos)-1 else
- if StrComp(ptr, 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in FCanDos)-1 else
- if StrComp(ptr, 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in FCanDos)-1 else
- if StrComp(ptr, 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in FCanDos)-1 else
- if StrComp(ptr, '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in FCanDos)-1 else
- if StrComp(ptr, '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in FCanDos)-1 else
- if StrComp(ptr, '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in FCanDos)-1 else
- if StrComp(ptr, '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in FCanDos)-1 else
- if StrComp(ptr, '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in FCanDos)-1 else
- if StrComp(ptr, '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in FCanDos)-1 else
- if StrComp(ptr, '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in FCanDos)-1 else
- if StrComp(ptr, '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in FCanDos)-1 else
- if StrComp(ptr, '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in FCanDos)-1 else
- if StrComp(ptr, '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in FCanDos)-1 else
- if StrComp(ptr, 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in FCanDos)-1 else
- if StrComp(ptr, 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos)-1 else
- if StrComp(ptr, 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos)-1 else
- if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos)-1 else
+ {$IFDEF Debug} AddLogMessage('HostCallCanDo (' + StrPas(PChar(ptr)) + ')'); {$ENDIF}
+ if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos) - 1 else
+ if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos) - 1 else
+ if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos) - 1 else
+ if StrComp(ptr, 'sendVstEvents')         = 0 then Result := 2 * Integer(vcdSendVstEvents         in FCanDos) - 1 else
+ if StrComp(ptr, 'sendVstMidiEvent')      = 0 then Result := 2 * Integer(vcdSendVstMidiEvent      in FCanDos) - 1 else
+ if StrComp(ptr, 'sendVstTimeInfo')       = 0 then Result := 2 * Integer(vcdSendVstTimeInfo       in FCanDos) - 1 else
+ if StrComp(ptr, 'offline')               = 0 then Result := 2 * Integer(vcdOffline               in FCanDos) - 1 else
+ if StrComp(ptr, 'plugAsChannelInsert')   = 0 then Result := 2 * Integer(vcdPlugAsChannelInsert   in FCanDos) - 1 else
+ if StrComp(ptr, 'plugAsSend')            = 0 then Result := 2 * Integer(vcdPlugAsSend            in FCanDos) - 1 else
+ if StrComp(ptr, 'mixDryWet')             = 0 then Result := 2 * Integer(vcdMixDryWet             in FCanDos) - 1 else
+ if StrComp(ptr, 'noRealTime')            = 0 then Result := 2 * Integer(vcdNoRealTime            in FCanDos) - 1 else
+ if StrComp(ptr, 'multipass')             = 0 then Result := 2 * Integer(vcdMultipass             in FCanDos) - 1 else
+ if StrComp(ptr, 'metapass')              = 0 then Result := 2 * Integer(vcdMetapass              in FCanDos) - 1 else
+ if StrComp(ptr, '1in1out')               = 0 then Result := 2 * Integer(vcd1in1out               in FCanDos) - 1 else
+ if StrComp(ptr, '1in2out')               = 0 then Result := 2 * Integer(vcd1in2out               in FCanDos) - 1 else
+ if StrComp(ptr, '2in1out')               = 0 then Result := 2 * Integer(vcd2in1out               in FCanDos) - 1 else
+ if StrComp(ptr, '2in2out')               = 0 then Result := 2 * Integer(vcd2in2out               in FCanDos) - 1 else
+ if StrComp(ptr, '2in4out')               = 0 then Result := 2 * Integer(vcd2in4out               in FCanDos) - 1 else
+ if StrComp(ptr, '4in2out')               = 0 then Result := 2 * Integer(vcd4in2out               in FCanDos) - 1 else
+ if StrComp(ptr, '4in4out')               = 0 then Result := 2 * Integer(vcd4in4out               in FCanDos) - 1 else
+ if StrComp(ptr, '4in8out')               = 0 then Result := 2 * Integer(vcd4in8out               in FCanDos) - 1 else
+ if StrComp(ptr, '8in4out')               = 0 then Result := 2 * Integer(vcd8in4out               in FCanDos) - 1 else
+ if StrComp(ptr, '8in8out')               = 0 then Result := 2 * Integer(vcd8in8out               in FCanDos) - 1 else
+ if StrComp(ptr, 'midiProgramNames')      = 0 then Result := 2 * Integer(vcdMidiProgramNames      in FCanDos) - 1 else
+ if StrComp(ptr, 'conformsToWindowRules') = 0 then Result := 2 * Integer(vcdConformsToWindowRules in FCanDos) - 1 else
+ if StrComp(ptr, 'LiveWithoutToolbar')    = 0 then Result := 2 * Integer(vcdLiveWithoutToolbar    in FCanDos) - 1 else
+ if StrComp(ptr, 'bypass')                = 0 then Result := 2 * Integer(vcdBypass                in FCanDos) - 1 else
  if StrComp(ptr, 'hasCockosExtensions')   = 0 then
   if vcdCockosExtension in FCanDos
    then Result := Integer($BEEF0000)
@@ -837,15 +839,13 @@ end;
 function TCustomVSTModule.HostCallGetTailSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetTailSize'); {$ENDIF}
- Result := fTailSize;
+ Result := FTailSize;
 end;
-
-
 
 function TCustomVSTModule.HostCallKeysRequired(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallKeysRequired'); {$ENDIF}
- Result := Integer(not fKeysRequired); // reversed to keep v1 compatibility
+ Result := Integer(not FKeysRequired); // reversed to keep v1 compatibility
 end;
 
 function TCustomVSTModule.HostCallGetVstVersion(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -857,7 +857,7 @@ end;
 function TCustomVSTModule.HostCallEditKeyDown(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   keyCode : TVstKeyCode;
-  a,b     : Integer;
+  a, b    : Integer;
   Hndl    : THandle;
 begin
  Result := 0;
@@ -950,7 +950,7 @@ end;
 
 function TCustomVSTModule.HostCallSetEditKnobMode(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetEditKnobMode'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallSetEditKnobMode (' + IntToStr(Value) + ')'); {$ENDIF}
  if Assigned(FOnSetKnobMode) then
   begin
    FOnSetKnobMode(Self, Value);

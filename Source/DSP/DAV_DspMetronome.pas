@@ -12,6 +12,7 @@ type
   private
     FAngle          : TComplexDouble;
     FPosition       : TComplexDouble;
+    FDecayFactor    : Single;
     FVolume         : Single;
     FBeatPos        : Integer;
     FSamplesPerBeat : Single;
@@ -40,6 +41,7 @@ begin
   FSampleRate := 44100;
   FBeatsPerMinute := 120;
   FMetroVolume := 1;
+  FDecayFactor := 0.995;
   FVolume := 1;
   SetSamplesPerBeat;
   Reset;
@@ -57,10 +59,9 @@ begin
   Result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
   FPosition.Re := Result;
-  if FBeatPos = 0 then
-    Result := 2 * FPosition.Re * FPosition.Re - 1;
+  if FBeatPos = 0 then Result := 2 * FPosition.Re * FPosition.Re - 1;
   Result := FVolume * Result * FMetroVolume;
-  FMetroVolume := 0.995 * FMetroVolume;
+  FMetroVolume := FDecayFactor * FMetroVolume;
   FSamplesCount := FSamplesCount + 1;
   if FSamplesCount > FSamplesPerBeat then
    begin
@@ -68,10 +69,9 @@ begin
     FSamplesCount := FSamplesCount - FSamplesPerBeat;
     FPosition.Re := 1;
     FPosition.Im := 0;
-    if FBeatPos < 3 then
-      Inc(FBeatPos)
-    else
-      FBeatPos := 0;
+    if FBeatPos < 3
+     then Inc(FBeatPos)
+     else FBeatPos := 0;
    end;
 end;
 
@@ -95,6 +95,7 @@ begin
   if FSampleRate <> Value then
    begin
     FSampleRate := Value;
+    FDecayFactor := 0.995; // need to be samplerate independent in the future!
     SetSamplesPerBeat;
    end;
 end;

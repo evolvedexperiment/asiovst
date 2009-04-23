@@ -22,7 +22,7 @@ type
     procedure CalculateW0; override;
     class function GetMaxOrder: Cardinal; override;
   public
-    constructor Create; override;
+    constructor Create(const Order: Integer = 0); override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
@@ -42,7 +42,6 @@ type
 
   TBesselLowpassFilter = class(TCustomBesselFilter)
   public
-    constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -52,7 +51,6 @@ type
 
   TBesselHighpassFilter = class(TCustomBesselFilter)
   public
-    constructor Create; override;
     procedure CalculateCoefficients; override;
     function ProcessSample(const Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -68,9 +66,9 @@ implementation
 uses
   Math, Dialogs, SysUtils, DAV_Complex;
 
-constructor TCustomBesselFilter.Create;
+constructor TCustomBesselFilter.Create(const Order: Integer = 0);
 begin
- inherited;
+ inherited Create(Order);
  FDownsamplePow := 0;
  FDownsampleFak := 1;
  CalculateCoefficients;
@@ -221,12 +219,6 @@ begin
 end;
 
 { TBesselFilterLP }
-
-constructor TBesselLowpassFilter.Create;
-begin
- inherited Create;
- Order := 6;
-end;
 
 function CalculateReverseBesselPolynomial(Order : Integer;  X : Double): Double;
 begin
@@ -382,14 +374,9 @@ end;
 
 { TBesselFilterHP }
 
-constructor TBesselHighpassFilter.Create;
-begin
- inherited Create;
- fGainFactor:=1;
-end;
-
 procedure TBesselHighpassFilter.CalculateCoefficients;
-var K, t  : Double;
+var
+  K, t  : Double;
 begin
  K := tan(fW0 * 0.5);
  if Order = 4 then

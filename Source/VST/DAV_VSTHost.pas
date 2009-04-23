@@ -1579,11 +1579,37 @@ begin
    end;
 
  try
+  {$IFDEF VstHostCubase4}
+  VstDispatch(effSetProcessPrecision);
+  VstDispatch(effSetBlockSize, 0, 1024);
+  VstDispatch(effSetSampleRate, 0, 0, nil, FSampleRate);
+  {$ENDIF}
+
   VstDispatch(effOpen);
+
+  {$IFDEF VstHostCubase4}
+  VstDispatch(effMainsChanged, 0, 1);
+  {$ENDIF}
+
   if VstCanDo('bypass') <> 0
    then FVSTCanDos := [vcdBypass]
    else FVSTCanDos := [];
   FVSTCanDosScannedComplete := False;
+
+  {$IFDEF VstHostCubase4}
+  VstDispatch(effMainsChanged, 0, 0);
+
+  if VstCanDo('receiveVstMidiEvent') <> 0
+   then FVSTCanDos := FVSTCanDos + [vcdReceiveVstMidiEvent]
+
+  if VstCanDo('sendVstMidiEvent') <> 0
+   then FVSTCanDos := FVSTCanDos + [vcdSendVstMidiEvent]
+
+  if VstCanDo('midiProgramNames') <> 0
+   then FVSTCanDos := FVSTCanDos + [vcdMidiProgramNames]
+
+  VstDispatch(effSetEditKnobMode, 0, 2);
+  {$ENDIF}
 
   SetPanLaw(plLinear, sqrt(2));
   SetBlockSize(FBlocksize);
@@ -1615,8 +1641,7 @@ begin
   if not assigned(FVstEffect) then
    result := 0
   else
-   result := Integer(opCode);
-   result := FVstEffect.Dispatcher(FVstEffect, TDispatcherOpcode(result), index, value, pntr, opt);
+   result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
  except
   result := 0;
  end;

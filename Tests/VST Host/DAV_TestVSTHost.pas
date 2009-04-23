@@ -59,6 +59,7 @@ type
     procedure TestInvalidOpcodes;
     procedure TestInvalidParameters;
     procedure TestSimpleCubaseTest;
+    procedure TestDefaultCubaseTest;
   end;
 
   // I/O test methods for VST Plugins
@@ -193,6 +194,117 @@ begin
   begin
    if numPrograms <= 0
     then Fail('No programs found, Cubase will probably crash!');
+
+   // get vst version
+   VstDispatch(effGetVstVersion);
+
+   // set process precision (32 bit)
+   VstDispatch(effSetProcessPrecision);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 1024);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 44100);
+
+   // open
+   VstDispatch(effOpen);
+
+   // CanDo receiveVstMidiEvent
+   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+
+   // CanDo sendVstMidiEvent
+   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+
+   // get vendor string
+   VstDispatch(effGetVendorString);
+
+   // get vst version
+   VstDispatch(effGetVstVersion);
+
+   // get vendor version
+   VstDispatch(effGetVendorVersion);
+
+   // get plug category
+   VstDispatch(effGetPlugCategory);
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginBasicTests.TestDefaultCubaseTest;
+begin
+ with FVstHost[0] do
+  begin
+   if numPrograms <= 0
+    then Fail('No programs found, Cubase will probably crash!');
+
+   // get vst version
+   VstDispatch(effGetVstVersion);
+
+   // set process precision (32 bit)
+   VstDispatch(effSetProcessPrecision);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 1024);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 44100);
+
+   // open
+   VstDispatch(effOpen);
+
+   // switch on
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // cando
+
+   // switch off
+   VstDispatch(effMainsChanged, 0, 0);
+
+   // candos
+
+   // program scanning
+
+   // set process precision (32 bit)
+   VstDispatch(effSetProcessPrecision);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 2048);
+
+   // switch on
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // start process
+   VstDispatch(effStartProcess);
+
+   // set pan law
+   VstDispatch(effSetPanLaw, 0, 0, nil, sqrt(2));
+
+   // set knob mode
+   VstDispatch(effSetEditKnobMode, 0, 2);
+
+   // get edit rect
+   VstDispatch(effEditGetRect);
+
+   // open edit
+   VstDispatch(effEditOpen);
+
+   // get edit rect
+   VstDispatch(effEditGetRect);
+
+   // stop process
+   VstDispatch(effStopProcess);
+
+   // switch off
+   VstDispatch(effMainsChanged, 0, 0);
+
+   // close edit
+   VstDispatch(effEditClose);
+
+   // close
+   VstDispatch(effClose);
   end;
 end;
 

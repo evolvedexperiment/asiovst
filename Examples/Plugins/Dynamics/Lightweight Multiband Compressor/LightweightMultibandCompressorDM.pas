@@ -210,7 +210,8 @@ procedure TLightweightMultibandCompressorDataModule.SetAutoGain(Index: Integer;
 begin
  if Index in [0..Length(FLightweightMultibandCompressor) - 1] then
   begin
-   FLightweightMultibandCompressor[Index].AutoMakeUp := Value;
+   if assigned(FLightweightMultibandCompressor[Index])
+    then FLightweightMultibandCompressor[Index].AutoMakeUp := Value;
    if EditorForm is TFmLightweightMultibandCompressor then
     with TFmLightweightMultibandCompressor(EditorForm) do
      case Index of
@@ -273,8 +274,9 @@ procedure TLightweightMultibandCompressorDataModule.ParameterLowFreqChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
-  do FLinkwitzRiley[Channel, 0].Frequency := Value;
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
+  if assigned(FLinkwitzRiley[Channel, 0])
+   then FLinkwitzRiley[Channel, 0].Frequency := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateLowFrequency;
 end;
@@ -284,8 +286,9 @@ procedure TLightweightMultibandCompressorDataModule.ParameterMidFreqChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
-  do FLinkwitzRiley[Channel, 1].Frequency := Value;
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
+  if assigned(FLinkwitzRiley[Channel, 1])
+   then FLinkwitzRiley[Channel, 1].Frequency := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateMidFrequency;
 end;
@@ -295,8 +298,9 @@ procedure TLightweightMultibandCompressorDataModule.ParameterHighChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLightweightMultibandCompressor) - 1
-  do FLinkwitzRiley[Channel, 2].Frequency := Value;
+ for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
+  if assigned(FLinkwitzRiley[Channel, 2])
+   then FLinkwitzRiley[Channel, 2].Frequency := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateHighFrequency;
 end;
@@ -339,7 +343,8 @@ var
   Band : Integer;
 begin
  Band := (Index - 4) div 7;
- FLightweightMultibandCompressor[Band].Attack := Value;
+ if assigned(FLightweightMultibandCompressor[Band])
+  then FLightweightMultibandCompressor[Band].Attack := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -356,7 +361,8 @@ var
   Band : Integer;
 begin
  Band := (Index - 5) div 7;
- FLightweightMultibandCompressor[Band].Release := Value;
+ if assigned(FLightweightMultibandCompressor[Band])
+  then FLightweightMultibandCompressor[Band].Release := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -373,7 +379,8 @@ var
   Band : Integer;
 begin
  Band := (Index - 6) div 7;
- FLightweightMultibandCompressor[Band].Threshold_dB := Value;
+ if assigned(FLightweightMultibandCompressor[Band])
+  then FLightweightMultibandCompressor[Band].Threshold_dB := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -390,7 +397,8 @@ var
   Band : Integer;
 begin
  Band := (Index - 7) div 7;
- FLightweightMultibandCompressor[Band].Ratio := Value;
+ if assigned(FLightweightMultibandCompressor[Band])
+  then FLightweightMultibandCompressor[Band].Ratio := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -407,7 +415,8 @@ var
   Band : Integer;
 begin
  Band := (Index - 8) div 7;
- FLightweightMultibandCompressor[Band].Knee_dB := Value;
+ if assigned(FLightweightMultibandCompressor[Band])
+  then FLightweightMultibandCompressor[Band].Knee_dB := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -424,7 +433,8 @@ var
   Band : Integer;
 begin
  Band := (Index - 9) div 7;
- FLightweightMultibandCompressor[Band].MakeUpGain_dB := Value;
+ if assigned(FLightweightMultibandCompressor[Band])
+  then FLightweightMultibandCompressor[Band].MakeUpGain_dB := Value;
 
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
@@ -542,10 +552,14 @@ var
 begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
   begin
-   FLightweightMultibandCompressor[Channel].SampleRate := SampleRate;
-   FLinkwitzRiley[Channel, 0].SampleRate := SampleRate;
-   FLinkwitzRiley[Channel, 1].SampleRate := SampleRate;
-   FLinkwitzRiley[Channel, 2].SampleRate := SampleRate;
+   if assigned(FLightweightMultibandCompressor[Channel])
+    then FLightweightMultibandCompressor[Channel].SampleRate := SampleRate;
+   if assigned(FLinkwitzRiley[Channel, 0])
+    then FLinkwitzRiley[Channel, 0].SampleRate := SampleRate;
+   if assigned(FLinkwitzRiley[Channel, 1])
+    then FLinkwitzRiley[Channel, 1].SampleRate := SampleRate;
+   if assigned(FLinkwitzRiley[Channel, 2])
+    then FLinkwitzRiley[Channel, 2].SampleRate := SampleRate;
   end;
 end;
 

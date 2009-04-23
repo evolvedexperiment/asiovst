@@ -2,7 +2,9 @@ unit AdvancedClipperDM;
 
 interface
 
-uses 
+{$I DAV_Compiler.inc}
+
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DSPUpDownsampling;
 
@@ -39,131 +41,6 @@ implementation
 
 uses
   AdvancedClipperGUI, DAV_VSTModuleWithPrograms;
-
-procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);
-var
-  ch : Integer;
-begin
- for ch := 0 to 1 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Factor := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOSFactor1;
-   end;
-end;
-
-procedure TAdvancedClipperDataModule.ParamOSFactor2Change(Sender: TObject; const Index: Integer; var Value: Single);
-var
-  ch : Integer;
-begin
- for ch := 2 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Factor := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOSFactor2;
-   end;
-end;
-
-procedure TAdvancedClipperDataModule.ParamInputGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FInputGain := dB_to_Amp(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateInputGain;
-   end;
-end;
-
-procedure TAdvancedClipperDataModule.ParamRoundDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- PreDefined := IntToStr(round(Parameter[Index]));
-end;
-
-procedure TAdvancedClipperDataModule.ParamHardClipDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- if Boolean(round(Parameter[Index]))
-  then PreDefined := 'On'
-  else PreDefined := 'Off';
-end;
-
-procedure TAdvancedClipperDataModule.ParamHardClipChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FHardClip := Boolean(round(Value));
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateHardClip;
-   end;
-end;
-
-procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
-  const Index: Integer; var Value: Single);
-var
-  ch : Integer;
-begin
- for ch := 0 to 1 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
-end;
-
-procedure TAdvancedClipperDataModule.ParamBW2Change(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  ch : Integer;
-begin
- for ch := 2 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
-end;
-
-procedure TAdvancedClipperDataModule.ParamOutputGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- FOutputGain := dB_to_Amp(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOutputGain;
-   end;
-end;
-
-procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
-  Sender: TObject; const Index: Integer; var Value: Single);
-var
-  ch : Integer;
-begin
- for ch := 0 to 1 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Order := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOrder1;
-   end;
-end;
-
-procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
-  const Index: Integer; var Value: Single);
-var
-  ch : Integer;
-begin
- for ch := 2 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Order := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOrder2;
-   end;
-end;
 
 procedure TAdvancedClipperDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -296,6 +173,131 @@ end;
 procedure TAdvancedClipperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
   GUI := TFmAdvancedClipper.Create(Self);
+end;
+
+procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to 1 do
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Factor := round(Value);
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateOSFactor1;
+   end;
+end;
+
+procedure TAdvancedClipperDataModule.ParamOSFactor2Change(Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 2 to 3 do
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Factor := round(Value);
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateOSFactor2;
+   end;
+end;
+
+procedure TAdvancedClipperDataModule.ParamInputGainChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FInputGain := dB_to_Amp(Value);
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateInputGain;
+   end;
+end;
+
+procedure TAdvancedClipperDataModule.ParamRoundDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(round(Parameter[Index]));
+end;
+
+procedure TAdvancedClipperDataModule.ParamHardClipDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Boolean(round(Parameter[Index]))
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
+end;
+
+procedure TAdvancedClipperDataModule.ParamHardClipChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FHardClip := Boolean(round(Value));
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateHardClip;
+   end;
+end;
+
+procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to 1 do
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+end;
+
+procedure TAdvancedClipperDataModule.ParamBW2Change(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 2 to 3 do
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+end;
+
+procedure TAdvancedClipperDataModule.ParamOutputGainChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FOutputGain := dB_to_Amp(Value);
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateOutputGain;
+   end;
+end;
+
+procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to 1 do
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Order := round(Value);
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateOrder1;
+   end;
+end;
+
+procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 2 to 3 do
+  if assigned(FUpDownSampling[ch])
+   then FUpDownSampling[ch].Order := round(Value);
+ if EditorForm is TFmAdvancedClipper then
+  with TFmAdvancedClipper(EditorForm) do
+   begin
+    UpdateOrder2;
+   end;
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleProcess(const Inputs,

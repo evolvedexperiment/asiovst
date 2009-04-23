@@ -142,8 +142,12 @@ end;
 procedure TLightweightLimiterDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightLimiter[0].MakeUpGain_dB := Value;
- FLightweightLimiter[1].MakeUpGain_dB := FLightweightLimiter[0].MakeUpGain_dB;
+ if assigned(FLightweightLimiter[0]) then
+  begin
+   FLightweightLimiter[0].MakeUpGain_dB := Value;
+   if assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].MakeUpGain_dB := FLightweightLimiter[0].MakeUpGain_dB;
+  end;
  if EditorForm is TFmLightweightLimiter
   then TFmLightweightLimiter(EditorForm).UpdateMakeUp;
 end;
@@ -209,8 +213,12 @@ end;
 procedure TLightweightLimiterDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightLimiter[0].AutoMakeUp := Boolean(round(Value));
- FLightweightLimiter[1].AutoMakeUp := FLightweightLimiter[0].AutoMakeUp;
+ if assigned(FLightweightLimiter[0]) then
+  begin
+   FLightweightLimiter[0].AutoMakeUp := Boolean(round(Value));
+   if assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].AutoMakeUp := FLightweightLimiter[0].AutoMakeUp;
+  end;
  if EditorForm is TFmLightweightLimiter
   then TFmLightweightLimiter(EditorForm).UpdateAutoMakeUpGain;
 end;
@@ -225,8 +233,12 @@ end;
 procedure TLightweightLimiterDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightLimiter[0].Attack := Value;
- FLightweightLimiter[1].Attack := FLightweightLimiter[0].Attack;
+ if assigned(FLightweightLimiter[0]) then
+  begin
+   FLightweightLimiter[0].Attack := Value;
+   if assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].Attack := FLightweightLimiter[0].Attack;
+  end;
  if EditorForm is TFmLightweightLimiter
   then TFmLightweightLimiter(EditorForm).UpdateAttack;
 end;
@@ -234,8 +246,12 @@ end;
 procedure TLightweightLimiterDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightLimiter[0].Release := Value;
- FLightweightLimiter[1].Release := FLightweightLimiter[0].Release;
+ if assigned(FLightweightLimiter[0]) then
+  begin
+   FLightweightLimiter[0].Release := Value;
+   if assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].Release := FLightweightLimiter[0].Release;
+  end;
  if EditorForm is TFmLightweightLimiter
   then TFmLightweightLimiter(EditorForm).UpdateRelease;
 end;
@@ -243,8 +259,12 @@ end;
 procedure TLightweightLimiterDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightLimiter[0].Threshold_dB := Value;
- FLightweightLimiter[1].Threshold_dB := Value;
+ if assigned(FLightweightLimiter[0]) then
+  begin
+   FLightweightLimiter[0].Threshold_dB := Value;
+   if assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].Threshold_dB := Value;
+  end;
  if EditorForm is TFmLightweightLimiter
   then TFmLightweightLimiter(EditorForm).UpdateThreshold;
 end;
@@ -252,8 +272,12 @@ end;
 procedure TLightweightLimiterDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightLimiter[0].Knee_dB := Value;
- FLightweightLimiter[1].Knee_dB := Value;
+ if assigned(FLightweightLimiter[0]) then
+  begin
+   FLightweightLimiter[0].Knee_dB := Value;
+   if assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].Knee_dB := Value;
+  end;
  if EditorForm is TFmLightweightLimiter
   then TFmLightweightLimiter(EditorForm).UpdateKnee;
 end;
@@ -317,8 +341,10 @@ end;
 procedure TLightweightLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FLightweightLimiter[0].SampleRate := SampleRate;
- FLightweightLimiter[1].SampleRate := SampleRate;
+ if assigned(FLightweightLimiter[0])
+  then FLightweightLimiter[0].SampleRate := SampleRate;
+ if assigned(FLightweightLimiter[1])
+  then FLightweightLimiter[1].SampleRate := SampleRate;
 end;
 
 end.

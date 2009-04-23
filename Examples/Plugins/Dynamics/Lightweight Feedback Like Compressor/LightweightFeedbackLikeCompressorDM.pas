@@ -144,8 +144,11 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].MakeUpGain_dB := Value;
- FLightweightFeedbackLikeCompressor[1].MakeUpGain_dB := FLightweightFeedbackLikeCompressor[0].MakeUpGain_dB;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].MakeUpGain_dB := Value;
+   FLightweightFeedbackLikeCompressor[1].MakeUpGain_dB := FLightweightFeedbackLikeCompressor[0].MakeUpGain_dB;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateMakeUp;
 end;
@@ -211,8 +214,12 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].AutoMakeUp := Boolean(round(Value));
- FLightweightFeedbackLikeCompressor[1].AutoMakeUp := FLightweightFeedbackLikeCompressor[0].AutoMakeUp;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].AutoMakeUp := Boolean(round(Value));
+   if assigned(FLightweightFeedbackLikeCompressor[1])
+    then FLightweightFeedbackLikeCompressor[1].AutoMakeUp := FLightweightFeedbackLikeCompressor[0].AutoMakeUp;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
@@ -227,8 +234,12 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].Attack := Value;
- FLightweightFeedbackLikeCompressor[1].Attack := FLightweightFeedbackLikeCompressor[0].Attack;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].Attack := Value;
+   if assigned(FLightweightFeedbackLikeCompressor[1])
+    then FLightweightFeedbackLikeCompressor[1].Attack := FLightweightFeedbackLikeCompressor[0].Attack;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateAttack;
 end;
@@ -236,8 +247,12 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].Release := Value;
- FLightweightFeedbackLikeCompressor[1].Release := FLightweightFeedbackLikeCompressor[0].Release;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].Release := Value;
+   if assigned(FLightweightFeedbackLikeCompressor[1])
+    then FLightweightFeedbackLikeCompressor[1].Release := FLightweightFeedbackLikeCompressor[0].Release;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateRelease;
 end;
@@ -245,8 +260,12 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].Threshold_dB := Value;
- FLightweightFeedbackLikeCompressor[1].Threshold_dB := Value;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].Threshold_dB := Value;
+   if assigned(FLightweightFeedbackLikeCompressor[1])
+    then FLightweightFeedbackLikeCompressor[1].Threshold_dB := Value;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateThreshold;
 end;
@@ -254,8 +273,12 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].Ratio := Value;
- FLightweightFeedbackLikeCompressor[1].Ratio := Value;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].Ratio := Value;
+   if assigned(FLightweightFeedbackLikeCompressor[1])
+    then FLightweightFeedbackLikeCompressor[1].Ratio := Value;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateRatio;
 end;
@@ -263,8 +286,12 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].Knee_dB := Value;
- FLightweightFeedbackLikeCompressor[1].Knee_dB := Value;
+ if assigned(FLightweightFeedbackLikeCompressor[0]) then
+  begin
+   FLightweightFeedbackLikeCompressor[0].Knee_dB := Value;
+   if assigned(FLightweightFeedbackLikeCompressor[1])
+    then FLightweightFeedbackLikeCompressor[1].Knee_dB := Value;
+  end;
  if EditorForm is TFmLightweightFeedbackLikeCompressor
   then TFmLightweightFeedbackLikeCompressor(EditorForm).UpdateKnee;
 end;
@@ -328,8 +355,10 @@ end;
 procedure TLightweightFeedbackLikeCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FLightweightFeedbackLikeCompressor[0].SampleRate := SampleRate;
- FLightweightFeedbackLikeCompressor[1].SampleRate := SampleRate;
+ if assigned(FLightweightFeedbackLikeCompressor[0])
+  then FLightweightFeedbackLikeCompressor[0].SampleRate := SampleRate;
+ if assigned(FLightweightFeedbackLikeCompressor[1])
+  then FLightweightFeedbackLikeCompressor[1].SampleRate := SampleRate;
  if EditorForm is TFmLightweightFeedbackLikeCompressor then
   with TFmLightweightFeedbackLikeCompressor(EditorForm) do
    begin

@@ -118,7 +118,8 @@ end;
 procedure TPlateReverbVST.ParameterModulationChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FPlateReverb.Modulation := 0.01 * Value;
+ if assigned(FPlateReverb)
+  then FPlateReverb.Modulation := 0.01 * Value;
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateModulation;
 end;
@@ -126,7 +127,8 @@ end;
 procedure TPlateReverbVST.ParameterPreDelayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FPlateReverb.PreDelay := 1E-3 * Value;
+ if assigned(FPlateReverb)
+  then FPlateReverb.PreDelay := 1E-3 * Value;
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdatePreDelay;
 end;
@@ -134,7 +136,8 @@ end;
 procedure TPlateReverbVST.ParameterDecayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FPlateReverb.Decay := 0.0025 * Value;
+ if assigned(FPlateReverb)
+  then FPlateReverb.Decay := 0.0025 * Value;
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDecay;
 end;
@@ -142,7 +145,8 @@ end;
 procedure TPlateReverbVST.ParameterDampingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FPlateReverb.DampingFrequency := Value;
+ if assigned(FPlateReverb)
+  then FPlateReverb.DampingFrequency := Value;
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDampingFrequency;
 end;
@@ -150,7 +154,8 @@ end;
 procedure TPlateReverbVST.ParameterInputDiffusionChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FPlateReverb.InputDiffusion := 0.01 * Value;
+ if assigned(FPlateReverb)
+  then FPlateReverb.InputDiffusion := 0.01 * Value;
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateInputDiffusion;
 end;
@@ -158,7 +163,8 @@ end;
 procedure TPlateReverbVST.ParameterDecayChangeDiffusion(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
-  FPlateReverb.DecayDiffusion := 0.01 * Value;
+ if assigned(FPlateReverb)
+  then FPlateReverb.DecayDiffusion := 0.01 * Value;
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDecayDiffusion;
 end;
@@ -204,7 +210,8 @@ end;
 
 procedure TPlateReverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- FPlateReverb.SampleRate := SampleRate;
+ if assigned(FPlateReverb)
+  then FPlateReverb.SampleRate := SampleRate;
 end;
 
 end.

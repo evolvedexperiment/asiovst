@@ -144,8 +144,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].MakeUpGain_dB := Value;
- FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].MakeUpGain_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateMakeUp;
 end;
@@ -211,8 +215,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].AutoMakeUp := Boolean(round(Value));
- FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].AutoMakeUp := Boolean(round(Value));
+   if assigned(FCompressor[1])
+    then FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
@@ -227,8 +235,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Attack := Value;
- FCompressor[1].Attack := FCompressor[0].Attack;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Attack := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Attack := FCompressor[0].Attack;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateAttack;
 end;
@@ -236,8 +248,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Release := Value;
- FCompressor[1].Release := FCompressor[0].Release;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Release := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Release := FCompressor[0].Release;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateRelease;
 end;
@@ -245,8 +261,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Threshold_dB := Value;
- FCompressor[1].Threshold_dB := Value;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Threshold_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Threshold_dB := Value;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateThreshold;
 end;
@@ -254,8 +274,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Ratio := Value;
- FCompressor[1].Ratio := Value;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Ratio := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Ratio := Value;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateRatio;
 end;
@@ -263,8 +287,12 @@ end;
 procedure TLightweightUpwardCompressorDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor[0].Knee_dB := Value;
- FCompressor[1].Knee_dB := Value;
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Knee_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Knee_dB := Value;
+  end;
  if EditorForm is TFmLightweightUpwardCompressor
   then TFmLightweightUpwardCompressor(EditorForm).UpdateKnee;
 end;
@@ -328,8 +356,10 @@ end;
 procedure TLightweightUpwardCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FCompressor[0].SampleRate := SampleRate;
- FCompressor[1].SampleRate := SampleRate;
+ if assigned(FCompressor[0])
+  then FCompressor[0].SampleRate := SampleRate;
+ if assigned(FCompressor[1])
+  then FCompressor[1].SampleRate := SampleRate;
 end;
 
 end.

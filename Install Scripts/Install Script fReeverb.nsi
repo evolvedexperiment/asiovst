@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;AmpSim Installer
+;fReeverb Installer
 ;Written by Christian Budde
 
 SetCompressor lzma

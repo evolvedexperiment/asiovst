@@ -97,6 +97,7 @@ object SimpleCompressorDataModule: TSimpleCompressorDataModule
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 679
   Top = 126
   Height = 150

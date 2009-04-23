@@ -26,7 +26,7 @@ type
     class function GetMaxOrder: Cardinal; override;
     procedure OrderChanged; override;
   public
-    constructor Create(const Order: Integer = 0); reintroduce; virtual;
+    constructor Create(const Order: Integer = 0); override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
@@ -104,11 +104,9 @@ const
 
 constructor TCustomButterworthFilter.Create(const Order: Integer = 0);
 begin
- FOrder := Order;
- OrderChanged;
-
  FDownsamplePow := 0;
  FDownsampleFak := 1;
+ FFilterGain    := 1;
  inherited Create;
  CalculateCoefficients;
 end;

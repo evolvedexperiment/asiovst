@@ -61,6 +61,12 @@
   The default is enabled.}
 {$DEFINE VstHostGUI}
 
+
+{ Enable this option if the VST host unit should initialize the VST plugins
+  similar to Cubase 4. Some opcodes are dispached before the plugin is open.
+  The default is disable.}
+{.$DEFINE VstHostCubase4}
+
 { Enable this option if the VST host should use FlatScrollBars instead of the
   3-D like scrollbars. It is disabled by default, because it hasn't been tested
   in detail.
@@ -109,7 +115,7 @@
 //  DSP Compiler Switches  //
 /////////////////////////////
 
-{$DEFINE Use_IPPS}
+{.$DEFINE Use_IPPS}
 { If this compiler switch is enabled the Intel Performance Primitives are used.
   Right now there only exists a unit (not part of the package) to integrate the
   FFT found in the IPP. You need to purchase the IPP separately from Intel in

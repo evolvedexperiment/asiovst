@@ -1343,11 +1343,11 @@ begin
      effGetNumMidiInputChannels:   Result := HostCallGetNumMidiInputChannels(Index, Value, ptr, opt);
      effGetNumMidiOutputChannels:  Result := HostCallGetNumMidiOutputChannels(Index, Value, ptr, opt);
      else
-       try
-         raise EVstError.Create('Unknown OpCode');
-       except
-         Result := 0;
-       end;
+      try
+        raise EVstError.Create('Unknown OpCode');
+      except
+        Result := 0;
+      end;
      end;
    end
  else Result := 0;
@@ -1382,8 +1382,13 @@ procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle;
 {$IFDEF PUREPASCAL}
 begin
  if not assigned(Effect) or (SampleFrames = 0) then exit;
- if TObject(Effect^.vObject) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.vObject).HostCallProcess(Inputs, Outputs, SampleFrames);
+ {$IFDEF UseAudioEffectPtr}
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+ {$ELSE}
+ if TObject(Effect^.User) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.User).HostCallProcess(Inputs, Outputs, SampleFrames);
+ {$ENDIF}
 end;
 {$ELSE}
 asm
@@ -1399,10 +1404,17 @@ asm
   test ebx, ebx
   jz @end
 
-  // test Effect^.vObject <> 0
+ {$IFDEF UseAudioEffectPtr}
+  // test Effect^.AudioEffectPtr <> 0
   mov ebx, [ebx + $40]
   test ebx, ebx
   jz @end
+ {$ELSE}
+  // test Effect^.User <> 0
+  mov ebx, [ebx + $44]
+  test ebx, ebx
+  jz @end
+ {$ENDIF}
 
   // test Outputs <> 0
   mov ecx, [Outputs]
@@ -1431,8 +1443,13 @@ procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: 
 {$IFDEF PUREPASCAL}
 begin
  if not assigned(Effect) or (SampleFrames = 0) then exit;
- if TObject(Effect^.vObject) is TBasicVSTModule
+ {$IFDEF UseAudioEffectPtr}
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
   then TBasicVSTModule(Effect^.vObject).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
+ {$ELSE}
+ if TObject(Effect^.User) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.User).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
+ {$ENDIF}
 end;
 {$ELSE}
 asm
@@ -1448,10 +1465,17 @@ asm
   test ebx, ebx
   jz @end
 
-  // test Effect^.vObject <> 0
+ {$IFDEF UseAudioEffectPtr}
+  // test Effect^.AudioEffectPtr <> 0
   mov ebx, [ebx + $40]
   test ebx, ebx
   jz @end
+ {$ELSE}
+  // test Effect^.User <> 0
+  mov ebx, [ebx + $44]
+  test ebx, ebx
+  jz @end
+ {$ENDIF}
 
   // test Outputs <> 0
   mov ecx, [Outputs]
@@ -1497,10 +1521,17 @@ asm
   test ebx, ebx
   jz @end
 
-  // test Effect^.vObject <> 0
+ {$IFDEF UseAudioEffectPtr}
+  // test Effect^.AudioEffectPtr <> 0
   mov ebx, [ebx + $40]
   test ebx, ebx
   jz @end
+ {$ELSE}
+  // test Effect^.User <> 0
+  mov ebx, [ebx + $44]
+  test ebx, ebx
+  jz @end
+ {$ENDIF}
 
   // test Outputs <> 0
   mov ecx, [Outputs]
