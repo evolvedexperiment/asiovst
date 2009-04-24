@@ -168,10 +168,10 @@ type
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
+
     function BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
     function BeginLoadProgram(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
     function CanBeAutomated(const Index: Integer): Integer;
-    function VstCanDo(const CanDoString: string): Integer;
     function ConnectInput(const InputNr: Integer; const State: Boolean): Integer;
     function ConnectOutput(const OutputNr: Integer; const State: Boolean): Integer;
     function CopyCurrentProgramTo(const Destination: Integer): Boolean;
@@ -211,47 +211,46 @@ type
     function Identify: Integer;
     function Idle: Integer;
     function KeysRequired: Integer;
-    function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
 
+    // Offline Functions
     function OfflineNotify(const VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
     function OfflinePrepare(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
     function OfflineRun(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count :Integer): Integer;
+
     function ProcessEvents(const VstEvents: TVstEvents): Integer;
     function ProcessVarIo(const VarIo: TVstVariableIo): Integer;
     function SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;
     function SetBypass(const Value: Boolean): Integer;
     function SetChunk(const Data: Pointer; const ByteSize: Integer; const IsPreset: Boolean = False): Integer;
-    function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
     function SetInputSpeakerArrangement(const PluginInput: TVstSpeakerArrangement): Boolean;
     function SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
+    function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
     function String2Parameter(const Index: Integer; const ParameterName: string): Integer;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
-    procedure BeginSetProgram;
-    procedure Close;
-    {$IFDEF VstHostGUI}
-    procedure CloseEdit;
-    procedure EditActivate;
-    procedure EditDeactivate;
-    function EditGetRect: ERect;
-    function EditIdle: Integer;
-    function EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
-    function EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
-    function EditOpen(const Handle: THandle): Integer;
-    {$ENDIF}
-    procedure EndSetProgram;
-    procedure LoadBank(FileName: TFileName); overload;
-    procedure LoadBank(Stream: TStream); overload;
-    procedure LoadPreset(FileName: TFileName); overload;
-    procedure LoadPreset(Stream: TStream); overload;
+    function VstCanDo(const CanDoString: string): Integer;
+    function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
+
+    // load plugin
+    function CheckValidPlugin(const FileName: TFilename): Boolean;
     procedure LoadFromFile(const FileName: TFilename);
     {$IFDEF MemDLL}
     procedure LoadFromStream(const Stream: TStream);
     {$ENDIF}
     procedure LoadFromVSTEffect(const Value: PVSTEffect);
+    procedure UnLoad;
 
-    procedure MainsChanged(const IsOn: Boolean);
+    // open / close
     procedure Open;
+    procedure Close;
+
+    procedure BeginSetProgram;
+    procedure EndSetProgram;
+    procedure LoadBank(FileName: TFileName); overload;
+    procedure LoadBank(Stream: TStream); overload;
+    procedure LoadPreset(FileName: TFileName); overload;
+    procedure LoadPreset(Stream: TStream); overload;
+    procedure MainsChanged(const IsOn: Boolean);
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
     procedure ProcessAudioDataCollection(Inputs, Outputs: TAudioDataCollection32); overload; virtual;
@@ -264,15 +263,26 @@ type
     procedure SaveBank(Stream: TStream); overload;
     procedure SavePreset(FileName: TFileName); overload;
     procedure SavePreset(Stream: TStream); overload;
+    procedure SetBlockSize(const Value: Integer);
     procedure SetPanLaw(const PanLaw: TVstPanLawType; const Gain: Single);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
     procedure SetProgram(const lValue: Integer);
     procedure SetProgramName(const newName: string);
-    procedure SetBlockSize(const Value: Integer);
     procedure SetSampleRate(const Value: Single);
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(const x, y: Integer);
+    procedure StartProcess;
+    procedure StopProcess;
+
     {$IFDEF VstHostGUI}
+    procedure CloseEdit;
+    procedure EditActivate;
+    procedure EditDeactivate;
+    function EditGetRect: ERect;
+    function EditIdle: Integer;
+    function EditKeyDown(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
+    function EditKeyUp(const Key: Char; const VirtualKeycode: Integer; const Modifier: TVstModifierKeys): Boolean;
+    function EditOpen(const Handle: THandle): Integer;
     procedure RenderEditorToBitmap(Bitmap: TBitmap);
     procedure SetEditKnobMode(Mode : TKnobMode);
     procedure ShowEdit(Control: TWinControl); overload;
@@ -280,9 +290,6 @@ type
     procedure ShowDefaultEditList(Control: TWinControl);
     procedure ShowEdit; overload;
     {$ENDIF}
-    procedure StartProcess;
-    procedure StopProcess;
-    procedure UnLoad;
 
     property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
     property ParameterName[Index: Integer]: string read GetParamName;
@@ -1854,7 +1861,9 @@ var
   theRect: ERect;
 begin
  {$IFDEF VstHostGUI}
- theRect := EditGetRect;
+ if (effFlagsHasEditor in FVstEffect.EffectFlags)
+  then theRect := EditGetRect
+  else theRect := Rect(0, 0, 320, 4 + numParams * 16);
  {$ELSE}
  theRect := Rect(0, 0, 0, 0);
  {$ENDIF}
@@ -1868,7 +1877,7 @@ var
 begin
  GetMem(temp, SizeOf(PPERect));
  try
-  if fActive then VstDispatch(effEditGetRect, 0, 0, temp);
+  if FActive then VstDispatch(effEditGetRect, 0, 0, temp);
   if Assigned(temp) then
    if Assigned(temp^)
     then result := temp^^;
@@ -1989,7 +1998,7 @@ begin
     do begin param := GetParamName(i); Items.Add(param); end;
    Anchors := [akLeft, akTop, akRight]; Left := 4; Top := 5;
    Width := Control.Width - 4 * Left; Height := 21; ItemHeight := 13;
-   TabOrder := 2; OnChange := ParamChange; Text := ''; itemindex := 0;
+   TabOrder := 2; OnChange := ParamChange; Text := ''; ItemIndex := 0;
    Font.Color := clWindowText;
    OnChange(nil);
   end;
@@ -2248,6 +2257,23 @@ end;
 function TCustomVstPlugIn.CanBeAutomated(const Index: Integer): Integer;
 begin
  result := VstDispatch(effCanBeAutomated, Index);
+end;
+
+function TCustomVstPlugIn.CheckValidPlugin(const FileName: TFilename): Boolean;
+var
+  VstDllHandle : THandle;
+begin
+ result := False;
+ DontRaiseExceptionsAndSetFPUcodeword;
+ VstDllHandle := SafeLoadLibrary(PAnsiChar(FileName), 7);
+ if VstDllHandle <> 0 then
+  try
+   result := GetProcAddress(VstDllHandle, 'main') <> nil;
+   if result = False
+    then result := GetProcAddress(VstDllHandle, 'VSTPluginMain') <> nil;
+  finally
+   FreeLibrary(VstDllHandle);
+  end;
 end;
 
 function TCustomVstPlugIn.String2Parameter(const Index: Integer; const ParameterName: string): Integer;

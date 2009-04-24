@@ -1,5 +1,7 @@
 library ASIOVI;
 
+{%TogetherDiagram 'ModelSupport_ASIOVI\default.txaPackage'}
+
 uses
   FastMM4,
   ASIOVIObject in 'ASIOVIObject.pas',
