@@ -72,8 +72,10 @@ SetCompressor lzma
 Section "Lightweight Limiter VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\LightweightLimiter.dll" "..\Bin\Lightweight Limiter.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\LightweightLimiter.dll"
+  File "..\Bin\Lightweight Limiter.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -120,7 +122,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\LightweightLimiter.dll"
+  Delete "$INSTDIR\Lightweight Limiter.dll"
   Delete "$INSTDIR\Lightweight Limiter Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 

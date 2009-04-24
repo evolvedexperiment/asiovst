@@ -11,15 +11,15 @@ uses
 
 type
   TFmSpinBugLite = class(TForm)
-    LbTitle: TGuiLabel;
-    LbTitleShadow: TGuiLabel;
     DialLFO: TGuiDial;
-    SelectType: TGuiSelectBox;
-    LbType: TLabel;
-    SelectColour: TGuiSelectBox;
     Label1: TLabel;
     LbLFOSpeed: TLabel;
     LbLFOSpeedValue: TLabel;
+    LbTitle: TGuiLabel;
+    LbTitleShadow: TGuiLabel;
+    LbType: TLabel;
+    SelectColour: TGuiSelectBox;
+    SelectType: TGuiSelectBox;
     procedure FormCreate(Sender : TObject);
     procedure FormPaint(Sender : TObject);
     procedure FormDestroy(Sender : TObject);

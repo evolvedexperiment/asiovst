@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "Phaser Installer"
-  OutFile "Phaser_Install.exe"
+  OutFile "Phase-O-Matic_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"

@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Simple Sampler Installer
+;Simple Sample Delay Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Simple Sampler Installer"
-  OutFile "SimpleSampler_Install.exe"
+  Name "Simple Sample Delay Installer"
+  OutFile "Simple_Sample_Delay_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Simple Sampler"
+  !define PRODUCT_NAME "Simple Sample Delay"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,11 +69,13 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Simple Sampler VST-Plugin" SecVstPlugins
+Section "Simple Sample Delay VST-Plugin" SecVstPlugins
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\SimpleSampleDelay.dll" "..\Bin\Simple Sample Delay.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\SimpleSampler.dll"
+  File "..\Bin\Simple Sample Delay.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -88,13 +90,13 @@ SectionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sample Delay VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Sample Delay VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -107,7 +109,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\SimpleSampler.dll"
+  Delete "$INSTDIR\Simple Sample Delay.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Simple Sampler Installer
+;ConvoFX Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,11 +13,11 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Simple Sampler Installer"
-  OutFile "SimpleSampler_Install.exe"
+  Name "ConvoFX Installer"
+  OutFile "ConvoFX_Install.exe"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\VSTPlugIns"
+  InstallDir "$VSTPlugin\VSTPlugIns"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Simple Sampler"
+  !define PRODUCT_NAME "ConvoFX"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -66,39 +66,36 @@ SetCompressor lzma
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Simple Sampler VST-Plugin" SecVstPlugins
+Section "ConvoFX VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\SimpleSampler.dll"
+  File "..\Bin\ConvoFX.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSimpleSampler.exe"
-
-
+  WriteUninstaller "$INSTDIR\UninstallConvoFX.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ConvoFX VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "ConvoFX VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -107,7 +104,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\SimpleSampler.dll"
+  Delete "$INSTDIR\ConvoFX.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

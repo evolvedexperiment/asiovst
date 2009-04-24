@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Simple Sampler Installer
+;SoundTouch Pitch Shifter Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Simple Sampler Installer"
-  OutFile "SimpleSampler_Install.exe"
+  Name "SoundTouch Pitch Shifter Installer"
+  OutFile "SoundTouch_Pitch_Shifter_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Simple Sampler"
+  !define PRODUCT_NAME "SoundTouch Pitch Shifter"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,32 +69,33 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Simple Sampler VST-Plugin" SecVstPlugins
+Section "SoundTouch Pitch Shifter VST-Plugin" SecVstPlugins
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\SoundTouchPitchShifter.dll" "..\Bin\SoundTouch Pitch Shifter.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\SimpleSampler.dll"
+  File "..\Bin\SoundTouch Pitch Shifter.dll"
+  File "..\Bin\SoundTouch.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSimpleSampler.exe"
-
-
+  WriteUninstaller "$INSTDIR\UninstallSimpleVibrato.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "SoundTouch Pitch Shifter VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "SoundTouch Pitch Shifter VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -107,7 +108,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\SimpleSampler.dll"
+  Delete "$INSTDIR\SoundTouch Pitch Shifter.dll"
+  Delete "$INSTDIR\SoundTouch.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

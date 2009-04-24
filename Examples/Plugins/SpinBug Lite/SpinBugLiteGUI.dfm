@@ -80,7 +80,6 @@ object FmSpinBugLite: TFmSpinBugLite
     Width = 89
     Height = 25
     ArrowColor = clWhite
-    ArrowWidth = 1
     ButtonColor = 271837
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -100,8 +99,9 @@ object FmSpinBugLite: TFmSpinBugLite
       'special'
       'old one')
     LineColor = 2097152
-    SelectBoxColor = 271837
+    ParentFont = False
     Radius = 4
+    SelectBoxColor = 271837
     OnChange = SelectTypeChange
   end
   object LbType: TLabel
@@ -123,7 +123,6 @@ object FmSpinBugLite: TFmSpinBugLite
     Width = 108
     Height = 25
     ArrowColor = clWhite
-    ArrowWidth = 1
     ButtonColor = 271837
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -138,8 +137,9 @@ object FmSpinBugLite: TFmSpinBugLite
       'soft'
       'smooth')
     LineColor = 2097152
-    SelectBoxColor = 271837
+    ParentFont = False
     Radius = 4
+    SelectBoxColor = 271837
     OnChange = SelectColourChange
   end
   object Label1: TLabel
