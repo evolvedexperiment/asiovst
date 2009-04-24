@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Sine Synth Installer
+;Stk PitchShift Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Sine Synth Installer"
-  OutFile "Sine_Synth_Install.exe"
+  Name "Stk PitchShift Installer"
+  OutFile "Stk_PitchShift_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -22,7 +22,7 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Delphi ASIO & VST Package"
+  BrandingText "Delphi ASIO & VST Packages"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Sine Synth"
+  !define PRODUCT_NAME "Stk PitchShift"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,38 +69,34 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Sine Synth VST-Plugin" SecProgramFiles
+Section "Stk PitchShift VST-Plugin" SecVstPlugins
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\SineSynth.dll" "..\Bin\Sine Synth.dll"'  
-
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\SineSynth.dll"
+  File "..\Bin\StkPitchShift.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSineSynth.exe"
-
-
+  WriteUninstaller "$INSTDIR\UninstallStkPitchShift.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Sine Synth VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Stk PitchShift VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Sine Synth VST Plugin"
+  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Stk PitchShift VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -109,7 +105,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Sine Synth.dll"
+  Delete "$INSTDIR\StkPitchShift.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

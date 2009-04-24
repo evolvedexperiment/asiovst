@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "Simple Sampler Installer"
-  OutFile "SimpleSampler_Install.exe"
+  OutFile "Simple_Sampler_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
