@@ -69,7 +69,7 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "AmpSim VST-Plugin" SecProgramFiles
+Section "AmpSim VST-Plugin" SecVstPlugins
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -94,11 +94,11 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "AmpSim VST Plugin"
+  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "AmpSim VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

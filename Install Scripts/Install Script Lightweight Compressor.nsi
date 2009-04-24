@@ -72,8 +72,10 @@ SetCompressor lzma
 Section "Lightweight Compressor VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\LightweightCompressor.dll" "..\Bin\Lightweight Compressor.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\LightweightCompressor.dll"
+  File "..\Bin\Lightweight Compressor.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -120,7 +122,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\LightweightCompressor.dll"
+  Delete "$INSTDIR\Lightweight Compressor.dll"
   Delete "$INSTDIR\Lightweight Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 

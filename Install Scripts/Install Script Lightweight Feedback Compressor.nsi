@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Lightweight Compressor Installer
+;Lightweight Feedback Compressor Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -72,8 +72,10 @@ SetCompressor lzma
 Section "Lightweight Feedback Compressor VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\LightweightFeedbackCompressor.dll" "..\Bin\Lightweight Feedback Compressor.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\LightweightFeedbackCompressor.dll"
+  File "..\Bin\Lightweight Feedback Compressor.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -120,7 +122,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\LightweightFeedbackCompressor.dll"
+  Delete "$INSTDIR\Lightweight Feedback Compressor.dll"
   Delete "$INSTDIR\Lightweight Feedback Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 

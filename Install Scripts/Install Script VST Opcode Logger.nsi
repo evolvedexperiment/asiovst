@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Lightweight Gate Installer
+;VstOpcodeLogger Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Lightweight Gate Installer"
-  OutFile "Lightweight_Gate_Install.exe"
+  Name "VST Opcode Logger Installer"
+  OutFile "Vst_Opcode_Logger_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Lightweight Gate"
+  !define PRODUCT_NAME "VstOpcodeLogger"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,51 +69,36 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Lightweight Gate VST-Plugin" SecVSTPlugin
+Section "VstOpcodeLogger VST-Plugin" SecVstPlugins
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\LightweightGate.dll" "..\Bin\Lightweight Gate.dll"'  
+  !system 'copy "..\Bin\VstOpcodeLogger.dll" "..\Bin\Vst Opcode Logger.dll"'  
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\LightweightGate.dll"
+  File "..\Bin\Vst Opcode Logger.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightGate.exe"
-SectionEnd
-
-Section "Lightweight Gate Manual" SecManual
-  SetOutPath "$INSTDIR"
-  
-  ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Lightweight Gate Manual.pdf"
-
-  ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
-  
-  ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightGate.exe"
+  WriteUninstaller "$INSTDIR\UninstallVstOpcodeLogger.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Lightweight Gate VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VstOpcodeLogger VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Lightweight Gate VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "Lightweight Gate Manual"
+  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "VstOpcodeLogger VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -122,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Lightweight Gate.dll"
+  Delete "$INSTDIR\Vst Opcode Logger.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd
