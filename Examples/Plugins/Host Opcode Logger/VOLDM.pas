@@ -66,10 +66,12 @@ begin
    end;
   effIdle:
     if FLastOpcode <> effIdle
-     then FOpcodeLog.Add(Opcode2String(Opcode));
+     then FOpcodeLog.Add(Opcode2String(Opcode))
+     else exit;
   effEditIdle:
     if FLastOpcode <> effEditIdle
-     then FOpcodeLog.Add(Opcode2String(Opcode));
+     then FOpcodeLog.Add(Opcode2String(Opcode))
+     else exit;
   effCanDo: FOpcodeLog.Add(Opcode2String(Opcode) + ' ''' +
                            StrPas(PChar(Ptr)) + '''');
   effClose:
