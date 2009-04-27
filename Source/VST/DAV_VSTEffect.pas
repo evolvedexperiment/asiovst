@@ -85,8 +85,8 @@ type
 
     // other
     effProcessVarIo,              // 41: VstVariableIo* in <ptr>
-    effSetSpeakerArrangement,     // 42: VstSpeakerArrangement* pluginInput in <value>
-                                  //     VstSpeakerArrangement* pluginOutput in <ptr>
+    effSetSpeakerArrangement,     // 42: PVstSpeakerArrangement pluginInput in <value>
+                                  //     PVstSpeakerArrangement pluginOutput in <ptr>
     effSetBlockSizeAndSampleRate, // 43: NOT USED IN 2.4 - block size in <value>, sampleRate in <opt>
     effSetBypass,                 // 44: onOff in <value> (0 = off)
     effGetEffectName,             // 45: char* name (max 32 Bytes) in <ptr>
@@ -138,8 +138,8 @@ type
     effBeginSetProgram,           // 67: called before a new program is loaded
     effEndSetProgram,             // 68: called when the program is loaded
 
-    effGetSpeakerArrangement,     // 69: VstSpeakerArrangement** pluginInput in <value>
-                                  //     VstSpeakerArrangement** pluginOutput in <ptr>
+    effGetSpeakerArrangement,     // 69: ^PVstSpeakerArrangement pluginInput in <value>
+                                  //     ^PVstSpeakerArrangement pluginOutput in <ptr>
     effShellGetNextPlugin,        // 70: This opcode is only called, if plugin is of type kPlugCategShell.
                                   //     returns the next plugin's uniqueID.
                                   //     <ptr> points to a char buffer of size 64, which is to be filled
@@ -611,13 +611,13 @@ type
     Future    : array[0..27] of Byte;
   end;
 
-// note: the origin for azimuth is right (as by math conventions dealing with radians);
-// the elevation origin is also right, visualizing a rotation of a circle across the
-// -pi/pi axis of the horizontal circle. thus, an elevation of -pi/2 corresponds
-// to bottom, and a speaker standing on the left, and 'beaming' upwards would have
-// an azimuth of -pi, and an elevation of pi/2.
-// for user interface representation, grads are more likely to be used, and the
-// origins will obviously 'shift' accordingly.
+  // note: the origin for azimuth is right (as by math conventions dealing with radians);
+  // the elevation origin is also right, visualizing a rotation of a circle across the
+  // -pi/pi axis of the horizontal circle. thus, an elevation of -pi/2 corresponds
+  // to bottom, and a speaker standing on the left, and 'beaming' upwards would have
+  // an azimuth of -pi, and an elevation of pi/2.
+  // for user interface representation, grads are more likely to be used, and the
+  // origins will obviously 'shift' accordingly.
 
   PVstSpeakerArrangement = ^TVstSpeakerArrangement;
   TVstSpeakerArrangement = record
@@ -935,9 +935,9 @@ type
 
   PVstPatchChunkInfo = ^TVstPatchChunkInfo;
   TVstPatchChunkInfo = packed record
-    version        : LongInt;               // Format Version (should be 1)
-    pluginUniqueID : TChunkName;            // UniqueID of the plugin
-    pluginVersion  : LongInt;               // Plugin Version
+    Version        : LongInt;               // Format Version (should be 1)
+    PluginUniqueID : TChunkName;            // UniqueID of the plugin
+    PluginVersion  : LongInt;               // Plugin Version
     numElements    : LongInt;               // Number of Programs (Bank) or Parameters (Program)
     future         : array[0..47] of AnsiChar;
   end;

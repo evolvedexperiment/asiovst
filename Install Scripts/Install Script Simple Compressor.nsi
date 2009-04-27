@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\SimpleCompressor.dll"
+  Delete "$INSTDIR\Simple Compressor.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

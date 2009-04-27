@@ -14,6 +14,7 @@ object VOLDataModule: TVOLDataModule
   IORatio = 1.000000000000000000
   UniqueID = 'DVOL'
   ShellPlugins = <>
+  TruncateStrings = True
   Programs = <
     item
       DisplayName = 'Init'
@@ -37,6 +38,7 @@ object VOLDataModule: TVOLDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParamChange
     end
     item
       Curve = ctLinear

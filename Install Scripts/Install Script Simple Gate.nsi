@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Simple Sampler Installer
+;Simple Gate Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Simple Sampler Installer"
-  OutFile "Simple_Sampler_Install.exe"
+  Name "Simple Gate Installer"
+  OutFile "Simple_Gate_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Simple Sampler"
+  !define PRODUCT_NAME "Simple Gate"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,34 +69,32 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Simple Sampler VST-Plugin" SecVstPlugins
+Section "Simple Gate VST-Plugin" SecVstPlugins
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\SimpleSampler.dll" "..\Bin\Simple Sampler.dll"'  
+  !system 'copy "..\Bin\SimpleGate.dll" "..\Bin\Simple Gate.dll"'  
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Simple Sampler.dll"
+  File "..\Bin\Simple Gate.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSimpleSampler.exe"
-
-
+  WriteUninstaller "$INSTDIR\UninstallSimpleGate.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Gate VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Gate VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -109,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Simple Sampler.dll"
+  Delete "$INSTDIR\Simple Gate.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

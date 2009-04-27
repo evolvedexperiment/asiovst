@@ -226,7 +226,7 @@ type
     function SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
     function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
-    function String2Parameter(const Index: Integer; const ParameterName: string): Integer;
+    function String2Parameter(const Index: Integer; var ParameterName: string): Integer;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
     function VstCanDo(const CanDoString: string): Integer;
     function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
@@ -1675,14 +1675,14 @@ end;
 procedure TCustomVstPlugIn.SetParameter(Index:Integer; Parameter: Single);
 begin
  if FVstEffect <> nil
-  then FVstEffect.setParameter(FVstEffect, Index, Parameter);
+  then FVstEffect.SetParameter(FVstEffect, Index, Parameter);
 end;
 
 function TCustomVstPlugIn.GetParameter(Index: Integer): Single;
 begin
  if FVstEffect = nil
   then result := 0
-  else result := FVstEffect.getParameter(FVstEffect, Index);
+  else result := FVstEffect.GetParameter(FVstEffect, Index);
 end;
 
 procedure TCustomVstPlugIn.SetProgram(const lValue: Integer);
@@ -2276,9 +2276,26 @@ begin
   end;
 end;
 
-function TCustomVstPlugIn.String2Parameter(const Index: Integer; const ParameterName: string): Integer;
+function TCustomVstPlugIn.String2Parameter(const Index: Integer; var ParameterName: string): Integer;
+var
+  Temp : PAnsiChar;
+const
+  Lngth = 256;
 begin
- result := VstDispatch(effString2Parameter, Index, 0, PAnsiChar(ParameterName));
+ result := 0;
+ // allocate and zero memory (256 byte, which is more than necessary, but
+ // just to be sure and in case of host ignoring the specs)
+ GetMem(Temp, Lngth);
+ try
+  FillChar(Temp^, Lngth, 0);
+  if FActive then
+   begin
+    result := VstDispatch(effString2Parameter, Index, 0, Temp);
+    ParameterName := StrPas(Temp);
+   end;
+ finally
+
+ end;
 end;
 
 function TCustomVstPlugIn.GetNumProgramCategories: Integer;
@@ -3188,14 +3205,26 @@ var
   Param          : Single;
   ChunkData      : Pointer;
   ChunkDataSize  : Integer;
+  ChunkName      : TChunkName;
   PatchChunkInfo : TVstPatchChunkInfo;
-  b              : Byte;
   UseChunk       : Boolean;
 begin
  if not assigned(FVstEffect) then exit;
- Stream.Seek(9, 0);
- Stream.Read(b, 1);
- UseChunk := (b <> $78);
+ Stream.Seek(0, soBeginning);
+
+ // read chunk magic
+ Stream.Read(ChunkName, 4);
+ assert(ChunkName = 'CcnK');
+
+ // check stream size
+ Stream.Read(ChunkDataSize, 4);
+ SwapLong(ChunkDataSize);
+ assert(ChunkDataSize + 8 <= Stream.Size);
+
+ // read fx magic
+ Stream.Read(ChunkName, 4);
+
+ UseChunk := (ChunkName[1] <> 'x');
  Stream.Seek(0, 0);
 
  if UseChunk then
@@ -3233,7 +3262,7 @@ begin
 
    // swap
    SwapLong(FXSet.fxId);
-   if FXChunkBank.fxId <> FVstEffect^.UniqueID
+   if FXSet.fxId <> FVstEffect^.UniqueID
     then raise Exception.Create(RStrBankFileNotForThisPlugin);
 
    with PatchChunkInfo do
@@ -3379,12 +3408,12 @@ begin
   with FXSet do
    begin
     chunkMagic    := 'KncC';
-    fxMagic       := 'hCBF';
+    fxMagic       := 'kCxF';
     version       := 1;
     fxID          := FVstEffect^.UniqueID;
     fxVersion     := FVstEffect^.version;
     numPrograms   := FVstEffect^.numPrograms;
-    ByteSize      := SizeOf(FXSet) - SizeOf(LongInt) + (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms;
+    ByteSize      := SizeOf(FXSet) - SizeOf(LongInt) + (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms - 8;
 
     // swap-o-matic
     SwapLong(chunkMagic);
@@ -3396,7 +3425,7 @@ begin
     SwapLong(ByteSize);
 
     Stream.WriteBuffer(FXSet, SizeOf(FXSet) - SizeOf(Single));
-    for PrgNo := 0 to numPrograms - 1 do
+    for PrgNo := 0 to Self.numPrograms - 1 do
      begin
       FXPreset := GetPreset(PrgNo);
       try

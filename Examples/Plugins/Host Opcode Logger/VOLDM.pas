@@ -11,6 +11,8 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure ParamChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
   private
     FOpcodeLog  : TStringList;
     FLastOpcode : TDispatcherOpcode;
@@ -27,7 +29,7 @@ implementation
 {$R *.DFM}
 
 uses
-  VOLGUI;
+  VOLGUI, DAV_VSTCustomModule;
 
 procedure TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
   const Index, Value: Integer; const ptr: Pointer; const opt: Single);
@@ -98,6 +100,13 @@ begin
     if CBAutoUpdates.Checked
      then MOpcodeLog.Lines.Assign(OpcodeLog);
    end;
+end;
+
+procedure TVOLDataModule.ParamChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if EditorForm is TFmVOL
+  then TFmVOL(EditorForm).UpdateParameter;
 end;
 
 procedure TVOLDataModule.VSTModuleCreate(Sender: TObject);

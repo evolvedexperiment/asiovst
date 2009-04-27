@@ -107,7 +107,7 @@ begin
  FDownsamplePow := 0;
  FDownsampleFak := 1;
  FFilterGain    := 1;
- inherited Create;
+ inherited Create(Order);
  CalculateCoefficients;
 end;
 

@@ -13,11 +13,26 @@ object FmVOL: TFmVOL
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnShow = FormShow
   DesignSize = (
     374
     277)
   PixelsPerInch = 96
   TextHeight = 13
+  object LbParameter: TLabel
+    Left = 8
+    Top = 30
+    Width = 63
+    Height = 13
+    Caption = 'Parameter 1:'
+  end
+  object LbParameterValue: TLabel
+    Left = 287
+    Top = 30
+    Width = 79
+    Height = 13
+    Caption = 'Parameter Value'
+  end
   object BtClear: TButton
     Left = 299
     Top = 0
@@ -27,21 +42,18 @@ object FmVOL: TFmVOL
     Caption = '&Clear'
     TabOrder = 1
     OnClick = BtClearClick
-    ExplicitLeft = 310
   end
   object MOpcodeLog: TMemo
     Left = 0
-    Top = 26
+    Top = 48
     Width = 374
-    Height = 251
+    Height = 229
     Align = alBottom
     Anchors = [akLeft, akTop, akRight, akBottom]
     Lines.Strings = (
       'MOpcodeLog')
     ReadOnly = True
     TabOrder = 0
-    ExplicitWidth = 354
-    ExplicitHeight = 249
   end
   object BtUpdate: TButton
     Left = 224
@@ -52,7 +64,6 @@ object FmVOL: TFmVOL
     Caption = '&Update'
     TabOrder = 2
     OnClick = BtUpdateClick
-    ExplicitLeft = 235
   end
   object CBAutoUpdates: TCheckBox
     Left = 4
@@ -61,5 +72,31 @@ object FmVOL: TFmVOL
     Height = 17
     Caption = 'Automatic Updates'
     TabOrder = 3
+  end
+  object BtSaveAs: TButton
+    Left = 149
+    Top = 0
+    Width = 75
+    Height = 25
+    Anchors = [akTop, akRight]
+    Caption = 'Save &As...'
+    TabOrder = 4
+    OnClick = BtSaveAsClick
+  end
+  object Sb1: TScrollBar
+    Left = 77
+    Top = 29
+    Width = 204
+    Height = 15
+    PageSize = 0
+    TabOrder = 5
+    OnChange = Sb1Change
+  end
+  object SaveDialog: TSaveDialog
+    DefaultExt = 'log'
+    Filter = 'Logfile (*.log)|*.log'
+    Title = 'Save As...'
+    Left = 128
+    Top = 40
   end
 end

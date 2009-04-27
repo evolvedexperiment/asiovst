@@ -255,51 +255,71 @@ end;
 
 function TVSTModuleWithPrograms.HostCallSetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- if numPrograms > 0
-  then Programs[FCurProgram].DisplayName := string(PChar(ptr));
-
  Result := 0;
+ if assigned(ptr) then
+  begin
+   if numPrograms > 0
+    then Programs[FCurProgram].DisplayName := StrPas(PChar(ptr));
+  end;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   str : string;
 begin
- if numPrograms > 0
-  then str := Programs[FCurProgram].DisplayName
-  else str := '';
-
- if FTruncateStrings and (Length(str) > 24)
-  then SetLength(str, 24);
- StrPCopy(ptr, str);
  Result := 0;
+
+ if assigned(ptr) then
+  begin
+   if numPrograms > 0
+    then str := Programs[FCurProgram].DisplayName
+    else str := '';
+   if FTruncateStrings and (Length(str) > 24)
+    then SetLength(str, 24);
+   StrPCopy(ptr, str);
+  end;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetParamLabel(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   str : string;
 begin
- Str := ParameterLabel[Index];
- StrPCopy(ptr, str);
  Result := 0;
+ if assigned(ptr) then
+  begin
+   Str := ParameterLabel[Index];
+   if FTruncateStrings and (Length(str) > 8)
+    then SetLength(str, 8);
+   StrPCopy(ptr, str);
+  end;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetParamDisplay(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   str : string;
 begin
- str := ParameterDisplay[Index];
- StrPCopy(ptr, str);
  Result := 0;
+ if assigned(ptr) then
+  begin
+   str := ParameterDisplay[Index];
+   if FTruncateStrings and (Length(str) > 8)
+    then SetLength(str, 8);
+   StrPCopy(ptr, str);
+  end;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetParamName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
   str : string;
 begin
- str := ParameterName[Index];
- StrPCopy(ptr, str);
  Result := 0;
+ if assigned(ptr) then
+  begin
+   str := ParameterName[Index];
+   if FTruncateStrings and (Length(str) > 8)
+    then SetLength(str, 8);
+   StrPCopy(ptr, str);
+  end;
 end;
 
 function TVSTModuleWithPrograms.HostCallEditOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -333,7 +353,7 @@ var
   tmps : TMemoryStream;
 begin
  Result := 0;
- if (numPrograms <= 0) then Exit;
+ if (numPrograms <= 0) or (ptr = nil) then Exit;
 
  if Index <> 0 then
   with Programs[FCurProgram] do
@@ -370,7 +390,7 @@ var
   pb : pbyte;
 begin
  Result := 0;
- if (numPrograms <= 0) then Exit;
+ if (numPrograms <= 0) or (ptr = nil) then Exit;
  if Index <> 0 then
   with Programs[FCurProgram] do
    begin
@@ -416,15 +436,15 @@ var
   tmp : string;
   val : Single;
 begin
- if (Index < 0) or (Index >= 0)
+ if (Index < 0) or (Index >= numParams)
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 
  with ParameterProperties[Index] do
   begin
    Result := Integer(assigned(OnStringToParameterDisplay) or FUseDefaultStr2Param);
-   if Ptr <> nil then
+   if assigned(Ptr) then
     begin
-     tmp := StrPas(pchar(ptr));
+     tmp := StrPas(PChar(ptr));
      if FUseDefaultStr2Param then
       try
        Parameter[Index] := StrToFloat(tmp);
@@ -492,7 +512,7 @@ var
   str : string;
 begin
  Result := 0;
- if (Index < FEffect.numPrograms) and not (Index < 0) then
+ if (Index in [0..FEffect.numPrograms]) and (Value = -1) and assigned(Ptr) then
   begin
    str := Programs[Index].DisplayName;
    if FTruncateStrings and (Length(str) > 24)
@@ -508,7 +528,7 @@ var
   str : string;
 begin
   Result := Integer(ParameterProperties[Index].ReportVST2Properties);
-  if Result > 0 then
+  if (Result > 0) and assigned(ptr) then
    with PVstParameterPropertyRecord(ptr)^ do
     begin
      // copy display name
@@ -583,20 +603,30 @@ end;
 
 function TVSTModuleWithPrograms.HostCallBeginLoadBank(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- if PVstPatchChunkInfo(ptr)^.pluginUniqueID <> FEffect.uniqueID
-  then Result := -1
-  else Result := 0;
+ Result := 0;
+ if assigned(ptr) then
+  begin
+   if PVstPatchChunkInfo(ptr)^.pluginUniqueID <> FEffect.uniqueID
+    then Result := -1
+    else Result :=  1;
 
- if Assigned(FOnBeginLoadBank) then FOnBeginLoadBank(Self, PVstPatchChunkInfo(ptr)^)
+   if Assigned(FOnBeginLoadBank)
+    then FOnBeginLoadBank(Self, PVstPatchChunkInfo(ptr)^)
+  end;
 end;
 
 function TVSTModuleWithPrograms.HostCallBeginLoadProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- if PVstPatchChunkInfo(ptr)^.pluginUniqueID <> FEffect.uniqueID
-  then Result := -1
-  else Result := 0;
+ Result := 0;
+ if assigned(ptr) then
+  begin
+   if PVstPatchChunkInfo(ptr)^.pluginUniqueID <> FEffect.uniqueID
+    then Result := -1
+    else Result :=  1;
 
- if Assigned(FOnBeginLoadProgram) then FOnBeginLoadProgram(Self, PVstPatchChunkInfo(ptr)^)
+   if Assigned(FOnBeginLoadProgram)
+    then FOnBeginLoadProgram(Self, PVstPatchChunkInfo(ptr)^)
+  end;
 end;
 
 
@@ -609,7 +639,7 @@ end;
 
 procedure TVSTModuleWithPrograms.SetNumPrograms(const Value: Integer);
 begin
- if Assigned(fVstPrograms)
+ if Assigned(FVstPrograms)
   then FEffect.numPrograms := FVstPrograms.Count
   else FEffect.numPrograms := 0;
 end;

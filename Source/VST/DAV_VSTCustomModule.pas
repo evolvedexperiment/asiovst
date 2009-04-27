@@ -12,26 +12,27 @@ uses
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
 
-  TProcessAudioEvent     = procedure(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer) of object;
-  TProcessDoubleEvent    = procedure(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
-  TGetVUEvent            = procedure(var VU: Single) of object;
-  TBlockSizeChangeEvent  = procedure(Sender: TObject; const BlockSize: Integer) of object;
-  TSampleRateChangeEvent = procedure(Sender: TObject; const SampleRate: Single) of object;
-  TOnDispatcherEvent     = procedure(Sender: TObject; const opCode: TDispatcherOpcode) of object;
-  TOfflineNotifyEvent    = procedure(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean) of object;
-  TOfflinePrepareEvent   = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
-  TOfflineRunEvent       = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
-  TVSTKeyEvent           = procedure(Sender: TObject; var keyCode : TVstKeyCode) of object;
-  TProcessVarIOEvent     = procedure(Sender: TObject; const varIo: TVstVariableIo) of object;
-  TInOutConnectedEvent   = procedure(Sender: TObject; const Index: Integer; const State: Boolean) of object;
-  TSetKnobModeEvent      = procedure(Sender: TObject; val: Integer) of object;
-  TSoftBypassEvent       = procedure(Sender: TObject; const isBypass: Boolean) of object;
-  TOnSetPanLawEvent      = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
-  TGetEditorEvent        = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
-  TOnVendorSpecificEvent = function(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: pointer; const floatArg: Single): Integer of object;
-  TOnCanDoEvent          = function(Sender: TObject; const CanDoText: string): Integer of object;
-  TOnCheckKey            = function(Sender: TObject; Key: Char): Boolean of object;
-  TOnEditClose           = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
+  TProcessAudioEvent       = procedure(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer) of object;
+  TProcessDoubleEvent      = procedure(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer) of object;
+  TGetVUEvent              = procedure(var VU: Single) of object;
+  TBlockSizeChangeEvent    = procedure(Sender: TObject; const BlockSize: Integer) of object;
+  TSampleRateChangeEvent   = procedure(Sender: TObject; const SampleRate: Single) of object;
+  TOnDispatcherEvent       = procedure(Sender: TObject; const opCode: TDispatcherOpcode) of object;
+  TOfflineNotifyEvent      = procedure(Sender: TObject; const AudioFile: TVstAudioFile; const numAudioFiles: Integer; const start: Boolean) of object;
+  TOfflinePrepareEvent     = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
+  TOfflineRunEvent         = procedure(Sender: TObject; const OfflineTasks: array of TVstOfflineTask) of object;
+  TSpeakerArrangementEvent = procedure(Sender: TObject; const Input, Output: TVstSpeakerArrangement) of object;
+  TVSTKeyEvent             = procedure(Sender: TObject; var keyCode : TVstKeyCode) of object;
+  TProcessVarIOEvent       = procedure(Sender: TObject; const varIo: TVstVariableIo) of object;
+  TInOutConnectedEvent     = procedure(Sender: TObject; const Index: Integer; const State: Boolean) of object;
+  TSetKnobModeEvent        = procedure(Sender: TObject; val: Integer) of object;
+  TSoftBypassEvent         = procedure(Sender: TObject; const isBypass: Boolean) of object;
+  TOnSetPanLawEvent        = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
+  TGetEditorEvent          = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
+  TOnVendorSpecificEvent   = function(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: pointer; const floatArg: Single): Integer of object;
+  TOnCanDoEvent            = function(Sender: TObject; const CanDoText: string): Integer of object;
+  TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;
+  TOnEditClose             = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
 
   TOnGetChannelPropertiesEvent = function(Sender: TObject; const Index: Integer; var vLabel: ShortString; var shortLabel: ShortString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean of object;
 
@@ -79,6 +80,7 @@ type
     FOnCheckKey             : TOnCheckKey;
     FVstShellPlugins        : TCustomVstShellPlugins;
     FCurrentVstShellPlugin  : Integer;
+    FOnSpeakerArrangementChanged: TSpeakerArrangementEvent;
     {$IFDEF Debug}
     FLog                    : TStringList;
     FTmStmp                 : TDateTime;
@@ -190,12 +192,14 @@ type
     function HostCallSetTotalSampleToProcess   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallSetPanLaw                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallSetProcessPrecision       (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetSpeakerArrangement     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
 
     function GetSpeakerArrangement(var InputArrangement, OutputArrangement: PVstSpeakerArrangement): Boolean; virtual;
     function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
     function DeallocateArrangement(var Arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker Arrangement
     function CopySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker Properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
     function MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same Values as "from" ones ("from" must exist).
+    procedure SetSpeakerArrangement(const Input, Output: TVstSpeakerArrangement);
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -268,6 +272,7 @@ type
     property OnOfflineNotify: TOfflineNotifyEvent read FOnOfflineNotify write FOnOfflineNotify;
     property OnOfflinePrepare: TOfflinePrepareEvent read FOnOfflinePrepare write FOnOfflinePrepare;
     property OnOfflineRun: TOfflineRunEvent read FOnOfflineRun write FOnOfflineRun;
+    property OnSpeakerArrangementChanged: TSpeakerArrangementEvent read FOnSpeakerArrangementChanged write FOnSpeakerArrangementChanged;
     property OnProcessVarIO: TProcessVarIOEvent read FOnProcessVarIO write FOnProcessVarIO;
     property OnSetPanLaw: TOnSetPanLawEvent read FOnSetPanLaw write FOnSetPanLaw;
     property OnVendorSpecific: TOnVendorSpecificEvent read FOnVendorSpecific write FOnVendorSpecific;
@@ -497,23 +502,30 @@ end;
 function TCustomVSTModule.HostCallEditGetRect(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallEditGetRect'); {$ENDIF}
- PPERect(ptr)^ := @FEditorRect;
- FEditorRect.top := 0;
- FEditorRect.left := 0;
-
- if Assigned(FEditorForm) then
+ Result := 0;
+ if assigned(ptr) then
   begin
-   FEditorRect.bottom := FEditorForm.ClientHeight;
-   FEditorRect.right := FEditorForm.ClientWidth;
-   Result := 1;
-  end else Result := 0;
+   PPERect(ptr)^ := @FEditorRect;
+   if assigned(ptr) then
+    begin
+     FEditorRect.Top := 0;
+     FEditorRect.Left := 0;
+
+     if Assigned(FEditorForm) then
+      begin
+       FEditorRect.Bottom := FEditorForm.ClientHeight;
+       FEditorRect.Right := FEditorForm.ClientWidth;
+       Result := 1;
+      end;
+    end;
+  end;
 end;
 
 function TCustomVSTModule.HostCallEditOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallEditOpen'); {$ENDIF}
  Result := 0;
- if (effFlagsHasEditor in FEffect.EffectFlags) then
+ if (effFlagsHasEditor in FEffect.EffectFlags) and assigned(ptr) then
   begin
    if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm, THandle(ptr));
    if Assigned(FEditorForm) then
@@ -618,8 +630,12 @@ begin
      then Result := Integer(FOnGetInputProperties(Self, Index, str1, str2, sat, cpf))
      else Result := 1;
 
-    StrPCopy(Caption, str1); // set name of input channel:
-    StrPCopy(ShortLabel, str2); // set name of input channel:
+    // set caption of input channel
+    StrPCopy(@Caption, str1);
+
+    // set short label of input channel
+    StrPCopy(@ShortLabel, str2);
+
     if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
     if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
     if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
@@ -647,8 +663,12 @@ begin
      then Result := Integer(FOnGetOutputProperties(Self, index, str1, str2, sat, cpf))
      else Result := 1;
 
-    StrPCopy(Caption, str1); // set name of input channel:
-    StrPCopy(shortLabel, str2); // set name of input channel:
+    // set caption of output channel
+    StrPCopy(@Caption, str1);
+
+    // set short label of output channel
+    StrPCopy(@shortLabel, str2);
+     
     if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
     if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
     if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
@@ -764,24 +784,36 @@ end;
 function TCustomVSTModule.HostCallGetEffectName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetEffectName'); {$ENDIF}
- StrPCopy(ptr, FEffectName);
- Result := 1;
+ Result := 0;
+ if Assigned(ptr) then
+  begin
+   StrPCopy(ptr, FEffectName);
+   Result := 1;
+  end;
 end;
 
 function TCustomVSTModule.HostCallGetVendorString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetVendorString'); {$ENDIF}
- StrPCopy(ptr, FVendorName);
- Result := 1;
+ Result := 0;
+ if Assigned(ptr) then
+  begin
+   StrPCopy(ptr, FVendorName);
+   Result := 1;
+  end;
 end;
 
 function TCustomVSTModule.HostCallGetProductString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallGetProductString'); {$ENDIF}
- if FProductName <> ''
-  then StrPCopy(ptr, FProductName)
-  else StrPCopy(ptr, FEffectName);
- Result := 1;
+ Result := 0;
+ if Assigned(ptr) then
+  begin
+   if FProductName <> ''
+    then StrPCopy(ptr, FProductName)
+    else StrPCopy(ptr, FEffectName);
+   Result := 1;
+  end;
 end;
 
 function TCustomVSTModule.HostCallGetVendorVersion(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -967,7 +999,7 @@ end;
 function TCustomVSTModule.HostCallShellGetNextPlugin(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
- if FCurrentVstShellPlugin < FVstShellPlugins.Count then
+ if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and assigned(Ptr) then
   begin
    StrPCopy(PAnsiChar(Ptr), FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
    Result := Integer(FVstShellPlugins[FCurrentVstShellPlugin].UniqueID);
@@ -1211,7 +1243,8 @@ begin
 end;
 
 function TCustomVSTModule.MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean;
-var i: Integer;
+var
+  i: Integer;
 begin
  if matchFrom = nil then Result := False else
  if not deallocateArrangement(matchTo) or
@@ -1232,6 +1265,22 @@ begin
    end;
 end;
 
+procedure TCustomVSTModule.SetSpeakerArrangement(const Input, Output: TVstSpeakerArrangement);
+begin
+ if assigned(FOnSpeakerArrangementChanged)
+  then FOnSpeakerArrangementChanged(Self, Input, Output);
+end;
+
+function TCustomVSTModule.HostCallSetSpeakerArrangement(const Index,
+  Value: Integer; const ptr: pointer; const opt: Single): Integer;
+begin
+ result := 0;
+ if assigned(ptr) and (Value <> 0) then
+  begin
+   SetSpeakerArrangement(PVstSpeakerArrangement(Value)^, PVstSpeakerArrangement(Ptr)^);
+   result := 1;
+  end;
+end;
 
 procedure TCustomVSTModule.BlockSizeChanged;
 begin

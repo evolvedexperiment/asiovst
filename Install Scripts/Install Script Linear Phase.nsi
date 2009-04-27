@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Simple Sampler Installer
+;Linear Phase Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Simple Sampler Installer"
-  OutFile "Simple_Sampler_Install.exe"
+  Name "Linear Phase Installer"
+  OutFile "Linear_Phase_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Simple Sampler"
+  !define PRODUCT_NAME "Linear Phase"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,38 +69,38 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "Simple Sampler VST-Plugin" SecVstPlugins
+Section "Linear Phase VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\SimpleSampler.dll" "..\Bin\Simple Sampler.dll"'  
+  !system 'copy "..\Bin\LinearPhaseLP.dll" "..\Bin\Linear Phase LP.dll"'  
+  !system 'copy "..\Bin\LinearPhaseHP.dll" "..\Bin\Linear Phase HP.dll"'  
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Simple Sampler.dll"
+  File "..\Bin\Linear Phase LP.dll"
+  File "..\Bin\Linear Phase HP.dll"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSimpleSampler.exe"
-
-
+  WriteUninstaller "$INSTDIR\UninstallLinear Phase.exe"
 SectionEnd
 
 ;--------------------------------
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Linear Phase VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Simple Sampler VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Linear Phase VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -109,7 +109,8 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Simple Sampler.dll"
+  Delete "$INSTDIR\Linear Phase LP.dll"
+  Delete "$INSTDIR\Linear Phase HP.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

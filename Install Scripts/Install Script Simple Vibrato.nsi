@@ -107,7 +107,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\SimpleVibrato.dll"
+  Delete "$INSTDIR\Simple Vibrato.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

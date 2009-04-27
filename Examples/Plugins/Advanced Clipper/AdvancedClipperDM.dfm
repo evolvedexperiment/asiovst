@@ -1,6 +1,6 @@
 object AdvancedClipperDataModule: TAdvancedClipperDataModule
   OldCreateOrder = False
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Advanced Clipper'
   ProductName = 'DAV effect examples'
@@ -12,6 +12,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   IORatio = 1.000000000000000000
   UniqueID = 'AdCr'
   ShellPlugins = <>
+  TruncateStrings = True
   Programs = <
     item
       DisplayName = 'Default'
@@ -61,6 +62,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 6
       Min = -6.000000000000000000
       MinInteger = -6
+      ReportVST2Properties = True
       ShortLabel = 'InGain'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -80,6 +82,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 16
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -97,6 +100,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       LargeStepInteger = 2
       Max = 64.000000000000000000
       MaxInteger = 64
+      ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -112,6 +116,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Bw'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -131,6 +136,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 16
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Factor'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -148,6 +154,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       LargeStepInteger = 2
       Max = 64.000000000000000000
       MaxInteger = 64
+      ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -163,6 +170,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Bw'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -181,6 +189,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       MaxInteger = 6
       Min = -6.000000000000000000
       MinInteger = -6
+      ReportVST2Properties = True
       ShortLabel = 'OutGain'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -198,6 +207,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Hrd Clp'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
@@ -229,8 +239,8 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 218
-  Top = 81
+  Left = 348
+  Top = 80
   Height = 150
   Width = 215
 end

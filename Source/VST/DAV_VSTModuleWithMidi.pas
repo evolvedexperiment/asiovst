@@ -92,7 +92,8 @@ end;
 function TVSTModuleWithMidi.HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
- ProcessEvents(PVstEvents(ptr)^);
+ if assigned(ptr)
+  then ProcessEvents(PVstEvents(ptr)^);
 end;
 
 procedure TVSTModuleWithMidi.ProcessEvents(const Events: TVstEvents);

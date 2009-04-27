@@ -79,6 +79,7 @@ type
     property OnOfflinePrepare;
     property OnOfflineRun;
     property OnOutConnected;
+    property OnSpeakerArrangementChanged;
     property OnOutputProperties;
     property OnParameterChange;
     property OnParameterSizeFailed;
