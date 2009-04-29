@@ -216,6 +216,7 @@ type
     {$ENDIF}
   public
     property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
+    property Items; default;
   end;
 
   TAudioChannels32 = class(TCustomAudioChannels);

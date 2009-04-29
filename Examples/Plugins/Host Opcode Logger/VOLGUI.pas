@@ -14,8 +14,8 @@ type
     CBAutoUpdates: TCheckBox;
     BtSaveAs: TButton;
     SaveDialog: TSaveDialog;
-    LbParameter: TLabel;
     Sb1: TScrollBar;
+    LbParameter: TLabel;
     LbParameterValue: TLabel;
     procedure FormShow(Sender: TObject);
     procedure BtUpdateClick(Sender: TObject);

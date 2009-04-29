@@ -127,7 +127,6 @@ type
     property OnStartDrag;
 
     {$IFDEF DELPHI10_UP}
-    {$IFDEF DELPHI10_UP}
     property OnMouseEnter;
     property OnMouseLeave;
     {$ENDIF}

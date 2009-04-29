@@ -66,7 +66,7 @@ type
     function  SendVstEventsToHost(var Events: TVstEvents): Boolean;  // True: success
 
     function  GetNumAutomatableParameters: Integer; virtual;
-    procedure SetParameterAutomated(Index: Integer; const Value: Single); virtual;
+    procedure SetParameterAutomated(const Index: Integer; const Value: Single); virtual;
     function  GetParameterQuantization: Integer; virtual; // returns the Integer Value for +1.0 representation, or 1 if full single float precision is maintained in automation. parameter Index in <Value> (-1: all, any)
 
     function  GetInputLatency: Integer; virtual;
@@ -112,8 +112,8 @@ type
     // hidden, since the user should not be able to call them directly!
     function HostCallOpen                      (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
     function HostCallClose                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetProgramm               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetProgramm               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
+    function HostCallSetProgram                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
+    function HostCallGetProgram                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
     function HostCallSetProgramName            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
     function HostCallGetProgramName            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
     function HostCallGetParamLabel             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
@@ -196,6 +196,8 @@ type
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
 
     procedure HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single); virtual; abstract;
+    function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
+    procedure HostCallSetParameter(const Index: Integer; const Value: Single); virtual; abstract;
 
     function  UpdateSampleRate: Double; virtual;  // gets and returns sample rate from host (may issue setSampleRate() )
     function  UpdateBlockSize: Integer; virtual;  // same for block size
@@ -207,8 +209,6 @@ type
     destructor Destroy; override;
 
     class function GetStaticDescription: string; virtual;
-    function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
-    procedure HostCallSetParameter(const Index: Integer; const Value: Single); virtual; abstract;
 
     property Effect: PVSTEffect read GetEffect;
     property AudioMaster: TAudioMasterCallbackFunc read FAudioMaster write SetAudioMaster;
@@ -479,10 +479,10 @@ begin
     Result := 0;
 end;
 
-procedure TBasicVSTModule.SetParameterAutomated(Index: Integer; const Value: Single);
+procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer; const Value: Single);
 begin
-  if Assigned(FAudioMaster)
-   then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Value);
+ if Assigned(FAudioMaster)
+  then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Value);
 end;
 
 function TBasicVSTModule.GetParameterQuantization: Integer;
@@ -1006,10 +1006,10 @@ begin
  end;
 end;
 
-function TBasicVSTModule.HostCallSetProgramm(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetProgramm(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin Result := 0; end;
 
 function TBasicVSTModule.HostCallSetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -1264,8 +1264,8 @@ begin
     case OpCode of
      effOpen:                      Result := HostCallOpen(Index, Value, ptr, opt);
      effClose:                     Result := HostCallClose(Index, Value, ptr, opt);
-     effSetProgram:                Result := HostCallSetProgramm(Index, Value, ptr, opt);
-     effGetProgram:                Result := HostCallGetProgramm(Index, Value, ptr, opt);
+     effSetProgram:                Result := HostCallSetProgram(Index, Value, ptr, opt);
+     effGetProgram:                Result := HostCallGetProgram(Index, Value, ptr, opt);
      effSetProgramName:            Result := HostCallSetProgramName(Index, Value, ptr, opt);
      effGetProgramName:            Result := HostCallGetProgramName(Index, Value, ptr, opt);
      effGetParamLabel:             Result := HostCallGetParamLabel(Index, Value, ptr, opt);

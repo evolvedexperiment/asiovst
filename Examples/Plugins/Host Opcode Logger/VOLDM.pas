@@ -16,10 +16,13 @@ type
   private
     FOpcodeLog  : TStringList;
     FLastOpcode : TDispatcherOpcode;
+    procedure SyncLogDisplay;
   protected
     procedure HostCallDispatchEffect(const opcode: TDispatcherOpcode;
       const Index: Integer; const Value: Integer; const ptr: Pointer;
       const opt: Single); override;
+    procedure HostCallSetParameter(const Index: Integer; const Value: Single); override;
+    function HostCallGetParameter(const Index: Integer): Single; override;
   public
     property OpcodeLog: TStringList read FOpcodeLog;
   end;
@@ -38,6 +41,10 @@ var
   ChunkName      : TChunkName;
 begin
  inherited;
+
+ if not assigned(FOpcodeLog)
+  then exit;
+
  case Opcode of
   effOpen,
   effEditClose,
@@ -94,6 +101,38 @@ begin
  end;
  FLastOpcode := Opcode;
 
+ SyncLogDisplay;
+end;
+
+function TVOLDataModule.HostCallGetParameter(const Index: Integer): Single;
+begin
+ result := inherited HostCallGetParameter(Index);
+
+ if not assigned(FOpcodeLog)
+  then exit;
+
+ FOpcodeLog.Add('GetParameter' +
+                ' Index: ' + IntToStr(Index) +
+                ' Value: ' + FloatToStr(result));
+ SyncLogDisplay;
+end;
+
+procedure TVOLDataModule.HostCallSetParameter(const Index: Integer;
+  const Value: Single);
+begin
+ inherited;
+
+ if not assigned(FOpcodeLog)
+  then exit;
+
+ FOpcodeLog.Add('GetParameter' +
+                ' Index: ' + IntToStr(Index) +
+                ' Value: ' + FloatToStr(Value));
+ SyncLogDisplay;
+end;
+
+procedure TVOLDataModule.SyncLogDisplay;
+begin
  if EditorForm is TFmVOL then
   with TFmVOL(EditorForm) do
    begin

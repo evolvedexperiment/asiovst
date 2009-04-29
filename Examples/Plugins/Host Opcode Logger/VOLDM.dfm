@@ -23,6 +23,10 @@ object VOLDataModule: TVOLDataModule
     item
       DisplayName = 'Default'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Test'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
@@ -47,12 +51,16 @@ object VOLDataModule: TVOLDataModule
       DisplayName = 'Parameter 2'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
-      Max = 1.000000000000000000
+      Max = 20.000000000000000000
+      MaxInteger = 20
+      Min = 10.000000000000000000
+      MinInteger = 10
       ReportVST2Properties = True
       ShortLabel = 'Param2'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParamChange
     end
     item
       Curve = ctLinear

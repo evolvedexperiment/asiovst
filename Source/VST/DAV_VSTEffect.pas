@@ -449,13 +449,13 @@ type
     StepFloat        : Single;
     SmallStepFloat   : Single;
     LargeStepFloat   : Single;
-    Caption          : array[0..63] of AnsiChar;
+    Caption          : array [0..63] of AnsiChar;
     Flags            : TVstParameterPropertiesFlags;
     MinInteger       : LongInt;
     MaxInteger       : LongInt;
     StepInteger      : LongInt;
     LargeStepInteger : LongInt;
-    ShortLabel       : array[0..7] of AnsiChar;   // recommended: 6 + delimiter
+    ShortLabel       : array [0..7] of AnsiChar;   // recommended: 6 + delimiter
 
     // the following are for remote controller display purposes.
     // note that the kVstParameterSupportsDisplayIndex flag must be set.
@@ -473,9 +473,45 @@ type
     Category                : SmallInt;     // 0: no category, else group index + 1
     numParametersInCategory : SmallInt;
     Reserved                : SmallInt;
-    CategoryLabel           : array[0..23] of AnsiChar; // for instance, "Osc 1"
-    Future                  : array[0..15] of AnsiChar;
+    CategoryLabel           : array [0..23] of AnsiChar; // for instance, "Osc 1"
+    Future                  : array [0..15] of AnsiChar;
   end;
+
+  TVstSpeakerArrangementType = (
+    {$IFDEF DELPHI6_UP}
+    satUserDefined     = -2,
+    satEmpty           = -1,
+    {$ENDIF}
+    satMono            {$IFDEF DELPHI6_UP} =  0 {$ENDIF},  // M
+    satStereo          {$IFDEF DELPHI6_UP} =  1 {$ENDIF},  // L R
+    satStereoSurround  {$IFDEF DELPHI6_UP} =  2 {$ENDIF},  // Ls Rs
+    satStereoCenter    {$IFDEF DELPHI6_UP} =  3 {$ENDIF},  // Lc Rc
+    satStereoSide      {$IFDEF DELPHI6_UP} =  4 {$ENDIF},  // Sl Sr
+    satStereoCLfe      {$IFDEF DELPHI6_UP} =  5 {$ENDIF},  // C Lfe
+    sat30Cine          {$IFDEF DELPHI6_UP} =  6 {$ENDIF},  // L R C
+    sat30Music         {$IFDEF DELPHI6_UP} =  7 {$ENDIF},  // L R S
+    sat31Cine          {$IFDEF DELPHI6_UP} =  8 {$ENDIF},  // L R C Lfe
+    sat31Music         {$IFDEF DELPHI6_UP} =  9 {$ENDIF},  // L R Lfe S
+    sat40Cine          {$IFDEF DELPHI6_UP} = 10 {$ENDIF},  // L R C   S (LCRS)
+    sat40Music         {$IFDEF DELPHI6_UP} = 11 {$ENDIF},  // L R Ls  Rs (Quadro)
+    sat41Cine          {$IFDEF DELPHI6_UP} = 12 {$ENDIF},  // L R C   Lfe S (LCRS+Lfe)
+    sat41Music         {$IFDEF DELPHI6_UP} = 13 {$ENDIF},  // L R Lfe Ls Rs (Quadro+Lfe)
+    sat50              {$IFDEF DELPHI6_UP} = 14 {$ENDIF},  // L R C Ls  Rs
+    sat51              {$IFDEF DELPHI6_UP} = 15 {$ENDIF},  // L R C Lfe Ls Rs
+    sat60Cine          {$IFDEF DELPHI6_UP} = 16 {$ENDIF},  // L R C   Ls  Rs Cs
+    sat60Music         {$IFDEF DELPHI6_UP} = 17 {$ENDIF},  // L R Ls  Rs  Sl Sr
+    sat61Cine          {$IFDEF DELPHI6_UP} = 18 {$ENDIF},  // L R C   Lfe Ls Rs Cs
+    sat61Music         {$IFDEF DELPHI6_UP} = 19 {$ENDIF},  // L R Lfe Ls  Rs Sl Sr
+    sat70Cine          {$IFDEF DELPHI6_UP} = 20 {$ENDIF},  // L R C Ls  Rs Lc Rc
+    sat70Music         {$IFDEF DELPHI6_UP} = 21 {$ENDIF},  // L R C Ls  Rs Sl Sr
+    sat71Cine          {$IFDEF DELPHI6_UP} = 22 {$ENDIF},  // L R C Lfe Ls Rs Lc Rc
+    sat71Music         {$IFDEF DELPHI6_UP} = 23 {$ENDIF},  // L R C Lfe Ls Rs Sl Sr
+    sat80Cine          {$IFDEF DELPHI6_UP} = 24 {$ENDIF},  // L R C Ls  Rs Lc Rc Cs
+    sat80Music         {$IFDEF DELPHI6_UP} = 25 {$ENDIF},  // L R C Ls  Rs Cs Sl Sr
+    sat81Cine          {$IFDEF DELPHI6_UP} = 26 {$ENDIF},  // L R C Lfe Ls Rs Lc Rc Cs
+    sat81Music         {$IFDEF DELPHI6_UP} = 27 {$ENDIF},  // L R C Lfe Ls Rs Cs Sl Sr
+    sat102             {$IFDEF DELPHI6_UP} = 28 {$ENDIF},  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2
+    satNumSpeakerArr   {$IFDEF DELPHI6_UP} = 29 {$ENDIF});
 
   TVstPinPropertiesFlag = (vppIsActive, vppIsStereo, vppUseSpeaker);
   TVstPinPropertiesFlags = set of TVstPinPropertiesFlag;
@@ -484,7 +520,7 @@ type
   TVstPinProperties = packed record
     Caption         : array[0..63] of AnsiChar;
     Flags           : TVstPinPropertiesFlags;  // see pin properties flags
-    ArrangementType : LongInt;
+    ArrangementType : TVstSpeakerArrangementType;
     ShortLabel      : array[0..7] of AnsiChar; // recommended: 6 + delimiter
     Future          : array[0..47] of Byte;
   end;
@@ -621,46 +657,10 @@ type
 
   PVstSpeakerArrangement = ^TVstSpeakerArrangement;
   TVstSpeakerArrangement = record
-    vType       : LongInt;                               // (was float lfeGain) LFE channel gain is adjusted [dB] higher than other channels)
-    numChannels : LongInt;                               // number of channels in this speaker arrangement
-    Speakers    : array[0..7] of TVstSpeakerProperties;  // variable
+    ArrangementType : TVstSpeakerArrangementType;           // (was float lfeGain) LFE channel gain is adjusted [dB] higher than other channels)
+    numChannels     : LongInt;                              // number of channels in this speaker arrangement
+    Speakers        : array[0..7] of TVstSpeakerProperties; // variable
   end;
-
-  TVstSpeakerArrangementType = (
-    {$IFDEF DELPHI6_UP}
-    satUserDefined     = -2,
-    satEmpty           = -1,
-    {$ENDIF}
-    satMono            {$IFDEF DELPHI6_UP} =  0 {$ENDIF},  // M
-    satStereo          {$IFDEF DELPHI6_UP} =  1 {$ENDIF},  // L R
-    satStereoSurround  {$IFDEF DELPHI6_UP} =  2 {$ENDIF},  // Ls Rs
-    satStereoCenter    {$IFDEF DELPHI6_UP} =  3 {$ENDIF},  // Lc Rc
-    satStereoSide      {$IFDEF DELPHI6_UP} =  4 {$ENDIF},  // Sl Sr
-    satStereoCLfe      {$IFDEF DELPHI6_UP} =  5 {$ENDIF},  // C Lfe
-    sat30Cine          {$IFDEF DELPHI6_UP} =  6 {$ENDIF},  // L R C
-    sat30Music         {$IFDEF DELPHI6_UP} =  7 {$ENDIF},  // L R S
-    sat31Cine          {$IFDEF DELPHI6_UP} =  8 {$ENDIF},  // L R C Lfe
-    sat31Music         {$IFDEF DELPHI6_UP} =  9 {$ENDIF},  // L R Lfe S
-    sat40Cine          {$IFDEF DELPHI6_UP} = 10 {$ENDIF},  // L R C   S (LCRS)
-    sat40Music         {$IFDEF DELPHI6_UP} = 11 {$ENDIF},  // L R Ls  Rs (Quadro)
-    sat41Cine          {$IFDEF DELPHI6_UP} = 12 {$ENDIF},  // L R C   Lfe S (LCRS+Lfe)
-    sat41Music         {$IFDEF DELPHI6_UP} = 13 {$ENDIF},  // L R Lfe Ls Rs (Quadro+Lfe)
-    sat50              {$IFDEF DELPHI6_UP} = 14 {$ENDIF},  // L R C Ls  Rs
-    sat51              {$IFDEF DELPHI6_UP} = 15 {$ENDIF},  // L R C Lfe Ls Rs
-    sat60Cine          {$IFDEF DELPHI6_UP} = 16 {$ENDIF},  // L R C   Ls  Rs Cs
-    sat60Music         {$IFDEF DELPHI6_UP} = 17 {$ENDIF},  // L R Ls  Rs  Sl Sr
-    sat61Cine          {$IFDEF DELPHI6_UP} = 18 {$ENDIF},  // L R C   Lfe Ls Rs Cs
-    sat61Music         {$IFDEF DELPHI6_UP} = 19 {$ENDIF},  // L R Lfe Ls  Rs Sl Sr
-    sat70Cine          {$IFDEF DELPHI6_UP} = 20 {$ENDIF},  // L R C Ls  Rs Lc Rc
-    sat70Music         {$IFDEF DELPHI6_UP} = 21 {$ENDIF},  // L R C Ls  Rs Sl Sr
-    sat71Cine          {$IFDEF DELPHI6_UP} = 22 {$ENDIF},  // L R C Lfe Ls Rs Lc Rc
-    sat71Music         {$IFDEF DELPHI6_UP} = 23 {$ENDIF},  // L R C Lfe Ls Rs Sl Sr
-    sat80Cine          {$IFDEF DELPHI6_UP} = 24 {$ENDIF},  // L R C Ls  Rs Lc Rc Cs
-    sat80Music         {$IFDEF DELPHI6_UP} = 25 {$ENDIF},  // L R C Ls  Rs Cs Sl Sr
-    sat81Cine          {$IFDEF DELPHI6_UP} = 26 {$ENDIF},  // L R C Lfe Ls Rs Lc Rc Cs
-    sat81Music         {$IFDEF DELPHI6_UP} = 27 {$ENDIF},  // L R C Lfe Ls Rs Cs Sl Sr
-    sat102             {$IFDEF DELPHI6_UP} = 28 {$ENDIF},  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2
-    satNumSpeakerArr   {$IFDEF DELPHI6_UP} = 29 {$ENDIF});
 
   TVstOfflineTaskFlag = (
     votUnvalidParameter,

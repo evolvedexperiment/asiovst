@@ -88,7 +88,10 @@ object FmVOL: TFmVOL
     Top = 29
     Width = 204
     Height = 15
+    Max = 2000
+    Min = 1000
     PageSize = 0
+    Position = 1000
     TabOrder = 5
     OnChange = Sb1Change
   end

@@ -34,7 +34,7 @@ type
   TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;
   TOnEditClose             = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
 
-  TOnGetChannelPropertiesEvent = function(Sender: TObject; const Index: Integer; var vLabel: ShortString; var shortLabel: ShortString; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean of object;
+  TOnGetChannelPropertiesEvent = function(Sender: TObject; const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean of object;
 
   TCustomVSTModule = class(TBasicVSTModule)
   private
@@ -198,7 +198,7 @@ type
     function AllocateArrangement(var Arrangement: PVstSpeakerArrangement; nbChannels: Integer): Boolean; virtual;   // Allocate memory for a VstSpeakerArrangement containing the given number of channels
     function DeallocateArrangement(var Arrangement: PVstSpeakerArrangement): Boolean; virtual;                      // Delete/free memory for a speaker Arrangement
     function CopySpeaker(copyTo, copyFrom: PVstSpeakerProperties): Boolean; virtual;    // Feed the "to" speaker Properties with the same Values than "from"'s ones. It is assumed here that "to" exists yet, ie this function won't allocate memory for the speaker (this will prevent from having a difference between an Arrangement's number of channels and its actual speakers...)
-    function MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same Values as "from" ones ("from" must exist).
+    function MatchArrangement(var MatchTo, MatchFrom: PVstSpeakerArrangement): Boolean; virtual;    // "to" is deleted, then created and initialized with the same Values as "from" ones ("from" must exist).
     procedure SetSpeakerArrangement(const Input, Output: TVstSpeakerArrangement);
   public
     constructor Create(AOwner: TComponent); override;
@@ -613,7 +613,6 @@ function TCustomVSTModule.HostCallGetInputProperties(const Index, Value: Integer
 var
   str1  : string[63];
   str2  : string[7];
-  sat   : TVstSpeakerArrangementType;
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
@@ -623,22 +622,22 @@ begin
    begin
     str1 := 'Input #' + IntToStr(Index + 1);
     str2 := 'In' + IntToStr(Index + 1);
-    sat := satStereo;
-    cpf := [vppIsActive, vppIsStereo];
 
-    if Assigned(FOnGetInputProperties)
-     then Result := Integer(FOnGetInputProperties(Self, Index, str1, str2, sat, cpf))
-     else Result := 1;
-
-    // set caption of input channel
-    StrPCopy(@Caption, str1);
-
-    // set short label of input channel
-    StrPCopy(@ShortLabel, str2);
+    case numInputs of
+     1: ArrangementType := satMono;
+     2: ArrangementType := satStereo;
+     4: ArrangementType := sat40Music;
+    end;
+    cpf := [vppIsActive];
+    if numInputs = 2 then cpf := cpf + [vppIsStereo];
 
     if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
     if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
     if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
+
+    if Assigned(FOnGetInputProperties)
+     then Result := Integer(FOnGetInputProperties(Self, Index, PVstPinProperties(ptr)^))
+     else Result := 1;
   end;
 end;
 
@@ -646,7 +645,6 @@ function TCustomVSTModule.HostCallGetOutputProperties(const Index, Value: Intege
 var
   str1  : string[63];
   str2  : string[7];
-  sat   : TVSTSpeakerArrangementType;
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
@@ -656,22 +654,22 @@ begin
    begin
     str1 := 'Output #' + IntToStr(Index + 1);
     str2 := 'Out' + IntToStr(Index + 1);
-    sat := satStereo;
-    cpf := [vppIsActive, vppIsStereo];
 
-    if Assigned(FOnGetOutputProperties)
-     then Result := Integer(FOnGetOutputProperties(Self, index, str1, str2, sat, cpf))
-     else Result := 1;
+    case numOutputs of
+     1: ArrangementType := satMono;
+     2: ArrangementType := satStereo;
+     4: ArrangementType := sat40Music;
+    end;
+    cpf := [vppIsActive];
+    if numOutputs = 2 then cpf := cpf + [vppIsStereo];
 
-    // set caption of output channel
-    StrPCopy(@Caption, str1);
-
-    // set short label of output channel
-    StrPCopy(@shortLabel, str2);
-     
     if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
     if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
     if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
+
+    if Assigned(FOnGetOutputProperties)
+     then Result := Integer(FOnGetOutputProperties(Self, index, PVstPinProperties(ptr)^))
+     else Result := 1;
    end;
 end;
 
@@ -1001,7 +999,7 @@ begin
  {$IFDEF Debug} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
  if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and assigned(Ptr) then
   begin
-   StrPCopy(PAnsiChar(Ptr), FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
+   StrPCopy(Ptr, FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
    Result := Integer(FVstShellPlugins[FCurrentVstShellPlugin].UniqueID);
    Inc(FCurrentVstShellPlugin);
   end
@@ -1226,36 +1224,28 @@ begin
   // allocate memory for the speaker (this will prevent from having
   // a difference between an Arrangement's number of channels and
   // its actual speakers...)
- if (copyFrom = nil) or (copyTo = nil) then
-  begin
-   Result := False;
-   Exit;
-  end;
+ Result := False;
+ if (copyFrom = nil) or (copyTo = nil)
+  then Exit;
 
- StrCopy(copyTo^.name, copyFrom^.name);
- copyTo^.vType := copyFrom^.vType;
- copyTo^.Azimuth := copyFrom^.Azimuth;
- copyTo^.Elevation := copyFrom^.Elevation;
- copyTo^.Radius := copyFrom^.Radius;
- copyTo^.Reserved := copyFrom^.Reserved;
- Move(copyTo^.Future, copyFrom^.future, 28);
+ copyTo^ := copyFrom^;
  Result := True;
 end;
 
-function TCustomVSTModule.MatchArrangement(var matchTo: PVstSpeakerArrangement; matchFrom: PVstSpeakerArrangement): Boolean;
+function TCustomVSTModule.MatchArrangement(var MatchTo, MatchFrom: PVstSpeakerArrangement): Boolean;
 var
   i: Integer;
 begin
  if matchFrom = nil then Result := False else
- if not deallocateArrangement(matchTo) or
-    not allocateArrangement(matchTo, matchFrom^.numChannels)
+ if not DeallocateArrangement(matchTo) or
+    not AllocateArrangement(matchTo, matchFrom^.numChannels)
   then Result := False
   else
    begin
-    matchTo^.vType := matchFrom^.vType;
-    for i := 0 to matchTo^.numChannels-1 do
+    matchTo^.ArrangementType := matchFrom^.ArrangementType;
+    for i := 0 to matchTo^.numChannels - 1 do
      begin
-      if not copySpeaker(@(matchTo^.speakers[i]), @(matchFrom^.speakers[i])) then
+      if not CopySpeaker(@(MatchTo.speakers[i]), @(matchFrom^.speakers[i])) then
        begin
         Result := False;
         Exit;

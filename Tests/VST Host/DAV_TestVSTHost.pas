@@ -571,7 +571,7 @@ begin
  with FVstHost[0] do
   begin
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 7984);
@@ -580,7 +580,7 @@ begin
    VstDispatch(effOpen);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 7984);
@@ -686,7 +686,7 @@ begin
    VstDispatch(effOpen);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 1024);
@@ -798,7 +798,7 @@ begin
    VstDispatch(effSetBlockSize, 0, 1024);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // open
    VstDispatch(effOpen);
@@ -844,7 +844,7 @@ begin
    VstDispatch(effOpen);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 1024);
@@ -882,7 +882,7 @@ begin
    VstDispatch(effGetPlugCategory);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // set blocksize
    VstDispatch(effSetBlockSize, 0, 256);
@@ -986,7 +986,7 @@ begin
    VstDispatch(effSetBlockSize, 0, 1024);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // open
    VstDispatch(effOpen);
@@ -1184,7 +1184,7 @@ begin
    VstDispatch(effSetBlockSize, 0, 1024);
 
    // set samplerate
-   VstDispatch(effSetSampleRate, 0, 44100);
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
 
    // open
    VstDispatch(effOpen);

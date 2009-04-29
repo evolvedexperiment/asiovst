@@ -28,7 +28,6 @@ type
     function GetParameterLabel(Index: Integer): string;
     function GetParameterName(Index: Integer): string;
   protected
-    FParameterUpdate        : Boolean;
     FUseDefaultStr2Param    : Boolean;
     FCurProgram             : Integer;
     FVstPrograms            : TCustomVstPrograms;
@@ -36,7 +35,6 @@ type
     FChunkData              : TMemoryStream;
     FParameterProperties    : TCustomVstParameterProperties;
     FParameterCategories    : TCustomVstParameterCategories;
-    FIsHostAutomation       : Boolean;
 
     FOnBeforeProgramChange  : TNotifyEvent;
     FOnAfterProgramChange   : TNotifyEvent;
@@ -60,23 +58,17 @@ type
     procedure SetCurrentProgramName(AName: string); virtual;
     procedure SetNumParams(const Value: Integer); virtual;
     procedure SetNumPrograms(const Value: Integer); virtual;
-    procedure SetParameter(const Index: Integer; Value: Single); virtual;
-    procedure SetParameterAutomated(Index: Integer; const Value: Single); override;
+    procedure SetParameterDirect(const Index: Integer; Value: Single); virtual;
+    procedure SetParameter(Index: Integer; const Value: Single); virtual;
     procedure SetProgram(const AProgramIndex: Integer); virtual;
     procedure Loaded; override;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    procedure SetProgramParameters(const ProgramIndex: Integer; Parameters: TDAVSingleDynArray); virtual;
-    procedure SetParameterCount(const Value: Integer);
 
     function  HostCallGetParameter(const Index: Integer): Single; override;
     procedure HostCallSetParameter(const Index: Integer; const Value: Single); override;
 
     function HostCallEditOpen                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallSetProgramm             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetProgramm             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallSetProgram              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallGetProgram              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallSetProgramName          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallGetProgramName          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallGetParamLabel           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
@@ -93,6 +85,12 @@ type
     function HostCallEndSetProgram           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallBeginLoadBank           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     function HostCallBeginLoadProgram        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure SetProgramParameters(const ProgramIndex: Integer; Parameters: TDAVSingleDynArray); virtual;
+    procedure SetParameterCount(const Value: Integer);
 
     property UseDefaultString2ParameterHandler: Boolean read FUseDefaultStr2Param write FUseDefaultStr2Param default False;
     property numParams: Integer read FEffect.numParams write SetNumParams stored false;
@@ -104,7 +102,7 @@ type
     property ProgramByName[ProgramName: string]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
     property ParameterCategories: TCustomVstParameterCategories read FParameterCategories write SetParameterCategories;
-    property Parameter[Index: Integer]: Single read GetParameter write SetParameterAutomated;
+    property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
     property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
 
     property ParameterName[Index: Integer]: string read GetParameterName;
@@ -143,17 +141,16 @@ begin
  FParameterProperties := TCustomVstParameterProperties.Create(Self);
  FParameterCategories := TCustomVstParameterCategories.Create(Self);
  FVstPrograms         := TCustomVstPrograms.Create(Self);
- FParameterUpdate     := False;
  FChunkData           := TMemoryStream.Create;
 end;
 
 destructor TVSTModuleWithPrograms.Destroy;
 begin
  try
-  if Assigned(FParameterProperties) then FreeAndNil(FParameterProperties);
-  if Assigned(FParameterCategories) then FreeAndNil(FParameterCategories);
-  if Assigned(FVstPrograms) then FreeAndNil(FVstPrograms);
   if Assigned(FChunkData) then FreeAndNil(FChunkData);
+  if Assigned(FVstPrograms) then FreeAndNil(FVstPrograms);
+  if Assigned(FParameterCategories) then FreeAndNil(FParameterCategories);
+  if Assigned(FParameterProperties) then FreeAndNil(FParameterProperties);
  finally
   inherited;
  end;
@@ -178,7 +175,7 @@ end;
 
 function TVSTModuleWithPrograms.GetParameterDisplay(Index: Integer): string;
 begin
- if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
+ if not (assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1]))
   then result := RStrUndefined
   else
    begin
@@ -199,7 +196,7 @@ end;
 
 function TVSTModuleWithPrograms.GetParameterLabel(Index: Integer): string;
 begin
- if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
+ if not (assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1]))
   then result := RStrUndefined
   else
    begin
@@ -213,9 +210,9 @@ end;
 
 function TVSTModuleWithPrograms.GetParameterName(Index: Integer): string;
 begin
- if (Index >= FEffect.numParams) or (Index >= FParameterProperties.Count)
-  then result := RStrUndefined
-  else result := FParameterProperties[Index].DisplayName;
+ if assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1])
+  then result := FParameterProperties[Index].DisplayName
+  else result := RStrUndefined;
 
  if FTruncateStrings and (Length(result) > 8)
   then SetLength(result, 8);
@@ -223,32 +220,27 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetParameter(const Index: Integer): Single;
 begin
- if (Index < numParams) and (Index < FParameterProperties.Count)
+ if assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1])
   then Result := Parameter2VSTParameter(GetParameter(Index), Index)
   else Result := 0;
 end;
 
 procedure TVSTModuleWithPrograms.HostCallSetParameter(const Index: Integer; const Value: Single);
 begin
- if FIsHostAutomation then exit;
-
- FIsHostAutomation := True;
- if ((Index >= numParams) or (Index >= FParameterProperties.Count)) then
+ if assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1]) then
   if Assigned(FOnParameterSizeFailed)
    then FOnParameterSizeFailed(Self) else
-  else SetParameter(Index, VSTParameter2Parameter(Value, Index));
-
- FIsHostAutomation := False;
+  else SetParameterDirect(Index, VSTParameter2Parameter(Value, Index));
 end;
 
-function TVSTModuleWithPrograms.HostCallSetProgramm(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
- if (Value < FEffect.numPrograms) and (Value >= 0) and (Value <> FCurProgram)
+ if Value in [0..numPrograms - 1]
   then CurrentProgram := Value;
  Result := 0;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetProgramm(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  Result := FCurProgram;
 end;
@@ -504,7 +496,7 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetNumProgramCategories(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
-  Result := FNumCategories;
+ Result := FNumCategories;
 end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -512,7 +504,7 @@ var
   str : string;
 begin
  Result := 0;
- if (Index in [0..FEffect.numPrograms]) and (Value = -1) and assigned(Ptr) then
+ if (Index in [0..FEffect.numPrograms - 1]) and assigned(Ptr) {and (Value = -1)} then
   begin
    str := Programs[Index].DisplayName;
    if FTruncateStrings and (Length(str) > 24)
@@ -532,11 +524,14 @@ begin
    with PVstParameterPropertyRecord(ptr)^ do
     begin
      // copy display name
-     StrCopy(Caption, @ParameterProperties[Index].DisplayName[1]);
+     str := ParameterProperties[Index].DisplayName;
+     SetLength(str, 64);
+     StrCopy(Caption, @str[1]);
 
      // copy short label
      str := ParameterProperties[Index].ShortLabel;
-     StrCopy(shortLabel, @str);
+     SetLength(str, 8);
+     StrCopy(shortLabel, @str[1]);
 
      // assign flags
      Flags := ParameterProperties[Index].Flags;
@@ -544,8 +539,8 @@ begin
      // use integer min/max
      if kVstParameterUsesIntegerMinMax in Flags then
       begin
-       minInteger       := ParameterProperties[Index].MinInteger;
-       maxInteger       := ParameterProperties[Index].MaxInteger;
+       minInteger := ParameterProperties[Index].MinInteger;
+       maxInteger := ParameterProperties[Index].MaxInteger;
       end;
 
      // use integer steps
@@ -571,7 +566,8 @@ begin
      if kVstParameterSupportsDisplayCategory in Flags then
       begin
        str := ParameterProperties[Index].Category;
-       StrCopy(CategoryLabel, @str);
+       SetLength(str, 24);
+       StrCopy(CategoryLabel, @str[1]);
        Category := ParameterProperties[Index].CategoryIndex;
        if (Category > 0) and (Category <= ParameterCategories.Count)
         then numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory
@@ -648,9 +644,11 @@ procedure TVSTModuleWithPrograms.SetProgram(const AProgramIndex: Integer);
 var
   NeedProgramUpdate: Boolean;
 begin
- if (AProgramIndex >= 0) and (AProgramIndex < FEffect.numPrograms) and (numPrograms > 0) then
+ if (numPrograms > 0) and (AProgramIndex in [0..numPrograms - 1]) and
+  (AProgramIndex <> FCurProgram) then
   begin
-   if Assigned(FOnBeforeProgramChange) then FOnBeforeProgramChange(Self);
+   if Assigned(FOnBeforeProgramChange)
+    then FOnBeforeProgramChange(Self);
    NeedProgramUpdate := FCurProgram >= 0;
    FCurProgram := AProgramIndex;
    if Assigned(FOnAfterProgramChange) then FOnAfterProgramChange(Self);
@@ -664,7 +662,7 @@ var
 begin
  try
   for i := 0 to Programs[FCurProgram].ParameterCount - 1
-   do SetParameter(i, Programs[FCurProgram].Parameter[i]);
+   do SetParameterDirect(i, Programs[FCurProgram].Parameter[i]);
  except
  end;
  FEditorNeedUpdate := True;
@@ -730,40 +728,21 @@ end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
 begin
- assert(Index >= 0);
- assert(Index < numParams);
- assert(Index < FParameterProperties.Count);
-
- if (Index >= numParams) or
-    (Index >= FParameterProperties.Count) then
-  begin
-   Result := 0;
-   Exit;
-  end;
- Result := FParameterProperties[Index].Parameter2VSTParameter(Value);
+ Result := 0;
+ if assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1])
+  then Result := FParameterProperties[Index].Parameter2VSTParameter(Value);
 end;
 
 function TVSTModuleWithPrograms.VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
 begin
- assert(Index >= 0);
- assert(Index < numParams);
- assert(Index < FParameterProperties.Count);
- Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
-end;
-
-procedure TVSTModuleWithPrograms.SetParameterAutomated(Index: Integer; const Value: Single);
-begin
- if (Index >= numParams) or (Index >= FParameterProperties.Count) then Exit;
- SetParameter(Index, Value);
- if Assigned(FParameterProperties[Index]) then
-  with FParameterProperties[Index] do
-   if CanBeAutomated and not FIsHostAutomation
-    then inherited SetParameterAutomated(Index, Parameter2VSTParameter(Value));
+ Result := 0;
+ if assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1])
+  then Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
 end;
 
 function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: string): Integer;
 begin
- if FParameterProperties.Count = 0
+ if not assigned(FParameterProperties) or (FParameterProperties.Count = 0)
   then raise Exception.Create(RStrNoParameterAvailable);
  result := 0;
  while result < FParameterProperties.Count do
@@ -792,53 +771,57 @@ begin
  Parameter[TranslateParameterNameToIndex(ParameterName)] := Value;
 end;
 
-procedure TVSTModuleWithPrograms.SetParameter(const Index: Integer; Value: Single);
-var
-  tmp: Single;
+procedure TVSTModuleWithPrograms.SetParameter(Index: Integer; const Value: Single);
 begin
- if FParameterUpdate then exit;
- FParameterUpdate := True;
- try
-  if (Index >= FEffect.numParams) or (Index < 0) or
-     (Index >= FParameterProperties.Count)
-   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
-  if (effFlagsProgramChunks in FEffect.EffectFlags)
-   then
-    begin
-     if Assigned(ParameterProperties[Index].OnParameterChange)
-      then FParameterProperties[Index].OnParameterChange(Self, Index, Value);
-     if Assigned(OnParameterChange)
-      then OnParameterChange(Self, Index, Value);
-    end
-   else
-    begin
-     if (numPrograms > 0) and (FCurProgram >= 0)
-      then
-       begin
-        Programs[FCurProgram].Parameter[Index] := Value;
+ // check parameter index is valid
+ if not (assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1]))
+  then Exit;
 
-        tmp := Programs[FCurProgram].Parameter[Index];
+ SetParameterDirect(Index, Value);
 
-        if Assigned(ParameterProperties[Index].OnParameterChange)
-         then FParameterProperties[Index].OnParameterChange(Self, Index, tmp);
-        if Assigned(OnParameterChange)
-         then OnParameterChange(Self, Index, tmp);
+ if Assigned(FParameterProperties[Index]) then
+  with FParameterProperties[Index] do
+   if CanBeAutomated
+    then SetParameterAutomated(Index, Parameter2VSTParameter(Value));
+end;
 
-        Programs[FCurProgram].Parameter[Index] := tmp;
-       end
-      else
-       begin
-        FParameter[Index] := Value;
-        if Assigned(ParameterProperties[Index].OnParameterChange)
-         then FParameterProperties[Index].OnParameterChange(Self, Index, FParameter[Index]);
-        if Assigned(OnParameterChange)
-         then OnParameterChange(Self, Index, FParameter[Index]);
-       end
-    end;
-  FEditorNeedUpdate := True;
- finally
-  FParameterUpdate := False;
- end;
+procedure TVSTModuleWithPrograms.SetParameterDirect(const Index: Integer; Value: Single);
+begin
+ if not (assigned(FParameterProperties) and (Index in [0..FParameterProperties.Count - 1]))
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+ if (effFlagsProgramChunks in FEffect.EffectFlags)
+  then
+   begin
+    if Assigned(ParameterProperties[Index].OnParameterChange)
+     then FParameterProperties[Index].OnParameterChange(Self, Index, Value);
+    if Assigned(OnParameterChange)
+     then OnParameterChange(Self, Index, Value);
+   end
+  else
+   begin
+    if (numPrograms > 0) and (FCurProgram >= 0)
+     then
+      begin
+       Programs[FCurProgram].Parameter[Index] := Value;
+       Value := Programs[FCurProgram].Parameter[Index];
+
+       if Assigned(ParameterProperties[Index].OnParameterChange)
+        then FParameterProperties[Index].OnParameterChange(Self, Index, Value);
+       if Assigned(OnParameterChange)
+        then OnParameterChange(Self, Index, Value);
+
+       Programs[FCurProgram].Parameter[Index] := Value;
+      end
+     else
+      begin
+       FParameter[Index] := Value;
+       if Assigned(ParameterProperties[Index].OnParameterChange)
+        then FParameterProperties[Index].OnParameterChange(Self, Index, FParameter[Index]);
+       if Assigned(OnParameterChange)
+        then OnParameterChange(Self, Index, FParameter[Index]);
+      end
+   end;
+ FEditorNeedUpdate := True;
 end;
 
 function TVSTModuleWithPrograms.GetParameter(Index: Integer): Single;
