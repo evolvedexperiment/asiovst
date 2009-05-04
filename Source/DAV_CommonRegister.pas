@@ -8,7 +8,7 @@ procedure Register;
 
 implementation
 
-{$IFNDEF FPC}{$R ..\Resources\DAV_CommonRegister.res}{$ENDIF}
+{$IFNDEF FPC}{$R ..\..\Resources\DAV_CommonRegister.res}{$ENDIF}
 
 uses
   {$IFDEF FPC} LResources, {$ENDIF} Classes, DAV_Common, DAV_MidiFile,
@@ -23,7 +23,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i ..\Resources\DAV_CommonRegister.lrs}
+  {-$i ..\..\Resources\DAV_CommonRegister.lrs}
 {$ENDIF}
 
 end.

@@ -159,9 +159,9 @@ end;
 
 destructor TCustomGuiAudioDataDisplay.Destroy;
 begin
+ FreeAndNil(FXAxis);
  FreeAndNil(FCursor);
  FreeAndNil(FBuffer);
- FreeAndNil(FXAxis);
  inherited;
 end;
 

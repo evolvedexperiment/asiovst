@@ -7,7 +7,8 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\..\Source\;..\..\Source\ASIO\;..\Resources\;..\..\Source\DSP\"/>
+        <IncludeFiles Value="..\..\Resources\"/>
+        <OtherUnitFiles Value="..\..\Source\;..\..\Source\ASIO\;..\..\Source\DSP\;..\..\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -99,11 +100,12 @@
         <UnitName Value="DAV_DSPUpDownsampling"/>
       </Item19>
       <Item20>
-        <Filename Value="..\Resources\DAV_DSPRegister.lrs"/>
+        <Filename Value="..\..\Resources\DAV_DSPRegister.lrs"/>
         <Type Value="LRS"/>
       </Item20>
       <Item21>
         <Filename Value="..\..\Source\DSP\DAV_DSPLFO.pas"/>
+        <UnitName Value="DAV_DSPLFO"/>
       </Item21>
     </Files>
     <Type Value="RunAndDesignTime"/>

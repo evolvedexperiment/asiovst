@@ -7,7 +7,8 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\..\Source\;..\Resources\"/>
+        <IncludeFiles Value="..\..\Resources\"/>
+        <OtherUnitFiles Value="..\..\Source\;..\..\Source\FileFormats\;..\..\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -51,11 +52,12 @@
         <UnitName Value="DAV_AudioData"/>
       </Item7>
       <Item8>
-        <Filename Value="..\Resources\DAV_CommonRegister.lrs"/>
+        <Filename Value="..\..\Resources\DAV_CommonRegister.lrs"/>
         <Type Value="LRS"/>
       </Item8>
       <Item9>
         <Filename Value="..\..\Source\DAV_Approximations.pas"/>
+        <UnitName Value="DAV_Approximations"/>
       </Item9>
       <Item10>
         <Filename Value="..\..\Source\DAV_Compiler.inc"/>

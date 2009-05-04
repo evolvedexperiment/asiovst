@@ -1,19 +1,21 @@
 library NoGUIFilter;
 
-{$I ASIOVST.INC}
+{$I DAV_Compiler.INC}
 
 uses
   Interfaces,
-  DVSTEffect,
-  DVSTModule,
+  DAV_VSTEffect,
+  DAV_VSTModule,
+  DAV_VSTParameters,
   FilterModule in 'FilterModule.pas';
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
-var VSTModule1 : TVSTFilter;
+var
+  VSTModule1 : TVSTFilter;
 begin
-  VSTModule1:=TVSTFilter.Create(nil);
-  VSTModule1.Effect^.user:=VSTModule1;
-  VSTModule1.AudioMaster:=audioMaster;
+  VSTModule1 := TVSTFilter.Create(nil);
+  VSTModule1.Effect^.user := VSTModule1;
+  VSTModule1.AudioMaster := audioMaster;
   Result := VSTModule1.Effect;
 
   with VSTModule1 do
@@ -33,7 +35,7 @@ begin
     OnProcess := VSTModuleProcess;
     OnProcessReplacing := VSTModuleProcess;
     OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
-    OnInitialize := VSTModuleInitialize;
+    OnOpen := VSTModuleOpen;
 
     with (Programs.Add) do
     begin
@@ -52,15 +54,15 @@ begin
     end;
 
     with (ParameterProperties.Add) do
-    begin
+     begin
       VSTModule := VSTModule1;
       Min := 20.0;
       Max := 20000.0;
-      Curve := ctLogarithmic;
+      Curve := ctLinear;
       DisplayName := 'Cutoff Frequency';
       Units := 'Hz';
       CurveFactor := 1000.0;
-      SmoothingFactor := 1.0;
+      SmoothingFactor := 0;
       CanBeAutomated := True;
       ReportVST2Properties := False;
       StepFloat := 100.0;
@@ -72,16 +74,16 @@ begin
       StepInteger := 100;
       LargeStepInteger := 1000;
       ShortLabel := 'Cutoff';
-      OnParameterChange := VSTFilterParameterProperties0ParameterChange;
+      OnParameterChange := VSTFilterParameterChange;
     end;
     with (ParameterProperties.Add) do
-    begin
+     begin
       Min := 0.01;
       Max := 20.0;
       Curve := ctLinear;
       DisplayName := 'Resonance';
       CurveFactor := 1.0;
-      SmoothingFactor := 1.0;
+      SmoothingFactor := 0;
       CanBeAutomated := True;
       ReportVST2Properties := False;
       StepFloat := 0.1;
@@ -94,7 +96,7 @@ begin
       LargeStepInteger := 1;
       ShortLabel := 'Res';
       VSTModule := VSTModule1;
-    end;
+     end;
     CurrentProgram := 0;
     if Assigned(OnCreate) then OnCreate(VSTModule1);
     if Assigned(OnInitialize) then OnInitialize(VSTModule1);

@@ -7,7 +7,7 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\..\Source\;..\..\Source\ASIO\;..\Resources\"/>
+        <OtherUnitFiles Value="..\..\Source\;..\..\Source\ASIO\;..\..\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -55,12 +55,12 @@
         <UnitName Value="DAV_BeRoASIO"/>
       </Item8>
       <Item9>
-        <Filename Value="..\..\Source\ASIOVST.inc"/>
-        <Type Value="Include"/>
+        <Filename Value="..\..\Resources\DAV_ASIOHostRegister.lrs"/>
+        <Type Value="LRS"/>
       </Item9>
       <Item10>
-        <Filename Value="..\Resources\DAV_ASIOHostRegister.lrs"/>
-        <Type Value="LRS"/>
+        <Filename Value="..\..\Source\DAV_Compiler.inc"/>
+        <Type Value="Include"/>
       </Item10>
     </Files>
     <Type Value="RunAndDesignTime"/>

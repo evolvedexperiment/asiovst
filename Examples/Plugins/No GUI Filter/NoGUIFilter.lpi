@@ -2,17 +2,17 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="\"/>
-    <Version Value="5"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <Runnable Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=".dll"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -36,15 +36,16 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="35">
+    <Units Count="37">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="15" Y="16"/>
-        <TopLine Value="1"/>
+        <CursorPos X="21" Y="71"/>
+        <TopLine Value="57"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="52"/>
+        <UsageCount Value="53"/>
         <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\..\Source\DVSTEffect.pas"/>
@@ -52,6 +53,7 @@
         <CursorPos X="42" Y="92"/>
         <TopLine Value="70"/>
         <UsageCount Value="12"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Source\DVSTModule.pas"/>
@@ -60,7 +62,6 @@
         <UnitName Value="DVSTModule"/>
         <CursorPos X="3" Y="3339"/>
         <TopLine Value="3337"/>
-        <EditorIndex Value="2"/>
         <UsageCount Value="18"/>
         <Bookmarks Count="4">
           <Item0 X="23" Y="993" ID="1"/>
@@ -68,7 +69,7 @@
           <Item2 X="1" Y="2267" ID="3"/>
           <Item3 X="35" Y="2419" ID="4"/>
         </Bookmarks>
-        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\DAVDCommon.pas"/>
@@ -76,6 +77,7 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\forms.pp"/>
@@ -95,13 +97,13 @@
         <Filename Value="FilterModule.pas"/>
         <ComponentName Value="VSTFilter"/>
         <HasResources Value="True"/>
-        <ResourceFilename Value="FilterModule.lrs"/>
         <UnitName Value="FilterModule"/>
-        <CursorPos X="26" Y="10"/>
-        <TopLine Value="1"/>
+        <CursorPos X="46" Y="43"/>
+        <TopLine Value="22"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="16"/>
+        <UsageCount Value="17"/>
         <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit6>
       <Unit7>
         <Filename Value="FilterModule.lfm"/>
@@ -170,6 +172,7 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\..\..\Lazarus\HostVSTLaz.pas"/>
@@ -184,6 +187,7 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\..\..\Source\DGuiBarChart.pas"/>
@@ -191,6 +195,7 @@
         <CursorPos X="1" Y="9"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\..\Source\DGuiMidiKeys.pas"/>
@@ -198,6 +203,7 @@
         <CursorPos X="1" Y="5"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\..\..\Source\DGuiStaticWaveform.pas"/>
@@ -205,6 +211,7 @@
         <CursorPos X="1" Y="4"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\..\..\Source\DGuiADSRGraph.pas"/>
@@ -212,6 +219,7 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="9"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\alllclunits.pp"/>
@@ -283,6 +291,7 @@
         <CursorPos X="17" Y="360"/>
         <TopLine Value="343"/>
         <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\classes.inc"/>
@@ -290,71 +299,91 @@
         <TopLine Value="535"/>
         <UsageCount Value="11"/>
       </Unit34>
+      <Unit35>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTOfflineTask.pas"/>
+        <UnitName Value="DAV_VSTOfflineTask"/>
+        <CursorPos X="50" Y="23"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit35>
+      <Unit36>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTParameters.pas"/>
+        <UnitName Value="DAV_VSTParameters"/>
+        <CursorPos X="23" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit36>
     </Units>
-    <JumpHistory Count="8" HistoryIndex="7">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="173" Column="28" TopLine="158"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="16" Column="15" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="447" Column="14" TopLine="430"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="17" Column="29" TopLine="2"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="630" Column="22" TopLine="613"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="7" Column="20" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="647" Column="36" TopLine="630"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="23" Column="54" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1134" Column="39" TopLine="1117"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="37" Column="3" TopLine="20"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1897" Column="23" TopLine="1880"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="64" Column="22" TopLine="55"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1235" Column="29" TopLine="1221"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="64" Column="22" TopLine="55"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\Source\DVSTModule.pas"/>
-        <Caret Line="1241" Column="57" TopLine="1221"/>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="93" Column="27" TopLine="73"/>
       </Position8>
+      <Position9>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="38" Column="5" TopLine="16"/>
+      </Position9>
+      <Position10>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position10>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
+    <Version Value="8"/>
     <PathDelim Value="\"/>
     <Target>
       <Filename Value="..\..\..\Bin\NoGUIFilter.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source\"/>
-      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Source\;..\..\..\Source\VST\;..\..\..\Source\Math\"/>
       <UnitOutputDirectory Value="..\..\..\Bin"/>
       <ObjectPath Value="..\..\Source\"/>
-      <SrcPath Value="..\..\..\Source\"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <D2Extensions Value="False"/>
+        <SyntaxMode Value="Delphi"/>
         <CStyleOperator Value="False"/>
         <AllowLabel Value="False"/>
         <CPPInline Value="False"/>
-        <DelphiCompat Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <SmartLinkUnit Value="True"/>
       <Checks>
         <IOChecks Value="True"/>
         <StackChecks Value="True"/>
       </Checks>
-      <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
@@ -363,10 +392,7 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
-        <LinkerOptions Value="-Aas -Xe"/>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
+        <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>

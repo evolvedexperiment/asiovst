@@ -11,11 +11,11 @@ type
   TVSTFilter = class(TVSTModule)
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-    procedure VSTFilterParameterProperties0ParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTFilterParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
   private
-    FCutOffFrequency   : Single;
-    FOld               : array [0..1] of array[0..1] of Double;
+    FCutOffFrequency : Single;
+    FOld             : array [0..1] of array[0..1] of Double;
   public
   end;
 
@@ -40,10 +40,10 @@ end;
 // Parameter 0 Changed (Cutoff Frequency)
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTFilterParameterProperties0ParameterChange(
+procedure TVSTFilter.VSTFilterParameterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCutOffFrequency := 0.01 + Parameter[0] * 0.00005;
+ FCutOffFrequency := 0.01 + Value * 0.00005;
 end;
 
 

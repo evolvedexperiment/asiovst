@@ -10,7 +10,6 @@ object VSTGUI: TVSTGUI
   Color = 53
   Font.Height = -11
   Font.Name = 'Verdana'
-  ParentFont = False
   LCLVersion = '0.9.27'
   object LbGain: TLabel
     Left = 175
@@ -33,6 +32,7 @@ object VSTGUI: TVSTGUI
     Anchors = [akTop, akLeft, akRight]
     Max = 1000
     Min = 100
+    PageSize = 0
     Position = 100
     TabOrder = 0
     OnChange = SBGainChange

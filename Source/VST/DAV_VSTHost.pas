@@ -2111,6 +2111,7 @@ begin
  if not assigned(FGUIControl)
   then raise Exception.Create('Editor not instanciated yet');
 
+ {$IFNDEF FPC}
  with TCanvas.Create do
   try
    Handle := GetWindowDC(GUIControl.Handle);
@@ -2128,6 +2129,7 @@ begin
   finally
    Free;
   end;
+ {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.ParamChange(Sender: TObject);

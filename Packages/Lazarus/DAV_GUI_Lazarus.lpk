@@ -20,14 +20,14 @@
       </Other>
     </CompilerOptions>
     <Version Minor="3"/>
-    <Files Count="16">
+    <Files Count="14">
       <Item1>
         <Filename Value="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
         <UnitName Value="DAV_GuiVUMeter"/>
       </Item1>
       <Item2>
-        <Filename Value="..\..\Source\GUI\DAV_CorrelationMeter.pas"/>
-        <UnitName Value="DAV_CorrelationMeter"/>
+        <Filename Value="..\..\Source\GUI\DAV_GuiCorrelationMeter.pas"/>
+        <UnitName Value="DAV_GuiCorrelationMeter"/>
       </Item2>
       <Item3>
         <Filename Value="..\..\Source\GUI\DAV_GuiADSRGraph.pas"/>
@@ -46,46 +46,38 @@
         <UnitName Value="DAV_GuiButton"/>
       </Item6>
       <Item7>
-        <Filename Value="..\..\Source\GUI\DAV_GuiDial.pas"/>
-        <UnitName Value="DAV_GuiDial"/>
-      </Item7>
-      <Item8>
         <Filename Value="..\..\Source\GUI\DAV_GuiDynamicWaveform.pas"/>
         <UnitName Value="DAV_GuiDynamicWaveform"/>
-      </Item8>
-      <Item9>
+      </Item7>
+      <Item8>
         <Filename Value="..\..\Source\GUI\DAV_GuiLabel.pas"/>
         <UnitName Value="DAV_GuiLabel"/>
-      </Item9>
-      <Item10>
-        <Filename Value="..\..\Source\GUI\DAV_GuiLED.pas"/>
-        <UnitName Value="DAV_GuiLED"/>
-      </Item10>
-      <Item11>
+      </Item8>
+      <Item9>
         <Filename Value="..\..\Source\GUI\DAV_GuiMidiKeys.pas"/>
         <UnitName Value="DAV_GuiMidiKeys"/>
-      </Item11>
-      <Item12>
+      </Item9>
+      <Item10>
         <Filename Value="..\..\Source\GUI\DAV_GuiMidiKeyZones.pas"/>
         <UnitName Value="DAV_GuiMidiKeyZones"/>
-      </Item12>
-      <Item13>
+      </Item10>
+      <Item11>
         <Filename Value="..\..\Source\GUI\DAV_GuiPanel.pas"/>
         <UnitName Value="DAV_GuiPanel"/>
-      </Item13>
-      <Item14>
+      </Item11>
+      <Item12>
         <Filename Value="..\..\Source\GUI\DAV_GuiRegister.pas"/>
         <HasRegisterProc Value="True"/>
         <UnitName Value="DAV_GuiRegister"/>
-      </Item14>
-      <Item15>
+      </Item12>
+      <Item13>
         <Filename Value="..\..\Source\GUI\DAV_GuiSelectBox.pas"/>
         <UnitName Value="DAV_GuiSelectBox"/>
-      </Item15>
-      <Item16>
+      </Item13>
+      <Item14>
         <Filename Value="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
         <UnitName Value="DAV_GuiStaticWaveform"/>
-      </Item16>
+      </Item14>
     </Files>
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">

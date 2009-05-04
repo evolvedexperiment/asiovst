@@ -2,15 +2,16 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="\"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="3"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -21,7 +22,8 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <HostApplicationFilename Value="C:\ITA\Projects\VST Package\Bin\VST Plugin Analyser.exe"/>
+        <HostApplicationFilename Value="C:\Users\Christian Budde\Projects\VSTPack\Bin\VST Plugin Analyser.exe"/>
+        <CommandLineParams Value="OpAmp.dll"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
@@ -33,13 +35,13 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="19">
       <Unit0>
         <Filename Value="OpAmp.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="3" Y="23"/>
+        <CursorPos X="27" Y="24"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="6"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
@@ -50,9 +52,8 @@
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <ResourceFilename Value="OpAmpModule.lrs"/>
         <UnitName Value="OpAmpModule"/>
-        <CursorPos X="1" Y="1"/>
+        <CursorPos X="24" Y="27"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="25"/>
@@ -65,11 +66,10 @@
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="OpAmpGUI.lrs"/>
         <UnitName Value="OpAmpGUI"/>
-        <CursorPos X="25" Y="29"/>
-        <TopLine Value="19"/>
-        <EditorIndex Value="7"/>
+        <CursorPos X="33" Y="41"/>
+        <TopLine Value="25"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
@@ -127,13 +127,11 @@
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <ResourceFilename Value="..\..\..\Source\VST\DAV_VSTModule.lrs"/>
         <UnitName Value="DAV_VSTModule"/>
         <CursorPos X="62" Y="8"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="1"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
@@ -143,9 +141,8 @@
         <UnitName Value="DAV_VSTModuleWithDsp"/>
         <CursorPos X="55" Y="8"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="2"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithPrograms.pas"/>
@@ -155,9 +152,8 @@
         <UnitName Value="DAV_VSTModuleWithPrograms"/>
         <CursorPos X="31" Y="24"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="3"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithMidi.pas"/>
@@ -165,30 +161,27 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTModuleWithMidi"/>
-        <CursorPos X="38" Y="14"/>
+        <CursorPos X="49" Y="4"/>
         <TopLine Value="1"/>
-        <EditorIndex Value="4"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
         <ComponentName Value="CustomVSTModule"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <ResourceFilename Value="..\..\..\Source\VST\DAV_VSTCustomModule.lrs"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <CursorPos X="11" Y="508"/>
-        <TopLine Value="487"/>
-        <EditorIndex Value="5"/>
+        <CursorPos X="1" Y="618"/>
+        <TopLine Value="610"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <CursorPos X="14" Y="1271"/>
-        <TopLine Value="1252"/>
+        <CursorPos X="48" Y="1815"/>
+        <TopLine Value="1798"/>
         <UsageCount Value="10"/>
       </Unit15>
       <Unit16>
@@ -198,44 +191,35 @@
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="..\..\..\Packages\Lazarus\DAV_VSTPlugin_Lazarus.pas"/>
+        <UnitName Value="DAV_VSTPlugin_Lazarus"/>
+        <CursorPos X="54" Y="24"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <CursorPos X="13" Y="37"/>
+        <TopLine Value="18"/>
+        <UsageCount Value="10"/>
+      </Unit18>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="3" HistoryIndex="2">
       <Position1>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="96" Column="10" TopLine="76"/>
-      </Position1>
-      <Position2>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="110" Column="12" TopLine="90"/>
-      </Position2>
-      <Position3>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="153" Column="26" TopLine="133"/>
-      </Position3>
-      <Position4>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="508" Column="19" TopLine="487"/>
-      </Position4>
-      <Position5>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="509" Column="12" TopLine="487"/>
-      </Position5>
-      <Position6>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="508" Column="11" TopLine="487"/>
-      </Position6>
-      <Position7>
         <Filename Value="OpAmpGUI.pas"/>
         <Caret Line="29" Column="25" TopLine="19"/>
-      </Position7>
-      <Position8>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
-        <Caret Line="8" Column="62" TopLine="1"/>
-      </Position8>
-      <Position9>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
-        <Caret Line="8" Column="55" TopLine="1"/>
-      </Position9>
+      </Position1>
+      <Position2>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="9" Column="65" TopLine="1"/>
+      </Position2>
+      <Position3>
+        <Filename Value="OpAmpGUI.pas"/>
+        <Caret Line="29" Column="25" TopLine="19"/>
+      </Position3>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -246,8 +230,8 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source\"/>
-      <Libraries Value="..\..\..\Source\"/>
-      <OtherUnitFiles Value="..\..\..\Source\"/>
+      <Libraries Value="..\..\..\Packages\Lazarus\;..\..\..\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Packages\Lazarus\;..\..\..\Source\;..\..\..\Source\VST\;..\..\..\Source\Math\"/>
       <UnitOutputDirectory Value="..\..\..\Bin"/>
       <ObjectPath Value="..\..\Source\"/>
     </SearchPaths>
@@ -271,7 +255,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="2">
+    <BreakPoints Count="3">
       <Item1>
         <Source Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
         <Line Value="2155"/>
@@ -280,6 +264,10 @@
         <Source Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
         <Line Value="2297"/>
       </Item2>
+      <Item3>
+        <Source Value="OpAmp.lpr"/>
+        <Line Value="21"/>
+      </Item3>
     </BreakPoints>
     <Exceptions Count="2">
       <Item1>

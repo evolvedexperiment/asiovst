@@ -372,8 +372,9 @@ begin
     begin
      if not (effFlagsProgramChunks in Effect^.EffectFlags) then
       if Effect^.numPrograms > 0 then
-       for i := 0 to Effect^.numPrograms - 1
-        do Programs[i].SetParameterCount(Collection.Count - 1)
+       for i := 0 to Effect^.numPrograms - 1 do
+        if assigned(Programs[i])
+         then Programs[i].SetParameterCount(Collection.Count - 1)
       else SetParameterCount(Collection.Count - 1);
 
      if (HostProduct <> 'Cubase VST') and

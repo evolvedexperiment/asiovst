@@ -7,7 +7,7 @@
       <Version Value="8"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <OtherUnitFiles Value="..\..\Source\;..\..\Source\VST\;..\Resources\"/>
+        <OtherUnitFiles Value="..\..\Source\;..\..\Source\VST\;..\..\Resources\"/>
         <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
       <Parsing>
@@ -31,7 +31,7 @@
         <UnitName Value="DAV_VSTHost"/>
       </Item2>
       <Item3>
-        <Filename Value="..\Resources\DAV_VstHostRegister.lrs"/>
+        <Filename Value="..\..\Resources\DAV_VstHostRegister.lrs"/>
         <Type Value="LRS"/>
       </Item3>
     </Files>

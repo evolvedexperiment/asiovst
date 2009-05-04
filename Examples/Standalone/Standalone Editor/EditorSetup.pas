@@ -91,13 +91,15 @@ begin
 end;
 
 procedure TFmSetup.FormDestroy(Sender: TObject);
-var Settings : TInifile;
 begin
- Settings:=TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI');
- Settings.WriteInteger('Layout','Setup Top',Top);
- Settings.WriteInteger('Layout','Setup Left',Left);
- Settings.WriteInteger('Setup','ASIO Driver',CBDrivers.ItemIndex);
- Settings.Free;
+ with TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI') do
+  try
+   WriteInteger('Layout', 'Setup Top', Top);
+   WriteInteger('Layout', 'Setup Left', Left);
+   WriteInteger('Setup', 'ASIO Driver', CBDrivers.ItemIndex);
+  finally
+   Free;
+  end;
 end;
 
 {$IFDEF FPC}

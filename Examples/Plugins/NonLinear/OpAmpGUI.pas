@@ -29,8 +29,8 @@ uses
   Dialogs, SysUtils, OpAmpModule;
 
 procedure TVSTGUI.LbGainClick(Sender: TObject);
-var
-  b : PChar;
+//var
+//  b : PChar;
 begin
 (*
  // Example on how to query the DLL name of the plugin

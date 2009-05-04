@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LMessages, Controls, {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTChannels,
+  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls, {$ELSE} Windows, Messages,
+  {$ENDIF} Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTChannels,
   DAV_VSTBasicModule, DAV_VSTShellPlugins, DAV_VSTOfflineTask;
 
 type
@@ -536,8 +536,12 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
+      Parent := TWinControl.CreateParented(HWnd(ptr));
+(*
+      ParentWindow := HWnd(ptr);
       Parent := FindOwnerControl(THandle(ptr));
       SetBounds(0, 0, 300, 100);
+*)
       {$ENDIF}
       Visible := True;
       BorderStyle := bsNone;
@@ -611,8 +615,6 @@ end;
 
 function TCustomVSTModule.HostCallGetInputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
-  str1  : string[63];
-  str2  : string[7];
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
@@ -620,8 +622,8 @@ begin
  if (Index < FEffect.numInputs) then
   with PVstPinProperties(ptr)^ do
    begin
-    str1 := 'Input #' + IntToStr(Index + 1);
-    str2 := 'In' + IntToStr(Index + 1);
+    Caption := 'Input #' + IntToStr(Index + 1);
+    ShortLabel := 'In' + IntToStr(Index + 1);
 
     case numInputs of
      1: ArrangementType := satMono;
@@ -643,8 +645,6 @@ end;
 
 function TCustomVSTModule.HostCallGetOutputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
-  str1  : string[63];
-  str2  : string[7];
   cpf   : TVstPinPropertiesFlags;
 begin
  Result := 0;
@@ -652,8 +652,8 @@ begin
  if (Index < FEffect.numOutputs) then
   with PVstPinProperties(ptr)^ do
    begin
-    str1 := 'Output #' + IntToStr(Index + 1);
-    str2 := 'Out' + IntToStr(Index + 1);
+    Caption := 'Output #' + IntToStr(Index + 1);
+    ShortLabel := 'Out' + IntToStr(Index + 1);
 
     case numOutputs of
      1: ArrangementType := satMono;
