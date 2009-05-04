@@ -615,15 +615,18 @@ end;
 
 function TCustomVSTModule.HostCallGetInputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
-  cpf   : TVstPinPropertiesFlags;
+  cpf : TVstPinPropertiesFlags;
+  str : string;
 begin
  Result := 0;
  {$IFDEF Debug} AddLogMessage('HostCallGetInputProperties'); {$ENDIF}
  if (Index < FEffect.numInputs) then
   with PVstPinProperties(ptr)^ do
    begin
-    Caption := 'Input #' + IntToStr(Index + 1);
-    ShortLabel := 'In' + IntToStr(Index + 1);
+    str := 'Input #' + IntToStr(Index + 1) + #0;
+    Move(str[1], Caption, Length(str));
+    str := 'In' + IntToStr(Index + 1) + #0;
+    Move(str[1], ShortLabel, Length(str));
 
     case numInputs of
      1: ArrangementType := satMono;
@@ -645,15 +648,18 @@ end;
 
 function TCustomVSTModule.HostCallGetOutputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 var
-  cpf   : TVstPinPropertiesFlags;
+  cpf : TVstPinPropertiesFlags;
+  str : string;
 begin
  Result := 0;
  {$IFDEF Debug} AddLogMessage('HostCallGetOutputProperties'); {$ENDIF}
  if (Index < FEffect.numOutputs) then
   with PVstPinProperties(ptr)^ do
    begin
-    Caption := 'Output #' + IntToStr(Index + 1);
-    ShortLabel := 'Out' + IntToStr(Index + 1);
+    str := 'Output #' + IntToStr(Index + 1) + #0;
+    Move(str[1], Caption, Length(str));
+    str := 'Out' + IntToStr(Index + 1) + #0;
+    Move(str[1], ShortLabel, Length(str));
 
     case numOutputs of
      1: ArrangementType := satMono;
