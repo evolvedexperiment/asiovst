@@ -510,7 +510,7 @@ var
   str : string;
 begin
  Result := 0;
- if ((Index >= 0) or (Index < FEffect.numPrograms)) and assigned(Ptr) {and (Value = -1)} then
+ if ((Index >= 0) or (Index < Programs.Count)) and assigned(Ptr) {and (Value = -1)} then
   begin
    str := Programs[Index].DisplayName;
    if FTruncateStrings and (Length(str) > 24)

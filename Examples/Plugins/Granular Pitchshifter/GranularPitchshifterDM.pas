@@ -3,7 +3,7 @@ unit GranularPitchShifterDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common, DAV_VSTModule,
   DAV_DspGranularPitchShifter;
 
 type
@@ -18,9 +18,12 @@ type
     procedure ParamGranularityChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStagesDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
+
   private
     FGranularPitchShifter : Array [0..1] of TDspGranularPitchShifter32;
-    FSemaphore            : Integer;
+    FCriticalSection      : TCriticalSection;
     function GetGranularPitchShifter(Index: Integer): TDspGranularPitchShifter32;
   public
     property GranularPitchShifter[Index: Integer]: TDspGranularPitchShifter32 read GetGranularPitchShifter;
@@ -36,11 +39,20 @@ uses
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
+procedure TGranularPitchShifterModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TGranularPitchShifterModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TGranularPitchShifterModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- FSemaphore := 0;
  for Channel := 0 to 1 do
   begin
    FGranularPitchShifter[Channel] := TDspGranularPitchShifter32.Create;
@@ -50,7 +62,7 @@ begin
  Parameter[1] :=  1024 / SampleRate;
  Parameter[2] :=  2;
  Parameter[3] := 100;
-(*
+
  with Programs[0] do
   begin
    Parameter[0] :=  2;
@@ -79,7 +91,6 @@ begin
    Parameter[2] :=  4.5;
    Parameter[3] := 50;
   end;
-*)
 end;
 
 procedure TGranularPitchShifterModule.VSTModuleClose(Sender: TObject);
@@ -102,13 +113,12 @@ end;
 
 procedure TGranularPitchShifterModule.ParamSemitonesChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if assigned(FGranularPitchShifter[0]) then FGranularPitchShifter[0].Semitones := Value;
   if assigned(FGranularPitchShifter[1]) then FGranularPitchShifter[1].Semitones := Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
  if EditorForm is TFmGranularPitchShifter then
   with TFmGranularPitchShifter(EditorForm)
@@ -124,13 +134,12 @@ end;
 procedure TGranularPitchShifterModule.ParamStagesChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if assigned(FGranularPitchShifter[0]) then FGranularPitchShifter[0].Stages := round(Value);
   if assigned(FGranularPitchShifter[1]) then FGranularPitchShifter[1].Stages := round(Value);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
  if EditorForm is TFmGranularPitchShifter then
   with TFmGranularPitchShifter(EditorForm)
@@ -139,13 +148,12 @@ end;
 
 procedure TGranularPitchShifterModule.ParamGranularityChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if assigned(FGranularPitchShifter[0]) then FGranularPitchShifter[0].Granularity := 1E-3 * Value;
   if assigned(FGranularPitchShifter[1]) then FGranularPitchShifter[1].Granularity := 1E-3 * Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
  if EditorForm is TFmGranularPitchShifter then
   with TFmGranularPitchShifter(EditorForm)
@@ -155,13 +163,12 @@ end;
 procedure TGranularPitchShifterModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Value := 100;
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
 //  if assigned(FGranularPitchShifter[0]) then FGranularPitchShifter[0].Mix := 0.01 * Value;
 //  if assigned(FGranularPitchShifter[1]) then FGranularPitchShifter[1].Mix := 0.01 * Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 (*
  if EditorForm is TFmGranularPitchShifter then
@@ -175,27 +182,26 @@ procedure TGranularPitchShifterModule.VSTModuleProcess(const Inputs,
 var
   Channel, Sample : Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FGranularPitchShifter[Channel].Process(Inputs[Channel, Sample]);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TGranularPitchShifterModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ if SampleRate <= 0 then exit;
+ FCriticalSection.Enter;
  try
   if assigned(FGranularPitchShifter[0]) then FGranularPitchShifter[0].SampleRate := SampleRate;
   if assigned(FGranularPitchShifter[1]) then FGranularPitchShifter[1].SampleRate := SampleRate;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

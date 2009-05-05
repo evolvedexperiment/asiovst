@@ -3,8 +3,8 @@ unit SplitHarmonizerDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_SoundTouchDLLResource, DAV_DspDelayLines; //DAV_SoundTouch;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  DAV_VSTModule, DAV_SoundTouchDLLResource, DAV_DspDelayLines; //DAV_SoundTouch;
 
 const
   CInputDelay = 5248;
@@ -30,10 +30,12 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure ParameterUseAntiAliasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterUseQuickSeekChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FSoundTouch : array [0..1] of TSoundTouch;
-    FDelayLine  : array [0..1, 0..1] of TDelayLineSamples32;
-    FMix        : array [0..1] of Single;
+    FSoundTouch      : array [0..1] of TSoundTouch;
+    FDelayLine       : array [0..1, 0..1] of TDelayLineSamples32;
+    FMix             : array [0..1] of Single;
+    FCriticalSection : TCriticalSection;
   public
   end;
 
@@ -43,6 +45,17 @@ implementation
 
 uses
   Math, Dialogs, SplitHarmonizerGUI, DAV_VSTCustomModule, DAV_VSTPrograms;
+
+procedure TSplitHarmonizerModule.VSTModuleCreate(Sender: TObject);
+begin
+ InitialDelay := CInputDelay;
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TSplitHarmonizerModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TSplitHarmonizerModule.VSTModuleOpen(Sender: TObject);
 var
@@ -79,20 +92,22 @@ begin
   do FreeAndNil(FSoundTouch[Channel]);
 end;
 
-procedure TSplitHarmonizerModule.VSTModuleCreate(Sender: TObject);
-begin
- InitialDelay := CInputDelay;
-end;
-
 procedure TSplitHarmonizerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmSplitHarmonizer.Create(Self);
+ GUI := TFmSplitHarmonizer.Create(Self);
 end;
 
 procedure TSplitHarmonizerModule.ParameterSemiTonesAChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSoundTouch[0].Pitch := Power(2, Value / 1200);
+ FCriticalSection.Enter;
+ try
+  if assigned(FSoundTouch[0])
+   then FSoundTouch[0].Pitch := Power(2, Value / 1200);
+ finally
+  FCriticalSection.Leave;
+ end;
+
  if EditorForm is TFmSplitHarmonizer
   then TFmSplitHarmonizer(EditorForm).UpdateSemitones(0);
 end;
@@ -100,7 +115,14 @@ end;
 procedure TSplitHarmonizerModule.ParameterSemiTonesBChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSoundTouch[1].Pitch := Power(2, Value / 1200);
+ FCriticalSection.Enter;
+ try
+  if assigned(FSoundTouch[1])
+   then FSoundTouch[1].Pitch := Power(2, Value / 1200);
+ finally
+  FCriticalSection.Leave;
+ end;
+
  if EditorForm is TFmSplitHarmonizer
   then TFmSplitHarmonizer(EditorForm).UpdateSemitones(1);
 end;
@@ -108,21 +130,41 @@ end;
 procedure TSplitHarmonizerModule.ParameterUseAntiAliasChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSoundTouch[0].UseAntiAliasFilter := Value > 0.5;
- FSoundTouch[1].UseAntiAliasFilter := Value > 0.5;
+ FCriticalSection.Enter;
+ try
+  if assigned(FSoundTouch[0])
+   then FSoundTouch[0].UseAntiAliasFilter := Value > 0.5;
+  if assigned(FSoundTouch[1])
+   then FSoundTouch[1].UseAntiAliasFilter := Value > 0.5;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSplitHarmonizerModule.ParameterUseQuickSeekChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSoundTouch[0].UseQuickSeek := Value > 0.5;
- FSoundTouch[1].UseQuickSeek := Value > 0.5;
+ FCriticalSection.Enter;
+ try
+  if assigned(FSoundTouch[0])
+   then FSoundTouch[0].UseQuickSeek := Value > 0.5;
+  if assigned(FSoundTouch[1])
+   then FSoundTouch[1].UseQuickSeek := Value > 0.5;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSplitHarmonizerModule.ParameterDelayAChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDelayLine[0, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
+ FCriticalSection.Enter;
+ try
+  if assigned(FDelayLine[0, 1])
+   then FDelayLine[0, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
+ finally
+  FCriticalSection.Leave;
+ end;
  if EditorForm is TFmSplitHarmonizer
   then TFmSplitHarmonizer(EditorForm).UpdateDelay(0);
 end;
@@ -130,7 +172,13 @@ end;
 procedure TSplitHarmonizerModule.ParameterDelayBChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FDelayLine[1, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
+ FCriticalSection.Enter;
+ try
+  if assigned(FDelayLine[1, 1])
+   then FDelayLine[1, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
+ finally
+  FCriticalSection.Leave;
+ end;
  if EditorForm is TFmSplitHarmonizer
   then TFmSplitHarmonizer(EditorForm).UpdateDelay(1);
 end;
@@ -183,20 +231,25 @@ var
   Sample  : Integer;
   Mix     : array [0..1, 0..1] of Single;
 begin
- for Channel := 0 to NumInputs - 1 do
-  begin
-   Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
-   Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to NumInputs - 1 do
+   begin
+    Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
+    Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
 
-   FSoundTouch[Channel].PutSamples(@Inputs[Channel, 0], SampleFrames);
-   FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
-  end;
+    FSoundTouch[Channel].PutSamples(@Inputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
+   end;
 
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample(Outputs[0, Sample]);
-   Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample(Outputs[1, Sample]);
-  end;
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample(Outputs[0, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample(Outputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64LR(const Inputs,
@@ -206,20 +259,25 @@ var
   Sample  : Integer;
   Mix     : array [0..1, 0..1] of Double;
 begin
- for Channel := 0 to NumInputs - 1 do
-  begin
-   Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
-   Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to NumInputs - 1 do
+   begin
+    Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
+    Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
 
-   FSoundTouch[Channel].PutSamples(@Inputs[Channel, 0], SampleFrames);
-   FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
-  end;
+    FSoundTouch[Channel].PutSamples(@Inputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
+   end;
 
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample(Outputs[0, Sample]);
-   Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample(Outputs[1, Sample]);
-  end;
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample(Outputs[0, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample(Outputs[1, Sample]);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessMS(const Inputs,
@@ -230,26 +288,31 @@ var
   Temp    : Single;
   Mix     : array [0..1, 0..1] of Single;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
+   end;
 
- for Channel := 0 to NumInputs - 1 do
-  begin
-   Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
-   Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
-   FSoundTouch[Channel].PutSamples(@Outputs[Channel, 0], SampleFrames);
-   FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
-  end;
+  for Channel := 0 to NumInputs - 1 do
+   begin
+    Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
+    Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
+    FSoundTouch[Channel].PutSamples(@Outputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
+   end;
 
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
-   Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
-   Outputs[0, Sample] := Temp;
-  end;
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
+    Outputs[0, Sample] := Temp;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleProcessReplacing64MS(const Inputs,
@@ -260,26 +323,31 @@ var
   Temp    : Double;
   Mix     : array [0..1, 0..1] of Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
-  end;
+ FCriticalSection.Enter;
+ try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
+   end;
 
- for Channel := 0 to NumInputs - 1 do
-  begin
-   Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
-   Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
-   FSoundTouch[Channel].PutSamples(@Outputs[Channel, 0], SampleFrames);
-   FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
-  end;
+  for Channel := 0 to NumInputs - 1 do
+   begin
+    Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
+    Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
+    FSoundTouch[Channel].PutSamples(@Outputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
+   end;
 
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
-   Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
-   Outputs[0, Sample] := Temp;
-  end;
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
+    Outputs[0, Sample] := Temp;
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -287,11 +355,12 @@ procedure TSplitHarmonizerModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
+ if SampleRate = 0 then exit;
  for Channel := 0 to NumInputs - 1 do
   begin
-   FSoundTouch[Channel].SampleRate := SampleRate;
+   FSoundTouch[Channel].SampleRate := abs(SampleRate);
    FDelayLine[Channel, 0].BufferSize := CInputDelay;
-   FDelayLine[Channel, 1].BufferSize := Max(1, round(Parameter[2 + 3 * Channel] * 1E-3 * SampleRate));
+   FDelayLine[Channel, 1].BufferSize := Max(1, round(Parameter[2 + 3 * Channel] * 1E-3 * abs(SampleRate)));
   end;
 end;
 

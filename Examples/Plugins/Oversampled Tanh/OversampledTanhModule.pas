@@ -3,8 +3,8 @@ unit OversampledTanhModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspPolyphaseDownsampler, DAV_DspPolyphaseUpSampler;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  DAV_VSTModule, DAV_DspPolyphaseDownsampler, DAV_DspPolyphaseUpSampler;
 
 type
   TOversampledTanhModule = class(TVSTModule)
@@ -14,11 +14,13 @@ type
     procedure VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParamCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FDownsampler2x : array[0..1] of TPolyphaseDownsampler32;
-    FUpSampler2x   : array[0..1] of TPolyphaseUpsampler32;
-    FBuffer        : PDAVSingleFixedArray;
-    FSemaphore     : Integer;
+    FDownsampler2x   : array[0..1] of TPolyphaseDownsampler32;
+    FUpSampler2x     : array[0..1] of TPolyphaseUpsampler32;
+    FBuffer          : PDAVSingleFixedArray;
+    FCriticalSection : TCriticalSection;
   end;
 
 implementation
@@ -27,6 +29,16 @@ implementation
 
 uses
   DAV_Approximations, OversampledTanhGUI;
+
+procedure TOversampledTanhModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TOversampledTanhModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TOversampledTanhModule.VSTModuleOpen(Sender: TObject);
 var
@@ -55,13 +67,22 @@ begin
   end;
 end;
 
+procedure TOversampledTanhModule.VSTEditOpen(Sender: TObject;
+  var GUI: TForm; const ParentWindow: Cardinal);
+begin
+  GUI := TFmOversampledTanh.Create(Self);
+end;
+
 procedure TOversampledTanhModule.ParamTransitionChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
 begin
- if assigned(FDownsampler2x[0]) then FDownsampler2x[0].Transition := 0.001 + 0.498 * Value;
- if assigned(FDownsampler2x[1]) then FDownsampler2x[1].Transition := 0.001 + 0.498 * Value;
- if assigned(FUpSampler2x[0]) then FUpSampler2x[0].Transition := 0.001 + 0.498 * Value;
- if assigned(FUpSampler2x[1]) then FUpSampler2x[1].Transition := 0.001 + 0.498 * Value;
+  for Channel := 0 to 1 do
+   begin
+    if assigned(FDownsampler2x[Channel]) then FDownsampler2x[Channel].Transition := 0.001 + 0.498 * Value;
+    if assigned(FUpSampler2x[Channel]) then FUpSampler2x[Channel].Transition := 0.001 + 0.498 * Value;
+   end;
  if EditorForm is TFmOversampledTanh then
   with TFmOversampledTanh(EditorForm)
    do UpdateTransition;
@@ -72,38 +93,36 @@ procedure TOversampledTanhModule.ParamCoeffsChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   if (Value < 1) or (Value > 32) then Exit;
 
   for Channel := 0 to 1 do
    begin
-    FDownsampler2x[Channel].NumberOfCoefficients := round(Value); //round(Value);
-    FDownsampler2x[Channel].Transition := 0.01;
-    FUpSampler2x[Channel].NumberOfCoefficients := round(Value);
-    FUpSampler2x[Channel].Transition := 0.01;
+    if assigned(FDownsampler2x[Channel]) then
+     begin
+      FDownsampler2x[Channel].NumberOfCoefficients := round(Value); //round(Value);
+      FDownsampler2x[Channel].Transition := 0.01;
+     end;
+    if assigned(FUpSampler2x[Channel]) then
+     begin
+      FUpSampler2x[Channel].NumberOfCoefficients := round(Value);
+      FUpSampler2x[Channel].Transition := 0.01;
+     end;
    end;
   if EditorForm is TFmOversampledTanh then
    with TFmOversampledTanh(EditorForm)
     do UpdateCoeffs;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
-end;
-
-procedure TOversampledTanhModule.VSTEditOpen(Sender: TObject;
-  var GUI: TForm; const ParentWindow: Cardinal);
-begin
-  GUI := TFmOversampledTanh.Create(Self);
 end;
 
 procedure TOversampledTanhModule.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample: Integer;
 begin
-  while FSemaphore > 0 do;
-  inc(FSemaphore);
+  FCriticalSection.Enter;
   try
    for Channel := 0 to 1 do
     begin
@@ -113,7 +132,7 @@ begin
      FDownsampler2x[Channel].ProcessBlock(@FBuffer[0], @outputs[Channel][0], 16);
     end;
   finally
-   Dec(FSemaphore);
+   FCriticalSection.Leave;
   end;
 end;
 

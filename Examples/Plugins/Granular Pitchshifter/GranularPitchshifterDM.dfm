@@ -1,5 +1,7 @@
 object GranularPitchShifterModule: TGranularPitchShifterModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'GranularPitchShifter'

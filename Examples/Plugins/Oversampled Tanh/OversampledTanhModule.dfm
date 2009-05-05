@@ -1,5 +1,7 @@
 object OversampledTanhModule: TOversampledTanhModule
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '0.0'
   EffectName = 'Oversampled Tanh'

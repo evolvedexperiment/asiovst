@@ -372,9 +372,9 @@ end;
 
 procedure TCustomPlateReverb.SetSampleRate(const Value: Single);
 begin
- if FSampleRate <> Value then
+ if FSampleRate <> abs(Value) then
   begin
-   FSampleRate := Value;
+   FSampleRate := abs(Value);
    SampleRateChanged;
   end;
 end;

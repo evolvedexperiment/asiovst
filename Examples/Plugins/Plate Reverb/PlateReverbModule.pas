@@ -210,6 +210,7 @@ end;
 
 procedure TPlateReverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
+ if SampleRate <= 0 then exit;
  if assigned(FPlateReverb)
   then FPlateReverb.SampleRate := SampleRate;
 end;

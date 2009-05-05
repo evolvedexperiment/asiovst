@@ -1,6 +1,7 @@
 object SplitHarmonizerModule: TSplitHarmonizerModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SoundTouch Detuner'

@@ -404,6 +404,7 @@ begin
     VstDispatch(effEditOpen);
     VstDispatch(effEditGetRect);
     VstDispatch(effProcessEvents);
+    VstDispatch(effGetProgramNameIndexed, numPrograms);
     VstDispatch(effGetVendorString);
     VstDispatch(effGetProductString);
     VstDispatch(effGetParamLabel);
@@ -875,6 +876,7 @@ end;
 
 procedure TVstPluginHostTests.TestReaper;
 var
+  i    : Integer;
   Data : PChar;
   rct  : TRect;
   prct : PRect;
@@ -938,10 +940,8 @@ begin
    GetMem(Data, 1024);
    try
     // Get Program Name Indexed
-    VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
-
-    // Get Program Name Indexed
-    VstDispatch(effGetProgramNameIndexed, 1, -1, Data);
+    for i := 0 to numPrograms - 1
+     do VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
    finally
     Dispose(Data);
    end;
