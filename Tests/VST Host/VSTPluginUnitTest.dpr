@@ -19,8 +19,10 @@ uses
   TestFramework,
   GUITestRunner,
   TextTestRunner,
-  DAV_TestVSTHost in 'DAV_TestVSTHost.pas',
-  SplashScreen in 'SplashScreen.pas' {FmSplashScreen};
+{$IFNDEF CONSOLE_TESTRUNNER}
+  SplashScreen in 'SplashScreen.pas' {FmSplashScreen},
+{$ENDIF}
+  DAV_TestVSTHost in 'DAV_TestVSTHost.pas';
 
 {$R *.RES}
 

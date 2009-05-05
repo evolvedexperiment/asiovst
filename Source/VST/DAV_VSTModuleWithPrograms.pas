@@ -147,11 +147,10 @@ end;
 destructor TVSTModuleWithPrograms.Destroy;
 begin
  try
-  // free program stuff
+  // free programs
   if Assigned(FVstPrograms) then FreeAndNil(FVstPrograms);
-  FEffect.numPrograms := 0;
 
-  // free parameter stuff
+  // free parameter categories and properties
   if Assigned(FParameterCategories) then FreeAndNil(FParameterCategories);
   if Assigned(FParameterProperties) then FreeAndNil(FParameterProperties);
 

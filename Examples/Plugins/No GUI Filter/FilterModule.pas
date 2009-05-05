@@ -62,12 +62,12 @@ begin
  fb := res + res / (1 - cut * 0.9);
  for i := 0 to SampleFrames - 1 do
   begin
-   FOld[0,0] := FOld[0, 0] + cut * (Inputs[0, i] - FOld[0, 0] + fb * (FOld[0, 0] - FOld[1, 0])) + CDenorm32;
-   FOld[0,1] := FOld[0, 1] + cut * (Inputs[1, i] - FOld[0, 1] + fb * (FOld[0, 1] - FOld[1, 1])) + CDenorm32;
-   FOld[1,0] := FOld[1, 0] + cut * (FOld[0, 0] - FOld[1, 0]);
-   FOld[1,1] := FOld[1, 1] + cut * (FOld[0, 1] - FOld[1, 1]);
-   Outputs[0,i] := Limit(FOld[1, 0]);
-   Outputs[1,i] := Limit(FOld[1, 1]);
+   FOld[0, 0] := FOld[0, 0] + cut * (Inputs[0, i] - FOld[0, 0] + fb * (FOld[0, 0] - FOld[1, 0])) + CDenorm32;
+   FOld[0, 1] := FOld[0, 1] + cut * (Inputs[1, i] - FOld[0, 1] + fb * (FOld[0, 1] - FOld[1, 1])) + CDenorm32;
+   FOld[1, 0] := FOld[1, 0] + cut * (FOld[0, 0] - FOld[1, 0]);
+   FOld[1, 1] := FOld[1, 1] + cut * (FOld[0, 1] - FOld[1, 1]);
+   Outputs[0, i] := Limit(FOld[1, 0]);
+   Outputs[1, i] := Limit(FOld[1, 1]);
   end;
 end;
 

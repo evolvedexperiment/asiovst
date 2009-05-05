@@ -13,6 +13,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure ParamChange(Sender: TObject;
       const Index: Integer; var Value: Single);
+    procedure VSTModuleOpen(Sender: TObject);
   private
     FOpcodeLog  : TStringList;
     FLastOpcode : TDispatcherOpcode;
@@ -33,6 +34,33 @@ implementation
 
 uses
   VOLGUI, DAV_VSTCustomModule;
+
+procedure TVOLDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FOpcodeLog := TStringList.Create;
+end;
+
+procedure TVOLDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FOpcodeLog);
+end;
+
+procedure TVOLDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ if not assigned(FOpcodeLog)
+  then exit;
+
+ FOpcodeLog.Add('HostProduct: ' + HostProduct);
+ FOpcodeLog.Add('HostVendor: ' + HostVendor);
+
+ SyncLogDisplay;
+end;
+
+procedure TVOLDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+begin
+ GUI := TFmVOL.Create(Self);
+ TFmVOL(GUI).MOpcodeLog.Lines.Assign(OpcodeLog);
+end;
 
 procedure TVOLDataModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode;
   const Index, Value: Integer; const ptr: Pointer; const opt: Single);
@@ -146,22 +174,6 @@ procedure TVOLDataModule.ParamChange(
 begin
  if EditorForm is TFmVOL
   then TFmVOL(EditorForm).UpdateParameter;
-end;
-
-procedure TVOLDataModule.VSTModuleCreate(Sender: TObject);
-begin
- FOpcodeLog := TStringList.Create;
-end;
-
-procedure TVOLDataModule.VSTModuleDestroy(Sender: TObject);
-begin
- FreeAndNil(FOpcodeLog);
-end;
-
-procedure TVOLDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmVOL.Create(Self);
- TFmVOL(GUI).MOpcodeLog.Lines.Assign(OpcodeLog);
 end;
 
 end.

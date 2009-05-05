@@ -173,7 +173,7 @@ type
 implementation
 
 uses
-  Math, DAV_VSTModuleWithPrograms;
+  Math, DAV_VSTModuleWithPrograms, DAV_VSTPrograms;
 
 { TCustomVstParameterCategory }
 
@@ -233,23 +233,23 @@ end;
 
 destructor TCustomVstParameterCategories.Destroy;
 begin
-  while Count > 0 do Delete(0);
-  inherited;
+ while Count > 0 do Delete(0);
+ inherited;
 end;
 
 function TCustomVstParameterCategories.Add: TCustomVstParameterCategory;
 begin
-  Result := TCustomVstParameterCategory(inherited Add);
+ Result := TCustomVstParameterCategory(inherited Add);
 end;
 
 function TCustomVstParameterCategories.GetItem(Index: Integer): TCustomVstParameterCategory;
 begin
-  Result := TCustomVstParameterCategory(inherited GetItem(Index));
+ Result := TCustomVstParameterCategory(inherited GetItem(Index));
 end;
 
 function TCustomVstParameterCategories.Insert(const Index: Integer): TCustomVstParameterCategory;
 begin
-  Result := TCustomVstParameterCategory(inherited Insert(Index));
+ Result := TCustomVstParameterCategory(inherited Insert(Index));
 end;
 
 procedure TCustomVstParameterCategories.Delete(const Index: Integer);
@@ -371,20 +371,24 @@ begin
    with TVSTModuleWithPrograms(FVSTModule) do
     begin
      if not (effFlagsProgramChunks in Effect^.EffectFlags) then
-      if Effect^.numPrograms > 0 then
-       for i := 0 to Effect^.numPrograms - 1 do
+      if assigned(Programs) and (Programs.Count > 0) then
+       for i := 0 to Programs.Count - 1 do
         if assigned(Programs[i])
          then Programs[i].SetParameterCount(Collection.Count - 1)
       else SetParameterCount(Collection.Count - 1);
 
+(*
      if (HostProduct <> 'Cubase VST') and
         (HostProduct <> 'Unknown') and
-        (HostProduct <> '') then Effect^.numParams := Collection.Count - 1;
-    end;
- except
- end;
+        (HostProduct <> '') then
 
- inherited;
+     not necessary anymore ?!?
+*)
+     Effect^.numParams := Collection.Count - 1;
+    end;
+ finally
+  inherited;
+ end;
 end;
 
 function TCustomVstParameterProperty.VSTParameter2Parameter(const Value: Single): Single;

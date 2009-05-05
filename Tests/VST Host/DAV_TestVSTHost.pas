@@ -48,31 +48,42 @@ type
   // Basic test methods for VST Plugins
   TVstPluginBasicTests = class(TCustomTestVstPlugin)
   published
-    procedure TestMultipleOpenCloseCycles;
     procedure TestMultipleInstances;
     procedure TestActiveParameterSweeps;
-    procedure TestInactiveParameterSweeps;
     procedure TestActiveSamplerateChanges;
-    procedure TestInactiveSamplerateChanges;
     procedure TestActiveBlocksizeChanges;
+    procedure TestPrograms;
+  end;
+
+  // Perverse test methods for VST Plugins
+  TVstPluginPerverseTests = class(TCustomTestVstPlugin)
+  published
+    procedure TestMultipleOpenCloseCycles;
+    procedure TestInactiveParameterSweeps;
+    procedure TestInactiveSamplerateChanges;
     procedure TestInactiveBlocksizeChanges;
     procedure TestInactiveProcessReplacing;
     procedure TestCanDoUnknownTokens;
     procedure TestInvalidOpcodes;
     procedure TestInvalidParameters;
-    procedure TestPrograms;
   end;
 
   // Test methods for VST Plugins for various hosts
   TVstPluginHostTests = class(TCustomTestVstPlugin)
   published
-    procedure TestSimpleCubaseTest;
-    procedure TestDefaultCubaseTest;
-    procedure TestReloadPluginCubaseTest;
-    procedure TestFL8FastScanTest;
-    procedure TestReaperTest;
-    procedure TestFL8Test;
-    procedure TestCantabileTest;
+    procedure TestCubaseScan;
+    procedure TestCubase;
+    procedure TestReloadPluginCubase;
+    procedure TestFL8FastScan;
+    procedure TestFL8;
+    procedure TestTracktion2;
+    procedure TestTracktion2Scan;
+    procedure TestReaper;
+    procedure TestMULAB;
+    procedure TestCantabile;
+    procedure TestSamplitude;
+    procedure TestAbletonLiveScan;
+    procedure TestAbletonLive;
   end;
 
   // I/O test methods for VST Plugins
@@ -139,7 +150,8 @@ type
 implementation
 
 uses
-  Math, Forms, Controls, SplashScreen, DAV_VSTEffect;
+  Math, Forms, Controls, {$IFNDEF CONSOLE_TESTRUNNER} SplashScreen, {$ENDIF}
+  DAV_VSTEffect;
 
 function RemoveFileExt(const FileName: string): string;
 var
@@ -169,10 +181,16 @@ end;
 
 procedure TCustomTestVstPlugin.SetUp;
 begin
- with FVstHost.VstPlugIns.Add do
-  if FileExists(FVstPluginName)
-   then LoadFromFile(FVstPluginName)
-   else raise Exception.Create('VST Plugin not found: ' + FVstPluginName);
+ with FVstHost do
+  begin
+   VendorString := 'Delphi ASIO & VST Project';
+   ProductString := 'Delphi ASIO & VST Project';
+
+   with VstPlugIns.Add do
+    if FileExists(FVstPluginName)
+     then LoadFromFile(FVstPluginName)
+     else raise Exception.Create('VST Plugin not found: ' + FVstPluginName);
+  end;
 end;
 
 procedure TCustomTestVstPlugin.SetVstPluginName(const Value: TFileName);
@@ -189,18 +207,6 @@ end;
 
 
 { TVstPluginBasicTests }
-
-procedure TVstPluginBasicTests.TestMultipleOpenCloseCycles;
-var
-  i : Integer;
-begin
- for i := 0 to 9 do
-  with FVstHost[0] do
-   begin
-    Active := True;
-    Active := False;
-   end;
-end;
 
 procedure TVstPluginBasicTests.TestPrograms;
 var
@@ -287,7 +293,184 @@ begin
   end;
 end;
 
-procedure TVstPluginBasicTests.TestInactiveParameterSweeps;
+procedure TVstPluginBasicTests.TestActiveSamplerateChanges;
+var
+  d : Single;
+begin
+ // Test Active Samplerate Change
+ FVstHost[0].Active := True;
+ d := 1;
+ while d <= 1411200 do
+  begin
+   FVstHost[0].SetSampleRate(d);
+   d := d * 1.1;
+  end;
+end;
+
+procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
+var
+  i : Integer;
+begin
+ with FVstHost[0] do
+  begin
+   Active := True;
+
+   // small block sizes
+   for i := 0 to 64 do SetBlockSize(i);
+
+   // medium odd block sizes
+   for i := 1 to 64 do SetBlockSize(19 * i);
+
+   // large odd block sizes
+   for i := 1 to 64 do SetBlockSize(1025 * i);
+  end;
+end;
+
+
+{ TVstPluginPerverseTests }
+
+procedure TVstPluginPerverseTests.TestInactiveBlocksizeChanges;
+var
+  i : Integer;
+begin
+ FVstHost[0].Active := False;
+
+ // small block sizes
+ for i := 0 to 64 do FVstHost[0].SetBlockSize(i);
+
+ // medium odd block sizes
+ for i := 1 to 64 do FVstHost[0].SetBlockSize(19 * i);
+
+ // large odd block sizes
+ for i := 1 to 64 do FVstHost[0].SetBlockSize(1025 * i);
+
+ // activate and directly deactivate
+ with FVstHost[0] do
+  begin
+   Active := True;
+   Active := False;
+  end;
+
+ // small block sizes
+ for i := 0 to 64 do FVstHost[0].SetBlockSize(i);
+
+ // medium odd block sizes
+ for i := 1 to 64 do FVstHost[0].SetBlockSize(19 * i);
+
+ // large odd block sizes
+ for i := 1 to 64 do FVstHost[0].SetBlockSize(1025 * i);
+end;
+
+procedure TVstPluginPerverseTests.TestCanDoUnknownTokens;
+var
+  TestCanDo : string;
+  CharCnt   : Integer;
+begin
+ // Test empty CanDo text
+ FVstHost[0].VstCanDo('');
+
+ // Test long CanDo text
+ TestCanDo := '2zcrfo3874zrbiwrbgrvsdrgbviwztvi374vöowiurzbi4t7zviw74tvposihfopit';
+ FVstHost[0].VstCanDo(TestCanDo);
+
+ // test very long CanDo text!
+ TestCanDo := '';
+ for CharCnt := 0 to 1111
+  do TestCanDo := TestCanDo + Char(1 + Random(200));
+ FVstHost[0].VstCanDo(TestCanDo);
+end;
+
+procedure TVstPluginPerverseTests.TestInvalidOpcodes;
+var
+  i  : Integer;
+begin
+ with FVstHost[0] do
+  for i := 0 to 1 do
+   begin
+    VstDispatch(effSetEditKnobMode, 0, 3);
+    VstDispatch(effSetViewPosition, 249824962, 300013512);
+    VstDispatch(effSetSpeakerArrangement);
+    VstDispatch(effOfflineNotify);
+    VstDispatch(effOfflinePrepare);
+    VstDispatch(effOfflineRun);
+    VstDispatch(effSetSampleRate);
+    VstDispatch(effSetSampleRate, 0, 0, nil, -44100);
+    VstDispatch(effEditGetRect);
+    VstDispatch(effEditIdle);
+    VstDispatch(effEditTop);
+    VstDispatch(effEditSleep);
+    VstDispatch(effEditDraw);
+    VstDispatch(effEditClose);
+    VstDispatch(effEditOpen);
+    VstDispatch(effEditGetRect);
+    VstDispatch(effProcessEvents);
+    VstDispatch(effGetVendorString);
+    VstDispatch(effGetProductString);
+    VstDispatch(effGetParamLabel);
+    VstDispatch(effGetParamName);
+    VstDispatch(effGetParamDisplay);
+    VstDispatch(effGetProductString);
+    VstDispatch(effShellGetNextPlugin);
+    VstDispatch(effBeginLoadBank);
+    VstDispatch(effGetParameterProperties);
+    VstDispatch(effOpen);
+    CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+      'effIdentify didn''t return NvEf');
+   end;
+
+{$IFNDEF NoInvalidOpcodes}
+ for i := 128 to 2000
+  do FVstHost[0].VstDispatch(TDispatcherOpcode(i));
+{$ENDIF}
+
+ with FVstHost[0] do
+  begin
+   VstDispatch(effClose);
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginPerverseTests.TestMultipleOpenCloseCycles;
+var
+  i : Integer;
+begin
+ for i := 0 to 9 do
+  with FVstHost[0] do
+   begin
+    Active := True;
+    Active := False;
+   end;
+end;
+
+procedure TVstPluginPerverseTests.TestInactiveSamplerateChanges;
+var
+  d : Single;
+begin
+ // Test Inactive Samplerate Change
+ FVstHost[0].Active := False;
+ d := 1;
+ while d <= 1411200 do
+  begin
+   FVstHost[0].SetSampleRate(d);
+   d := d * 1.1;
+  end;
+
+ // activate and directly deactivate
+ with FVstHost[0] do
+  begin
+   Active := True;
+   Active := False;
+  end;
+
+ d := 1;
+ while d <= 1411200 do
+  begin
+   FVstHost[0].SetSampleRate(d);
+   d := d * 1.1;
+  end;
+end;
+
+procedure TVstPluginPerverseTests.TestInactiveParameterSweeps;
 var
   Param : Integer;
   Value : Single;
@@ -302,13 +485,28 @@ begin
      while Value < 1 do
       begin
        Parameter[Param] := Value;
+       GetParameter(Param);
+       Value := Value + 0.01;
+      end;
+    end;
+
+   // passive, active, passive
+   Active := True;
+   Active := False;
+   for Param := 0 to numParams - 1 do
+    begin
+     Value := 0;
+     while Value < 1 do
+      begin
+       Parameter[Param] := Value;
+       GetParameter(Param);
        Value := Value + 0.01;
       end;
     end;
   end;
 end;
 
-procedure TVstPluginBasicTests.TestInactiveProcessReplacing;
+procedure TVstPluginPerverseTests.TestInactiveProcessReplacing;
 var
   Input   : array of PDavSingleFixedArray;
   Output  : array of PDavSingleFixedArray;
@@ -351,135 +549,7 @@ begin
   end;
 end;
 
-procedure TVstPluginBasicTests.TestActiveSamplerateChanges;
-var
-  d : Single;
-begin
- // Test Active Samplerate Change
- FVstHost[0].Active := True;
- d := 1;
- while d <= 1411200 do
-  begin
-   FVstHost[0].SetSampleRate(d);
-   d := d * 1.1;
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestInactiveSamplerateChanges;
-var
-  d : Single;
-begin
- // Test Inactive Samplerate Change
- FVstHost[0].Active := False;
- d := 1;
- while d <= 1411200 do
-  begin
-   FVstHost[0].SetSampleRate(d);
-   d := d * 1.1;
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
-var
-  i : Integer;
-begin
- with FVstHost[0] do
-  begin
-   Active := True;
-
-   // small block sizes
-   for i := 0 to 64 do SetBlockSize(i);
-
-   // medium odd block sizes
-   for i := 1 to 64 do SetBlockSize(19 * i);
-
-   // large odd block sizes
-   for i := 1 to 64 do SetBlockSize(1025 * i);
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestInactiveBlocksizeChanges;
-var
-  i : Integer;
-begin
- FVstHost[0].Active := False;
-
- // small block sizes
- for i := 0 to 64 do FVstHost[0].SetBlockSize(i);
-
- // medium odd block sizes
- for i := 1 to 64 do FVstHost[0].SetBlockSize(19 * i);
-
- // large odd block sizes
- for i := 1 to 64 do FVstHost[0].SetBlockSize(1025 * i);
-end;
-
-procedure TVstPluginBasicTests.TestCanDoUnknownTokens;
-var
-  TestCanDo : string;
-  CharCnt   : Integer;
-begin
- // Test empty CanDo text
- FVstHost[0].VstCanDo('');
-
- // Test long CanDo text
- TestCanDo := '2zcrfo3874zrbiwrbgrvsdrgbviwztvi374vöowiurzbi4t7zviw74tvposihfopit';
- FVstHost[0].VstCanDo(TestCanDo);
-
- // test very long CanDo text!
- TestCanDo := '';
- for CharCnt := 0 to 1111
-  do TestCanDo := TestCanDo + Char(1 + Random(200));
- FVstHost[0].VstCanDo(TestCanDo);
-end;
-
-procedure TVstPluginBasicTests.TestInvalidOpcodes;
-var
-  i : Integer;
-begin
- with FVstHost[0] do
-  for i := 0 to 1 do
-   begin
-    VstDispatch(effSetEditKnobMode, 0, 3);
-    VstDispatch(effSetViewPosition, 249824962, 300013512);
-    VstDispatch(effSetSpeakerArrangement);
-    VstDispatch(effOfflineNotify);
-    VstDispatch(effOfflinePrepare);
-    VstDispatch(effOfflineRun);
-    VstDispatch(effSetSampleRate);
-    VstDispatch(effSetSampleRate, 0, 0, nil, -44100);
-    VstDispatch(effEditGetRect);
-    VstDispatch(effEditIdle);
-    VstDispatch(effEditTop);
-    VstDispatch(effEditSleep);
-    VstDispatch(effEditClose);
-    VstDispatch(effEditOpen);
-    VstDispatch(effEditGetRect);
-    VstDispatch(effGetVendorString);
-    VstDispatch(effGetProductString);
-    VstDispatch(effGetParamLabel);
-    VstDispatch(effGetParamName);
-    VstDispatch(effGetParamDisplay);
-    VstDispatch(effGetProductString);
-    VstDispatch(effShellGetNextPlugin);
-    VstDispatch(effBeginLoadBank);
-    VstDispatch(effGetParameterProperties);
-    VstDispatch(effOpen);
-   end;
-
-{$IFNDEF NoInvalidOpcodes}
- for i := 128 to 2000
-  do FVstHost[0].VstDispatch(TDispatcherOpcode(i));
-{$ENDIF}
-
- with FVstHost[0] do
-  begin
-   VstDispatch(effClose);
-   VstDispatch(effClose);
-  end;
-end;
-
-procedure TVstPluginBasicTests.TestInvalidParameters;
+procedure TVstPluginPerverseTests.TestInvalidParameters;
 begin
  with FVstHost[0] do
   begin
@@ -530,10 +600,13 @@ end;
 
 { TVstPluginHostTests }
 
-procedure TVstPluginHostTests.TestFL8FastScanTest;
+procedure TVstPluginHostTests.TestFL8FastScan;
 var
   Data : PChar;
 begin
+ FVstHost.VendorString := 'Image-Line';
+ FVstHost.ProductString := 'Fruity Wrapper';
+
  with FVstHost[0] do
   begin
    if numPrograms <= 0
@@ -562,12 +635,18 @@ begin
   end;
 end;
 
-procedure TVstPluginHostTests.TestFL8Test;
+procedure TVstPluginHostTests.TestFL8;
 var
+  i    : Integer;
   Data : PChar;
   rct  : TRect;
   prct : PRect;
+  pp   : TVstPinProperties;
+  ve   : TVstEvents;
 begin
+ FVstHost.VendorString := 'Image-Line';
+ FVstHost.ProductString := 'Fruity Wrapper';
+
  with FVstHost[0] do
   begin
    // set samplerate
@@ -599,15 +678,22 @@ begin
     // get program
     VstDispatch(effGetProgram);
 
-(*
-effGetInputProperties Index: 0 Value: 0 Pointer: 1242428 Single: 0
-effGetInputProperties Index: 1 Value: 0 Pointer: 1242428 Single: 0
-effGetOutputProperties Index: 0 Value: 0 Pointer: 1242428 Single: 0
-effGetOutputProperties Index: 1 Value: 0 Pointer: 1242428 Single: 0
-*)
+    // get input properties
+    for i := 0 to numInputs - 1 do
+     if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+      end;
+
+    // get output properties
+    for i := 0 to numOutputs - 1 do
+     if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+      end;
 
     // Get Program Name Indexed
-    VstDispatch(effGetProgramNameIndexed, 0, -1);
+    VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
 
     // CanDo receiveVstMidiEvent
     VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
@@ -630,56 +716,172 @@ effGetOutputProperties Index: 1 Value: 0 Pointer: 1242428 Single: 0
     // get vendor string
     VstDispatch(effGetVendorString, 0, 0, Data);
 
-   // Open Editor
-   VstDispatch(effEditOpen);
+    // Open Editor
+    with TForm.Create(nil) do
+     try
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
-   // Get Editor Rect
-   prct := @rct;
-   VstDispatch(effEditGetRect, 0, 0, @prct);
+      // Get Editor Rect
+      prct := @rct;
+      VstDispatch(effEditGetRect, 0, 0, @prct);
 
-   VstDispatch(effEditGetRect, 0, 0, @prct);
+      // set bounds
+      SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
 
-   VstDispatch(effEditGetRect, 0, 0, @prct);
+      // repaint
+      Repaint;
+      Application.ProcessMessages;
 
-(*
-effProcessEvents Index: 0 Value: 0 Pointer: 113398208 Single: 0
-effProcessEvents Index: 0 Value: 0 Pointer: 113398208 Single: 0
-*)
-    VstDispatch(effProcessEvents);
-    VstDispatch(effProcessEvents);
+      VstDispatch(effEditGetRect, 0, 0, @prct);
 
+      VstDispatch(effEditGetRect, 0, 0, @prct);
 
-    // switch off
-    VstDispatch(effMainsChanged, 0, 0);
+      // process events
+      FillChar(ve, SizeOf(TVstEvents), 0);
+      VstDispatch(effProcessEvents, 0, 0, @ve);
 
-    // switch on
-    VstDispatch(effMainsChanged, 0, 1);
+      VstDispatch(effProcessEvents, 0, 0, @ve);
 
-    // switch off
-    VstDispatch(effMainsChanged, 0, 0);
+      // switch off
+      VstDispatch(effMainsChanged, 0, 0);
 
-    // get vendor string
-    VstDispatch(effGetVendorString, 0, 0, Data);
+      // switch on
+      VstDispatch(effMainsChanged, 0, 1);
+
+      // switch off
+      VstDispatch(effMainsChanged, 0, 0);
+
+      // get vendor string
+      VstDispatch(effGetVendorString, 0, 0, Data);
+
+      // edit close
+      VstDispatch(effEditClose);
+    finally
+     Free;
+    end;
 
    finally
     Dispose(Data);
    end;
 
-   // edit close
-   VstDispatch(effEditClose);
-
    // close plugin
    VstDispatch(effClose);
-
   end;
 end;
 
-procedure TVstPluginHostTests.TestReaperTest;
+procedure TVstPluginHostTests.TestMULAB;
+var
+  rct  : TRect;
+  prct : PRect;
+  pp   : TVstPinProperties;
+  ve   : TVstEvents;
+begin
+ FVstHost.VendorString := 'MUTOOLS.com';
+ FVstHost.ProductString := 'MU.LAB';
+
+ with FVstHost[0] do
+  begin
+   // check identify is fEvN
+   CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+     'effIdentify didn''t return NvEf');
+
+   // get vst version
+   VstDispatch(effGetVstVersion);
+
+   // open plugin
+   VstDispatch(effOpen);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 256);
+
+   // switch on
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // set program
+   VstDispatch(effSetProgram);
+
+   // set edit knob mode
+   VstDispatch(effSetEditKnobMode, 0, 3);
+
+   // idle
+   VstDispatch(effIdle, 0, 3);
+
+   // get input properties
+   if VstDispatch(effGetInputProperties, 0, 0, @pp) <> 0 then
+    begin
+     CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+    end;
+
+   // get output properties
+   if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+    begin
+     CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+    end;
+
+   // get vst version
+   VstDispatch(effGetVstVersion);
+
+   // process events
+   FillChar(ve, SizeOf(TVstEvents), 0);
+   VstDispatch(effProcessEvents, 0, 0, @ve);
+
+   // edit open
+   with TForm.Create(nil) do
+    try
+     VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+     // process events
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // Get Editor Rect
+     prct := @rct;
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // set bounds
+     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+
+     // repaint
+     Repaint;
+     Application.ProcessMessages;
+
+     // process events
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // edit draw
+     VstDispatch(effEditDraw, 0, 0, @prct);
+
+     // edit idle
+     VstDispatch(effEditIdle);
+
+     // process events
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // close
+     VstDispatch(effEditClose);
+    finally
+     Free;
+    end;
+
+   // switch off
+   VstDispatch(effMainsChanged, 0, 0);
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestReaper;
 var
   Data : PChar;
   rct  : TRect;
   prct : PRect;
 begin
+ FVstHost.VendorString := 'Cockos';
+ FVstHost.ProductString := 'REAPER';
+
  with FVstHost[0] do
   begin
    // open plugin
@@ -718,10 +920,10 @@ begin
    // CanDo receiveVstMidiEvent
    VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
 
-   // CanDo receiveVstMidiEvent
+   // get plugin category
    VstDispatch(effGetPlugCategory);
 
-   // CanDo receiveVstEvent
+   // CanDo sendVstEvents
    VstDispatch(effCanDo, 0, 0, PChar('sendVstEvents'));
 
    // Idle
@@ -749,43 +951,388 @@ begin
    VstDispatch(effEditGetRect, 0, 0, @prct);
 
    // Open Editor
-   VstDispatch(effEditOpen);
+   with TForm.Create(nil) do
+    try
+     VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
-   // Get Editor Rect
-   VstDispatch(effEditGetRect, 0, 0, @prct);
+     // Get Editor Rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
 
-   // Get Program
-   VstDispatch(effGetProgram);
+     // set bounds
+     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
 
-   // Editor Idle
-   VstDispatch(effIdle);
+     // repaint
+     Repaint;
+     Application.ProcessMessages;
 
-   // Idle
-   VstDispatch(effIdle);
+     // Get Program
+     VstDispatch(effGetProgram);
 
-   // Editor Idle
-   VstDispatch(effIdle);
+     // Editor Idle
+     VstDispatch(effIdle);
 
-   // Idle
-   VstDispatch(effIdle);
+     // Idle
+     VstDispatch(effIdle);
 
-   // Get Editor Rect
-   VstDispatch(effEditGetRect, 0, 0, @prct);
+     // Editor Idle
+     VstDispatch(effIdle);
 
-   // edit close
-   VstDispatch(effEditClose);
+     // Idle
+     VstDispatch(effIdle);
+
+     // Get Editor Rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // edit close
+     VstDispatch(effEditClose);
+    finally
+     Free;
+    end;
 
    // stop process
    VstDispatch(effStopProcess);
+
    // close
    VstDispatch(effClose);
   end;
 end;
 
-procedure TVstPluginHostTests.TestSimpleCubaseTest;
+procedure TVstPluginHostTests.TestSamplitude;
+var
+  i    : Integer;
+  prct : PRect;
+  rct  : TRect;
+  Data : PChar;
+begin
+ FVstHost.VendorString := 'MAGIX';
+ FVstHost.ProductString := 'Samplitude';
+
+ with FVstHost[0] do
+  begin
+   // open
+   VstDispatch(effOpen);
+
+   // set program
+   VstDispatch(effSetProgram);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 4096);
+
+   GetMem(Data, 1024);
+   try
+    // get vendor string
+    VstDispatch(effGetVendorString, 0, 0, Data);
+
+    // get vendor version
+    VstDispatch(effGetVstVersion);
+
+    // CanDo receiveVstMidiEvent
+    VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+
+    // set program
+    VstDispatch(effSetProgram);
+
+    // set samplerate
+    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+    // set blocksize
+    VstDispatch(effSetBlockSize, 0, 4096);
+
+    // Get Program Name Indexed
+    VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
+   finally
+    Dispose(Data);
+   end;
+
+   // switch on
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // set edit knob mode
+   VstDispatch(effSetEditKnobMode);
+
+   // Get Editor Rect
+   prct := @rct;
+   VstDispatch(effEditGetRect, 0, 0, @prct);
+
+   with TForm.Create(nil) do
+    try
+     VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+     // edit top
+     VstDispatch(effEditTop);
+
+     GetMem(Data, 1024);
+     try
+      // get parameter name
+      for i := 0 to numParams - 1
+       do VstDispatch(effGetParamName, i, 0, Data);
+
+      for i := 0 to numParams - 1 do
+       begin
+        // get param name
+        VstDispatch(effGetParamDisplay, i, 0, Data);
+
+        // get param label
+        VstDispatch(effGetParamLabel, i, 0, Data);
+
+        // check can be automated
+        VstDispatch(effCanBeAutomated, i);
+       end;
+     finally
+      Dispose(Data);
+     end;
+
+     // get parameter
+     for i := 0 to numParams - 1
+      do GetParameter(i);
+
+     // get editor rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // get editor rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // idle
+     VstDispatch(effEditDraw);
+
+     // idle
+     VstDispatch(effIdle);
+
+     // editor idle
+     VstDispatch(effEditIdle);
+
+     // switch off
+     VstDispatch(effMainsChanged, 0, 0);
+
+     // close editor
+     VstDispatch(effEditClose);
+    finally
+     Free;
+    end;
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestTracktion2;
+var
+  i, j : Integer;
+  pp   : TVstPinProperties;
+  ve   : TVstEvents;
+  Data : PChar;
+  prct : PRect;
+  rct  : TRect;
+begin
+ FVstHost.VendorString := '';
+ FVstHost.ProductString := 'Tracktion 2';
+
+ with FVstHost[0] do
+  begin
+   CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+     'effIdentify didn''t return NvEf');
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 2048);
+
+   // open
+   VstDispatch(effOpen);
+
+   // set program
+   VstDispatch(effSetProgram);
+
+   // get program
+   VstDispatch(effGetProgram);
+
+   // get input connected
+   for i := numInputs - 1 downto 0
+    do VstDispatch(effConnectInput, i);
+
+   // get output connected
+   for i := numOutputs - 1 downto 0
+    do VstDispatch(effConnectOutput, i);
+
+   // get output properties
+   for i := 0 to numOutputs - 1 do
+    if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+     begin
+      CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+     end;
+
+   GetMem(Data, 1024);
+   try
+    for i := 0 to numParams - 1 do
+     begin
+      // get parameter name
+      VstDispatch(effGetParamName, i, 0, Data);
+
+      // get parameter name
+      VstDispatch(effCanBeAutomated, i);
+
+      GetParameter(i);
+     end;
+   finally
+    Dispose(Data);
+   end;
+
+   GetMem(Data, 1024);
+   try
+    // get program name indexed
+    VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
+
+    for j := 0 to numPrograms - 1 do
+     begin
+      // get/set program
+      if VstDispatch(effGetProgram) <> j
+       then VstDispatch(effSetProgram, 0, j);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // get program name
+      VstDispatch(effGetProgramName, 0, 0, Data);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      for i := 0 to numParams - 1
+       do GetParameter(i);
+     end;
+
+    // get/set program
+    if VstDispatch(effGetProgram) <> 0
+     then VstDispatch(effSetProgram);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    for i := 0 to numParams - 1
+     do GetParameter(i);
+
+    // get program name
+    VstDispatch(effGetProgramName, 0, 0, Data);
+
+   finally
+    Dispose(Data);
+   end;
+
+   // CanDo receiveVstMidiEvent
+   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+
+   // get plugin category
+   VstDispatch(effGetPlugCategory);
+
+   // get plugin category
+   VstDispatch(effGetPlugCategory);
+
+   // get program
+   for j := 0 to numPrograms - 1
+    do VstDispatch(effGetProgram);
+
+   // get editor rect
+   prct := @rct;
+   VstDispatch(effEditGetRect, 0, 0, @prct);
+
+   with TForm.Create(nil) do
+    try
+     // open editor
+     VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+     // get editor rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
+
+     // set bounds
+     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
+
+     // repaint
+     Repaint;
+     Application.ProcessMessages;
+
+     // get program
+     VstDispatch(effGetProgram);
+
+     // keys required
+     VstDispatch(effKeysRequired);
+
+     // edit idle
+     VstDispatch(effEditIdle);
+
+     // switch on
+     VstDispatch(effMainsChanged, 0, 1);
+
+     // start process
+     VstDispatch(effStartProcess);
+
+     // process events
+     FillChar(ve, SizeOf(TVstEvents), 0);
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // edit idle
+     VstDispatch(effEditIdle);
+
+     // process events
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // get program
+     VstDispatch(effGetProgram);
+
+     // get program
+     VstDispatch(effGetProgram);
+
+     GetMem(Data, 1024);
+     try
+      // get program name
+      VstDispatch(effGetProgramName, 0, 0, Data);
+     finally
+      Dispose(Data)
+     end;
+
+     // process events
+     VstDispatch(effProcessEvents, 0, 0, @ve);
+
+     // stop processing
+     VstDispatch(effStopProcess);
+
+     // close editor
+     VstDispatch(effEditClose);
+
+    finally
+     Free;
+    end;
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestTracktion2Scan;
+begin
+ FVstHost.VendorString := '';
+ FVstHost.ProductString := 'Tracktion 2';
+
+ with FVstHost[0] do
+  begin
+   VstDispatch(effGetPlugCategory);
+   CheckTrue(TChunkName(VstDispatch(effIdentify)) = 'fEvN',
+     'effIdentify didn''t return NvEf');
+   VstDispatch(effOpen);
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestCubaseScan;
 var
   Data : PChar;
 begin
+ FVstHost.VendorString := 'Steinberg';
+ FVstHost.ProductString := 'Cubase VST';
+
  with FVstHost[0] do
   begin
    // get vst version
@@ -831,13 +1378,215 @@ begin
   end;
 end;
 
-procedure TVstPluginHostTests.TestCantabileTest;
+procedure TVstPluginHostTests.TestAbletonLive;
+var
+  i, j : Integer;
+  pp   : TVstPinProperties;
+  Data : PChar;
+  prct : PRect;
+  rct  : TRect;
+begin
+ FVstHost.VendorString := 'Ableton';
+ FVstHost.ProductString := 'Live';
+
+ with FVstHost[0] do
+  begin
+   // get vst version
+   VstDispatch(effGetVstVersion);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 128);
+
+   // open
+   VstDispatch(effOpen);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 128);
+
+   // CanDo sendVstMidiEvent
+   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+
+   // CanDo receiveVstMidiEvent
+   VstDispatch(effCanDo, 0, 0, PChar('receiveVstMidiEvent'));
+
+   // CanDo midiProgramNames
+   VstDispatch(effCanDo, 0, 0, PChar('midiProgramNames'));
+
+   // get input properties
+   for i := 0 to numInputs - 1 do
+    if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
+     begin
+      CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+     end;
+
+   // get output properties
+   for i := 0 to numOutputs - 1 do
+    if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+     begin
+      CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+     end;
+
+   // switch on
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // switch off
+   VstDispatch(effMainsChanged, 0, 0);
+
+   // get input properties
+   for i := 0 to numInputs - 1 do
+    if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
+     begin
+      CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+     end;
+
+   // get output properties
+   for i := 0 to numOutputs - 1 do
+    if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+     begin
+      CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+     end;
+
+   // get midi input channel count
+   VstDispatch(effGetNumMidiInputChannels);
+
+   // get midi output channel count
+   VstDispatch(effGetNumMidiOutputChannels);
+
+   // get program
+   VstDispatch(effGetProgram);
+
+   GetMem(Data, 1024);
+   try
+
+    // get program name indexed
+    for j := 0 to numPrograms - 1
+     do VstDispatch(effGetProgramNameIndexed, j, -1, Data);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    for j := 0 to numParams - 1 do
+     begin
+      // get parameter
+      GetParameter(j);
+
+      // get parameter name
+      VstDispatch(effGetParamName, j, 0, Data);
+
+      // get parameter display
+      VstDispatch(effGetParamDisplay, j, 0, Data);
+
+      // get parameter label
+      VstDispatch(effGetParamLabel, j, 0, Data);
+
+      // get parameter can be automated
+      VstDispatch(effCanBeAutomated, j, 0, Data);
+     end;
+
+    with TForm.Create(nil) do
+     try
+      // get program
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+      // set edit knob mode
+      VstDispatch(effSetEditKnobMode, 0, 2);
+
+      // get editor rect
+      prct := @rct;
+      VstDispatch(effEditGetRect, 0, 0, @prct);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // set program
+      VstDispatch(effSetProgram);
+
+      // get program name
+      VstDispatch(effGetProgramName, 0, 0, Data);
+
+      for j := 0 to numPrograms - 1 do
+       begin
+        // set program
+        VstDispatch(effSetProgram, 0, j);
+
+        // get program name
+        VstDispatch(effGetProgramName, 0, 0, Data);
+
+        // get parameter
+        for i := 0 to numParams - 1
+         do GetParameter(i);
+       end;
+
+       // set program
+       VstDispatch(effSetProgram);
+
+       // get program
+       VstDispatch(effGetProgram);
+
+       // switch on
+       VstDispatch(effMainsChanged, 0, 1);
+
+       // start process
+       VstDispatch(effStartProcess);
+
+       // edit idle
+       VstDispatch(effEditIdle);
+
+       // set program
+       VstDispatch(effSetProgram);
+
+       // stop process
+       VstDispatch(effStopProcess);
+
+       // edit close
+       VstDispatch(effEditClose);
+
+     finally
+      Dispose(Data);
+     end;
+
+   finally
+    Free;
+   end;
+
+   // switch off
+   VstDispatch(effMainsChanged);
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestAbletonLiveScan;
+begin
+ FVstHost.VendorString := 'Ableton';
+ FVstHost.ProductString := 'Live';
+
+ with FVstHost[0] do
+  begin
+   VstDispatch(effGetVstVersion);
+   VstDispatch(effGetPlugCategory);
+   VstDispatch(effGetPlugCategory);
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestCantabile;
 var
   Data : PChar;
   i    : Integer;
   rct  : TRect;
   prct : PRect;
 begin
+ FVstHost.VendorString := 'Topten Software';
+ FVstHost.ProductString := 'Cantabile';
+
  with FVstHost[0] do
   begin
    // open
@@ -914,66 +1663,83 @@ begin
     // get plugin category
     VstDispatch(effGetProductString, 0, 0, Data);
 
-(*
-effEditOpen Index: 0 Value: 0 Pointer: 787172 Single: 0
-*)
+    with TForm.Create(nil) do
+     try
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
-    VstDispatch(effSetEditKnobMode, 0, 2);
+      // set edit knob
+      VstDispatch(effSetEditKnobMode, 0, 2);
 
-    prct := @rct;
-    VstDispatch(effEditGetRect, 0, 0, @prct);
+      // get edit rect
+      prct := @rct;
+      VstDispatch(effEditGetRect, 0, 0, @prct);
 
-    // get program
-    VstDispatch(effGetProgram);
+      // set bounds
+      SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
 
-    // get program name indexed
-    VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+      // repaint
+      Repaint;
+      Application.ProcessMessages;
 
-    // get program
-    VstDispatch(effGetProgram);
+      // get program
+      VstDispatch(effGetProgram);
+
+      // get program name indexed
+      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // edit top
+      VstDispatch(effEditTop);
+
+      // edit idle
+      VstDispatch(effEditIdle);
+
+      // edit sleep
+      VstDispatch(effEditSleep);
+
+      // edit idle
+      VstDispatch(effEditIdle);
+
+      // stop process
+      VstDispatch(effStopProcess);
+
+      // switch off
+      VstDispatch(effMainsChanged, 0, 0);
+
+      // edit top
+      VstDispatch(effEditTop);
+
+      // edit sleep
+      VstDispatch(effEditSleep);
+
+      // edit close
+      VstDispatch(effEditClose);
+     finally
+      Free;
+     end;
 
    finally
     Dispose(Data);
    end;
-
-   // edit top
-   VstDispatch(effEditTop);
-
-   // edit idle
-   VstDispatch(effEditIdle);
-
-   // edit sleep
-   VstDispatch(effEditSleep);
-
-   // edit idle
-   VstDispatch(effEditIdle);
-
-   // stop process
-   VstDispatch(effStopProcess);
-
-   // switch off
-   VstDispatch(effMainsChanged, 0, 0);
-
-   // edit top
-   VstDispatch(effEditTop);
-
-   // edit sleep
-   VstDispatch(effEditSleep);
-
-   // edit close
-   VstDispatch(effEditClose);
-
+   
    // close
    VstDispatch(effClose);
   end;
 end;
 
-procedure TVstPluginHostTests.TestDefaultCubaseTest;
+procedure TVstPluginHostTests.TestCubase;
 var
   Data : PChar;
   i, j : Integer;
   ChNm : TChunkName;
+  rct  : TRect;
+  prct : PRect;
 begin
+ FVstHost.VendorString := 'Steinberg';
+ FVstHost.ProductString := 'Cubase VST';
+
  with FVstHost[0] do
   begin
    // get vst version
@@ -1056,7 +1822,7 @@ begin
    VstDispatch(effSetBlockSize, 0, 2048);
 
 (*
-effSetSpeakerArrangement Index: 0 Value: 280560528 Pointer: 280561440 Single: 0
+   effSetSpeakerArrangement Index: 0 Value: 280560528 Pointer: 280561440 Single: 0
 *)
 
    // effVendorSpecific Chunkname: aCts Value: 1164857154 Pointer: 0 Single: 0
@@ -1081,97 +1847,116 @@ effSetSpeakerArrangement Index: 0 Value: 280560528 Pointer: 280561440 Single: 0
    VstDispatch(effSetEditKnobMode, 0, 2);
 
    // get edit rect
-   VstDispatch(effEditGetRect);
+   prct := @rct;
+   VstDispatch(effEditGetRect, 0, 0, @prct);
 
-   // open edit
-   VstDispatch(effEditOpen);
+   with TForm.Create(nil) do
+    try
+     // open edit
+     VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
-   // get edit rect
-   VstDispatch(effEditGetRect);
+     // get edit rect
+     VstDispatch(effEditGetRect, 0, 0, @prct);
 
-   // get edit idle
-   VstDispatch(effEditIdle);
+     // set bounds
+     SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
 
-   if numPrograms <= 0
-    then Fail('No programs found, Cubase will probably crash!');
+     // repaint
+     Repaint;
+     Application.ProcessMessages;
 
-   // program scanning
-   GetMem(Data, 1024);
-   try
-    // get program
-    VstDispatch(effGetProgram);
+     // get edit idle
+     VstDispatch(effEditIdle);
 
-    for i := 0 to numPrograms - 1 do
-     begin
-      // set program
-      VstDispatch(effSetProgram, 0, i);
+     if numPrograms <= 0
+      then Fail('No programs found, Cubase will probably crash!');
 
-      // get program name
-      VstDispatch(effGetProgramName, 0, 0, Data);
-     end;
-
-    for j := 0 to numPrograms - 1 do
-     begin
+     // program scanning
+     GetMem(Data, 1024);
+     try
       // get program
       VstDispatch(effGetProgram);
 
-      // get program name indexed
-      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
-
-      // set program
-      VstDispatch(effSetProgram, 0, j);
-
-      // get program name
-      VstDispatch(effGetProgramName, j, 0, Data);
-
-      // get program name indexed
-      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
-
-      for i := 0 to numParams - 1 do
+      for i := 0 to numPrograms - 1 do
        begin
-        // check can be automated
-        VstDispatch(effCanBeAutomated, i);
+        // set program
+        VstDispatch(effSetProgram, 0, i);
 
-        // get param name
-        VstDispatch(effGetParamName, i, 0, Data);
-
-        // get param label
-        VstDispatch(effGetParamLabel, i, 0, Data);
-
-        // get param properties
-        VstDispatch(effGetParameterProperties, i, 0, Data);
+        // get program name
+        VstDispatch(effGetProgramName, 0, 0, Data);
        end;
+
+      for j := 0 to numPrograms - 1 do
+       begin
+        // get program
+        VstDispatch(effGetProgram);
+
+        // get program name indexed
+        VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+        // set program
+        VstDispatch(effSetProgram, 0, j);
+
+        // get program name
+        VstDispatch(effGetProgramName, j, 0, Data);
+
+        // get program name indexed
+        VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+        for i := 0 to numParams - 1 do
+         begin
+          // check can be automated
+          VstDispatch(effCanBeAutomated, i);
+
+          // get param name
+          VstDispatch(effGetParamName, i, 0, Data);
+
+          // get param label
+          VstDispatch(effGetParamLabel, i, 0, Data);
+
+          // get param properties
+          VstDispatch(effGetParameterProperties, i, 0, Data);
+         end;
+       end;
+
+     finally
+      Dispose(Data);
      end;
 
-   finally
-    Dispose(Data);
-   end;
+     // get program
+     VstDispatch(effGetProgram);
 
-   // get program
-   VstDispatch(effGetProgram);
+     // get edit idle
+     VstDispatch(effEditIdle);
 
-   // get edit idle
-   VstDispatch(effEditIdle);
+     // stop process
+     VstDispatch(effStopProcess);
 
-   // stop process
-   VstDispatch(effStopProcess);
+     // switch off
+     VstDispatch(effMainsChanged, 0, 0);
 
-   // switch off
-   VstDispatch(effMainsChanged, 0, 0);
-
-   // close edit
-   VstDispatch(effEditClose);
+     // close edit
+     VstDispatch(effEditClose);
+    finally
+     Free;
+    end;
 
    // close
    VstDispatch(effClose);
   end;
 end;
 
-procedure TVstPluginHostTests.TestReloadPluginCubaseTest;
+procedure TVstPluginHostTests.TestReloadPluginCubase;
 var
   Data : PChar;
   i, j : Integer;
+  rct  : TRect;
+  prct : PRect;
+  ChNm : TChunkName;
 begin
+ FVstHost.VendorString := 'Steinberg';
+ FVstHost.ProductString := 'Cubase VST';
+
  with FVstHost[0] do
   begin
    // get vst version
@@ -1273,10 +2058,13 @@ begin
     VstDispatch(effSetBlockSize, 0, 2048);
 
  (*
- effSetSpeakerArrangement Index: 0 Value: 280560528 Pointer: 280561440 Single: 0
- effVendorSpecific Chunkname: aCts Value: 1164855618 Pointer: 0 Single: 0
- effVendorSpecific Chunkname: aCts Value: 1164857154 Pointer: 0 Single: 0
+    effSetSpeakerArrangement Index: 0 Value: 280560528 Pointer: 280561440 Single: 0
  *)
+
+    ChNm := 'aCts';
+    VstDispatch(effVendorSpecific, Integer(ChNm), Integer(ChNm));
+
+    VstDispatch(effVendorSpecific, Integer(ChNm), Integer(ChNm));
 
     // switch on
     VstDispatch(effMainsChanged, 0, 1);
@@ -1303,92 +2091,106 @@ begin
     VstDispatch(effSetEditKnobMode, 0, 2);
 
     // get edit rect
-    VstDispatch(effEditGetRect);
+    prct := @rct;
+    VstDispatch(effEditGetRect, 0, 0, @prct);
 
-    // open edit
-    VstDispatch(effEditOpen);
+    with TForm.Create(nil) do
+     try
+      // open edit
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
 
-    // get edit rect
-    VstDispatch(effEditGetRect);
+      // get edit rect
+      VstDispatch(effEditGetRect, 0, 0, @prct);
 
-    // stop process
-    VstDispatch(effStopProcess);
+      // set bounds
+      SetBounds(rct.Left, rct.Top, rct.Right - rct.Left, rct.Bottom - rct.Top);
 
-    // get edit idle
-    VstDispatch(effEditIdle);
+      // repaint
+      Repaint;
+      Application.ProcessMessages;
 
-    // start process
-    VstDispatch(effStartProcess);
+      // stop process
+      VstDispatch(effStopProcess);
 
-    // get edit idle
-    VstDispatch(effEditIdle);
+      // get edit idle
+      VstDispatch(effEditIdle);
 
-    if numPrograms <= 0
-     then Fail('No programs found, Cubase will probably crash!');
+      // start process
+      VstDispatch(effStartProcess);
 
-    // get program
-    VstDispatch(effGetProgram);
+      // get edit idle
+      VstDispatch(effEditIdle);
 
-    for i := 0 to numPrograms - 1 do
-     begin
-      // set program
-      VstDispatch(effSetProgram, 0, i);
+      if numPrograms <= 0
+       then Fail('No programs found, Cubase will probably crash!');
 
-      // get program name
-      VstDispatch(effGetProgramName, 0, 0, Data);
-     end;
-
-    for j := 0 to numPrograms - 1 do
-     begin
       // get program
       VstDispatch(effGetProgram);
 
-      // get program name indexed
-      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
-
-      // set program
-      VstDispatch(effSetProgram, 0, j);
-
-      // get program name
-      VstDispatch(effGetProgramName, j, 0, Data);
-
-      // get program name indexed
-      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
-
-      for i := 0 to numParams - 1 do
+      for i := 0 to numPrograms - 1 do
        begin
-        // check can be automated
-        VstDispatch(effCanBeAutomated, i);
+        // set program
+        VstDispatch(effSetProgram, 0, i);
 
-        // get param name
-        VstDispatch(effGetParamName, i, 0, Data);
-
-        // get param label
-        VstDispatch(effGetParamLabel, i, 0, Data);
-
-        // get param properties
-        VstDispatch(effGetParameterProperties, i, 0, Data);
+        // get program name
+        VstDispatch(effGetProgramName, 0, 0, Data);
        end;
+
+      for j := 0 to numPrograms - 1 do
+       begin
+        // get program
+        VstDispatch(effGetProgram);
+
+        // get program name indexed
+        VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+        // set program
+        VstDispatch(effSetProgram, 0, j);
+
+        // get program name
+        VstDispatch(effGetProgramName, j, 0, Data);
+
+        // get program name indexed
+        VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+        for i := 0 to numParams - 1 do
+         begin
+          // check can be automated
+          VstDispatch(effCanBeAutomated, i);
+
+          // get param name
+          VstDispatch(effGetParamName, i, 0, Data);
+
+          // get param label
+          VstDispatch(effGetParamLabel, i, 0, Data);
+
+          // get param properties
+          VstDispatch(effGetParameterProperties, i, 0, Data);
+         end;
+       end;
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // get edit idle
+      VstDispatch(effEditIdle);
+
+      // stop process
+      VstDispatch(effStopProcess);
+
+      // switch off
+      VstDispatch(effMainsChanged, 0, 0);
+
+      // close edit
+      VstDispatch(effEditClose);
+
+     finally
+      Free;
      end;
 
    finally
     Dispose(Data);
    end;
-
-   // get program
-   VstDispatch(effGetProgram);
-
-   // get edit idle
-   VstDispatch(effEditIdle);
-
-   // stop process
-   VstDispatch(effStopProcess);
-
-   // switch off
-   VstDispatch(effMainsChanged, 0, 0);
-
-   // close edit
-   VstDispatch(effEditClose);
 
    // close
    VstDispatch(effClose);
@@ -1450,6 +2252,8 @@ begin
  inherited;
  SetupBuffers;
 
+ FVstHost.VendorString := 'Delphi ASIO & VST Project';
+ FVstHost.ProductString := 'Delphi ASIO & VST Project';
  with FVstHost[0] do
   begin
    Active := True;
@@ -1712,6 +2516,9 @@ begin
  FVstProcessThread := TVSTProcessThread.Create(FVstHost[0]);
  FVstProcessThread.BlockSize := FBlockSize;
 
+ FVstHost.VendorString := 'Delphi ASIO & VST Project';
+ FVstHost.ProductString := 'Delphi ASIO & VST Project';
+
  with FVstHost[0] do
   begin
    Active := True;
@@ -1807,6 +2614,7 @@ begin
   end;
 end;
 
+{$IFNDEF CONSOLE_TESTRUNNER}
 procedure EnumerateVstPlugins;
 var
   SR   : TSearchRec;
@@ -1830,6 +2638,7 @@ begin
          TS := TTestVstSuite.Create(SR.Name);
          TS.VstPluginName := SR.Name;
          TS.AddTests(TVstPluginBasicTests);
+         TS.AddTests(TVstPluginPerverseTests);
          TS.AddTests(TVstPluginHostTests);
          TS.AddTests(TVstPluginIOTests);
          TS.AddTests(TVstPluginIOThreadTests);
@@ -1846,14 +2655,25 @@ begin
    Free;
   end;
 end;
+{$ENDIF}
 
 initialization
   if ParamStr(1) <> '' then
    begin
     RegisterTest(TVstPluginBasicTests.Suite);
+    RegisterTest(TVstPluginPerverseTests.Suite);
     RegisterTest(TVstPluginHostTests.Suite);
     RegisterTest(TVstPluginIOTests.Suite);
     RegisterTest(TVstPluginIOThreadTests.Suite);
-   end else EnumerateVstPlugins;
+   end else
+{$IFNDEF CONSOLE_TESTRUNNER}
+  EnumerateVstPlugins;
+{$ELSE}
+  begin
+   WriteLn('Please specify a VST plugin DLL!');
+   WriteLn('');
+   WriteLn('Usage: ' + ExtractFileName(ParamStr(0)) + ' filename');
+  end;
+{$ENDIF}
 
 end.

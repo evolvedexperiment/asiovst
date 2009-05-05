@@ -210,9 +210,9 @@ end;
 
 procedure TCustomDspBarberpole.SetSampleRate(const Value: Double);
 begin
- if FSampleRate <> Value then
+ if FSampleRate <> abs(Value) then
   begin
-   FSampleRate := Value;
+   FSampleRate := abs(Value);
    SampleRateChanged;
   end;
 end;

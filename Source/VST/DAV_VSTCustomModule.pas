@@ -29,7 +29,7 @@ type
   TSoftBypassEvent         = procedure(Sender: TObject; const isBypass: Boolean) of object;
   TOnSetPanLawEvent        = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
   TGetEditorEvent          = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
-  TOnVendorSpecificEvent   = function(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: pointer; const floatArg: Single): Integer of object;
+  TOnVendorSpecificEvent   = function(Sender: TObject; const Index, Value: Integer; const Ptr: pointer; const Float: Single): Integer of object;
   TOnCanDoEvent            = function(Sender: TObject; const CanDoText: string): Integer of object;
   TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;
   TOnEditClose             = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
@@ -473,7 +473,7 @@ end;
 function TCustomVSTModule.HostCallSetSampleRate(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallSetSampleRate (' + FloatToStr(Opt) + ')'); {$ENDIF}
- setSampleRate(opt);
+ SetSampleRate(opt);
  Result := 1;
 end;
 
@@ -1285,7 +1285,7 @@ end;
 
 procedure TCustomVSTModule.SampleRateChanged;
 begin
-  if Assigned(FSampleRateChangeEvent) then FSampleRateChangeEvent(Self,FSampleRate);
+ if Assigned(FSampleRateChangeEvent) then FSampleRateChangeEvent(Self,FSampleRate);
 end;
 
 {$WARNINGS ON}

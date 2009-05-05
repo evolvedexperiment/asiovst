@@ -79,6 +79,7 @@ object VOLDataModule: TVOLDataModule
       DisplayName = 'Category 1'
       VSTModule = Owner
     end>
+  OnOpen = VSTModuleOpen
   OnEditOpen = VSTModuleEditOpen
   Left = 286
   Top = 77
