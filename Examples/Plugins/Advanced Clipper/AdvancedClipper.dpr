@@ -4,10 +4,10 @@ library AdvancedClipper;
 {$R 'AdvancedClipper.res' 'AdvancedClipper.rc'}
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
+  FastMM4,
   madExcept,
-  madLinkDisAsm,
+  madLinkDisAsm,  // either download the library or comment if there is an error here
+  FastMove,
   RTLVCLOptimize,
   DAV_WinAmp,
   DAV_VSTEffect,

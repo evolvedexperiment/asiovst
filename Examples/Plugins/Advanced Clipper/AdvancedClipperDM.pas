@@ -5,11 +5,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPUpDownsampling;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  DAV_VSTModule, DAV_DSPUpDownsampling;
 
 type
   TAdvancedClipperDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -28,10 +30,11 @@ type
     procedure ParamHardClipDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamHardClipChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FUpDownSampling : array [0..3] of TDAVUpDownsampling;
-    FInputGain      : Single;
-    FOutputGain     : Single;
-    FHardClip       : Boolean;
+    FUpDownSampling  : array [0..3] of TDAVUpDownsampling;
+    FInputGain       : Single;
+    FOutputGain      : Single;
+    FHardClip        : Boolean;
+    FCriticalSection : TCriticalSection;
   public
   end;
 
@@ -41,6 +44,16 @@ implementation
 
 uses
   AdvancedClipperGUI, DAV_VSTModuleWithPrograms;
+
+procedure TAdvancedClipperDataModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TAdvancedClipperDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TAdvancedClipperDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -179,9 +192,14 @@ procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const 
 var
   ch : Integer;
 begin
- for ch := 0 to 1 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Factor := round(Value);
+ FCriticalSection.Enter;
+ try
+  for ch := 0 to 1 do
+   if assigned(FUpDownSampling[ch])
+    then FUpDownSampling[ch].Factor := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
  if EditorForm is TFmAdvancedClipper then
   with TFmAdvancedClipper(EditorForm) do
    begin
@@ -193,25 +211,24 @@ procedure TAdvancedClipperDataModule.ParamOSFactor2Change(Sender: TObject; const
 var
   ch : Integer;
 begin
- for ch := 2 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Factor := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOSFactor2;
-   end;
+ FCriticalSection.Enter;
+ try
+  for ch := 2 to 3 do
+   if assigned(FUpDownSampling[ch])
+    then FUpDownSampling[ch].Factor := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+ if EditorForm is TFmAdvancedClipper
+  then TFmAdvancedClipper(EditorForm).UpdateOSFactor2;
 end;
 
 procedure TAdvancedClipperDataModule.ParamInputGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FInputGain := dB_to_Amp(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateInputGain;
-   end;
+ if EditorForm is TFmAdvancedClipper
+  then TFmAdvancedClipper(EditorForm).UpdateInputGain;
 end;
 
 procedure TAdvancedClipperDataModule.ParamRoundDisplay(
@@ -232,11 +249,8 @@ procedure TAdvancedClipperDataModule.ParamHardClipChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FHardClip := Boolean(round(Value));
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateHardClip;
-   end;
+ if EditorForm is TFmAdvancedClipper
+  then TFmAdvancedClipper(EditorForm).UpdateHardClip;
 end;
 
 procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
@@ -244,9 +258,14 @@ procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
 var
   ch : Integer;
 begin
- for ch := 0 to 1 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+ FCriticalSection.Enter;
+ try
+  for ch := 0 to 1 do
+   if assigned(FUpDownSampling[ch])
+    then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAdvancedClipperDataModule.ParamBW2Change(
@@ -254,20 +273,22 @@ procedure TAdvancedClipperDataModule.ParamBW2Change(
 var
   ch : Integer;
 begin
- for ch := 2 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+ FCriticalSection.Enter;
+ try
+  for ch := 2 to 3 do
+   if assigned(FUpDownSampling[ch])
+    then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAdvancedClipperDataModule.ParamOutputGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FOutputGain := dB_to_Amp(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOutputGain;
-   end;
+ if EditorForm is TFmAdvancedClipper
+  then TFmAdvancedClipper(EditorForm).UpdateOutputGain;
 end;
 
 procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
@@ -275,14 +296,16 @@ procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
 var
   ch : Integer;
 begin
- for ch := 0 to 1 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Order := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOrder1;
-   end;
+ FCriticalSection.Enter;
+ try
+  for ch := 0 to 1 do
+   if assigned(FUpDownSampling[ch])
+    then FUpDownSampling[ch].Order := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+ if EditorForm is TFmAdvancedClipper
+  then TFmAdvancedClipper(EditorForm).UpdateOrder1;
 end;
 
 procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
@@ -290,14 +313,16 @@ procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
 var
   ch : Integer;
 begin
- for ch := 2 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].Order := round(Value);
- if EditorForm is TFmAdvancedClipper then
-  with TFmAdvancedClipper(EditorForm) do
-   begin
-    UpdateOrder2;
-   end;
+ FCriticalSection.Enter;
+ try
+  for ch := 2 to 3 do
+   if assigned(FUpDownSampling[ch])
+    then FUpDownSampling[ch].Order := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+ if EditorForm is TFmAdvancedClipper
+  then TFmAdvancedClipper(EditorForm).UpdateOrder2;
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleProcess(const Inputs,
@@ -307,22 +332,27 @@ var
   InterStage : Double;
   d          : array [0..15] of Double;
 begin
- for i := 0 to SampleFrames - 1 do
-  for ch := 0 to 1 do
-   begin
-    FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
-    for j := 0 to FUpDownSampling[ch].Factor - 1
-     do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    InterStage := FUpDownSampling[ch].Downsample64(@d);
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   for ch := 0 to 1 do
+    begin
+     FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
+     for j := 0 to FUpDownSampling[ch].Factor - 1
+      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
+     InterStage := FUpDownSampling[ch].Downsample64(@d);
 
-    FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
-    for j := 0 to FUpDownSampling[ch + 2].Factor - 1
-     do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
-    if FHardClip
-     then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
-    Outputs[ch, i] := FOutputGain * d[0];
-   end;
+     FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
+     for j := 0 to FUpDownSampling[ch + 2].Factor - 1
+      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
+     d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
+     if FHardClip
+      then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
+     Outputs[ch, i] := FOutputGain * d[0];
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleProcessDoubleReplacing(
@@ -333,22 +363,27 @@ var
   InterStage : Double;
   d          : array [0..15] of Double;
 begin
- for i := 0 to SampleFrames - 1 do
-  for ch := 0 to 1 do
-   begin
-    FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
-    for j := 0 to FUpDownSampling[ch].Factor - 1
-     do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    InterStage := FUpDownSampling[ch].Downsample64(@d);
+ FCriticalSection.Enter;
+ try
+  for i := 0 to SampleFrames - 1 do
+   for ch := 0 to 1 do
+    begin
+     FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
+     for j := 0 to FUpDownSampling[ch].Factor - 1
+      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
+     InterStage := FUpDownSampling[ch].Downsample64(@d);
 
-    FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
-    for j := 0 to FUpDownSampling[ch + 2].Factor - 1
-     do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
-    d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
-    if FHardClip
-     then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
-    Outputs[ch, i] := FOutputGain * d[0];
-   end;
+     FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
+     for j := 0 to FUpDownSampling[ch + 2].Factor - 1
+      do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
+     d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
+     if FHardClip
+      then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
+     Outputs[ch, i] := FOutputGain * d[0];
+    end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleSampleRateChange(Sender: TObject;

@@ -367,9 +367,9 @@ begin
  try
   for i := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[i]);
   for i := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[i]);
- except
+ finally
+  inherited;
  end;
- inherited;
 end;
 
 function TBasicVSTModule.GetEffect: PVSTEffect;
@@ -999,7 +999,7 @@ begin
   {$ELSE}
   Effect^.User := nil;
   {$ENDIF}
-  Free;
+//  Free;
   Result := 1;
  except
   Result := 0;

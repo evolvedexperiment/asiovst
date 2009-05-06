@@ -17,7 +17,8 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TVOLDataModule);
+ PauseMadExcept(True);
+ Result := VstModuleMain(AudioMasterCallback, TVOLDataModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
