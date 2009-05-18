@@ -72,10 +72,10 @@ SetCompressor lzma
 Section "VST-Plugin Unit Test" SecProgramFiles
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Tests\VST Host\VSTPluginUnitTest.exe" "..\Tests\VST Host\VST-Plugin Unit Test.exe"'  
+  !system 'copy "..\Bin\VSTPluginUnitTest.exe" "..\Bin\VST-Plugin Unit Test.exe"'  
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Tests\VST Host\VST-Plugin Unit Test.exe"
+  File "..\Bin\VST-Plugin Unit Test.exe"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
