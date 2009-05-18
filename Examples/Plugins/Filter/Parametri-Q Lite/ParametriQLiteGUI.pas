@@ -187,8 +187,9 @@ type
     procedure FormShow(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
     procedure PlotBoxPaint(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
   private
-//    FBackgrounBitmap : TBitmap;
+    FBackgroundBitmap : TBitmap;
   public
     procedure UpdateGain(const Index: Integer);
     procedure UpdateBandwidth(const Index: Integer);
@@ -208,12 +209,11 @@ procedure TFmParametriQLite.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
   PngBmp : TPngObject;
-(*
   x, y   : Integer;
   s      : array[0..1] of Single;
   b      : ShortInt;
+  rct    : TRect;
   Line   : PRGB24Array;
-*)
 begin
  PngBmp := TPngObject.Create;
  try
@@ -321,10 +321,9 @@ begin
   FreeAndNil(PngBmp);
  end;
 
-(*
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackgroundBitmap := TBitmap.Create;
+ with FBackgroundBitmap do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -337,17 +336,26 @@ begin
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.9 * s[0] + 0.1 * random;
-       b := round($1F + $32 * s[1]);
+       b := round($4 * s[1]) - $2;
        s[0] := s[1];
-       Line[x].B := b;
-       Line[x].G := b;
-       Line[x].R := b;
+       Line[x].B := $2F + b;
+       Line[x].G := $30 + b;
+       Line[x].R := $2E + b;
       end;
     end;
+   rct := Rect(8, 8, 221, 190);
+   Canvas.Pen.Color := $00424341;
+   Canvas.Brush.Color := $00161715;
+   Canvas.Rectangle(rct);
   end;
-*)
+
  PlotBox.ControlStyle   := PlotBox.ControlStyle + [csOpaque];
  ShapeInfo.ControlStyle := ShapeInfo.ControlStyle + [csOpaque];
+end;
+
+procedure TFmParametriQLite.FormPaint(Sender: TObject);
+begin
+ Canvas.Draw(0, 0, FBackgroundBitmap);
 end;
 
 procedure TFmParametriQLite.FormShow(Sender: TObject);
@@ -442,6 +450,21 @@ begin
   end;
 end;
 
+function FastFreqLogToLinear(Value: Single): Single;
+const
+  fltl1 : Single = 0.05;
+  fltl2 : Single = 0.1;
+begin
+ Result := FastLog2MinError3(value * fltl1) * fltl2;
+end;
+
+function FastFreqLinearToLog(Value: Single): Single;
+const
+  fltl1 : Single = 9.9657840729;
+begin
+ Result := (CTwenty32 * FastPower2MinError3 (value * fltl1));
+end;
+
 procedure TFmParametriQLite.PlotBoxPaint(Sender: TObject);
 var
   R         : TRect;
@@ -455,6 +478,7 @@ const
 begin
  with TParametriQLiteDataModule(Owner), PlotBox.Canvas do
   begin
+   Lock;
    R := PlotBox.ClientRect;
    Pen.Color := $00424341;
    RoundRect(R.Left, R.Top, R.Right, R.Bottom, 2, 2);
@@ -466,17 +490,17 @@ begin
    HalfHght := (R.Bottom - R.Top) div 2;
 
    // draw 100 Hz
-   Band := round(FreqLogToLinear(100) * Wdth);
+   Band := round(FastFreqLogToLinear(100) * Wdth);
    MoveTo(Band, R.Top);
    LineTo(Band, R.Bottom);
 
    // draw 1 kHz
-   Band := round(FreqLogToLinear(1E3) * Wdth);
+   Band := round(FastFreqLogToLinear(1E3) * Wdth);
    MoveTo(Band, R.Top);
    LineTo(Band, R.Bottom);
 
    // draw 10 kHz
-   Band := round(FreqLogToLinear(1E4) * Wdth);
+   Band := round(FastFreqLogToLinear(1E4) * Wdth);
    MoveTo(Band, R.Top);
    LineTo(Band, R.Bottom);
 
@@ -491,12 +515,13 @@ begin
    MoveTo(1, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor)));
    for c := 2 to Wdth do
     begin
-     Frq := FreqLinearToLog(c * WdthRez);
+     Frq := FastFreqLinearToLog(c * WdthRez);
      Magn := Filter[0].MagnitudeSquared(Frq);
      for Band := 1 to 7
       do Magn := Magn * Filter[Band].MagnitudeSquared(Frq);
      LineTo(c, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor )));
     end;
+   Unlock; 
   end;
 end;
 

@@ -18,7 +18,7 @@ type
     procedure RippleChanged; virtual;
     procedure CalculateRippleFactors; virtual; abstract;
   public
-    constructor Create(const Order: Integer = 0); reintroduce; virtual;
+    constructor Create(const Order: Integer = 0); override;
     procedure ResetStatesInt64; override;
     function Real(const Frequency: Double): Double; override;
     function Imaginary(const Frequency: Double): Double; override;
@@ -169,7 +169,7 @@ begin
  FOrder    := Order;
  FRipple   := 1;
  OrderChanged;
- inherited Create;
+ inherited Create(Order);
 end;
 
 function TCustomChebyshevFilter.GetRipple: Double;

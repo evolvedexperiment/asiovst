@@ -4,8 +4,12 @@ library ParametriQLite;
 {$R 'ParametriQLite.res' 'ParametriQLite.rc'}
 
 uses
-  FastMM4,
-  FastMove,
+  FastMM4,  // either download the library or comment if there is an error here
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
+  FastMove, // either download the library or comment if there is an error here
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

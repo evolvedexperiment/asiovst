@@ -3,8 +3,8 @@ object FmParametriQLite: TFmParametriQLite
   Top = 77
   BorderStyle = bsNone
   Caption = 'Parametri-Q Lite'
-  ClientHeight = 349
-  ClientWidth = 796
+  ClientHeight = 348
+  ClientWidth = 794
   Color = 3092526
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,103 +14,85 @@ object FmParametriQLite: TFmParametriQLite
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnPaint = FormPaint
   OnShow = FormShow
-  DesignSize = (
-    796
-    349)
   PixelsPerInch = 96
   TextHeight = 13
   object Box8: TShape
     Tag = 8
-    Left = 498
+    Left = 717
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box7: TShape
     Tag = 7
-    Left = 428
+    Left = 647
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box6: TShape
     Tag = 6
-    Left = 358
+    Left = 577
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box5: TShape
     Tag = 5
-    Left = 288
+    Left = 507
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box4: TShape
     Tag = 4
-    Left = 218
+    Left = 437
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box3: TShape
     Tag = 3
-    Left = 148
+    Left = 367
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box2: TShape
     Tag = 2
-    Left = 78
+    Left = 297
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Box1: TShape
     Tag = 1
-    Left = 8
+    Left = 227
     Top = 8
     Width = 71
-    Height = 333
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 334
     Brush.Style = bsClear
     Pen.Color = 4342593
-    ExplicitHeight = 341
   end
   object Shape4: TShape
     Tag = 8
-    Left = 155
+    Left = 374
     Top = 315
     Width = 57
     Height = 21
@@ -120,7 +102,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape5: TShape
     Tag = 8
-    Left = 225
+    Left = 444
     Top = 315
     Width = 57
     Height = 21
@@ -130,7 +112,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape7: TShape
     Tag = 5
-    Left = 295
+    Left = 514
     Top = 315
     Width = 57
     Height = 21
@@ -140,7 +122,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape6: TShape
     Tag = 8
-    Left = 365
+    Left = 584
     Top = 315
     Width = 57
     Height = 21
@@ -150,7 +132,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape8: TShape
     Tag = 8
-    Left = 435
+    Left = 654
     Top = 315
     Width = 57
     Height = 21
@@ -160,7 +142,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape3: TShape
     Tag = 8
-    Left = 85
+    Left = 304
     Top = 315
     Width = 57
     Height = 21
@@ -170,7 +152,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape2: TShape
     Tag = 1
-    Left = 15
+    Left = 234
     Top = 315
     Width = 57
     Height = 21
@@ -180,7 +162,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object Shape1: TShape
     Tag = 8
-    Left = 505
+    Left = 724
     Top = 315
     Width = 57
     Height = 21
@@ -189,18 +171,17 @@ object FmParametriQLite: TFmParametriQLite
     Shape = stRoundRect
   end
   object ShapeInfo: TShape
-    Left = 575
+    Left = 8
     Top = 8
     Width = 213
-    Height = 184
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 182
     Brush.Color = 1447701
     Pen.Color = 4342593
-    ExplicitHeight = 182
+    Visible = False
   end
   object DialFreq1: TGuiDial
     Tag = 1
-    Left = 20
+    Left = 239
     Top = 34
     Width = 48
     Height = 48
@@ -224,7 +205,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW1: TGuiDial
     Tag = 1
-    Left = 20
+    Left = 239
     Top = 131
     Width = 48
     Height = 48
@@ -248,7 +229,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain1: TGuiDial
     Tag = 1
-    Left = 12
+    Left = 231
     Top = 220
     Width = 64
     Height = 64
@@ -269,7 +250,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq2: TGuiDial
     Tag = 2
-    Left = 90
+    Left = 309
     Top = 34
     Width = 48
     Height = 48
@@ -293,7 +274,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW2: TGuiDial
     Tag = 2
-    Left = 90
+    Left = 309
     Top = 131
     Width = 48
     Height = 48
@@ -317,7 +298,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain2: TGuiDial
     Tag = 2
-    Left = 82
+    Left = 301
     Top = 220
     Width = 64
     Height = 64
@@ -338,7 +319,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq3: TGuiDial
     Tag = 3
-    Left = 160
+    Left = 379
     Top = 34
     Width = 48
     Height = 48
@@ -362,7 +343,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW3: TGuiDial
     Tag = 3
-    Left = 160
+    Left = 379
     Top = 131
     Width = 48
     Height = 48
@@ -386,7 +367,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain3: TGuiDial
     Tag = 3
-    Left = 152
+    Left = 371
     Top = 220
     Width = 64
     Height = 64
@@ -407,7 +388,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq4: TGuiDial
     Tag = 4
-    Left = 230
+    Left = 449
     Top = 34
     Width = 48
     Height = 48
@@ -431,7 +412,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW4: TGuiDial
     Tag = 4
-    Left = 230
+    Left = 449
     Top = 131
     Width = 48
     Height = 48
@@ -455,7 +436,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain4: TGuiDial
     Tag = 4
-    Left = 222
+    Left = 441
     Top = 220
     Width = 64
     Height = 64
@@ -476,7 +457,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq5: TGuiDial
     Tag = 5
-    Left = 300
+    Left = 519
     Top = 34
     Width = 48
     Height = 48
@@ -500,7 +481,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW5: TGuiDial
     Tag = 5
-    Left = 300
+    Left = 519
     Top = 131
     Width = 48
     Height = 48
@@ -524,7 +505,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain5: TGuiDial
     Tag = 5
-    Left = 292
+    Left = 511
     Top = 220
     Width = 64
     Height = 64
@@ -545,7 +526,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq6: TGuiDial
     Tag = 6
-    Left = 370
+    Left = 589
     Top = 34
     Width = 48
     Height = 48
@@ -569,7 +550,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW6: TGuiDial
     Tag = 6
-    Left = 370
+    Left = 589
     Top = 131
     Width = 48
     Height = 48
@@ -593,7 +574,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain6: TGuiDial
     Tag = 6
-    Left = 362
+    Left = 581
     Top = 220
     Width = 64
     Height = 64
@@ -614,7 +595,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq7: TGuiDial
     Tag = 7
-    Left = 440
+    Left = 659
     Top = 34
     Width = 48
     Height = 48
@@ -638,7 +619,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW7: TGuiDial
     Tag = 7
-    Left = 440
+    Left = 659
     Top = 131
     Width = 48
     Height = 48
@@ -662,7 +643,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain7: TGuiDial
     Tag = 7
-    Left = 432
+    Left = 651
     Top = 220
     Width = 64
     Height = 64
@@ -683,7 +664,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialFreq8: TGuiDial
     Tag = 8
-    Left = 510
+    Left = 729
     Top = 34
     Width = 48
     Height = 48
@@ -707,7 +688,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialBW8: TGuiDial
     Tag = 8
-    Left = 510
+    Left = 729
     Top = 131
     Width = 48
     Height = 48
@@ -731,7 +712,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object DialGain8: TGuiDial
     Tag = 8
-    Left = 502
+    Left = 721
     Top = 220
     Width = 64
     Height = 64
@@ -752,7 +733,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq1: TGuiLabel
     Tag = 1
-    Left = 22
+    Left = 241
     Top = 16
     Width = 44
     Height = 14
@@ -767,7 +748,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq2: TGuiLabel
     Tag = 2
-    Left = 92
+    Left = 311
     Top = 16
     Width = 44
     Height = 14
@@ -782,7 +763,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq3: TGuiLabel
     Tag = 3
-    Left = 162
+    Left = 381
     Top = 16
     Width = 44
     Height = 14
@@ -797,7 +778,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq4: TGuiLabel
     Tag = 4
-    Left = 232
+    Left = 451
     Top = 16
     Width = 44
     Height = 14
@@ -812,7 +793,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq7: TGuiLabel
     Tag = 7
-    Left = 442
+    Left = 661
     Top = 16
     Width = 44
     Height = 14
@@ -827,7 +808,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq6: TGuiLabel
     Tag = 6
-    Left = 372
+    Left = 591
     Top = 16
     Width = 44
     Height = 14
@@ -842,7 +823,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq5: TGuiLabel
     Tag = 5
-    Left = 302
+    Left = 521
     Top = 16
     Width = 44
     Height = 14
@@ -857,7 +838,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreq8: TGuiLabel
     Tag = 8
-    Left = 512
+    Left = 731
     Top = 16
     Width = 44
     Height = 14
@@ -872,7 +853,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW1: TGuiLabel
     Tag = 1
-    Left = 29
+    Left = 248
     Top = 113
     Width = 30
     Height = 14
@@ -887,7 +868,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW2: TGuiLabel
     Tag = 2
-    Left = 99
+    Left = 318
     Top = 113
     Width = 30
     Height = 14
@@ -902,7 +883,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW3: TGuiLabel
     Tag = 3
-    Left = 169
+    Left = 388
     Top = 113
     Width = 30
     Height = 14
@@ -917,7 +898,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW4: TGuiLabel
     Tag = 4
-    Left = 239
+    Left = 458
     Top = 113
     Width = 30
     Height = 14
@@ -932,7 +913,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW8: TGuiLabel
     Tag = 8
-    Left = 519
+    Left = 738
     Top = 113
     Width = 30
     Height = 14
@@ -947,7 +928,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW7: TGuiLabel
     Tag = 7
-    Left = 449
+    Left = 668
     Top = 113
     Width = 30
     Height = 14
@@ -962,7 +943,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW6: TGuiLabel
     Tag = 6
-    Left = 379
+    Left = 598
     Top = 113
     Width = 30
     Height = 14
@@ -977,7 +958,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbBW5: TGuiLabel
     Tag = 5
-    Left = 309
+    Left = 528
     Top = 113
     Width = 30
     Height = 14
@@ -991,7 +972,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = [fsBold]
   end
   object DialInput: TGuiDial
-    Left = 583
+    Left = 16
     Top = 201
     Width = 96
     Height = 96
@@ -1011,7 +992,7 @@ object FmParametriQLite: TFmParametriQLite
     StitchKind = skHorizontal
   end
   object DialOutput: TGuiDial
-    Left = 685
+    Left = 118
     Top = 201
     Width = 96
     Height = 96
@@ -1032,7 +1013,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain1: TGuiLabel
     Tag = 1
-    Left = 24
+    Left = 243
     Top = 206
     Width = 40
     Height = 14
@@ -1047,7 +1028,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain2: TGuiLabel
     Tag = 2
-    Left = 94
+    Left = 313
     Top = 206
     Width = 40
     Height = 14
@@ -1062,7 +1043,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain3: TGuiLabel
     Tag = 3
-    Left = 164
+    Left = 383
     Top = 206
     Width = 40
     Height = 14
@@ -1077,7 +1058,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain4: TGuiLabel
     Tag = 4
-    Left = 234
+    Left = 453
     Top = 206
     Width = 40
     Height = 14
@@ -1092,7 +1073,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain8: TGuiLabel
     Tag = 8
-    Left = 514
+    Left = 733
     Top = 206
     Width = 40
     Height = 14
@@ -1107,7 +1088,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain7: TGuiLabel
     Tag = 7
-    Left = 444
+    Left = 663
     Top = 206
     Width = 40
     Height = 14
@@ -1122,7 +1103,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain6: TGuiLabel
     Tag = 6
-    Left = 374
+    Left = 593
     Top = 206
     Width = 40
     Height = 14
@@ -1137,7 +1118,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbGain5: TGuiLabel
     Tag = 5
-    Left = 304
+    Left = 523
     Top = 206
     Width = 40
     Height = 14
@@ -1152,7 +1133,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue1: TGuiLabel
     Tag = 1
-    Left = 12
+    Left = 231
     Top = 81
     Width = 64
     Height = 14
@@ -1166,7 +1147,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue2: TGuiLabel
     Tag = 2
-    Left = 82
+    Left = 301
     Top = 81
     Width = 64
     Height = 14
@@ -1180,7 +1161,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue4: TGuiLabel
     Tag = 4
-    Left = 222
+    Left = 441
     Top = 81
     Width = 64
     Height = 14
@@ -1194,7 +1175,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue3: TGuiLabel
     Tag = 3
-    Left = 152
+    Left = 371
     Top = 81
     Width = 64
     Height = 14
@@ -1208,7 +1189,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue8: TGuiLabel
     Tag = 8
-    Left = 502
+    Left = 721
     Top = 81
     Width = 64
     Height = 14
@@ -1222,7 +1203,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue7: TGuiLabel
     Tag = 7
-    Left = 432
+    Left = 651
     Top = 81
     Width = 64
     Height = 14
@@ -1236,7 +1217,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue6: TGuiLabel
     Tag = 6
-    Left = 362
+    Left = 581
     Top = 81
     Width = 64
     Height = 14
@@ -1250,7 +1231,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbFreqValue5: TGuiLabel
     Tag = 5
-    Left = 292
+    Left = 511
     Top = 81
     Width = 64
     Height = 14
@@ -1264,7 +1245,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMin1: TGuiLabel
     Tag = 1
-    Left = 16
+    Left = 235
     Top = 176
     Width = 18
     Height = 14
@@ -1277,7 +1258,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMin2: TGuiLabel
     Tag = 2
-    Left = 86
+    Left = 305
     Top = 176
     Width = 18
     Height = 14
@@ -1290,7 +1271,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMin4: TGuiLabel
     Tag = 4
-    Left = 226
+    Left = 445
     Top = 176
     Width = 18
     Height = 14
@@ -1303,7 +1284,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMin3: TGuiLabel
     Tag = 3
-    Left = 156
+    Left = 375
     Top = 176
     Width = 18
     Height = 14
@@ -1316,7 +1297,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMin8: TGuiLabel
     Tag = 8
-    Left = 506
+    Left = 725
     Top = 176
     Width = 18
     Height = 14
@@ -1328,7 +1309,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMin7: TGuiLabel
-    Left = 436
+    Left = 655
     Top = 176
     Width = 18
     Height = 14
@@ -1341,7 +1322,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMin6: TGuiLabel
     Tag = 6
-    Left = 366
+    Left = 585
     Top = 176
     Width = 18
     Height = 14
@@ -1353,7 +1334,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMin5: TGuiLabel
-    Left = 294
+    Left = 513
     Top = 176
     Width = 18
     Height = 14
@@ -1366,7 +1347,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMax1: TGuiLabel
     Tag = 1
-    Left = 52
+    Left = 271
     Top = 176
     Width = 20
     Height = 14
@@ -1379,7 +1360,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMax2: TGuiLabel
-    Left = 122
+    Left = 341
     Top = 176
     Width = 20
     Height = 14
@@ -1393,7 +1374,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMax4: TGuiLabel
     Tag = 4
-    Left = 262
+    Left = 481
     Top = 176
     Width = 20
     Height = 14
@@ -1407,7 +1388,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object GuiMax3: TGuiLabel
     Tag = 3
-    Left = 192
+    Left = 411
     Top = 176
     Width = 20
     Height = 14
@@ -1420,7 +1401,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMax8: TGuiLabel
-    Left = 542
+    Left = 761
     Top = 176
     Width = 20
     Height = 14
@@ -1433,7 +1414,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMax7: TGuiLabel
-    Left = 472
+    Left = 691
     Top = 176
     Width = 20
     Height = 14
@@ -1446,7 +1427,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMax6: TGuiLabel
-    Left = 402
+    Left = 621
     Top = 176
     Width = 20
     Height = 14
@@ -1459,7 +1440,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object GuiMax5: TGuiLabel
-    Left = 332
+    Left = 551
     Top = 176
     Width = 20
     Height = 14
@@ -1473,7 +1454,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA1: TShape
     Tag = 1
-    Left = 36
+    Left = 255
     Top = 105
     Width = 16
     Height = 1
@@ -1482,7 +1463,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA2: TShape
     Tag = 2
-    Left = 106
+    Left = 325
     Top = 105
     Width = 16
     Height = 1
@@ -1491,7 +1472,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA3: TShape
     Tag = 3
-    Left = 176
+    Left = 395
     Top = 105
     Width = 16
     Height = 1
@@ -1500,7 +1481,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA4: TShape
     Tag = 4
-    Left = 246
+    Left = 465
     Top = 105
     Width = 16
     Height = 1
@@ -1509,7 +1490,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA5: TShape
     Tag = 5
-    Left = 316
+    Left = 535
     Top = 105
     Width = 16
     Height = 1
@@ -1518,7 +1499,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA6: TShape
     Tag = 6
-    Left = 386
+    Left = 605
     Top = 105
     Width = 16
     Height = 1
@@ -1527,7 +1508,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA7: TShape
     Tag = 7
-    Left = 456
+    Left = 675
     Top = 105
     Width = 16
     Height = 1
@@ -1536,7 +1517,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorA8: TShape
     Tag = 8
-    Left = 526
+    Left = 745
     Top = 105
     Width = 16
     Height = 1
@@ -1545,7 +1526,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB1: TShape
     Tag = 1
-    Left = 36
+    Left = 255
     Top = 197
     Width = 16
     Height = 1
@@ -1554,7 +1535,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB2: TShape
     Tag = 2
-    Left = 106
+    Left = 325
     Top = 197
     Width = 16
     Height = 1
@@ -1563,7 +1544,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB3: TShape
     Tag = 3
-    Left = 176
+    Left = 395
     Top = 197
     Width = 16
     Height = 1
@@ -1572,7 +1553,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB4: TShape
     Tag = 4
-    Left = 246
+    Left = 465
     Top = 197
     Width = 16
     Height = 1
@@ -1581,7 +1562,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB5: TShape
     Tag = 5
-    Left = 316
+    Left = 535
     Top = 197
     Width = 16
     Height = 1
@@ -1590,7 +1571,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB6: TShape
     Tag = 6
-    Left = 386
+    Left = 605
     Top = 197
     Width = 16
     Height = 1
@@ -1599,7 +1580,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB7: TShape
     Tag = 7
-    Left = 456
+    Left = 675
     Top = 197
     Width = 16
     Height = 1
@@ -1608,7 +1589,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorB8: TShape
     Tag = 8
-    Left = 526
+    Left = 745
     Top = 197
     Width = 16
     Height = 1
@@ -1617,7 +1598,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC1: TShape
     Tag = 1
-    Left = 36
+    Left = 255
     Top = 292
     Width = 16
     Height = 1
@@ -1626,7 +1607,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC2: TShape
     Tag = 2
-    Left = 106
+    Left = 325
     Top = 292
     Width = 16
     Height = 1
@@ -1635,7 +1616,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC3: TShape
     Tag = 3
-    Left = 176
+    Left = 395
     Top = 292
     Width = 16
     Height = 1
@@ -1644,7 +1625,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC4: TShape
     Tag = 4
-    Left = 246
+    Left = 465
     Top = 292
     Width = 16
     Height = 1
@@ -1653,7 +1634,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC5: TShape
     Tag = 5
-    Left = 316
+    Left = 535
     Top = 292
     Width = 16
     Height = 1
@@ -1662,7 +1643,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC6: TShape
     Tag = 6
-    Left = 386
+    Left = 605
     Top = 292
     Width = 16
     Height = 1
@@ -1671,7 +1652,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC7: TShape
     Tag = 7
-    Left = 456
+    Left = 675
     Top = 292
     Width = 16
     Height = 1
@@ -1680,7 +1661,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object SeparatorC8: TShape
     Tag = 8
-    Left = 526
+    Left = 745
     Top = 292
     Width = 16
     Height = 1
@@ -1689,7 +1670,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType8: TGuiLabel
     Tag = 8
-    Left = 514
+    Left = 733
     Top = 299
     Width = 40
     Height = 14
@@ -1705,7 +1686,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType7: TGuiLabel
     Tag = 7
-    Left = 444
+    Left = 663
     Top = 299
     Width = 40
     Height = 14
@@ -1721,7 +1702,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType6: TGuiLabel
     Tag = 6
-    Left = 374
+    Left = 593
     Top = 299
     Width = 40
     Height = 14
@@ -1737,7 +1718,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType5: TGuiLabel
     Tag = 5
-    Left = 304
+    Left = 523
     Top = 299
     Width = 40
     Height = 14
@@ -1753,7 +1734,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType4: TGuiLabel
     Tag = 4
-    Left = 234
+    Left = 453
     Top = 299
     Width = 40
     Height = 14
@@ -1769,7 +1750,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType3: TGuiLabel
     Tag = 3
-    Left = 164
+    Left = 383
     Top = 299
     Width = 40
     Height = 14
@@ -1785,7 +1766,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType2: TGuiLabel
     Tag = 2
-    Left = 94
+    Left = 313
     Top = 299
     Width = 40
     Height = 14
@@ -1801,7 +1782,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbType1: TGuiLabel
     Tag = 1
-    Left = 24
+    Left = 243
     Top = 299
     Width = 40
     Height = 14
@@ -1816,7 +1797,7 @@ object FmParametriQLite: TFmParametriQLite
     OnClick = LbTypeClick
   end
   object LbInput: TGuiLabel
-    Left = 611
+    Left = 44
     Top = 299
     Width = 42
     Height = 14
@@ -1830,7 +1811,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = [fsBold]
   end
   object LbOutput: TGuiLabel
-    Left = 709
+    Left = 142
     Top = 299
     Width = 54
     Height = 14
@@ -1844,8 +1825,8 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = [fsBold]
   end
   object LbGain: TGuiLabel
-    Left = 663
-    Top = 319
+    Left = 96
+    Top = 317
     Width = 36
     Height = 14
     Alignment = taCenter
@@ -1858,51 +1839,45 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = [fsBold]
   end
   object ShapeInputBottom: TShape
-    Left = 632
-    Top = 326
+    Left = 65
+    Top = 324
     Width = 25
     Height = 2
-    Anchors = [akLeft, akTop, akBottom]
     Brush.Style = bsClear
     Pen.Color = 6711141
   end
   object ShapeOutputBottom: TShape
-    Left = 705
-    Top = 326
+    Left = 138
+    Top = 324
     Width = 28
     Height = 2
-    Anchors = [akLeft, akTop, akBottom]
     Brush.Style = bsClear
     Pen.Color = 6711141
   end
   object ShapeInputLeft: TShape
-    Left = 631
+    Left = 64
     Top = 315
     Width = 2
-    Height = 12
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 10
     Brush.Style = bsClear
     Pen.Color = 6711141
-    ExplicitHeight = 10
   end
   object ShapeOutputRight: TShape
-    Left = 732
+    Left = 165
     Top = 315
     Width = 2
-    Height = 12
-    Anchors = [akLeft, akTop, akBottom]
+    Height = 10
     Brush.Style = bsClear
     Pen.Color = 6711141
-    ExplicitHeight = 10
   end
   object LbTitle: TGuiLabel
-    Left = 651
+    Left = 61
     Top = 16
-    Width = 52
+    Width = 109
     Height = 14
     Alignment = taCenter
     AntiAlias = gaaLinear4x
-    Caption = 'DAV EQ'
+    Caption = 'Parametri-Q LITE'
     Color = 1447701
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 12961476
@@ -1911,7 +1886,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = [fsBold]
   end
   object VUMeter: TGuiVUMeter
-    Left = 598
+    Left = 31
     Top = 139
     Width = 168
     Height = 40
@@ -1921,7 +1896,7 @@ object FmParametriQLite: TFmParametriQLite
     StitchKind = skHorizontal
   end
   object Switch: TGuiSwitch
-    Left = 674
+    Left = 107
     Top = 121
     Width = 32
     Height = 12
@@ -1936,7 +1911,7 @@ object FmParametriQLite: TFmParametriQLite
     StitchKind = skHorizontal
   end
   object LbIn: TGuiLabel
-    Left = 662
+    Left = 95
     Top = 119
     Width = 10
     Height = 14
@@ -1950,7 +1925,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object LbOut: TGuiLabel
-    Left = 708
+    Left = 141
     Top = 119
     Width = 19
     Height = 14
@@ -1963,7 +1938,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Style = []
   end
   object LbdB: TGuiLabel
-    Left = 642
+    Left = 75
     Top = 119
     Width = 14
     Height = 14
@@ -1978,7 +1953,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue1: TGuiLabel
     Tag = 1
-    Left = 16
+    Left = 235
     Top = 319
     Width = 55
     Height = 14
@@ -1996,7 +1971,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue2: TGuiLabel
     Tag = 2
-    Left = 86
+    Left = 305
     Top = 319
     Width = 55
     Height = 14
@@ -2014,7 +1989,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue3: TGuiLabel
     Tag = 3
-    Left = 156
+    Left = 375
     Top = 319
     Width = 55
     Height = 14
@@ -2032,7 +2007,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue4: TGuiLabel
     Tag = 4
-    Left = 226
+    Left = 445
     Top = 319
     Width = 55
     Height = 14
@@ -2050,7 +2025,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue5: TGuiLabel
     Tag = 5
-    Left = 296
+    Left = 515
     Top = 319
     Width = 55
     Height = 14
@@ -2068,7 +2043,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue6: TGuiLabel
     Tag = 6
-    Left = 366
+    Left = 585
     Top = 319
     Width = 55
     Height = 14
@@ -2086,7 +2061,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue7: TGuiLabel
     Tag = 7
-    Left = 436
+    Left = 655
     Top = 319
     Width = 55
     Height = 14
@@ -2104,7 +2079,7 @@ object FmParametriQLite: TFmParametriQLite
   end
   object LbTypeValue8: TGuiLabel
     Tag = 8
-    Left = 506
+    Left = 725
     Top = 319
     Width = 55
     Height = 14
@@ -2121,11 +2096,10 @@ object FmParametriQLite: TFmParametriQLite
     OnClick = LbTypeClick
   end
   object PlotBox: TPaintBox
-    Left = 583
+    Left = 16
     Top = 33
     Width = 198
     Height = 84
-    Anchors = [akLeft, akTop, akBottom]
     OnPaint = PlotBoxPaint
   end
   object GuiDialImageList: TGuiDialImageList
@@ -4968,13 +4942,13 @@ object FmParametriQLite: TFmParametriQLite
         Height = 0
         Width = 0
       end>
-    Left = 28
+    Left = 247
     Top = 40
   end
   object PopupFilter: TPopupMenu
     AutoPopup = False
     OnPopup = PopupFilterPopup
-    Left = 64
+    Left = 283
     Top = 40
     object MIPeak: TMenuItem
       Caption = '&Peak'
@@ -5027,7 +5001,7 @@ object FmParametriQLite: TFmParametriQLite
   object Timer: TTimer
     Interval = 100
     OnTimer = TimerTimer
-    Left = 608
+    Left = 41
     Top = 144
   end
 end

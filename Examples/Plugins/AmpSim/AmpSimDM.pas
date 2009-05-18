@@ -88,8 +88,11 @@ end;
 
 procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHighPass[0].Bandwidth := 1.1 - 0.01 * Value;
- FHighPass[1].Bandwidth := FHighPass[0].Bandwidth;
+ if assigned(FHighPass[0]) then
+  begin
+   FHighPass[0].Bandwidth := 1.1 - 0.01 * Value;
+   FHighPass[1].Bandwidth := FHighPass[0].Bandwidth;
+  end;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
   with TFmCombo(EditorForm)
