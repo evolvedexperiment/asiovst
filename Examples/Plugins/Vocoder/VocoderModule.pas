@@ -17,15 +17,17 @@ type
     procedure VocInputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocSynthVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocVocoderVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
+    procedure ParameterAttackChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
+    procedure ParameterReleaseChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
+    procedure ParameterBandwidthChange(Sender: TObject;
+      const Index: Integer; var Value: Single);
   private
-    FAnalysisFiltersLP : array [0..cNumFrequencies - 1] of TChebyshev1LowpassFilter;
-    FAnalysisFiltersHP : array [0..cNumFrequencies - 1] of TChebyshev1HighpassFilter;
-    FAnalysisRMS       : array [0..cNumFrequencies - 1] of Single;
-    FSynthesisFilters  : array [0..cNumFrequencies - 1] of TBasicBandpassFilter;
-    FDownSampler       : Integer;
-    FDownSampleMax     : Integer;
-    FVolFactors        : array [0..2] of Double;
     FVoices            : TVoiceList;
+    FVocoder           : TVocoder;
   public
     property Voices: TVoiceList read FVoices;
   end;
@@ -38,64 +40,21 @@ uses
   Math, DAV_Approximations, VocoderGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
-var
-  i: Integer;
-const
-  HalfThirdMulFak64: Double = 1.1224620483093729814335330496792;
- // = Power(2,1/6)
 begin
   FVoices := TVoiceList.Create(True);
-  FDownSampler := 0;
-  for i := 0 to CNumFrequencies - 1 do
-   begin
-    FAnalysisFiltersLP[i] := TChebyshev1LowpassFilter.Create(6);
-    with FAnalysisFiltersLP[i] do
-     begin
-      SampleRate := 44100;
-      SetFilterValues(min(0.5 * Samplerate, 0.917 * (CThirdOctaveFrequencies[CNumFrequencies - i - 1] * HalfThirdMulFak64)), 0, 0.05);
-      if FDownSampler = -1
-       then DownsampleAmount := 0
-       else while IntPower(2, DownsampleAmount) * Frequency < 0.1 * SampleRate
-        do DownsampleAmount := DownsampleAmount + 1;
-      CalculateCoefficients;
-     end;
-
-    FAnalysisFiltersHP[i] := TChebyshev1HighpassFilter.Create(6);
-    with FAnalysisFiltersHP[i] do
-     begin
-      SampleRate := 44100;
-      SetFilterValues(1.0905 * (CThirdOctaveFrequencies[CNumFrequencies - i - 1] / HalfThirdMulFak64), 0, 0.05);
-      DownsampleAmount := FAnalysisFiltersLP[i].DownsampleAmount;
-      CalculateCoefficients;
-     end;
-
-    FSynthesisFilters[i] := TBasicBandpassFilter.Create;
-    with FSynthesisFilters[i] do
-     begin
-      SampleRate := 44100;
-      Gain := 0;
-      Bandwidth := 0.5;
-      Frequency := CThirdOctaveFrequencies[CNumFrequencies - i - 1];
-     end;
-   end;
-
-  FDownSampleMax := FAnalysisFiltersLP[CNumFrequencies - 1].DownsampleFaktor;
+  FVocoder := TVocoder.Create;
 
   Parameter[0] := -80;
   Parameter[1] := -80;
   Parameter[2] := 0;
+  Parameter[3] := 0.5;
+  Parameter[4] := 2;
+  Parameter[5] := sqrt(0.5);
 end;
 
 procedure TVSTSSModule.VSTModuleClose(Sender: TObject);
-var
-  i: Integer;
 begin
-  for i := 0 to CNumFrequencies - 1 do
-   begin
-    FreeAndNil(FAnalysisFiltersLP[i]);
-    FreeAndNil(FAnalysisFiltersHP[i]);
-    FreeAndNil(FSynthesisFilters[i]);
-   end;
+  FreeAndNil(FVocoder);
   FreeAndNil(FVoices);
 end;
 
@@ -110,44 +69,17 @@ procedure TVSTSSModule.VSTModuleProcess(
   const Inputs, Outputs: TDAVArrayOfSingleDynArray;
   const SampleFrames: Integer);
 var
-  i, j    : Integer;
-  d, z, s : Double;
+  i, j        : Integer;
+  SynthSignal : Double;
 begin
-  for i := 0 to SampleFrames - 1 do
-   begin
-    d := Inputs[0, i]; // + 1E-3 * (2 * random - 1);
-    for j := 0 to CNumFrequencies - 1 do
-     begin
-      if (FDownSampler mod FAnalysisFiltersLP[j].DownsampleFaktor) <> 0
-       then Break;
-
-      d := FAnalysisFiltersLP[j].ProcessSample(d + 1E-32);
-      z := FAnalysisFiltersHP[j].ProcessSample(d + 1E-32);
-
-//      s := IntPower(1.01, 8 * FAnalysisFiltersLP[j].DownsampleAmount + 1);
-      s := 0.99;
-      FAnalysisRMS[j] := s * FAnalysisRMS[j] + (1 - s) * abs(z);
-//      if FAnalysisRMS[j] > 0.5 then FAnalysisRMS[j] := 0.5;
-     end;
-    Inc(FDownSampler);
-    if FDownSampler >= FDownSampleMax
-     then FDownSampler := 0;
-   end;
-
   for j := 0 to SampleFrames - 1 do
    begin
     // process synth input
-    d := 0.01 * (random - 0.5);
+    SynthSignal := 0;
     for i := 0 to Voices.Count - 1
-     do d := d + Voices[i].Process;
+     do SynthSignal := SynthSignal + Voices[i].Process;
 
-    // process vocoded signal
-    z := 0;
-    for i := 0 to CNumFrequencies - 1
-     do z := z + FSynthesisFilters[i].ProcessSample(FAnalysisRMS[i] * d);
-
-    Outputs[0, j] := FastTanhOpt5TermFPU(FVolFactors[2] * z +
-      FVolFactors[1] * d + FVolFactors[0] * Inputs[0, j]);
+    Outputs[0, j] := FastTanhOpt5Term(FVocoder.Process(Inputs[0, j], SynthSignal));
    end;
 
   for i := 1 to numOutputs - 1
@@ -191,12 +123,41 @@ begin
   then Voices.Clear; // all notes off
 end;
 
+procedure TVSTSSModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ if assigned(FVocoder)
+  then FVocoder.SampleRate := SampleRate;
+end;
+
+procedure TVSTSSModule.ParameterBandwidthChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FVocoder)
+  then FVocoder.SynthesisBandwidth := Value;
+end;
+
+procedure TVSTSSModule.ParameterReleaseChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FVocoder)
+  then FVocoder.Release := Value;
+end;
+
+procedure TVSTSSModule.ParameterAttackChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FVocoder)
+  then FVocoder.Attack := Value;
+end;
+
 procedure TVSTSSModule.VocInputVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if Value <= -80
-  then FVolFactors[0] := 0
-  else FVolFactors[0] := dB_to_Amp(Value);
+ if assigned(FVocoder) then
+  if Value <= -80
+   then FVocoder.InputLevel := 0
+   else FVocoder.InputLevel := dB_to_Amp(Value);
  if FEditorForm is TVSTGUI
   then TVSTGUI(FEditorForm).UpdateInputVolume;
 end;
@@ -204,9 +165,10 @@ end;
 procedure TVSTSSModule.VocSynthVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if Value <= -80
-  then FVolFactors[0] := 0
-  else FVolFactors[1] := dB_to_Amp(Value);
+ if assigned(FVocoder) then
+  if Value <= -80
+   then FVocoder.SynthLevel := 0
+   else FVocoder.SynthLevel := dB_to_Amp(Value);
  if FEditorForm is TVSTGUI
   then TVSTGUI(FEditorForm).UpdateSynthVolume;
 end;
@@ -214,9 +176,10 @@ end;
 procedure TVSTSSModule.VocVocoderVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if Value <= -80
-  then FVolFactors[0] := 0
-  else FVolFactors[2] := dB_to_Amp(Value);
+ if assigned(FVocoder) then
+  if Value <= -80
+   then FVocoder.VocoderLevel := 0
+   else FVocoder.VocoderLevel := dB_to_Amp(Value);
  if FEditorForm is TVSTGUI
   then TVSTGUI(FEditorForm).UpdateVocoderVolume;
 end;

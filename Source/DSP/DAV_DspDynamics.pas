@@ -1168,7 +1168,7 @@ begin
  inherited;
  FThresholdReciprocal := 1 / FThreshold;
  FMakeUpGain          := 1;
- FMakeUpGain_dB        := 0;
+ FMakeUpGain_dB       := 0;
 end;
 
 procedure TCustomLimiter.AutoMakeUpChanged;

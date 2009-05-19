@@ -75,6 +75,51 @@ object VSTSSModule: TVSTSSModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = VocVocoderVolumeChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Attack'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 0.009999999776482582
+      ReportVST2Properties = True
+      ShortLabel = 'Attack'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnParameterChange = ParameterAttackChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Release'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 0.009999999776482582
+      ReportVST2Properties = True
+      ShortLabel = 'Release'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnParameterChange = ParameterReleaseChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Bandwidth'
+      LargeStepFloat = 2.000000000000000000
+      Max = 2.000000000000000000
+      Min = 0.019999999552965160
+      ShortLabel = 'BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterBandwidthChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
@@ -83,6 +128,7 @@ object VSTSSModule: TVSTSSModule
   OnProcess = VSTModuleProcess
   OnProcessMidi = VSTModuleProcessMidi
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 200
   Top = 103
   Height = 150

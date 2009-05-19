@@ -78,6 +78,8 @@ begin
  if Result > 0
   then Result := FAmplitude * Result - FAmplitude
   else Result := FAmplitude * Result + FAmplitude;
+ Result := Result + FAmplitude * 0.01 * (random - 0.5)
+
 (*
  if Result > 0
   then Result := FAmplitude * Result

@@ -9,8 +9,7 @@ uses
   VocoderModule in 'VocoderModule.pas' {VSTSSModule: TVSTModule},
   VocoderGUI in 'VocoderGUI.pas' {VSTGUI},
   VocoderVoice in 'VocoderVoice.pas',
-  VoiceList in 'VoiceList.pas',
-  DAV_DspVocoder in '..\..\..\Source\DSP\DAV_DspVocoder.pas';
+  VoiceList in 'VoiceList.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
