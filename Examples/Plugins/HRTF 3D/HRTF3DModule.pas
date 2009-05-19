@@ -71,6 +71,8 @@ end;
 
 procedure TVSTHRTF3DModule.VST2ModuleClose(Sender: TObject);
 begin
+ Dispose(FIR[0]);
+ Dispose(FIR[1]);
  FreeAndNil(FConvolution);
  FreeAndNil(FHRTFs);
 end;

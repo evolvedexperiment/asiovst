@@ -5,14 +5,7 @@ interface
 uses
   Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
   VocoderVoice, VoiceList, DAV_DspChebyshevFilter, DAV_DspFilter,
-  DAV_DspFilterBasics;
-
-const
-  CNumFrequencies = 32;
-  CThirdOctaveFrequencies: array [0..cNumFrequencies - 1] of Single =
-    (16, 20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500,
-    630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
-    10000, 12500, 16000, 20000);
+  DAV_DspFilterBasics, DAV_DspVocoder;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -110,13 +103,7 @@ procedure TVSTSSModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 // Do not delete this if you are using the editor
 begin
-  GUI := TVSTGUI.Create(Self);
-  with (GUI As TVSTGUI) do
-   begin
-    SBInputLevel.Position := round(Amp_to_dB(FVolFactors[0]));
-    SBSynthLevel.Position := round(Amp_to_dB(FVolFactors[1]));
-    SBVocoderLevel.Position := round(Amp_to_dB(FVolFactors[2]));
-   end;
+ GUI := TVSTGUI.Create(Self);
 end;
 
 procedure TVSTSSModule.VSTModuleProcess(
@@ -128,7 +115,7 @@ var
 begin
   for i := 0 to SampleFrames - 1 do
    begin
-    d := Inputs[0, i];
+    d := Inputs[0, i]; // + 1E-3 * (2 * random - 1);
     for j := 0 to CNumFrequencies - 1 do
      begin
       if (FDownSampler mod FAnalysisFiltersLP[j].DownsampleFaktor) <> 0
@@ -137,9 +124,10 @@ begin
       d := FAnalysisFiltersLP[j].ProcessSample(d + 1E-32);
       z := FAnalysisFiltersHP[j].ProcessSample(d + 1E-32);
 
-      s := IntPower(0.999, 8 * FAnalysisFiltersLP[j].DownsampleAmount + 1);
-      FAnalysisRMS[j] := s * FAnalysisRMS[j] + 400 * (1 - s) * abs(z);
-      if FAnalysisRMS[j] > 0.5 then FAnalysisRMS[j] := 0.5;
+//      s := IntPower(1.01, 8 * FAnalysisFiltersLP[j].DownsampleAmount + 1);
+      s := 0.99;
+      FAnalysisRMS[j] := s * FAnalysisRMS[j] + (1 - s) * abs(z);
+//      if FAnalysisRMS[j] > 0.5 then FAnalysisRMS[j] := 0.5;
      end;
     Inc(FDownSampler);
     if FDownSampler >= FDownSampleMax
@@ -148,12 +136,16 @@ begin
 
   for j := 0 to SampleFrames - 1 do
    begin
-    d := 0.1 * (random - 0.5);
+    // process synth input
+    d := 0.01 * (random - 0.5);
     for i := 0 to Voices.Count - 1
      do d := d + Voices[i].Process;
+
+    // process vocoded signal
     z := 0;
     for i := 0 to CNumFrequencies - 1
      do z := z + FSynthesisFilters[i].ProcessSample(FAnalysisRMS[i] * d);
+
     Outputs[0, j] := FastTanhOpt5TermFPU(FVolFactors[2] * z +
       FVolFactors[1] * d + FVolFactors[0] * Inputs[0, j]);
    end;
@@ -194,35 +186,39 @@ begin
        Break;
       end;
    end
-  else if (status = $B0) and (MidiEvent.midiData[1] = $7E) then
-    Voices.Clear; // all notes off
+  else
+ if (status = $B0) and (MidiEvent.midiData[1] = $7E)
+  then Voices.Clear; // all notes off
 end;
 
 procedure TVSTSSModule.VocInputVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FVolFactors[0] := dB_to_Amp(Value);
- if FEditorForm is TVSTGUI then
-  with TVSTGUI(FEditorForm)
-   do SBInputLevel.Position := Round(Value);
+ if Value <= -80
+  then FVolFactors[0] := 0
+  else FVolFactors[0] := dB_to_Amp(Value);
+ if FEditorForm is TVSTGUI
+  then TVSTGUI(FEditorForm).UpdateInputVolume;
 end;
 
 procedure TVSTSSModule.VocSynthVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FVolFactors[1] := dB_to_Amp(Value);
- if FEditorForm is TVSTGUI then
-  with TVSTGUI(FEditorForm)
-   do SBSynthLevel.Position := Round(Value);
+ if Value <= -80
+  then FVolFactors[0] := 0
+  else FVolFactors[1] := dB_to_Amp(Value);
+ if FEditorForm is TVSTGUI
+  then TVSTGUI(FEditorForm).UpdateSynthVolume;
 end;
 
 procedure TVSTSSModule.VocVocoderVolumeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- FVolFactors[2] := dB_to_Amp(Value);
- if FEditorForm is TVSTGUI then
-  with TVSTGUI(FEditorForm)
-   do SBVocoderLevel.Position := Round(Value);
+ if Value <= -80
+  then FVolFactors[0] := 0
+  else FVolFactors[2] := dB_to_Amp(Value);
+ if FEditorForm is TVSTGUI
+  then TVSTGUI(FEditorForm).UpdateVocoderVolume;
 end;
 
 end.

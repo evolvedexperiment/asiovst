@@ -16,6 +16,7 @@ object VSTGUI: TVSTGUI
   Scaled = False
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object MidiKeys: TGuiMidiKeys
@@ -27,6 +28,7 @@ object VSTGUI: TVSTGUI
     KeyDownMode = kdmFlat
     Height3d = 0.200000002980232200
     BlackKeyHeight = 0.629999995231628400
+    BaseOctave = 4
     NumOctaves = 2
     KeyZones = <>
     ShowKeyZones = False

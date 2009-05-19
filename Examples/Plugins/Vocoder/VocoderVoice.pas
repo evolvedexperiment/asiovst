@@ -74,9 +74,15 @@ begin
  Result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
  FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
  FPosition.Re := Result;
+
+ if Result > 0
+  then Result := FAmplitude * Result - FAmplitude
+  else Result := FAmplitude * Result + FAmplitude;
+(*
  if Result > 0
   then Result := FAmplitude * Result
   else Result := -FAmplitude;
+*)
 end;
 
 procedure TVocoderVoice.SamplerateChanged;
@@ -101,7 +107,7 @@ end;
 procedure TVocoderVoice.NoteOn(Frequency, Amplitude: Single);
 begin
  FFrequency := Frequency;
- SetFrequency(Frequency);
+ FrequencyChanged;
  FAmplitude := Amplitude;
 end;
 

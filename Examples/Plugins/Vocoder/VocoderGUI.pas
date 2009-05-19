@@ -22,15 +22,26 @@ type
     procedure SBVocoderLevelChange(Sender: TObject);
     procedure MidiKeysNoteOn(Sender: TObject; KeyNr: Byte; Velocity: Single);
     procedure MidiKeysNoteOff(Sender: TObject; KeyNr: Byte);
+    procedure FormShow(Sender: TObject);
+  public
+    procedure UpdateSynthVolume;
+    procedure UpdateInputVolume;
+    procedure UpdateVocoderVolume;
   end;
 
 implementation
 
 {$R *.DFM}
 
-uses VocoderModule, VocoderVoice, VoiceList;
+uses
+  VocoderModule, VocoderVoice, VoiceList;
 
-
+procedure TVSTGUI.FormShow(Sender: TObject);
+begin
+ UpdateSynthVolume;
+ UpdateInputVolume;
+ UpdateVocoderVolume;
+end;
 
 procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
   Velocity: Single);
@@ -71,6 +82,30 @@ end;
 procedure TVSTGUI.SBVocoderLevelChange(Sender: TObject);
 begin
  TVSTSSModule(Owner).Parameter[2] := SBVocoderLevel.Position;
+end;
+
+procedure TVSTGUI.UpdateInputVolume;
+begin
+ with TVSTSSModule(Owner) do
+  begin
+   SBInputLevel.Position := round(Parameter[0]);
+  end;
+end;
+
+procedure TVSTGUI.UpdateSynthVolume;
+begin
+ with TVSTSSModule(Owner) do
+  begin
+   SBSynthLevel.Position := round(Parameter[1]);
+  end;
+end;
+
+procedure TVSTGUI.UpdateVocoderVolume;
+begin
+ with TVSTSSModule(Owner) do
+  begin
+   SBVocoderLevel.Position := round(Parameter[2]);
+  end;
 end;
 
 procedure TVSTGUI.FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
