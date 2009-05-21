@@ -5,8 +5,8 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
-  DAV_DspConvolution;
+  Windows, Classes, SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule,
+  DAV_Complex, DAV_DspConvolution;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -25,10 +25,13 @@ type
 
     FSemaphore           : Integer;
     FStaticCount         : Integer;
-    FFileName            : PChar;
+    FFileName            : PAnsiChar;
     FMaxIRSize           : Integer;
     FRealLatency         : Integer;
     FDesiredLatencyIndex : Integer;
+
+    FContainedIRs        : TStringList;
+
     procedure SampleRateChanged; override;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
@@ -41,7 +44,8 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
 
-    procedure LoadIR(FileName: TFileName);
+    procedure LoadIR(FileName: TFileName); overload;
+    procedure LoadIR(ID: Integer); overload;
   end;
 
 implementation
@@ -52,6 +56,12 @@ uses
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
 
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
+begin
+ Result := True;
+ TStringList(lParam).Add(lpName);
+end;
+
 constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 {$IFDEF Use_IPPS}
 var
@@ -59,11 +69,17 @@ var
 {$ENDIF}
 begin
  inherited Create(SEAudioMaster, Reserved);
- FFileName            := '';
  FSemaphore           := 0;
  FConvolver           := TConvolution32.Create;
  FMaxIRSize           := 16384;
  FDesiredLatencyIndex := 5;
+
+ FContainedIRs := TStringList.Create;
+ EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(FContainedIRs));
+
+ if FContainedIRs.Count > 0
+  then Integer(FFileName) := 0
+  else FFileName := '';
 
  {$IFDEF Use_IPPS}
  {$IFNDEF Registered}
@@ -78,6 +94,7 @@ end;
 
 destructor TSEConvolutionModule.Destroy;
 begin
+ FreeAndNil(FContainedIRs);
  FreeAndNil(FConvolver);
  inherited;
 end;
@@ -116,7 +133,7 @@ end;
 procedure TSEConvolutionModule.ChooseProcess;
 begin
  if Pin[Integer(pinInput)].Status = stRun then
-  if FileExists(FFileName)
+  if (FContainedIRs.Count > 0) or FileExists(FFileName)
    then OnProcess := SubProcess
    else OnProcess := SubProcessBypass
   else
@@ -145,6 +162,8 @@ end;
 
 // describe the pins (plugs)
 function TSEConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+var
+  str : string;
 begin
  result := True;
  case TSEConvolutionPins(index) of
@@ -172,12 +191,25 @@ begin
   pinFileName:
     with Properties^ do
      begin
-      Name            := 'FileName';
-      VariableAddress := @FFileName;
-      Flags           := [iofFilename];
-      Direction       := drIn;
-      DataType        := dtText;
-      DefaultValue    := 'IR.wav';
+      if FContainedIRs.Count <= 0 then
+       begin
+        Name            := 'FileName';
+        VariableAddress := @FFileName;
+        Flags           := [iofFilename];
+        Direction       := drIn;
+        DataType        := dtText;
+        DefaultValue    := 'IR.wav';
+       end
+      else
+       begin
+        Name            := 'IR ID';
+        VariableAddress := @FFileName;
+        Direction       := drIn;
+        DataType        := dtEnum;
+        DefaultValue    := '0';
+        str             := 'range 0,' + IntToStr(FContainedIRs.Count - 1);
+        DatatypeExtra   := PChar(str);
+       end;
      end;
   pinMaxIRSize:
     with Properties^ do
@@ -222,8 +254,12 @@ begin
                        Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                       end;
         pinFileName : begin
-                       if FileExists(FFileName)
-                        then LoadIR(StrPas(FFileName));
+                       if FContainedIRs.Count <= 0 then
+                        begin
+                         if FileExists(FFileName)
+                          then LoadIR(StrPas(FFileName));
+                        end
+                       else LoadIR(Integer(FFileName));
                        ChooseProcess;
                       end;
        pinMaxIRSize : begin
@@ -259,6 +295,35 @@ begin
  finally
   dec(FSemaphore);
  end;
+end;
+
+procedure TSEConvolutionModule.LoadIR(ID: Integer);
+var
+  ADC : TAudioDataCollection32;
+  RS  : TResourceStream;
+begin
+ if (ID >= 0) and (ID < FContainedIRs.Count) then
+  begin
+   while FSemaphore > 0 do;
+   inc(FSemaphore);
+   try
+    ADC := TAudioDataCollection32.Create(nil);
+     with ADC do
+      try
+       RS := TResourceStream.Create(HInstance, FContainedIRs[ID], 'IR');
+       try
+        LoadFromStream(RS);
+       finally
+        FreeAndNil(RS);
+       end;
+       FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+      finally
+       FreeAndNil(ADC);
+      end;
+   finally
+    dec(FSemaphore);
+   end;
+  end;
 end;
 
 procedure TSEConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);

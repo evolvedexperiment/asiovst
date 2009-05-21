@@ -362,6 +362,8 @@ type
     // File I/O
     procedure LoadFromFile(const FileName: TFileName); virtual;
     procedure SaveToFile(const FileName: TFileName); virtual;
+    procedure LoadFromStream(const Stream: TStream); virtual;
+    procedure SaveToStream(const Stream: TStream); virtual;
 
     property SampleFrames: Cardinal read FSampleFrames write SetSampleFrames default 0;
     property Channels: TCustomAudioChannels read FChannels write FChannels;
@@ -1324,6 +1326,63 @@ end;
 procedure TCustomAudioDataCollection.BeginWriteAudioData(Sender: TObject);
 begin
  // nothing to do yet, but lock data in the future...
+end;
+
+procedure TCustomAudioDataCollection.LoadFromStream(const Stream: TStream);
+var
+  CurrentFormat : Integer;
+  StreamStart   : Int64;
+begin
+ if Length(AudioFileFormats) = 0
+  then raise Exception.Create(RCStrNoAudioFileFormat);
+
+ StreamStart := Stream.Position;
+
+ // search file format that can load the file
+ for CurrentFormat := 0 to Length(AudioFileFormats) - 1 do
+  begin
+   if AudioFileFormats[CurrentFormat].CanLoad(Stream) then
+    begin
+     Stream.Position := StreamStart;
+     with AudioFileFormats[CurrentFormat].Create(Self) do
+      try
+       OnDecode := DataDecoding;
+       OnBeginReadAudioData := BeginReadAudioData;
+
+       LoadFromStream(Stream);
+      finally
+       Free;
+      end;
+
+     DataChanged;
+
+     // file loaded succesfully, now exit!
+     exit;
+    end;
+  end;
+end;
+
+procedure TCustomAudioDataCollection.SaveToStream(const Stream: TStream);
+var
+  i : Integer;
+begin
+ if Length(AudioFileFormats) = 0
+  then raise Exception.Create(RCStrNoAudioFileFormat);
+
+ for i := 0 to Length(AudioFileFormats) - 1 do
+  if False then
+   begin
+    with AudioFileFormats[i].Create(Self) do
+     try
+      SampleFrames  := Self.SampleFrames;
+      ChannelCount  := Self.ChannelCount;
+      OnEncode      := DataEncoding;
+      SaveToStream(Stream);
+     finally
+      Free;
+     end;
+    exit;
+   end;
 end;
 
 procedure TCustomAudioDataCollection.LoadFromFile(const FileName: TFileName);

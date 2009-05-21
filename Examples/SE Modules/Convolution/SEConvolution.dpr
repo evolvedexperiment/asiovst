@@ -2,6 +2,8 @@ library SEConvolution;
 
 {$I DAV_Compiler.INC}
 
+{-$R 'IR.res' 'IR.rc'}
+
 uses
   SysUtils,
   Classes,

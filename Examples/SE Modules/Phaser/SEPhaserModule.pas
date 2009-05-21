@@ -163,7 +163,7 @@ begin
                   ChooseProcess;
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                  end;
-      pinStages: FPhaser.Stages   := FStages;
+      pinStages: FPhaser.Stages := FStages;
  end;
 end;
 
