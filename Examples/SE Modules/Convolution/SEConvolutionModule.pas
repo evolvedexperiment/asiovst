@@ -308,18 +308,18 @@ begin
    inc(FSemaphore);
    try
     ADC := TAudioDataCollection32.Create(nil);
-     with ADC do
+    with ADC do
+     try
+      RS := TResourceStream.Create(HInstance, FContainedIRs[ID], 'IR');
       try
-       RS := TResourceStream.Create(HInstance, FContainedIRs[ID], 'IR');
-       try
-        LoadFromStream(RS);
-       finally
-        FreeAndNil(RS);
-       end;
-       FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+       LoadFromStream(RS);
       finally
-       FreeAndNil(ADC);
+       FreeAndNil(RS);
       end;
+      FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+     finally
+      FreeAndNil(ADC);
+     end;
    finally
     dec(FSemaphore);
    end;

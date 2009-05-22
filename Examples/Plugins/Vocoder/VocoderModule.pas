@@ -4,8 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
-  VocoderVoice, VoiceList, DAV_DspChebyshevFilter, DAV_DspFilter,
-  DAV_DspFilterBasics, DAV_DspVocoder;
+  VocoderVoice, VoiceList, DAV_DspVocoder;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -17,17 +16,13 @@ type
     procedure VocInputVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocSynthVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VocVocoderVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
-    procedure ParameterAttackChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure ParameterReleaseChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure ParameterBandwidthChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FVoices            : TVoiceList;
-    FVocoder           : TVocoder;
+    FVoices  : TVoiceList;
+    FVocoder : TVocoder;
   public
     property Voices: TVoiceList read FVoices;
   end;

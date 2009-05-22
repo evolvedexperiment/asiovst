@@ -6,7 +6,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf,  LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls;
+  Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  ExtCtrls;
 
 type
   TFmAbout = class(TForm)
@@ -34,7 +35,8 @@ implementation
 {$R *.dfm}
 {$ENDIF}
 
-uses ShellAPI, MiniHostForm;
+uses
+  ShellAPI, MiniHostForm;
 
 procedure TFmAbout.LbWebClick(Sender: TObject);
 begin

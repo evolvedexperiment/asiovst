@@ -519,6 +519,49 @@ begin
      end;
 end;
 
+(*
+function LoadResource(hModule: HINST; hResInfo: HRSRC): HGLOBAL; stdcall;
+begin
+ result := Windows.LoadResource(hModule, hResInfo);
+end;
+
+function SizeofResource(hModule: HINST; hResInfo: HRSRC): DWORD; stdcall;
+begin
+ result := Windows.SizeofResource(hModule, hResInfo);
+end;
+*)
+
+function GetModuleFileNameA(hModule: HINST; lpFilename: PAnsiChar; nSize: DWORD): DWORD; stdcall;
+begin
+ result := Windows.GetModuleFileNameA(hModule, lpFilename, nSize);
+ if (result = 0) and (hModule <> 0) then
+  begin
+   StrCopy(lpFilename, @ParamStr(0)[1]);
+   result := Length(ParamStr(0));
+  end;
+end;
+
+function GetModuleFileNameW(hModule: HINST; lpFilename: PWideChar; nSize: DWORD): DWORD; stdcall;
+begin
+ result := Windows.GetModuleFileNameW(hModule, lpFilename, nSize);
+end;
+
+(*
+var
+  LastHMODULE : HMODULE;
+
+function GetInternalProcAddress(hModule: HMODULE; lpProcName: LPCSTR): FARPROC; stdcall;
+begin
+ if LastHMODULE <> hModule
+  then
+   begin
+    result := GetProcAddress(hModule, lpProcName);
+    LastHMODULE := hModule;
+   end
+  else result := GetProcAddress(hModule, lpProcName);
+end;
+*)
+
 function TDLLLoader.Load(Stream: TStream): Boolean;
 var
   ImageDOSHeader: TImageDOSHeader;
@@ -706,10 +749,9 @@ var
           DLLImport^.LibraryName := Name;
           DLLImport^.LibraryHandle := GetExternalLibraryHandle(Name);
           DLLImport^.Entries := nil;
-          if ImportDescriptor^.TimeDateStamp = 0 then
-            ThunkData := ConvertPointer(ImportDescriptor^.FirstThunk)
-          else
-            ThunkData := ConvertPointer(ImportDescriptor^.OriginalFirstThunk);
+          if ImportDescriptor^.TimeDateStamp = 0
+           then ThunkData := ConvertPointer(ImportDescriptor^.FirstThunk)
+           else ThunkData := ConvertPointer(ImportDescriptor^.OriginalFirstThunk);
 
           while ThunkData^ <> 0 do
            begin
@@ -732,8 +774,21 @@ var
               DLLFunctionImport^.NameOrID := niName;
               DLLFunctionImport^.ID := 0;
               DLLFunctionImport^.Name := Name;
-              FunctionPointer :=
-                GetProcAddress(DLLImport^.LibraryHandle, Name);
+
+(*
+              if Name = 'LoadResource'
+               then FunctionPointer := @LoadResource else
+              if Name = 'SizeofResource'
+               then FunctionPointer := @SizeofResource else
+              if Name = 'GetProcAddress'
+               then FunctionPointer := @GetInternalProcAddress else
+*)
+
+              if Name = 'GetModuleFileNameA'
+               then FunctionPointer := @GetModuleFileNameA else
+              if Name = 'GetModuleFileNameW'
+               then FunctionPointer := @GetModuleFileNameW
+               else FunctionPointer := GetProcAddress(DLLImport^.LibraryHandle, Name);
              end;
             PPointer(Thunkdata)^ := FunctionPointer;
             Inc(ThunkData);

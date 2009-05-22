@@ -59,6 +59,7 @@ type
   TVstPluginPerverseTests = class(TCustomTestVstPlugin)
   published
     procedure TestMultipleOpenCloseCycles;
+    procedure TestLoadVSTPluginFromResource;
     procedure TestInactiveParameterSweeps;
     procedure TestInactiveSamplerateChanges;
     procedure TestInactiveBlocksizeChanges;
@@ -598,6 +599,23 @@ begin
   end;
 end;
 
+
+procedure TVstPluginPerverseTests.TestLoadVSTPluginFromResource;
+var
+  FileStream : TFileStream;
+begin
+ with FVstHost.VstPlugIns.Add do
+  begin
+   FileStream := TFileStream.Create(FVstHost[0].DLLFileName, fmOpenRead);
+   try
+    LoadFromStream(FileStream);
+   finally
+    FreeAndNil(FileStream);
+   end;
+   Open;
+   Close;
+  end;
+end;
 
 { TVstPluginHostTests }
 

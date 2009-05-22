@@ -402,8 +402,6 @@ end;
 
 procedure TCustomAudioFileAU.WriteAudioDataToStream(const Stream: TStream);
 var
-  ChunkName   : TChunkName;
-  ChunkSize   : Cardinal;
   ChunkEnd    : Cardinal;
   DataDecoder : TCustomChannelDataCoder;
   Samples     : Cardinal;

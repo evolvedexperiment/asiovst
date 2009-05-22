@@ -111,7 +111,7 @@ type
     MIMain: TMenuItem;
     MIExit: TMenuItem;
     MIShowMIDIWAVWindow: TMenuItem;
-    N1: TMenuItem;
+    N1: TMenuItem;   
     N2: TMenuItem;
     N3: TMenuItem;
     N4: TMenuItem;
@@ -247,12 +247,17 @@ type
     procedure ProcessEvents(Sender: TObject; ev: PVstEvents);
     procedure ProcessNoteOnOff(ch, n, v: byte);
     function FindBackgroundColor: TColor;
+    procedure BuildChannelBuffers;
+    procedure StopProcessingAndClosePlugin;
+  protected
+    procedure ShowVSTPlugin(const DefaultProgram: Integer = 0);
   public
     procedure AddMID(const FileName: string);
     procedure AddMIDIData(d1, d2, d3: byte; pos: Integer = 0);
     procedure AddWAV(const FileName: string);
     procedure BuildPresetList;
-    procedure LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
+    procedure LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0); overload;
+    procedure LoadPlugin(const Stream: TStream; const DefaultProgram: Integer = 0); overload;
     procedure LoadPresets(Files: TStrings);
     procedure LoadWAV(const FileName: string);
     procedure LoadWAVFile;
@@ -289,16 +294,22 @@ uses
   Math, Inifiles, Dialogs, ShellAPI, DAV_AudioData, DAV_AudioFileWAV,
   DAV_AudioFileAIFF, DAV_AudioFileAU, OptionsForm, PlayerForm;
 
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
+begin
+ Result := True;
+ TStringList(lParam).Add(lpName);
+end;
+
 procedure TFmMiniHost.FormCreate(Sender: TObject);
 var
-  i        : Integer;
-  m        : TMenuItem;
-  tlist    : TStringList;
-  slist    : TStrings;
-  s        : string;
-  Settings : TIniFile;
-  p        : PVstMidiEvent;
-  mi       : Integer;
+  i, mi               : Integer;
+  MenuItem            : TMenuItem;
+  PlayList            : TStringList;
+  AsioDriverList      : TStrings;
+  str                 : string;
+  Settings            : TIniFile;
+  ContainedVSTPlugins : TStringList;
+  RS                  : TResourceStream;
 (*
   b        : Byte;
   flt      : array [0..1] of Single;
@@ -364,12 +375,14 @@ begin
   begin
    GetMem(FMyEvents.Events[i], SizeOf(TVSTMidiEvent));
    FillChar(FMyEvents.Events[i]^, SizeOf(TVSTMidiEvent), 0);
-   p := PVstMidiEvent(FMyEvents.events[i]);
-   p^.EventType := etMidi;
-   p^.byteSize := 24;
+   with PVstMidiEvent(FMyEvents.Events[i])^ do
+    begin
+     EventType := etMidi;
+     ByteSize := 24;
+    end;
   end;
 
- FWaveFile := TWavPlayer.create;
+ FWaveFile := TWavPlayer.Create;
  FPluginLoaded := False;
 
  Player := TPlayer.Create(Self);
@@ -391,70 +404,71 @@ begin
  ININame := GetApplicationDirectory + '\' + ChangeFileExt(GetApplicationFilename, '.ini');
 {$ENDIF}
 
- FMidiFile := TMidiFile.create(nil);
+ FMidiFile := TMidiFile.Create(nil);
  FMidiFile.OnMidiEvent := MyMidiEvent;
  FMidiFile.ManualCall := True;
  FRecordState := rsStop;
 
  try
-  m := TMenuItem.Create(Self);
-  m.RadioItem := True;
-  m.tag := 0;
-  m.Caption := 'None';
-  m.OnClick := MIDIInChange;
-  MIMIDIIn.Add(m);
+  MenuItem := TMenuItem.Create(Self);
+  MenuItem.RadioItem := True;
+  MenuItem.Tag := 0;
+  MenuItem.Caption := 'None';
+  MenuItem.OnClick := MIDIInChange;
+  MIMIDIIn.Add(MenuItem);
   for mi := 0 to MidiInput.Devices.Count - 1 do
    begin
-    m := TMenuItem.Create(Self);
-    m.RadioItem := True;
-    m.tag := mi + 1;
-    m.Caption := MidiInput.Devices[mi];
-    m.OnClick := MIDIInChange;
-    MIMIDIIn.Add(m);
+    MenuItem := TMenuItem.Create(Self);
+    MenuItem.RadioItem := True;
+    MenuItem.Tag := mi + 1;
+    MenuItem.Caption := MidiInput.Devices[mi];
+    MenuItem.OnClick := MIDIInChange;
+    MIMIDIIn.Add(MenuItem);
    end;
  except
   MessageDlg('ERROR: A serious problem occured with MIDI-In drivers!', mtError, [mbOK], 0);
  end;
 
  try
-  m := TMenuItem.Create(Self);
-  m.RadioItem := True;
-  m.tag := 0;
-  m.Caption := 'None';
-  m.OnClick := MIDIOutChange;
-  MIMIDIOut.Add(m);
+  MenuItem := TMenuItem.Create(Self);
+  MenuItem.RadioItem := True;
+  MenuItem.Tag := 0;
+  MenuItem.Caption := 'None';
+  MenuItem.OnClick := MIDIOutChange;
+  MIMIDIOut.Add(MenuItem);
   for mi := 0 to MidiOutput.Devices.Count - 1 do
    begin
-    m := TMenuItem.Create(Self);
-    m.RadioItem := True;
-    m.tag := mi + 1;
-    m.Caption := MidiOutput.Devices[mi];
-    m.OnClick := MIDIOutChange;
-    MIMIDIOut.Add(m);
+    MenuItem := TMenuItem.Create(Self);
+    MenuItem.RadioItem := True;
+    MenuItem.Tag := mi + 1;
+    MenuItem.Caption := MidiOutput.Devices[mi];
+    MenuItem.OnClick := MIDIOutChange;
+    MIMIDIOut.Add(MenuItem);
    end;
  except
   MessageDlg('ERROR: A serious problem occured with MIDI-Out drivers', mtError, [mbOK], 0);
  end;
 
  try
-  slist := ASIOHost.DriverList;
+  AsioDriverList := ASIOHost.DriverList;
  except
-  slist := nil;
+  AsioDriverList := nil;
   MessageDlg('ASIO driver list could not be received! Application Terminated!', mtError, [mbOK], 0);
   Application.Terminate;
  end;
 
- if slist <> nil then
-  for i := 0 to slist.Count - 1 do
+ if AsioDriverList <> nil then
+  for i := 0 to AsioDriverList.Count - 1 do
    begin
-    m := TMenuItem.Create(Self);
-    m.RadioItem := True;
-    m.Tag := i;
-    m.Caption := slist.Strings[i];
-    m.OnClick := ASIOChange;
-    MIAsioDriver.Add(m);
+    MenuItem := TMenuItem.Create(Self);
+    MenuItem.RadioItem := True;
+    MenuItem.Tag := i;
+    MenuItem.Caption := AsioDriverList.Strings[i];
+    MenuItem.OnClick := ASIOChange;
+    MIAsioDriver.Add(MenuItem);
    end;
- if slist.Count = 0 then
+
+ if AsioDriverList.Count = 0 then
  begin
   MessageDlg('No ASIO Driver present! Application Terminated!', mtError, [mbOK], 0);
   Application.Terminate;
@@ -464,84 +478,110 @@ begin
  MidiInput.OnSysExData := SysExData;
 
  Settings := TIniFile.Create(ININame);
- i := Settings.ReadInteger('Audio', 'ASIO Driver', -1);
- if i = -1 then i := slist.IndexOf('ASIO4ALL v2');
- if i = -1 then i := slist.IndexOf('ASIO4ALL');
- if (i < 0) or (i >= slist.count) then i := 0;
- MIAsioDriver.Items[i].Checked := True;
  try
-  ASIOChange(MIAsioDriver.Items[i]);
- except
+  i := Settings.ReadInteger('Audio', 'ASIO Driver', -1);
+  if i = -1 then i := AsioDriverList.IndexOf('ASIO4ALL v2');
+  if i = -1 then i := AsioDriverList.IndexOf('ASIO4ALL');
+  if (i < 0) or (i >= AsioDriverList.count) then i := 0;
+  MIAsioDriver.Items[i].Checked := True;
+  try
+   ASIOChange(MIAsioDriver.Items[i]);
+  except
+  end;
+  i := Settings.ReadInteger('Audio', 'Output Channel', 0);
+  if (i >= 0) and (i < MIASIOOutputChannel.Count) and (MIASIOOutputChannel.Count <> 0)
+   then
+    try
+     MIASIOOutputChannel.Items[i].Checked := True;
+     MIASIOOutputChannel.Items[i].Click;
+    except
+    end;
+
+  i := Settings.ReadInteger('Audio', 'Input Channel', 0);
+  if (i >= 0) and (i < MIASIOInputChannel.Count) and (MIASIOInputChannel.Count <> 0)
+   then
+    try
+     MIASIOInputChannel.Items[i].Checked := True;
+     MIASIOInputChannel.Items[i].Click;
+    except
+    end;
+
+  WaveFile.FFilename := Settings.ReadString('Audio', 'File', '');
+
+  i := Settings.ReadInteger('Audio', 'Record Bits', 16);
+  case i of
+   16 : Player.CbRecordFormat.ItemIndex := 0;
+   else Player.CbRecordFormat.ItemIndex := 1;
+  end;
+
+  MIShowPreset.Checked := Settings.ReadBool('Layout', 'ShowPresetInTitleBar', True);
+  FDirPlugin := Settings.ReadString('General', 'Plugin Directory', '');
+  FDirPreset := Settings.ReadString('General', 'Preset Directory', '');
+  FDirWave   := Settings.ReadString('General', 'Wave Directory', '');
+  FDirMidi   := Settings.ReadString('General', 'Midi Directory', '');
+
+  // clear playlists
+  Player.MidiBox.Clear;
+  Player.WavBox.Clear;
+
+  // load playlists
+  PlayList := TStringList.Create;
+  try
+   Settings.ReadSection('Playlist MIDI', PlayList);
+   for i := 0 to PlayList.Count - 1 do AddMID(PlayList[i]);
+   Settings.ReadSection('Playlist WAV', PlayList);
+   for i := 0 to PlayList.Count - 1 do AddWAV(PlayList[i]);
+  finally
+   PlayList.Free;
+  end;
+
+  Player.CBMidiPlayMode.ItemIndex := Settings.ReadInteger('MIDI', 'LoopMode', 1);
+  Player.CBWavPlayMode.ItemIndex := Settings.ReadInteger('Audio', 'LoopMode', 1);
+  WaveFile.looped := Player.CBWavPlayMode.itemindex = 1;
+  FMidiFile.Filename := Settings.ReadString('MIDI', 'LastFile', '');
+  if (FMidiFile.filename <> '') and fileexists(FMidiFile.filename)
+   and (uppercase(extractfileext(FMidiFile.filename))='.MID') then FMidiFile.ReadFile;
+  MidiPlaying := False;
+
+  MIDownMixToStereo.Checked := Settings.ReadBool('VST', 'DownmixStereo', False);
+  MIMidiThru.Checked := Settings.ReadBool('VST', 'MIDIThru', False);
+
+  str := Settings.ReadString('VST', 'LastPlugin', '');
+  i := Settings.ReadInteger('VST', 'LastProgram', 0);
+ finally
+  Settings.Free;
  end;
- i := Settings.ReadInteger('Audio', 'Output Channel', 0);
- if (i >= 0) and (i < MIASIOOutputChannel.Count) and (MIASIOOutputChannel.Count <> 0)
-  then
-   try
-    MIASIOOutputChannel.Items[i].Checked := True;
-    MIASIOOutputChannel.Items[i].Click;
-   except
-   end;
-
- i := Settings.ReadInteger('Audio', 'Input Channel', 0);
- if (i >= 0) and (i < MIASIOInputChannel.Count) and (MIASIOInputChannel.Count <> 0)
-  then
-   try
-    MIASIOInputChannel.Items[i].Checked := True;
-    MIASIOInputChannel.Items[i].Click;
-   except
-   end;
-
- WaveFile.FFilename := Settings.ReadString('Audio', 'File', '');
-
- i := Settings.ReadInteger('Audio', 'Record Bits', 16);
- case i of
-  16 : Player.CbRecordFormat.ItemIndex := 0;
-  else Player.CbRecordFormat.ItemIndex := 1;
- end;
-
- MIShowPreset.Checked := Settings.ReadBool('Layout', 'ShowPresetInTitleBar', True);
- FDirPlugin := Settings.ReadString('General', 'Plugin Directory', '');
- FDirPreset := Settings.ReadString('General', 'Preset Directory', '');
- FDirWave   := Settings.ReadString('General', 'Wave Directory', '');
- FDirMidi   := Settings.ReadString('General', 'Midi Directory', '');
-
- Player.MidiBox.Clear;
- tlist := TStringList.Create;
- Settings.ReadSection('Playlist MIDI', tlist);
- for i := 0 to tlist.Count - 1 do AddMID(tlist[i]);
- Player.WavBox.Clear;
- Settings.ReadSection('Playlist WAV', tlist);
- for i := 0 to tlist.Count - 1 do AddWAV(tlist[i]);
- tlist.Free;
-
- Player.CBMidiPlayMode.ItemIndex := Settings.ReadInteger('MIDI', 'LoopMode', 1);
- Player.CBWavPlayMode.ItemIndex := Settings.ReadInteger('Audio', 'LoopMode', 1);
- WaveFile.looped := Player.CBWavPlayMode.itemindex = 1;
- FMidiFile.Filename := Settings.ReadString('MIDI', 'LastFile', '');
- if (FMidiFile.filename <> '') and fileexists(FMidiFile.filename)
-  and (uppercase(extractfileext(FMidiFile.filename))='.MID') then FMidiFile.ReadFile;
- MidiPlaying := False;
-
- MIDownMixToStereo.Checked := Settings.ReadBool('VST', 'DownmixStereo', False);
- MIMidiThru.Checked := Settings.ReadBool('VST', 'MIDIThru', False);
-
- s := Settings.ReadString('VST', 'LastPlugin', '');
- i := Settings.ReadInteger('VST', 'LastProgram', 0);
- Settings.Free;
 
  LoadWAV(WaveFile.Filename);
 
- if (ParamCount > 0) and (FileExists(Paramstr(1))) then
-  begin
-   LoadPlugin(Paramstr(1));
-   VSTHost[0].OnProcessEvents := ProcessEvents;
-  end
- else if FileExists(s) then
-  begin
-   FLoadProg := i;
-   LoadPlugin(s, i);
-   VSTHost[0].OnProcessEvents := ProcessEvents;
-  end;
+ ContainedVSTPlugins := TStringList.Create;
+ try
+  EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
+
+  if (ParamCount > 0) and (FileExists(Paramstr(1))) then
+   begin
+    LoadPlugin(Paramstr(1));
+    VSTHost[0].OnProcessEvents := ProcessEvents;
+   end
+  else if ContainedVSTPlugins.Count > 0 then
+   begin
+    RS := TResourceStream.Create(HInstance, ContainedVSTPlugins[0], 'DLL');
+    try
+     LoadPlugin(RS);
+    finally
+     FreeAndNil(RS);
+    end;
+   end
+  else if FileExists(str) then
+   begin
+    FLoadProg := i;
+    LoadPlugin(str, i);
+    VSTHost[0].OnProcessEvents := ProcessEvents;
+   end;
+
+ finally
+  FreeAndNil(ContainedVSTPlugins);
+ end;
 end;
 
 procedure TFmMiniHost.FormDestroy(Sender: TObject);
@@ -558,7 +598,7 @@ begin
  // free about form if necessary
  if assigned(FAboutForm)
   then FreeAndNil(FAboutForm);
-  
+
  with TIniFile.Create(ININame) do
   try
    EraseSection('Playlist MIDI');
@@ -743,18 +783,21 @@ begin
  if n >= 0 then PresetBox.ItemIndex := FCurProg;
 end;
 
-procedure TFmMiniHost.LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
-var
-  rct : ERect;
-  i   : Integer;
+procedure TFmMiniHost.StopProcessingAndClosePlugin;
 begin
- if not FileExists(VSTDll) then exit;
  WaveTimer.Enabled := False;
  FProcessing := False;
  StopAudio;
  sleep(2);
  ClosePlugin;
  sleep(2);
+end;
+
+procedure TFmMiniHost.LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
+begin
+ if not FileExists(VSTDll) then exit;
+
+ StopProcessingAndClosePlugin;
 
  VSTHost.BlockSize := ASIOHost.BufferSize;
  VSTHost[0].LoadFromFile(VSTDll);
@@ -771,6 +814,36 @@ begin
   exit;
  end;
 
+ BuildChannelBuffers;
+
+ ShowVSTPlugin(DefaultProgram);
+end;
+
+procedure TFmMiniHost.LoadPlugin(const Stream: TStream; const DefaultProgram: Integer = 0);
+begin
+ StopProcessingAndClosePlugin;
+
+ VSTHost.BlockSize := ASIOHost.BufferSize;
+ VSTHost[0].LoadFromStream(Stream);
+
+ try
+  VSTHost[0].Active := True;
+ except
+  VSTHost[0].Active := False;
+  VSTHost[0].DLLFilename := '';
+  FPanel.Height := 0;
+  exit;
+ end;
+
+ BuildChannelBuffers;
+
+ ShowVSTPlugin(DefaultProgram);
+end;
+
+procedure TFmMiniHost.BuildChannelBuffers;
+var
+  i : Integer;
+begin
  SetLength(FVSTBufIn,  max(VSTHost[0].numInputs,  2), ASIOHost.BufferSize);
  SetLength(FVSTBufOut, max(VSTHost[0].numOutputs, 2), ASIOHost.BufferSize);
  FNumIn := VSTHost[0].numInputs;
@@ -778,7 +851,12 @@ begin
  SetLength(FVSTPinProps, FNumOut);
  for i := 0 to FNumOut - 1
   do FVSTPinProps[i] := VSTHost[0].GetOutputProperties(i);
+end;
 
+procedure TFmMiniHost.ShowVSTPlugin(const DefaultProgram: Integer = 0);
+var
+  rct : ERect;
+begin
  with VSTHost[0] do
   try
    ShowEdit(FPanel);
@@ -2315,7 +2393,7 @@ begin
     for i := 0 to bs - 1 do
      for j := 2 to FNumOut - 1 do
      begin
-      if FVSTPinProps[j].arrangementType = 0 then
+      if FVSTPinProps[j].ArrangementType = satMono then
       begin
        FVSTBufOut[0][i] := FVSTBufOut[0][i] + FVSTBufOut[j][i];
        FVSTBufOut[1][i] := FVSTBufOut[1][i] + FVSTBufOut[j][i];

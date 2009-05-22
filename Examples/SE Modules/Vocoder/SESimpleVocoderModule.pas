@@ -1,4 +1,4 @@
-unit SEVocoderModule;
+unit SESimpleVocoderModule;
 
 interface
 
@@ -7,10 +7,10 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEVocoderPins = (pinInput, pinCarrier, pinOutput, pinBandwidth, pinAttack,
+  TSESimpleVocoderPins = (pinInput, pinCarrier, pinOutput, pinBandwidth, pinAttack,
     pinRelease);
 
-  TCustomSEVocoderModule = class(TSEModuleBase)
+  TCustomSESimpleVocoderModule = class(TSEModuleBase)
   private
     FInputBuffer   : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer  : PDAVSingleFixedArray;
@@ -20,7 +20,7 @@ type
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FVocoder       : TVocoder;
+    FVocoder : TSimpleThirdOctaveVocoder;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -33,7 +33,7 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
-  TSEVocoderStaticModule = class(TCustomSEVocoderModule)
+  TSESimpleVocoderStaticModule = class(TCustomSESimpleVocoderModule)
   private
     FAttack    : Single;
     FRelease   : Single;
@@ -44,13 +44,13 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
-  TSEVocoderControllableModule = class(TSEVocoderStaticModule)
+  TSESimpleVocoderControllableModule = class(TSESimpleVocoderStaticModule)
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
-  TSEVocoderAutomatableModule = class(TCustomSEVocoderModule)
+  TSESimpleVocoderAutomatableModule = class(TCustomSESimpleVocoderModule)
   protected
     FAttackBuffer  : PDAVSingleFixedArray;
     FReleaseBuffer : PDAVSingleFixedArray;
@@ -66,24 +66,24 @@ implementation
 uses
   SysUtils;
 
-{ TCustomSEVocoderModule }
+{ TCustomSESimpleVocoderModule }
 
-constructor TCustomSEVocoderModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TCustomSESimpleVocoderModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FVocoder := TVocoder.Create;
+ FVocoder := TSimpleThirdOctaveVocoder.Create;
  FVocoder.SynthLevel := 0;
  FVocoder.InputLevel := 0;
  FVocoder.VocoderLevel := 1;
 end;
 
-destructor TCustomSEVocoderModule.Destroy;
+destructor TCustomSESimpleVocoderModule.Destroy;
 begin
  FreeAndNil(FVocoder);
  inherited;
 end;
 
-procedure TCustomSEVocoderModule.Open;
+procedure TCustomSESimpleVocoderModule.Open;
 begin
  inherited Open;
 
@@ -92,13 +92,13 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TCustomSEVocoderModule.SampleRateChanged;
+procedure TCustomSESimpleVocoderModule.SampleRateChanged;
 begin
  inherited;
  FVocoder.SampleRate := SampleRate;
 end;
 
-procedure TCustomSEVocoderModule.SubProcess(const BufferOffset,
+procedure TCustomSESimpleVocoderModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 var
   Inp     : PDAVSingleFixedArray;
@@ -115,7 +115,7 @@ begin
   do Outp^[Sample] := FVocoder.Process(Inp^[Sample], Carrier^[Sample]);
 end;
 
-procedure TCustomSEVocoderModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSESimpleVocoderModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -123,7 +123,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TCustomSEVocoderModule.ChooseProcess;
+procedure TCustomSESimpleVocoderModule.ChooseProcess;
 begin
  if (Pin[Integer(pinInput)].Status = stRun) and
     (Pin[Integer(pinCarrier)].Status = stRun)
@@ -141,7 +141,7 @@ begin
 end;
 
 // describe your module
-class procedure TCustomSEVocoderModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TCustomSESimpleVocoderModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
@@ -152,10 +152,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TCustomSEVocoderModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TCustomSESimpleVocoderModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEVocoderPins(index) of
+ case TSESimpleVocoderPins(index) of
   pinInput:
    with Properties^ do
     begin
@@ -199,10 +199,10 @@ begin
 end;
 
 // An input plug has changed value
-procedure TCustomSEVocoderModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TCustomSESimpleVocoderModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEVocoderPins(CurrentPin.PinID) of
+ case TSESimpleVocoderPins(CurrentPin.PinID) of
   pinInput,
   pinCarrier   : ChooseProcess;
   pinBandwidth : FVocoder.SynthesisBandwidth := FBandwidth * sqrt(0.5);
@@ -210,31 +210,31 @@ begin
 end;
 
 
-{ TSEVocoderStaticModule }
+{ TSESimpleVocoderStaticModule }
 
 // describe your module
-class procedure TSEVocoderStaticModule.GetModuleProperties(
+class procedure TSESimpleVocoderStaticModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Vocoder (static)';
+   Name := 'Simple Third Octave Vocoder (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Vocoder (static)';
+   ID := 'DAV Simple Vocoder (static)';
   end;
 end;
 
 // describe the pins (plugs)
-function TSEVocoderStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSESimpleVocoderStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- case TSEVocoderPins(index) of
+ case TSESimpleVocoderPins(index) of
   pinAttack:
    with Properties^ do
     begin
@@ -259,67 +259,67 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSEVocoderStaticModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSESimpleVocoderStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEVocoderPins(CurrentPin.PinID) of
+ case TSESimpleVocoderPins(CurrentPin.PinID) of
      pinAttack : FVocoder.Attack := FAttack;
     pinRelease : FVocoder.Release := FRelease;
  end;
 end;
 
 
-{ TSEVocoderControllableModule }
+{ TSESimpleVocoderControllableModule }
 
-class procedure TSEVocoderControllableModule.GetModuleProperties(
+class procedure TSESimpleVocoderControllableModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Vocoder';
+   Name := 'Simple Third Octave Vocoder';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Vocoder';
+   ID := 'DAV Simple Vocoder';
   end;
 end;
 
-function TSEVocoderControllableModule.GetPinProperties(const Index: Integer;
+function TSESimpleVocoderControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- if TSEVocoderPins(index) in [pinBandwidth..pinRelease]
+ if TSESimpleVocoderPins(index) in [pinBandwidth..pinRelease]
   then with Properties^ do Direction := drIn;
 end;
 
-{ TSEVocoderAutomatableModule }
+{ TSESimpleVocoderAutomatableModule }
 
-class procedure TSEVocoderAutomatableModule.GetModuleProperties(
+class procedure TSESimpleVocoderAutomatableModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Vocoder (automatable)';
+   Name := 'Simple Third Octave Vocoder (automatable)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Vocoder (automatable)';
+   ID := 'DAV Simple Vocoder (automatable)';
   end;
 end;
 
-function TSEVocoderAutomatableModule.GetPinProperties(const Index: Integer;
+function TSESimpleVocoderAutomatableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- case TSEVocoderPins(index) of
+ case TSESimpleVocoderPins(index) of
   pinAttack:
    with Properties^ do
     begin
@@ -343,10 +343,10 @@ begin
  end;
 end;
 
-procedure TSEVocoderAutomatableModule.PlugStateChange(
+procedure TSESimpleVocoderAutomatableModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
- case TSEVocoderPins(CurrentPin.PinID) of
+ case TSESimpleVocoderPins(CurrentPin.PinID) of
   pinAttack, pinRelease:
     if (Pin[Integer(pinAttack)].Status <> stRun) and
        (Pin[Integer(pinRelease)].Status <> stRun)
@@ -356,7 +356,7 @@ begin
  inherited;
 end;
 
-procedure TSEVocoderAutomatableModule.SubProcessAutomated(const BufferOffset,
+procedure TSESimpleVocoderAutomatableModule.SubProcessAutomated(const BufferOffset,
   SampleFrames: Integer);
 var
   Inp     : PDAVSingleFixedArray;
