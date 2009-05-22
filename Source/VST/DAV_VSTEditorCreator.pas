@@ -126,7 +126,7 @@ end;
 
 function TVSTEditorCreator.GetUnnamed: Boolean;
 begin
-  Result := True;
+  Result := False; // False still queries for a project name!
 end;
 
 function TVSTEditorCreator.NewFormFile(const FormIdent, AncestorIdent: string):

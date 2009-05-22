@@ -34,6 +34,7 @@ type
     VersionRelease : Integer;
     VendorName     : string;
     ProductName    : string;
+    SaveWhenDone   : Boolean;
     constructor Create;
   end;
 

@@ -93,6 +93,7 @@ type
     TSPluginType: TTabSheet;
     TSVersionID: TTabSheet;
     TSWelcome: TTabSheet;
+    chkSaveWhenFinished: TCheckBox;
     procedure btnNextClick(Sender: TObject);
     procedure btnPrevClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -215,6 +216,7 @@ begin
   Config.VersionRelease := StrToInt(edtVersionRelease.Text);
   Config.VendorName     := edtVendorName.Text;
   Config.ProductName    := edtProductName.Text;
+  Config.SaveWhenDone   := chkSaveWhenFinished.Checked;
 end;
 
 procedure TVSTPluginWizardForm.InitFormFromConfig(Config: TConfig);
@@ -235,6 +237,7 @@ begin
   edtVersionRelease.Text := IntToStr(Config.VersionRelease);
   edtVendorName.Text     := Config.VendorName;
   edtProductName.Text    := Config.ProductName;
+  chkSaveWhenFinished.Checked := Config.SaveWhenDone;
 end;
 
 procedure TVSTPluginWizardForm.SetNavigationButtons;

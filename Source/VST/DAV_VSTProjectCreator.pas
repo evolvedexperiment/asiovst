@@ -98,7 +98,7 @@ end;
 function TVSTProjectCreator.GetUnnamed: Boolean;
 begin
   // Project needs to be named/saved
-  Result := True;
+  Result := False; // False still queries for a project name!
 end;
 
 // =============================================================================

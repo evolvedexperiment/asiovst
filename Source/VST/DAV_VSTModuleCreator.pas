@@ -194,13 +194,13 @@ end;
 
 function TVSTModuleCreator.GetUnnamed: Boolean;
 begin
-  Result := True;
+  Result := False; // False still queries for a project name!
 end;
 
 function TVSTModuleCreator.NewFormFile(const FormIdent, AncestorIdent: string):
   IOTAFile;
 begin
-  Result := nil
+  Result := nil;
 end;
 
 function TVSTModuleCreator.NewImplSource(const ModuleIdent, FormIdent,
