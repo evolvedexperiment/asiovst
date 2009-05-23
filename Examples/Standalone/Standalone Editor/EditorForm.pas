@@ -83,11 +83,11 @@ begin
      begin
       ContainedVSTPlugins := TStringList.Create;
       try
-       EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
+       EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
 
        if ContainedVSTPlugins.Count > 0 then
         begin
-         RS := TResourceStream.Create(HInstance, ContainedVSTPlugins[0], 'IR');
+         RS := TResourceStream.Create(HInstance, ContainedVSTPlugins[0], 'DLL');
          try
           LoadFromStream(RS);
          finally
