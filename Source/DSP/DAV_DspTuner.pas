@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspButterworthFilter;
+  DAV_Common, DAV_DspCommon, DAV_DspButterworthFilter, DAV_DspCorrelation;
 
 type
   TCustomTuner = class(TDspObject)
@@ -24,8 +24,8 @@ type
   private
     FMaximumFrequency: Single;
     FMinimumFrequency: Single;
-    function GetDSFilterOrder: Integer;
-    procedure SetDSFilterOrder(const Value: Integer);
+    function GetDSFilterOrder: Cardinal;
+    procedure SetDSFilterOrder(const Value: Cardinal);
     procedure CalculateDownsampleFactor;
     procedure SetMaximumFrequency(const Value: Single);
     procedure SetMinimumFrequency(const Value: Single);
@@ -42,7 +42,7 @@ type
     constructor Create; override;
     procedure Process(Input: Single); override;
 
-    property DownSampleFilterOrder: Integer read GetDSFilterOrder write SetDSFilterOrder;
+    property DownSampleFilterOrder: Cardinal read GetDSFilterOrder write SetDSFilterOrder;
     property MaximumFrequency: Single read FMaximumFrequency write SetMaximumFrequency;
     property MinimumFrequency: Single read FMinimumFrequency write SetMinimumFrequency;
   end;
@@ -108,7 +108,7 @@ begin
  FDownSampleFactor := NewFactor;
 end;
 
-function TCustomDownsampledTuner.GetDSFilterOrder: Integer;
+function TCustomDownsampledTuner.GetDSFilterOrder: Cardinal;
 begin
  result := FLowpass.Order;
 end;
@@ -138,7 +138,7 @@ begin
   end;
 end;
 
-procedure TCustomDownsampledTuner.SetDSFilterOrder(const Value: Integer);
+procedure TCustomDownsampledTuner.SetDSFilterOrder(const Value: Cardinal);
 begin
  if FLowpass.Order <> Value then
   begin
