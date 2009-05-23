@@ -13,7 +13,7 @@ type
   protected
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
-    FFilter       : TButterworthFilter;
+    FFilter       : TCustomButterworthFilter;
     FStaticCount  : Integer;
     procedure ChooseProcess;
     procedure Open; override;

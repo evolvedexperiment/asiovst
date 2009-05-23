@@ -248,8 +248,8 @@ begin
                      FSplitter[1].NumberOfCoefficients := FCoefficients;
                     end;
     pinTransition : begin
-                     FSplitter[0].Transition := f_Limit(FTransition, 0.01, 0.499);
-                     FSplitter[1].Transition := f_Limit(FTransition, 0.01, 0.499);
+                     FSplitter[0].Transition := Limit(FTransition, 0.01, 0.499);
+                     FSplitter[1].Transition := Limit(FTransition, 0.01, 0.499);
                     end;
  end;
 end;

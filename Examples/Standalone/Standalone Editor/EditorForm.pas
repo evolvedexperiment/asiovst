@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
   {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
-  StdCtrls, ToolWin, Dialogs, DAV_Common, DAV_ASIOHost, DAV_VSTHost;
+  StdCtrls, ToolWin, Dialogs, DAV_Common, DAV_ASIOHost, DAV_VSTHost, Menus;
 
 type
   TFmVSTEditor = class(TForm)
@@ -25,6 +25,11 @@ type
     VstHost: TVstHost;
     {$IFNDEF FPC}
     XPManifest: TXPManifest;
+    PUPreset: TPopupMenu;
+    MILoadPreset: TMenuItem;
+    SavePreset1: TMenuItem;
+    OD: TOpenDialog;
+    SD: TSaveDialog;
     {$ENDIF}
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -36,6 +41,8 @@ type
     procedure BtExitClick(Sender: TObject);
     procedure CBPresetChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure MILoadPresetClick(Sender: TObject);
+    procedure SavePreset1Click(Sender: TObject);
   private
     FVSTInBuffer  : array of PDAVSingleFixedArray;
     FVSTOutBuffer : array of PDAVSingleFixedArray;
@@ -156,6 +163,26 @@ begin
   do Dispose(FVSTInBuffer[Channel]);
  for Channel := 0 to Length(FVSTOutBuffer) - 1
   do Dispose(FVSTOutBuffer[Channel]);
+end;
+
+procedure TFmVSTEditor.MILoadPresetClick(Sender: TObject);
+begin
+ with OD do
+  if Execute then
+   case FilterIndex of
+    1 : VstHost[0].LoadPreset(FileName);
+    2 : VstHost[0].LoadBank(FileName);
+   end;
+end;
+
+procedure TFmVSTEditor.SavePreset1Click(Sender: TObject);
+begin
+ with SD do
+  if Execute then
+   case FilterIndex of
+    1 : VstHost[0].SavePreset(FileName);
+    2 : VstHost[0].SaveBank(FileName);
+   end;
 end;
 
 procedure TFmVSTEditor.BtSetupClick(Sender: TObject);

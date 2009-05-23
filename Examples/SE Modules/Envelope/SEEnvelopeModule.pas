@@ -198,7 +198,7 @@ begin
                      Pin[1].TransmitStatusChange(SampleClock, OutState);
                     end;
   pinCoefficients : FHilbert.NumberOfCoefficients := FCoefficients;
-    pinTransition : FHilbert.Transition := f_Limit(FTransition, 0.01, 0.499);
+    pinTransition : FHilbert.Transition := Limit(FTransition, 0.01, 0.499);
  end;
 end;
 
@@ -350,7 +350,7 @@ begin
                      Pin[2].TransmitStatusChange(SampleClock, OutState);
                     end;
   pinCoefficients : FHilbert.NumberOfCoefficients := FCoefficients;
-    pinTransition : FHilbert.Transition := f_Limit(FTransition, 0.01, 0.499);
+    pinTransition : FHilbert.Transition := Limit(FTransition, 0.01, 0.499);
  end;
 end;
 

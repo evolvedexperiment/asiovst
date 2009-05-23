@@ -57,7 +57,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_Approximations;
 
 constructor TSETanhAproximationsModule.Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
@@ -101,7 +101,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FastTanhOpt3asm(Input[Sample]);
+  do Output^[Sample] := FastTanhOpt3TermFPU(Input[Sample]);
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt4asm(const BufferOffset, SampleFrames: Integer);
@@ -113,7 +113,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FastTanhOpt4asm(Input[Sample]);
+  do Output^[Sample] := FastTanhOpt4TermFPU(Input[Sample]);
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt5asm(const BufferOffset, SampleFrames: Integer);
@@ -125,7 +125,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FastTanhOpt5asm(Input[Sample]);
+  do Output^[Sample] := FastTanhOpt5TermFPU(Input[Sample]);
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt6asm(const BufferOffset, SampleFrames: Integer);
@@ -137,7 +137,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FastTanhOpt6asm(Input[Sample]);
+  do Output^[Sample] := FastTanhOpt6TermFPU(Input[Sample]);
 end;
 
 procedure TSETanhAproximationsModule.SubProcessOpt7asm(const BufferOffset, SampleFrames: Integer);
@@ -149,7 +149,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FastTanhOpt7asm(Input[Sample]);
+  do Output^[Sample] := FastTanhOpt7TermFPU(Input[Sample]);
 end;
 
 // describe your module
@@ -310,7 +310,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := Tanh2a(Input[Sample]);
+  do Output^[Sample] := FastTanh2Like1Term(Input[Sample]);
 end;
 
 procedure TSETanhAproxModule.SubProcess2b(const BufferOffset, SampleFrames: Integer);
@@ -322,7 +322,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := Tanh2b(Input[Sample]);
+  do Output^[Sample] := FastTanh2Like2Term(Input[Sample]);
 end;
 
 procedure TSETanhAproxModule.SubProcess2c(const BufferOffset, SampleFrames: Integer);
@@ -334,7 +334,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := Tanh2c(Input[Sample]);
+  do Output^[Sample] := FastTanh2Like3Term(Input[Sample]);
 end;
 
 procedure TSETanhAproxModule.SubProcess2d(const BufferOffset, SampleFrames: Integer);
@@ -346,7 +346,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := Tanh2d(Input[Sample]);
+  do Output^[Sample] := FastTanh2Like4Term(Input[Sample]);
 end;
 
 { TSETanhModule }

@@ -2913,7 +2913,7 @@ begin
   then raise Exception.Create(RStrLoadingFailed);
 
  // check if the VstEffect pointer is valid
- if FVstEffect.Magic <> 'PtsV'
+ if FVstEffect.Magic <> 'PtsV' // reversed (due to reversed byte order)
   then raise Exception.Create(RStrVSTPluginNotValid);
 
  // set host related variables
@@ -2944,7 +2944,7 @@ begin
  if FLoaded
   then Unload;
  try
-   if Value^.Magic <> 'PtsV'
+   if Value^.Magic <> 'PtsV' // reversed (due to reversed byte order)
     then raise Exception.Create(RStrVSTPluginNotValid);
   FVstEffect := Value;  
   DontRaiseExceptionsAndSetFPUcodeword;
@@ -3091,8 +3091,8 @@ begin
  SetProgram(ProgramNo);
  with result do
   begin
-   ChunkMagic := 'KncC';
-   FXMagic    := 'kCxF';
+   ChunkMagic := 'CcnK';
+   FXMagic    := 'FxCk';
    Version    := 1;
    FXID       := FVstEffect^.UniqueID;
    FXVersion  := FVstEffect^.version;
@@ -3112,8 +3112,6 @@ begin
 
    // swap
    SwapLong(ByteSize);
-   SwapLong(ChunkMagic);
-   SwapLong(FXMagic);
    SwapLong(Version);
    SwapLong(FXID);
    SwapLong(FXVersion);
@@ -3158,8 +3156,8 @@ begin
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkSet do
    begin
-    ChunkMagic  := 'KncC';
-    FXMagic     := 'hCPF';
+    ChunkMagic  := 'CcnK';
+    FXMagic     := 'FPCh';
     Version     := 1;
     FXID        := FVstEffect^.UniqueID;
     FXVersion   := FVstEffect^.version;
@@ -3173,8 +3171,6 @@ begin
     ByteSize := SizeOf(FXChunkSet) - SizeOf(LongInt) * 2 + chunkSize - 8;
 
     // swap-o-matic
-    SwapLong(chunkMagic);
-    SwapLong(fxMagic);
     SwapLong(version);
     SwapLong(fxID);
     SwapLong(fxVersion);
@@ -3233,10 +3229,8 @@ begin
   begin
    assert(effFlagsProgramChunks in EffectOptions);
    Stream.Read(FXChunkBank, SizeOf(TFXChunkBank) - SizeOf(Pointer));
-   SwapLong(FXChunkBank.chunkMagic);
-   SwapLong(FXChunkBank.fxMagic);
-   assert(FXChunkBank.chunkMagic = 'KncC');
-   assert(FXChunkBank.fxMagic = 'kCxF');
+   assert(FXChunkBank.chunkMagic = 'CcnK');
+   assert(FXChunkBank.fxMagic = 'FBCh');
 
    // swap unique ID
    SwapLong(FXChunkBank.fxId);
@@ -3257,10 +3251,8 @@ begin
  else
   begin
    Stream.Read(FXSet, SizeOf(TFXSet) - SizeOf(Pointer));
-   SwapLong(FXSet.chunkMagic);
-   SwapLong(FXSet.fxMagic);
-   assert(FXSet.chunkMagic = 'KncC');
-   assert(FXSet.fxMagic = 'kCxF');
+   assert(FXSet.chunkMagic = 'CcnK');
+   assert(FXSet.fxMagic = 'FxBk');
 
    // swap
    SwapLong(FXSet.fxId);
@@ -3381,8 +3373,8 @@ begin
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkBank do
    begin
-    chunkMagic    := 'KncC';
-    fxMagic       := 'hCBF';
+    chunkMagic    := 'CcnK';
+    fxMagic       := 'FBCh';
     version       := 1;
     fxID          := FVstEffect^.UniqueID;
     fxVersion     := FVstEffect^.version;
@@ -3393,8 +3385,6 @@ begin
     ByteSize      := SizeOf(FXChunkBank) - SizeOf(LongInt) * 3 + chunkSize + 8;
 
     // swap-o-matic
-    SwapLong(chunkMagic);
-    SwapLong(fxMagic);
     SwapLong(version);
     SwapLong(fxID);
     SwapLong(fxVersion);
@@ -3409,8 +3399,8 @@ begin
  else
   with FXSet do
    begin
-    chunkMagic    := 'KncC';
-    fxMagic       := 'kCxF';
+    chunkMagic    := 'CcnK';
+    fxMagic       := 'FxBk';
     version       := 1;
     fxID          := FVstEffect^.UniqueID;
     fxVersion     := FVstEffect^.version;
@@ -3418,8 +3408,6 @@ begin
     ByteSize      := SizeOf(FXSet) - SizeOf(LongInt) + (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms - 8;
 
     // swap-o-matic
-    SwapLong(chunkMagic);
-    SwapLong(fxMagic);
     SwapLong(version);
     SwapLong(fxID);
     SwapLong(fxVersion);

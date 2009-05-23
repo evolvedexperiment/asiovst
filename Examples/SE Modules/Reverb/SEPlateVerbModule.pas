@@ -59,7 +59,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_StkReverb;
+  SysUtils;
 
 { TCustomSEPlateReverbModule }
 

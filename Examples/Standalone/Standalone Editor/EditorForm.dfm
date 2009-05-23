@@ -71,6 +71,7 @@ object FmVSTEditor: TFmVSTEditor
       Style = csDropDownList
       Color = clBtnFace
       ItemHeight = 16
+      PopupMenu = PUPreset
       TabOrder = 0
       OnChange = CBPresetChange
     end
@@ -162,6 +163,31 @@ object FmVSTEditor: TFmVSTEditor
   end
   object XPManifest: TXPManifest
     Left = 152
+    Top = 75
+  end
+  object PUPreset: TPopupMenu
+    Left = 180
+    Top = 75
+    object MILoadPreset: TMenuItem
+      Caption = '&Load Preset...'
+      OnClick = MILoadPresetClick
+    end
+    object SavePreset1: TMenuItem
+      Caption = '&Save Preset...'
+      OnClick = SavePreset1Click
+    end
+  end
+  object OD: TOpenDialog
+    DefaultExt = 'fxp'
+    Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
+    Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
+    Left = 208
+    Top = 75
+  end
+  object SD: TSaveDialog
+    DefaultExt = 'fxp'
+    Filter = 'VST Preset (*.fxp)|*.fxp|VST Bank (*.fxb)|*.fxb'
+    Left = 236
     Top = 75
   end
 end

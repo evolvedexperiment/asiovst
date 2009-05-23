@@ -1,25 +1,24 @@
-unit SEPhaserModule;
+unit SEVoiceSynthModule;
 
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspPhaser;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspVoiceSynth;
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEPhaserPins = (pinInput, pinOutput, pinStages, pinDepth, pinFeedback, pinMinimum,
-    pinMaximum, pinRate);
+  TSEVoiceSynthPins = (pinInput, pinMinimum, pinMaximum, pinSmooth,
+    pinAttack, pinRelease, pinQuantize, pinOutput);
 
-  TCustomSEPhaserModule = class(TSEModuleBase)
+  TCustomSEVoiceSynthModule = class(TSEModuleBase)
   private
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FStaticCount  : Integer;
-    FStages       : Integer;
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FPhaser       : TPhaser;
+    FVoiceSynth  : TVoiceSynth;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -29,25 +28,25 @@ type
 
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
-  TSEPhaserStaticModule = class(TCustomSEPhaserModule)
+  TSEVoiceSynthStaticModule = class(TCustomSEVoiceSynthModule)
   private
-    FDepth        : Single;
-    FRate         : Single;
     FMinimum      : Single;
     FMaximum      : Single;
-    FFeedback     : Single;
+    FSmoothFactor : Single;
+    FAttack       : Single;
+    FRelease      : Single;
+    FQuantize     : Boolean;
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
-  TSEPhaserControllableModule = class(TSEPhaserStaticModule)
+  TSEVoiceSynthControllableModule = class(TSEVoiceSynthStaticModule)
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
@@ -58,21 +57,21 @@ implementation
 uses
   SysUtils;
 
-{ TCustomSEPhaserModule }
+{ TCustomSEVoiceSynthModule }
 
-constructor TCustomSEPhaserModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TCustomSEVoiceSynthModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FPhaser := TPhaser.Create
+ FVoiceSynth := TVoiceSynth.Create;
 end;
 
-destructor TCustomSEPhaserModule.Destroy;
+destructor TCustomSEVoiceSynthModule.Destroy;
 begin
- FreeAndNil(FPhaser);
+ FreeAndNil(FVoiceSynth);
  inherited;
 end;
 
-procedure TCustomSEPhaserModule.Open;
+procedure TCustomSEVoiceSynthModule.Open;
 begin
  inherited Open;
 
@@ -81,13 +80,28 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TCustomSEPhaserModule.SampleRateChanged;
+procedure TCustomSEVoiceSynthModule.SampleRateChanged;
 begin
  inherited;
- FPhaser.SampleRate := SampleRate;
+ if SampleRate > 0
+  then FVoiceSynth.SampleRate := SampleRate;
 end;
 
-procedure TCustomSEPhaserModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSEVoiceSynthModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Inp, Outp : PDAVSingleFixedArray;
+  Sample    : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1
+  do Outp^[Sample] := FVoiceSynth.Process(Inp^[Sample]);
+end;
+
+procedure TCustomSEVoiceSynthModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -95,9 +109,9 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TCustomSEPhaserModule.ChooseProcess;
+procedure TCustomSEVoiceSynthModule.ChooseProcess;
 begin
- if Pin[Integer(pinInput)].Status = stRun
+ if (Pin[Integer(pinInput)].Status = stRun)
   then OnProcess := SubProcess
   else
    begin
@@ -107,7 +121,7 @@ begin
 end;
 
 // describe your module
-class procedure TCustomSEPhaserModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TCustomSEVoiceSynthModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
@@ -118,10 +132,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TCustomSEPhaserModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TCustomSEVoiceSynthModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEPhaserPins(index) of
+ case TSEVoiceSynthPins(index) of
   pinInput:
    with Properties^ do
     begin
@@ -139,94 +153,51 @@ begin
      VariableAddress := @FOutputBuffer;
      Direction       := drOut;
      Datatype        := dtFSample;
-    end;
-  pinStages:
-   with Properties^ do
-    begin
-     Name            := 'Stages';
-     VariableAddress := @FStages;
-     Direction       := drIn;
-     Datatype        := dtEnum;
-     DatatypeExtra   := 'range 1,16';
-     DefaultValue    := '2';
+     DefaultValue    := '0';
+     result          := True;
     end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
 // An input plug has changed value
-procedure TCustomSEPhaserModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TCustomSEVoiceSynthModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEPhaserPins(CurrentPin.PinID) of
-       pinInput: begin
-                  ChooseProcess;
-                  Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
-                 end;
-      pinStages: FPhaser.Stages := FStages;
+ case TSEVoiceSynthPins(CurrentPin.PinID) of
+  pinInput : begin
+              Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, Pin[0].Status);
+              ChooseProcess;
+             end;
  end;
 end;
 
 
-{ TSEPhaserStaticModule }
+{ TSEVoiceSynthStaticModule }
 
 // describe your module
-class procedure TSEPhaserStaticModule.GetModuleProperties(
+class procedure TSEVoiceSynthStaticModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Phaser (static)';
+   Name := 'VoiceSynth (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Phaser (static)';
+   ID := 'DAV VoiceSynth (static)';
   end;
 end;
 
-procedure TSEPhaserStaticModule.SubProcess(const BufferOffset, SampleFrames: Integer);
-var
-  Inp    : PDAVSingleFixedArray;
-  Outp   : PDAVSingleFixedArray;
-  Sample : Integer;
-begin
- // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
- Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
- Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
- for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FPhaser.Process(Inp^[Sample]);
-end;
-
 // describe the pins (plugs)
-function TSEPhaserStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEVoiceSynthStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- case TSEPhaserPins(index) of
-  pinDepth:
-   with Properties^ do
-    begin
-     Name            := 'Depth [%]';
-     VariableAddress := @FDepth;
-     Direction       := drParameter;
-     Datatype        := dtSingle;
-     DefaultValue    := '10';
-     result          := True;
-    end;
-  pinFeedback:
-   with Properties^ do
-    begin
-     Name            := 'Feedback [%]';
-     VariableAddress := @FFeedback;
-     Direction       := drParameter;
-     Datatype        := dtSingle;
-     DefaultValue    := '10';
-     result          := True;
-    end;
+ case TSEVoiceSynthPins(index) of
   pinMinimum:
    with Properties^ do
     begin
@@ -234,7 +205,7 @@ begin
      VariableAddress := @FMinimum;
      Direction       := drParameter;
      Datatype        := dtSingle;
-     DefaultValue    := '300';
+     DefaultValue    := '100';
      result          := True;
     end;
   pinMaximum:
@@ -244,60 +215,90 @@ begin
      VariableAddress := @FMaximum;
      Direction       := drParameter;
      Datatype        := dtSingle;
-     DefaultValue    := '1000';
+     DefaultValue    := '4000';
      result          := True;
     end;
-  pinRate:
+  pinSmooth:
    with Properties^ do
     begin
-     Name            := 'Rate [Hz]';
-     VariableAddress := @FRate;
+     Name            := 'Smooth [0..1]';
+     VariableAddress := @FSmoothFactor;
+     Direction       := drParameter;
+     Datatype        := dtSingle;
+     DefaultValue    := '0.99';
+     result          := True;
+    end;
+  pinAttack:
+   with Properties^ do
+    begin
+     Name            := 'Attack [ms]';
+     VariableAddress := @FAttack;
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
+     result          := True;
+    end;
+  pinRelease:
+   with Properties^ do
+    begin
+     Name            := 'Release [ms]';
+     VariableAddress := @FRelease;
+     Direction       := drParameter;
+     Datatype        := dtSingle;
+     DefaultValue    := '10';
+     result          := True;
+    end;
+  pinQuantize:
+   with Properties^ do
+    begin
+     Name            := 'Quantize To Notes';
+     VariableAddress := @FQuantize;
+     Direction       := drParameter;
+     Datatype        := dtBoolean;
      result          := True;
     end;
  end;
 end;
 
 // An input plug has changed value
-procedure TSEPhaserStaticModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEVoiceSynthStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEPhaserPins(CurrentPin.PinID) of
-       pinDepth: FPhaser.Depth    := 0.01 * FDepth;
-    pinFeedback: FPhaser.Feedback := 0.01 * FFeedback;
-     pinMinimum: FPhaser.Minimum  := FMinimum;
-     pinMaximum: FPhaser.Maximum  := FMaximum;
-        pinRate: FPhaser.Rate     := FRate;
+ case TSEVoiceSynthPins(CurrentPin.PinID) of
+  pinMinimum  : FVoiceSynth.MinimumFrequency := FMinimum;
+  pinMaximum  : FVoiceSynth.MaximumFrequency := FMaximum;
+  pinSmooth   : FVoiceSynth.SmoothFactor := FSmoothFactor;
+  pinAttack   : FVoiceSynth.Attack := FAttack;
+  pinRelease  : FVoiceSynth.Release := FRelease;
+  pinQuantize : FVoiceSynth.QuantizeToNotes := FQuantize;
  end;
 end;
 
 
-{ TSEPhaserControllableModule }
+{ TSEVoiceSynthControllableModule }
 
-class procedure TSEPhaserControllableModule.GetModuleProperties(
+class procedure TSEVoiceSynthControllableModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Phaser';
+   Name := 'VoiceSynth';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Phaser';
+   ID := 'DAV VoiceSynth';
   end;
 end;
 
-function TSEPhaserControllableModule.GetPinProperties(const Index: Integer;
+function TSEVoiceSynthControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- if TSEPhaserPins(index) in [pinDepth..pinRate]
+ if TSEVoiceSynthPins(index) in [pinMinimum..pinQuantize]
   then with Properties^ do Direction := drIn;
 end;
 

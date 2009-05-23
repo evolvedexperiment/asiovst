@@ -6,7 +6,7 @@ uses
   DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_Approximations;
 
 type
-  TSEApproximationsModuleClass = class of TSEApproximationsModule;
+  TSEApproximationsModuleClass = class of TSEModuleBase;
   TSEApproximationsModule = class(TSEModuleBase)
   protected
     procedure Open; override;

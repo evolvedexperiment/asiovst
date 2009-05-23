@@ -3,7 +3,8 @@ unit SELightweightDynamicsModule;
 interface
 
 uses
-  DAV_Common, DAV_DSPDynamics, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_DSPDynamics, DAV_DSPLightweightDynamics, DAV_SECommon,
+  DAV_SEModule;
 
 type
   TCustomLightweightDynamicsSEModuleClass = class of TCustomLightweightDynamicsSEModule;
