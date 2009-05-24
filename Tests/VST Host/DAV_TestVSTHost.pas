@@ -602,11 +602,14 @@ end;
 
 procedure TVstPluginPerverseTests.TestLoadVSTPluginFromResource;
 var
+  FileName   : TFileName;
   FileStream : TFileStream;
 begin
- with FVstHost.VstPlugIns.Add do
-  begin
-   FileStream := TFileStream.Create(FVstHost[0].DLLFileName, fmOpenRead);
+ with FVstHost[0] do
+  try
+   FileName := FVstHost[0].DLLFileName;
+   UnLoad;
+   FileStream := TFileStream.Create(FileName, fmOpenRead);
    try
     LoadFromStream(FileStream);
    finally
@@ -614,6 +617,8 @@ begin
    end;
    Open;
    Close;
+  except
+   Fail('Error: Failed to load DLL file, probably in use');
   end;
 end;
 

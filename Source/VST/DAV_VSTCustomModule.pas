@@ -1112,10 +1112,10 @@ end;
 
 procedure TCustomVSTModule.SetNumOutputs(const Outputs: Integer);
 begin
- if FEffect.numInputs <> Outputs then
+ if FEffect.numOutputs <> Outputs then
   begin
    FEffect.numOutputs := Outputs;
-   NumOutputsChanged
+   NumOutputsChanged;
   end;
 end;
 

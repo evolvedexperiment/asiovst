@@ -44,7 +44,7 @@ type
   TSEModuleBaseClass = class of TSEModuleBase;
 
 const
-  CModuleClasses : array [0..135] of TSEModuleBaseClass = (
+  CModuleClasses : array [0..138] of TSEModuleBaseClass = (
     TSEFastSineApproximationsSingleModule,
     TSEFastSineApproximationsDoubleModule,
     TSEFastCosineApproximationsSingleModule,
@@ -176,6 +176,9 @@ const
     TSETunerControllableModule,
     TSEVibratoStaticModule,
     TSEVibratoControllableModule,
+    TSEVocoderStaticModule,
+    TSEVocoderControllableModule,
+    TSEVocoderAutomatableModule,
     TSESimpleVocoderStaticModule,
     TSESimpleVocoderControllableModule,
     TSESimpleVocoderAutomatableModule,

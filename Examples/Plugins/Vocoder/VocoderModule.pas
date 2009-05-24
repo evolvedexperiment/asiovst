@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
-  VocoderVoice, VoiceList, DAV_DspVocoder;
+  VocoderVoice, VoiceList, DAV_DspVocoder, DAV_DspDownsampleScheduler;
 
 type
   TVSTSSModule = class(TVSTModule)
@@ -23,6 +23,8 @@ type
   private
     FVoices  : TVoiceList;
     FVocoder : TVocoder;
+
+    FDownsampleScheduler : TDownsampleScheduler;
   public
     property Voices: TVoiceList read FVoices;
   end;
@@ -67,6 +69,8 @@ var
   i, j        : Integer;
   SynthSignal : Double;
 begin
+
+
   for j := 0 to SampleFrames - 1 do
    begin
     // process synth input

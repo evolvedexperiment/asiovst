@@ -7,8 +7,8 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEVocoderPins = (pinInput, pinCarrier, pinOutput, pinBandwidth, pinAttack,
-    pinRelease);
+  TSEVocoderPins = (pinInput, pinCarrier, pinOutput, pinBandwidth, pinOrder,
+    pinAttack, pinRelease);
 
   TCustomSEVocoderModule = class(TSEModuleBase)
   private
@@ -17,6 +17,7 @@ type
     FCarrierBuffer : PDAVSingleFixedArray;
     FStaticCount   : Integer;
     FBandwidth     : Single;
+    FAnalysisOrder : Integer;
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
@@ -35,8 +36,8 @@ type
 
   TSEVocoderStaticModule = class(TCustomSEVocoderModule)
   private
-    FAttack    : Single;
-    FRelease   : Single;
+    FAttack        : Single;
+    FRelease       : Single;
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
@@ -194,6 +195,17 @@ begin
      DefaultValue    := '1';
      result          := True;
     end;
+  pinOrder:
+   with Properties^ do
+    begin
+     Name            := 'Analysis Order';
+     VariableAddress := @FAnalysisOrder;
+     Direction       := drIn;
+     Datatype        := dtEnum;
+     DefaultValue    := '12';
+     DatatypeExtra   := 'range 1,32';
+     result          := True;
+    end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
@@ -206,6 +218,7 @@ begin
   pinInput,
   pinCarrier   : ChooseProcess;
   pinBandwidth : FVocoder.SynthesisBandwidth := FBandwidth * sqrt(0.5);
+  pinOrder     : FVocoder.AnalysisOrder := FAnalysisOrder;
  end;
 end;
 

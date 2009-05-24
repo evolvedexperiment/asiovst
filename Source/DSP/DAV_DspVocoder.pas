@@ -15,6 +15,10 @@ const
     630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000,
     10000, 12500, 16000, 20000);
 
+  CBarkFrequencyScale: array [0..23] of Single = (100, 200, 300, 400, 510,
+    630, 770, 920, 1080, 1270, 1480, 1720, 2000, 2320, 2700, 3150, 3700, 4400,
+    5300, 6400, 7700, 9500, 12000, 15500);
+
 type
   TCustomVocoder = class(TDspSampleRateDependent)
   private
@@ -53,8 +57,8 @@ type
   private
     FSynthesisBW: Double;
     procedure SetSynthesisBW(const Value: Double);
-  public
-    FAnalysisRMS       : array [0..cNumFrequencies - 1] of Single;
+  protected
+    FAnalysisPeak      : array [0..cNumFrequencies - 1] of Single;
     FAnalysisFilters   : array [0..cNumFrequencies - 1] of TBasicBandpassFilter;
     FSynthesisFilters  : array [0..cNumFrequencies - 1] of TBasicBandpassFilter;
     procedure SampleRateChanged; override;
@@ -75,18 +79,23 @@ type
     property SampleRate;
   end;
 
-  TVocoder = class(TCustomVocoder)
+  TBarkScaleVocoder = class(TCustomVocoder)
   private
     FSynthesisBW: Double;
+    FAnalysisOrder: Integer;
     procedure SetSynthesisBW(const Value: Double);
-  public
-    FAnalysisFiltersLP : array [0..cNumFrequencies - 1] of TChebyshev1LowpassFilter;
-    FAnalysisFiltersHP : array [0..cNumFrequencies - 1] of TChebyshev1HighpassFilter;
-    FAnalysisRMS       : array [0..cNumFrequencies - 1] of Single;
-    FSynthesisFilters  : array [0..cNumFrequencies - 1] of TBasicBandpassFilter;
-    FDownSampler       : Integer;
-    FDownSampleMax     : Integer;
+    procedure SetAnalysisOrder(Value: Integer);
+  protected
+    FAnalysisFiltersLP   : array [0..23] of TChebyshev1LowpassFilter;
+    FAnalysisFiltersHP   : array [0..23] of TChebyshev1HighpassFilter;
+    FAnalysisPeak        : array [0..23] of Single;
+    FSynthesisFiltersLP  : array [0..23] of TChebyshev1LowpassFilter;
+    FSynthesisFiltersHP  : array [0..23] of TChebyshev1HighpassFilter;
+    FDownSampler         : Integer;
+    FDownSampleMax       : Integer;
+    FTransitionBandwidth : Single;
     procedure SampleRateChanged; override;
+    procedure AnalysisOrderChanged;
     procedure SynthesisBandwidthChanged; virtual;
   public
     constructor Create; override;
@@ -95,6 +104,40 @@ type
     function Process(Input, Carrier: Single): Single; override;
 
     property SynthesisBandwidth: Double read FSynthesisBW write SetSynthesisBW;
+    property AnalysisOrder: Integer read FAnalysisOrder write SetAnalysisOrder;
+  published
+    property InputLevel;
+    property SynthLevel;
+    property VocoderLevel;
+    property Attack;       // in ms
+    property Release;      // in ms
+    property SampleRate;
+  end;
+
+  TVocoder = class(TCustomVocoder)
+  private
+    FSynthesisBW: Double;
+    FAnalysisOrder: Integer;
+    procedure SetSynthesisBW(const Value: Double);
+    procedure SetAnalysisOrder(Value: Integer);
+  protected
+    FAnalysisFiltersLP : array [0..cNumFrequencies - 1] of TChebyshev1LowpassFilter;
+    FAnalysisFiltersHP : array [0..cNumFrequencies - 1] of TChebyshev1HighpassFilter;
+    FAnalysisPeak      : array [0..cNumFrequencies - 1] of Single;
+    FSynthesisFilters  : array [0..cNumFrequencies - 1] of TBasicBandpassFilter;
+    FDownSampler       : Integer;
+    FDownSampleMax     : Integer;
+    procedure SampleRateChanged; override;
+    procedure AnalysisOrderChanged;
+    procedure SynthesisBandwidthChanged; virtual;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    function Process(Input, Carrier: Single): Single; override;
+
+    property SynthesisBandwidth: Double read FSynthesisBW write SetSynthesisBW;
+    property AnalysisOrder: Integer read FAnalysisOrder write SetAnalysisOrder;
   published
     property InputLevel;
     property SynthLevel;
@@ -211,7 +254,7 @@ begin
     FAnalysisFilters[i] := TBasicBandpassFilter.Create;
     with FAnalysisFilters[i] do
      begin
-      SampleRate := 44100;
+      SampleRate := Self.SampleRate;
       Gain := 0; Bandwidth := 0.707;
       Frequency := CThirdOctaveFrequencies[CNumFrequencies - i - 1];
      end;
@@ -219,7 +262,7 @@ begin
     FSynthesisFilters[i] := TBasicBandpassFilter.Create;
     with FSynthesisFilters[i] do
      begin
-      SampleRate := 44100;
+      SampleRate := Self.SampleRate;
       Gain := 0; Bandwidth := 0.707;
       Frequency := CThirdOctaveFrequencies[CNumFrequencies - i - 1];
      end;
@@ -247,15 +290,15 @@ begin
   begin
    BandSignal := FAnalysisFilters[Band].ProcessSample(Input + 1E-32);
 
-   if abs(BandSignal) > FAnalysisRMS[Band]
-    then FAnalysisRMS[Band] := FAnalysisRMS[Band] + (abs(BandSignal) - FAnalysisRMS[Band]) * FAttackFactor
-    else FAnalysisRMS[Band] := abs(BandSignal) + (FAnalysisRMS[Band] - abs(BandSignal)) * FReleaseFactor;
+   if abs(BandSignal) > FAnalysisPeak[Band]
+    then FAnalysisPeak[Band] := FAnalysisPeak[Band] + (abs(BandSignal) - FAnalysisPeak[Band]) * FAttackFactor
+    else FAnalysisPeak[Band] := abs(BandSignal) + (FAnalysisPeak[Band] - abs(BandSignal)) * FReleaseFactor;
   end;
 
  // process vocoded signal
  result := 0;
  for Band := 0 to CNumFrequencies - 1
-  do result := result + FSynthesisFilters[Band].ProcessSample(FAnalysisRMS[Band] * Carrier);
+  do result := result + FSynthesisFilters[Band].ProcessSample(FAnalysisPeak[Band] * Carrier);
 
  result := FVolFactors[2] * result +
            FVolFactors[1] * Carrier +
@@ -294,6 +337,181 @@ begin
   end;
 end;
 
+{ TBarkScaleVocoder }
+
+constructor TBarkScaleVocoder.Create;
+var
+  Band : Integer;
+  DS   : Integer;
+begin
+  FDownSampler := 0;
+  FTransitionBandwidth := 0.1;
+  DS := 0;
+  for Band := 0 to Length(CBarkFrequencyScale) - 1 do
+   begin
+    // create filters
+    FAnalysisFiltersLP[Band] := TChebyshev1LowpassFilter.Create(4);
+    FAnalysisFiltersHP[Band] := TChebyshev1HighpassFilter.Create(4);
+    FSynthesisFiltersLP[Band] := TChebyshev1LowpassFilter.Create(4);
+    FSynthesisFiltersHP[Band] := TChebyshev1HighpassFilter.Create(4);
+
+    if FDownSampler >= 0 then
+     while IntPower(2, DS) * CBarkFrequencyScale[Band] < FTransitionBandwidth * SampleRate
+      do DS := DS + 1;
+
+    // setup filters
+    with FAnalysisFiltersLP[Band] do
+     begin
+      SampleRate := Self.SampleRate;
+      SetFilterValues(CBarkFrequencyScale[Band] , 0, 0.1);
+      DownsampleAmount := DS;
+      CalculateCoefficients;
+     end;
+
+    with FAnalysisFiltersHP[Band] do
+     begin
+      SampleRate := Self.SampleRate;
+      SetFilterValues(CBarkFrequencyScale[Band], 0, 0.1);
+      DownsampleAmount := DS;
+      CalculateCoefficients;
+     end;
+
+    with FAnalysisFiltersLP[Band] do
+     begin
+      SampleRate := Self.SampleRate;
+      SetFilterValues(CBarkFrequencyScale[Band] , 0, 0.1);
+      DownsampleAmount := DS;
+      CalculateCoefficients;
+     end;
+
+    with FAnalysisFiltersHP[Band] do
+     begin
+      SampleRate := Self.SampleRate;
+      SetFilterValues(CBarkFrequencyScale[Band], 0, 0.1);
+      DownsampleAmount := DS;
+      CalculateCoefficients;
+     end;
+   end;
+
+  FDownSampleMax := FAnalysisFiltersLP[Length(CBarkFrequencyScale) - 1].DownsampleFaktor;
+
+  inherited Create;
+end;
+
+destructor TBarkScaleVocoder.Destroy;
+var
+  i: Integer;
+begin
+ for i := 0 to CNumFrequencies - 1 do
+  begin
+   FreeAndNil(FAnalysisFiltersLP[i]);
+   FreeAndNil(FAnalysisFiltersHP[i]);
+   FreeAndNil(FSynthesisFiltersLP[i]);
+   FreeAndNil(FSynthesisFiltersHP[i]);
+  end;
+ inherited;
+end;
+
+function TBarkScaleVocoder.Process(Input, Carrier: Single): Single;
+var
+  i, j       : Integer;
+  Lowpassed  : Double;
+  BandSignal : Double;
+begin
+ Lowpassed := Input;
+ for j := 0 to CNumFrequencies - 1 do
+  begin
+   if (FDownSampler mod FAnalysisFiltersLP[j].DownsampleFaktor) <> 0
+    then Break;
+
+   BandSignal := FAnalysisFiltersHP[j].ProcessSample(Lowpassed + 1E-32);
+
+   if abs(BandSignal) > FAnalysisPeak[j]
+    then FAnalysisPeak[j] := FAnalysisPeak[j] + (abs(BandSignal) - FAnalysisPeak[j]) * FAttackFactor
+    else FAnalysisPeak[j] := abs(BandSignal) + (FAnalysisPeak[j] - abs(BandSignal)) * FReleaseFactor;
+
+   Lowpassed := FAnalysisFiltersLP[j].ProcessSample(Lowpassed + 1E-32);
+  end;
+
+ Inc(FDownSampler);
+ if FDownSampler >= FDownSampleMax
+  then FDownSampler := 0;
+
+(*
+ // process vocoded signal
+ result := 0;
+ for i := 0 to CNumFrequencies - 1
+  do result := result + FSynthesisFilters[i].ProcessSample(FAnalysisPeak[i] * Carrier);
+*)
+
+ result := FVolFactors[2] * result +
+           FVolFactors[1] * Carrier +
+           FVolFactors[0] * Input;
+end;
+
+procedure TBarkScaleVocoder.SampleRateChanged;
+var
+  Band : Integer;
+begin
+ inherited;
+
+ for Band := 0 to Length(FAnalysisFiltersLP) - 1
+  do FAnalysisFiltersLP[Band].SampleRate := SampleRate;
+
+ for Band := 0 to Length(FAnalysisFiltersHP) - 1
+  do FAnalysisFiltersHP[Band].SampleRate := SampleRate;
+
+ for Band := 0 to Length(FSynthesisFiltersLP) - 1
+  do FAnalysisFiltersLP[Band].SampleRate := SampleRate;
+
+ for Band := 0 to Length(FSynthesisFiltersHP) - 1
+  do FAnalysisFiltersHP[Band].SampleRate := SampleRate;
+end;
+
+procedure TBarkScaleVocoder.SetAnalysisOrder(Value: Integer);
+begin
+ if Value < 2
+  then Value := 2
+  else Value := ((Value shr 1) shl 1);
+ if FAnalysisOrder <> Value then
+  begin
+   FAnalysisOrder := Value;
+   AnalysisOrderChanged;
+  end;
+end;
+
+procedure TBarkScaleVocoder.AnalysisOrderChanged;
+var
+  Band : Integer;
+begin
+ for Band := 0 to Length(FAnalysisFiltersLP) - 1
+  do FAnalysisFiltersLP[Band].Order := FAnalysisOrder shr 1;
+
+ for Band := 0 to Length(FAnalysisFiltersHP) - 1
+  do FAnalysisFiltersHP[Band].Order := FAnalysisOrder shr 1;
+end;
+
+procedure TBarkScaleVocoder.SetSynthesisBW(const Value: Double);
+begin
+ if FSynthesisBW <> Value then
+  begin
+   FSynthesisBW := Value;
+   SynthesisBandwidthChanged;
+  end;
+end;
+
+procedure TBarkScaleVocoder.SynthesisBandwidthChanged;
+var
+  Band: Integer;
+begin
+(*
+ for Band := 0 to Length(FSynthesisFilters) - 1 do
+  begin
+   // ToDo
+  end;
+*)
+end;
+
 { TVocoder }
 
 constructor TVocoder.Create;
@@ -308,7 +526,7 @@ begin
     FAnalysisFiltersLP[i] := TChebyshev1LowpassFilter.Create(6);
     with FAnalysisFiltersLP[i] do
      begin
-      SampleRate := 44100;
+      SampleRate := Self.SampleRate;
       SetFilterValues(min(0.5 * Samplerate, HalfThirdOctaveMulFak64 * (CThirdOctaveFrequencies[CNumFrequencies - i - 1])), 0, 0.1);
       if FDownSampler = -1
        then DownsampleAmount := 0
@@ -320,7 +538,7 @@ begin
     FAnalysisFiltersHP[i] := TChebyshev1HighpassFilter.Create(6);
     with FAnalysisFiltersHP[i] do
      begin
-      SampleRate := 44100;
+      SampleRate := Self.SampleRate;
       SetFilterValues((CThirdOctaveFrequencies[CNumFrequencies - i - 1]) / HalfThirdOctaveMulFak64, 0, 0.1);
       DownsampleAmount := FAnalysisFiltersLP[i].DownsampleAmount;
       CalculateCoefficients;
@@ -329,7 +547,7 @@ begin
     FSynthesisFilters[i] := TBasicBandpassFilter.Create;
     with FSynthesisFilters[i] do
      begin
-      SampleRate := 44100;
+      SampleRate := Self.SampleRate;
       Gain := 0;
       Bandwidth := 0.707;
       Frequency := CThirdOctaveFrequencies[CNumFrequencies - i - 1];
@@ -369,9 +587,9 @@ begin
    Lowpassed := FAnalysisFiltersLP[j].ProcessSample(Lowpassed + 1E-32);
    BandSignal := FAnalysisFiltersHP[j].ProcessSample(Lowpassed + 1E-32);
 
-   if abs(BandSignal) > FAnalysisRMS[j]
-    then FAnalysisRMS[j] := FAnalysisRMS[j] + (abs(BandSignal) - FAnalysisRMS[j]) * FAttackFactor
-    else FAnalysisRMS[j] := abs(BandSignal) + (FAnalysisRMS[j] - abs(BandSignal)) * FReleaseFactor;
+   if abs(BandSignal) > FAnalysisPeak[j]
+    then FAnalysisPeak[j] := FAnalysisPeak[j] + (abs(BandSignal) - FAnalysisPeak[j]) * FAttackFactor
+    else FAnalysisPeak[j] := abs(BandSignal) + (FAnalysisPeak[j] - abs(BandSignal)) * FReleaseFactor;
   end;
  Inc(FDownSampler);
  if FDownSampler >= FDownSampleMax
@@ -380,7 +598,7 @@ begin
  // process vocoded signal
  result := 0;
  for i := 0 to CNumFrequencies - 1
-  do result := result + FSynthesisFilters[i].ProcessSample(FAnalysisRMS[i] * Carrier);
+  do result := result + FSynthesisFilters[i].ProcessSample(FAnalysisPeak[i] * Carrier);
 
  result := FVolFactors[2] * result +
            FVolFactors[1] * Carrier +
@@ -401,6 +619,29 @@ begin
 
  for Band := 0 to Length(FSynthesisFilters) - 1
   do FSynthesisFilters[Band].SampleRate := SampleRate;
+end;
+
+procedure TVocoder.SetAnalysisOrder(Value: Integer);
+begin
+ if Value < 2
+  then Value := 2
+  else Value := ((Value shr 1) shl 1);
+ if FAnalysisOrder <> Value then
+  begin
+   FAnalysisOrder := Value;
+   AnalysisOrderChanged;
+  end;
+end;
+
+procedure TVocoder.AnalysisOrderChanged;
+var
+  Band : Integer;
+begin
+ for Band := 0 to Length(FAnalysisFiltersLP) - 1
+  do FAnalysisFiltersLP[Band].Order := FAnalysisOrder shr 1;
+
+ for Band := 0 to Length(FAnalysisFiltersHP) - 1
+  do FAnalysisFiltersHP[Band].Order := FAnalysisOrder shr 1;
 end;
 
 procedure TVocoder.SetSynthesisBW(const Value: Double);
