@@ -28,7 +28,6 @@ begin
   case Index of
    0: result := TSEVoiceSynthStaticModule.Create(SEAudioMaster, Reserved).Effect;
    1: result := TSEVoiceSynthControllableModule.Create(SEAudioMaster, Reserved).Effect;
-   2: result := TSEVoiceSynthControllableModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 

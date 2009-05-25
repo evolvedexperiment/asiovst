@@ -215,6 +215,12 @@ type
     procedure DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer); dynamic;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); dynamic;
 
+    {$IFNDEF Delphi7_Up}
+    procedure WMMouseWheel(var Message : TWMMouseWheel);  message WM_MOUSEWHEEL;      // Sping
+    procedure DoOnMouseWheel(Delta: Integer; MousePos: TPoint); virtual;              // Sping
+    procedure MouseWheelHandler(var Message: TMessage); dynamic;
+    {$ENDIF}
+
     {$IFNDEF FPC}
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
@@ -832,13 +838,36 @@ end;
 procedure TCustomGuiBaseMouseControl.UpdateGuiTimer(Sender: TObject);
 begin
   if not FTimerMustRedraw then exit;
-  
+
   FRedrawTimer.Enabled := False;
   RedrawBuffer(True);
   FRedrawTimer.Enabled := True;
 
   FTimerMustRedraw := False;
 end;
+
+{$IFNDEF Delphi7_Up}
+function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+  MousePos: TPoint): Boolean;
+begin
+ // not used yet
+end;
+
+procedure TCustomGuiBaseMouseControl.MouseWheelHandler(var Message: TMessage);
+begin
+end;
+
+procedure TCustomGuiBaseMouseControl.WMMouseWheel(var Message: TWMMouseWheel);
+begin
+ if not Mouse.WheelPresent then
+  begin
+   Mouse.FWheelPresent := True;
+   Mouse.SettingChanged(SPI_GETWHEELSCROLLLINES);
+  end;
+ if DoMouseWheel(KeysToShiftState(Message.Keys), WheelDelta, SmallPointToPoint(Pos))
+  then Message.Result := 1
+end;
+{$ENDIF}
 
 { TGUIShadow }
 

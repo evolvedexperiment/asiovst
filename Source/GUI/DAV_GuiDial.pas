@@ -107,6 +107,7 @@ type
     FPosition         : Single;
     FRightMouseButton : TGuiDialRMBFunc;
     FScrollRange      : Single;
+    FWheelStep        : Single;
     function CircularMouseToPosition(X, Y: Integer): Single;
     function GetNormalizedPosition: Single;
     function PositionToAngle: Single;
@@ -133,6 +134,8 @@ type
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
     procedure ReadState(Reader: TReader); override;
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+      MousePos: TPoint): Boolean; override;
 
     property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
     property MappedPosition: Single read GetMappedPosition;
@@ -151,6 +154,7 @@ type
     property Position: Single read FPosition write SetPosition;
     property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
     property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
+    property WheelStep: single read FWheelStep write FWheelStep;
   end;
 
   TCustomGuiSwitch = class(TCustomGuiStitchedControl)
@@ -229,6 +233,7 @@ type
     property Transparent;
     {$ENDIF}
     property Visible;
+    property WheelStep;
   end;
 
   TGuiDialMetal = class(TCustomGuiDialMetal)
@@ -260,6 +265,7 @@ type
     property Transparent;
     {$ENDIF}
     property Visible;
+    property WheelStep;
   end;
 
   TGuiDialEx = class(TCustomGuiDialEx)
@@ -292,6 +298,7 @@ type
     property Transparent;
     {$ENDIF}
     property Visible;
+    property WheelStep;
   end;
 
   TGuiSwitch = class(TCustomGuiSwitch)
@@ -1230,6 +1237,7 @@ begin
   FInertiaExp             := 1;
   FInertiaScale           := 1;
   FMin                    := 0;
+  FWheelStep              := 1; 
   if csDesigning in ComponentState
    then FMax := 100;
 end;
@@ -1238,6 +1246,21 @@ destructor TCustomGuiDial.Destroy;
 begin
   FreeAndNil(FPointerAngles);
   inherited Destroy;
+end;
+
+function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+  MousePos: TPoint): Boolean;
+var
+  Difference : Single;
+begin
+ Difference := FWheelStep * WheelDelta / ( 120 * FScrollRange );
+
+// apply inertia function
+ if Difference < 0
+  then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
+  else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
+ NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference);
+ result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
 end;
 
 function TCustomGuiDial.PositionToAngle: Single;
@@ -1438,8 +1461,8 @@ begin
 
   // apply inertia function
   if Difference < 0
-   then Difference := -Power(abs(Difference), fInertiaExp) * FInertiaScale
-   else Difference :=  Power(abs(Difference), fInertiaExp) * FInertiaScale;
+   then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
+   else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
 
   if ssShift in Shift
    then NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference * 0.1)

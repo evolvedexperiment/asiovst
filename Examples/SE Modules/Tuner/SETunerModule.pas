@@ -7,7 +7,8 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSETunerPins = (pinInput, pinMinimum, pinMaximum, pinSmooth, pinFrequency);
+  TSETunerPins = (pinInput, pinMinimum, pinMaximum, pinSmooth,
+    pinOneCrossingOnly, pinDSFilterOrder, pinDSBandwidth, pinFrequency);
 
   TCustomSETunerModule = class(TSEModuleBase)
   private
@@ -17,7 +18,7 @@ type
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FTuner : TTuner;
+    FTuner : TLinearZeroCrossingTuner;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -32,9 +33,12 @@ type
 
   TSETunerStaticModule = class(TCustomSETunerModule)
   private
-    FMinimum      : Single;
-    FMaximum      : Single;
-    FSmoothFactor : Single;
+    FMinimum         : Single;
+    FMaximum         : Single;
+    FSmoothFactor    : Single;
+    FOneCrossingOnly : Boolean;
+    FDSFilterOrder   : Integer;
+    FDSBandwidth     : Single;
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
@@ -58,7 +62,7 @@ uses
 constructor TCustomSETunerModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FTuner := TTuner.Create;
+ FTuner := TLinearZeroCrossingTuner.Create;
 end;
 
 destructor TCustomSETunerModule.Destroy;
@@ -227,6 +231,37 @@ begin
      DefaultValue    := '0.99';
      result          := True;
     end;
+  pinOneCrossingOnly:
+   with Properties^ do
+    begin
+     Name            := 'One Crossing Only';
+     VariableAddress := @FOneCrossingOnly;
+     Direction       := drParameter;
+     Datatype        := dtBoolean;
+     DefaultValue    := 'True';
+     result          := True;
+    end;
+  pinDSFilterOrder:
+   with Properties^ do
+    begin
+     Name            := 'Downsampling Filter Order';
+     VariableAddress := @FDSFilterOrder;
+     Direction       := drParameter;
+     Datatype        := dtEnum;
+     DefaultValue    := '4';
+     DatatypeExtra   := 'range 2,32';
+     result          := True;
+    end;
+  pinDSBandwidth:
+   with Properties^ do
+    begin
+     Name            := 'Downsampling Bandwidth [0..1]';
+     VariableAddress := @FDSBandwidth;
+     Direction       := drParameter;
+     Datatype        := dtSingle;
+     DefaultValue    := '0.8';
+     result          := True;
+    end;
  end;
 end;
 
@@ -235,9 +270,12 @@ procedure TSETunerStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  case TSETunerPins(CurrentPin.PinID) of
-  pinMinimum : FTuner.MinimumFrequency := FMinimum;
-  pinMaximum : FTuner.MaximumFrequency := FMaximum;
-  pinSmooth  : FTuner.SmoothFactor := FSmoothFactor;
+  pinMinimum         : FTuner.MinimumFrequency := FMinimum;
+  pinMaximum         : FTuner.MaximumFrequency := FMaximum;
+  pinSmooth          : FTuner.SmoothFactor := FSmoothFactor;
+  pinOneCrossingOnly : FTuner.OneCrossingOnly := FOneCrossingOnly;
+  pinDSFilterOrder   : FTuner.DownSampleFilterOrder := FDSFilterOrder;
+  pinDSBandwidth     : FTuner.DownSampleBandwidth := FDSBandwidth;
  end;
 end;
 
@@ -265,7 +303,7 @@ function TSETunerControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- if TSETunerPins(index) in [pinMinimum..pinSmooth]
+ if TSETunerPins(index) in [pinMinimum..pinDSBandwidth]
   then with Properties^ do Direction := drIn;
 end;
 

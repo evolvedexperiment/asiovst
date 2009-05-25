@@ -1,25 +1,27 @@
-unit SEVoiceSynthModule;
+unit SEAdvancedTunerModule;
 
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspVoiceSynth;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspTuner;
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEVoiceSynthPins = (pinInput, pinMinimum, pinMaximum, pinSmooth,
+  TSETunerPins = (pinInput, pinMinimum, pinMaximum, pinSmooth,
     pinOneCrossingOnly, pinDSFilterOrder, pinDSBandwidth, pinAttack,
-    pinRelease, pinThreshold, pinQuantize, pinOutput);
+    pinRelease, pinThreshold, pinFrequency, pinNote, pinDetune);
 
-  TCustomSEVoiceSynthModule = class(TSEModuleBase)
+  TCustomSEAdvancedTunerModule = class(TSEModuleBase)
   private
-    FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
-    FOutputBuffer : PDAVSingleFixedArray;
-    FStaticCount  : Integer;
+    FInputBuffer : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FFrequency   : PDAVSingleFixedArray;
+    FNote        : string;
+    FDetune      : Single;
+    FStaticCount : Integer;
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FVoiceSynth  : TVoiceSynth;
+    FTuner : TAdvancedTuner;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -32,18 +34,17 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
   end;
 
-  TSEVoiceSynthStaticModule = class(TCustomSEVoiceSynthModule)
+  TSEAdvancedTunerStaticModule = class(TCustomSEAdvancedTunerModule)
   private
     FMinimum         : Single;
     FMaximum         : Single;
     FSmoothFactor    : Single;
     FOneCrossingOnly : Boolean;
-    FDSBandwidth     : Single;
     FDSFilterOrder   : Integer;
+    FDSBandwidth     : Single;
     FAttack          : Single;
     FRelease         : Single;
     FThreshold       : Single;
-    FQuantize        : Boolean;
   protected
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
@@ -51,7 +52,7 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
-  TSEVoiceSynthControllableModule = class(TSEVoiceSynthStaticModule)
+  TSEAdvancedTunerControllableModule = class(TSEAdvancedTunerStaticModule)
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
@@ -62,21 +63,21 @@ implementation
 uses
   SysUtils;
 
-{ TCustomSEVoiceSynthModule }
+{ TCustomSEAdvancedTunerModule }
 
-constructor TCustomSEVoiceSynthModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TCustomSEAdvancedTunerModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FVoiceSynth := TVoiceSynth.Create;
+ FTuner := TAdvancedTuner.Create;
 end;
 
-destructor TCustomSEVoiceSynthModule.Destroy;
+destructor TCustomSEAdvancedTunerModule.Destroy;
 begin
- FreeAndNil(FVoiceSynth);
+ FreeAndNil(FTuner);
  inherited;
 end;
 
-procedure TCustomSEVoiceSynthModule.Open;
+procedure TCustomSEAdvancedTunerModule.Open;
 begin
  inherited Open;
 
@@ -85,28 +86,33 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TCustomSEVoiceSynthModule.SampleRateChanged;
+procedure TCustomSEAdvancedTunerModule.SampleRateChanged;
 begin
  inherited;
  if SampleRate > 0
-  then FVoiceSynth.SampleRate := SampleRate;
+  then FTuner.SampleRate := SampleRate;
 end;
 
-procedure TCustomSEVoiceSynthModule.SubProcess(const BufferOffset,
+procedure TCustomSEAdvancedTunerModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 var
-  Inp, Outp : PDAVSingleFixedArray;
+  Inp, Freq : PDAVSingleFixedArray;
   Sample    : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Inp  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
- Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ Freq := PDAVSingleFixedArray(@FFrequency[BufferOffset]);
 
- for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FVoiceSynth.Process(Inp^[Sample]);
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FTuner.Process(Inp^[Sample]);
+   Freq^[Sample] := 0.1 * FTuner.CurrentFrequency;
+  end;
+ FNote := FTuner.CurrentNote;
+ FDetune := FTuner.CurrentDetune;
 end;
 
-procedure TCustomSEVoiceSynthModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TCustomSEAdvancedTunerModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -114,7 +120,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TCustomSEVoiceSynthModule.ChooseProcess;
+procedure TCustomSEAdvancedTunerModule.ChooseProcess;
 begin
  if (Pin[Integer(pinInput)].Status = stRun)
   then OnProcess := SubProcess
@@ -126,7 +132,7 @@ begin
 end;
 
 // describe your module
-class procedure TCustomSEVoiceSynthModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TCustomSEAdvancedTunerModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
@@ -137,10 +143,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TCustomSEVoiceSynthModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TCustomSEAdvancedTunerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEVoiceSynthPins(index) of
+ case TSETunerPins(index) of
   pinInput:
    with Properties^ do
     begin
@@ -151,11 +157,11 @@ begin
      Datatype        := dtFSample;
      DefaultValue    := '0';
     end;
-  pinOutput:
+  pinFrequency:
    with Properties^ do
     begin
-     Name            := 'Output';
-     VariableAddress := @FOutputBuffer;
+     Name            := 'Frequency';
+     VariableAddress := @FFrequency;
      Direction       := drOut;
      Datatype        := dtFSample;
      DefaultValue    := '0';
@@ -166,43 +172,43 @@ begin
 end;
 
 // An input plug has changed value
-procedure TCustomSEVoiceSynthModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TCustomSEAdvancedTunerModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEVoiceSynthPins(CurrentPin.PinID) of
+ case TSETunerPins(CurrentPin.PinID) of
   pinInput : begin
-              Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, Pin[0].Status);
+              Pin[Integer(pinFrequency)].TransmitStatusChange(SampleClock, Pin[0].Status);
               ChooseProcess;
              end;
  end;
 end;
 
 
-{ TSEVoiceSynthStaticModule }
+{ TSEAdvancedTunerStaticModule }
 
 // describe your module
-class procedure TSEVoiceSynthStaticModule.GetModuleProperties(
+class procedure TSEAdvancedTunerStaticModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'VoiceSynth (static)';
+   Name := 'Advanced Tuner (static)';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV VoiceSynth (static)';
+   ID := 'DAV Advanced Tuner (static)';
   end;
 end;
 
 // describe the pins (plugs)
-function TSEVoiceSynthStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEAdvancedTunerStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- case TSEVoiceSynthPins(index) of
+ case TSETunerPins(index) of
   pinMinimum:
    with Properties^ do
     begin
@@ -240,7 +246,7 @@ begin
      VariableAddress := @FOneCrossingOnly;
      Direction       := drParameter;
      Datatype        := dtBoolean;
-     DefaultValue    := 'True';
+     DefaultValue    := '1';
      result          := True;
     end;
   pinDSFilterOrder:
@@ -261,7 +267,7 @@ begin
      VariableAddress := @FDSBandwidth;
      Direction       := drParameter;
      Datatype        := dtSingle;
-     DefaultValue    := 'True';
+     DefaultValue    := '0.8';
      result          := True;
     end;
   pinAttack:
@@ -294,62 +300,70 @@ begin
      DefaultValue    := '0';
      result          := True;
     end;
-  pinQuantize:
+  pinNote:
    with Properties^ do
     begin
-     Name            := 'Quantize To Notes';
-     VariableAddress := @FQuantize;
-     Direction       := drParameter;
-     Datatype        := dtBoolean;
-     DefaultValue    := 'False';
+     Name            := 'Note';
+     VariableAddress := @FNote;
+     Direction       := drOut;
+     Datatype        := dtText;
+     DefaultValue    := '';
+     result          := True;
+    end;
+  pinDetune:
+   with Properties^ do
+    begin
+     Name            := 'Detune [Cent]';
+     VariableAddress := @FDetune;
+     Direction       := drOut;
+     Datatype        := dtSingle;
+     DefaultValue    := '0';
      result          := True;
     end;
  end;
 end;
 
 // An input plug has changed value
-procedure TSEVoiceSynthStaticModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEAdvancedTunerStaticModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEVoiceSynthPins(CurrentPin.PinID) of
-  pinMinimum         : FVoiceSynth.MinimumFrequency := FMinimum;
-  pinMaximum         : FVoiceSynth.MaximumFrequency := FMaximum;
-  pinSmooth          : FVoiceSynth.SmoothFactor := FSmoothFactor;
-  pinDSFilterOrder   : FVoiceSynth.DownSampleFilterOrder := FDSFilterOrder;
-  pinDSBandwidth     : FVoiceSynth.DownSampleBandwidth := FDSBandwidth;
-  pinOneCrossingOnly : FVoiceSynth.OneCrossingOnly := FOneCrossingOnly;
-  pinAttack          : FVoiceSynth.Attack := FAttack;
-  pinRelease         : FVoiceSynth.Release := FRelease;
-  pinThreshold       : FVoiceSynth.Threshold := FThreshold;
-  pinQuantize        : FVoiceSynth.QuantizeToNotes := FQuantize;
+ case TSETunerPins(CurrentPin.PinID) of
+  pinMinimum         : FTuner.MinimumFrequency := FMinimum;
+  pinMaximum         : FTuner.MaximumFrequency := FMaximum;
+  pinSmooth          : FTuner.SmoothFactor := FSmoothFactor;
+  pinOneCrossingOnly : FTuner.OneCrossingOnly := FOneCrossingOnly;
+  pinDSFilterOrder   : FTuner.DownSampleFilterOrder := FDSFilterOrder;
+  pinDSBandwidth     : FTuner.DownSampleBandwidth := FDSBandwidth;
+  pinAttack          : FTuner.Attack := FAttack;
+  pinRelease         : FTuner.Release := FRelease;
  end;
 end;
 
 
-{ TSEVoiceSynthControllableModule }
+{ TSETunerControllableModule }
 
-class procedure TSEVoiceSynthControllableModule.GetModuleProperties(
+class procedure TSEAdvancedTunerControllableModule.GetModuleProperties(
   Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'VoiceSynth';
+   Name := 'Advanced Tuner';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV VoiceSynth';
+   ID := 'DAV Advanced Tuner';
   end;
 end;
 
-function TSEVoiceSynthControllableModule.GetPinProperties(const Index: Integer;
+function TSEAdvancedTunerControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
- if TSEVoiceSynthPins(index) in [pinMinimum..pinQuantize]
+ if TSETunerPins(index) in [pinMinimum..pinThreshold]
   then with Properties^ do Direction := drIn;
 end;
 
