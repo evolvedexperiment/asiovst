@@ -1,5 +1,7 @@
 program HRTFEditor;
 
+{$R 'HRTF3D.res' 'HRTF3D.rc'}
+
 uses
   FastMM4,
   madExcept,
@@ -8,7 +10,6 @@ uses
   madListProcesses,
   madListModules,
   FastMove,
-
   Forms,
   HEmain in 'HEmain.pas' {FmHRTFEditor};
 

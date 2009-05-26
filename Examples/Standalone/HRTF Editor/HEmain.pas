@@ -108,6 +108,7 @@ type
     SaveDialogWAV: TSaveDialog;
     OpenDialogWAV: TOpenDialog;
     MIImportDiffuse: TMenuItem;
+    ImportETI1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -151,6 +152,7 @@ type
     procedure BtImportClick(Sender: TObject);
     procedure BtExportClick(Sender: TObject);
     procedure MIImportDiffuseClick(Sender: TObject);
+    procedure ImportETI1Click(Sender: TObject);
   private
     FFileName : TFileName;
     FHRTFFile : THrtfs;
@@ -167,7 +169,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Filectrl, DAV_ChunkClasses;
+  Filectrl, DAV_DLLResources, DAV_ChunkClasses;
 
 const
   CDegToRad : Single = 2 * Pi / 360;
@@ -422,6 +424,62 @@ begin
   then SEHrtfIndex.MaxValue := FHRTFFile.HrirCount - 1;
 end;
 
+procedure TFmHRTFEditor.ImportETI1Click(Sender: TObject);
+var
+  Dir    : string;
+  SR     : TSearchRec;
+  ADC    : TAudioDataCollection32;
+  FN     : TFileName;
+  DelPos : Integer;
+  AzmStr : string;
+  PolStr : string;
+  i      : array [0..1] of Integer;
+begin
+ Dir := '';
+ SelectDirectory('Select a directory', '', Dir);
+
+ if DirectoryExists(Dir) then
+  begin
+   FHRTFFile.ClearHrirs;
+   ADC := TAudioDataCollection32.Create(Self);
+   try
+    if FindFirst(Dir + '\*.wav', 0, SR) = 0 then
+     repeat
+      ADC.LoadFromFile(Dir + '\' + SR.Name);
+
+      FN := ExtractFileName(SR.Name);
+
+      DelPos := Pos('_', FN);
+      AzmStr := Copy(FN, 1, DelPos - 1);
+
+      Delete(FN, 1, DelPos);
+      DelPos := Pos('_', FN);
+      PolStr := Copy(FN, 1, DelPos - 1);
+
+      i[0] := StrToInt(AzmStr);
+      i[1] := StrToInt(PolStr);
+      exit;
+
+      while i[0] > 180 do i[0] := i[0] - 360;
+      while i[1] > 180 do i[1] := i[1] - 360;
+
+      FHRTFFile.AddChunk(TCustomHrir.Create(i[0] * CDegToRad, i[1] * CDegToRad, 44100,
+        ADC.SampleFrames, ADC[0].ChannelDataPointer, ADC[1].ChannelDataPointer));
+
+      FHRTFFile.AddChunk(TCustomHrir.Create(-i[0] * CDegToRad, i[1] * CDegToRad, 44100,
+        ADC.SampleFrames, ADC[1].ChannelDataPointer, ADC[0].ChannelDataPointer));
+
+     until FindNext(SR) <> 0;
+    FindClose(sr);
+
+    ADHRIR.SampleFrames := ADC.SampleFrames;
+   finally
+    FreeAndNil(ADC);
+   end;
+  end;
+ HRTFFileChanged;
+end;
+
 procedure TFmHRTFEditor.MINewClick(Sender: TObject);
 begin
  FFileName := '';
@@ -476,13 +534,53 @@ begin
 end;
 
 procedure TFmHRTFEditor.MISaveAsClick(Sender: TObject);
+var
+  VST : TPEResourceModule;
+  RS  : TResourceStream;
+  RD  : TResourceDetails;
+  MS  : TMemoryStream;
+  i   : Integer;
 begin
  with SaveDialog do
   if Execute then
-   begin
-    FHRTFFile.SaveToFile(FileName);
-    FFileName := FileName;
-    MISave.Enabled := FFileName <> '';
+   case FilterIndex of
+    1 : begin
+         FHRTFFile.SaveToFile(FileName);
+         FFileName := FileName;
+         MISave.Enabled := FFileName <> '';
+        end;
+    2 : begin
+         VST := TPEResourceModule.Create;
+
+         RS := TResourceStream.Create(HInstance, 'HRTF3D', 'DLL');
+         try
+          VST.LoadFromStream(RS);
+         finally
+          FreeAndNil(RS);
+         end;
+
+         for i := 0 to VST.ResourceCount - 1 do
+          if (VST.ResourceDetails[i].ResourceType = 'HRTF') and
+            (VST.ResourceDetails[i].ResourceName = 'DEFAULT') then
+           begin
+            VST.DeleteResource(i);
+            break;
+           end;
+
+
+         MS := TMemoryStream.Create;
+         FHRTFFile.SaveToStream(MS);
+         with MS do
+          try
+           RD := TResourceDetails.CreateResourceDetails(VST, 0, 'DEFAULT', 'HRTF', Size, Memory);
+           VST.AddResource(RD);
+          finally
+           FreeAndNil(MS);
+          end;
+
+          VST.SortResources;
+          VST.SaveToFile(FileName);
+        end;
    end;
 end;
 

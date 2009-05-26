@@ -3,7 +3,7 @@ object FmHRTFEditor: TFmHRTFEditor
   Top = 90
   BorderStyle = bsSingle
   Caption = 'HRTF editor'
-  ClientHeight = 329
+  ClientHeight = 348
   ClientWidth = 600
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,22 +22,17 @@ object FmHRTFEditor: TFmHRTFEditor
     Left = 0
     Top = 0
     Width = 600
-    Height = 329
+    Height = 348
     ActivePage = TSHrtfData
     Align = alClient
     MultiLine = True
     TabOrder = 0
-    ExplicitHeight = 371
     object TSGeneralInfo: TTabSheet
       Caption = 'General Information'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         592
-        283)
+        302)
       object LbTitle: TLabel
         Left = 8
         Top = 8
@@ -198,7 +193,7 @@ object FmHRTFEditor: TFmHRTFEditor
       OnResize = TSHrtfDataResize
       DesignSize = (
         592
-        283)
+        302)
       object LbHrtfIndex: TLabel
         Left = 3
         Top = 6
@@ -248,16 +243,22 @@ object FmHRTFEditor: TFmHRTFEditor
         AudioDataCollection = ADHRIR
         DisplayedChannel = 0
         LineWidth = 0
+        XAxis.SampleUpper = 511
+        XAxis.FractionalLower = -0.500000000000000000
+        XAxis.FractionalUpper = 0.500000000000000000
       end
       object AudioDataDisplayRight: TGuiAudioDataDisplay
         Left = 3
-        Top = 171
+        Top = 190
         Width = 586
         Height = 110
         Anchors = [akLeft, akRight, akBottom]
         AudioDataCollection = ADHRIR
         DisplayedChannel = 1
         LineWidth = 0
+        XAxis.SampleUpper = 511
+        XAxis.FractionalLower = -0.500000000000000000
+        XAxis.FractionalUpper = 0.500000000000000000
       end
       object SEHrtfIndex: TSpinEdit
         Left = 70
@@ -317,13 +318,9 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSSubjectInfo: TTabSheet
       Caption = 'Subject Information'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         592
-        283)
+        302)
       object LbNameID: TLabel
         Left = 8
         Top = 8
@@ -405,13 +402,9 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSRoomInfo: TTabSheet
       Caption = 'Room Information'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         592
-        283)
+        302)
       object LbRoomType: TLabel
         Left = 8
         Top = 39
@@ -507,13 +500,9 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSMicrophoneInfo: TTabSheet
       Caption = 'Microphone Information'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         592
-        283)
+        302)
       object LbMicType: TLabel
         Left = 8
         Top = 8
@@ -566,13 +555,9 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSOutboardInfo: TTabSheet
       Caption = 'Outboard Information'
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         592
-        283)
+        302)
       object LbAmplifier: TLabel
         Left = 8
         Top = 62
@@ -641,13 +626,9 @@ object FmHRTFEditor: TFmHRTFEditor
     object TSMeasurementInfo: TTabSheet
       Caption = 'Measurement Information'
       ImageIndex = 6
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         592
-        283)
+        302)
       object LbMicrophoneType: TLabel
         Left = 8
         Top = 8
@@ -764,6 +745,10 @@ object FmHRTFEditor: TFmHRTFEditor
         Caption = 'Import Diffuse...'
         OnClick = MIImportDiffuseClick
       end
+      object ImportETI1: TMenuItem
+        Caption = 'Import ETI...'
+        OnClick = ImportETI1Click
+      end
       object N1: TMenuItem
         Caption = '-'
       end
@@ -782,7 +767,7 @@ object FmHRTFEditor: TFmHRTFEditor
   end
   object SaveDialog: TSaveDialog
     DefaultExt = 'hrtf'
-    Filter = 'HRTF files (*.HRTF)|*.hrtf'
+    Filter = 'HRTF files (*.HRTF)|*.hrtf|VST Plugin (*.DLL)|*.DLL'
     Title = 'Select an HRTF file'
     Left = 88
     Top = 152
