@@ -55,6 +55,7 @@ uses
 
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
+  RCNotRegistered = 'You are not a registered customer!';
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -63,10 +64,6 @@ begin
 end;
 
 constructor TSEConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
-{$IFDEF Use_IPPS}
-var
-  VSTHostParams : TSECallVstHostParams;
-{$ENDIF}
 begin
  inherited Create(SEAudioMaster, Reserved);
  FSemaphore           := 0;
@@ -80,16 +77,6 @@ begin
  if FContainedIRs.Count > 0
   then Integer(FFileName) := 0
   else FFileName := '';
-
- {$IFDEF Use_IPPS}
- {$IFNDEF Registered}
- if CSepMagic <> 2 * $29A2A826
-  then raise Exception.Create(RCStrSynthEditOnly);
- VSTHostParams.Opcode := 32;
- if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
-  then raise Exception.Create(RCStrSynthEditOnly);
- {$ENDIF}
- {$ENDIF}
 end;
 
 destructor TSEConvolutionModule.Destroy;
@@ -100,7 +87,35 @@ begin
 end;
 
 procedure TSEConvolutionModule.Open;
+{$IFDEF Use_IPPS}
+var
+  VSTHostParams  : TSECallVstHostParams;
+  RegisteredName : array [0..99] of Char;
+  ID             : Integer;
+{$ENDIF}
 begin
+ {$IFDEF Use_IPPS}
+ {$IFNDEF Registered}
+ try
+  FillChar(RegisteredName[0], SizeOf(RegisteredName), 0);
+  CallHost(SEAudioMasterGetRegisteredName, 0, 0, @RegisteredName);
+ except
+  RegisteredName := '';
+ end;
+ if (RegisteredName <> 'Treck.de')
+  then
+   begin
+    ID := $29A2A826;
+    if CSepMagic <> (ID shl 1)
+     then raise Exception.Create(RCStrSynthEditOnly);
+    VSTHostParams.Opcode := 32;
+
+    if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
+     then raise Exception.Create(RCStrSynthEditOnly)
+   end;
+ {$ENDIF}
+ {$ENDIF}
+
  inherited Open;
 
  // choose which function is used to process audio
@@ -132,10 +147,11 @@ end;
 
 procedure TSEConvolutionModule.ChooseProcess;
 begin
- if Pin[Integer(pinInput)].Status = stRun then
-  if (FContainedIRs.Count > 0) or FileExists(FFileName)
-   then OnProcess := SubProcess
-   else OnProcess := SubProcessBypass
+ if (FContainedIRs.Count = 0) and (not FileExists(FFileName))
+  then OnProcess := SubProcessBypass
+  else
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
   else
    begin
     FStaticCount := BlockSize + FConvolver.IRSize;
