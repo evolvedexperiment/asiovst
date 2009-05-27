@@ -162,7 +162,7 @@ type
     property CurrentDetune;
   end;
 
-  TCepstrumTuner = TCustomCepstrumTuner
+  TCepstrumTuner = class(TCustomCepstrumTuner);
 
   TTuner = class(TLinearZeroCrossingTuner);
 

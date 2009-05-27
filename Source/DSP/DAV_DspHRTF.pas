@@ -260,6 +260,8 @@ type
 
   TCustomHrtfs = class(TChunkContainer)
   private
+    FOnHrtfChanged     : TNotifyEvent;
+    FInterpolationType : TInterpolationType;
     function GetDate: TDateTime;
     function GetDistance: Single;
     function GetGeneralInfoString(const Index: Integer): String;
@@ -293,7 +295,6 @@ type
     FMeasurementInformation : TCustomHrirMeasurementInformation;
     FHrirList               : TObjectList;
     FSampleRate             : Single;
-    FInterpolationType      : TInterpolationType;
     procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass;
       Stream: TStream); override;
     procedure Interpolate2Hrir(const Azimuth, Polar: Single;
@@ -307,6 +308,7 @@ type
     procedure FindNearestHrirs(const SpherePos: TSphereVector2D;
       var A, B, C: TCustomHrir);
     function GetChunkSize: Cardinal; override;
+    function GetMaximumHrirSize: Integer; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -357,6 +359,9 @@ type
     property MeasuredLength: Integer read GetMeasuredLength write SetMeasuredLength;
     property SampleRate: Single read FSampleRate write FSampleRate;
     property InterpolationType: TInterpolationType read FInterpolationType write FInterpolationType default itLinear;
+    property MaximumHrirSize: Integer read GetMaximumHrirSize; 
+
+    property OnHrtfChanged: TNotifyEvent read FOnHrtfChanged write FOnHrtfChanged;
   end;
 
   THrtfs = class(TCustomHrtfs)
@@ -1502,6 +1507,16 @@ begin
  result := FHrirList.Count;
 end;
 
+function TCustomHrtfs.GetMaximumHrirSize: Integer;
+var
+  Index : Integer;
+begin
+ result := 0;
+ for Index := 0 to FHrirList.Count - 1 do
+  if TCustomHrir(FHrirList[Index]).SampleFrames > result
+   then result := TCustomHrir(FHrirList[Index]).SampleFrames;
+end;
+
 function TCustomHrtfs.GetMeasuredLength: Integer;
 begin
  if assigned(FMeasurementInformation)
@@ -2284,6 +2299,9 @@ begin
  FOutboardInformation    := nil;
  FMeasurementInformation := nil;
  inherited;
+
+ if assigned(FOnHrtfChanged)
+  then FOnHrtfChanged(Self);
 end;
 
 procedure TCustomHrtfs.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream);

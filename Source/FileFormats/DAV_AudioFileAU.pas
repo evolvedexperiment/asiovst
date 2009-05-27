@@ -197,9 +197,9 @@ procedure TCustomAudioFileAU.SetSampleFrames(const Value: Cardinal);
 begin
  inherited;
  with FAUHeader do
-  if DataSize <> Value then
+  if Cardinal(DataSize) <> Value then
    begin
-    DataSize := Value;
+    Cardinal(DataSize) := Value;
    end;
 end;
 
@@ -216,7 +216,7 @@ end;
 procedure TCustomAudioFileAU.SetChannels(const Value: Cardinal);
 begin
  with FAUHeader do
-  if Value <> Channels then
+  if Value <> Cardinal(Channels) then
    begin
     inherited;
     Channels := Value;
@@ -384,14 +384,14 @@ begin
    with DataDecoder do
     try
      Samples := 0;
-     while Samples + SampleFrames <= FAUHeader.DataSize do
+     while Samples + SampleFrames <= Cardinal(FAUHeader.DataSize) do
       begin
        LoadFromStream(Stream);
        if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
        Samples := Samples + SampleFrames;
       end;
 
-      SampleFrames := FAUHeader.DataSize - Samples;
+      SampleFrames := Cardinal(FAUHeader.DataSize) - Samples;
       LoadFromStream(Stream);
       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
     finally
@@ -419,6 +419,7 @@ begin
                  auePCM24 : ChunkEnd := Position + 3 * DataSize * Channels;
       auePCM32, aueIEEE32 : ChunkEnd := Position + 4 * DataSize * Channels;
                 aueIEEE64 : ChunkEnd := Position + 8 * DataSize * Channels;
+      else raise Exception.Create('not yet implemented');          
      end;
 
     DataDecoder := CreateDataCoder;
@@ -427,7 +428,7 @@ begin
     with DataDecoder do
      try
       Samples   := 0;
-      while Samples + SampleFrames <= FAUHeader.DataSize do
+      while Samples + SampleFrames <= Cardinal(FAUHeader.DataSize) do
        begin
         if assigned(FOnEncode) then FOnEncode(Self, DataDecoder, Samples);
         SaveToStream(Stream);
@@ -435,7 +436,7 @@ begin
         Samples := Samples + SampleFrames;
        end;
 
-       SampleFrames := FAUHeader.DataSize - Samples;
+       SampleFrames := Cardinal(FAUHeader.DataSize) - Samples;
        if assigned(FOnEncode) then FOnEncode(Self, DataDecoder, Samples);
        SaveToStream(Stream);
       finally
