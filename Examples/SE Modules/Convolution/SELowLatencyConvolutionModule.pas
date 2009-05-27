@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
+  Windows, Classes, SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
   DAV_DspConvolution;
 
 type
@@ -29,6 +29,9 @@ type
     FMaxIRBlockOrder     : Integer;
     FRealLatency         : Integer;
     FDesiredLatencyIndex : Integer;
+
+    FContainedIRs        : TStringList;
+
     procedure SampleRateChanged; override;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
@@ -41,7 +44,8 @@ type
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
 
-    procedure LoadIR(FileName: TFileName);
+    procedure LoadIR(FileName: TFileName); overload;
+    procedure LoadIR(ID: Integer); overload;
   end;
 
 implementation
@@ -52,11 +56,13 @@ uses
 resourcestring
   RCStrSynthEditOnly = 'This module is not allowed to be embedded into a VST Plugin';
 
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
+begin
+ Result := True;
+ TStringList(lParam).Add(lpName);
+end;
+
 constructor TSELowLatencyConvolutionModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
-{$IFDEF Use_IPPS}
-var
-  VSTHostParams : TSECallVstHostParams;
-{$ENDIF}
 begin
  inherited Create(SEAudioMaster, Reserved);
  FFileName            := '';
@@ -65,17 +71,17 @@ begin
  FMaxIRBlockOrder     := FConvolver.MaximumIRBlockOrder;
  FDesiredLatencyIndex := 5;
 
- {$IFDEF Use_IPPS}
- if CSepMagic <> 2 * $29A2A826
-  then raise Exception.Create(RCStrSynthEditOnly);
- VSTHostParams.Opcode := 32;
- if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
-  then raise Exception.Create(RCStrSynthEditOnly);
- {$ENDIF}
+ FContainedIRs := TStringList.Create;
+ EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(FContainedIRs));
+
+ if FContainedIRs.Count > 0
+  then Integer(FFileName) := 0
+  else FFileName := '';
 end;
 
 destructor TSELowLatencyConvolutionModule.Destroy;
 begin
+ FreeAndNil(FContainedIRs);
  FreeAndNil(FConvolver);
  inherited;
 end;
@@ -83,7 +89,34 @@ end;
 procedure TSELowLatencyConvolutionModule.Open;
 var
   SingleImpulse : Single;
+{$IFDEF Use_IPPS}
+  VSTHostParams  : TSECallVstHostParams;
+  RegisteredName : array [0..99] of Char;
+  ID             : Integer;
+{$ENDIF}
 begin
+ {$IFDEF Use_IPPS}
+ {$IFNDEF Registered}
+ try
+  FillChar(RegisteredName[0], SizeOf(RegisteredName), 0);
+  CallHost(SEAudioMasterGetRegisteredName, 0, 0, @RegisteredName);
+ except
+  RegisteredName := '';
+ end;
+ if (RegisteredName <> 'Treck.de')
+  then
+   begin
+    ID := $29A2A826;
+    if CSepMagic <> (ID shl 1)
+     then raise Exception.Create(RCStrSynthEditOnly);
+    VSTHostParams.Opcode := 32;
+
+    if CallHost(SEAudioMasterCallVstHost, 0, 0, @VSTHostParams) <> -1
+     then raise Exception.Create(RCStrSynthEditOnly)
+   end;
+ {$ENDIF}
+ {$ENDIF}
+
  inherited Open;
 
  SingleImpulse := 1;
@@ -118,36 +151,64 @@ end;
 
 procedure TSELowLatencyConvolutionModule.ChooseProcess;
 begin
- if FileExists(FFileName) then
-  if Pin[Integer(pinInput)].Status = stRun
-   then OnProcess := SubProcess
-   else
-    begin
-     FStaticCount := BlockSize + FConvolver.IRSize + FConvolver.Latency;
-     OnProcess := SubProcessStatic;
-    end
-  else OnProcess := SubProcessBypass
+ if (FContainedIRs.Count = 0) and (not FileExists(FFileName))
+  then OnProcess := SubProcessBypass
+  else
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize + FConvolver.IRSize + FConvolver.Latency;
+    OnProcess := SubProcessStatic;
+   end;
 end;
 
 // describe your module
 class procedure TSELowLatencyConvolutionModule.GetModuleProperties(Properties : PSEModuleProperties);
+var
+  ContainedIRs : TStringList;
 begin
- with Properties^ do
-  begin
-   {$IFDEF Use_IPPS}
-   Name       := 'Low Latency Convolution Module (IPP based)';
-   ID         := 'IPP Low Latency Convolution Module';
-   {$ELSE}
-   Name       := 'Low Latency Convolution Module';
-   ID         := 'DAV Low Latency Convolution Module';
-   {$ENDIF}
-   About      := 'by Christian-W. Budde';
-   SdkVersion := CSeSdkVersion;
-  end;
+ ContainedIRs := TStringList.Create;
+ try
+  EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(ContainedIRs));
+
+  with Properties^ do
+   begin
+    {$IFDEF Use_IPPS}
+    if ContainedIRs.Count > 0 then
+     begin
+      Name     := 'Low Latency Resource Convolution Module (IPP based)';
+      ID       := 'IPP ResLL Convolution Module';
+     end
+    else
+     begin
+      Name     := 'Low Latency Convolution Module (IPP based)';
+      ID       := 'IPP Low Latency Convolution Module';
+     end;
+    {$ELSE}
+    if ContainedIRs.Count > 0 then
+     begin
+      Name     := 'Low Latency Convolution Module';
+      ID       := 'DAV Low Latency Convolution Module';
+     end
+    else
+     begin
+      Name     := 'Low Latency Resource Convolution Module';
+      ID       := 'DAV ResLL Convolution Module';
+     end;
+    {$ENDIF}
+    About      := 'by Christian-W. Budde';
+    SdkVersion := CSeSdkVersion;
+   end;
+ finally
+  FreeAndNil(ContainedIRs);
+ end;
 end;
 
 // describe the pins (plugs)
 function TSELowLatencyConvolutionModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+var
+  str : String;
 begin
  result := True;
  case TSELowLatencyConvolutionPins(index) of
@@ -172,12 +233,25 @@ begin
   pinFileName:
     with Properties^ do
      begin
-      Name            := 'FileName';
-      VariableAddress := @FFileName;
-      Flags           := [iofFilename];
-      Direction       := drIn;
-      DataType        := dtText;
-      DefaultValue    := 'IR.wav';
+      if FContainedIRs.Count <= 0 then
+       begin
+        Name            := 'FileName';
+        VariableAddress := @FFileName;
+        Flags           := [iofFilename];
+        Direction       := drIn;
+        DataType        := dtText;
+        DefaultValue    := 'IR.wav';
+       end
+      else
+       begin
+        Name            := 'IR ID';
+        VariableAddress := @FFileName;
+        Direction       := drIn;
+        DataType        := dtEnum;
+        DefaultValue    := '0';
+        str             := 'range 0,' + IntToStr(FContainedIRs.Count - 1);
+        DatatypeExtra   := PChar(str);
+       end;
      end;
   pinMaxFFTOrder:
     with Properties^ do
@@ -223,8 +297,12 @@ begin
                        Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                       end;
         pinFileName : begin
-                       if FileExists(FFileName)
-                        then LoadIR(StrPas(FFileName));
+                       if FContainedIRs.Count <= 0 then
+                        begin
+                         if FileExists(FFileName)
+                          then LoadIR(StrPas(FFileName));
+                        end
+                       else LoadIR(Integer(FFileName));
                        ChooseProcess;
                       end;
      pinMaxFFTOrder : begin
@@ -271,6 +349,35 @@ begin
  finally
   dec(FSemaphore);
  end;
+end;
+
+procedure TSELowLatencyConvolutionModule.LoadIR(ID: Integer);
+var
+  ADC : TAudioDataCollection32;
+  RS  : TResourceStream;
+begin
+ if (ID >= 0) and (ID < FContainedIRs.Count) then
+  begin
+   while FSemaphore > 0 do;
+   inc(FSemaphore);
+   try
+    ADC := TAudioDataCollection32.Create(nil);
+    with ADC do
+     try
+      RS := TResourceStream.Create(HInstance, FContainedIRs[ID], 'IR');
+      try
+       LoadFromStream(RS);
+      finally
+       FreeAndNil(RS);
+      end;
+      FConvolver.LoadImpulseResponse(ADC[0].ChannelDataPointer, ADC.SampleFrames);
+     finally
+      FreeAndNil(ADC);
+     end;
+   finally
+    dec(FSemaphore);
+   end;
+  end;
 end;
 
 procedure TSELowLatencyConvolutionModule.SubProcess(const BufferOffset, SampleFrames: Integer);

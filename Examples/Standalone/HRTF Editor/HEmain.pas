@@ -461,12 +461,12 @@ begin
       exit;
 
       while i[0] > 180 do i[0] := i[0] - 360;
-      while i[1] > 180 do i[1] := i[1] - 360;
+      while i[1] > 180 do i[1] := i[1] - 180;
 
-      FHRTFFile.AddChunk(TCustomHrir.Create(i[0] * CDegToRad, i[1] * CDegToRad, 44100,
+      FHRTFFile.AddChunk(TCustomHrir.Create(i[0] * CDegToRad, (90 - i[1]) * CDegToRad, 44100,
         ADC.SampleFrames, ADC[0].ChannelDataPointer, ADC[1].ChannelDataPointer));
 
-      FHRTFFile.AddChunk(TCustomHrir.Create(-i[0] * CDegToRad, i[1] * CDegToRad, 44100,
+      FHRTFFile.AddChunk(TCustomHrir.Create(-i[0] * CDegToRad, (90 - i[1]) * CDegToRad, 44100,
         ADC.SampleFrames, ADC[1].ChannelDataPointer, ADC[0].ChannelDataPointer));
 
      until FindNext(SR) <> 0;

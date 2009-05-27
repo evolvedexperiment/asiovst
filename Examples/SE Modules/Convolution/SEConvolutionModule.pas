@@ -161,19 +161,44 @@ end;
 
 // describe your module
 class procedure TSEConvolutionModule.GetModuleProperties(Properties : PSEModuleProperties);
+var
+  ContainedIRs : TStringList;
 begin
- with Properties^ do
-  begin
-   {$IFDEF Use_IPPS}
-   Name       := 'Convolution Module (IPP based)';
-   ID         := 'IPP Convolution Module';
-   {$ELSE}
-   Name       := 'Simple Convolution Module';
-   ID         := 'DAV Simple Convolution Module';
-   {$ENDIF}
-   About      := 'by Christian-W. Budde';
-   SdkVersion := CSeSdkVersion;
-  end;
+ ContainedIRs := TStringList.Create;
+ try
+  EnumResourceNames(HInstance, 'IR', @EnumNamesFunc, LongWord(ContainedIRs));
+
+  with Properties^ do
+   begin
+    {$IFDEF Use_IPPS}
+    if ContainedIRs.Count > 0 then
+     begin
+      Name     := 'Resource Convolution Module (IPP based)';
+      ID       := 'IPP Resource Convolution Module';
+     end
+    else
+     begin
+      Name     := 'Convolution Module (IPP based)';
+      ID       := 'IPP Convolution Module';
+     end;
+    {$ELSE}
+    if ContainedIRs.Count > 0 then
+     begin
+      Name     := 'Resource Convolution Module';
+      ID       := 'DAV Resource Convolution Module';
+     end
+    else
+     begin
+      Name     := 'Simple Convolution Module';
+      ID       := 'DAV Simple Convolution Module';
+     end;
+    {$ENDIF}
+    About      := 'by Christian-W. Budde';
+    SdkVersion := CSeSdkVersion;
+   end;
+ finally
+  FreeAndNil(ContainedIRs);
+ end;
 end;
 
 // describe the pins (plugs)

@@ -6,7 +6,8 @@ interface
 {$DEFINE OnlineFreqCalc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspButterworthFilter, DAV_DspCorrelation;
+  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspButterworthFilter,
+  DAV_DspCorrelation, DAV_DspCepstrum;
 
 type
   TCustomTuner = class(TDspObject)
@@ -114,6 +115,28 @@ type
     property CurrentDetune: Single read FCurrentDetune;
   end;
 
+  TCustomCepstrumTuner = class(TCustomDownsampledTuner)
+  private
+    procedure CalculateBufferLength;
+  protected
+    FBuffer              : PDAVSingleFixedArray;
+    FCepstrum            : PDAVComplexSingleFixedArray;
+    FCepstrumCalculation : TPowerCepstrum32;
+    FBufferLength        : Integer;
+    FBufferPos           : Integer;
+    {$IFDEF OnlineFreqCalc}
+    FCurrentFreq         : Single;
+    {$ENDIF}
+    function GetCurrentFrequency: Single; override;
+    procedure ProcessDownsampled(Downsampled: Single); override;
+    function CalculateCurrentFrequency: Single; virtual;
+    procedure CalculateDownsampleFactor; override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+  end;
+
   TZeroCrossingTuner = class(TCustomZeroCrossingTuner)
   published
     property SampleRate;
@@ -139,12 +162,14 @@ type
     property CurrentDetune;
   end;
 
+  TCepstrumTuner = TCustomCepstrumTuner
+
   TTuner = class(TLinearZeroCrossingTuner);
 
 implementation
 
 uses
-  DAV_Approximations;
+  SysUtils, Math, DAV_Approximations, DAV_DspWindowing;
 
 { TCustomTuner }
 
@@ -508,6 +533,99 @@ begin
   end
  else inc(FSamples);
  FLastSample := Downsampled;
+end;
+
+{ TCustomCepstrumTuner }
+
+constructor TCustomCepstrumTuner.Create;
+begin
+ inherited;
+ FCepstrumCalculation := TPowerCepstrum32.Create;
+ FBufferLength := 0;
+ CalculateBufferLength;
+end;
+
+destructor TCustomCepstrumTuner.Destroy;
+begin
+ FreeAndNil(FCepstrumCalculation);
+ inherited;
+end;
+
+procedure TCustomCepstrumTuner.SampleRateChanged;
+begin
+ inherited;
+ CalculateBufferLength;
+end;
+
+procedure TCustomCepstrumTuner.CalculateDownsampleFactor;
+begin
+ inherited;
+ CalculateBufferLength;
+end;
+
+procedure TCustomCepstrumTuner.CalculateBufferLength;
+var
+  NewBufferLength : Integer;
+begin
+ // buffer of about 25ms
+ NewBufferLength := Round(0.025 * SampleRate / FDownSampleFactor);
+
+ // round to nearest power of 2
+ NewBufferLength := RoundToPowerOf2(NewBufferLength);
+
+ if NewBufferLength <> FBufferLength then
+  begin
+   FBufferLength := NewBufferLength;
+
+   // set cepstrum length
+   FCepstrumCalculation.FFTOrder := round(Log2(NewBufferLength));
+
+   // reallocate buffer memory
+   ReallocMem(FBuffer, NewBufferLength * SizeOf(Single));
+   FillChar(FBuffer^, NewBufferLength * SizeOf(Single), 0);
+
+   // reset buffer position
+   FBufferPos := 0;
+  end;
+end;
+
+function TCustomCepstrumTuner.CalculateCurrentFrequency: Single;
+var
+  i   : Integer;
+  max : Single;
+  mps : Integer;
+begin
+ mps := 0;
+ max := FCepstrum[0].Re;
+ for i := 1 to FBufferLength - 1 do
+  if FCepstrum[i].Re > max then
+   begin
+    max := FCepstrum[i].Re;
+    mps := i;
+   end;
+
+ result := FSampleRate / (FDownSampleFactor * mps);
+end;
+
+function TCustomCepstrumTuner.GetCurrentFrequency: Single;
+begin
+ {$IFDEF OnlineFreqCalc}
+ result := FCurrentFreq;
+ {$ELSE}
+ result := CalculateCurrentFrequency;
+ {$ENDIF}
+end;
+
+procedure TCustomCepstrumTuner.ProcessDownsampled(Downsampled: Single);
+begin
+ FBuffer[FBufferPos] := DownSampled;
+ inc(FBufferPos);
+ if FBufferPos = FBufferLength then
+  begin
+   FBufferPos := 0;
+   ApplyHammingWindow(FBuffer, FBufferLength);
+   FCepstrumCalculation.CalculateCepstrum(FBuffer, FCepstrum);
+  end;
 end;
 
 end.

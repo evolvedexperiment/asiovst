@@ -10,8 +10,8 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEHRTF3DPins = (pinInputL, pinInputR, pinOutputL, pinOutputR, pinAzimuth,
-    pinPolar, pinMaxFFTOrder, pinDesiredLatency, pinRealLatency);
+  TSEHRTF3DPins = (pinInputL, pinInputR, pinOutputL, pinOutputR, pinFileName,
+    pinAzimuth, pinPolar, pinMaxFFTOrder, pinDesiredLatency, pinRealLatency);
 
   TSEHRTF3DModule = class(TSEModuleBase)
   private
@@ -20,6 +20,7 @@ type
   protected
     FInputBuffer         : array [0..1] of PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer        : array [0..1] of PDAVSingleFixedArray;
+    FFileName            : PAnsiChar;
 
     FHrir                : array [0..1] of PDAVSingleFixedArray;
     FConvolver           : array [0..1] of TLowLatencyConvolution32;
@@ -65,6 +66,7 @@ begin
  FMaxIRBlockOrder     := FConvolver[0].MaximumIRBlockOrder;
  FRealLatency         := FConvolver[0].Latency;
  FDesiredLatencyIndex := 5;
+ FFileName            := '';
 end;
 
 destructor TSEHRTF3DModule.Destroy;
@@ -207,6 +209,16 @@ begin
       Direction       := drOut;
       Datatype        := dtFSample;
      end;
+  pinFileName:
+    with Properties^ do
+     begin
+      Name            := 'FileName';
+      VariableAddress := @FFileName;
+      Flags           := [iofFilename];
+      Direction       := drIn;
+      DataType        := dtText;
+      DefaultValue    := '';
+     end;
   pinAzimuth:
     with Properties^ do
      begin
@@ -270,6 +282,16 @@ begin
                           ChooseProcess;
                           Pin[3].TransmitStatusChange(SampleClock, Pin[1].Status);
                          end;
+        pinFileName : begin
+                       while FSemaphore > 0 do;
+                       Inc(FSemaphore);
+                       try
+                        if FileExists(FFileName)
+                         then FHRTF.LoadFromFile(StrPas(FFileName));
+                       finally
+                        Dec(FSemaphore);
+                       end;
+                      end;
   pinPolar, pinAzimuth : LoadCurrentHrirs;
         pinMaxFFTOrder : begin
                           while FSemaphore > 0 do;

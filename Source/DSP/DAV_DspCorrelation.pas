@@ -351,6 +351,8 @@ end;
 
 constructor TCorrelation32.Create;
 begin
+ inherited;
+
  FSignalFreq      := nil;
  FCorrelationFreq := nil;
 
@@ -441,6 +443,8 @@ end;
 
 constructor TCorrelation64.Create;
 begin
+ inherited;
+
  FSignalFreq      := nil;
  FCorrelationFreq := nil;
 
