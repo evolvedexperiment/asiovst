@@ -90,10 +90,10 @@ type
 
   TCustomLinkwitzBass = class(TCustomPsychoAcousticBassEnhancer)
   private
-    FDecay          : Single;
-    FGains          : array [0..3] of Single;
-    FDrive          : Single;
-    FResponse       : Single;
+    FDecay    : Single;
+    FGains    : array [0..3] of Single;
+    FDrive    : Single;
+    FResponse : Single;
     procedure SetHighpassSelect(const Value: THighpassSelect);
     procedure SetDecay(const Value: Single);
     procedure SetResponse(const Value: Single);
@@ -135,9 +135,9 @@ type
     procedure SetGain(const Value: Single);
     procedure SetIntensity(const Value: Single);
   protected
-    FCrossoverLP : TButterworthLowPassFilter;
-    FCrossoverHP : TButterworthHighPassFilter;
+    FCrossover   : TButterworthSplitBandFilter;
     FHighpass    : TButterworthHighpassFilter;
+    FLimiter     : TLightweightSoftKneeLimiter;
     FGains       : array [0..3] of Single;
 
     procedure AddOriginalBassChanged; virtual;
@@ -602,34 +602,39 @@ begin
  inherited;
 
  // create & setup crossover
- FCrossoverLP := TButterworthLowPassFilter.Create(3);
- FCrossoverLP.SampleRate := SampleRate;
- FCrossoverHP := TButterworthHighPassFilter.Create(3);
- FCrossoverHP.SampleRate := SampleRate;
+ FCrossover := TButterworthSplitBandFilter.Create(3);
+ FCrossover.SampleRate := SampleRate;
 
  // create & setup highpass filter
  FHighpass := TButterworthHighpassFilter.Create(2);
  FHighpass.SampleRate := SampleRate;
  FHighpass.Frequency  := 16;
 
+ FLimiter := TLightweightSoftKneeLimiter.Create;
+ FLimiter.Threshold_dB := 0;
+ FLimiter.Knee_dB := 0;
+ FLimiter.Attack := 25;
+ FLimiter.Release := 25;
 end;
 
 destructor TCustomRenaissanceBass.Destroy;
 begin
-
-  inherited;
+ FreeAndNil(FLimiter);
+ FreeAndNil(FHighpass);
+ FreeAndNil(FCrossover);
+ inherited;
 end;
 
 procedure TCustomRenaissanceBass.FrequencyChanged;
 begin
- FCrossoverLP.Frequency := FFrequency;
- FCrossoverHP.Frequency := FFrequency;
+ FCrossover.Frequency := FFrequency;
 end;
 
 procedure TCustomRenaissanceBass.SampleRateChanged;
 begin
- FCrossoverLP.SampleRate := SampleRate;
- FCrossoverHP.SampleRate := SampleRate;
+ FCrossover.SampleRate := SampleRate;
+ FLimiter.SampleRate := SampleRate;
+ FHighpass.SampleRate := SampleRate;
 end;
 
 procedure TCustomRenaissanceBass.SetAddOriginalBass(const Value: Boolean);
@@ -678,14 +683,15 @@ function TCustomRenaissanceBass.Process(Input: Single): Single;
 var
   Low, High, Maxx : Single;
 begin
- Low  := FCrossoverLP.ProcessSample(FGains[0] * Input);
- High := FCrossoverHP.ProcessSample(FGains[0] * Input);
+ FCrossover.ProcessSample(Input, Low, High);
 
  Maxx := FGains[0] * Low;
- Maxx := 4 * FHighpass.ProcessSample(0.2 + Maxx * (1 - 0.4 * Maxx));
+ Maxx := FHighpass.ProcessSample(0.2 + Maxx * (1 - 0.4 * Maxx));
+ Maxx := 0.5 * FLimiter.ProcessSample(Maxx);
  Maxx := Limit(Maxx);
 
  result := FGains[2] * (FGains[1] * Low + Maxx + High);
+// result := Maxx;
 end;
 
 end.
