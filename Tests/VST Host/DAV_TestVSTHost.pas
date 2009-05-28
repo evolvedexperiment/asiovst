@@ -219,19 +219,23 @@ begin
  with FVstHost[0] do
   begin
    Active := True;
-   for i := 0 to 999 do
-    begin
-     ProgramNr := random(numPrograms);
-     Parameter[random(numParams)] := random;
-     GetParamName(random(numParams));
-     GetParamLabel(random(numParams));
-     GetParamDisplay(random(numParams));
-     String2Parameter(random(numParams), str);
-     SetLength(str, 20);
-     SetProgramName(str);
-     CopyCurrentProgramTo(random(numPrograms));
-     GetMidiProgramName(MPN);
-    end;
+   if numPrograms > 0 then
+    for i := 0 to 999 do
+     begin
+      ProgramNr := random(numPrograms);
+      if numParams > 0 then
+       begin
+        Parameter[random(numParams)] := random;
+        GetParamName(random(numParams));
+        GetParamLabel(random(numParams));
+        GetParamDisplay(random(numParams));
+        String2Parameter(random(numParams), str);
+       end;
+      SetLength(str, 20);
+      SetProgramName(str);
+      CopyCurrentProgramTo(random(numPrograms));
+      GetMidiProgramName(MPN);
+     end;
 
    for i := 0 to 9 do
     begin
@@ -633,9 +637,6 @@ begin
 
  with FVstHost[0] do
   begin
-   if numPrograms <= 0
-    then Fail('No programs found, Cubase will probably crash!');
-
    // open
    VstDispatch(effOpen);
 

@@ -606,9 +606,9 @@ begin
  // eventually zero pad IR
  if Self.SampleFrames < SampleFrames then
   begin
-   SampleFrames := Self.SampleFrames;
    FillChar(Destination^[Self.SampleFrames], (SampleFrames - Self.SampleFrames) *
      SizeOf(Single), 0);
+   SampleFrames := Self.SampleFrames;
   end;
 
  // decode
@@ -636,9 +636,9 @@ begin
  // eventually zero pad IR
  if Self.SampleFrames < SampleFrames then
   begin
-   SampleFrames := Self.SampleFrames;
    FillChar(Destination^[Self.SampleFrames], (SampleFrames - Self.SampleFrames) *
      SizeOf(Single), 0);
+   SampleFrames := Self.SampleFrames;
   end;
 
  // decode

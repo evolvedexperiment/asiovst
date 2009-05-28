@@ -510,7 +510,7 @@ var
   str : string;
 begin
  Result := 0;
- if ((Index >= 0) or (Index < Programs.Count)) and assigned(Ptr) {and (Value = -1)} then
+ if (Index >= 0) and (Index < Programs.Count) and assigned(Ptr) {and (Value = -1)} then
   begin
    str := Programs[Index].DisplayName;
    if FTruncateStrings and (Length(str) > 24)
@@ -525,61 +525,67 @@ function TVSTModuleWithPrograms.HostCallGetParameterProperties(const Index, Valu
 var
   str : string;
 begin
-  Result := Integer(ParameterProperties[Index].ReportVST2Properties);
-  if (Result > 0) and assigned(ptr) then
-   with PVstParameterPropertyRecord(ptr)^ do
-    begin
-     // copy display name
-     str := ParameterProperties[Index].DisplayName;
-     SetLength(str, 64);
-     StrCopy(Caption, @str[1]);
+ if (Index < 0) or (Index >= ParameterProperties.Count) then
+  begin
+   Result := 0;
+   exit;
+  end;
 
-     // copy short label
-     str := ParameterProperties[Index].ShortLabel;
-     SetLength(str, 8);
-     StrCopy(shortLabel, @str[1]);
+ Result := Integer(ParameterProperties[Index].ReportVST2Properties);
+ if (Result > 0) and assigned(ptr) then
+  with PVstParameterPropertyRecord(ptr)^ do
+   begin
+    // copy display name
+    str := ParameterProperties[Index].DisplayName;
+    SetLength(str, 64);
+    StrCopy(Caption, @str[1]);
 
-     // assign flags
-     Flags := ParameterProperties[Index].Flags;
+    // copy short label
+    str := ParameterProperties[Index].ShortLabel;
+    SetLength(str, 8);
+    StrCopy(shortLabel, @str[1]);
 
-     // use integer min/max
-     if kVstParameterUsesIntegerMinMax in Flags then
-      begin
-       minInteger := ParameterProperties[Index].MinInteger;
-       maxInteger := ParameterProperties[Index].MaxInteger;
-      end;
+    // assign flags
+    Flags := ParameterProperties[Index].Flags;
 
-     // use integer steps
-     if kVstParameterUsesIntStep in Flags then
-      begin
-       stepInteger      := ParameterProperties[Index].StepInteger;
-       largeStepInteger := ParameterProperties[Index].LargeStepInteger;
-      end;
+    // use integer min/max
+    if kVstParameterUsesIntegerMinMax in Flags then
+     begin
+      minInteger := ParameterProperties[Index].MinInteger;
+      maxInteger := ParameterProperties[Index].MaxInteger;
+     end;
 
-     // use float steps
-     if kVstParameterUsesFloatStep in Flags then
-      begin
-       stepFloat        := ParameterProperties[Index].StepFloat;
-       largeStepFloat   := ParameterProperties[Index].LargeStepFloat;
-       smallStepFloat   := ParameterProperties[Index].SmallStepFloat;
-      end;
+    // use integer steps
+    if kVstParameterUsesIntStep in Flags then
+     begin
+      stepInteger      := ParameterProperties[Index].StepInteger;
+      largeStepInteger := ParameterProperties[Index].LargeStepInteger;
+     end;
 
-     // assign display index
-     if kVstParameterSupportsDisplayIndex in Flags
-      then displayIndex := Index;
+    // use float steps
+    if kVstParameterUsesFloatStep in Flags then
+     begin
+      stepFloat        := ParameterProperties[Index].StepFloat;
+      largeStepFloat   := ParameterProperties[Index].LargeStepFloat;
+      smallStepFloat   := ParameterProperties[Index].SmallStepFloat;
+     end;
 
-     // copy category label
-     if kVstParameterSupportsDisplayCategory in Flags then
-      begin
-       str := ParameterProperties[Index].Category;
-       SetLength(str, 24);
-       StrCopy(CategoryLabel, @str[1]);
-       Category := ParameterProperties[Index].CategoryIndex;
-       if (Category > 0) and (Category <= ParameterCategories.Count)
-        then numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory
-        else numParametersInCategory := 0;
-      end;
-    end;
+    // assign display index
+    if kVstParameterSupportsDisplayIndex in Flags
+     then displayIndex := Index;
+
+    // copy category label
+    if kVstParameterSupportsDisplayCategory in Flags then
+     begin
+      str := ParameterProperties[Index].Category;
+      SetLength(str, 24);
+      StrCopy(CategoryLabel, @str[1]);
+      Category := ParameterProperties[Index].CategoryIndex;
+      if (Category > 0) and (Category <= ParameterCategories.Count)
+       then numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory
+       else numParametersInCategory := 0;
+     end;
+   end;
 end;
 
 function TVSTModuleWithPrograms.HostCallBeginSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
