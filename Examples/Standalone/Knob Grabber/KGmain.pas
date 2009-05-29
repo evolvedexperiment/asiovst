@@ -7,6 +7,7 @@ uses
   Dialogs, Menus, DAV_VSTHost, ExtCtrls;
 
 type
+  TStitchType = (stHorizontal, stVertical);
   TFmKnobGrabber = class(TForm)
     MainMenu: TMainMenu;
     MIFile: TMenuItem;
@@ -100,6 +101,8 @@ begin
 
      // render basic image
      Parameter[ParameterNo] := 0;
+     EditIdle;
+     Idle;
      Application.ProcessMessages;
      RenderEditorToBitmap(Bmp[0]);
      Application.ProcessMessages;
@@ -156,6 +159,7 @@ var
   vrct  : TRect;
   x, y  : Integer;
   Scln  : array [0..1] of PIntegerArray;
+  sttyp : TStitchType;
 
 label
   next;
@@ -182,10 +186,13 @@ begin
       Bmp[2].Height := rct.Bottom - rct.Top;
       Bmp[2].PixelFormat := pf32bit;
 
+      sttyp := TStitchType(Bmp[1].Width > Bmp[1].Height);
 //      Png.SetSize(rct.Right - rct.Left, rct.Bottom - rct.Top);
 
       // render basic image
       Parameter[ParameterNo] := 0;
+      EditIdle;
+      Idle;
       Application.ProcessMessages;
       RenderEditorToBitmap(Bmp[0]);
 
@@ -210,10 +217,22 @@ begin
           for x := 0 to Bmp[2].Width - 1 do
            if Scln[0]^[x] <> Scln[1]^[x] then
             begin
-             Png.SetSize(Png.Width + (rct.Right - rct.Left), Png.Height);
-             Png.Canvas.CopyRect(rect(Png.Width - (rct.Right - rct.Left), 0, Png.Width, Png.Height),
-               Bmp[2].Canvas, Rect(0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top));
-             Bmp[1].Assign(Bmp[2]);
+             case sttyp of
+              stHorizontal :
+               begin
+                Png.SetSize(Png.Width + (rct.Right - rct.Left), Png.Height);
+                Png.Canvas.CopyRect(rect(Png.Width - (rct.Right - rct.Left), 0, Png.Width, Png.Height),
+                  Bmp[2].Canvas, Rect(0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top));
+                Bmp[1].Assign(Bmp[2]);
+               end;
+              stVertical :
+               begin
+                Png.SetSize(Png.Width, Png.Height + (rct.Bottom - rct.Top));
+                Png.Canvas.CopyRect(rect(0, Png.Height - (rct.Bottom - rct.Top), Png.Width, Png.Height),
+                  Bmp[2].Canvas, Rect(0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top));
+                Bmp[1].Assign(Bmp[2]);
+               end;
+             end;
 
              Application.ProcessMessages;
              goto next;
@@ -257,6 +276,7 @@ begin
    ClientHeight := (rct.Bottom - rct.Top);
 //   Image.Height := (rct.Bottom - rct.Top);
    FFileName := FileName;
+   MIGrabKnobs.Enabled := True;
   end;
 end;
 

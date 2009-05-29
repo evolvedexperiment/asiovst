@@ -2,8 +2,8 @@ object FmKnobGrabber: TFmKnobGrabber
   Left = 286
   Top = 77
   Caption = 'VST Plugin Knob Grabber'
-  ClientHeight = 193
-  ClientWidth = 361
+  ClientHeight = 59
+  ClientWidth = 142
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,9 +18,11 @@ object FmKnobGrabber: TFmKnobGrabber
   object PnGUI: TPanel
     Left = 0
     Top = 0
-    Width = 361
-    Height = 193
+    Width = 142
+    Height = 59
     Align = alClient
+    BevelOuter = bvNone
+    Caption = '(no plugin loaded)'
     TabOrder = 0
   end
   object MainMenu: TMainMenu
@@ -34,6 +36,7 @@ object FmKnobGrabber: TFmKnobGrabber
       end
       object MIGrabKnobs: TMenuItem
         Caption = 'Grab Knobs...'
+        Enabled = False
         OnClick = MIGrabKnobsClick
       end
       object N1: TMenuItem
