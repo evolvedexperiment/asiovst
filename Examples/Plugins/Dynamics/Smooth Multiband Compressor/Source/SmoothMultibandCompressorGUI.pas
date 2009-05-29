@@ -65,6 +65,7 @@ type
     procedure DrawState(const Stage: Integer);
     procedure DrawSoftClip;
     procedure DrawGraph(const Stage: Integer);
+    procedure DrawBypass(const Stage: Integer);
   public
     procedure UpdateLowFrequency;
     procedure UpdateOutputGain;
@@ -101,7 +102,7 @@ var
   GKnob         : TVerticallyStitchedBitmap32;
   GSoftClip     : TVerticallyStitchedBitmap32;
   GAutoGain     : TVerticallyStitchedBitmap32;
-  GRectStage    : Array [0..2, 0..7] of TRect;
+  GRectStage    : Array [0..2, 0..8] of TRect;
   GRectTop      : Array [0..3] of TRect;
 
 implementation
@@ -268,6 +269,11 @@ begin
     GRectStage[1, 7].Bottom  := GRectStage[1, 7].Top + GAutoGain.RealHeight;
     GRectStage[2, 7].Right   := GRectStage[2, 7].Left + GAutoGain.RealWidth;
     GRectStage[2, 7].Bottom  := GRectStage[2, 7].Top + GAutoGain.RealHeight;
+
+    // Calculate Rects
+    GRectStage[0, 8] := Rect(30,  86, 772, 188);
+    GRectStage[1, 8] := Rect(30, 193, 772, 293);
+    GRectStage[2, 8] := Rect(30, 297, 772, 397);
    end;
 
  FEditValue := edNone;
@@ -313,7 +319,7 @@ begin
     else
    if PtInRect(GRectTop[2], Pt) then
     if ssCtrl in Shift
-     then Parameter[2] := 0
+     then Parameter[24] := 0
      else FEditValue := edVolume
     else
    if PtInRect(GRectTop[3], Pt)  then
@@ -375,6 +381,16 @@ begin
        if bsSmooth in BandStates[Stage]
         then Parameter[9 + Stage * 7] := 0
         else Parameter[9 + Stage * 7] := 4;
+       FAnimateFrame := -$20;
+       Exit;
+      end else
+     if PtInRect(GRectStage[FStage, 8], Pt) and (ssCtrl in Shift) then
+      begin
+       FBackground[0].DrawMode := dmOpaque;
+       FBackground[0].DrawTo(FBackground[1]);
+       if bsBypass in BandStates[Stage]
+        then Parameter[9 + Stage * 7] := 0
+        else Parameter[9 + Stage * 7] := 1;
        FAnimateFrame := -$20;
        Exit;
       end;
@@ -693,6 +709,7 @@ begin
      DrawMakeUpGain(Stage);
      DrawState(Stage);
      DrawGraph(Stage);
+     DrawBypass(Stage);
     end;
   finally
    EndUpdate;
@@ -813,26 +830,27 @@ var
   t : string;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   with ParameterProperties[5 + Stage * 7]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[5 + Stage * 7]));
-   if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
-   r := GRectStage[Stage, 0];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
-   r.Bottom := r.Top;
-   r.Top    := r.Bottom - 19;
-   r.Left   := (3 * r.Left + r.Right) div 4;
-   r.Right  := r.Left + 32;
-   r.Left   := r.Left - 32;
-   Draw(r, r, GBG);
-   t := ParameterDisplay[5 + Stage * 7] + ' ' + ParameterLabel[5 + Stage * 7];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    with ParameterProperties[5 + Stage * 7]
+     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[5 + Stage * 7]));
+    if i < 0 then i := 0
+     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    r := GRectStage[Stage, 0];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
+    r.Bottom := r.Top;
+    r.Top    := r.Bottom - 19;
+    r.Left   := (3 * r.Left + r.Right) div 4;
+    r.Right  := r.Left + 32;
+    r.Left   := r.Left - 32;
+    Draw(r, r, GBG);
+    t := ParameterDisplay[5 + Stage * 7] + ' ' + ParameterLabel[5 + Stage * 7];
+    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
+   finally
+    EndUpdate;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawRatio(const Stage: Integer);
@@ -842,26 +860,27 @@ var
   t : string;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   with ParameterProperties[6 + Stage * 7]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[6 + Stage * 7]));
-   if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
-   r := GRectStage[Stage, 1];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
-   r.Bottom := r.Top;
-   r.Top    := r.Bottom - 19;
-   r.Left   := (3 * r.Left + r.Right) div 4;
-   r.Right  := r.Left + 32;
-   r.Left   := r.Left - 32;
-   Draw(r, r, GBG);
-   t := ParameterDisplay[6 + Stage * 7] + ' : 1';
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    with ParameterProperties[6 + Stage * 7]
+     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[6 + Stage * 7]));
+    if i < 0 then i := 0
+     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    r := GRectStage[Stage, 1];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
+    r.Bottom := r.Top;
+    r.Top    := r.Bottom - 19;
+    r.Left   := (3 * r.Left + r.Right) div 4;
+    r.Right  := r.Left + 32;
+    r.Left   := r.Left - 32;
+    Draw(r, r, GBG);
+    t := ParameterDisplay[6 + Stage * 7] + ' : 1';
+    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
+   finally
+    EndUpdate;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawAttack(const Stage: Integer);
@@ -871,26 +890,27 @@ var
   t : string;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   with ParameterProperties[3 + Stage * 7]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[3 + Stage * 7]));
-   if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
-   r := GRectStage[Stage, 2];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
-   r.Bottom := r.Top;
-   r.Top    := r.Bottom - 19;
-   r.Left   := (3 * r.Left + r.Right) div 4;
-   r.Right  := r.Left + 32;
-   r.Left   := r.Left - 32;
-   Draw(r, r, GBG);
-   t := ParameterDisplay[3 + Stage * 7] + ' ' + ParameterLabel[3 + Stage * 7];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    with ParameterProperties[3 + Stage * 7]
+     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[3 + Stage * 7]));
+    if i < 0 then i := 0
+     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    r := GRectStage[Stage, 2];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
+    r.Bottom := r.Top;
+    r.Top    := r.Bottom - 19;
+    r.Left   := (3 * r.Left + r.Right) div 4;
+    r.Right  := r.Left + 32;
+    r.Left   := r.Left - 32;
+    Draw(r, r, GBG);
+    t := ParameterDisplay[3 + Stage * 7] + ' ' + ParameterLabel[3 + Stage * 7];
+    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
+   finally
+    EndUpdate;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawRelease(const Stage: Integer);
@@ -900,26 +920,27 @@ var
   t : string;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   with ParameterProperties[4 + Stage * 7]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[4 + Stage * 7]));
-   if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
-   r := GRectStage[Stage, 3];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
-   r.Bottom := r.Top;
-   r.Top    := r.Bottom - 19;
-   r.Left   := (3 * r.Left + r.Right) div 4;
-   r.Right  := r.Left + 32;
-   r.Left   := r.Left - 32;
-   Draw(r, r, GBG);
-   t := ParameterDisplay[4 + Stage * 7] + ' ' + ParameterLabel[4 + Stage * 7];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    with ParameterProperties[4 + Stage * 7]
+     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[4 + Stage * 7]));
+    if i < 0 then i := 0
+     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    r := GRectStage[Stage, 3];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
+    r.Bottom := r.Top;
+    r.Top    := r.Bottom - 19;
+    r.Left   := (3 * r.Left + r.Right) div 4;
+    r.Right  := r.Left + 32;
+    r.Left   := r.Left - 32;
+    Draw(r, r, GBG);
+    t := ParameterDisplay[4 + Stage * 7] + ' ' + ParameterLabel[4 + Stage * 7];
+    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
+   finally
+    EndUpdate;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawKnee(const Stage: Integer);
@@ -929,26 +950,27 @@ var
   t : string;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   with ParameterProperties[7 + Stage * 7]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[7 + Stage * 7]));
-   if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
-   r := GRectStage[Stage, 4];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
-   r.Bottom := r.Top;
-   r.Top    := r.Bottom - 19;
-   r.Left   := (3 * r.Left + r.Right) div 4;
-   r.Right  := r.Left + 32;
-   r.Left   := r.Left - 32;
-   Draw(r, r, GBG);
-   t := ParameterDisplay[7 + Stage * 7] + ' ' + ParameterLabel[7 + Stage * 7];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    with ParameterProperties[7 + Stage * 7]
+     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[7 + Stage * 7]));
+    if i < 0 then i := 0
+     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    r := GRectStage[Stage, 4];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
+    r.Bottom := r.Top;
+    r.Top    := r.Bottom - 19;
+    r.Left   := (3 * r.Left + r.Right) div 4;
+    r.Right  := r.Left + 32;
+    r.Left   := r.Left - 32;
+    Draw(r, r, GBG);
+    t := ParameterDisplay[7 + Stage * 7] + ' ' + ParameterLabel[7 + Stage * 7];
+    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
+   finally
+    EndUpdate;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawMakeUpGain(const Stage: Integer);
@@ -958,26 +980,27 @@ var
   t : string;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   with ParameterProperties[8 + Stage * 7]
-    do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[8 + Stage * 7]));
-   if i < 0 then i := 0
-    else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
-   r := GRectStage[Stage, 5];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
-   r.Bottom := r.Top;
-   r.Top    := r.Bottom - 19;
-   r.Left   := (3 * r.Left + r.Right) div 4;
-   r.Right  := r.Left + 32;
-   r.Left   := r.Left - 32;
-   Draw(r, r, GBG);
-   t := ParameterDisplay[8 + Stage * 7] + ' ' + ParameterLabel[8 + Stage * 7];
-   RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    with ParameterProperties[8 + Stage * 7]
+     do i := Round((GKnob.NumGlyphs - 1) * Parameter2VSTParameter(Parameter[8 + Stage * 7]));
+    if i < 0 then i := 0
+     else if i >= GKnob.NumGlyphs then i := GKnob.NumGlyphs - 1;
+    r := GRectStage[Stage, 5];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GKnob.RealHeight, GKnob.RealWidth, (i + 1) * GKnob.RealHeight), GKnob);
+    r.Bottom := r.Top;
+    r.Top    := r.Bottom - 19;
+    r.Left   := (3 * r.Left + r.Right) div 4;
+    r.Right  := r.Left + 32;
+    r.Left   := r.Left - 32;
+    Draw(r, r, GBG);
+    t := ParameterDisplay[8 + Stage * 7] + ' ' + ParameterLabel[8 + Stage * 7];
+    RenderText((r.Left + r.Right - TextWidth(t)) div 2, R.Top, t, 0, $FF4A4645);
+   finally
+    EndUpdate;
+   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawGraph(const Stage: Integer);
@@ -990,35 +1013,36 @@ const
   COneSixty : Single = 1 / 60;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  with LightweightCompressor[Stage] do
-   begin
-    BeginUpdate;
-    try
-     r := GRectStage[Stage, 6];
-     Draw(r, r, GBG);
+  if not (bsBypass in BandStates[Stage]) then
+   with LightweightCompressor[Stage] do
+    begin
+     BeginUpdate;
+     try
+      r := GRectStage[Stage, 6];
+      Draw(r, r, GBG);
 
-     s := 60 / (r.Bottom - r.Top);
-     PenColor := $DF6289A8;
+      s := 60 / (r.Bottom - r.Top);
+      PenColor := $DF6289A8;
 
-     i := r.Left;
+      i := r.Left;
 
-     repeat
-      n := CharacteristicCurve_dB(-54 + (i - r.Left) * s);
-      n := r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty);
-      inc(i)
-     until n < r.Bottom;
-     MoveToF(i, Limit(n - 1, r.Top, r.Bottom - 1));
-     while i < r.Right do
-      begin
+      repeat
        n := CharacteristicCurve_dB(-54 + (i - r.Left) * s);
-       if n > 6 then PenColor := SetAlpha(PenColor, round($DF - (n - 6) * 2));
-       LineToFS(i, Limit(r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty), r.Top, r.Bottom - 1));
-       inc(i);
-      end;
-    finally
-     EndUpdate;
+       n := r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty);
+       inc(i)
+      until n < r.Bottom;
+      MoveToF(i, Limit(n - 1, r.Top, r.Bottom - 1));
+      while i < r.Right do
+       begin
+        n := CharacteristicCurve_dB(-54 + (i - r.Left) * s);
+        if n > 6 then PenColor := SetAlpha(PenColor, round($DF - (n - 6) * 2));
+        LineToFS(i, Limit(r.Bottom - (r.Bottom - r.Top) * ((n + 55) * COneSixty), r.Top, r.Bottom - 1));
+        inc(i);
+       end;
+     finally
+      EndUpdate;
+     end;
     end;
-   end;
 end;
 
 procedure TFmSmoothMultibandCompressor.DrawState(const Stage: Integer);
@@ -1027,17 +1051,57 @@ var
   r : TRect;
 begin
  with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
-  try
-   BeginUpdate;
-   i := Integer(bsSmooth in BandStates[Stage]);
-   if i < 0 then i := 0
-    else if i >= GAutoGain.NumGlyphs then i := GAutoGain.NumGlyphs - 1;
-   r := GRectStage[Stage, 7];
-   Draw(r, r, GBG);
-   Draw(r, Rect(0, i * GAutoGain.RealHeight, GAutoGain.RealWidth, (i + 1) * GAutoGain.RealHeight), GAutoGain);
-  finally
-   EndUpdate;
-  end;
+  if not (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+    i := Integer(bsSmooth in BandStates[Stage]);
+    if i < 0 then i := 0
+     else if i >= GAutoGain.NumGlyphs then i := GAutoGain.NumGlyphs - 1;
+    r := GRectStage[Stage, 7];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GAutoGain.RealHeight, GAutoGain.RealWidth, (i + 1) * GAutoGain.RealHeight), GAutoGain);
+   finally
+    EndUpdate;
+   end;
+end;
+
+procedure TFmSmoothMultibandCompressor.DrawBypass(const Stage: Integer);
+var
+  i : Integer;
+  r : TRect;
+begin
+ with FBackground[0], TSmoothMultibandCompressorDataModule(Owner) do
+  if (bsBypass in BandStates[Stage]) then
+   try
+    BeginUpdate;
+
+    r := GRectStage[Stage, 8];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GAutoGain.RealHeight, GAutoGain.RealWidth, (i + 1) * GAutoGain.RealHeight), GAutoGain);
+
+    FillRectTS(GRectStage[Stage, 8], clTrBlack32);
+   finally
+    EndUpdate;
+   end
+  else
+   try
+    BeginUpdate;
+
+    r := GRectStage[Stage, 8];
+    Draw(r, r, GBG);
+    Draw(r, Rect(0, i * GAutoGain.RealHeight, GAutoGain.RealWidth, (i + 1) * GAutoGain.RealHeight), GAutoGain);
+
+    DrawThreshold(Stage);
+    DrawRatio(Stage);
+    DrawAttack(Stage);
+    DrawRelease(Stage);
+    DrawKnee(Stage);
+    DrawMakeUpGain(Stage);
+    DrawState(Stage);
+    DrawGraph(Stage);
+   finally
+    EndUpdate;
+   end
 end;
 
 ////////////
@@ -1067,6 +1131,7 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateLowState;
 begin
  DrawState(0);
+ DrawBypass(0);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateLowThreshold;
@@ -1111,6 +1176,7 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateMidState;
 begin
  DrawState(1);
+ DrawBypass(1);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateMidThreshold;
@@ -1160,6 +1226,7 @@ end;
 procedure TFmSmoothMultibandCompressor.UpdateHighState;
 begin
  DrawState(2);
+ DrawBypass(2);
 end;
 
 procedure TFmSmoothMultibandCompressor.UpdateHighThreshold;

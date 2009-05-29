@@ -5,12 +5,12 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspFilterLinkwitzRiley,
-  DAV_DspFilterLinearPhaseCrossover;
+  DAV_DspButterworthFilter, DAV_DspFilterLinearPhaseCrossover;
 
 type
   TBandState = (bsBypass, bsMute, bsSmooth, bsClipped);
   TBandStates = set of TBandState;
-  
+
   TSmoothMultibandCompressorDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -45,6 +45,7 @@ type
     FFeedBackCompressor    : array [0..2] of TLightweightSoftKneeFeedbackLikeCompressor;
     FActualCompressor      : array [0..2] of TCustomCompressor;
     FLinkwitzRiley         : array [0..1] of TLinkwitzRiley;
+    FCrossoverFilter       : array [0..1] of TButterworthSplitBandFilter;
     FLinearPhaseCrossover  : array [0..1] of TLinearPhaseCrossover;
     FStates                : array [0..2] of TBandStates;
     FMidiLearnParameter    : Integer;
@@ -106,9 +107,16 @@ begin
 
  for Channel := 0 to Length(FLinkwitzRiley) - 1 do
   begin
-   FLinkwitzRiley[Channel] := TLinkwitzRiley.Create;
+   FLinkwitzRiley[Channel] := TLinkwitzRiley.Create(1);
    FLinkwitzRiley[Channel].SampleRate := SampleRate;
    FLinkwitzRiley[Channel].Order := 1;
+  end;
+
+ for Channel := 0 to Length(FCrossoverFilter) - 1 do
+  begin
+   FCrossoverFilter[Channel] := TButterworthSplitBandFilter.Create(3);
+   FCrossoverFilter[Channel].SampleRate := SampleRate;
+   FCrossoverFilter[Channel].Order := 3;
   end;
 
  Parameter[ 0] := 300;
@@ -300,8 +308,11 @@ procedure TSmoothMultibandCompressorDataModule.ParameterLowFreqChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLinearPhaseCrossover) - 1
-  do FLinkwitzRiley[Channel].Frequency := Value;
+ for Channel := 0 to Length(FLinearPhaseCrossover) - 1 do
+  begin
+   FLinkwitzRiley[Channel].Frequency := Value;
+   FCrossoverFilter[Channel].Frequency := Value;
+  end;
  if EditorForm is TFmSmoothMultibandCompressor then
   with TFmSmoothMultibandCompressor(EditorForm) do UpdateLowFrequency;
 end;
@@ -327,7 +338,7 @@ end;
 
 procedure TSmoothMultibandCompressorDataModule.ChooseProcess;
 begin
- case round(Parameter[3]) of
+ case round(Parameter[2]) of
   0 : OnProcess := VSTModuleProcessMono;
   1 : OnProcess := VSTModuleProcessMonoSoftClip;
  end;
@@ -487,10 +498,12 @@ begin
 
  if EditorForm is TFmSmoothMultibandCompressor then
   with TFmSmoothMultibandCompressor(EditorForm) do
-   case Band of
-    0: UpdateLowState;
-    1: UpdateMidState;
-    2: UpdateHighState;
+   begin
+    case Band of
+     0: UpdateLowState;
+     1: UpdateMidState;
+     2: UpdateHighState;
+    end;
    end;
 end;
 
@@ -512,6 +525,10 @@ begin
    // split low
    FLinkwitzRiley[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
    FLinkwitzRiley[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
+(*
+   FCrossoverFilter[0].ProcessSample(FD[0, 1] - CDenorm32, FD[0, 0], FD[0, 1]);
+   FCrossoverFilter[1].ProcessSample(FD[1, 1] - CDenorm32, FD[1, 0], FD[1, 1]);
+*)
 
    // compress & copy gain reduction
    with FActualCompressor[0] do
@@ -585,6 +602,9 @@ begin
 
  for Channel := 0 to Length(FLinkwitzRiley) - 1
   do FLinkwitzRiley[Channel].SampleRate := SampleRate;
+
+ for Channel := 0 to Length(FCrossoverFilter) - 1
+  do FCrossoverFilter[Channel].SampleRate := SampleRate;
 end;
 
 end.
