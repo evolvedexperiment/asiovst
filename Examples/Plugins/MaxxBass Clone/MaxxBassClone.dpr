@@ -9,8 +9,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   MaxxBassCloneDM in 'MaxxBassCloneDM.pas' {MaxxBassCloneModule: TVSTModule},
-  MaxxBassCloneGUI in 'MaxxBassCloneGUI.pas' {FmMaxxBassClone},
-  DAV_DspPsychoacousticBassEnhancer in '..\..\..\Source\DSP\DAV_DspPsychoacousticBassEnhancer.pas';
+  MaxxBassCloneGUI in 'MaxxBassCloneGUI.pas' {FmMaxxBassClone};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

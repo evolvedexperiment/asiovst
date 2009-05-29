@@ -181,11 +181,53 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
-      ShortLabel = 'Use Qui'
+      ShortLabel = 'Quick'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterUseQuickSeekChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Sequence'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'Sequenc'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterSequenceChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Seek Window'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'SeekWin'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterSeekWindowChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Overlap'
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'Overlap'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterOverlapChange
     end>
   ParameterCategories = <
     item

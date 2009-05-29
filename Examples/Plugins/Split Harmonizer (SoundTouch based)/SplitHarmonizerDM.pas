@@ -7,10 +7,12 @@ uses
   DAV_VSTModule, DAV_SoundTouchDLLResource, DAV_DspDelayLines; //DAV_SoundTouch;
 
 const
-  CInputDelay = 5248;
+  CInputDelay = 1335;
 
 type
   TSplitHarmonizerModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -27,10 +29,14 @@ type
     procedure ParameterMixRightChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSemiTonesAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSemiTonesBChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
     procedure ParameterUseAntiAliasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterUseQuickSeekChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure ParameterOverlapChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterSeekWindowChange(Sender: TObject; const Index: Integer;
+      var Value: Single);
+    procedure ParameterSequenceChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FSoundTouch      : array [0..1] of TSoundTouch;
     FDelayLine       : array [0..1, 0..1] of TDelayLineSamples32;
@@ -65,23 +71,27 @@ begin
   begin
    FSoundTouch[Channel] := TSoundTouch.Create;
    FDelayLine[Channel, 0] := TDelayLineSamples32.Create;
-   FDelayLine[Channel, 0].BufferSize := CInputDelay;
+   FDelayLine[Channel, 0].BufferSize := 1335;
    FDelayLine[Channel, 1] := TDelayLineSamples32.Create;
+   FDelayLine[Channel, 1].BufferSize := 1335;
   end;
- Parameter[0] := 0;
- Parameter[1] := -20;
- Parameter[2] := 10;
- Parameter[3] := 0;
- Parameter[4] := +20;
- Parameter[5] := 10;
- Parameter[6] := 0;
- Parameter[7] := 1;
- Parameter[8] := 0;
+ Parameter[ 0] := 0;
+ Parameter[ 1] := -20;
+ Parameter[ 2] := 10;
+ Parameter[ 3] := 0;
+ Parameter[ 4] := +20;
+ Parameter[ 5] := 10;
+ Parameter[ 6] := 0;
+ Parameter[ 7] := 1;
+ Parameter[ 8] := 0;
+ Parameter[ 9] := 10;
+ Parameter[10] := 10;
+ Parameter[11] := 5;
 
  Programs[0].SetParameters(FParameter);
- with Programs[1] do SetParameters([0, -9, 13.5, 52.5,   9, 14.1, 50.0, 1, 0]);
- with Programs[2] do SetParameters([1, -6, 23.1, 52.5,   6, 21.6, 50.0, 1, 0]);
- with Programs[3] do SetParameters([0, 16, 48.2, 13.5, -13, 79.1, 63.5, 1, 0]);
+ with Programs[1] do SetParameters([0, -9, 13.5, 52.5,   9, 14.1, 50.0, 1, 0, 10, 10, 5]);
+ with Programs[2] do SetParameters([1, -6, 23.1, 52.5,   6, 21.6, 50.0, 1, 0, 10, 10, 5]);
+ with Programs[3] do SetParameters([0, 16, 48.2, 13.5, -13, 79.1, 63.5, 1, 0, 10, 10, 5]);
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleClose(Sender: TObject);
@@ -143,13 +153,59 @@ end;
 
 procedure TSplitHarmonizerModule.ParameterUseQuickSeekChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FSoundTouch[0])
-   then FSoundTouch[0].UseQuickSeek := Value > 0.5;
-  if assigned(FSoundTouch[1])
-   then FSoundTouch[1].UseQuickSeek := Value > 0.5;
+  for Channel := 0 to 1 do
+   if assigned(FSoundTouch[Channel])
+    then FSoundTouch[Channel].UseQuickSeek := Value > 0.5;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TSplitHarmonizerModule.ParameterSequenceChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if assigned(FSoundTouch[Channel])
+    then FSoundTouch[Channel].SequenceMs := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TSplitHarmonizerModule.ParameterSeekWindowChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if assigned(FSoundTouch[Channel])
+    then FSoundTouch[Channel].SeekWindow := round(Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TSplitHarmonizerModule.ParameterOverlapChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   if assigned(FSoundTouch[Channel])
+    then FSoundTouch[Channel].OverlapMs := round(Value);
  finally
   FCriticalSection.Leave;
  end;

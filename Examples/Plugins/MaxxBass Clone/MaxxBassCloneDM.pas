@@ -29,7 +29,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FMaxxBass        : array [0..1] of TDownsampledMaxxBass;
+    FMaxxBass        : array [0..1] of TCustomMaxxBass;
     FCriticalSection : TCriticalSection;
     procedure CalculateGains;
   public
@@ -49,7 +49,7 @@ begin
  // create & setup upward compressor
  for Channel := 0 to Length(FMaxxBass) - 1 do
   begin
-   FMaxxBass[Channel] := TDownsampledMaxxBass.Create;
+   FMaxxBass[Channel] := TCustomMaxxBass.Create;
    FMaxxBass[Channel].SampleRate := SampleRate;
   end;
 

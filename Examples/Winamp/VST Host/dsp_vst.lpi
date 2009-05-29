@@ -59,7 +59,7 @@
         <SyntaxHighlighter Value="LFM"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\Source\DVSTHost.pas"/>
+        <Filename Value="..\..\..\Source\DAV_VSTHost.pas"/>
         <UnitName Value="DVSTHost"/>
         <CursorPos X="21" Y="16"/>
         <TopLine Value="8"/>

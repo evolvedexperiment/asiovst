@@ -1,13 +1,12 @@
-library dsp_vst;
-
-{$MODE Delphi}
+library dsp_vst_ffdshow;
 
 uses
-  Interfaces,
+  FastMM4,
+  FastMove,
+  FastCode,
   WinAmpDspVst in 'WinAmpDspVst.pas',
   WinAmpDspVstGui in 'WinAmpDspVstGui.pas' {FmWinAmpVST};
 
 exports winampDSPGetHeader2 name 'winampDSPGetHeader2';
-exports winampDSPGetHeader2;
 
 end.

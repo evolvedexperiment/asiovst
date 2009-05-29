@@ -40,11 +40,7 @@ type
     procedure SetDecay(const Value: Single);
     procedure SetResponse(const Value: Single);
   protected
-    FCrossover   : TButterworthSplitBandFilter;
-(*
-    FCrossoverLP    : TButterworthLowPassFilter;
-    FCrossoverHP    : TButterworthHighPassFilter;
-*)
+    FCrossover      : TButterworthSplitBandFilter;
     FDrive          : Single;
     FHighpass       : TButterworthHighpassFilter;
     FHighpassSelect : THighpassSelect;
@@ -387,10 +383,10 @@ begin
 
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Maxx := //0.5 * FUpwardComp.ProcessSample(
-         Limit(0.5 * FDrive* FLimiter.ProcessSample(4 *
+ Maxx := 0.5 * FUpwardComp.ProcessSample(
+         Limit(0.5 * FLimiter.ProcessSample(4 *
          FHighpass.ProcessSample(
-         FDecay + Low * (1 + Low * -2 * FDecay))));
+         FDecay + Low * (1 + Low * -2 * FDecay)))));
 
  result := FGains[2] * Low + FGains[3] * Maxx + FGains[1] * High;
 end;
