@@ -98,6 +98,7 @@ type
     procedure ConvertInterleaved16bitToFloatOversampled(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
     procedure ConvertInterleaved24bitToFloatOversampled(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
     procedure ConvertInterleaved32bitToFloatOversampled(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
+    procedure UpdateVSTPlugin;
   protected
     {$IFDEF UseCriticalSection}
     FCriticalSection  : TCriticalSection;
@@ -165,7 +166,7 @@ exports winampDSPGetHeader2;
 
 function winampDSPGetHeader2 : PWinAmpDSPHeader; cdecl;
 begin
-  Result := @WADSPHeader;
+ Result := @WADSPHeader;
 end;
 
 function GetModule(const Which: Integer): PWinAmpDSPModule;
@@ -174,6 +175,29 @@ begin
    0 : result := @WADSPModule;
  else
   Result := nil;
+ end;
+end;
+
+function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
+begin
+ Result := True;
+ TStringList(lParam).Add(lpName);
+end;
+
+procedure ScanResources;
+var
+  ContainedVSTPlugins : TStringList;
+begin
+ ContainedVSTPlugins := TStringList.Create;
+ try
+  EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
+  if (ContainedVSTPlugins.Count > 0) and (ContainedVSTPlugins[0] <> 'DLL') then
+   begin
+    WADSPHeader.Description := PAnsiChar(ContainedVSTPlugins[0]);
+    WADSPModule.Description := PAnsiChar(ContainedVSTPlugins[0]);
+   end;
+ finally
+  FreeAndNil(ContainedVSTPlugins);
  end;
 end;
 
@@ -265,7 +289,7 @@ begin
     finally 
       RevertToSelf; 
     end; 
-  finally 
+  finally
     LocalFree(HLOCAL(SecurityDescriptor));
   end;
 end;
@@ -350,6 +374,9 @@ end;
 { TWinAmpObject }
 
 constructor TWinAmpObject.CreateNew(AOwner: TComponent; const AWinAmpDspModule: PWinampDSPModule);
+var
+  ContainedVSTPlugins : TStringList;
+  RS                  : TResourceStream;
 begin
  inherited CreateNew(AOwner);
  FWinAmpDspModule := AWinAmpDspModule;
@@ -404,27 +431,50 @@ begin
     do OnAudioMasterUpdateDisplay := AudioMasterUpdateDisplay;
   end;
 
- with TRegistry.Create do
-  try
-   if OpenKeyReadOnly(RegistryKey) then
-    begin
-     if ValueExists('Last Plugin') then
+ ContainedVSTPlugins := TStringList.Create;
+ try
+  EnumResourceNames(HInstance, 'DLL', @EnumNamesFunc, LongWord(ContainedVSTPlugins));
+
+  if ContainedVSTPlugins.Count > 0 then
+   begin
+    RS := TResourceStream.Create(HInstance, ContainedVSTPlugins[0], 'DLL');
+    try
+     VstHost[0].LoadFromStream(RS);
+     VstHost[0].Active := True;
+     UpdateVSTPlugin;
+     if FileExists(FxpName)
+      then VstHost[0].LoadPreset(FxpName);
+    finally
+     FreeAndNil(RS);
+    end;
+   end
+  else
+   with TRegistry.Create do
+    try
+     if OpenKeyReadOnly(RegistryKey) then
       begin
-       LoadVSTDLL(ReadString('Last Plugin'));
-       if FileExists(FxpName) then
-        try
-         VstHost[0].LoadPreset(FxpName);
-        finally
-         if not ValueExists('Dispose Preset') or ReadBool('Dispose Preset') then
-          if CheckAccessToFile(GENERIC_WRITE, FFxpName)
-           then DeleteFile(FxpName);
+       if ValueExists('Last Plugin') then
+        begin
+         LoadVSTDLL(ReadString('Last Plugin'));
+         if FileExists(FxpName) then
+          try
+           VstHost[0].LoadPreset(FxpName);
+          finally
+           if not ValueExists('Dispose Preset') or ReadBool('Dispose Preset') then
+            if CheckAccessToFile(GENERIC_WRITE, FFxpName)
+             then DeleteFile(FxpName);
+          end;
         end;
       end;
+    finally
+     CloseKey;
+     Free;
     end;
-  finally
-   CloseKey;
-   Free;
-  end;
+
+ finally
+  FreeAndNil(ContainedVSTPlugins);
+ end;
+
 end;
 
 destructor TWinAmpObject.Destroy;
@@ -972,8 +1022,6 @@ begin
 end;
 
 procedure TWinAmpObject.LoadVSTDLL(const VSTDLL: TFileName);
-var
-  i : Integer;
 begin
  {$IFDEF UseSimpleSemaphore}
  while FSimpleSemaphore > 0 do;
@@ -1000,42 +1048,7 @@ begin
    //   FRealDelay := 0;
      Active := True;
 
-     // allocate and clear VST input buffer
-     if FVstHost[0].numInputs > Length(FInputBuffer) then
-      begin
-       SetLength(FInputBuffer, FVstHost[0].numInputs);
-       SetLength(FUpsampler, FVstHost[0].numInputs);
-       for i := 0 to Length(FInputBuffer) - 1 do
-        begin
-         ReallocMem(FInputBuffer[i], FSampleFrames * SizeOf(Single));
-         FillChar(FInputBuffer[i]^[0], FSampleFrames * SizeOf(Single), 0);
-         FUpsampler[i] := TPolyphaseUpsampler32.Create;
-         FUpsampler[i].SetCoefficients(5, 0.1);
-        end;
-      end;
-
-     // allocate and clear VST output buffer
-     if FVstHost[0].numOutputs > Length(FOutputBuffer) then
-      begin
-       SetLength(FOutputBuffer, FVstHost[0].numOutputs);
-       SetLength(FDownsampler, FVstHost[0].numInputs);
-       for i := 0 to Length(FOutputBuffer) - 1 do
-        begin
-         ReallocMem(FOutputBuffer[i], FSampleFrames * SizeOf(Single));
-         FillChar(FOutputBuffer[i]^[0], FSampleFrames * SizeOf(Single), 0);
-         FDownsampler[i] := TPolyphaseDownsampler32.Create;
-         FDownsampler[i].SetCoefficients(5, 0.1);
-        end;
-      end;
-
-     if assigned(FEditorForm) then
-      try
-       ShowEdit(FEditorForm.PnGUI);
-       Idle;
-       EditIdle;
-      except
-       raise
-      end;
+     UpdateVSTPlugin;
     end;
   {$IFDEF UseCriticalSection}
   finally
@@ -1050,6 +1063,48 @@ begin
 
  if assigned(FEditorForm)
   then FEditorForm.UpdatePluginInformation;
+end;
+
+procedure TWinAmpObject.UpdateVSTPlugin;
+var
+  i : Integer;
+begin
+ // allocate and clear VST input buffer
+ if FVstHost[0].numInputs > Length(FInputBuffer) then
+  begin
+   SetLength(FInputBuffer, FVstHost[0].numInputs);
+   SetLength(FUpsampler, FVstHost[0].numInputs);
+   for i := 0 to Length(FInputBuffer) - 1 do
+    begin
+     ReallocMem(FInputBuffer[i], FSampleFrames * SizeOf(Single));
+     FillChar(FInputBuffer[i]^[0], FSampleFrames * SizeOf(Single), 0);
+     FUpsampler[i] := TPolyphaseUpsampler32.Create;
+     FUpsampler[i].SetCoefficients(5, 0.1);
+    end;
+  end;
+
+ // allocate and clear VST output buffer
+ if FVstHost[0].numOutputs > Length(FOutputBuffer) then
+  begin
+   SetLength(FOutputBuffer, FVstHost[0].numOutputs);
+   SetLength(FDownsampler, FVstHost[0].numInputs);
+   for i := 0 to Length(FOutputBuffer) - 1 do
+    begin
+     ReallocMem(FOutputBuffer[i], FSampleFrames * SizeOf(Single));
+     FillChar(FOutputBuffer[i]^[0], FSampleFrames * SizeOf(Single), 0);
+     FDownsampler[i] := TPolyphaseDownsampler32.Create;
+     FDownsampler[i].SetCoefficients(5, 0.1);
+    end;
+  end;
+
+ if assigned(FEditorForm) then
+  try
+   FVstHost[0].ShowEdit(FEditorForm.PnGUI);
+   FVstHost[0].Idle;
+   FVstHost[0].EditIdle;
+  except
+   raise
+  end;
 end;
 
 procedure TWinAmpObject.SetEnhanced(const Value: Boolean);
@@ -1071,5 +1126,8 @@ begin
     end else FEnhanceFak := 1;
   end;
 end;
+
+initialization
+ ScanResources; 
 
 end.

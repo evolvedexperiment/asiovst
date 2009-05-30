@@ -321,7 +321,8 @@ end;
 
 procedure TFmWinAmpVST.EdVSTNameClick(Sender: TObject);
 begin
- PUVSTPlugin.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+ if TWinAmpObject(Owner).VstHost[0].DLLFileName <> ''
+  then PUVSTPlugin.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
 end;
 
 procedure TFmWinAmpVST.CBPresetChange(Sender: TObject);
@@ -461,7 +462,24 @@ begin
       CBPreset.Font.Color  := PanelControl.Font.Color;
       CBEnhance.Font.Color := PanelControl.Font.Color;
      end
-    else SetScheme;
+    else
+     begin
+      if VstHost[0].DLLFileName <> ''
+       then SetScheme
+       else
+        begin
+         // set font color
+         if (PanelControl.Color and $FF) +
+            (PanelControl.Color shr 8 and $FF) +
+            (PanelControl.Color shr 16 and $FF) < 384
+          then LbPlugin.Font.Color := clWhite
+          else LbPlugin.Font.Color := clBlack;
+         LbProgram.Font.Color  := LbPlugin.Font.Color;
+         CBEnhance.Font.Color  := LbPlugin.Font.Color;
+         EdVSTName.Font.Color  := LbPlugin.Font.Color;
+         CBPreset.Font.Color   := LbPlugin.Font.Color;
+        end;
+     end;
   end;
 end;
 

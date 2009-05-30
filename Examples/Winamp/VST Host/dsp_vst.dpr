@@ -1,5 +1,7 @@
 library dsp_vst;
 
+{.$R 'EmbeddedVSTPlugin.res' 'EmbeddedVSTPlugin.rc'}
+
 uses
   FastMM4,
   madExcept,
