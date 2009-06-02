@@ -15,11 +15,15 @@ SetCompressor lzma
   ;Name and file
   Name "Oversampler"
   OutFile "OversamplerInstall.exe"
-  BrandingText "Oversampler"
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\Oversampler"
+  InstallDir "$PROGRAMFILES\VSTPlugIns"
   
+  ;Get installation folder from registry if available
+  InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
+
+  BrandingText "Delphi ASIO && VST Project"
+
   ; Turn on the xp style of drawing
   XPStyle ON
 

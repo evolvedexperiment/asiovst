@@ -2,7 +2,7 @@ object FmKnobGrabber: TFmKnobGrabber
   Left = 286
   Top = 77
   Caption = 'VST Plugin Knob Grabber'
-  ClientHeight = 59
+  ClientHeight = 78
   ClientWidth = 142
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object FmKnobGrabber: TFmKnobGrabber
     Left = 0
     Top = 0
     Width = 142
-    Height = 59
+    Height = 78
     Align = alClient
     BevelOuter = bvNone
     Caption = '(no plugin loaded)'
@@ -45,6 +45,22 @@ object FmKnobGrabber: TFmKnobGrabber
       object MIExit: TMenuItem
         Caption = 'E&xit'
         OnClick = MIExitClick
+      end
+    end
+    object MIStitch: TMenuItem
+      Caption = 'Stitch'
+      object MIHorizontalStitch: TMenuItem
+        Caption = '&horizontal'
+        RadioItem = True
+      end
+      object MIVerticalStitch: TMenuItem
+        Caption = '&vertical'
+        RadioItem = True
+      end
+      object MIAutoStitch: TMenuItem
+        Caption = '&auto'
+        Checked = True
+        RadioItem = True
       end
     end
   end

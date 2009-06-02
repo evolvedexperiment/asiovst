@@ -17,12 +17,12 @@ SetCompressor lzma
   OutFile "Advanced_Clipper_Install.exe"
 
   ;Default installation folder
-  InstallDir "$VSTPlugin\VSTPlugIns"
+  InstallDir "$PROGRAMFILES\VSTPlugIns"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Delphi ASIO && VST Packages"
+  BrandingText "Delphi ASIO && VST Project"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -94,7 +94,6 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
 Section "Clipper VST-Plugin" SecVSTPlugin

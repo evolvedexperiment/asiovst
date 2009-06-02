@@ -33,6 +33,7 @@ object TunerDataModule: TTunerDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterGuitarStringChange
       OnCustomParameterDisplay = ParameterNoteDisplay
     end>
   ParameterCategories = <>

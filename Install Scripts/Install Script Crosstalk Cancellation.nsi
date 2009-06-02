@@ -17,12 +17,12 @@ SetCompressor lzma
   OutFile "Crosstalk_Cancellation_Install.exe"
 
   ;Default installation folder
-  InstallDir "$VSTPlugin\VSTPlugIns"
+  InstallDir "$PROGRAMFILES\VSTPlugIns"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Delphi ASIO & VST Packages"
+  BrandingText "Delphi ASIO && VST Project"
 
   ; Turn on the xp style of drawing
   XPStyle ON

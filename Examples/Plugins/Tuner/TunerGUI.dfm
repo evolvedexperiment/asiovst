@@ -23,6 +23,7 @@ object FmTuner: TFmTuner
     Top = 8
     Width = 266
     Height = 49
+    OnPaint = PBDisplayPaint
   end
   object LbLowE: TGuiLabel
     Left = 136
@@ -32,7 +33,7 @@ object FmTuner: TFmTuner
     AntiAlias = gaaLinear4x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 8355711
+    Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
@@ -60,7 +61,7 @@ object FmTuner: TFmTuner
     AntiAlias = gaaLinear3x
     Caption = 'D'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 8355711
+    Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
@@ -74,7 +75,7 @@ object FmTuner: TFmTuner
     AntiAlias = gaaLinear3x
     Caption = 'G'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 8355711
+    Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
@@ -88,7 +89,7 @@ object FmTuner: TFmTuner
     AntiAlias = gaaLinear3x
     Caption = 'H'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 8355711
+    Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
@@ -102,7 +103,7 @@ object FmTuner: TFmTuner
     AntiAlias = gaaLinear3x
     Caption = 'E'
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 8355711
+    Font.Color = 5197647
     Font.Height = -24
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
@@ -120,5 +121,11 @@ object FmTuner: TFmTuner
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+  end
+  object Timer: TTimer
+    Interval = 20
+    OnTimer = TimerTimer
+    Left = 16
+    Top = 16
   end
 end

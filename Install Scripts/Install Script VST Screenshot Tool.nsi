@@ -19,7 +19,7 @@ SetCompressor lzma
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VST Plugin Screenshot Tool"
   
-  BrandingText "Delphi ASIO && VST Packages"
+  BrandingText "Delphi ASIO && VST Project"
 
   ; Turn on the xp style of drawing
   XPStyle ON

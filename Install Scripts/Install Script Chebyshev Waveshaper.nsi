@@ -22,10 +22,15 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Delphi ASIO & VST Packages"
+  BrandingText "Delphi ASIO && VST Project"
 
   ; Turn on the xp style of drawing
   XPStyle ON
+
+;--------------------------------
+;Variables
+
+  Var BugReportState
 
 ;--------------------------------
 ;Interface Settings

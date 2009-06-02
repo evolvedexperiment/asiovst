@@ -22,7 +22,7 @@ SetCompressor lzma
   ;Get installation folder from registry if available
   InstallDirRegKey HKLM "SOFTWARE\VST" "VSTPluginsPath"
 
-  BrandingText "Delphi ASIO & VST Packages"
+  BrandingText "Delphi ASIO && VST Project"
 
   ; Turn on the xp style of drawing
   XPStyle ON
@@ -89,14 +89,15 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
 Section "Barberpole Flanger VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\BarberpoleFlanger.dll" "..\Bin\Barberpole Flanger.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\BarberpoleFlanger.dll"
+  File "..\Bin\Barberpole Flanger.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -104,7 +105,7 @@ Section "Barberpole Flanger VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\BarberpoleFlanger.dll" 
+  StrCpy $0 "$INSTDIR\Barberpole Flanger.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -157,7 +158,7 @@ FunctionEnd
 
 Section "Uninstall"
 
-  Delete "$INSTDIR\BarberpoleFlanger.dll"
+  Delete "$INSTDIR\Barberpole Flanger.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

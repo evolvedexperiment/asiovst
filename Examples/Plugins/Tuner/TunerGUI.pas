@@ -2,7 +2,7 @@ unit TunerGUI;
 
 interface
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, Graphics, DAV_Common,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, Controls, ExtCtrls;
 
@@ -16,12 +16,17 @@ type
     LbH: TGuiLabel;
     LbE: TGuiLabel;
     LbGuitarTuning: TGuiLabel;
+    Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LbNoteClick(Sender: TObject);
+    procedure PBDisplayPaint(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackgrounBitmap   : TBitmap;
+    FNeedlePosition    : Single;
+    FOldNeedlePosition : Integer;
   end;
 
 implementation
@@ -88,6 +93,7 @@ begin
   FreeAndNil(PngBmp);
  end;
 *)
+// PBDisplay.ControlStyle := PBDisplay.ControlStyle + [csOpaque];
 end;
 
 procedure TFmTuner.FormPaint(Sender: TObject);
@@ -108,12 +114,52 @@ end;
 
 procedure TFmTuner.LbNoteClick(Sender: TObject);
 begin
- if Sender <> LbLowE then LbLowE.Font.Color := $003F3F3F else LbLowE.Font.Color := clBlack;
- if Sender <> LbA then LbA.Font.Color := $003F3F3F else LbA.Font.Color := clBlack;
- if Sender <> LbD then LbD.Font.Color := $003F3F3F else LbD.Font.Color := clBlack;
- if Sender <> LbG then LbG.Font.Color := $003F3F3F else LbG.Font.Color := clBlack;
- if Sender <> LbH then LbH.Font.Color := $003F3F3F else LbH.Font.Color := clBlack;
- if Sender <> LbE then LbE.Font.Color := $003F3F3F else LbE.Font.Color := clBlack;
+ if Sender <> LbLowE then LbLowE.Font.Color := $4F4F4F else LbLowE.Font.Color := clBlack;
+ if Sender <> LbA then LbA.Font.Color := $4F4F4F else LbA.Font.Color := clBlack;
+ if Sender <> LbD then LbD.Font.Color := $4F4F4F else LbD.Font.Color := clBlack;
+ if Sender <> LbG then LbG.Font.Color := $4F4F4F else LbG.Font.Color := clBlack;
+ if Sender <> LbH then LbH.Font.Color := $4F4F4F else LbH.Font.Color := clBlack;
+ if Sender <> LbE then LbE.Font.Color := $4F4F4F else LbE.Font.Color := clBlack;
+end;
+
+procedure TFmTuner.PBDisplayPaint(Sender: TObject);
+var
+  NeedlePosition : Integer;
+begin
+ FNeedlePosition := 0.9 * FNeedlePosition + 0.1 * ((2 * random) - 1);
+
+ NeedlePosition := round( (PBDisplay.Width div 2) * FNeedlePosition);
+ FOldNeedlePosition := NeedlePosition;
+
+ with PBDisplay.Canvas do
+  begin
+   Lock;
+
+   // main line
+   Pen.Color := clBlack;
+(*
+   Pen.Mode := pmNot;
+   MoveTo((PBDisplay.Width div 2) + FOldNeedlePosition, 0);
+   LineTo((PBDisplay.Width div 2) + FOldNeedlePosition, PBDisplay.Height);
+*)
+
+   MoveTo((PBDisplay.Width div 2) + NeedlePosition, 0);
+   LineTo((PBDisplay.Width div 2) + NeedlePosition, PBDisplay.Height);
+
+   // side lines
+   Pen.Color := $4F4F4F;
+   MoveTo((PBDisplay.Width div 2) + NeedlePosition - 1, 0);
+   LineTo((PBDisplay.Width div 2) + NeedlePosition - 1, PBDisplay.Height);
+   MoveTo((PBDisplay.Width div 2) + NeedlePosition + 1, 0);
+   LineTo((PBDisplay.Width div 2) + NeedlePosition + 1, PBDisplay.Height);
+
+   Unlock;
+  end;
+end;
+
+procedure TFmTuner.TimerTimer(Sender: TObject);
+begin
+ PBDisplay.Invalidate;
 end;
 
 end.
