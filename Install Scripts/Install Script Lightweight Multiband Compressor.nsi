@@ -28,6 +28,11 @@ SetCompressor lzma
   XPStyle ON
 
 ;--------------------------------
+;Variables
+
+  Var BugReportState
+
+;--------------------------------
 ;Interface Settings
 
   !define PRODUCT_NAME "Lightweight Multiband Compressor"
@@ -47,6 +52,27 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
+;--------------------------------
+;Reserve Files
+  
+  ;These files should be inserted before other files in the data block
+  ;Keep these lines before any File command
+  ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
+  
+    ReserveFile "madExcept Patch.dll"
+    ReserveFile "ioBugReport.ini"
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
+;Installer Functions
+
+Function .onInit
+
+;  !insertmacro MUI_LANGDLL_DISPLAY  
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
+
+FunctionEnd
 
 ;--------------------------------
 ;Pages

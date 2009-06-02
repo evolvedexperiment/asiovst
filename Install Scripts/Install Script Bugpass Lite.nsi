@@ -91,7 +91,7 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Bugpass Lite VST-Plugin" SecVstPlugins
+Section "Bugpass Lite VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\BugpassLite.dll" "..\Bin\Bugpass Lite.dll"'  
@@ -122,7 +122,9 @@ SkipDLLCall:
 
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -137,20 +139,17 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
+
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

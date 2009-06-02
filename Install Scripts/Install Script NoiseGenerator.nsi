@@ -80,20 +80,15 @@ Section "ASIO NoiseGen" SecProgramFiles
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallNoiseGen.exe"
-
-
 SectionEnd
-
-;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ASIO NoiseGen"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ASIO NoiseGen"
+
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "ASIO NoiseGen"
 
   ;Assign language strings to sections

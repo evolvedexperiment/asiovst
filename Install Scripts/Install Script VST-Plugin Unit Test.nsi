@@ -98,15 +98,12 @@ Section "Manual" SecManual
 SectionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VST-Plugin Unit Test"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VST-Plugin Unit Test"
+
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "VST-Plugin Unit Test"
   LangString DESC_SecManual ${LANG_ENGLISH} "VST-Plugin Unit Test (Manual)"
 

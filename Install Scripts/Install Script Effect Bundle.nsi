@@ -28,6 +28,11 @@ SetCompressor lzma
   XPStyle ON
 
 ;--------------------------------
+;Variables
+
+  Var BugReportState
+
+;--------------------------------
 ;Interface Settings
 
   !define PRODUCT_NAME "EffectBundle"
@@ -49,11 +54,33 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
+;Reserve Files
+  
+  ;These files should be inserted before other files in the data block
+  ;Keep these lines before any File command
+  ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
+  
+    ReserveFile "madExcept Patch.dll"
+    ReserveFile "ioBugReport.ini"
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
+;Installer Functions
+
+Function .onInit
+
+;  !insertmacro MUI_LANGDLL_DISPLAY  
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
+
+FunctionEnd
+
+;--------------------------------
 ;Pages
 
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
+  Page custom BugReportPatch
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
   !insertmacro MUI_UNPAGE_WELCOME
@@ -91,8 +118,6 @@ Section "Dynamic Processors" SecDynamics
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
-
-
 SectionEnd
 
 Section "Filters" SecFilters
@@ -116,8 +141,6 @@ Section "Filters" SecFilters
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
-
-
 SectionEnd
 
 Section "VSTi" SecSynths
@@ -134,8 +157,6 @@ Section "VSTi" SecSynths
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
-
-
 SectionEnd
 
 Section "Misc. VST-Plugins" SecMisc
@@ -169,19 +190,30 @@ Section "Misc. VST-Plugins" SecMisc
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
-
-
 SectionEnd
 ;--------------------------------
 ;Installer Functions
 
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "EffectBundle VST Plugin"
+Function BugReportPatch
+  ${If} ${SectionIsSelected} ${SecVSTPlugin}
+  Goto IsVST
+  ${EndIf}
+  Goto NoVST
+
+  IsVST:
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+
+  NoVST:
+FunctionEnd
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "EffectBundle VST Plugin"
+
   LangString DESC_SecDynamics ${LANG_ENGLISH} "Dynamic Processors"
   LangString DESC_SecFilters ${LANG_ENGLISH} "Filters"
   LangString DESC_SecMisc ${LANG_ENGLISH} "Misc. VST Plugins"

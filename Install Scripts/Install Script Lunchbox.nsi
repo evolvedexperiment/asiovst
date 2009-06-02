@@ -80,20 +80,15 @@ Section "ASIO Lunchbox" SecProgramFiles
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallLunchbox.exe"
-
-
 SectionEnd
-
-;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ASIO Lunchbox"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ASIO Lunchbox"
+
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "ASIO Lunchbox"
 
   ;Assign language strings to sections

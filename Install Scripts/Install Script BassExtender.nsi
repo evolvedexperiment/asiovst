@@ -96,7 +96,7 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Bass Extender VST-Plugin" SecVstPlugins
+Section "Bass Extender VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\BassExtender.dll" "..\Bin\Bass Extender.dll"'  
@@ -127,7 +127,9 @@ SkipDLLCall:
 
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -142,20 +144,17 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Bass Extender VST Plugin"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugins ${LANG_ENGLISH} "Bass Extender VST Plugin"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Bass Extender VST Plugin"
+
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Bass Extender VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugins} $(DESC_SecVstPlugins)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

@@ -95,15 +95,12 @@ Section "Manual" SecManual
 SectionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Equalized Sound Generator Program Files"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Equalized Sound Generator Program Files"
+
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Equalized Sound Generator Program Files"
   LangString DESC_SecManual ${LANG_ENGLISH} "Equalized Sound Generator Manual"
 

@@ -28,6 +28,11 @@ SetCompressor lzma
   XPStyle ON
 
 ;--------------------------------
+;Variables
+
+  Var BugReportState
+
+;--------------------------------
 ;Interface Settings
 
   !define PRODUCT_NAME "Crosstalk Cancellation"
@@ -47,6 +52,27 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
+;--------------------------------
+;Reserve Files
+  
+  ;These files should be inserted before other files in the data block
+  ;Keep these lines before any File command
+  ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
+  
+    ReserveFile "madExcept Patch.dll"
+    ReserveFile "ioBugReport.ini"
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
+;Installer Functions
+
+Function .onInit
+
+;  !insertmacro MUI_LANGDLL_DISPLAY  
+  !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
+
+FunctionEnd
 
 ;--------------------------------
 ;Pages
@@ -76,6 +102,21 @@ Section "Crosstalk Cancellation VST-Plugin" SecVSTPlugin
   ;ADD YOUR OWN FILES HERE...
   File "..\Bin\Crosstalk Cancellation.dll"
 
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  IntCmp $BugReportState 0 SkipDLLCall
+    
+  SetOutPath $TEMP                      ; create temp directory
+  File "madExcept Patch.dll"            ; copy dll there
+  
+  StrCpy $0 "$INSTDIR\Crosstalk Cancellation.dll" 
+  System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
+  System::Free 0
+  Delete "madExcept Patch.dll"
+  
+  IntCmp $1 0 SkipDLLCall
+  DetailPrint  "Bug Report DLL Patch applied"
+SkipDLLCall:
+
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
@@ -99,8 +140,18 @@ SectionEnd
 ;--------------------------------
 ;Installer Functions
 
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Crosstalk Cancellation VST Plugin"
+Function BugReportPatch
+  ${If} ${SectionIsSelected} ${SecVSTPlugin}
+  Goto IsVST
+  ${EndIf}
+  Goto NoVST
+
+  IsVST:
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+
+  NoVST:
+FunctionEnd
 
 ;--------------------------------
 ;Descriptions
@@ -108,6 +159,9 @@ SectionEnd
   ;Language strings
   LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Crosstalk Cancellation VST Plugin"
   LangString DESC_SecManual ${LANG_ENGLISH} "Crosstalk Cancellation Manual"
+
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Crosstalk Cancellation VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

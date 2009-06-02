@@ -80,20 +80,15 @@ Section "ASIO Metronome" SecProgramFiles
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\UninstallMetronome.exe"
-
-
 SectionEnd
-
-;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ASIO Metronome"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "ASIO Metronome"
+
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "ASIO Metronome"
 
   ;Assign language strings to sections

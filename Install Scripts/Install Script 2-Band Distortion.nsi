@@ -96,7 +96,7 @@ FunctionEnd
 
 ;Installer Sections
 
-Section "2-Band Distortion VST-Plugin" SecProgramFiles
+Section "2-Band Distortion VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\TwoBandDistortion.dll" "..\Bin\2-Band Distortion.dll"'  
@@ -139,7 +139,9 @@ Section "2-Band Distortion Manual" SecManual
   WriteUninstaller "$INSTDIR\Uninstall_2-Band_Distortion.exe"
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -154,21 +156,18 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "2-Band Distortion VST Plugin"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "2-Band Distortion VST Plugin"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "2-Band Distortion VST Plugin"
+
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "2-Band Distortion VST Plugin"
   LangString DESC_SecManual ${LANG_ENGLISH} "2-Band Distortion Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
