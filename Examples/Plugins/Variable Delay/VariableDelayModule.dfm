@@ -1,5 +1,7 @@
 object VariableDelayVST: TVariableDelayVST
   OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Delay'
@@ -83,6 +85,7 @@ object VariableDelayVST: TVariableDelayVST
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 248
   Top = 106
   Height = 150

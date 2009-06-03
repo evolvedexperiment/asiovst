@@ -18,15 +18,21 @@
       <Projects Name="ChunkDemo.dll">Chunk Demo\ChunkDemo.bdsproj</Projects>
       <Projects Name="ConvoFx.dll">ConvoFX\ConvoFx.bdsproj</Projects>
       <Projects Name="Convolution.dll">Convolution Engine\Convolution.bdsproj</Projects>
+      <Projects Name="CrosstalkCancellation.dll">Crosstalk Cancellation\CrosstalkCancellation.bdsproj</Projects>
       <Projects Name="Decimator.dll">Decimator\Decimator.bdsproj</Projects>
       <Projects Name="DitherNoiseshaper.dll">DitherNoiseshaper\DitherNoiseshaper.bdsproj</Projects>
       <Projects Name="Exciter.dll">Chebyshev Exciter\Exciter.bdsproj</Projects>
       <Projects Name="fReeverb.dll">fReeverb\fReeverb.bdsproj</Projects>
       <Projects Name="GranularPitchshifter.dll">Granular Pitchshifter\GranularPitchshifter.bdsproj</Projects>
+      <Projects Name="HeadphoneMix.dll">HeadphoneMix\HeadphoneMix.bdsproj</Projects>
+      <Projects Name="HRTF3D.dll">HRTF 3D\HRTF3D.bdsproj</Projects>
+      <Projects Name="MaxxBassClone.dll">MaxxBass Clone\MaxxBassClone.bdsproj</Projects>
       <Projects Name="OpAmp.dll">NonLinear\OpAmp.bdsproj</Projects>
       <Projects Name="OversampledTanh.dll">Oversampled Tanh\OversampledTanh.bdsproj</Projects>
       <Projects Name="Phaser.dll">Phaser\Phaser.bdsproj</Projects>
       <Projects Name="PlateReverb.dll">Plate Reverb\PlateReverb.bdsproj</Projects>
+      <Projects Name="Quadropolis.dll">Quadropolis\Quadropolis.bdsproj</Projects>
+      <Projects Name="RenaissanceBassClone.dll">Renaissance Bass Clone\RenaissanceBassClone.bdsproj</Projects>
       <Projects Name="SimpleChorus.dll">Chorus\SimpleChorus.bdsproj</Projects>
       <Projects Name="SimpleFlanger.dll">Flanger\SimpleFlanger.bdsproj</Projects>
       <Projects Name="SimpleSampleDelay.dll">Simple Sample Delay\SimpleSampleDelay.bdsproj</Projects>
@@ -37,7 +43,7 @@
       <Projects Name="SubBoost.dll">SubBoost\SubBoost.bdsproj</Projects>
       <Projects Name="TwoBandDistortion.dll">2-Band Distortion\TwoBandDistortion.bdsproj</Projects>
       <Projects Name="VariableDelay.dll">Variable Delay\VariableDelay.bdsproj</Projects>
-      <Projects Name="Targets">AdvancedClipper.dll AmpSim.dll ASIOVST.dll BarberpoleFlanger.dll BassExtender.dll ChebyshevWaveshaper.dll ChunkDemo.dll ConvoFx.dll Convolution.dll Convolution.dll Decimator.dll DitherNoiseshaper.dll Exciter.dll fReeverb.dll GranularPitchshifter.dll OpAmp.dll OversampledTanh.dll Phaser.dll PlateReverb.dll SimpleChorus.dll SimpleFlanger.dll SimpleSampleDelay.dll SimpleVibrato.dll SoundTouchPitchShifter.dll SpinBugLite.dll SplitHarmonizer.dll SubBoost.dll TwoBandDistortion.dll VariableDelay.dll</Projects>
+      <Projects Name="Targets">AdvancedClipper.dll AmpSim.dll ASIOVST.dll BarberpoleFlanger.dll BassExtender.dll ChebyshevWaveshaper.dll ChunkDemo.dll ConvoFx.dll Convolution.dll CrosstalkCancellation.dll Decimator.dll DitherNoiseshaper.dll Exciter.dll fReeverb.dll HeadphoneMix.dll HRTF3D.dll GranularPitchshifter.dll MaxxBassClone.dll OpAmp.dll OversampledTanh.dll Phaser.dll PlateReverb.dll Quadropolis.dll RenaissanceBassClone.dll SimpleChorus.dll SimpleFlanger.dll SimpleSampleDelay.dll SimpleVibrato.dll SoundTouchPitchShifter.dll SpinBugLite.dll SplitHarmonizer.dll SubBoost.dll TwoBandDistortion.dll VariableDelay.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

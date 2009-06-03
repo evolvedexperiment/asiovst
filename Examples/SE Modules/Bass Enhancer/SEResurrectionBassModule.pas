@@ -1,4 +1,4 @@
-unit SERenaissanceBassModule;
+unit SEResurrectionBassModule;
 
 interface
 
@@ -8,10 +8,10 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSERenaissancePins = (pinInput, pinOutput, pinFrequency, pinAddOriginalBass,
+  TSEResurrectionPins = (pinInput, pinOutput, pinFrequency, pinAddOriginalBass,
     pinIntensity, pinGain);
 
-  TSERenaissanceBassModule = class(TSEModuleBase)
+  TSEResurrectionBassModule = class(TSEModuleBase)
   private
     FInputBuffer        : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer       : PDAVSingleFixedArray;
@@ -24,7 +24,7 @@ type
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FBassEnhancer : TRenaissanceBass;
+    FBassEnhancer : TResurrectionBass;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -42,21 +42,21 @@ implementation
 uses
   SysUtils;
 
-{ TSERenaissanceBassModule }
+{ TSEResurrectionBassModule }
 
-constructor TSERenaissanceBassModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSEResurrectionBassModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FBassEnhancer := TRenaissanceBass.Create
+ FBassEnhancer := TResurrectionBass.Create
 end;
 
-destructor TSERenaissanceBassModule.Destroy;
+destructor TSEResurrectionBassModule.Destroy;
 begin
  FreeAndNil(FBassEnhancer);
  inherited;
 end;
 
-procedure TSERenaissanceBassModule.Open;
+procedure TSEResurrectionBassModule.Open;
 begin
  inherited Open;
 
@@ -65,13 +65,13 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSERenaissanceBassModule.SampleRateChanged;
+procedure TSEResurrectionBassModule.SampleRateChanged;
 begin
  inherited;
  FBassEnhancer.SampleRate := SampleRate;
 end;
 
-procedure TSERenaissanceBassModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSEResurrectionBassModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Inp     : PDAVSingleFixedArray;
   Outp    : PDAVSingleFixedArray;
@@ -96,7 +96,7 @@ begin
   end;
 end;
 
-procedure TSERenaissanceBassModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TSEResurrectionBassModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -104,7 +104,7 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TSERenaissanceBassModule.ChooseProcess;
+procedure TSEResurrectionBassModule.ChooseProcess;
 begin
  if Pin[Integer(pinInput)].Status = stRun
   then OnProcess := SubProcess
@@ -116,18 +116,18 @@ begin
 end;
 
 // describe your module
-class procedure TSERenaissanceBassModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEResurrectionBassModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Renaissance Clone';
+   Name := 'Resurrection Clone';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Renaissance Clone';
+   ID := 'DAV Resurrection Clone';
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
@@ -136,10 +136,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSERenaissanceBassModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEResurrectionBassModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSERenaissancePins(index) of
+ case TSEResurrectionPins(index) of
   pinInput:
    with Properties^ do
     begin
@@ -197,11 +197,11 @@ begin
 end;
 
 // An input plug has changed value
-procedure TSERenaissanceBassModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEResurrectionBassModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
 
- case TSERenaissancePins(CurrentPin.PinID) of
+ case TSEResurrectionPins(CurrentPin.PinID) of
             pinInput : begin
                         ChooseProcess;
                         Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);

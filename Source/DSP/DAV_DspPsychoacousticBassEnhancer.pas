@@ -29,7 +29,7 @@ type
     property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
-  TCustomMaxxBass = class(TCustomPsychoAcousticBassEnhancer)
+  TCustomHarmonicBass = class(TCustomPsychoAcousticBassEnhancer)
   private
     FDecay          : Single;
     FGains          : array [0..3] of Single;
@@ -64,12 +64,12 @@ type
     property InputLevel: Single read FGains[0] write FGains[0];
     property HighFrequencyLevel: Single read FGains[1] write FGains[1];
     property OriginalBassLevel: Single read FGains[2] write FGains[2];
-    property MaxxBassLevel: Single read FGains[3] write FGains[3];
+    property HarmonicBassLevel: Single read FGains[3] write FGains[3];
     property Decay: Single read FDecay write SetDecay;
     property HighpassSelect: THighpassSelect read FHighpassSelect write SetHighpassSelect;
   end;
 
-  TCustomDownsampledMaxxBass = class(TCustomMaxxBass)
+  TCustomDownsampledHarmonicBass = class(TCustomHarmonicBass)
   private
     FResamplingRatio : Single;
     FDownsamplePos     : Single;
@@ -122,7 +122,7 @@ type
     property HighpassSelect: THighpassSelect read FHighpassSelect write SetHighpassSelect;
   end;
 
-  TCustomRenaissanceBass = class(TCustomPsychoAcousticBassEnhancer)
+  TCustomResurrectionBass = class(TCustomPsychoAcousticBassEnhancer)
   private
     FAddOriginalBass : Boolean;
     FGain            : Single;
@@ -152,11 +152,11 @@ type
     property AddOriginalBass: Boolean read FAddOriginalBass write SetAddOriginalBass;
   end;
 
-  TMaxxBass = class(TCustomMaxxBass)
+  THarmonicBass = class(TCustomHarmonicBass)
   published
     property Decay;
     property Frequency;
-    property MaxxBassLevel;
+    property HarmonicBassLevel;
     property HighFrequencyLevel;
     property HighpassSelect;
     property InputLevel;
@@ -166,11 +166,11 @@ type
     property SampleRate;
   end;
 
-  TDownsampledMaxxBass = class(TCustomDownsampledMaxxBass)
+  TDownsampledHarmonicBass = class(TCustomDownsampledHarmonicBass)
   published
     property Decay;
     property Frequency;
-    property MaxxBassLevel;
+    property HarmonicBassLevel;
     property HighFrequencyLevel;
     property HighpassSelect;
     property InputLevel;
@@ -194,7 +194,7 @@ type
     property SampleRate;
   end;
 
-  TRenaissanceBass = class(TCustomRenaissanceBass)
+  TResurrectionBass = class(TCustomResurrectionBass)
   published
     property AddOriginalBass;
     property Frequency;
@@ -234,9 +234,9 @@ begin
   end;
 end;
 
-{ TCustomMaxxBass }
+{ TCustomHarmonicBass }
 
-constructor TCustomMaxxBass.Create;
+constructor TCustomHarmonicBass.Create;
 begin
  inherited;
  FUpwardComp := TLightweightSoftKneeUpwardCompressor.Create;
@@ -262,9 +262,11 @@ begin
  FGains[1] := 1;
  FGains[2] := 1;
  FGains[3] := 0;
+
+ FrequencyChanged;
 end;
 
-destructor TCustomMaxxBass.Destroy;
+destructor TCustomHarmonicBass.Destroy;
 begin
  FreeAndNil(FUpwardComp);
  FreeAndNil(FLimiter);
@@ -276,7 +278,7 @@ begin
  inherited;
 end;
 
-procedure TCustomMaxxBass.SetDecay(const Value: Single);
+procedure TCustomHarmonicBass.SetDecay(const Value: Single);
 begin
  if FDecay <> Value then
   begin
@@ -285,7 +287,7 @@ begin
   end;
 end;
 
-procedure TCustomMaxxBass.SetHighpassSelect(
+procedure TCustomHarmonicBass.SetHighpassSelect(
   const Value: THighpassSelect);
 begin
  if FHighpassSelect <> Value then
@@ -295,7 +297,7 @@ begin
   end;
 end;
 
-procedure TCustomMaxxBass.SetRatio(const Value: Single);
+procedure TCustomHarmonicBass.SetRatio(const Value: Single);
 begin
  if FRatio <> Value then
   begin
@@ -304,7 +306,7 @@ begin
   end;
 end;
 
-procedure TCustomMaxxBass.SetResponse(const Value: Single);
+procedure TCustomHarmonicBass.SetResponse(const Value: Single);
 begin
  if FResponse <> Value then
   begin
@@ -313,12 +315,12 @@ begin
   end;
 end;
 
-procedure TCustomMaxxBass.DecayChanged;
+procedure TCustomHarmonicBass.DecayChanged;
 begin
 
 end;
 
-procedure TCustomMaxxBass.ResponseChanged;
+procedure TCustomHarmonicBass.ResponseChanged;
 begin
  FLimiter.Attack := FResponse;
  FLimiter.Release := FResponse;
@@ -326,13 +328,13 @@ begin
  FUpwardComp.Release := FResponse;
 end;
 
-procedure TCustomMaxxBass.RatioChanged;
+procedure TCustomHarmonicBass.RatioChanged;
 begin
  FDrive := FRatio;
  FUpwardComp.Ratio := FRatio;
 end;
 
-procedure TCustomMaxxBass.FrequencyChanged;
+procedure TCustomHarmonicBass.FrequencyChanged;
 begin
  if FHighpassSelect in [hp1stOrder, hp2ndOrder]
   then FHighpass.Frequency := 0.5 * FFrequency;
@@ -340,7 +342,7 @@ begin
  FCrossover.Frequency := FFrequency;
 end;
 
-procedure TCustomMaxxBass.HighpassSelectChanged;
+procedure TCustomHarmonicBass.HighpassSelectChanged;
 begin
  case FHighpassSelect of
   hpDC :
@@ -361,9 +363,9 @@ begin
  end;
 end;
 
-function TCustomMaxxBass.Process(Input: Single): Single;
+function TCustomHarmonicBass.Process(Input: Single): Single;
 var
-  Low, High, Maxx : Single;
+  Low, High, Harmonic : Single;
 begin
 (*
  result := FUpwardComp.ProcessSample(Input);
@@ -383,15 +385,15 @@ begin
 
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Maxx := 0.5 * FUpwardComp.ProcessSample(
+ Harmonic := 0.5 * FUpwardComp.ProcessSample(
          Limit(0.5 * FLimiter.ProcessSample(4 *
          FHighpass.ProcessSample(
          FDecay + Low * (1 + Low * -2 * FDecay)))));
 
- result := FGains[2] * Low + FGains[3] * Maxx + FGains[1] * High;
+ result := FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
 end;
 
-procedure TCustomMaxxBass.SampleRateChanged;
+procedure TCustomHarmonicBass.SampleRateChanged;
 begin
  FUpwardComp.SampleRate := SampleRate;
  FHighpass.SampleRate := SampleRate;
@@ -400,35 +402,35 @@ begin
  FLimiter.SampleRate := SampleRate;
 end;
 
-{ TCustomDownsampledMaxxBass }
+{ TCustomDownsampledHarmonicBass }
 
-constructor TCustomDownsampledMaxxBass.Create;
+constructor TCustomDownsampledHarmonicBass.Create;
 begin
  inherited;
  CalculateResamplingRatio;
 end;
 
-procedure TCustomDownsampledMaxxBass.FrequencyChanged;
+procedure TCustomDownsampledHarmonicBass.FrequencyChanged;
 begin
  inherited;
  CalculateResamplingRatio;
 end;
 
-procedure TCustomDownsampledMaxxBass.SampleRateChanged;
+procedure TCustomDownsampledHarmonicBass.SampleRateChanged;
 begin
  inherited;
  CalculateResamplingRatio;
 end;
 
-procedure TCustomDownsampledMaxxBass.CalculateResamplingRatio;
+procedure TCustomDownsampledHarmonicBass.CalculateResamplingRatio;
 begin
  FHighpass.SampleRate := (1 shl 7) * FFrequency;
  FResamplingRatio := FHighpass.SampleRate / SampleRate;
 end;
 
-function TCustomDownsampledMaxxBass.Process(Input: Single): Single;
+function TCustomDownsampledHarmonicBass.Process(Input: Single): Single;
 var
-  Low, High, Maxx : Single;
+  Low, High, Harmonic : Single;
 begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
@@ -440,19 +442,19 @@ begin
   begin
    FDownsamplePos := FDownsamplePos - 1;
 
-   Maxx := Hermite32_asm(FDownsamplePos, @FLastInputSamples[0]);
+   Harmonic := Hermite32_asm(FDownsamplePos, @FLastInputSamples[0]);
 
-   Maxx := //0.5 * FUpwardComp.ProcessSample(
+   Harmonic := //0.5 * FUpwardComp.ProcessSample(
             Limit(0.5 * FDrive* FLimiter.ProcessSample(4 *
             FHighpass.ProcessSample(
-            FDecay + Maxx * (1 + Maxx * -2 * FDecay))));
+            FDecay + Harmonic * (1 + Harmonic * -2 * FDecay))));
 
    Move(FLastOutputSamples[1], FLastOutputSamples[0], 3 * SizeOf(Single));
-   FLastOutputSamples[3] := Maxx;
+   FLastOutputSamples[3] := Harmonic;
   end;
- Maxx := Hermite32_asm(FDownsamplePos, @FLastOutputSamples[0]);
+ Harmonic := Hermite32_asm(FDownsamplePos, @FLastOutputSamples[0]);
 
- result := FGains[2] * Low + FGains[3] * Maxx + FGains[1] * High;
+ result := FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
 end;
 
 
@@ -479,6 +481,8 @@ begin
  FGains[1] := 1;
  FGains[2] := 1;
  FGains[3] := 0;
+
+ FrequencyChanged;
 end;
 
 destructor TCustomLinkwitzBass.Destroy;
@@ -573,15 +577,15 @@ end;
 
 function TCustomLinkwitzBass.Process(Input: Single): Single;
 var
-  Low, High, Maxx : Single;
+  Low, High, Harmonic : Single;
 begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Maxx := Limit(0.5 * FDrive* FLimiter.ProcessSample(4 *
+ Harmonic := Limit(0.5 * FDrive* FLimiter.ProcessSample(4 *
          FHighpass.ProcessSample(
          FDecay + Low * (1 + Low * -2 * FDecay))));
 
- result := FGains[2] * Low + FGains[3] * Maxx + FGains[1] * High;
+ result := FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
 end;
 
 procedure TCustomLinkwitzBass.SampleRateChanged;
@@ -591,9 +595,9 @@ begin
  FLimiter.SampleRate := SampleRate;
 end;
 
-{ TCustomRenaissanceBass }
+{ TCustomResurrectionBass }
 
-constructor TCustomRenaissanceBass.Create;
+constructor TCustomResurrectionBass.Create;
 begin
  inherited;
 
@@ -611,9 +615,11 @@ begin
  FLimiter.Knee_dB := 0;
  FLimiter.Attack := 25;
  FLimiter.Release := 25;
+
+ FrequencyChanged;
 end;
 
-destructor TCustomRenaissanceBass.Destroy;
+destructor TCustomResurrectionBass.Destroy;
 begin
  FreeAndNil(FLimiter);
  FreeAndNil(FHighpass);
@@ -621,19 +627,19 @@ begin
  inherited;
 end;
 
-procedure TCustomRenaissanceBass.FrequencyChanged;
+procedure TCustomResurrectionBass.FrequencyChanged;
 begin
  FCrossover.Frequency := FFrequency;
 end;
 
-procedure TCustomRenaissanceBass.SampleRateChanged;
+procedure TCustomResurrectionBass.SampleRateChanged;
 begin
  FCrossover.SampleRate := SampleRate;
  FLimiter.SampleRate := SampleRate;
  FHighpass.SampleRate := SampleRate;
 end;
 
-procedure TCustomRenaissanceBass.SetAddOriginalBass(const Value: Boolean);
+procedure TCustomResurrectionBass.SetAddOriginalBass(const Value: Boolean);
 begin
  if FAddOriginalBass <> Value then
   begin
@@ -642,7 +648,7 @@ begin
   end;
 end;
 
-procedure TCustomRenaissanceBass.SetGain(const Value: Single);
+procedure TCustomResurrectionBass.SetGain(const Value: Single);
 begin
  if FGain <> Value then
   begin
@@ -651,7 +657,7 @@ begin
   end;
 end;
 
-procedure TCustomRenaissanceBass.SetIntensity(const Value: Single);
+procedure TCustomResurrectionBass.SetIntensity(const Value: Single);
 begin
  if FIntensity <> Value then
   begin
@@ -660,34 +666,34 @@ begin
   end;
 end;
 
-procedure TCustomRenaissanceBass.IntensityChanged;
+procedure TCustomResurrectionBass.IntensityChanged;
 begin
  FGains[0] := dB_to_Amp(FIntensity);
 end;
 
-procedure TCustomRenaissanceBass.AddOriginalBassChanged;
+procedure TCustomResurrectionBass.AddOriginalBassChanged;
 begin
  FGains[1] := Integer(FAddOriginalBass);
 end;
 
-procedure TCustomRenaissanceBass.GainChanged;
+procedure TCustomResurrectionBass.GainChanged;
 begin
  FGains[2] := FGain;
 end;
 
-function TCustomRenaissanceBass.Process(Input: Single): Single;
+function TCustomResurrectionBass.Process(Input: Single): Single;
 var
-  Low, High, Maxx : Single;
+  Low, High, Harmonic : Single;
 begin
  FCrossover.ProcessSample(Input, Low, High);
 
- Maxx := FGains[0] * Low;
- Maxx := FHighpass.ProcessSample(0.2 + Maxx * (1 - 0.4 * Maxx));
- Maxx := 0.5 * FLimiter.ProcessSample(Maxx);
- Maxx := Limit(Maxx);
+ Harmonic := FGains[0] * Low;
+ Harmonic := FHighpass.ProcessSample(0.2 + Harmonic * (1 - 0.4 * Harmonic));
+ Harmonic := 0.5 * FLimiter.ProcessSample(Harmonic);
+ Harmonic := Limit(Harmonic);
 
- result := FGains[2] * (FGains[1] * Low + Maxx + High);
-// result := Maxx;
+ result := FGains[2] * (FGains[1] * Low + Harmonic + High);
+// result := Harmonic;
 end;
 
 end.

@@ -12,10 +12,15 @@ type
   TProcessingMode = (pmNormal, pmBlockSave, pmCopy, pmMute, pmDspQueue);
 
   TDspVSTModule = class(TVSTModuleWithPrograms)
+  private
+    procedure ProcessingModeChanged;
+    procedure OnProcessChanged;
+    procedure OnProcessReplacingChanged;
+    procedure OnProcessDoublesChanged;
   protected
     FBlockModeSize        : Integer;
     FBlockModeOverlap     : Integer;
-    FProcessingMode       : TProcessingMode;
+    FProcessingmode       : TProcessingMode;
     FBlockPosition        : Integer;
     FDspQueueList         : TDAVProcessingComponentList;
     FBlockInBuffer32      : TDAVArrayOfSingleDynArray;
@@ -45,12 +50,12 @@ type
 
     procedure NumInputsChanged; override;
     procedure NumOutputsChanged; override;
-    procedure SetInitialDelay(const Delay: Integer); override;
+    procedure InitialDelayChanged; override;
 
-    procedure SetOnProcess(v : TProcessAudioEvent);
-    procedure SetOnProcessReplacing(v : TProcessAudioEvent);
-    procedure SetOnProcessDoubleReplacing(v : TProcessDoubleEvent);
-    procedure SetProcessingMode(v : TProcessingMode);
+    procedure SetOnProcess(Value : TProcessAudioEvent);
+    procedure SetOnProcessReplacing(Value : TProcessAudioEvent);
+    procedure SetOnProcessDoubleReplacing(Value : TProcessDoubleEvent);
+    procedure SetProcessingMode(Value : TProcessingMode);
     procedure PrepareBlockProcessing; virtual;
     procedure SetBlockForcedSize(v: Integer); virtual;
     procedure SetBlockOverlapSize(v: Integer); virtual;
@@ -64,7 +69,7 @@ type
 
     property BlockModeSize: Integer read FBlockModeSize write SetBlockForcedSize default 1024;
     property BlockModeOverlap: Integer read FBlockModeOverlap write SetBlockOverlapSize default 0;
-    property ProcessingMode: TProcessingMode read FProcessingMode write SetProcessingMode default pmNormal;
+    property ProcessingMode: TProcessingMode read FProcessingmode write SetProcessingMode default pmNormal;
 
     property OnProcess: TProcessAudioEvent read FOnProcess write SetOnProcess;
     property OnProcessReplacing: TProcessAudioEvent read FOnProcessReplacing write SetOnProcessReplacing;
@@ -86,7 +91,7 @@ uses
 constructor TDspVSTModule.Create(AOwner: TComponent);
 begin
   inherited; 
-  FProcessingMode := pmNormal;      
+  FProcessingmode := pmNormal;      
   FBlockModeSize := 1024;  
   FBlockModeOverlap := 0;
   FDspDirectProcessItem:=nil;
@@ -106,7 +111,7 @@ begin
    if IndexOf(item) < 0 then
     begin
      Add(item);
-     if (FProcessingMode = pmDspQueue) and not Assigned(FDspDirectProcessItem)
+     if (FProcessingmode = pmDspQueue) and not Assigned(FDspDirectProcessItem)
       then FDspDirectProcessItem := item;
     end;
    Item.SampleRate := FSampleRate;
@@ -150,18 +155,14 @@ begin
  PrepareBlockProcessing;
 end;
 
-procedure TDspVSTModule.SetInitialDelay(const Delay: Integer);
+procedure TDspVSTModule.InitialDelayChanged;
 begin
-  if FInitialDelay <> Delay then
-  begin
-    FInitialDelay := Delay;
-    if (FProcessingMode = pmBlockSave) and
-       (FInitialDelay < FBlockModeSize - FBlockModeOverlap)
-     then FEffect.initialDelay := FBlockModeSize - FBlockModeOverlap
-     else FEffect.initialDelay := FInitialDelay;
+ if (FProcessingmode = pmBlockSave) and
+    (FInitialDelay < FBlockModeSize - FBlockModeOverlap)
+  then FEffect.initialDelay := FBlockModeSize - FBlockModeOverlap
+  else FEffect.initialDelay := FInitialDelay;
 
-   if HostProduct <> 'energyXT' then IOChanged;
-  end;
+ if HostProduct <> 'energyXT' then IOChanged;
 end;
 
 procedure TDspVSTModule.SetBlockForcedSize(v: Integer);
@@ -176,9 +177,9 @@ procedure TDspVSTModule.SetBlockOverlapSize(v: Integer);
 begin
  if v < FBlockModeSize then FBlockModeOverlap := v;
 
- if (FProcessingMode = pmBlockSave) and
+ if (FProcessingmode = pmBlockSave) and
     (FEffect.InitialDelay < FBlockModeSize - FBlockModeOverlap)
-  then SetInitialDelay(FInitialDelay);
+  then InitialDelayChanged;
 end;
 
 procedure TDspVSTModule.ProcessMidiEvent(const MidiEvent: TVstMidiEvent);
@@ -246,20 +247,20 @@ begin
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
    begin
-    for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], fBlockInBuffer32[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Single));
+    for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], FBlockInBuffer32[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
+    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Single));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], fBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
-    for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+    for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], FBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
 
-    FOnProcess(fBlockInBuffer32, fBlockOutBuffer32, FBlockModeSize);
+    FOnProcess(FBlockInBuffer32, FBlockOutBuffer32, FBlockModeSize);
 
-    for i := 0 to numInputs - 1  do move(fBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer32[i,0], FBlockModeOverlap * Sizeof(Single));
+    for i := 0 to numInputs - 1  do move(FBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer32[i,0], FBlockModeOverlap * Sizeof(Single));
 
     CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
     FBlockPosition := FBlockModeOverlap;
@@ -277,18 +278,18 @@ begin
   repeat
     if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
     begin
-      for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], fBlockInBuffer64[i, FBlockPosition], (SampleFrames-CurrentPosition) * Sizeof(Double));
-      for i := 0 to numOutputs - 1 do move(fBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (SampleFrames-CurrentPosition) * Sizeof(Double));
+      for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition], (SampleFrames-CurrentPosition) * Sizeof(Double));
+      for i := 0 to numOutputs - 1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (SampleFrames-CurrentPosition) * Sizeof(Double));
 
       FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
       CurrentPosition := SampleFrames;
     end else begin
-      for i := 0 to numInputs-1  do move(Inputs[i, CurrentPosition], fBlockInBuffer64[i, FBlockPosition],(FBlockModeSize-FBlockPosition) * Sizeof(Double));
-      for i := 0 to numOutputs-1 do move(fBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize-FBlockPosition) * Sizeof(Double));
+      for i := 0 to numInputs-1  do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition],(FBlockModeSize-FBlockPosition) * Sizeof(Double));
+      for i := 0 to numOutputs-1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize-FBlockPosition) * Sizeof(Double));
 
-      FOnProcessDoubles(fBlockInBuffer64, fBlockOutBuffer64, FBlockModeSize);
+      FOnProcessDoubles(FBlockInBuffer64, FBlockOutBuffer64, FBlockModeSize);
 
-      for i := 0 to numInputs - 1  do move(fBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer64[i,0], FBlockModeOverlap * Sizeof(Double));
+      for i := 0 to numInputs - 1  do move(FBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer64[i,0], FBlockModeOverlap * Sizeof(Double));
 
       CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
       FBlockPosition := FBlockModeOverlap;
@@ -306,21 +307,21 @@ begin
   repeat
     if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
      begin
-      for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], fBlockInBuffer32[i, FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
-      for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^,(SampleFrames-CurrentPosition)*Sizeof(Single));
+      for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], FBlockInBuffer32[i, FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
+      for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^,(SampleFrames-CurrentPosition)*Sizeof(Single));
 
       FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
       CurrentPosition := SampleFrames;
      end
     else
      begin
-      for i := 0 to numInputs  - 1 do move(Inputs[i,CurrentPosition], fBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
-      for i := 0 to numOutputs - 1 do move(fBlockOutBuffer32[i,FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+      for i := 0 to numInputs  - 1 do move(Inputs[i,CurrentPosition], FBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+      for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i,FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
 
-      FOnProcessReplacing(fBlockInBuffer32, fBlockOutBuffer32, FBlockModeSize);
+      FOnProcessReplacing(FBlockInBuffer32, FBlockOutBuffer32, FBlockModeSize);
 
       for i := 0 to numInputs - 1
-       do move(fBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer32[i, 0], FBlockModeOverlap * Sizeof(Single));
+       do move(FBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer32[i, 0], FBlockModeOverlap * Sizeof(Single));
 
       CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
       FBlockPosition := FBlockModeOverlap;
@@ -336,18 +337,18 @@ begin
   repeat
     if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
     begin
-      for i := 0 to numInputs  - 1  do move(Inputs[i, CurrentPosition], fBlockInBuffer64[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-      for i := 0 to numOutputs - 1 do move(fBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Double));
+      for i := 0 to numInputs  - 1  do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+      for i := 0 to numOutputs - 1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Double));
 
       FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
       CurrentPosition := SampleFrames;
     end else begin
-      for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], fBlockInBuffer64[i, FBlockPosition],(FBlockModeSize - FBlockPosition) * Sizeof(Double));
-      for i := 0 to numOutputs - 1 do move(fBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Double));
+      for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition],(FBlockModeSize - FBlockPosition) * Sizeof(Double));
+      for i := 0 to numOutputs - 1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Double));
 
-      FOnProcessDoubles(fBlockInBuffer64, fBlockOutBuffer64, FBlockModeSize);
+      FOnProcessDoubles(FBlockInBuffer64, FBlockOutBuffer64, FBlockModeSize);
 
-      for i := 0 to numInputs  - 1 do move(fBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], fBlockInBuffer64[i, 0], FBlockModeOverlap * Sizeof(Double));
+      for i := 0 to numInputs  - 1 do move(FBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer64[i, 0], FBlockModeOverlap * Sizeof(Double));
 
       CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
       FBlockPosition := FBlockModeOverlap;
@@ -357,30 +358,31 @@ end;
 
 procedure TDspVSTModule.PrepareBlockProcessing;
 begin
- if FProcessingMode = pmBlockSave then
+ if FProcessingmode = pmBlockSave then
   begin
-   SetLength(fBlockInBuffer32,  numInputs,  FBlockModeSize);
-   SetLength(fBlockOutBuffer32, numOutputs, FBlockModeSize);
-   SetLength(fBlockInBuffer64,  numInputs,  FBlockModeSize);
-   SetLength(fBlockOutBuffer64, numOutputs, FBlockModeSize);
+   SetLength(FBlockInBuffer32,  numInputs,  FBlockModeSize);
+   SetLength(FBlockOutBuffer32, numOutputs, FBlockModeSize);
+   SetLength(FBlockInBuffer64,  numInputs,  FBlockModeSize);
+   SetLength(FBlockOutBuffer64, numOutputs, FBlockModeSize);
 
    FBlockPosition := FBlockModeOverlap;
-   if (FProcessingMode = pmBlockSave) and
+   if (FProcessingmode = pmBlockSave) and
       (FEffect.InitialDelay < FBlockModeSize - FBlockModeOverlap)
-    then SetInitialDelay(FInitialDelay);
+    then InitialDelayChanged;
   end
  else
   begin
-   SetLength(fBlockInBuffer32,  0, 0);
-   SetLength(fBlockOutBuffer32, 0, 0);
-   SetLength(fBlockInBuffer64,  0, 0);
-   SetLength(fBlockOutBuffer64, 0, 0);
+   SetLength(FBlockInBuffer32,  0, 0);
+   SetLength(FBlockOutBuffer32, 0, 0);
+   SetLength(FBlockInBuffer64,  0, 0);
+   SetLength(FBlockOutBuffer64, 0, 0);
   end;
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var ProcessBuffer : TDAVArrayOfSingleDynArray;
-    i: Integer;
+var
+  ProcessBuffer : TDAVArrayOfSingleDynArray;
+  i: Integer;
 begin
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
  for i := 0 to numInputs - 1 do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Single));
@@ -390,8 +392,9 @@ begin
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
-var ProcessBuffer : TDAVArrayOfDoubleDynArray;
-    i: Integer;
+var
+  ProcessBuffer : TDAVArrayOfDoubleDynArray;
+  i: Integer;
 begin
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
  for i := 0 to numInputs - 1 do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Double));
@@ -401,96 +404,125 @@ begin
 end;
 
 
-procedure TDspVSTModule.SetOnProcess(v : TProcessAudioEvent);
+procedure TDspVSTModule.SetOnProcess(Value : TProcessAudioEvent);
 begin
-  FOnProcess := v;
-  case FProcessingMode of
-    pmNormal:     FOnProcessEx := FOnProcess;
-    pmBlockSave:  if Assigned(FOnProcessReplacing)
-                    then FOnProcessEx := DoBlockSaveProcess
-                    else FOnProcessEx := FOnProcess;
-    pmCopy:       FOnProcessEx := DoProcessCopy;
-    pmMute:       FOnProcessEx := DoProcessMute;
-    pmDspQueue:   FOnProcessEx := DoProcessDspQueue;
-  end;
-end;
-
-procedure TDspVSTModule.SetOnProcessReplacing(v : TProcessAudioEvent);
-begin
-  FOnProcessReplacing := v;
-  case FProcessingMode of
-    pmNormal:    FOnProcessReplacingEx := FOnProcessReplacing;
-    pmBlockSave: if Assigned(FOnProcessReplacing)
-                   then FOnProcessReplacingEx := DoBlockSaveProcessReplacing
-                   else FOnProcessReplacingEx := FOnProcessReplacing;
-    pmCopy:      FOnProcessReplacingEx := DoProcessCopy;
-    pmMute:      FOnProcessReplacingEx := DoProcessMute;
-    pmDspQueue:  FOnProcessReplacingEx := DoProcessDspQueue;
-  end;
-end;
-
-procedure TDspVSTModule.SetOnProcessDoubleReplacing(v : TProcessDoubleEvent);
-begin
-  FOnProcessDoubles := v;
-  case FProcessingMode of
-    pmNormal:    FOnProcessDoublesEx := FOnProcessDoubles;
-    pmBlockSave: if Assigned(FOnProcessDoubles)
-                   then FOnProcessDoublesEx := DoBlockSaveProcessReplacing
-                   else FOnProcessDoublesEx := FOnProcessDoubles;
-    pmCopy:      FOnProcessDoublesEx := DoProcessCopy;
-    pmMute:      FOnProcessDoublesEx := DoProcessMute;
-    pmDspQueue:  FOnProcessDoublesEx := DoProcessDspQueue;
-  end;
-end;
-
-procedure TDspVSTModule.SetProcessingMode(v : TProcessingMode);
-begin
- if v <> fProcessingmode then
+ if @FOnProcess <> @Value then
   begin
-   fProcessingmode := v;
-   case FProcessingMode of
-      pmNormal:
-         begin
-           FOnProcessEx := FOnProcess;
-           FOnProcessReplacingEx := FOnProcessReplacing;
-           FOnProcessDoublesEx := FOnProcessDoubles;
-         end;
-      pmBlockSave:
-         begin
-           if Assigned(FOnProcess)
-            then FOnProcessEx := DoBlockSaveProcess
-            else FOnProcessEx := FOnProcess;
-
-           if Assigned(FOnProcessReplacing)
-            then FOnProcessReplacingEx := DoBlockSaveProcessReplacing
-            else FOnProcessReplacingEx := FOnProcessReplacing;
-
-           if Assigned(FOnProcessDoubles)
-            then FOnProcessDoublesEx := DoBlockSaveProcessReplacing
-            else FOnProcessDoublesEx := FOnProcessDoubles;
-
-           PrepareBlockProcessing;
-         end;
-      pmCopy:
-         begin
-           FOnProcessEx := DoProcessCopy;
-           FOnProcessReplacingEx := DoProcessCopy;
-           FOnProcessDoublesEx := DoProcessCopy;
-         end;
-      pmMute:
-         begin
-           FOnProcessEx := DoProcessMute;
-           FOnProcessReplacingEx := DoProcessMute;
-           FOnProcessDoublesEx := DoProcessMute;
-         end;
-      pmDspQueue:
-        begin
-          FOnProcessEx := DoProcessDspQueue;
-          FOnProcessReplacingEx := DoProcessDspQueue;
-          FOnProcessDoublesEx := DoProcessDspQueue;
-        end;
-    end;
+   FOnProcess := Value;
+   OnProcessChanged;
   end;
+end;
+
+procedure TDspVSTModule.SetOnProcessReplacing(Value : TProcessAudioEvent);
+begin
+ if @FOnProcessReplacing <> @Value then
+  begin
+   FOnProcessReplacing := Value;
+   OnProcessReplacingChanged;
+  end;
+end;
+
+procedure TDspVSTModule.SetOnProcessDoubleReplacing(Value : TProcessDoubleEvent);
+begin
+ if @FOnProcessDoubles <> @Value then
+  begin
+   FOnProcessDoubles := Value;
+   OnProcessDoublesChanged;
+  end;
+end;
+
+procedure TDspVSTModule.SetProcessingMode(Value : TProcessingMode);
+begin
+ if Value <> FProcessingmode then
+  begin
+   FProcessingmode := Value;
+   ProcessingModeChanged;
+  end;
+end;
+
+procedure TDspVSTModule.OnProcessChanged;
+begin
+ case FProcessingMode of
+   pmNormal:     FOnProcessEx := FOnProcess;
+   pmBlockSave:  if Assigned(FOnProcessReplacing)
+                   then FOnProcessEx := DoBlockSaveProcess
+                   else FOnProcessEx := FOnProcess;
+   pmCopy:       FOnProcessEx := DoProcessCopy;
+   pmMute:       FOnProcessEx := DoProcessMute;
+   pmDspQueue:   FOnProcessEx := DoProcessDspQueue;
+ end;
+end;
+
+procedure TDspVSTModule.OnProcessReplacingChanged;
+begin
+ case FProcessingMode of
+   pmNormal:    FOnProcessReplacingEx := FOnProcessReplacing;
+   pmBlockSave: if Assigned(FOnProcessReplacing)
+                  then FOnProcessReplacingEx := DoBlockSaveProcessReplacing
+                  else FOnProcessReplacingEx := FOnProcessReplacing;
+   pmCopy:      FOnProcessReplacingEx := DoProcessCopy;
+   pmMute:      FOnProcessReplacingEx := DoProcessMute;
+   pmDspQueue:  FOnProcessReplacingEx := DoProcessDspQueue;
+ end;
+end;
+
+procedure TDspVSTModule.OnProcessDoublesChanged;
+begin
+ case FProcessingMode of
+   pmNormal:    FOnProcessDoublesEx := FOnProcessDoubles;
+   pmBlockSave: if Assigned(FOnProcessDoubles)
+                  then FOnProcessDoublesEx := DoBlockSaveProcessReplacing
+                  else FOnProcessDoublesEx := FOnProcessDoubles;
+   pmCopy:      FOnProcessDoublesEx := DoProcessCopy;
+   pmMute:      FOnProcessDoublesEx := DoProcessMute;
+   pmDspQueue:  FOnProcessDoublesEx := DoProcessDspQueue;
+ end;
+end;
+
+procedure TDspVSTModule.ProcessingModeChanged;
+begin
+ case FProcessingMode of
+    pmNormal:
+       begin
+         FOnProcessEx := FOnProcess;
+         FOnProcessReplacingEx := FOnProcessReplacing;
+         FOnProcessDoublesEx := FOnProcessDoubles;
+       end;
+    pmBlockSave:
+       begin
+         if Assigned(FOnProcess)
+          then FOnProcessEx := DoBlockSaveProcess
+          else FOnProcessEx := FOnProcess;
+
+         if Assigned(FOnProcessReplacing)
+          then FOnProcessReplacingEx := DoBlockSaveProcessReplacing
+          else FOnProcessReplacingEx := FOnProcessReplacing;
+
+         if Assigned(FOnProcessDoubles)
+          then FOnProcessDoublesEx := DoBlockSaveProcessReplacing
+          else FOnProcessDoublesEx := FOnProcessDoubles;
+
+         PrepareBlockProcessing;
+       end;
+    pmCopy:
+       begin
+         FOnProcessEx := DoProcessCopy;
+         FOnProcessReplacingEx := DoProcessCopy;
+         FOnProcessDoublesEx := DoProcessCopy;
+       end;
+    pmMute:
+       begin
+         FOnProcessEx := DoProcessMute;
+         FOnProcessReplacingEx := DoProcessMute;
+         FOnProcessDoublesEx := DoProcessMute;
+       end;
+    pmDspQueue:
+      begin
+        FOnProcessEx := DoProcessDspQueue;
+        FOnProcessReplacingEx := DoProcessDspQueue;
+        FOnProcessDoublesEx := DoProcessDspQueue;
+      end;
+ end;
 end;
 
 procedure TDspVSTModule.SetDspDirectProcessItem(v: TDAVProcessingComponent);

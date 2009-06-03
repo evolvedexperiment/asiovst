@@ -1,4 +1,4 @@
-unit SEMaxxBassModule;
+unit SEHarmonicBassModule;
 
 interface
 
@@ -8,11 +8,11 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEMaxxBassPins = (pinInput, pinOutput, pinFrequency, pinRatio, pinResponse,
+  TSEHarmonicBassPins = (pinInput, pinOutput, pinFrequency, pinRatio, pinResponse,
     pinHighpassSelect, pinDecay, pinInputLevel, pinOriginalBassLevel,
-    pinMaxxBassLevel, pinHighFrequencyLevel);
+    pinHarmonicBassLevel, pinHighFrequencyLevel);
 
-  TSEMaxBassModule = class(TSEModuleBase)
+  TSEHarmonicBassModule = class(TSEModuleBase)
   private
     FInputBuffer        : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer       : PDAVSingleFixedArray;
@@ -23,14 +23,14 @@ type
     FResponse           : Single;
     FHighpassSelect     : Integer;
     FDecay              : Single;
-    FMaxxBassLevel      : PDAVSingleFixedArray;
+    FHarmonicBassLevel      : PDAVSingleFixedArray;
     FHighFrequencyLevel : PDAVSingleFixedArray;
     FInputLevel         : PDAVSingleFixedArray;
     FOriginalBassLevel  : PDAVSingleFixedArray;
     procedure ChooseProcess;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   protected
-    FBassEnhancer : TMaxxBass;
+    FBassEnhancer : THarmonicBass;
     procedure Open; override;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
     procedure SampleRateChanged; override;
@@ -48,21 +48,21 @@ implementation
 uses
   SysUtils;
 
-{ TSEMaxBassModule }
+{ TSEHarmonicBassModule }
 
-constructor TSEMaxBassModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
+constructor TSEHarmonicBassModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
- FBassEnhancer := TMaxxBass.Create
+ FBassEnhancer := THarmonicBass.Create
 end;
 
-destructor TSEMaxBassModule.Destroy;
+destructor TSEHarmonicBassModule.Destroy;
 begin
  FreeAndNil(FBassEnhancer);
  inherited;
 end;
 
-procedure TSEMaxBassModule.Open;
+procedure TSEHarmonicBassModule.Open;
 begin
  inherited Open;
 
@@ -71,13 +71,13 @@ begin
 end;
 
 // The most important part, processing the audio
-procedure TSEMaxBassModule.SampleRateChanged;
+procedure TSEHarmonicBassModule.SampleRateChanged;
 begin
  inherited;
  FBassEnhancer.SampleRate := SampleRate;
 end;
 
-procedure TSEMaxBassModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSEHarmonicBassModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 var
   Inp    : PDAVSingleFixedArray;
   Outp   : PDAVSingleFixedArray;
@@ -90,7 +90,7 @@ begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Inp    := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Outp   := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
- MBLev  := PDAVSingleFixedArray(@FMaxxBassLevel[BufferOffset]);
+ MBLev  := PDAVSingleFixedArray(@FHarmonicBassLevel[BufferOffset]);
  HFLev  := PDAVSingleFixedArray(@FHighFrequencyLevel[BufferOffset]);
  InpLv  := PDAVSingleFixedArray(@FInputLevel[BufferOffset]);
  OrigLv := PDAVSingleFixedArray(@FOriginalBassLevel[BufferOffset]);
@@ -100,15 +100,15 @@ begin
    Outp^[Sample] := FBassEnhancer.Process(Inp^[Sample]);
    if (Sample div 2) = 0 then
     begin
-     FBassEnhancer.MaxxBassLevel := MBLev^[Sample];
+     FBassEnhancer.HarmonicBassLevel  := MBLev^[Sample];
      FBassEnhancer.HighFrequencyLevel := HFLev^[Sample];
-     FBassEnhancer.InputLevel := InpLv^[Sample];
-     FBassEnhancer.OriginalBassLevel := OrigLv^[Sample];
+     FBassEnhancer.InputLevel         := InpLv^[Sample];
+     FBassEnhancer.OriginalBassLevel  := OrigLv^[Sample];
     end;
   end;
 end;
 
-procedure TSEMaxBassModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+procedure TSEHarmonicBassModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
 begin
  SubProcess(BufferOffset, SampleFrames);
  FStaticCount := FStaticCount - SampleFrames;
@@ -116,30 +116,30 @@ begin
   then CallHost(SEAudioMasterSleepMode);
 end;
 
-procedure TSEMaxBassModule.ChooseProcess;
+procedure TSEHarmonicBassModule.ChooseProcess;
 begin
  if Pin[Integer(pinInput)].Status = stRun
   then OnProcess := SubProcess
   else
    begin
-    FStaticCount := BlockSize;
+    FStaticCount := 2 * BlockSize;
     OnProcess := SubProcessStatic;
    end;
 end;
 
 // describe your module
-class procedure TSEMaxBassModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSEHarmonicBassModule.getModuleProperties(Properties : PSEModuleProperties);
 begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'MaxxBass Clone';
+   Name := 'HarmonicBass Clone';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV MaxxBass Clone';
+   ID := 'DAV HarmonicBass Clone';
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
@@ -148,10 +148,10 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSEMaxBassModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSEHarmonicBassModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := True;
- case TSEMaxxBassPins(index) of
+ case TSEHarmonicBassPins(index) of
   pinInput:
    with Properties^ do
     begin
@@ -214,7 +214,7 @@ begin
      VariableAddress := @FDecay;
      Direction       := drIn;
      Datatype        := dtSingle;
-     DefaultValue    := '20';
+     DefaultValue    := '-15';
     end;
   pinInputLevel:
    with Properties^ do
@@ -222,13 +222,13 @@ begin
      Name            := 'Input Level';
      VariableAddress := @FInputLevel;
      Direction       := drIn;
-     Datatype        := dtSingle;
+     Datatype        := dtFSample;
     end;
-  pinMaxxBassLevel:
+  pinHarmonicBassLevel:
    with Properties^ do
     begin
      Name            := 'Harmonic Bass Level';
-     VariableAddress := @FMaxxBassLevel;
+     VariableAddress := @FHarmonicBassLevel;
      Direction       := drIn;
      Datatype        := dtFSample;
     end;
@@ -243,21 +243,21 @@ begin
   pinOriginalBassLevel:
    with Properties^ do
     begin
-     Name            := 'OriginalBassLevel';
+     Name            := 'Original Bass Level';
      VariableAddress := @FOriginalBassLevel;
      Direction       := drIn;
-     Datatype        := dtSingle;
+     Datatype        := dtFSample;
     end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
 // An input plug has changed value
-procedure TSEMaxBassModule.PlugStateChange(const CurrentPin: TSEPin);
+procedure TSEHarmonicBassModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
 
- case TSEMaxxBassPins(CurrentPin.PinID) of
+ case TSEHarmonicBassPins(CurrentPin.PinID) of
            pinInput : begin
                        ChooseProcess;
                        Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);

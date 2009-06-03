@@ -133,13 +133,13 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'BassEnhancer (STK based)';
+   Name := 'Bass Enhancer';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV BassEnhancer (STK based)';
+   ID := 'DAV Bass Enhancer';
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';
@@ -222,7 +222,7 @@ begin
      Name            := 'Input Level';
      VariableAddress := @FInputLevel;
      Direction       := drIn;
-     Datatype        := dtSingle;
+     Datatype        := dtFSample;
     end;
   pinMaxxBassLevel:
    with Properties^ do
@@ -246,7 +246,7 @@ begin
      Name            := 'OriginalBassLevel';
      VariableAddress := @FOriginalBassLevel;
      Direction       := drIn;
-     Datatype        := dtSingle;
+     Datatype        := dtFSample;
     end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;

@@ -93,6 +93,16 @@ type
     procedure ReadOnlyString(s: string); virtual;
     function GetHostProduct: string;
     function GetHostVendor: string;
+    procedure SetOnProcessDoublesEx(const Value: TProcessDoubleEvent);
+    procedure SetOnProcessEx(const Value: TProcessAudioEvent);
+    procedure SetOnProcessReplacingEx(const Value: TProcessAudioEvent);
+    procedure SetSampleRate(const Value: Single);
+    procedure SetPluginFlags(newFlags : TEffFlags);
+    procedure SetInitialDelay(const Delay: Integer);
+    procedure SetBlockSize(const Value: Integer);
+    procedure VersionMajorChanged;
+    procedure VersionMinorChanged;
+    procedure VersionReleaseChanged;
   protected
     FBlockSize              : Integer;
     FEditorForm             : TForm;
@@ -122,10 +132,6 @@ type
     function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
     function OfflineRun(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
-    procedure SetBlockSize(const Value: Integer); virtual;
-    procedure SetInitialDelay(const Delay: Integer); virtual;
-    procedure SetPluginFlags(newFlags : TEffFlags); virtual;
-    procedure SetSampleRate(const Value: Single); virtual;
     procedure SetUniqueID(const Value: string); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
@@ -141,6 +147,11 @@ type
     procedure BlockSizeChanged; virtual;
     procedure NumInputsChanged; virtual;
     procedure NumOutputsChanged; virtual;
+    procedure EffectFlagsChanged; virtual;
+    procedure OnProcessDoublesExChanged; virtual;
+    procedure OnProcessExChanged; virtual;
+    procedure OnProcessReplacingExChanged; virtual;
+    procedure InitialDelayChanged; virtual;
 
     procedure HostCallDispatchEffect(const opcode : TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single); override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
@@ -223,7 +234,7 @@ type
     property EffectName: string read FEffectName write SetEffectName;
     property HostProduct: string read GetHostProduct stored false;
     property HostVendor: string read GetHostVendor stored false;
-    property HostVersion: Integer read GetHostVendorVersion stored false;
+    property HostVersion: Integer read GetHostVendorVersion stored False;
     property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
     property IORatio: Single read FEffect.ioRatio write FEffect.ioRatio;
     property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
@@ -281,9 +292,9 @@ type
     property OnInputProperties: TOnGetChannelPropertiesEvent read FOnGetInputProperties write FOnGetInputProperties;
     property OnOutputProperties: TOnGetChannelPropertiesEvent read FOnGetOutputProperties write FOnGetOutputProperties;
 
-    property OnProcess: TProcessAudioEvent read FOnProcessEx write FOnProcessEx;
-    property OnProcessReplacing: TProcessAudioEvent read FOnProcessReplacingEx write FOnProcessReplacingEx;
-    property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcessDoublesEx write FOnProcessDoublesEx;
+    property OnProcess: TProcessAudioEvent read FOnProcessEx write SetOnProcessEx;
+    property OnProcessReplacing: TProcessAudioEvent read FOnProcessReplacingEx write SetOnProcessReplacingEx;
+    property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcessDoublesEx write SetOnProcessDoublesEx;
   end;
 
 
@@ -1119,9 +1130,62 @@ begin
   end;
 end;
 
+procedure TCustomVSTModule.SetOnProcessDoublesEx(
+  const Value: TProcessDoubleEvent);
+begin
+ if @FOnProcessDoublesEx <> @Value then
+  begin
+   FOnProcessDoublesEx := Value;
+   OnProcessDoublesExChanged;
+  end;
+end;
+
+procedure TCustomVSTModule.SetOnProcessEx(const Value: TProcessAudioEvent);
+begin
+ if @FOnProcessEx <> @Value then
+  begin
+   FOnProcessEx := Value;
+   OnProcessExChanged;
+  end;
+end;
+
+procedure TCustomVSTModule.SetOnProcessReplacingEx(
+  const Value: TProcessAudioEvent);
+begin
+ if @FOnProcessReplacingEx <> @Value then
+  begin
+   FOnProcessReplacingEx := Value;
+   OnProcessReplacingExChanged;
+  end;
+end;
+
 procedure TCustomVSTModule.SetPluginFlags(newFlags : TEffFlags);
 begin
- FEffect.EffectFlags := newFlags;
+ if FEffect.EffectFlags <> newFlags then
+  begin
+   FEffect.EffectFlags := newFlags;
+   EffectFlagsChanged;
+  end;
+end;
+
+procedure TCustomVSTModule.OnProcessDoublesExChanged;
+begin
+ // nothing todo here
+end;
+
+procedure TCustomVSTModule.OnProcessExChanged;
+begin
+ // nothing todo here
+end;
+
+procedure TCustomVSTModule.OnProcessReplacingExChanged;
+begin
+ // nothing todo here
+end;
+
+procedure TCustomVSTModule.EffectFlagsChanged;
+begin
+ // nothing todo here
 end;
 
 function TCustomVSTModule.GetPluginFlags: TEffFlags;
@@ -1141,14 +1205,19 @@ begin
  if FInitialDelay <> Delay then
   begin
    FInitialDelay := Delay;
-   FEffect.initialDelay := Delay;
-
-   if Pos('WaveLab', HostProduct) > 0 then
-    begin
-     IOChanged;
-    end else
-   if HostProduct <> 'energyXT' then IOChanged;
+   InitialDelayChanged;
   end;
+end;
+
+procedure TCustomVSTModule.InitialDelayChanged;
+begin
+ FEffect.InitialDelay := FInitialDelay;
+
+ if Pos('WaveLab', HostProduct) > 0 then
+  begin
+   IOChanged;
+  end else
+ if HostProduct <> 'energyXT' then IOChanged;
 end;
 
 procedure TCustomVSTModule.EditorPostUpdate;
@@ -1374,20 +1443,44 @@ end;
 
 procedure TCustomVSTModule.SetVersionMajor(Value: Integer);
 begin
-  FVersionMajor := Value;
-  UpdateVersion;
+ if FVersionMajor <> Value then
+  begin
+   FVersionMajor := Value;
+   VersionMajorChanged;
+  end;
 end;
 
 procedure TCustomVSTModule.SetVersionMinor(Value: Integer);
 begin
-  FVersionMinor := Value;
-  UpdateVersion;
+ if FVersionMinor <> Value then
+  begin
+   FVersionMinor := Value;
+   VersionMinorChanged;
+  end;
 end;
 
 procedure TCustomVSTModule.SetVersionRelease(Value: Integer);
 begin
-  FVersionRelease := Value;
-  UpdateVersion;
+ if FVersionRelease <> Value then
+  begin
+   FVersionRelease := Value;
+   VersionReleaseChanged;
+  end;
+end;
+
+procedure TCustomVSTModule.VersionMajorChanged;
+begin
+ UpdateVersion;
+end;
+
+procedure TCustomVSTModule.VersionMinorChanged;
+begin
+ UpdateVersion;
+end;
+
+procedure TCustomVSTModule.VersionReleaseChanged;
+begin
+ UpdateVersion;
 end;
 
 procedure TCustomVSTModule.UpdateVersion;

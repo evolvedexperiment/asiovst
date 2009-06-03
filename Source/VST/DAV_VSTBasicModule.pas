@@ -618,10 +618,9 @@ end;
 
 function TBasicVSTModule.GetHostVendorVersion: Integer;
 begin
-  if Assigned(FAudioMaster) then
-    Result := FAudioMaster(@FEffect, audioMasterGetVendorVersion, 0, 0, nil, 0)
-  else
-    Result := 0;
+ if Assigned(FAudioMaster)
+  then Result := FAudioMaster(@FEffect, audioMasterGetVendorVersion, 0, 0, nil, 0)
+  else Result := 0;
 end;
 
 function TBasicVSTModule.HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;

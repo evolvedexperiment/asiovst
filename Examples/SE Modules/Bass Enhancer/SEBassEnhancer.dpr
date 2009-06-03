@@ -6,9 +6,9 @@ uses
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEMaxxBassModule in 'SEMaxxBassModule.pas',
+  SEHarmonicBassModule in 'SEHarmonicBassModule.pas',
   SEBassEnhancerModule in 'SEBassEnhancerModule.pas',
-  SERenaissanceBassModule in 'SERenaissanceBassModule.pas';
+  SEResurrectionBassModule in 'SEResurrectionBassModule.pas';
 
 {$E sem}
 {$R *.res}
@@ -17,9 +17,9 @@ function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): B
 begin
  result := True;
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEMaxBassModule.GetModuleProperties(Properties);
+  0: TSEHarmonicBassModule.GetModuleProperties(Properties);
   1: TSEBassEnhancerModule.GetModuleProperties(Properties);
-  2: TSERenaissanceBassModule.GetModuleProperties(Properties);
+  2: TSEResurrectionBassModule.GetModuleProperties(Properties);
   else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;
 end;
@@ -29,9 +29,9 @@ begin
  result := nil;
  if (ProcessType = 1) then
   case Index of
-   0: result := TSEMaxBassModule.Create(SEAudioMaster, Reserved).Effect;
+   0: result := TSEHarmonicBassModule.Create(SEAudioMaster, Reserved).Effect;
    1: result := TSEBassEnhancerModule.Create(SEAudioMaster, Reserved).Effect;
-   2: result := TSERenaissanceBassModule.Create(SEAudioMaster, Reserved).Effect;
+   2: result := TSEResurrectionBassModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 

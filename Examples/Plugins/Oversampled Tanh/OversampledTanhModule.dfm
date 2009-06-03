@@ -3,7 +3,7 @@ object OversampledTanhModule: TOversampledTanhModule
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
-  Version = '0.0'
+  Version = '1.0'
   EffectName = 'Oversampled Tanh'
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
@@ -12,7 +12,6 @@ object OversampledTanhModule: TOversampledTanhModule
   BlockSize = 16
   CurrentProgram = 0
   CurrentProgramName = 'Init'
-  ProcessingMode = pmBlockSave
   BlockModeSize = 16
   InitialDelay = 16
   IORatio = 1.000000000000000000
@@ -62,6 +61,7 @@ object OversampledTanhModule: TOversampledTanhModule
   OnEditOpen = VSTEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 296
   Top = 130
   Height = 150

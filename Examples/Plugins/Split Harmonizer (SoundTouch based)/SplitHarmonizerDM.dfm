@@ -171,6 +171,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterUseAntiAliasChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
       Curve = ctLinear
@@ -186,6 +187,23 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterUseQuickSeekChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Use Auto Settings'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'UseAuto'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterAutoSettingsChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
       Curve = ctLinear

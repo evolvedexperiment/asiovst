@@ -16,6 +16,8 @@ type
     procedure ParamTransitionChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
     FDownsampler2x   : array[0..1] of TPolyphaseDownsampler32;
     FUpSampler2x     : array[0..1] of TPolyphaseUpsampler32;
@@ -28,11 +30,12 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Approximations, OversampledTanhGUI;
+  DAV_Approximations, DAV_VSTModuleWithDsp, OversampledTanhGUI;
 
 procedure TOversampledTanhModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
+ ProcessingMode := pmBlockSave;
 end;
 
 procedure TOversampledTanhModule.VSTModuleDestroy(Sender: TObject);
@@ -118,7 +121,7 @@ begin
  end;
 end;
 
-procedure TOversampledTanhModule.VSTModuleProcess(const inputs, outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel, Sample: Integer;
 begin
@@ -126,14 +129,30 @@ begin
   try
    for Channel := 0 to 1 do
     begin
-     FUpSampler2x[Channel].ProcessBlock(@inputs[Channel][0], @FBuffer[0], 16);
+     FUpSampler2x[Channel].ProcessBlock(@Inputs[Channel][0], @FBuffer[0], 16);
      for Sample := 0 to 2 * SampleFrames - 1
       do FBuffer[Sample] := CDenorm32 + FastTanhOpt5Term(FBuffer[Sample]);
-     FDownsampler2x[Channel].ProcessBlock(@FBuffer[0], @outputs[Channel][0], 16);
+     FDownsampler2x[Channel].ProcessBlock(@FBuffer[0], @Outputs[Channel][0], 16);
     end;
   finally
    FCriticalSection.Leave;
   end;
+end;
+
+procedure TOversampledTanhModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  Channel, Sample: Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to 1 do
+   begin
+    // nothing todo
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.
