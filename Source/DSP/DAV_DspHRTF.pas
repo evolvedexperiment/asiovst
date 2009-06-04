@@ -1,36 +1,44 @@
 unit DAV_DspHrtf;
 
+// This unit uses a spherical coordinate system with the following
+// specifications:
+//
+// - the azimuth is the angle to the front [-Pi..Pi]
+// - the elevation is the angle to the equator [-Pi/2..Pi/2]
+// - the radial distance r is assumed to be 1 and is not used
+//
+// With this definition a point (0, 0, 1) equals a point in front of the
+// listener, while a point (Pi/2, 0, 1) means a point hard left to the
+// listener. Finally the point (*, Pi/2, 1) means a point above the listener.
+// Note: the azimuth angle is not important anymore in case the source is on
+// the pole.
+
 interface
 
 {$I DAV_Compiler.INC}
 
 uses
   Classes, Graphics, SysUtils, Contnrs, DAV_Common, DAV_ChunkClasses,
-  DAV_HalfFloat, DAV_DspCommon;
+  DAV_HalfFloat, DAV_DspCommon, DAV_VectorMath;
 
 type
-  TSphereVector2D = record
-    Azimuth : Single;   // 0..2*PI
-    Polar   : Single;   // 0..PI
-  end;
-
   THrirEncoding = (heInteger, heFloat);
   THrirHeader = record
-    Position       : TSphereVector2D;  // position in spherical coordinates
-    Flags          : Integer;        // not used yet
-    SampleFrames   : Integer;        // samples per channel
-    SampleRate     : Single;         // samplerate
-    Encoding       : THrirEncoding;  // encoding (integer or float)
-    BytesPerSample : Integer;        // bytes used for one sample
+    Position       : TSphereVector3D;  // position in spherical coordinates
+    Flags          : Integer;          // not used yet
+    SampleFrames   : Integer;          // samples per channel
+    SampleRate     : Single;           // samplerate
+    Encoding       : THrirEncoding;    // encoding (integer or float)
+    BytesPerSample : Integer;          // bytes used for one sample
   end;
 
-  TInterpolationType = (itNearest, itLinear);
+  TInterpolationType = (itNearest, itLinear, itLinear3);
 
   TCustomHrir = class(TDefinedChunk)
   private
     procedure SetSampleFrames(const Value: Integer);
     procedure SetBytesPerSample(const Value: Integer);
-    function GetPosition: TSphereVector2D;
+    function GetPosition: TSphereVector3D;
   protected
     FHrirHeader : THrirHeader;
     FBuffer     : array [0..1] of Pointer;
@@ -49,6 +57,12 @@ type
       const SampleFrames: Integer; const Left, Right: PDAVSingleFixedArray); reintroduce; overload; virtual;
     constructor Create(Azimuth, Polar: Single; const SampleRate: Single;
       const SampleFrames: Integer; const Left, Right: PDAVDoubleFixedArray); reintroduce; overload; virtual;
+    constructor Create(Azimuth, Polar, Radius: Single; const SampleRate: Single;
+      const SampleFrames: Integer; const Left, Right: PDAVHalfFloatFixedArray); reintroduce; overload; virtual;
+    constructor Create(Azimuth, Polar, Radius: Single; const SampleRate: Single;
+      const SampleFrames: Integer; const Left, Right: PDAVSingleFixedArray); reintroduce; overload; virtual;
+    constructor Create(Azimuth, Polar, Radius: Single; const SampleRate: Single;
+      const SampleFrames: Integer; const Left, Right: PDAVDoubleFixedArray); reintroduce; overload; virtual;
     destructor Destroy; override;
 
     procedure LoadFromStream(Stream: TStream); override;
@@ -64,7 +78,7 @@ type
     procedure AssignRight64(Source: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
     class function GetClassChunkName: TChunkName; override;
 
-    property Position: TSphereVector2D read GetPosition;
+    property Position: TSphereVector3D read GetPosition;
   published
     property Azimuth: Single read FHrirHeader.Position.Azimuth; 
     property Polar: Single read FHrirHeader.Position.Polar;
@@ -224,13 +238,16 @@ type
     MeasurementType : ShortString;
     MeasuredLength  : Integer;
     ExcitationType  : ShortString;
+    Flags           : Integer;
   end;
 
   TCustomHrirMeasurementInformation = class(TDefinedChunk)
   private
     function GetString(const Index: Integer): string;
-    procedure SetString(const Index: Integer; const Value: string);
+    function GetSymmetric: Boolean;
     procedure SetMeasuredLength(const Value: Integer);
+    procedure SetString(const Index: Integer; const Value: string);
+    procedure SetSymmetric(const Value: Boolean);
   protected
     FMeasurementRecord : THrirMeasurementRecord;
     function GetChunkSize: Cardinal; override;
@@ -244,6 +261,7 @@ type
     property MeasurementType: string index 0 read GetString write SetString;
     property MeasuredLength: Integer read FMeasurementRecord.MeasuredLength write SetMeasuredLength;
     property ExcitationType: string index 1 read GetString write SetString;
+    property Symmetric: Boolean read GetSymmetric write SetSymmetric;
   end;
 
 
@@ -273,6 +291,9 @@ type
     function GetRoomType: String;
     function GetSex: THrirSexType;
     function GetSubjectString(const Index: Integer): String;
+    function GetSymmetric: Boolean;
+    function GetHrir(Index: Integer): TCustomHrir;
+    function GetHrirCount: Integer;
     procedure SetDate(const Value: TDateTime);
     procedure SetDistance(const Value: Single);
     procedure SetGeneralInfoString(const Index: Integer; const Value: String);
@@ -284,8 +305,11 @@ type
     procedure SetRoomType(const Value: String);
     procedure SetSex(const Value: THrirSexType);
     procedure SetSubjectString(const Index: Integer; const Value: String);
-    function GetHrir(Index: Integer): TCustomHrir;
-    function GetHrirCount: Integer;
+    procedure SetSymmetric(const Value: Boolean);
+    procedure CalculateScaleFactors(const SpherePos: TSphereVector3D;
+      const A, B, C: TSphereVector3D; var ScaleA, ScaleB, ScaleC: Double); overload;
+    procedure CalculateScaleFactors(const SpherePos: TSphereVector3D;
+      const A, B: TSphereVector3D; var ScaleA, ScaleB: Double); overload;
   protected
     FGeneralInformation     : TCustomHrirGeneralInformation;
     FSubjectInformation     : TCustomHrirSubjectInformation;
@@ -298,15 +322,27 @@ type
     procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass;
       Stream: TStream); override;
     procedure Interpolate2Hrir(const Azimuth, Polar: Single;
-      const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray); overload; virtual;
+      const SampleFrames: Integer;
+      const Left, Right: PDavSingleFixedArray); overload; virtual;
     procedure Interpolate2Hrir(const Azimuth, Polar: Single;
-      const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray); overload; virtual;
+      const SampleFrames: Integer;
+      const Left, Right: PDavDoubleFixedArray); overload; virtual;
     procedure Interpolate3Hrir(const Azimuth, Polar: Single;
-      const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray); overload; virtual;
+      const SampleFrames: Integer;
+      const Left, Right: PDavSingleFixedArray); overload; virtual;
     procedure Interpolate3Hrir(const Azimuth, Polar: Single;
-      const SampleFrames: Integer; const Left, Right: PDavDoubleFixedArray); overload; virtual;
+      const SampleFrames: Integer;
+      const Left, Right: PDavDoubleFixedArray); overload; virtual;
+    function FindNearestHrirs(const SpherePos: TSphereVector2D): TCustomHrir; overload;
+    function FindNearestHrirs(const SpherePos: TSphereVector3D): TCustomHrir; overload;
+    function FindSecondNearestHrirs(const SpherePos: TSphereVector2D;
+      const Nearest: TCustomHrir): TCustomHrir; overload; virtual;
+    function FindSecondNearestHrirs(const SpherePos: TSphereVector3D;
+      const Nearest: TCustomHrir): TCustomHrir; overload; virtual;
     procedure FindNearestHrirs(const SpherePos: TSphereVector2D;
-      var A, B, C: TCustomHrir);
+      var A, B, C: TCustomHrir); overload; virtual;
+    procedure FindNearestHrirs(const SpherePos: TSphereVector3D;
+      var A, B, C: TCustomHrir); overload; virtual;
     function GetChunkSize: Cardinal; override;
     function GetMaximumHrirSize: Integer; virtual;
   public
@@ -357,6 +393,7 @@ type
     property MeasurementType: String index 0 read GetMeasurementString write SetMeasurementString;
     property ExcitationType: String index 1 read GetMeasurementString write SetMeasurementString;
     property MeasuredLength: Integer read GetMeasuredLength write SetMeasuredLength;
+    property Symmetric: Boolean read GetSymmetric write SetSymmetric;
     property SampleRate: Single read FSampleRate write FSampleRate;
     property InterpolationType: TInterpolationType read FInterpolationType write FInterpolationType default itLinear;
     property MaximumHrirSize: Integer read GetMaximumHrirSize; 
@@ -413,34 +450,14 @@ type
 implementation
 
 uses
-  Math, DAV_Complex;
+  Math, DAV_Complex, DAV_Approximations;
 
 resourcestring
   RCStrPositiveValueOnly = 'Value must be larger than 0!';
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrChunkAlreadyExists = 'Chunk already exists';
 
-{ Vector Geometry }
-
-function GetOrthodromicDistance(A, B: TSphereVector2D): Single;
-begin
-  Result := arccos(sin(A.Polar) * sin(B.Polar) +
-                   cos(A.Polar) * cos(B.Polar) * cos(B.Azimuth - A.Azimuth));
-end;
-
-function GetOrthodromicAngle(A, B: TSphereVector2D): Single;
-begin
-  Result := sin(A.Polar) * sin(B.Polar) +
-            cos(A.Polar) * cos(B.Polar) * cos(B.Azimuth - A.Azimuth);
-end;
-
-function MakeSphereVector2D(const Azimuth, Polar: Single): TSphereVector2D;
-begin
- result.Azimuth := Azimuth;
- result.Polar   := Polar;
-end;
-
-
+  
 { TCustomHrir }
 
 constructor TCustomHrir.Create;
@@ -458,7 +475,7 @@ begin
  CreateBuffers;
 end;
 
-constructor TCustomHrir.Create(Azimuth, Polar: Single;
+constructor TCustomHrir.Create(Azimuth, Polar, Radius: Single;
   const SampleRate: Single; const SampleFrames: Integer; const Left,
   Right: PDAVHalfFloatFixedArray);
 begin
@@ -481,9 +498,9 @@ begin
  FChunkSize := GetChunkSize;
 end;
 
-constructor TCustomHrir.Create(Azimuth, Polar: Single;
-  const SampleRate: Single; const SampleFrames: Integer;
-  const Left, Right: PDAVSingleFixedArray);
+constructor TCustomHrir.Create(Azimuth, Polar, Radius: Single;
+  const SampleRate: Single; const SampleFrames: Integer; const Left,
+  Right: PDAVSingleFixedArray);
 begin
  inherited Create;
  FChunkName := GetClassChunkName;
@@ -492,6 +509,7 @@ begin
  FHrirHeader.SampleFrames     := SampleFrames;
  FHrirHeader.Position.Azimuth := Azimuth;
  FHrirHeader.Position.Polar   := Polar;
+ FHrirHeader.Position.Radius  := Radius;
  FHrirHeader.SampleRate       := SampleRate;
  with FHrirHeader do
   begin
@@ -502,6 +520,64 @@ begin
  Move(Left^[0], PDAVSingleFixedArray(FBuffer[0])^[0], SampleFrames * SizeOf(Single));
  Move(Right^[0], PDAVSingleFixedArray(FBuffer[1])^[0], SampleFrames * SizeOf(Single));
  FChunkSize := GetChunkSize;
+end;
+
+constructor TCustomHrir.Create(Azimuth, Polar, Radius: Single;
+  const SampleRate: Single; const SampleFrames: Integer; const Left,
+  Right: PDAVDoubleFixedArray);
+begin
+ inherited Create;
+ FChunkName := GetClassChunkName;
+ FillChar(FHrirHeader, SizeOf(THrirHeader), 0);
+
+ FHrirHeader.SampleFrames     := SampleFrames;
+ FHrirHeader.Position.Azimuth := Azimuth;
+ FHrirHeader.Position.Polar   := Polar;
+ FHrirHeader.Position.Radius  := Radius;
+ FHrirHeader.SampleRate       := SampleRate;
+ with FHrirHeader do
+  begin
+   Encoding       := heFloat;
+   BytesPerSample := 8;
+  end;
+ CreateBuffers;
+ Move(Left^[0], PDAVDoubleFixedArray(FBuffer[0])^[0], SampleFrames * SizeOf(Double));
+ Move(Right^[0], PDAVDoubleFixedArray(FBuffer[1])^[0], SampleFrames * SizeOf(Double));
+ FChunkSize := GetChunkSize;
+end;
+
+constructor TCustomHrir.Create(Azimuth, Polar: Single;
+  const SampleRate: Single; const SampleFrames: Integer; const Left,
+  Right: PDAVHalfFloatFixedArray);
+begin
+ Create(Azimuth, Polar, 1, SampleRate, SampleFrames, Left, Right);
+end;
+
+constructor TCustomHrir.Create(Azimuth, Polar: Single;
+  const SampleRate: Single; const SampleFrames: Integer;
+  const Left, Right: PDAVSingleFixedArray);
+begin
+ Create(Azimuth, Polar, 1, SampleRate, SampleFrames, Left, Right);
+end;
+
+constructor TCustomHrir.Create(Azimuth, Polar: Single;
+  const SampleRate: Single; const SampleFrames: Integer;
+  const Left, Right: PDAVDoubleFixedArray);
+begin
+ Create(Azimuth, Polar, 1, SampleRate, SampleFrames, Left, Right);
+end;
+
+destructor TCustomHrir.Destroy;
+begin
+ Dispose(FBuffer[0]);
+ Dispose(FBuffer[1]);
+ inherited;
+end;
+
+procedure TCustomHrir.CreateBuffers;
+begin
+ ReallocMem(FBuffer[0], SampleFrames * BytesPerSample);
+ ReallocMem(FBuffer[1], SampleFrames * BytesPerSample);
 end;
 
 procedure TCustomHrir.AssignTo(Dest: TPersistent);
@@ -517,42 +593,6 @@ begin
    end;
 end;
 
-constructor TCustomHrir.Create(Azimuth, Polar: Single;
-  const SampleRate: Single; const SampleFrames: Integer;
-  const Left, Right: PDAVDoubleFixedArray);
-begin
- inherited Create;
- FChunkName := GetClassChunkName;
- FillChar(FHrirHeader, SizeOf(THrirHeader), 0);
-
- FHrirHeader.SampleFrames     := SampleFrames;
- FHrirHeader.Position.Azimuth := Azimuth;
- FHrirHeader.Position.Polar   := Polar;
- FHrirHeader.SampleRate       := SampleRate;
- with FHrirHeader do
-  begin
-   Encoding       := heFloat;
-   BytesPerSample := 8;
-  end;
- CreateBuffers;
- Move(Left^[0], PDAVDoubleFixedArray(FBuffer[0])^[0], SampleFrames * SizeOf(Double));
- Move(Right^[0], PDAVDoubleFixedArray(FBuffer[1])^[0], SampleFrames * SizeOf(Double));
- FChunkSize := GetChunkSize;
-end;
-
-procedure TCustomHrir.CreateBuffers;
-begin
- ReallocMem(FBuffer[0], SampleFrames * BytesPerSample);
- ReallocMem(FBuffer[1], SampleFrames * BytesPerSample);
-end;
-
-destructor TCustomHrir.Destroy;
-begin
- Dispose(FBuffer[0]);
- Dispose(FBuffer[1]);
- inherited;
-end;
-
 function TCustomHrir.GetChunkSize: Cardinal;
 begin
  with FHrirHeader
@@ -564,7 +604,7 @@ begin
  result := 'hrir';
 end;
 
-function TCustomHrir.GetPosition: TSphereVector2D;
+function TCustomHrir.GetPosition: TSphereVector3D;
 begin
  result := FHrirHeader.Position;
 end;
@@ -757,7 +797,7 @@ begin
    CreateBuffers;
 
    // check constraints
-   assert(Integer(FChunkSize) - SizeOf(THrirHeader) >= 2 * SampleFrames * FHrirHeader.BytesPerSample);
+   assert(Integer(FChunkSize) - (SizeOf(THrirHeader)) >= 2 * SampleFrames * FHrirHeader.BytesPerSample);
    assert(Size - Position >= 2 * SampleFrames * BytesPerSample);
 
    // read data
@@ -1326,7 +1366,7 @@ begin
  // calculate chunk size
  with FMeasurementRecord
   do result := 2 + SizeOf(Distance) + Byte(MeasurementType[0]) +
-       SizeOf(MeasuredLength) + Byte(ExcitationType[0]);
+       SizeOf(MeasuredLength) + Byte(ExcitationType[0]) + SizeOf(Integer);
 end;
 
 class function TCustomHrirMeasurementInformation.GetClassChunkName: TChunkName;
@@ -1343,15 +1383,24 @@ begin
  end;
 end;
 
+function TCustomHrirMeasurementInformation.GetSymmetric: Boolean;
+begin
+ result := (FMeasurementRecord.Flags and 1) > 0;
+end;
+
 procedure TCustomHrirMeasurementInformation.LoadFromStream(Stream: TStream);
 var
   StringSize : Byte;
+  StreamPos  : Int64;
 begin
  // load basic chunk information
  inherited LoadFromStream(Stream);
 
  with Stream, FMeasurementRecord do
   begin
+   // store stream position
+   StreamPos := Position;
+
    // read distance
    Read(Distance, SizeOf(Distance));
 
@@ -1370,6 +1419,12 @@ begin
      Byte(MeasurementType[0]) <= FChunkSize);
    SetLength(ExcitationType, StringSize);
    Read(ExcitationType[1], StringSize);
+
+   // read flags
+   Read(Flags, 4);
+
+   // reset stream position
+   Position := (StreamPos + FChunkSize);
   end;
 end;
 
@@ -1396,6 +1451,9 @@ begin
    // write 'ExcitationType' string
    Write(ExcitationType[0], 1);
    Write(ExcitationType[1], Byte(ExcitationType[0]));
+
+   // write flags
+   Write(Flags, SizeOf(Integer));
   end;
 end;
 
@@ -1415,6 +1473,13 @@ begin
   1 : FMeasurementRecord.ExcitationType := Value;
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
  end;
+end;
+
+procedure TCustomHrirMeasurementInformation.SetSymmetric(const Value: Boolean);
+begin
+ if Value
+  then FMeasurementRecord.Flags := 1
+  else FMeasurementRecord.Flags := 0;
 end;
 
 { TCustomHrtfs }
@@ -1598,6 +1663,13 @@ begin
  else result := '';
 end;
 
+function TCustomHrtfs.GetSymmetric: Boolean;
+begin
+ if not assigned(FMeasurementInformation)
+  then result := FMeasurementInformation.Symmetric
+  else result := False;
+end;
+
 procedure TCustomHrtfs.SetDate(const Value: TDateTime);
 begin
  if not assigned(FGeneralInformation) then
@@ -1763,6 +1835,150 @@ begin
    end;
 end;
 
+procedure TCustomHrtfs.SetSymmetric(const Value: Boolean);
+begin
+ if not assigned(FMeasurementInformation) then
+  begin
+   FMeasurementInformation := TCustomHrirMeasurementInformation.Create;
+   AddChunk(FMeasurementInformation);
+  end;
+ FMeasurementInformation.Symmetric := Value;
+end;
+
+function GetOrthodromicAngle2DWithoutArcCos(A, B: TSphereVector3D): Double;
+var
+  CosAzimuth : Double;
+begin
+ CosAzimuth := cos(A.Azimuth - B.Azimuth);
+ result := 0.5 * ((cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
+                   cos(A.Polar + B.Polar) * (CosAzimuth - 1)));
+end;
+
+function GetSphericTriangleAngleNoCos(A, B, C: Double): Double;
+begin
+ result := arccos((A - B * C) / (sqrt((1 - sqr(B)) * (1 - sqr(C)))));
+end;
+
+procedure TCustomHrtfs.CalculateScaleFactors(const SpherePos, A,
+  B: TSphereVector3D; var ScaleA, ScaleB: Double);
+var
+  HrirAngle : Double;
+  Angle     : Array [0..1] of Single;
+begin
+ // calculate vector distances
+ HrirAngle := GetOrthodromicAngle2D(A, B);
+ Angle[0]  := GetOrthodromicAngle2D(A, SpherePos);
+ Angle[1]  := GetOrthodromicAngle2D(B, SpherePos);
+
+ // calculate wheighting (todo: check whether still valid!)
+// ScaleA := (sqr(Angle[1]) + sqr(HrirAngle) - sqr(Angle[0])) / HrirAngle;
+ ScaleA := Angle[1] / (Angle[0] + Angle[1]); 
+ ScaleB := 1 - ScaleA;
+
+ // verify constraints
+ assert(ScaleA < 1);
+end;
+
+procedure TCustomHrtfs.CalculateScaleFactors(const SpherePos, A, B,
+  C: TSphereVector3D; var ScaleA, ScaleB, ScaleC: Double);
+var
+  AngleA       : Array [0..2] of Double;
+  PntA         : Array [0..2] of Double;
+  InnerAngles  : Array [0..2] of Double;
+  TotalAngle   : Array [0..2] of Double;
+  HalfAngles   : Array [0..1, 0..2] of Double;
+  SidePart     : Array [0..1, 0..2] of Double;
+begin
+ // calculate orthodromic angle/distance to desired position (without arccos)
+ AngleA[0] := GetOrthodromicAngle2DWithoutArcCos(A, SpherePos); // a'
+ AngleA[1] := GetOrthodromicAngle2DWithoutArcCos(B, SpherePos); // b'
+ AngleA[2] := GetOrthodromicAngle2DWithoutArcCos(C, SpherePos); // c'
+
+ // calculate orthodromic angle/distance between Hrirs (without arccos)
+ PntA[0] := GetOrthodromicAngle2DWithoutArcCos(B, C); // a
+ PntA[1] := GetOrthodromicAngle2DWithoutArcCos(C, A); // b
+ PntA[2] := GetOrthodromicAngle2DWithoutArcCos(A, B); // c
+
+ // from cos(a) = cos(b) * cos(c) + sin(b) * sin(c) * cos(alpha)
+ // <=>  sin(b) * sin(c) * cos(alpha) = cos(a) - cos(b) * cos(c)
+ // <=>  cos(alpha) = (cos(a) - cos(b) * cos(c)) / (sin(b) * sin(c))
+ // <=>  alpha = arccos((cos(a) - cos(b) * cos(c)) / (sin(b) * sin(c)))
+
+ // calculate inner angles
+ InnerAngles[0] := GetSphericTriangleAngleNoCos(PntA[0], AngleA[2], AngleA[1]);
+ InnerAngles[1] := GetSphericTriangleAngleNoCos(PntA[1], AngleA[0], AngleA[2]);
+ InnerAngles[2] := GetSphericTriangleAngleNoCos(PntA[2], AngleA[1], AngleA[0]);
+
+ // check position lies inside the triangle
+ assert(abs( (InnerAngles[0] + InnerAngles[1] + InnerAngles[2]) - 2 * Pi) < 1E-5);
+
+ // half angles (part 1)
+ HalfAngles[0, 0] := GetSphericTriangleAngleNoCos(AngleA[0], AngleA[2], PntA[1]);
+ HalfAngles[0, 1] := GetSphericTriangleAngleNoCos(AngleA[1], AngleA[0], PntA[2]);
+ HalfAngles[0, 2] := GetSphericTriangleAngleNoCos(AngleA[2], AngleA[1], PntA[0]);
+
+ // half angles (part 2)
+ HalfAngles[1, 0] := GetSphericTriangleAngleNoCos(AngleA[0], PntA[2], AngleA[1]);
+ HalfAngles[1, 1] := GetSphericTriangleAngleNoCos(AngleA[1], PntA[0], AngleA[2]);
+ HalfAngles[1, 2] := GetSphericTriangleAngleNoCos(AngleA[2], PntA[1], AngleA[0]);
+
+ // calculate angles
+ TotalAngle[0] := GetSphericTriangleAngleNoCos(PntA[0], PntA[1], PntA[2]); // alpha
+ TotalAngle[1] := GetSphericTriangleAngleNoCos(PntA[1], PntA[2], PntA[0]); // beta
+ TotalAngle[2] := GetSphericTriangleAngleNoCos(PntA[2], PntA[0], PntA[1]); // gamma
+
+ // check position lies inside the triangle
+ assert(abs((HalfAngles[0, 1] + HalfAngles[1, 2]) - TotalAngle[0]) < 1E-3);
+ assert(abs((HalfAngles[0, 2] + HalfAngles[1, 0]) - TotalAngle[1]) < 1E-3);
+ assert(abs((HalfAngles[0, 0] + HalfAngles[1, 1]) - TotalAngle[2]) < 1E-3);
+
+(*
+ // calculate triangle angles (using spherical trigonometry)
+ Angles[0] := arccos((PntA[0] - PntA[1] * PntA[2]) / (sqrt(1 - sqr(PntA[1])) * sqrt(1 - sqr(PntA[2]))));
+ Angles[1] := arccos((PntA[1] - PntA[2] * PntA[0]) / (sqrt(1 - sqr(PntA[2])) * sqrt(1 - sqr(PntA[0]))));
+ Angles[2] := arccos((PntA[2] - PntA[0] * PntA[1]) / (sqrt(1 - sqr(PntA[0])) * sqrt(1 - sqr(PntA[1]))));
+
+ // calculate triangle angles between (using spherical trigonometry)
+ HalfAng[0] := arccos(Limit((AngleA[1] - AngleA[0] * PntA[2]) / (sqrt(1 - sqr(AngleA[0])) * sqrt(1 - sqr(PntA[2])))));
+ HalfAng[1] := arccos(Limit((AngleA[2] - AngleA[1] * PntA[0]) / (sqrt(1 - sqr(AngleA[1])) * sqrt(1 - sqr(PntA[0])))));
+ HalfAng[2] := arccos(Limit((AngleA[0] - AngleA[2] * PntA[1]) / (sqrt(1 - sqr(AngleA[2])) * sqrt(1 - sqr(PntA[1])))));
+*)
+
+
+ // calculate side parts
+ // from cot(a) = (sin(beta) * cot(alpha) + cos(c) * cos(beta)) / sin(c)
+
+ SidePart[0, 0] := arccot((sin(TotalAngle[2]) * cot(HalfAngles[0, 1]) + PntA[2] * cos(TotalAngle[2])) / sqrt(1 - sqr(PntA[2])));
+ SidePart[0, 1] := arccot((sin(TotalAngle[0]) * cot(HalfAngles[0, 2]) + PntA[0] * cos(TotalAngle[0])) / sqrt(1 - sqr(PntA[0])));
+ SidePart[0, 2] := arccot((sin(TotalAngle[1]) * cot(HalfAngles[0, 0]) + PntA[1] * cos(TotalAngle[1])) / sqrt(1 - sqr(PntA[1])));
+
+ assert(SidePart[0, 0] < arccos(PntA[0]));
+ assert(SidePart[0, 1] < arccos(PntA[1]));
+ assert(SidePart[0, 2] < arccos(PntA[2]));
+
+ SidePart[1, 0] := arccos(PntA[0]) - SidePart[0, 0];
+ SidePart[1, 1] := arccos(PntA[1]) - SidePart[0, 1];
+ SidePart[1, 2] := arccos(PntA[2]) - SidePart[0, 2];
+
+ ScaleA := sqrt(SidePart[1, 1] / arccos(PntA[1]) * SidePart[1, 2] / arccos(PntA[2]));
+ ScaleB := sqrt(SidePart[1, 2] / arccos(PntA[2]) * SidePart[1, 0] / arccos(PntA[0]));
+ ScaleC := sqrt(SidePart[1, 0] / arccos(PntA[0]) * SidePart[1, 1] / arccos(PntA[1]));
+
+(*
+ Scale[0] := HalfAngles[0, 0] * HalfAngles[1, 0] / (TotalAngle[1] * TotalAngle[2]);
+ Scale[1] := HalfAngles[0, 1] * HalfAngles[1, 1] / (TotalAngle[2] * TotalAngle[0]);
+ Scale[2] := HalfAngles[0, 2] * HalfAngles[1, 2] / (TotalAngle[0] * TotalAngle[1]);
+*)
+
+(*
+ // verify scaling order
+ assert(Scale[0] > Scale[1]);
+ assert(Scale[1] > Scale[2]);
+
+ assert(abs(Scale[0] + Scale[1] + Scale[2] - 1) < 1E-3);
+*)
+end;
+
 procedure TCustomHrtfs.InterpolateHrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray);
 begin
@@ -1798,52 +2014,49 @@ procedure TCustomHrtfs.Interpolate2Hrir(const Azimuth, Polar: Single;
 var
   TempData  : PDavSingleFixedArray;
   Hrirs     : Array [0..1] of TCustomHrir;
-  HrirDist  : Double;
-  Dist      : Array [0..1] of Single;
-  Scale     : Array [0..1] of Single;
-  SpherePos : TSphereVector2D;
+  Scale     : Array [0..1] of Double;
+  SpherePos : TSphereVector3D;
   Sample    : Integer;
 begin
- SpherePos := MakeSphereVector2D(Azimuth, Polar);
+ SpherePos := MakeSphereVector3D(Azimuth, Polar);
  Hrirs[0] := TCustomHrir(FHrirList[0]);
  Hrirs[1] := TCustomHrir(FHrirList[1]);
-
- // calculate vector distances
- HrirDist := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
- Dist[0]  := GetOrthodromicDistance(Hrirs[0].Position, SpherePos);
- Dist[1]  := GetOrthodromicDistance(Hrirs[1].Position, SpherePos);
 
  case FInterpolationType of
   itNearest :
    begin
     // select nearest
-    if Dist[1] < Dist[0]
+    if GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos) <
+       GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos)
      then Hrirs[0] := Hrirs[1];
 
     // move data nearest
     Hrirs[0].MoveLeft32(Left, SampleFrames);
     Hrirs[0].MoveRight32(Right, SampleFrames);
    end;
-  itLinear :
+  itLinear, itLinear3 :
    begin
     // calculate wheighting
-    Scale[0] := (sqr(Dist[1]) + sqr(HrirDist) - sqr(Dist[0])) / HrirDist;
-    Scale[1] := 1 - Scale[0];
+    CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
+      Scale[0], Scale[1]);
 
     // allocate a temporary buffer
     ReallocMem(TempData, SampleFrames * SizeOf(Single));
+    try
+     // linear interpolate left
+     Hrirs[0].MoveLeft32(TempData, SampleFrames);
+     Hrirs[1].MoveLeft32(Left, SampleFrames);
+     for Sample := 0 to SampleFrames - 1
+      do Left^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Left^[Sample];
 
-    // linear interpolate left
-    Hrirs[0].MoveLeft32(TempData, SampleFrames);
-    Hrirs[1].MoveLeft32(Left, SampleFrames);
-    for Sample := 0 to SampleFrames - 1
-     do Left^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Left^[Sample];
-
-    // linear interpolate right
-    Hrirs[0].MoveRight32(TempData, SampleFrames);
-    Hrirs[1].MoveRight32(Right, SampleFrames);
-    for Sample := 0 to SampleFrames - 1
-     do Right^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Right^[Sample];
+     // linear interpolate right
+     Hrirs[0].MoveRight32(TempData, SampleFrames);
+     Hrirs[1].MoveRight32(Right, SampleFrames);
+     for Sample := 0 to SampleFrames - 1
+      do Right^[Sample] := Scale[0] * TempData^[Sample] + Scale[1] * Right^[Sample];
+    finally
+     Dispose(TempData);
+    end;
    end;
  end;
 
@@ -1854,37 +2067,31 @@ procedure TCustomHrtfs.Interpolate2Hrir(const Azimuth, Polar: Single;
 var
   TempData  : PDavDoubleFixedArray;
   Hrirs     : Array [0..1] of TCustomHrir;
-  HrirDist  : Double;
-  Dist      : Array [0..1] of Double;
   Scale     : Array [0..1] of Double;
-  SpherePos : TSphereVector2D;
+  SpherePos : TSphereVector3D;
   Sample    : Integer;
 begin
- SpherePos := MakeSphereVector2D(Azimuth, Polar);
+ SpherePos := MakeSphereVector3D(Azimuth, Polar);
  Hrirs[0] := TCustomHrir(FHrirList[0]);
  Hrirs[1] := TCustomHrir(FHrirList[1]);
-
- // calculate vector distances
- HrirDist := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
- Dist[0]  := GetOrthodromicDistance(Hrirs[0].Position, SpherePos);
- Dist[1]  := GetOrthodromicDistance(Hrirs[1].Position, SpherePos);
 
  case FInterpolationType of
   itNearest :
    begin
     // select nearest
-    if Dist[1] < Dist[0]
+    if GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos) <
+       GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos)
      then Hrirs[0] := Hrirs[1];
 
     // move data nearest
     Hrirs[0].MoveLeft64(Left, SampleFrames);
     Hrirs[0].MoveRight64(Right, SampleFrames);
    end;
-  itLinear :
+  itLinear, itLinear3 :
    begin
     // calculate wheighting
-    Scale[0] := (sqr(Dist[1]) + sqr(HrirDist) - sqr(Dist[0])) / HrirDist;
-    Scale[1] := 1 - Scale[0];
+    CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
+      Scale[0], Scale[1]);
 
     // allocate a temporary buffer
     ReallocMem(TempData, SampleFrames * SizeOf(Double));
@@ -1910,30 +2117,74 @@ end;
 procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
   const SampleFrames: Integer; const Left, Right: PDavSingleFixedArray);
 var
-  TempData  : Array [0..1] of PDavSingleFixedArray;
-  Hrirs     : Array [0..2] of TCustomHrir;
-  HrirPos   : Array [0..2] of TSphereVector2D;
-  SpherePos : TSphereVector2D;
-  DistA     : Array [0..2] of Double;
-  PntA      : Array [0..2] of Double;
-  Angles    : Array [0..2] of Double;
-  HalfAng   : Array [0..2] of Double;
-  Relations : Array [0..2] of Double;
-  Scale     : Array [0..2] of Double;
-  Sample    : Integer;
+  TempData     : Array [0..1] of PDavSingleFixedArray;
+  Hrirs        : Array [0..2] of TCustomHrir;
+  HrirPos      : Array [0..2] of TSphereVector3D;
+  SpherePos    : TSphereVector3D;
+  AngleA       : Array [0..1] of Double;
+  i            : Integer;
+  MinimumAngle : Single;
+  CurrentAngle : Single;
+  Scale        : Array [0..2] of Double;
+  Sample       : Integer;
 begin
- SpherePos := MakeSphereVector2D(Azimuth, Polar);
- FindNearestHrirs(SpherePos, Hrirs[0], Hrirs[1], Hrirs[2]);
+ SpherePos := MakeSphereVector3D(Azimuth, Polar);
 
  case FInterpolationType of
   itNearest :
    begin
+    Hrirs[0] := FindNearestHrirs(SpherePos);
+
     // move data nearest
     Hrirs[0].MoveLeft32(Left, SampleFrames);
     Hrirs[0].MoveRight32(Right, SampleFrames);
    end;
   itLinear :
    begin
+    // find nearest HRIR and set position shortcut
+    Hrirs[0] := FindNearestHrirs(SpherePos);
+    HrirPos[0] := Hrirs[0].Position;
+
+    // check if a single Hrir is hit exactly
+    if (SpherePos.Polar = HrirPos[0].Polar) and
+       (SpherePos.Azimuth = HrirPos[0].Azimuth) then
+     begin
+      Hrirs[0].MoveLeft32(Left, SampleFrames);
+      Hrirs[0].MoveRight32(Right, SampleFrames);
+      Exit;
+     end;
+
+    // find second nearest HRIR and set its position shortcut
+    Hrirs[1] := FindSecondNearestHrirs(SpherePos, Hrirs[0]);
+    HrirPos[1] := Hrirs[1].Position;
+
+    // calculate wheighting
+    CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
+      Scale[0], Scale[1]);
+
+    // allocate a temporary buffer
+    GetMem(TempData[0], SampleFrames * SizeOf(Single));
+    try
+     // linear interpolate left
+     Hrirs[0].MoveLeft32(TempData[0], SampleFrames);
+     Hrirs[1].MoveLeft32(Left, SampleFrames);
+     for Sample := 0 to SampleFrames - 1
+      do Left^[Sample] := Scale[0] * TempData[0]^[Sample] + Scale[1] * Left^[Sample];
+
+     // linear interpolate right
+     Hrirs[0].MoveRight32(TempData[0], SampleFrames);
+     Hrirs[1].MoveRight32(Right, SampleFrames);
+     for Sample := 0 to SampleFrames - 1
+      do Right^[Sample] := Scale[0] * TempData[0]^[Sample] + Scale[1] * Right^[Sample];
+    finally
+     Dispose(TempData[0]);
+    end;
+   end;
+  itLinear3 :
+   begin
+    // find nearest three HRIRs
+    FindNearestHrirs(SpherePos, Hrirs[0], Hrirs[1], Hrirs[2]);
+
     HrirPos[0] := Hrirs[0].Position;
     HrirPos[1] := Hrirs[1].Position;
     HrirPos[2] := Hrirs[2].Position;
@@ -1947,20 +2198,82 @@ begin
       Exit;
      end;
 
-    // check only 1D interpolation
-    if ((SpherePos.Polar   = Hrirs[0].Position.Polar) and
-        (SpherePos.Polar   = Hrirs[1].Position.Polar)) or
-       ((SpherePos.Azimuth = Hrirs[0].Position.Azimuth) and
-        (SpherePos.Azimuth = Hrirs[1].Position.Azimuth)) then
+    // check if polar angle is identical
+    if (SpherePos.Polar <> HrirPos[0].Polar) and
+       (HrirPos[0].Polar = HrirPos[1].Polar) and
+       (HrirPos[1].Polar = HrirPos[2].Polar) and
+       (HrirPos[2].Polar = HrirPos[0].Polar) then
      begin
-      DistA[0] := GetOrthodromicDistance(Hrirs[1].Position, SpherePos);
-      DistA[1] := GetOrthodromicDistance(Hrirs[0].Position, Hrirs[1].Position);
+      i := 0;
+      Hrirs[2] := Hrirs[1];
+      while i < FHrirList.Count do
+       if (TCustomHrir(FHrirList[i]).Polar <> HrirPos[0].Polar) then
+        begin
+         Hrirs[1] := TCustomHrir(FHrirList[i]);
+         HrirPos[1] := Hrirs[1].Position;
+         MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
+         inc(i);
+         break;
+        end else inc(i);
+      while i < FHrirList.Count do
+       begin
+        CurrentAngle := GetOrthodromicAngle2D(TCustomHrir(FHrirList[i]).Position, SpherePos);
+        if (TCustomHrir(FHrirList[i]).Polar <> HrirPos[0].Polar) and
+           (CurrentAngle < MinimumAngle) then
+         begin
+          Hrirs[1] := TCustomHrir(FHrirList[i]);
+          HrirPos[1] := Hrirs[1].Position;
+          MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
+         end;
+        inc(i);
+       end;
+     end;
 
-      assert(DistA[0] > 0);
-      assert(DistA[1] > 0);
+    // check if polar angle is identical
+    if (SpherePos.Azimuth <> HrirPos[0].Azimuth) and
+       (HrirPos[0].Azimuth = HrirPos[1].Azimuth) and
+       (HrirPos[1].Azimuth = HrirPos[2].Azimuth) and
+       (HrirPos[2].Azimuth = HrirPos[0].Azimuth) then
+     begin
+      i := 0;
+      Hrirs[2] := Hrirs[1];
+      while i < FHrirList.Count do
+       if (TCustomHrir(FHrirList[i]).Azimuth <> HrirPos[0].Azimuth) then
+        begin
+         Hrirs[1] := TCustomHrir(FHrirList[i]);
+         HrirPos[1] := Hrirs[1].Position;
+         MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
+         inc(i);
+         break;
+        end else inc(i);
+      while i < FHrirList.Count do
+       begin
+        CurrentAngle := GetOrthodromicAngle2D(TCustomHrir(FHrirList[i]).Position, SpherePos);
+        if (TCustomHrir(FHrirList[i]).Azimuth <> HrirPos[0].Azimuth) and
+           (CurrentAngle < MinimumAngle) then
+         begin
+          Hrirs[1] := TCustomHrir(FHrirList[i]);
+          HrirPos[1] := Hrirs[1].Position;
+          MinimumAngle := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
+         end;
+        inc(i);
+       end;
+     end;
+
+    // check only 1D interpolation
+    if ((SpherePos.Polar   = HrirPos[0].Polar) and
+        (SpherePos.Polar   = HrirPos[1].Polar)) or
+       ((SpherePos.Azimuth = HrirPos[0].Azimuth) and
+        (SpherePos.Azimuth = HrirPos[1].Azimuth)) then
+     begin
+      AngleA[0] := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
+      AngleA[1] := GetOrthodromicAngle2D(Hrirs[0].Position, Hrirs[1].Position);
+
+      assert(AngleA[0] > 0);
+      assert(AngleA[1] > 0);
 
       // calculate wheighting
-      Scale[0] := DistA[0] / DistA[1];
+      Scale[0] := AngleA[0] / AngleA[1];
       Scale[1] := 1 - Scale[0];
 
       assert(Scale[0] >= 0);
@@ -1988,43 +2301,8 @@ begin
       Exit;
      end;
 
-    // calculate orthodromic angle to desired position
-    DistA[0] := GetOrthodromicAngle(Hrirs[0].Position, SpherePos);
-    DistA[1] := GetOrthodromicAngle(Hrirs[1].Position, SpherePos);
-    DistA[2] := GetOrthodromicAngle(Hrirs[2].Position, SpherePos);
-
-    // calculate orthodromic angle between Hrirs
-    PntA[0] := GetOrthodromicAngle(Hrirs[1].Position, Hrirs[2].Position);
-    PntA[1] := GetOrthodromicAngle(Hrirs[2].Position, Hrirs[0].Position);
-    PntA[2] := GetOrthodromicAngle(Hrirs[0].Position, Hrirs[1].Position);
-
-    // calculate triangle angles (using spherical trigonometry)
-    Angles[0] := arccos((PntA[0] - PntA[1] * PntA[2]) / (sqrt(1 - sqr(PntA[1])) * sqrt(1 - sqr(PntA[2]))));
-    Angles[1] := arccos((PntA[1] - PntA[2] * PntA[0]) / (sqrt(1 - sqr(PntA[2])) * sqrt(1 - sqr(PntA[0]))));
-    Angles[2] := arccos((PntA[2] - PntA[0] * PntA[1]) / (sqrt(1 - sqr(PntA[0])) * sqrt(1 - sqr(PntA[1]))));
-
-    // calculate triangle angles between (using spherical trigonometry)
-    HalfAng[0] := (DistA[1] - DistA[0] * PntA[2]);
-    if HalfAng[0] <> 0
-     then HalfAng[0] := arccos(Limit(HalfAng[0] / (sqrt(1 - sqr(DistA[0])) * sqrt(1 - sqr(PntA[2])))));
-
-    HalfAng[1] := (DistA[2] - DistA[1] * PntA[0]);
-    if HalfAng[1] <> 0
-     then HalfAng[1] := arccos(Limit(HalfAng[1] / (sqrt(1 - sqr(DistA[1])) * sqrt(1 - sqr(PntA[0])))));
-
-    HalfAng[2] := (DistA[0] - DistA[2] * PntA[1]);
-    if HalfAng[2] <> 0
-     then HalfAng[2] := arccos(Limit(HalfAng[2] / (sqrt(1 - sqr(DistA[2])) * sqrt(1 - sqr(PntA[1])))));
-
-    // calculate relations
-    Relations[0] := HalfAng[0] / Angles[0];
-    Relations[1] := HalfAng[1] / Angles[1];
-    Relations[2] := HalfAng[2] / Angles[2];
-
-    // calculate scale factors
-    Scale[0] := (1 - Relations[2]) *  Relations[1];
-    Scale[1] := (1 - Relations[0]) *  Relations[2];
-    Scale[2] := (1 - Relations[1]) *  Relations[0];
+    CalculateScaleFactors(SpherePos, HrirPos[0], HrirPos[1], HrirPos[2],
+      Scale[0], Scale[1], Scale[2]);
 
     // allocate a temporary buffer
     GetMem(TempData[0], SampleFrames * SizeOf(Single));
@@ -2063,9 +2341,9 @@ procedure TCustomHrtfs.Interpolate3Hrir(const Azimuth, Polar: Single;
 var
   TempData  : Array [0..1] of PDavDoubleFixedArray;
   Hrirs     : Array [0..2] of TCustomHrir;
-  HrirPos   : Array [0..2] of TSphereVector2D;
-  SpherePos : TSphereVector2D;
-  DistA     : Array [0..2] of Double;
+  HrirPos   : Array [0..2] of TSphereVector3D;
+  SpherePos : TSphereVector3D;
+  AngleA    : Array [0..2] of Double;
   PntA      : Array [0..2] of Double;
   Angles    : Array [0..2] of Double;
   HalfAng   : Array [0..2] of Double;
@@ -2073,31 +2351,75 @@ var
   Scale     : Array [0..2] of Double;
   Sample    : Integer;
 begin
- SpherePos := MakeSphereVector2D(Azimuth, Polar);
- FindNearestHrirs(SpherePos, Hrirs[0], Hrirs[1], Hrirs[2]);
+ SpherePos := MakeSphereVector3D(Azimuth, Polar);
 
  case FInterpolationType of
   itNearest :
    begin
+    Hrirs[0] := FindNearestHrirs(SpherePos);
+
     // move data nearest
     Hrirs[0].MoveLeft64(Left, SampleFrames);
     Hrirs[0].MoveRight64(Right, SampleFrames);
    end;
   itLinear :
    begin
+    // find nearest HRIR and set position shortcut
+    Hrirs[0] := FindNearestHrirs(SpherePos);
+    HrirPos[0] := Hrirs[0].Position;
+
+    // check if a single Hrir is hit exactly
+    if (SpherePos.Polar = HrirPos[0].Polar) and
+       (SpherePos.Azimuth = HrirPos[0].Azimuth) then
+     begin
+      Hrirs[0].MoveLeft64(Left, SampleFrames);
+      Hrirs[0].MoveRight64(Right, SampleFrames);
+      Exit;
+     end;
+
+    // find second nearest HRIR and set its position shortcut
+    Hrirs[1] := FindSecondNearestHrirs(SpherePos, Hrirs[0]);
+    HrirPos[1] := Hrirs[1].Position;
+
+    // calculate wheighting
+    CalculateScaleFactors(SpherePos, Hrirs[0].Position, Hrirs[1].Position,
+      Scale[0], Scale[1]);
+
+    // allocate a temporary buffer
+    GetMem(TempData[0], SampleFrames * SizeOf(Double));
+    try
+     // linear interpolate left
+     Hrirs[0].MoveLeft64(TempData[0], SampleFrames);
+     Hrirs[1].MoveLeft64(Left, SampleFrames);
+     for Sample := 0 to SampleFrames - 1
+      do Left^[Sample] := Scale[0] * TempData[0]^[Sample] + Scale[1] * Left^[Sample];
+
+     // linear interpolate right
+     Hrirs[0].MoveRight64(TempData[0], SampleFrames);
+     Hrirs[1].MoveRight64(Right, SampleFrames);
+     for Sample := 0 to SampleFrames - 1
+      do Right^[Sample] := Scale[0] * TempData[0]^[Sample] + Scale[1] * Right^[Sample];
+    finally
+     Dispose(TempData[0]);
+    end;
+   end;
+  itLinear3 :
+   begin
+    FindNearestHrirs(SpherePos, Hrirs[0], Hrirs[1], Hrirs[2]);
+
     HrirPos[0] := Hrirs[0].Position;
     HrirPos[1] := Hrirs[1].Position;
     HrirPos[2] := Hrirs[2].Position;
 
     // calculate orthodromic angle to desired position
-    DistA[0] := GetOrthodromicAngle(Hrirs[0].Position, SpherePos);
-    DistA[1] := GetOrthodromicAngle(Hrirs[1].Position, SpherePos);
-    DistA[2] := GetOrthodromicAngle(Hrirs[2].Position, SpherePos);
+    AngleA[0] := GetOrthodromicAngle2D(Hrirs[0].Position, SpherePos);
+    AngleA[1] := GetOrthodromicAngle2D(Hrirs[1].Position, SpherePos);
+    AngleA[2] := GetOrthodromicAngle2D(Hrirs[2].Position, SpherePos);
 
     // calculate orthodromic angle between Hrirs
-    PntA[0] := GetOrthodromicAngle(Hrirs[1].Position, Hrirs[2].Position);
-    PntA[1] := GetOrthodromicAngle(Hrirs[2].Position, Hrirs[0].Position);
-    PntA[2] := GetOrthodromicAngle(Hrirs[0].Position, Hrirs[1].Position);
+    PntA[0] := GetOrthodromicAngle2D(Hrirs[1].Position, Hrirs[2].Position);
+    PntA[1] := GetOrthodromicAngle2D(Hrirs[2].Position, Hrirs[0].Position);
+    PntA[2] := GetOrthodromicAngle2D(Hrirs[0].Position, Hrirs[1].Position);
 
     // calculate triangle angles (using spherical trigonometry)
     Angles[0] := arccos((PntA[0] - PntA[1] * PntA[2]) / (sqrt(1 - sqr(PntA[1])) * sqrt(1 - sqr(PntA[2]))));
@@ -2105,17 +2427,17 @@ begin
     Angles[2] := arccos((PntA[2] - PntA[0] * PntA[1]) / (sqrt(1 - sqr(PntA[0])) * sqrt(1 - sqr(PntA[1]))));
 
     // calculate triangle angles between (using spherical trigonometry)
-    HalfAng[0] := (DistA[1] - DistA[0] * PntA[2]);
+    HalfAng[0] := (AngleA[1] - AngleA[0] * PntA[2]);
     if HalfAng[0] <> 0
-     then HalfAng[0] := arccos(Limit(HalfAng[0] / (sqrt(1 - sqr(DistA[0])) * sqrt(1 - sqr(PntA[2])))));
+     then HalfAng[0] := arccos(Limit(HalfAng[0] / (sqrt(1 - sqr(AngleA[0])) * sqrt(1 - sqr(PntA[2])))));
 
-    HalfAng[1] := (DistA[2] - DistA[1] * PntA[0]);
+    HalfAng[1] := (AngleA[2] - AngleA[1] * PntA[0]);
     if HalfAng[1] <> 0
-     then HalfAng[1] := arccos(Limit(HalfAng[1] / (sqrt(1 - sqr(DistA[1])) * sqrt(1 - sqr(PntA[0])))));
+     then HalfAng[1] := arccos(Limit(HalfAng[1] / (sqrt(1 - sqr(AngleA[1])) * sqrt(1 - sqr(PntA[0])))));
 
-    HalfAng[2] := (DistA[0] - DistA[2] * PntA[1]);
+    HalfAng[2] := (AngleA[0] - AngleA[2] * PntA[1]);
     if HalfAng[2] <> 0
-     then HalfAng[2] := arccos(Limit(HalfAng[2] / (sqrt(1 - sqr(DistA[2])) * sqrt(1 - sqr(PntA[1])))));
+     then HalfAng[2] := arccos(Limit(HalfAng[2] / (sqrt(1 - sqr(AngleA[2])) * sqrt(1 - sqr(PntA[1])))));
 
     Relations[0] := HalfAng[0] / Angles[0];
     Relations[1] := HalfAng[1] / Angles[1];
@@ -2157,15 +2479,153 @@ begin
  end;
 end;
 
+function TCustomHrtfs.FindNearestHrirs(const SpherePos: TSphereVector2D): TCustomHrir;
+var
+  SpherePos3D : TSphereVector3D;
+begin
+ SpherePos3D.Azimuth := SpherePos.Azimuth;
+ SpherePos3D.Polar := SpherePos.Polar;
+ SpherePos3D.Radius := 1;
+ result := FindNearestHrirs(SpherePos3D);
+end;
+
+function TCustomHrtfs.FindNearestHrirs(const SpherePos: TSphereVector3D): TCustomHrir;
+var
+  i            : Integer;
+  CurrentAngle : Single;
+  TempHrir     : TCustomHrir;
+  MinimumAngle : Double;
+begin
+ assert(FHrirList.Count > 0);
+
+ // initialize with first HRIR
+ result := TCustomHrir(FHrirList[0]);
+
+ // initialize with first angle/distance
+ MinimumAngle := GetOrthodromicAngle2D(result.Position, SpherePos);
+
+ // search for better distances..
+ for i := 1 to FHrirList.Count - 1 do
+  begin
+   TempHrir := TCustomHrir(FHrirList[i]);
+   CurrentAngle := GetOrthodromicAngle2D(TempHrir.Position, SpherePos);
+
+   if CurrentAngle < MinimumAngle then
+    begin
+     MinimumAngle := CurrentAngle;
+     result := TempHrir;
+    end;
+  end;
+end;
+
+function TCustomHrtfs.FindSecondNearestHrirs(const SpherePos: TSphereVector2D; const Nearest: TCustomHrir): TCustomHrir;
+var
+  SpherePos3D : TSphereVector3D;
+begin
+ SpherePos3D.Azimuth := SpherePos.Azimuth;
+ SpherePos3D.Polar := SpherePos.Polar;
+ SpherePos3D.Radius := 1;
+ result := FindSecondNearestHrirs(SpherePos3D, Nearest);
+end;
+
+function TCustomHrtfs.FindSecondNearestHrirs(const SpherePos: TSphereVector3D; const Nearest: TCustomHrir): TCustomHrir;
+var
+  i                  : Integer;
+  CurrentAngle       : Single;
+  TempHrir           : TCustomHrir;
+  OnPolarAxisFound   : Boolean;
+  OnAzimuthAxisFound : Boolean;
+  MinimumAngle       : Double;
+begin
+ assert(FHrirList.Count > 1);
+
+ // initialize with first HRIR
+ if TCustomHrir(FHrirList[0]) <> Nearest
+  then result := TCustomHrir(FHrirList[0])
+  else result := TCustomHrir(FHrirList[1]);
+
+ // initialize with first angle/distance
+ MinimumAngle := GetOrthodromicAngle2D(result.Position, SpherePos);
+
+ // check whether an on polar axis situation has been found
+ OnPolarAxisFound := (result.Position.Polar = SpherePos.Polar) and
+   (SpherePos.Polar = Nearest.Polar);
+
+ // check whether an on azimuth axis situation has been found
+ OnAzimuthAxisFound := (result.Position.Azimuth = SpherePos.Azimuth) and
+   (SpherePos.Azimuth = Nearest.Azimuth);
+
+ // search for better distances..
+ for i := 0 to FHrirList.Count - 1 do
+  if TCustomHrir(FHrirList[i]) <> Nearest then
+   begin
+    TempHrir := TCustomHrir(FHrirList[i]);
+    CurrentAngle := GetOrthodromicAngle2D(TempHrir.Position, SpherePos);
+
+    if (SpherePos.Polar = Nearest.Polar) and
+      (TempHrir.Polar = SpherePos.Polar) then
+     begin
+      if OnPolarAxisFound then
+       if (CurrentAngle < MinimumAngle) then
+        begin
+         MinimumAngle := CurrentAngle;
+         result := TempHrir;
+        end else
+       else
+        begin
+         MinimumAngle := CurrentAngle;
+         result := TempHrir;
+         OnPolarAxisFound := True;
+        end;
+     end;
+
+    if (SpherePos.Azimuth = Nearest.Azimuth) and
+      (TempHrir.Azimuth = SpherePos.Azimuth) then
+     begin
+      if OnAzimuthAxisFound then
+       if (CurrentAngle < MinimumAngle) then
+        begin
+         MinimumAngle := CurrentAngle;
+         result := TempHrir;
+        end else
+       else
+        begin
+         MinimumAngle := CurrentAngle;
+         result := TempHrir;
+         OnAzimuthAxisFound := True;
+        end;
+     end;
+
+    // in case no on axis HRIR has been found, search for minimum
+    if (not OnPolarAxisFound) and (not OnAzimuthAxisFound) and
+       (CurrentAngle < MinimumAngle) then
+     begin
+      MinimumAngle := CurrentAngle;
+      result := TempHrir;
+     end;
+   end;
+end;
+
 procedure TCustomHrtfs.FindNearestHrirs(const SpherePos: TSphereVector2D;
   var A, B, C: TCustomHrir);
 var
-  i           : Integer;
-  CurrentDist : Single;
-  TempHrir    : TCustomHrir;
-  Distances   : array [0..2] of Single;
+  SpherePos3D : TSphereVector3D;
 begin
- assert(FHrirList.Count > 0);
+ SpherePos3D.Azimuth := SpherePos.Azimuth;
+ SpherePos3D.Polar := SpherePos.Polar;
+ SpherePos3D.Radius := 1;
+ FindNearestHrirs(SpherePos3D, A, B, C);
+end;
+
+procedure TCustomHrtfs.FindNearestHrirs(const SpherePos: TSphereVector3D;
+  var A, B, C: TCustomHrir);
+var
+  i            : Integer;
+  CurrentAngle : Single;
+  TempHrir     : TCustomHrir;
+  Angles       : array [0..2] of Single;
+begin
+ assert(FHrirList.Count >= 3);
 
  // initialize with first three HRIRs
  A := TCustomHrir(FHrirList[0]);
@@ -2173,39 +2633,39 @@ begin
  C := TCustomHrir(FHrirList[2]);
 
  // initialize with first three distances
- Distances[0] := GetOrthodromicDistance(A.Position, SpherePos);
- Distances[1] := GetOrthodromicDistance(B.Position, SpherePos);
- Distances[2] := GetOrthodromicDistance(C.Position, SpherePos);
+ Angles[0] := GetOrthodromicAngle2D(A.Position, SpherePos);
+ Angles[1] := GetOrthodromicAngle2D(B.Position, SpherePos);
+ Angles[2] := GetOrthodromicAngle2D(C.Position, SpherePos);
 
  // order distances
- if Distances[1] < Distances[0] then
+ if Angles[1] < Angles[0] then
   begin
    // eventually swap HRIRs
-   CurrentDist  := Distances[0];
-   Distances[0] := Distances[1];
-   Distances[1] := CurrentDist;
+   CurrentAngle  := Angles[0];
+   Angles[0] := Angles[1];
+   Angles[1] := CurrentAngle;
 
    TempHrir := A;
    A := B;
    B := TempHrir;
   end;
- if Distances[2] < Distances[0] then
+ if Angles[2] < Angles[0] then
   begin
    // eventually swap HRIRs
-   CurrentDist  := Distances[0];
-   Distances[0] := Distances[2];
-   Distances[2] := CurrentDist;
+   CurrentAngle  := Angles[0];
+   Angles[0] := Angles[2];
+   Angles[2] := CurrentAngle;
 
    TempHrir := A;
    A := C;
    C := TempHrir;
   end;
- if Distances[2] < Distances[1] then
+ if Angles[2] < Angles[1] then
   begin
    // eventually swap HRIRs
-   CurrentDist  := Distances[1];
-   Distances[1] := Distances[2];
-   Distances[2] := CurrentDist;
+   CurrentAngle  := Angles[1];
+   Angles[1] := Angles[2];
+   Angles[2] := CurrentAngle;
 
    TempHrir := B;
    B := C;
@@ -2216,31 +2676,31 @@ begin
  for i := 3 to FHrirList.Count - 1 do
   begin
    TempHrir := TCustomHrir(FHrirList[i]);
-   CurrentDist := GetOrthodromicDistance(TempHrir.Position, SpherePos);
+   CurrentAngle := GetOrthodromicAngle2D(TempHrir.Position, SpherePos);
 
    // is first place?
-   if CurrentDist < Distances[0] then
+   if CurrentAngle < Angles[0] then
     begin
-     Distances[2] := Distances[1];
-     Distances[1] := Distances[0];
-     Distances[0] := CurrentDist;
+     Angles[2] := Angles[1];
+     Angles[1] := Angles[0];
+     Angles[0] := CurrentAngle;
      C := B; B := A;
      A := TempHrir;
     end else
 
    // or second place?
-   if CurrentDist < Distances[1] then
+   if CurrentAngle < Angles[1] then
     begin
-     Distances[2] := Distances[1];
-     Distances[1] := CurrentDist;
+     Angles[2] := Angles[1];
+     Angles[1] := CurrentAngle;
      C := B;
      B := TempHrir;
     end else
 
    // or third place?
-   if CurrentDist < Distances[2] then
+   if CurrentAngle < Angles[2] then
     begin
-     Distances[2] := CurrentDist;
+     Angles[2] := CurrentAngle;
      C := TempHrir;
     end;
   end;

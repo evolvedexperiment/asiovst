@@ -3,7 +3,7 @@ object FmHRTFEditor: TFmHRTFEditor
   Top = 90
   BorderStyle = bsSingle
   Caption = 'HRTF editor'
-  ClientHeight = 348
+  ClientHeight = 386
   ClientWidth = 600
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object FmHRTFEditor: TFmHRTFEditor
     Left = 0
     Top = 0
     Width = 600
-    Height = 348
+    Height = 386
     ActivePage = TSHrtfData
     Align = alClient
     MultiLine = True
@@ -32,7 +32,7 @@ object FmHRTFEditor: TFmHRTFEditor
       ImageIndex = 1
       DesignSize = (
         592
-        302)
+        340)
       object LbTitle: TLabel
         Left = 8
         Top = 8
@@ -193,7 +193,7 @@ object FmHRTFEditor: TFmHRTFEditor
       OnResize = TSHrtfDataResize
       DesignSize = (
         592
-        302)
+        340)
       object LbHrtfIndex: TLabel
         Left = 3
         Top = 6
@@ -249,7 +249,7 @@ object FmHRTFEditor: TFmHRTFEditor
       end
       object AudioDataDisplayRight: TGuiAudioDataDisplay
         Left = 3
-        Top = 190
+        Top = 228
         Width = 586
         Height = 110
         Anchors = [akLeft, akRight, akBottom]
@@ -320,7 +320,7 @@ object FmHRTFEditor: TFmHRTFEditor
       ImageIndex = 2
       DesignSize = (
         592
-        302)
+        340)
       object LbNameID: TLabel
         Left = 8
         Top = 8
@@ -404,7 +404,7 @@ object FmHRTFEditor: TFmHRTFEditor
       ImageIndex = 3
       DesignSize = (
         592
-        302)
+        340)
       object LbRoomType: TLabel
         Left = 8
         Top = 39
@@ -502,7 +502,7 @@ object FmHRTFEditor: TFmHRTFEditor
       ImageIndex = 4
       DesignSize = (
         592
-        302)
+        340)
       object LbMicType: TLabel
         Left = 8
         Top = 8
@@ -557,7 +557,7 @@ object FmHRTFEditor: TFmHRTFEditor
       ImageIndex = 5
       DesignSize = (
         592
-        302)
+        340)
       object LbAmplifier: TLabel
         Left = 8
         Top = 62
@@ -628,7 +628,7 @@ object FmHRTFEditor: TFmHRTFEditor
       ImageIndex = 6
       DesignSize = (
         592
-        302)
+        340)
       object LbMicrophoneType: TLabel
         Left = 8
         Top = 8
@@ -737,6 +737,10 @@ object FmHRTFEditor: TFmHRTFEditor
       object N2: TMenuItem
         Caption = '-'
       end
+      object MIAutoconvertOldHRTFfiles: TMenuItem
+        Caption = 'Autoconvert old HRTF files...'
+        OnClick = MIAutoconvertOldHRTFfilesClick
+      end
       object MIImportIRCAM: TMenuItem
         Caption = 'Import IRCAM...'
         OnClick = MIImportIRCAMClick
@@ -745,9 +749,9 @@ object FmHRTFEditor: TFmHRTFEditor
         Caption = 'Import Diffuse...'
         OnClick = MIImportDiffuseClick
       end
-      object ImportETI1: TMenuItem
+      object MIImportETI: TMenuItem
         Caption = 'Import ETI...'
-        OnClick = ImportETI1Click
+        OnClick = MIImportETIClick
       end
       object N1: TMenuItem
         Caption = '-'

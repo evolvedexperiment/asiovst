@@ -79,6 +79,25 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       StepInteger = 0
       Units = 'm'
       VSTModule = Owner
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Interpolation'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 3.000000000000000000
+      MaxInteger = 3
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Interpl'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterInterpolationChange
+      OnCustomParameterDisplay = ParameterInterpolationDisplay
     end>
   ParameterCategories = <>
   OnOpen = VST2ModuleOpen

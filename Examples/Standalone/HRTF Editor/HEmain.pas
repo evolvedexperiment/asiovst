@@ -4,15 +4,17 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, StdCtrls, ComCtrls, DAV_Common, DAV_DspHrtf, Spin, Grids,
-  Calendar, DAV_AudioData, DAV_GuiBaseControl, DAV_GuiAudioDataDisplay,
-  DAV_AudioFileWAV, DAV_AudioFileAIFF;
+  Menus, StdCtrls, ComCtrls, Spin, Grids, Calendar, DAV_Common, DAV_DspHrtf,
+  DAV_AudioData, DAV_GuiBaseControl, DAV_GuiAudioDataDisplay, DAV_AudioFileWAV,
+  DAV_AudioFileAIFF;
 
 type
   TFmHRTFEditor = class(TForm)
     ADHRIR: TAudioDataCollection32;
     AudioDataDisplayLeft: TGuiAudioDataDisplay;
     AudioDataDisplayRight: TGuiAudioDataDisplay;
+    BtExport: TButton;
+    BtImport: TButton;
     Calendar: TCalendar;
     EdADConverter: TEdit;
     EdAmplifier: TEdit;
@@ -23,42 +25,58 @@ type
     EdDescription: TEdit;
     EdLoudspeaker: TEdit;
     EdManufacturer: TEdit;
+    EdMeasurementType: TEdit;
     EdMicNotes: TEdit;
     EdMicType: TEdit;
     EdNameID: TEdit;
     EdNotes: TEdit;
     EdRoomType: TEdit;
+    EdSignalType: TEdit;
     EdTitle: TEdit;
     LbADConverter: TLabel;
     LbAmplifier: TLabel;
     LbAuthor: TLabel;
+    LbAzimuth: TLabel;
+    LbAzimuthUnit: TLabel;
     LbContext: TLabel;
     LbCopyright: TLabel;
     LbDAConverter: TLabel;
     LbDate: TLabel;
     LbDescription: TLabel;
+    LbDistance: TLabel;
+    LbDistanceUnit: TLabel;
     LbFullDate: TLabel;
     LbHeight: TLabel;
     LbHeightUnit: TLabel;
+    LbHrtfIndex: TLabel;
     LbLength: TLabel;
     LbLengthUnit: TLabel;
     LbLoudSpeaker: TLabel;
     LbManufacturer: TLabel;
     LbMicNotes: TLabel;
+    LbMicrophoneDepth: TLabel;
+    LbMicrophoneDepthUnit: TLabel;
+    LbMicrophoneType: TLabel;
     LbMicType: TLabel;
     LbMonth: TLabel;
     LbMonthName: TLabel;
     LbNameID: TLabel;
     LbNotes: TLabel;
+    LbPolar: TLabel;
+    LbPolarUnit: TLabel;
     LbRoomType: TLabel;
     LbSex: TLabel;
+    LbSignalType: TLabel;
     LbTitle: TLabel;
     LbWidth: TLabel;
     LbWidthUnit: TLabel;
     LbYear: TLabel;
     MainMenu: TMainMenu;
+    MIAutoconvertOldHRTFfiles: TMenuItem;
     MIExit: TMenuItem;
     MIFile: TMenuItem;
+    MIImportDiffuse: TMenuItem;
+    MIImportETI: TMenuItem;
     MIImportIRCAM: TMenuItem;
     MINew: TMenuItem;
     MIOpen: TMenuItem;
@@ -67,51 +85,36 @@ type
     N1: TMenuItem;
     N2: TMenuItem;
     OpenDialog: TOpenDialog;
+    OpenDialogWAV: TOpenDialog;
     PageControl: TPageControl;
     RbFemale: TRadioButton;
     RbGeneric: TRadioButton;
     RbMale: TRadioButton;
     RbUnknown: TRadioButton;
     SaveDialog: TSaveDialog;
+    SaveDialogWAV: TSaveDialog;
+    SEAzimuth: TSpinEdit;
+    SEDistance: TSpinEdit;
     SEHeight: TSpinEdit;
+    SEHrtfIndex: TSpinEdit;
     SELength: TSpinEdit;
+    SEMicDepth: TSpinEdit;
     SEMonth: TSpinEdit;
+    SEPolar: TSpinEdit;
     SEWidth: TSpinEdit;
     SEYear: TSpinEdit;
     TSGeneralInfo: TTabSheet;
     TSHrtfData: TTabSheet;
+    TSMeasurementInfo: TTabSheet;
     TSMicrophoneInfo: TTabSheet;
     TSOutboardInfo: TTabSheet;
     TSRoomInfo: TTabSheet;
     TSSubjectInfo: TTabSheet;
-    SEHrtfIndex: TSpinEdit;
-    LbHrtfIndex: TLabel;
-    LbAzimuth: TLabel;
-    SEAzimuth: TSpinEdit;
-    SEPolar: TSpinEdit;
-    LbPolar: TLabel;
-    LbAzimuthUnit: TLabel;
-    LbPolarUnit: TLabel;
-    TSMeasurementInfo: TTabSheet;
-    LbMicrophoneType: TLabel;
-    EdMeasurementType: TEdit;
-    LbDistance: TLabel;
-    SEDistance: TSpinEdit;
-    LbDistanceUnit: TLabel;
-    LbMicrophoneDepth: TLabel;
-    SEMicDepth: TSpinEdit;
-    LbMicrophoneDepthUnit: TLabel;
-    LbSignalType: TLabel;
-    EdSignalType: TEdit;
-    BtExport: TButton;
-    BtImport: TButton;
-    SaveDialogWAV: TSaveDialog;
-    OpenDialogWAV: TOpenDialog;
-    MIImportDiffuse: TMenuItem;
-    ImportETI1: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure BtExportClick(Sender: TObject);
+    procedure BtImportClick(Sender: TObject);
     procedure CalendarChange(Sender: TObject);
     procedure EdADConverterChange(Sender: TObject);
     procedure EdAmplifierChange(Sender: TObject);
@@ -122,37 +125,36 @@ type
     procedure EdDescriptionChange(Sender: TObject);
     procedure EdLoudspeakerChange(Sender: TObject);
     procedure EdManufacturerChange(Sender: TObject);
+    procedure EdMeasurementTypeChange(Sender: TObject);
     procedure EdMicNotesChange(Sender: TObject);
     procedure EdMicTypeChange(Sender: TObject);
     procedure EdNameIDChange(Sender: TObject);
     procedure EdNotesChange(Sender: TObject);
     procedure EdRoomTypeChange(Sender: TObject);
+    procedure EdSignalTypeChange(Sender: TObject);
     procedure EdTitleChange(Sender: TObject);
+    procedure MIAutoconvertOldHRTFfilesClick(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
+    procedure MIImportDiffuseClick(Sender: TObject);
+    procedure MIImportETIClick(Sender: TObject);
     procedure MIImportIRCAMClick(Sender: TObject);
     procedure MINewClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
     procedure MISaveAsClick(Sender: TObject);
+    procedure MISaveClick(Sender: TObject);
     procedure RbFemaleClick(Sender: TObject);
     procedure RbGenericClick(Sender: TObject);
     procedure RbMaleClick(Sender: TObject);
     procedure RbUnknownClick(Sender: TObject);
+    procedure SEDistanceChange(Sender: TObject);
     procedure SEHeightChange(Sender: TObject);
+    procedure SEHrirPosChange(Sender: TObject);
     procedure SEHrtfIndexChange(Sender: TObject);
     procedure SELengthChange(Sender: TObject);
     procedure SEMonthChange(Sender: TObject);
     procedure SEWidthChange(Sender: TObject);
     procedure SEYearChange(Sender: TObject);
-    procedure SEHrirPosChange(Sender: TObject);
     procedure TSHrtfDataResize(Sender: TObject);
-    procedure EdMeasurementTypeChange(Sender: TObject);
-    procedure EdSignalTypeChange(Sender: TObject);
-    procedure SEDistanceChange(Sender: TObject);
-    procedure MISaveClick(Sender: TObject);
-    procedure BtImportClick(Sender: TObject);
-    procedure BtExportClick(Sender: TObject);
-    procedure MIImportDiffuseClick(Sender: TObject);
-    procedure ImportETI1Click(Sender: TObject);
   private
     FFileName : TFileName;
     FHRTFFile : THrtfs;
@@ -169,7 +171,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Filectrl, DAV_DLLResources, DAV_ChunkClasses;
+  Filectrl, Registry, DAV_DLLResources, DAV_ChunkClasses, HEeti;
 
 const
   CDegToRad : Single = 2 * Pi / 360;
@@ -303,6 +305,28 @@ end;
 procedure TFmHRTFEditor.FormShow(Sender: TObject);
 begin
  UpdateFullDateCaption;
+
+(*
+ MIImportETIClick(Sender);
+ SEAzimuth.Value := 1;
+ SEPolar.Value := 1;
+*)
+end;
+
+procedure TFmHRTFEditor.MIAutoconvertOldHRTFfilesClick(Sender: TObject);
+var
+  Dir : string;
+  SR  : TSearchRec;
+  fn  : TFileName;
+begin
+ Dir := 'C:\Users\Christian Budde\Projects\VSTPack\Resources\HRTFs';
+ if FindFirst(Dir + '\*.HRTF', 0, SR) = 0 then
+  repeat
+   FHRTFFile.LoadFromFile(Dir + '\' + SR.Name);
+   fn := Dir + '\' + Copy(SR.Name, 1, 8) + '.hrco'; 
+   FHRTFFile.SaveToFile(fn);
+  until FindNext(SR) <> 0;
+ FindClose(sr);
 end;
 
 procedure TFmHRTFEditor.MIExitClick(Sender: TObject);
@@ -319,8 +343,16 @@ var
   i      : array [0..1] of Integer;
   s      : string;
 begin
- Dir := 'C:\Users\Christian Budde\Projects\VSTPack\Examples\Plugins\HRTF 3D\HRTFs\ToDo\Diffuse';
- SelectDirectory('Select a directory', '', Dir);
+// Dir := 'C:\Users\Christian Budde\Projects\VSTPack\Examples\Plugins\HRTF 3D\HRTFs\ToDo\Diffuse';
+ with TRegIniFile.Create do
+  try
+   if OpenKey('SOFTWARE\Delphi ASIO & VST Project\HRTF Editor\', True)
+    then Dir := ReadString('Diffuse Import', 'Directory', '');
+   SelectDirectory('Select a directory', '', Dir);
+   WriteString('Diffuse Import', 'Directory', Dir);
+  finally
+   Free;
+  end;
 
  if DirectoryExists(Dir) then
   begin
@@ -367,8 +399,15 @@ var
   FN     : TFileName;
   i      : array [0..1] of Integer;
 begin
- Dir := '';
- SelectDirectory('Select a directory', '', Dir);
+ with TRegIniFile.Create do
+  try
+   if OpenKey('SOFTWARE\Delphi ASIO & VST Project\HRTF Editor\', True)
+    then Dir := ReadString('IRCAM Import', 'Directory', '');
+   SelectDirectory('Select a directory', '', Dir);
+   WriteString('IRCAM Import', 'Directory', Dir);
+  finally
+   Free;
+  end;
 
  if DirectoryExists(Dir) then
   begin
@@ -422,9 +461,11 @@ begin
 
  if SEHrtfIndex.Enabled
   then SEHrtfIndex.MaxValue := FHRTFFile.HrirCount - 1;
+
+ if LbHrtfIndex.Enabled then SEHrtfIndexChange(Self);
 end;
 
-procedure TFmHRTFEditor.ImportETI1Click(Sender: TObject);
+procedure TFmHRTFEditor.MIImportETIClick(Sender: TObject);
 var
   Dir    : string;
   SR     : TSearchRec;
@@ -433,10 +474,27 @@ var
   DelPos : Integer;
   AzmStr : string;
   PolStr : string;
-  i      : array [0..1] of Integer;
+  RadStr : string;
+  i      : array [0..2] of Integer;
 begin
- Dir := '';
- SelectDirectory('Select a directory', '', Dir);
+(*
+ with TFmEtiImport.Create(Self) do
+  try
+   ShowModal;
+  finally
+   Free;
+  end;
+*)
+
+ with TRegIniFile.Create do
+  try
+   if OpenKey('SOFTWARE\Delphi ASIO & VST Project\HRTF Editor\', True)
+    then Dir := ReadString('ETI Import', 'Directory', '');
+   SelectDirectory('Select a directory', '', Dir);
+   WriteString('ETI Import', 'Directory', Dir);
+  finally
+   Free;
+  end;
 
  if DirectoryExists(Dir) then
   begin
@@ -456,18 +514,25 @@ begin
       DelPos := Pos('_', FN);
       PolStr := Copy(FN, 1, DelPos - 1);
 
+      Delete(FN, 1, DelPos);
+      DelPos := Pos('.', FN);
+      RadStr := Copy(FN, 1, DelPos - 1);
+
       i[0] := StrToInt(AzmStr);
       i[1] := StrToInt(PolStr);
-      exit;
+      i[2] := StrToInt(RadStr);
 
       while i[0] > 180 do i[0] := i[0] - 360;
       while i[1] > 180 do i[1] := i[1] - 180;
 
-      FHRTFFile.AddChunk(TCustomHrir.Create(i[0] * CDegToRad, (90 - i[1]) * CDegToRad, 44100,
-        ADC.SampleFrames, ADC[0].ChannelDataPointer, ADC[1].ChannelDataPointer));
+      FHRTFFile.AddChunk(TCustomHrir.Create(i[0] * CDegToRad,
+        i[1] * CDegToRad, i[2], 44100, ADC.SampleFrames,
+        ADC[0].ChannelDataPointer, ADC[1].ChannelDataPointer));
 
-      FHRTFFile.AddChunk(TCustomHrir.Create(-i[0] * CDegToRad, (90 - i[1]) * CDegToRad, 44100,
-        ADC.SampleFrames, ADC[1].ChannelDataPointer, ADC[0].ChannelDataPointer));
+      if (i[0] <> -i[0]) and (abs(i[0]) < 180)
+       then FHRTFFile.AddChunk(TCustomHrir.Create(-i[0] * CDegToRad,
+              i[1] * CDegToRad, i[2], 44100, ADC.SampleFrames,
+              ADC[1].ChannelDataPointer, ADC[0].ChannelDataPointer));
 
      until FindNext(SR) <> 0;
     FindClose(sr);
@@ -636,11 +701,19 @@ begin
    ADHRIR[0].ChannelDataPointer, ADHRIR[1].ChannelDataPointer);
  AudioDataDisplayLeft.Invalidate;
  AudioDataDisplayRight.Invalidate;
- with FHRTFFile.Hrir[SEHrtfIndex.Value] do
-  begin
-   SEAzimuth.Value := round(360 / (2 * Pi) * Azimuth);
-   SEPolar.Value := round(360 / (2 * Pi) * Polar);
-  end;
+
+ SEPolar.OnChange := nil;
+ SEAzimuth.OnChange := nil;
+ try
+  with FHRTFFile.Hrir[SEHrtfIndex.Value] do
+   begin
+    SEAzimuth.Value := round(360 / (2 * Pi) * Azimuth);
+    SEPolar.Value := round(360 / (2 * Pi) * Polar);
+   end;
+ finally
+  SEAzimuth.OnChange := SEHrirPosChange;
+  SEPolar.OnChange := SEHrirPosChange;
+ end;
 end;
 
 procedure TFmHRTFEditor.SELengthChange(Sender: TObject);

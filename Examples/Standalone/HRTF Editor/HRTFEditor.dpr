@@ -11,7 +11,8 @@ uses
   madListModules,
   FastMove,
   Forms,
-  HEmain in 'HEmain.pas' {FmHRTFEditor};
+  HEmain in 'HEmain.pas' {FmHRTFEditor},
+  HEeti in 'HEeti.pas' {FmEtiImport};
 
 {$R *.res}
 

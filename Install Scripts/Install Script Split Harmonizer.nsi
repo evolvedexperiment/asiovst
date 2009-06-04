@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallBarberpoleFlanger.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Split_Harmonizer.exe"
 SectionEnd
 
 Section "Split Harmonizer Manual" SecManual
@@ -136,7 +136,7 @@ Section "Split Harmonizer Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_2-Band_Distortion.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Split_Harmonizer.exe"
 SectionEnd
 
 ;--------------------------------
@@ -163,7 +163,7 @@ FunctionEnd
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Split Harmonizer VST Plugin"
 
   LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Split Harmonizer VST Plugin"
-  LangString DESC_SecManual ${LANG_ENGLISH} "2-Band Distortion Manual"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Split Harmonizer Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

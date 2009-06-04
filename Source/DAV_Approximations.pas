@@ -180,6 +180,14 @@ uses
   function FastArcCotan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastArcCotan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
+  // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
+  function FastArcCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
+  // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
+  function FastArcCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
 
   { 2^x Approximations }
 
@@ -1391,7 +1399,7 @@ begin
 end;
 
 
-// 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
+// 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
 
 function FastArcTanPart6Term(const Value: Single): Single;
 begin
@@ -1408,7 +1416,7 @@ begin
 end;
 
 // WARNING: We do not test for the tangent approaching infinity,
-// which it will at x=pi/2 and x=3*pi/2. If this is a problem
+// which it will at x = pi / 2 and x = 3 * pi / 2. If this is a problem
 // in your application, take appropriate action.
 
 function FastArcTan6Term(const Value: Single): Single;
@@ -1487,6 +1495,28 @@ begin
   Result := -FastArcTan6Term(CPiHalf64 - Value);
 end;
 
+// 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
+function FastArcCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ Result := FastArcTan3Term(Value * FastInvSqrt(1 - sqr(Value)));
+end;
+
+function FastArcCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ Result := FastArcTan3Term(Value * FastInvSqrt(1 - sqr(Value)));
+end;
+
+
+// 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
+function FastArcCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ Result := FastArcTan6Term(Value * FastInvSqrt(1 - sqr(Value)));
+end;
+
+function FastArcCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ Result := FastArcTan6Term(Value * FastInvSqrt(1 - sqr(Value)));
+end;
 
 
 function FastSinLike(const Value: Single): Single; overload;

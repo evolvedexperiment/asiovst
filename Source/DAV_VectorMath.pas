@@ -15,6 +15,17 @@ type
   TDAVMatrix32 = Array [0..3] of TDAVVector32;
   TDAVMatrix64 = Array [0..3] of TDAVVector64;
 
+  TSphereVector2D = record
+    Azimuth : Single;   // 0..2*PI
+    Polar   : Single;   // 0..PI
+  end;
+
+  TSphereVector3D = record
+    Azimuth : Single;   // 0..2*PI
+    Polar   : Single;   // 0..PI
+    Radius  : Single;   // is assumed to be 1
+  end;
+
 const
   CHomogeneousXVector32    : TDAVHomogeneousVector32 = (1, 0, 0, 0);
   CHomogeneousYVector32    : TDAVHomogeneousVector32 = (0, 1, 0, 0);
@@ -153,6 +164,12 @@ function RSqrt(Value: Single): Single;
 function GeometryOptimizationMode: String;
 procedure BeginFPUOnlySection;
 procedure EndFPUOnlySection;
+
+function GetOrthodromicAngle(A, B: TSphereVector2D): Single; overload;
+function GetOrthodromicAngle(A, B: TSphereVector3D): Single; overload;
+function GetOrthodromicAngle2D(A, B: TSphereVector3D): Single;
+function MakeSphereVector2D(const Azimuth, Polar: Single): TSphereVector2D;
+function MakeSphereVector3D(const Azimuth, Polar: Single): TSphereVector3D;
 
 var
    // this var is adjusted during "initialization", current values are
@@ -2190,6 +2207,62 @@ begin
    Result[2] := Value[2];
    Result[3] := Value[3];
 {$ENDIF}
+end;
+
+function GetOrthodromicAngle(A, B: TSphereVector3D): Single;
+var
+  x, y, z : array [0..1] of Double;
+
+begin
+ x[0] := A.Radius * cos(A.Azimuth) * cos(A.Polar);
+ y[0] := A.Radius * sin(A.Azimuth) * cos(A.Polar);
+ z[0] := A.Radius *                 -sin(A.Polar);
+
+ x[1] := A.Radius * cos(B.Azimuth) * cos(B.Polar);
+ y[1] := A.Radius * sin(B.Azimuth) * cos(B.Polar);
+ z[1] := A.Radius *                 -sin(B.Polar);
+
+ result := arccos( (x[0] * x[1] + y[0] * y[1] + z[0] * z[1]) /
+   (sqrt(sqr(x[0]) + sqr(y[0]) + sqr(z[0])) * sqrt(sqr(x[1]) + sqr(y[1]) + sqr(z[1]))));
+end;
+
+function GetOrthodromicAngle2D(A, B: TSphereVector3D): Single;
+var
+  CosAzimuth : Double;
+begin
+ CosAzimuth := cos(A.Azimuth - B.Azimuth);
+ result := arccos(0.5 * (
+   (cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
+    cos(A.Polar + B.Polar) * (CosAzimuth - 1))));
+end;
+
+function GetOrthodromicAngle(A, B: TSphereVector2D): Single;
+var
+  CosAzimuth : Double;
+begin
+(*
+ result := arccos(
+   (cos(A.Polar) * cos(B.Polar) * (cos(A.Azimuth - B.Azimuth)) +
+    sin(A.Polar) * sin(B.Polar)));
+*)
+
+ CosAzimuth := cos(A.Azimuth - B.Azimuth);
+ result := arccos(0.5 * (
+   (cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
+    cos(A.Polar + B.Polar) * (CosAzimuth - 1))));
+end;
+
+function MakeSphereVector2D(const Azimuth, Polar: Single): TSphereVector2D;
+begin
+ result.Azimuth := Azimuth;
+ result.Polar   := Polar;
+end;
+
+function MakeSphereVector3D(const Azimuth, Polar: Single): TSphereVector3D;
+begin
+ result.Azimuth := Azimuth;
+ result.Polar   := Polar;
+ result.Radius  := 1;
 end;
 
 initialization
