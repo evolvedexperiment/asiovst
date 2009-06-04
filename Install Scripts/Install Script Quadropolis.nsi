@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Graphic-EQ Installer
+;Quadropolis Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Graphic-EQ Installer"
-  OutFile "Graphic-EQ_Install.exe"
+  Name "Quadropolis Installer"
+  OutFile "Quadropolis_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,11 +35,12 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Graphic-EQ"
+  !define PRODUCT_NAME "Quadropolis"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -48,8 +49,8 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT HKLM
-  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
+  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -92,15 +93,14 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
+
 ;Installer Sections
 
-Section "Graphic-EQ VST-Plugin" SecVstPlugin
+Section "Quadropolis VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\GraphicEQ.dll" "..\Bin\Graphic-EQ.dll"'  
-
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Graphic-EQ.dll"
+  File "..\Bin\Quadropolis.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -108,20 +108,20 @@ Section "Graphic-EQ VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Graphic-EQ.dll" 
+  StrCpy $0 "$INSTDIR\Quadropolis.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint "Bug Report DLL Patch applied"
+  DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Graphic-EQ.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Quadropolis.exe"
 SectionEnd
 
 ;--------------------------------
@@ -145,9 +145,9 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Quadropolis VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Quadropolis VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -160,7 +160,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Graphic-EQ.dll"
-  DeleteRegKey HKLM PRODUCT_DIR_REGKEY
+  Delete "$INSTDIR\Quadropolis.dll"
+  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

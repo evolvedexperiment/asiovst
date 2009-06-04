@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Graphic-EQ Installer
+;HRTF3D Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Graphic-EQ Installer"
-  OutFile "Graphic-EQ_Install.exe"
+  Name "HRTF-3D Installer"
+  OutFile "HRTF-3D_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,7 +35,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Graphic-EQ"
+  !define PRODUCT_NAME "HRTF3D"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -80,7 +80,7 @@ FunctionEnd
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   Page custom BugReportPatch
-  !insertmacro MUI_PAGE_INSTFILES
+  !insertmacro MUI_PAGE_INSTFILES  
   !insertmacro MUI_PAGE_FINISH
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -94,13 +94,11 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Graphic-EQ VST-Plugin" SecVstPlugin
+Section "HRTF3D VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\GraphicEQ.dll" "..\Bin\Graphic-EQ.dll"'  
-
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Graphic-EQ.dll"
+  File "..\Bin\HRTF3D.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -108,7 +106,7 @@ Section "Graphic-EQ VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Graphic-EQ.dll" 
+  StrCpy $0 "$INSTDIR\HRTF3D.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -118,10 +116,25 @@ Section "Graphic-EQ VST-Plugin" SecVstPlugin
 SkipDLLCall:
 
   ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Graphic-EQ.exe"
+  WriteUninstaller "$INSTDIR\UninstallHRTF3D.exe"
+
+SectionEnd
+
+Section "HRTF3D Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\HRTF3D Manual.pdf"
+
+  ;Store installation folder
+  WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\UninstallHRTF3D.exe"
+
 SectionEnd
 
 ;--------------------------------
@@ -145,13 +158,16 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Delphi ASIO & VST Project - HRTF3D"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Graphic-EQ VST Plugin"
+  LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "HRTF3D VST-Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "HRTF3D Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
+;    !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -160,7 +176,8 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Graphic-EQ.dll"
+  Delete "$INSTDIR\HRTF3D.dll"
+  Delete "$INSTDIR\HRTF3D Manual.pdf"
   DeleteRegKey HKLM PRODUCT_DIR_REGKEY
 
 SectionEnd
