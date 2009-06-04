@@ -105,7 +105,7 @@ Section "Lightweight Multiband Compressor VST-Plugin" SecVSTPlugin
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallMultibandCompressor.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Multiband_Compressor.exe"
 SectionEnd
 
 Section "Lightweight Multiband Compressor Manual" SecManual
@@ -118,7 +118,7 @@ Section "Lightweight Multiband Compressor Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallMultibandCompressor.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Multiband_Compressor.exe"
 SectionEnd
 
 ;--------------------------------

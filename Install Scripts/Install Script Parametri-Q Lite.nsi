@@ -120,7 +120,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallParametri-Q Lite.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Parametri-Q_Lite.exe"
 SectionEnd
 
 ;--------------------------------

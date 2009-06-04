@@ -79,7 +79,7 @@ Section "ASIO NoiseGen" SecProgramFiles
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallNoiseGen.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_NoiseGen.exe"
 SectionEnd
 
 ;--------------------------------

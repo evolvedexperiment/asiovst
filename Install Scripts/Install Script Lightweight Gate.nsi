@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightGate.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Gate.exe"
 SectionEnd
 
 Section "Lightweight Gate Manual" SecManual
@@ -136,7 +136,7 @@ Section "Lightweight Gate Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightGate.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Gate.exe"
 SectionEnd
 
 ;--------------------------------

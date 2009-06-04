@@ -127,7 +127,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLinear Phase.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Linear_Phase.exe"
 SectionEnd
 
 ;--------------------------------

@@ -124,7 +124,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSimpleVibrato.exe"
+  WriteUninstaller "$INSTDIR\UninstallSoundTouchPitchShifter.exe"
 SectionEnd
 
 ;--------------------------------

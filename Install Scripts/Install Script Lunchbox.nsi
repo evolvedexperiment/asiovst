@@ -79,7 +79,7 @@ Section "ASIO Lunchbox" SecProgramFiles
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLunchbox.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lunchbox.exe"
 SectionEnd
 
 ;--------------------------------

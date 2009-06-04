@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightCompressor.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Compressor.exe"
 SectionEnd
 
 Section "Lightweight Feedback Compressor Manual" SecManual
@@ -136,7 +136,7 @@ Section "Lightweight Feedback Compressor Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightCompressor.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Compressor.exe"
 SectionEnd
 
 ;--------------------------------

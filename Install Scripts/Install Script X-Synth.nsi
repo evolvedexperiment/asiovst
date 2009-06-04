@@ -121,7 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallXSynth.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_X-Synth.exe"
 SectionEnd
 
 ;--------------------------------

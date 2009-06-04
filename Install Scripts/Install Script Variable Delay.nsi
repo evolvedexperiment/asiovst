@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallVariableDelay.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_VariableDelay.exe"
 SectionEnd
 
 ;--------------------------------

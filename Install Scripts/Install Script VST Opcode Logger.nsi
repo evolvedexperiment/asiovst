@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallVstOpcodeLogger.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_VST_Opcode_Logger.exe"
 SectionEnd
 
 ;--------------------------------

@@ -121,9 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLA4029.exe"
-
-
+  WriteUninstaller "$INSTDIR\Uninstall_LA4029.exe"
 SectionEnd
 
 ;--------------------------------

@@ -121,7 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallfReeverb.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_fReeverb.exe"
 SectionEnd
 
 ;--------------------------------

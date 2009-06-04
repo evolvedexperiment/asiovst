@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallSimpleFeedbackCompressor.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Simple_Feedback_Compressor.exe"
 SectionEnd
 
 ;--------------------------------

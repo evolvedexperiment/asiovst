@@ -117,7 +117,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallAmpSim.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_AmpSim.exe"
 SectionEnd
 
 ;--------------------- Install VST Plugin --------------------

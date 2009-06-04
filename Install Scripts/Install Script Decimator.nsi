@@ -120,7 +120,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\ITA\Decimator" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallDecimator.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Decimator.exe"
 SectionEnd
 
 ;--------------------------------

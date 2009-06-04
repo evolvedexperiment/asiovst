@@ -119,7 +119,7 @@ SkipDLLCall:
   ExecWait '$SYSDIR\regsvr32.exe /s "$INSTDIR\OversampleVSTPlugin.dll"'
 
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallOversampleVSTPlugin.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Oversample_VSTPlugin.exe"
 
 SectionEnd
 

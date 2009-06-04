@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallExciter.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Exciter.exe"
 SectionEnd
 
 Section "Exciter Manual" SecManual
@@ -136,7 +136,7 @@ Section "Exciter Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallExciter.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Exciter.exe"
 SectionEnd
 
 ;--------------------- Install VST Plugin --------------------

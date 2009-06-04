@@ -99,8 +99,10 @@ FunctionEnd
 Section "EnhancedGate VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\EnhancedGate.dll" "..\Bin\Enhanced Gate.dll"'
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\EnhancedGate.dll"
+  File "..\Bin\Enhanced Gate.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -108,7 +110,7 @@ Section "EnhancedGate VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\EnhancedGate.dll" 
+  StrCpy $0 "$INSTDIR\Enhanced Gate.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -121,9 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallEnhancedGate.exe"
-
-
+  WriteUninstaller "$INSTDIR\Uninstall_Enhanced_Gate.exe"
 SectionEnd
 
 ;--------------------------------
@@ -162,7 +162,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\EnhancedGate.dll"
+  Delete "$INSTDIR\Enhanced Gate.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

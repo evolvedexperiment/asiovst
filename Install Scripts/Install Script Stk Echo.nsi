@@ -121,7 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallStkEcho.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_StkEcho.exe"
 SectionEnd
 
 ;--------------------------------

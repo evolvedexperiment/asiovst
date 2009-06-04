@@ -159,7 +159,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstallmda.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_mda.exe"
 SectionEnd
 
 ;--------------------------------

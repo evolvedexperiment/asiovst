@@ -121,7 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall Crosstalk Cancellation.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Crosstalk_Cancellation.exe"
 SectionEnd
 
 Section "Crosstalk Cancellation Manual" SecManual
@@ -134,7 +134,7 @@ Section "Crosstalk Cancellation Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall Crosstalk Cancellation.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Crosstalk_Cancellation.exe"
 SectionEnd
 
 ;--------------------------------

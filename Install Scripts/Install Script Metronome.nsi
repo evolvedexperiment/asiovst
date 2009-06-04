@@ -79,7 +79,7 @@ Section "ASIO Metronome" SecProgramFiles
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallMetronome.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Metronome.exe"
 SectionEnd
 
 ;--------------------------------

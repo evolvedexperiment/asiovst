@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightLimiter.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Limiter.exe"
 SectionEnd
 
 Section "Lightweight Limiter Manual" SecManual
@@ -136,7 +136,7 @@ Section "Lightweight Limiter Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightLimiter.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Limiter.exe"
 SectionEnd
 
 ;--------------------------------

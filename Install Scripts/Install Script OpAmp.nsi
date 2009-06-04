@@ -114,7 +114,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\OpAmp" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallOpAmp.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_OpAmp.exe"
 SectionEnd
 
 ;--------------------------------

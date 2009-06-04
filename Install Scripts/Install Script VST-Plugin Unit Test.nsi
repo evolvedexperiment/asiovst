@@ -81,7 +81,7 @@ Section "VST-Plugin Unit Test" SecProgramFiles
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallVST-Plugin Unit Test.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_VST-Plugin_Unit_Test.exe"
 SectionEnd
 
 Section "Manual" SecManual
@@ -94,7 +94,7 @@ Section "Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallVST-Plugin Unit Test.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_VST-Plugin_Unit_Test.exe"
 SectionEnd
 
 ;--------------------------------

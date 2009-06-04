@@ -143,7 +143,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightSeries.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Series.exe"
 SectionEnd
 
 Section "Lightweight Series Manual" SecManual
@@ -160,7 +160,7 @@ Section "Lightweight Series Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallLightweightSeries.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Series.exe"
 SectionEnd
 
 ;--------------------------------

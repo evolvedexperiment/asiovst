@@ -121,7 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallStkPitchShift.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_StkPitchShift.exe"
 SectionEnd
 
 ;--------------------------------

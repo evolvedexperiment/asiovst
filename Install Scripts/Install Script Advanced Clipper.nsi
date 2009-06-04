@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall Advanced Clipper.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Advanced_Clipper.exe"
 SectionEnd
 
 Section "Clipper Manual" SecManual
@@ -136,7 +136,7 @@ Section "Clipper Manual" SecManual
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall Advanced Clipper.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Advanced_Clipper.exe"
 SectionEnd
 
 ;--------------------- Install VST Plugin --------------------

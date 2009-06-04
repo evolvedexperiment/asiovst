@@ -123,7 +123,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallBassExtender.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Bass_Extender.exe"
 
 SectionEnd
 

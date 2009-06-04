@@ -117,7 +117,7 @@ Section "Dynamic Processors" SecDynamics
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_EffectBundle.exe"
 SectionEnd
 
 Section "Filters" SecFilters
@@ -140,7 +140,7 @@ Section "Filters" SecFilters
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_EffectBundle.exe"
 SectionEnd
 
 Section "VSTi" SecSynths
@@ -156,16 +156,18 @@ Section "VSTi" SecSynths
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_EffectBundle.exe"
 SectionEnd
 
 Section "Misc. VST-Plugins" SecMisc
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\ASIOVST.dll" "..\Bin\VST interfaced ASIO-Host.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
   File "..\Bin\AdvancedClipper.dll"
   File "..\Bin\AmpSim.dll"
-  File "..\Bin\ASIOVST.dll"
+  File "..\Bin\VST interfaced ASIO-Host.dll"
   File "..\Bin\BassExtender.dll"
   File "..\Bin\ChebyshevWaveshaper.dll"
   File "..\Bin\Convolution.dll"
@@ -189,7 +191,7 @@ Section "Misc. VST-Plugins" SecMisc
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\UninstallEffectBundle.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_EffectBundle.exe"
 SectionEnd
 ;--------------------------------
 ;Installer Functions
@@ -234,7 +236,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\AmpSim.dll"
-  Delete "$INSTDIR\ASIOVST.dll"
+  Delete "$INSTDIR\VST interfaced ASIO-Host.dll"
   Delete "$INSTDIR\BassExtender.dll"
   Delete "$INSTDIR\BugpassLite.dll"
   Delete "$INSTDIR\ButterworthHP.dll"
