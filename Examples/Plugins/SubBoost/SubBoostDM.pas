@@ -99,13 +99,16 @@ end;
 procedure TSubBoostDataModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FInputFilter.Order := round(Value);
+ if assigned(FInputFilter)
+  then FInputFilter.Order := round(Value);
 end;
 
 procedure TSubBoostDataModule.ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FInputFilter.Frequency := Value;
- FOutputFilter.Frequency := Value;
+ if assigned(FInputFilter) then FInputFilter.Frequency := Value;
+ if assigned(FOutputFilter) then FOutputFilter.Frequency := Value;
+
+ // update GUI if necessary
  if assigned(EditorForm) then
   with TFmSubBoost(EditorForm) do
    begin
@@ -233,8 +236,8 @@ end;
 procedure TSubBoostDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FInputFilter.SampleRate := SampleRate;
- FOutputFilter.SampleRate := SampleRate;
+ if assigned(FInputFilter) then FInputFilter.SampleRate := SampleRate;
+ if assigned(FOutputFilter) then FOutputFilter.SampleRate := SampleRate;
 end;
 
 end.

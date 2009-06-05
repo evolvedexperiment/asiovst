@@ -1,4 +1,4 @@
-object FmMaxxBassClone: TFmMaxxBassClone
+object FmHarmonicBassClone: TFmHarmonicBassClone
   Left = 501
   Top = 225
   Caption = 'MaxxBass Clone'

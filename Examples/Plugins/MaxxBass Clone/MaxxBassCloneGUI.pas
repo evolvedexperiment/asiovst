@@ -7,7 +7,7 @@ uses
   Dialogs, StdCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiLevelMeter;
 
 type
-  TFmMaxxBassClone = class(TForm)
+  TFmHarmonicBassClone = class(TForm)
     GuiColorLevelMeter1: TGuiColorLevelMeter;
     GuiColorLevelMeter2: TGuiColorLevelMeter;
     LbAudio: TGuiLabel;
@@ -23,7 +23,7 @@ type
   end;
 
 var
-  FmMaxxBassClone: TFmMaxxBassClone;
+  FmHarmonicBassClone: TFmHarmonicBassClone;
 
 implementation
 

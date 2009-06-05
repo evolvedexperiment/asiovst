@@ -1,4 +1,4 @@
-object RenaissanceBassCloneModule: TRenaissanceBassCloneModule
+object ResurrectionBassCloneModule: TResurrectionBassCloneModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy

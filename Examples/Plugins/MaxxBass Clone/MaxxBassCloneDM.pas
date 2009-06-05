@@ -7,7 +7,7 @@ uses
   DAV_VSTModule, DAV_DspPsychoAcousticBassEnhancer;
 
 type
-  TMaxxBassCloneModule = class(TVSTModule)
+  THarmonicBassModule = class(TVSTModule)
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -29,7 +29,7 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
   private
-    FMaxxBass        : array [0..1] of TCustomMaxxBass;
+    FHarmonicBass : array [0..1] of TCustomHarmonicBass;
     FCriticalSection : TCriticalSection;
     procedure CalculateGains;
   public
@@ -42,15 +42,15 @@ uses
 
 {$R *.DFM}
 
-procedure TMaxxBassCloneModule.VSTModuleOpen(Sender: TObject);
+procedure THarmonicBassModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
  // create & setup upward compressor
- for Channel := 0 to Length(FMaxxBass) - 1 do
+ for Channel := 0 to Length(FHarmonicBass) - 1 do
   begin
-   FMaxxBass[Channel] := TCustomMaxxBass.Create;
-   FMaxxBass[Channel].SampleRate := SampleRate;
+   FHarmonicBass[Channel] := TCustomHarmonicBass.Create;
+   FHarmonicBass[Channel].SampleRate := SampleRate;
   end;
 
  Parameter[0] := 80;
@@ -125,31 +125,31 @@ begin
   end;
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleClose(Sender: TObject);
+procedure THarmonicBassModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FMaxxBass) - 1
-  do FreeAndNil(FMaxxBass[Channel]);
+ for Channel := 0 to Length(FHarmonicBass) - 1
+  do FreeAndNil(FHarmonicBass[Channel]);
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleCreate(Sender: TObject);
+procedure THarmonicBassModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleDestroy(Sender: TObject);
+procedure THarmonicBassModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleEditOpen(Sender: TObject;
+procedure THarmonicBassModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
- GUI := TFmMaxxBassClone.Create(Self);
+ GUI := TFmHarmonicBassClone.Create(Self);
 end;
 
-procedure TMaxxBassCloneModule.ParameterHighpassDisplay(
+procedure THarmonicBassModule.ParameterHighpassDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -159,17 +159,17 @@ begin
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterListenDisplay(
+procedure THarmonicBassModule.ParameterListenDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
   0 : PreDefined := 'Audio';
   1 : PreDefined := 'Original Bass';
-  2 : PreDefined := 'MaxxBass';
+  2 : PreDefined := 'HarmonicBass';
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterdBDisplay(
+procedure THarmonicBassModule.ParameterdBDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] = 0
@@ -177,52 +177,52 @@ begin
   else PreDefined := FloatToStrF(RoundTo(Amp_to_dB(Parameter[Index]), -2), ffGeneral, 3, 3);
 end;
 
-procedure TMaxxBassCloneModule.ParameterHighpassSelectChange(
+procedure THarmonicBassModule.ParameterHighpassSelectChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].HighpassSelect := THighpassSelect(round(Value));
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].HighpassSelect := THighpassSelect(round(Value));
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterInputChange(
+procedure THarmonicBassModule.ParameterInputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].InputLevel := Value;
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].InputLevel := Value;
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterDecayChange(
+procedure THarmonicBassModule.ParameterDecayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].Decay := 0.5 * dB_to_Amp(Value);
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].Decay := 0.5 * dB_to_Amp(Value);
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterResponseChange(
+procedure THarmonicBassModule.ParameterResponseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
@@ -231,70 +231,70 @@ const
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].Response := Value * CScale;
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].Response := Value * CScale;
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterRatioChange(
+procedure THarmonicBassModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].Ratio := Value;
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].Ratio := Value;
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterOriginalBassChange(
+procedure THarmonicBassModule.ParameterOriginalBassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
 end;
 
-procedure TMaxxBassCloneModule.ParameterMaxxbassChange(
+procedure THarmonicBassModule.ParameterMaxxbassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
 end;
 
-procedure TMaxxBassCloneModule.ParameterListenChange(
+procedure THarmonicBassModule.ParameterListenChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateGains;
 end;
 
-procedure TMaxxBassCloneModule.CalculateGains;
+procedure THarmonicBassModule.CalculateGains;
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel]) then
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel]) then
     case round(Parameter[8]) of
      0 : begin
-          FMaxxBass[Channel].OriginalBassLevel := Parameter[6];
-          FMaxxBass[Channel].MaxxBassLevel := Parameter[7];
-          FMaxxBass[Channel].HighFrequencyLevel := 1;
+          FHarmonicBass[Channel].OriginalBassLevel := Parameter[6];
+          FHarmonicBass[Channel].HarmonicBassLevel := Parameter[7];
+          FHarmonicBass[Channel].HighFrequencyLevel := 1;
          end;
      1 : begin
-          FMaxxBass[Channel].OriginalBassLevel := 1;
-          FMaxxBass[Channel].MaxxBassLevel := 0;
-          FMaxxBass[Channel].HighFrequencyLevel := 0;
+          FHarmonicBass[Channel].OriginalBassLevel := 1;
+          FHarmonicBass[Channel].HarmonicBassLevel := 0;
+          FHarmonicBass[Channel].HighFrequencyLevel := 0;
          end;
      2 : begin
-          FMaxxBass[Channel].OriginalBassLevel := 0;
-          FMaxxBass[Channel].MaxxBassLevel := 1;
-          FMaxxBass[Channel].HighFrequencyLevel := 0;
+          FHarmonicBass[Channel].OriginalBassLevel := 0;
+          FHarmonicBass[Channel].HarmonicBassLevel := 1;
+          FHarmonicBass[Channel].HighFrequencyLevel := 0;
          end;
     end;
  finally
@@ -302,37 +302,37 @@ begin
  end;
 end;
 
-procedure TMaxxBassCloneModule.ParameterFrequencyChange(
+procedure THarmonicBassModule.ParameterFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].Frequency := Value;
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].Frequency := Value;
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure THarmonicBassModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
-   if assigned(FMaxxBass[Channel])
-    then FMaxxBass[Channel].SampleRate := SampleRate;
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
+   if assigned(FHarmonicBass[Channel])
+    then FHarmonicBass[Channel].SampleRate := SampleRate;
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleProcess(const Inputs,
+procedure THarmonicBassModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel   : Integer;
@@ -340,15 +340,15 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FMaxxBass[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FHarmonicBass[Channel].Process(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;
 end;
 
-procedure TMaxxBassCloneModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure THarmonicBassModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel   : Integer;
@@ -356,9 +356,9 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FMaxxBass) - 1 do
+  for Channel := 0 to Length(FHarmonicBass) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FMaxxBass[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FHarmonicBass[Channel].Process(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;

@@ -7,7 +7,7 @@ uses
   DAV_VSTModule, DAV_DspPsychoacousticBassEnhancer;
 
 type
-  TRenaissanceBassCloneModule = class(TVSTModule)
+  TResurrectionBassCloneModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
@@ -24,7 +24,7 @@ type
     procedure ParameterAddOriginalBassChange(Sender: TObject;
       const Index: Integer; var Value: Single);
   private
-    FRenaissanceBass : array [0..1] of TRenaissanceBass;
+    FRenaissanceBass : array [0..1] of TResurrectionBass;
     FCriticalSection : TCriticalSection;
   public
   end;
@@ -36,24 +36,24 @@ uses
 
 {$R *.DFM}
 
-procedure TRenaissanceBassCloneModule.VSTModuleCreate(Sender: TObject);
+procedure TResurrectionBassCloneModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleDestroy(Sender: TObject);
+procedure TResurrectionBassCloneModule.VSTModuleDestroy(Sender: TObject);
 begin
  FreeAndNil(FCriticalSection);
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleOpen(Sender: TObject);
+procedure TResurrectionBassCloneModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
  // create & setup upward compressor
  for Channel := 0 to Length(FRenaissanceBass) - 1 do
   begin
-   FRenaissanceBass[Channel] := TRenaissanceBass.Create;
+   FRenaissanceBass[Channel] := TResurrectionBass.Create;
    FRenaissanceBass[Channel].SampleRate := SampleRate;
   end;
 
@@ -99,7 +99,7 @@ begin
   end;
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleClose(Sender: TObject);
+procedure TResurrectionBassCloneModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -107,13 +107,13 @@ begin
   do FreeAndNil(FRenaissanceBass[Channel]);
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleEditOpen(Sender: TObject;
+procedure TResurrectionBassCloneModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TFmRenaissanceBassClone.Create(Self);
 end;
 
-procedure TRenaissanceBassCloneModule.ParameterAddOriginalBassDisplay(
+procedure TResurrectionBassCloneModule.ParameterAddOriginalBassDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -122,7 +122,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.ParameterdBDisplay(
+procedure TResurrectionBassCloneModule.ParameterdBDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] = 0
@@ -130,7 +130,7 @@ begin
   else PreDefined := FloatToStrF(RoundTo(Amp_to_dB(Parameter[Index]), -2), ffGeneral, 3, 3);
 end;
 
-procedure TRenaissanceBassCloneModule.ParameterAddOriginalBassChange(
+procedure TResurrectionBassCloneModule.ParameterAddOriginalBassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
@@ -145,7 +145,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.ParameterIntensityChange(
+procedure TResurrectionBassCloneModule.ParameterIntensityChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
@@ -160,7 +160,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.ParameterGainChange(
+procedure TResurrectionBassCloneModule.ParameterGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
@@ -175,7 +175,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.ParameterFrequencyChange(
+procedure TResurrectionBassCloneModule.ParameterFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
@@ -190,7 +190,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TResurrectionBassCloneModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   Channel : Integer;
@@ -205,7 +205,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleProcess(const Inputs,
+procedure TResurrectionBassCloneModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel   : Integer;
@@ -221,7 +221,7 @@ begin
  end;
 end;
 
-procedure TRenaissanceBassCloneModule.VSTModuleProcessDoubleReplacing(const Inputs,
+procedure TResurrectionBassCloneModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   Channel   : Integer;

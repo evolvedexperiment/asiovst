@@ -1,4 +1,4 @@
-object MaxxBassCloneModule: TMaxxBassCloneModule
+object HarmonicBassModule: THarmonicBassModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
