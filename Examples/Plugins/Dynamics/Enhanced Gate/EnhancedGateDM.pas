@@ -118,7 +118,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Threshold_dB := Value;
- if Assigned(EditorForm)
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   then (EditorForm As TEditorForm).UpdateThreshold;
 end;
 
@@ -130,7 +132,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Range_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   with EditorForm As TEditorForm do UpdateRange;
 end;
 
@@ -141,7 +145,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Ratio := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   with EditorForm As TEditorForm do UpdateRatio;
 end;
 
@@ -168,7 +174,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].SideChainLowCut := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   with EditorForm As TEditorForm do UpdateLoCut;
 end;
 
@@ -179,7 +187,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].SideChainHighCut := 1000 * Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   with EditorForm As TEditorForm do UpdateHiCut;
 end;
 
@@ -190,7 +200,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Attack := Value;
- if Assigned(EditorForm)
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   then TEditorForm(EditorForm).UpdateAttack;
 end;
 
@@ -201,7 +213,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Hold := Value;
- if Assigned(EditorForm)
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   then TEditorForm(EditorForm).UpdateHold;
 end;
 
@@ -212,7 +226,9 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Knee_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   with EditorForm As TEditorForm do UpdateKnee;
 end;
 
@@ -223,13 +239,15 @@ begin
  for Channel := 0 to CNrChannels - 1 do
   if assigned(FEnhancedGates[Channel])
    then FEnhancedGates[Channel].Release := Value;
- if Assigned(EditorForm)
+
+ // update GUI if necessary
+ if EditorForm is TEditorForm then
   then TEditorForm(EditorForm).UpdateDecay;
 end;
 
 procedure TEnhancedGateDataModule.EAGDuckChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(EditorForm) then
+ if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if CBDuck.Checked <> Boolean(Round(Value))
     then CBDuck.Checked := Boolean(Round(Value));
@@ -237,7 +255,7 @@ end;
 
 procedure TEnhancedGateDataModule.EAGStereoLinkChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(EditorForm) then
+ if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if CBStereoLink.Checked <> Boolean(Round(Value))
     then CBStereoLink.Checked := Boolean(Round(Value));

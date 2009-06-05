@@ -4,21 +4,24 @@ library MaxxBassClone;
 uses
   FastMM4,
   FastMove,
-  Forms,
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  MaxxBassCloneDM in 'MaxxBassCloneDM.pas' {MaxxBassCloneModule: TVSTModule},
-  MaxxBassCloneGUI in 'MaxxBassCloneGUI.pas' {FmMaxxBassClone};
+  MaxxBassCloneDM in 'MaxxBassCloneDM.pas' {HarmonicBassModule: TVSTModule},
+  MaxxBassCloneGUI in 'MaxxBassCloneGUI.pas' {FmHarmonicBassClone};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TMaxxBassCloneModule);
+ Result := VstModuleMain(AudioMasterCallback, THarmonicBassModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TMaxxBassCloneModule);
+ Result := WinampDSPModuleHeader(THarmonicBassModule);
 end;
 
 exports VstPluginMain name 'main';

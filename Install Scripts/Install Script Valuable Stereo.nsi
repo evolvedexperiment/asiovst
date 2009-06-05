@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Parametri-Q Lite Installer
+;Valueable Stereo Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Parametri-Q Lite Installer"
-  OutFile "Parametri-Q_Lite_Install.exe"
+  Name "Valueable Stereo Installer"
+  OutFile "Valueable_Stereo_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,7 +35,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Parametri-Q Lite"
+  !define PRODUCT_NAME "Valueable Stereo"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -92,13 +92,14 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
+
 ;Installer Sections
 
-Section "Parametri-Q Lite VST-Plugin" SecVstPlugin
+Section "Valueable Stereo VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\ParametriQLite.dll"
+  File "..\Bin\Valueable Stereo.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -106,7 +107,7 @@ Section "Parametri-Q Lite VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\ParametriQLite.dll" 
+  StrCpy $0 "$INSTDIR\Valueable Stereo.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -119,7 +120,7 @@ SkipDLLCall:
   WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Parametri-Q_Lite.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Valueable Stereo.exe"
 SectionEnd
 
 ;--------------------------------
@@ -142,10 +143,10 @@ FunctionEnd
 ;Descriptions
 
   ;Language strings
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Parametri-Q Lite VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Valueable Stereo VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Parametri-Q Lite VST Plugin"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Valueable Stereo VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -158,7 +159,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\ParametriQLite.dll"
+  Delete "$INSTDIR\Valueable Stereo.dll"
   DeleteRegKey HKLM PRODUCT_DIR_REGKEY
 
 SectionEnd

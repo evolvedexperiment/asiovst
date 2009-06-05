@@ -236,6 +236,8 @@ procedure TAdhesiveDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FCompressor) then FCompressor.Attack := Value;
+
+ // update GUI if necessary
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateAttack;
 end;
@@ -244,6 +246,8 @@ procedure TAdhesiveDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FCompressor) then FCompressor.Release := Value;
+
+ // update GUI if necessary
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateRelease;
 end;
@@ -252,6 +256,8 @@ procedure TAdhesiveDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FCompressor) then FCompressor.Threshold_dB := Value;
+
+ // update GUI if necessary
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateThreshold;
 end;
@@ -260,6 +266,8 @@ procedure TAdhesiveDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FCompressor) then FCompressor.Ratio := Value;
+
+ // update GUI if necessary
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateRatio;
 end;
@@ -268,6 +276,8 @@ procedure TAdhesiveDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FCompressor) then FCompressor.Knee_dB := Value;
+
+ // update GUI if necessary
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateKnee;
 end;

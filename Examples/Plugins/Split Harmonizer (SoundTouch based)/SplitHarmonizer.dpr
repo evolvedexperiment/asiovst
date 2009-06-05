@@ -1,16 +1,19 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library SplitHarmonizer;
 
+// if the file below is missing please execute the batch file in this
+// directory first to compile the resource file
+
 {$R 'SoundTouchKnob.res' 'SoundTouchKnob.rc'}
 {$R '..\..\..\Bin\SoundTouch.res' '..\..\..\Bin\SoundTouch.RC'}
 
 uses
-  FastMM4,
-  madExcept,
+  FastMM4, // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept, // either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  FastMove,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

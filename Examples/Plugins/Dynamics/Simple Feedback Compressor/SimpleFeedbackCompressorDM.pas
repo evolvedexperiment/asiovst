@@ -61,8 +61,12 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSimpleFeedbackCompressors[0].Threshold_dB := Value;
- FSimpleFeedbackCompressors[1].Threshold_dB := Value;
+ if assigned(FSimpleFeedbackCompressors[0])
+  then FSimpleFeedbackCompressors[0].Threshold_dB := Value;
+ if assigned(FSimpleFeedbackCompressors[1])
+  then FSimpleFeedbackCompressors[1].Threshold_dB := Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if DialThreshold.Position <> Round(Value) then
@@ -75,8 +79,13 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSimpleFeedbackCompressors[0].Ratio := 1 / Value;
- FSimpleFeedbackCompressors[1].Ratio := FSimpleFeedbackCompressors[0].Ratio;
+ if assigned(FSimpleFeedbackCompressors[0]) then
+  begin
+   FSimpleFeedbackCompressors[0].Ratio := 1 / Value;
+   FSimpleFeedbackCompressors[1].Ratio := FSimpleFeedbackCompressors[0].Ratio;
+  end;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if DialRatio.Position <> Round(100 * Log10(Value)) then
@@ -88,8 +97,12 @@ end;
 
 procedure TSimpleFeedbackCompressorDataModule.SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSimpleFeedbackCompressors[0].Release := Value;
- FSimpleFeedbackCompressors[1].Release := Value;
+ if assigned(FSimpleFeedbackCompressors[0])
+  then FSimpleFeedbackCompressors[0].Release := Value;
+ if assigned(FSimpleFeedbackCompressors[0])
+  then FSimpleFeedbackCompressors[1].Release := Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
    if DialRelease.Position <> Round(Value) then
@@ -106,8 +119,13 @@ begin
  SampleDuration_ms := 1000 / SampleRate;
  if Value < 3 * SampleDuration_ms
   then Value := 3 * SampleDuration_ms;
- FSimpleFeedbackCompressors[0].Attack := Value;
- FSimpleFeedbackCompressors[1].Attack := Value;
+
+ if assigned(FSimpleFeedbackCompressors[0])
+  then FSimpleFeedbackCompressors[0].Attack := Value;
+ if assigned(FSimpleFeedbackCompressors[1])
+  then FSimpleFeedbackCompressors[1].Attack := Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateAttack;
@@ -130,8 +148,10 @@ procedure TSimpleFeedbackCompressorDataModule.VSTModuleSampleRateChange(
 var
   SampleDuration_ms : Single;
 begin
- FSimpleFeedbackCompressors[0].SampleRate := SampleRate;
- FSimpleFeedbackCompressors[1].SampleRate := SampleRate;
+ if assigned(FSimpleFeedbackCompressors[0])
+  then FSimpleFeedbackCompressors[0].SampleRate := SampleRate;
+ if assigned(FSimpleFeedbackCompressors[1])
+  then FSimpleFeedbackCompressors[1].SampleRate := SampleRate;
 
  SampleDuration_ms := 1000 / SampleRate;
  if Parameter[3] < 3 * SampleDuration_ms

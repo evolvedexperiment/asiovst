@@ -16,8 +16,7 @@ type
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FSimpleCompressors : Array [0..1] of TSimpleCompressor;
   public
@@ -55,6 +54,8 @@ begin
   then FSimpleCompressors[0].Threshold_dB := Value;
  if assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Threshold_dB := Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateThreshold;
@@ -67,6 +68,8 @@ begin
   then FSimpleCompressors[0].Ratio := 1 / Value;
  if assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Ratio := 1 / Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateRatio;
@@ -79,6 +82,8 @@ begin
   then FSimpleCompressors[0].Release := Value;
  if assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Release := Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateRelease;
@@ -91,6 +96,8 @@ begin
   then FSimpleCompressors[0].Attack := Value;
  if assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Attack := Value;
+
+ // update GUI if necessary
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateAttack;

@@ -30,6 +30,8 @@ procedure TSimpleGateDataModule.VSTModuleOpen(Sender: TObject);
 begin
  FSimpleGates[0] := TClassicGate.Create;
  FSimpleGates[1] := TClassicGate.Create;
+
+ Parameter[0] := -10;
 end;
 
 procedure TSimpleGateDataModule.VSTModuleClose(Sender: TObject);
@@ -47,8 +49,8 @@ end;
 procedure TSimpleGateDataModule.SGDMThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSimpleGates[0].Threshold_dB := Value;
- FSimpleGates[1].Threshold_dB := Value;
+ if assigned(FSimpleGates[0]) then FSimpleGates[0].Threshold_dB := Value;
+ if assigned(FSimpleGates[1]) then FSimpleGates[1].Threshold_dB := Value;
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm)
    do UpdateScrollBar;
@@ -69,8 +71,8 @@ end;
 procedure TSimpleGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FSimpleGates[0].SampleRate := SampleRate;
- FSimpleGates[1].SampleRate := SampleRate;
+ if assigned(FSimpleGates[0]) then FSimpleGates[0].SampleRate := SampleRate;
+ if assigned(FSimpleGates[1]) then FSimpleGates[1].SampleRate := SampleRate;
 end;
 
 end.

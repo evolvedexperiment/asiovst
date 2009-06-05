@@ -167,7 +167,7 @@ uses
 resourcestring
   RStrLoadingFailed              = 'Loading failed!';
   RStrFileDoesNotExist           = 'File %d does not exists';
-  RStrNoEntryPoint               = 'VST entry point could not be detected';
+  RStrNoEntryPoint               = 'SynthEdit entry point could not be detected';
   RStrValue                      = 'Value';
 
 

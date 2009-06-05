@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Parametri-Q Lite Installer
+;Valueable Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Parametri-Q Lite Installer"
-  OutFile "Parametri-Q_Lite_Install.exe"
+  Name "Valueable Installer"
+  OutFile "Valueable_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,11 +35,12 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Parametri-Q Lite"
+  !define PRODUCT_NAME "Valueable"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -49,7 +50,7 @@ SetCompressor lzma
 
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
+  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -92,13 +93,14 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
+
 ;Installer Sections
 
-Section "Parametri-Q Lite VST-Plugin" SecVstPlugin
+Section "Valueable VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\ParametriQLite.dll"
+  File "..\Bin\Valueable.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -106,7 +108,7 @@ Section "Parametri-Q Lite VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\ParametriQLite.dll" 
+  StrCpy $0 "$INSTDIR\Valueable.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -116,10 +118,10 @@ Section "Parametri-Q Lite VST-Plugin" SecVstPlugin
 SkipDLLCall:
 
   ;Store installation folder
-  WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Parametri-Q_Lite.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Valueable.exe"
 SectionEnd
 
 ;--------------------------------
@@ -142,10 +144,10 @@ FunctionEnd
 ;Descriptions
 
   ;Language strings
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Parametri-Q Lite VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Valueable VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Parametri-Q Lite VST Plugin"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Valueable VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -158,7 +160,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\ParametriQLite.dll"
-  DeleteRegKey HKLM PRODUCT_DIR_REGKEY
+  Delete "$INSTDIR\Valueable.dll"
+  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

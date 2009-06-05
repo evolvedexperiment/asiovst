@@ -17,6 +17,7 @@ const
     TSEStaticControlableButterworthLPModule,
     TSEStaticControlableButterworthHPModule,
     TSEAutomatableButterworthLPModule, TSEAutomatableButterworthHPModule);
+//    TSEAutomatableXButterworthLPModule, TSEAutomatableXButterworthHPModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin

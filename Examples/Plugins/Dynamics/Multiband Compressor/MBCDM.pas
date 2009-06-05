@@ -149,7 +149,9 @@ begin
  for i := 0 to Length(FLowSplit) - 1 do
   if assigned(FLowSplit[i])
    then FLowSplit[i].Frequency := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     if Value < 1000
@@ -174,7 +176,8 @@ begin
  if assigned(FLowComp)
   then FLowComp.MakeUpGain_dB := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbLowGaindB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
@@ -187,7 +190,9 @@ procedure TMBCDataModule.MBCDMMidGainChange(Sender: TObject; const Index: Intege
 begin
  if assigned(FMidComp)
   then FMidComp.MakeUpGain_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbMidGaindB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
@@ -200,7 +205,9 @@ procedure TMBCDataModule.MBCDMHighGainChange(Sender: TObject; const Index: Integ
 begin
  if assigned(FHighComp)
   then FHighComp.MakeUpGain_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbHighGaindB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
@@ -213,7 +220,9 @@ procedure TMBCDataModule.MBCDMLowThresholdChange(Sender: TObject; const Index: I
 begin
  if assigned(FLowComp)
   then FLowComp.Threshold_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbLowThresholddB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
@@ -226,7 +235,9 @@ procedure TMBCDataModule.MBCDMMidThresholdChange(Sender: TObject; const Index: I
 begin
  if assigned(FMidComp)
   then FMidComp.Threshold_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbMidThresholddB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
@@ -239,7 +250,9 @@ procedure TMBCDataModule.MBCDMHighThresholdChange(Sender: TObject; const Index: 
 begin
  if assigned(FHighComp)
   then FHighComp.Threshold_dB := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbHighThresholddB.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' dB';
@@ -253,7 +266,9 @@ procedure TMBCDataModule.MBCDMLowRatioChange(
 begin
  if assigned(FLowComp)
   then FLowComp.Ratio := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbLowRatioValue.Caption := '1:' + FloatToStrF(Value, ffGeneral, 3, 2);
@@ -266,7 +281,9 @@ procedure TMBCDataModule.MBCDMMidRatioChange(Sender: TObject; const Index: Integ
 begin
  if assigned(FMidComp)
   then FMidComp.Ratio := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbMidRatioValue.Caption := '1:' + FloatToStrF(Value, ffGeneral, 3, 2);
@@ -279,7 +296,9 @@ procedure TMBCDataModule.MBCDMHighRatioChange(Sender: TObject; const Index: Inte
 begin
  if assigned(FHighComp)
   then FHighComp.Ratio := Value;
- if Assigned(EditorForm) then
+
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbHighRatioValue.Caption := '1:' + FloatToStrF(Value, ffGeneral, 3, 2);
@@ -293,7 +312,8 @@ begin
  if assigned(FLowComp)
   then FLowComp.Attack := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbLowAttackValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
@@ -307,7 +327,8 @@ begin
  if assigned(FMidComp)
   then FMidComp.Attack := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbMidAttackValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
@@ -321,7 +342,8 @@ begin
  if assigned(FHighComp)
   then FHighComp.Attack := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm) do
    begin
     LbHighAttackValue.Caption := FloatToStrF(Value, ffGeneral, 3, 2) + ' ms';
@@ -335,7 +357,8 @@ begin
  if assigned(FLowComp)
   then FLowComp.Release := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm)
    do UpdateLowRelease;
 end;
@@ -345,7 +368,8 @@ begin
  if assigned(FMidComp)
   then FMidComp.Release := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm)
    do UpdateMidRelease;
 end;
@@ -355,7 +379,8 @@ begin
  if assigned(FHighComp)
   then FHighComp.Release := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmMBC then
   with TFmMBC(EditorForm)
    do UpdateHighRelease;
 end;

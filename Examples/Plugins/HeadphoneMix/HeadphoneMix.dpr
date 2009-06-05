@@ -2,14 +2,15 @@
 library HeadphoneMix;
 
 uses
-  FastMM4,
-  FastMove,
+  FastMM4, // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   DAV_VSTEffect,
   DAV_VSTModule,
-  HMDM in 'HMDM.pas' {HMModule: TVSTModule},
-  DAV_DspCrosstalkSimulator in '..\..\..\Source\DSP\DAV_DspCrosstalkSimulator.pas',
-  DAV_DspCrosstalkSimulatorHRTF in '..\..\..\Source\DSP\DAV_DspCrosstalkSimulatorHRTF.pas',
-  DAV_BlockRoutines in '..\..\..\Source\DAV_BlockRoutines.pas';
+  HMDM in 'HMDM.pas' {HMModule: TVSTModule};
 
 {$I DAV_Compiler.inc}
 
@@ -30,8 +31,8 @@ begin
     Flags := [effFlagsCanReplacing];
     Version := '1.0';
     EffectName := 'Headphone Mix';
-    ProductName := 'Headphone Mix';
-    VendorName := 'AIXcoustic Creations';
+    ProductName := 'DAV Effect Examples';
+    VendorName := 'Delphi ASIO & VST Project';
     VersionMajor := 1;
     VersionMinor := 0;
     VersionRelease := 0;

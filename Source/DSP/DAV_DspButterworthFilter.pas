@@ -9,6 +9,7 @@ uses
   DAV_DspFilter, DAV_Common;
 
 type
+  TCustomButterworthFilterClass = class of TCustomButterworthFilter;
   TCustomButterworthFilter = class(TCustomOrderFilter)
   private
     procedure SetDownsamplePower(Value: Integer);
@@ -41,7 +42,7 @@ type
     property DownsampleFaktor : Integer read FDownsampleFak;
   end;
 
-  TButterworthLowPassFilter = class(TCustomButterworthFilter)
+  TCustomButterworthLowPassFilter = class(TCustomButterworthFilter)
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
@@ -49,15 +50,9 @@ type
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
-  published
-    property Gain;
-    property Order;
-    property Frequency;
-    property SampleRate;
   end;
-  TButterworthHighCutFilter = TButterworthLowPassFilter;
 
-  TButterworthHighpassFilter = class(TCustomButterworthFilter)
+  TCustomButterworthHighPassFilter = class(TCustomButterworthFilter)
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
@@ -66,15 +61,9 @@ type
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
-  published
-    property Gain;
-    property Order;
-    property Frequency;
-    property SampleRate;
   end;
-  TButterworthLowCut = TButterworthHighpassFilter;
 
-  TButterworthSplitBandFilter = class(TCustomButterworthFilter)
+  TCustomButterworthSplitBandFilter = class(TCustomButterworthFilter)
   protected
     FKs      : Double;
     FHPState : array [0..63] of Double;
@@ -84,6 +73,27 @@ type
     procedure ProcessSample(const Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
     procedure ProcessSample(const Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+  end;
+
+  TButterworthHighPassFilter = class(TCustomButterworthHighPassFilter)
+  published
+    property Gain;
+    property Order;
+    property Frequency;
+    property SampleRate;
+  end;
+  TButterworthLowCut = TCustomButterworthHighPassFilter;
+
+  TButterworthLowPassFilter = class(TCustomButterworthLowPassFilter)
+  published
+    property Gain;
+    property Order;
+    property Frequency;
+    property SampleRate;
+  end;
+  TButterworthHighCutFilter = TCustomButterworthLowPassFilter;
+
+  TButterworthSplitBandFilter = class(TCustomButterworthSplitBandFilter)
   published
     property Gain;
     property Order;
@@ -91,10 +101,37 @@ type
     property SampleRate;
   end;
 
+  TButterworthLowPassFilterAutomatable = class(TCustomButterworthHighPassFilter)
+  public
+    procedure CalculateW0; override;
+    procedure CalculateCoefficients; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+  published
+    property Gain;
+    property Order;
+    property Frequency;
+    property SampleRate;
+  end;
+
+  TButterworthHighPassFilterAutomatable = class(TCustomButterworthHighPassFilter)
+  public
+    procedure CalculateW0; override;
+    procedure CalculateCoefficients; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+  published
+    property Gain;
+    property Order;
+    property Frequency;
+    property SampleRate;
+  end;
+
+
+//  TCustomButterworthLowPassFilterAutomatable = class(TCustomButterworthLowPassFilter);
+
 implementation
 
 uses
-  Math, SysUtils, DAV_Complex;
+  Math, SysUtils, DAV_Complex, DAV_Approximations;
 
 var
   DenormRandom   : Single;
@@ -218,12 +255,12 @@ end;
 
 { TButterworthFilterLP }
 
-constructor TButterworthLowPassFilter.Create(const Order: Integer = 0);
+constructor TCustomButterworthLowPassFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
 end;
 
-procedure TButterworthLowPassFilter.CalculateCoefficients;
+procedure TCustomButterworthLowPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
@@ -251,7 +288,7 @@ begin
   end;
 end;
 
-function TButterworthLowPassFilter.MagnitudeSquared(const Frequency: Double): Double;
+function TCustomButterworthLowPassFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   i     : Integer;
   a, cw : Double;
@@ -270,7 +307,7 @@ begin
  Result := CDenorm64 + Abs(Result);
 end;
 
-function TButterworthLowPassFilter.Phase(const Frequency: Double): Double;
+function TCustomButterworthLowPassFilter.Phase(const Frequency: Double): Double;
 var
   Cmplx : array [0..1] of TComplexDouble;
   i     : Integer;
@@ -289,7 +326,7 @@ begin
  Result := ArcTan2(Cmplx[1].Im, Cmplx[1].Re);
 end;
 
-procedure TButterworthLowPassFilter.Complex(const Frequency: Double; out Real,
+procedure TCustomButterworthLowPassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i           : Integer;
@@ -320,7 +357,7 @@ begin
 end;
 
 
- function TButterworthLowPassFilter.ProcessSample(const Input: Double): Double;
+ function TCustomButterworthLowPassFilter.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -393,13 +430,13 @@ end;
 
 { TButterworthFilterHP }
 
-constructor TButterworthHighpassFilter.Create(const Order: Integer = 0);
+constructor TCustomButterworthHighPassFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
  DenormRandom := Random;
 end;
 
-procedure TButterworthHighpassFilter.CalculateCoefficients;
+procedure TCustomButterworthHighPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
@@ -427,7 +464,7 @@ begin
   end;
 end;
 
-function TButterworthHighpassFilter.MagnitudeSquared(const Frequency: Double): Double;
+function TCustomButterworthHighPassFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   i     : Integer;
   a, cw : Double;
@@ -446,7 +483,7 @@ begin
  Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
 end;
 
-function TButterworthHighpassFilter.Phase(const Frequency: Double): Double;
+function TCustomButterworthHighPassFilter.Phase(const Frequency: Double): Double;
 var
   cw, sw   : Double;
   Nom, Den : Double;
@@ -472,7 +509,7 @@ begin
  Result := ArcTan2(Nom, Den);
 end;
 
-procedure TButterworthHighpassFilter.Complex(const Frequency: Double; out Real,
+procedure TCustomButterworthHighPassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   i           : Integer;
@@ -503,7 +540,7 @@ begin
   end;
 end;
 
-function TButterworthHighpassFilter.ProcessSample(const Input: Single): Single;
+function TCustomButterworthHighPassFilter.ProcessSample(const Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -583,7 +620,7 @@ asm
  {$ENDIF}
 end;
 
-function TButterworthHighpassFilter.ProcessSample(const Input: Double): Double;
+function TCustomButterworthHighPassFilter.ProcessSample(const Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -663,16 +700,16 @@ asm
  {$ENDIF}
 end;
 
-{ TButterworthSplitBandFilter }
+{ TCustomButterworthSplitBandFilter }
 
-constructor TButterworthSplitBandFilter.Create(const Order: Integer = 0);
+constructor TCustomButterworthSplitBandFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
  Randomize;
  DenormRandom := Random;
 end;
 
-procedure TButterworthSplitBandFilter.CalculateCoefficients;
+procedure TCustomButterworthSplitBandFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
@@ -697,7 +734,7 @@ begin
   end;
 end;
 
-function TButterworthSplitBandFilter.MagnitudeSquared(const Frequency: Double): Double;
+function TCustomButterworthSplitBandFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   i  : Integer;
   cw : Double;
@@ -719,7 +756,7 @@ begin
  Result := CDenorm64 + Abs(sqr(FFilterGain) * Result);
 end;
 
-procedure TButterworthSplitBandFilter.ProcessSample(const Input: Single; out Lowpass,
+procedure TCustomButterworthSplitBandFilter.ProcessSample(const Input: Single; out Lowpass,
   Highpass: Single);
 {$IFDEF PUREPASCAL}
 var
@@ -852,7 +889,7 @@ asm
  {$ENDIF}
 end;
 
-procedure TButterworthSplitBandFilter.ProcessSample(const Input: Double; out Lowpass,
+procedure TCustomButterworthSplitBandFilter.ProcessSample(const Input: Double; out Lowpass,
   Highpass: Double);
 {$IFDEF PUREPASCAL}
 var
@@ -983,6 +1020,118 @@ asm
  pop ecx
  fstp Highpass.Double
  {$ENDIF}
+end;
+
+{ TButterworthLowPassFilterAutomatable }
+
+procedure TButterworthLowPassFilterAutomatable.CalculateCoefficients;
+var
+  i           : Integer;
+  K, K2, t, a : Double;
+begin
+ if FOrder = 0 then exit;
+ FFilterGain := sqr(FGainFactor);
+ K := FTanW0;
+ K2 := K * K;
+
+ i := 0;
+ while i < Integer(FOrder) - 1 do
+  begin
+   a := 2 * FastSinInBounds4Term((i + 1) * FPiHalfOrderInv) * K;
+   t := 1 / (K2 + a + 1);
+   FFilterGain := FFilterGain * t * K2;
+   FCoeffs[i    ] := -2 * (K2 - 1) * t;
+   FCoeffs[i + 1] := (a - K2 - 1) * t;
+   inc(i, 2);
+  end;
+ if i < Integer(FOrder) then
+  begin
+   t := 1 / (K + 1);
+   FFilterGain := FFilterGain * t * K;
+   FCoeffs[i] := (1 - K) * t;
+  end;
+end;
+
+procedure TButterworthLowPassFilterAutomatable.CalculateW0;
+begin
+ FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
+ FTanW0 := FastTanInBounds4Term(FW0 * CHalf64)
+end;
+
+function TButterworthLowPassFilterAutomatable.MagnitudeSquared(
+  const Frequency: Double): Double;
+var
+  i     : Integer;
+  a, cw : Double;
+begin
+ cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
+ Result := sqr(FFilterGain);
+ for i := 0 to (FOrder div 2) - 1
+  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
+       sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+       cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+  end;
+ Result := CDenorm64 + Abs(Result);
+end;
+
+{ TButterworthHighPassFilterAutomatable }
+
+procedure TButterworthHighPassFilterAutomatable.CalculateCoefficients;
+var
+  i           : Integer;
+  K, K2, t, a : Double;
+begin
+ if FOrder = 0 then exit;
+ FFilterGain := sqr(FGainFactor);
+ K := FTanW0;
+ K2 := K * K;
+
+ i := 0;
+ while i < Integer(FOrder) - 1 do
+  begin
+   a := 2 * FastSinInBounds4Term((i + 1) * FPiHalfOrderInv) * K;
+   t := 1 / (K2 + a + 1);
+   FFilterGain := FFilterGain * t;
+   FCoeffs[i    ] := -2 * (K2 - 1) * t;
+   FCoeffs[i + 1] := (a - K2 - 1) * t;
+   inc(i, 2);
+  end;
+ if i < Integer(FOrder) then
+  begin
+   t := 1 / (K + 1);
+   FFilterGain := FFilterGain * t;
+   FCoeffs[i] := (1 - K) * t;
+  end;
+end;
+
+procedure TButterworthHighPassFilterAutomatable.CalculateW0;
+begin
+ FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
+ FTanW0 := FastTanInBounds4Term(FW0 * CHalf64)
+end;
+
+function TButterworthHighPassFilterAutomatable.MagnitudeSquared(
+  const Frequency: Double): Double;
+var
+  i     : Integer;
+  a, cw : Double;
+begin
+ cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
+ a := sqr(cw - 2);
+ Result := 1;
+ for i := 0 to (FOrder div 2) - 1
+  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) + sqr(FCoeffs[2 * i + 1]) +
+       2 * FCoeffs[2 * i + 1] + cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+  end;
+ Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
 end;
 
 end.

@@ -107,7 +107,8 @@ begin
  if assigned(FLA4029s)
   then FLA4029s.Input_dB := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmLA4029 then
   with EditorForm as TFmLA4029 do
    if DialInput.Position <> Value then
     begin
@@ -122,7 +123,8 @@ begin
  if assigned(FLA4029s)
   then FLA4029s.Output_dB := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmLA4029 then
   with EditorForm as TFmLA4029 do
    if DialOutput.Position <> Value then
     begin
@@ -136,7 +138,8 @@ begin
  if assigned(FLA4029s)
   then FLA4029s.Knee := 0.1 * Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmLA4029 then
   with EditorForm as TFmLA4029 do
    if DialKnee.Position <> Value then
     begin
@@ -150,7 +153,8 @@ begin
  if assigned(FLA4029s)
   then FLA4029s.Ratio := 1 / Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmLA4029 then
   with EditorForm as TFmLA4029 do
    if DialRatio.Position <> Log10(Value) then
     begin
@@ -164,7 +168,8 @@ begin
  if assigned(FLA4029s)
   then FLA4029s.Release_ms := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmLA4029 then
   with EditorForm as TFmLA4029 do
    if DialRelease.Position <> Log10(Value) then
     begin
@@ -312,7 +317,8 @@ begin
  if assigned(FLA4029s)
   then FLA4029s.Attack_ms := Value;
 
- if Assigned(EditorForm) then
+ // update GUI if necessary
+ if EditorForm is TFmLA4029 then
   with EditorForm as TFmLA4029 do
    if DialAttack.Position <> Log10(Value) then
     begin

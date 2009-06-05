@@ -21,10 +21,10 @@ type
     procedure Open; override;
     procedure SampleRateChanged; override;
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   public
     destructor Destroy; override;
 
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual; abstract;
   end;
@@ -35,10 +35,10 @@ type
     FOrder        : Integer;
     FRipple       : Single;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
 
-    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
@@ -54,6 +54,20 @@ type
     class function GetModueName: string; override;
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+  end;
+
+  TSEControlableChebyshevFilterLPModule = class(TSEStaticChebyshevFilterLPModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class function GetModueName: string; override;
+  end;
+
+  TSEControlableChebyshevFilterHPModule = class(TSEStaticChebyshevFilterHPModule)
+  protected
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+  public
+    class function GetModueName: string; override;
   end;
 
   TSEAutomatebleChebyshevFilterModule = class(TSECustomChebyshevFilterModule)
@@ -292,6 +306,38 @@ end;
 class function TSEStaticChebyshevFilterHPModule.GetModueName: string;
 begin
  result := 'Chebyshev Highpass (static)';
+end;
+
+{ TSEControlableChebyshevFilterLPModule }
+
+class function TSEControlableChebyshevFilterLPModule.GetModueName: string;
+begin
+ result := 'Chebyshev Lowpass';
+end;
+
+function TSEControlableChebyshevFilterLPModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEChebyshevFilterPins(index) of
+  pinFrequency..pinRipple : with Properties^ do Direction := drIn;
+ end;
+end;
+
+{ TSEControlableChebyshevFilterHPModule }
+
+class function TSEControlableChebyshevFilterHPModule.GetModueName: string;
+begin
+ result := 'Chebyshev Highpass';
+end;
+
+function TSEControlableChebyshevFilterHPModule.GetPinProperties(
+  const Index: Integer; Properties: PSEPinProperties): Boolean;
+begin
+ result := inherited GetPinProperties(Index, Properties);
+ case TSEChebyshevFilterPins(index) of
+  pinFrequency..pinRipple : with Properties^ do Direction := drIn;
+ end;
 end;
 
 { TSEAutomatebleChebyshevFilterModule }

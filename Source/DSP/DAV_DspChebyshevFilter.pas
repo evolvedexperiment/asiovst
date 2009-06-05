@@ -8,6 +8,7 @@ uses
   DAV_Common, DAV_DspFilter, DAV_Complex;
 
 type
+  TCustomChebyshevFilterClass = class of TCustomChebyshevFilter;
   TCustomChebyshevFilter = class(TCustomOrderFilter)
   private
     function GetRipple: Double;

@@ -2,21 +2,26 @@
 library RenaissanceBassClone;
 
 uses
-  Forms,
+  FastMM4,
+  FastMove,
+  madExcept,
+  madLinkDisAsm,
+  madListProcesses,
+  madListModules,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  RenaissanceBassCloneDM in 'RenaissanceBassCloneDM.pas' {RenaissanceBassCloneModule: TVSTModule},
+  RenaissanceBassCloneDM in 'RenaissanceBassCloneDM.pas' {ResurrectionBassCloneModule: TVSTModule},
   RenaissanceBassCloneGUI in 'RenaissanceBassCloneGUI.pas' {FmRenaissanceBassClone};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TRenaissanceBassCloneModule);
+ Result := VstModuleMain(AudioMasterCallback, TResurrectionBassCloneModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TRenaissanceBassCloneModule);
+ Result := WinampDSPModuleHeader(TResurrectionBassCloneModule);
 end;
 
 exports VstPluginMain name 'main';

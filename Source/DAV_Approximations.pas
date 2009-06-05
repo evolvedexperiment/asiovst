@@ -59,6 +59,10 @@ uses
   function FastCosInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSec4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -586,6 +590,26 @@ function FastCos4Term(const Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
  Result := FastCosInBounds4Term(abs(FastMod(Value, CTwoPi64)));
+end;
+
+function FastSinPart4Term(const Value: Single): Single;
+begin
+  Result := FastCosPart4Term(CPiHalf32 - Value);
+end;
+
+function FastSinPart4Term(const Value: Double): Double;
+begin
+  Result := FastCosPart4Term(CPiHalf64 - Value);
+end;
+
+function FastSinInBounds4Term(const Value: Single): Single;
+begin
+  Result := FastCosInBounds4Term(CPiHalf32 - Value);
+end;
+
+function FastSinInBounds4Term(const Value: Double): Double;
+begin
+  Result := FastCosInBounds4Term(CPiHalf64 - Value);
 end;
 
 function FastSin4Term(const Value: Single): Single;
