@@ -40,7 +40,6 @@ SetCompressor lzma
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
-  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -49,8 +48,8 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define MUI_LANGDLL_REGISTRY_ROOT HKLM 
+  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -80,6 +79,7 @@ FunctionEnd
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
+  Page custom BugReportPatch
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
   !insertmacro MUI_UNPAGE_WELCOME
@@ -177,6 +177,6 @@ Section "Uninstall"
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\Crosstalk Cancellation.dll"
   Delete "$INSTDIR\Crosstalk Cancellation.pdf"
-  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  DeleteRegKey HKLM PRODUCT_DIR_REGKEY
 
 SectionEnd

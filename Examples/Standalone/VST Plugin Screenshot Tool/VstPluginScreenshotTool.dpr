@@ -23,7 +23,7 @@ begin
      // check VST plugin is a valid plugin
      if not CheckValidPlugin(FileName) then exit;
 
-     Writeln(FileName);
+     Writeln('Capturing: ' + FileName);
 
      // load from file
      LoadFromFile(FileName);
@@ -76,6 +76,8 @@ var
   Dir : string;
   SR  : TSearchRec;
 begin
+ Writeln('Delphi ASIO & VST Project - Vst Plugin Screenshot Tool');
+
  if FileExists(ParamStr(1))
   then RenderScreenshot(ParamStr(1))
   else
@@ -90,6 +92,9 @@ begin
     end
    else
     begin
+     Writeln('Wrong syntax!');
+     Writeln('Add parameter or move this tool into a directory containing VST plugins');
+
      Dir := ExtractFileDir(ParamStr(0));
      SelectDirectory('Select Directory', '', Dir);
      if FindFirst(Dir + '\' + '*.dll', faAnyFile, SR) = 0 then

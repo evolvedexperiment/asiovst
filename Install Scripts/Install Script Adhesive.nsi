@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Barberpole Flanger Installer
+;Adhesive Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Barberpole Flanger Installer"
-  OutFile "Barberpole Flanger_Install.exe"
+  Name "Adhesive Installer"
+  OutFile "Adhesive_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,12 +35,11 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Barberpole Flanger"
+  !define PRODUCT_NAME "Adhesive"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
-  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -49,8 +48,8 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define MUI_LANGDLL_REGISTRY_ROOT HKLM 
+  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -94,15 +93,14 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
+
 ;Installer Sections
 
-Section "Barberpole Flanger VST-Plugin" SecVstPlugin
+Section "Adhesive VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\BarberpoleFlanger.dll" "..\Bin\Barberpole Flanger.dll"'  
-
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Barberpole Flanger.dll"
+  File "..\Bin\Adhesive.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -110,7 +108,7 @@ Section "Barberpole Flanger VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Barberpole Flanger.dll" 
+  StrCpy $0 "$INSTDIR\Adhesive.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -123,8 +121,7 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
-
+  WriteUninstaller "$INSTDIR\Uninstall_Adhesive.exe"
 SectionEnd
 
 ;--------------------- Install VST Plugin --------------------
@@ -145,13 +142,13 @@ FunctionEnd
 ;Installer Functions
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Adhesive VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Adhesive VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -163,7 +160,7 @@ FunctionEnd
 
 Section "Uninstall"
 
-  Delete "$INSTDIR\Barberpole Flanger.dll"
+  Delete "$INSTDIR\Adhesive.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

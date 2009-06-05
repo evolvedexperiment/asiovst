@@ -202,7 +202,7 @@ end;
 procedure TAdhesiveDataModule.ParameterSideChainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FFilter.Frequency := Value;
+ if assigned(FFilter) then FFilter.Frequency := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateSideChainFilter;
 end;
@@ -235,7 +235,7 @@ end;
 procedure TAdhesiveDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor.Attack := Value;
+ if assigned(FCompressor) then FCompressor.Attack := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateAttack;
 end;
@@ -243,7 +243,7 @@ end;
 procedure TAdhesiveDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor.Release := Value;
+ if assigned(FCompressor) then FCompressor.Release := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateRelease;
 end;
@@ -251,7 +251,7 @@ end;
 procedure TAdhesiveDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor.Threshold_dB := Value;
+ if assigned(FCompressor) then FCompressor.Threshold_dB := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateThreshold;
 end;
@@ -259,7 +259,7 @@ end;
 procedure TAdhesiveDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor.Ratio := Value;
+ if assigned(FCompressor) then FCompressor.Ratio := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateRatio;
 end;
@@ -267,7 +267,7 @@ end;
 procedure TAdhesiveDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FCompressor.Knee_dB := Value;
+ if assigned(FCompressor) then FCompressor.Knee_dB := Value;
  if EditorForm is TFmAdhesive
   then TFmAdhesive(EditorForm).UpdateKnee;
 end;
@@ -287,12 +287,12 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   with FCompressor do
-  begin
-   ProcessSample(FFilter.ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
-   Temp := FMix[0] + FMix[1] * GainReductionFactor;
-   Outputs[0, Sample] := Temp * Inputs[0, Sample];
-   Outputs[1, Sample] := Temp * Inputs[1, Sample];
-  end;
+   begin
+    ProcessSample(FFilter.ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
+    Temp := FMix[0] + FMix[1] * GainReductionFactor;
+    Outputs[0, Sample] := Temp * Inputs[0, Sample];
+    Outputs[1, Sample] := Temp * Inputs[1, Sample];
+   end;
 end;
 
 procedure TAdhesiveDataModule.VSTModuleProcessPeakClip(const Inputs,
@@ -303,12 +303,12 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   with FCompressor do
-  begin
-   ProcessSample(FFilter.ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
-   Temp := FMix[0] + FMix[1] * GainReductionFactor;
-   Outputs[0, Sample] := FastTanhOpt3Term(Temp * Inputs[0, Sample]);
-   Outputs[1, Sample] := FastTanhOpt3Term(Temp * Inputs[1, Sample]);
-  end;
+   begin
+    ProcessSample(FFilter.ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
+    Temp := FMix[0] + FMix[1] * GainReductionFactor;
+    Outputs[0, Sample] := FastTanhOpt3Term(Temp * Inputs[0, Sample]);
+    Outputs[1, Sample] := FastTanhOpt3Term(Temp * Inputs[1, Sample]);
+   end;
 end;
 
 procedure TAdhesiveDataModule.VSTModuleProcessSC(const Inputs,
@@ -319,12 +319,12 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   with FCompressor do
-  begin
-   ProcessSample(FFilter.ProcessSample(Inputs[2, Sample]));
-   Temp := FMix[0] + FMix[1] * GainReductionFactor;
-   Outputs[0, Sample] := Temp * Inputs[0, Sample];
-   Outputs[1, Sample] := Temp * Inputs[1, Sample];
-  end;
+   begin
+    ProcessSample(FFilter.ProcessSample(Inputs[2, Sample]));
+    Temp := FMix[0] + FMix[1] * GainReductionFactor;
+    Outputs[0, Sample] := Temp * Inputs[0, Sample];
+    Outputs[1, Sample] := Temp * Inputs[1, Sample];
+   end;
 end;
 
 procedure TAdhesiveDataModule.VSTModuleProcessSCPeakClip(const Inputs,
@@ -346,7 +346,11 @@ end;
 procedure TAdhesiveDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FCompressor.SampleRate := SampleRate;
+ // skip invalid samplerates
+ if abs(SampleRate) <= 0 then exit;
+
+ if assigned(FCompressor) then FCompressor.SampleRate := abs(SampleRate);
+ if assigned(FFilter) then FFilter.SampleRate := abs(SampleRate);
 end;
 
 end.

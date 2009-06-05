@@ -4,12 +4,12 @@ library SmoothMultibandCompressor;
 {$R 'SmoothMultibandCompressor.res' 'SmoothMultibandCompressor.rc'}
 
 uses
-  FastMM4,
-  madExcept,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept,// either download madExcept or remove mad* if there is an error here
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  FastMove,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

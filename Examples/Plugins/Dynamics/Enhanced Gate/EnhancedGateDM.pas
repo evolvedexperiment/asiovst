@@ -112,29 +112,35 @@ begin
 end;
 
 procedure TEnhancedGateDataModule.EAGThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Threshold_dB := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Threshold_dB := Value;
  if Assigned(EditorForm)
   then (EditorForm As TEditorForm).UpdateThreshold;
 end;
 
 procedure TEnhancedGateDataModule.EAGRangeChange(Sender: TObject;
   const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Range_dB := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Range_dB := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do UpdateRange;
 end;
 
 procedure TEnhancedGateDataModule.EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Ratio := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Ratio := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do UpdateRatio;
 end;
@@ -156,57 +162,67 @@ begin
 end;
 
 procedure TEnhancedGateDataModule.EAGLoCutChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].SideChainLowCut := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].SideChainLowCut := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do UpdateLoCut;
 end;
 
 procedure TEnhancedGateDataModule.EAGHiCutChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].SideChainHighCut := 1000 * Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].SideChainHighCut := 1000 * Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do UpdateHiCut;
 end;
 
 procedure TEnhancedGateDataModule.EAGAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Attack := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Attack := Value;
  if Assigned(EditorForm)
   then TEditorForm(EditorForm).UpdateAttack;
 end;
 
 procedure TEnhancedGateDataModule.EAGHoldChange(Sender: TObject; const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Hold := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Hold := Value;
  if Assigned(EditorForm)
   then TEditorForm(EditorForm).UpdateHold;
 end;
 
 procedure TEnhancedGateDataModule.EAGKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  i : Integer;
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Knee_dB := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Knee_dB := Value;
  if Assigned(EditorForm) then
   with EditorForm As TEditorForm do UpdateKnee;
 end;
 
 procedure TEnhancedGateDataModule.EAGDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  i : Integer;
+  Channel : Integer;
 begin
- for i := 0 to CNrChannels - 1
-  do FEnhancedGates[i].Release := Value;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].Release := Value;
  if Assigned(EditorForm)
   then TEditorForm(EditorForm).UpdateDecay;
 end;
@@ -257,10 +273,11 @@ end;
 procedure TEnhancedGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  j : Integer;
+  Channel : Integer;
 begin
- for j := 0 to CNrChannels - 1
-  do FEnhancedGates[j].SampleRate := SampleRate;
+ for Channel := 0 to CNrChannels - 1 do
+  if assigned(FEnhancedGates[Channel])
+   then FEnhancedGates[Channel].SampleRate := SampleRate;
 end;
 
 end.

@@ -1,4 +1,4 @@
-object HardKneeCompressorGUI: THardKneeCompressorGUI
+object HardKneeCompressorGUI: TFmHardKneeCompressor
   Left = 355
   Top = 328
   BorderStyle = bsNone
@@ -34,6 +34,7 @@ object HardKneeCompressorGUI: THardKneeCompressorGUI
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object LbThreshold: TGuiLabel
     Left = 8
@@ -68,6 +69,7 @@ object HardKneeCompressorGUI: THardKneeCompressorGUI
     Position = 60.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object LbRatio: TGuiLabel
     Left = 72
@@ -101,6 +103,7 @@ object HardKneeCompressorGUI: THardKneeCompressorGUI
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object LbAttack: TGuiLabel
     Left = 136
@@ -136,6 +139,7 @@ object HardKneeCompressorGUI: THardKneeCompressorGUI
     Position = 699.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object LbRelease: TGuiLabel
     Left = 200

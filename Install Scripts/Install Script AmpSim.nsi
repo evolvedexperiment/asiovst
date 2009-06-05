@@ -28,6 +28,11 @@ SetCompressor lzma
   XPStyle ON
 
 ;--------------------------------
+;Variables
+
+  Var BugReportState
+
+;--------------------------------
 ;Interface Settings
 
   !define PRODUCT_NAME "AmpSim"
@@ -35,7 +40,6 @@ SetCompressor lzma
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
-  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -44,8 +48,8 @@ SetCompressor lzma
 ;Language Selection Dialog Settings
 
   ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define MUI_LANGDLL_REGISTRY_ROOT HKLM 
+  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------

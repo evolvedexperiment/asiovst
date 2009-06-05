@@ -129,10 +129,10 @@ var
 begin
  for ch := 0 to 1 do
   begin
-   FLow[Ch].SampleRate  := SampleRate;
-   FMid[Ch].SampleRate  := SampleRate;
-   FPres[Ch].SampleRate := SampleRate;
-   FHigh[Ch].SampleRate := SampleRate;
+   if assigned(FLow[Ch]) then FLow[Ch].SampleRate  := SampleRate;
+   if assigned(FMid[Ch]) then FMid[Ch].SampleRate  := SampleRate;
+   if assigned(FPres[Ch]) then FPres[Ch].SampleRate := SampleRate;
+   if assigned(FHigh[Ch]) then FHigh[Ch].SampleRate := SampleRate;
   end;
 end;
 
@@ -152,13 +152,13 @@ begin
   then Gain := Value * 11.46 / 15
   else Gain := Value * 12.96 / 15;
 
- FPres[0].Gain := Gain;
- FPres[1].Gain := Gain;
+ if assigned(FPres[0]) then FPres[0].Gain := Gain;
+ if assigned(FPres[1]) then FPres[1].Gain := Gain;
 
  Freq := 7278 + 108 * Value / 15;
 
- FPres[0].Frequency := Freq;
- FPres[1].Frequency := Freq;
+ if assigned(FPres[0]) then FPres[0].Frequency := Freq;
+ if assigned(FPres[1]) then FPres[1].Frequency := Freq;
 
  if assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
@@ -191,13 +191,13 @@ begin
   then Gain := Value * 15 / 15
   else Gain := Value * 13.5 / 15;
 
- FHigh[0].Gain := Gain;
- FHigh[1].Gain := Gain;
+ if assigned(FHigh[0]) then FHigh[0].Gain := Gain;
+ if assigned(FHigh[1]) then FHigh[1].Gain := Gain;
 
  Freq := 4340 - 300 * Value / 15;
 
- FHigh[0].Frequency := Freq;
- FHigh[1].Frequency := Freq;
+ if assigned(FHigh[0]) then FHigh[0].Frequency := Freq;
+ if assigned(FHigh[1]) then FHigh[1].Frequency := Freq;
 
  UpdateVolume;
 
@@ -214,8 +214,8 @@ begin
   then Gain := Value * 11.9 / 15
   else Gain := Value * 12.3 / 15;
 
- FLow[0].Gain := Gain;
- FLow[1].Gain := Gain;
+ if assigned(FLow[0]) then FLow[0].Gain := Gain;
+ if assigned(FLow[1]) then FLow[1].Gain := Gain;
 
  if assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
@@ -230,13 +230,13 @@ begin
   then Gain := Value * 11.42 / 15
   else Gain := Value * 13.35 / 15;
 
- FMid[0].Gain := Gain;
- FMid[1].Gain := Gain;
+ if assigned(FMid[0]) then FMid[0].Gain := Gain;
+ if assigned(FMid[1]) then FMid[1].Gain := Gain;
 
  BW := 3.6 + 0.1 * Value / 15;
 
- FMid[0].Bandwidth := BW;
- FMid[1].Bandwidth := BW;
+ if assigned(FMid[0]) then FMid[0].Bandwidth := BW;
+ if assigned(FMid[1]) then FMid[1].Bandwidth := BW;
 
  if assigned(EditorForm) then
   with TFmUniQuE(EditorForm)

@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Barberpole Flanger Installer
+;EnhancedGate Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Barberpole Flanger Installer"
-  OutFile "Barberpole Flanger_Install.exe"
+  Name "EnhancedGate Installer"
+  OutFile "Enhanced_Gate_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,7 +35,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Barberpole Flanger"
+  !define PRODUCT_NAME "EnhancedGate"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -86,7 +86,6 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
-
 ;--------------------------------
 ;Languages
  
@@ -94,15 +93,16 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
+
 ;Installer Sections
 
-Section "Barberpole Flanger VST-Plugin" SecVstPlugin
+Section "EnhancedGate VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\BarberpoleFlanger.dll" "..\Bin\Barberpole Flanger.dll"'  
+  !system 'copy "..\Bin\EnhancedGate.dll" "..\Bin\Enhanced Gate.dll"'
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Barberpole Flanger.dll"
+  File "..\Bin\Enhanced Gate.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -110,7 +110,7 @@ Section "Barberpole Flanger VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Barberpole Flanger.dll" 
+  StrCpy $0 "$INSTDIR\Enhanced Gate.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -123,11 +123,12 @@ SkipDLLCall:
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
-
+  WriteUninstaller "$INSTDIR\Uninstall_Enhanced_Gate.exe"
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -142,16 +143,13 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "EnhancedGate VST Plugin"
+
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "EnhancedGate VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -163,7 +161,8 @@ FunctionEnd
 
 Section "Uninstall"
 
-  Delete "$INSTDIR\Barberpole Flanger.dll"
+  ;ADD YOUR OWN FILES HERE...
+  Delete "$INSTDIR\Enhanced Gate.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

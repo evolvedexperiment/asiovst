@@ -28,6 +28,11 @@ SetCompressor lzma
   XPStyle ON
 
 ;--------------------------------
+;Variables
+
+  Var BugReportState
+
+;--------------------------------
 ;Interface Settings
 
   !define PRODUCT_NAME "Bugpass Lite"

@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;EnhancedGate Installer
+;Simple Limiter Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "EnhancedGate Installer"
-  OutFile "EnhancedGate_Install.exe"
+  Name "Simple Limiter Installer"
+  OutFile "Simple_Limiter_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -35,12 +35,11 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "EnhancedGate"
+  !define PRODUCT_NAME "Simple Limiter"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
   !define PRODUCT_DIR_REGKEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
-  !define PRODUCT_DIR_ROOT_KEY "HKLM"
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
@@ -50,7 +49,7 @@ SetCompressor lzma
 
   ;Remember the installer language
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
-  !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
 ;--------------------------------
@@ -96,13 +95,13 @@ FunctionEnd
 
 ;Installer Sections
 
-Section "EnhancedGate VST-Plugin" SecVstPlugin
+Section "Simple Limiter VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\EnhancedGate.dll" "..\Bin\Enhanced Gate.dll"'
+  !system 'copy "..\Bin\SimpleLimiter.dll" "..\Bin\Simple Limiter.dll"'  
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Enhanced Gate.dll"
+  File "..\Bin\Simple Limiter.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -110,7 +109,7 @@ Section "EnhancedGate VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Enhanced Gate.dll" 
+  StrCpy $0 "$INSTDIR\Simple Limiter.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -120,10 +119,10 @@ Section "EnhancedGate VST-Plugin" SecVstPlugin
 SkipDLLCall:
 
   ;Store installation folder
-  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  WriteRegStr HKLM PRODUCT_DIR_REGKEY "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_Enhanced_Gate.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Simple_Limiter.exe"
 SectionEnd
 
 ;--------------------------------
@@ -147,9 +146,9 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "EnhancedGate VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Simple Limiter VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "EnhancedGate VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Simple Limiter VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -162,7 +161,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Enhanced Gate.dll"
-  DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
+  Delete "$INSTDIR\Simple Limiter.dll"
+  DeleteRegKey HKLM PRODUCT_DIR_REGKEY
 
 SectionEnd

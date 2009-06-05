@@ -104,7 +104,8 @@ end;
 
 procedure TLA4029DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA4029s.Input_dB := Value;
+ if assigned(FLA4029s)
+  then FLA4029s.Input_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -118,7 +119,8 @@ end;
 procedure TLA4029DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA4029s.Output_dB := Value;
+ if assigned(FLA4029s)
+  then FLA4029s.Output_dB := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -131,7 +133,8 @@ end;
 
 procedure TLA4029DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA4029s.Knee := 0.1 * Value;
+ if assigned(FLA4029s)
+  then FLA4029s.Knee := 0.1 * Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -144,7 +147,8 @@ end;
 
 procedure TLA4029DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA4029s.Ratio := 1 / Value;
+ if assigned(FLA4029s)
+  then FLA4029s.Ratio := 1 / Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -157,7 +161,8 @@ end;
 
 procedure TLA4029DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA4029s.Release_ms := Value;
+ if assigned(FLA4029s)
+  then FLA4029s.Release_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
@@ -304,7 +309,8 @@ end;
 
 procedure TLA4029DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA4029s.Attack_ms := Value;
+ if assigned(FLA4029s)
+  then FLA4029s.Attack_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do

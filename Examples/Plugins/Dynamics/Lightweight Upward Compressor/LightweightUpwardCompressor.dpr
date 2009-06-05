@@ -4,12 +4,12 @@ library LightweightUpwardCompressor;
 {$R 'Compressor.res' 'Compressor.rc'}
 
 uses
-  FastMM4,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   madExcept,
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  FastMove,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
