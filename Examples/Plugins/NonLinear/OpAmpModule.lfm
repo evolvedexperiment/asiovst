@@ -1,11 +1,12 @@
 object VSTOpAmp: TVSTOpAmp
+  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple OpAmp Simulation'
   ProductName = 'Simple OpAmp Simulation'
   VendorName = 'Christian Budde'
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100
+  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1
   UniqueID = 'NoLi'
@@ -17,6 +18,7 @@ object VSTOpAmp: TVSTOpAmp
     end>
   ParameterProperties = <  
     item
+      Curve = ctLinear
       CurveFactor = 1
       DisplayName = 'Gain'
       LargeStepFloat = 2
@@ -31,12 +33,10 @@ object VSTOpAmp: TVSTOpAmp
       StepFloat = 1
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnEditOpen = DataModuleEditOpen
   OnInitialize = VSTModuleInitialize
   OnParameterChange = VSTModuleParameterChange
-  OnProcess = VSTModuleProcess
-  OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
-  OnProcessReplacing = VSTModuleProcess
   left = 243
   top = 103
   Height = 150

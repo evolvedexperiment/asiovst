@@ -6,7 +6,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_DspFilter, DAV_Common;
+  DAV_DspFilter, DAV_Common, DAV_Complex;
 
 type
   TCustomButterworthFilterClass = class of TCustomButterworthFilter;
@@ -19,6 +19,7 @@ type
     FFilterGain     : Double;
     FOrderInv       : Double;
     FPiHalfOrderInv : Double;
+    FCosOrderOffset : TComplexDouble;
     FTanW0          : Double;
     FCoeffs         : array [0..63] of Double;
     FState          : array [0..63] of Double;
@@ -101,11 +102,12 @@ type
     property SampleRate;
   end;
 
-  TButterworthLowPassFilterAutomatable = class(TCustomButterworthHighPassFilter)
+  TButterworthLowPassFilterAutomatable = class(TCustomButterworthLowPassFilter)
+  private
   public
     procedure CalculateW0; override;
-    procedure CalculateCoefficients; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
   published
     property Gain;
     property Order;
@@ -116,8 +118,8 @@ type
   TButterworthHighPassFilterAutomatable = class(TCustomButterworthHighPassFilter)
   public
     procedure CalculateW0; override;
-    procedure CalculateCoefficients; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
   published
     property Gain;
     property Order;
@@ -131,13 +133,15 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Complex, DAV_Approximations;
+  Math, SysUtils, DAV_Approximations;
 
+{$IFDEF HandleDenormals}
 var
   DenormRandom   : Single;
 const
   CDenorm32      : Single = 1E-24;
   CDenorm64      : Double = 1E-34;
+{$ENDIF}
 
 constructor TCustomButterworthFilter.Create(const Order: Integer = 0);
 begin
@@ -221,6 +225,7 @@ begin
   begin
    FOrderInv := 1 / FOrder;
    FPiHalfOrderInv := PI * CHalf64 * FOrderInv;
+   GetSinCos(FPiHalfOrderInv, FCosOrderOffset.Im, FCosOrderOffset.Re);
    inherited;
   end
  else
@@ -264,6 +269,7 @@ procedure TCustomButterworthLowPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
+  Cmplx       : TComplexDouble;
 begin
  if FOrder = 0 then exit;
  FFilterGain := sqr(FGainFactor);
@@ -271,9 +277,12 @@ begin
  K2 := K * K;
 
  i := 0;
+ Cmplx := FCosOrderOffset;
  while i < Integer(FOrder) - 1 do
   begin
-   a := 2 * sin((i + 1) * FPiHalfOrderInv) * K;
+   a := 2 * Cmplx.Im * K; // 2 * sin((i + 1) * FPiHalfOrderInv) * K;
+   ComplexMultiply2Inplace(Cmplx, FCosOrderOffset);
+
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t * K2;
    FCoeffs[i    ] := -2 * (K2 - 1) * t;
@@ -304,7 +313,7 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm64 + Abs(Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
 function TCustomButterworthLowPassFilter.Phase(const Frequency: Double): Double;
@@ -381,7 +390,9 @@ begin
 {$ELSE}
 asm
  fld Input.Double;
+ {$IFDEF HandleDenormals}
  fadd CDenorm32
+ {$ENDIF}
  fmul [eax.FFilterGain].Double
  mov ecx, [eax.FOrder]
  test ecx, ecx
@@ -433,13 +444,16 @@ end;
 constructor TCustomButterworthHighPassFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
+ {$IFDEF HandleDenormals}
  DenormRandom := Random;
+ {$ENDIF}
 end;
 
 procedure TCustomButterworthHighPassFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
+  Cmplx       : TComplexDouble;
 begin
  if FOrder = 0 then exit;
  FFilterGain := sqr(FGainFactor);
@@ -447,9 +461,12 @@ begin
  K2 := K * K;
 
  i := 0;
+ Cmplx := FCosOrderOffset;
  while i < Integer(FOrder) - 1 do
   begin
-   a := 2 * sin((i + 1) * FPiHalfOrderInv) * K;
+   a := 2 * K * Cmplx.Im;
+   ComplexMultiply2Inplace(Cmplx, FCosOrderOffset);
+
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;
    FCoeffs[i    ] := -2 * (K2 - 1) * t;
@@ -480,7 +497,7 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
+ Result := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
 end;
 
 function TCustomButterworthHighPassFilter.Phase(const Frequency: Double): Double;
@@ -565,7 +582,8 @@ begin
 asm
  fld  Input.Single
 
- // add denormal
+ // eventually add denormal
+ {$IFDEF HandleDenormals}
  mov  edx, DenormRandom
  imul edx, DenormRandom, $08088405
  inc  edx
@@ -573,6 +591,7 @@ asm
  or   edx, $20000000
  mov  DenormRandom, edx
  fadd DenormRandom
+ {$ENDIF}
 
  fmul [eax.FFilterGain].Double
  mov  ecx, [eax.FOrder]
@@ -645,7 +664,8 @@ begin
 asm
  fld  Input.Double
 
- // add denormal
+ // eventually add denormal
+ {$IFDEF HandleDenormals}
  mov  edx, DenormRandom
  imul edx, DenormRandom, $08088405
  inc  edx
@@ -653,6 +673,7 @@ asm
  or   edx, $20000000
  mov  DenormRandom, edx
  fadd DenormRandom
+ {$ENDIF} 
 
  fmul [eax.FFilterGain].Double
  mov  ecx, [eax.FOrder]
@@ -706,7 +727,9 @@ constructor TCustomButterworthSplitBandFilter.Create(const Order: Integer = 0);
 begin
  inherited Create(Order);
  Randomize;
+ {$IFDEF HandleDenormals}
  DenormRandom := Random;
+ {$ENDIF}
 end;
 
 procedure TCustomButterworthSplitBandFilter.CalculateCoefficients;
@@ -753,7 +776,7 @@ begin
    Result := Result * (cw + 2) * (cw - 2) / sqr(1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
 
- Result := CDenorm64 + Abs(sqr(FFilterGain) * Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
 end;
 
 procedure TCustomButterworthSplitBandFilter.ProcessSample(const Input: Single; out Lowpass,
@@ -792,7 +815,8 @@ begin
 asm
  fld  Input.Single               // highpass
 
- // add denormal
+ // eventuall add denormal
+ {$IFDEF HandleDenormals}
  push ebx
  mov  ebx, DenormRandom
  imul ebx, DenormRandom, $08088405
@@ -802,6 +826,7 @@ asm
  mov  DenormRandom, ebx
  fadd DenormRandom
  pop ebx
+ {$ENDIF}
 
  fmul [eax.FFilterGain].Double
  fld  st(0)                      // lowpass, highpass
@@ -896,8 +921,8 @@ var
   x : Double;
   i : Integer;
 begin
- Highpass := CDenorm32 + FFilterGain * Input;
- Lowpass  := CDenorm32 + FFilterGain * Input * FKs;
+ Highpass := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} FFilterGain * Input;
+ Lowpass  := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} FFilterGain * Input * FKs;
  for i := 0 to (FOrder div 2) - 1 do
   begin
    x := Lowpass;
@@ -926,7 +951,8 @@ asm
  fld  Input.Double               // highpass
  fmul [eax.FFilterGain].Double
 
- // add denormal
+ // eventually add denormal
+ {$IFDEF HandleDenormals}
  push ebx
  mov  ebx, DenormRandom
  imul ebx, DenormRandom, $08088405
@@ -936,6 +962,7 @@ asm
  mov  DenormRandom, ebx
  fadd DenormRandom
  pop ebx
+ {$ENDIF}
 
  fld st(0)                       // lowpass, highpass
  fmul [eax.FKs].Double
@@ -1024,38 +1051,15 @@ end;
 
 { TButterworthLowPassFilterAutomatable }
 
-procedure TButterworthLowPassFilterAutomatable.CalculateCoefficients;
-var
-  i           : Integer;
-  K, K2, t, a : Double;
-begin
- if FOrder = 0 then exit;
- FFilterGain := sqr(FGainFactor);
- K := FTanW0;
- K2 := K * K;
-
- i := 0;
- while i < Integer(FOrder) - 1 do
-  begin
-   a := 2 * FastSinInBounds4Term((i + 1) * FPiHalfOrderInv) * K;
-   t := 1 / (K2 + a + 1);
-   FFilterGain := FFilterGain * t * K2;
-   FCoeffs[i    ] := -2 * (K2 - 1) * t;
-   FCoeffs[i + 1] := (a - K2 - 1) * t;
-   inc(i, 2);
-  end;
- if i < Integer(FOrder) then
-  begin
-   t := 1 / (K + 1);
-   FFilterGain := FFilterGain * t * K;
-   FCoeffs[i] := (1 - K) * t;
-  end;
-end;
-
 procedure TButterworthLowPassFilterAutomatable.CalculateW0;
 begin
  FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
  FTanW0 := FastTanInBounds4Term(FW0 * CHalf64)
+end;
+
+function TButterworthLowPassFilterAutomatable.MagnitudeLog10(const Frequency: Double): Double;
+begin
+ result := 20 * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TButterworthLowPassFilterAutomatable.MagnitudeSquared(
@@ -1064,7 +1068,7 @@ var
   i     : Integer;
   a, cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
+ cw := 2 * FastCosInBounds3Term(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
  Result := sqr(FFilterGain);
  for i := 0 to (FOrder div 2) - 1
   do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
@@ -1075,43 +1079,20 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm64 + Abs(Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
 { TButterworthHighPassFilterAutomatable }
 
-procedure TButterworthHighPassFilterAutomatable.CalculateCoefficients;
-var
-  i           : Integer;
-  K, K2, t, a : Double;
-begin
- if FOrder = 0 then exit;
- FFilterGain := sqr(FGainFactor);
- K := FTanW0;
- K2 := K * K;
-
- i := 0;
- while i < Integer(FOrder) - 1 do
-  begin
-   a := 2 * FastSinInBounds4Term((i + 1) * FPiHalfOrderInv) * K;
-   t := 1 / (K2 + a + 1);
-   FFilterGain := FFilterGain * t;
-   FCoeffs[i    ] := -2 * (K2 - 1) * t;
-   FCoeffs[i + 1] := (a - K2 - 1) * t;
-   inc(i, 2);
-  end;
- if i < Integer(FOrder) then
-  begin
-   t := 1 / (K + 1);
-   FFilterGain := FFilterGain * t;
-   FCoeffs[i] := (1 - K) * t;
-  end;
-end;
-
 procedure TButterworthHighPassFilterAutomatable.CalculateW0;
 begin
  FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
- FTanW0 := FastTanInBounds4Term(FW0 * CHalf64)
+ FTanW0 := FastTanInBounds4Term(FW0 * CHalf32)
+end;
+
+function TButterworthHighPassFilterAutomatable.MagnitudeLog10(const Frequency: Double): Double;
+begin
+ result := 20 * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TButterworthHighPassFilterAutomatable.MagnitudeSquared(
@@ -1120,7 +1101,7 @@ var
   i     : Integer;
   a, cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
+ cw := 2 * FastCosInBounds3Term(2 * Frequency * Pi * SampleRateReciprocal);
  a := sqr(cw - 2);
  Result := 1;
  for i := 0 to (FOrder div 2) - 1
@@ -1131,7 +1112,8 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm32 + Abs(sqr(FFilterGain) * Result);
+
+ Result := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
 end;
 
 end.

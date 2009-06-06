@@ -115,6 +115,13 @@
 //  DSP Compiler Switches  //
 /////////////////////////////
 
+{$DEFINE HandleDenormals}
+{ If this compiler switch is enabled, denormals are handled on the lowest level
+  possible. Although it costs some extra CPU cycles per sample, it avoids the
+  penalty caused by denormal calculations (around factor 3)  
+  The default is enabled.}
+
+
 {.$DEFINE Use_IPPS}
 { If this compiler switch is enabled the Intel Performance Primitives are used.
   Right now there only exists a unit (not part of the package) to integrate the

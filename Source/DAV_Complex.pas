@@ -538,7 +538,7 @@ asm
  fld st(3)          // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
  fmul st(0), st(2)  // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
  fsubp              // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
- fstp A.Re.Single   // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+ fstp A.Re.Single   // A.Re := A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
  fxch st(2)         // A.Im, B.Re, B.Im, A.Re
  fmulp              // A.Im * B.Re, B.Im, A.Re
  fxch st(2)         // B.Im, A.Re, A.Im * B.Re

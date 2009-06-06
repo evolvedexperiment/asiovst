@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPButterworthFilter, DAV_VstWindowSizer;
+  DAV_DSPButterworthFilter, DAV_DSPChebyshevFilter, DAV_VstWindowSizer;
 
 type
   TButterworthHPModule = class(TVSTModule)
@@ -17,7 +17,7 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFilter  : array [0..1] of TButterworthHighpassFilter;
+    FFilter : array [0..1] of TCustomButterworthFilter;
   end;
 
 implementation
@@ -33,9 +33,11 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TButterworthHighpassFilter.Create;
+   FFilter[ch] := TButterworthHighPassFilter.Create;
    FFilter[ch].SetFilterValues(20, 0);
   end;
+
+ // set initial parameters 
  Parameter[0] := 20;
  Parameter[1] := 2;
 end;
@@ -56,56 +58,52 @@ end;
 procedure TButterworthHPModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to numInputs - 1 do
-  begin
-   if assigned(FFilter[ch])
-    then FFilter[ch].Order := round(Value);
-  end;
- if EditorForm is TFmButterworth then
-  with TFmButterworth(EditorForm) do
-   begin
-    UpdateOrder;
-   end;
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel])
+   then FFilter[Channel].Order := round(Value);
+
+ // update GUI if necessary
+ if EditorForm is TFmButterworth
+  then TFmButterworth(EditorForm).UpdateOrder;
 end;
 
 procedure TButterworthHPModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to numInputs - 1 do
-  if assigned(FFilter[ch])
-   then FFilter[ch].Frequency := Value;
- if EditorForm is TFmButterworth then
-  with TFmButterworth(EditorForm) do
-   begin
-    UpdateFrequency;
-   end;
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel])
+   then FFilter[Channel].Frequency := Value;
+
+ // update GUI if necessary
+ if EditorForm is TFmButterworth
+  then TFmButterworth(EditorForm).UpdateFrequency;
 end;
 
 procedure TButterworthHPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i : Integer;
+  Sample : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, Sample] := FFilter[0].ProcessSample(Inputs[0, Sample]);
+   Outputs[1, Sample] := FFilter[1].ProcessSample(Inputs[1, Sample]);
   end;
 end;
 
 procedure TButterworthHPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  i : Integer;
+  Sample : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, Sample] := FFilter[0].ProcessSample(Inputs[0, Sample]);
+   Outputs[1, Sample] := FFilter[1].ProcessSample(Inputs[1, Sample]);
   end;
 end;
 
@@ -113,7 +111,7 @@ procedure TButterworthHPModule.VSTModuleSampleRateChange(Sender: TObject; const 
 var
   ch : Integer;
 begin
- for ch := 0 to numInputs - 1
+ for ch := 0 to Length(FFilter) - 1
   do FFilter[ch].SampleRate := SampleRate;
 end;
 

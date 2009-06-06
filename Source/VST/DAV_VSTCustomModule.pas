@@ -547,11 +547,11 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
-      Parent := TWinControl.CreateParented(HWnd(ptr));
 (*
-      ParentWindow := HWnd(ptr);
+//      Parent := TWinControl.CreateParented(HWnd(ptr));
+(*
+//      ParentWindow := HWnd(ptr);
       Parent := FindOwnerControl(THandle(ptr));
-      SetBounds(0, 0, 300, 100);
 *)
       {$ENDIF}
       Visible := True;
