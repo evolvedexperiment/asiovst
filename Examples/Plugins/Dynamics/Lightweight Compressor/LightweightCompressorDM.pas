@@ -104,6 +104,105 @@ begin
  result:= FCompressor[0].CharacteristicCurve_dB(Input);
 end;
 
+procedure TLightweightCompressorDataModule.ChooseProcess;
+begin
+ case round(Parameter[7]) of
+  0 : case round(Parameter[6]) of
+       0 : OnProcess := VSTModuleProcessMono;
+       1 : OnProcess := VSTModuleProcessStereo;
+      end;
+  1 : case round(Parameter[6]) of
+       0 : OnProcess := VSTModuleProcessMonoSoftClip;
+       1 : OnProcess := VSTModuleProcessStereoSoftClip;
+      end;
+ end;
+ OnProcessReplacing := OnProcess;
+end;
+
+function TLightweightCompressorDataModule.GetLightweightCompressor(Index: Integer): TCustomKneeCompressor;
+begin
+ if Index in [0..Length(FCompressor) - 1]
+  then result := FCompressor[Index]
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
+end;
+
+procedure TLightweightCompressorDataModule.ParameterAttackChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Attack := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Attack := FCompressor[0].Attack;
+  end;
+ if EditorForm is TFmLightweightCompressor
+  then TFmLightweightCompressor(EditorForm).UpdateAttack;
+end;
+
+procedure TLightweightCompressorDataModule.ParameterReleaseChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Release := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Release := FCompressor[0].Release;
+  end;
+ if EditorForm is TFmLightweightCompressor
+  then TFmLightweightCompressor(EditorForm).UpdateRelease;
+end;
+
+procedure TLightweightCompressorDataModule.ParameterThresholdChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Threshold_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Threshold_dB := Value;
+  end;
+ if EditorForm is TFmLightweightCompressor
+  then TFmLightweightCompressor(EditorForm).UpdateThreshold;
+end;
+
+procedure TLightweightCompressorDataModule.ParameterRatioChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Ratio := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Ratio := Value;
+  end;
+ if EditorForm is TFmLightweightCompressor
+  then TFmLightweightCompressor(EditorForm).UpdateRatio;
+end;
+
+procedure TLightweightCompressorDataModule.ParameterKneeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].Knee_dB := Value;
+   if assigned(FCompressor[1])
+    then FCompressor[1].Knee_dB := Value;
+  end;
+ if EditorForm is TFmLightweightCompressor
+  then TFmLightweightCompressor(EditorForm).UpdateKnee;
+end;
+
+procedure TLightweightCompressorDataModule.ParameterAutoMakeUpGainChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if assigned(FCompressor[0]) then
+  begin
+   FCompressor[0].AutoMakeUp := Boolean(round(Value));
+   FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
+  end;
+ if EditorForm is TFmLightweightCompressor
+  then TFmLightweightCompressor(EditorForm).UpdateAutoMakeUpGain;
+end;
+
 procedure TLightweightCompressorDataModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -194,105 +293,6 @@ begin
  ChooseProcess;
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateLimit;
-end;
-
-procedure TLightweightCompressorDataModule.ChooseProcess;
-begin
- case round(Parameter[7]) of
-  0 : case round(Parameter[6]) of
-       0 : OnProcess := VSTModuleProcessMono;
-       1 : OnProcess := VSTModuleProcessStereo;
-      end;
-  1 : case round(Parameter[6]) of
-       0 : OnProcess := VSTModuleProcessMonoSoftClip;
-       1 : OnProcess := VSTModuleProcessStereoSoftClip;
-      end;
- end;
- OnProcessReplacing := OnProcess;
-end;
-
-procedure TLightweightCompressorDataModule.ParameterAutoMakeUpGainChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if assigned(FCompressor[0]) then
-  begin
-   FCompressor[0].AutoMakeUp := Boolean(round(Value));
-   FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
-  end;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateAutoMakeUpGain;
-end;
-
-function TLightweightCompressorDataModule.GetLightweightCompressor(Index: Integer): TCustomKneeCompressor;
-begin
- if Index in [0..Length(FCompressor) - 1]
-  then result := FCompressor[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
-end;
-
-procedure TLightweightCompressorDataModule.ParameterAttackChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if assigned(FCompressor[0]) then
-  begin
-   FCompressor[0].Attack := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Attack := FCompressor[0].Attack;
-  end;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateAttack;
-end;
-
-procedure TLightweightCompressorDataModule.ParameterReleaseChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if assigned(FCompressor[0]) then
-  begin
-   FCompressor[0].Release := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Release := FCompressor[0].Release;
-  end;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateRelease;
-end;
-
-procedure TLightweightCompressorDataModule.ParameterThresholdChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if assigned(FCompressor[0]) then
-  begin
-   FCompressor[0].Threshold_dB := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Threshold_dB := Value;
-  end;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateThreshold;
-end;
-
-procedure TLightweightCompressorDataModule.ParameterRatioChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if assigned(FCompressor[0]) then
-  begin
-   FCompressor[0].Ratio := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Ratio := Value;
-  end;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateRatio;
-end;
-
-procedure TLightweightCompressorDataModule.ParameterKneeChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- if assigned(FCompressor[0]) then
-  begin
-   FCompressor[0].Knee_dB := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Knee_dB := Value;
-  end;
- if EditorForm is TFmLightweightCompressor
-  then TFmLightweightCompressor(EditorForm).UpdateKnee;
 end;
 
 procedure TLightweightCompressorDataModule.VSTModuleProcessStereo(const Inputs,

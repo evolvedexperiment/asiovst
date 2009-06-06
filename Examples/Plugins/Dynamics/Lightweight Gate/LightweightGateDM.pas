@@ -90,55 +90,6 @@ begin
  result:= FLightweightGate[0].CharacteristicCurve_dB(Input);
 end;
 
-procedure TLightweightGateDataModule.ParameterMixChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
-begin
- Value := 100;
-end;
-
-procedure TLightweightGateDataModule.ParameterTimeLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-var
-  Val : Single;
-begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := 'µs' else
- if Val >= 1000
-  then PreDefined := 's';
-end;
-
-procedure TLightweightGateDataModule.ParameterTimeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-var
-  Val : Single;
-begin
- Val := Parameter[Index];
- if Val < 1
-  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
- if Val < 1000
-  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
-  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
-end;
-
-procedure TLightweightGateDataModule.ParameterThresholdDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
-end;
-
-procedure TLightweightGateDataModule.ParameterRatioDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
-end;
-
-procedure TLightweightGateDataModule.ParameterKneeDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
-begin
- PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
-end;
-
 function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TCustomKneeCompressor;
 begin
  if Index in [0..Length(FLightweightGate) - 1]
@@ -209,6 +160,55 @@ begin
   end;
  if EditorForm is TFmLightweightGate
   then TFmLightweightGate(EditorForm).UpdateKnee;
+end;
+
+procedure TLightweightGateDataModule.ParameterMixChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ Value := 100;
+end;
+
+procedure TLightweightGateDataModule.ParameterTimeLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+var
+  Val : Single;
+begin
+ Val := Parameter[Index];
+ if Val < 1
+  then PreDefined := 'µs' else
+ if Val >= 1000
+  then PreDefined := 's';
+end;
+
+procedure TLightweightGateDataModule.ParameterTimeDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+var
+  Val : Single;
+begin
+ Val := Parameter[Index];
+ if Val < 1
+  then PreDefined := FloatToStrF(RoundTo(1E3 * Val, -2), ffGeneral, 3, 3) else
+ if Val < 1000
+  then PreDefined := FloatToStrF(RoundTo(Val, -2), ffGeneral, 3, 3)
+  else PreDefined := FloatToStrF(RoundTo(1E-3 * Val, -2), ffGeneral, 3, 3);
+end;
+
+procedure TLightweightGateDataModule.ParameterThresholdDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+end;
+
+procedure TLightweightGateDataModule.ParameterRatioDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
+end;
+
+procedure TLightweightGateDataModule.ParameterKneeDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
 end;
 
 procedure TLightweightGateDataModule.VSTModuleProcessStereo(const Inputs,
