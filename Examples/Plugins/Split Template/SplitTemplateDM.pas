@@ -11,8 +11,8 @@ uses
   DAV_VstHost, DAV_DSPLFO, Themes;
 
 type
-  TLowPassArray = array [0..1] of TButterworthLP;
-  THighPassArray = array [0..1] of TButterworthHP;
+  TLowPassArray = array [0..1] of TButterworthLowPassFilter;
+  THighPassArray = array [0..1] of TButterworthHighPassFilter;
   TUpDownsampling = array [0..1] of TDAVUpDownsampling;
 
   TSplitType = (stSimple, stLiRi, stDyn, stLeftRight, stMS, stSerial,
@@ -23,8 +23,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
-    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var vLabel, shortLabel: string; var SpeakerArrangement: TVstSpeakerArrangementType; var Flags: TVstPinPropertiesFlags): Boolean;
     function VSTModuleVendorSpecific(Sender: TObject; const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure VSTModuleEditClose(Sender: TObject; var DestroyForm: Boolean);
@@ -95,6 +93,10 @@ type
     procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer;
+      var VstPinProperties: TVstPinProperties): Boolean;
+    function VSTModuleInputProperties(Sender: TObject; const Index: Integer;
+      var VstPinProperties: TVstPinProperties): Boolean;
   private
     FLowpass          : array of TLowPassArray;
     FHighpass         : array of THighPassArray;
@@ -263,8 +265,8 @@ begin
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    FLowpass[ch, n]     := TButterworthLP.Create;
-    FHighpass[ch, n]    := TButterworthHP.Create;
+    FLowpass[ch, n]     := TButterworthLowPassFilter.Create;
+    FHighpass[ch, n]    := TButterworthHighPassFilter.Create;
    end;
 
  for ch := 0 to FMaxChannels - 1 do
@@ -428,26 +430,13 @@ begin
 end;
 
 function TSplitTemplateDataModule.VSTModuleInputProperties(Sender: TObject;
-  const Index: Integer; var vLabel, shortLabel: string;
-  var SpeakerArrangement: TVstSpeakerArrangementType;
-  var Flags: TVstPinPropertiesFlags): Boolean;
-var
-  PinProperties : TVstPinProperties;
+  const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean;
 begin
- if VstHost[0].Active then
-  begin
-   PinProperties := VstHost[0].GetInputProperties(Index);
-   vLabel := PinProperties.Caption;
-   shortLabel := PinProperties.ShortLabel;
-   Flags := PinProperties.Flags;
-  end else
- if VstHost[1].Active then
-  begin
-   PinProperties := VstHost[0].GetInputProperties(Index);
-   vLabel := PinProperties.Caption;
-   shortLabel := PinProperties.ShortLabel;
-   Flags := PinProperties.Flags;
-  end;
+ if VstHost[0].Active
+  then VstPinProperties := VstHost[0].GetInputProperties(Index)
+  else
+ if VstHost[1].Active
+  then VstPinProperties := VstHost[0].GetInputProperties(Index);
  Result := False;
 end;
 
@@ -536,26 +525,13 @@ begin
 end;
 
 function TSplitTemplateDataModule.VSTModuleOutputProperties(Sender: TObject;
-  const Index: Integer; var vLabel, shortLabel: string;
-  var SpeakerArrangement: TVstSpeakerArrangementType;
-  var Flags: TVstPinPropertiesFlags): Boolean;
-var
-  PinProperties : TVstPinProperties;
+  const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean;
 begin
- if VstHost[0].Active then
-  begin
-   PinProperties := VstHost[0].GetOutputProperties(Index);
-   vLabel := PinProperties.Caption;
-   shortLabel := PinProperties.ShortLabel;
-   Flags := PinProperties.Flags;
-  end else
- if VstHost[1].Active then
-  begin
-   PinProperties := VstHost[0].GetOutputProperties(Index);
-   vLabel := PinProperties.Caption;
-   shortLabel := PinProperties.ShortLabel;
-   Flags := PinProperties.Flags;
-  end;
+ if VstHost[0].Active
+  then VstPinProperties := VstHost[0].GetOutputProperties(Index)
+  else
+ if VstHost[1].Active
+  then VstPinProperties := VstHost[0].GetOutputProperties(Index);
  Result := False;
 end;
 
@@ -598,20 +574,21 @@ var
 begin
  for ch := 0 to Length(FLowpass) - 1 do
   begin
-   FLowpass[ch, 0].SampleRate := SampleRate;
-   FLowpass[ch, 1].SampleRate := SampleRate;
+   if assigned(FLowpass[ch, 0]) then FLowpass[ch, 0].SampleRate := SampleRate;
+   if assigned(FLowpass[ch, 1]) then FLowpass[ch, 1].SampleRate := SampleRate;
   end;
  for ch := 0 to Length(FHighpass) - 1 do
   begin
-   FHighpass[ch, 0].SampleRate := SampleRate;
-   FHighpass[ch, 1].SampleRate := SampleRate;
+   if assigned(FHighpass[ch, 0]) then FHighpass[ch, 0].SampleRate := SampleRate;
+   if assigned(FHighpass[ch, 1]) then FHighpass[ch, 1].SampleRate := SampleRate;
   end;
  for ch := 0 to Length(FOversampler) - 1 do
   begin
-   FOversampler[ch, 0].SampleRate := SampleRate;
-   FOversampler[ch, 1].SampleRate := SampleRate;
+   if assigned(FOversampler[ch, 0]) then FOversampler[ch, 0].SampleRate := SampleRate;
+   if assigned(FOversampler[ch, 0]) then FOversampler[ch, 1].SampleRate := SampleRate;
   end;
- FSineLFO.SampleRate := SampleRate; 
+ if assigned(FSineLFO)
+  then FSineLFO.SampleRate := SampleRate;
  PluginSampleRateChanged;
 end;
 
@@ -778,8 +755,9 @@ var
 begin
  FOSFactor := NewOSFactor;
  for ch := 0 to FMaxChannels - 1 do
-  for n := 0 to 1
-   do FOversampler[ch, n].Factor := FOSFactor;
+  for n := 0 to 1 do
+   if assigned(FOversampler[ch, n]) 
+    then FOversampler[ch, n].Factor := FOSFactor;
  TempBufferSize := FMaximumBlockSize * FOSFactor;
  PluginSampleRateChanged;
 end;
@@ -847,8 +825,8 @@ begin
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    FLowpass[ch, n].Order  := round(Value);
-    FHighpass[ch, n].Order := round(Value);
+    if assigned(FLowpass[ch, n]) then FLowpass[ch, n].Order  := round(Value);
+    if assigned(FHighpass[ch, n]) then FHighpass[ch, n].Order := round(Value);
    end;
  if EditorForm is TFmSplitter
   then TFmSplitter(EditorForm).UpdateOrder;
@@ -862,8 +840,8 @@ begin
  for ch := 0 to numInputs - 1 do
   for n := 0 to 1 do
    begin
-    FLowpass[ch, n].Frequency  := Value;
-    FHighpass[ch, n].Frequency := Value;
+    if assigned(FLowpass[ch, n]) then FLowpass[ch, n].Frequency  := Value;
+    if assigned(FHighpass[ch, n]) then FHighpass[ch, n].Frequency := Value;
    end;
  if EditorForm is TFmSplitter
   then TFmSplitter(EditorForm).UpdateFrequency;

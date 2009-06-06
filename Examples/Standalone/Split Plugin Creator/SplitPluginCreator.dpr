@@ -12,8 +12,7 @@ uses
   FastMove,
   RTLVCLOptimize,
   Forms,
-  SPCmain in 'SPCmain.pas' {FmSplitPluginCreator},
-  DAV_ChunkPluginGUI in '..\..\..\Source\DAV_ChunkPluginGUI.pas';
+  SPCmain in 'SPCmain.pas' {FmSplitPluginCreator};
 
 {$R *.res}
 

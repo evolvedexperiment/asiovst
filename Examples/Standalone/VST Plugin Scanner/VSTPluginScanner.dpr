@@ -2,12 +2,12 @@ program VSTPluginScanner;
 
 uses
   FastMM4,
+  FastMove,
+  RTLVCLOptimize,
   madExcept,
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  FastMove,
-  RTLVCLOptimize,
   Forms,
   VPSmain in 'VPSmain.pas' {FmVSTPluginScanner};
 
