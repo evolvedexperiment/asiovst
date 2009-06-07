@@ -5,8 +5,7 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_DspFilter,
   DAV_DspButterworthFilter, DAV_DspFilterBasics, DAV_DspDynamics,
-  DAV_DspLightweightDynamics,
-  DAV_VSTModule;
+  DAV_DspLightweightDynamics, Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
 
 type
   TTrackPlugModule = class(TVSTModule)
@@ -44,9 +43,9 @@ type
     procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FDCFilter   : array [0..1] of TButterworthHighPassFilter;
-    FEqFilter   : array [0..1, 0..4] of TCustomBandwidthIIRFilter;
+    FEqFilter   : array [0..1, 0..8] of TCustomBandwidthIIRFilter;
     FGate       : array [0..1] of TCustomKneeCompressor;
-    FCompressor : array [0..1] of TCustomKneeCompressor;
+    FCompressor : array [0..1, 0..1] of TCustomKneeCompressor;
     function GetFilter(Index: Integer): TCustomIIRFilter;
     function GetFilterClass(Index: Integer): TBandwidthIIRFilterClass;
     procedure SetFilterClass(Index: Integer;
@@ -92,12 +91,13 @@ begin
    FGate[Channel].SampleRate := SampleRate;
   end;
 
- // create compressor
+ // create compressors
  for Channel := 0 to Length(FCompressor) - 1 do
-  begin
-   FCompressor[Channel] := TLightweightSoftKneeCompressor.Create;
-   FCompressor[Channel].SampleRate := SampleRate;
-  end;
+  for Band := 0 to Length(FCompressor[Channel]) - 1 do
+   begin
+    FCompressor[Channel, Band] := TLightweightSoftKneeCompressor.Create;
+    FCompressor[Channel, Band].SampleRate := SampleRate;
+   end;
 
  // DC filter
  Parameter[ 0] := 5;
@@ -133,22 +133,56 @@ begin
  Parameter[20] := 1;
  Parameter[21] := 6;
 
- // gate
- Parameter[22] := 1.5;
- Parameter[23] := 7.5;
- Parameter[24] := -10;
- Parameter[25] := 0.2;
- Parameter[26] := 6;
+ // EQ filter 6
+ Parameter[22] := 10000;
+ Parameter[23] := 0;
+ Parameter[24] := 1;
+ Parameter[25] := 6;
 
- // compressor
- Parameter[27] := 15;
- Parameter[28] := 75;
- Parameter[29] := -10;
- Parameter[30] := 5;
- Parameter[31] := 2;
- Parameter[32] := 6;
- Parameter[33] := 0;
- Parameter[34] := 100;
+ // EQ filter 7
+ Parameter[26] := 10000;
+ Parameter[27] := 0;
+ Parameter[28] := 1;
+ Parameter[29] := 6;
+
+ // EQ filter 8
+ Parameter[30] := 10000;
+ Parameter[31] := 0;
+ Parameter[32] := 1;
+ Parameter[33] := 6;
+
+ // EQ filter 9
+ Parameter[34] := 10000;
+ Parameter[35] := 0;
+ Parameter[36] := 1;
+ Parameter[37] := 6;
+
+ // gate
+ Parameter[38] := 1.5;
+ Parameter[39] := 7.5;
+ Parameter[40] := -10;
+ Parameter[41] := 0.2;
+ Parameter[42] := 6;
+
+ // compressor A
+ Parameter[43] := 15;
+ Parameter[44] := 75;
+ Parameter[45] := -10;
+ Parameter[46] := 5;
+ Parameter[47] := 2;
+ Parameter[48] := 6;
+ Parameter[49] := 0;
+ Parameter[50] := 100;
+
+ // compressor B
+ Parameter[51] := 15;
+ Parameter[52] := 75;
+ Parameter[53] := -10;
+ Parameter[54] := 5;
+ Parameter[55] := 2;
+ Parameter[56] := 6;
+ Parameter[57] := 0;
+ Parameter[58] := 100;
 end;
 
 procedure TTrackPlugModule.VSTModuleClose(Sender: TObject);
@@ -165,11 +199,12 @@ begin
    do FreeAndNil(FEqFilter[Channel, Band]);
 
  for Channel := 0 to Length(FGate) - 1
-  do FreeAndNil(FGate[Channel])
+  do FreeAndNil(FGate[Channel]);
 
  // free compressor
- for Channel := 0 to Length(FCompressor) - 1
-  do FreeAndNil(FCompressor[Channel])
+ for Channel := 0 to Length(FCompressor) - 1 do
+  for Band := 0 to Length(FCompressor[Channel]) - 1
+   do FreeAndNil(FCompressor[Channel, Band]);
 end;
 
 procedure TTrackPlugModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -304,66 +339,96 @@ end;
 
 procedure TTrackPlugModule.ParameterCompressorAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].Attack := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Attack := FCompressor[0].Attack;
+   FCompressor[0, Band].Attack := Value;
+   if assigned(FCompressor[1, Band])
+    then FCompressor[1, Band].Attack := FCompressor[0, Band].Attack;
   end;
 end;
 
 procedure TTrackPlugModule.ParameterCompressorReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].Release := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Release := FCompressor[0].Release;
+   FCompressor[0, Band].Release := Value;
+   if assigned(FCompressor[1, Band])
+    then FCompressor[1, Band].Release := FCompressor[0, Band].Release;
   end;
 end;
 
 procedure TTrackPlugModule.ParameterCompressorThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].Threshold_dB := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Threshold_dB := Value;
+   FCompressor[0, Band].Threshold_dB := Value;
+   if assigned(FCompressor[1, Band])
+    then FCompressor[1, Band].Threshold_dB := Value;
   end;
 end;
 
 procedure TTrackPlugModule.ParameterCompressorRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].Ratio := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Ratio := Value;
+   FCompressor[0, Band].Ratio := Value;
+   if assigned(FCompressor[1, Band])
+    then FCompressor[1, Band].Ratio := Value;
   end;
 end;
 
 procedure TTrackPlugModule.ParameterCompressorKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].Knee_dB := Value;
-   if assigned(FCompressor[1])
-    then FCompressor[1].Knee_dB := Value;
+   FCompressor[0, Band].Knee_dB := Value;
+   if assigned(FCompressor[1, Band])
+    then FCompressor[1, Band].Knee_dB := Value;
   end;
 end;
 
 procedure TTrackPlugModule.ParameterCompressorAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].AutoMakeUp := Boolean(round(Value));
-   FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
+   FCompressor[0, Band].AutoMakeUp := Boolean(round(Value));
+   FCompressor[1, Band].AutoMakeUp := FCompressor[0, Band].AutoMakeUp;
   end;
 end;
 
@@ -461,11 +526,16 @@ end;
 
 procedure TTrackPlugModule.ParameterCompressorMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FCompressor[0]) then
+ Assert(Index >= 43);
+ Band := (Index - 43) div 8;
+
+ if assigned(FCompressor[0, Band]) then
   begin
-   FCompressor[0].MakeUpGain_dB := Value;
-   FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
+   FCompressor[0, Band].MakeUpGain_dB := Value;
+   FCompressor[1, Band].MakeUpGain_dB := FCompressor[0, Band].MakeUpGain_dB;
   end;
 end;
 
@@ -514,8 +584,9 @@ begin
 
  // compressor
  for Channel := 0 to Length(FCompressor) - 1 do
-  if assigned(FCompressor[Channel])
-   then FCompressor[Channel].SampleRate := SampleRate;
+  for Band := 0 to Length(FCompressor[Channel]) - 1 do
+   if assigned(FCompressor[Channel, Band])
+    then FCompressor[Channel, Band].SampleRate := SampleRate;
 end;
 
 procedure TTrackPlugModule.VSTModuleProcess(const Inputs,
@@ -537,7 +608,8 @@ begin
 
     CurrentSample := FGate[Channel].ProcessSample(CurrentSample);
 
-    CurrentSample := FCompressor[Channel].ProcessSample(CurrentSample);
+    CurrentSample := FCompressor[Channel, 0].ProcessSample(CurrentSample);
+    CurrentSample := FCompressor[Channel, 1].ProcessSample(CurrentSample);
 
     Outputs[Channel, Sample] := CurrentSample;
    end;

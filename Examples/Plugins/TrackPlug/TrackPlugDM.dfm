@@ -6,15 +6,21 @@ object TrackPlugModule: TTrackPlugModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'TrPl'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
+      Category = 'DC Filter'
       DisplayName = 'DC Filter Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -32,6 +38,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'DC Filter'
       DisplayName = 'DC Filter Order'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -50,6 +57,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -68,6 +76,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Gain'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -86,6 +95,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Bandwidth'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -102,6 +112,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Type'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
@@ -119,6 +130,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -137,6 +149,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Gain'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -155,6 +168,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Bandwidth'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -171,6 +185,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Type'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
@@ -188,6 +203,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -206,6 +222,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Gain'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -224,6 +241,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Bandwidth'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -240,6 +258,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Type'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
@@ -257,6 +276,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -275,6 +295,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Gain'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -293,6 +314,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Bandwidth'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -309,6 +331,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Type'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
@@ -326,6 +349,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -344,6 +368,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Gain'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -362,6 +387,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Bandwidth'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -378,6 +404,7 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Type'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
@@ -393,10 +420,302 @@ object TrackPlugModule: TTrackPlugModule
       OnCustomParameterDisplay = ParameterEqTypeDisplay
     end
     item
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 6'
+      DisplayName = 'EQ Filter 6 Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'EQ6Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterFrequencyChange
+    end
+    item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Time Constants'
-      DisplayName = 'Attack'
+      Category = 'EQ Filter 6'
+      DisplayName = 'EQ Filter 6 Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'EQ6Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterGainChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 6'
+      DisplayName = 'EQ Filter 6 Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = 0.100000001490116100
+      ShortLabel = 'EQ6 BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Oct'
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 6'
+      DisplayName = 'EQ Filter 6 Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 7.000000000000000000
+      MaxInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'EQ6Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterEqTypeChange
+      OnCustomParameterDisplay = ParameterEqTypeDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 7'
+      DisplayName = 'EQ Filter 7 Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'EQ7Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 7'
+      DisplayName = 'EQ Filter 7 Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'EQ7Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterGainChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 7'
+      DisplayName = 'EQ Filter 7 Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = 0.100000001490116100
+      ShortLabel = 'EQ7 BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Oct'
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 7'
+      DisplayName = 'EQ Filter 7 Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 7.000000000000000000
+      MaxInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'EQ7Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterEqTypeChange
+      OnCustomParameterDisplay = ParameterEqTypeDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 8'
+      DisplayName = 'EQ Filter 8 Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'EQ8Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 8'
+      DisplayName = 'EQ Filter 8 Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'EQ8Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterGainChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 8'
+      DisplayName = 'EQ Filter 8 Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = 0.100000001490116100
+      ShortLabel = 'EQ8 BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Oct'
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 8'
+      DisplayName = 'EQ Filter 8 Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 7.000000000000000000
+      MaxInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'EQ8Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterEqTypeChange
+      OnCustomParameterDisplay = ParameterEqTypeDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      Category = 'EQ Filter 9'
+      DisplayName = 'EQ Filter 9 Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'EQ9Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 9'
+      DisplayName = 'EQ Filter 9 Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'EQ5Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterEqFilterGainChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100.000000000000000000
+      Category = 'EQ Filter 9'
+      DisplayName = 'EQ Filter 9 Bandwidth'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = 0.100000001490116100
+      ShortLabel = 'EQ9 BW'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Oct'
+      VSTModule = Owner
+      OnParameterChange = ParameterFilterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'EQ Filter 9'
+      DisplayName = 'EQ Filter 9 Type'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 7.000000000000000000
+      MaxInteger = 7
+      ReportVST2Properties = True
+      ShortLabel = 'EQ9Type'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterEqTypeChange
+      OnCustomParameterDisplay = ParameterEqTypeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Gate'
+      DisplayName = 'Gate Attack'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
@@ -415,8 +734,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Time Constants'
-      DisplayName = 'Release'
+      Category = 'Gate'
+      DisplayName = 'Gate Release'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
@@ -435,8 +754,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Characteristic'
-      DisplayName = 'Threshold'
+      Category = 'Gate'
+      DisplayName = 'Gate Threshold'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
@@ -455,8 +774,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Characteristic'
-      DisplayName = 'Ratio'
+      Category = 'Gate'
+      DisplayName = 'Gate Ratio'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
@@ -473,8 +792,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Characteristic'
-      DisplayName = 'Knee'
+      Category = 'Compressor 1'
+      DisplayName = 'Gate Knee'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
@@ -491,7 +810,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
-      DisplayName = 'Compressor Attack'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Attack'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
@@ -510,7 +830,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
-      DisplayName = 'Compressor Release'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Release'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
@@ -529,7 +850,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Compressor Threshold'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Threshold'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
@@ -548,7 +870,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
-      DisplayName = 'Compressor Ratio'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Ratio'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
@@ -565,7 +888,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Compressor Knee'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Knee'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
@@ -582,7 +906,8 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Compressor MakeUp Gain'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 MakeUp Gain'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
@@ -600,14 +925,15 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Compressor Auto Make Up Gain'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Auto Make Up Gain'
       Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
       ReportVST2Properties = True
-      ShortLabel = 'Auto Ma'
+      ShortLabel = 'Auto MU'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
@@ -617,7 +943,157 @@ object TrackPlugModule: TTrackPlugModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Compressor Mix'
+      Category = 'Compressor 1'
+      DisplayName = 'Compressor 1 Mix'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Mix'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorMixChange
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Attack'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1000.000000000000000000
+      MaxInteger = 1000
+      Min = 0.009999999776482582
+      ReportVST2Properties = True
+      ShortLabel = 'Attack'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorAttackChange
+      OnCustomParameterLabel = ParameterTimeLabel
+      OnCustomParameterDisplay = ParameterTimeDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Release'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 5000.000000000000000000
+      MaxInteger = 5000
+      Min = 0.050000000745058060
+      ReportVST2Properties = True
+      ShortLabel = 'Release'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorReleaseChange
+      OnCustomParameterLabel = ParameterTimeLabel
+      OnCustomParameterDisplay = ParameterTimeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Threshold'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      Min = -90.000000000000000000
+      MinInteger = -90
+      ReportVST2Properties = True
+      ShortLabel = 'Thresho'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorThresholdChange
+      OnCustomParameterDisplay = ParameterThresholdDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 10000.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Ratio'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 0.009999999776482582
+      MinInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Ratio'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorRatioChange
+      OnCustomParameterDisplay = ParameterRatioDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Knee'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Knee'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorKneeChange
+      OnCustomParameterDisplay = ParameterKneeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 MakeUp Gain'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      LargeStepInteger = 2
+      Max = 60.000000000000000000
+      MaxInteger = 60
+      ReportVST2Properties = True
+      ShortLabel = 'Gain'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorMakeUpGainChange
+      OnCustomParameterDisplay = ParameterMakeUpGainDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Auto Make Up Gain'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Auto MU'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterCompressorAutoMakeUpGainChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Compressor 2'
+      DisplayName = 'Compressor 2 Mix'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
@@ -631,11 +1107,39 @@ object TrackPlugModule: TTrackPlugModule
     end>
   ParameterCategories = <
     item
-      DisplayName = 'Time Constants'
+      DisplayName = 'DC Filter'
       VSTModule = Owner
     end
     item
-      DisplayName = 'Characteristic'
+      DisplayName = 'EQ Filter 1'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'EQ Filter 2'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'EQ Filter 3'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'EQ Filter 4'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'EQ Filter 5'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Gate'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Compressor 1'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Compressor 2'
       VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
