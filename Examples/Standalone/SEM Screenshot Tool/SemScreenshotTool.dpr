@@ -3,8 +3,17 @@ program SemScreenshotTool;
 {$APPTYPE CONSOLE}
 
 uses
-  Windows, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl, PngImage,
-  DAV_SECommon, DAV_SEModule, DAV_SEHost;
+  Windows,
+  Classes,
+  Controls,
+  Forms,
+  Graphics,
+  SysUtils,
+  FileCtrl,
+  PngImage,
+  DAV_SECommon,
+  DAV_SEModule,
+  DAV_SEHost;
 
 procedure RenderScreenshot(FileName: TFileName);
 var
@@ -42,9 +51,9 @@ begin
           try
            Canvas.Font.Name := 'Arial';
            Canvas.Font.Color := clWhite;
-           Canvas.Font.Size := 8;
-           Canvas.Brush.Color := clNavy;
-           Canvas.Pen.Color := clNavy;
+           Canvas.Font.Size := 9;
+           Canvas.Brush.Color := $6A240A;
+           Canvas.Pen.Color := $6A240A;
 
            Width := 4 + TextWidth(Properties.Name);
            Height := TextHeight(Properties.Name) + 4;
@@ -58,50 +67,55 @@ begin
             begin
              SetLength(Pins, Length(Pins) + 1);
              Pins[Length(Pins) - 1] := Pin;
-             if TextWidth(Pin.Name) + 6 > Width
-              then Width := TextWidth(Pin.Name) + 6;
+             if TextWidth(Pin.Name) + 4 > Width
+              then Width := TextWidth(Pin.Name) + 4;
 
              Height := Height + TextHeight(Pin.Name) + 2;
             end;
 
-           Canvas.Font.Size := 8;
+           Canvas.Font.Size := 9;
            TextOut((Width - TextWidth(Properties.Name)) div 2, 1, Properties.Name);
 
-           Canvas.Brush.Color := clSilver;
+           Canvas.Brush.Color := $C8D0D4;
            FillRect(Rect(0, TextHeight(Properties.Name) + 2, Width, Height));
            Canvas.Font.Size := 7;
 
            for PinNr := 0 to Length(Pins) - 1 do
             begin
              case Pins[PinNr].Datatype of
-              dtFSample : Canvas.Font.Color := clNavy;
-              dtSingle  : Canvas.Font.Color := clGreen;
+              dtFSample : Canvas.Font.Color := $960032;
+              dtSingle  : Canvas.Font.Color := $8c5000;
               dtInteger : Canvas.Font.Color := clOlive;
-              dtEnum    : Canvas.Font.Color := clOlive;
+              dtEnum    : Canvas.Font.Color := clGreen;
               else Canvas.Font.Color := clBlack;
              end;
 
-             TpPos := (PinNr + 1) * (TextHeight(Properties.Name) + 2) + 2;
+             TpPos := (PinNr + 1) * (TextHeight(Properties.Name) + 2) + 4;
              Canvas.Pen.Color := Canvas.Font.Color;
 
              case Pins[PinNr].Direction of
               drIn : begin
                       MoveTo(0, TpPos + 5);
-                      LineTo(4, TpPos + 5);
-                      TextOut(6, TpPos, Pins[PinNr].Name);
+                      LineTo(3, TpPos + 5);
+                      TextOut(4, TpPos, Pins[PinNr].Name);
                      end;
               drParameter : TextOut((Width - TextWidth(Pins[PinNr].Name)) div 2, TpPos, '(' + Pins[PinNr].Name + ')');
               drOut : begin
-                       TextOut(Width - 6 - TextWidth(Pins[PinNr].Name), TpPos, Pins[PinNr].Name);
-                       MoveTo(Width - 4, TpPos + 5);
+                       TextOut(Width - 4 - TextWidth(Pins[PinNr].Name), TpPos, Pins[PinNr].Name);
+                       MoveTo(Width - 3, TpPos + 5);
                        LineTo(Width, TpPos + 5);
                       end;
              end;
             end;
 
-           Pen.Color := clGray;
-           Brush.Color := clGray;
-           FrameRect(ClipRect);
+           Pen.Color := $808080;
+           MoveTo(Width - 1, 0);
+           LineTo(Width - 1, Height - 1);
+           LineTo(0, Height - 1);
+           Pen.Color := $B4B4B4;
+           LineTo(0, 0);
+           LineTo(Width - 1, 0);
+//           FrameRect(ClipRect);
 
            // copy to png
            Png := TPNGObject.Create;
@@ -148,7 +162,7 @@ begin
    else
     begin
      Writeln('Wrong syntax!');
-     Writeln('Add parameter or move this tool into a directory containing VST plugins');
+     Writeln('Add parameter or move this tool into a directory that contains SE modules');
 
      Dir := ExtractFileDir(ParamStr(0));
      SelectDirectory('Select Directory', '', Dir);
