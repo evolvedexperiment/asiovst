@@ -252,7 +252,7 @@ begin
                   ChooseProcess;
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                  end;
-  pinFrequency : FFilter.Frequency := 10000 * FFrequency;
+  pinFrequency : FFilter.Frequency := 1E-5 + abs(10000 * FFrequency);
       pinOrder : FFilter.Order     := 2 * (FOrder div 2);
      pinRipple : FFilter.Ripple    := 10 * FRipple;
  end;
@@ -284,7 +284,7 @@ constructor TSEStaticChebyshevFilterLPModule.Create(
 begin
  inherited;
  FFilter := TChebyshev1LowpassFilter.Create;
- FFilter.SetFilterValues(10000 * FFrequency, 0, 0.1);
+ FFilter.SetFilterValues(FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
@@ -299,7 +299,7 @@ constructor TSEStaticChebyshevFilterHPModule.Create(SEAudioMaster: TSE2audioMast
 begin
  inherited;
  FFilter := TChebyshev1HighpassFilter.Create;
- FFilter.SetFilterValues(100 * FFrequency, 0, 0.1);
+ FFilter.SetFilterValues(FFrequency, 0, 0.1);
  FFilter.Order := FOrder;
 end;
 
@@ -415,8 +415,11 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FFilter.Frequency := 10000 * Freq[Sample];
-   FFilter.Ripple    := 10 * Rippl[Sample];
+   if (Sample div 2 = 0) then
+    begin
+     FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
+     FFilter.Ripple    := 10 * Rippl[Sample];
+    end;
    Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;

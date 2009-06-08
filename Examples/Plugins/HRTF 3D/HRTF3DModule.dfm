@@ -98,6 +98,22 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       VSTModule = Owner
       OnParameterChange = ParameterInterpolationChange
       OnCustomParameterDisplay = ParameterInterpolationDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Display HRTFs'
+      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'HRTFs?'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnCustomParameterDisplay = ParameterDisplayHRTFsDisplay
     end>
   ParameterCategories = <>
   OnOpen = VST2ModuleOpen

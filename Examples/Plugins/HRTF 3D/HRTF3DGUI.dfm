@@ -15,6 +15,7 @@ object VSTGUI: TVSTGUI
   Scaled = False
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
@@ -59,6 +60,14 @@ object VSTGUI: TVSTGUI
       Diffuse.Color = {83C02A3FFED4383F60E5703F0000803F}
       Position.Coordinates = {0000A04000000000000000000000803F}
       SpotCutOff = 180.000000000000000000
+    end
+    object GLHRTFs: TGLPoints
+      NoZWrite = False
+      Static = False
+      Size = 3.000000000000000000
+      Style = psSmooth
+      PointParameters.Enabled = True
+      PointParameters.PointParams = {00000000000000400000803F}
     end
     object GLCamera: TGLCamera
       DepthOfView = 100.000000000000000000

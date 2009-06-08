@@ -14,17 +14,18 @@ type
     procedure VST2ModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VST2ModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParamAzimuthChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterInterpolationDisplay(
+    procedure ParamAzimuthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterInterpolationDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterInterpolationChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDisplayHRTFsDisplay(
       Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterInterpolationChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FIR           : array [0..1] of PDAVSingleFixedArray;
     FHRTFs        : THrtfs;
     FLength       : Cardinal;
     FConvolution  : array [0..1] of TLowLatencyConvolution32;
+  public
+    property HRTFs: THrtfs read FHRTFs;
   end;
 
 implementation
@@ -41,25 +42,27 @@ var
   Channel : Integer;
   RS      : TResourceStream;
 begin
-  FLength := 512;
+ FHRTFs := THRTFs.Create;
 
-  GetMem(FIR[0], FLength * SizeOf(Single));
-  GetMem(FIR[1], FLength * SizeOf(Single));
+ RS := TResourceStream.Create(hInstance, 'Default', 'HRTF');
+ try
+  FHRTFs.LoadFromStream(RS);
+ finally
+  RS.Free;
+ end;
 
-  for Channel := 0 to 1 do
-   begin
-    FConvolution[Channel] := TLowLatencyConvolution32.Create;
-    FConvolution[Channel].MinimumIRBlockOrder :=  6;
-    FConvolution[Channel].MaximumIRBlockOrder := 13;
-   end;
-  FHRTFs := THRTFs.Create;
+ FLength := FHRTFs.MinimumHrirSize;
 
-  RS := TResourceStream.Create(hInstance, 'Default', 'HRTF');
-   try
-    FHRTFs.LoadFromStream(RS);
-   finally
-    RS.Free;
-   end;
+ GetMem(FIR[0], FLength * SizeOf(Single));
+ GetMem(FIR[1], FLength * SizeOf(Single));
+
+ for Channel := 0 to 1 do
+  begin
+   FConvolution[Channel] := TLowLatencyConvolution32.Create;
+   FConvolution[Channel].MinimumIRBlockOrder :=  6;
+   FConvolution[Channel].MaximumIRBlockOrder := 13;
+  end;
+ // initial parameters
  Parameter[0] := 0;
  Parameter[1] := 0;
  Parameter[2] := 0;
@@ -72,6 +75,7 @@ begin
    Parameter[1] := 0;
    Parameter[2] := 0;
    Parameter[3] := 2;
+   Parameter[4] := 2;
   end;
 end;
 
@@ -98,6 +102,14 @@ var
 begin
  for Channel := 0 to 1
   do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], min(BlockSize, SampleFrames));
+end;
+
+procedure TVSTHRTF3DModule.ParameterDisplayHRTFsDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] > 0.5
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
 end;
 
 procedure TVSTHRTF3DModule.ParameterInterpolationChange(

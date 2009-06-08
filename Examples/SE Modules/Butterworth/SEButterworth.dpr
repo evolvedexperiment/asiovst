@@ -13,11 +13,11 @@ uses
 
 const
   CModuleClasses : array [0..7] of TSEModuleBaseClass = (
+    TSEAutomatableButterworthLPModule, TSEAutomatableButterworthHPModule, 
+    TSEAutomatableXButterworthLPModule, TSEAutomatableXButterworthHPModule,
     TSEStaticButterworthLPModule, TSEStaticButterworthHPModule,
     TSEStaticControlableButterworthLPModule,
-    TSEStaticControlableButterworthHPModule,
-    TSEAutomatableButterworthLPModule, TSEAutomatableButterworthHPModule, 
-    TSEAutomatableXButterworthLPModule, TSEAutomatableXButterworthHPModule);
+    TSEStaticControlableButterworthHPModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin

@@ -3,9 +3,9 @@ unit HRTF3DGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  GLScene, GLObjects, GLMisc, Controls, GLFile3DS, GLWin32Viewer,
-  GLVectorFileObjects, Dialogs, StdCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Dialogs, StdCtrls,
+  DAV_Common, DAV_VSTModule, GLScene, GLObjects, GLMisc, GLTexture, GLFile3DS,
+  GLWin32Viewer, GLVectorFileObjects;
 
 type
   TVSTGUI = class(TForm)
@@ -15,10 +15,13 @@ type
     GLDummyCube: TGLDummyCube;
     GLHead: TGLFreeForm;
     GLLight: TGLLightSource;
+    GLHRTFs: TGLPoints;
     procedure FormCreate(Sender: TObject);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLIRsRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure FormShow(Sender: TObject);
   private
     FOldMousePoint : TPoint;
     procedure Zoom(Value: Single);
@@ -34,7 +37,7 @@ implementation
 
 uses
   Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFileObj,
-  GLCrossPlatform, VectorLists, HRTF3DModule;
+  GLCrossPlatform, VectorLists, HRTF3DModule, DAV_DspHrtf;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 var
@@ -193,6 +196,25 @@ begin
  Handled := true
 end;
 
+procedure TVSTGUI.FormShow(Sender: TObject);
+var
+  HrtfNr : Integer;
+begin
+ GLHRTFs.Visible := TVSTHRTF3DModule(Owner).Parameter[4] > 0.5;
+ if GLHRTFs.Visible then
+  begin
+   GLHRTFs.Positions.Clear;
+   with TVSTHRTF3DModule(Owner) do
+    for HrtfNr := 0 to HRTFs.HrirCount - 1 do
+     with HRTFs.Hrir[HrtfNr].Position do
+      begin
+       GLHRTFs.Positions.Add(cos(Azimuth) * sin(Polar + 0.25 * Pi), sin(Azimuth) * sin(Polar + 0.25 * Pi), cos(Polar + 0.25 * Pi));
+  //     GLHRTFs.Positions.Add(cos(Polar) * sin(Azimuth), sin(Polar) * sin(Azimuth), cos(Azimuth));
+      end;
+   GLHRTFs.StructureChanged;
+  end;
+end;
+
 procedure TVSTGUI.GLSceneViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 const
@@ -284,6 +306,12 @@ end;
 procedure TVSTGUI.UpdateRadius;
 begin
 
+end;
+
+procedure TVSTGUI.GLIRsRender(Sender: TObject;
+  var rci: TRenderContextInfo);
+begin
+// Add
 end;
 
 procedure TVSTGUI.GLSceneViewerMouseDown(Sender: TObject;

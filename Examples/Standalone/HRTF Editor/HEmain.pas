@@ -518,12 +518,14 @@ begin
       DelPos := Pos('.', FN);
       RadStr := Copy(FN, 1, DelPos - 1);
 
-      i[0] := StrToInt(AzmStr);
+      i[0] := -StrToInt(AzmStr);
       i[1] := StrToInt(PolStr);
       i[2] := StrToInt(RadStr);
 
       while i[0] > 180 do i[0] := i[0] - 360;
       while i[1] > 180 do i[1] := i[1] - 180;
+      while i[0] < -180 do i[0] := i[0] + 360;
+      while i[1] < -180 do i[1] := i[1] + 180;
 
       FHRTFFile.AddChunk(TCustomHrir.Create(i[0] * CDegToRad,
         i[1] * CDegToRad, i[2], 44100, ADC.SampleFrames,

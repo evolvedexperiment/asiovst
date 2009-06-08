@@ -345,6 +345,7 @@ type
       var A, B, C: TCustomHrir); overload; virtual;
     function GetChunkSize: Cardinal; override;
     function GetMaximumHrirSize: Integer; virtual;
+    function GetMinimumHrirSize: Integer;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -396,7 +397,8 @@ type
     property Symmetric: Boolean read GetSymmetric write SetSymmetric;
     property SampleRate: Single read FSampleRate write FSampleRate;
     property InterpolationType: TInterpolationType read FInterpolationType write FInterpolationType default itLinear;
-    property MaximumHrirSize: Integer read GetMaximumHrirSize; 
+    property MaximumHrirSize: Integer read GetMaximumHrirSize;
+    property MinimumHrirSize: Integer read GetMinimumHrirSize;
 
     property OnHrtfChanged: TNotifyEvent read FOnHrtfChanged write FOnHrtfChanged;
   end;
@@ -1580,6 +1582,21 @@ begin
  for Index := 0 to FHrirList.Count - 1 do
   if TCustomHrir(FHrirList[Index]).SampleFrames > result
    then result := TCustomHrir(FHrirList[Index]).SampleFrames;
+end;
+
+function TCustomHrtfs.GetMinimumHrirSize: Integer;
+var
+  Index : Integer;
+begin
+ if FHrirList.Count = 0
+  then result := 0
+  else
+   begin
+    result := TCustomHrir(FHrirList[0]).SampleFrames;
+    for Index := 1 to FHrirList.Count - 1 do
+     if TCustomHrir(FHrirList[Index]).SampleFrames < result
+      then result := TCustomHrir(FHrirList[Index]).SampleFrames;
+   end;
 end;
 
 function TCustomHrtfs.GetMeasuredLength: Integer;
