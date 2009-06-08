@@ -1020,8 +1020,8 @@ end;
 procedure TCustomChebyshev2Filter.CalculateW0;
 begin
  inherited;
- FW0 := 2 * Pi * fSRR * (FFrequency);
- FSinW0 := sin(FW0);
+ FW0 := 2 * Pi * FSRR * FFrequency;
+ GetSinCos(FW0, FExpW0.Im, FExpW0.Re);
  if FW0 > 3.1 then FW0 := 3.1;
 end;
 

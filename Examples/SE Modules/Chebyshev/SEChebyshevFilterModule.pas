@@ -252,7 +252,7 @@ begin
                   ChooseProcess;
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                  end;
-  pinFrequency : FFilter.Frequency := 1E-5 + abs(10000 * FFrequency);
+  pinFrequency : FFilter.Frequency := 1E-5 + abs(1000 * FFrequency);
       pinOrder : FFilter.Order     := 2 * (FOrder div 2);
      pinRipple : FFilter.Ripple    := 10 * FRipple;
  end;

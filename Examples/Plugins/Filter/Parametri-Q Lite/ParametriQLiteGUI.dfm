@@ -202,6 +202,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW1: TGuiDial
     Tag = 1
@@ -226,6 +227,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain1: TGuiDial
     Tag = 1
@@ -247,6 +249,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq2: TGuiDial
     Tag = 2
@@ -271,6 +274,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW2: TGuiDial
     Tag = 2
@@ -295,6 +299,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain2: TGuiDial
     Tag = 2
@@ -316,6 +321,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq3: TGuiDial
     Tag = 3
@@ -340,6 +346,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW3: TGuiDial
     Tag = 3
@@ -364,6 +371,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain3: TGuiDial
     Tag = 3
@@ -385,6 +393,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq4: TGuiDial
     Tag = 4
@@ -409,6 +418,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW4: TGuiDial
     Tag = 4
@@ -433,6 +443,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain4: TGuiDial
     Tag = 4
@@ -454,6 +465,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq5: TGuiDial
     Tag = 5
@@ -478,6 +490,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW5: TGuiDial
     Tag = 5
@@ -502,6 +515,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain5: TGuiDial
     Tag = 5
@@ -523,6 +537,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq6: TGuiDial
     Tag = 6
@@ -547,6 +562,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW6: TGuiDial
     Tag = 6
@@ -571,6 +587,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain6: TGuiDial
     Tag = 6
@@ -592,6 +609,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq7: TGuiDial
     Tag = 7
@@ -616,6 +634,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW7: TGuiDial
     Tag = 7
@@ -640,6 +659,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain7: TGuiDial
     Tag = 7
@@ -661,6 +681,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialFreq8: TGuiDial
     Tag = 8
@@ -685,6 +706,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialBW8: TGuiDial
     Tag = 8
@@ -709,6 +731,7 @@ object FmParametriQLite: TFmParametriQLite
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain8: TGuiDial
     Tag = 8
@@ -730,6 +753,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbFreq1: TGuiLabel
     Tag = 1
@@ -990,6 +1014,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialOutput: TGuiDial
     Left = 118
@@ -1010,6 +1035,7 @@ object FmParametriQLite: TFmParametriQLite
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbGain1: TGuiLabel
     Tag = 1
@@ -4988,6 +5014,10 @@ object FmParametriQLite: TFmParametriQLite
       Caption = '&Allpass'
       RadioItem = True
       OnClick = MIAllpassClick
+    end
+    object MILowShelfA: TMenuItem
+      Caption = 'Lowshelf A'
+      OnClick = MILowShelfAClick
     end
     object N1: TMenuItem
       Caption = '-'

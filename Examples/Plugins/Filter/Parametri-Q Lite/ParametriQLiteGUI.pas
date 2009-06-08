@@ -167,6 +167,7 @@ type
     N1: TMenuItem;
     Timer: TTimer;
     PlotBox: TPaintBox;
+    MILowShelfA: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure DialBWChange(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
@@ -188,6 +189,7 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure PlotBoxPaint(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure MILowShelfAClick(Sender: TObject);
   private
     FBackgroundBitmap : TBitmap;
   public
@@ -415,6 +417,14 @@ begin
  with TParametriQLiteDataModule(Owner) do
   begin
    Parameter[PopupFilter.Tag * 4 + 4] := 4;
+  end;
+end;
+
+procedure TFmParametriQLite.MILowShelfAClick(Sender: TObject);
+begin
+ with TParametriQLiteDataModule(Owner) do
+  begin
+   Parameter[PopupFilter.Tag * 4 + 4] := 9;
   end;
 end;
 

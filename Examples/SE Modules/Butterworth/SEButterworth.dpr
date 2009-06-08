@@ -5,23 +5,25 @@ uses
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEButterworthModule in 'SEButterworthModule.pas';
+  SEButterworthModule in 'SEButterworthModule.pas',
+  SEButterworthSplitterModule in 'SEButterworthSplitterModule.pas';
 
 {$E sem}
-
 {$R *.res}
 
 const
-  CModuleClasses : array [0..7] of TSEModuleBaseClass = (
-    TSEAutomatableButterworthLPModule, TSEAutomatableButterworthHPModule, 
-    TSEAutomatableXButterworthLPModule, TSEAutomatableXButterworthHPModule,
+  CModuleClasses : array [0..10] of TSEModuleBaseClass = (
+    TSEAutomatableButterworthSplitterModule, TSEAutomatableButterworthLPModule,
+    TSEAutomatableButterworthHPModule, TSEAutomatableXButterworthLPModule,
+    TSEAutomatableXButterworthHPModule, TSEStaticButterworthSplitterModule,
     TSEStaticButterworthLPModule, TSEStaticButterworthHPModule,
+    TSEStaticControlableButterworthSplitterModule,
     TSEStaticControlableButterworthLPModule,
     TSEStaticControlableButterworthHPModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- if (Index >= 0) and (Index < Length(CModuleClasses)) then
+ if Index in [0..Length(CModuleClasses) - 1] then
   begin
    CModuleClasses[Index].GetModuleProperties(Properties);
    result := True;
@@ -31,7 +33,7 @@ end;
 
 function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
- if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1)
+ if (Index in [0..Length(CModuleClasses) - 1]) and (ProcessType = 1)
   then result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect
   else result := nil;
 end;

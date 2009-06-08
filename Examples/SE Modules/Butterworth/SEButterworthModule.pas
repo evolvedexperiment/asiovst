@@ -283,7 +283,7 @@ begin
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                   ChooseProcess;
                  end;
-  pinFrequency : FFilter.Frequency := FFrequency;
+  pinFrequency : FFilter.Frequency := 1E-5 + abs(FFrequency);
       pinOrder : FFilter.Order     := FOrder;
  end;
  inherited;
@@ -323,7 +323,7 @@ begin
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                   ChooseProcess;
                  end;
-  pinFrequency : FFilter.Frequency := FFrequency;
+  pinFrequency : FFilter.Frequency := 1E-5 + abs(FFrequency);
       pinOrder : FFilter.Order     := FOrder;
  end;
  inherited;
@@ -469,7 +469,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 10000 * Freq[Sample];
+   FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
@@ -535,7 +535,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 10000 * Freq[Sample];
+   FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
@@ -605,7 +605,8 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 10000 * Freq[Sample];
+   if Sample mod 2 = 0
+    then FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
@@ -676,7 +677,8 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
-   FFilter.Frequency := 10000 * Freq[Sample]; 
+   if Sample mod 2 = 0
+    then FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
    Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;

@@ -19,9 +19,9 @@ type
     FGain_dB           : Double;
     FGainFactor        : Double;
     FGainFactorSquared : Double;
-    FFrequency         : Double;
-    FSinW0, FW0        : Double;
     FSampleRate        : Double;
+    FFrequency, FW0    : Double;
+    FExpW0             : TComplexDouble;
     FSRR               : Double; // reciprocal of FSampleRate
     FOnChange          : TNotifyEvent;
     procedure CalculateW0; virtual;
@@ -38,7 +38,7 @@ type
 
     property GainFactor: Double read FGainFactor;
     property SampleRateReciprocal: Double read FSRR;
-    property SinW0: Double read FSinW0;
+    property ExpW0: TComplexDouble read FExpW0;
     property W0: Double read FW0;
   public
     constructor Create; virtual;
@@ -239,7 +239,7 @@ begin
    TCustomFilter(Dest).FSampleRate := FSampleRate;
    TCustomFilter(Dest).FSRR        := FSRR;
    TCustomFilter(Dest).FW0         := FW0;
-   TCustomFilter(Dest).FSinW0      := FSinW0;
+   TCustomFilter(Dest).FExpW0      := FExpW0;
   end
  else inherited;
 end;
@@ -253,7 +253,7 @@ end;
 procedure TCustomFilter.CalculateW0;
 begin
  FW0 := 2 * Pi * FFrequency * FSRR;
- FSinW0 := sin(FW0);
+ GetSinCos(FW0, FExpW0.Im, FExpW0.Re);
  if FW0 > 3.141
   then FW0 := 3.141;
 end;
@@ -652,9 +652,9 @@ end;
 
 procedure TCustomBandwidthIIRFilter.CalculateAlpha;
 begin
- if (FSinW0 = 0)
-  then FAlpha := FSinW0 /( 2 * FBandWidth)
-  else FAlpha := Sinh(ln22 * cos(FW0 * 0.5) * FBandWidth * (FW0 / FSinW0)) * FSinW0;
+ if (FExpW0.Im = 0)
+  then FAlpha := FExpW0.Im /( 2 * FBandWidth)
+  else FAlpha := Sinh(ln22 * cos(FW0 * 0.5) * FBandWidth * (FW0 / FExpW0.Im)) * FExpW0.Im;
 end;
 
 procedure TCustomBandwidthIIRFilter.SetBW(Value: Double);

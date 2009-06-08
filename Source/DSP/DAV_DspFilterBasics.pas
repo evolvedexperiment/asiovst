@@ -113,7 +113,7 @@ var
 begin
  t := FGainFactor / (FGainFactor + FAlpha);
  FDenominator[2] := (FGainFactor - FAlpha) / (FGainFactor + FAlpha);
- FDenominator[1] := -2 * cos(FW0) * t;
+ FDenominator[1] := -2 * ExpW0.Re * t;
  FNominator[1] := FDenominator[1];
  FNominator[0] := (1 + FAlpha * FGainFactor) * t;
  FNominator[2] := (1 - FAlpha * FGainFactor) * t;
@@ -128,7 +128,7 @@ var
 begin
  t               := 1 / (1 + FAlpha);
  a               := FGainFactorSquared;
- FDenominator[1] := -2 * cos(FW0) * t;
+ FDenominator[1] := -2 * ExpW0.Re * t;
  FDenominator[2] := (1 - FAlpha) * t;
  FNominator[1]   := FDenominator[1] * a;
  FNominator[0]   := FDenominator[2] * a;
@@ -143,7 +143,7 @@ var
   cn, sA    : Double;
 begin
  sA := 2 * sqrt(FGainFactor) * FAlpha;
- cn := cos(FW0);
+ cn := ExpW0.Re;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
  t  := 1 / (A1 + A2 * cn + sA);
@@ -163,7 +163,7 @@ var
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K  := Tan(FW0 * 0.5);
+ K  := FExpW0.Im / (1 + FExpW0.Re);
  t1 := FGainFactor * CSqrt2 * K;
  t2 := FGainFactorSquared * sqr(K);
  t3 := 1 / (1 + K * FBandWidth + sqr(K));
@@ -182,7 +182,7 @@ var
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K  := Tan(FW0 * 0.5);
+ K  := FExpW0.Im / (1 + FExpW0.Re);
  t1 := K * FBandWidth;
  t2 := 1 / FGainFactorSquared;
  t3 := FGainFactor / (CSqrt2 * K + FGainFactor * (1 + t2 * sqr(K)));
@@ -200,7 +200,7 @@ var
   t, A1, A2 : Double;
   cn, sA    : Double;
 begin
- cn := cos(FW0);
+ cn := ExpW0.Re;
  sA := 2 * sqrt(FGainFactor) * FAlpha;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
@@ -217,42 +217,44 @@ end;
 
 procedure TBasicHighShelfAFilter.CalculateCoefficients;
 var
- K, t1, t2, t3, t5, t6: Double;
+  K : Double;
+  t : array [0..4] of Double;
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K     := Tan(FW0 * 0.5);
- t2    := K * K;
- t3    := K * FBandWidth;
- t6    := Sqr(FGainFactor);
- t5    := CSqrt2 * FGainFactor * K;
- t1    := 1 / (1 + t3 + t2);
- FNominator[0] := (t6 + t5 + t2) * t1;
- FNominator[1] := 2 * (t2 - t6) * t1;
- FNominator[2] := (t6 - t5 + t2) * t1;
- FDenominator[1] := 2 * (t2 - 1) * t1;
- FDenominator[2] := (1 - t3 + t2) * t1;
+ K    :=  FExpW0.Im / (1 + FExpW0.Re);
+ t[1] := K * K;
+ t[2] := K * FBandWidth;
+ t[4] := Sqr(FGainFactor);
+ t[3] := CSqrt2 * FGainFactor * K;
+ t[0] := 1 / (1 + t[2] + t[1]);
+ FNominator[0] := (t[4] + t[3] + t[1]) * t[0];
+ FNominator[1] := 2 * (t[1] - t[4]) * t[0];
+ FNominator[2] := (t[4] - t[3] + t[1]) * t[0];
+ FDenominator[1] := 2 * (t[1] - 1) * t[0];
+ FDenominator[2] := (1 - t[2] + t[1]) * t[0];
 end;
 
 { TBasicHighShelfBFilter }
 
 procedure TBasicHighShelfBFilter.CalculateCoefficients;
 var
- K, t1, t2, t3, t4, t5: Double;
+  K : Double;
+  t : array [0..4] of Double;
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K     := Tan(FW0 * 0.5);
- t2    := K * K;
- t3    := K * FBandWidth;
- t4    := sqr(FGainFactor);
- t5    := CSqrt2 * FGainFactor * K;
- t1    := 1 / (1 + t5 + t4 * t2);
- FNominator[0] := (1 + t3 + t2) * t1 * t4;
- FNominator[1] := 2 * (t2 - 1) * t1 * t4;
- FNominator[2] := (1 - t3 + t2) * t1 * t4;
- FDenominator[1] := (2 * (t4 * t2 - 1)) * t1;
- FDenominator[2] := (1 - t5 + t4 * t2) * t1;
+ K    := FExpW0.Im / (1 + FExpW0.Re);
+ t[0] := K * K;
+ t[1] := K * FBandWidth;
+ t[2] := sqr(FGainFactor);
+ t[3] := CSqrt2 * FGainFactor * K;
+ t[4] := 1 / (1 + t[3] + t[2] * t[0]);
+ FNominator[0] := (1 + t[1] + t[0]) * t[4] * t[2];
+ FNominator[1] := 2 * (t[0] - 1) * t[4] * t[2];
+ FNominator[2] := (1 - t[1] + t[0]) * t[4] * t[2];
+ FDenominator[1] := (2 * (t[2] * t[0] - 1)) * t[4];
+ FDenominator[2] := (1 - t[3] + t[2] * t[0]) * t[4];
 end;
 
 { TBasicHighcut }
@@ -262,7 +264,7 @@ var
   cn, t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := cos(FW0);
+ cn := ExpW0.Re;
  FNominator[0]   := sqr(FGainFactor) * (1 - cn) * 0.5 * t;
  FNominator[1]   := 2 * FNominator[0];
  FNominator[2]   := FNominator[0];
@@ -278,7 +280,7 @@ var
   cn, t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := cos(FW0);
+ cn := ExpW0.Re;
  FNominator[0]   := sqr(FGainFactor) * (1 + cn) * 0.5 * t;
  FNominator[1]   := -2 * FNominator[0];
  FNominator[2]   := FNominator[0];
@@ -296,7 +298,7 @@ begin
  t := 1 / (1 + FAlpha);
  FNominator[0]   := sqr(FGainFactor) * FAlpha * t;
  FNominator[2]   := -FNominator[0];
- FDenominator[1] := -2 * cos(FW0) * t;
+ FDenominator[1] := -2 * ExpW0.Re * t;
  FDenominator[2] := (1 - FAlpha) * t;
  FNominator[1]   := 0;
 end;
@@ -309,7 +311,7 @@ var
 begin
   t := 1 / (1 + FAlpha);
   a := sqr(FGainFactor);
-  FDenominator[1] := -2 * cos(FW0) * t;
+  FDenominator[1] := -2 * ExpW0.Re * t;
   FDenominator[2] := (1 - FAlpha) * t;
 
   FNominator[0] := a * t;

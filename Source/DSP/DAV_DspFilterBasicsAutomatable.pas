@@ -9,6 +9,7 @@ uses
 
 type
   TCustomAutomatable = class(TBiquadIIRFilter)
+
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double):Double; override;
   end;
@@ -136,7 +137,7 @@ var
 begin
  t := FGainFactor / (FGainFactor + FAlpha);
  FDenominator[2] := (FGainFactor - FAlpha) / (FGainFactor + FAlpha);
- FDenominator[1] := -2 * FastCosInBounds3Term(FW0) * t;
+ FDenominator[1] := -2 * FExpW0.Re * t;
  FNominator[1] := FDenominator[1];
  FNominator[0] := (1 + FAlpha * FGainFactor) * t;
  FNominator[2] := (1 - FAlpha * FGainFactor) * t;
@@ -151,7 +152,7 @@ var
 begin
  t               := 1 / (1 + FAlpha);
  a               := FGainFactorSquared;
- FDenominator[1] := -2 * FastCosInBounds3Term(FW0) * t;
+ FDenominator[1] := -2 * FExpW0.Re * t;
  FDenominator[2] := (1 - FAlpha) * t;
  FNominator[1]   := FDenominator[1] * a;
  FNominator[0]   := FDenominator[2] * a;
@@ -166,7 +167,7 @@ var
   cn, sA    : Double;
 begin
  sA := 2 * FastSqrtBab1(FGainFactor) * FAlpha;
- cn := FastCosInBounds3Term(FW0);
+ cn := FExpW0.Re;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
  t  := 1 / (A1 + A2 * cn + sA);
@@ -186,7 +187,7 @@ var
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K  := Tan(FW0 * 0.5);
+ K  := FExpW0.Im / (1 + FExpW0.Re);
  t1 := FGainFactor * CSqrt2 * K;
  t2 := FGainFactorSquared * sqr(K);
  t3 := 1 / (1 + K * FBandWidth + sqr(K));
@@ -205,7 +206,7 @@ var
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K  := Tan(FW0 * 0.5);
+ K  := FExpW0.Im / (1 + FExpW0.Re);
  t1 := K * FBandWidth;
  t2 := 1 / FGainFactorSquared;
  t3 := FGainFactor / (CSqrt2 * K + FGainFactor * (1 + t2 * sqr(K)));
@@ -223,7 +224,7 @@ var
   t, A1, A2 : Double;
   cn, sA    : Double;
 begin
- cn := FastCosInBounds3Term(FW0);
+ cn := FExpW0.Re;
  sA := 2 * FastSqrtBab1(FGainFactor) * FAlpha;
  A1 := FGainFactor + 1;
  A2 := FGainFactor - 1;
@@ -244,7 +245,7 @@ var
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K     := Tan(FW0 * 0.5);
+ K     := FExpW0.Im / (1 + FExpW0.Re);
  t2    := K * K;
  t3    := K * FBandWidth;
  t6    := Sqr(FGainFactor);
@@ -265,7 +266,7 @@ var
 const
   CSqrt2: Double = 1.4142135623730950488016887242097;
 begin
- K     := Tan(FW0 * 0.5);
+ K     := FExpW0.Im / (1 + FExpW0.Re);
  t2    := K * K;
  t3    := K * FBandWidth;
  t4    := sqr(FGainFactor);
@@ -285,7 +286,7 @@ var
   cn, t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := FastCosInBounds3Term(FW0);
+ cn := FExpW0.Re;
  FNominator[0]   := sqr(FGainFactor) * (1 - cn) * 0.5 * t;
  FNominator[1]   := 2 * FNominator[0];
  FNominator[2]   := FNominator[0];
@@ -301,7 +302,7 @@ var
   cn, t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := FastCosInBounds3Term(FW0);
+ cn := FExpW0.Re;
  FNominator[0]   := sqr(FGainFactor) * (1 + cn) * 0.5 * t;
  FNominator[1]   := -2 * FNominator[0];
  FNominator[2]   := FNominator[0];
@@ -319,7 +320,7 @@ begin
  t := 1 / (1 + FAlpha);
  FNominator[0]   := sqr(FGainFactor) * FAlpha * t;
  FNominator[2]   := -FNominator[0];
- FDenominator[1] := -2 * FastCosInBounds3Term(FW0) * t;
+ FDenominator[1] := -2 * FExpW0.Re * t;
  FDenominator[2] := (1 - FAlpha) * t;
  FNominator[1]   := 0;
 end;
@@ -332,7 +333,7 @@ var
 begin
   t := 1 / (1 + FAlpha);
   a := sqr(FGainFactor);
-  FDenominator[1] := -2 * FastCosInBounds3Term(FW0) * t;
+  FDenominator[1] := -2 * FExpW0.Re * t;
   FDenominator[2] := (1 - FAlpha) * t;
 
   FNominator[0] := a * t;
