@@ -8,8 +8,7 @@ uses
   DAV_SEModule,
   SEVocoderModule in 'SEVocoderModule.pas',
   SESimpleVocoderModule in 'SESimpleVocoderModule.pas',
-  SEBarkVocoderModule in 'SEBarkVocoderModule.pas',
-  DAV_DspDownsampleScheduler in '..\..\..\Source\DSP\DAV_DspDownsampleScheduler.pas';
+  SEBarkVocoderModule in 'SEBarkVocoderModule.pas';
 
 {$E sem}
 {$R *.res}

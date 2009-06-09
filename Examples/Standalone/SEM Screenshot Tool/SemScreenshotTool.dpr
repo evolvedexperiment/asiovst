@@ -45,10 +45,11 @@ begin
        for PartNr := 0 to PartCount - 1 do
         with Part[PartNr] do
          begin
+          Writeln('Capturing: ' + Name);
+
           Instantiation;
   //        Open;
           try
-           Writeln('Capturing: ' + Name);
 
            // create form for GUI rendering
            Bitmap := TBitmap.Create;

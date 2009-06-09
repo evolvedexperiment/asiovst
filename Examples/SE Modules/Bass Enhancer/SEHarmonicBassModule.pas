@@ -133,13 +133,13 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'HarmonicBass Clone';
+   Name := 'Harmonic Bass Enhancer';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV HarmonicBass Clone';
+   ID := 'DAV Harmonic Bass Enhancer';
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';

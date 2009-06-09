@@ -24,15 +24,13 @@ var
   SEModuleBase: TSEModuleBase;
 begin
  result := nil;
- case Index of // !!TODO!! list your in / out plugs
-  0: begin
-      if (ProcessType = 1) then // Audio Processing Object
-       begin
-        SEModuleBase := TSEPascalScriptModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
+ case Index of
+  0: if (ProcessType = 1) then // Audio Processing Object
+      begin
+       SEModuleBase := TSEPascalScriptModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end;
  end;
 end;
 

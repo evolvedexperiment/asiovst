@@ -121,13 +121,13 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Resurrection Clone';
+   Name := 'Resurrection Bass Enhancer';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
-   ID := 'DAV Resurrection Clone';
+   ID := 'DAV Resurrection Bass Enhancer';
 
    // Info, may include Author, Web page whatever
    About := 'by Christian-W. Budde';

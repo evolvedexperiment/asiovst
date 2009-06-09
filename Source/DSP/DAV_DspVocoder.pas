@@ -28,7 +28,7 @@ type
     procedure SetSampleRate(const Value: Double);
     procedure SetAttack(const Value: Double);
     procedure SetRelease(const Value: Double);
-  public
+  protected
     FVolFactors        : array [0..2] of Double;
     FAttack            : Double;
     FAttackFactor      : Double;

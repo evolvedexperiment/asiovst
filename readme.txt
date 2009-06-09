@@ -85,6 +85,7 @@ Contributors (incomplete list, let me know if your name is missing)
 
 Christian-W. Budde (Christian@savioursofsoul.de)
 Tobias Fleischer (tobybear@web.de)
+Chris Horton
 Frederic Vanmol
 Maik Menz (myco@gmx.net)
 Tobias Erichsen

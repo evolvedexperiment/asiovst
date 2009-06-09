@@ -462,6 +462,8 @@ end;
 
 constructor TCustomLinkwitzBass.Create;
 begin
+ inherited;
+
  // create & setup limiter
  FLimiter := TLightweightSoftKneeLimiter.Create;
  FLimiter.Knee_dB := 6;

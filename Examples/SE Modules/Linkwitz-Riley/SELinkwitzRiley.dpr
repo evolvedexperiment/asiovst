@@ -27,30 +27,24 @@ var
 begin
  result := nil;
  case Index of
-  0: begin
-      if (ProcessType = 1) then
-       begin
-        SEModuleBase := TSELinkwitzRileyStaticModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
-  1: begin
-      if (ProcessType = 1) then
-       begin
-        SEModuleBase := TSELinkwitzRileyControlableModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
-  2: begin
-      if (ProcessType = 1) then
-       begin
-        SEModuleBase := TSELinkwitzRileyAutomatableModule.Create(SEAudioMaster, Reserved);
-        if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
-       end;
-     end;
+  0: if (ProcessType = 1) then
+      begin
+       SEModuleBase := TSELinkwitzRileyStaticModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end;
+  1: if (ProcessType = 1) then
+      begin
+       SEModuleBase := TSELinkwitzRileyControlableModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end;
+  2: if (ProcessType = 1) then
+      begin
+       SEModuleBase := TSELinkwitzRileyAutomatableModule.Create(SEAudioMaster, Reserved);
+       if assigned(SEModuleBase)
+        then result := SEModuleBase.Effect;
+      end;
  end;
 end;
 

@@ -133,7 +133,7 @@ begin
  with Properties^ do
   begin
    // describe the plugin, this is the name the end-user will see.
-   Name := 'Bass Enhancer';
+   Name := 'Linkwitz Bass Enhancer';
 
    // return a unique string 32 characters max
    // if posible include manufacturer and plugin identity
