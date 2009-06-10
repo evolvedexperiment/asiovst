@@ -37,7 +37,7 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TChebyshev1HighpassFilterAutomatable.Create;
+   FFilter[ch] := TChebyshev1HighpassFilter.Create(4);
    FFilter[ch].SetFilterValues(1000, 0, 1);
   end;
 (*
@@ -94,7 +94,7 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch])
-   then FFilter[ch].Order := max(2, 2 * round(0.5 * Value));
+   then FFilter[ch].Order := max(2, 2 * round(0.5 * Value)); // round(value); //
  if EditorForm is TFmChebyshev then
   with TFmChebyshev(EditorForm) do
    begin

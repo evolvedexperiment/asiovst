@@ -79,8 +79,8 @@ object ChebyshevLPModule: TChebyshevLPModule
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 694
-  Top = 85
+  Left = 1027
+  Top = 158
   Height = 150
   Width = 215
 end

@@ -19,7 +19,7 @@ type
     FFilterGain     : Double;
     FOrderInv       : Double;
     FPiHalfOrderInv : Double;
-    FCosOrderOffset : TComplexDouble;
+    FExpOrdPiHalf   : TComplexDouble;
     FTanW0          : Double;
     FCoeffs         : array [0..63] of Double;
     FState          : array [0..63] of Double;
@@ -225,7 +225,7 @@ begin
   begin
    FOrderInv := 1 / FOrder;
    FPiHalfOrderInv := PI * CHalf64 * FOrderInv;
-   GetSinCos(FPiHalfOrderInv, FCosOrderOffset.Im, FCosOrderOffset.Re);
+   GetSinCos(FPiHalfOrderInv, FExpOrdPiHalf.Im, FExpOrdPiHalf.Re);
    inherited;
   end
  else
@@ -272,26 +272,26 @@ var
   Cmplx       : TComplexDouble;
 begin
  if FOrder = 0 then exit;
- FFilterGain := sqr(FGainFactor);
+ FFilterGain := FGainFactorSquared; //sqr(FGainFactor);
  K := FTanW0;
  K2 := K * K;
+ Cmplx := FExpOrdPiHalf;
 
  i := 0;
- Cmplx := FCosOrderOffset;
  while i < Integer(FOrder) - 1 do
   begin
    a := 2 * Cmplx.Im * K; // 2 * sin((i + 1) * FPiHalfOrderInv) * K;
-   ComplexMultiply2Inplace(Cmplx, FCosOrderOffset);
+   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
 
-   t := 1 / (K2 + a + 1);
+   t := 1 / (a + 1 + K2);
    FFilterGain := FFilterGain * t * K2;
-   FCoeffs[i    ] := -2 * (K2 - 1) * t;
-   FCoeffs[i + 1] := (a - K2 - 1) * t;
+   FCoeffs[i    ] := 2 * (1 - K2) * t;
+   FCoeffs[i + 1] := (a - 1 - K2) * t;
    inc(i, 2);
   end;
  if i < Integer(FOrder) then
   begin
-   t := 1 / (K + 1);
+   t := 1 / (1 + K);
    FFilterGain := FFilterGain * t * K;
    FCoeffs[i] := (1 - K) * t;
   end;
@@ -393,31 +393,31 @@ asm
  {$IFDEF HandleDenormals}
  fadd CDenorm32
  {$ENDIF}
- fmul [eax.FFilterGain].Double
- mov ecx, [eax.FOrder]
- test ecx, ecx
- jz @End
- shr ecx, 1
- shl ecx, 2
- push ecx
+ fmul  [eax.FFilterGain].Double
+ mov   ecx, [eax.FOrder]
+ test  ecx, ecx
+ jz    @End
+ shr   ecx, 1
+ shl   ecx, 2
+ push  ecx
  jz @SingleStage
  @FilterLoop:
-  sub ecx, 4
-  fld st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld st(0)
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FState + ecx * 4 + 8].Double
-  fld st(3)
-  fadd st(0), st(0)
+  sub   ecx, 4
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
   faddp
-  fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
+  fxch  st(2)
   faddp
-  fstp [eax.FState + ecx * 4 + 8].Double
+  fstp  [eax.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:
@@ -461,11 +461,11 @@ begin
  K2 := K * K;
 
  i := 0;
- Cmplx := FCosOrderOffset;
+ Cmplx := FExpOrdPiHalf;
  while i < Integer(FOrder) - 1 do
   begin
    a := 2 * K * Cmplx.Im;
-   ComplexMultiply2Inplace(Cmplx, FCosOrderOffset);
+   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
 
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;

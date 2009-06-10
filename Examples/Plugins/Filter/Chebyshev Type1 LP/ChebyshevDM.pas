@@ -37,7 +37,7 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TChebyshev1LowpassFilterAutomatable.Create;
+   FFilter[ch] := TChebyshev1LowpassFilter.Create(4);
    FFilter[ch].SetFilterValues(1000, 0, 1);
   end;
 (*
@@ -79,11 +79,10 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch]) then FFilter[ch].Ripple := Value;
- if EditorForm is TFmChebyshev then
-  with TFmChebyshev(EditorForm) do
-   begin
-    UpdateRipple;
-   end;
+
+ // update GUI if necessary
+ if EditorForm is TFmChebyshev
+  then TFmChebyshev(EditorForm).UpdateRipple;
 end;
 
 procedure TChebyshevLPModule.ParamOrderChange(Sender: TObject;
@@ -93,12 +92,11 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch])
-   then FFilter[ch].Order := max(2, 2 * round(0.5 * Value));
- if EditorForm is TFmChebyshev then
-  with TFmChebyshev(EditorForm) do
-   begin
-    UpdateOrder;
-   end;
+   then FFilter[ch].Order := round(Value); // max(2, 2 * round(0.5 * Value));
+
+ // update GUI if necessary
+ if EditorForm is TFmChebyshev
+  then TFmChebyshev(EditorForm).UpdateOrder;
 end;
 
 procedure TChebyshevLPModule.ParamFrequencyChange(Sender: TObject;
@@ -109,11 +107,10 @@ begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch])
    then FFilter[ch].Frequency := Value;
- if EditorForm is TFmChebyshev then
-  with TFmChebyshev(EditorForm) do
-   begin
-    UpdateFrequency;
-   end;
+
+ // update GUI if necessary
+ if EditorForm is TFmChebyshev
+  then TFmChebyshev(EditorForm).UpdateFrequency;
 end;
 
 procedure TChebyshevLPModule.VSTModuleProcess(const Inputs,
