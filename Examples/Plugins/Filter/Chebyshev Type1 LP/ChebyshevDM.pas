@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilterChebyshev, DAV_VstWindowSizer;
+  DAV_DSPFilterChebyshev, DAV_DspFilterChebyshevType1, DAV_VstWindowSizer;
 
 type
   TChebyshevLPModule = class(TVSTModule)

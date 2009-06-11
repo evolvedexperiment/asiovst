@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspChebyshevFilter, DAV_DspFilter,
-  DAV_DspFilterBasics;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterBasics,
+  DAV_DspFilterChebyshev, DAV_DspFilterChebyshevType1;
 
 const
   CNumFrequencies = 32;

@@ -3,7 +3,8 @@ unit SEChebyshevFilterModule;
 interface
 
 uses
-  DAV_Common, DAV_DSPFilterChebyshev, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DSPFilterChebyshev,
+  DAV_DspFilterChebyshevType1, DAV_DspFilterChebyshevType2;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -99,7 +100,7 @@ type
   end;
 
   TSEAutomatebleXChebyshevFilterModule = class(TSEAutomatebleChebyshevFilterModule)
-  protected
+  public
     procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
   end;
 
