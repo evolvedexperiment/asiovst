@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspButterworthFilter;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth;
 
 type
   TLinkwitzRiley = class(TDspSampleRateDependent)

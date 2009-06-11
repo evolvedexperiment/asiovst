@@ -1,9 +1,8 @@
-unit DAV_DspChebyshevFilter;
+unit DAV_DspFilterChebyshev;
 
 interface
 
 {$I ..\DAV_Compiler.inc}
-{-$DEFINE PUREPASCAL}
 
 uses
   DAV_Common, DAV_DspFilter, DAV_Complex;
@@ -167,6 +166,14 @@ const
   CHalf32 : Single = 0.5;
   CHalf64 : Double = 0.5;
 
+{$IFDEF HandleDenormals}
+var
+  DenormRandom   : Single;
+const
+  CDenorm32      : Single = 1E-24;
+  CDenorm64      : Double = 1E-34;
+{$ENDIF}
+
 { TCustomChebyshevFilter }
 
 constructor TCustomChebyshevFilter.Create(const Order: Integer = 0);
@@ -274,6 +281,9 @@ constructor TCustomChebyshev1Filter.Create(const Order: Integer = 0);
 begin
  FFilterGain := 1;
  inherited Create(Order);
+ {$IFDEF HandleDenormals}
+ DenormRandom := Random;
+ {$ENDIF}
 end;
 
 class function TCustomChebyshev1Filter.GetMaxOrder: Cardinal;
@@ -389,7 +399,6 @@ begin
 end;
 
 function TCustomChebyshev1LowpassFilter.ProcessSample(const Input: Double): Double;
-{.$DEFINE PUREPASCAL}
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -714,56 +723,77 @@ begin
  for i := 0 to (FOrder div 2) - 1 do
   begin
    x := Result;
-   Result            :=      x                                + FState[2 * i];
-   FState[2 * i    ] := -2 * x + FCoeffs[2 * i    ] * Result  + FState[2 * i + 1];
+   Result            :=      x + FState[2 * i];
+   FState[2 * i    ] := -2 * x + FCoeffs[2 * i] * Result + FState[2 * i + 1];
    FState[2 * i + 1] :=      x + FCoeffs[2 * i + 1] * Result;
   end;
  if (FOrder mod 2) = 1 then
   begin
-   i := ((FOrder + 1) div 2) - 1;
+   i             := ((FOrder + 1) div 2) - 1;
    x             := Result;
-   Result        := x + FState[2 * i];
-   FState[2 * i] := x + FCoeffs[2 * i] * Result;
+   Result        :=  x + FState[2 * i];
+   FState[2 * i] := -x + FCoeffs[2 * i] * Result;
   end;
-end;
 {$ELSE}
 asm
- fld   Input.Double;
- fmul  [Self.FFilterGain].Double
- mov   ecx, [Self.FOrder]
+ fld  Input.Double
+
+ // eventually add denormal
+ {$IFDEF HandleDenormals}
+ mov  edx, DenormRandom
+ imul edx, DenormRandom, $08088405
+ inc  edx
+ shr  edx, 23
+ or   edx, $20000000
+ mov  DenormRandom, edx
+ fadd DenormRandom
+ {$ENDIF}
+
+ fmul  [eax.FFilterGain].Double
+ mov   ecx, [eax.FOrder]
  test  ecx, ecx
  jz    @End
- push  ecx
  shr   ecx, 1
- shl   ecx, 1
- @FilterLoopBiquad:
-  sub  ecx, 2
+ shl   ecx, 2
+ push  ecx
+ jz @SingleStage
+ @FilterLoop:
+  sub  ecx, 4
   fld  st(0)
-  fadd [self.FState + ecx * 8].Double
+  fadd [eax.FState + ecx * 4].Double
   fld  st(0)
   fld  st(0)
-  fmul [self.FCoeffs + ecx * 8].Double
-  fadd [self.FState + ecx * 8 + 8].Double
+  fmul [eax.FCoeffs + ecx * 4].Double
+  fadd [eax.FState + ecx * 4 + 8].Double
   fld  st(3)
   fadd st(0), st(0)
   fsubp
-  fstp [self.FState + ecx * 8].Double
-  fmul [self.FCoeffs + ecx * 8 + 8].Double
+  fstp [eax.FState + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch st(2)
   faddp
-  fstp [self.FState + ecx * 8 + 8].Double
- jnz @FilterLoopBiquad
- pop  ecx
- and  ecx, 1
- test  ecx, ecx
- jz    @End
+  fstp [eax.FState + ecx * 4 + 8].Double
+ ja @FilterLoop
 
- // add first order here
-
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [eax.FOrder]
+ jz @End
+  mov ecx, [eax.FOrder]
+  dec ecx
+  shl ecx, 1
+  fld st(0)
+  fadd [eax.FState + ecx * 4].Double
+  fld st(0)
+  fmul [eax.FCoeffs + ecx * 4].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp [eax.FState + ecx * 4].Double
  @End:
+ {$ENDIF}
 end;
-{$ENDIF}
 
 
 { TChebyshev1LowpassFilterAutomatable }
@@ -1311,6 +1341,7 @@ asm
 end;
 
 { TChebyshev2LowpassFilter }
+
 {$DEFINE PUREPASCAL}
 
 procedure TChebyshev2LowpassFilter.CalculateCoefficients;

@@ -1,4 +1,4 @@
-unit DAV_DspButterworthFilter;
+unit DAV_DSPFilterButterworth;
 
 interface
 
@@ -558,6 +558,7 @@ begin
 end;
 
 function TCustomButterworthHighPassFilter.ProcessSample(const Input: Single): Single;
+//{$DEFINE PUREPASCAL}
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -593,13 +594,13 @@ asm
  fadd DenormRandom
  {$ENDIF}
 
- fmul [eax.FFilterGain].Double
- mov  ecx, [eax.FOrder]
- test ecx, ecx
- jz @End
- shr ecx, 1
- shl ecx, 2
- push ecx
+ fmul  [eax.FFilterGain].Double
+ mov   ecx, [eax.FOrder]
+ test  ecx, ecx
+ jz    @End
+ shr   ecx, 1
+ shl   ecx, 2
+ push  ecx
  jz @SingleStage
  @FilterLoop:
   sub  ecx, 4

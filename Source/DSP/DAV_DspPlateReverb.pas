@@ -4,7 +4,7 @@ interface
 
 uses
   DAV_Common, DAV_DspCommon, DAV_DspDelayLines, DAV_DspFilter,
-  DAV_DspLFO, DAV_DspButterworthFilter;
+  DAV_DspLFO, DAV_DSPFilterButterworth;
 
 const
   CInternalSampleRate : Single = 29761;

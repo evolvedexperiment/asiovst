@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DspConvolution, DAV_DspButterworthFilter;
+  DAV_DspConvolution, DAV_DSPFilterButterworth;
 
 const
   CNumChannels = 2;

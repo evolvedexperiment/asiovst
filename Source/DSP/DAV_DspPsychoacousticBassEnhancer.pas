@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses 
-  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspButterworthFilter,
+  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
   DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type

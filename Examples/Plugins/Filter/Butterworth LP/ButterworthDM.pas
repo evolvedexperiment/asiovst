@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPButterworthFilter, DAV_VstWindowSizer;
+  DAV_DSPFilterButterworth, DAV_VstWindowSizer;
 
 type
   TButterworthLPModule = class(TVSTModule)

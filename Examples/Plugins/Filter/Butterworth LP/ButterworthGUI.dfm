@@ -92,6 +92,7 @@ object FmButterworth: TFmButterworth
       Position = 20000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object LbFrequency: TGuiLabel
       Left = 8
@@ -115,6 +116,7 @@ object FmButterworth: TFmButterworth
       Height = 64
       CircleColor = 1315880
       Color = 1315880
+      DefaultPosition = 4.000000000000000000
       DialImageIndex = -1
       LineColor = 10526927
       LineWidth = 2
@@ -128,6 +130,7 @@ object FmButterworth: TFmButterworth
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object LbOrder: TGuiLabel
       Left = 94

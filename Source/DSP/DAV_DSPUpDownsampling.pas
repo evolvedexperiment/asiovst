@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, DAV_Common, DAV_AudioData, DAV_DspFilter,
-  DAV_DSPButterworthFilter, DAV_DSPChebyshevFilter, DAV_DSPBesselFilter;
+  DAV_DSPFilterButterworth, DAV_DSPChebyshevFilter, DAV_DSPBesselFilter;
 
 type
   TDAVResampling = class(TAudioObject)

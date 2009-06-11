@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspGranularPitchshifter,
-  DAV_DspLightweightDynamics, DAV_DspButterworthFilter;
+  DAV_DspLightweightDynamics, DAV_DSPFilterButterworth;
 
 const
   CNumChannels = 2;

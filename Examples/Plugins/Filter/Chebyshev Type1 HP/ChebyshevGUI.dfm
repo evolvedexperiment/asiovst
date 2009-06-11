@@ -86,12 +86,14 @@ object FmChebyshev: TFmChebyshev
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialFrequencyChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object DialRipple: TGuiDial
       Left = 102
@@ -109,12 +111,14 @@ object FmChebyshev: TFmChebyshev
       Min = 0.001000000047497451
       NumGlyphs = 65
       OnChange = DialRippleChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 0.100000001490116100
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object LbFrequency: TGuiLabel
       Left = 8
@@ -154,18 +158,21 @@ object FmChebyshev: TFmChebyshev
       Height = 64
       CircleColor = 657940
       Color = 1315880
+      DefaultPosition = 4.000000000000000000
       DialImageIndex = -1
       LineColor = 10526927
       LineWidth = 2
       Max = 16.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object LbOrder: TGuiLabel
       Left = 182

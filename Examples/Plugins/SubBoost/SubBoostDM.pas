@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Forms, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule,
-  DAV_DSPButterworthFilter;
+  DAV_DSPFilterButterworth;
 
 type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);

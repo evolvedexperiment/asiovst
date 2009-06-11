@@ -1,10 +1,10 @@
-﻿unit LA1701DM;
+unit LA1701DM;
 
 interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPDynamics, DAV_DSPLevelingAmplifier, DAV_DspButterworthFilter;
+  DAV_DSPDynamics, DAV_DSPLevelingAmplifier, DAV_DSPFilterButterworth;
 
 type
   TLA1701DataModule = class(TVSTModule)

@@ -11,12 +11,14 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..5] of TSEModuleBaseClass = (
+  CModuleClasses : array [0..7] of TSEModuleBaseClass = (
     TSEStaticChebyshevFilterLPModule, TSEStaticChebyshevFilterHPModule,
     TSEControlableChebyshevFilterLPModule,
     TSEControlableChebyshevFilterHPModule,
     TSEAutomatebleChebyshevFilterLPModule,
-    TSEAutomatebleChebyshevFilterHPModule);
+    TSEAutomatebleChebyshevFilterHPModule,
+    TSEAutomatebleXChebyshevFilterLPModule,
+    TSEAutomatebleXChebyshevFilterHPModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin

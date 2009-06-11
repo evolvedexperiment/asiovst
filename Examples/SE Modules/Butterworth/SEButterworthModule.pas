@@ -3,7 +3,7 @@ unit SEButterworthModule;
 interface
 
 uses
-  DAV_Common, DAV_DSPButterworthFilter, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_DSPFilterButterworth, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer

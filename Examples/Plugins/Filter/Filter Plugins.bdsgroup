@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
   <PersonalityInfo>
     <Option>
@@ -14,8 +14,8 @@
       <Projects Name="BugpassLite.dll">Bugpass\BugpassLite.bdsproj</Projects>
       <Projects Name="ButterworthHP.dll">Butterworth HP\ButterworthHP.bdsproj</Projects>
       <Projects Name="ButterworthLP.dll">Butterworth LP\ButterworthLP.bdsproj</Projects>
-      <Projects Name="ChebyshevHP.dll">Chebyshev HP\ChebyshevHP.bdsproj</Projects>
-      <Projects Name="ChebyshevLP.dll">Chebyshev LP\ChebyshevLP.bdsproj</Projects>
+      <Projects Name="ChebyshevHP.dll">Chebyshev Type1 HP\ChebyshevHP.bdsproj</Projects>
+      <Projects Name="ChebyshevLP.dll">Chebyshev Type1 LP\ChebyshevLP.bdsproj</Projects>
       <Projects Name="GraphicEQ.dll">Graphic EQ\GraphicEQ.bdsproj</Projects>
       <Projects Name="LinearPhaseHP.dll">Linear Phase HP\LinearPhaseHP.bdsproj</Projects>
       <Projects Name="LinearPhaseLP.dll">Linear Phase LP\LinearPhaseLP.bdsproj</Projects>

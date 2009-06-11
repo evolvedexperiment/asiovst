@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPChebyshevFilter, DAV_VstWindowSizer;
+  DAV_DSPFilterChebyshev, DAV_VstWindowSizer;
 
 type
   TChebyshevHPModule = class(TVSTModule)
@@ -80,11 +80,10 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch]) then FFilter[ch].Ripple := Value;
- if EditorForm is TFmChebyshev then
-  with TFmChebyshev(EditorForm) do
-   begin
-    UpdateRipple;
-   end;
+
+ // update GUI if necessary
+ if EditorForm is TFmChebyshev
+  then TFmChebyshev(EditorForm).UpdateRipple;
 end;
 
 procedure TChebyshevHPModule.ParamOrderChange(Sender: TObject;
@@ -94,12 +93,11 @@ var
 begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch])
-   then FFilter[ch].Order := max(2, 2 * round(0.5 * Value)); // round(value); //
- if EditorForm is TFmChebyshev then
-  with TFmChebyshev(EditorForm) do
-   begin
-    UpdateOrder;
-   end;
+   then FFilter[ch].Order := round(value); //max(2, 2 * round(0.5 * Value)); //
+
+ // update GUI if necessary
+ if EditorForm is TFmChebyshev
+  then TFmChebyshev(EditorForm).UpdateOrder;
 end;
 
 procedure TChebyshevHPModule.ParamFrequencyChange(Sender: TObject;
@@ -110,11 +108,10 @@ begin
  for ch := 0 to numInputs - 1 do
   if assigned(FFilter[ch])
    then FFilter[ch].Frequency := Value;
- if EditorForm is TFmChebyshev then
-  with TFmChebyshev(EditorForm) do
-   begin
-    UpdateFrequency;
-   end;
+
+ // update GUI if necessary
+ if EditorForm is TFmChebyshev
+  then TFmChebyshev(EditorForm).UpdateFrequency;
 end;
 
 procedure TChebyshevHPModule.VSTModuleProcess(const Inputs,

@@ -91,7 +91,7 @@ implementation
 
 uses
   Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms,
-  DAV_VSTModuleWithDsp, DAV_DSPButterworthFilter, DAV_DSPChebyshevFilter,
+  DAV_VSTModuleWithDsp, DAV_DSPFilterButterworth, DAV_DSPFilterChebyshev,
   DAV_DSPBesselFilter;
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;

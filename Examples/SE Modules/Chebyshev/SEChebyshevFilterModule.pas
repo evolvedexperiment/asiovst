@@ -3,7 +3,7 @@ unit SEChebyshevFilterModule;
 interface
 
 uses
-  DAV_Common, DAV_DSPChebyshevFilter, DAV_SECommon, DAV_SEModule;
+  DAV_Common, DAV_DSPFilterChebyshev, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -92,6 +92,25 @@ type
   end;
 
   TSEAutomatebleChebyshevFilterHPModule = class(TSEAutomatebleChebyshevFilterModule)
+  protected
+    class function GetModueName: string; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+  end;
+
+  TSEAutomatebleXChebyshevFilterModule = class(TSEAutomatebleChebyshevFilterModule)
+  protected
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); override;
+  end;
+
+  TSEAutomatebleXChebyshevFilterLPModule = class(TSEAutomatebleXChebyshevFilterModule)
+  protected
+    class function GetModueName: string; override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+  end;
+
+  TSEAutomatebleXChebyshevFilterHPModule = class(TSEAutomatebleChebyshevFilterModule)
   protected
     class function GetModueName: string; override;
   public
@@ -253,7 +272,7 @@ begin
                   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
                  end;
   pinFrequency : FFilter.Frequency := 1E-5 + abs(1000 * FFrequency);
-      pinOrder : FFilter.Order     := 2 * (FOrder div 2);
+      pinOrder : FFilter.Order     := FOrder;
      pinRipple : FFilter.Ripple    := 10 * FRipple;
  end;
  inherited;
@@ -404,22 +423,19 @@ var
   Input  : PDAVSingleFixedArray;
   Output : PDAVSingleFixedArray;
   Freq   : PDAVSingleFixedArray;
-  Rippl  : PDAVSingleFixedArray;
+  Ripple : PDAVSingleFixedArray;
   Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
- Rippl  := PDAVSingleFixedArray(@FRipplBuffer[BufferOffset]);
+ Ripple := PDAVSingleFixedArray(@FRipplBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   if (Sample div 2 = 0) then
-    begin
-     FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
-     FFilter.Ripple    := 10 * Rippl[Sample];
-    end;
+   FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
+   FFilter.Ripple    := 10 * Ripple[Sample];
    Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
@@ -444,7 +460,7 @@ constructor TSEAutomatebleChebyshevFilterLPModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TChebyshev1LowpassFilterAutomatable.Create;
+ FFilter := TChebyshev1LowpassFilter.Create;
  FFilter.SetFilterValues(10000, 0, 0.1);
  FFilter.Order := FOrder;
 end;
@@ -460,7 +476,7 @@ constructor TSEAutomatebleChebyshevFilterHPModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FFilter := TChebyshev1HighpassFilterAutomatable.Create;
+ FFilter := TChebyshev1HighpassFilter.Create;
  FFilter.SetFilterValues(10000, 0, 0.1);
  FFilter.Order := FOrder;
 end;
@@ -468,6 +484,66 @@ end;
 class function TSEAutomatebleChebyshevFilterHPModule.GetModueName: string;
 begin
  result := 'Chebyshev Highpass (automatable)';
+end;
+
+{ TSEAutomatebleXChebyshevFilterModule }
+
+procedure TSEAutomatebleXChebyshevFilterModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Freq   : PDAVSingleFixedArray;
+  Ripple : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
+ Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ Freq   := PDAVSingleFixedArray(@FFreqBuffer[BufferOffset]);
+ Ripple := PDAVSingleFixedArray(@FRipplBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   if (Sample div 2 = 0) then
+    begin
+     FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
+     FFilter.Ripple    := 10 * Ripple[Sample];
+    end;
+   Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+  end;
+end;
+
+{ TSEAutomatebleXChebyshevFilterLPModule }
+
+constructor TSEAutomatebleXChebyshevFilterLPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TChebyshev1LowpassFilterAutomatable.Create;
+ FFilter.SetFilterValues(10000, 0, 0.1);
+ FFilter.Order := FOrder;
+end;
+
+class function TSEAutomatebleXChebyshevFilterLPModule.GetModueName: string;
+begin
+ result := 'Chebyshev Lowpass (automatable+)';
+end;
+
+{ TSEAutomatebleXChebyshevFilterHPModule }
+
+constructor TSEAutomatebleXChebyshevFilterHPModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TChebyshev1HighpassFilterAutomatable.Create;
+ FFilter.SetFilterValues(10000, 0, 0.1);
+ FFilter.Order := FOrder;
+end;
+
+class function TSEAutomatebleXChebyshevFilterHPModule.GetModueName: string;
+begin
+ result := 'Chebyshev Highpass (automatable+)';
 end;
 
 end.

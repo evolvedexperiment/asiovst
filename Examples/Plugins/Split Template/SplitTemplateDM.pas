@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
-  DAV_VSTCustomModule, DAV_DspButterworthFilter, DAV_DspUpDownsampling,
+  DAV_VSTCustomModule, DAV_DSPFilterButterworth, DAV_DspUpDownsampling,
   DAV_VstHost, DAV_DSPLFO, Themes;
 
 type

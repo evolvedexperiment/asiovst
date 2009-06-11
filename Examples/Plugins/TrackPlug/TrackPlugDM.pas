@@ -1,10 +1,10 @@
-﻿unit TrackPlugDM;
+unit TrackPlugDM;
 
 interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_DspFilter,
-  DAV_DspButterworthFilter, DAV_DspFilterBasics, DAV_DspDynamics,
+  DAV_DSPFilterButterworth, DAV_DspFilterBasics, DAV_DspDynamics,
   DAV_DspLightweightDynamics, Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
 
 type

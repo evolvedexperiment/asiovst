@@ -1,11 +1,11 @@
-﻿unit SmoothMultibandCompressorDM;
+unit SmoothMultibandCompressorDM;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspFilterLinkwitzRiley,
-  DAV_DspButterworthFilter, DAV_DspFilterLinearPhaseCrossover;
+  DAV_DSPFilterButterworth, DAV_DspFilterLinearPhaseCrossover;
 
 type
   TBandState = (bsBypass, bsMute, bsSmooth, bsClipped);

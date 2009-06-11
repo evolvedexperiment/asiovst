@@ -6,7 +6,7 @@ interface
 {$DEFINE OnlineFreqCalc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspButterworthFilter,
+  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DSPFilterButterworth,
   DAV_DspCorrelation, DAV_DspCepstrum;
 
 type
