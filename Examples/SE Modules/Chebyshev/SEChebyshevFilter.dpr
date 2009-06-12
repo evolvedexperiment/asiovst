@@ -5,20 +5,28 @@ uses
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEChebyshevFilterModule in 'SEChebyshevFilterModule.pas';
+  SEChebyshev1FilterModule in 'SEChebyshev1FilterModule.pas',
+  SEChebyshev2FilterModule in 'SEChebyshev2FilterModule.pas';
 
 {$E sem}
 {$R *.res}
 
 const
-  CModuleClasses : array [0..7] of TSEModuleBaseClass = (
-    TSEStaticChebyshevFilterLPModule, TSEStaticChebyshevFilterHPModule,
-    TSEControlableChebyshevFilterLPModule,
-    TSEControlableChebyshevFilterHPModule,
-    TSEAutomatebleChebyshevFilterLPModule,
-    TSEAutomatebleChebyshevFilterHPModule,
-    TSEAutomatebleXChebyshevFilterLPModule,
-    TSEAutomatebleXChebyshevFilterHPModule);
+  CModuleClasses : array [0..15] of TSEModuleBaseClass = (
+    TSEStaticChebyshev1FilterLPModule, TSEStaticChebyshev1FilterHPModule,
+    TSEControlableChebyshev1FilterLPModule,
+    TSEControlableChebyshev1FilterHPModule,
+    TSEAutomatebleChebyshev1FilterLPModule,
+    TSEAutomatebleChebyshev1FilterHPModule,
+    TSEAutomatebleXChebyshev1FilterLPModule,
+    TSEAutomatebleXChebyshev1FilterHPModule,
+    TSEStaticChebyshev2FilterLPModule, TSEStaticChebyshev2FilterHPModule,
+    TSEControlableChebyshev2FilterLPModule,
+    TSEControlableChebyshev2FilterHPModule,
+    TSEAutomatebleChebyshev2FilterLPModule,
+    TSEAutomatebleChebyshev2FilterHPModule,
+    TSEAutomatebleXChebyshev2FilterLPModule,
+    TSEAutomatebleXChebyshev2FilterHPModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
