@@ -21,8 +21,7 @@ type
     procedure ParameterIntensityChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterAddOriginalBassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAddOriginalBassChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
+    procedure ParameterAddOriginalBassChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FRenaissanceBass : array [0..1] of TResurrectionBass;
     FCriticalSection : TCriticalSection;

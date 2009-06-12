@@ -332,6 +332,20 @@ type
     property Threshold_dB;
   end;
 
+  TRCLimiter = class(TCustomLimiter)
+  protected
+    procedure ReleaseChanged; override;
+    procedure AttackChanged; override;
+  public
+    function ProcessSample(const Input: Double): Double; override;
+    function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+    function CharacteristicCurve(const InputLevel: Double): Double; override;
+  published
+    property AutoMakeUp;
+    property MakeUpGain_dB;
+    property Threshold_dB;
+  end;
+
   //////////////////////////////////////////////////////////////////////////////
   //                                                                          //
   //  TSoftKneeLimiter                                                        //
@@ -1243,15 +1257,51 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- if FPeak > FThreshold
-  then result := FThreshold else
- if FPeak < -FThreshold
-  then result := -FThreshold
-  else result := FPeak;
- result := FMakeUpGain * result;
+ result := Input * TranslatePeakToGain(FPeak);
 end;
 
 function TLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
+begin
+ if PeakLevel > FThreshold
+  then result := FThreshold / PeakLevel
+  else result := 1;
+ result := FMakeUpGain * result;
+end;
+
+{ TRCLimiter }
+
+procedure TRCLimiter.AttackChanged;
+begin
+ inherited;
+ Release := FAttack;
+end;
+
+procedure TRCLimiter.ReleaseChanged;
+begin
+ inherited;
+ Attack := FRelease;
+end;
+
+function TRCLimiter.CharacteristicCurve(const InputLevel: Double): Double;
+begin
+ if InputLevel > FThreshold
+  then result := FThreshold else
+ if InputLevel < -FThreshold
+  then result := -FThreshold
+  else result := InputLevel;
+ result := FMakeUpGain * result;
+end;
+
+function TRCLimiter.ProcessSample(const Input: Double): Double;
+begin
+ FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor;
+
+ if FPeak > FThreshold
+  then result := Input * FMakeUpGain * FThreshold / FPeak
+  else result := Input * FMakeUpGain;
+end;
+
+function TRCLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel > FThreshold
   then result := FThreshold / PeakLevel

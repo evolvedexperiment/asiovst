@@ -44,7 +44,7 @@ type
     FDrive          : Single;
     FHighpass       : TButterworthHighpassFilter;
     FHighpassSelect : THighpassSelect;
-    FLimiter        : TLightweightSoftKneeLimiter;
+    FLimiter        : TRCLimiter;
     FUpwardComp     : TLightweightSoftKneeUpwardCompressor;
 
     procedure DecayChanged; virtual;
@@ -71,7 +71,7 @@ type
 
   TCustomDownsampledHarmonicBass = class(TCustomHarmonicBass)
   private
-    FResamplingRatio : Single;
+    FResamplingRatio   : Single;
     FDownsamplePos     : Single;
     FLastInputSamples  : TDAV4SingleArray;
     FLastOutputSamples : TDAV4SingleArray;
@@ -245,9 +245,10 @@ begin
  FUpwardComp.Knee_dB := 6;
 
  // create & setup limiter
- FLimiter := TLightweightSoftKneeLimiter.Create;
- FLimiter.Knee_dB := 0;
+ FLimiter := TRCLimiter.Create;
+ FLimiter.Attack := 20;
  FLimiter.Release := 20;
+ FLimiter.Threshold_dB := 0;
  FLimiter.SampleRate := SampleRate;
 
  FCrossover := TButterworthSplitBandFilter.Create(3);
@@ -385,10 +386,9 @@ begin
 
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Harmonic := 0.5 * FUpwardComp.ProcessSample(
-         Limit(0.5 * FLimiter.ProcessSample(4 *
-         FHighpass.ProcessSample(
-         FDecay + Low * (1 + Low * -2 * FDecay)))));
+ Harmonic := Limit(0.5 * FLimiter.ProcessSample(4 *
+             FHighpass.ProcessSample(
+             FDecay + Low * (1 + Low * -2 * FDecay))));
 
  result := FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
 end;

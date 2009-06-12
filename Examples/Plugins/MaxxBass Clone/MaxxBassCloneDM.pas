@@ -8,8 +8,10 @@ uses
 
 type
   THarmonicBassModule = class(TVSTModule)
-    procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -26,8 +28,6 @@ type
     procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterListenDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterHighpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FHarmonicBass : array [0..1] of TCustomHarmonicBass;
     FCriticalSection : TCriticalSection;
@@ -41,6 +41,16 @@ uses
   Math, DAV_Approximations, MaxxBassCloneGUI;
 
 {$R *.DFM}
+
+procedure THarmonicBassModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure THarmonicBassModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure THarmonicBassModule.VSTModuleOpen(Sender: TObject);
 var
@@ -131,16 +141,6 @@ var
 begin
  for Channel := 0 to Length(FHarmonicBass) - 1
   do FreeAndNil(FHarmonicBass[Channel]);
-end;
-
-procedure THarmonicBassModule.VSTModuleCreate(Sender: TObject);
-begin
- FCriticalSection := TCriticalSection.Create;
-end;
-
-procedure THarmonicBassModule.VSTModuleDestroy(Sender: TObject);
-begin
- FreeAndNil(FCriticalSection);
 end;
 
 procedure THarmonicBassModule.VSTModuleEditOpen(Sender: TObject;
