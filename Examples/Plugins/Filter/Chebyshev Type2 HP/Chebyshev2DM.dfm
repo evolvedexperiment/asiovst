@@ -72,6 +72,22 @@ object Chebyshev2HPModule: TChebyshev2HPModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Correct Frequency'
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Correct'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterCorrectFrequencyChange
+      OnCustomParameterDisplay = ParameterOnOffDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

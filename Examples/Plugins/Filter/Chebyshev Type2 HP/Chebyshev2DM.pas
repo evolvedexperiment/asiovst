@@ -17,6 +17,10 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamStopbandChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterCorrectFrequencyChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterOnOffDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FFilter  : array [0..1] of TCustomChebyshev2HighpassFilter;
     FResizer : TVstWindowSizer;
@@ -98,6 +102,24 @@ begin
  // update GUI if necessary
  if EditorForm is TFmChebyshev2
   then TFmChebyshev2(EditorForm).UpdateOrder;
+end;
+
+procedure TChebyshev2HPModule.ParameterOnOffDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] > 0.5
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
+end;
+
+procedure TChebyshev2HPModule.ParameterCorrectFrequencyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to numInputs - 1 do
+  if assigned(FFilter[ch])
+   then FFilter[ch].FixFrequency := Value > 0.5;
 end;
 
 procedure TChebyshev2HPModule.ParamFrequencyChange(Sender: TObject;
