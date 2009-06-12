@@ -31,6 +31,7 @@ type
     procedure SampleRateChanged; virtual;
     procedure FrequencyChanged; virtual;
     procedure GainChanged; virtual;
+    procedure Changed; virtual;
 
     // Order
     function GetOrder: Cardinal; virtual; abstract;
@@ -269,18 +270,23 @@ begin
  Imaginary := Complex64.Im;
 end;
 
+procedure TCustomFilter.Changed;
+begin
+ if assigned(FOnChange) then FOnChange(Self);
+end;
+
 procedure TCustomFilter.FrequencyChanged;
 begin
  CalculateW0;
  CalculateCoefficients;
- if assigned(FOnChange) then FOnChange(Self);
+ Changed;
 end;
 
 procedure TCustomFilter.GainChanged;
 begin
  CalculateGainFactor;
  CalculateCoefficients;
- if assigned(FOnChange) then FOnChange(Self);
+ Changed;
 end;
 
 procedure TCustomFilter.GetIR(ImpulseResonse: TDAVSingleDynArray);
@@ -338,7 +344,7 @@ procedure TCustomFilter.SampleRateChanged;
 begin
  CalculateW0;
  CalculateCoefficients;
- if assigned(FOnChange) then FOnChange(Self);
+ Changed;
 end;
 
 procedure TCustomFilter.SetFrequency(Value: Double);
@@ -391,6 +397,7 @@ end;
 procedure TCustomOrderFilter.OrderChanged;
 begin
  CalculateCoefficients;
+ Changed;
 end;
 
 procedure TCustomOrderFilter.SetOrder(const Value: Cardinal);
@@ -641,7 +648,7 @@ procedure TCustomBandwidthIIRFilter.BandwidthChanged;
 begin
  CalculateAlpha;
  CalculateCoefficients;
- if assigned(FOnChange) then FOnChange(Self);
+ Changed;
 end;
 
 procedure TCustomBandwidthIIRFilter.CalculateW0;

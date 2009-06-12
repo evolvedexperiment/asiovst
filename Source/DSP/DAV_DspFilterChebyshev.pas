@@ -87,6 +87,7 @@ begin
    FOrderInv := 1;
    FFilterGain := 1;
   end;
+ Changed; 
 end;
 
 procedure TCustomChebyshevFilter.CalculateExpOrdPiHalf;

@@ -47,13 +47,13 @@ begin
 
  // Initial Parameters
  Parameter[0] := 1000;
- Parameter[1] := 1;
+ Parameter[1] := -24;
  Parameter[2] := 4;
 
  with Programs[0] do
   begin
    Parameter[0] := 1000;
-   Parameter[1] := 1;
+   Parameter[1] := -24;
    Parameter[2] := 4;
   end;
 end;
