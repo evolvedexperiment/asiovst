@@ -72,6 +72,14 @@ learn how this software works as it will save you plenty of time in the design
 stage.
 
 
+License
+-------
+
+The license of this project is a dual license of either LGPL or MPL. In order
+to work with Lazarus the LGPL that holds here is the same as the (modified) 
+LGPL used for Lazarus.
+
+
 Comments
 --------
 
