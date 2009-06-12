@@ -10,28 +10,30 @@ type
   TStitchType = (stHorizontal, stVertical);
   TFmKnobGrabber = class(TForm)
     MainMenu: TMainMenu;
-    MIFile: TMenuItem;
-    MIExit: TMenuItem;
-    N1: TMenuItem;
-    MIOpen: TMenuItem;
-    VstHost: TVstHost;
-    OpenDialog: TOpenDialog;
-    MIGrabKnobs: TMenuItem;
-    PnGUI: TPanel;
-    MIStitch: TMenuItem;
-    MIHorizontalStitch: TMenuItem;
-    MIVerticalStitch: TMenuItem;
     MIAutoStitch: TMenuItem;
+    MIExit: TMenuItem;
+    MIFile: TMenuItem;
+    MIGrabKnobs: TMenuItem;
+    MIHorizontalStitch: TMenuItem;
+    MIOpen: TMenuItem;
+    MIStitch: TMenuItem;
+    MIVerticalStitch: TMenuItem;
+    N1: TMenuItem;
+    OpenDialog: TOpenDialog;
+    PnGUI: TPanel;
+    VstHost: TVstHost;
+    procedure FormCreate(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure MIGrabKnobsClick(Sender: TObject);
   private
-    FFileName : TFileName;
+    FFileName             : TFileName;
+    FCheckParameterString : Boolean;
     procedure LoadVstPlugin(FileName: TFileName);
     function FindKnobBounds(ParameterNo: Integer): TRect;
     procedure GrabKnob(ParameterNo: Integer; rct: TRect; FileName: string);
   public
+    property CheckParameterString: Boolean read FCheckParameterString;
   end;
 
 var
@@ -46,6 +48,7 @@ uses
 
 procedure TFmKnobGrabber.FormCreate(Sender: TObject);
 begin
+ FCheckParameterString := True;
  if FileExists(ParamStr(1))
   then LoadVstPlugin(ParamStr(1));
 end;
@@ -83,6 +86,7 @@ function TFmKnobGrabber.FindKnobBounds(ParameterNo: Integer): TRect;
 var
   Bmp   : array [0..2] of TBitmap;
   Param : Single;
+  PrmSt : array [0..1] of string;
   rct   : TRect;
   x, y  : Integer;
   Scln  : PIntegerArray;
@@ -123,6 +127,16 @@ begin
        Parameter[ParameterNo] := Param;
        EditIdle; Idle;
        Application.ProcessMessages;
+       if CheckParameterString then
+        begin
+         PrmSt[0] := ParameterDisplay[ParameterNo];
+         if (PrmSt[0] = PrmSt[1]) then
+          begin
+           Param := Param + 0.001;
+           Continue;
+          end;
+         PrmSt[1] := PrmSt[0];
+        end;
        RenderEditorToBitmap(Bmp[1]);
        Application.ProcessMessages;
 
@@ -172,6 +186,7 @@ var
   Png   : TPNGObject;
   Bmp   : array [0..2] of TBitmap;
   Param : Single;
+  PrmSt : array [0..1] of string;
   vrct  : TRect;
   x, y  : Integer;
   Scln  : array [0..1] of PIntegerArray;
@@ -220,12 +235,18 @@ begin
       Bmp[1].Canvas.CopyRect(Rect(0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top), Bmp[0].Canvas, rct);
       Png.Assign(Bmp[1]);
 
-      Param := 0.001;
+      Param := 0.001; PrmSt[1] := '';
       while Param <= 1 do
        begin
         Parameter[ParameterNo] := Param;
         EditIdle; Idle;
         Application.ProcessMessages;
+        if CheckParameterString then
+         begin
+          PrmSt[0] := ParameterDisplay[ParameterNo];
+          if (PrmSt[0] = PrmSt[1]) then goto next;
+          PrmSt[1] := PrmSt[0];
+         end;
         RenderEditorToBitmap(Bmp[0]);
         Application.ProcessMessages;
 
@@ -244,14 +265,15 @@ begin
              case sttyp of
               stHorizontal :
                begin
-                Png.SetSize(Png.Width + (rct.Right - rct.Left), Png.Height);
+
+                Png.Resize(Png.Width + (rct.Right - rct.Left), Png.Height);
                 Png.Canvas.CopyRect(rect(Png.Width - (rct.Right - rct.Left), 0, Png.Width, Png.Height),
                   Bmp[2].Canvas, Rect(0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top));
                 Bmp[1].Assign(Bmp[2]);
                end;
               stVertical :
                begin
-                Png.SetSize(Png.Width, Png.Height + (rct.Bottom - rct.Top));
+                Png.Resize(Png.Width, Png.Height + (rct.Bottom - rct.Top));
                 Png.Canvas.CopyRect(rect(0, Png.Height - (rct.Bottom - rct.Top), Png.Width, Png.Height),
                   Bmp[2].Canvas, Rect(0, 0, rct.Right - rct.Left, rct.Bottom - rct.Top));
                 Bmp[1].Assign(Bmp[2]);
