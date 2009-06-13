@@ -72,7 +72,31 @@ type
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
+  TSELightweightLowshelfAModule = class(TCustomSEGainFrequencyModule)
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  TSELightweightLowshelfBModule = class(TCustomSEGainFrequencyModule)
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
   TSELightweightHighshelfModule = class(TCustomSEGainFrequencyModule)
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  TSELightweightHighshelfAModule = class(TCustomSEGainFrequencyModule)
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+  end;
+
+  TSELightweightHighshelfBModule = class(TCustomSEGainFrequencyModule)
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -453,6 +477,64 @@ end;
 
 { TSELightweightHighshelfModule }
 
+{ TSELightweightLowshelfAModule }
+
+constructor TSELightweightLowshelfAModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TAutomatableLowShelfFilter.Create;
+ FFilter.Frequency := 1000;
+ FFilter.Gain      := 0;
+ FFilter.Bandwidth := 1;
+end;
+
+class procedure TSELightweightLowshelfAModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Lightweight Filter Lowshelf A';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Lightweight Filter Lowshelf A';
+  end;
+end;
+
+{ TSELightweightLowshelfBModule }
+
+constructor TSELightweightLowshelfBModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TAutomatableLowShelfFilter.Create;
+ FFilter.Frequency := 1000;
+ FFilter.Gain      := 0;
+ FFilter.Bandwidth := 1;
+end;
+
+class procedure TSELightweightLowshelfBModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Lightweight Filter Lowshelf B';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Lightweight Filter Lowshelf B';
+  end;
+end;
+
 constructor TSELightweightHighshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
  inherited;
@@ -475,6 +557,64 @@ begin
    // this is used internally by SE to identify the plug.
    // No two plugs may have the same id.
    ID := 'DAV Lightweight Filter Highshelf';
+  end;
+end;
+
+{ TSELightweightHighshelfAModule }
+
+constructor TSELightweightHighshelfAModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TAutomatableHighshelfAFilter.Create;
+ FFilter.Frequency := 1000;
+ FFilter.Gain      := 0;
+ FFilter.Bandwidth := 1;
+end;
+
+class procedure TSELightweightHighshelfAModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Lightweight Filter Highshelf A';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Lightweight Filter Highshelf A';
+  end;
+end;
+
+{ TSELightweightHighshelfBModule }
+
+constructor TSELightweightHighshelfBModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ FFilter := TAutomatableHighshelfBFilter.Create;
+ FFilter.Frequency := 1000;
+ FFilter.Gain      := 0;
+ FFilter.Bandwidth := 1;
+end;
+
+class procedure TSELightweightHighshelfBModule.GetModuleProperties(
+  Properties: PSEModuleProperties);
+begin
+ inherited GetModuleProperties(Properties);
+ with Properties^ do
+  begin
+   // describe the plugin, this is the name the end-user will see.
+   Name := 'Lightweight Filter Highshelf B';
+
+   // return a unique string 32 characters max
+   // if posible include manufacturer and plugin identity
+   // this is used internally by SE to identify the plug.
+   // No two plugs may have the same id.
+   ID := 'DAV Lightweight Filter Highshelf B';
   end;
 end;
 

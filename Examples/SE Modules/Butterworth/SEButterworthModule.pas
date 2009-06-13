@@ -49,13 +49,13 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
-  TSEStaticControlableButterworthLPModule = class(TSEStaticButterworthLPModule)
+  TSEControlableButterworthLPModule = class(TSEStaticButterworthLPModule)
   public
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
-  TSEStaticControlableButterworthHPModule = class(TSEStaticButterworthHPModule)
+  TSEControlableButterworthHPModule = class(TSEStaticButterworthHPModule)
   public
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -359,16 +359,16 @@ begin
  end;
 end;
 
-{ TSEStaticControlableButterworthLPModule }
+{ TSEControlableButterworthLPModule }
 
-function TSEStaticControlableButterworthLPModule.GetPinProperties(
+function TSEControlableButterworthLPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
  if index in [2..3] then Properties^.Direction := drIn;
 end;
 
-class procedure TSEStaticControlableButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEControlableButterworthLPModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do
@@ -384,16 +384,16 @@ begin
   end;
 end;
 
-{ TSEStaticControlableButterworthHPModule }
+{ TSEControlableButterworthHPModule }
 
-function TSEStaticControlableButterworthHPModule.GetPinProperties(
+function TSEControlableButterworthHPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
  if index in [2..3] then Properties^.Direction := drIn;
 end;
 
-class procedure TSEStaticControlableButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEControlableButterworthHPModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do

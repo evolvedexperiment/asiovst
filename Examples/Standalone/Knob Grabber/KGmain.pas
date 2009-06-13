@@ -120,7 +120,7 @@ begin
      Bmp[1].Assign(Bmp[0]);
      Bmp[1].Canvas.CopyMode := cmSrcInvert;
 
-     Param := 0.001;
+     Param := 0.001; PrmSt[1] := '';
      while Param <= 1 do
       begin
        // change parameter and idle to ensure drawing

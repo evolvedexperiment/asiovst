@@ -3,7 +3,7 @@ unit SECorrelationMeterGUI;
 interface
 
 uses
-  Windows, Classes, Controls, DAV_SEModule, DAV_SEGUI, DAV_CorrelationMeter,
+  Windows, Classes, Controls, DAV_SEModule, DAV_SEGUI, DAV_GuiCorrelationMeter,
   SECorrelationMeterModule;
 
 const
@@ -37,7 +37,7 @@ begin
  CallHost(seGuiHostSetWindowSize, 64, 64);
  CallHost(seGuiHostSetWindowType, 1); // 0 = Draw on SE's window (default), 1 = HWND based
 
- CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE));
+// CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE));
 end;
 
 destructor TSECorrelationMeterGui.Destroy;
@@ -55,8 +55,6 @@ begin
 end;
 
 procedure TSECorrelationMeterGui.GuiWindowOpen(WI: PSEWndInfo);
-var
-  H  : HWnd;
 begin
  FCorrelationMeter := TGuiCorrelationMeter.Create(nil);
  with FCorrelationMeter do

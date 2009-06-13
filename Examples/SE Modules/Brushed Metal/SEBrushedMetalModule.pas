@@ -59,10 +59,10 @@ procedure TSEBrushedMetalModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
  case CurrentPin.PinID of
-  0 : FHue := f_Limit(FHue, 0, 1);
-  1 : FLuminance := f_Limit(FLuminance, 0, 1);
-  2 : FSaturation := f_Limit(FSaturation, 0, 1);
-  3 : FAmount := f_Limit(FAmount, 0, 1);
+  0 : FHue := Limit(FHue, 0, 1);
+  1 : FLuminance := Limit(FLuminance, 0, 1);
+  2 : FSaturation := Limit(FSaturation, 0, 1);
+  3 : FAmount := Limit(FAmount, 0, 1);
  end;
 end;
 

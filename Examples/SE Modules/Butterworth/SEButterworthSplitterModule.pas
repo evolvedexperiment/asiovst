@@ -40,7 +40,7 @@ type
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
   end;
 
-  TSEStaticControlableButterworthSplitterModule = class(TSEStaticButterworthSplitterModule)
+  TSEControlableButterworthSplitterModule = class(TSEStaticButterworthSplitterModule)
   public
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
@@ -249,16 +249,16 @@ begin
  inherited;
 end;
 
-{ TSEStaticControlableButterworthSplitterModule }
+{ TSEControlableButterworthSplitterModule }
 
-function TSEStaticControlableButterworthSplitterModule.GetPinProperties(
+function TSEControlableButterworthSplitterModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  result := inherited GetPinProperties(Index, Properties);
  if index in [2..3] then Properties^.Direction := drIn;
 end;
 
-class procedure TSEStaticControlableButterworthSplitterModule.GetModuleProperties(Properties: PSEModuleProperties);
+class procedure TSEControlableButterworthSplitterModule.GetModuleProperties(Properties: PSEModuleProperties);
 begin
  inherited GetModuleProperties(Properties);
  with Properties^ do

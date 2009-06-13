@@ -12,15 +12,18 @@ uses
 {$R *.res}
 
 const
-  CModuleClasses : array [0..17] of TSEModuleBaseClass = (
+  CModuleClasses : array [0..25] of TSEModuleBaseClass = (
     TSEBasicLowpassModule, TSEBasicHighpassModule, TSEBasicBandpassModule,
-    TSEBasicNotchModule, TSEBasicLowshelfModule, TSEBasicHighshelfModule,
-    TSEBasicPeakModule, TSEBasicAllpassModule, TSEBasicShapeModule,
-    TSELightweightLowpassModule, TSELightweightHighpassModule,
-    TSELightweightBandpassModule, TSELightweightNotchModule,
-    TSELightweightLowshelfModule, TSELightweightHighshelfModule,
-    TSELightweightPeakModule, TSELightweightAllpassModule,
-    TSELightweightShapeModule);
+    TSEBasicNotchModule, TSEBasicLowshelfModule, TSEBasicLowshelfAModule,
+    TSEBasicLowshelfBModule, TSEBasicHighshelfModule, TSEBasicHighshelfAModule,
+    TSEBasicHighshelfBModule, TSEBasicPeakModule, TSEBasicAllpassModule,
+    TSEBasicShapeModule, TSELightweightLowpassModule,
+    TSELightweightHighpassModule, TSELightweightBandpassModule,
+    TSELightweightNotchModule, TSELightweightLowshelfModule,
+    TSELightweightLowshelfAModule, TSELightweightLowshelfBModule,
+    TSELightweightHighshelfModule, TSELightweightHighshelfAModule,
+    TSELightweightHighshelfBModule, TSELightweightPeakModule,
+    TSELightweightAllpassModule, TSELightweightShapeModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
