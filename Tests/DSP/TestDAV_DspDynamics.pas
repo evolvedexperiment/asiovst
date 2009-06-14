@@ -258,7 +258,8 @@ begin
  with FSimpleDirectGate do
   begin
    Threshold_dB := -10;
-   CheckTrue(abs(TranslatePeakToGain(0.5) - 0.5) < 1E-15);
+   CheckTrue(abs(TranslatePeakToGain(0.5) - 1) < 1E-15);
+   CheckTrue(abs(TranslatePeakToGain(0.25)) < 1E-15);
   end;
 end;
 
@@ -305,9 +306,9 @@ begin
  with FSoftDirectGate do
   begin
    Threshold_dB := -6;
-   CheckEquals(ProcessSample(0), 0);
-   CheckEquals(ProcessSample(1), 1);
-   CheckEquals(ProcessSample(0.1), 0);
+   CheckEquals(ProcessSample(0), 0, 'Error: Processing silence <> 0');
+   CheckTrue(abs(ProcessSample(1) - 1) < 1E-1);
+   CheckTrue(abs(ProcessSample(0.01)) < 1E-3);
   end;
 end;
 
@@ -319,9 +320,9 @@ begin
    InputSample(0);
    CheckEquals(GainSample(0), 0);
    InputSample(1);
-   CheckEquals(GainSample(1), 1);
+   CheckTrue(abs(GainSample(1) - 1) < 1E-1);
    InputSample(0.1);
-   CheckEquals(GainSample(1), 0);
+   CheckTrue(abs(ProcessSample(0.01)) < 1E-3);
   end;
 end;
 
@@ -330,7 +331,8 @@ begin
  with FSoftDirectGate do
   begin
    Threshold_dB := -10;
-   CheckTrue(abs(TranslatePeakToGain(0.5) - 0.5) < 1E-15);
+   CheckTrue(abs(TranslatePeakToGain(0.5) - 1) < 1E-1);
+   CheckTrue(abs(TranslatePeakToGain(0.01)) < 1E-3);
   end;
 end;
 

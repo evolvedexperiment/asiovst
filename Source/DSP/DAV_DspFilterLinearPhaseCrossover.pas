@@ -220,6 +220,8 @@ begin
   begin
    FStates[0]^[Tap - 1] := FStates[0]^[Tap] + Input * FFilterKernel^[Tap];
    FStates[1]^[Tap - 1] := FStates[1]^[Tap] - Input * FFilterKernel^[Tap];
+   if Tap = FFilterLength div 2
+    then FStates[1]^[Tap - 1] := FStates[1]^[Tap - 1] + Input
   end;
 end;
 

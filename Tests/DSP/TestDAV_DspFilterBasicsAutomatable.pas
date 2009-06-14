@@ -159,9 +159,9 @@ begin
  with FAutomatableGainFilter do
   begin
    Gain := Amp_to_dB(CHalf32);
-   CheckEquals(ProcessSample(0.0), 0);
-   CheckTrue(abs(ProcessSample(CHalf32) - dB_to_Amp(Gain) * CHalf32) < 1E-9, 'ProcessSample(0.5)  <> 0.5');
-   CheckTrue(abs(ProcessSample(1.0) - dB_to_Amp(Gain)) < 1E-9, 'ProcessSample(1)  <> 1');
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(abs(ProcessSample(CHalf32) - dB_to_Amp(Gain) * CHalf32) < 1E-7, 'ProcessSample(0.5)  <> 0.5');
+   CheckTrue(abs(ProcessSample(1.0) - dB_to_Amp(Gain)) < 1E-7, 'ProcessSample(1)  <> 1');
   end;
 end;
 

@@ -121,7 +121,7 @@ end;
 
 function TAutomatableGainFilter.ProcessSample(const Input: Double): Double;
 begin
- result := Input * sqr(FGainFactorSquared);
+ result := Input * FGainFactorSquared;
 end;
 
 function TAutomatableGainFilter.ProcessSampleASM: Double;

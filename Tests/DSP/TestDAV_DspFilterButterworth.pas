@@ -342,8 +342,7 @@ begin
    end;
 
   // Calculate filter
-  with FButterworthSplitBandFilter
-   do ReturnValue := MagnitudeSquared(Frequency);
+  with FButterworthSplitBandFilter do ReturnValue := MagnitudeSquared(Frequency);
 
   // Validate results
   CheckTrue(abs(0.5 - ReturnValue) < 1E-15);

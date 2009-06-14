@@ -47,8 +47,9 @@ end;
 
 procedure TestTLinearPhaseCrossover.TestProcessSampleSingle;
 var
-  High  : Single;
-  Low   : Single;
+  High   : Single;
+  Low    : Single;
+  Sample : Integer;
 begin
  with FLinearPhaseCrossover do
   begin
@@ -56,8 +57,13 @@ begin
    Frequency  := 1000;
    FilterLength := 64;
    ProcessSample(1, Low, High);
-   CheckTrue(Low > 0, 'Low is positive');
-   CheckTrue(High > 0, 'High is positive');
+   CheckTrue((Low = 0) and (High = 0), 'First sample output <> 0');
+
+   for Sample := 0 to FilterLength div 2 - 1
+    do ProcessSample(0, Low, High);
+
+   CheckTrue(Low > 0, 'Low is negative');
+   CheckTrue(High > 0, 'High is negative');
   end;
 end;
 
@@ -65,6 +71,7 @@ procedure TestTLinearPhaseCrossover.TestProcessSampleDouble;
 var
   High  : Double;
   Low   : Double;
+  Sample : Integer;
 begin
  with FLinearPhaseCrossover do
   begin
@@ -72,8 +79,13 @@ begin
    Frequency  := 1000;
    FilterLength := 64;
    ProcessSample(1, Low, High);
-   CheckTrue(Low > 0, 'Low is positive');
-   CheckTrue(High > 0, 'High is positive');
+   CheckTrue((Low = 0) and (High = 0), 'First sample output <> 0');
+
+   for Sample := 0 to FilterLength div 2 - 1
+    do ProcessSample(0, Low, High);
+
+   CheckTrue(Low > 0, 'Low is negative');
+   CheckTrue(High > 0, 'High is negative');
   end;
 end;
 
