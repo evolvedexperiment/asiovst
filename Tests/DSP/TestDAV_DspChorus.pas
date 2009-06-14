@@ -104,7 +104,7 @@ begin
  ReturnValue := FDspChorus32.Process(Input);
 
  // Validate method results
- CheckTrue(ReturnValue <> 0);
+ CheckTrue(ReturnValue = 0);
 
  // Test chorus process series
  Input := 0;
@@ -196,7 +196,7 @@ begin
  ReturnValue := FDspChorus64.Process(Input);
 
  // Validate method results
- CheckTrue(ReturnValue <> 0);
+ CheckTrue(ReturnValue = 0);
 
  // Test chorus process series
  Input := 0;

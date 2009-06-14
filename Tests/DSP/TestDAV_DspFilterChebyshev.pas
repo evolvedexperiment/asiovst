@@ -14,7 +14,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  TestFramework, DAV_Complex, DAV_DSPFilterChebyshev, DAV_DspFilter, DAV_Common;
+  TestFramework, DAV_Common, DAV_Complex, DAV_DspFilter,
+  DAV_DSPFilterChebyshev, DAV_DSPFilterChebyshevType1;
 
 type
   // Test methods for class TChebyshev1LowpassFilter
