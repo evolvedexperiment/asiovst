@@ -1,4 +1,4 @@
-unit TestDAV_DspChebyshevFilter;
+unit TestDAV_DSPFilterChebyshev;
 {
 
   Delphi DUnit Testfall
@@ -14,7 +14,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  TestFramework, DAV_Complex, DAV_DspChebyshevFilter, DAV_DspFilter, DAV_Common;
+  TestFramework, DAV_Complex, DAV_DSPFilterChebyshev, DAV_DspFilter, DAV_Common;
 
 type
   // Test methods for class TChebyshev1LowpassFilter

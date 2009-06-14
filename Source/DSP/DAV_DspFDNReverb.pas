@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter, 
+  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter,
   DAV_DspFeedbackDelayNetwork, DAV_DspVibrato;
 
 type
@@ -13,7 +13,6 @@ type
   protected
     FCoeffs : array [0..1] of Double;
     FState  : Double;
-    procedure CalculateW0; override;
   public
     constructor Create; override;
     function Imaginary(const Frequency: Double): Double; override;
@@ -173,13 +172,6 @@ begin
  PInt64(@FState)^ := 0;
 end;
 
-procedure TDampingFilter.CalculateW0;
-begin
- fW0 := 2 * Pi * fSRR * (fFrequency);
- fSinW0 := sin(fW0);
- if fW0 > 3.1 then fW0 := 3.1;
-end;
-
 procedure TDampingFilter.SetFilterValues(const AFrequency, AGain : Single);
 const
   ln10_0025 : Double = 5.7564627325E-2;
@@ -269,7 +261,7 @@ procedure TDampingFilter.CalculateCoefficients;
 var
   K, t : Double;
 begin
- K := tan(fW0 * 0.5);
+ K := tan(FW0 * 0.5);
  t := 1 / (K + 1);
  FCoeffs[0] := K * t;
  FCoeffs[1] := (1 - K) * t;

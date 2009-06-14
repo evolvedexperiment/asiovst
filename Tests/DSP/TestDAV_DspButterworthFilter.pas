@@ -1,4 +1,4 @@
-unit TestDAV_DspButterworthFilter;
+unit TestDAV_DSPFilterButterworth;
 {
 
   Delphi DUnit Testfall
@@ -12,7 +12,7 @@ unit TestDAV_DspButterworthFilter;
 interface
 
 uses
-  TestFramework, DAV_DspButterworthFilter, DAV_DspFilter, DAV_Common;
+  TestFramework, DAV_DSPFilterButterworth, DAV_DspFilter, DAV_Common;
 type
   // Test methods for class TButterworthFilter
 

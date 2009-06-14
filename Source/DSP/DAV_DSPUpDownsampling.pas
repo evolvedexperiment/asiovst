@@ -5,11 +5,12 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_AudioData, DAV_DspFilter,
-  DAV_DSPFilterButterworth, DAV_DSPChebyshevFilter, DAV_DSPBesselFilter;
+  Classes, SysUtils, DAV_Common, DAV_DspCommon, DAV_DspFilter,
+  DAV_DSPFilterButterworth, DAV_DSPFilterChebyshev, DAV_DSPFilterChebyshevType1,
+  DAV_DSPFilterChebyshevType2, DAV_DSPBesselFilter;
 
 type
-  TDAVResampling = class(TAudioObject)
+  TDAVResampling = class(TDspObject)
   private
     FFilterClass : TOrderFilterClass;
     procedure SetFactor(const Value: Integer);
@@ -29,7 +30,7 @@ type
     procedure TransitionBandwidthChanged; virtual;
     procedure UpdateFilter; virtual; abstract;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; virtual;
     property FilterClass: TOrderFilterClass read FFilterClass write SetFilterClass;
   published
     property Factor: Integer read FFactor write SetFactor;
@@ -47,7 +48,7 @@ type
     procedure SampleRateChanged; override;
     procedure UpdateFilter; override;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
     procedure Upsample32(Input: Single; Output: PDAVSingleFixedArray);
     procedure Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
@@ -62,7 +63,7 @@ type
     procedure SampleRateChanged; override;
     procedure UpdateFilter; override;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
     function Downsample32(Input: PDAVSingleFixedArray): Single;
     function Downsample64(Input: PDAVDoubleFixedArray): Double;
@@ -77,7 +78,7 @@ type
     procedure SampleRateChanged; override;
     procedure UpdateFilter; override;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
     procedure Upsample32(Input: Single; Output: PDAVSingleFixedArray);
     procedure Upsample64(Input: Double; Output: PDAVDoubleFixedArray);
@@ -89,9 +90,8 @@ implementation
 
 { TDAVResampling }
 
-constructor TDAVResampling.Create(AOwner: TComponent);
+constructor TDAVResampling.Create;
 begin
- inherited;
  FFactor              := 1;
  FTransitionBandwidth := 0.99;
  FSampleRate          := 44100;
@@ -165,7 +165,7 @@ end;
 
 { TDAVUpDownsampling }
 
-constructor TDAVUpDownsampling.Create(AOwner: TComponent);
+constructor TDAVUpDownsampling.Create;
 begin
  FilterClass := TButterworthLowPassFilter;
  inherited;
@@ -267,7 +267,7 @@ end;
 
 { TDAVUpSampling }
 
-constructor TDAVUpSampling.Create(AOwner: TComponent);
+constructor TDAVUpSampling.Create;
 begin
  FilterClass := TButterworthLowPassFilter;
  inherited;
@@ -335,7 +335,7 @@ end;
 
 { TDAVDownSampling }
 
-constructor TDAVDownSampling.Create(AOwner: TComponent);
+constructor TDAVDownSampling.Create;
 begin
  FilterClass := TButterworthLowPassFilter;
  inherited;

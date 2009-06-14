@@ -15,7 +15,7 @@ interface
 
 uses
   TestFramework, DAV_DspDynamics, DAV_Common, DAV_DspCommon,
-  DAV_DspButterworthFilter;
+  DAV_DSPFilterButterworth;
 
 type
   // Test methods for class TSimpleDirectGate

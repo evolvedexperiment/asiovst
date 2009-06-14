@@ -33,8 +33,8 @@ requires
 contains
   DAV_DspRegister in '..\..\Source\DSP\DAV_DspRegister.pas',
   DAV_DspBesselFilter in '..\..\Source\DSP\DAV_DspBesselFilter.pas',
-  DAV_DspButterworthFilter in '..\..\Source\DSP\DAV_DspButterworthFilter.pas',
-  DAV_DspChebyshevFilter in '..\..\Source\DSP\DAV_DspChebyshevFilter.pas',
+  DAV_DSPFilterButterworth in '..\..\Source\DSP\DAV_DSPFilterButterworth.pas',
+  DAV_DSPFilterChebyshev in '..\..\Source\DSP\DAV_DSPFilterChebyshev.pas',
   DAV_DspDynamics in '..\..\Source\DSP\DAV_DspDynamics.pas',
   DAV_DspMinBlep in '..\..\Source\DSP\DAV_DspMinBlep.pas',
   DAV_DspPhaser in '..\..\Source\DSP\DAV_DspPhaser.pas',
