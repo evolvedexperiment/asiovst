@@ -36,6 +36,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicAllpassFilter
@@ -45,6 +47,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicLowShelfFilter
@@ -54,6 +58,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicLowShelfAFilter
@@ -63,6 +69,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicLowShelfBFilter
@@ -72,6 +80,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicHighShelfFilter
@@ -81,6 +91,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicHighShelfAFilter
@@ -90,6 +102,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicHighShelfBFilter
@@ -99,6 +113,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicHighcutFilter
@@ -108,6 +124,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicLowcutFilter
@@ -117,6 +135,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicBandpassFilter
@@ -126,6 +146,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TBasicNotchFilter
@@ -135,6 +157,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
 implementation
@@ -171,13 +195,25 @@ end;
 
 procedure TestTBasicPeakFilter.SetUp;
 begin
-  FBasicPeakFilter := TBasicPeakFilter.Create;
+ FBasicPeakFilter := TBasicPeakFilter.Create;
 end;
 
 procedure TestTBasicPeakFilter.TearDown;
 begin
  FreeAndNil(FBasicPeakFilter);
-end;        
+end;
+
+procedure TestTBasicPeakFilter.TestProcessSample;
+begin
+ with FBasicPeakFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
 
 
 { TestTBasicAllpassFilter }
@@ -190,6 +226,18 @@ end;
 procedure TestTBasicAllpassFilter.TearDown;
 begin
  FreeAndNil(FBasicAllpassFilter);
+end;
+
+procedure TestTBasicAllpassFilter.TestProcessSample;
+begin
+ with FBasicAllpassFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -205,6 +253,18 @@ begin
  FreeAndNil(FBasicLowShelfFilter);
 end;
 
+procedure TestTBasicLowShelfFilter.TestProcessSample;
+begin
+ with FBasicLowShelfFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTBasicLowShelfAFilter }
 
@@ -218,6 +278,17 @@ begin
  FreeAndNil(FBasicLowShelfAFilter);
 end;
 
+procedure TestTBasicLowShelfAFilter.TestProcessSample;
+begin
+ with FBasicLowShelfAFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
 
 { TestTBasicLowShelfBFilter }
 
@@ -229,6 +300,18 @@ end;
 procedure TestTBasicLowShelfBFilter.TearDown;
 begin
  FreeAndNil(FBasicLowShelfBFilter);
+end;
+
+procedure TestTBasicLowShelfBFilter.TestProcessSample;
+begin
+ with FBasicLowShelfBFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -244,6 +327,18 @@ begin
  FreeAndNil(FBasicHighShelfFilter);
 end;
 
+procedure TestTBasicHighShelfFilter.TestProcessSample;
+begin
+ with FBasicHighShelfFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTBasicHighShelfAFilter }
 
@@ -255,6 +350,18 @@ end;
 procedure TestTBasicHighShelfAFilter.TearDown;
 begin
  FreeAndNil(FBasicHighShelfAFilter);
+end;
+
+procedure TestTBasicHighShelfAFilter.TestProcessSample;
+begin
+ with FBasicHighShelfAFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -270,6 +377,18 @@ begin
  FreeAndNil(FBasicHighShelfBFilter);
 end;
 
+procedure TestTBasicHighShelfBFilter.TestProcessSample;
+begin
+ with FBasicHighShelfBFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTBasicHighcutFilter }
 
@@ -281,6 +400,18 @@ end;
 procedure TestTBasicHighcutFilter.TearDown;
 begin
  FreeAndNil(FBasicHighcutFilter);
+end;
+
+procedure TestTBasicHighcutFilter.TestProcessSample;
+begin
+ with FBasicHighcutFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -296,6 +427,18 @@ begin
  FreeAndNil(FBasicLowcutFilter);
 end;
 
+procedure TestTBasicLowcutFilter.TestProcessSample;
+begin
+ with FBasicLowcutFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTBasicBandpassFilter }
 
@@ -309,6 +452,18 @@ begin
  FreeAndNil(FBasicBandpassFilter);
 end;
 
+procedure TestTBasicBandpassFilter.TestProcessSample;
+begin
+ with FBasicBandpassFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTBasicNotchFilter }
 
@@ -320,6 +475,18 @@ end;
 procedure TestTBasicNotchFilter.TearDown;
 begin
  FreeAndNil(FBasicNotchFilter);
+end;
+
+procedure TestTBasicNotchFilter.TestProcessSample;
+begin
+ with FBasicNotchFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 

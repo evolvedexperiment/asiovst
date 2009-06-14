@@ -61,6 +61,14 @@ type
     property Mix: Single read FMix write SetMix;
   end;
 
+  TIIRCrosstalkSimulator = class(TCustomIIRCrosstalkSimulator)
+  published
+    property Model;
+    property Diameter;
+    property Polarity;
+    property Mix;
+  end;
+
 implementation
 
 uses
@@ -288,8 +296,8 @@ begin
  if FBufPos >= FBufSize then FBufPos := 0;
  Left  := FMulFactor[0] * Left  + FBuffer[0, FBufPos];
  Right := FMulFactor[0] * Right + FBuffer[1, FBufPos];
- FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample(FFilter[0, 1].ProcessSample(FFilter[0, 0].ProcessSample(ip[0])));
- FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample(FFilter[1, 1].ProcessSample(FFilter[1, 0].ProcessSample(ip[1])));
+ FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample(FFilter[0, 1].ProcessSample(FFilter[0, 0].ProcessSample(ip[1])));
+ FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample(FFilter[1, 1].ProcessSample(FFilter[1, 0].ProcessSample(ip[0])));
 end;
 
 procedure TCustomIIRCrosstalkSimulator.Process(var Left, Right: Double);
@@ -300,10 +308,10 @@ begin
  ip[1] := Right;
  inc(FBufPos);
  if FBufPos >= FBufSize then FBufPos := 0;
- Left  := FMulFactor[0] * Left + FBuffer[0, FBufPos];
+ Left  := FMulFactor[0] * Left  + FBuffer[0, FBufPos];
  Right := FMulFactor[0] * Right + FBuffer[1, FBufPos];
- FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample(FFilter[0, 1].ProcessSample(FFilter[0, 0].ProcessSample(ip[0])));
- FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample(FFilter[1, 1].ProcessSample(FFilter[1, 0].ProcessSample(ip[1])));
+ FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample(FFilter[0, 1].ProcessSample(FFilter[0, 0].ProcessSample(ip[1])));
+ FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample(FFilter[1, 1].ProcessSample(FFilter[1, 0].ProcessSample(ip[0])));
 end;
 
 end.

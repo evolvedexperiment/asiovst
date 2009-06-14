@@ -36,6 +36,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableAllpassFilter
@@ -45,6 +47,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableLowShelfFilter
@@ -54,6 +58,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableLowShelfAFilter
@@ -63,6 +69,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableLowShelfBFilter
@@ -72,6 +80,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableHighShelfFilter
@@ -81,6 +91,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableHighShelfAFilter
@@ -90,6 +102,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableHighShelfBFilter
@@ -99,6 +113,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableHighcutFilter
@@ -108,6 +124,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableLowcutFilter
@@ -117,6 +135,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableBandpassFilter
@@ -126,6 +146,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
   // Test methods for class TAutomatableNotchFilter
@@ -135,6 +157,8 @@ type
   public
     procedure SetUp; override;
     procedure TearDown; override;
+  published
+    procedure TestProcessSample;
   end;
 
 implementation
@@ -178,6 +202,18 @@ begin
  FreeAndNil(FAutomatablePeakFilter);
 end;
 
+procedure TestTAutomatablePeakFilter.TestProcessSample;
+begin
+ with FAutomatablePeakFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTAutomatableAllpassFilter }
 
@@ -191,6 +227,17 @@ begin
  FreeAndNil(FAutomatableAllpassFilter);
 end;
 
+procedure TestTAutomatableAllpassFilter.TestProcessSample;
+begin
+ with FAutomatableAllpassFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
 
 { TestTAutomatableLowShelfFilter }
 
@@ -202,6 +249,18 @@ end;
 procedure TestTAutomatableLowShelfFilter.TearDown;
 begin
  FreeAndNil(FAutomatableLowShelfFilter);
+end;
+
+procedure TestTAutomatableLowShelfFilter.TestProcessSample;
+begin
+ with FAutomatableLowShelfFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -217,6 +276,18 @@ begin
  FreeAndNil(FAutomatableLowShelfAFilter);
 end;
 
+procedure TestTAutomatableLowShelfAFilter.TestProcessSample;
+begin
+ with FAutomatableLowShelfAFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTAutomatableLowShelfBFilter }
 
@@ -228,6 +299,18 @@ end;
 procedure TestTAutomatableLowShelfBFilter.TearDown;
 begin
  FreeAndNil(FAutomatableLowShelfBFilter);
+end;
+
+procedure TestTAutomatableLowShelfBFilter.TestProcessSample;
+begin
+ with FAutomatableLowShelfBFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -243,6 +326,18 @@ begin
  FreeAndNil(FAutomatableHighShelfFilter);
 end;
 
+procedure TestTAutomatableHighShelfFilter.TestProcessSample;
+begin
+ with FAutomatableHighShelfFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTAutomatableHighShelfAFilter }
 
@@ -254,6 +349,18 @@ end;
 procedure TestTAutomatableHighShelfAFilter.TearDown;
 begin
  FreeAndNil(FAutomatableHighShelfAFilter);
+end;
+
+procedure TestTAutomatableHighShelfAFilter.TestProcessSample;
+begin
+ with FAutomatableHighShelfAFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -269,6 +376,18 @@ begin
  FreeAndNil(FAutomatableHighShelfBFilter);
 end;
 
+procedure TestTAutomatableHighShelfBFilter.TestProcessSample;
+begin
+ with FAutomatableHighShelfBFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTAutomatableHighcutFilter }
 
@@ -280,6 +399,18 @@ end;
 procedure TestTAutomatableHighcutFilter.TearDown;
 begin
  FreeAndNil(FAutomatableHighcutFilter);
+end;
+
+procedure TestTAutomatableHighcutFilter.TestProcessSample;
+begin
+ with FAutomatableHighcutFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -295,6 +426,18 @@ begin
  FreeAndNil(FAutomatableLowcutFilter);
 end;
 
+procedure TestTAutomatableLowcutFilter.TestProcessSample;
+begin
+ with FAutomatableLowcutFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 { TestTAutomatableBandpassFilter }
 
@@ -306,6 +449,18 @@ end;
 procedure TestTAutomatableBandpassFilter.TearDown;
 begin
  FreeAndNil(FAutomatableBandpassFilter);
+end;
+
+procedure TestTAutomatableBandpassFilter.TestProcessSample;
+begin
+ with FAutomatableBandpassFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
 end;
 
 
@@ -320,6 +475,19 @@ procedure TestTAutomatableNotchFilter.TearDown;
 begin
  FreeAndNil(FAutomatableNotchFilter);
 end;
+
+procedure TestTAutomatableNotchFilter.TestProcessSample;
+begin
+ with FAutomatableNotchFilter do
+  begin
+   Gain := Amp_to_dB(CHalf32);
+   Frequency := 1000;
+   Bandwidth := 2;
+   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
+   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+  end;
+end;
+
 
 initialization
   // Alle Testfälle beim Test-Runner registrieren

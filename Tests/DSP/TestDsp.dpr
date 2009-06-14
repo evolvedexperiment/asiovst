@@ -44,7 +44,11 @@ uses
   TestDAV_DspFilterButterworth in 'TestDAV_DspFilterButterworth.pas',
   TestDAV_DspFilterChebyshev in 'TestDAV_DspFilterChebyshev.pas',
   TestDAV_DspFilterLinearPhaseCrossover in 'TestDAV_DspFilterLinearPhaseCrossover.pas',
-  TestDAV_DspFilterLinkwitzRiley in 'TestDAV_DspFilterLinkwitzRiley.pas';
+  TestDAV_DspFilterLinkwitzRiley in 'TestDAV_DspFilterLinkwitzRiley.pas',
+  TestDAV_DspCrosstalkCancellation in 'TestDAV_DspCrosstalkCancellation.pas',
+  DAV_DspCrosstalkCancellation in '..\..\Source\DSP\DAV_DspCrosstalkCancellation.pas',
+  TestDAV_DspCrosstalkSimulator in 'TestDAV_DspCrosstalkSimulator.pas',
+  DAV_DspCrosstalkSimulator in '..\..\Source\DSP\DAV_DspCrosstalkSimulator.pas';
 
 {$R *.RES}
 
