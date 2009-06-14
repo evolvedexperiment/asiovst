@@ -45,36 +45,38 @@ uses
   DAV_OpenToolsUtils;
 
 const
-  DEFAULT_PLUGIN_UNIT_NAME = 'PluginDM';
-  DEFAULT_PLUGIN_FORM_NAME = 'PluginDataModule';
-  DEFAULT_EDITOR_UNIT_NAME = 'EditorFrm';
-  DEFAULT_EDITOR_FORM_NAME = 'EditorForm';
-  DEFAULT_USE_EDITOR       = True;
-  DEFAULT_EFFECT_NAME      = 'My Plugin';
-  DEFAULT_IS_SYNTH         = False;
-  DEFAULT_VERSION_MAJOR    = 1;
-  DEFAULT_VERSION_MINOR    = 0;
-  DEFAULT_VERSION_RELEASE  = 0;
-  DEFAULT_VENDOR_NAME      = 'My Company';
-  DEFAULT_PRODUCT_NAME     = 'My Product';
+  CDefaultUseEditor      = True;
+  CDefaultIsSynth        = False;
+  CDefaultVersionMajor   = 1;
+  CDefaultVersionMinor   = 0;
+  CDefaultVersionRelease = 0;
+
+resourcestring
+  RCDefaultPluginUnitName = 'PluginDM';
+  RCDefaultPluginFormName = 'PluginDataModule';
+  RCDefaultEditorUnitName = 'EditorFrm';
+  RCDefaultEditorFormName = 'EditorForm';
+  RCDefaultEffectName     = 'My Plugin';
+  RCDefaultVendorName     = 'My Company';
+  RCDefaultProductName    = 'My Product';
 
 constructor TConfig.Create;
 begin
   ProjectPath    := GetCurrentDir;
   ProjectName    := GetUniqueProjectName;
-  PluginUnitName := DEFAULT_PLUGIN_UNIT_NAME;
-  PluginFormName := DEFAULT_PLUGIN_FORM_NAME;
-  EditorUnitName := DEFAULT_EDITOR_UNIT_NAME;
-  EditorFormName := DEFAULT_EDITOR_FORM_NAME;
-  UseEditor      := DEFAULT_USE_EDITOR;
+  PluginUnitName := RCDefaultPluginUnitName;
+  PluginFormName := RCDefaultPluginFormName;
+  EditorUnitName := RCDefaultEditorUnitName;
+  EditorFormName := RCDefaultEditorFormName;
+  UseEditor      := CDefaultUseEditor;
   UniqueID       := RandomUniqueID;
-  EffectName     := DEFAULT_EFFECT_NAME;
-  IsSynth        := DEFAULT_IS_SYNTH;
-  VersionMajor   := DEFAULT_VERSION_MAJOR;
-  VersionMinor   := DEFAULT_VERSION_MINOR;
-  VersionRelease := DEFAULT_VERSION_RELEASE;
-  VendorName     := DEFAULT_VENDOR_NAME;
-  ProductName    := DEFAULT_PRODUCT_NAME;
+  EffectName     := RCDefaultEffectName;
+  IsSynth        := CDefaultIsSynth;
+  VersionMajor   := CDefaultVersionMajor;
+  VersionMinor   := CDefaultVersionMinor;
+  VersionRelease := CDefaultVersionRelease;
+  VendorName     := RCDefaultVendorName;
+  ProductName    := RCDefaultProductName;
 end;
 
 function TConfig.RandomLetter: Char;

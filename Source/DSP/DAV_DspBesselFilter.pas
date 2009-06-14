@@ -108,14 +108,14 @@ end;
 
 procedure TCustomBesselFilter.CalculateW0;
 begin
- fW0 := 2 * Pi * fSRR * (fFrequency * FDownsampleFak);
- fSinW0 := sin(fW0);
- if fW0 > 3.1 then fW0 := 3.1;
+ FW0 := 2 * Pi * fSRR * (FFrequency * FDownsampleFak);
+ GetSinCos(FW0, FExpW0.Im, FExpW0.Re);
+ if FW0 > 3.1 then FW0 := 3.1;
 end;
 
 procedure TCustomBesselFilter.SetFilterValues(const AFrequency, AGain : Single);
 begin
- fFrequency := AFrequency;
+ FFrequency := AFrequency;
  FGain_dB := AGain;
  FGainFactor := dB_to_Amp(FGain_dB);
  CalculateW0;
@@ -245,7 +245,7 @@ var
 begin
 // ShowMessage(FloatToStr(CalculateReverseBesselPolynomial0(6)));
 
- K := tan(fW0 * 0.5);
+ K := tan(FW0 * 0.5);
  if Order = 4 then
   begin
    t     := 1 / ((((    K + 10) * K + 45) * K + 105)*K + 105);
@@ -378,7 +378,7 @@ procedure TBesselHighpassFilter.CalculateCoefficients;
 var
   K, t  : Double;
 begin
- K := tan(fW0 * 0.5);
+ K := tan(FW0 * 0.5);
  if Order = 4 then
   begin
    t     := 1 / ((((105 * K + 105) * K + 45) * K + 10)*K + 1);

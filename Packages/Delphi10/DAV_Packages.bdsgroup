@@ -17,7 +17,8 @@
       <Projects Name="DAV_ASIOHost_D10.bpl">DAV_ASIOHost_D10.bdsproj</Projects>
       <Projects Name="DAV_SEHost_D10.bpl">DAV_SEHost_D10.bdsproj</Projects>
       <Projects Name="DAV_GUI_D10.bpl">DAV_GUI_D10.bdsproj</Projects>
-      <Projects Name="Targets">DAV_Common_D10.bpl DAV_DSP_D10.bpl DAV_Modular_D10.bpl DAV_VSTPlugin_D10.bpl DAV_VSTHost_D10.bpl DAV_ASIOHost_D10.bpl DAV_SEHost_D10.bpl DAV_GUI_D10.bpl</Projects>
+      <Projects Name="DAV_VSTCloner_D10.bpl">DAV_VSTCloner_D10.bdsproj</Projects>
+      <Projects Name="Targets">DAV_Common_D10.bpl DAV_DSP_D10.bpl DAV_Modular_D10.bpl DAV_VSTPlugin_D10.bpl DAV_VSTHost_D10.bpl DAV_ASIOHost_D10.bpl DAV_SEHost_D10.bpl DAV_GUI_D10.bpl DAV_VSTCloner_D10.bpl</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{EA6C899F-BFF7-4C22-A8D6-8ADA4A6D1102}">
@@ -45,6 +46,10 @@
         <Dependency GUID="{9BBFFEDA-4079-4648-98C4-356430021140}"/>
         <Dependency GUID="{88624A48-C07F-4CAA-89C9-334FCA3805A2}"/>
         <Dependency GUID="{BF579786-56CB-4C56-824F-24A5DEF73E77}"/>
+      </Dependency>
+      <Dependency GUID="{F511D808-1D93-49A1-BF41-5C6953A2E26C}">
+        <Dependency GUID="{9BBFFEDA-4079-4648-98C4-356430021140}"/>
+        <Dependency GUID="{E35643D9-8D38-463D-8150-5E6C52EEDA4F}"/>
       </Dependency>
     </Dependencies>
   </Default.Personality>

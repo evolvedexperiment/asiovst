@@ -192,7 +192,8 @@ type
     function GetOutputProperties(const OutputNr: Integer): TVstPinProperties;
     function GetParamDisplay(index: Integer): string;
     function GetParameter(index: Integer): Single; virtual;
-    function GetParameterProperties(const Parameter: Integer): TVstParameterPropertyRecord;
+    function GetParameterProperties(const Index: Integer;
+      var ParameterProperties: TVstParameterPropertyRecord): Boolean;
     function GetParamLabel(index: Integer): string;
     function GetParamName(index: Integer): string;
     function GetPlugCategory: TVstPluginCategory;
@@ -2674,10 +2675,12 @@ begin
  VstDispatch(effSetViewPosition, x, y);
 end;
 
-function TCustomVstPlugIn.GetParameterProperties(const Parameter: Integer): TVstParameterPropertyRecord;
+function TCustomVstPlugIn.GetParameterProperties(const Index: Integer;
+  var ParameterProperties: TVstParameterPropertyRecord): Boolean;
 begin
  if FActive
-  then VstDispatch(effGetParameterProperties, Parameter, 0, @result);
+  then result := VstDispatch(effGetParameterProperties, Index, 0, @result) <> 0
+  else result := False;
 end;
 
 function TCustomVstPlugIn.KeysRequired: Integer;

@@ -413,7 +413,7 @@ procedure TMidiFile.MidiTimer(Sender: TObject);
 begin
   if FPlaying then
   begin
-    PlayToTime(GetTickCount - FPlayStartTime);
+    PlayToTime(GetTickCount - Cardinal(FPlayStartTime));
     if assigned(FOnUpdateEvent) then FOnUpdateEvent(Self);
   end;
 end;
@@ -432,7 +432,7 @@ end;
 
 procedure TMidiFile.ContinuePlaying;
 begin
- FPlayStartTime := GetTickCount - FCurrentTime;
+ FPlayStartTime := GetTickCount - Cardinal(FCurrentTime);
  FPlaying := True;
  if not FManual then FMidiTimer.Enabled := True;
 end;

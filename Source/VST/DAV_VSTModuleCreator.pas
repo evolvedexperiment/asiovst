@@ -53,11 +53,11 @@ uses
 
 const
   CRLF               = #13#10;
-  ANCESTOR_NAME      = 'VSTModule';
-  NUM_INPUTS_EFFECT  = 2;
-  NUM_OUTPUTS_EFFECT = 2;
-  NUM_INPUTS_SYNTH   = 0;
-  NUM_OUTPUTS_SYNTH  = 2;
+  CAnchestorName     = 'VSTModule';
+  CNumInputsEffect   = 2;
+  CNumOutputsEffect  = 2;
+  CNumInputsSynth    = 0;
+  CNumOutputsSynth   = 2;
 
 constructor TVSTModuleCreator.Create(Config: TConfig);
 begin
@@ -81,16 +81,16 @@ begin
 
     if FConfig.IsSynth then
     begin
-      NumInputs    := NUM_INPUTS_SYNTH;
-      NumOutputs   := NUM_OUTPUTS_SYNTH;
+      NumInputs    := CNumInputsSynth;
+      NumOutputs   := CNumOutputsSynth;
       PlugCategory := vpcSynth;
       CanDos := CanDos + [vcdReceiveVstEvents, vcdReceiveVstMidiEvent];
       Flags := Flags + [effFlagsIsSynth];
     end
     else
     begin
-      NumInputs    := NUM_INPUTS_EFFECT;
-      NumOutputs   := NUM_OUTPUTS_EFFECT;
+      NumInputs    := CNumInputsEffect;
+      NumOutputs   := CNumOutputsEffect;
       PlugCategory := vpcEffect;
       if (NumInputs = 1) then
       begin
@@ -137,7 +137,7 @@ end;
 
 function TVSTModuleCreator.GetAncestorName: string;
 begin
-  Result := ANCESTOR_NAME;
+  Result := CAnchestorName;
 end;
 
 function TVSTModuleCreator.GetCreatorType: string;

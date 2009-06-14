@@ -504,7 +504,7 @@ begin
  inherited;
  with Stream do
   begin
-   if FChunkSize <= GetClassChunkSize
+   if FChunkSize <= Cardinal(GetClassChunkSize)
     then Read(FStartAddresses[0]^, FChunkSize)
     else
      begin

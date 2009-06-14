@@ -33,9 +33,10 @@ requires
 
 contains
   DAV_DspRegister in '..\..\Source\DSP\DAV_DspRegister.pas',
-  DAV_DspBesselFilter in '..\..\Source\DSP\DAV_DspBesselFilter.pas',
-  DAV_DspButterworthFilter in '..\..\Source\DSP\DAV_DspButterworthFilter.pas',
-  DAV_DspChebyshevFilter in '..\..\Source\DSP\DAV_DspChebyshevFilter.pas',
+  DAV_DspFilterButterworth in '..\..\Source\DSP\DAV_DspFilterButterworth.pas',
+  DAV_DspFilterChebyshev in '..\..\Source\DSP\DAV_DspFilterChebyshev.pas',
+  DAV_DspFilterChebyshevType1 in '..\..\Source\DSP\DAV_DspFilterChebyshevType1.pas',
+  DAV_DspFilterChebyshevType2 in '..\..\Source\DSP\DAV_DspFilterChebyshevType2.pas',
   DAV_DspDynamics in '..\..\Source\DSP\DAV_DspDynamics.pas',
   DAV_DspMinBlep in '..\..\Source\DSP\DAV_DspMinBlep.pas',
   DAV_DspPhaser in '..\..\Source\DSP\DAV_DspPhaser.pas',
