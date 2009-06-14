@@ -29,7 +29,6 @@ type
     procedure OrderChanged; override;
   public
     constructor Create(const Order: Integer = 0); override;
-    function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     procedure SetFilterValues(const AFrequency, AGain : Single); virtual;
     procedure ResetStates; override;
@@ -212,11 +211,6 @@ var
   Temp: Double;
 begin
  Complex(Frequency, Temp, result);
-end;
-
-function TCustomButterworthFilter.MagnitudeSquared(const Frequency: Double): Double;
-begin
- Result := 1;
 end;
 
 procedure TCustomButterworthFilter.OrderChanged;
@@ -1059,8 +1053,10 @@ begin
 end;
 
 function TButterworthLowPassFilterAutomatable.MagnitudeLog10(const Frequency: Double): Double;
+const
+  CLogScale : Double = 3.0102999566398119521373889472449;
 begin
- result := 20 * FastLog2ContinousError4(MagnitudeSquared(Frequency));
+ result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TButterworthLowPassFilterAutomatable.MagnitudeSquared(
@@ -1092,8 +1088,10 @@ begin
 end;
 
 function TButterworthHighPassFilterAutomatable.MagnitudeLog10(const Frequency: Double): Double;
+const
+  CLogScale : Double = 3.0102999566398119521373889472449;
 begin
- result := 20 * FastLog2ContinousError4(MagnitudeSquared(Frequency));
+ result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TButterworthHighPassFilterAutomatable.MagnitudeSquared(

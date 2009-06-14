@@ -24,7 +24,6 @@ type
   public
     constructor Create(const Order: Integer = 0); override;
     procedure SetFilterValues(const AFrequency, AGain, ARipple : Single); virtual;
-    function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     procedure ResetStates; override;
     procedure PushStates; override;
@@ -57,6 +56,7 @@ type
   public
     procedure CalculateCoefficients; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
   end;
   TChebyshev1HighCutFilterAutomatable = TChebyshev1LowpassFilterAutomatable;
 
@@ -83,6 +83,7 @@ type
   public
     procedure CalculateCoefficients; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
   end;
   TChebyshev1LowCutFilterAutomatable = TChebyshev1HighpassFilterAutomatable;
 
@@ -123,6 +124,7 @@ end;
 
 procedure TCustomChebyshev1Filter.CalculateRippleGain;
 begin
+ assert(FRipple > 0);
  FRippleGain := dB_to_Amp(FRipple);
 end;
 
@@ -172,14 +174,10 @@ begin
  FGain_dB    := AGain;
  FRipple     := ARipple;
  CalculateW0;
+ CalculateRippleGain;
  CalculateGainFactor;
  CalculateHypFactors;
  CalculateCoefficients;
-end;
-
-function TCustomChebyshev1Filter.MagnitudeSquared(const Frequency: Double): Double;
-begin
- Result := 1;
 end;
 
 procedure TCustomChebyshev1Filter.PopStates;
@@ -703,6 +701,14 @@ begin
  FTanW0Half := FastTan2Term(Pi * FSRR * (FFrequency * FDownsampleFak));
 end;
 
+function TChebyshev1LowpassFilterAutomatable.MagnitudeLog10(
+  const Frequency: Double): Double;
+const
+  CLogScale : Double = 3.0102999566398119521373889472449;
+begin
+ result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
+end;
+
 function TChebyshev1LowpassFilterAutomatable.MagnitudeSquared(
   const Frequency: Double): Double;
 var
@@ -966,6 +972,14 @@ end;
 procedure TChebyshev1HighpassFilterAutomatable.CalculateW0;
 begin
  FTanW0Half := FastTan2Term(2 * Pi * FSRR * (FFrequency * FDownsampleFak) * CHalf64);
+end;
+
+function TChebyshev1HighpassFilterAutomatable.MagnitudeLog10(
+  const Frequency: Double): Double;
+const
+  CLogScale : Double = 3.0102999566398119521373889472449;
+begin
+ result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TChebyshev1HighpassFilterAutomatable.MagnitudeSquared(const Frequency: Double): Double;

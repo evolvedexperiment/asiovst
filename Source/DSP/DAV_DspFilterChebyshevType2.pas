@@ -204,6 +204,7 @@ begin
  FGain_dB    := AGain;
  FStopband   := AStopband;
  CalculateW0;
+ CalculateStopbandGain;
  CalculateGainFactor;
  CalculateHypFactors;
  CalculateCoefficients;
