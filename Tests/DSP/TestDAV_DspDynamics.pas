@@ -357,7 +357,7 @@ begin
   begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
-   CheckEquals(ProcessSample(0), 0);
+   CheckEquals(ProcessSample(0), 0, 'ProcessSample(0) <> 0');
    CheckTrue(abs(ProcessSample(ThresholdFactor) - ThresholdFactor) < 1E-5);
    CheckTrue(abs(ProcessSample(1) - ThresholdFactor) < 1E-5);
   end;
@@ -368,7 +368,7 @@ begin
  with FBrickwallLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.5) - 0.5) < 1E-15);
+   CheckTrue(abs(TranslatePeakToGain(0.5) - 1) < 1E-15);
   end;
 end;
 
@@ -377,9 +377,9 @@ begin
  with FBrickwallLimiter do
   begin
    Threshold_dB := -10;
-   CheckTrue(abs(CharacteristicCurve(0) + 10) < 1E-5);
-   CheckTrue(abs(CharacteristicCurve(-10) + 10) < 1E-5);
-   CheckTrue(abs(CharacteristicCurve(-20) + 20) < 1E-5);
+   CheckTrue(abs(CharacteristicCurve_dB(0) + 10) < 1E-5);
+   CheckTrue(abs(CharacteristicCurve_dB(-10) + 10) < 1E-5);
+   CheckTrue(abs(CharacteristicCurve_dB(-20) + 20) < 1E-5);
   end;
 end;
 
@@ -411,7 +411,7 @@ begin
  with FSoftBrickwallLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.01) - 0.01) < 1E-15);
+   CheckTrue(abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
   end;
 end;
 
@@ -433,7 +433,7 @@ begin
  with FSimpleSoftBrickwallLimiter do
   begin
    Threshold_dB := 0;
-   CheckTrue(abs(TranslatePeakToGain(0.01) - 0.01) < 1E-15);
+   CheckTrue(abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
   end;
 end;
 
