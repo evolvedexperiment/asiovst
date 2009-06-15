@@ -332,31 +332,37 @@ end;
 procedure TCustomButterworthLowPassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
-  i           : Integer;
-  cw, Divider : Double;
+  i       : Cardinal;
+  Cmplx   : TComplexDouble;
+  A, B, R : TComplexSingle;
 begin
- cw := cos(2 * Frequency * Pi * FSRR);
- Real := FFilterGain;
- Imaginary := 0;
- for i := 0 to (FOrder div 2) - 1 do
+ GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
+
+ R.Re := FFilterGain;
+ R.Im := 0;
+
+ i := 0;
+ while i < (FOrder div 2) do
   begin
-(*
-   Divider   := 1 / (sqr(FCoeffs[2 * i + 1] + 1) + sqr(FCoeffs[2 * i])
-                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] - 1) - 2 * cw * FCoeffs[2 * i + 1]));
-   ComplexMultiplyInplace(Real, Imaginary,
-     (1 - 2 * FCoeffs[2 * i] - FCoeffs[2 * i + 1]
-      + 2 * cw * (1 - FCoeffs[2 * i + 1] - FCoeffs[2 * i])
-      + (2 * sqr(cw) - 1) * (1 - FCoeffs[2 * i + 1])) * Divider,
-      + 2 * (1 + FCoeffs[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider);
-*)
-   Divider   := 1 / ( sqr(FCoeffs[2 * i + 1]) - 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
-                    + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] + 1) + 2 * cw * FCoeffs[2 * i + 1]));
-   ComplexMultiplyInplace(Real, Imaginary,
-     (1 + 2 * FCoeffs[2 * i] + FCoeffs[2 * i + 1]
-      + cw * (2 * (1 + FCoeffs[2 * i + 1]) + FCoeffs[2 * i] * 2)
-      + (2 * sqr(cw)-1) * (FCoeffs[2 * i + 1] + 1)) * Divider,
-      (2 * (1 - FCoeffs[2 * i + 1]) + 2 * cw * (1 - FCoeffs[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider);
+   A.Re :=  2 * Cmplx.Re * (Cmplx.Re + 1);
+   A.Im := -2 * Cmplx.Im * (Cmplx.Re + 1);
+   B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
+   R := ComplexMultiply(R, ComplexDivide(A, B));
+   inc(i);
   end;
+
+ if FOrder mod 2 = 1 then
+  begin
+   A.Re :=  Cmplx.Re + 1;
+   A.Im := -Cmplx.Im;
+   B.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
+   B.Im :=  Cmplx.Im * FCoeffs[2 * i];
+   R := ComplexMultiply(R, ComplexDivide(A, B));
+  end;
+
+ Real := R.Re;
+ Imaginary := R.Im;
 end;
 
 
@@ -523,32 +529,42 @@ end;
 procedure TCustomButterworthHighPassFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
-  i           : Integer;
-  cw, Divider : Double;
+  i     : Cardinal;
+  Cmplx : TComplexDouble;
+  A, R  : TComplexSingle;
 begin
- cw := cos(2 * Frequency * Pi * FSRR);
- Real := FFilterGain;
- Imaginary := 0;
- for i := 0 to (FOrder div 2) - 1 do
+ GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
+
+ R.Re := FFilterGain;
+ R.Im := 0;
+
+ i := 0;
+ while i < (FOrder div 2) do
   begin
-(*
-   Divider   := 1 / (sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
-                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] - 1) - 2 * cw * FCoeffs[2 * i + 1]));
-   ComplexMultiplyInplace(Real, Imaginary,
-     (1 + 2 * FCoeffs[2 * i] - FCoeffs[2 * i + 1]
-      + 2 * cw * ((FCoeffs[2 * i + 1] - 1) - FCoeffs[2 * i])
-      + (2 * sqr(cw) - 1) * (1 - FCoeffs[2 * i + 1])) * Divider,
-      - 2 * (1 + FCoeffs[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider);
-*)
-   Divider   := 1 / ( sqr(FCoeffs[2 * i + 1]) - 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
-                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] + 1) + 2 * cw * FCoeffs[2 * i + 1]));
-   ComplexMultiplyInplace(Real, Imaginary,
-     (1 -2 * FCoeffs[2 * i] + 1 * FCoeffs[2 * i + 1]
-      +        cw * 2 * (-(1 + FCoeffs[2 * i + 1]) + FCoeffs[2 * i])
-      + (2 * sqr(cw) - 1) * (1 * FCoeffs[2 * i + 1] + 1)) * Divider,
-      (-2 * (1 - FCoeffs[2 * i + 1])
-      + 2 * cw * (1 - FCoeffs[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider);
+   A.Re :=  2 * Cmplx.Re * (Cmplx.Re - 1);
+   A.Im := -2 * Cmplx.Im * (Cmplx.Re - 1);
+   R := ComplexMultiply(R, A);
+
+   A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
+   R := ComplexDivide(R, A);
+
+   inc(i);
   end;
+
+ if FOrder mod 2 = 1 then
+  begin
+   A.Re :=  Cmplx.Re - 1;
+   A.Im := -Cmplx.Im;
+   R := ComplexMultiply(R, A);
+
+   A.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
+   A.Im :=  Cmplx.Im * FCoeffs[2 * i];
+   R := ComplexDivide(R, A);
+  end;
+
+ Real := R.Re;
+ Imaginary := R.Im;
 end;
 
 function TCustomButterworthHighPassFilter.ProcessSample(const Input: Single): Single;
