@@ -611,36 +611,36 @@ function ComplexDivide(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
 var
   Divisor: Double;
 begin
-  Divisor := sqr(BRe) + sqr(BIm);
-  Result.Re := (ARe * BRe + AIm * BIm) / Divisor;
-  Result.Im := (AIm * BRe - ARe * BIm) / Divisor;
+  Divisor := 1 / (sqr(BRe) + sqr(BIm));
+  Result.Re := (ARe * BRe + AIm * BIm) * Divisor;
+  Result.Im := (AIm * BRe - ARe * BIm) * Divisor;
 end;
 
 function ComplexDivide(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
 var
   Divisor: Double;
 begin
-  Divisor := sqr(BRe) + sqr(BIm);
-  Result.Re := (ARe * BRe + AIm * BIm) / Divisor;
-  Result.Im := (AIm * BRe - ARe * BIm) / Divisor;
+  Divisor := 1 / (sqr(BRe) + sqr(BIm));
+  Result.Re := (ARe * BRe + AIm * BIm) * Divisor;
+  Result.Im := (AIm * BRe - ARe * BIm) * Divisor;
 end;
 
 function ComplexDivide(const A, B: TComplexSingle): TComplexSingle;
 var
   Divisor: Double;
 begin
-  Divisor := sqr(B.Re) + sqr(B.Im);
-  Result.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
-  Result.Im := (A.Im * B.Re - A.Re * B.Im) / Divisor;
+  Divisor := 1 / (sqr(B.Re) + sqr(B.Im));
+  Result.Re := (A.Re * B.Re + A.Im * B.Im) * Divisor;
+  Result.Im := (A.Im * B.Re - A.Re * B.Im) * Divisor;
 end;
 
 function ComplexDivide(const A, B: TComplexDouble): TComplexDouble;
 var
   Divisor: Double;
 begin
-  Divisor := sqr(B.Re) + sqr(B.Im);
-  Result.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
-  Result.Im := (A.Im * B.Re - A.Re * B.Im) / Divisor;
+  Divisor := 1 / (sqr(B.Re) + sqr(B.Im));
+  Result.Re := (A.Re * B.Re + A.Im * B.Im) * Divisor;
+  Result.Im := (A.Im * B.Re - A.Re * B.Im) * Divisor;
 end;
 
 procedure ComplexDivideInplace(var A: TComplexSingle; const B: TComplexSingle);

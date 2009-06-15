@@ -36,8 +36,8 @@ type
   TCustomChebyshev1LowpassFilter = class(TCustomChebyshev1Filter)
   public
     function ProcessSample(const Input: Double): Double; override;
-    procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
     function Phase(const Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
 
   TChebyshev1LowpassFilter = class(TCustomChebyshev1LowpassFilter)
@@ -63,9 +63,8 @@ type
   TCustomChebyshev1HighpassFilter = class(TCustomChebyshev1Filter)
   public
     function ProcessSample(const Input: Double): Double; override;
-    procedure Complex(const Frequency: Double; out Real: Single;
-      out Imaginary: Single); override;
     function Phase(const Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
 
   TChebyshev1HighpassFilter = class(TCustomChebyshev1HighpassFilter)
@@ -210,22 +209,37 @@ end;
 procedure TCustomChebyshev1LowpassFilter.Complex(const Frequency: Double;
   out Real, Imaginary: Double);
 var
-  i           : Integer;
-  cw, Divider : Double;
+  i       : Cardinal;
+  Cmplx   : TComplexDouble;
+  A, B, R : TComplexSingle;
 begin
- cw := cos(2 * Frequency * Pi * FSRR);
- Real := FFilterGain;
- Imaginary := 0;
- for i := 0 to (FOrder div 2) - 1 do
+ GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
+
+ R.Re := FFilterGain;
+ R.Im := 0;
+
+ i := 0;
+ while i < (FOrder div 2) do
   begin
-   Divider   := 1 / (sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
-                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] - 1) - 2 * cw * FCoeffs[2 * i + 1]));
-   ComplexMultiply(Real, Imaginary,
-     (1 - 2 * FCoeffs[2 * i] - FCoeffs[2 * i + 1]
-                + 2 * cw * (1 - FCoeffs[2 * i + 1] - FCoeffs[2 * i])
-                + (2 * sqr(cw) - 1) * (1 - FCoeffs[2 * i + 1])) * Divider,
-     2 * (1 + FCoeffs[2 * i + 1]) * sqrt(1 - sqr(cw)) * Divider);
+   A.Re :=  2 * Cmplx.Re * (Cmplx.Re + 1);
+   A.Im := -2 * Cmplx.Im * (Cmplx.Re + 1);
+   B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
+   R := ComplexMultiply(R, ComplexDivide(A, B));
+   inc(i);
   end;
+
+ if FOrder mod 2 = 1 then
+  begin
+   A.Re :=  Cmplx.Re + 1;
+   A.Im := -Cmplx.Im;
+   B.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
+   B.Im :=  Cmplx.Im * FCoeffs[2 * i];
+   R := ComplexMultiply(R, ComplexDivide(A, B));
+  end;
+
+ Real := R.Re;
+ Imaginary := R.Im;
 end;
 
 function TCustomChebyshev1LowpassFilter.Phase(const Frequency: Double): Double;
@@ -505,6 +519,7 @@ begin
   do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
        sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
        cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
+
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
@@ -517,45 +532,60 @@ end;
 { TCustomChebyshev1HighpassFilter }
 
 procedure TCustomChebyshev1HighpassFilter.Complex(const Frequency: Double;
-  out Real, Imaginary: Single);
+  out Real, Imaginary: Double);
 var
-  i           : Integer;
-  cw, Divider : Double;
+  i       : Cardinal;
+  Cmplx   : TComplexDouble;
+  A, B, R : TComplexSingle;
 begin
- cw := cos(2 * Frequency * Pi * FSRR);
- for i := 0 to (FOrder div 2) - 1 do
+ GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
+
+ R.Re := FFilterGain;
+ R.Im := 0;
+
+ i := 0;
+ while i < (FOrder div 2) do
   begin
-   Divider   := 1 / (sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] + sqr(FCoeffs[2 * i]) + 1
-                      + 2 * cw * (FCoeffs[2 * i] * (FCoeffs[2 * i + 1] - 1) - 2 * cw * FCoeffs[2 * i + 1]));
-   Real      := (1 + 2 * FCoeffs[2 * i] - FCoeffs[2 * i + 1]
-                +        cw     * (2 * (FCoeffs[2 * i + 1] - 1) - FCoeffs[2 * i] * 2)
-                + (2 * sqr(cw) - 1) * (1 - FCoeffs[2 * i + 1])) * Divider;
-   Imaginary := (- 2 * (1 + FCoeffs[2 * i + 1])) * sqrt(1 - sqr(cw)) * Divider;
+   A.Re :=  2 * Cmplx.Re * (Cmplx.Re - 1);
+   A.Im := -2 * Cmplx.Im * (Cmplx.Re - 1);
+   B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
+   R := ComplexMultiply(R, ComplexDivide(A, B));
+   inc(i);
   end;
+
+ if FOrder mod 2 = 1 then
+  begin
+   A.Re :=  Cmplx.Re - 1;
+   A.Im := -Cmplx.Im;
+   B.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
+   B.Im :=  Cmplx.Im * FCoeffs[2 * i];
+   R := ComplexMultiply(R, ComplexDivide(A, B));
+  end;
+
+ Real := R.Re;
+ Imaginary := R.Im;
 end;
 
 function TCustomChebyshev1HighpassFilter.Phase(const Frequency: Double): Double;
 var
-  cw, sw   : Double;
+  Cmplx    : TComplexDouble;
   Nom, Den : Double;
   i        : Integer;
 begin
-(*
- Complex(Frequency, Den, Nom);
-*)
- GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, sw, cw);
+ GetSinCos(2 * Frequency * Pi * SampleRateReciprocal, Cmplx.Im, Cmplx.Re);
  Nom := 0; Den := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
    ComplexMultiplyInplace(Den, Nom,
-     (cw * (FCoeffs[2 * i + 1] - FCoeffs[2 * i] - 1 + cw * (1 - FCoeffs[2 * i + 1])) + FCoeffs[2 * i]),
-     (sw * (FCoeffs[2 * i + 1] + 1) * (cw - 1)));
+     (Cmplx.Re * (FCoeffs[2 * i + 1] - FCoeffs[2 * i] - 1 + Cmplx.Re * (1 - FCoeffs[2 * i + 1])) + FCoeffs[2 * i]),
+     (Cmplx.Im * (FCoeffs[2 * i + 1] + 1) * (Cmplx.Re - 1)));
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   ComplexMultiplyInplace(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - cw),
-     sw * (FCoeffs[2 * i] - 1));
+   ComplexMultiplyInplace(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - Cmplx.Re),
+     Cmplx.Im * (FCoeffs[2 * i] - 1));
   end;
  Result := ArcTan2(Nom, Den);
 end;
@@ -722,6 +752,7 @@ begin
   do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
        sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
        cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
+
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
@@ -926,6 +957,13 @@ begin
   do Result := Result * a /
   (1 + sqr(FCoeffs[2 * i]) + sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
    cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
+
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+  end;
+ Result := CDenorm64 + Abs(Result);
 end;
 
 { TChebyshev1HighpassFilterAutomatable }
