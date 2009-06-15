@@ -73,6 +73,7 @@ type
     procedure ProcessSample(const Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
     procedure ProcessSample(const Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
     function MagnitudeSquared(const Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
 
   TButterworthHighPassFilter = class(TCustomButterworthHighPassFilter)
@@ -230,7 +231,7 @@ end;
 
 function TCustomButterworthFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
- result := 20 * Log10(MagnitudeSquared(Frequency));
+ result := 10 * Log10(MagnitudeSquared(Frequency));
 end;
 
 procedure TCustomButterworthFilter.PopStates;
@@ -266,7 +267,7 @@ var
   Cmplx       : TComplexDouble;
 begin
  if FOrder = 0 then exit;
- FFilterGain := FGainFactorSquared; //sqr(FGainFactor);
+ FFilterGain := FGainFactorSquared;
  K := FTanW0;
  K2 := K * K;
  Cmplx := FExpOrdPiHalf;
@@ -276,8 +277,7 @@ begin
   begin
    a := 2 * Cmplx.Im * K; // 2 * sin((i + 1) * FPiHalfOrderInv) * K;
    ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
-
-   t := 1 / (a + 1 + K2);
+   t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t * K2;
    FCoeffs[i    ] := 2 * (1 - K2) * t;
    FCoeffs[i + 1] := (a - 1 - K2) * t;
@@ -486,18 +486,18 @@ var
   i     : Integer;
   a, cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
- a := sqr(cw - 2);
- Result := 1;
+ cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
+ Result := sqr(FFilterGain);
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) + sqr(FCoeffs[2 * i + 1]) +
-       2 * FCoeffs[2 * i + 1] + cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
+  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
+       sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+       cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+   Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
 function TCustomButterworthHighPassFilter.Phase(const Frequency: Double): Double;
@@ -684,7 +684,7 @@ asm
  or   edx, $20000000
  mov  DenormRandom, edx
  fadd DenormRandom
- {$ENDIF} 
+ {$ENDIF}
 
  fmul [eax.FFilterGain].Double
  mov  ecx, [eax.FOrder]
@@ -747,47 +747,91 @@ procedure TCustomButterworthSplitBandFilter.CalculateCoefficients;
 var
   i           : Integer;
   K, K2, t, a : Double;
+  Cmplx       : TComplexDouble;
 begin
- FFilterGain := sqr(FGainFactor);
- K := FTanW0; K2 := K * K; FKs := IntPower(K, FOrder);
-
- for i := 0 to (FOrder div 2) - 1 do
+ if FOrder = 0 then exit;
+ FFilterGain := FGainFactorSquared;
+ K := FTanW0;
+ K2 := K * K;
+ Cmplx := FExpOrdPiHalf;
+ FKs := IntPower(K, FOrder);
+ i := 0;
+ while i < Integer(FOrder) - 1 do
   begin
-   a := 2 * sin((2 * i + 1) * FPiHalfOrderInv) * K;
+   a := 2 * Cmplx.Im * K;
+   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;
-   FCoeffs[2 * i    ] := -2 * (K2 - 1) * t;
-   FCoeffs[2 * i + 1] := (a - K2 - 1) * t;
+   FCoeffs[i    ] := 2 * (1 - K2) * t;
+   FCoeffs[i + 1] := (a - 1 - K2) * t;
+   inc(i, 2);
   end;
- if (FOrder mod 2) = 1 then
+ if i < Integer(FOrder) then
   begin
-   i := ((FOrder + 1) div 2) - 1;
-   t := 1 / (K + 1);
+   t := 1 / (1 + K);
    FFilterGain := FFilterGain * t;
-   FCoeffs[2 * i] := (1 - K) * t;
+   FCoeffs[i] := (1 - K) * t;
   end;
 end;
 
 function TCustomButterworthSplitBandFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
-  i  : Integer;
-  cw : Double;
+  Cmplx : TComplexDouble;
 begin
- cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal);
- Result := sqr(FFilterGain) * sqr(FKs);
- for i := 0 to (FOrder div 2) - 1 do
+ Complex(Frequency, Cmplx.Re, Cmplx.Im);
+ result := sqr(Cmplx.Re) + sqr(Cmplx.Im);
+end;
+
+procedure TCustomButterworthSplitBandFilter.Complex(const Frequency: Double;
+  out Real, Imaginary: Double);
+var
+  i     : Cardinal;
+  Cmplx : TComplexDouble;
+  A, R  : TComplexSingle;
+begin
+ GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
+
+ // lowpass
+ Real := FFilterGain * FKs * IntPower(2 * (Cmplx.Re + 1), FOrder div 2);
+ Imaginary := 0;
+
+ // highpass
+ R.Re := FFilterGain * IntPower(2 * (Cmplx.Re - 1), FOrder div 2);
+ R.Im := 0;
+
+ i := 0;
+ while i < (FOrder div 2) do
   begin
-   Result := Result * sqr(cw + 2) * sqr(cw - 2) / sqr(1 + sqr(FCoeffs[2 * i]) +
-     sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
-     cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
-  end;
- if (FOrder mod 2) = 1 then
-  begin
-   i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw + 2) * (cw - 2) / sqr(1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+   ComplexMultiplyInplace(Real, Imaginary, Cmplx.Re, -Cmplx.Im);
+   ComplexMultiplyInplace(R.Re, R.Im, Cmplx.Re, -Cmplx.Im);
+   inc(i);
   end;
 
- Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
+ if FOrder mod 2 = 1 then
+  begin
+   ComplexMultiplyInplace(R.Re, R.Im, Cmplx.Re - 1, -Cmplx.Im);
+   ComplexMultiplyInplace(Real, Imaginary, Cmplx.Re + 1, -Cmplx.Im);
+  end;
+
+ Real := R.Re + Real;
+ Imaginary := R.Im + Imaginary;
+
+ // calculate divider
+ i := 0;
+ while i < (FOrder div 2) do
+  begin
+   A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
+   ComplexDivideInplace(Real, Imaginary, A.Re, A.Im);
+   inc(i);
+  end;
+
+ if FOrder mod 2 = 1 then
+  begin
+   A.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
+   A.Im :=  Cmplx.Im * FCoeffs[2 * i];
+   ComplexDivideInplace(Real, Imaginary, A.Re, A.Im);
+  end;
 end;
 
 procedure TCustomButterworthSplitBandFilter.ProcessSample(const Input: Single; out Lowpass,

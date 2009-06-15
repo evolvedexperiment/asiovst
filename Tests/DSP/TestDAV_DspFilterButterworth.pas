@@ -163,7 +163,10 @@ begin
   FButterworthLowPassFilter.Complex(Frequency, Real, Imaginary);
 
   // Validate results
-//  CheckTrue(abs(ReturnValue) < 1E-15);
+  CheckTrue(abs(0.5 - (sqr(Real) + sqr(Imaginary))) < 1E-5, 'Magnitude calculation from complex failed');
+
+  // Validate results
+  CheckTrue(abs(ArcTan2(Imaginary, Real)) < 1E-5, 'Phase calculation from complex failed');
 end;
 
 
