@@ -5,11 +5,14 @@ unit ButterworthSplitterDM;
 interface
 
 uses 
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_VSTCustomModule,
   DAV_DspFilterButterworth;
 
 type
+
+  { TButterworthSplitterModule }
+
   TButterworthSplitterModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -42,13 +45,22 @@ begin
    FButterworthSplitter[Channel] := TButterworthSplitBandFilter.Create;
    FButterworthSplitter[Channel].SampleRate := SampleRate;
   end;
+
+ {$IFDEF FPC}
+ OnProcess := VSTModuleProcess;
+ OnProcessReplacing := VSTModuleProcess;
+ {$ENDIF}
+
  Parameter[0] := 1000;
  Parameter[1] := 2;
 end;
 
 procedure TButterworthSplitterModule.VSTModuleClose(Sender: TObject);
+var
+  Channel: Integer;
 begin
- FreeAndNil(FButterworthSplitter);
+ for Channel := 0 to Length(FButterworthSplitter) - 1
+  do FreeAndNil(FButterworthSplitter[Channel]);
 end;
 
 procedure TButterworthSplitterModule.VSTModuleProcess(const Inputs,
@@ -56,6 +68,7 @@ procedure TButterworthSplitterModule.VSTModuleProcess(const Inputs,
 var
   Sample, Channel: Integer;
 begin
+ {$IFDEF Debug} AddLogMessage('VSTModuleProcess'); {$ENDIF}
  // CDenorm32 +
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FButterworthSplitter) - 1

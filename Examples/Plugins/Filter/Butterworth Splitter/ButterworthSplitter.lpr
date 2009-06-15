@@ -4,26 +4,26 @@ library ButterworthSplitter;
 {$I DAV_Compiler.inc}
 
 uses
+  Interfaces,
   Forms,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
+  DAV_VSTBasicModule,
   ButterworthSplitterDM in 'ButterworthSplitterDM.pas' {ButterworthSplitterModule: TVSTModule};
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  try
-    with TButterworthSplitterModule.Create(Application) do
-     begin
-      AudioMaster := AudioMasterCallback;
-      Result := Effect;
-     end;
-  except
-    Result := nil;
-  end;
+ Result := VstModuleMain(AudioMasterCallback, TButterworthSplitterModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TButterworthSplitterModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

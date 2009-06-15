@@ -59,29 +59,29 @@ type
     effProcessEvents,         // 25: VstEvents* in <ptr>
 
     // parameters and programs
-    effCanBeAutomated,          // 26: parameter index in <index>
-    effString2Parameter,        // 27: parameter index in <index>, string in <ptr>
-    effGetNumProgramCategories, // 28: NOT USED IN 2.4 - no arguments. this is for dividing programs into groups (like GM)
-    effGetProgramNameIndexed,   // 29: get program name of category <value>, program <index> into <ptr>.
-                                //     category (that is, <value>) may be -1, in which case program indices
-                                //     are enumerated linearily (as usual); otherwise, each category starts
-                                //     over with index 0.
-    effCopyProgram,             // 30: NOT USED IN 2.4 - copy current program to destination <index>, note: implies setParameter
-                                //     connections, configuration
-    effConnectInput,            // 31: NOT USED IN 2.4 - input at <index> has been (dis-)connected; <value> == 0: disconnected, else connected
-    effConnectOutput,           // 32: NOT USED IN 2.4 - same as input
-    effGetInputProperties,      // 33: <index>, VstPinProperties* in ptr, return != 0 => true
-    effGetOutputProperties,     // 34: dto
-    effGetPlugCategory,         // 35: no parameter, return value is category
+    effCanBeAutomated,            // 26: parameter index in <index>
+    effString2Parameter,          // 27: parameter index in <index>, string in <ptr>
+    effGetNumProgramCategories,   // 28: NOT USED IN 2.4 - no arguments. this is for dividing programs into groups (like GM)
+    effGetProgramNameIndexed,     // 29: get program name of category <value>, program <index> into <ptr>.
+                                  //     category (that is, <value>) may be -1, in which case program indices
+                                  //     are enumerated linearily (as usual); otherwise, each category starts
+                                  //     over with index 0.
+    effCopyProgram,               // 30: NOT USED IN 2.4 - copy current program to destination <index>, note: implies setParameter
+                                  //     connections, configuration
+    effConnectInput,              // 31: NOT USED IN 2.4 - input at <index> has been (dis-)connected; <value> == 0: disconnected, else connected
+    effConnectOutput,             // 32: NOT USED IN 2.4 - same as input
+    effGetInputProperties,        // 33: <index>, VstPinProperties* in ptr, return != 0 => true
+    effGetOutputProperties,       // 34: dto
+    effGetPlugCategory,           // 35: no parameter, return value is category
 
     // realtime
-    effGetCurrentPosition,      // 36: NOT USED IN 2.4 - for external dsp, see flag bits below
-    effGetDestinationBuffer,    // 37: NOT USED IN 2.4 - for external dsp, see flag bits below. returns float*
+    effGetCurrentPosition,        // 36: NOT USED IN 2.4 - for external dsp, see flag bits below
+    effGetDestinationBuffer,      // 37: NOT USED IN 2.4 - for external dsp, see flag bits below. returns float*
 
     // offline
-    effOfflineNotify,           // 38: ptr = VstAudioFile array, value = count, index = start flag
-    effOfflinePrepare,          // 39: ptr = VstOfflineTask array, value = count
-    effOfflineRun,              // 40: ptr = VstOfflineTask array, value = count
+    effOfflineNotify,             // 38: ptr = VstAudioFile array, value = count, index = start flag
+    effOfflinePrepare,            // 39: ptr = VstOfflineTask array, value = count
+    effOfflineRun,                // 40: ptr = VstOfflineTask array, value = count
 
     // other
     effProcessVarIo,              // 41: VstVariableIo* in <ptr>

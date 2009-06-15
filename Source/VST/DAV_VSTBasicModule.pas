@@ -998,7 +998,11 @@ begin
   {$ELSE}
   Effect^.User := nil;
   {$ENDIF}
-//  Free;
+
+  {$IFNDEF FPC}
+  Free;
+  {$ENDIF}
+
   Result := 1;
  except
   Result := 0;
@@ -1377,6 +1381,10 @@ begin
  {$ENDIF}
 end;
 
+{$IFDEF FPC}
+{$DEFINE PUREPASCAL}
+{$ENDIF}
+
 procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
@@ -1503,8 +1511,14 @@ procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Out
 {$IFDEF PUREPASCAL}
 begin
  if not assigned(Effect) or (SampleFrames = 0) then exit;
- if TObject(Effect^.vObject) is TBasicVSTModule
+
+ {$IFDEF UseAudioEffectPtr}
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
   then TBasicVSTModule(Effect^.vObject).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+ {$ELSE}
+ if TObject(Effect^.User) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.User).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+ {$ENDIF}
 end;
 {$ELSE}
 asm

@@ -3,7 +3,7 @@ unit DAV_DSPFilterButterworth;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
+{$IFDEF FPC}{.$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
   DAV_DspFilter, DAV_Common, DAV_Complex;
@@ -963,9 +963,9 @@ asm
   fstp [eax.FHPState + ecx * 4].Double
   fxch
  @End:
- fstp Lowpass.Single
+ fstp [Lowpass].Single
  pop ecx
- fstp Highpass.Single
+ fstp [Highpass].Single
  {$ENDIF}
 end;
 
@@ -1098,9 +1098,9 @@ asm
   fstp [eax.FHPState + ecx * 4].Double
   fxch
  @End:
- fstp Lowpass.Double
+ fstp [Lowpass].Double
  pop ecx
- fstp Highpass.Double
+ fstp [Highpass].Double
  {$ENDIF}
 end;
 

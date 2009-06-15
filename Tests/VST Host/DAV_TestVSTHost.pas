@@ -234,6 +234,7 @@ begin
       SetLength(str, 20);
       SetProgramName(str);
       CopyCurrentProgramTo(random(numPrograms));
+      FillChar(MPN, SizeOf(MPN), 0);
       GetMidiProgramName(MPN);
      end;
 
@@ -556,6 +557,8 @@ begin
 end;
 
 procedure TVstPluginPerverseTests.TestInvalidParameters;
+var
+  PP : TVstParameterPropertyRecord;
 begin
  with FVstHost[0] do
   begin
@@ -596,10 +599,10 @@ begin
    GetParamName(numParams + random(MaxInt - numParams));
 
    // get invalid parameter properties
-   GetParameterProperties(numParams);
+   GetParameterProperties(numParams, PP);
 
    // get completely invalid parameter properties
-   GetParameterProperties(numParams + random(MaxInt - numParams));
+   GetParameterProperties(numParams + random(MaxInt - numParams), PP);
   end;
 end;
 
@@ -705,17 +708,25 @@ begin
 
     // get input properties
     for i := 0 to numInputs - 1 do
-     if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
-      begin
-       CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
-      end;
+     begin
+      FillChar(pp, SizeOf(pp), 0);
+      if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
+       begin
+        CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+        CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+       end;
+     end;
 
     // get output properties
     for i := 0 to numOutputs - 1 do
-     if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
-      begin
-       CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
-      end;
+     begin
+      FillChar(pp, SizeOf(pp), 0);
+      if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+       begin
+        CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+        CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+       end;
+     end;
 
     // Get Program Name Indexed
     VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
@@ -796,10 +807,11 @@ end;
 
 procedure TVstPluginHostTests.TestMULAB;
 var
-  rct  : TRect;
-  prct : PRect;
-  pp   : TVstPinProperties;
-  ve   : TVstEvents;
+  rct     : TRect;
+  prct    : PRect;
+  pp      : TVstPinProperties;
+  ve      : TVstEvents;
+  Channel : Integer;
 begin
  FVstHost.VendorString := 'MUTOOLS.com';
  FVstHost.ProductString := 'MU.LAB';
@@ -835,15 +847,25 @@ begin
    VstDispatch(effIdle, 0, 3);
 
    // get input properties
-   if VstDispatch(effGetInputProperties, 0, 0, @pp) <> 0 then
+   for Channel := 0 to numInputs - 1 do
     begin
-     CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetInputProperties, Channel, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+      end;
     end;
 
    // get output properties
-   if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+   for Channel := 0 to numOutputs - 1 do
     begin
-     CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetOutputProperties, Channel, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetOutputProperties: Future field <> 0');
+      end;
     end;
 
    // get vst version
@@ -1184,10 +1206,14 @@ begin
 
    // get output properties
    for i := 0 to numOutputs - 1 do
-    if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
-     begin
-      CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
-     end;
+    begin
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetOutputProperties, i, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetOutputProperties: Future field <> 0');
+      end;
+    end;
 
    GetMem(Data, 1024);
    try
@@ -1444,17 +1470,25 @@ begin
 
    // get input properties
    for i := 0 to numInputs - 1 do
-    if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
-     begin
-      CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
-     end;
+    begin
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+      end;
+    end;
 
    // get output properties
    for i := 0 to numOutputs - 1 do
-    if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
-     begin
-      CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
-     end;
+    begin
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+      end;
+    end;
 
    // switch on
    VstDispatch(effMainsChanged, 0, 1);

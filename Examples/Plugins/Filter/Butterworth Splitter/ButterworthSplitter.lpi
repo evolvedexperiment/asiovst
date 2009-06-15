@@ -7,12 +7,12 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
-        <Runnable Value="False"/>
+        <AlwaysBuild Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
       <UseAppBundle Value="False"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="4"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -36,13 +36,13 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="13">
       <Unit0>
         <Filename Value="ButterworthSplitter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="21" Y="4"/>
+        <CursorPos X="8" Y="20"/>
         <TopLine Value="1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="27"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -52,9 +52,11 @@
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="ButterworthSplitterDM"/>
-        <CursorPos X="71" Y="23"/>
+        <CursorPos X="16" Y="10"/>
         <TopLine Value="1"/>
-        <UsageCount Value="21"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="27"/>
+        <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
@@ -62,7 +64,7 @@
         <UnitName Value="DAV_Common"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
@@ -70,7 +72,7 @@
         <UnitName Value="DAV_VSTOfflineTask"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="9"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
@@ -78,132 +80,204 @@
         <UnitName Value="DAV_DspButterworthFilter"/>
         <CursorPos X="19" Y="661"/>
         <TopLine Value="651"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="9"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModule.pas"/>
+        <UnitName Value="DAV_VSTModule"/>
+        <CursorPos X="15" Y="5"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <UnitName Value="DAV_VSTModuleWithDsp"/>
+        <CursorPos X="18" Y="116"/>
+        <TopLine Value="97"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <UnitName Value="DAV_VSTCustomModule"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <UnitName Value="DAV_VSTBasicModule"/>
+        <CursorPos X="18" Y="1567"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="12"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <UnitName Value="DAV_DSPFilterButterworth"/>
+        <CursorPos X="24" Y="1116"/>
+        <TopLine Value="1084"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="..\..\..\..\Source\DAV_Compiler.inc"/>
+        <CursorPos X="26" Y="1089"/>
+        <TopLine Value="1076"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="..\..\..\..\Source\DAV_CompilerSwitches.inc"/>
+        <CursorPos X="42" Y="5"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithMidi.pas"/>
+        <UnitName Value="DAV_VSTModuleWithMidi"/>
+        <CursorPos X="26" Y="299"/>
+        <TopLine Value="280"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit12>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="369" Column="12" TopLine="344"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="10" Column="14" TopLine="1"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="386" Column="12" TopLine="356"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="13" Column="11" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="479" Column="17" TopLine="459"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="21" Column="22" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="477" Column="34" TopLine="459"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="34" Column="13" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="479" Column="16" TopLine="459"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="48" Column="24" TopLine="21"/>
       </Position5>
       <Position6>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="492" Column="12" TopLine="459"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="50" Column="22" TopLine="21"/>
       </Position6>
       <Position7>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="493" Column="12" TopLine="459"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="63" Column="27" TopLine="38"/>
       </Position7>
       <Position8>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="497" Column="12" TopLine="478"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="69" Column="48" TopLine="38"/>
       </Position8>
       <Position9>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="498" Column="12" TopLine="478"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="73" Column="21" TopLine="55"/>
       </Position9>
       <Position10>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="502" Column="12" TopLine="478"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="77" Column="23" TopLine="55"/>
       </Position10>
       <Position11>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="508" Column="15" TopLine="478"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="80" Column="30" TopLine="55"/>
       </Position11>
       <Position12>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="510" Column="16" TopLine="478"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="96" Column="11" TopLine="77"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="514" Column="12" TopLine="478"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="99" Column="20" TopLine="77"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="516" Column="12" TopLine="497"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="98" Column="28" TopLine="77"/>
       </Position14>
       <Position15>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="519" Column="12" TopLine="497"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="108" Column="58" TopLine="77"/>
       </Position15>
       <Position16>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="558" Column="11" TopLine="539"/>
+        <Filename Value="ButterworthSplitterDM.pas"/>
+        <Caret Line="46" Column="1" TopLine="25"/>
       </Position16>
       <Position17>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="559" Column="16" TopLine="539"/>
+        <Filename Value="ButterworthSplitterDM.pas"/>
+        <Caret Line="75" Column="42" TopLine="47"/>
       </Position17>
       <Position18>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="569" Column="12" TopLine="539"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="74" Column="15" TopLine="50"/>
       </Position18>
       <Position19>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="572" Column="12" TopLine="539"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="6" Column="15" TopLine="1"/>
       </Position19>
       <Position20>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="573" Column="12" TopLine="539"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="960" Column="17" TopLine="944"/>
       </Position20>
       <Position21>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="577" Column="12" TopLine="558"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModule.pas"/>
+        <Caret Line="104" Column="16" TopLine="86"/>
       </Position21>
       <Position22>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="578" Column="12" TopLine="558"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTModule.pas"/>
+        <Caret Line="5" Column="15" TopLine="1"/>
       </Position22>
       <Position23>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="582" Column="12" TopLine="558"/>
+        <Filename Value="..\..\..\..\Source\DAV_Compiler.inc"/>
+        <Caret Line="11" Column="17" TopLine="1"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="588" Column="15" TopLine="558"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="6" Column="15" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="590" Column="16" TopLine="558"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="966" Column="2" TopLine="833"/>
       </Position25>
       <Position26>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="594" Column="12" TopLine="558"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="968" Column="15" TopLine="949"/>
       </Position26>
       <Position27>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="596" Column="12" TopLine="577"/>
+        <Filename Value="..\..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="391" Column="1" TopLine="368"/>
       </Position27>
       <Position28>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="603" Column="67" TopLine="577"/>
+        <Filename Value="ButterworthSplitterDM.pas"/>
+        <Caret Line="10" Column="16" TopLine="1"/>
       </Position28>
       <Position29>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="794" Column="34" TopLine="763"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position29>
       <Position30>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
-        <Caret Line="320" Column="19" TopLine="305"/>
+        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <Caret Line="969" Column="1" TopLine="949"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -213,6 +287,7 @@
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source\;$(ProjOutDir)\"/>
       <OtherUnitFiles Value="..\..\..\..\Source\;..\..\..\..\Source\VST\;..\..\..\..\Source\DSP\;..\..\..\..\Source\Math\"/>
+      <UnitOutputDirectory Value="..\..\..\..\Bin"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
@@ -226,6 +301,11 @@
       <SmartLinkUnit Value="True"/>
       <TargetCPU Value="i386"/>
       <TargetOS Value="Win32"/>
+      <Optimizations>
+        <VariablesInRegisters Value="True"/>
+        <UncertainOptimizations Value="True"/>
+        <OptimizationLevel Value="3"/>
+      </Optimizations>
     </CodeGeneration>
     <Linking>
       <Debugging>

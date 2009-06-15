@@ -1646,10 +1646,9 @@ function TCustomVstPlugIn.VstDispatch(const opCode : TDispatcherOpcode; const In
 begin
  try
   DontRaiseExceptionsAndSetFPUcodeword;
-  if not assigned(FVstEffect) then
-   result := 0
-  else
-   result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
+  if not assigned(FVstEffect)
+   then result := 0
+   else result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
  except
   result := 0;
  end;

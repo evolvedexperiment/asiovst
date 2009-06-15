@@ -84,7 +84,6 @@ type
     {$IFDEF Debug}
     FLog                    : TStringList;
     FTmStmp                 : TDateTime;
-    procedure AddLogMessage(const Text: string);
     {$ENDIF}
     procedure SetNumInputs(const Inputs: Integer);
     procedure SetNumOutputs(const Outputs: Integer);
@@ -126,7 +125,9 @@ type
     FVersionMajor           : Integer;
     FVersionMinor           : Integer;
     FVersionRelease         : Integer;
-
+    {$IFDEF Debug}
+    procedure AddLogMessage(const Text: string);
+    {$ENDIF}
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID: string; virtual;
     function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
@@ -367,6 +368,7 @@ var
   OutsTmp : TDAVArrayOfSingleDynArray;
   i, j    : Integer;
 begin
+ {$IFDEF Debug} AddLogMessage('HostCallProcess'); {$ENDIF}
  if Assigned(FOnProcessEx)
   then FOnProcessEx(Ins, Outs, SampleFrames)
   else if Assigned(FOnProcessReplacingEx) then
@@ -385,8 +387,9 @@ var
   Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
   Outs : TDAVArrayOfSingleDynArray absolute Outputs;
 begin
-  if Assigned(FOnProcessReplacingEx)
-   then FOnProcessReplacingEx(Ins, Outs, SampleFrames);
+ {$IFDEF Debug} AddLogMessage('HostCallProcessReplacing'); {$ENDIF}
+ if Assigned(FOnProcessReplacingEx)
+  then FOnProcessReplacingEx(Ins, Outs, SampleFrames);
 end;
 
 procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
@@ -394,7 +397,8 @@ var
   Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
-  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
+ {$IFDEF Debug} AddLogMessage('HostCallProcessDoubleReplacing'); {$ENDIF}
+ if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
 end;
 
 procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
