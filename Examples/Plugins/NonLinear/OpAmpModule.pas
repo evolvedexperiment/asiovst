@@ -6,12 +6,14 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
-  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_VSTCustomModule;
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_VSTCustomModule,
+  DAV_VSTParameters;
 
 type
+  { TVSTOpAmp }
   TVSTOpAmp = class(TVSTModule)
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: THandle);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -34,13 +36,28 @@ uses
 
 procedure TVSTOpAmp.VSTModuleOpen(Sender: TObject);
 begin
+ FGain := 1;
+
+ {$IFDEF FPC}
+ OnProcess := VSTModuleProcess;
+ OnProcessReplacing := VSTModuleProcess;
+ OnParameterChange := VSTModuleParameterChange;
+ {$ENDIF}
+
  Parameter[0] := 1;
 end;
 
 procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
+  ParentWindow: THandle);
 begin
  GUI := TVSTGUI.Create(Self);
+ with TVSTGUI(GUI) do
+  begin
+   LbGain.Caption  := 'OpAmp Gain';
+   SbGain.Max      := 1000;
+   SbGain.Min      := 100;
+   SbGain.Position := 100;
+  end;
 end;
 
 procedure TVSTOpAmp.VSTModuleProcess(const Inputs,
@@ -65,16 +82,14 @@ end;
 
 procedure TVSTOpAmp.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
-var i : Integer;
+var
+  i : Integer;
 begin
  FGain := 2 * dB_to_Amp(Value);
- if Assigned(fEditorForm) then
-  with fEditorForm As TVSTGUI do
-   begin
-    i := Round(10 * Value);
-    if SBGain.Position <> i
-     then SBGain.Position := i;
-   end;   
+
+ // eventually update GUI
+ if FEditorForm is TVSTGUI
+  then TVSTGUI(FEditorForm).UpdateGain;
 end;
 
 {$IFDEF FPC}

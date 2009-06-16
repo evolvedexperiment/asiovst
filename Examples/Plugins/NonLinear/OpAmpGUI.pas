@@ -9,14 +9,18 @@ uses
   Forms, Controls, StdCtrls, DAV_Common, DAV_VSTModule;
 
 type
+
+  { TVSTGUI }
+
   TVSTGUI = class(TForm)
     SBGain: TScrollBar;
     LbGain: TLabel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure SBGainChange(Sender: TObject);
     procedure LbGainClick(Sender: TObject);
-  private
   public
-    theModule: TVSTModule;
+    procedure UpdateGain;
   end;
 
 implementation
@@ -27,6 +31,19 @@ implementation
 
 uses
   Dialogs, SysUtils, OpAmpModule;
+
+procedure TVSTGUI.FormCreate(Sender: TObject);
+begin
+ LbGain.Caption  := 'OpAmp Gain';
+ SbGain.Max      := 1000;
+ SbGain.Min      := 100;
+ SbGain.Position := 100;
+end;
+
+procedure TVSTGUI.FormShow(Sender: TObject);
+begin
+ UpdateGain;
+end;
 
 procedure TVSTGUI.LbGainClick(Sender: TObject);
 //var
@@ -46,9 +63,22 @@ begin
 *)
 end;
 
+procedure TVSTGUI.UpdateGain;
+begin
+ with TVSTOpAmp(Owner) do
+  begin
+   if round(10 * Parameter[0]) <> SBGain.Position
+    then SBGain.Position := round(10 * Parameter[0]);
+  end;
+end;
+
 procedure TVSTGUI.SBGainChange(Sender: TObject);
 begin
- TVSTOpAmp(Owner).Parameter[0] := SBGain.Position * 0.1;
+ with TVSTOpAmp(Owner) do
+  begin
+   if Parameter[0] <> SBGain.Position * 0.1
+    then Parameter[0] := SBGain.Position * 0.1;
+  end;
 end;
 
 {$IFDEF FPC}

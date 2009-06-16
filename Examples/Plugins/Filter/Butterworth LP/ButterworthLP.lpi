@@ -8,6 +8,7 @@
       <TargetFileExt Value=".exe"/>
       <Icon Value="0"/>
       <UseXPManifest Value="True"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -31,50 +32,53 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="3">
       <Unit0>
-        <Filename Value="LinearPhaseCrossover.lpr"/>
+        <Filename Value="ButterworthLP.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="25" Y="16"/>
+        <CursorPos X="3" Y="7"/>
         <TopLine Value="1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="20"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
-        <Filename Value="LinearPhaseCrossoverDM.pas"/>
-        <ComponentName Value="LinearPhaseCrossoverModule"/>
+        <Filename Value="ButterworthDM.pas"/>
+        <ComponentName Value="ButterworthLPModule"/>
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UnitName Value="LinearPhaseCrossoverDM"/>
-        <CursorPos X="7" Y="314"/>
-        <TopLine Value="279"/>
-        <UsageCount Value="21"/>
+        <UnitName Value="ButterworthDM"/>
+        <CursorPos X="40" Y="19"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\..\Source\DSP\DAV_DspFftReal2Complex.pas"/>
-        <UnitName Value="DAV_DspFftReal2Complex"/>
-        <CursorPos X="19" Y="3915"/>
-        <TopLine Value="3896"/>
-        <UsageCount Value="10"/>
+        <Filename Value="ButterworthGUI.pas"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ButterworthGUI"/>
+        <CursorPos X="15" Y="3"/>
+        <TopLine Value="3"/>
+        <UsageCount Value="20"/>
+        <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
-      <Unit3>
-        <Filename Value="..\..\..\..\..\..\..\..\Lazarus\fpc\2.2.5\source\rtl\objpas\math.pp"/>
-        <UnitName Value="math"/>
-        <CursorPos X="8" Y="100"/>
-        <TopLine Value="81"/>
-        <UsageCount Value="10"/>
-      </Unit3>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="ButterworthDM.pas"/>
+        <Caret Line="120" Column="1" TopLine="83"/>
+      </Position1>
+      <Position2>
+        <Filename Value="ButterworthDM.pas"/>
+        <Caret Line="127" Column="8" TopLine="88"/>
+      </Position2>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <PathDelim Value="\"/>
-    <SearchPaths>
-      <IncludeFiles Value="..\..\..\..\Source\;$(ProjOutDir)\"/>
-      <OtherUnitFiles Value="..\..\..\..\Source\;..\..\..\..\Source\VST\;..\..\..\..\Source\DSP\;..\..\..\..\Source\Math\"/>
-      <UnitOutputDirectory Value="..\..\..\..\Bin"/>
-    </SearchPaths>
     <Linking>
       <Options>
         <ExecutableType Value="Library"/>

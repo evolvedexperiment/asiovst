@@ -32,10 +32,11 @@ object VSTOpAmp: TVSTOpAmp
       SmoothingFactor = 1
       StepFloat = 1
       VSTModule = Owner
+      OnParameterChange = VSTModuleParameterChange
     end>
   ParameterCategories = <>
-  OnEditOpen = DataModuleEditOpen
-  OnInitialize = VSTModuleInitialize
+  OnOpen = VSTModuleOpen
+  OnEditOpen = VSTModuleEditOpen
   OnParameterChange = VSTModuleParameterChange
   left = 243
   top = 103

@@ -1,9 +1,12 @@
 unit ButterworthDM;
 
+{$I DAV_Compiler.inc}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DSPFilterButterworth, DAV_VstWindowSizer;
 
 type
@@ -22,7 +25,9 @@ type
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   Math, ButterworthGUI;
@@ -113,5 +118,10 @@ begin
  for ch := 0 to numInputs - 1
   do FFilter[ch].SampleRate := SampleRate;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i ButterworthDM.lrs}
+{$ENDIF}
 
 end.

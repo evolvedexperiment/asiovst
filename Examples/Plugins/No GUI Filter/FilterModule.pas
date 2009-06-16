@@ -32,6 +32,13 @@ implementation
 procedure TVSTFilter.VSTModuleOpen(Sender: TObject);
 begin
  FCutOffFrequency := 0.5;
+
+ {$IFDEF FPC}
+ OnProcess := VSTModuleProcess;
+ OnProcessReplacing := VSTModuleProcess;
+ OnProcessDoubleReplacing := VSTModuleProcessDoubleReplacing;
+ {$ENDIF}
+
  Parameter[0] := 1000;
  Parameter[1] := 1;
 end;
@@ -51,7 +58,8 @@ end;
 // 32 Bit Processing
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TVSTFilter.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+procedure TVSTFilter.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   i         : Integer;
   cut, res  : Single;

@@ -10,6 +10,8 @@ object VSTGUI: TVSTGUI
   Color = 53
   Font.Height = -11
   Font.Name = 'Verdana'
+  OnCreate = FormCreate
+  OnShow = FormShow
   LCLVersion = '0.9.27'
   object LbGain: TLabel
     Left = 175
@@ -18,7 +20,7 @@ object VSTGUI: TVSTGUI
     Width = 73
     Anchors = [akTop]
     Caption = 'OpAmp Gain'
-    Font.Color = clSilver
+    Font.Color = 5899260
     Font.Height = -11
     Font.Name = 'Verdana'
     ParentColor = False

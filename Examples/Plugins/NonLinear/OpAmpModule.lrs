@@ -14,8 +14,9 @@ LazarusResources.Add('TVSTOpAmp','FORMDATA',[
   +'in'#5#0#0#0#0#0#0#0#128#255'?'#10'MinInteger'#2#1#10'ShortLabel'#6#4'Gain'
   +#14'SmallStepFloat'#5#0#0#0#0#0#0#0#128#255'?'#15'SmoothingFactor'#5#0#0#0#0
   +#0#0#0#128#255'?'#9'StepFloat'#5#0#0#0#0#0#0#0#128#255'?'#9'VSTModule'#7#5'O'
-  +'wner'#0#0#19'ParameterCategories'#14#0#10'OnEditOpen'#7#18'DataModuleEditOp'
-  +'en'#12'OnInitialize'#7#19'VSTModuleInitialize'#17'OnParameterChange'#7#24'V'
-  +'STModuleParameterChange'#4'left'#3#243#0#3'top'#2'g'#6'Height'#3#150#0#16'H'
-  +'orizontalOffset'#3#245#1#14'VerticalOffset'#3#235#1#5'Width'#3#215#0#0#0
+  +'wner'#17'OnParameterChange'#7#24'VSTModuleParameterChange'#0#0#19'Parameter'
+  +'Categories'#14#0#6'OnOpen'#7#13'VSTModuleOpen'#10'OnEditOpen'#7#17'VSTModul'
+  +'eEditOpen'#17'OnParameterChange'#7#24'VSTModuleParameterChange'#4'left'#3
+  +#243#0#3'top'#2'g'#6'Height'#3#150#0#16'HorizontalOffset'#3#245#1#14'Vertica'
+  +'lOffset'#3#235#1#5'Width'#3#215#0#0#0
 ]);

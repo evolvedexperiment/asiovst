@@ -11,14 +11,14 @@ uses
 
 function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
-  VSTModule1 : TVSTFilter;
+  VSTFilterModule : TVSTFilter;
 begin
-  VSTModule1 := TVSTFilter.Create(nil);
-  VSTModule1.Effect^.user := VSTModule1;
-  VSTModule1.AudioMaster := audioMaster;
-  Result := VSTModule1.Effect;
+  VSTFilterModule := TVSTFilter.Create(nil);
+  VSTFilterModule.Effect^.user := VSTFilterModule;
+  VSTFilterModule.AudioMaster := audioMaster;
+  Result := VSTFilterModule.Effect;
 
-  with VSTModule1 do
+  with VSTFilterModule do
   try
     Flags := [effFlagsCanReplacing, effFlagsCanDoubleReplacing];
     Version := '1.0';
@@ -38,24 +38,24 @@ begin
     OnOpen := VSTModuleOpen;
 
     with (Programs.Add) do
-    begin
+     begin
       DisplayName := 'Preset 1';
-      VSTModule:=VSTModule1;
-    end;
+      VSTModule:=VSTFilterModule;
+     end;
     with (Programs.Add) do
-    begin
+     begin
       DisplayName := 'Preset 2';
-      VSTModule:=VSTModule1;
-    end;
+      VSTModule:=VSTFilterModule;
+     end;
     with (Programs.Add) do
-    begin
+     begin
       DisplayName := 'Preset 3';
-      VSTModule:=VSTModule1;
-    end;
+      VSTModule:=VSTFilterModule;
+     end;
 
     with (ParameterProperties.Add) do
      begin
-      VSTModule := VSTModule1;
+      VSTModule := VSTFilterModule;
       Min := 20.0;
       Max := 20000.0;
       Curve := ctLinear;
@@ -95,11 +95,11 @@ begin
       StepInteger := 1;
       LargeStepInteger := 1;
       ShortLabel := 'Res';
-      VSTModule := VSTModule1;
+      VSTModule := VSTFilterModule;
      end;
     CurrentProgram := 0;
-    if Assigned(OnCreate) then OnCreate(VSTModule1);
-    if Assigned(OnInitialize) then OnInitialize(VSTModule1);
+    if Assigned(OnCreate) then OnCreate(VSTFilterModule);
+    if Assigned(OnInitialize) then OnInitialize(VSTFilterModule);
   except
   end;
 end;

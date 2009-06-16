@@ -1,11 +1,13 @@
 unit ButterworthGUI;
 
+{$I DAV_Compiler.inc}
+
 interface
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, ExtCtrls,
-  DAV_GuiPanel;
+uses
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows {$ENDIF}, Messages,
+  SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Common, DAV_VSTModule,
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
 
 type
   TFmButterworth = class(TForm)
@@ -29,7 +31,9 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   ButterworthDM, DAV_VSTModuleWithPrograms;
@@ -96,5 +100,10 @@ begin
    LbOrderValue.Caption := IntToStr(round(Order));
   end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i ButterworthGUI.lrs}
+{$ENDIF}
 
 end.

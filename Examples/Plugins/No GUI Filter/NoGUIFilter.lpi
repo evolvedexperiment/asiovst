@@ -7,7 +7,6 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
-        <Runnable Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
@@ -26,7 +25,7 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <HostApplicationFilename Value="C:\ITA\Projects\VSTPack\Bin\VST Plugin Analyser.exe"/>
+        <HostApplicationFilename Value="C:\Users\Christian Budde\Projects\VSTPack\Bin\VST Plugin Analyser.exe"/>
         <CommandLineParams Value="NoGUIFilter.dll"/>
         <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
@@ -36,12 +35,12 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="37">
+    <Units Count="40">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="21" Y="71"/>
-        <TopLine Value="57"/>
+        <CursorPos X="25" Y="8"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="53"/>
         <Loaded Value="True"/>
@@ -98,8 +97,8 @@
         <ComponentName Value="VSTFilter"/>
         <HasResources Value="True"/>
         <UnitName Value="FilterModule"/>
-        <CursorPos X="46" Y="43"/>
-        <TopLine Value="22"/>
+        <CursorPos X="3" Y="62"/>
+        <TopLine Value="50"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="17"/>
         <Loaded Value="True"/>
@@ -315,8 +314,38 @@
         <UsageCount Value="10"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit36>
+      <Unit37>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
+        <UnitName Value="DAV_VSTModule"/>
+        <CursorPos X="66" Y="8"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <UnitName Value="DAV_VSTModuleWithDsp"/>
+        <CursorPos X="38" Y="9"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit38>
+      <Unit39>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <UnitName Value="DAV_VSTCustomModule"/>
+        <CursorPos X="117" Y="15"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit39>
     </Units>
-    <JumpHistory Count="10" HistoryIndex="9">
+    <JumpHistory Count="16" HistoryIndex="15">
       <Position1>
         <Filename Value="NoGUIFilter.lpr"/>
         <Caret Line="16" Column="15" TopLine="1"/>
@@ -357,6 +386,30 @@
         <Filename Value="NoGUIFilter.lpr"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position10>
+      <Position11>
+        <Filename Value="FilterModule.pas"/>
+        <Caret Line="38" Column="28" TopLine="22"/>
+      </Position11>
+      <Position12>
+        <Filename Value="FilterModule.pas"/>
+        <Caret Line="8" Column="23" TopLine="1"/>
+      </Position12>
+      <Position13>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
+        <Caret Line="8" Column="66" TopLine="1"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
+        <Caret Line="9" Column="38" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="14" Column="6" TopLine="3"/>
+      </Position15>
+      <Position16>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="102" Column="49" TopLine="72"/>
+      </Position16>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -374,16 +427,13 @@
     <Parsing>
       <SyntaxOptions>
         <SyntaxMode Value="Delphi"/>
-        <CStyleOperator Value="False"/>
-        <AllowLabel Value="False"/>
+        <IncludeAssertionCode Value="True"/>
         <CPPInline Value="False"/>
+        <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
-      <Checks>
-        <IOChecks Value="True"/>
-        <StackChecks Value="True"/>
-      </Checks>
+      <SmartLinkUnit Value="True"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
