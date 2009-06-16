@@ -42,6 +42,12 @@ begin
    FLinkwitzRiley[Channel] := TLinkwitzRiley.Create;
    FLinkwitzRiley[Channel].SampleRate := SampleRate;
   end;
+
+ {$IFDEF FPC}
+ OnProcess := VSTModuleProcess;
+ OnProcessReplacing := VSTModuleProcess;
+ {$ENDIF}
+
  Parameter[0] := 1000;
  Parameter[1] := 2;
 end;

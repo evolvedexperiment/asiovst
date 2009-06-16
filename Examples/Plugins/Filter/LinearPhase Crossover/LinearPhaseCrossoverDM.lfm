@@ -1,7 +1,8 @@
-object LinkwitzRileyModule: TLinkwitzRileyModule
+object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
+  OnCreate = VSTModuleCreate
   OldCreateOrder = False
   Version = '1.0'
-  EffectName = 'LinkwitzRiley'
+  EffectName = 'LinearPhaseCrossover'
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
@@ -9,6 +10,9 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
   numInputs = 1
   CurrentProgram = 0
   CurrentProgramName = 'Default'
+  ProcessingMode = pmBlockSave
+  BlockModeOverlap = 512
+  InitialDelay = 1024
   IORatio = 1
   UniqueID = 'LiRi'
   ShellPlugins = <>
@@ -42,16 +46,16 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
     item
       Curve = ctLinear
       CurveFactor = 1
-      DisplayName = 'Order'
+      DisplayName = 'FFT Order'
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
       LargeStepFloat = 1
       LargeStepInteger = 1
       Max = 16
       MaxInteger = 16
-      Min = 1
-      MinInteger = 1
+      Min = 6
+      MinInteger = 6
       ReportVST2Properties = True
-      ShortLabel = 'Order'
+      ShortLabel = 'FFT Ord'
       SmallStepFloat = 1
       SmoothingFactor = 0
       StepFloat = 1
@@ -66,7 +70,7 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
   left = 286
   top = 77
   Height = 150
-  HorizontalOffset = 298
-  VerticalOffset = 206
+  HorizontalOffset = 299
+  VerticalOffset = 116
   Width = 215
 end

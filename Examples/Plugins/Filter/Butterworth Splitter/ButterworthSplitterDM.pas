@@ -10,9 +10,6 @@ uses
   DAV_DspFilterButterworth;
 
 type
-
-  { TButterworthSplitterModule }
-
   TButterworthSplitterModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -33,6 +30,8 @@ implementation
 {$IFNDEF FPC}
 {$R *.dfm}
 {$ENDIF}
+
+{ TButterworthSplitterModule }
 
 procedure TButterworthSplitterModule.VSTModuleOpen(Sender: TObject);
 var

@@ -5,7 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, DAV_Common, DAV_Complex;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
+  DAV_Common, DAV_Complex;
 
 type
   TFftAutoScaleType = (astDivideFwdByN = 1, astDivideInvByN = 2,
@@ -56,7 +57,7 @@ type
     LUT: array of Integer;
     constructor Create(const BitCount: Integer);
     destructor Destroy; override;
-    function GetPointer: pInteger;
+    function GetPointer: PInteger;
   end;
 
   TFFTLUTListObject = class
@@ -231,7 +232,7 @@ procedure TFftReal2Complex.ConvertSingleToDouble(Singles: PSingle;
 asm
   push ebx
   mov ebx, Doubles
-  mov ecx, [self.FFftSize]
+  mov ecx, [eax.FFftSize]
 
   @MarioLand:
   fld  [edx + ecx * 4 - 4].Single
@@ -245,7 +246,7 @@ procedure TFftReal2Complex.ConvertDoubleToSingle(Doubles: PDouble;
 asm
   push ebx
   mov ebx, Singles
-  mov ecx,[self.FFftSize]
+  mov ecx,[eax.FFftSize]
 
   @MarioLand:
   fld  [edx + ecx * 8 - 8].Double
@@ -367,7 +368,7 @@ begin
   inherited;
 end;
 
-function TFFTLUTBitReversed.GetPointer: pInteger;
+function TFFTLUTBitReversed.GetPointer: PInteger;
 begin
   Result := @LUT[0];
 end;
@@ -620,8 +621,8 @@ begin
 end;
 {$ELSE}
 asm
- fld TimeDomain.Single
- fstp FreqDomain.Single
+ fld [TimeDomain].Single
+ fstp [FreqDomain].Single
 end;
 {$ENDIF}
 
@@ -634,8 +635,8 @@ begin
 end;
 {$ELSE}
 asm
- fld TimeDomain.Single
- fstp FreqDomain.Single
+ fld  [TimeDomain].Single
+ fstp [FreqDomain].Single
 end;
 {$ENDIF}
 
@@ -651,12 +652,12 @@ begin
 end;
 {$ELSE}
 asm
- fld  (TimeDomain     ).Single
+ fld  [TimeDomain     ].Single
  fld   st(0)
- fadd (TimeDomain + $4).Single
- fstp (FreqDomain     ).Single
- fsub (TimeDomain + $4).Single
- fstp (FreqDomain + $4).Single
+ fadd [TimeDomain + $4].Single
+ fstp [FreqDomain     ].Single
+ fsub [TimeDomain + $4].Single
+ fstp [FreqDomain + $4].Single
 end;
 {$ENDIF}
 
@@ -673,12 +674,12 @@ begin
 end;
 {$ELSE}
 asm
- fld  (TimeDomain     ).Single
+ fld  [TimeDomain     ].Single
  fld   st(0)
- fadd (TimeDomain + $4).Single
- fstp (FreqDomain     ).Single
- fsub (TimeDomain + $4).Single
- fstp (FreqDomain + $4).Single
+ fadd [TimeDomain + $4].Single
+ fstp [FreqDomain     ].Single
+ fsub [TimeDomain + $4].Single
+ fstp [FreqDomain + $4].Single
 end;
 {$ENDIF}
 
@@ -699,21 +700,21 @@ begin
 end;
 {$ELSE}
 asm
- fld  (TimeDomain     ).Single
- fsub (TimeDomain + $8).Single
- fstp (FreqDomain + $4).Single
- fld  (TimeDomain + $4).Single
- fsub (TimeDomain + $C).Single
- fstp (FreqDomain + $C).Single
- fld  (TimeDomain     ).Single
- fadd (TimeDomain + $8).Single
- fld  (TimeDomain + $4).Single
- fadd (TimeDomain + $C).Single
+ fld  [TimeDomain     ].Single
+ fsub [TimeDomain + $8].Single
+ fstp [FreqDomain + $4].Single
+ fld  [TimeDomain + $4].Single
+ fsub [TimeDomain + $C].Single
+ fstp [FreqDomain + $C].Single
+ fld  [TimeDomain     ].Single
+ fadd [TimeDomain + $8].Single
+ fld  [TimeDomain + $4].Single
+ fadd [TimeDomain + $C].Single
  fld   st(0)
  fadd  st(0),st(2)
- fstp (FreqDomain     ).Single
+ fstp [FreqDomain     ].Single
  fsubp
- fstp (FreqDomain + $8).Single
+ fstp [FreqDomain + $8].Single
 end;
 {$ENDIF}
 
@@ -735,21 +736,21 @@ begin
 end;
 {$ELSE}
 asm
- fld  (TimeDomain     ).Single
- fsub (TimeDomain + $8).Single
- fstp (FreqDomain + $4).Single
- fld  (TimeDomain + $4).Single
- fsub (TimeDomain + $C).Single
- fstp (FreqDomain + $C).Single
- fld  (TimeDomain     ).Single
- fadd (TimeDomain + $8).Single
- fld  (TimeDomain + $4).Single
- fadd (TimeDomain + $C).Single
+ fld  [TimeDomain     ].Single
+ fsub [TimeDomain + $8].Single
+ fstp [FreqDomain + $4].Single
+ fld  [TimeDomain + $4].Single
+ fsub [TimeDomain + $C].Single
+ fstp [FreqDomain + $C].Single
+ fld  [TimeDomain     ].Single
+ fadd [TimeDomain + $8].Single
+ fld  [TimeDomain + $4].Single
+ fadd [TimeDomain + $C].Single
  fld   st(0)
  fadd  st(0),st(2)
- fstp (FreqDomain     ).Single
+ fstp [FreqDomain     ].Single
  fsubp
- fstp (FreqDomain + $8).Single
+ fstp [FreqDomain + $8].Single
 end;
 {$ENDIF}
 
@@ -1616,8 +1617,8 @@ begin
 end;
 {$ELSE}
 asm
- fld FreqDomain.Single
- fstp TimeDomain.Single
+ fld  [FreqDomain].Single
+ fstp [TimeDomain].Single
 end;
 {$ENDIF}
 
@@ -1630,8 +1631,8 @@ begin
 end;
 {$ELSE}
 asm
- fld FreqDomain.Single
- fstp TimeDomain.Single
+ fld  [FreqDomain].Single
+ fstp [TimeDomain].Single
 end;
 {$ENDIF}
 
@@ -1647,12 +1648,12 @@ begin
 end;
 {$ELSE}
 asm
- fld   FreqDomain.Single
+ fld  [FreqDomain    ].Single
  fld  st(0)
- fadd (FreqDomain + 4).Single
- fstp (TimeDomain    ).Single
- fsub (FreqDomain + 4).Single
- fstp (TimeDomain + 4).Single
+ fadd [FreqDomain + 4].Single
+ fstp [TimeDomain    ].Single
+ fsub [FreqDomain + 4].Single
+ fstp [TimeDomain + 4].Single
 end;
 {$ENDIF}
 
@@ -1669,12 +1670,12 @@ begin
 end;
 {$ELSE}
 asm
- fld   FreqDomain.Single
+ fld  [FreqDomain].Single
  fld  st(0)
- fadd (FreqDomain + 4).Single
- fstp (TimeDomain    ).Single
- fsub (FreqDomain + 4).Single
- fstp (TimeDomain + 4).Single
+ fadd [FreqDomain + 4].Single
+ fstp [TimeDomain    ].Single
+ fsub [FreqDomain + 4].Single
+ fstp [TimeDomain + 4].Single
 end;
 {$ENDIF}
 
@@ -1698,26 +1699,26 @@ end;
 const
   c2 : Double = 2;
 asm
- fld (FreqDomain+8).Single
- fld FreqDomain.Single
- fld st(0)
+ fld  [FreqDomain +  8].Single
+ fld  FreqDomain.Single
+ fld  st(0)
  fadd st(0),st(2)
  fxch st(2)
- fsubp                        // b1, b0
- fld (FreqDomain+12).Single   // f3, b1, b0
- fmul c2                      // 2 * f3, b1, b0
- fld st(0)                    // 2 * f3, 2 * f3, b1, b0
- fadd st(0),st(2)             // b1 + 2 * f3, 2 * f3, b1, b0
- fstp (TimeDomain+4).Single   // 2 * f3, b1, b0
- fsubp                        // b1 - 2 * f3, b0
- fstp (TimeDomain+12).Single  // b0
- fld (FreqDomain+4).Single    // f1, b0
- fmul c2                      // 2 * f1, b0
- fld st(0)                    // 2 * f1, 2 * f1, b0
- fadd st(0),st(2)             // 2 * f1 + b0, 2 * f1, b0
- fstp (TimeDomain).Single     // 2 * f1, b0
- fsubp                        // b0 - 2 * f1
- fstp (TimeDomain+8).Single
+ fsubp                         // b1, b0
+ fld  [FreqDomain + 12].Single // f3, b1, b0
+ fmul c2                       // 2 * f3, b1, b0
+ fld  st(0)                    // 2 * f3, 2 * f3, b1, b0
+ fadd st(0),st(2)              // b1 + 2 * f3, 2 * f3, b1, b0
+ fstp [TimeDomain +  4].Single // 2 * f3, b1, b0
+ fsubp                         // b1 - 2 * f3, b0
+ fstp [TimeDomain+ 12].Single  // b0
+ fld  [FreqDomain +  4].Single // f1, b0
+ fmul c2                       // 2 * f1, b0
+ fld  st(0)                    // 2 * f1, 2 * f1, b0
+ fadd st(0),st(2)              // 2 * f1 + b0, 2 * f1, b0
+ fstp [TimeDomain].Single      // 2 * f1, b0
+ fsubp                         // b0 - 2 * f1
+ fstp [TimeDomain +  8].Single
 end;
 {$ENDIF}
 
@@ -1742,26 +1743,26 @@ end;
 const
   c2 : Double = 2;
 asm
- fld (FreqDomain + 8).Single
- fld FreqDomain.Single
- fld st(0)
+ fld  [FreqDomain +  8].Single
+ fld  [FreqDomain].Single
+ fld  st(0)
  fadd st(0),st(2)
  fxch st(2)
- fsubp                        // b1, b0
- fld (FreqDomain+12).Single   // f3, b1, b0
- fmul c2                      // 2 * f3, b1, b0
- fld st(0)                    // 2 * f3, 2 * f3, b1, b0
- fadd st(0),st(2)             // b1 + 2 * f3, 2 * f3, b1, b0
- fstp (TimeDomain+4).Single   // 2 * f3, b1, b0
- fsubp                        // b1 - 2 * f3, b0
- fstp (TimeDomain+12).Single  // b0
- fld (FreqDomain+4).Single    // f1, b0
- fmul c2                      // 2 * f1, b0
- fld st(0)                    // 2 * f1, 2 * f1, b0
- fadd st(0),st(2)             // 2 * f1 + b0, 2 * f1, b0
- fstp (TimeDomain).Single     // 2 * f1, b0
- fsubp                        // b0 - 2 * f1
- fstp (TimeDomain+8).Single
+ fsubp                         // b1, b0
+ fld  [FreqDomain + 12].Single // f3, b1, b0
+ fmul c2                       // 2 * f3, b1, b0
+ fld  st(0)                    // 2 * f3, 2 * f3, b1, b0
+ fadd st(0), st(2)             // b1 + 2 * f3, 2 * f3, b1, b0
+ fstp [TimeDomain +  4].Single // 2 * f3, b1, b0
+ fsubp                         // b1 - 2 * f3, b0
+ fstp [TimeDomain + 12].Single // b0
+ fld  [FreqDomain +  4].Single // f1, b0
+ fmul c2                       // 2 * f1, b0
+ fld  st(0)                    // 2 * f1, 2 * f1, b0
+ fadd st(0),st(2)              // 2 * f1 + b0, 2 * f1, b0
+ fstp [TimeDomain].Single      // 2 * f1, b0
+ fsubp                         // b0 - 2 * f1
+ fstp [TimeDomain + 8].Single
 end;
 {$ENDIF}
 
@@ -2802,8 +2803,8 @@ begin
 end;
 {$ELSE}
 asm
- fld TimeDomain.Double
- fstp FreqDomain.Double
+ fld  [TimeDomain].Double
+ fstp [FreqDomain].Double
 end;
 {$ENDIF}
 
@@ -2814,8 +2815,8 @@ begin
 end;
 {$ELSE}
 asm
- fld TimeDomain.Double
- fstp FreqDomain.Double
+ fld  [TimeDomain].Double
+ fstp [FreqDomain].Double
 end;
 {$ENDIF}
 
@@ -2832,12 +2833,12 @@ begin
 end;
 {$ELSE}
 asm
- fld   TimeDomain.Double
+ fld   [TimeDomain].Double
  fld   st(0)
- fadd (TimeDomain + $8).Double
- fstp  FreqDomain.Double
- fsub (TimeDomain + $8).Double
- fstp (FreqDomain + $8).Double
+ fadd  [TimeDomain + $8].Double
+ fstp  [FreqDomain].Double
+ fsub  [TimeDomain + $8].Double
+ fstp  [FreqDomain + $8].Double
 end;
 {$ENDIF}
 
@@ -2853,12 +2854,12 @@ begin
 end;
 {$ELSE}
 asm
- fld   TimeDomain.Double
+ fld   [TimeDomain].Double
  fld   st(0)
- fadd (TimeDomain + $8).Double
- fstp  FreqDomain.Double
- fsub (TimeDomain + $8).Double
- fstp (FreqDomain + $8).Double
+ fadd  [TimeDomain + $8].Double
+ fstp  [FreqDomain].Double
+ fsub  [TimeDomain + $8].Double
+ fstp  [FreqDomain + $8].Double
 end;
 {$ENDIF}
 
@@ -2878,21 +2879,21 @@ begin
 end;
 {$ELSE}
 asm
- fld  (TimeDomain      ).Double
- fsub (TimeDomain + $10).Double
- fstp (FreqDomain +  $8).Double
- fld  (TimeDomain +  $8).Double
- fsub (TimeDomain + $18).Double
- fstp (FreqDomain + $18).Double
- fld  (TimeDomain      ).Double
- fadd (TimeDomain + $10).Double
- fld  (TimeDomain +  $8).Double
- fadd (TimeDomain + $18).Double
+ fld   [TimeDomain      ].Double
+ fsub  [TimeDomain + $10].Double
+ fstp  [FreqDomain +  $8].Double
+ fld   [TimeDomain +  $8].Double
+ fsub  [TimeDomain + $18].Double
+ fstp  [FreqDomain + $18].Double
+ fld   [TimeDomain      ].Double
+ fadd  [TimeDomain + $10].Double
+ fld   [TimeDomain +  $8].Double
+ fadd  [TimeDomain + $18].Double
  fld   st(0)
  fadd  st(0),st(2)
- fstp  FreqDomain.Double
+ fstp  [FreqDomain].Double
  fsubp
- fstp (FreqDomain + $10).Double
+ fstp  [FreqDomain + $10].Double
 end;
 {$ENDIF}
 
@@ -2912,21 +2913,21 @@ begin
 end;
 {$ELSE}
 asm
- fld  (TimeDomain      ).Double
- fsub (TimeDomain + $10).Double
- fstp (FreqDomain +  $8).Double
- fld  (TimeDomain +  $8).Double
- fsub (TimeDomain + $18).Double
- fstp (FreqDomain + $18).Double
- fld  (TimeDomain      ).Double
- fadd (TimeDomain + $10).Double
- fld  (TimeDomain +  $8).Double
- fadd (TimeDomain + $18).Double
+ fld   [TimeDomain      ].Double
+ fsub  [TimeDomain + $10].Double
+ fstp  [FreqDomain +  $8].Double
+ fld   [TimeDomain +  $8].Double
+ fsub  [TimeDomain + $18].Double
+ fstp  [FreqDomain + $18].Double
+ fld   [TimeDomain      ].Double
+ fadd  [TimeDomain + $10].Double
+ fld   [TimeDomain +  $8].Double
+ fadd  [TimeDomain + $18].Double
  fld   st(0)
  fadd  st(0),st(2)
- fstp  FreqDomain.Double
+ fstp  [FreqDomain].Double
  fsubp
- fstp (FreqDomain + $10).Double
+ fstp  [FreqDomain + $10].Double
 end;
 {$ENDIF}
 
@@ -3811,8 +3812,8 @@ begin
 end;
 {$ELSE}
 asm
- fld FreqDomain.Double
- fstp TimeDomain.Double
+ fld  [FreqDomain].Double
+ fstp [TimeDomain].Double
 end;
 {$ENDIF}
 
@@ -3823,8 +3824,8 @@ begin
 end;
 {$ELSE}
 asm
- fld FreqDomain.Double
- fstp TimeDomain.Double
+ fld  [FreqDomain].Double
+ fstp [TimeDomain].Double
 end;
 {$ENDIF}
 
@@ -3839,12 +3840,12 @@ begin
 end;
 {$ELSE}
 asm
- fld FreqDomain.Double
- fld st(0)
- fadd (FreqDomain + 8).Double
- fstp TimeDomain.Double
- fsub (FreqDomain + 8).Double
- fstp (TimeDomain + 8).Double
+ fld  [FreqDomain].Double
+ fld  st(0)
+ fadd [FreqDomain + 8].Double
+ fstp [TimeDomain].Double
+ fsub [FreqDomain + 8].Double
+ fstp [TimeDomain + 8].Double
 end;
 {$ENDIF}
 
@@ -3859,12 +3860,12 @@ begin
 end;
 {$ELSE}
 asm
- fld FreqDomain.Double
- fld st(0)
- fadd (FreqDomain + 8).Double
- fstp TimeDomain.Double
- fsub (FreqDomain + 8).Double
- fstp (TimeDomain + 8).Double
+ fld  [FreqDomain].Double
+ fld  st(0)
+ fadd [FreqDomain + 8].Double
+ fstp [TimeDomain].Double
+ fsub [FreqDomain + 8].Double
+ fstp [TimeDomain + 8].Double
 end;
 {$ENDIF}
 
@@ -3887,26 +3888,26 @@ end;
 const
   c2 : Double = 2 ;
 asm
- fld (FreqDomain + $10).Double
- fld FreqDomain.Double
- fld st(0)
+ fld  [FreqDomain + $10].Double
+ fld  [FreqDomain].Double
+ fld  st(0)
  fadd st(0), st(2)
  fxch st(2)
  fsubp
- fld (FreqDomain + $18).Double
+ fld  [FreqDomain + $18].Double
  fmul c2
- fld st(0)
+ fld  st(0)
  fadd st(0), st(2)
- fstp (TimeDomain + $8).Double
+ fstp [TimeDomain + $8].Double
  fsubp
- fstp (TimeDomain + $18).Double
- fld (FreqDomain + $8).Double
+ fstp [TimeDomain + $18].Double
+ fld  [FreqDomain + $8].Double
  fmul c2
- fld st(0)
+ fld  st(0)
  fadd st(0), st(2)
- fstp (TimeDomain).Double    
+ fstp [TimeDomain].Double
  fsubp                       
- fstp (TimeDomain + $10).Double
+ fstp [TimeDomain + $10].Double
 end;
 {$ENDIF}
 
@@ -3929,26 +3930,26 @@ end;
 const
   c2 : Double = 2 ;
 asm
- fld (FreqDomain + $10).Double
- fld FreqDomain.Double
- fld st(0)
- fadd st(0), st(2)
- fxch st(2)
+ fld   [FreqDomain + $10].Double
+ fld   [FreqDomain].Double
+ fld   st(0)
+ fadd  st(0), st(2)
+ fxch  st(2)
  fsubp
- fld (FreqDomain + $18).Double
- fmul c2
- fld st(0)
- fadd st(0), st(2)
- fstp (TimeDomain + $8).Double
+ fld   [FreqDomain + $18].Double
+ fmul  c2
+ fld   st(0)
+ fadd  st(0), st(2)
+ fstp  [TimeDomain +  $8].Double
  fsubp
- fstp (TimeDomain + $18).Double
- fld (FreqDomain + $8).Double
- fmul c2
- fld st(0)
- fadd st(0), st(2)
- fstp (TimeDomain).Double
+ fstp  [TimeDomain + $18].Double
+ fld   [FreqDomain +  $8].Double
+ fmul  c2
+ fld   st(0)
+ fadd  st(0), st(2)
+ fstp  [TimeDomain].Double
  fsubp
- fstp (TimeDomain + $10).Double
+ fstp  [TimeDomain + $10].Double
 end;
 {$ENDIF}
 

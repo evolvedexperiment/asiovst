@@ -3,12 +3,13 @@ unit LinearPhaseCrossoverDM;
 interface
 
 {$I DAV_Compiler.INC}
-{$DEFINE Use_IPPS}
+{.$DEFINE Use_IPPS}
 {.$DEFINE Use_CUDA}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
-  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Forms, DAV_Common, DAV_Complex, DAV_DspFftReal2Complex,
+  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
 type
@@ -44,7 +45,9 @@ implementation
 uses
   Math, DAV_DspWindowing;
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 procedure TLinearPhaseCrossoverModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -56,6 +59,12 @@ begin
  FSignalFreq[0]   := nil;
  FSignalFreq[1]   := nil;
  BlockModeOverlap := BlockModeSize div 2;
+
+ {$IFDEF FPC}
+ OnProcess := VSTModuleProcess;
+ OnProcessReplacing := VSTModuleProcess;
+ {$ENDIF}
+
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleOpen(Sender: TObject);
@@ -299,5 +308,10 @@ procedure TLinearPhaseCrossoverModule.VSTModuleSampleRateChange(Sender: TObject;
 begin
  CalculateFilterKernel;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$I LinearPhaseCrossoverDM.lrs}
+{$ENDIF}
 
 end.
