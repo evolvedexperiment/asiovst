@@ -23,8 +23,6 @@ type
   private
     FVoices  : TVoiceList;
     FVocoder : TVocoder;
-
-    FDownsampleScheduler : TDownsampleScheduler;
   public
     property Voices: TVoiceList read FVoices;
   end;

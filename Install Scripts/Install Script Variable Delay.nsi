@@ -162,7 +162,7 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\VariableDelay.dll"
+  Delete "$INSTDIR\Variable Delay.dll"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

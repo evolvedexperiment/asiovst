@@ -30,6 +30,9 @@ type
     procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDownsampled(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterDownsamplingChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FUseDownsampling: Boolean;
     function GetBandReserve: Single;
@@ -44,7 +47,6 @@ type
     FBandReserve     : Double;
 
     FFilterArray     : Array [0..cNumFrequencies - 1] of TDownsampleFilterRecord;
-    FChannelNr       : Integer;
     FFSGain          : Single;
     FSpeedConst      : array [0..1] of Single;
     procedure UpdateFilters; virtual;
@@ -63,10 +65,7 @@ uses
   Math, DAV_VSTCustomModule, ThirdOctaveAnalyserGUI;
 
 procedure TThirdOctaveAnalyserModule.VSTModuleOpen(Sender: TObject);
-var
-  Band : Integer;
 begin
- FChannelNr := 0;
  FSpeedConst[0] := 0.999;
  CalculateSmoothingFactor;
  FFSGain := 0;
@@ -76,57 +75,27 @@ begin
  UseDownsampling := True;
  DownsamplingChanged;
 
- if FDownSampleCount = -1
-  then OnProcess := VSTModuleProcessNormal
-  else OnProcess := VSTModuleProcessDownSampled;
+ Parameter[0] := 0.99;
+ Parameter[1] := 90;
+ Parameter[2] := 1;
 
- OnProcessReplacing := OnProcess; 
-end;
-
-procedure TThirdOctaveAnalyserModule.VSTModuleProcessNormal(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  i,j : Integer;
-  d,z : Double;
-const
-  cDenorm = 1E-32;
-begin
- for i := 0 to SampleFrames - 1 do
+ with Programs[0] do
   begin
-   d := Inputs[FChannelNr,i];
-   for j := 0 to CNumFrequencies - 1 do
-    begin
-     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
-     FFilterArray[j].RMS := FSpeedConst[0] * FFilterArray[j].RMS + FSpeedConst[1] * Amp_to_dB(abs(z));
-    end;
+   Parameter[0] := 0.99;
+   Parameter[1] := 90;
+   Parameter[2] := 1;
   end;
-end;
-
-procedure TThirdOctaveAnalyserModule.VSTModuleProcessDownsampled(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  i, j, r : Integer;
-  d, z, s : Double;
-const
-  cDenorm = 1E-32;
-begin
- for i := 0 to SampleFrames - 1 do
+ with Programs[1] do
   begin
-   d := Inputs[FChannelNr, i];
-   for j := 0 to CNumFrequencies - 1 do
-    begin
-     if (FDownSampleCount mod FFilterArray[j].Downsampling) <> 0
-      then Break;
-
-     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
-
-     s := IntPower(FSpeedConst[0], 8 * FFilterArray[j].Downsampling + 1);
-     FFilterArray[j].RMS := s * FFilterArray[j].RMS + (1 - s) * Amp_to_dB(abs(z));
-    end;
-   inc(FDownSampleCount);
-   if FDownSampleCount >= FDownSampleMax then FDownSampleCount := 0;
+   Parameter[0] := 0.999;
+   Parameter[1] := 90;
+   Parameter[2] := 1;
+  end;
+ with Programs[2] do
+  begin
+   Parameter[0] := 0.9999;
+   Parameter[1] := 90;
+   Parameter[2] := 1;
   end;
 end;
 
@@ -171,6 +140,20 @@ begin
    FUseDownsampling := Value;
    DownsamplingChanged;
   end;
+end;
+
+procedure TThirdOctaveAnalyserModule.ParameterDownsamplingChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ UseDownsampling := Value > 0.5;
+end;
+
+procedure TThirdOctaveAnalyserModule.ParameterDownsamplingDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 0.5
+  then PreDefined := 'Off'
+  else PreDefined := 'On';
 end;
 
 procedure TThirdOctaveAnalyserModule.ParameterFullscaleGainChange(
@@ -244,8 +227,60 @@ procedure TThirdOctaveAnalyserModule.DownsamplingChanged;
 begin
  if FUseDownsampling
   then FDownSampleCount := 0
-  else FDownSampleCount := -1
+  else FDownSampleCount := -1;
+
+ if FDownSampleCount = -1
+  then OnProcess := VSTModuleProcessNormal
+  else OnProcess := VSTModuleProcessDownSampled;
+
+ OnProcessReplacing := OnProcess;
 end;
 
+procedure TThirdOctaveAnalyserModule.VSTModuleProcessNormal(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i,j : Integer;
+  d,z : Double;
+const
+  cDenorm = 1E-32;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   d := Inputs[0, i];
+   for j := 0 to CNumFrequencies - 1 do
+    begin
+     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
+     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
+     FFilterArray[j].RMS := FSpeedConst[0] * FFilterArray[j].RMS + FSpeedConst[1] * Amp_to_dB(abs(z));
+    end;
+  end;
+end;
+
+procedure TThirdOctaveAnalyserModule.VSTModuleProcessDownsampled(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  i, j    : Integer;
+  d, z, s : Double;
+const
+  cDenorm = 1E-32;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   d := Inputs[0, i];
+   for j := 0 to CNumFrequencies - 1 do
+    begin
+     if (FDownSampleCount mod FFilterArray[j].Downsampling) <> 0
+      then Break;
+
+     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
+     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
+
+     s := IntPower(FSpeedConst[0], 8 * FFilterArray[j].Downsampling + 1);
+     FFilterArray[j].RMS := s * FFilterArray[j].RMS + (1 - s) * Amp_to_dB(abs(z));
+    end;
+   inc(FDownSampleCount);
+   if FDownSampleCount >= FDownSampleMax then FDownSampleCount := 0;
+  end;
+end;
 
 end.

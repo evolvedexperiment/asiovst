@@ -7,12 +7,26 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
+  numInputs = 1
   numOutputs = 0
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Slow'
   IORatio = 1.000000000000000000
   UniqueID = 'TOAV'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Slow'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Medium'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Fast'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLogarithmic
@@ -46,12 +60,26 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterFullscaleGainChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Downsampling'
+      LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
+      ShortLabel = 'DS'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterDownsamplingChange
+      OnCustomParameterDisplay = ParameterDownsamplingDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNormal
+  OnProcessReplacing = VSTModuleProcessNormal
   Left = 286
   Top = 81
   Height = 150

@@ -27,21 +27,6 @@ type
     function Imaginary(const Frequency: Double): Double; override;
   end;
 
-(*
-  TCustomDownsampledChebyshevFilter = class(TCustomChebyshevFilter)
-  private
-    procedure SetDownsamplePower(Value: Integer);
-  protected
-    FDownsamplePow : Integer;
-    FDownsampleFak : Integer;
-    procedure CalculateW0; override;
-  public
-    constructor Create(const Order: Integer = 0); override;
-    property DownsampleAmount : Integer read FDownsamplePow write SetDownsamplePower;
-    property DownsampleFaktor : Integer read FDownsampleFak;
-  end;
-*)
-
 implementation
 
 {$IFDEF FPC}
@@ -109,34 +94,5 @@ begin
  inherited;
  ResetStates;
 end;
-
-(*
-{ TCustomDownsampledChebyshevFilter }
-
-constructor TCustomDownsampledChebyshevFilter.Create(const Order: Integer = 0);
-begin
- FDownsamplePow := 0;
- FDownsampleFak := 1;
- inherited Create(Order);
-end;
-
-procedure TCustomDownsampledChebyshevFilter.SetDownsamplePower(Value: Integer);
-begin
- if Value < 0 then Value := 0;
- if FDownsamplePow <> Value then
-  begin
-   FDownsamplePow := Value;
-   FDownsampleFak := round(IntPower(2, FDownsamplePow));
-   CalculateW0;
-  end;
-end;
-
-procedure TCustomDownsampledChebyshevFilter.CalculateW0;
-begin
- // inherited; FTanW0Half := FExpW0.Im / (1 + FExpW0.Re);
- FW0 := Pi * FSRR * FFrequency * FDownsampleFak;
- FTanW0Half := tan(FW0);
-end;
-*)
 
 end.
