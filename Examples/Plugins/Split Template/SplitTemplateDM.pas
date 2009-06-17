@@ -271,7 +271,7 @@ begin
 
  for ch := 0 to FMaxChannels - 1 do
   for n := 0 to 1
-   do FOversampler[ch, n] := TDAVUpDownsampling.Create(Self);
+   do FOversampler[ch, n] := TDAVUpDownsampling.Create;
 
  FOSFactor     := 1;
  FOSActive     := False;

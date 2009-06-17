@@ -92,7 +92,7 @@ implementation
 uses
   Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms,
   DAV_VSTModuleWithDsp, DAV_DSPFilterButterworth, DAV_DSPFilterChebyshev,
-  DAV_DSPBesselFilter;
+  DAV_DSPFilterChebyshevType1, DAV_DSPBesselFilter;
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
@@ -248,10 +248,10 @@ begin
 
  SetLength(FUpsampler, numInputs);
  for ch := 0 to Length(FUpsampler) - 1
-  do FUpsampler[ch] := TDAVUpsampling.Create(Self);
+  do FUpsampler[ch] := TDAVUpsampling.Create;
  SetLength(FDownsampler, numOutputs);
  for ch := 0 to Length(FDownsampler) - 1
-  do FDownsampler[ch] := TDAVDownsampling.Create(Self);
+  do FDownsampler[ch] := TDAVDownsampling.Create;
 
  SetLength(FIn32, numInputs);
  SetLength(FIn64, numInputs);
@@ -637,8 +637,8 @@ var
 begin
  for ch := 0 to Length(FUpsampler) - 1 do
   case round(Value) of
-   4, 5, 6 : FUpsampler[ch].FilterClass := TChebyshev1LP;
-   else FUpsampler[ch].FilterClass := TButterworthLP;
+   4, 5, 6 : FUpsampler[ch].FilterClass := TChebyshev1LowpassFilter;
+   else FUpsampler[ch].FilterClass := TButterworthLowpassFilter;
   end;
 end;
 
@@ -665,8 +665,8 @@ var
 begin
  for ch := 0 to Length(FUpsampler) - 1 do
   case round(Value) of
-   4, 5, 6 : FUpsampler[ch].FilterClass := TChebyshev1LP;
-   else FUpsampler[ch].FilterClass := TButterworthLP;
+   4, 5, 6 : FUpsampler[ch].FilterClass := TChebyshev1LowpassFilter;
+   else FUpsampler[ch].FilterClass := TButterworthLowpassFilter;
   end;
 end;
 
