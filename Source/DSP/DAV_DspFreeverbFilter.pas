@@ -2,13 +2,15 @@ unit DAV_DspFreeverbFilter;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, DAV_Common, DAV_DspCommon;
-{$ALIGN 8}
 
 // Reverb model tuning values, taken from original algoritm by Jezar
 
 const
+  {$ALIGN 8}
   CMuted           = 0.0;
   CFixedGain       = 0.015;
   CScaleDamp       = 0.4;

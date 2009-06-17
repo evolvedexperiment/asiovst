@@ -15,7 +15,7 @@ unit DAV_DspHrtf;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I ..\DAV_Compiler.INC}
 
 uses
   Classes, Graphics, SysUtils, Contnrs, DAV_Common, DAV_ChunkClasses,

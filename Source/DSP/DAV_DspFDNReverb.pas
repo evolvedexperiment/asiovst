@@ -2,7 +2,7 @@ unit DAV_DspFDNReverb;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter,
@@ -287,14 +287,14 @@ begin
 {$ELSE}
 asm
  fld Input.Double;
- fmul [self.FCoeffs].Double     // x
+ fmul [eax.FCoeffs].Double      // x
  fld  st(0)                     // x, x
- fadd [self.FState].Double      // x + FState, x
+ fadd [eax.FState].Double       // x + FState, x
  fld  st(0)                     // x + FState, x + FState, x
- fmul [self.FCoeffs + 8].Double
+ fmul [eax.FCoeffs + 8].Double
  faddp st(2), st(0)
  fxch
- fstp [self.FState].Double
+ fstp [eax.FState].Double
 {$ENDIF}
 end;
 

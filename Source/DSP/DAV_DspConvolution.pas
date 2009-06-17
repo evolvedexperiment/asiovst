@@ -2,7 +2,7 @@ unit DAV_DspConvolution;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I ..\DAV_Compiler.INC}
 
 uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspFftReal2Complex

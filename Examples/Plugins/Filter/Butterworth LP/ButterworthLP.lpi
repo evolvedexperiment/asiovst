@@ -39,7 +39,6 @@
         <CursorPos X="3" Y="7"/>
         <TopLine Value="1"/>
         <UsageCount Value="20"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="ButterworthDM.pas"/>
@@ -48,7 +47,7 @@
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="ButterworthDM"/>
-        <CursorPos X="40" Y="19"/>
+        <CursorPos X="62" Y="24"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="20"/>
@@ -62,10 +61,9 @@
         <CursorPos X="15" Y="3"/>
         <TopLine Value="3"/>
         <UsageCount Value="20"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="4" HistoryIndex="3">
       <Position1>
         <Filename Value="ButterworthDM.pas"/>
         <Caret Line="120" Column="1" TopLine="83"/>
@@ -74,11 +72,22 @@
         <Filename Value="ButterworthDM.pas"/>
         <Caret Line="127" Column="8" TopLine="88"/>
       </Position2>
+      <Position3>
+        <Filename Value="ButterworthDM.pas"/>
+        <Caret Line="10" Column="66" TopLine="1"/>
+      </Position3>
+      <Position4>
+        <Filename Value="ButterworthDM.pas"/>
+        <Caret Line="3" Column="2" TopLine="1"/>
+      </Position4>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <PathDelim Value="\"/>
+    <SearchPaths>
+      <SrcPath Value="..\..\..\Source\"/>
+    </SearchPaths>
     <Linking>
       <Options>
         <ExecutableType Value="Library"/>

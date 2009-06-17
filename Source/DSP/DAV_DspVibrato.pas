@@ -2,7 +2,7 @@ unit DAV_DspVibrato;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO;

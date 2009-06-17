@@ -551,12 +551,7 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
-(*
-//      Parent := TWinControl.CreateParented(HWnd(ptr));
-(*
-//      ParentWindow := HWnd(ptr);
-      Parent := FindOwnerControl(THandle(ptr));
-*)
+      Handle := HWnd(ptr);
       {$ENDIF}
       Visible := True;
       BorderStyle := bsNone;

@@ -160,10 +160,10 @@ asm
  push edi
  push esi
 
- mov ebx, [self.FFilterKernel]
+ mov ebx, [eax.FFilterKernel]
 
- mov edi, [self.FStates    ].Integer
- mov esi, [self.FStates + 4].Integer
+ mov edi, [eax.FStates    ].Integer
+ mov esi, [eax.FStates + 4].Integer
 
  // calculate first sample
  fld  Input               // Input
@@ -176,7 +176,7 @@ asm
  fsubrp                   // FStates[1]^[0] - Input * FFilterKernel^[0], Input * FFilterKernel^[0], Input
  fstp [ecx].Single        // Input
 
- mov ecx, [Self.FFilterLength]
+ mov ecx, [eax.FFilterLength]
  mov eax, ecx
  shr eax, 1              // eax = FFilterLength div 2
  sub ecx, 1

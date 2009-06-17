@@ -1104,7 +1104,7 @@
 // for Delphi/BCB trial versions remove the point from the line below
 {.$UNDEF SUPPORTS_WEAKPACKAGEUNIT}
 
-{$IFDEF FPC} {$DEFINE Debug} {$ENDIF}
+{$IFDEF FPC} {.$DEFINE Debug} {$ENDIF}
 {$IFNDEF FPC}{$IFDEF DELPHI6_UP} {$DEFINE CPU_Detection} {$ENDIF} {$ENDIF}
 
 {$IFDEF DELPHI7_UP} {$ELSE} {$UNDEF UseNativeTypes} {$ENDIF}

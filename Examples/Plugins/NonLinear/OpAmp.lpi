@@ -11,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -51,8 +51,8 @@
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="OpAmpModule"/>
-        <CursorPos X="67" Y="61"/>
-        <TopLine Value="36"/>
+        <CursorPos X="62" Y="9"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="0"/>
         <UsageCount Value="29"/>
         <Loaded Value="True"/>
@@ -67,7 +67,7 @@
         <UnitName Value="OpAmpGUI"/>
         <CursorPos X="1" Y="41"/>
         <TopLine Value="9"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="29"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
@@ -170,9 +170,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <CursorPos X="10" Y="639"/>
-        <TopLine Value="599"/>
+        <CursorPos X="14" Y="553"/>
+        <TopLine Value="532"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="13"/>
+        <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
@@ -261,7 +263,7 @@
         <UsageCount Value="11"/>
       </Unit25>
     </Units>
-    <JumpHistory Count="21" HistoryIndex="20">
+    <JumpHistory Count="25" HistoryIndex="24">
       <Position1>
         <Filename Value="OpAmpModule.pas"/>
         <Caret Line="46" Column="19" TopLine="25"/>
@@ -346,6 +348,22 @@
         <Filename Value="OpAmpModule.pas"/>
         <Caret Line="59" Column="27" TopLine="27"/>
       </Position21>
+      <Position22>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="39" Column="15" TopLine="36"/>
+      </Position22>
+      <Position23>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="9" Column="62" TopLine="1"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="32" Column="79" TopLine="1"/>
+      </Position25>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

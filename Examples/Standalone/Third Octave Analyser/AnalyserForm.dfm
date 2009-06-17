@@ -1,6 +1,6 @@
 object FmAnalyser: TFmAnalyser
-  Left = 291
-  Top = 266
+  Left = 287
+  Top = 277
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Simple ASIO Third Octave Analyser'
@@ -13,8 +13,10 @@ object FmAnalyser: TFmAnalyser
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnShow = FormShow
   DesignSize = (
     446
     326)
@@ -26,6 +28,7 @@ object FmAnalyser: TFmAnalyser
     Width = 31
     Height = 13
     Caption = 'Driver:'
+    OnClick = Lb_DrivernameClick
   end
   object Lb_Channels: TLabel
     Left = 7
@@ -95,6 +98,46 @@ object FmAnalyser: TFmAnalyser
     TabOrder = 3
     OnClick = Bt_AnalyseClick
   end
+  object RB_Fast: TRadioButton
+    Left = 49
+    Top = 63
+    Width = 40
+    Height = 17
+    Caption = '&Fast'
+    TabOrder = 4
+    OnClick = RB_FastClick
+  end
+  object RB_Medium: TRadioButton
+    Left = 91
+    Top = 63
+    Width = 55
+    Height = 17
+    Caption = '&Medium'
+    Checked = True
+    TabOrder = 5
+    TabStop = True
+    OnClick = RB_MediumClick
+  end
+  object RB_Slow: TRadioButton
+    Left = 150
+    Top = 63
+    Width = 46
+    Height = 17
+    Caption = '&Slow'
+    TabOrder = 6
+    OnClick = RB_SlowClick
+  end
+  object SEFullscaleGain: TSpinEdit
+    Left = 262
+    Top = 60
+    Width = 56
+    Height = 22
+    MaxValue = 200
+    MinValue = 0
+    TabOrder = 7
+    Value = 0
+    OnChange = SEFullscaleGainChange
+  end
   object AnalyserChart: TChart
     Left = 7
     Top = 88
@@ -112,9 +155,8 @@ object FmAnalyser: TFmAnalyser
     LeftAxis.Title.Caption = 'Magnitude [dB]'
     View3D = False
     View3DWalls = False
-    TabOrder = 4
+    TabOrder = 8
     Anchors = [akLeft, akTop, akRight, akBottom]
-    OnDblClick = AnalyserChartDblClick
     object BarSeries: TBarSeries
       Marks.ArrowLength = 20
       Marks.Visible = False
@@ -131,46 +173,6 @@ object FmAnalyser: TFmAnalyser
       YValues.Order = loNone
     end
   end
-  object RB_Fast: TRadioButton
-    Left = 49
-    Top = 63
-    Width = 40
-    Height = 17
-    Caption = '&Fast'
-    TabOrder = 5
-    OnClick = RB_FastClick
-  end
-  object RB_Medium: TRadioButton
-    Left = 91
-    Top = 63
-    Width = 55
-    Height = 17
-    Caption = '&Medium'
-    Checked = True
-    TabOrder = 6
-    TabStop = True
-    OnClick = RB_MediumClick
-  end
-  object RB_Slow: TRadioButton
-    Left = 150
-    Top = 63
-    Width = 46
-    Height = 17
-    Caption = '&Slow'
-    TabOrder = 7
-    OnClick = RB_SlowClick
-  end
-  object SEFullscaleGain: TSpinEdit
-    Left = 262
-    Top = 60
-    Width = 56
-    Height = 22
-    MaxValue = 200
-    MinValue = 0
-    TabOrder = 8
-    Value = 120
-    OnChange = SEFullscaleGainChange
-  end
   object ASIOHost: TASIOHost
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
@@ -181,8 +183,16 @@ object FmAnalyser: TFmAnalyser
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
     SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    OnBufferSwitch32 = ASIOHostBufferSwitch
+    OnBufferSwitch32 = BSDownSampled
+    OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 252
+    Top = 24
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = TimerTimer
+    Left = 280
     Top = 24
   end
 end

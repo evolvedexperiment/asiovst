@@ -245,9 +245,9 @@ function TPolyphaseDownsampler32.ProcessSample1(const Input: TDAV2SingleArray): 
 {$IFNDEF PUREPASCAL}
 asm
   push edi
-  mov edi, [self.FY]             // edi = FY
-  mov ecx, [self.FX]             // esi = FX
-  mov eax, [self.FCoefficients]  // ecx = FCoefficients
+  mov edi, [eax.FY]              // edi = FY
+  mov ecx, [eax.FX]              // esi = FX
+  mov eax, [eax.FCoefficients]   // ecx = FCoefficients
   fld [ecx].Single               // FX[0]
   fld [Input + 4].Single         // Input[1], FX[0]
   fst  [ecx].Single              // FX[0] := Input[1];
@@ -272,9 +272,9 @@ function TPolyphaseDownsampler32.ProcessSample2(const Input: TDAV2SingleArray): 
 {$IFNDEF PUREPASCAL}
 asm
   push edi
-  mov edi, [self.FY]             // edi = FY
-  mov ecx, [self.FX]             // esi = FX
-  mov eax, [self.FCoefficients]  // ecx = FCoefficients
+  mov edi, [eax.FY]              // edi = FY
+  mov ecx, [eax.FX]              // esi = FX
+  mov eax, [eax.FCoefficients]   // ecx = FCoefficients
 
   fld  [ecx].Single              // FX[0]
   fld  [Input + 4].Single        // Input[1], FX[0]
@@ -308,9 +308,9 @@ function TPolyphaseDownsampler32.ProcessSample3(const Input: TDAV2SingleArray): 
 {$IFNDEF PUREPASCAL}
 asm
   push edi
-  mov edi, [self.FY]             // edi = FY
-  mov ecx, [self.FX]             // esi = FX
-  mov eax, [self.FCoefficients]  // ecx = FCoefficients
+  mov edi, [eax.FY]              // edi = FY
+  mov ecx, [eax.FX]              // esi = FX
+  mov eax, [eax.FCoefficients]   // ecx = FCoefficients
 
   fld  [ecx].Single              // FX[0]
   fld  [Input + 4].Single        // Input[1], FX[0]
@@ -353,9 +353,9 @@ function TPolyphaseDownsampler32.ProcessSample4(const Input: TDAV2SingleArray): 
 {$IFNDEF PUREPASCAL}
 asm
   push edi
-  mov edi, [self.FY]             // edi = FY
-  mov ecx, [self.FX]             // esi = FX
-  mov eax, [self.FCoefficients]  // ecx = FCoefficients
+  mov edi, [eax.FY]             // edi = FY
+  mov ecx, [eax.FX]             // esi = FX
+  mov eax, [eax.FCoefficients]  // ecx = FCoefficients
 
   fld  [ecx].Single              // FX[0]
   fld  [Input + 4].Single        // Input[1], FX[0]
@@ -407,9 +407,9 @@ function TPolyphaseDownsampler32.ProcessSampleLarge(const Input: TDAV2SingleArra
 {$IFNDEF PUREPASCAL}
 asm
   pushad
-  mov esi, [self.FX]             // esi = FX
-  mov edi, [self.FY]             // edi = FY
-  mov ebx, [self.FCoefficients]  // ecx = FCoefficients
+  mov esi, [eax.FX]             // esi = FX
+  mov edi, [eax.FY]             // edi = FY
+  mov ebx, [eax.FCoefficients]  // ecx = FCoefficients
 
   fld [esi].Single               // FX[0]
   fld [Input + 4].Single         // Input[1], FX[0]
@@ -427,7 +427,7 @@ asm
   faddp                          // (Input[0] - FY[1]) * FCoefficients[1] + FX[1]
   fstp [edi + 4].Single
 
-  mov ecx,[self.FNumberOfCoeffs] // ECX=self.FNumberOfCoeffs
+  mov ecx,[eax.FNumberOfCoeffs] // ECX=self.FNumberOfCoeffs
   sub ecx, 4                     // "Den Rest mach ich selber"
   @Loopy:
   fld  [esi +  8].Single         // FX[a]
@@ -723,9 +723,9 @@ const
   half: Double = 0.5;
 asm
     pushad
-    mov esi, [self.FX]                  // esi = FX
-    mov edi, [self.FY]                  // edi = FY
-    mov ecx, [self.FCoefficients]       // ecx = FCoefficients
+    mov esi, [eax.FX]                  // esi = FX
+    mov edi, [eax.FY]                  // edi = FY
+    mov ecx, [eax.FCoefficients]       // ecx = FCoefficients
 
     fld [esi].Double                    // FX[0]
     fld [Input+8].Double                // Input[1], FX[0]
@@ -755,9 +755,9 @@ const
   half: Double = 0.5;
 asm
     pushad
-    mov esi, [self.FX]                  // esi = FX
-    mov edi, [self.FY]                  // edi = FY
-    mov ecx, [self.FCoefficients]       // ecx = FCoefficients
+    mov esi, [eax.FX]                  // esi = FX
+    mov edi, [eax.FY]                  // edi = FY
+    mov ecx, [eax.FCoefficients]       // ecx = FCoefficients
 
     fld [esi].Double                    // FX[0]
     fld [Input+8].Double                // Input[1], FX[0]
@@ -796,9 +796,9 @@ const
   half: Double = 0.5;
 asm
     pushad
-    mov esi, [self.FX]                  // esi = FX
-    mov edi, [self.FY]                  // edi = FY
-    mov ecx, [self.FCoefficients]       // ecx = FCoefficients
+    mov esi, [eax.FX]                  // esi = FX
+    mov edi, [eax.FY]                  // edi = FY
+    mov ecx, [eax.FCoefficients]       // ecx = FCoefficients
 
     fld [esi].Double                    // FX[0]
     fld [Input+8].Double                // Input[1], FX[0]
@@ -847,9 +847,9 @@ const
   half: Double = 0.5;
 asm
     push edi
-    mov edi, [self.FY]                  // edi = FY
-    mov ecx, [self.FX]                  // esi = FX
-    mov eax, [self.FCoefficients]       // ecx = FCoefficients
+    mov edi, [eax.FY]                  // edi = FY
+    mov ecx, [eax.FX]                  // esi = FX
+    mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
     fld [ecx].Double                    // FX[0]
     fld [Input+8].Double                // Input[1], FX[0]
@@ -907,9 +907,9 @@ const
   half: Double = 0.5;
 asm
     pushad
-    mov esi, [self.FX]                  // esi = FX
-    mov edi, [self.FY]                  // edi = FY
-    mov ebx, [self.FCoefficients]       // ecx = FCoefficients
+    mov esi, [eax.FX]                  // esi = FX
+    mov edi, [eax.FY]                  // edi = FY
+    mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
     fld [esi].Double                    // FX[0]
     fld [Input+8].Double                // Input[1], FX[0]
@@ -929,7 +929,7 @@ asm
     fstp [edi+8].Double
 // FY[1]:=(Input[0]-FY[1])*FCoefficients[1]+FX[1]
 
-    mov ecx,[self.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
+    mov ecx,[eax.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
     sub ecx, 4                          // "Den Rest mach ich selber"
     @Loopy:
     fld [esi+16].Double                 // FX[a]

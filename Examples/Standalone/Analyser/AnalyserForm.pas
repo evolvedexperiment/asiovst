@@ -17,9 +17,6 @@ const
        1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000);
 
 type
-
-  { TFmAnalyser }
-
   TFmAnalyser = class(TForm)
     AnalyserChart: TChart;
     ASIOHost: TASIOHost;
@@ -47,6 +44,7 @@ type
     procedure RB_MediumClick(Sender: TObject);
     procedure RB_SlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
+    procedure AnalyserChartDblClick(Sender: TObject);
   private
     FFilterArray : Array [0..CNumFrequencies - 1] of TBasicBandpassFilter;
     FFilterRMS   : Array [0..CNumFrequencies - 1] of Single;
@@ -69,6 +67,8 @@ implementation
 
 uses
   Inifiles;
+
+{ TFmAnalyser }
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
@@ -217,6 +217,19 @@ begin
   do TBar(AnalyserChart.Bars.Items[j]).Value := round(FFilterRMS[j] + FFSGain);
  AnalyserChart.Invalidate;
  {$ENDIF}
+end;
+
+procedure TFmAnalyser.AnalyserChartDblClick(Sender: TObject);
+begin
+ with AnalyserChart do
+  if Align <> alClient
+   then Align := alClient
+   else
+    begin
+     Align := alBottom;
+     Top := 88;
+     Height := Self.ClientHeight - 88;
+    end;
 end;
 
 procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);

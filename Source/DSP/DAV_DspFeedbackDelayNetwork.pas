@@ -2,7 +2,7 @@ unit DAV_DspFeedbackDelayNetwork;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath;

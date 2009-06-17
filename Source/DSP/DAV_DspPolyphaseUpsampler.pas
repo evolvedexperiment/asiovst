@@ -224,9 +224,9 @@ end;
 {$ELSE}
 asm
  push edi
- mov  edi, [self.FY]                  // edi = FY
- mov  ecx, [self.FX]                  // esi = FX
- mov  eax, [self.FCoefficients]       // ecx = FCoefficients
+ mov  edi, [eax.FY]                  // edi = FY
+ mov  ecx, [eax.FX]                  // esi = FX
+ mov  eax, [eax.FCoefficients]       // ecx = FCoefficients
  fld  [ecx].Single                    // FX[0]
  fld  Input.Single                    // Input, FX[0]
  fst  [Output + 4].Single             // Output[1] := Input;
@@ -251,9 +251,9 @@ end;
 {$ELSE}
 asm
  push edi
- mov edi, [self.FY]                  // edi = FY
- mov ecx, [self.FX]                  // esi = FX
- mov eax, [self.FCoefficients]       // ecx = FCoefficients
+ mov edi, [eax.FY]                  // edi = FY
+ mov ecx, [eax.FX]                  // esi = FX
+ mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
  fld  [ecx].Single                   // FX[0]
  fld  Input.Single                   // Input, FX[0]
@@ -289,9 +289,9 @@ end;
 {$ELSE}
 asm
  push edi
- mov edi, [self.FY]                  // edi = FY
- mov ecx, [self.FX]                  // esi = FX
- mov eax, [self.FCoefficients]       // ecx = FCoefficients
+ mov edi, [eax.FY]                  // edi = FY
+ mov ecx, [eax.FX]                  // esi = FX
+ mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
  fld [ecx].Single                    // FX[0]
  fld Input.Single                    // Input, FX[0]
@@ -336,9 +336,9 @@ end;
 {$ELSE}
 asm
  push edi
- mov edi, [self.FY]                  // edi = FY
- mov ecx, [self.FX]                  // esi = FX
- mov eax, [self.FCoefficients]       // ecx = FCoefficients
+ mov edi, [eax.FY]                  // edi = FY
+ mov ecx, [eax.FX]                  // esi = FX
+ mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
  fld  [ecx].Single                   // FX[0]
  fld  Input.Single                   // Input, FX[0]
@@ -398,9 +398,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov  esi, [self.FX]                  // esi = FX
- mov  edi, [self.FY]                  // edi = FY
- mov  ebx, [self.FCoefficients]       // ebx = FCoefficients
+ mov  esi, [eax.FX]                  // esi = FX
+ mov  edi, [eax.FY]                  // edi = FY
+ mov  ebx, [eax.FCoefficients]       // ebx = FCoefficients
 
  fld  [esi].Single                    // FX[0]
  fld  Input.Single                    // Input, FX[0]
@@ -419,7 +419,7 @@ asm
  fstp [edi + 4].Single                // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
  push ecx                             // The Saviour of ECX
- mov  ecx,[self.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
+ mov  ecx,[eax.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
  sub  ecx, 4                          // "Den Rest mach ich selber"
 @Loopy:
  fld  [esi +  8].Single               // FX[2], FY[2]
@@ -478,9 +478,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov  esi, [self.FX]                  // esi = FX
- mov  edi, [self.FY]                  // edi = FY
- mov  ebx, [self.FCoefficients]       // ebx = FCoefficients
+ mov  esi, [eax.FX]                  // esi = FX
+ mov  edi, [eax.FY]                  // edi = FY
+ mov  ebx, [eax.FCoefficients]       // ebx = FCoefficients
 
  fld  [esi].Single                    // FX[0]
  fld  Input.Single                    // Input, FX[0]
@@ -499,7 +499,7 @@ asm
  fstp [edi + 4].Single                // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
  push ecx                             // The Saviour of ECX
- mov  ecx,[self.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
+ mov  ecx,[eax.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
  sub  ecx, 4                          // "Den Rest mach ich selber"
 @Loopy:
  fld  [esi +  8].Single               // FX[2], FY[2]
@@ -683,9 +683,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov esi, [self.FX]                  // esi = FX
- mov edi, [self.FY]                  // edi = FY
- mov ebx, [self.FCoefficients]       // ecx = FCoefficients
+ mov esi, [eax.FX]                  // esi = FX
+ mov edi, [eax.FY]                  // edi = FY
+ mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
  fld [esi].Double                    // FX[0]
  fld Input.Double                    // Input, FX[0]
  fst [Output + 4].Single             // Output[1] := Input;
@@ -710,9 +710,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov esi, [self.FX]                  // esi = FX
- mov edi, [self.FY]                  // edi = FY
- mov ebx, [self.FCoefficients]       // ecx = FCoefficients
+ mov esi, [eax.FX]                  // esi = FX
+ mov edi, [eax.FY]                  // edi = FY
+ mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
  fld [esi].Double                    // FX[0]
  fld Input.Double                    // Input, FX[0]
@@ -748,9 +748,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov esi, [self.FX]                  // esi = FX
- mov edi, [self.FY]                  // edi = FY
- mov ebx, [self.FCoefficients]       // ecx = FCoefficients
+ mov esi, [eax.FX]                  // esi = FX
+ mov edi, [eax.FY]                  // edi = FY
+ mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
  fld [esi].Double                    // FX[0]
  fld Input.Double                    // Input, FX[0]
@@ -795,9 +795,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov esi, [self.FX]                  // esi = FX
- mov edi, [self.FY]                  // edi = FY
- mov ebx, [self.FCoefficients]       // ecx = FCoefficients
+ mov esi, [eax.FX]                  // esi = FX
+ mov edi, [eax.FY]                  // edi = FY
+ mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
  fld [esi].Double                    // FX[0]
  fld Input.Double                    // Input, FX[0]
@@ -856,9 +856,9 @@ end;
 {$ELSE}
 asm
  pushad
- mov esi, [self.FX]                  // esi = FX
- mov edi, [self.FY]                  // edi = FY
- mov ebx, [self.FCoefficients]       // ecx = FCoefficients
+ mov esi, [eax.FX]                   // esi = FX
+ mov edi, [eax.FY]                   // edi = FY
+ mov ebx, [eax.FCoefficients]        // ecx = FCoefficients
 
  fld [esi].Double                    // FX[0]
  fld Input.Double                    // Input, FX[0]
@@ -877,7 +877,7 @@ asm
  fstp [edi + 8].Double               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
  push ecx                            // The Saviour of ECX
- mov ecx,[self.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
+ mov ecx,[eax.FNumberOfCoeffs]       // ECX=self.FNumberOfCoeffs
  sub ecx, 4                          // "Den Rest mach ich selber"
 @Loopy:
  fld [esi + 16].Double               // FX[2], FY[2]
