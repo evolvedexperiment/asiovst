@@ -22,7 +22,7 @@ package DAV_Common_D7;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $500000}
-{$DESCRIPTION 'ASIO/VST Base Package'}
+{$DESCRIPTION 'ASIO & VST Project - Base Package'}
 {$IMPLICITBUILD OFF}
 
 requires

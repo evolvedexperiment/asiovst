@@ -21,8 +21,8 @@ package DAV_VSTCloner_D10;
 {$VARSTRINGCHECKS ON}
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
-{$IMAGEBASE $560000}
-{$DESCRIPTION 'ASIO & VST VST Plugin Project Wizard (design-time)'}
+{$IMAGEBASE $561000}
+{$DESCRIPTION 'ASIO & VST Project - VST Plugin Clone Wizard (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 

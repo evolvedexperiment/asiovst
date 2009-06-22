@@ -21,7 +21,7 @@ package DAV_Common_D9;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $500000}
-{$DESCRIPTION 'ASIO/VST Base Package'}
+{$DESCRIPTION 'ASIO & VST Project - Base Package'}
 {$IMPLICITBUILD ON}
 
 requires

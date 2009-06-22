@@ -22,7 +22,7 @@ package VstPlugin_D6;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $560000}
-{$DESCRIPTION 'ASIO/VST VST Plugin Wizard (design-time)'}
+{$DESCRIPTION 'ASIO & VST Project - VST Plugin Wizard (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
 

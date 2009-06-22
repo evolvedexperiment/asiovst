@@ -21,7 +21,7 @@ package DAV_Modular_D9;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $518000}
-{$DESCRIPTION 'ASIO/VST Modular Package'}
+{$DESCRIPTION 'ASIO & VST Project - Modular Package'}
 {$IMPLICITBUILD ON}
 
 requires
