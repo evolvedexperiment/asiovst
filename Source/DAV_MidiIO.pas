@@ -223,9 +223,6 @@ type
   function SysExStreamToStr(const AStream: TMemoryStream): string; // convert the stream into xx xx xx xx string
   procedure StrToSysExStream(const AString: string; const AStream: TMemoryStream); // fill the string in a xx xx xx xx into the stream
 
-  function MidiInput: TMidiInput;   // MIDI input devices
-  function MidiOutput: TMidiOutput; // MIDI output Devices
-
 implementation
 
 { TMidiBase }
@@ -254,28 +251,10 @@ begin
  inherited;
 end;
 
-var
-  GMidiInput: TMidiInput;
-  GMidiOutput: TMidiOutput;
-
-function MidiInput: TMidiInput;
-begin
- if not assigned(GMidiInput)
-  then GMidiInput := TMidiInput.Create;
- Result := GMidiInput;
-end;
-
-function MidiOutput: TMidiOutput;
-begin
- if not assigned(GMidiOutput)
-  then GMidiOutput := TMidiOutput.Create;
- Result := GMidiOutput;
-end;
-
 { TMidiInput }
 
-{$IFDEF FPC}
 type
+{$IFDEF FPC}
   PHMIDIIN = ^HMIDIIN;
   TMidiHdr = _midihdr;
   TMidiInCapsA = _MIDIINCAPSA;
@@ -286,16 +265,26 @@ type
   TMidiOutCaps = TMidiOutCapsA;
 {$ENDIF}
 
-procedure midiInCallback(aMidiInHandle: PHMIDIIN; aMsg: Integer; aData, aMidiData, aTimeStamp: Integer); stdcall;
-begin
- case aMsg of
-  MIM_DATA: begin
-   if assigned(MidiInput.OnMidiData)
-    then MidiInput.OnMidiData(aData, aMidiData and $000000FF,
-           (aMidiData and $0000FF00) shr 8, (aMidiData and $00FF0000) shr 16);
+  TMidiInputDeviceRecord = record
+    MidiInput    : TMidiInput;
+    DeviceNumber : Integer;
   end;
-  MIM_LONGDATA: MidiInput.DoSysExData(aData);
- end;
+  PMidiInputDeviceRecord = ^TMidiInputDeviceRecord;
+
+procedure midiInCallback(aMidiInHandle: PHMIDIIN; aMsg: Integer; aInstance, aMidiData, aTimeStamp: Integer); stdcall;
+begin
+ if aInstance <> 0 then
+  with PMidiInputDeviceRecord(aInstance)^ do
+   case aMsg of
+    MIM_DATA: begin
+     if assigned(MidiInput.OnMidiData)
+      then MidiInput.OnMidiData(DeviceNumber, aMidiData and $000000FF,
+             (aMidiData and $0000FF00) shr 8, (aMidiData and $00FF0000) shr 16);
+    end;
+    MIM_LONGDATA: MidiInput.DoSysExData(DeviceNumber);
+    MIM_ERROR,
+    MIM_LONGERROR: raise Exception.Create('Midi In Error!');
+   end;
 end;
 
 procedure TMidiInput.Close(const ADeviceIndex: Integer);
@@ -349,9 +338,14 @@ procedure TMidiInput.Open(const ADeviceIndex: Integer);
 var
   lHandle: THandle;
   lSysExData: TSysExData;
+  lMidiInputDevice: PMidiInputDeviceRecord;
 begin
  if GetHandle(ADeviceIndex) <> 0 then Exit;
- MidiResult := midiInOpen(@lHandle, ADeviceIndex, cardinal(@midiInCallback), ADeviceIndex, CALLBACK_FUNCTION);
+ GetMem(lMidiInputDevice, SizeOf(TMidiInputDeviceRecord));
+ lMidiInputDevice^.MidiInput := Self;
+ lMidiInputDevice^.DeviceNumber := ADeviceIndex;
+ MidiResult := midiInOpen(@lHandle, ADeviceIndex, Cardinal(@midiInCallback),
+   Integer(lMidiInputDevice), CALLBACK_FUNCTION);
  FDevices.Objects[ADeviceIndex] := TObject(lHandle);
  lSysExData := TSysExData(FSysExData[ADeviceIndex]);
  lSysExData.SysExHeader.dwFlags := 0;
@@ -477,13 +471,16 @@ procedure TMidiOutput.SendSysEx(const ADeviceIndex: Integer;
 var
   lSysExHeader: TMidiHdr;
 begin
- AStream.Position := 0;
- lSysExHeader.dwBufferLength := AStream.Size;
- lSysExHeader.lpData := AStream.Memory;
- lSysExHeader.dwFlags := 0;
- MidiResult := midiOutPrepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiOutLongMsg( GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiOutUnprepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+ if AStream.Size > 0 then
+  begin
+   AStream.Position := 0;
+   lSysExHeader.dwBufferLength := AStream.Size;
+   lSysExHeader.lpData := AStream.Memory;
+   lSysExHeader.dwFlags := 0;
+   MidiResult := midiOutPrepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiOutLongMsg( GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiOutUnprepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
+  end;
 end;
 
 { TSysExData }
@@ -524,13 +521,5 @@ begin
   PChar(AStream.Memory)[i-1] :=
    Char(AnsiPos(lStr[ i*2 - 1], cHex) shl 4 + AnsiPos(lStr[i*2], cHex));
 end;
-
-initialization
-  GMidiInput := nil;
-  GMidiOutput := nil;
-
-finalization
-  FreeAndNil(GMidiInput);
-  FreeAndNil(GMidiOutput);
 
 end.
