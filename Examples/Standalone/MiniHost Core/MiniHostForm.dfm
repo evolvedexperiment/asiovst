@@ -1730,7 +1730,6 @@ object FmMiniHost: TFmMiniHost
         A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8A8
         A8A8}
       Transparent = True
-      ExplicitTop = -3
     end
     object IOnOff: TImage
       Left = 5

@@ -1,6 +1,6 @@
 program MiniHost;
 
-{$R 'EmbeddedPlugin.res' 'EmbeddedPlugin.rc'}
+{.$R 'EmbeddedPlugin.res' 'EmbeddedPlugin.rc'}
 
 uses
   FastMM4,

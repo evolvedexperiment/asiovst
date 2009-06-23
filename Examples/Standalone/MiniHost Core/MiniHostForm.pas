@@ -225,6 +225,8 @@ type
     FAboutForm      : TFmAbout;
 
     FMidiFile       : TMidiFile;
+    FMIDIInput      : TMidiInput;
+    FMIDIOutput     : TMidiOutput;
     FWavWriter      : TWavWriter;
 
     FCurrentASIO    : Integer;
@@ -382,6 +384,9 @@ begin
     end;
   end;
 
+ FMIDIInput  := TMidiInput.Create;
+ FMIDIOutput := TMidiOutput.Create;
+
  FWaveFile := TWavPlayer.Create;
  FPluginLoaded := False;
 
@@ -416,12 +421,12 @@ begin
   MenuItem.Caption := 'None';
   MenuItem.OnClick := MIDIInChange;
   MIMIDIIn.Add(MenuItem);
-  for mi := 0 to MidiInput.Devices.Count - 1 do
+  for mi := 0 to FMidiInput.Devices.Count - 1 do
    begin
     MenuItem := TMenuItem.Create(Self);
     MenuItem.RadioItem := True;
     MenuItem.Tag := mi + 1;
-    MenuItem.Caption := MidiInput.Devices[mi];
+    MenuItem.Caption := FMidiInput.Devices[mi];
     MenuItem.OnClick := MIDIInChange;
     MIMIDIIn.Add(MenuItem);
    end;
@@ -436,12 +441,12 @@ begin
   MenuItem.Caption := 'None';
   MenuItem.OnClick := MIDIOutChange;
   MIMIDIOut.Add(MenuItem);
-  for mi := 0 to MidiOutput.Devices.Count - 1 do
+  for mi := 0 to FMidiOutput.Devices.Count - 1 do
    begin
     MenuItem := TMenuItem.Create(Self);
     MenuItem.RadioItem := True;
     MenuItem.Tag := mi + 1;
-    MenuItem.Caption := MidiOutput.Devices[mi];
+    MenuItem.Caption := FMidiOutput.Devices[mi];
     MenuItem.OnClick := MIDIOutChange;
     MIMIDIOut.Add(MenuItem);
    end;
@@ -474,8 +479,8 @@ begin
   Application.Terminate;
  end;
 
- MidiInput.OnMidiData := MidiData;
- MidiInput.OnSysExData := SysExData;
+ FMidiInput.OnMidiData := MidiData;
+ FMidiInput.OnSysExData := SysExData;
 
  Settings := TIniFile.Create(ININame);
  try
@@ -658,11 +663,13 @@ begin
   then FreeAndNil(FWavWriter);
 
  try
-  MidiInput.CloseAll;
-  MidiOutput.CloseAll;
+  FMidiInput.CloseAll;
+  FMidiOutput.CloseAll;
  except
  end;
 
+ FreeAndNil(FMidiInput);
+ FreeAndNil(FMidiOutput);
  FreeAndNil(FMidiFile);
  FreeAndNil(FWaveFile);
  FNumIn := 0;
@@ -957,19 +964,19 @@ end;
 
 procedure TFmMiniHost.MIDIInChange(Sender: TObject);
 begin
- if MidiInput.Devices.Count = 0
+ if FMidiInput.Devices.Count = 0
   then exit;
- MidiInput.OnMidiData := MidiData;
+ FMidiInput.OnMidiData := MidiData;
  (Sender as TMenuItem).Checked := True;
  try
-  MidiInput.Close(FCurrentMIDIIn);
+  FMidiInput.Close(FCurrentMIDIIn);
  except
  end;
  FCurrentMIDIIn := (sender as TMenuItem).tag;
  MIMIDIIn.Items[FCurrentMIDIIn].Checked := True;
  try
-  if FCurrentMIDIIn > 0 then
-   MidiInput.Open(FCurrentMIDIIn - 1);
+  if FCurrentMIDIIn > 0
+   then FMidiInput.Open(FCurrentMIDIIn - 1);
  except
  end;
 end;
@@ -1395,11 +1402,11 @@ begin
    MIAlwaysOnTop.Checked := not ReadBool('Layout', 'AlwaysOnTop', False);
    MIAlwaysOnTopClick(Sender);
    i := ReadInteger('MIDI', 'MIDI-In Driver', 0);
-   if (i < 0) or (i > MidiInput.Devices.Count) then i := 0;
+   if (i < 0) or (i > FMidiInput.Devices.Count) then i := 0;
    FCurrentMIDIIn := i;
    MIMIDIIn.Items[i].Click;
    i := ReadInteger('MIDI', 'MIDI-Out Driver', 0);
-   if (i < 0) or (i > MidiOutput.Devices.Count) then i := 0;
+   if (i < 0) or (i > FMidiOutput.Devices.Count) then i := 0;
    FCurrentMIDIOut := i;
    MIMIDIOut.Items[i].Click;
   finally
@@ -1479,14 +1486,14 @@ procedure TFmMiniHost.MIDIOutChange(Sender: TObject);
 begin
  (Sender as TMenuItem).Checked := True;
  try
-  MidiOutput.Close(FCurrentMIDIOut);
+  FMidiOutput.Close(FCurrentMIDIOut);
  except
  end;
  FCurrentMIDIOut := (sender as TMenuItem).tag;
  MIMidiOut.Items[FCurrentMIDIOut].Checked := True;
  try
-  if FCurrentMIDIOut > 0 then
-   MidiOutput.Open(FCurrentMIDIOut - 1);
+  if FCurrentMIDIOut > 0
+   then FMidiOutput.Open(FCurrentMIDIOut - 1);
  except
  end;
 end;
@@ -1605,7 +1612,7 @@ begin
    if (ev.events[i].EventType = etMidi) then
     begin
      event := PVstMidiEvent(ev^.events[i]);
-     MidiOutput.Send(FCurrentMIDIOut - 1, event^.mididata[0],
+     FMidiOutput.Send(FCurrentMIDIOut - 1, event^.mididata[0],
        event^.mididata[1], event^.mididata[2]);
     end else
    if ev.events[i].EventType = etSysex then
@@ -1618,7 +1625,7 @@ begin
         aStream.Size := Sysex.dumpBytes;
         aStream.Position := 0;
         Move(Sysex.SysexDump^, pchar(aStream.Memory)[0], Sysex.dumpBytes);
-        MidiOutput.SendSysEx(FCurrentMIDIOut - 1, aStream);
+        FMidiOutput.SendSysEx(FCurrentMIDIOut - 1, aStream);
        finally
         FreeAndNil(aStream);
        end;
@@ -2326,7 +2333,7 @@ begin
     if (FCurrentMIDIOut > 0) and MIMidiThru.Checked then
      begin
       for i := 0 to FMDataCnt - 1 do
-       MidiOutput.Send(FCurrentMIDIOut - 1,
+       FMidiOutput.Send(FCurrentMIDIOut - 1,
                        PVstMidiEvent(FMyEvents.events[i])^.midiData[0],
                        PVstMidiEvent(FMyEvents.events[i])^.midiData[1],
                        PVstMidiEvent(FMyEvents.events[i])^.midiData[2]);

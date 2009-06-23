@@ -273,11 +273,11 @@ end;
 
 procedure TFmSimpleHDRecorder.SwitchRecordingBuffer;
 begin
+ FDataBufferIndex := 1 - FDataBufferIndex;
+ FDataBufferPos := 0;
  if not assigned(FStorageThread)
   then StoreData(FDataBufferIndex)
   else FStorageThread.Resume;
- FDataBufferIndex := 1 - FDataBufferIndex;
- FDataBufferPos := 0;
 end;
 
 procedure TFmSimpleHDRecorder.StopRecording;
