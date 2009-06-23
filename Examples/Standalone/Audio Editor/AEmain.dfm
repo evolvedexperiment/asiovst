@@ -24,18 +24,12 @@ object FmAudioEditor: TFmAudioEditor
     BarWidthPercentage = 0.800000011920929000
     MaximumPeakLevel = 1.000000000000000000
     PeakLevel = 0.500000000000000000
-    ExplicitLeft = 844
-    ExplicitTop = 96
-    ExplicitHeight = 573
   end
   object Splitter1: TSplitter
     Left = 647
     Top = 30
     Height = 292
     Align = alRight
-    ExplicitLeft = 480
-    ExplicitTop = 320
-    ExplicitHeight = 100
   end
   object GuiAudioDataDisplay: TGuiAudioDataDisplay
     Left = 0
@@ -47,6 +41,9 @@ object FmAudioEditor: TFmAudioEditor
     AudioDataCollection = AudioDataCollection32
     LineColor = clMaroon
     LineWidth = 0
+    XAxis.SampleUpper = 8191
+    XAxis.FractionalLower = -0.500000000000000000
+    XAxis.FractionalUpper = 0.500000000000000000
   end
   object ControlBar1: TControlBar
     Left = 0

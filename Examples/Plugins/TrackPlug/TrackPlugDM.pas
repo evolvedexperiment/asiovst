@@ -1,4 +1,4 @@
-unit TrackPlugDM;
+﻿unit TrackPlugDM;
 
 interface
 
@@ -198,6 +198,7 @@ begin
   for Band := 0 to Length(FEqFilter[Channel]) - 1
    do FreeAndNil(FEqFilter[Channel, Band]);
 
+ // free gate  
  for Channel := 0 to Length(FGate) - 1
   do FreeAndNil(FGate[Channel]);
 

@@ -1,40 +1,47 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
-  <PersonalityInfo>
-    <Option>
-      <Option Name="Personality">Default.Personality</Option>
-      <Option Name="ProjectType"></Option>
-      <Option Name="Version">1.0</Option>
-      <Option Name="GUID">{73F6E16D-42DE-4E57-B492-E0B6A0270535}</Option>
-    </Option>
-  </PersonalityInfo>
-  <Default.Personality>
-    
-    
-    
+	<PersonalityInfo>
+		<Option>
+			<Option Name="Personality">Default.Personality</Option>
+			<Option Name="ProjectType"></Option>
+			<Option Name="Version">1.0</Option>
+			<Option Name="GUID">{73F6E16D-42DE-4E57-B492-E0B6A0270535}</Option>
+		</Option>
+	</PersonalityInfo>
+	<Default.Personality>  
     <Projects>
-      <Projects Name="Analyser.exe">Analyser\Analyser.bdsproj</Projects>
-      <Projects Name="ASIODemo.exe">ASIO-Host Demo\ASIODemo.bdsproj</Projects>
+      <Projects Name="Analyser.exe">Third Octave Analyser 3D\Analyser.bdsproj</Projects>
+      <Projects Name="ASIODemo.exe">ASIO-AudioData-Host Demo\ASIODemo.bdsproj</Projects>
       <Projects Name="AudioEditor.exe">Audio Editor\AudioEditor.bdsproj</Projects>
-      <Projects Name="BMTestSingle.exe">Buffer Math Test\BMTestSingle.bdsproj</Projects>
       <Projects Name="BMTestDouble.exe">Buffer Math Test\BMTestDouble.bdsproj</Projects>
+      <Projects Name="BMTestSingle.exe">Buffer Math Test\BMTestSingle.bdsproj</Projects>
+      <Projects Name="EqualizedNoiseGenerator.exe">Equalized Noise Generator\EqualizedNoiseGenerator.bdsproj</Projects>
+      <Projects Name="EqualizedSoundGenerator.exe">Equalized Sound Generator\EqualizedSoundGenerator.bdsproj</Projects>
       <Projects Name="FunctionPlotter.exe">Function Plot\FunctionPlotter.bdsproj</Projects>
+      <Projects Name="HrtfAverager.exe">HRTF Averager\HrtfAverager.bdsproj</Projects>
       <Projects Name="HRTFEditor.exe">HRTF Editor\HRTFEditor.bdsproj</Projects>
+      <Projects Name="KnobGrabber.exe">Knob Grabber\KnobGrabber.bdsproj</Projects>
+      <Projects Name="LunchBox.exe">Simple Lunch-Box\LunchBox.bdsproj</Projects>
       <Projects Name="Metronome.exe">Metronome\Metronome.bdsproj</Projects>
       <Projects Name="MidiGui.exe">Midikeyboard Gui\MidiGui.bdsproj</Projects>
       <Projects Name="MiniHost.exe">MiniHost Core\MiniHost.bdsproj</Projects>
       <Projects Name="NoiseGen.exe">Noise Generator\NoiseGen.bdsproj</Projects>
-      <Projects Name="PluginMerger.exe">PluginMerger\PluginMerger.bdsproj</Projects>
+      <Projects Name="PluginMerger.exe">Plugin Merger\PluginMerger.bdsproj</Projects>
       <Projects Name="PresetParser.exe">Preset Parser\PresetParser.bdsproj</Projects>
+      <Projects Name="SemEmbedConvolutionIR.exe">SEM Embed Convolution IR\SemEmbedConvolutionIR.bdsproj</Projects>
       <Projects Name="SemExplorer.exe">SEM Explorer\SemExplorer.bdsproj</Projects>
       <Projects Name="SemMerger.exe">SEM Merger\SemMerger.bdsproj</Projects>
+      <Projects Name="SemScreenshotTool.exe">SEM Screenshot Tool\SemScreenshotTool.bdsproj</Projects>
       <Projects Name="SimpleHDRecorder.exe">Simple HD Recorder\SimpleHDRecorder.bdsproj</Projects>
-      <Projects Name="LunchBox.exe">Simple Lunch-Box\LunchBox.bdsproj</Projects>
-      <Projects Name="VSTAnalyser.exe">Simple VST Plugin Analyser\VSTAnalyser.bdsproj</Projects>
       <Projects Name="SplitPluginCreator.exe">Split Plugin Creator\SplitPluginCreator.bdsproj</Projects>
+      <Projects Name="StandaloneEmbedPlugin.exe">Standalone Embed Plugin\StandaloneEmbedPlugin.bdsproj</Projects>
+      <Projects Name="VST2SEM.exe">VST to SEM converter\VST2SEM.bdsproj</Projects>
+      <Projects Name="VSTAnalyser.exe">Simple VST Plugin Analyser\VSTAnalyser.bdsproj</Projects>
       <Projects Name="VSTEditor.exe">Standalone Editor\VSTEditor.bdsproj</Projects>
       <Projects Name="VSTPluginScanner.exe">VST Plugin Scanner\VSTPluginScanner.bdsproj</Projects>
-      <Projects Name="Targets">Analyser.exe ASIODemo.exe ASIODemo.exe AudioEditor.exe BMTestSingle.exe BMTestDouble.exe FunctionPlotter.exe HRTFEditor.exe Metronome.exe MidiGui.exe MiniHost.exe NoiseGen.exe PluginMerger.exe PresetParser.exe SemExplorer.exe SemMerger.exe SimpleHDRecorder.exe LunchBox.exe VSTAnalyser.exe SplitPluginCreator.exe VSTEditor.exe VSTPluginScanner.exe</Projects>
+      <Projects Name="VstPluginScreenshotTool.exe">VST Plugin Screenshot Tool\VstPluginScreenshotTool.bdsproj</Projects>
+      <Projects Name="WinAmpEmbedPlugin.exe">WinAmp Embed Plugin\WinAmpEmbedPlugin.bdsproj</Projects>
+      <Projects Name="Targets">Analyser.exe Analyser.exe Analyser.exe ASIODemo.exe AudioEditor.exe BMTestDouble.exe BMTestSingle.exe EqualizedNoiseGenerator.exe EqualizedSoundGenerator.exe FunctionPlotter.exe HrtfAverager.exe HRTFEditor.exe KnobGrabber.exe LunchBox.exe Metronome.exe MidiGui.exe MiniHost.exe NoiseGen.exe PluginMerger.exe PresetParser.exe SemEmbedConvolutionIR.exe SemExplorer.exe SemMerger.exe SemScreenshotTool.exe SimpleHDRecorder.exe SplitPluginCreator.exe StandaloneEmbedPlugin.exe VST2SEM.exe VSTAnalyser.exe VSTEditor.exe VSTPluginScanner.exe VstPluginScreenshotTool.exe WinAmpEmbedPlugin.exe</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

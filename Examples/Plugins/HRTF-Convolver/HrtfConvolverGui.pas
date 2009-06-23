@@ -1,34 +1,47 @@
-unit HRTF3DGUI;
+unit HrtfConvolverGui;
 
 interface
 
-uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Dialogs, StdCtrls,
-  DAV_Common, DAV_VSTModule, GLScene, GLObjects, GLMisc, GLTexture, GLFile3DS,
-  GLWin32Viewer, GLVectorFileObjects;
+uses 
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  ComCtrls, Controls, Spin, StdCtrls, GLScene, GLObjects, GLVectorFileObjects,
+  GLMisc, GLWin32Viewer, DAV_GuiAudioDataDisplay, DAV_AudioData, Dialogs;
 
 type
-  TVSTGUI = class(TForm)
-    GLScene: TGLScene;
+  TFmHrtfConvolver = class(TForm)
+    PCConvolutionSelect: TPageControl;
+    TSHrtf: TTabSheet;
+    TSReverb: TTabSheet;
+    LbHrtfSet: TLabel;
+    EdHrtfSet: TEdit;
+    BtLoadHrtfFile: TButton;
+    GBPosition: TGroupBox;
+    LbRadius: TLabel;
+    SERadius: TSpinEdit;
+    SEElevation: TSpinEdit;
+    LbElevation: TLabel;
+    SEAzimuth: TSpinEdit;
+    LbAzimuth: TLabel;
+    GbImpulseResponses: TGroupBox;
+    Gb3D: TGroupBox;
     GLSceneViewer: TGLSceneViewer;
-    GLCamera: TGLCamera;
+    GLScene: TGLScene;
     GLDummyCube: TGLDummyCube;
     GLHead: TGLFreeForm;
     GLLight: TGLLightSource;
     GLHRTFs: TGLPoints;
-    procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    GLCamera: TGLCamera;
+    AudioDataDisplay: TGuiAudioDataDisplay;
+    OpenDialog: TOpenDialog;
+    procedure BtLoadHrtfFileClick(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure GLIRsRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure FormCreate(Sender: TObject);
+    procedure SEAzimuthChange(Sender: TObject);
   private
     FOldMousePoint : TPoint;
     procedure Zoom(Value: Single);
-  public  
-    procedure UpdateAzimuth;
-    procedure UpdatePolar;
-    procedure UpdateRadius;
   end;
 
 implementation
@@ -36,13 +49,13 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFileObj,
-  GLCrossPlatform, VectorLists, HRTF3DModule, DAV_DspHrtf;
+  Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFile3DS, GLFileObj,
+  GLCrossPlatform, VectorLists, DAV_DspHrtf, HrtfConvolverDM;
 
-procedure TVSTGUI.FormCreate(Sender: TObject);
+procedure TFmHrtfConvolver.FormCreate(Sender: TObject);
 var
   rs             : TResourceStream;
-  i, j           : Integer;
+  i              : Integer;
   tris, norms    : TAffineVectorList;
   tex, buf       : TAffineVectorList;
   morphTris      : TAffineVectorList;
@@ -52,7 +65,6 @@ var
   firstRemap     : TIntegerList;
   subdivideRemap : TIntegerList;
   bufRemap       : TIntegerList;
-  t              : Int64;
 begin
  rs := TResourceStream.Create(hInstance, 'Head', '3DS');
  with rs do
@@ -165,64 +177,36 @@ begin
   finally
    Free;
   end;
-end;
 
-procedure TVSTGUI.Zoom(Value: Single);
-var
-  vect : TVector;
-begin
- if GLSceneViewer.Camera = GLCamera then
-  with GLCamera do
-   if Assigned(TargetObject) then
-    begin
-     vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
-     if ((VectorLength(vect) > 1.2) or (Value > 1)) and
-        ((VectorLength(vect) < 10)  or (Value < 1)) then
-      begin
-       ScaleVector(vect, Value - 1);
-       AddVector(vect, AbsolutePosition);
-       if Assigned(Parent)
-        then vect := Parent.AbsoluteToLocal(vect);
-       Position.AsVector := vect;
-      end;
-    end
-end;
-
-procedure TVSTGUI.FormMouseWheel(Sender: TObject; Shift: TShiftState;
-  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-const
-  Scale = 1/120;
-begin
- Zoom(Power(0.9, WheelDelta * Scale));
- Handled := true
-end;
-
-procedure TVSTGUI.FormShow(Sender: TObject);
-var
-  HrtfNr : Integer;
-begin
- GLHRTFs.Visible := TVSTHRTF3DModule(Owner).Parameter[4] > 0.5;
- if GLHRTFs.Visible then
+ with THrtfConvolverDataModule(Owner) do
   begin
-   GLHRTFs.Positions.Clear;
-   with TVSTHRTF3DModule(Owner) do
-    for HrtfNr := 0 to HRTFs.HrirCount - 1 do
-     with HRTFs.Hrir[HrtfNr].Position do
-      begin
-       GLHRTFs.Positions.Add(cos(Azimuth) * sin(Polar + 0.25 * Pi), sin(Azimuth) * sin(Polar + 0.25 * Pi), cos(Polar + 0.25 * Pi));
-  //     GLHRTFs.Positions.Add(cos(Polar) * sin(Azimuth), sin(Polar) * sin(Azimuth), cos(Azimuth));
-      end;
-   GLHRTFs.StructureChanged;
+   AudioDataDisplay.AudioDataCollection := AudioDataCollection;
   end;
 end;
 
-procedure TVSTGUI.GLSceneViewerMouseMove(Sender: TObject;
+procedure TFmHrtfConvolver.BtLoadHrtfFileClick(Sender: TObject);
+begin
+ with OpenDialog do
+  if Execute then
+   begin
+
+   end;
+end;
+
+procedure TFmHrtfConvolver.GLSceneViewerMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+ FOldMousePoint.X := X;
+ FOldMousePoint.Y := Y;
+end;
+
+procedure TFmHrtfConvolver.GLSceneViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 const
   Scale = 1/40;
 var
    originalT2C, normalT2C, normalCameraRight, newPos : TVector;
-   turnNow, pitchNow, dist: Single;
+   pitchNow, dist: Single;
 begin
  if ssLeft in Shift then
   begin
@@ -247,12 +231,11 @@ begin
      newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
      if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
      Position.AsVector := newPos;
-     GLLight.Position.SetVector(newPos);
-     with TVSTHRTF3DModule(Self.Owner) do
-      begin
-       Parameter[0] := RadToDeg(ArcTan2(Position.Y, Position.X));
-       Parameter[1] := 90 - RadToDeg(pitchNow);
-      end;
+
+     case GLLight.Position.Style of
+      csPoint: GLLight.Position.SetPoint(newPos);
+      csVector: GLLight.Position.SetVector(newPos);
+     end;
     end;
    FOldMousePoint.X := X;
    FOldMousePoint.Y := Y;
@@ -265,61 +248,52 @@ begin
   end;
 end;
 
-procedure TVSTGUI.UpdateAzimuth;
-(*
+procedure TFmHrtfConvolver.GLSceneViewerMouseWheel(Sender: TObject;
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+  var Handled: Boolean);
 const
-  Scale = 1/40;
-var
-   originalT2C, normalT2C, normalCameraRight, newPos : TVector;
-   turnNow, pitchNow, dist: Single;
-*)
+  Scale = 1/120;
 begin
-(*
- with GLSceneViewer.Camera do
+ Zoom(Power(0.9, WheelDelta * Scale));
+ Handled := true
+end;
+
+procedure TFmHrtfConvolver.SEAzimuthChange(Sender: TObject);
+begin
+ if SEAzimuth.Value > 180  then SEAzimuth.Value := SEAzimuth.Value - 360 else
+ if SEAzimuth.Value < -180 then SEAzimuth.Value := SEAzimuth.Value + 360;
+
+ with THrtfConvolverDataModule(Owner) do
   begin
-   originalT2C := VectorSubtract(AbsolutePosition, GLDummyCube.AbsolutePosition);
-   SetVector(normalT2C, originalT2C);
-   dist := VectorLength(normalT2C);
-   NormalizeVector(normalT2C);
-   normalCameraRight := VectorCrossProduct(AbsoluteUp, normalT2C);
-   if VectorLength(normalCameraRight) < 0.001
-    then SetVector(normalCameraRight, XVector) // arbitrary vector
-    else NormalizeVector(normalCameraRight);
-   pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
-   SetVector(normalT2C, AbsoluteUp);
-   RotateVector(normalT2C, normalCameraRight, -pitchNow);
-   RotateVector(normalT2C, AbsoluteUp, DegToRad(TVSTHRTF3DModule(Self.Owner).Parameter[0]));
-   ScaleVector(normalT2C, dist);
-   newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
-   if Assigned(Parent)
-    then newPos := Parent.AbsoluteToLocal(newPos);
-   Position.AsVector := newPos;
-   GLLight.Position.SetVector(newPos);
-  end;
+
+(*
+   FHRTFFile.InterpolateHrir(SEAzimuth.Value * CDegToRad,
+     SEPolar.Value * CDegToRad, ADHRIR.SampleFrames,
+     ADHRIR[0].ChannelDataPointer, ADHRIR[1].ChannelDataPointer);
+   AudioDataDisplay.Invalidate;
 *)
+  end;
 end;
 
-procedure TVSTGUI.UpdatePolar;
+procedure TFmHrtfConvolver.Zoom(Value: Single);
+var
+  vect : TVector;
 begin
-
-end;
-
-procedure TVSTGUI.UpdateRadius;
-begin
-
-end;
-
-procedure TVSTGUI.GLIRsRender(Sender: TObject;
-  var rci: TRenderContextInfo);
-begin
-// Add
-end;
-
-procedure TVSTGUI.GLSceneViewerMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
- FOldMousePoint.X := X;
- FOldMousePoint.Y := Y;
+ if GLSceneViewer.Camera = GLCamera then
+  with GLCamera do
+   if Assigned(TargetObject) then
+    begin
+     vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
+     if ((VectorLength(vect) > 1.2) or (Value > 1)) and
+        ((VectorLength(vect) < 10)  or (Value < 1)) then
+      begin
+       ScaleVector(vect, Value - 1);
+       AddVector(vect, AbsolutePosition);
+       if Assigned(Parent)
+        then vect := Parent.AbsoluteToLocal(vect);
+       Position.AsVector := vect;
+      end;
+    end
 end;
 
 end.

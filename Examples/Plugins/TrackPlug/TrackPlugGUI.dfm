@@ -2,7 +2,7 @@ object FmTrackPlug: TFmTrackPlug
   Left = 286
   Top = 77
   BorderStyle = bsNone
-  Caption = 'FmTrackPlug'
+  Caption = 'TrackPlug'
   ClientHeight = 405
   ClientWidth = 682
   Color = clBtnFace

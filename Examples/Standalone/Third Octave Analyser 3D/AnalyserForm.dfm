@@ -140,9 +140,12 @@ object FmAnalyser: TFmAnalyser
     Top = 96
     Width = 430
     Height = 222
-    Camera = DefaultCamera
+    OnMouseWheel = GLSceneViewerMouseWheel
+    Camera = GLCamera
     Buffer.BackgroundColor = 789774
     FieldOfView = 100.000000000000000000
+    OnMouseDown = GLSceneViewerMouseDown
+    OnMouseMove = GLSceneViewerMouseMove
   end
   object ASIOHost: TASIOHost
     ASIOTime.Speed = 1.000000000000000000
@@ -169,15 +172,20 @@ object FmAnalyser: TFmAnalyser
   object BarGraphScene: TGLScene
     Left = 216
     Top = 160
-    object LightSource: TGLLightSource
+    object GLDummyCube: TGLDummyCube
+      Position.Coordinates = {000000000000803F000000000000803F}
+      CubeSize = 1.000000000000000000
+    end
+    object GLLight: TGLLightSource
       Ambient.Color = {8716793F08AC3C3F1B2FDD3C0000803F}
       ConstAttenuation = 1.000000000000000000
       Diffuse.Color = {54E3453F9A99193FAAF1D23E0000803F}
       Position.Coordinates = {000000000000803F0000A0400000803F}
+      LightStyle = lsOmni
       Specular.Color = {0000803F0000003F000000000000803F}
       SpotCutOff = 180.000000000000000000
     end
-    object DefaultCamera: TGLCamera
+    object GLCamera: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 93.140060424804690000
       Position.Coordinates = {000000000000803F0000A0400000803F}

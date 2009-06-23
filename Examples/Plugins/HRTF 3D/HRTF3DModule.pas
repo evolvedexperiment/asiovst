@@ -17,8 +17,7 @@ type
     procedure ParamAzimuthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterInterpolationDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterInterpolationChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterDisplayHRTFsDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterDisplayHRTFsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FIR           : array [0..1] of PDAVSingleFixedArray;
     FHRTFs        : THrtfs;

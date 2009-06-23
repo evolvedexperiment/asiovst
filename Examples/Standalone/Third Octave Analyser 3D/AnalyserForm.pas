@@ -9,8 +9,9 @@ uses
   GLMisc, GLWin32Viewer;
 
 const
+  CNumHistory = 5;
   CNumFrequencies = 32;
-  CThirdOctaveFrequencies : Array [0..cNumFrequencies-1] of Single =
+  CThirdOctaveFrequencies : Array [0..cNumFrequencies - 1] of Single =
       (16,20,25,31,40,50,63,80,100,125,160,200,250,315,400,500,630,800,1000,
        1250,1600,2000,2500,3150,4000,5000,6300,8000,10000,12500,16000,20000);
   CDS = 8;
@@ -26,10 +27,15 @@ type
 
   TFmAnalyser = class(TForm)
     ASIOHost: TASIOHost;
+    BarGraphScene: TGLScene;
     Bt_Analyse: TButton;
     Bt_CP: TButton;
     ChannelBox: TComboBox;
     DriverCombo: TComboBox;
+    GLCamera: TGLCamera;
+    GLDummyCube: TGLDummyCube;
+    GLLight: TGLLightSource;
+    GLSceneViewer: TGLSceneViewer;
     Lb_Channels: TLabel;
     Lb_dB: TLabel;
     Lb_Drivername: TLabel;
@@ -40,10 +46,6 @@ type
     RB_Slow: TRadioButton;
     SEFullscaleGain: TSpinEdit;
     Timer: TTimer;
-    BarGraphScene: TGLScene;
-    GLSceneViewer: TGLSceneViewer;
-    DefaultCamera: TGLCamera;
-    LightSource: TGLLightSource;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -61,21 +63,29 @@ type
     procedure RB_SlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    FUseDownsampling: Boolean;
+    FUseDownsampling      : Boolean;
+    FOldMousePoint        : TPoint;
+    FSampleRateReciprocal : Double;
+    function GetSamplerate: Single;
     function GetBandReserve: Single;
+    procedure Zoom(Value: Single);
     procedure SetBandReserve(const Value: Single);
     procedure SetUseDownsampling(const Value: Boolean);
-    function GetSamplerate: Single;
     procedure CalculateSmoothingFactor;
   protected
     FMaxDSStages     : Integer;
     FDownSampleCount : Integer;
     FDownSampleMax   : Integer;
     FBandReserve     : Double;
+    FHistoryCount    : Integer;
 
     FFilterArray     : Array [0..cNumFrequencies - 1] of TDownsampleFilterRecord;
-    FCubeArray       : Array [0..cNumFrequencies - 1] of TGLCube;
+    FCubeArray       : Array [0..CNumHistory - 1, 0..cNumFrequencies - 1] of TGLCube;
 
     FChannelNr       : Integer;
     FSpeedConst      : Array [0..1] of Single;
@@ -97,14 +107,17 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry;
+  Inifiles, Registry, VectorGeometry;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
-  Band : Integer;
+  Band    : Integer;
+  History : Integer;
 begin
  FChannelNr := 0;
- FSpeedConst[0] := 0.999; FSpeedConst[1] := 1 - FSpeedConst[0];
+ FSpeedConst[0] := 0.999;
+ FSpeedConst[1] := 1 - FSpeedConst[0];
+ FHistoryCount := 0;
  FFSGain := SEFullscaleGain.Value;
  DriverCombo.Items := ASIOHost.DriverList;
 
@@ -120,20 +133,23 @@ begin
  UpdateFilters;
 
  // add bands
- for Band := 0 to CNumFrequencies - 1 do
-  begin
-   FCubeArray[Band] := TGLCube.Create(BarGraphScene);
-   with FCubeArray[Band] do
-    begin
-     CubeWidth := 0.06;
-     CubeHeight := 1;
-     CubeDepth := 0.1;
-     Position.X := 0.08 * (Band - 16);
-     BarGraphScene.Objects.AddChild(FCubeArray[Band]);
-    end;
-  end;
+ for History := 0 to CNumHistory - 1 do
+  for Band := 0 to CNumFrequencies - 1 do
+   begin
+    FCubeArray[History, Band] := TGLCube.Create(BarGraphScene);
+    with FCubeArray[History, Band] do
+     begin
+      CubeWidth := 0.06;
+      CubeHeight := 1;
+      CubeDepth := 0.1;
+      Position.X := 0.08 * (Band - 16);
+      Position.Z := -0.20 * History;
+      BarGraphScene.Objects.AddChild(FCubeArray[History, Band]);
+     end;
+   end;
 
- DefaultCamera.TargetObject := FCubeArray[16];
+ GLCamera.TargetObject := FCubeArray[0, 16];
+// GLLight.Position.Style :=
 
  UseDownsampling := True;
  DownsamplingChanged;
@@ -205,7 +221,7 @@ begin
    if DesiredFreq > 0.499 * SampleRate then DesiredFreq := 0.499 * SampleRate;   
 
    if UseDownsampling then
-    while ((2 * DesiredFreq / Self.SampleRate) * (1 shl Downsampling)) < FBandReserve
+    while ((2 * DesiredFreq * FSampleRateReciprocal) * (1 shl Downsampling)) < FBandReserve
      do Inc(Downsampling);
 
    // eventually create filter
@@ -235,6 +251,27 @@ begin
  FDownSampleMax := 1 shl Downsampling;
 end;
 
+procedure TFmAnalyser.Zoom(Value: Single);
+var
+  vect : TVector;
+begin
+ if GLSceneViewer.Camera = GLCamera then
+  with GLCamera do
+   if Assigned(TargetObject) then
+    begin
+     vect := VectorSubtract(AbsolutePosition, TargetObject.AbsolutePosition);
+     if ((VectorLength(vect) > 1.2) or (Value > 1)) and
+        ((VectorLength(vect) < 10)  or (Value < 1)) then
+      begin
+       ScaleVector(vect, Value - 1);
+       AddVector(vect, AbsolutePosition);
+       if Assigned(Parent)
+        then vect := Parent.AbsoluteToLocal(vect);
+       Position.AsVector := vect;
+      end;
+    end
+end;
+
 function TFmAnalyser.GetBandReserve: Single;
 begin
  result := 100 * FBandReserve;
@@ -243,6 +280,70 @@ end;
 function TFmAnalyser.GetSamplerate: Single;
 begin
  result := ASIOHost.SampleRate;
+end;
+
+procedure TFmAnalyser.GLSceneViewerMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+ FOldMousePoint.X := X;
+ FOldMousePoint.Y := Y;
+end;
+
+procedure TFmAnalyser.GLSceneViewerMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+const
+  Scale = 1/40;
+var
+   originalT2C, normalT2C, normalCameraRight, newPos : TVector;
+   pitchNow, dist: Single;
+begin
+ if ssLeft in Shift then
+  begin
+   with GLSceneViewer.Camera do
+    begin
+     originalT2C := VectorSubtract(AbsolutePosition, GLDummyCube.AbsolutePosition);
+     SetVector(normalT2C, originalT2C);
+     dist := VectorLength(normalT2C);
+     NormalizeVector(normalT2C);
+     normalCameraRight := VectorCrossProduct(AbsoluteUp, normalT2C);
+     if VectorLength(normalCameraRight) < 0.001
+      then SetVector(normalCameraRight, XVector) // arbitrary vector
+      else NormalizeVector(normalCameraRight);
+     pitchNow := Math.ArcCos(VectorDotProduct(AbsoluteUp, normalT2C));
+     if not (ssAlt in Shift)
+      then pitchNow := ClampValue(pitchNow + DegToRad(FOldMousePoint.Y - Y), 0.002, PI - 0.77);
+     SetVector(normalT2C, AbsoluteUp);
+     RotateVector(normalT2C, normalCameraRight, -pitchNow);
+     if not (ssShift in Shift)
+      then RotateVector(normalT2C, AbsoluteUp, -DegToRad(FOldMousePoint.X - X));
+     ScaleVector(normalT2C, dist);
+     newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
+     if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
+     Position.AsVector := newPos;
+     case GLLight.Position.Style of
+      csPoint  : GLLight.Position.SetPoint(newPos);
+      csVector : GLLight.Position.SetVector(newPos);
+     end;
+    end;
+   FOldMousePoint.X := X;
+   FOldMousePoint.Y := Y;
+  end else
+ if ssRight in Shift then
+  begin
+   Zoom(Power(0.995, (FOldMousePoint.Y - Y)));
+   FOldMousePoint.X := X;
+   FOldMousePoint.Y := Y;
+  end;
+end;
+
+procedure TFmAnalyser.GLSceneViewerMouseWheel(Sender: TObject;
+  Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint;
+  var Handled: Boolean);
+const
+  CScale = 1/120;
+begin
+ Zoom(Power(0.9, WheelDelta * CScale));
+ Handled := true
 end;
 
 procedure TFmAnalyser.RB_FastClick(Sender: TObject);
@@ -342,13 +443,31 @@ end;
 
 procedure TFmAnalyser.UpdateBarGraph;
 var
-  Band : Integer;
+  Band    : Integer;
+  History : Integer;
+  Value   : Double;
 begin
  for Band := 0 to cNumFrequencies - 1 do
   begin
-   FCubeArray[Band].CubeHeight := (FFilterArray[cNumFrequencies - Band - 1].RMS + FFSGain) / FFSGain;
-   FCubeArray[Band].StructureChanged;
+   if FHistoryCount = 0 then
+    for History := 1 to CNumHistory - 1 do
+     begin
+      FCubeArray[History, Band].CubeHeight := FCubeArray[History - 1, Band].CubeHeight;
+      FCubeArray[History, Band].StructureChanged;
+     end;
+
+   Value := (FFilterArray[cNumFrequencies - Band - 1].RMS + FFSGain) / FFSGain;
+   if Value < 0 then Value := 0;
+
+   FCubeArray[0, Band].CubeHeight := Value;
+   FCubeArray[0, Band].StructureChanged;
   end;
+
+(*
+ if FHistoryCount < 1
+  then inc(FHistoryCount)
+  else FHistoryCount := 0;
+*)
 end;
 
 procedure TFmAnalyser.AnalyserChartDblClick(Sender: TObject);
@@ -369,8 +488,6 @@ begin
 end;
 
 procedure TFmAnalyser.Lb_DrivernameClick(Sender: TObject);
-var
-  i : Integer;
 begin
  if FDownSampleCount > 0
   then FDownSampleCount := -1
@@ -400,13 +517,16 @@ end;
 
 procedure TFmAnalyser.ASIOHostSampleRateChanged(Sender: TObject);
 begin
+ if SampleRate = 0
+  then raise Exception.Create('Samplerate may not be zero!');
+ FSampleRateReciprocal := 1 / SampleRate;
  UpdateFilters;
 end;
 
 procedure TFmAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleDynArray);
 var
-  i, j, r : Integer;
+  i, j : Integer;
   d, z, s : Double;
 const
   cDenorm = 1E-32;

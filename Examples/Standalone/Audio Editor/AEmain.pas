@@ -117,7 +117,7 @@ begin
    // scan for maximum
    for ch := 0 to ChannelCount - 1 do
     begin
-     chdata := ChannelDataPointerList[ch];
+     chdata := ChannelDataPointer[ch];
      for i := 0 to SampleFrames - 1 do
       if abs(chdata^[i]) > max
        then max := abs(chdata^[i]);
@@ -129,7 +129,7 @@ begin
      max := 1 / max;
      for ch := 0 to ChannelCount - 1 do
       begin
-       chdata := ChannelDataPointerList[ch];
+       chdata := ChannelDataPointer[ch];
        for i := 0 to SampleFrames - 1
         do chdata^[i] := max * chdata^[i];
       end;
@@ -149,7 +149,7 @@ begin
    // rectify every sample
    for ch := 0 to ChannelCount - 1 do
     begin
-     chdata := ChannelDataPointerList[ch];
+     chdata := ChannelDataPointer[ch];
      for i := 0 to SampleFrames - 1
       do chdata^[i] := abs(chdata^[i]);
     end;
@@ -168,7 +168,7 @@ begin
   begin
    for ch := 0 to ChannelCount - 1 do
     begin
-     chdata := ChannelDataPointerList[ch];
+     chdata := ChannelDataPointer[ch];
 
      // build sum of
      Sum := 0;
@@ -194,7 +194,7 @@ begin
    // rectify every sample
    for ch := 0 to ChannelCount - 1 do
     begin
-     chdata := ChannelDataPointerList[ch];
+     chdata := ChannelDataPointer[ch];
      for i := 0 to SampleFrames - 1
       do chdata^[i] := -chdata^[i];
     end;
@@ -214,7 +214,7 @@ begin
    SampleFrames   := round(ASIOHost.SampleRate);
    for ch := 0 to ChannelCount - 1 do
     begin
-     chdata := ChannelDataPointerList[ch];
+     chdata := ChannelDataPointer[ch];
      for i := 0 to SampleFrames - 1
       do chdata^[i] := 2 * random - 1;
     end;
