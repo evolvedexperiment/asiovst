@@ -439,6 +439,7 @@ uses
 
 resourcestring
   RCStrNoAudioFileFormat = 'No audio file format registered';
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 {$IFDEF DELPHI10_UP} {$region 'SampleRateSource implementation'} {$ENDIF}
 
@@ -1511,11 +1512,13 @@ begin
   end;
 end;
 
-function TCustomAudioDataCollection32.GetAudioChannel(index: Integer): TAudioChannel32;
+function TCustomAudioDataCollection32.GetAudioChannel(Index: Integer): TAudioChannel32;
 begin
- if (Index < 0) or (Index >= FChannels.Count)
-  then raise Exception.Create('Index out of bounds')
-  else result := TAudioChannel32(FChannels.Items[index]);
+ if assigned(FChannels) then
+  if (Index < 0) or (Index >= FChannels.Count)
+   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+   else result := TAudioChannel32(FChannels.Items[index])
+ else raise Exception.Create('Channels not assigned!')
 end;
 
 function TCustomAudioDataCollection32.GetChannelDataPointerList(
@@ -1630,10 +1633,10 @@ begin
   end;
 end;
 
-function TCustomAudioDataCollection64.GetAudioChannel(index: Integer): TAudioChannel64;
+function TCustomAudioDataCollection64.GetAudioChannel(Index: Integer): TAudioChannel64;
 begin
  if (Index < 0) or (Index >= FChannels.Count)
-  then raise Exception.Create('Index out of bounds')
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
   else result := TAudioChannel64(FChannels.Items[index]);
 end;
 

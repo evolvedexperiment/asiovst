@@ -27,8 +27,9 @@ type
     FAudioDataCollection : TAudioDataCollection32;
     FHRTFs               : THrtfs;
     function GetConvolution(Index: Integer): TLowLatencyConvolution32;
-    procedure HRTFChanged;
   public
+    procedure HRTFChanged;
+
     property AudioDataCollection: TAudioDataCollection32 read FAudioDataCollection;
     property Convolution[Index: Integer]: TLowLatencyConvolution32 read GetConvolution;
     property HRTFs: THrtfs read FHRTFs;
@@ -130,18 +131,24 @@ procedure THrtfConvolverDataModule.ParameterAzimuthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  HRTFChanged;
+ if EditorForm is TFmHrtfConvolver
+  then TFmHrtfConvolver(EditorForm).AzimuthChanged;
 end;
 
 procedure THrtfConvolverDataModule.ParameterElevationChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  HRTFChanged;
+ if EditorForm is TFmHrtfConvolver
+  then TFmHrtfConvolver(EditorForm).ElevationChanged;
 end;
 
 procedure THrtfConvolverDataModule.ParameterRadiusChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  HRTFChanged;
+ if EditorForm is TFmHrtfConvolver
+  then TFmHrtfConvolver(EditorForm).RadiusChanged;
 end;
 
 procedure THrtfConvolverDataModule.HRTFChanged;

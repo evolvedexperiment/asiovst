@@ -570,6 +570,7 @@ var
 function string2Language(LanguageString: string): TVstHostLanguage;
 function PlugCategory2String(Category: TVstPluginCategory):string;
 function EffOptions2String(EffOpts: TEffFlags):string;
+function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 
 implementation
 
@@ -681,6 +682,24 @@ procedure DontRaiseExceptionsAndSetFPUcodeword;
 asm
  fnclex                  // Don't raise pending exceptions enabled by the new flags
  fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
+end;
+
+function CheckValidVstPlugin(const FileName: TFilename): Boolean;
+var
+  VstDllHandle : THandle;
+begin
+ result := False;
+ if not FileExists(FileName) then exit; 
+ DontRaiseExceptionsAndSetFPUcodeword;
+ VstDllHandle := SafeLoadLibrary(PAnsiChar(FileName), 7);
+ if VstDllHandle <> 0 then
+  try
+   result := GetProcAddress(VstDllHandle, 'main') <> nil;
+   if result = False
+    then result := GetProcAddress(VstDllHandle, 'VSTPluginMain') <> nil;
+  finally
+   FreeLibrary(VstDllHandle);
+  end;
 end;
 
 function AudioMasterCallback(const Effect: PVstEffect; const Opcode : TAudioMasterOpcode; const Index, Value: LongInt; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
@@ -2262,20 +2281,8 @@ begin
 end;
 
 function TCustomVstPlugIn.CheckValidPlugin(const FileName: TFilename): Boolean;
-var
-  VstDllHandle : THandle;
 begin
- result := False;
- DontRaiseExceptionsAndSetFPUcodeword;
- VstDllHandle := SafeLoadLibrary(PAnsiChar(FileName), 7);
- if VstDllHandle <> 0 then
-  try
-   result := GetProcAddress(VstDllHandle, 'main') <> nil;
-   if result = False
-    then result := GetProcAddress(VstDllHandle, 'VSTPluginMain') <> nil;
-  finally
-   FreeLibrary(VstDllHandle);
-  end;
+ result := CheckValidVstPlugin(FileName);
 end;
 
 function TCustomVstPlugIn.String2Parameter(const Index: Integer; var ParameterName: string): Integer;

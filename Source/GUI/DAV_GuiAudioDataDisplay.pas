@@ -15,6 +15,37 @@ type
   TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);
   TGuiWaveDrawMode = (wdmLine, wdmSolid, wdmPoints, wdmOutline);
 
+  TDisplayChannels = class(TOwnedCollection)
+  private
+    FOnChanged: TNotifyEvent;
+  protected
+    {$IFDEF Delphi6_Up}
+    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
+    {$ELSE}
+    procedure Update(Item: TCollectionItem); override;
+    {$ENDIF}
+  public
+    property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
+    property Items; default;
+  end;
+
+  TCustomDisplayChannel = class(TCollectionItem)
+  private
+    FDisplayName  : string;
+    FColor        : TColor;
+    procedure SetColor(const Value: TColor);
+    procedure ColorChanged;
+  protected
+    function GetDisplayName: string; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure SetDisplayName(const Value: string); override;
+  public
+    constructor Create(Collection: TCollection); override;
+  published
+    property DisplayName;
+    property Color: TColor read FColor write SetColor;
+  end;
+
   TCustomGuiAudioDataDisplay = class(TCustomControl)
   private
     FAntiAlias            : TGuiAntiAlias;
@@ -30,18 +61,26 @@ type
     FWaveDrawMode         : TGuiWaveDrawMode;
     FCursor               : TGuiAudioDataDisplayCursor;
     FXAxis                : TGuiAudioDataDisplayXAxis;
+    FDisplayChannels      : TDisplayChannels;
 
     function  GetChannelCount: Integer;
     function  GetSampleFrames: Integer;
+    procedure AudioDataCollectionChanged;
+    procedure AxisChangedHandler(Sender: TObject);
+    procedure CursorChangedHandler(Sender: TObject);
+    procedure DisplayChannelsChangedHandler(Sender: TObject);
     procedure DrawChannelData(Bitmap: TBitmap; Channel: Integer);
+    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetAudioDataCollection(const Value: TCustomAudioDataCollection);
+    procedure SetCursor(const Value: TGuiAudioDataDisplayCursor);
+    procedure SetDisplayChannels(const Value: TDisplayChannels);
     procedure SetDisplayedChannel(Value: Integer);
     procedure SetLineColor(const Value: TColor);
     procedure SetLineWidth(const Value: Integer);
     procedure SetSolidColor(const Value: TColor);
     procedure SetTransparent(const Value: Boolean);
     procedure SetWaveDrawMode(Value: TGuiWaveDrawMode);
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure SetXAxis(const Value: TGuiAudioDataDisplayXAxis);
     procedure RenderDisplayToBitmap(Bitmap: TBitmap);
     procedure RenderCursorsToBitmap(Bitmap: TBitmap);
     procedure DownsampleBitmap(Bitmap: TBitmap);
@@ -49,11 +88,6 @@ type
     {$IFNDEF FPC}
     procedure DrawParentImage(Dest: TCanvas); virtual;
     {$ENDIF}
-    procedure SetCursor(const Value: TGuiAudioDataDisplayCursor);
-    procedure CursorChangedHandler(Sender: TObject);
-    procedure SetXAxis(const Value: TGuiAudioDataDisplayXAxis);
-    procedure AxisChangedHandler(Sender: TObject);
-    procedure AudioDataCollectionChanged;
   protected
     procedure Resize; override;
 //    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
@@ -70,6 +104,7 @@ type
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property AudioDataCollection: TCustomAudioDataCollection read FAudioDataCollection write SetAudioDataCollection;
     property DisplayedChannel: Integer read FDisplayedChannel write SetDisplayedChannel default -1;
+    property DisplayChannels: TDisplayChannels read FDisplayChannels write SetDisplayChannels;
     property Cursor: TGuiAudioDataDisplayCursor read FCursor write SetCursor;
     property SolidColor: TColor read FSolidColor write SetSolidColor default clRed;
 
@@ -137,6 +172,67 @@ implementation
 uses
   Math, SysUtils;
 
+{ TDisplayChannels }
+
+{$IFDEF Delphi6_Up}
+procedure TDisplayChannels.Notify(Item: TCollectionItem;
+  Action: TCollectionNotification);
+{$ELSE}
+procedure TDisplayChannels.Update(Item: TCollectionItem);
+{$ENDIF}
+begin
+ inherited;
+ if assigned(OnChanged)
+  then OnChanged(Self);
+end;
+
+
+{ TCustomDisplayChannel }
+
+constructor TCustomDisplayChannel.Create(Collection: TCollection);
+begin
+ inherited;
+ FDisplayName := 'Channel ' + IntToStr(Collection.Count);
+end;
+
+function TCustomDisplayChannel.GetDisplayName: string;
+begin
+ result := FDisplayName;
+end;
+
+procedure TCustomDisplayChannel.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDisplayChannel then
+  begin
+   TCustomDisplayChannel(Dest).FDisplayName := FDisplayName;
+   TCustomDisplayChannel(Dest).FColor := FColor;
+  end
+ else inherited;
+end;
+
+procedure TCustomDisplayChannel.SetColor(const Value: TColor);
+begin
+ if FColor <> Value then
+  begin
+   FColor := Value;
+   ColorChanged;
+  end;
+end;
+
+procedure TCustomDisplayChannel.ColorChanged;
+begin
+
+end;
+
+procedure TCustomDisplayChannel.SetDisplayName(const Value: string);
+begin
+ FDisplayName := Value;
+ inherited;
+end;
+
+
+{ TCustomGuiAudioDataDisplay }
+
 constructor TCustomGuiAudioDataDisplay.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -155,6 +251,9 @@ begin
 
   FXAxis              := TGuiAudioDataDisplayXAxis.Create;
   FXAxis.OnChanged    := AxisChangedHandler;
+
+  FDisplayChannels    := TDisplayChannels.Create(Self, TCustomDisplayChannel);
+  FDisplayChannels.OnChanged := DisplayChannelsChangedHandler;
 end;
 
 destructor TCustomGuiAudioDataDisplay.Destroy;
@@ -162,7 +261,13 @@ begin
  FreeAndNil(FXAxis);
  FreeAndNil(FCursor);
  FreeAndNil(FBuffer);
+ FreeAndNil(FDisplayChannels);
  inherited;
+end;
+
+procedure TCustomGuiAudioDataDisplay.DisplayChannelsChangedHandler(Sender: TObject);
+begin
+ //
 end;
 
 procedure TCustomGuiAudioDataDisplay.CursorChangedHandler(Sender: TObject);
@@ -254,6 +359,12 @@ end;
 procedure TCustomGuiAudioDataDisplay.SetCursor(const Value: TGuiAudioDataDisplayCursor);
 begin
  FCursor.Assign(Value);
+end;
+
+procedure TCustomGuiAudioDataDisplay.SetDisplayChannels(
+  const Value: TDisplayChannels);
+begin
+ FDisplayChannels.Assign(Value);
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetDisplayedChannel(Value: Integer);

@@ -105,6 +105,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
           MinValue = -90
           TabOrder = 1
           Value = 0
+          OnChange = SEElevationChange
         end
         object SEAzimuth: TSpinEdit
           Left = 55
@@ -130,6 +131,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
           Top = 17
           Width = 314
           Height = 155
+          LineWidth = 0
           XAxis.SampleUpper = 511
           XAxis.FractionalLower = -0.500000000000000000
           XAxis.FractionalUpper = 0.500000000000000000

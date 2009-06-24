@@ -9,39 +9,44 @@ uses
 
 type
   TFmHrtfConvolver = class(TForm)
-    PCConvolutionSelect: TPageControl;
-    TSHrtf: TTabSheet;
-    TSReverb: TTabSheet;
-    LbHrtfSet: TLabel;
-    EdHrtfSet: TEdit;
+    AudioDataDisplay: TGuiAudioDataDisplay;
     BtLoadHrtfFile: TButton;
-    GBPosition: TGroupBox;
-    LbRadius: TLabel;
-    SERadius: TSpinEdit;
-    SEElevation: TSpinEdit;
-    LbElevation: TLabel;
-    SEAzimuth: TSpinEdit;
-    LbAzimuth: TLabel;
-    GbImpulseResponses: TGroupBox;
+    EdHrtfSet: TEdit;
     Gb3D: TGroupBox;
-    GLSceneViewer: TGLSceneViewer;
-    GLScene: TGLScene;
+    GbImpulseResponses: TGroupBox;
+    GBPosition: TGroupBox;
+    GLCamera: TGLCamera;
     GLDummyCube: TGLDummyCube;
     GLHead: TGLFreeForm;
-    GLLight: TGLLightSource;
     GLHRTFs: TGLPoints;
-    GLCamera: TGLCamera;
-    AudioDataDisplay: TGuiAudioDataDisplay;
+    GLLight: TGLLightSource;
+    GLScene: TGLScene;
+    GLSceneViewer: TGLSceneViewer;
+    LbAzimuth: TLabel;
+    LbElevation: TLabel;
+    LbHrtfSet: TLabel;
+    LbRadius: TLabel;
     OpenDialog: TOpenDialog;
+    PCConvolutionSelect: TPageControl;
+    SEAzimuth: TSpinEdit;
+    SEElevation: TSpinEdit;
+    SERadius: TSpinEdit;
+    TSHrtf: TTabSheet;
+    TSReverb: TTabSheet;
     procedure BtLoadHrtfFileClick(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
     procedure SEAzimuthChange(Sender: TObject);
+    procedure SEElevationChange(Sender: TObject);
   private
     FOldMousePoint : TPoint;
     procedure Zoom(Value: Single);
+  public  
+    procedure AzimuthChanged;
+    procedure ElevationChanged;
+    procedure RadiusChanged;
   end;
 
 implementation
@@ -50,7 +55,8 @@ implementation
 
 uses
   Math, VectorGeometry, MeshUtils, Jpeg, TGA, GLFile3DS, GLFileObj,
-  GLCrossPlatform, VectorLists, DAV_DspHrtf, HrtfConvolverDM;
+  GLCrossPlatform, VectorLists, DAV_DspHrtf, HrtfConvolverDM,
+  DAV_VSTModuleWithPrograms;
 
 procedure TFmHrtfConvolver.FormCreate(Sender: TObject);
 var
@@ -186,10 +192,11 @@ end;
 
 procedure TFmHrtfConvolver.BtLoadHrtfFileClick(Sender: TObject);
 begin
- with OpenDialog do
+ with THrtfConvolverDataModule(Self.Owner), OpenDialog do
   if Execute then
    begin
-
+    HRTFs.LoadFromFile(FileName);
+    HrtfChanged;
    end;
 end;
 
@@ -260,18 +267,55 @@ end;
 
 procedure TFmHrtfConvolver.SEAzimuthChange(Sender: TObject);
 begin
- if SEAzimuth.Value > 180  then SEAzimuth.Value := SEAzimuth.Value - 360 else
+ if SEAzimuth.Value >  180 then SEAzimuth.Value := SEAzimuth.Value - 360 else
  if SEAzimuth.Value < -180 then SEAzimuth.Value := SEAzimuth.Value + 360;
 
  with THrtfConvolverDataModule(Owner) do
   begin
+   if Parameter[0] <> SEAzimuth.Value
+    then Parameter[0] := SEAzimuth.Value;
+  end;
+end;
 
-(*
-   FHRTFFile.InterpolateHrir(SEAzimuth.Value * CDegToRad,
-     SEPolar.Value * CDegToRad, ADHRIR.SampleFrames,
-     ADHRIR[0].ChannelDataPointer, ADHRIR[1].ChannelDataPointer);
+procedure TFmHrtfConvolver.SEElevationChange(Sender: TObject);
+begin
+ if SEElevation.Value >  90 then SEElevation.Value := SEElevation.Value - 180 else
+ if SEElevation.Value < -90 then SEElevation.Value := SEElevation.Value + 180;
+
+ with THrtfConvolverDataModule(Owner) do
+  begin
+   if Parameter[1] <> SEElevation.Value
+    then Parameter[1] := SEElevation.Value;
+  end;
+end;
+
+procedure TFmHrtfConvolver.AzimuthChanged;
+begin
+ with THrtfConvolverDataModule(Owner) do
+  begin
+   if SEAzimuth.Value <> Parameter[0]
+    then SEAzimuth.Value := round(Parameter[0]);
    AudioDataDisplay.Invalidate;
-*)
+  end;
+end;
+
+procedure TFmHrtfConvolver.ElevationChanged;
+begin
+ with THrtfConvolverDataModule(Owner) do
+  begin
+   if SEElevation.Value <> Parameter[1]
+    then SEElevation.Value := round(Parameter[1]);
+   AudioDataDisplay.Invalidate;
+  end;
+end;
+
+procedure TFmHrtfConvolver.RadiusChanged;
+begin
+ with THrtfConvolverDataModule(Owner) do
+  begin
+   if SERadius.Value <> Parameter[2]
+    then SERadius.Value := round(Parameter[2]);
+   AudioDataDisplay.Invalidate;
   end;
 end;
 
