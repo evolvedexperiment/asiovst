@@ -184,6 +184,10 @@ type
   function FastRound(Sample: Double): Integer; overload;
   {$ENDIF}
 
+  function Tanh(const X: Extended): Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function Tanh(const X: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function Tanh(const X: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
   procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double); overload;
   procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
   procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
@@ -916,6 +920,45 @@ var
   IntCast : Integer absolute Value;
 begin
  Result := 1 - ((Intcast shr 31) shl 1);
+end;
+
+function Tanh(const X: Extended): Extended;
+var
+  ep : Extended;
+begin
+  if IsZero(X)
+   then Result := 0
+   else
+    begin
+     ep := Exp(2 * X);
+     Result := (ep - 1) / (ep + 1);
+    end;
+end;
+
+function Tanh(const X: Double): Double;
+var
+  ep : Extended;
+begin
+  if IsZero(X)
+   then Result := 0
+   else
+    begin
+     ep := Exp(2 * X);
+     Result := (ep - 1) / (ep + 1);
+    end;
+end;
+
+function Tanh(const X: Single): Single;
+var
+  ep : Extended;
+begin
+  if IsZero(X)
+   then Result := 0
+   else
+    begin
+     ep := Exp(2 * X);
+     Result := (ep - 1) / (ep + 1);
+    end;
 end;
 
 procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended);

@@ -65,10 +65,10 @@ function Waveshaper7(x, a: Single): Single; overload;
 function Waveshaper7(x, a: Double): Double; overload;
 function Waveshaper8(x, a: Single): Single; overload;
 function Waveshaper8(x, a: Double): Double; overload;
-function Saturate(input, fMax: Single): Single; overload;
-function Saturate(input, fMax: Double): Double; overload;
-function Saturate2(input, fMax: Single): Single; overload;
-function Saturate2(input, fMax: Double): Double; overload;
+function Saturate(input, Limit: Single): Single; overload;
+function Saturate(input, Limit: Double): Double; overload;
+function Saturate2(input, Limit: Single): Single; overload;
+function Saturate2(input, Limit: Double): Double; overload;
 function SoftSat(x, a:Single): Single; overload;
 function SoftSat(x, a:Double): Double; overload;
 
@@ -93,8 +93,8 @@ begin
   else
    begin
     if x > 0
-     then Result:=  t + (1 - t) * tanh(( x - t) / (1 - t))
-     else Result:=-(t + (1 - t) * tanh((-x - t) / (1 - t)));
+     then Result :=   t + (1 - t) * tanh(( x - t) / (1 - t))
+     else Result := -(t + (1 - t) * tanh((-x - t) / (1 - t)));
    end;
 end;
 
@@ -179,78 +179,80 @@ begin
  Result := sign(x) * Exp(ln(Abs(x)) * a);
 end;
 
-function Waveshaper7(x,a:Double):Double;
+function Waveshaper7(x, a: Double): Double;
 begin
  Result := sign(x) * Exp(ln(Abs(x)) * a);
 end;
 
-function Waveshaper8(x,a:Single):Single;
+function Waveshaper8(x, a: Single): Single;
 begin
  Result := sign(x) * Exp(ln(a) * Abs(x));
 end;
 
-function Waveshaper8(x,a:Double):Double;
+function Waveshaper8(x, a: Double): Double;
 begin
  Result := sign(x) * Exp(ln(a) * Abs(x));
 end;
 
-function Saturate(input, fMax: Single): Single;
+function Saturate(Input, Limit: Single): Single;
 {$IFNDEF FPC}
-const fGrdDiv : Double = 0.5;
+const
+  CGrdDiv : Double = 0.5;
 asm
- fld input.Single
- fadd fMax
+ fld Input.Single
+ fadd Limit
  fabs
- fld input.Single
- fsub fMax
+ fld Input.Single
+ fsub Limit
  fabs
  fsubp
- fmul fGrdDiv;
-// result := fGrdDiv * (Abs(input + fMax) - Abs(input - fMax));
+ fmul CGrdDiv;
+// result := CGrdDiv * (Abs(Input + Limit) - Abs(Input - Limit));
 end;
 {$ELSE}
 begin
- result := 0.5 * (Abs(input + fMax) - Abs(input - fMax));
+ result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
 end;
 {$ENDIF}
 
-function Saturate(input, fMax: Double): Double;
+function Saturate(Input, Limit: Double): Double;
 {$IFNDEF FPC}
-const fGrdDiv : Double = 0.5;
+const
+  CGrdDiv : Double = 0.5;
 asm
- fld input.Double
- fadd fMax.Double
+ fld Input.Double
+ fadd Limit.Double
  fabs
- fld input.Double
- fsub fMax.Double
+ fld Input.Double
+ fsub Limit.Double
  fabs
  fsubp
- fmul fGrdDiv;
+ fmul CGrdDiv;
 end;
 {$ELSE}
 begin
- result := 0.5 * (Abs(input + fMax) - Abs(input - fMax));
+ result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
 end;
 {$ENDIF}
 
-function Saturate2(input, fMax: Single): Single;
+function Saturate2(Input, Limit: Single): Single;
 begin
- if input > fMax
-  then result := fMax
+ if Input > Limit
+  then result := Limit
   else
-   if input < -fMax
-    then result := -fMax
-    else Result := input;
+   if Input < -Limit
+    then result := -Limit
+    else Result := Input;
 end;
 
-function Saturate2(input, fMax: Double): Double;
+function Saturate2(Input, Limit: Double): Double;
 begin
- if input > fMax
-  then result := fMax
+ if Input > Limit
+  then result := Limit
   else
-   if input < -fMax
-    then result := -fMax
-    else Result := input;
+   if Input < -Limit
+    then result := -Limit
+    else Result := Input;
 end; 
 
 function SoftSat(x, a: Single): Single;

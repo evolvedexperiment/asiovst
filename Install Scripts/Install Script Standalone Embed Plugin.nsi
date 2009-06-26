@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;WinAmp Embed Plugin Installer
+;Standalone Embed Plugin Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,8 +13,8 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "WinAmp Embed Plugin Installer"
-  OutFile "WinAmp_Embed_Plugin_Install.exe"
+  Name "Standalone Embed Plugin Installer"
+  OutFile "Standalone_Embed_Plugin_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -30,7 +30,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "WinAmp Embed Plugin"
+  !define PRODUCT_NAME "Standalone Embed Plugin"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -69,19 +69,19 @@ SetCompressor lzma
 
 ;Installer Sections
 
-Section "WinAmp Embed Plugin" SecProgramFiles
+Section "Standalone Embed Plugin" SecProgramFiles
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\WinAmpEmbedPlugin.exe" "..\Bin\WinAmp Embed Plugin.exe"'  
+  !system 'copy "..\Bin\StandaloneEmbedPlugin.exe" "..\Bin\Standalone Embed Plugin.exe"'  
 
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\WinAmp Embed Plugin.exe"
+  File "..\Bin\Standalone Embed Plugin.exe"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
-  WriteUninstaller "$INSTDIR\Uninstall_WinAmp_Embed_Plugin.exe"
+  WriteUninstaller "$INSTDIR\Uninstall_Standalone_Embed_Plugin.exe"
 SectionEnd
 
 ;--------------------------------
@@ -89,9 +89,9 @@ SectionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "WinAmp Embed Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Standalone Embed Plugin"
 
-  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "WinAmp Embed Plugin"
+  LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Standalone Embed Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
@@ -104,7 +104,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\WinAmp Embed Plugin.exe"
+  Delete "$INSTDIR\Standalone Embed Plugin.exe"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

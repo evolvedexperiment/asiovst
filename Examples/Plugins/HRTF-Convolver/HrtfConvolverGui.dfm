@@ -131,6 +131,15 @@ object FmHrtfConvolver: TFmHrtfConvolver
           Top = 17
           Width = 314
           Height = 155
+          DisplayChannels = <
+            item
+              DisplayName = 'Channel 1'
+              Color = clBlack
+            end
+            item
+              DisplayName = 'Channel 2'
+              Color = clBlack
+            end>
           LineWidth = 0
           XAxis.SampleUpper = 511
           XAxis.FractionalLower = -0.500000000000000000

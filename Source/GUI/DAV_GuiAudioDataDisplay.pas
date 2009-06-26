@@ -128,6 +128,7 @@ type
     property Constraints;
     property Cursor;
     property DisplayedChannel;
+    property DisplayChannels;
     property DragCursor;
     property DragKind;
     property DragMode;
