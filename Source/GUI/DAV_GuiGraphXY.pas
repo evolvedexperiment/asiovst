@@ -64,6 +64,7 @@ type
     property PixelPerValue: Double read FPixelPerValue;
   public
     constructor Create; virtual;
+    procedure SetBounds(Lower, Upper: Double);
 
     property Range: Double read fRange;
     property PixelSize: Integer read FPixelSize write SetPixelSize nodefault;
@@ -299,6 +300,27 @@ begin
  CalculateRange;
  CalculateZeroPosition;
  CalculatePixelValueRelation;
+end;
+
+procedure TCustomAxis.SetBounds(Lower, Upper: Double);
+begin
+ if not (cafAutoExtendBounds in Flags) then
+  begin
+   if (Lower < Minimum) then Lower := Minimum;
+   if (Upper > Maximum) then Upper := Maximum;
+  end;
+
+ if FLower <> Lower then
+  begin
+   FLower := Lower;
+   LowerChanged;
+  end;
+
+ if FUpper <> Upper then
+  begin
+   FUpper := Upper;
+   UpperChanged;
+  end;
 end;
 
 procedure TCustomAxis.SetFlags(const Value: TCustomAxisFlags);

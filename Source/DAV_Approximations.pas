@@ -23,6 +23,7 @@ uses
   function FastPower(base, exp: Double) : Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastLog2(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastPower2(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastFloorLn2(const Value: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastArctanLike(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastArctanLike(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -43,6 +44,8 @@ uses
   function FastCosInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSec3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -79,6 +82,8 @@ uses
   function FastCosInBounds5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSec5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -91,8 +96,12 @@ uses
   function FastCosPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart6TermFPU(const Value: Single): Single; overload;
   function FastCosPart6TermFPU(const Value: Double): Double; overload;
+  function FastCosInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSin6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastSec6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -221,6 +230,62 @@ uses
   function FastLog2MinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
+  { 10^X Approximations }
+
+  function FastPower10MinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10ContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10MinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10ContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10MinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10ContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10MinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower10ContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
+
+  { Exp Approximations }
+
+  function FastExpMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpMinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpMinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpMinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExpContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
+
+  { Log10 Approximations }
+
+  function FastLog10ContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
+
+  { Ln Approximations }
+
+  function FastLnContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
+
   { Sqrt Approximations }
 
 //  function FastSqrtMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -249,10 +314,19 @@ uses
   function FastTanhOpt6TermFPU(const Input: Double): Double; assembler; overload;
   function FastTanhOpt7TermFPU(const Input: Double): Double; assembler; overload;
 
-  function FastTanh2Like4Term(const Input: Single): Single;
-  function FastTanh2Like3Term(const Input: Single): Single;
+  function FastTanh2Like4Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanh2Like3Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastTanh2Like2Term(const Input: Single): Single;
   function FastTanh2Like1Term(const Input: Single): Single;
+
+  function FastTanhMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhMinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhMinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhMinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanhContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   function FastdBtoAmpMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastdBtoAmpMinError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -324,6 +398,12 @@ const
   CdBtoAmpExpGain64 : Double = 1.6609640474436811739351597147447E-1;
   CFactor2IndB32    : Single = 6.0205999132796239042747778944899;
   CFactor2IndB64    : Double = 6.0205999132796239042747778944899;
+  CExp32            : Single = 1.4426950408889634073599246810019;
+  C2Exp32           : Single = 2 * 1.442695040888963407359924681;
+  C1032             : Single = 3.3219280948873623478703194294894;
+  C21032            : Single = 2 * 3.321928094887362347870319429;
+  CLog2of10Inv32    : Single = 0.3010299956639811952137388947245;
+  CLog2ofEInv32     : Single = 0.6931471805599453094172321214582;
 
 const
   CArcTanLike : Array [0..4] of Single = (0.0208351, -0.085133, 0.180141,
@@ -485,6 +565,15 @@ begin
  Result := FastCosInBounds3Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
+function FastSinInBounds3Term(const Value: Single): Single;
+begin
+  Result := FastCosInBounds3Term(CPiHalf32 - Value);
+end;
+
+function FastSinInBounds3Term(const Value: Double): Double;
+begin
+  Result := FastCosInBounds3Term(CPiHalf64 - Value);
+end;
 
 function FastSin3Term(const Value: Single): Single;
 begin
@@ -724,6 +813,16 @@ begin
  Result := FastCosInBounds5Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
+function FastSinInBounds5Term(const Value: Single): Single;
+begin
+  Result := FastCosInBounds5Term(CPiHalf32 - Value);
+end;
+
+function FastSinInBounds5Term(const Value: Double): Double;
+begin
+  Result := FastCosInBounds5Term(CPiHalf64 - Value);
+end;
+
 function FastSin5Term(const Value: Single): Single;
 begin
  Result := FastCos5Term(CPiHalf32 - Value);
@@ -815,28 +914,50 @@ asm
  fadd [CCos6Term + 8].Double
 end;
 
+function FastCosInBounds6Term(const Value: Single): Single;
+begin
+ case Round(Value * CTwoDivPi32 - CHalf32) of
+  0 : Result :=  FastCosPart6Term(Value);
+  1 : Result := -FastCosPart6Term(Pi - Value);
+  2 : Result := -FastCosPart6Term(Value - Pi);
+  3 : Result :=  FastCosPart6Term(CTwoPI32 - Value);
+  4 : Result :=  FastCosPart6Term(Value);
+  else Result := 0;
+ end;
+end;
+
+function FastCosInBounds6Term(const Value: Double): Double;
+begin
+ case round(Value * CTwoDivPi64 - CHalf64) of
+  0 : Result :=  FastCosPart6Term(Value);
+  1 : Result := -FastCosPart6Term(Pi - Value);
+  2 : Result := -FastCosPart6Term(Value - Pi);
+  3 : Result :=  FastCosPart6Term(CTwoPI64 - Value);
+  4 : Result :=  FastCosPart6Term(Value);
+  else Result := 0;
+ end;
+end;
+
 function FastCos6Term(const Value: Single): Single;
 begin
  Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi32 - CHalf32) of
-  0 : Result :=  FastCosPart6Term(Result);
-  1 : Result := -FastCosPart6Term(Pi - Result);
-  2 : Result := -FastCosPart6Term(Result - Pi);
-  3 : Result :=  FastCosPart6Term(CTwoPI32 - Result);
-  4 : Result :=  FastCosPart6Term(Result);
- end;
+ Result := FastCosInBounds6Term(Result);
 end;
 
 function FastCos6Term(const Value: Double): Double;
 begin
  Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
- case round(Result * CTwoDivPi64 - CHalf64) of
-  0 : Result :=  FastCosPart6Term(Result);
-  1 : Result := -FastCosPart6Term(Pi - Result);
-  2 : Result := -FastCosPart6Term(Result - Pi);
-  3 : Result :=  FastCosPart6Term(CTwoPI64 - Result);
-  4 : Result :=  FastCosPart6Term(Result);
- end;
+ Result := FastCosInBounds6Term(Result);
+end;
+
+function FastSinInBounds6Term(const Value: Single): Single;
+begin
+  Result := FastCosInBounds6Term(CPiHalf32 - Value);
+end;
+
+function FastSinInBounds6Term(const Value: Double): Double;
+begin
+  Result := FastCosInBounds6Term(CPiHalf64 - Value);
 end;
 
 function FastSin6Term(const Value: Single): Single;
@@ -1798,6 +1919,9 @@ begin
  Result := Value + log2;
 end;
 
+
+{ Log2 Approximations }
+
 function FastLog2MinError2(const Value: Single): Single;
 var
   log2 : Integer;
@@ -1943,6 +2067,218 @@ begin
                                       Result + CL2Laurent5[3]) *
                                       Result + CL2Laurent5[4];
 end;
+
+
+function FastExpMinError2(Value: Single): Single;
+begin
+ result := FastPower10MinError2(CExp32 * Value)
+end;
+
+function FastExpContinousError2(Value: Single): Single;
+begin
+ result := FastPower10ContinousError2(CExp32 * Value)
+end;
+
+function FastExpMinError3(Value: Single): Single;
+begin
+ result := FastPower10MinError2(CExp32 * Value)
+end;
+
+function FastExpContinousError3(Value: Single): Single;
+begin
+ result := FastPower10ContinousError3(CExp32 * Value)
+end;
+
+function FastExpMinError4(Value: Single): Single;
+begin
+ result := FastPower10MinError4(CExp32 * Value)
+end;
+
+function FastExpContinousError4(Value: Single): Single;
+begin
+ result := FastPower10ContinousError4(CExp32 * Value)
+end;
+
+function FastExpMinError5(Value: Single): Single;
+begin
+ result := FastPower10MinError5(CExp32 * Value)
+end;
+
+function FastExpContinousError5(Value: Single): Single;
+begin
+ result := FastPower10ContinousError5(CExp32 * Value)
+end;
+
+
+function FastPower10MinError2(Value: Single): Single;
+begin
+ result := FastPower2MinError2(C1032 * Value)
+end;
+
+function FastPower10ContinousError2(Value: Single): Single;
+begin
+ result := FastPower2ContinousError2(C1032 * Value)
+end;
+
+function FastPower10MinError3(Value: Single): Single;
+begin
+ result := FastPower2MinError2(C1032 * Value)
+end;
+
+function FastPower10ContinousError3(Value: Single): Single;
+begin
+ result := FastPower2ContinousError3(C1032 * Value)
+end;
+
+function FastPower10MinError4(Value: Single): Single;
+begin
+ result := FastPower2MinError4(C1032 * Value)
+end;
+
+function FastPower10ContinousError4(Value: Single): Single;
+begin
+ result := FastPower2ContinousError4(C1032 * Value)
+end;
+
+function FastPower10MinError5(Value: Single): Single;
+begin
+ result := FastPower2MinError5(C1032 * Value)
+end;
+
+function FastPower10ContinousError5(Value: Single): Single;
+begin
+ result := FastPower2ContinousError5(C1032 * Value)
+end;
+
+
+{ Log10 Approximations }
+
+function FastLog10MinError2(const Value: Single): Single;
+begin
+ Result := FastLog2MinError2(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10ContinousError2(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError2(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10Laurent2(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent2(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10MinError3(const Value: Single): Single;
+begin
+ Result := FastLog2MinError3(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10ContinousError3(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError3(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10Laurent3(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent3(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10MinError4(const Value: Single): Single;
+begin
+ Result := FastLog2MinError4(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10ContinousError4(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError4(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10Laurent4(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent4(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10MinError5(const Value: Single): Single;
+begin
+ Result := FastLog2MinError5(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10ContinousError5(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError5(Value) * CLog2of10Inv32;
+end;
+
+function FastLog10Laurent5(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent5(Value) * CLog2of10Inv32;
+end;
+
+
+{ Ln Approximations }
+
+function FastLnMinError2(const Value: Single): Single;
+begin
+ Result := FastLog2MinError2(Value) * CLog2ofEInv32;
+end;
+
+function FastLnContinousError2(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError2(Value) * CLog2ofEInv32;
+end;
+
+function FastLnLaurent2(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent2(Value) * CLog2ofEInv32;
+end;
+
+function FastLnMinError3(const Value: Single): Single;
+begin
+ Result := FastLog2MinError3(Value) * CLog2ofEInv32;
+end;
+
+function FastLnContinousError3(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError3(Value) * CLog2ofEInv32;
+end;
+
+function FastLnLaurent3(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent3(Value) * CLog2ofEInv32;
+end;
+
+function FastLnMinError4(const Value: Single): Single;
+begin
+ Result := FastLog2MinError4(Value) * CLog2ofEInv32;
+end;
+
+function FastLnContinousError4(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError4(Value) * CLog2ofEInv32;
+end;
+
+function FastLnLaurent4(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent4(Value) * CLog2ofEInv32;
+end;
+
+function FastLnMinError5(const Value: Single): Single;
+begin
+ Result := FastLog2MinError5(Value) * CLog2ofEInv32;
+end;
+
+function FastLnContinousError5(const Value: Single): Single;
+begin
+ Result := FastLog2ContinousError5(Value) * CLog2ofEInv32;
+end;
+
+function FastLnLaurent5(const Value: Single): Single;
+begin
+ Result := FastLog2Laurent5(Value) * CLog2ofEInv32;
+end;
+
+
+
+
 
 (*
 function FastSqrtMinError2(const Value: Single): Single;
@@ -2240,6 +2576,11 @@ var
   IntCast : Integer absolute result;
 begin
  IntCast := ((($7F + round(Value)) shl 23) and $FF800000);
+end;
+
+function FastExp(const Value: Single): Single;
+begin
+ result := FastPower2(CExp32 * Value);
 end;
 
 function FastRoot(i: Single; n: Integer): Single;
@@ -2810,6 +3151,69 @@ asm
 {$ENDIF}
 end;
 
+function FastTanhMinError2(Value: Single): Single; 
+var
+  temp : Single;
+begin
+ temp := FastPower2MinError2(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhContinousError2(Value: Single): Single; 
+var
+  temp : Single;
+begin
+ temp := FastPower2ContinousError2(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhMinError3(Value: Single): Single; 
+var
+  temp : Single;
+begin
+ temp := FastPower2MinError2(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhContinousError3(Value: Single): Single; 
+var
+  temp : Single;
+begin
+ temp := FastPower2ContinousError3(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhMinError4(Value: Single): Single; 
+var
+  temp : Single;
+begin
+ temp := FastPower2MinError4(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhContinousError4(Value: Single): Single; 
+var
+  temp : Single;
+begin
+ temp := FastPower2ContinousError4(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhMinError5(Value: Single): Single;
+var
+  temp : Single;
+begin
+ temp := FastPower2MinError5(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
+
+function FastTanhContinousError5(Value: Single): Single;
+var
+  temp : Single;
+begin
+ temp := FastPower2ContinousError5(C2Exp32 * Value);
+ Result := (temp - 1) / (temp + 1);
+end;
 
 procedure InitConstants;
 {$IFDEF PUREPASCAL}

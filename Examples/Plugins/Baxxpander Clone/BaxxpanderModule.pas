@@ -6,6 +6,8 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common,
   DAV_DspFilterButterworth, DAV_VSTModule;
 
+{$I DAV_Compiler.inc}
+
 type
   TBaxxpanderModule = class(TVSTModule)
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -47,6 +49,12 @@ begin
      Frequency := 250;
     end;
   end;
+
+ Parameter[0] := 100;
+ Parameter[1] := 100;
+ Parameter[2] := 100;
+ Parameter[3] := 1;
+ Parameter[4] := 100;
 end;
 
 procedure TBaxxpanderModule.VSTModuleClose(Sender: TObject);
@@ -147,7 +155,7 @@ begin
    begin
     FButterworthSplitter[Channel].ProcessSample(Inputs[Channel, Sample], Low, High);
     Outputs[Channel, Sample] := FGains[0] * Inputs[Channel, Sample] +
-                                FGains[3] * Tanh(FGains[4] * Low) + FGains[2] * High;
+                                FGains[3] * FastTanhContinousError5(FGains[4] * Low) + FGains[2] * High;
    end;
 end;
 

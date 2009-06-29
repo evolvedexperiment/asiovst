@@ -1,7 +1,7 @@
 program ApproximationBenchmark;
 
 uses
-//  FastMM4,
+  FastMM4,
   FastMove,
   Forms,
   ApproxMain in 'ApproxMain.pas' {FmApproximationBenchmark};

@@ -926,39 +926,24 @@ function Tanh(const X: Extended): Extended;
 var
   ep : Extended;
 begin
-  if IsZero(X)
-   then Result := 0
-   else
-    begin
-     ep := Exp(2 * X);
-     Result := (ep - 1) / (ep + 1);
-    end;
+ ep := Exp(2 * X);
+ Result := (ep - 1) / (ep + 1);
 end;
 
 function Tanh(const X: Double): Double;
 var
   ep : Extended;
 begin
-  if IsZero(X)
-   then Result := 0
-   else
-    begin
-     ep := Exp(2 * X);
-     Result := (ep - 1) / (ep + 1);
-    end;
+ ep := Exp(2 * X);
+ Result := (ep - 1) / (ep + 1);
 end;
 
 function Tanh(const X: Single): Single;
 var
   ep : Extended;
 begin
-  if IsZero(X)
-   then Result := 0
-   else
-    begin
-     ep := Exp(2 * X);
-     Result := (ep - 1) / (ep + 1);
-    end;
+ ep := Exp(2 * X);
+ Result := (ep - 1) / (ep + 1);
 end;
 
 procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended);
