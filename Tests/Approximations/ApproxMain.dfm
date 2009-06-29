@@ -24,6 +24,11 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
+      end
+      item
+        DisplayName = 'TGuiGraphXYSeriesCollectionItem'
+        SeriesClassName = 'TGuiGraphXYFunctionSeries'
+        Series.Color = clBlue
       end>
     XAxis.Granularity = 1.000000000000000000
     XAxis.Minimum = -5.000000000000000000
@@ -267,7 +272,7 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
           OnClick = MITanhExp5TermContErrorClick
         end
       end
-      object MILog2x: TMenuItem
+      object MILog2: TMenuItem
         Caption = 'Log2(x)'
         object MILog2MinError2Term: TMenuItem
           Caption = 'min. Error &2 Term'
@@ -303,6 +308,44 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
         object MILog2ContError5Term: TMenuItem
           Caption = 'cont. Error &5 Term'
           OnClick = MILog2ContError5TermClick
+        end
+      end
+      object MILn: TMenuItem
+        Caption = 'Ln(x)'
+        object MILnMinError2Term: TMenuItem
+          Caption = 'min. Error &2 Term'
+          OnClick = MILnMinError2TermClick
+        end
+        object MILnMinError3Term: TMenuItem
+          Caption = 'min. Error &3 Term'
+          OnClick = MILnMinError3TermClick
+        end
+        object MILnMinError4Term: TMenuItem
+          Caption = 'min. Error &4 Term'
+          OnClick = MILnMinError4TermClick
+        end
+        object MILnMinError5Term: TMenuItem
+          Caption = 'min. Error &5 Term'
+          OnClick = MILnMinError5TermClick
+        end
+        object N10: TMenuItem
+          Caption = '-'
+        end
+        object MILnContError2Term: TMenuItem
+          Caption = 'cont. Error &2 Term'
+          OnClick = MILnContError2TermClick
+        end
+        object MILnContError3Term: TMenuItem
+          Caption = 'cont. Error &3 Term'
+          OnClick = MILnContError3TermClick
+        end
+        object MILnContError4Term: TMenuItem
+          Caption = 'cont. Error &4 Term'
+          OnClick = MILnContError4TermClick
+        end
+        object MILnContError5Term: TMenuItem
+          Caption = 'cont. Error &5 Term'
+          OnClick = MILnContError5TermClick
         end
       end
       object MIPower2: TMenuItem

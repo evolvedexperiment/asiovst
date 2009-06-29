@@ -651,8 +651,9 @@ procedure TCustomGuiGraphXYFunctionSeries.PaintToGraph(
   const GraphXY: TCustomGuiGraphXY; const Bitmap: TBitmap);
 var
   x        : Integer;
-  Offset,
+  Offset   : TDAVPointSingle;
   Scale    : TDAVPointSingle;
+  Value    : Single;
 begin
  if Visible and assigned(FOnEvaluate) then
   with GraphXY, Bitmap do
@@ -664,9 +665,13 @@ begin
 
     Canvas.Pen.Color := fColor;
     Canvas.Pen.Width := LineWidth * OversamplingFactor;
-    Canvas.MoveTo(0 {+ Left}, round(Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X)));
-    for x := 1 to OversamplingFactor * FXAxis.PixelSize
-     do Canvas.LineTo(0 {+ Left} + x, round(Offset.Y - Scale.Y * FOnEvaluate(Self, Offset.X + x * Scale.X)));
+    Value := FOnEvaluate(Self, Offset.X);
+    Canvas.MoveTo(0 {+ Left}, round(Offset.Y - Scale.Y * Value));
+    for x := 1 to OversamplingFactor * FXAxis.PixelSize do
+     begin
+      Value := FOnEvaluate(Self, Offset.X + x * Scale.X);
+      Canvas.LineTo(0 {+ Left} + x, round(Offset.Y - Scale.Y * Value));
+     end;
    end;
 end;
 

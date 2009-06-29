@@ -12,92 +12,102 @@ type
     GuiGraphXY: TGuiGraphXY;
     Splitter: TSplitter;
     MainMenu: TMainMenu;
-    MIFile: TMenuItem;
-    MIExit: TMenuItem;
     MIBenchmark: TMenuItem;
     MICos: TMenuItem;
-    MISin: TMenuItem;
-    MITan: TMenuItem;
-    MITanh: TMenuItem;
+    MICosInBounds4Term: TMenuItem;
+    MICosInBounds5Term: TMenuItem;
+    MICosInBounds6Term: TMenuItem;
+    MIExit: TMenuItem;
+    MIExp: TMenuItem;
+    MIExpContError2Term: TMenuItem;
+    MIExpContError3Term: TMenuItem;
+    MIExpContError4Term: TMenuItem;
+    MIExpContError5Term: TMenuItem;
+    MIExpMinError2Term: TMenuItem;
+    MIExpMinError3Term: TMenuItem;
+    MIExpMinError4Term: TMenuItem;
+    MIExpMinError5Term: TMenuItem;
     MIFastCos3Term: TMenuItem;
     MIFastCos4Term: TMenuItem;
     MIFastCos5Term: TMenuItem;
     MIFastCos6Term: TMenuItem;
+    MIFile: TMenuItem;
+    MIInBounds3Term: TMenuItem;
+    MILn: TMenuItem;
+    MILnContError2Term: TMenuItem;
+    MILnContError3Term: TMenuItem;
+    MILnContError4Term: TMenuItem;
+    MILnContError5Term: TMenuItem;
+    MILnMinError2Term: TMenuItem;
+    MILnMinError3Term: TMenuItem;
+    MILnMinError4Term: TMenuItem;
+    MILnMinError5Term: TMenuItem;
+    MILog2: TMenuItem;
+    MILog2ContError2Term: TMenuItem;
+    MILog2ContError3Term: TMenuItem;
+    MILog2ContError4Term: TMenuItem;
+    MILog2ContError5Term: TMenuItem;
+    MILog2MinError2Term: TMenuItem;
+    MILog2MinError3Term: TMenuItem;
+    MILog2MinError4Term: TMenuItem;
+    MILog2MinError5Term: TMenuItem;
+    MIPower2: TMenuItem;
+    MIPower2ContError2Term: TMenuItem;
+    MIPower2ContError3Term: TMenuItem;
+    MIPower2ContError4Term: TMenuItem;
+    MIPower2ContError5Term: TMenuItem;
+    MIPower2MinError2Term: TMenuItem;
+    MIPower2MinError3Term: TMenuItem;
+    MIPower2MinError4Term: TMenuItem;
+    MIPower2MinError5Term: TMenuItem;
+    MISaveLog: TMenuItem;
+    MISin: TMenuItem;
     MISinComplete3Term: TMenuItem;
     MISinComplete4Term: TMenuItem;
     MISinComplete5Term: TMenuItem;
     MISinComplete6Term: TMenuItem;
-    N1: TMenuItem;
-    MIInBounds3Term: TMenuItem;
-    MICosInBounds4Term: TMenuItem;
-    MICosInBounds5Term: TMenuItem;
-    MICosInBounds6Term: TMenuItem;
-    MITanComplete2Term: TMenuItem;
-    MITanComplete3Term: TMenuItem;
-    MITanComplete4Term: TMenuItem;
-    MITanComplete6Term: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
     MISinInbounds3Term: TMenuItem;
     MISinInbounds4Term: TMenuItem;
     MISinInbounds5Term: TMenuItem;
     MISinInbounds6Term: TMenuItem;
-    MITanInbounds2Term: TMenuItem;
-    MITanInbounds3Term: TMenuItem;
-    MITanInbounds4Term: TMenuItem;
-    MITanInbounds6Term: TMenuItem;
+    MITan: TMenuItem;
+    MITanComplete2Term: TMenuItem;
+    MITanComplete3Term: TMenuItem;
+    MITanComplete4Term: TMenuItem;
+    MITanComplete6Term: TMenuItem;
+    MITanh: TMenuItem;
     MITanhComplete3Term: TMenuItem;
     MITanhComplete4Term: TMenuItem;
     MITanhComplete5Term: TMenuItem;
-    MITanhComplete7Term: TMenuItem;
     MITanhComplete6Term: TMenuItem;
-    N4: TMenuItem;
+    MITanhComplete7Term: TMenuItem;
+    MITanhExp2TermContError: TMenuItem;
+    MITanhExp2TermMinError: TMenuItem;
+    MITanhExp3TermContError: TMenuItem;
+    MITanhExp3TermMinError: TMenuItem;
+    MITanhExp4TermContError: TMenuItem;
+    MITanhExp4TermMinError: TMenuItem;
+    MITanhExp5TermContError: TMenuItem;
+    MITanhExp5TermMinError: TMenuItem;
     MITanhRationalPolynom3TermFPU: TMenuItem;
     MITanhRationalPolynom4TermFPU: TMenuItem;
     MITanhRationalPolynom5TermFPU: TMenuItem;
     MITanhRationalPolynom6TermFPU: TMenuItem;
     MITanhRationalPolynom7TermFPU: TMenuItem;
+    MITanInbounds2Term: TMenuItem;
+    MITanInbounds3Term: TMenuItem;
+    MITanInbounds4Term: TMenuItem;
+    MITanInbounds6Term: TMenuItem;
+    N1: TMenuItem;
+    N10: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
     N5: TMenuItem;
-    MITanhExp2TermMinError: TMenuItem;
-    MITanhExp3TermMinError: TMenuItem;
-    MITanhExp4TermMinError: TMenuItem;
-    MITanhExp5TermMinError: TMenuItem;
-    MITanhExp2TermContError: TMenuItem;
-    MITanhExp3TermContError: TMenuItem;
-    MITanhExp4TermContError: TMenuItem;
-    MITanhExp5TermContError: TMenuItem;
-    MILog2x: TMenuItem;
-    MIPower2: TMenuItem;
-    MILog2MinError2Term: TMenuItem;
-    MILog2MinError5Term: TMenuItem;
-    MILog2MinError4Term: TMenuItem;
-    MILog2MinError3Term: TMenuItem;
     N6: TMenuItem;
-    MILog2ContError2Term: TMenuItem;
-    MILog2ContError3Term: TMenuItem;
-    MILog2ContError4Term: TMenuItem;
-    MILog2ContError5Term: TMenuItem;
-    MIPower2MinError2Term: TMenuItem;
-    MIPower2MinError3Term: TMenuItem;
-    MIPower2MinError4Term: TMenuItem;
-    MIPower2MinError5Term: TMenuItem;
     N7: TMenuItem;
-    MIPower2ContError2Term: TMenuItem;
-    MIPower2ContError3Term: TMenuItem;
-    MIPower2ContError4Term: TMenuItem;
-    MIPower2ContError5Term: TMenuItem;
-    MISaveLog: TMenuItem;
     N8: TMenuItem;
-    MIExp: TMenuItem;
-    MIExpContError5Term: TMenuItem;
-    MIExpContError4Term: TMenuItem;
-    MIExpContError3Term: TMenuItem;
-    MIExpContError2Term: TMenuItem;
     N9: TMenuItem;
-    MIExpMinError5Term: TMenuItem;
-    MIExpMinError4Term: TMenuItem;
-    MIExpMinError3Term: TMenuItem;
-    MIExpMinError2Term: TMenuItem;
     procedure MemoClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     function Evaluation(Sender: TObject; X: Double): Double;
@@ -167,6 +177,7 @@ type
     procedure MIPower2ContError4TermClick(Sender: TObject);
     procedure MIPower2ContError5TermClick(Sender: TObject);
     procedure MISaveLogClick(Sender: TObject);
+    procedure MIExpClick(Sender: TObject);
     procedure MIExpMinError2TermClick(Sender: TObject);
     procedure MIExpMinError3TermClick(Sender: TObject);
     procedure MIExpMinError4TermClick(Sender: TObject);
@@ -175,6 +186,15 @@ type
     procedure MIExpContError3TermClick(Sender: TObject);
     procedure MIExpContError4TermClick(Sender: TObject);
     procedure MIExpContError5TermClick(Sender: TObject);
+    procedure MILnClick(Sender: TObject);
+    procedure MILnMinError2TermClick(Sender: TObject);
+    procedure MILnMinError3TermClick(Sender: TObject);
+    procedure MILnMinError4TermClick(Sender: TObject);
+    procedure MILnMinError5TermClick(Sender: TObject);
+    procedure MILnContError2TermClick(Sender: TObject);
+    procedure MILnContError3TermClick(Sender: TObject);
+    procedure MILnContError4TermClick(Sender: TObject);
+    procedure MILnContError5TermClick(Sender: TObject);
   protected
     function EvaluateCosine(Sender: TObject; X: Double): Double;
     function EvaluateFastCosine3(Sender: TObject; X: Double): Double;
@@ -186,6 +206,21 @@ type
     function EvaluateFastSine4(Sender: TObject; X: Double): Double;
     function EvaluateFastSine5(Sender: TObject; X: Double): Double;
     function EvaluateFastSine6(Sender: TObject; X: Double): Double;
+    function EvaluateTan(Sender: TObject; X: Double): Double;
+    function EvaluateFastTan2(Sender: TObject; X: Double): Double;
+    function EvaluateFastTan3(Sender: TObject; X: Double): Double;
+    function EvaluateFastTan4(Sender: TObject; X: Double): Double;
+    function EvaluateFastTan6(Sender: TObject; X: Double): Double;
+    function EvaluateTanh(Sender: TObject; X: Double): Double;
+    function EvaluateFastTanhOpt3(Sender: TObject; X: Double): Double;
+    function EvaluateFastTanhOpt4(Sender: TObject; X: Double): Double;
+    function EvaluateFastTanhOpt5(Sender: TObject; X: Double): Double;
+    function EvaluateFastTanhOpt6(Sender: TObject; X: Double): Double;
+    function EvaluateFastTanhOpt7(Sender: TObject; X: Double): Double;
+    function EvaluateLn(Sender: TObject; X: Double): Double;
+    function EvaluateLog2(Sender: TObject; X: Double): Double;
+    function EvaluatePower2(Sender: TObject; X: Double): Double;
+    function EvaluateExp(Sender: TObject; X: Double): Double;
   end;
 
 var
@@ -208,6 +243,461 @@ procedure TFmApproximationBenchmark.MIExitClick(Sender: TObject);
 begin
  Close;
 end;
+
+
+// Evaluation
+
+function TFmApproximationBenchmark.Evaluation(Sender: TObject;
+  X: Double): Double;
+var
+  s : Single;
+begin
+// result := Amp_to_dB(abs(x)) - FastAmpTodBMinError5(abs(x));
+// result := Amp_to_dB(abs(x)) - FastAmptodBContinousError5(abs(x));
+ s := x;
+ result := dB_to_Amp(x) - FastdBtoAmpMinError3(s);
+end;
+
+function TFmApproximationBenchmark.EvaluateCosine(Sender: TObject;
+  X: Double): Double;
+begin
+ result := cos(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastCosine3(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastCos3Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastCosine4(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastCos4Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastCosine5(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastCos5Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastCosine6(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastCos6Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateSine(Sender: TObject;
+  X: Double): Double;
+begin
+ result := sin(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastSine3(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastSin3Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastSine4(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastSin4Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastSine5(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastSin5Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastSine6(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastSin6Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateTan(Sender: TObject;
+  X: Double): Double;
+begin
+ result := Tan(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTan2(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTan2Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTan3(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTan3Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTan4(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTan4Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTan6(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTan6Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateTanh(Sender: TObject;
+  X: Double): Double;
+begin
+ result := Tanh(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTanhOpt3(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTanhOpt3Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTanhOpt4(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTanhOpt4Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTanhOpt5(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTanhOpt5Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTanhOpt6(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTanhOpt6Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluateFastTanhOpt7(Sender: TObject;
+  X: Double): Double;
+begin
+ result := FastTanhOpt7Term(x);
+end;
+
+function TFmApproximationBenchmark.EvaluatePower2(Sender: TObject;
+  X: Double): Double;
+begin
+ result := Power(2, x);
+end;
+
+function TFmApproximationBenchmark.EvaluateLn(Sender: TObject;
+  X: Double): Double;
+begin
+ if x > 0
+  then result := Ln(x)
+  else result := -Infinity;
+end;
+
+function TFmApproximationBenchmark.EvaluateLog2(Sender: TObject;
+  X: Double): Double;
+begin
+ if x > 0
+  then result := Log2(x)
+  else result := -Infinity;
+end;
+
+function TFmApproximationBenchmark.EvaluateExp(Sender: TObject;
+  X: Double): Double;
+begin
+ result := Exp(x);
+end;
+
+
+// Reference
+
+procedure TFmApproximationBenchmark.MICosClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ // Fast Cos() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+ Application.ProcessMessages;
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateCosine;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ // evaluate performance for cos(x)
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Cos(i * Temp);
+   Cos(i * Temp);
+   Cos(i * Temp);
+   Cos(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Cos(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MISinClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ // Fast Cos() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+ Application.ProcessMessages;
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateSine;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ // evaluate performance for cos(x)
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Sin(i * Temp);
+   Sin(i * Temp);
+   Sin(i * Temp);
+   Sin(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Sin(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MITanClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ // Fast Tan() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateTan;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Tan(i * Temp);
+   Tan(i * Temp);
+   Tan(i * Temp);
+   Tan(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Tan(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MITanhClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ // Fast Tan() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateTanh;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Tanh(i * Temp);
+   Tanh(i * Temp);
+   Tanh(i * Temp);
+   Tanh(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Tanh(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MILnClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ // Fast Tan() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateLn;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Ln(i * Temp);
+   Ln(i * Temp);
+   Ln(i * Temp);
+   Ln(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Ln(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MIPower2Click(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluatePower2;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Power(2, i * Temp);
+   Power(2, i * Temp);
+   Power(2, i * Temp);
+   Power(2, i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Power(2, x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MIExpClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateExp;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Exp(i * Temp);
+   Exp(i * Temp);
+   Exp(i * Temp);
+   Exp(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Exp(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MILog2Click(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ // Fast Tan() Test
+ Temp := 1 / TestLength;
+ Memo.Lines.Clear;
+ Memo.Lines.Add('Benchmark started');
+
+ if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
+  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
+   do OnEvaluate := EvaluateLog2;
+
+ GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
+ GuiGraphXY.YAxis.SetBounds(-1, 1);
+ GuiGraphXY.UpdateGraph;
+
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   Log2(i * Temp);
+   Log2(i * Temp);
+   Log2(i * Temp);
+   Log2(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: Log2(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+// Approximations
 
 procedure TFmApproximationBenchmark.MIExpContError2TermClick(Sender: TObject);
 var
@@ -321,7 +811,7 @@ var
 const
   TestLength = $100000;
 begin
- MIPower2Click(Sender);
+ MIExpClick(Sender);
 
  // evaluate performance for FastCos6Term(x)
  Temp := 1 / TestLength;
@@ -347,7 +837,7 @@ var
 const
   TestLength = $100000;
 begin
- MIPower2Click(Sender);
+ MIExpClick(Sender);
 
  // evaluate performance for FastCos6Term(x)
  Temp := 1 / TestLength;
@@ -373,7 +863,7 @@ var
 const
   TestLength = $100000;
 begin
- MIPower2Click(Sender);
+ MIExpClick(Sender);
 
  // evaluate performance for FastCos6Term(x)
  Temp := 1 / TestLength;
@@ -399,7 +889,7 @@ var
 const
   TestLength = $100000;
 begin
- MIPower2Click(Sender);
+ MIExpClick(Sender);
 
  // evaluate performance for FastCos6Term(x)
  Temp := 1 / TestLength;
@@ -414,114 +904,6 @@ begin
  end;
  QueryPerformanceCounter(B);
  Memo.Lines.Add('Reference: FastExpMinError5(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
- Application.ProcessMessages;
-end;
-
-function TFmApproximationBenchmark.Evaluation(Sender: TObject;
-  X: Double): Double;
-var
-  s : Single;
-begin
-// result := Amp_to_dB(abs(x)) - FastAmpTodBMinError5(abs(x));
-// result := Amp_to_dB(abs(x)) - FastAmptodBContinousError5(abs(x));
- s := x;
- result := dB_to_Amp(x) - FastdBtoAmpMinError3(s);
-end;
-
-function TFmApproximationBenchmark.EvaluateCosine(Sender: TObject;
-  X: Double): Double;
-begin
- result := cos(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastCosine3(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastCos3Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastCosine4(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastCos4Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastCosine5(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastCos5Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastCosine6(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastCos6Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateSine(Sender: TObject;
-  X: Double): Double;
-begin
- result := sin(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastSine3(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastSin3Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastSine4(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastSin4Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastSine5(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastSin5Term(x);
-end;
-
-function TFmApproximationBenchmark.EvaluateFastSine6(Sender: TObject;
-  X: Double): Double;
-begin
- result := FastSin6Term(x);
-end;
-
-procedure TFmApproximationBenchmark.MICosClick(Sender: TObject);
-var
-  i       : Integer;
-  A, B, C : Int64;
-  Temp    : Single;
-const
-  TestLength = $100000;
-begin
- // Fast Cos() Test
- Temp := 1 / TestLength;
- Memo.Lines.Clear;
- Memo.Lines.Add('Benchmark started');
- Application.ProcessMessages;
-
- if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
-  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
-   do OnEvaluate := EvaluateCosine;
-
- GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
- GuiGraphXY.YAxis.SetBounds(-1, 1);
- GuiGraphXY.UpdateGraph;
-
- // evaluate performance for cos(x)
- QueryPerformanceFrequency(C);
- QueryPerformanceCounter(A);
- for i := 1 to TestLength do
-  begin
-   Cos(i * Temp);
-   Cos(i * Temp);
-   Cos(i * Temp);
-   Cos(i * Temp);
-  end;
- QueryPerformanceCounter(B);
- Memo.Lines.Add('Reference: Cos(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 
@@ -540,7 +922,7 @@ begin
   end;
 end;
 
-procedure TFmApproximationBenchmark.MISinClick(Sender: TObject);
+procedure TFmApproximationBenchmark.MILnContError2TermClick(Sender: TObject);
 var
   i       : Integer;
   A, B, C : Int64;
@@ -548,36 +930,24 @@ var
 const
   TestLength = $100000;
 begin
- // Fast Cos() Test
+ MILnClick(Sender);
+
  Temp := 1 / TestLength;
- Memo.Lines.Clear;
- Memo.Lines.Add('Benchmark started');
- Application.ProcessMessages;
-
- if GuiGraphXY[0].Series is TGuiGraphXYFunctionSeries then
-  with TGuiGraphXYFunctionSeries(GuiGraphXY[0].Series)
-   do OnEvaluate := EvaluateSine;
-
- GuiGraphXY.YAxis.Flags := GuiGraphXY.YAxis.Flags + [cafAutoExtendBounds];
- GuiGraphXY.YAxis.SetBounds(-1, 1);
- GuiGraphXY.UpdateGraph;
-
- // evaluate performance for cos(x)
  QueryPerformanceFrequency(C);
  QueryPerformanceCounter(A);
  for i := 1 to TestLength do
   begin
-   Sin(i * Temp);
-   Sin(i * Temp);
-   Sin(i * Temp);
-   Sin(i * Temp);
+   FastLnContinousError2(i * Temp);
+   FastLnContinousError2(i * Temp);
+   FastLnContinousError2(i * Temp);
+   FastLnContinousError2(i * Temp);
   end;
  QueryPerformanceCounter(B);
- Memo.Lines.Add('Reference: Sin(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Memo.Lines.Add('Reference: FastLnContinousError2(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 
-procedure TFmApproximationBenchmark.MITanClick(Sender: TObject);
+procedure TFmApproximationBenchmark.MILnContError3TermClick(Sender: TObject);
 var
   i       : Integer;
   A, B, C : Int64;
@@ -585,26 +955,24 @@ var
 const
   TestLength = $100000;
 begin
- // Fast Tan() Test
- Temp := 1 / TestLength;
- Memo.Lines.Clear;
- Memo.Lines.Add('Benchmark started');
+ MILnClick(Sender);
 
+ Temp := 1 / TestLength;
  QueryPerformanceFrequency(C);
  QueryPerformanceCounter(A);
  for i := 1 to TestLength do
   begin
-   Tan(i * Temp);
-   Tan(i * Temp);
-   Tan(i * Temp);
-   Tan(i * Temp);
+   FastLnContinousError3(i * Temp);
+   FastLnContinousError3(i * Temp);
+   FastLnContinousError3(i * Temp);
+   FastLnContinousError3(i * Temp);
   end;
  QueryPerformanceCounter(B);
- Memo.Lines.Add('Reference: Tan(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Memo.Lines.Add('Reference: FastLnContinousError3(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 
-procedure TFmApproximationBenchmark.MITanhClick(Sender: TObject);
+procedure TFmApproximationBenchmark.MILnContError4TermClick(Sender: TObject);
 var
   i       : Integer;
   A, B, C : Int64;
@@ -612,26 +980,24 @@ var
 const
   TestLength = $100000;
 begin
- // Fast Tan() Test
- Temp := 1 / TestLength;
- Memo.Lines.Clear;
- Memo.Lines.Add('Benchmark started');
+ MILnClick(Sender);
 
+ Temp := 1 / TestLength;
  QueryPerformanceFrequency(C);
  QueryPerformanceCounter(A);
  for i := 1 to TestLength do
   begin
-   Tanh(i * Temp);
-   Tanh(i * Temp);
-   Tanh(i * Temp);
-   Tanh(i * Temp);
+   FastLnContinousError4(i * Temp);
+   FastLnContinousError4(i * Temp);
+   FastLnContinousError4(i * Temp);
+   FastLnContinousError4(i * Temp);
   end;
  QueryPerformanceCounter(B);
- Memo.Lines.Add('Reference: Tanh(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Memo.Lines.Add('Reference: FastLnContinousError4(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 
-procedure TFmApproximationBenchmark.MILog2Click(Sender: TObject);
+procedure TFmApproximationBenchmark.MILnContError5TermClick(Sender: TObject);
 var
   i       : Integer;
   A, B, C : Int64;
@@ -639,26 +1005,24 @@ var
 const
   TestLength = $100000;
 begin
- // Fast Tan() Test
- Temp := 1 / TestLength;
- Memo.Lines.Clear;
- Memo.Lines.Add('Benchmark started');
+ MILnClick(Sender);
 
+ Temp := 1 / TestLength;
  QueryPerformanceFrequency(C);
  QueryPerformanceCounter(A);
  for i := 1 to TestLength do
   begin
-   Log2(i * Temp);
-   Log2(i * Temp);
-   Log2(i * Temp);
-   Log2(i * Temp);
+   FastLnContinousError5(i * Temp);
+   FastLnContinousError5(i * Temp);
+   FastLnContinousError5(i * Temp);
+   FastLnContinousError5(i * Temp);
   end;
  QueryPerformanceCounter(B);
- Memo.Lines.Add('Reference: Log2(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Memo.Lines.Add('Reference: FastLnContinousError5(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 
-procedure TFmApproximationBenchmark.MIPower2Click(Sender: TObject);
+procedure TFmApproximationBenchmark.MILnMinError2TermClick(Sender: TObject);
 var
   i       : Integer;
   A, B, C : Int64;
@@ -666,22 +1030,99 @@ var
 const
   TestLength = $100000;
 begin
- // Fast Tan() Test
- Temp := 1 / TestLength;
- Memo.Lines.Clear;
- Memo.Lines.Add('Benchmark started');
+ MILnClick(Sender);
 
+ // evaluate performance for FastLnMinError2(x)
+ Temp := 1 / TestLength;
  QueryPerformanceFrequency(C);
  QueryPerformanceCounter(A);
  for i := 1 to TestLength do
   begin
-   Power(2, i * Temp);
-   Power(2, i * Temp);
-   Power(2, i * Temp);
-   Power(2, i * Temp);
+   FastLnMinError2(i * Temp);
+   FastLnMinError2(i * Temp);
+   FastLnMinError2(i * Temp);
+   FastLnMinError2(i * Temp);
   end;
  QueryPerformanceCounter(B);
- Memo.Lines.Add('Reference: Power(2, x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Memo.Lines.Add('Reference: FastLnMinError2(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MILnMinError3TermClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ MILnClick(Sender);
+
+ // evaluate performance for FastLnMinError3(x)
+ Temp := 1 / TestLength;
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastLnMinError3(i * Temp);
+   FastLnMinError3(i * Temp);
+   FastLnMinError3(i * Temp);
+   FastLnMinError3(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastLnMinError3(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MILnMinError4TermClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ MILnClick(Sender);
+
+ // evaluate performance for FastLnMinError4(x)
+ Temp := 1 / TestLength;
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastLnMinError4(i * Temp);
+   FastLnMinError4(i * Temp);
+   FastLnMinError4(i * Temp);
+   FastLnMinError4(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastLnMinError4(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
+ Application.ProcessMessages;
+end;
+
+procedure TFmApproximationBenchmark.MILnMinError5TermClick(Sender: TObject);
+var
+  i       : Integer;
+  A, B, C : Int64;
+  Temp    : Single;
+const
+  TestLength = $100000;
+begin
+ MILnClick(Sender);
+
+ // evaluate performance for FastLnMinError5(x)
+ Temp := 1 / TestLength;
+ QueryPerformanceFrequency(C);
+ QueryPerformanceCounter(A);
+ for i := 1 to TestLength do
+  begin
+   FastLnMinError5(i * Temp);
+   FastLnMinError5(i * Temp);
+   FastLnMinError5(i * Temp);
+   FastLnMinError5(i * Temp);
+  end;
+ QueryPerformanceCounter(B);
+ Memo.Lines.Add('Reference: FastLnMinError5(x): ' + IntToStr(round((B - A) / C * 1000)) + 'ms');
  Application.ProcessMessages;
 end;
 
