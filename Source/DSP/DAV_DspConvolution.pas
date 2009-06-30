@@ -352,8 +352,8 @@ end;
 
 procedure TCustomConvolution.CalculateFftSizeVariables;
 begin
- FFFTSize            := FFft.FFTSize;
- FFFTSizeHalf        := FFFTSize shr 1;
+ FFFTSize     := FFft.FFTSize;
+ FFFTSizeHalf := FFFTSize shr 1;
 end;
 
 function TCustomConvolution.GetFftOrder: Byte;

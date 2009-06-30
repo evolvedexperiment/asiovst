@@ -10,6 +10,7 @@ uses
 type
   TDspObject = class(TPersistent);
   TDspSampleRateDependent = class(TDspObject);
+  TDspComponent = class(TComponent);
 
 implementation
 

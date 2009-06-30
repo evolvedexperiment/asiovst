@@ -184,7 +184,7 @@ constructor TCustomVstParameterCategory.Create(Collection: TCollection);
 {$ENDIF}
 begin
  inherited;
- FDisplayName := 'Category ' + IntTostr(Collection.Count);
+ FDisplayName := 'Category ' + IntToStr(Collection.Count);
  FParamsInCat := 0;
  FVSTModule   := TCustomVstParameterCategories(Collection).VSTModule;
 end;

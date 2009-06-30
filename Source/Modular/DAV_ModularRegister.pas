@@ -11,12 +11,12 @@ implementation
 {$IFNDEF FPC}{$R '..\..\Resources\DAV_ModularRegister.res'}{$ENDIF}
 
 uses
-  Classes, DAV_ModularEnvelopeFollower, DAV_ModularVoiceController,
-  DAV_ModularOscSine, DAV_ModularOscSaw, DAV_ModularOscRamp,
-  DAV_ModularOscSquare, DAV_ModularOscNoise, DAV_ModularOscAbsSine,
-  DAV_ModularEnvelope,
+  Classes, DAV_ModularManager, DAV_ModularBase, DAV_ModularPin,
+  DAV_ModularEnvelopeFollower, DAV_ModularVoiceController, DAV_ModularOscSine,
+  DAV_ModularOscSaw, DAV_ModularOscRamp, DAV_ModularOscSquare,
+  DAV_ModularOscNoise, DAV_ModularOscAbsSine, DAV_ModularEnvelope,
   {$IFNDEF FPC}
-   ToolsAPI,
+  ToolsAPI,
    {$IFDEF DELPHI6_UP}
    DesignIntf,    // DsgnIntf renamed to DesignIntf from Delphi 6
 // DesignEditors, // TCustomModule moved to DesignEditors from Delphi 6
@@ -30,7 +30,8 @@ uses
 
 procedure Register;
 begin
-  RegisterComponents('ASIO/VST Modular', [TDspVoiceController,
+  RegisterComponents('ASIO/VST Modular', [TModularManager,
+                                          TDspVoiceController,
                                           TDspOscSine,
                                           TDspOscSaw,
                                           TDspOscRamp,
