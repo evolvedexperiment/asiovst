@@ -79,15 +79,48 @@ type
     FTotalNrOfSamples  : Cardinal;
     FFormatChunk       : TFormatChunk;
     FFactChunk         : TFactChunk;
-//    FBextChunk         : PBextRecord;
-//    FCartChunk         : PCartRecord;
+    FBextChunk         : TBextChunk;
+    FCartChunk         : TCartChunk;
 //    FFileTags          : TObjectList;
     FBytesPerSample    : Integer;
     FAudioDataPosition : Cardinal;
     FFormatChunkFound  : Boolean;
+    function GetTitle: string;
+    function GetArtist: string;
+    function GetCategory: string;
+    function GetClassification: string;
+    function GetClientID: string;
+    function GetCutID: string;
+    function GetdbLevelReference: Integer;
+    function GetEndDate: string;
+    function GetEndTime: string;
+    function GetOutCue: string;
+    function GetProducerAppID: string;
+    function GetProducerAppVersion: string;
+    function GetStartDate: string;
+    function GetStartTime: string;
+    function GetUserDef: string;
+    function GetVersion: Integer;
     procedure ReadAudioDataFromStream(const Stream: TStream);
     procedure WriteAudioDataToStream(const Stream: TStream);
     procedure ReadItaHeaderChunk(const Stream: TStream);
+    procedure SetTitle(const Value: string);
+    procedure SetArtist(const Value: string);
+    procedure SetCategory(const Value: string);
+    procedure SetClassification(const Value: string);
+    procedure SetClientID(const Value: string);
+    procedure SetCutID(const Value: string);
+    procedure SetdbLevelReference(const Value: Integer);
+    procedure SetEndDate(const Value: string);
+    procedure SetEndTime(const Value: string);
+    procedure SetOutCue(const Value: string);
+    procedure SetProducerAppID(const Value: string);
+    procedure SetProducerAppVersion(const Value: string);
+    procedure SetStartDate(const Value: string);
+    procedure SetStartTime(const Value: string);
+    procedure SetUserDef(const Value: string);
+    procedure SetVersion(const Value: Integer);
+    procedure CheckCreateCartChunk;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -101,6 +134,7 @@ type
     procedure SetSampleRate(const Value: Double); override;
     procedure SetSampleFrames(const Value: Cardinal); override;
 
+    procedure CheckCartChunkEmpty; virtual;
     procedure CheckHeader(const Stream: TStream); virtual;
     procedure ParseChunkInformation(const Stream: TStream);
 
@@ -141,6 +175,23 @@ type
     property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
     property BytesPerSample: Integer read FBytesPerSample;
     property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
+
+    property Version: Integer read GetVersion write SetVersion;
+    property Title: string read GetTitle write SetTitle;
+    property Artist: string read GetArtist write SetArtist;
+    property CutID: string read GetCutID write SetCutID;
+    property ClientID: string read GetClientID write SetClientID;
+    property Category: string read GetCategory write SetCategory;
+    property Classification: string read GetClassification write SetClassification;
+    property OutCue: string read GetOutCue write SetOutCue;
+    property StartDate: string read GetStartDate write SetStartDate;
+    property StartTime: string read GetStartTime write SetStartTime;
+    property EndDate: string read GetEndDate write SetEndDate;
+    property EndTime: string read GetEndTime write SetEndTime;
+    property ProducerAppID: string read GetProducerAppID write SetProducerAppID;
+    property ProducerAppVersion: string read GetProducerAppVersion write SetProducerAppVersion;
+    property UserDef: string read GetUserDef write SetUserDef;
+    property dbLevelReference: Integer read GetdbLevelReference write SetdbLevelReference;
   end;
 
   TAudioFileWAV  = class(TCustomAudioFileWAV)
@@ -152,6 +203,8 @@ type
     property BitsPerSample;
     property BytesPerSample;
     property Encoding;
+
+    property Title;
   end;
 
 var
@@ -468,9 +521,44 @@ begin
  result := True;
 end;
 
+function TCustomAudioFileWAV.GetCategory: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.Category
+  else result := '';
+end;
+
 function TCustomAudioFileWAV.GetChannels: Cardinal;
 begin
  result := FFormatChunk.Channels;
+end;
+
+function TCustomAudioFileWAV.GetClassification: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.Classification
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetClientID: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.ClientID
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetCutID: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.CutID
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetdbLevelReference: Integer;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.dbLevelReference
+  else result := 0;
 end;
 
 function TCustomAudioFileWAV.GetSampleFrames: Cardinal;
@@ -481,6 +569,48 @@ end;
 function TCustomAudioFileWAV.GetSampleRate: Double;
 begin
  result := FFormatChunk.SampleRate;
+end;
+
+function TCustomAudioFileWAV.GetStartDate: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.StartDate
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetStartTime: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.StartTime
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetTitle: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.Title
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetArtist: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.Artist
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetUserDef: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.UserDef
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetVersion: Integer;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.Version
+  else result := 0;
 end;
 
 function TCustomAudioFileWAV.GetBitsPerSample: Byte;
@@ -500,6 +630,55 @@ begin
  end;
 end;
 
+function TCustomAudioFileWAV.GetEndDate: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.EndDate
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetEndTime: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.EndTime
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetOutCue: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.OutCue
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetProducerAppID: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.ProducerAppID
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetProducerAppVersion: string;
+begin
+ if assigned(FCartChunk)
+  then result := FCartChunk.ProducerAppVersion
+  else result := '';
+end;
+
+procedure TCustomAudioFileWAV.SetArtist(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.Artist := Value;
+  end
+ else
+  begin
+   FCartChunk.Artist := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
 procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Byte);
 begin
  with FFormatChunk do
@@ -511,6 +690,20 @@ begin
     BytesPerSecond  := BlockAlign * SampleRate;
 //    BitsPerSampleChanged;
    end;
+end;
+
+procedure TCustomAudioFileWAV.SetCategory(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.Category := Value;
+  end
+ else
+  begin
+   FCartChunk.Category := '';
+   CheckCartChunkEmpty;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.SetChannels(const Value: Cardinal);
@@ -525,9 +718,135 @@ begin
    end;
 end;
 
+procedure TCustomAudioFileWAV.SetClassification(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.Classification := Value;
+  end
+ else
+  begin
+   FCartChunk.Classification := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetClientID(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.ClientID := Value;
+  end
+ else
+  begin
+   FCartChunk.ClientID := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetCutID(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.CutID := Value;
+  end
+ else
+  begin
+   FCartChunk.CutID := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetdbLevelReference(const Value: Integer);
+begin
+ if Value <> 0 then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.dbLevelReference := Value;
+  end
+ else
+  begin
+   FCartChunk.dbLevelReference := 0;
+   CheckCartChunkEmpty;
+  end;
+end;
+
 procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
+ // yet todo
+end;
 
+procedure TCustomAudioFileWAV.SetEndDate(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.EndTime := Value;
+  end
+ else
+  begin
+   FCartChunk.EndTime := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetEndTime(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.EndTime := Value;
+  end
+ else
+  begin
+   FCartChunk.EndTime := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetOutCue(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.OutCue := Value;
+  end
+ else
+  begin
+   FCartChunk.OutCue := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetProducerAppID(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.ProducerAppID := Value;
+  end
+ else
+  begin
+   FCartChunk.ProducerAppID := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetProducerAppVersion(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.ProducerAppVersion := Value;
+  end
+ else
+  begin
+   FCartChunk.ProducerAppVersion := '';
+   CheckCartChunkEmpty;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.SetSampleFrames(const Value: Cardinal);
@@ -548,6 +867,88 @@ begin
     SampleRate := Round(Value);
     BytesPerSecond := BlockAlign * SampleRate;
    end;
+end;
+
+procedure TCustomAudioFileWAV.SetStartDate(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.StartDate := Value;
+  end
+ else
+  begin
+   FCartChunk.StartDate := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetStartTime(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.StartTime := Value;
+  end
+ else
+  begin
+   FCartChunk.StartTime := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetTitle(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.Title := Value;
+  end
+ else
+  begin
+   FCartChunk.Title := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetUserDef(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.UserDef := Value;
+  end
+ else
+  begin
+   FCartChunk.UserDef := '';
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetVersion(const Value: Integer);
+begin
+ if Value <> 0 then
+  begin
+   CheckCreateCartChunk;
+   FCartChunk.Version := Value;
+  end
+ else
+  begin
+   FCartChunk.Version := 0;
+   CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.CheckCartChunkEmpty;
+begin
+ // todo: not yet implemented!
+end;
+
+procedure TCustomAudioFileWAV.CheckCreateCartChunk;
+begin
+ // eventually create cart chunk
+ if not assigned(FCartChunk)
+  then FCartChunk := FCartChunk.Create;
 end;
 
 procedure TCustomAudioFileWAV.CheckHeader(const Stream: TStream);
@@ -714,21 +1115,25 @@ end;
 
 procedure TCustomAudioFileWAV.ReadBextChunk(const Stream: TStream);
 begin
- with Stream, TWavUnknownChunk.Create do
-  try
-   LoadFromStream(Stream);
-  finally
-   Free;
+ with Stream do
+  begin
+   // eventually create cart chunk
+   if not assigned(FBextChunk)
+    then FBextChunk := TBextChunk.Create;
+
+   FBextChunk.LoadFromStream(Stream);
   end;
 end;
 
 procedure TCustomAudioFileWAV.ReadCartChunk(const Stream: TStream);
 begin
- with Stream, TWavUnknownChunk.Create do
-  try
-   LoadFromStream(Stream);
-  finally
-   Free;
+ with Stream do
+  begin
+   // eventually create cart chunk
+   if not assigned(FCartChunk)
+    then FCartChunk := TCartChunk.Create;
+
+   FCartChunk.LoadFromStream(Stream);
   end;
 end;
 

@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon;
+  DAV_Common, DAV_DspCommon;
 
 type
   TCustomDelayLine = class(TDspObject)
@@ -21,7 +21,7 @@ type
     procedure Reset; virtual;
   end;
 
-  TDelayLineSamples32 = class(TCustomDelayLine)
+  TCustomDelayLineSamples32 = class(TCustomDelayLine)
   private
     function GetSample(Index: Integer): Single;
   protected
@@ -33,11 +33,11 @@ type
     procedure Reset; override;
     function ProcessSample(const Input: Single): Single;
     property Sample[Index: Integer]: Single read GetSample;
-  published
-    property BufferSize;
   end;
 
-  TDelayLineSamples64 = class(TCustomDelayLine)
+  TCustomDelayLineSamples64 = class(TCustomDelayLine)
+  private
+    function GetSample(Index: Integer): Double;
   protected
     FBuffer : PDAVDoubleFixedArray;
     procedure BufferSizeChanged; override;
@@ -46,6 +46,15 @@ type
     destructor Destroy; override;
     procedure Reset; override;
     function ProcessSample(const Input: Double): Double;
+    property Sample[Index: Integer]: Double read GetSample;
+  end;
+
+  TDelayLineSamples32 = class(TCustomDelayLineSamples32)
+  published
+    property BufferSize;
+  end;
+
+  TDelayLineSamples64 = class(TCustomDelayLineSamples64)
   published
     property BufferSize;
   end;
@@ -117,21 +126,21 @@ begin
 end;
 
 
-{ TDelayLineSamples32 }
+{ TCustomDelayLineSamples32 }
 
-constructor TDelayLineSamples32.Create(const BufferSize: Integer = 0);
+constructor TCustomDelayLineSamples32.Create(const BufferSize: Integer = 0);
 begin
  FBuffer := nil;
  inherited Create(Buffersize);
 end;
 
-destructor TDelayLineSamples32.Destroy;
+destructor TCustomDelayLineSamples32.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
 end;
 
-function TDelayLineSamples32.GetSample(Index: Integer): Single;
+function TCustomDelayLineSamples32.GetSample(Index: Integer): Single;
 var
   Pos: Integer;
 begin
@@ -144,7 +153,7 @@ begin
  result := FBuffer^[Pos];
 end;
 
-function TDelayLineSamples32.ProcessSample(const Input: Single): Single;
+function TCustomDelayLineSamples32.ProcessSample(const Input: Single): Single;
 begin
  result := FBuffer^[FBufferPos];
  FBuffer^[FBufferPos] := Input;
@@ -153,39 +162,52 @@ begin
   then FBufferPos := 0;
 end;
 
-procedure TDelayLineSamples32.BufferSizeChanged;
+procedure TCustomDelayLineSamples32.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
  FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
-procedure TDelayLineSamples32.Reset;
+procedure TCustomDelayLineSamples32.Reset;
 begin
  inherited;
  FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
 
-{ TDelayLineSamples64 }
+{ TCustomDelayLineSamples64 }
 
-constructor TDelayLineSamples64.Create(const BufferSize: Integer = 0);
+constructor TCustomDelayLineSamples64.Create(const BufferSize: Integer = 0);
 begin
  inherited Create(BufferSize);
  FBuffer := nil;
 end;
 
-destructor TDelayLineSamples64.Destroy;
+destructor TCustomDelayLineSamples64.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
 end;
 
-procedure TDelayLineSamples64.BufferSizeChanged;
+function TCustomDelayLineSamples64.GetSample(Index: Integer): Double;
+var
+  Pos: Integer;
+begin
+ if (Index < 0) or (Index >= FBufferSize)
+  then raise Exception.CreateFmt('Index out of bounds(%d)', [Index]);
+
+ Pos := FBufferPos - Index;
+ if Pos < 0
+  then Inc(Pos, FBufferSize);
+ result := FBuffer^[Pos];
+end;
+
+procedure TCustomDelayLineSamples64.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
 end;
 
-function TDelayLineSamples64.ProcessSample(const Input: Double): Double;
+function TCustomDelayLineSamples64.ProcessSample(const Input: Double): Double;
 begin
  result := FBuffer^[FBufferPos];
  FBuffer^[FBufferPos] := Input;
@@ -194,7 +216,7 @@ begin
   then FBufferPos := 0;
 end;
 
-procedure TDelayLineSamples64.Reset;
+procedure TCustomDelayLineSamples64.Reset;
 begin
  inherited;
  FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);

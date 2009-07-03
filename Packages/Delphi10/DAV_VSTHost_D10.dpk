@@ -27,8 +27,8 @@ package DAV_VSTHost_D10;
 requires
   vcl,
   rtl,
-  DAV_VSTPlugin_D10,
-  DAV_Common_D10;
+  DAV_Common_D10,
+  DAV_VSTPlugin_D10;
 
 contains
   DAV_VSTHost in '..\..\Source\VST\DAV_VSTHost.pas',

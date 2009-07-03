@@ -31,7 +31,7 @@ type
   /////////////////////////////// Format Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TFormatChunk = class(TDefinedChunk)
+  TFormatChunk = class(TWavDefinedChunk)
   private
     function GetFormatTag: TWavEncoding;
     function GetValidBitsPerSample: Word;
@@ -71,7 +71,7 @@ type
     SampleCount : Cardinal;
   end;
 
-  TFactChunk = class(TFixedDefinedChunk)
+  TFactChunk = class(TWavFixedDefinedChunk)
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -119,7 +119,7 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property XMLData: string read fText write fText;
+    property XMLData: string read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -132,19 +132,19 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property XMLData: string read fText write fText;
+    property XMLData: string read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
   ////////////////// Custom Cued Text Chunk (Label or Note) //////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TCustomCuedTextChunk = class(TDefinedChunk)
+  TCustomCuedTextChunk = class(TWavDefinedChunk)
   private
     procedure CalculateChunkSize;
   protected
-    fText  : string;
-    fCueID : Cardinal;
+    FText  : string;
+    FCueID : Cardinal;
     procedure SetText(const Value: string);
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -160,7 +160,7 @@ type
   public
     class function GetClassChunkName : TChunkName; override;
   published
-    property Text: string read fText write fText;
+    property Text: string read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -171,7 +171,7 @@ type
   public
     class function GetClassChunkName : TChunkName; override;
   published
-    property Note: string read fText write fText;
+    property Note: string read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -188,11 +188,11 @@ type
     CodePage     : Word;
   end;
 
-  TLabeledTextChunk = class(TDefinedChunk)
+  TLabeledTextChunk = class(TWavDefinedChunk)
   private
     procedure CalculateChunkSize;
   protected
-    fText  : string;
+    FText  : string;
     procedure SetText(const Value: string);
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -200,7 +200,7 @@ type
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
   published
-    property Text: string read fText write fText;
+    property Text: string read FText write FText;
     property CuePointID: Cardinal read LabeledTextRecord.CuePointID write LabeledTextRecord.CuePointID;
     property SampleLength: Cardinal read LabeledTextRecord.SampleLength write LabeledTextRecord.SampleLength;
     property PurposeID: Cardinal read LabeledTextRecord.PurposeID write LabeledTextRecord.PurposeID;
@@ -214,11 +214,11 @@ type
   ///////////////////////////// Cued File Chunk //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TCuedFileChunk = class(TDefinedChunk)
+  TCuedFileChunk = class(TWavDefinedChunk)
   private
     procedure CalculateChunkSize;
   protected
-    fCueID      : Cardinal;
+    FCueID      : Cardinal;
     fMediaType  : Cardinal;
     fBinaryData : array of Byte;
     procedure AssignTo(Dest: TPersistent); override;
@@ -236,7 +236,7 @@ type
     TypeID : TChunkName;
   end;
 
-  TAssociatedDataListChunk = class(TDefinedChunk)
+  TAssociatedDataListChunk = class(TWavDefinedChunk)
   private
     procedure CalculateChunkSize;
   protected
@@ -271,10 +271,10 @@ type
     property NumberOfRepeats: Cardinal read PlaylistSegment.NumberOfRepeats write PlaylistSegment.NumberOfRepeats;
   end;
 
-  TPlaylistChunk = class(TDefinedChunk)
+  TPlaylistChunk = class(TWavDefinedChunk)
   private
-    fCount            : Cardinal; 
-    fPlaylistSegments : TOwnedCollection;
+    FCount            : Cardinal; 
+    FPlaylistSegments : TOwnedCollection;
     procedure CalculateChunkSize;
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -294,7 +294,7 @@ type
     NumberOfSilentSamples : Cardinal;
   end;
 
-  TSilentChunk = class(TFixedDefinedChunk)
+  TSilentChunk = class(TWavFixedDefinedChunk)
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -315,7 +315,7 @@ type
     NumberOfSilentSamples : Cardinal;
   end;
 
-  TWavelistChunk = class(TFixedDefinedChunk)
+  TWavelistChunk = class(TWavFixedDefinedChunk)
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -354,10 +354,10 @@ type
     property RelativeBlockSampleOffset: Cardinal read CuePointRecord.SampleOffset write CuePointRecord.SampleOffset;
   end;
 
-  TCueChunk = class(TDefinedChunk)
+  TCueChunk = class(TWavDefinedChunk)
   private
-    fCount         : Cardinal;
-    fCueCollection : TOwnedCollection;
+    FCount         : Cardinal;
+    FCueCollection : TOwnedCollection;
     procedure CalculateChunkSize;
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -474,9 +474,9 @@ type
     property PlayCount: Cardinal read LoopRecord.PlayCount write LoopRecord.PlayCount;
   end;
 
-  TSamplerChunk = class(TDefinedChunk)
+  TSamplerChunk = class(TWavDefinedChunk)
   private
-    fLoopCollection : TOwnedCollection;
+    FLoopCollection : TOwnedCollection;
     function GetManufacturer: TMidiManufacturer;
     function GetSMPTEFormat: TSMPTEFormat;
     procedure CalculateChunkSize;
@@ -516,7 +516,7 @@ type
     HighVelocity  : Byte;
   end;
 
-  TInstrumentChunk = class(TFixedDefinedChunk)
+  TInstrumentChunk = class(TWavFixedDefinedChunk)
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -564,18 +564,20 @@ type
   ////////////////////////////////////////////////////////////////////////////
 
   TBextRecord = packed record
-    Description        : array [0..255] of Char;
-    Originator         : array [0..31]  of Char;
-    OriginatorRef      : array [0..31]  of Char;
-    OriginationDate    : array [0..9]   of Char;
-    OriginationTime    : array [0..7]   of Char;
+    Description        : array [0..255] of AnsiChar;
+    Originator         : array [0..31]  of AnsiChar;
+    OriginatorRef      : array [0..31]  of AnsiChar;
+    OriginationDate    : array [0..9]   of AnsiChar;
+    OriginationTime    : array [0..7]   of AnsiChar;
     TimeRefLow         : Integer;
     TimeRefHigh        : Integer;
     Version            : Word;
+    UMID               : Array [0..63]  of Byte;
+    Reserved           : Array [0..189] of Byte;
   end;
   PBextRecord = ^TBextRecord;
 
-  TCustomBextChunk = class(TFixedDefinedChunk)
+  TCustomBextChunk = class(TWavFixedDefinedChunk)
   private
     function GetDescription: string;
     function GetOriginationDate: string;
@@ -593,7 +595,7 @@ type
     BextRecord : TBextRecord;
     constructor Create; override;
     class function GetClassChunkSize: Integer; override;
-  published
+
     property Description: string read GetDescription write SetDescription;
     property Originator: string read GetOriginator write SetOriginator;
     property OriginatorRef: string read GetOriginatorRef write SetOriginatorRef;
@@ -607,6 +609,15 @@ type
   TBextChunk = class(TCustomBextChunk)
   public
     class function GetClassChunkName : TChunkName; override;
+  published
+    property Description;
+    property Originator;
+    property OriginatorRef;
+    property OriginationDate;
+    property OriginationTime;
+    property TimeRefLow;
+    property TimeRefHigh;
+    property Version;
   end;
 
   TBextChunkOld = class(TCustomBextChunk)
@@ -621,25 +632,25 @@ type
 
   TCartRecord = packed record
     Version            : Integer;
-    Title              : array [0..63] of Char;
-    Artist             : array [0..63] of Char;
-    CutID              : array [0..63] of Char;
-    ClientID           : array [0..63] of Char;
-    Category           : array [0..63] of Char;
-    Classification     : array [0..63] of Char;
-    OutCue             : array [0..63] of Char;
-    StartDate          : array [0..9] of Char;
-    StartTime          : array [0..7] of Char;
-    EndDate            : array [0..9] of Char;
-    EndTime            : array [0..7] of Char;
-    ProducerAppID      : array [0..63] of Char;
-    ProducerAppVersion : array [0..63] of Char;
-    UserDef            : array [0..63] of Char;
+    Title              : array [0..63] of AnsiChar;
+    Artist             : array [0..63] of AnsiChar;
+    CutID              : array [0..63] of AnsiChar;
+    ClientID           : array [0..63] of AnsiChar;
+    Category           : array [0..63] of AnsiChar;
+    Classification     : array [0..63] of AnsiChar;
+    OutCue             : array [0..63] of AnsiChar;
+    StartDate          : array [0..9] of AnsiChar;
+    StartTime          : array [0..7] of AnsiChar;
+    EndDate            : array [0..9] of AnsiChar;
+    EndTime            : array [0..7] of AnsiChar;
+    ProducerAppID      : array [0..63] of AnsiChar;
+    ProducerAppVersion : array [0..63] of AnsiChar;
+    UserDef            : array [0..63] of AnsiChar;
     dbLevelReference   : Integer;
   end;
   PCartRecord = ^TCartRecord;
 
-  TCartChunk = class(TFixedDefinedChunk)
+  TCartChunk = class(TWavFixedDefinedChunk)
   private
     function GetArtist: string;
     function GetCategory: string;
@@ -998,8 +1009,8 @@ begin
  inherited;
  if Dest is TCustomCuedTextChunk then
   begin
-   TCustomCuedTextChunk(Dest).fText  := fText;
-   TCustomCuedTextChunk(Dest).fCueID := fCueID;
+   TCustomCuedTextChunk(Dest).FText  := FText;
+   TCustomCuedTextChunk(Dest).FCueID := FCueID;
   end;
 end;
 
@@ -1008,9 +1019,9 @@ begin
  inherited;
  with Stream do
   begin
-   SetLength(fText, FChunkSize - SizeOf(Cardinal));
-   Read(fCueID, SizeOf(Cardinal));
-   Read(fText[1], Length(fText));
+   SetLength(FText, FChunkSize - SizeOf(Cardinal));
+   Read(FCueID, SizeOf(Cardinal));
+   Read(FText[1], Length(FText));
   end;
 end;
 
@@ -1020,20 +1031,20 @@ begin
  inherited;
  with Stream do
   begin
-   Write(fCueID, SizeOf(Cardinal));
-   Write(fText[1], FChunkSize);
+   Write(FCueID, SizeOf(Cardinal));
+   Write(FText[1], FChunkSize);
   end;
 end;
 
 procedure TCustomCuedTextChunk.SetText(const Value: string);
 begin
- fText := Value;
+ FText := Value;
  CalculateChunkSize;
 end;
 
 procedure TCustomCuedTextChunk.CalculateChunkSize;
 begin
- FChunkSize := Length(fText) + SizeOf(Cardinal);
+ FChunkSize := Length(FText) + SizeOf(Cardinal);
 end;
 
 { TLabelChunk }
@@ -1054,7 +1065,7 @@ end;
 
 procedure TLabeledTextChunk.CalculateChunkSize;
 begin
- FChunkSize := Length(fText) + SizeOf(TLabeledTextRecord);
+ FChunkSize := Length(FText) + SizeOf(TLabeledTextRecord);
 end;
 
 procedure TLabeledTextChunk.AssignTo(Dest: TPersistent);
@@ -1062,7 +1073,7 @@ begin
  inherited;
  if Dest is TLabeledTextChunk then
   begin
-   TLabeledTextChunk(Dest).fText             := fText;
+   TLabeledTextChunk(Dest).FText             := FText;
    TLabeledTextChunk(Dest).LabeledTextRecord := LabeledTextRecord;
   end;
 end;
@@ -1072,9 +1083,9 @@ begin
  inherited;
  with Stream do
   begin
-   SetLength(fText, FChunkSize - SizeOf(TLabeledTextRecord));
+   SetLength(FText, FChunkSize - SizeOf(TLabeledTextRecord));
    Read(LabeledTextRecord, SizeOf(TLabeledTextRecord));
-   Read(fText[1], Length(fText));
+   Read(FText[1], Length(FText));
   end;
 end;
 
@@ -1085,13 +1096,13 @@ begin
  with Stream do
   begin
    Write(LabeledTextRecord, SizeOf(TLabeledTextRecord));
-   Write(fText[1], FChunkSize);
+   Write(FText[1], FChunkSize);
   end;
 end;
 
 procedure TLabeledTextChunk.SetText(const Value: string);
 begin
- fText := Value;
+ FText := Value;
  CalculateChunkSize;
 end;
 
@@ -1102,7 +1113,7 @@ begin
  inherited;
  if Dest is TCuedFileChunk then
   begin
-   TCuedFileChunk(Dest).fCueID            := fCueID;
+   TCuedFileChunk(Dest).FCueID            := FCueID;
    TCuedFileChunk(Dest).fMediaType        := fMediaType;
 
    // copy binary data:
@@ -1113,7 +1124,7 @@ end;
 
 procedure TCuedFileChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(fCueID) +  SizeOf(fMediaType) + Length(fBinaryData);
+ FChunkSize := SizeOf(FCueID) +  SizeOf(fMediaType) + Length(fBinaryData);
 end;
 
 procedure TCuedFileChunk.LoadFromStream(Stream: TStream);
@@ -1121,11 +1132,11 @@ begin
  inherited;
  with Stream do
   begin
-   Read(fCueID, SizeOf(fCueID));
+   Read(FCueID, SizeOf(FCueID));
    Read(fMediaType, SizeOf(fMediaType));
 
    // read binary data:
-   SetLength(fBinaryData, FChunkSize - SizeOf(fCueID) - SizeOf(fMediaType));
+   SetLength(fBinaryData, FChunkSize - SizeOf(FCueID) - SizeOf(fMediaType));
    Read(fBinaryData[0], Length(fBinaryData));
   end;
 end;
@@ -1136,7 +1147,7 @@ begin
  inherited;
  with Stream do
   begin
-   Write(fCueID, SizeOf(fCueID));
+   Write(FCueID, SizeOf(FCueID));
    Write(fMediaType, SizeOf(fMediaType));
 
    // write binary data:
@@ -1158,12 +1169,12 @@ end;
 constructor TPlaylistChunk.Create;
 begin
  inherited;
- fPlaylistSegments := TOwnedCollection.Create(Self, TPlaylistSegmentItem);
+ FPlaylistSegments := TOwnedCollection.Create(Self, TPlaylistSegmentItem);
 end;
 
 destructor TPlaylistChunk.Destroy;
 begin
- FreeAndNil(fPlaylistSegments);
+ FreeAndNil(FPlaylistSegments);
  inherited;
 end;
 
@@ -1172,14 +1183,14 @@ begin
  inherited;
  if Dest is TPlaylistChunk then
   begin
-   TPlaylistChunk(Dest).fCount := fCount;
-   TPlaylistChunk(Dest).fPlaylistSegments.Assign(fPlaylistSegments);
+   TPlaylistChunk(Dest).FCount := FCount;
+   TPlaylistChunk(Dest).FPlaylistSegments.Assign(FPlaylistSegments);
   end;
 end;
 
 procedure TPlaylistChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TPlaylistSegmentRecord);
+ FChunkSize := SizeOf(Cardinal) + FCount * SizeOf(TPlaylistSegmentRecord);
 end;
 
 procedure TPlaylistChunk.LoadFromStream(Stream: TStream);
@@ -1189,14 +1200,14 @@ begin
  inherited;
  with Stream do
   begin
-   Read(fCount, SizeOf(Cardinal));
+   Read(FCount, SizeOf(Cardinal));
 
    // clear all eventually existing playlist segments
-   fPlaylistSegments.Clear;
+   FPlaylistSegments.Clear;
 
    // load every single playlist segment and add to playlist collection
-   for l := 0 to fCount - 1 do
-    with TPlaylistSegmentItem(fPlaylistSegments.Add)
+   for l := 0 to FCount - 1 do
+    with TPlaylistSegmentItem(FPlaylistSegments.Add)
      do Read(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
 
   end;
@@ -1206,8 +1217,8 @@ procedure TPlaylistChunk.SaveToStream(Stream: TStream);
 var
   l : Integer;
 begin
- // update fCount:
- fCount := fPlaylistSegments.Count;
+ // update FCount:
+ FCount := FPlaylistSegments.Count;
 
  // now recalculate the chunk size:
  CalculateChunkSize;
@@ -1218,11 +1229,11 @@ begin
  with Stream do
   begin
    // write sampler header
-   Write(fCount, SizeOf(Cardinal));
+   Write(FCount, SizeOf(Cardinal));
 
    // write every single playlist segment and add to playlist collection
-   for l := 0 to fCount - 1 do
-    with TPlaylistSegmentItem(fPlaylistSegments.Items[l])
+   for l := 0 to FCount - 1 do
+    with TPlaylistSegmentItem(FPlaylistSegments.Items[l])
      do Write(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
   end;
 end;
@@ -1241,12 +1252,12 @@ end;
 constructor TCueChunk.Create;
 begin
  inherited;
- fCueCollection := TOwnedCollection.Create(Self, TCueItem);
+ FCueCollection := TOwnedCollection.Create(Self, TCueItem);
 end;
 
 destructor TCueChunk.Destroy;
 begin
- FreeAndNil(fCueCollection);
+ FreeAndNil(FCueCollection);
  inherited;
 end;
 
@@ -1255,14 +1266,14 @@ begin
  inherited;
  if Dest is TCueChunk then
   begin
-   TCueChunk(Dest).fCount := fCount;
-   TCueChunk(Dest).fCueCollection.Assign(fCueCollection);
+   TCueChunk(Dest).FCount := FCount;
+   TCueChunk(Dest).FCueCollection.Assign(FCueCollection);
   end;
 end;
 
 procedure TCueChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(Cardinal) + fCount * SizeOf(TCuePointRecord);
+ FChunkSize := SizeOf(Cardinal) + FCount * SizeOf(TCuePointRecord);
 end;
 
 procedure TCueChunk.LoadFromStream(Stream: TStream);
@@ -1272,14 +1283,14 @@ begin
  inherited;
  with Stream do
   begin
-   Read(fCount, SizeOf(Cardinal));
+   Read(FCount, SizeOf(Cardinal));
 
    // clear all eventually existing cues
-   fCueCollection.Clear;
+   FCueCollection.Clear;
 
    // load every single playlist segment and add to playlist collection
-   for l := 0 to fCount - 1 do
-    with TCueItem(fCueCollection.Add)
+   for l := 0 to FCount - 1 do
+    with TCueItem(FCueCollection.Add)
      do Read(CuePointRecord, SizeOf(TCuePointRecord));
   end;
 end;
@@ -1288,8 +1299,8 @@ procedure TCueChunk.SaveToStream(Stream: TStream);
 var
   l : Integer;
 begin
- // update fCount:
- fCount := fCueCollection.Count;
+ // update FCount:
+ FCount := FCueCollection.Count;
 
  // now recalculate the chunk size:
  CalculateChunkSize;
@@ -1300,11 +1311,11 @@ begin
  with Stream do
   begin
    // write sampler header
-   Write(fCount, SizeOf(Cardinal));
+   Write(FCount, SizeOf(Cardinal));
 
    // write every single playlist segment and add to playlist collection
-   for l := 0 to fCount - 1 do
-    with TCueItem(fCueCollection.Items[l])
+   for l := 0 to FCount - 1 do
+    with TCueItem(FCueCollection.Items[l])
      do Write(CuePointRecord, SizeOf(TCuePointRecord));
   end;
 end;
@@ -1323,12 +1334,12 @@ end;
 constructor TSamplerChunk.Create;
 begin
  inherited;
- fLoopCollection := TOwnedCollection.Create(Self, TLoopItem);
+ FLoopCollection := TOwnedCollection.Create(Self, TLoopItem);
 end;
 
 destructor TSamplerChunk.Destroy;
 begin
- FreeAndNil(fLoopCollection);
+ FreeAndNil(FLoopCollection);
  inherited;
 end;
 
@@ -1338,7 +1349,7 @@ begin
  if Dest is TSamplerChunk then
   begin
    TSamplerChunk(Dest).SamplerRecord := SamplerRecord;
-   TSamplerChunk(Dest).fLoopCollection.Assign(fLoopCollection);
+   TSamplerChunk(Dest).FLoopCollection.Assign(FLoopCollection);
   end;
 end;
 
@@ -1369,11 +1380,11 @@ begin
    Read(SamplerRecord, SizeOf(TSamplerRecord));
 
    // clear all eventually existing loop points
-   fLoopCollection.Clear;
+   FLoopCollection.Clear;
 
    // load every single loop and add to loop collection
    for l := 0 to SamplerRecord.NumSampleLoops - 1 do
-    with TLoopItem(fLoopCollection.Add)
+    with TLoopItem(FLoopCollection.Add)
      do Read(LoopRecord, SizeOf(TLoopRecord));
 
    // read rest, should only be SamplerRecord.SamplerData
@@ -1387,7 +1398,7 @@ var
   l : Integer;
 begin
  // make sure some entries are correct:
- SamplerRecord.NumSampleLoops := fLoopCollection.Count;
+ SamplerRecord.NumSampleLoops := FLoopCollection.Count;
  SamplerRecord.SamplerData    := 0;
 
  // now recalculate the chunk size:
@@ -1403,7 +1414,7 @@ begin
 
    // write every single loop and add to loop collection
    for l := 0 to SamplerRecord.NumSampleLoops - 1 do
-    with TLoopItem(fLoopCollection.Items[l])
+    with TLoopItem(FLoopCollection.Items[l])
      do Write(LoopRecord, SizeOf(TLoopRecord));
   end;
 end;
