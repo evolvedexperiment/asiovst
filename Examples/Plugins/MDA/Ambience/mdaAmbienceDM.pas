@@ -23,7 +23,8 @@ type
   private
     FBuffers      : Array [0..3] of PDAVSingleFixedArray;
     FPos          : Integer;
-    FFil, FDamp   : Single;
+    FHfDampState  : Single;
+    FDamp         : Single;
     FOutputFactor : Single;
     FDry, FWet    : Single;
     FRoomsize     : Double;
@@ -80,7 +81,7 @@ begin
  GetMem(FBuffers[2], CBufferSize * SizeOf(Single));
  GetMem(FBuffers[3], CBufferSize * SizeOf(Single));
 
- FFil := 0.0;
+ FHfDampState := 0.0;
  FDen := FPos = 0;
 
  VSTModuleSuspend(Sender);  // Flush buffer
@@ -119,7 +120,7 @@ var
   i, p : Integer;
   d    : Array [0..3] of Integer;
 begin
- f   := FFil;
+ f   := FHfDampState;
  dmp := FDamp;
  y   := FDry;
  w   := FWet;
@@ -170,12 +171,12 @@ begin
  FPos := p;
  if (abs(f) > 1E-10) then
   begin   // Catch Denormals
-   FFil := f;
+   FHfDampState := f;
    FDen := False;
   end
  else
   begin
-   FFil := 0;
+   FHfDampState := 0;
    if FDen = False then
     begin
      FDen := True;
@@ -194,7 +195,7 @@ var
   i, p : Integer;
   d    : Array [0..3] of Integer;
 begin
- f   := FFil;
+ f   := FHfDampState;
  dmp := FDamp;
  y   := FDry;
  w   := FWet;
@@ -245,12 +246,12 @@ begin
  FPos := p;
  if (abs(f) > 1E-10) then
   begin   //catch denormals
-   FFil := f;
+   FHfDampState := f;
    FDen := False;
   end
  else
   begin
-   FFil := 0;
+   FHfDampState := 0;
    if FDen = False then
     begin
      FDen := True;

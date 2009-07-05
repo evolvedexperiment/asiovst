@@ -18,11 +18,11 @@ uses
   SysUtils;
 
 var
- ContainedModules : TStringList;
- DLLLoader        : array of TDLLLoader;
- GMP              : array of TSEGetModuleProperties;
- MM               : array of TSEMakeModule;
- PlugCounts       : array of Integer;
+  ContainedModules : TStringList;
+  DLLLoader        : array of TDLLLoader;
+  GMP              : array of TSEGetModuleProperties;
+  MM               : array of TSEMakeModule;
+  PlugCounts       : array of Integer;
 
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
@@ -101,7 +101,7 @@ begin
    if result then
     begin
      ID := StrPas(Properties^.ID);
-     ID := ID + ' (merged)';
+     ID := ID + ' (merged) ' + IntToStr(ContainedModules.Count);
      Properties^.ID := PChar(ID);
     end;
   except

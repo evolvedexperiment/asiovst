@@ -6,7 +6,6 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Small Space Ambience'
@@ -76,6 +75,7 @@ object mdaAmbienceDataModule: TmdaAmbienceDataModule
       VSTModule = Owner
       OnParameterChange = ParamOutputChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess

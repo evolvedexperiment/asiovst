@@ -11,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="0"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -35,40 +35,40 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="26">
+    <Units Count="31">
       <Unit0>
         <Filename Value="OpAmp.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="30"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="OpAmpModule.pas"/>
+        <IsPartOfProject Value="True"/>
         <ComponentName Value="VSTOpAmp"/>
         <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="OpAmpModule"/>
-        <CursorPos X="62" Y="9"/>
-        <TopLine Value="1"/>
+        <CursorPos X="21" Y="50"/>
+        <TopLine Value="35"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="29"/>
+        <UsageCount Value="30"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="OpAmpGUI.pas"/>
+        <IsPartOfProject Value="True"/>
         <ComponentName Value="VSTGUI"/>
         <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpAmpGUI"/>
         <CursorPos X="1" Y="41"/>
         <TopLine Value="9"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="29"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="30"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
@@ -126,9 +126,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTModule"/>
-        <CursorPos X="62" Y="8"/>
-        <TopLine Value="1"/>
+        <CursorPos X="14" Y="32"/>
+        <TopLine Value="13"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="12"/>
+        <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
@@ -170,9 +172,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <CursorPos X="14" Y="553"/>
-        <TopLine Value="532"/>
-        <EditorIndex Value="1"/>
+        <CursorPos X="3" Y="556"/>
+        <TopLine Value="536"/>
+        <EditorIndex Value="2"/>
         <UsageCount Value="13"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
@@ -180,16 +182,20 @@
       <Unit15>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <CursorPos X="15" Y="1620"/>
-        <TopLine Value="1600"/>
+        <CursorPos X="17" Y="1854"/>
+        <TopLine Value="1833"/>
+        <EditorIndex Value="4"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="1"/>
+        <CursorPos X="15" Y="537"/>
+        <TopLine Value="517"/>
+        <EditorIndex Value="3"/>
         <UsageCount Value="10"/>
+        <Loaded Value="True"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\..\..\Packages\Lazarus\DAV_VSTPlugin_Lazarus.pas"/>
@@ -258,112 +264,169 @@
       </Unit24>
       <Unit25>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\wincontrol.inc"/>
-        <CursorPos X="35" Y="5898"/>
-        <TopLine Value="5893"/>
+        <CursorPos X="40" Y="6005"/>
+        <TopLine Value="5983"/>
+        <EditorIndex Value="5"/>
         <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit25>
+      <Unit26>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspDFT.pas"/>
+        <UnitName Value="DAV_DspDFT"/>
+        <CursorPos X="25" Y="8"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\widgetset\wscontrols.pp"/>
+        <UnitName Value="WSControls"/>
+        <CursorPos X="1" Y="154"/>
+        <TopLine Value="152"/>
+        <UsageCount Value="10"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\control.inc"/>
+        <CursorPos X="32" Y="4053"/>
+        <TopLine Value="4044"/>
+        <UsageCount Value="10"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit29>
+      <Unit30>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\customform.inc"/>
+        <CursorPos X="22" Y="2376"/>
+        <TopLine Value="2352"/>
+        <UsageCount Value="10"/>
+      </Unit30>
     </Units>
-    <JumpHistory Count="25" HistoryIndex="24">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="46" Column="19" TopLine="25"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1584" Column="12" TopLine="1567"/>
       </Position1>
       <Position2>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="9" Column="64" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1587" Column="12" TopLine="1567"/>
       </Position2>
       <Position3>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="14" Column="66" TopLine="9"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1605" Column="24" TopLine="1567"/>
       </Position3>
       <Position4>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="17" Column="15" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1607" Column="18" TopLine="1586"/>
       </Position4>
       <Position5>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="12" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1622" Column="29" TopLine="1586"/>
       </Position5>
       <Position6>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="55" Column="25" TopLine="26"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1626" Column="15" TopLine="1607"/>
       </Position6>
       <Position7>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="9" Column="67" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1628" Column="40" TopLine="1607"/>
       </Position7>
       <Position8>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="15" Column="3" TopLine="15"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1763" Column="54" TopLine="1742"/>
       </Position8>
       <Position9>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="81" Column="21" TopLine="54"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1767" Column="24" TopLine="1742"/>
       </Position9>
       <Position10>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="78" Column="24" TopLine="54"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1769" Column="25" TopLine="1742"/>
       </Position10>
       <Position11>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1771" Column="26" TopLine="1742"/>
       </Position11>
       <Position12>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="51" Column="19" TopLine="27"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1774" Column="28" TopLine="1742"/>
       </Position12>
       <Position13>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="19" Column="5" TopLine="18"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1777" Column="22" TopLine="1742"/>
       </Position13>
       <Position14>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="36" Column="1" TopLine="26"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1788" Column="18" TopLine="1768"/>
       </Position14>
       <Position15>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="80" Column="5" TopLine="41"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1805" Column="64" TopLine="1768"/>
       </Position15>
       <Position16>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="28" Column="15" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1811" Column="26" TopLine="1791"/>
       </Position16>
       <Position17>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="77" Column="5" TopLine="41"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1853" Column="50" TopLine="1833"/>
       </Position17>
       <Position18>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1854" Column="60" TopLine="1833"/>
       </Position18>
       <Position19>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="19" Column="5" TopLine="18"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1926" Column="25" TopLine="1905"/>
       </Position19>
       <Position20>
-        <Filename Value="OpAmpGUI.pas"/>
-        <Caret Line="37" Column="18" TopLine="32"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="2180" Column="19" TopLine="2159"/>
       </Position20>
       <Position21>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="59" Column="27" TopLine="27"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="2182" Column="43" TopLine="2159"/>
       </Position21>
       <Position22>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="39" Column="15" TopLine="36"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="557" Column="10" TopLine="536"/>
       </Position22>
       <Position23>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="9" Column="62" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="2266" Column="11" TopLine="2246"/>
       </Position23>
       <Position24>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="32" Column="79" TopLine="1"/>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="180" Column="7" TopLine="160"/>
       </Position25>
+      <Position26>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Caret Line="242" Column="24" TopLine="222"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="558" Column="36" TopLine="536"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\wincontrol.inc"/>
+        <Caret Line="6005" Column="66" TopLine="5993"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\wincontrol.inc"/>
+        <Caret Line="5999" Column="66" TopLine="5985"/>
+      </Position29>
+      <Position30>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="52" Column="6" TopLine="42"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

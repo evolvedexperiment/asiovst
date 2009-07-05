@@ -10,9 +10,8 @@ uses
   DAV_VSTParameters;
 
 type
-  { TVSTOpAmp }
   TVSTOpAmp = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: THandle);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -30,7 +29,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Approximations, OpAmpGUI;
+  Math, DAV_Approximations, OpAmpGUI, Controls;
 
 { TVSTOpAmp }
 
@@ -48,9 +47,13 @@ begin
 end;
 
 procedure TVSTOpAmp.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: THandle);
+  ParentWindow: Cardinal);
 begin
+{$IFNDEF FPC}
  GUI := TVSTGUI.Create(Self);
+{$ELSE}
+ GUI := TVSTGUI.CreateParented(ParentWindow, Self);
+{$ENDIF}
  with TVSTGUI(GUI) do
   begin
    LbGain.Caption  := 'OpAmp Gain';
