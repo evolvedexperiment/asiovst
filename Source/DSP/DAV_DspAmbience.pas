@@ -6,7 +6,8 @@ interface
 
 uses
   DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
-  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics;
+  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics,
+  DAV_DspFilterBasics;
 
 type
   TCustomAmbience = class(TDspObject)
@@ -40,6 +41,7 @@ type
     FDryFactor      : Single;
     FWetFactor      : Single;
     FFlushedBuffers : Boolean;
+    FHighShelf      : TBasicHighShelfFilter;
     procedure DampingChanged;
   public
     constructor Create; virtual;
@@ -69,6 +71,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 const
   CBufferSize = 1024;
   CFeedBack = 0.8;
@@ -92,6 +97,11 @@ begin
  FWet        := 0.9;
  FDry        := 0.1;
  FOutputGain := 0.5;
+ FHighShelf  := TBasicHighShelfFilter.Create;
+ FHighShelf.Frequency := 1900;
+ FHighShelf.SampleRate := SampleRate;
+ FHighShelf.Bandwidth := 2.8;
+ FHighShelf.Gain := 12;
 
  RoomsizeChanged;
  DampingChanged;
@@ -100,6 +110,7 @@ end;
 
 destructor TCustomAmbience.Destroy;
 begin
+ FreeAndNil(FHighShelf);
  Dispose(FBuffers[0]);
  Dispose(FBuffers[1]);
  Dispose(FBuffers[2]);
@@ -185,7 +196,7 @@ end;
 
 procedure TCustomAmbience.SampleRateChanged;
 begin
- //
+ FHighShelf.SampleRate := SampleRate;
 end;
 
 procedure TCustomAmbience.RoomsizeChanged;
@@ -233,6 +244,8 @@ var
   i : Integer;
   d : Array [0..3] of Integer;
 begin
+ Input := FHighShelf.ProcessSample(Input);
+
  // apply HF damping
  FHfDampState := FHfDampState + FDampFactor * (FWet * Input - FHfDampState);  // HF damping
  r := FHfDampState;
@@ -287,7 +300,7 @@ var
   d : Array [0..3] of Integer;
 begin
  // apply HF damping
- FHfDampState := FHfDampState + FDampFactor * (FWet * (Left + Right) - FHfDampState);  // HF damping
+ FHfDampState := FHfDampState + FDampFactor * (FWet * FHighShelf.ProcessSample(Left + Right) - FHfDampState);  // HF damping
  r := FHfDampState;
 
  if (abs(FHfDampState) > 1E-10) then

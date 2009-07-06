@@ -67,7 +67,7 @@ begin
  FCrossover.SampleRate := SampleRate;
 
  // create highpass filter
- FHighpass := TButterworthHighPassFilter.Create(3);
+ FHighpass := TButterworthHighPassFilter.Create(1);
  FHighpass.SampleRate := SampleRate;
 end;
 

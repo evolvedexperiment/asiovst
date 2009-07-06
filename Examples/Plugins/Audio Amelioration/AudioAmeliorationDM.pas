@@ -284,7 +284,7 @@ begin
   with FExciter[Channel] do
    begin
     Frequency := 8000 - 6500 * FastSqrtBab1(0.01 * Value);
-    HighFrequencyLevel := 1;
+    HighFrequencyLevel := 1 + 0.001 * Value;
     LowFrequencyLevel := 1;
     HarmonicsLevel := 0.01 + 0.01 * Value;
    end;
@@ -308,10 +308,10 @@ procedure TAudioAmeliorationModule.ParameterCompressorChange(
 begin
  with FCompressor do
   begin
-   Threshold_dB := -0.1 * Value;
-   Knee_dB := 10 * (1 - 0.01 * Value);
+   Threshold_dB := -0.06 * Value;
+   Knee_dB := 5 * (1 - 0.01 * Value);
    MakeUpGain_dB := -Threshold_dB + (1 - 0.01 * Value) * Knee_dB;
-   Ratio := Power(2, 0.1 * Value);
+   Ratio := FastPower2MinError4(0.05 * Value);
   end;
 
  if EditorForm is TFmAudioAmelioration
@@ -403,7 +403,7 @@ begin
 
    // eventually create filter
    if not assigned(FFilterArray[Band].Lowpass)
-    then FFilterArray[Band].Lowpass := TChebyshev1LowpassFilter.Create(10);
+    then FFilterArray[Band].Lowpass := TChebyshev1LowpassFilter.Create(6);
 
    with FFilterArray[Band].Lowpass do
     begin
@@ -417,7 +417,7 @@ begin
 
    // eventually create filter
    if not assigned(FFilterArray[Band].Highpass)
-    then FFilterArray[Band].Highpass := TChebyshev1HighpassFilter.Create(12);
+    then FFilterArray[Band].Highpass := TChebyshev1HighpassFilter.Create(8);
     
    with FFilterArray[Band].Highpass do
     begin

@@ -196,8 +196,9 @@ object FmAudioAmelioration: TFmAudioAmelioration
       YValues.Order = loNone
     end
   end
-  object Timer1: TTimer
-    OnTimer = Timer1Timer
+  object Timer: TTimer
+    Interval = 40
+    OnTimer = TimerTimer
     Left = 136
     Top = 152
   end

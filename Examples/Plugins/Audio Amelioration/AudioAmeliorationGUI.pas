@@ -24,7 +24,7 @@ type
     TbExciter: TTrackBar;
     TbExtraBass: TTrackBar;
     LbSetup: TLabel;
-    Timer1: TTimer;
+    Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure CbAmbienceClick(Sender: TObject);
     procedure TbAmbienceChange(Sender: TObject);
@@ -38,7 +38,7 @@ type
     procedure Tb3DSurroundChange(Sender: TObject);
     procedure TbExtraBassChange(Sender: TObject);
     procedure RbSpeakerHeadphoneClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   public
     procedure Update3DSurround;
     procedure Update3DSurroundActive;
@@ -197,7 +197,7 @@ begin
   end;
 end;
 
-procedure TFmAudioAmelioration.Timer1Timer(Sender: TObject);
+procedure TFmAudioAmelioration.TimerTimer(Sender: TObject);
 var
   Band : Integer;
 begin
