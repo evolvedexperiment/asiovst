@@ -503,7 +503,7 @@ end;
 function Goertzel(TimeSignal: TDAVSingleDynArray; const Angular: TComplexSingle): TComplexSingle;
 {$IFDEF PUREPASCAL}
 var
-  Pos : TComplexDouble;
+  Pos : TComplexSingle;
   i   : Integer;
 begin
  Pos.Re   := 0;
@@ -624,7 +624,7 @@ end;
 function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const Angular: TComplexSingle): TComplexSingle; overload;
 {$IFDEF PUREPASCAL}
 var
-  Pos : TComplexDouble;
+  Pos : TComplexSingle;
   i   : Integer;
 begin
  Pos.Re   := 0;

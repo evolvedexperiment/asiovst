@@ -5,9 +5,10 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls, {$ELSE} Windows, Messages,
-  {$ENDIF} Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTChannels,
-  DAV_VSTBasicModule, DAV_VSTShellPlugins, DAV_VSTOfflineTask;
+  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls,
+  {$ELSE} Windows, Messages, {$ENDIF} Classes, Forms,
+  DAV_Common, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTBasicModule,
+  DAV_VSTShellPlugins, DAV_VSTOfflineTask;
 
 type
 //  TChannelPropertyFlags = set of (cpfIsActive, cpfIsStereo, cpfUseSpeaker);
@@ -125,6 +126,7 @@ type
     FVersionMajor           : Integer;
     FVersionMinor           : Integer;
     FVersionRelease         : Integer;
+//    FParentWindowProxy      : TWinControl;
     {$IFDEF Debug}
     procedure AddLogMessage(const Text: string);
     {$ENDIF}
@@ -551,7 +553,10 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
-      Handle := HWnd(ptr);
+//      Handle := HWnd(ptr);
+//      SetParent(Handle, HWnd(ptr));
+//      Parent := TWinControl.CreateParented(HWnd(ptr));
+//      Parent := TWinControl.CreateParented(HWnd(ptr));
       {$ENDIF}
       Visible := True;
       BorderStyle := bsNone;

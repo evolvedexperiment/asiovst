@@ -251,6 +251,7 @@ begin
  FLimiter.Threshold_dB := 0;
  FLimiter.SampleRate := SampleRate;
 
+ // create crossover filter
  FCrossover := TButterworthSplitBandFilter.Create(3);
  FCrossover.SampleRate := SampleRate;
 

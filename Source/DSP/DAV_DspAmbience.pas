@@ -223,7 +223,7 @@ end;
 
 procedure TCustomAmbience.DampingChanged;
 begin
- FDampFactor := 0.05 + 0.009 * FDamping;
+ FDampFactor := 0.05 + 0.01 * FDamping;
 end;
 
 function TCustomAmbience.Process(Input: Single): Single;
