@@ -180,6 +180,16 @@ type
     FText  : string;
     procedure SetText(const Value: string);
     procedure AssignTo(Dest: TPersistent); override;
+    property Text: string read FText write SetText;
+  public
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+  end;
+
+  TCustomStreamChunk = class(TDefinedChunk)
+  protected
+    FStream : TStream;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
@@ -1021,6 +1031,42 @@ begin
    FText := Value;
    FChunkSize := Length(FText);
   end;
+end;
+
+{ TCustomStreamChunk }
+
+procedure TCustomStreamChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomTextChunk then
+  begin
+   FStream.Position := 0;
+   TCustomStreamChunk(Dest).FStream.Position := 0;
+   TCustomStreamChunk(Dest).FStream.CopyFrom(FStream, FStream.Size); 
+  end;
+end;
+
+procedure TCustomStreamChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ FStream.Position := 0;
+ FStream.CopyFrom(Stream, FChunkSize);
+
+ // eventually skip padded zeroes
+ if cfPadSize in ChunkFlags
+  then Stream.Position := Stream.Position + CalculateZeroPad;
+end;
+
+procedure TCustomStreamChunk.SaveToStream(Stream: TStream);
+begin
+ FChunkSize := FStream.Size;
+ inherited;
+ FStream.Position := 0;
+ Stream.CopyFrom(FStream, FStream.Size);
+
+ // eventually skip padded zeroes
+ if (cfPadSize in ChunkFlags)
+  then Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
 end.
