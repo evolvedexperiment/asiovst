@@ -172,9 +172,9 @@ object FmVSTEditor: TFmVSTEditor
       Caption = '&Load Preset...'
       OnClick = MILoadPresetClick
     end
-    object SavePreset1: TMenuItem
+    object MISavePreset: TMenuItem
       Caption = '&Save Preset...'
-      OnClick = SavePreset1Click
+      OnClick = MISavePresetClick
     end
   end
   object OD: TOpenDialog

@@ -27,11 +27,12 @@ type
     XPManifest: TXPManifest;
     PUPreset: TPopupMenu;
     MILoadPreset: TMenuItem;
-    SavePreset1: TMenuItem;
+    MISavePreset: TMenuItem;
     OD: TOpenDialog;
     SD: TSaveDialog;
     {$ENDIF}
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
@@ -40,9 +41,8 @@ type
     procedure BtSetupClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
     procedure CBPresetChange(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure MILoadPresetClick(Sender: TObject);
-    procedure SavePreset1Click(Sender: TObject);
+    procedure MISavePresetClick(Sender: TObject);
   private
     FVSTInBuffer  : array of PDAVSingleFixedArray;
     FVSTOutBuffer : array of PDAVSingleFixedArray;
@@ -207,7 +207,7 @@ begin
    end;
 end;
 
-procedure TFmVSTEditor.SavePreset1Click(Sender: TObject);
+procedure TFmVSTEditor.MISavePresetClick(Sender: TObject);
 begin
  with SD do
   if Execute then

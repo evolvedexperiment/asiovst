@@ -1371,7 +1371,7 @@ begin
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
  for i := 0 to Length(AudioFileFormats) - 1 do
-  if False then
+  if True then
    begin
     with AudioFileFormats[i].Create(Self) do
      try

@@ -330,7 +330,7 @@ begin
     MS.SetSize(FSubPropertiesSize);
     move(FSubProperties^, MS.Memory^, MS.Size);
     Reader := TReader.Create(MS, 4096);
-    try
+    try                           
      Reader.IgnoreChildren := False;
      WaveChunkClassName := Reader.ReadString;
      Reader.ReadRootComponent(FWaveChunk);
@@ -472,6 +472,7 @@ constructor TCustomAudioFileWAV.Create(AOwner: TComponent);
 begin
  inherited;
  FAudioDataPosition := 0;
+ FBytesPerSample := 3; // 24 bit
  FFormatChunk := TFormatChunk.Create;
 end;
 

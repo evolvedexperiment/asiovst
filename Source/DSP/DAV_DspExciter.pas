@@ -6,16 +6,19 @@ interface
 
 uses 
   DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
-  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics;
+  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics,
+  DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
   TCustomExciter = class(TDspObject)
   private
-    FFrequency  : Single;
-    FSampleRate : Single;
-    FGains      : array [0..3] of Single;
-    FCrossover  : TButterworthSplitBandFilter;
-    FHighpass   : TButterworthHighPassFilter;
+    FFrequency   : Single;
+    FSampleRate  : Single;
+    FGains       : array [0..3] of Single;
+    FCrossover   : TButterworthSplitBandFilter;
+    FHighpass    : TButterworthHighPassFilter;
+    FUpsampler   : TPolyphaseUpsampler32;
+    FDownsampler : TPolyphaseDownsampler32;
 
     procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
@@ -69,6 +72,14 @@ begin
  // create highpass filter
  FHighpass := TButterworthHighPassFilter.Create(1);
  FHighpass.SampleRate := SampleRate;
+
+ // upsampler
+ FUpsampler := TPolyphaseUpsampler32.Create;
+ FUpsampler.NumberOfCoefficients := 6;
+
+ // downsampler
+ FDownsampler := TPolyphaseDownsampler32.Create;
+ FDownsampler.NumberOfCoefficients := 6;
 end;
 
 destructor TCustomExciter.Destroy;
@@ -110,10 +121,14 @@ end;
 function TCustomExciter.Process(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
+  Data : TDAV2SingleArray;
 begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Harmonic := FHighpass.ProcessSample(0.25 * FastTanhMinError2(4 * Low));
+ FUpsampler.ProcessSample(Low, Data);
+ Data[0] := 0.125 * FastTanhMinError2(8 * Low);
+ Data[1] := 0.125 * FastTanhMinError2(8 * Low);
+ Harmonic := FHighpass.ProcessSample(FDownsampler.ProcessSample(Data));
 
  result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
 end;

@@ -593,7 +593,7 @@ begin
         Move(DataInt, PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel)], 3);
        end;
   4: for Sample := 0 to FSampleFrames - 1 do
-      for Channel := 0 to FChannelCount
+      for Channel := 0 to FChannelCount - 1
        do PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
  end;
 end;

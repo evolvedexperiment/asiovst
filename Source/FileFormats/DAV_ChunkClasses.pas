@@ -190,9 +190,19 @@ type
   protected
     FStream : TStream;
     procedure AssignTo(Dest: TPersistent); override;
+    function GetChunkSize: Cardinal; override;
   public
+    destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+  end;
+
+  TCustomMemoryStreamChunk = class(TCustomStreamChunk)
+  private
+    function GetMemoryStream: TMemoryStream;
+  public
+    constructor Create; override;
+    property MemoryStream: TMemoryStream read GetMemoryStream;
   end;
 
 implementation
@@ -1038,7 +1048,7 @@ end;
 procedure TCustomStreamChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TCustomTextChunk then
+ if Dest is TCustomStreamChunk then
   begin
    FStream.Position := 0;
    TCustomStreamChunk(Dest).FStream.Position := 0;
@@ -1046,11 +1056,24 @@ begin
   end;
 end;
 
+destructor TCustomStreamChunk.Destroy;
+begin
+ FreeAndNil(FStream);
+ inherited;
+end;
+
+function TCustomStreamChunk.GetChunkSize: Cardinal;
+begin
+ FChunkSize := FStream.Size;
+ result := inherited GetChunkSize;
+end;
+
 procedure TCustomStreamChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
  FStream.Position := 0;
  FStream.CopyFrom(Stream, FChunkSize);
+ FStream.Position := 0;
 
  // eventually skip padded zeroes
  if cfPadSize in ChunkFlags
@@ -1067,6 +1090,19 @@ begin
  // eventually skip padded zeroes
  if (cfPadSize in ChunkFlags)
   then Stream.Position := Stream.Position + CalculateZeroPad;
+end;
+
+{ TCustomMemoryStreamChunk }
+
+constructor TCustomMemoryStreamChunk.Create;
+begin
+ inherited;
+ FStream := TMemoryStream.Create;
+end;
+
+function TCustomMemoryStreamChunk.GetMemoryStream: TMemoryStream;
+begin
+ result := TMemoryStream(FStream);
 end;
 
 end.

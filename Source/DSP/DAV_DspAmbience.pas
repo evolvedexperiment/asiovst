@@ -241,8 +241,6 @@ function TCustomAmbience.Process(Input: Single): Single;
 var
   r : Double;
   t : Double;
-  i : Integer;
-  d : Array [0..3] of Integer;
 begin
  Input := FHighShelf.ProcessSample(Input);
 

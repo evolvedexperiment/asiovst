@@ -132,11 +132,11 @@ begin
  FLimiter := TLightweightSoftKneeLimiter.Create;
  with FLimiter do
   begin
-   Threshold_dB  := -3.02;
+   Threshold_dB  := -1.02;
    Knee_dB       := 0.5;
-   MakeUpGain_dB := 3;
+   MakeUpGain_dB := 1;
    Attack        := 0.2;
-   Release       := 800;
+   Release       := 1300;
    SampleRate    := Self.SampleRate;
   end;
 
@@ -280,17 +280,17 @@ procedure TAudioAmeliorationModule.ParameterExciterChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FBassEnhancer) - 1 do
+ for Channel := 0 to Length(FExciter) - 1 do
   with FExciter[Channel] do
    begin
-    Frequency := 8000 - 6500 * FastSqrtBab1(0.01 * Value);
-    HighFrequencyLevel := 1 + 0.001 * Value;
+    Frequency := 8000 - 5500 * FastSqrtBab1(0.01 * Value);
+    HighFrequencyLevel := 1 + 0.005 * Value;
     LowFrequencyLevel := 1;
     HarmonicsLevel := 0.01 + 0.01 * Value;
    end;
 
  if EditorForm is TFmAudioAmelioration
-  then TFmAudioAmelioration(EditorForm).UpdateExtraBass;
+  then TFmAudioAmelioration(EditorForm).UpdateExciter;
 end;
 
 procedure TAudioAmeliorationModule.ParameterAmbienceChange(
@@ -327,7 +327,7 @@ begin
   with FBassEnhancer[Channel] do
    begin
     HighpassSelect := hp1stOrder;
-    Frequency := 80 + 1.5 * Value;
+    Frequency := 80 + 1.2 * Value;
     HarmonicBassLevel := dB_To_Amp(-18 * (1 - 0.01 * Value));
     OriginalBassLevel := dB_To_Amp(-0.1 * Value);
     Decay := dB_To_Amp(-(9 + 0.1 * Value));
@@ -481,11 +481,6 @@ begin
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FExciter[Channel].Process(Outputs[Channel, Sample]);
 
- // apply ambience
- if AmbienceActive then
-  for Sample := 0 to SampleFrames - 1
-   do FAmbience.Process(Outputs[0, Sample], Outputs[1, Sample]);
-
  // apply compression
  if CompressorActive then
   for Sample := 0 to SampleFrames - 1 do
@@ -494,6 +489,11 @@ begin
     Outputs[0, Sample] := FCompressor.GainSample(Outputs[0, Sample]);
     Outputs[1, Sample] := FCompressor.GainSample(Outputs[1, Sample]);
    end;
+
+ // apply ambience
+ if AmbienceActive then
+  for Sample := 0 to SampleFrames - 1
+   do FAmbience.Process(Outputs[0, Sample], Outputs[1, Sample]);
 
  // apply extra bass
  if ExtraBassActive then
@@ -505,8 +505,8 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    FLimiter.InputSample(0.5 * (Outputs[0, Sample] + Outputs[1, Sample]));
-   Outputs[0, Sample] := Limit(1.3 * FastTanhMinError4(FLimiter.GainSample(Outputs[0, Sample])));
-   Outputs[1, Sample] := Limit(1.3 * FastTanhMinError4(FLimiter.GainSample(Outputs[1, Sample])));
+   Outputs[0, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[0, Sample])));
+   Outputs[1, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[1, Sample])));
   end;
 
  for Sample := 0 to SampleFrames - 1 do
@@ -541,16 +541,16 @@ begin
  for Channel := 0 to min(numInputs, numOutputs) - 1
   do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
 
+ // apply ambience
+ if AmbienceActive then
+  for Sample := 0 to SampleFrames - 1
+   do FAmbience.Process(Outputs[0, Sample], Outputs[1, Sample]);
+
  // apply exciter
  if ExciterActive then
   for Channel := 0 to Length(FExciter) - 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FExciter[Channel].Process(Outputs[Channel, Sample]);
-
- // apply ambience
- if AmbienceActive then
-  for Sample := 0 to SampleFrames - 1
-   do FAmbience.Process(Outputs[0, Sample], Outputs[1, Sample]);
 
  // apply compression
  if CompressorActive then
@@ -574,8 +574,8 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    FLimiter.InputSample(0.5 * (Outputs[0, Sample] + Outputs[1, Sample]));
-   Outputs[0, Sample] := Limit(1.3 * FastTanhMinError4(FLimiter.GainSample(Outputs[0, Sample])));
-   Outputs[1, Sample] := Limit(1.3 * FastTanhMinError4(FLimiter.GainSample(Outputs[1, Sample])));
+   Outputs[0, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[0, Sample])));
+   Outputs[1, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[1, Sample])));
   end;
 
  for Sample := 0 to SampleFrames - 1 do
