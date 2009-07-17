@@ -35,7 +35,7 @@ type
     property Depth: Double read FDepth write SetDepth;
   end;
 
-  TDspVibrato32 = class(TCustomDspVibrato)
+  TCustomDspVibrato32 = class(TCustomDspVibrato)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -45,13 +45,16 @@ type
     destructor Destroy; override;
     function Process(const Input: Single): Single;
     procedure Reset; override;
+  end;
+
+  TDspVibrato32 = class(TCustomDspVibrato32)
   published
     property Depth;
     property SampleRate;
     property Speed;
   end;
 
-  TDspVibrato64 = class(TCustomDspVibrato)
+  TCustomDspVibrato64 = class(TCustomDspVibrato)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -61,6 +64,9 @@ type
     destructor Destroy; override;
     function Process(const Input: Double): Double;
     procedure Reset; override;
+  end;
+
+  TDspVibrato64 = class(TCustomDspVibrato64)
   published
     property Depth;
     property SampleRate;
@@ -149,26 +155,26 @@ begin
   end;
 end;
 
-{ TDspVibrato32 }
+{ TCustomDspVibrato32 }
 
-constructor TDspVibrato32.Create;
+constructor TCustomDspVibrato32.Create;
 begin
  inherited;
  FBuffer32 := nil;
 end;
 
-destructor TDspVibrato32.Destroy;
+destructor TCustomDspVibrato32.Destroy;
 begin
  Dispose(FBuffer32);
  inherited;
 end;
 
-procedure TDspVibrato32.Reset;
+procedure TCustomDspVibrato32.Reset;
 begin
  FillChar(FBuffer32^[0], FRealBufSize * SizeOf(Single), 0);
 end;
 
-procedure TDspVibrato32.UpdateBuffer;
+procedure TCustomDspVibrato32.UpdateBuffer;
 begin
  inherited;
 
@@ -176,7 +182,7 @@ begin
  ReallocMem(FBuffer32, FRealBufSize * SizeOf(Single));
 end;
 
-function TDspVibrato32.Process(const Input: Single): Single;
+function TCustomDspVibrato32.Process(const Input: Single): Single;
 var
   p : Integer;
   d : Double;
@@ -206,26 +212,26 @@ begin
   end;
 end;
 
-{ TDspVibrato64 }
+{ TCustomDspVibrato64 }
 
-constructor TDspVibrato64.Create;
+constructor TCustomDspVibrato64.Create;
 begin
  inherited;
  FBuffer64 := nil;
 end;
 
-destructor TDspVibrato64.Destroy;
+destructor TCustomDspVibrato64.Destroy;
 begin
  Dispose(FBuffer64);
  inherited;
 end;
 
-procedure TDspVibrato64.Reset;
+procedure TCustomDspVibrato64.Reset;
 begin
  FillChar(FBuffer64^[0], FRealBufSize * SizeOf(Double), 0);
 end;
 
-procedure TDspVibrato64.UpdateBuffer;
+procedure TCustomDspVibrato64.UpdateBuffer;
 begin
  inherited;
 
@@ -233,7 +239,7 @@ begin
  ReallocMem(FBuffer64, FRealBufSize * SizeOf(Double));
 end;
 
-function TDspVibrato64.Process(const Input: Double): Double;
+function TCustomDspVibrato64.Process(const Input: Double): Double;
 var
   p : Integer;
   d : Double;
