@@ -1,4 +1,4 @@
-unit DAV_DSPLFO;
+unit DAV_DspLFO;
 
 interface
 
@@ -14,41 +14,81 @@ type
 
   TCustomLFOSine = class(TCustomLFO)
   private
-    function GetPhase: Single;
     procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
-    procedure SetPhase(const Value: Single);
   protected
     FFrequency  : Single;
     FAmplitude  : Single;
     FSampleRate : Single;
-    FAngle      : TComplexDouble;
-    FPosition   : TComplexDouble;
-    procedure SetAmplitude(const Value: Single); virtual;
+    procedure SetAmplitude(const Value: Single); virtual; abstract;
     procedure SampleRateChanged; virtual;
-    procedure FrequencyChanged; virtual;
+    procedure FrequencyChanged; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
-    procedure CalculateNextSample; virtual;
-    procedure Reset; virtual;
-
-    property Sine: Double read FPosition.Re;
-    property Cosine: Double read FPosition.Im;
+    procedure CalculateNextSample; virtual; abstract;
+    procedure Reset; virtual; abstract;
 
     property Amplitude: Single read FAmplitude write SetAmplitude; //  0..1
     property Frequency: Single read FFrequency write SetFrequency; //  0..Samplerate
-    property Phase: Single read GetPhase write SetPhase; //  0..2*Pi;
     property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
-  TLFOSine = class(TCustomLFOSine)
+  TCustomLFOSine32 = class(TCustomLFOSine)
+  private
+    function GetPhase: Single;
+    procedure SetPhase(const Value: Single);
+  protected
+    FAngle    : TComplexSingle;
+    FPosition : TComplexSingle;
+    procedure FrequencyChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure SetAmplitude(const Value: Single); override;
+  public
+    procedure CalculateNextSample; override;
+    procedure Reset; override;
+
+    property Sine: Single read FPosition.Re;
+    property Cosine: Single read FPosition.Im;
+    property Phase: Single read GetPhase write SetPhase; //  0..2*Pi;
+  end;
+
+  TCustomLFOSine64 = class(TCustomLFOSine)
+  private
+    function GetPhase: Double;
+    procedure SetPhase(const Value: Double);
+  protected
+    FAngle    : TComplexDouble;
+    FPosition : TComplexDouble;
+    procedure FrequencyChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure SetAmplitude(const Value: Single); override;
+  public
+    procedure CalculateNextSample; override;
+    procedure Reset; override;
+
+    property Sine: Double read FPosition.Re;
+    property Cosine: Double read FPosition.Im;
+    property Phase: Double read GetPhase write SetPhase; //  0..2*Pi;
+  end;
+
+  TLFOSine32 = class(TCustomLFOSine32)
   published
     property Amplitude;
     property Frequency;
     property Phase;
     property SampleRate;
   end;
+
+  TLFOSine64 = class(TCustomLFOSine64)
+  published
+    property Amplitude;
+    property Frequency;
+    property Phase;
+    property SampleRate;
+  end;
+
+  TLFOSine = TLFOSine64;
 
   TCustomLFOSineLike = class(TDspObject)
   protected
@@ -134,60 +174,60 @@ begin
     FFrequency  := Self.FFrequency;
     FAmplitude  := Self.FAmplitude;
     FSampleRate := Self.FSampleRate;
-    FAngle      := Self.FAngle;
-    FPosition   := Self.FPosition;
    end
  else inherited;
 end;
 
-procedure TCustomLFOSine.CalculateNextSample;
-{$IFDEF PUREPASCAL}
-var
-  temp : Double;
-begin
-  temp := FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im;
-  FPosition.Im := FPosition.Im * fAngle.Re + FPosition.Re * fAngle.Im;
-  FPosition.Re := temp;
-end;
-{$ELSE}
-asm
- fld [Self.FPosition.Re].Double  // FPosition.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Re * fAngle.Re
- fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * fAngle.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Im * fAngle.Im, FPosition.Re * fAngle.Re
- fsubp                           // FPosition.Re * fAngle.Re - FPosition.Im * fAngle.Im = New.Re
-
- fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
- fmul [Self.FAngle.Re].Double    // FPosition.Im * fAngle.Re, New.Re
- fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * fAngle.Re, New.Re
- fmul [Self.FAngle.Im].Double    // FPosition.Re * fAngle.Im, FPosition.Re * fAngle.Re, New.Re
- faddp                           // FPosition.Re * fAngle.Re + FPosition.Im * fAngle.Im = New.Im, New.Re
- fstp [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
- fstp [Self.FPosition.Re].Double // FPosition.Re := New.Re
-end;
-{$ENDIF}
-
-procedure TCustomLFOSine.Reset;
-begin
- Phase := 0;
-end;
-
 procedure TCustomLFOSine.SampleRateChanged;
 begin
-  FrequencyChanged;
+ FrequencyChanged;
 end;
 
-procedure TCustomLFOSine.FrequencyChanged;
+procedure TCustomLFOSine.SetFrequency(const Value: Single);
+begin
+  if FFrequency <> Value then
+  begin
+    FFrequency := Value;
+    FrequencyChanged;
+  end;
+end;
+
+procedure TCustomLFOSine.SetSampleRate(const Value: Single);
+begin
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SampleRateChanged;
+  end;
+end;
+
+{ TCustomLFOSine32 }
+
+procedure TCustomLFOSine32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomLFOSine32 then
+  with TCustomLFOSine32(Dest) do
+   begin
+    FAngle    := Self.FAngle;
+    FPosition := Self.FPosition;
+   end else
+ if Dest is TCustomLFOSine64 then
+  with TCustomLFOSine64(Dest) do
+   begin
+    FAngle.Re    := Self.FAngle.Re;
+    FAngle.Im    := Self.FAngle.Im;
+    FPosition.Re := Self.FPosition.Im;
+    FPosition.Re := Self.FPosition.Im;
+   end
+ else inherited;
+end;
+
+procedure TCustomLFOSine32.FrequencyChanged;
 begin
  GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
-function TCustomLFOSine.GetPhase: Single;
-begin
- result := -ArcTan2(FPosition.Re, -FPosition.Im);
-end;
-
-procedure TCustomLFOSine.SetAmplitude(const Value: Single);
+procedure TCustomLFOSine32.SetAmplitude(const Value: Single);
 begin
  if FAmplitude <> Value then
   begin
@@ -205,29 +245,136 @@ begin
   end;
 end;
 
-procedure TCustomLFOSine.SetFrequency(const Value: Single);
-begin
-  if FFrequency <> Value then
-  begin
-    FFrequency := Value;
-    FrequencyChanged;
-  end;
-end;
-
-procedure TCustomLFOSine.SetPhase(const Value: Single);
+procedure TCustomLFOSine32.SetPhase(const Value: Single);
 begin
  GetSinCos(Value, FPosition.Re, FPosition.Im);
  FPosition.Re := FPosition.Re * -FAmplitude;
  FPosition.Im := FPosition.Im * -FAmplitude;
 end;
 
-procedure TCustomLFOSine.SetSampleRate(const Value: Single);
+function TCustomLFOSine32.GetPhase: Single;
 begin
- if FSampleRate <> Value then
+ result := -ArcTan2(FPosition.Re, -FPosition.Im);
+end;
+
+procedure TCustomLFOSine32.Reset;
+begin
+ Phase := 0;
+end;
+
+procedure TCustomLFOSine32.CalculateNextSample;
+{$IFDEF PUREPASCAL}
+var
+  temp : Single;
+begin
+  temp := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+  FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+  FPosition.Re := temp;
+end;
+{$ELSE}
+asm
+ fld [Self.FPosition.Re].Single  // FPosition.Re
+ fmul [Self.FAngle.Re].Single    // FPosition.Re * FAngle.Re
+ fld [Self.FPosition.Im].Single  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [Self.FAngle.Im].Single    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+
+ fld [Self.FPosition.Im].Single  // FPosition.Im, New.Re
+ fmul [Self.FAngle.Re].Single    // FPosition.Im * FAngle.Re, New.Re
+ fld [Self.FPosition.Re].Single  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [Self.FAngle.Im].Single    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+ fstp [Self.FPosition.Im].Single // FPosition.Im := New.Im, New.Re
+ fstp [Self.FPosition.Re].Single // FPosition.Re := New.Re
+end;
+{$ENDIF}
+
+{ TCustomLFOSine64 }
+
+procedure TCustomLFOSine64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomLFOSine64 then
+  with TCustomLFOSine64(Dest) do
+   begin
+    FAngle    := Self.FAngle;
+    FPosition := Self.FPosition;
+   end else
+ if Dest is TCustomLFOSine32 then
+  with TCustomLFOSine32(Dest) do
+   begin
+    FAngle.Re    := Self.FAngle.Re;
+    FAngle.Im    := Self.FAngle.Im;
+    FPosition.Re := Self.FPosition.Re;
+    FPosition.Im := Self.FPosition.Im;
+   end
+ else inherited;
+end;
+
+procedure TCustomLFOSine64.SetAmplitude(const Value: Single);
+begin
+ if FAmplitude <> Value then
   begin
-   FSampleRate := Value;
-   SampleRateChanged;
+   if FAmplitude = 0 then
+    begin
+     FPosition.Re := 0;
+     FPosition.Im := Value;
+    end
+   else
+    begin
+     FPosition.Re := FPosition.Re / FAmplitude * Value;
+     FPosition.Im := FPosition.Im / FAmplitude * Value;
+    end;
+   FAmplitude := Value;
   end;
+end;
+
+procedure TCustomLFOSine64.SetPhase(const Value: Double);
+begin
+ GetSinCos(Value, FPosition.Re, FPosition.Im);
+ FPosition.Re := FPosition.Re * -FAmplitude;
+ FPosition.Im := FPosition.Im * -FAmplitude;
+end;
+
+function TCustomLFOSine64.GetPhase: Double;
+begin
+ result := -ArcTan2(FPosition.Re, -FPosition.Im);
+end;
+
+procedure TCustomLFOSine64.Reset;
+begin
+ Phase := 0;
+end;
+
+procedure TCustomLFOSine64.CalculateNextSample;
+{$IFDEF PUREPASCAL}
+var
+  temp : Double;
+begin
+  temp := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+  FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+  FPosition.Re := temp;
+end;
+{$ELSE}
+asm
+ fld [Self.FPosition.Re].Double  // FPosition.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Re * FAngle.Re
+ fld [Self.FPosition.Im].Double  // FPosition.Im, FPosition.Re * FAngle.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Im * FAngle.Im, FPosition.Re * FAngle.Re
+ fsubp                           // FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im = New.Re
+
+ fld [Self.FPosition.Im].Double  // FPosition.Im, New.Re
+ fmul [Self.FAngle.Re].Double    // FPosition.Im * FAngle.Re, New.Re
+ fld [Self.FPosition.Re].Double  // FPosition.Re, FPosition.Re * FAngle.Re, New.Re
+ fmul [Self.FAngle.Im].Double    // FPosition.Re * FAngle.Im, FPosition.Re * FAngle.Re, New.Re
+ faddp                           // FPosition.Re * FAngle.Re + FPosition.Im * FAngle.Im = New.Im, New.Re
+ fstp [Self.FPosition.Im].Double // FPosition.Im := New.Im, New.Re
+ fstp [Self.FPosition.Re].Double // FPosition.Re := New.Re
+end;
+{$ENDIF}
+
+procedure TCustomLFOSine64.FrequencyChanged;
+begin
+ GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
 end;
 
 { TCustomLFOSineLike }

@@ -34,7 +34,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_GuiCommon;
+  DAV_GuiCommon, TunerDM;
 
 procedure TFmTuner.FormCreate(Sender: TObject);
 var
@@ -114,12 +114,12 @@ end;
 
 procedure TFmTuner.LbNoteClick(Sender: TObject);
 begin
- if Sender <> LbLowE then LbLowE.Font.Color := $4F4F4F else LbLowE.Font.Color := clBlack;
- if Sender <> LbA then LbA.Font.Color := $4F4F4F else LbA.Font.Color := clBlack;
- if Sender <> LbD then LbD.Font.Color := $4F4F4F else LbD.Font.Color := clBlack;
- if Sender <> LbG then LbG.Font.Color := $4F4F4F else LbG.Font.Color := clBlack;
- if Sender <> LbH then LbH.Font.Color := $4F4F4F else LbH.Font.Color := clBlack;
- if Sender <> LbE then LbE.Font.Color := $4F4F4F else LbE.Font.Color := clBlack;
+ if Sender <> LbLowE then LbLowE.Font.Color := $4F4F4F else begin LbLowE.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 1; end;
+ if Sender <> LbA then LbA.Font.Color := $4F4F4F else begin LbA.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 2; end;
+ if Sender <> LbD then LbD.Font.Color := $4F4F4F else begin LbD.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 3; end;
+ if Sender <> LbG then LbG.Font.Color := $4F4F4F else begin LbG.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 4; end;
+ if Sender <> LbH then LbH.Font.Color := $4F4F4F else begin LbH.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 5; end;
+ if Sender <> LbE then LbE.Font.Color := $4F4F4F else begin LbE.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 6; end;
 end;
 
 procedure TFmTuner.PBDisplayPaint(Sender: TObject);

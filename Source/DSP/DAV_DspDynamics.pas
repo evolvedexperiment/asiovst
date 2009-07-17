@@ -846,10 +846,10 @@ end;
 
 procedure TCustomDynamicProcessor.SetThreshold(const Value: Double);
 begin
-  if FThreshold_dB <> Value then
+ if FThreshold_dB <> Value then
   begin
-    FThreshold_dB := Value;
-    ThresholdChanged;
+   FThreshold_dB := Value;
+   ThresholdChanged;
   end;
 end;
 

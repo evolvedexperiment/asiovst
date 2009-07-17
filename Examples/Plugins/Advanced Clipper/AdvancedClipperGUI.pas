@@ -9,37 +9,37 @@ uses
 
 type
   TFmAdvancedClipper = class(TForm)
-    GpStage1: TGuiGroup;
-    GpStage2: TGuiGroup;
+    DialFilterOrder1: TGuiDial;
+    DialFilterOrder2: TGuiDial;
     DialInputGain: TGuiDial;
     DialOSFactor1: TGuiDial;
-    DialFilterOrder1: TGuiDial;
+    DialOSFactor2: TGuiDial;
+    DialOutputGain: TGuiDial;
+    GpStage1: TGuiGroup;
+    GpStage2: TGuiGroup;
+    GuiPanel1: TGuiPanel;
+    LbDisplay: TGuiLabel;
+    LbFilterOrder: TGuiLabel;
+    LbFilterOrder2: TGuiLabel;
+    LbHardClip: TGuiLabel;
     LbInputGain: TGuiLabel;
     LbOSFactor: TGuiLabel;
-    LbFilterOrder: TGuiLabel;
-    PnDisplay: TGuiPanel;
-    LbDisplay: TGuiLabel;
-    DialOSFactor2: TGuiDial;
     LbOSFactor2: TGuiLabel;
-    LbFilterOrder2: TGuiLabel;
-    DialFilterOrder2: TGuiDial;
-    DialOutputGain: TGuiDial;
     LbOutputGain: TGuiLabel;
-    GuiPanel1: TGuiPanel;
-    LbHardClip: TGuiLabel;
     LEDHardClip: TGuiLED;
+    PnDisplay: TGuiPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure DialInputGainChange(Sender: TObject);
-    procedure DialOutputGainChange(Sender: TObject);
-    procedure DialOSFactor1Change(Sender: TObject);
     procedure DialFilterOrder1Change(Sender: TObject);
-    procedure DialOSFactor2Change(Sender: TObject);
     procedure DialFilterOrder2Change(Sender: TObject);
+    procedure DialInputGainChange(Sender: TObject);
+    procedure DialOSFactor1Change(Sender: TObject);
+    procedure DialOSFactor2Change(Sender: TObject);
+    procedure DialOutputGainChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LbHardClipClick(Sender: TObject);
   private
-    fBackgrounBitmap : TBitmap;
+    FBackgrounBitmap : TBitmap;
   public
     procedure UpdateInputGain;
     procedure UpdateOSFactor1;
@@ -68,8 +68,8 @@ var
 
 begin
  // Create Background Image
- fBackgrounBitmap := TBitmap.Create;
- with fBackgrounBitmap do
+ FBackgrounBitmap := TBitmap.Create;
+ with FBackgrounBitmap do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -162,7 +162,7 @@ end;
 
 procedure TFmAdvancedClipper.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, fBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmAdvancedClipper.FormShow(Sender: TObject);

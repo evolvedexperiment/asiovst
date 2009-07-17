@@ -54,6 +54,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialOSFactor1: TGuiDial
       Left = 75
@@ -75,6 +76,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Position = 1.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialFilterOrder1: TGuiDial
       Left = 139
@@ -96,6 +98,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Position = 2.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbInputGain: TGuiLabel
       Left = 11
@@ -209,6 +212,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Position = 1.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbOSFactor2: TGuiLabel
       Left = 11
@@ -258,6 +262,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Position = 2.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialOutputGain: TGuiDial
       Left = 139
@@ -277,6 +282,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbOutputGain: TGuiLabel
       Left = 136
@@ -334,8 +340,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
         LEDColor = 14870505
         AntiAlias = gaaLinear4x
         LineColor = 3226174
-        OnClick = LbHardClipClick
         ParentColor = False
+        OnClick = LbHardClipClick
       end
     end
   end

@@ -22,6 +22,7 @@ type
   private
     procedure CalculateKneeFactor;
     procedure CalculateAutoMakeUpGain;
+    procedure CalculateLogScaledThresholdValue;
   protected
     FThrshlddB   : Single;
     FKneeFactor  : Single;
@@ -29,6 +30,7 @@ type
     procedure ThresholdChanged; override;
     procedure AutoMakeUpChanged; override;
   public
+    constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample(const Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
@@ -216,9 +218,14 @@ end;
 procedure TLightweightSoftKneeLimiter.ThresholdChanged;
 begin
  inherited;
- FThrshlddB := Threshold_dB / CFactor2IndB32;
+ CalculateLogScaledThresholdValue;
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
+end;
+
+procedure TLightweightSoftKneeLimiter.CalculateLogScaledThresholdValue;
+begin
+ FThrshlddB := Threshold_dB * CdBtoAmpExpGain32;
 end;
 
 function TLightweightSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -235,6 +242,12 @@ var
 begin
  Temp   := -CHalf32 * (InputLevel_dB - FThreshold_dB);
  result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
+end;
+
+constructor TLightweightSoftKneeLimiter.Create;
+begin
+ inherited;
+ CalculateLogScaledThresholdValue;
 end;
 
 function TLightweightSoftKneeLimiter.GainSample(const Input: Double): Double;

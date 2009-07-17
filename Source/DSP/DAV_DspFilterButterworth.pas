@@ -3,10 +3,9 @@ unit DAV_DSPFilterButterworth;
 interface
 
 {$I ..\DAV_Compiler.inc}
-{$IFDEF FPC}{.$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_DspFilter, DAV_Common, DAV_Complex;
+  DAV_Common, DAV_Complex, DAV_DspFilter;
 
 type
   TCustomButterworthFilterClass = class of TCustomButterworthFilter;
