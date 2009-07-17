@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009.07.17 13:26:25.484.bdsproj,C:\Users\Christian Budde\Projects\VSTPack\Examples\Plugins\Mod Delay 2\ModDelay.bdsproj=C:\Users\Christian Budde\Projects\VSTPack\Examples\Plugins\Mod Delay 2\ModDelay.bdsproj</Transaction>
+    <Transaction>2009.07.17 14:03:02.492.pas,C:\Users\Christian Budde\Projects\VSTPack\Examples\Plugins\Mod Delay 2\Unit1.pas=C:\Users\Christian Budde\Projects\VSTPack\Source\DSP\DAV_DspModDelay.pas</Transaction>
+  </Transactions>
+</BorlandProject>
