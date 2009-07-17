@@ -6,8 +6,6 @@ object ModDelay2Module: TModDelay2Module
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  numInputs = 1
-  numOutputs = 1
   CurrentProgram = -1
   IORatio = 1.000000000000000000
   UniqueID = 'MDly'
@@ -32,7 +30,7 @@ object ModDelay2Module: TModDelay2Module
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
-      OnCustomParameterDisplay = ModDelay2ModuleParameterProperties0CustomParameterDisplay
+      OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
       Curve = ctLinear
@@ -156,7 +154,7 @@ object ModDelay2Module: TModDelay2Module
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
-      OnCustomParameterDisplay = ModDelay2ModuleParameterProperties0CustomParameterDisplay
+      OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
       Curve = ctLinear

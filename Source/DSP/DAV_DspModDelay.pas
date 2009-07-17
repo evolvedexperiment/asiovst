@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO, DAV_DspFilterButterworth;
 
 type
   TCustomModDelay = class(TDspObject)
@@ -18,16 +18,20 @@ type
     FMix            : Double;
     FMixFactors     : array [0..1] of Single;
     FRate           : Double;
+    FLpfFreq        : Double;
     FRealBufSize    : Integer;
     FBufferSize     : Integer;
     FBufferPos      : Integer;
     FLFO            : TLFOSine;
+    FLowpassFilter  : TButterworthLowPassFilter;
     procedure SetDepth(const Value: Double);
     procedure SetRate(const Value: Double);
     procedure SetSampleRate(const Value: Double);
     procedure SetDelay(const Value: Double);
     procedure SetFeedback(const Value: Double);
     procedure SetMix(const Value: Double);
+    procedure SetLpfFreq(const Value: Double);
+    procedure LowpassFrequencyChanged;
   protected
     procedure DelayChanged; virtual;
     procedure DepthChanged; virtual;
@@ -45,6 +49,7 @@ type
     property Mix: Double read FMix write SetMix;
     property Delay: Double read FDelay write SetDelay;
     property Feedback: Double read FFeedback write SetFeedback;
+    property LowpassFrequency: Double read FLpfFreq write SetLpfFreq;
     property Rate: Double read FRate write SetRate;
     property Depth: Double read FDepth write SetDepth;
   end;
@@ -63,11 +68,12 @@ type
 
   TModDelay32 = class(TCustomModDelay32)
   published
-    property Mix;          // [%]
-    property Delay;        // [ms]
-    property Depth;        // [%]
-    property Feedback;     // [%]
-    property Rate;         // [Hz]
+    property Mix;              // [%]
+    property Delay;            // [ms]
+    property Depth;            // [%]
+    property Feedback;         // [%]
+    property LowpassFrequency; // [Hz]
+    property Rate;             // [Hz]
     property SampleRate;
   end;
 
@@ -85,11 +91,12 @@ type
 
   TModDelay64 = class(TCustomModDelay64)
   published
-    property Mix;          // [%]
-    property Delay;        // [ms]
-    property Depth;        // [%]
-    property Feedback;     // [%]
-    property Rate;         // [Hz]
+    property Mix;              // [%]
+    property Delay;            // [ms]
+    property Depth;            // [%]
+    property Feedback;         // [%]
+    property LowpassFrequency; // [Hz]
+    property Rate;             // [Hz]
     property SampleRate;
   end;
 
@@ -102,16 +109,24 @@ uses
 
 constructor TCustomModDelay.Create;
 begin
- FSampleRate   := 44100;
- FRate         := 2;
- FDepth        := 0.5;
- FBufferPos    := 0;
- FLFO          := TLFOSine.Create;
+ FSampleRate    := 44100;
+ FRate          := 2;
+ FDepth         := 0.5;
+ FBufferPos     := 0;
+
+ // create and setup sine LFO
+ FLFO := TLFOSine.Create;
+ FLFO.SampleRate := SampleRate;
+
+ // create and setup lowpass filter
+ FLowpassFilter := TButterworthLowPassFilter.Create(1);
+ FLowpassFilter.SampleRate := SampleRate;
 end;
 
 destructor TCustomModDelay.Destroy;
 begin
  FreeAndNil(FLFO);
+ FreeAndNil(FLowpassFilter);
  inherited;
 end;
 
@@ -146,6 +161,11 @@ begin
  FFeedbackFactor := 0.01 * FFeedback;
 end;
 
+procedure TCustomModDelay.LowpassFrequencyChanged;
+begin
+ FLowpassFilter.Frequency := FLpfFreq;
+end;
+
 procedure TCustomModDelay.MixChanged;
 begin
  FMixFactors[1] := 0.01 * FMix;
@@ -160,6 +180,7 @@ end;
 procedure TCustomModDelay.SampleRateChanged;
 begin
  FLFO.SampleRate := FSampleRate;
+ FLowpassFilter.SampleRate := SampleRate;
  UpdateBuffer;
 end;
 
@@ -187,6 +208,15 @@ begin
   begin
    FFeedback := Value;
    FeedbackChanged;
+  end;
+end;
+
+procedure TCustomModDelay.SetLpfFreq(const Value: Double);
+begin
+ if FLpfFreq <> Value then
+  begin
+   FLpfFreq := Value;
+   LowpassFrequencyChanged;
   end;
 end;
 
@@ -264,7 +294,7 @@ begin
  if p < 4 then p := p + (FRealBufSize - 4);
 
  // calculate pure result
- result := Hermite32_asm(d, @FBuffer32[p - 4]);
+ result := FLowpassFilter.ProcessSample(Hermite32_asm(d, @FBuffer32[p - 4]));
 
  // store new data
  FBuffer32[FBufferPos] := Input + FFeedbackFactor * result;
@@ -328,7 +358,7 @@ begin
  if p < 4 then p := p + (FRealBufSize - 4);
 
  // calculate pure result
- result := Hermite64_asm(d, @FBuffer64[p - 4]);
+ result := FLowpassFilter.ProcessSample(Hermite64_asm(d, @FBuffer64[p - 4]));
 
  // store new data
  FBuffer64[FBufferPos] := Input + FFeedbackFactor * result;

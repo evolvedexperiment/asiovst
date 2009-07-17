@@ -29,6 +29,7 @@ type
     LEDHardClip: TGuiLED;
     PnDisplay: TGuiPanel;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure DialFilterOrder1Change(Sender: TObject);
     procedure DialFilterOrder2Change(Sender: TObject);
@@ -36,7 +37,6 @@ type
     procedure DialOSFactor1Change(Sender: TObject);
     procedure DialOSFactor2Change(Sender: TObject);
     procedure DialOutputGainChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure LbHardClipClick(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;

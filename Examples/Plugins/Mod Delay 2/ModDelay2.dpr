@@ -7,8 +7,7 @@ uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   ModDelay2DM in 'ModDelay2DM.pas' {ModDelay2Module: TVSTModule},
-  ModDelay2GUI in 'ModDelay2GUI.pas' {FmModDelay2},
-  DAV_DspModDelay in '..\..\..\Source\DSP\DAV_DspModDelay.pas';
+  ModDelay2GUI in 'ModDelay2GUI.pas' {FmModDelay2};
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
