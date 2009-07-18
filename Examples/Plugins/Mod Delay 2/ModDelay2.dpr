@@ -2,6 +2,8 @@
 library ModDelay2;
 
 uses
+  FastMM4,
+  FastMove,
   Forms,
   DAV_WinAmp,
   DAV_VSTEffect,

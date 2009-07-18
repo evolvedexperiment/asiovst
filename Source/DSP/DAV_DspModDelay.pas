@@ -138,7 +138,7 @@ end;
 procedure TCustomModDelay.UpdateBuffer;
 begin
  // calculate buffer size in samples
- FBufferSize  := round(0.001 * FDelay * FSampleRate);
+ FBufferSize  := round(0.001 * FDelay * abs(FSampleRate));
  FRealBufSize := FBufferSize + 8;
 
  // check and reset buffer position
