@@ -18,14 +18,14 @@ type
 
   TResourceModule = class
   private
-    fDirty: Boolean;
+    FDirty  : Boolean;
+    FBackup : Boolean;
     function GetDirty: Boolean;
   protected
     function GetResourceCount: Integer; virtual; abstract;
     function GetResourceDetails(idx: Integer): TResourceDetails;
       virtual; abstract;
     procedure ClearDirty;
-
   public
     procedure DeleteResource(idx: Integer); virtual;
     procedure InsertResource(idx: Integer; details: TResourceDetails); virtual; abstract;
@@ -33,8 +33,8 @@ type
     function IndexOfResource(details: TResourceDetails): Integer; virtual; abstract;
     function GetUniqueResourceName(const tp: WideString): WideString;
 
-    procedure SaveToStream(stream: TStream); virtual;
-    procedure LoadFromStream(stream: TStream); virtual;
+    procedure SaveToStream(Stream: TStream); virtual;
+    procedure LoadFromStream(Stream: TStream); virtual;
 
     procedure SaveToFile(const FileName: string); virtual;
     procedure LoadFromFile(const FileName: string); virtual;
@@ -44,7 +44,8 @@ type
 
     property ResourceCount: Integer read GetResourceCount;
     property ResourceDetails[idx: Integer]: TResourceDetails read GetResourceDetails;
-    property Dirty: Boolean read GetDirty write fDirty;
+    property Dirty: Boolean read GetDirty write FDirty;
+    property Backup: Boolean read FBackup write FBackup;
   end;
 
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -56,18 +57,18 @@ type
 
   TResourceDetails = class
   private
-    fParent                : TResourceModule;
-    fData                  : TMemoryStream;
-    fCodePage              : Integer;
-    fResourceLanguage      : LCID;
-    fResourceName          : WideString;
-    fResourceType          : WideString;
+    FParent                : TResourceModule;
+    FData                  : TMemoryStream;
+    FCodePage              : Integer;
+    FResourceLanguage      : LCID;
+    FResourceName          : WideString;
+    FResourceType          : WideString;
 
-    fMemoryFlags           : Word;          // Resource memory flags
-    fDataVersion, fVersion : DWORD;         // Resource header version info
-    fCharacteristics       : DWORD;
-    fDirty                 : Boolean;
-    fTag                   : Integer;
+    FMemoryFlags           : Word;          // Resource memory flags
+    FDataVersion, FVersion : DWORD;         // Resource header version info
+    FCharacteristics       : DWORD;
+    FDirty                 : Boolean;
+    FTag                   : Integer;
     procedure SetResourceType(const Value: WideString);
                                            // Resource header characteristics
   protected
@@ -86,20 +87,20 @@ type
 
     procedure ChangeData(newData: TMemoryStream); virtual;
 
-    property Parent: TResourceModule read fParent;
-    property Data: TMemoryStream read fData;
-    property ResourceName: WideString read fResourceName write SetResourceName;
-    property ResourceType: WideString read fResourceType write SetResourceType;
-    property ResourceLanguage: LCID read fResourceLanguage write fResourceLanguage;
+    property Parent: TResourceModule read FParent;
+    property Data: TMemoryStream read FData;
+    property ResourceName: WideString read FResourceName write SetResourceName;
+    property ResourceType: WideString read FResourceType write SetResourceType;
+    property ResourceLanguage: LCID read FResourceLanguage write FResourceLanguage;
 
-    property CodePage: Integer read fCodePage write fCodePage;
-    property Characteristics: DWORD read fCharacteristics write fCharacteristics;
-    property Version: DWORD read fVersion write fDataVersion;
-    property DataVersion: DWORD read fDataVersion write fDataVersion;
-    property MemoryFlags: WORD read fMemoryFlags write fMemoryFlags;
+    property CodePage: Integer read FCodePage write FCodePage;
+    property Characteristics: DWORD read FCharacteristics write FCharacteristics;
+    property Version: DWORD read FVersion write FDataVersion;
+    property DataVersion: DWORD read FDataVersion write FDataVersion;
+    property MemoryFlags: WORD read FMemoryFlags write FMemoryFlags;
 
-    property Dirty: Boolean read fDirty write fDirty;
-    property Tag: Integer read fTag write fTag;
+    property Dirty: Boolean read FDirty write FDirty;
+    property Tag: Integer read FTag write FTag;
   end;
 
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -111,21 +112,21 @@ type
 
   TImageSection = class
   private
-    fParent: TPEModule;
-    fSectionHeader: TImageSectionHeader;
-    fRawData: TMemoryStream;
-    fUninitializedDataSize: Integer;
+    FParent: TPEModule;
+    FSectionHeader: TImageSectionHeader;
+    FRawData: TMemoryStream;
+    FUninitializedDataSize: Integer;
 
     function GetSectionName: string;
   public
     constructor Create(AParent: TPEModule;
       const AHeader: TImageSectionHeader; rawData: pointer);
     destructor Destroy; override;
-    property Parent: TPEModule read fParent;
+    property Parent: TPEModule read FParent;
 
     property SectionName: string read GetSectionName;
-    property SectionHeader: TImageSectionHeader read fSectionHeader;
-    property RawData: TMemoryStream read fRawData;
+    property SectionHeader: TImageSectionHeader read FSectionHeader;
+    property RawData: TMemoryStream read FRawData;
   end;
 
   TImageImportDirectory = packed record
@@ -145,15 +146,15 @@ type
 
   TPEModule = class(TResourceModule)
   private
-    fDOSHeader      : TImageDosHeader;
-    fCOFFHeader     : TImageFileHeader;
-    fOptionalHeader : PImageOptionalHeader;
-    fSectionList    : TObjectList;           // List of TImageSection objects
-    fDOSStub        : TMemoryStream;
-    fCommentBlock   : PChar;
-    fCommentSize    : Integer;
-    fEndComment     : PChar;
-    fEndCommentSize : Integer;
+    FDOSHeader      : TImageDosHeader;
+    FCOFFHeader     : TImageFileHeader;
+    FOptionalHeader : PImageOptionalHeader;
+    FSectionList    : TObjectList;           // List of TImageSection objects
+    FDOSStub        : TMemoryStream;
+    FCommentBlock   : PChar;
+    FCommentSize    : Integer;
+    FEndComment     : PChar;
+    FEndCommentSize : Integer;
 
     function GetOptionalHeader: TImageOptionalHeader;
     function GetImageSection(index: Integer): TImageSection;
@@ -174,7 +175,7 @@ type
   protected
     procedure Decode(memory: pointer; exeSize: Integer); virtual;
     procedure Encode; virtual;
-    property OptionalHeaderPtr: PImageOptionalHeader read fOptionalHeader;
+    property OptionalHeaderPtr: PImageOptionalHeader read FOptionalHeader;
     function FindDictionaryEntrySection(entryNo: Integer; var offset: Integer): Integer;
   public
     constructor Create;
@@ -201,7 +202,7 @@ type
     procedure LoadFromStream(s: TStream); override;
     procedure LoadFromFile(const Name: string); override;
 
-    procedure SaveToStream(s: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -251,7 +252,7 @@ type
 
   TPEResourceModule = class(TPEModule)
   private
-    fDetailList: TObjectList;             // List of TResourceDetails objects
+    FDetailList: TObjectList;             // List of TResourceDetails objects
 
   protected
     procedure Decode(memory: pointer; exeSize: Integer); override;
@@ -356,7 +357,7 @@ begin
   len := word(wstr^);
   SetLength(Result, len);
   Inc(wstr);
-  Move(wstr^, PWideChar(Result)^, len * sizeof(WideChar));
+  Move(wstr^, PWideChar(Result)^, len * SizeOf(WideChar));
   Inc(wstr, len);
 end;
 
@@ -378,13 +379,13 @@ var
   len, size: word;
 begin
   len := Length(s);
-  size := (Length(s) + 1) * sizeof(WideChar);
+  size := (Length(s) + 1) * SizeOf(WideChar);
   GetMem(buffer, size);
    try
     MultiByteToWideChar(codePage, 0, PChar(s), -1, buffer, size);
     p^ := WideChar(len);
     Inc(p);
-    Move(buffer^, p^, len * sizeof(WideChar));
+    Move(buffer^, p^, len * SizeOf(WideChar));
     Inc(p, len)
    finally
     FreeMem(buffer)
@@ -408,7 +409,7 @@ begin
   len := Length(s);
   p^ := WideChar(len);
   Inc(p);
-  Move(PWideChar(s)^, p^, len * sizeof(WideChar));
+  Move(PWideChar(s)^, p^, len * SizeOf(WideChar));
   Inc(p, len)
 end;
 
@@ -531,8 +532,8 @@ end;
  *----------------------------------------------------------------------*)
 procedure TResourceDetails.ChangeData(newData: TMemoryStream);
 begin
-  fData.Clear;
-  fData.CopyFrom(newData, 0);
+  FData.Clear;
+  FData.CopyFrom(newData, 0);
 end;
 
 (*----------------------------------------------------------------------*
@@ -544,14 +545,14 @@ constructor TResourceDetails.Create(AParent: TResourceModule;
   ALanguage: Integer; const AName, AType: WideString; ASize: Integer;
   AData: pointer);
 begin
-  fParent := AParent;
-  fResourceLanguage := ALanguage;
-  fCodePage := LCIDToCodePage(fResourceLanguage);
-  fResourceName := AName;
-  fResourceType := AType;
-  fData := TMemoryStream.Create;
+  FParent := AParent;
+  FResourceLanguage := ALanguage;
+  FCodePage := LCIDToCodePage(FResourceLanguage);
+  FResourceName := AName;
+  FResourceType := AType;
+  FData := TMemoryStream.Create;
   if AData <> nil then
-    fData.Write(AData^, ASize)
+    FData.Write(AData^, ASize)
   else
     InitNew
 end;
@@ -564,14 +565,14 @@ end;
 constructor TResourceDetails.CreateNew(AParent: TResourceModule;
   ALanguage: Integer; const aName: WideString);
 begin
-  fParent := AParent;
-  fResourceLanguage := ALanguage;
-  fCodePage := LCIDToCodePage(fResourceLanguage);
-  fResourceName := AName;
-  fResourceType := GetBaseType;
+  FParent := AParent;
+  FResourceLanguage := ALanguage;
+  FCodePage := LCIDToCodePage(FResourceLanguage);
+  FResourceName := AName;
+  FResourceType := GetBaseType;
   if Assigned(AParent) then
     AParent.AddResource(Self);
-  fData := TMemoryStream.Create;
+  FData := TMemoryStream.Create;
   InitNew
 end;
 
@@ -591,7 +592,7 @@ end;
  *----------------------------------------------------------------------*)
 destructor TResourceDetails.Destroy;
 begin
-  fData.Free;
+  FData.Free;
   inherited;
 end;
 
@@ -623,19 +624,19 @@ end;
  *----------------------------------------------------------------------*)
 procedure TResourceDetails.SetResourceName(const Value: WideString);
 begin
-  if fResourceName <> Value then
+  if FResourceName <> Value then
    begin
-    fResourceName := Value;
-    fDirty := True
+    FResourceName := Value;
+    FDirty := True
    end
 end;
 
 procedure TResourceDetails.SetResourceType(const Value: WideString);
 begin
-  if fResourceType <> Value then
+  if FResourceType <> Value then
    begin
-    fResourceType := Value;
-    fDirty := True
+    FResourceType := Value;
+    FDirty := True
    end
 end;
 
@@ -678,7 +679,7 @@ procedure TResourceModule.ClearDirty;
 var
   i: Integer;
 begin
-  fDirty := False;
+  FDirty := False;
   for i := 0 to ResourceCount - 1 do
     ResourceDetails[i].Dirty := False
 end;
@@ -692,7 +693,7 @@ end;
  *----------------------------------------------------------------------*)
 procedure TResourceModule.DeleteResource(idx: Integer);
 begin
-  fDirty := True;
+  FDirty := True;
   ResourceDetails[idx].BeforeDelete;
 end;
 
@@ -708,9 +709,9 @@ var
 begin
   Result := nil;
   for i := 0 to ResourceCount - 1 do
-    if (ResourceDetails[i].fResourceType = tp) and
-      (ResourceDetails[i].fResourceName = Name) and
-      (Integer(ResourceDetails[i].fResourceLanguage) = ALanguage) then
+    if (ResourceDetails[i].FResourceType = tp) and
+      (ResourceDetails[i].FResourceName = Name) and
+      (Integer(ResourceDetails[i].FResourceLanguage) = ALanguage) then
      begin
       Result := ResourceDetails[i];
       break
@@ -718,9 +719,9 @@ begin
 
   if not Assigned(Result) then
     for i := 0 to ResourceCount - 1 do
-      if (ResourceDetails[i].fResourceType = tp) and
-        (ResourceDetails[i].fResourceName = Name) and
-        (ResourceDetails[i].fResourceLanguage = 0) then
+      if (ResourceDetails[i].FResourceType = tp) and
+        (ResourceDetails[i].FResourceName = Name) and
+        (ResourceDetails[i].FResourceLanguage = 0) then
        begin
         Result := ResourceDetails[i];
         break
@@ -732,7 +733,7 @@ end;
  |                                                                      |
  | Returns true if the module or it's resources are 'dirty'             |
  |                                                                      |
- | nb. fDirty is only set if resources have been deleted.               |
+ | nb. FDirty is only set if resources have been deleted.               |
  |     After adding a resource make sure the resource's Dirty is set to |
  |     true.                                                            |
  *----------------------------------------------------------------------*)
@@ -740,8 +741,8 @@ function TResourceModule.GetDirty: Boolean;
 var
   i: Integer;
 begin
-  Result := fDirty;
-  if not fDirty then
+  Result := FDirty;
+  if not FDirty then
     for i := 0 to ResourceCount - 1 do
       if ResourceDetails[i].Dirty then
        begin
@@ -814,44 +815,50 @@ var
   oldFileName, ext: string;
   p: PChar;
 begin
-// Rename old file to .~ext'
-  oldFileName := FileName;
-  UniqueString(oldFileName);
-  p := StrRScan(PChar(oldFileName), '.');
-  if p <> nil then
-   begin
-    p^ := #0;
-    Inc(p);
-    ext := p;
-    oldFileName := PChar(oldFileName);
-   end
-  else
-    ext := '';
-  ext := '~' + ext;
-  oldFileName := oldFileName + '.' + ext;
+ if FBackup then
+  begin
+   // Rename old file to .~ext'
+   oldFileName := FileName;
+   UniqueString(oldFileName);
+   p := StrRScan(PChar(oldFileName), '.');
+   if p <> nil then
+    begin
+     p^ := #0;
+     Inc(p);
+     ext := p;
+     oldFileName := PChar(oldFileName);
+    end
+   else ext := '';
+   ext := '~' + ext;
+   oldFileName := oldFileName + '.' + ext;
 
-  if FileExists(oldFileName) then
-    DeleteFile(oldFileName);
+   if FileExists(oldFileName) then DeleteFile(oldFileName);
 
-  RenameFile(FileName, oldFileName);
+   RenameFile(FileName, oldFileName);
+  end;
 
+ try
+  s := TFileStream.Create(FileName, fmCreate);
    try
-    s := TFileStream.Create(FileName, fmCreate);
-     try
-      SaveToStream(s);
-      ClearDirty
-     finally
-      s.Free
-     end
-   except
-// Failed.  Rename old file back.
-    DeleteFile(FileName);
-    RenameFile(oldFileName, FileName);
-    raise
+    SaveToStream(s);
+    ClearDirty;
+   finally
+    FreeAndNil(s)
    end
+ except
+  // Failed
+  DeleteFile(FileName);
+
+  if FBackup then
+   begin
+    // Rename old file back.
+    RenameFile(oldFileName, FileName);
+   end;
+  raise
+ end
 end;
 
-procedure TResourceModule.SaveToStream(stream: TStream);
+procedure TResourceModule.SaveToStream(Stream: TStream);
 begin
   raise Exception.Create(rstNoStreaming);
 end;
@@ -867,15 +874,15 @@ end;
 constructor TPEModule.Create;
 begin
   inherited Create;
-  fSectionList := TObjectList.Create;
-  fDOSStub := TMemoryStream.Create;
+  FSectionList := TObjectList.Create;
+  FDOSStub := TMemoryStream.Create;
 end;
 
 (*----------------------------------------------------------------------*
  | procedure TPEModule.Decode                                            |
  |                                                                      |
  | Decode the PE file.  Load the DOS header, the COFF header and the    |
- | 'optional' header, then load each section into fSectionList          |
+ | 'optional' header, then load each section into FSectionList          |
  *----------------------------------------------------------------------*)
 procedure TPEModule.Decode(Memory: pointer; exeSize: Integer);
 var
@@ -884,28 +891,28 @@ var
   sectionHeader: PImageSectionHeader;
   commentOffset: Integer;
 begin
-  fSectionList.Clear;
+  FSectionList.Clear;
 
                                 // Check it's really a PE file.
   if PWORD(Memory)^ <> IMAGE_DOS_SIGNATURE then
     raise EPEException.Create(rstInvalidDOSSignature);
 
                                 // Load the DOS header
-  fDOSHeader := PImageDosHeader(Memory)^;
+  FDOSHeader := PImageDosHeader(Memory)^;
 
-  offset := fDOSHeader._lfanew;
-  fDOSStub.Write((PChar(Memory) + sizeof(fDOSHeader))^,
-    fDOSHeader._lfanew - sizeof(fDOSHeader));
+  offset := FDOSHeader._lfanew;
+  FDOSStub.Write((PChar(Memory) + SizeOf(FDOSHeader))^,
+    FDOSHeader._lfanew - SizeOf(FDOSHeader));
 
                                 // Check the COFF signature
   if PDWORD(PChar(Memory) + offset)^ <> IMAGE_NT_SIGNATURE then
     raise EPEException.Create(rstInvalidCOFFSignature);
 
                                 // Load the COFF header
-  Inc(offset, sizeof(DWORD));
-  fCOFFHeader := PImageFileHEader(PChar(Memory) + offset)^;
+  Inc(offset, SizeOf(DWORD));
+  FCOFFHeader := PImageFileHEader(PChar(Memory) + offset)^;
 
-  Inc(offset, sizeof(fCOFFHeader));
+  Inc(offset, SizeOf(FCOFFHeader));
 
                                 // Check the Optional Header signature.  nb
                                 // the optional header is compulsory for
@@ -914,34 +921,34 @@ begin
     raise EPEException.Create(rstInvalidOptionalHeader);
 
                                 // Save the 'optional' header
-  ReallocMem(fOptionalHeader, fCOFFHeader.SizeOfOptionalHeader);
-  Move((PChar(Memory) + Offset)^, fOptionalHeader^,
-    fCOFFHeader.SizeOfOptionalHeader);
+  ReallocMem(FOptionalHeader, FCOFFHeader.SizeOfOptionalHeader);
+  Move((PChar(Memory) + Offset)^, FOptionalHeader^,
+    FCOFFHeader.SizeOfOptionalHeader);
 
-  Inc(offset, fCOFFHeader.SizeOfOptionalHeader);
+  Inc(offset, FCOFFHeader.SizeOfOptionalHeader);
 
   sectionHeader := PImageSectionHeader(PChar(memory) + offset);
-  commentOffset := offset + fCOFFHeader.NumberOfSections *
-    sizeof(TImageSectionHeader);
+  commentOffset := offset + FCOFFHeader.NumberOfSections *
+    SizeOf(TImageSectionHeader);
 
 // Save padding between the end of the section headers, and the start of the
 // 1st section.  TDump reports this as 'comment', and it seems to be important
 // to MS clock.exe...
 
-  fCommentSize := Integer(sectionHeader^.PointerToRawData) - commentOffset;
+  FCommentSize := Integer(sectionHeader^.PointerToRawData) - commentOffset;
 
-  if fCommentSize > 0 then
+  if FCommentSize > 0 then
    begin
-    GetMem(fCommentBlock, fCommentSize);
-    Move((PChar(memory) + commentOffset)^, fCommentBlock^, fCommentSize)
+    GetMem(FCommentBlock, FCommentSize);
+    Move((PChar(memory) + commentOffset)^, FCommentBlock^, FCommentSize)
    end;
-                                // Now save each image section in the fSectionList
-  for i := 0 to fCOFFHeader.NumberOfSections - 1 do
+                                // Now save each image section in the FSectionList
+  for i := 0 to FCOFFHeader.NumberOfSections - 1 do
    begin
     sectionHeader := PImageSectionHeader(PChar(memory) + offset);
-    fSectionList.Add(TImageSection.Create(self, sectionHeader^,
+    FSectionList.Add(TImageSection.Create(self, sectionHeader^,
       PChar(memory) + sectionHeader^.PointertoRawData));
-    Inc(offset, sizeof(TImageSectionHeader));
+    Inc(offset, SizeOf(TImageSectionHeader));
    end;
 
   i := sectionHeader^.PointerToRawData + sectionHeader^.SizeOfRawData;
@@ -949,11 +956,11 @@ begin
 // Save the padding between the last section and the end of the file.
 // This appears to hold debug info and things ??
 
-  fEndCommentSize := exeSize - i;
-  if fEndCommentSize > 0 then
+  FEndCommentSize := exeSize - i;
+  if FEndCommentSize > 0 then
    begin
-    GetMem(fEndComment, fEndCommentSize);
-    Move((PChar(memory) + i)^, fEndComment^, fEndCommentSize)
+    GetMem(FEndComment, FEndCommentSize);
+    Move((PChar(memory) + i)^, FEndComment^, FEndCommentSize)
    end
 end;
 
@@ -964,11 +971,11 @@ end;
  *----------------------------------------------------------------------*)
 destructor TPEModule.Destroy;
 begin
-  ReallocMem(fOptionalHeader, 0);
-  fSectionList.Free;
-  fDOSStub.Free;
-  ReallocMem(fCommentBlock, 0);
-  ReallocMem(fEndComment, 0);
+  ReallocMem(FOptionalHeader, 0);
+  FSectionList.Free;
+  FDOSStub.Free;
+  ReallocMem(FCommentBlock, 0);
+  ReallocMem(FEndComment, 0);
   inherited;
 end;
 
@@ -994,22 +1001,22 @@ begin
   iDataSize := 0;
   uDataSize := 0;
                                                // Use the DOS stub from their .EXE
-  fDOSHeader._lfanew := sizeof(fDosHeader) + fDOSStub.Size;
+  FDOSHeader._lfanew := SizeOf(FDOSHeader) + FDOSStub.Size;
 
                                                // Fixup sections count
-  fCOFFHeader.NumberOfSections := fSectionList.Count;
+  FCOFFHeader.NumberOfSections := FSectionList.Count;
 
-  iSize := fDOSHeader._lfanew +
+  iSize := FDOSHeader._lfanew +
                // File offset for start of sections
     SizeOf(DWORD) +                   // NT signature
-    sizeof(fCoffHeader) +
-    fCOFFHeader.SizeOfOptionalHeader + fSectionList.Count *
-    sizeof(TImageSectionHeader);
+    SizeOf(FCOFFHeader) +
+    FCOFFHeader.SizeOfOptionalHeader + FSectionList.Count *
+    SizeOf(TImageSectionHeader);
 
-  offset := iSize + fCommentSize;
+  offset := iSize + FCommentSize;
 
-  align := fOptionalHeader^.FileAlignment;
-  addrAlign := fOptionalHeader^.SectionAlignment;
+  align := FOptionalHeader^.FileAlignment;
+  addrAlign := FOptionalHeader^.SectionAlignment;
 
   address := addrAlign;
   offset := DWORD((integer(offset) + align - 1) div align * align);
@@ -1017,24 +1024,24 @@ begin
                                                 // First section starts at $1000 (when loaded)
                                                 // and at 'offset' in file.
 
-  fOptionalHeader^.SizeOfHeaders :=
+  FOptionalHeader^.SizeOfHeaders :=
     DWORD((integer(iSize) + align - 1) div align * align);
 
-  fOptionalHeader^.BaseOfCode := $ffffffff;
-  fOptionalHeader^.CheckSum := 0;
+  FOptionalHeader^.BaseOfCode := $ffffffff;
+  FOptionalHeader^.CheckSum := 0;
                // Calculate it during 'SaveToStream' when
                                                 // we've got all the info.
 
   iSize := DWORD((integer(iSize) + addrAlign - 1) div
     addrAlign * addrAlign);
 
-  for i := 0 to fSectionList.Count - 1 do
+  for i := 0 to FSectionList.Count - 1 do
       // Recalculate the section offsets
    begin
-    section := TImageSection(fSectionList[i]);
+    section := TImageSection(FSectionList[i]);
 
-    section.fSectionHeader.PointerToRawData := offset;
-    section.fSectionHeader.VirtualAddress := address;
+    section.FSectionHeader.PointerToRawData := offset;
+    section.FSectionHeader.VirtualAddress := address;
 
 // Virtual size is size of data in memory, and is not padded to an 'alignment'.
 
@@ -1048,44 +1055,44 @@ begin
 
 // We do our best by saving the original difference in '2.' above in fUninitializeDataSize
 
-    section.fSectionHeader.Misc.VirtualSize :=
-      section.fRawData.Size + section.fUninitializedDataSize;
-    section.fSectionHeader.SizeOfRawData :=
-      (section.fRawData.Size + align - 1) div align * align;
+    section.FSectionHeader.Misc.VirtualSize :=
+      section.FRawData.Size + section.FUninitializedDataSize;
+    section.FSectionHeader.SizeOfRawData :=
+      (section.FRawData.Size + align - 1) div align * align;
 
-    alignedSize := (Integer(section.fSectionHeader.Misc.VirtualSize) +
+    alignedSize := (Integer(section.FSectionHeader.Misc.VirtualSize) +
       align - 1) div align * align;
-    addrAlignedSize := (Integer(section.fSectionHeader.Misc.VirtualSize) +
+    addrAlignedSize := (Integer(section.FSectionHeader.Misc.VirtualSize) +
       addrAlign - 1) div addrAlign * addrAlign;
 
-    if (section.fSectionHeader.Characteristics and
+    if (section.FSectionHeader.Characteristics and
       IMAGE_SCN_MEM_EXECUTE) <> 0 then
      begin
       Inc(codeSize, alignedSize);
-      if DWORD(address) < fOptionalHeader^.BaseOfCode then
-        fOptionalHeader^.BaseOfCode := address
+      if DWORD(address) < FOptionalHeader^.BaseOfCode then
+        FOptionalHeader^.BaseOfCode := address
      end
     else
-    if (section.fSectionHeader.Characteristics and
+    if (section.FSectionHeader.Characteristics and
       IMAGE_SCN_CNT_INITIALIZED_DATA) <> 0 then
       Inc(iDataSize, alignedSize)
     else
-    if (section.fSectionHeader.Characteristics and
+    if (section.FSectionHeader.Characteristics and
       IMAGE_SCN_CNT_UNINITIALIZED_DATA) <> 0 then
       Inc(uDataSize, alignedSize);
 
     Inc(iSize, addrAlignedSize);
-    Inc(offset, section.fSectionHeader.SizeOfRawData);
-    Inc(address, (Integer(section.fSectionHeader.Misc.VirtualSize) +
+    Inc(offset, section.FSectionHeader.SizeOfRawData);
+    Inc(address, (Integer(section.FSectionHeader.Misc.VirtualSize) +
       addrAlign - 1) div addrAlign * addrAlign);
    end;
 
-  fOptionalHeader^.SizeOfCode := codeSize;
-  fOptionalHeader^.SizeOfInitializedData := iDataSize;
-  fOptionalHeader^.SizeOfUninitializedData := uDataSize;
+  FOptionalHeader^.SizeOfCode := codeSize;
+  FOptionalHeader^.SizeOfInitializedData := iDataSize;
+  FOptionalHeader^.SizeOfUninitializedData := uDataSize;
 
   i := SizeOf(DWORD) +                   // NT signature
-    sizeof(fCoffHeader) + fCOFFHeader.SizeOfOptionalHeader +
+    SizeOf(FCOFFHeader) + FCOFFHeader.SizeOfOptionalHeader +
     codeSize;
 
   i := (i + addrAlign - 1) div addrAlign * addrAlign;
@@ -1100,9 +1107,9 @@ begin
   // doesn't do any harm making it $16000 instead, and the formula works for everything
   // else I've tested...
 
-  fOptionalHeader^.BaseOfData := fOptionalHeader.BaseOfCode + DWORD(i);
+  FOptionalHeader^.BaseOfData := FOptionalHeader.BaseOfCode + DWORD(i);
 
-  fOptionalHeader^.SizeOfImage := iSize;
+  FOptionalHeader^.SizeOfImage := iSize;
 end;
 
 (*----------------------------------------------------------------------*
@@ -1123,13 +1130,13 @@ begin
                                 // Find section with matching virt address.
   for i := 0 to ImageSectionCount - 1 do
     if (p^.VirtualAddress >=
-      ImageSection[i].fSectionHeader.VirtualAddress) and
-      (p^.VirtualAddress < ImageSection[i].fSectionHeader.VirtualAddress +
-      ImageSection[i].fSectionHeader.Misc.VirtualSize) then
+      ImageSection[i].FSectionHeader.VirtualAddress) and
+      (p^.VirtualAddress < ImageSection[i].FSectionHeader.VirtualAddress +
+      ImageSection[i].FSectionHeader.Misc.VirtualSize) then
      begin
       Result := i;
       offset := p^.VirtualAddress -
-        ImageSection[i].fSectionHeader.VirtualAddress;
+        ImageSection[i].FSectionHeader.VirtualAddress;
       break
      end
 end;
@@ -1141,7 +1148,7 @@ end;
  *----------------------------------------------------------------------*)
 function TPEModule.GetCOFFHeader: TImageFileHeader;
 begin
-  Result := fCoffHeader;
+  Result := FCOFFHeader;
 end;
 
 (*----------------------------------------------------------------------*
@@ -1156,7 +1163,7 @@ var
 begin
   if index < DataDictionaryCount then
    begin
-    p := @fOptionalHeader.DataDirectory[0];
+    p := @FOptionalHeader.DataDirectory[0];
     Inc(p, index);
     Result := p
    end
@@ -1171,7 +1178,7 @@ end;
  *----------------------------------------------------------------------*)
 function TPEModule.GetDataDictionaryCount: Integer;
 begin
-  Result := fOptionalHeader^.NumberOfRvaAndSizes
+  Result := FOptionalHeader^.NumberOfRvaAndSizes
 end;
 
 (*----------------------------------------------------------------------*
@@ -1181,7 +1188,7 @@ end;
  *----------------------------------------------------------------------*)
 function TPEModule.GetDOSHeader: TImageDosHeader;
 begin
-  Result := fDOSHeader;
+  Result := FDOSHeader;
 end;
 
 (*----------------------------------------------------------------------*
@@ -1199,7 +1206,7 @@ begin
   if Assigned(section) then
    begin
     ExportSection := PImageExportDirectory(
-      PChar(section.fRawData.memory) + offset);
+      PChar(section.FRawData.memory) + offset);
     Result := ExportSection^.NumberOfNames
    end
   else
@@ -1222,7 +1229,7 @@ begin
    begin
     Data := GetExportSectionData;
     ExportSection := PImageExportDirectory(
-      PChar(section.fRawData.memory) + offset);
+      PChar(section.FRawData.memory) + offset);
     po := DWORD(ExportSection^.AddressOfNameOrdinals);
     pw := PWORD(Data + po);
     Inc(pw, idx);
@@ -1253,13 +1260,13 @@ var
   offset: Integer;
 begin
   section := GetExportSection(offset);
-  Result := PChar(section.fRawData.Memory) -
-    section.fSectionHeader.VirtualAddress;
+  Result := PChar(section.FRawData.Memory) -
+    section.FSectionHeader.VirtualAddress;
 end;
 
 function TPEModule.GetImageSection(index: Integer): TImageSection;
 begin
-  Result := TImageSection(fSectionList[index]);
+  Result := TImageSection(FSectionList[index]);
 end;
 
 (*----------------------------------------------------------------------*
@@ -1269,7 +1276,7 @@ end;
  *----------------------------------------------------------------------*)
 function TPEModule.GetImageSectionCount: Integer;
 begin
-  Result := fSectionList.Count
+  Result := FSectionList.Count
 end;
 
 function DirValid(dir: PImageImportDirectory): boolean;
@@ -1296,7 +1303,7 @@ begin
   if Assigned(section) then
    begin
     ImportSection := PImageImportDirectory(
-      PChar(section.fRawData.memory) + offset);
+      PChar(section.FRawData.memory) + offset);
 
     while DirValid(ImportSection) and (idx > 0) do
      begin
@@ -1320,7 +1327,7 @@ begin
   if Assigned(section) then
    begin
     ImportSection := PImageImportDirectory(
-      PChar(section.fRawData.memory) + offset);
+      PChar(section.FRawData.memory) + offset);
 
     while DirValid(ImportSection) do
      begin
@@ -1347,13 +1354,13 @@ var
   offset: Integer;
 begin
   section := GetImportSection(offset);
-  Result := PChar(section.fRawData.Memory) -
-    section.fSectionHeader.VirtualAddress;
+  Result := PChar(section.FRawData.Memory) -
+    section.FSectionHeader.VirtualAddress;
 end;
 
 function TPEModule.GetOptionalHeader: TImageOptionalHeader;
 begin
-  Result := fOptionalHeader^
+  Result := FOptionalHeader^
 end;
 
 function TPEModule.GetResourceSection(var offset: Integer): TImageSection;
@@ -1426,108 +1433,109 @@ end;
  |                                                                      |
  | Save the module to a stream                                          |
  *----------------------------------------------------------------------*)
-procedure TPEModule.SaveToStream(s: TStream);
+procedure TPEModule.SaveToStream(Stream: TStream);
 var
-  NTSignature: DWORD;
-  i: Integer;
-  section: TImageSection;
-  paddingSize, paddingLen: Integer;
-  padding: PChar;
-  f: TMemoryStream;
-  oldCheckSum, newCheckSum: DWORD;
-  ntHeaders: PImageNTHEaders;
-  ckOffset: DWORD;
+  NTSignature : DWORD;
+  i           : Integer;
+  Section     : TImageSection;
+  PaddingSize : Integer;
+  PaddingLen  : Integer;
+  Padding     : PChar;
+  OldCheckSum : DWORD;
+  NewCheckSum : DWORD;
+  NtHeaders   : PImageNtHeaders;
+  CkOffset    : DWORD;
 begin
-  Encode;                       // Encode the data.
+ // Encode the data.
+ Encode;
 
-  NTSignature := IMAGE_NT_SIGNATURE;
+ NTSignature := IMAGE_NT_SIGNATURE;
 
-                                // Write the DOS stub
-  s.Write(fDOSHeader, sizeof(fDOSHeader));
-  s.CopyFrom(fDOSStub, 0);
+ // Write the DOS stub
+ Stream.Write(FDOSHeader, SizeOf(FDOSHeader));
+ Stream.CopyFrom(FDOSStub, 0);
 
-                                // Write NT sig and COFF header
-  s.Write(NTSignature, sizeof(NTSignature));
-  s.Write(fCOFFHeader, sizeof(fCOFFHeader));
-  ckOffset := s.Position + Integer(@fOptionalHeader^.CheckSum) -
-    Integer(@fOptionalHeader^);
-  s.Write(fOptionalHeader^, fCOFFHeader.SizeOfOptionalHeader);
+ // Write NT sig and COFF header
+ Stream.Write(NTSignature, SizeOf(NTSignature));
+ Stream.Write(FCOFFHeader, SizeOf(FCOFFHeader));
+ CkOffset := Stream.Position + Integer(@FOptionalHeader^.CheckSum) -
+   Integer(@FOptionalHeader^);
+ Stream.Write(FOptionalHeader^, FCOFFHeader.SizeOfOptionalHeader);
 
-                                // Write the section headers
-  for i := 0 to fSectionList.Count - 1 do
+                               // Write the Section headers
+ for i := 0 to FSectionList.Count - 1 do
+  begin
+   Section := TImageSection(FSectionList[i]);
+   Stream.Write(Section.FSectionHeader, SizeOf(Section.FSectionHeader))
+  end;
+
+ // Save the 'comment' Section.  See 'Decode' for details
+ if FCommentSize > 0
+  then Stream.Write(FCommentBlock^, FCommentSize);
+
+ // Write the sections
+ Padding := nil;
+ PaddingLen := 0;
+ try
+  for i := 0 to FSectionList.Count - 1 do
    begin
-    section := TImageSection(fSectionList[i]);
-    s.Write(section.fSectionHeader, sizeof(section.fSectionHeader))
-   end;
+    // Write Padding up to file offset of the Section
+    Section := TImageSection(FSectionList[i]);
+    PaddingSize := Section.FSectionHeader.PointerToRawData - DWORD(Stream.Position);
 
-  if fCommentSize > 0 then
-      // Save the 'comment' section.  See 'Decode' for details
-    s.Write(fCommentBlock^, fCommentSize);
-
-                                // Write the sections
-  padding := nil;
-  paddingLen := 0;
-   try
-    for i := 0 to fSectionList.Count - 1 do
+    if PaddingSize > PaddingLen then
      begin
-                                // Write padding up to file offset of the section
-      section := TImageSection(fSectionList[i]);
-      paddingSize := section.fSectionHeader.PointerToRawData -
-        DWORD(s.Position);
-
-      if paddingSize > paddingLen then
-       begin
-        paddingLen := paddingSize + 65536;
-        ReallocMem(padding, paddingLen);
-        ZeroMemory(padding, paddingLen);
-       end;
-
-      if paddingSize > 0 then   // Put our signature at the start of the first
-        s.Write(padding^, paddingSize);
-
-                                // Write the section data.
-      s.CopyFrom(section.fRawData, 0);
-
-                                // Write data
-      with section.fSectionHeader do
-        paddingSize := SizeOfRawData - misc.VirtualSize;
-
-                                // Pad data
-      if paddingSize > paddingLen then
-       begin
-        paddingLen := paddingSize + 65536;
-        ReallocMem(padding, paddingLen);
-        ZeroMemory(padding, paddingLen);
-       end;
-
-      if paddingSize > 0 then
-        s.Write(padding^, paddingSize)
-
+      PaddingLen := PaddingSize + 65536;
+      ReallocMem(Padding, PaddingLen);
+      ZeroMemory(Padding, PaddingLen);
      end;
 
-    if fEndCommentSize > 0 then  // Save the debug info.
-      s.Write(fEndComment^, fEndCommentSize)
-   finally
-    ReallocMem(padding, 0)
-   end;
+    // Put our signature at the start of the first
+    if PaddingSize > 0 then Stream.Write(Padding^, PaddingSize);
 
-  f := TMemoryStream.Create;    // Now calculate the checksum....
-   try
-    s.Seek(0, soFromBeginning);
-    f.LoadFromStream(s);
-    ntHeaders := ChecksumMappedFile(f.Memory, f.Size, @oldCheckSum,
-      @newCheckSum);
+    // Write the Section data.
+    Stream.CopyFrom(Section.FRawData, 0);
 
-    if Assigned(ntHeaders) then
+    // Write data
+    with Section.FSectionHeader
+     do PaddingSize := SizeOfRawData - misc.VirtualSize;
+
+    // Pad data
+    if PaddingSize > PaddingLen then
      begin
-      s.Seek(ckOffset, soFromBeginning);
-      s.Write(newChecksum, sizeof(newChecksum))
-     end
-   finally
-    f.Free
+      PaddingLen := PaddingSize + 65536;
+      ReallocMem(Padding, PaddingLen);
+      ZeroMemory(Padding, PaddingLen);
+     end;
+
+    if PaddingSize > 0
+     then Stream.Write(Padding^, PaddingSize)
    end;
 
-  s.Seek(0, soFromEnd);
+  // Save the debug info.
+  if FEndCommentSize > 0
+   then Stream.Write(FEndComment^, FEndCommentSize)
+ finally
+  ReallocMem(Padding, 0)
+ end;
+
+ // Now calculate the checksum....
+ with TMemoryStream.Create do
+  try
+   Stream.Seek(0, soFromBeginning);
+   LoadFromStream(Stream);
+   NtHeaders := ChecksumMappedFile(Memory, Size, @OldCheckSum, @NewCheckSum);
+
+   if Assigned(NtHeaders) then
+    begin
+     Stream.Seek(CkOffset, soFromBeginning);
+     Stream.Write(NewCheckSum, SizeOf(NewCheckSum))
+    end
+  finally
+   Free
+  end;
+
+ Stream.Seek(0, soFromEnd);
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -1542,34 +1550,34 @@ end;
 constructor TImageSection.Create(AParent: TPEModule;
   const AHeader: TImageSectionHeader; rawData: pointer);
 begin
-  fSectionHeader := AHeader;
-  fRawData := TMemoryStream.Create;
+  FSectionHeader := AHeader;
+  FRawData := TMemoryStream.Create;
 
 //  nb.  SizeOfRawData is usually bigger than VirtualSize because it's padded,
 //       and VirtualSize isn't.
 
 
-  if fSectionHeader.Misc.VirtualSize <= fSectionHeader.SizeOfRawData then
+  if FSectionHeader.Misc.VirtualSize <= FSectionHeader.SizeOfRawData then
    begin
 
 // Some linkers (?) set VirtualSize to 0 - which isn't correct.  Work round it.
 // (Encountered in MCL Link Lite HHT software )
 
-    if fSectionHeader.Misc.VirtualSize = 0 then
-      fSectionHeader.Misc.VirtualSize := fSectionHeader.SizeOfRawData;
-    fRawData.Write(rawData^, fSectionHeader.Misc.VirtualSize)
+    if FSectionHeader.Misc.VirtualSize = 0 then
+      FSectionHeader.Misc.VirtualSize := FSectionHeader.SizeOfRawData;
+    FRawData.Write(rawData^, FSectionHeader.Misc.VirtualSize)
    end
   else
 
 // nb.  If VirtualSize is bigger than SizeOfRawData it implies that extra padding is required.
 //      Save the amount, so we can get all the COFF header values right.  See 'Encode' above.
    begin
-    fRawData.Write(rawData^, fSectionHeader.SizeOfRawData);
-    fUninitializedDataSize :=
-      fSectionHeader.Misc.VirtualSize - fSectionHeader.SizeOfRawData;
+    FRawData.Write(rawData^, FSectionHeader.SizeOfRawData);
+    FUninitializedDataSize :=
+      FSectionHeader.Misc.VirtualSize - FSectionHeader.SizeOfRawData;
    end;
 
-  fParent := AParent;
+  FParent := AParent;
 end;
 
 (*----------------------------------------------------------------------*
@@ -1579,7 +1587,7 @@ end;
  *----------------------------------------------------------------------*)
 function TImageSection.GetSectionName: string;
 begin
-  Result := PChar(@fSectionHeader.Name)
+  Result := PChar(@FSectionHeader.Name)
 end;
 
 (*----------------------------------------------------------------------*
@@ -1589,7 +1597,7 @@ end;
  *----------------------------------------------------------------------*)
 destructor TImageSection.Destroy;
 begin
-  fRawData.Free;
+  FRawData.Free;
   inherited;
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -1610,7 +1618,7 @@ begin
   inherited;
   resourceNo := IndexOfResource(Res);
   if resourceNo <> -1 then
-    fDetailList.Delete(resourceNo);
+    FDetailList.Delete(resourceNo);
 end;
 
 (*----------------------------------------------------------------------*
@@ -1621,7 +1629,7 @@ end;
 constructor TPEResourceModule.Create;
 begin
   inherited Create;
-  fDetailList := TObjectList.Create;
+  FDetailList := TObjectList.Create;
 end;
 
 (*----------------------------------------------------------------------*
@@ -1631,7 +1639,7 @@ end;
  *----------------------------------------------------------------------*)
 destructor TPEResourceModule.Destroy;
 begin
-  fDetailList.Free;
+  FDetailList.Free;
   inherited;
 end;
 
@@ -1657,7 +1665,7 @@ var
       Result := IntToStr(n)
     else
      begin
-      p := PWideChar(PChar(section.fRawData.Memory) + (n and $7fffffff));
+      p := PWideChar(PChar(section.FRawData.Memory) + (n and $7fffffff));
       Result := ResourceWideCharToStr(p, CP_ACP)
      end
   end;
@@ -1673,12 +1681,12 @@ var
     details: TResourceDetails;
   begin
     table := PResourceDirectoryTable(
-      PChar(section.fRawData.memory) + offset);
+      PChar(section.FRawData.memory) + offset);
     with table^ do
       Count := cNameEntries + cIDEntries;
 
-    entry := PResourceDirectoryEntry(PChar(section.fRawData.memory) +
-      offset + sizeof(TResourceDirectoryTable));
+    entry := PResourceDirectoryEntry(PChar(section.FRawData.memory) +
+      offset + SizeOf(TResourceDirectoryTable));
     for i := 0 to Count - 1 do
      begin
       idOrName := i >= table^.cNameEntries;
@@ -1701,16 +1709,16 @@ var
       else
        begin
                                              // It's a leaf node - create resource details
-        dataEntry := PResourceDataEntry(PChar(section.fRawData.Memory) +
+        dataEntry := PResourceDataEntry(PChar(section.FRawData.Memory) +
           entry^.RVA);
         details := TResourceDetails.CreateResourceDetails(self,
-          lang, Name, tp, dataEntry^.Size, PChar(section.fRawData.Memory) +
-          dataEntry^.OffsetToData - section.fSectionHeader.VirtualAddress);
+          lang, Name, tp, dataEntry^.Size, PChar(section.FRawData.Memory) +
+          dataEntry^.OffsetToData - section.FSectionHeader.VirtualAddress);
         details.CodePage := dataEntry^.CodePage;
         details.Characteristics := table^.characteristics;
         details.DataVersion :=
           DWORD(table^.versionMajor) * 65536 + DWORD(table^.versionMinor);
-        fDetailList.Add(details);
+        FDetailList.Add(details);
 
        end;
 
@@ -1732,7 +1740,7 @@ end;
  *----------------------------------------------------------------------*)
 function TPEResourceModule.GetResourceCount: Integer;
 begin
-  Result := fDetailList.Count
+  Result := FDetailList.Count
 end;
 
 (*----------------------------------------------------------------------*
@@ -1743,7 +1751,7 @@ end;
 function TPEResourceModule.GetResourceDetails(idx: Integer):
 TResourceDetails;
 begin
-  Result := TResourceDetails(fDetailList[idx]);
+  Result := TResourceDetails(FDetailList[idx]);
 end;
 
 (*----------------------------------------------------------------------*
@@ -1753,7 +1761,7 @@ end;
  *----------------------------------------------------------------------*)
 function TPEResourceModule.IndexOfResource(details: TResourceDetails): Integer;
 begin
-  Result := fDetailList.IndexOf(details);
+  Result := FDetailList.IndexOf(details);
 end;
 
 (*----------------------------------------------------------------------*
@@ -1764,7 +1772,7 @@ end;
 procedure TPEResourceModule.InsertResource(idx: Integer;
   details: TResourceDetails);
 begin
-  fDetailList.Insert(idx, details);
+  FDetailList.Insert(idx, details);
 end;
 
 (*----------------------------------------------------------------------*
@@ -1798,24 +1806,24 @@ var
   var
     i: Integer;
   begin
-    Inc(nameOffset, sizeof(TResourceDirectoryTable));
-    Inc(deOffset, sizeof(TResourceDirectoryTable));
+    Inc(nameOffset, SizeOf(TResourceDirectoryTable));
+    Inc(deOffset, SizeOf(TResourceDirectoryTable));
 
     for i := 0 to node.Count - 1 do
      begin
-      Inc(nameOffset, sizeof(TResourceDirectoryEntry));
-      Inc(deOffset, sizeof(TResourceDirectoryEntry));
+      Inc(nameOffset, SizeOf(TResourceDirectoryEntry));
+      Inc(deOffset, SizeOf(TResourceDirectoryEntry));
 
       if not node.nodes[i].intID then
-        Inc(nameSize, Length(node.nodes[i].id) * sizeof(WideChar) +
-          sizeof(word));
+        Inc(nameSize, Length(node.nodes[i].id) * SizeOf(WideChar) +
+          SizeOf(word));
 
       if not node.nodes[i].leaf then
         GetNameTableSize(node.nodes[i].Next)
       else
        begin
-        Inc(nameOffset, sizeof(TResourceDataEntry));
-        Inc(deSize, sizeof(TResourceDataEntry));
+        Inc(nameOffset, SizeOf(TResourceDataEntry));
+        Inc(deSize, SizeOf(TResourceDataEntry));
         dataSize := (dataSize + DWORD(node.nodes[i].Data.Size) +
           3) div 4 * 4;
        end
@@ -1823,7 +1831,7 @@ var
   end;
 
   //------------------------------------------------------------------
-  // Save a node to section.fRawData (and save it's child nodes recursively)
+  // Save a node to section.FRawData (and save it's child nodes recursively)
 
   procedure SaveToSection(node: TResourceNode);
   var
@@ -1847,10 +1855,10 @@ var
         entry.Name := nameOffset + namePos + $80000000;
         w := node.nodes[i].id;
         wl := Length(node.nodes[i].id);
-        Move(wl, nameTable[namePos], sizeof(wl));
-        Inc(namePos, sizeof(wl));
-        Move(w[1], nameTable[namePos], wl * sizeof(WideChar));
-        Inc(namePos, wl * sizeof(WideChar))
+        Move(wl, nameTable[namePos], SizeOf(wl));
+        Inc(namePos, SizeOf(wl));
+        Move(w[1], nameTable[namePos], wl * SizeOf(WideChar));
+        Inc(namePos, wl * SizeOf(WideChar))
        end;
 
       if node.nodes[i].leaf then
@@ -1862,21 +1870,21 @@ var
         dataEntry^.Reserved := 0;
         dataEntry^.Size := node.nodes[i].Data.Size;
         dataEntry^.OffsetToData :=
-          dataOffset + dataPos + section.fSectionHeader.VirtualAddress;
+          dataOffset + dataPos + section.FSectionHeader.VirtualAddress;
 
         Move(node.nodes[i].Data.memory^, Data[dataPos], dataEntry^.Size);
 
-        Inc(dePos, sizeof(TResourceDataEntry));
+        Inc(dePos, SizeOf(TResourceDataEntry));
         dataPos := (dataPos + dataEntry^.size + 3) div 4 * 4;
-        section.fRawData.Write(entry, sizeof(entry));
+        section.FRawData.Write(entry, SizeOf(entry));
        end
       else                              // RVA points to another table.
        begin
         entry.RVA := $80000000 + tableOffset;
-        section.fRawData.Write(entry, sizeof(entry));
-        n := section.fRawData.Position;
+        section.FRawData.Write(entry, SizeOf(entry));
+        n := section.FRawData.Position;
         SaveToSection(node.nodes[i].Next);
-        section.fRawData.Seek(n, soFromBeginning);
+        section.FRawData.Seek(n, soFromBeginning);
        end
     end;
 
@@ -1895,11 +1903,11 @@ var
       else
         Inc(table.cNameEntries);
 
-    section.fRawData.Seek(tableOffset, soFromBeginning);
-    section.fRawData.Write(table, sizeof(table));
+    section.FRawData.Seek(tableOffset, soFromBeginning);
+    section.FRawData.Write(table, SizeOf(table));
 
-    tableOffset := tableOffset + sizeof(TResourceDirectoryTable) +
-      DWORD(node.Count) * sizeof(TResourceDirectoryEntry);
+    tableOffset := tableOffset + SizeOf(TResourceDirectoryTable) +
+      DWORD(node.Count) * SizeOf(TResourceDirectoryEntry);
 
                                         // The docs suggest that you save the nodes
                                         // with string entries first.  Goodness knows why,
@@ -1912,100 +1920,95 @@ var
       if node.nodes[i].intID then
         SaveNode(i);
 
-    section.fRawData.Seek(0, soFromEnd);
+    section.FRawData.Seek(0, soFromEnd);
   end;
 
 
 begin { Encode }
-  section := GetResourceSection(offset);
+ section := GetResourceSection(offset);
 
-                                        // Get the details in a tree structure
-  root := nil;
-  Data := nil;
-  deTable := nil;
-  zeros := nil;
+ // Get the details in a tree structure
+ root := nil;
+ Data := nil;
+ deTable := nil;
+ zeros := nil;
 
-   try
-    for i := 0 to fDetailList.Count - 1 do
-     begin
-      details := TResourceDetails(fDetailList.Items[i]);
-      if root = nil then
-        root := TResourceNode.Create(details.ResourceType,
-          details.ResourceName, details.ResourceLanguage, details.Data,
-          details.CodePage)
-      else
-        root.Add(details.ResourceType, details.ResourceName,
-          details.ResourceLanguage, details.Data, details.CodePage)
-     end;
+ try
+  for i := 0 to FDetailList.Count - 1 do
+   begin
+    details := TResourceDetails(FDetailList.Items[i]);
+    if root = nil
+     then root := TResourceNode.Create(details.ResourceType,
+            details.ResourceName, details.ResourceLanguage, details.Data,
+            details.CodePage)
+     else root.Add(details.ResourceType, details.ResourceName,
+            details.ResourceLanguage, details.Data, details.CodePage)
+   end;
 
-                                          // Save elements of their original EXE
-    versMajor := PResourceDirectoryTable(
-      section.fRawData.Memory)^.versionMajor;
-    versMinor := PResourceDirectoryTable(
-      section.fRawData.Memory)^.versionMinor;
-    TimeStamp := PResourceDirectoryTable(
-      section.fRawData.Memory)^.timeDateStamp;
+  // Save elements of their original EXE
+  versMajor := PResourceDirectoryTable(section.FRawData.Memory)^.versionMajor;
+  versMinor := PResourceDirectoryTable(section.FRawData.Memory)^.versionMinor;
+  TimeStamp := PResourceDirectoryTable(section.FRawData.Memory)^.timeDateStamp;
 
 
-    section.fRawData.Clear;
-               // Clear the data.  We're gonna recreate
-                                          // it from our resource details.
+  // Clear the data.  We're gonna recreate  it from our resource details.
+  Section.FRawData.Clear;
 
-    nameSize := 0;
-    nameOffset := offset;
-    deSize := 0;
-    deOffset := offset;
-    dataSize := 0;
+  nameSize := 0;
+  nameOffset := offset;
+  deSize := 0;
+  deOffset := offset;
+  dataSize := 0;
 
-    GetNameTableSize(root);              // Calculate sizes and offsets of the
-                                          // name table, the data entry table and
-                                          // the size of the data.
+  GetNameTableSize(root);              // Calculate sizes and offsets of the
+                                       // name table, the data entry table and
+                                       // the size of the data.
 
                                           // Calculate the data offset.  Must be aligned.
-    dataOffset := (nameOffset + nameSize + 15) div 16 * 16;
+  DataOffset := (nameOffset + nameSize + 15) div 16 * 16;
 
-                                          // Initialize globals...
-    namePos := 0;
-//   Offset of next entry in the string table
-    dePos := 0;
-//   Offset of next entry in the data entry table
-    dataPos := 0;                         //   Offset of next data block.
-    tableOffset := 0;
-                     //   Offset of next TResourceDirectoryTable
+  // Initialize globals...
 
+  // Offset of next entry in the string table
+  namePos := 0;
+  // Offset of next entry in the data entry table
+  dePos := 0;
+  // Offset of next data block.
+  dataPos := 0;
+  // Offset of next TResourceDirectoryTable
+  tableOffset := 0;
 
-    GetMem(nameTable, nameSize);         // Allocate buffers for tables
-    GetMem(Data, dataSize);
-    GetMem(deTable, deSize);
+  GetMem(nameTable, nameSize);         // Allocate buffers for tables
+  GetMem(Data, dataSize);
+  GetMem(deTable, deSize);
 
-    SaveToSection(root);               // Do the work.
+  SaveToSection(root);               // Do the work.
 
-                                        // Save the tables
-    section.fRawData.Write(deTable^, deSize);
-    section.fRawData.Write(nameTable^, nameSize);
+  // Save the tables
+  section.FRawData.Write(deTable^, deSize);
+  section.FRawData.Write(nameTable^, nameSize);
 
-                                        // Add padding so the data goes on a
-                                        // 16 byte boundary.
-    if DWORD(section.fRawData.Position) < dataOffset then
-     begin
-      GetMem(zeros, dataOffset - DWORD(section.fRawData.Position));
-      ZeroMemory(zeros, dataOffset - DWORD(section.fRawData.Position));
-      section.fRawData.Write(zeros^, dataOffset -
-        DWORD(section.fRawData.Position))
-     end;
+  // Add padding so the data goes on a
+  // 16 byte boundary.
+  if DWORD(section.FRawData.Position) < dataOffset then
+   begin
+    GetMem(zeros, dataOffset - DWORD(section.FRawData.Position));
+    ZeroMemory(zeros, dataOffset - DWORD(section.FRawData.Position));
+    section.FRawData.Write(zeros^, dataOffset - DWORD(section.FRawData.Position))
+   end;
 
-                                        // Write the data.
-    section.fRawData.Write(Data^, dataSize);
+  // Write the data.
+  section.FRawData.Write(Data^, dataSize);
 
-    inherited; // **** Must call inherited !
+  inherited; // **** Must call inherited !
 
-   finally       // Tidy up.
-    ReallocMem(zeros, 0);
-    FreeMem(nameTable);
-    FreeMem(deTable);
-    FreeMem(Data);
-    root.Free
-   end
+ finally       // Tidy up.
+  ReallocMem(zeros, 0);
+  FreeMem(nameTable);
+  FreeMem(deTable);
+  FreeMem(Data);
+  FreeAndNil(root);
+ end
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -2141,12 +2144,12 @@ end;
 
 function TPEResourceModule.AddResource(details: TResourceDetails): Integer;
 begin
-  Result := fDetailList.Add(details);
+  Result := FDetailList.Add(details);
 end;
 
 procedure TPEResourceModule.SortResources;
 begin
-  fDetailList.Sort(compareDetails);
+  FDetailList.Sort(compareDetails);
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 

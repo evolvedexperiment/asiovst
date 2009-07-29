@@ -305,7 +305,7 @@ type
     FDataType             : TSEPlugDataType;
     FVariablePtr          : Pointer;
     FAutoDuplicatePlugVar : TAutoduplicatePlugData; // Holds pointer to buffer (auto duplicate plugs only)
-    FOnStatusupdate       : TSEPinStatusUpdateEvent;
+    FOnStatusUpdate       : TSEPinStatusUpdateEvent;
     function GetIsConnected: Boolean;
     function GetValue: Single;
   protected
@@ -329,7 +329,7 @@ type
     // for audio plugs only
     property ValueNonAudio: TAutoduplicatePlugData read FAutoDuplicatePlugVar;
 
-    property OnStatusupdate: TSEPinStatusUpdateEvent read FOnStatusupdate write FOnStatusupdate;
+    property OnStatusupdate: TSEPinStatusUpdateEvent read FOnStatusUpdate write FOnStatusUpdate;
   end;
 
   TSEPins = array of TSEPin;
@@ -350,6 +350,7 @@ type
     FOnInputStatusChange     : TSEInputStateChangedEvent;
     FOnGuiNotify             : TSEGuiNotifyEvent;
     FOnVoiceReset            : TSEVoiceResetEvent;
+    FOnProgramChange: TNotifyEvent;
 
     function GetEffect: PSE2ModStructBase;
     function GetSampleClock: Cardinal;
@@ -416,6 +417,7 @@ type
     property OnProcess: TSE2ProcessEvent read FOnProcessEvent write SetProcess;
     property OnEvent: TSE2EventEvent read FOnEventEvent write FOnEventEvent;
     property OnMidiData: TSEMidiDataEvent read FOnMidiData write FOnMidiData;
+    property OnProgramChange: TNotifyEvent read FOnProgramChange write FOnProgramChange;
     property OnSampleRateChange: TNotifyEvent read FOnSampleRateChangeEvent write FOnSampleRateChangeEvent;
     property OnBlockSizeChange: TNotifyEvent read FOnBlockSizeChangeEvent write FOnBlockSizeChangeEvent;
     property OnPlugStateChange: TSEPlugStateChangeEvent read FOnPlugStateChangeEvent write FOnPlugStateChangeEvent;
@@ -434,6 +436,7 @@ procedure SE2Event(ModuleBase: TSEModuleBase; Event: PSEEvent); cdecl;
 
 // handy function to fix denormals.
 procedure KillDenormal(var Sample: Single);
+
 function IOFlagToString(IOFlag: TSEIOFlag): string;
 function IOFlagsToString(IOFlags: TSEIOFlags): string;
 function PropertyFlagsToString(Flags: TUgFlags): string;
@@ -511,6 +514,7 @@ end;
 
 procedure TSEPin.StatusUpdate(AStatus: TSEStateType);
 begin
+ if assigned(FOnStatusUpdate) then FOnStatusUpdate(Self, AStatus);
  FStatus := AStatus;
  Module.PlugStateChange(Self);
  if AStatus = stOneOff // one-offs need re-set once processed
@@ -910,7 +914,8 @@ begin
       GuiNotify( Event.IntParamA, (void * ) Event.IntParamB );
       free( (void * ) Event.IntParamB ); // free memory block
       break;*)
-  uetProgChange: ; // do nothing
+  uetProgChange: if assigned(FOnProgramChange)
+                  then FOnProgramChange(Self);
   uetMIDI : MidiData(Event.TimeStamp, Event.IntParamA, Event.IntParamB);
   else; // assert(false); // un-handled event
  end;
