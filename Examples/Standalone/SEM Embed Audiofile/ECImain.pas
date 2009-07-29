@@ -10,7 +10,7 @@ type
   TFmSemEmbedAudioFile = class(TForm)
     ListBox: TListBox;
     MainMenu: TMainMenu;
-    MIAddIR: TMenuItem;
+    MIAddWAV: TMenuItem;
     MIExit: TMenuItem;
     MIFile: TMenuItem;
     MIOpenSEM: TMenuItem;
@@ -23,7 +23,7 @@ type
     SaveDialogSEM: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure MIAddIRClick(Sender: TObject);
+    procedure MIAddWAVClick(Sender: TObject);
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenSEMClick(Sender: TObject);
     procedure MISaveAsClick(Sender: TObject);
@@ -71,7 +71,7 @@ begin
     FSEModule.LoadFromFile(FileName);
 
     for i := 0 to FSEModule.ResourceCount - 1 do
-     if FSEModule.ResourceDetails[i].ResourceType = 'Wavetable'
+     if FSEModule.ResourceDetails[i].ResourceType = 'WAVETABLE'
       then ListBox.Items.Add(FSEModule.ResourceDetails[i].ResourceName);
 
     FFileName := FileName;
@@ -100,7 +100,18 @@ begin
   else MISave.Enabled := False;
 end;
 
-procedure TFmSemEmbedAudioFile.MIAddIRClick(Sender: TObject);
+function RemoveFileExt(Filename: TFileName): TFileName;
+var
+  DotPos : Integer;
+begin
+ result := Filename;
+ DotPos := Pos('.', result);
+ if DotPos > 0
+  then result := Copy(result, 1, DotPos - 1);
+ result := Uppercase(result); 
+end;
+
+procedure TFmSemEmbedAudioFile.MIAddWAVClick(Sender: TObject);
 var
   i  : Integer;
   RD : TResourceDetails;
@@ -113,7 +124,8 @@ begin
       try
        ListBox.Items.Add(ExtractFileName(Files[i]));
        LoadFromFile(Files[i]);
-       RD := TResourceDetails.CreateResourceDetails(FSEModule, 0, ExtractFileName(Files[i]), 'Wavetable', Size, Memory);
+       RD := TResourceDetails.CreateResourceDetails(FSEModule, 0,
+         RemoveFileExt(ExtractFileName(Files[i])), 'WAVETABLE', Size, Memory);
        FSEModule.AddResource(RD);
       finally
        Free;

@@ -2,7 +2,7 @@ object FmSemEmbedAudioFile: TFmSemEmbedAudioFile
   Left = 286
   Top = 77
   Caption = 'SEM Embed Audio File'
-  ClientHeight = 150
+  ClientHeight = 169
   ClientWidth = 307
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,7 +20,7 @@ object FmSemEmbedAudioFile: TFmSemEmbedAudioFile
     Left = 0
     Top = 0
     Width = 307
-    Height = 150
+    Height = 169
     Align = alClient
     ItemHeight = 13
     TabOrder = 0
@@ -46,9 +46,9 @@ object FmSemEmbedAudioFile: TFmSemEmbedAudioFile
       object N2: TMenuItem
         Caption = '-'
       end
-      object MIAddIR: TMenuItem
-        Caption = 'Add IR...'
-        OnClick = MIAddIRClick
+      object MIAddWAV: TMenuItem
+        Caption = 'Add Audio File...'
+        OnClick = MIAddWAVClick
       end
       object N1: TMenuItem
         Caption = '-'

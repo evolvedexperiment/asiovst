@@ -816,7 +816,7 @@ end;
 function FastTrunc(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Value - 0.5);
+ result := Round(Value - CHalf64);
 end;
 {$ELSE}
 asm
@@ -829,7 +829,7 @@ end;
 function FastTrunc(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Value - 0.5);
+ result := Round(Value - CHalf64);
 end;
 {$ELSE}
 asm

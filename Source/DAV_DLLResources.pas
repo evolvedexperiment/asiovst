@@ -28,9 +28,9 @@ type
     procedure ClearDirty;
   public
     procedure DeleteResource(idx: Integer); virtual;
-    procedure InsertResource(idx: Integer; details: TResourceDetails); virtual; abstract;
-    function AddResource(details: TResourceDetails): Integer; virtual;
-    function IndexOfResource(details: TResourceDetails): Integer; virtual; abstract;
+    procedure InsertResource(idx: Integer; Details: TResourceDetails); virtual; abstract;
+    function AddResource(Details: TResourceDetails): Integer; virtual;
+    function IndexOfResource(Details: TResourceDetails): Integer; virtual; abstract;
     function GetUniqueResourceName(const tp: WideString): WideString;
 
     procedure SaveToStream(Stream: TStream); virtual;
@@ -70,9 +70,9 @@ type
     FDirty                 : Boolean;
     FTag                   : Integer;
     procedure SetResourceType(const Value: WideString);
-                                           // Resource header characteristics
+                                           // Resource header Characteristics
   protected
-    constructor Create(AParent: TResourceModule; ALanguage: Integer; const AName, AType: WideString; ASize: Integer; AData: pointer); virtual;
+    constructor Create(AParent: TResourceModule; ALanguage: Integer; const AName, AType: WideString; ASize: Integer; AData: Pointer); virtual;
     procedure InitNew; virtual;
     procedure SetResourceName(const Value: WideString); virtual;
     class function SupportsRCData(const AName: string; Size: Integer; Data: Pointer): Boolean; virtual;
@@ -165,9 +165,9 @@ type
     function GetCOFFHeader: TImageFileHeader;
     function GetExportCount: Integer;
     function GetImportCount: Integer;
-    function GetResourceSection(var offset: Integer): TImageSection;
-    function GetImportSection(var offset: Integer): TImageSection;
-    function GetExportSection(var offset: Integer): TImageSection;
+    function GetResourceSection(var Offset: Integer): TImageSection;
+    function GetImportSection(var Offset: Integer): TImageSection;
+    function GetExportSection(var Offset: Integer): TImageSection;
     function GetImport(idx: Integer): PImageImportDirectory;
     function GetImportSectionData: PChar;
     function GetExportSectionData: PChar;
@@ -176,7 +176,7 @@ type
     procedure Decode(memory: pointer; exeSize: Integer); virtual;
     procedure Encode; virtual;
     property OptionalHeaderPtr: PImageOptionalHeader read FOptionalHeader;
-    function FindDictionaryEntrySection(entryNo: Integer; var offset: Integer): Integer;
+    function FindDictionaryEntrySection(entryNo: Integer; var Offset: Integer): Integer;
   public
     constructor Create;
     destructor Destroy; override;
@@ -212,12 +212,12 @@ type
   ////////////////////////////////////
 
   TResourceDirectoryTable = packed record
-    characteristics : DWORD; // Resource flags, reserved for future use; currently set to zero.
-    timeDateStamp   : DWORD; // Time the resource data was created by the resource compiler.
-    versionMajor    : WORD;  // Major version number, set by the user.
-    versionMinor    : WORD;  // Minor version number.
-    cNameEntries    : WORD;  // Number of directory entries, immediately following the table, that use strings to identify Type, Name, or Language (depending on the level of the table).
-    cIDEntries      : WORD;  // Number of directory entries, immediately following the Name entries, that use numeric identifiers for Type, Name, or Language.
+    Characteristics : DWORD; // Resource flags, reserved for future use; currently set to zero.
+    TimeDateStamp   : DWORD; // Time the resource data was created by the resource compiler.
+    VersionMajor    : WORD;  // Major version number, set by the user.
+    VersionMinor    : WORD;  // Minor version number.
+    CNameEntries    : WORD;  // Number of directory entries, immediately following the Table, that use strings to identify Type, Name, or Language (depending on the level of the Table).
+    CIDEntries      : WORD;  // Number of directory entries, immediately following the Name entries, that use numeric identifiers for Type, Name, or Language.
   end;
   PResourceDirectoryTable = ^TResourceDirectoryTable;
 
@@ -226,8 +226,8 @@ type
   //////////////////////
 
   TResourceDirectoryEntry = packed record
-    Name : DWORD; // RVA Address of integer or string that gives the Type, Name, or Language identifier, depending on level of table.
-    RVA  : DWORD; // RVA High bit 0. Address of a Resource Data Entry (a leaf).
+    Name : DWORD; // RVA Address of integer or string that gives the Type, Name, or Language identifier, depending on level of Table.
+    RVA  : DWORD; // RVA High bit 0. Address of a Resource Data Entry (a Leaf).
                   // RVA High bit 1. Lower 31 bits are the address of another Resource Directory Table (the next level down).
   end;
   PResourceDirectoryEntry = ^TResourceDirectoryEntry;
@@ -266,9 +266,9 @@ type
     property ResourceCount: Integer read GetResourceCount;
     property ResourceDetails[idx: Integer]: TResourceDetails read GetResourceDetails;
     procedure DeleteResource(resourceNo: Integer); override;
-    procedure InsertResource(idx: Integer; details: TResourceDetails); override;
-    function AddResource(details: TResourceDetails): Integer; override;
-    function IndexOfResource(details: TResourceDetails): Integer; override;
+    procedure InsertResource(idx: Integer; Details: TResourceDetails); override;
+    function AddResource(Details: TResourceDetails): Integer; override;
+    function IndexOfResource(Details: TResourceDetails): Integer; override;
     procedure SortResources; override;
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -301,10 +301,10 @@ resourcestring
 type
   TResourceNode = class
     Count: Integer;
-    nodes: array of record
-      id: string;
-      intID: boolean;
-      case leaf: boolean of
+    Nodes: array of record
+      Id: string;
+      IntID: boolean;
+      case Leaf: boolean of
         False: (Next: TResourceNode);
         True: (Data: TMemoryStream;
           CodePage: DWORD)
@@ -320,122 +320,133 @@ type
     destructor Destroy; override;
   end;
 
-(*----------------------------------------------------------------------------*
- | procedure ResourceWideCharToStr ()                                         |
- |                                                                            |
- | Convert Pascal-style WideChar array to a string                            |
- |                                                                            |
- | Parameters:                                                                |
- |   WStr : PWChar             The characters                                 |
- |   codePage : Integer        Code page to use in conversion                 |
- *----------------------------------------------------------------------------*)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure ResourceWideCharToStr ()                                        //
+//                                                                            //
+//  Convert Pascal-style WideChar array to a string                           //
+//                                                                            //
+//  Parameters:                                                               //
+//    WStr : PWChar             The characters                                //
+//    codePage : Integer        Code page to use in conversion                //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function ResourceWideCharToStr(var wstr: PWideChar; codePage: Integer): string;
 var
-  len: word;
+  Len: word;
 begin
-  len := word(wstr^);
-  SetLength(Result, len);
+  Len := word(wstr^);
+  SetLength(Result, Len);
   Inc(wstr);
   WideCharToMultiByte(codePage, 0, WStr, Len, PChar(Result),
     Len + 1, nil, nil);
-  Inc(wstr, len);
+  Inc(wstr, Len);
   Result := PChar(Result);
 end;
 
-(*----------------------------------------------------------------------------*
- | procedure ResourceWideCharToWideStr ()                                     |
- |                                                                            |
- | Convert Pascal-style WideChar array to a WideString                        |
- |                                                                            |
- | Parameters:                                                                |
- |   WStr : PWChar             The characters                                 |
- *----------------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure ResourceWideCharToWideStr ()                                    //
+//                                                                            //
+//  Convert Pascal-style WideChar array to a WideString                       //
+//                                                                            //
+//  Parameters:                                                               //
+//    WStr : PWChar             The characters                                //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function ResourceWideCharToWideStr(var wstr: PWideChar): WideString;
 var
-  len: word;
+  Len: word;
 begin
-  len := word(wstr^);
-  SetLength(Result, len);
+  Len := word(wstr^);
+  SetLength(Result, Len);
   Inc(wstr);
-  Move(wstr^, PWideChar(Result)^, len * SizeOf(WideChar));
-  Inc(wstr, len);
+  Move(wstr^, PWideChar(Result)^, Len * SizeOf(WideChar));
+  Inc(wstr, Len);
 end;
 
-(*----------------------------------------------------------------------------*
- | procedure ResourceStrToWideChar ()                                         |
- |                                                                            |
- | Convert a string to a Pascal style Wide char array                         |
- |                                                                            |
- | Parameters:                                                                |
- |   s : string                The string                                     |
- |   var p : PWideChar         [in]  Points to the start of the receiving buf |
- |                             [out] Points after the characters.             |
- |   codePage : Integer        Code page to use in conversion                 |
- *----------------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+// procedure ResourceStrToWideChar ()                                         //
+//                                                                            //
+// Convert a string to a Pascal style Wide char array                         //
+//                                                                            //
+// Parameters:                                                                //
+//   s : string                The string                                     //
+//   var p : PWideChar         [in]  Points to the start of the receiving buf //
+//                             [out] Points after the characters.             //
+//   codePage : Integer        Code page to use in conversion                 //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 procedure ResourceStrToWideChar(const s: string; var p: PWideChar;
   codePage: Integer);
 var
-  buffer: PWideChar;
-  len, size: word;
+  Buffer: PWideChar;
+  Len, Size: word;
 begin
-  len := Length(s);
-  size := (Length(s) + 1) * SizeOf(WideChar);
-  GetMem(buffer, size);
+  Len := Length(s);
+  Size := (Length(s) + 1) * SizeOf(WideChar);
+  GetMem(Buffer, Size);
    try
-    MultiByteToWideChar(codePage, 0, PChar(s), -1, buffer, size);
-    p^ := WideChar(len);
+    MultiByteToWideChar(codePage, 0, PChar(s), -1, Buffer, Size);
+    p^ := WideChar(Len);
     Inc(p);
-    Move(buffer^, p^, len * SizeOf(WideChar));
-    Inc(p, len)
+    Move(Buffer^, p^, Len * SizeOf(WideChar));
+    Inc(p, Len)
    finally
-    FreeMem(buffer)
+    FreeMem(Buffer)
    end
 end;
 
-(*----------------------------------------------------------------------------*
- | procedure ResourceWideStrToWideChar ()                                     |
- |                                                                            |
- | Convert a wide string to a Pascal style Wide char array                    |
- |                                                                            |
- | Parameters:                                                                |
- |   s : string                The string                                     |
- |   var p : PWideChar         [in]  Points to the start of the receiving buf |
- |                             [out] Points after the characters.             |
- *----------------------------------------------------------------------------*)
+////////////////////////////////////////////////////////////////////////////////
+// procedure ResourceWideStrToWideChar ()                                     //
+//                                                                            //
+// Convert a wide string to a Pascal style Wide char array                    //
+//                                                                            //
+// Parameters:                                                                //
+//   s : string                The string                                     //
+//   var p : PWideChar         [in]  Points to the start of the receiving buf //
+//                             [out] Points after the characters.             //
+////////////////////////////////////////////////////////////////////////////////
 procedure ResourceWideStrToWideChar(const s: WideString; var p: PWideChar);
 var
-  len: word;
+  Len: word;
 begin
-  len := Length(s);
-  p^ := WideChar(len);
+  Len := Length(s);
+  p^ := WideChar(Len);
   Inc(p);
-  Move(PWideChar(s)^, p^, len * SizeOf(WideChar));
-  Inc(p, len)
+  Move(PWideChar(s)^, p^, Len * SizeOf(WideChar));
+  Inc(p, Len)
 end;
 
-(*----------------------------------------------------------------------*
- | procedure ResourceNameToInt                                          |
- |                                                                      |
- | Get integer value of resource name (or type).  Return -1 if it's     |
- | not numeric.                                                         |
- *----------------------------------------------------------------------*)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure ResourceNameToInt                                               //
+//                                                                            //
+//  Get integer value of resource name (or type).  Return -1 if it's not      //
+//  numeric.                                                                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 function ResourceNameToInt(const s: string): Integer;
 var
   isNumeric: Boolean;
   i: Integer;
 begin
-  isNumeric := Length(s) > 0;
-  for i := 1 to Length(s) do
-    if not (s[i] in ['0'..'9']) then
-     begin
-      isNumeric := False;
-      break
-     end;
+ isNumeric := Length(s) > 0;
+ for i := 1 to Length(s) do
+  if not (s[i] in ['0'..'9']) then
+   begin
+    isNumeric := False;
+    break
+   end;
 
-  if isNumeric then
-    Result := StrToInt(s)
-  else
-    Result := -1
+ if isNumeric
+  then Result := StrToInt(s)
+  else Result := -1
 end;
 
 function WideResourceNameToInt(const s: WideString): Integer;
@@ -443,16 +454,20 @@ begin
   Result := ResourceNameToInt(s);
 end;
 
-(*----------------------------------------------------------------------*
- | function CompareDetails                                              |
- |                                                                      |
- | 'Compare' function used when sorting resources.  p1 and p2 must be   |
- | TResourceDetails references.  Returns > 0 if details at p1 are >     |
- | details at p2.                                                       |
- |                                                                      |
- | *  Compare resource types.  If they match then compare names.        |
- | *  'Integer' ids or names must come *after* non integer ids or names.|
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function CompareDetails                                                   //
+//                                                                            //
+//  'Compare' function used when sorting resources.  p1 and p2 must be        //
+//  TResourceDetails references.  Returns > 0 if Details at p1 are >          //
+//  Details at p2.                                                            //
+//                                                                            //
+//   *  Compare resource types.  If they match then compare names.            //
+//   *  'Integer' ids or names must come *after* non integer ids or names.    //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function CompareDetails(p1, p2: Pointer): Integer;
 var
   d1: TResourceDetails;
@@ -466,40 +481,39 @@ begin
   i2 := ResourceNameToInt(d2.ResourceType);
 
   if i1 >= 0 then
-    if i2 >= 0 then
-      Result := i1 - i2         // Compare two integer ids
-    else
-      Result := 1               // id1 is int, so it's greater than non-int id2
+   if i2 >= 0
+    then Result := i1 - i2 // Compare two integer ids
+    else Result := 1       // id1 is int, so it's greater than non-int id2
   else
-  if i2 >= 0 then
-    Result := -1              // id2 is int, so it's less than non-int id1
-  else
-                                // Compare two string resource ids
-    Result := CompareText(d1.ResourceType, d2.ResourceType);
+   if i2 >= 0
+    then Result := -1      // id2 is int, so it's less than non-int id1
+    else Result := CompareText(d1.ResourceType, d2.ResourceType); // Compare two string resource ids
 
-  if Result = 0 then            // If they match, do the same with the names
+  if Result = 0 then        // If they match, do the same with the names
    begin
     i1 := ResourceNameToInt(d1.ResourceName);
     i2 := ResourceNameToInt(d2.ResourceName);
 
     if i1 >= 0 then
-      if i2 >= 0 then
-        Result := i1 - i2
-      else
-        Result := 1
+     if i2 >= 0
+      then Result := i1 - i2
+      else Result := 1
     else
-    if i2 >= 0 then
-      Result := -1
-    else
-      Result := CompareText(d1.ResourceName, d2.ResourceName)
+     if i2 >= 0
+      then Result := -1
+      else Result := CompareText(d1.ResourceName, d2.ResourceName)
    end
 end;
 
-(*----------------------------------------------------------------------*
- | function LCIDTOCodePage                                              |
- |                                                                      |
- | Get the ANSI code page for a given language ID                       |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function LCIDTOCodePage                                                   //
+//                                                                            //
+//  Get the ANSI code page for a given language Id                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function LCIDToCodePage(ALcid: LCID): Integer;
 var
   Buffer: array [0..6] of Char;
@@ -511,39 +525,51 @@ end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 {$IFDEF DELPHI10_UP} {$region 'TResourceDetails implementation'} {$ENDIF}
+
 { TResourceDetails }
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.BeforeDelete                                        |
- |                                                                      |
- | Can override this to clear up before deleting.  Eg. deleting an      |
- | icon removes it from the icon group it's in.  Deleting an icon group |
- | removes the individual icon resources, etc.                          |
- *----------------------------------------------------------------------*)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.BeforeDelete                                             //
+//                                                                            //
+//  Can override this to clear up before deleting.  Eg. deleting an           //
+//  icon removes it from the icon group it's in.  Deleting an icon group      //
+//  removes the individual icon resources, etc.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceDetails.BeforeDelete;
 begin
   // Stub
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.ChangeData                                          |
- |                                                                      |
- | Change all the data.  Handy for implementing 'undo', etc.            |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.ChangeData                                               //
+//                                                                            //
+//  Change all the data.  Handy for implementing 'undo', etc.                 //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceDetails.ChangeData(newData: TMemoryStream);
 begin
   FData.Clear;
   FData.CopyFrom(newData, 0);
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.Create                                              |
- |                                                                      |
- | Raw - protected - constructor for resource details.                  |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.Create                                                   //
+//                                                                            //
+//  Raw - protected - constructor for resource Details.                       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 constructor TResourceDetails.Create(AParent: TResourceModule;
   ALanguage: Integer; const AName, AType: WideString; ASize: Integer;
-  AData: pointer);
+  AData: Pointer);
 begin
   FParent := AParent;
   FResourceLanguage := ALanguage;
@@ -551,17 +577,20 @@ begin
   FResourceName := AName;
   FResourceType := AType;
   FData := TMemoryStream.Create;
-  if AData <> nil then
-    FData.Write(AData^, ASize)
-  else
-    InitNew
+  if AData <> nil
+   then FData.Write(AData^, ASize)
+   else InitNew;
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.CreateNew                                           |
- |                                                                      |
- | Constructor to be used when adding new resources to a module.        |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.CreateNew                                                //
+//                                                                            //
+//  Constructor to be used when adding new resources to a module.             //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 constructor TResourceDetails.CreateNew(AParent: TResourceModule;
   ALanguage: Integer; const aName: WideString);
 begin
@@ -576,9 +605,13 @@ begin
   InitNew
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.CreateResourceDetails                               |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.CreateResourceDetails                                    //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 class function TResourceDetails.CreateResourceDetails(
   AParent: TResourceModule;
   ALanguage: Integer; const AName, AType: WideString; ASize: Integer;
@@ -587,41 +620,57 @@ begin
  Result := TResourceDetails.Create(AParent, ALanguage, AName, AType, ASize, AData)
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.Destroy                                             |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.Destroy                                                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 destructor TResourceDetails.Destroy;
 begin
   FData.Free;
   inherited;
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.GetBaseType                                         |
- |                                                                      |
- | Return the base type for the resource details.  This is overridden   |
- | in derived classes.                                                  |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.GetBaseType                                              //
+//                                                                            //
+//  Return the base type for the resource Details.  This is overridden        //
+//  in derived classes.                                                       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 class function TResourceDetails.GetBaseType: WideString;
 begin
   Result := '0';
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.InitNew                                             |
- |                                                                      |
- | Override this to initialize a new resource being added to a module.  |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.InitNew                                                  //
+//                                                                            //
+//  Override this to initialize a new resource being added to a module.       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceDetails.InitNew;
 begin
 // Stub
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.SetResourceName                                     |
- |                                                                      |
- | Set the resource name.                                               |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.SetResourceName                                          //
+//                                                                            //
+//  Set the resource name.                                                    //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceDetails.SetResourceName(const Value: WideString);
 begin
   if FResourceName <> Value then
@@ -640,24 +689,32 @@ begin
    end
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.SupportsData                                        |
- |                                                                      |
- | Can be overridden to support a custom resource class, where you can  |
- | determine the custom class from the data - eg. RIFF data, etc.       |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.SupportsData                                             //
+//                                                                            //
+//  Can be overridden to support a custom resource class, where you can       //
+//  determine the custom class from the data - eg. RIFF data, etc.            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 class function TResourceDetails.SupportsData(Size: Integer;
   Data: Pointer): Boolean;
 begin
   Result := False; // stub
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceDetails.SupportsData                                        |
- |                                                                      |
- | Can be overridden to support RC data where you can determine the     |
- | type from the data and name - eg. the Delphi splash screen JPEG      |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceDetails.SupportsData                                             //
+//                                                                            //
+//  Can be overridden to support RC data where you can determine the          //
+//  type from the data and name - eg. the Delphi splash screen JPEG           //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 class function TResourceDetails.SupportsRCData(const AName: string;
   Size: Integer; Data: Pointer): Boolean;
 begin
@@ -669,7 +726,7 @@ end;
 {$IFDEF DELPHI10_UP} {$region 'TResourceModule implementation'} {$ENDIF}
 { TResourceModule }
 
-function TResourceModule.AddResource(details: TResourceDetails): Integer;
+function TResourceModule.AddResource(Details: TResourceDetails): Integer;
 begin
   Result := -1
  // Stub
@@ -684,24 +741,32 @@ begin
     ResourceDetails[i].Dirty := False
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceModule.DeleteResource                                       |
- |                                                                      |
- | Must be overridden to remove the resource details object from        |
- | wherever it's stored.  The overriding method must call               |
- | inherited                                                            |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceModule.DeleteResource                                            //
+//                                                                            //
+//  Must be overridden to remove the resource Details object from             //
+//  wherever it's stored.  The overriding method must call                    //
+//  inherited                                                                 //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceModule.DeleteResource(idx: Integer);
 begin
   FDirty := True;
   ResourceDetails[idx].BeforeDelete;
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceModule.FindResource                                         |
- |                                                                      |
- | Find a resource with a given type/name                               |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceModule.FindResource                                              //
+//                                                                            //
+//  Find a resource with a given type/name                                    //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TResourceModule.FindResource(const tp, Name: WideString;
   ALanguage: Integer): TResourceDetails;
 var
@@ -728,15 +793,19 @@ begin
        end
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceModule.GetDirty                                             |
- |                                                                      |
- | Returns true if the module or it's resources are 'dirty'             |
- |                                                                      |
- | nb. FDirty is only set if resources have been deleted.               |
- |     After adding a resource make sure the resource's Dirty is set to |
- |     true.                                                            |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceModule.GetDirty                                                  //
+//                                                                            //
+//  Returns true if the module or it's resources are 'dirty'                  //
+//                                                                            //
+//  nb. FDirty is only set if resources have been deleted.                    //
+//      After adding a resource make sure the resource's Dirty is set to      //
+//      true.                                                                 //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TResourceModule.GetDirty: Boolean;
 var
   i: Integer;
@@ -751,64 +820,75 @@ begin
        end
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceModule.GetUniqueResourceName                                |
- |                                                                      |
- | Generate a unique resource name for a given type.  Names start at    |
- | 1 (though string lists downgrade that to '0')                        |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceModule.GetUniqueResourceName                                     //
+//                                                                            //
+//  Generate a unique resource name for a given type.  Names start at         //
+//  1 (though string lists downgrade that to '0')                             //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TResourceModule.GetUniqueResourceName(
   const tp: WideString): WideString;
 var
-  i: Integer;
-  n, n1: Integer;
-  details: TResourceDetails;
+  i       : Integer;
+  n, n1   : Integer;
+  Details : TResourceDetails;
 begin
   n := 0;
 
   for i := 0 to ResourceCount - 1 do
    begin
-    details := ResourceDetails[i];
-    if details.ResourceType = tp then
+    Details := ResourceDetails[i];
+    if Details.ResourceType = tp then
      begin
-      n1 := ResourceNametoInt(details.ResourceName);
-      if n1 > n then
-        n := n1
+      n1 := ResourceNametoInt(Details.ResourceName);
+      if n1 > n then n := n1
      end
    end;
 
   Result := IntToStr(n + 1);
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceModule.LoadFromFile                                         |
- |                                                                      |
- | Load from file.  This can be overriden but usually isn't as it       |
- | relies on LoadFromStream, which must be.                             |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceModule.LoadFromFile                                              //
+//                                                                            //
+//  Load from file.  This can be overriden but usually isn't as it            //
+//  relies on LoadFromStream, which must be.                                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceModule.LoadFromFile(const FileName: string);
 var
   s: TFileStream;
 begin
-  s := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
-   try
-    LoadFromStream(s);
-   finally
-    s.Free
-   end;
+ s := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
+ try
+  LoadFromStream(s);
+ finally
+  s.Free
+ end;
 end;
 
 procedure TResourceModule.LoadFromStream(stream: TStream);
 begin
-  raise Exception.Create(rstNoStreaming);
+ raise Exception.Create(rstNoStreaming);
 end;
 
-(*----------------------------------------------------------------------*
- | TResourceModule.SaveToFile                                           |
- |                                                                      |
- | Save to file.  This can be overriden but usually isn't as it         |
- | relies on SaveToStream, which must be.                               |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  TResourceModule.SaveToFile                                                //
+//                                                                            //
+//  Save to file.  This can be overriden but usually isn't as it              //
+//  relies on SaveToStream, which must be.                                    //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TResourceModule.SaveToFile(const FileName: string);
 var
   s: TFileStream;
@@ -866,11 +946,16 @@ end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 {$IFDEF DELPHI10_UP} {$region 'TPEModule implementation'} {$ENDIF}
-(*----------------------------------------------------------------------*
- | constructor TPEModule.Create                                          |
- |                                                                      |
- | Constructor for TPEModule instance.  Create empty section list       |
- *----------------------------------------------------------------------*)
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  constructor TPEModule.Create                                              //
+//                                                                            //
+//  Constructor for TPEModule instance.  Create empty Section list            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 constructor TPEModule.Create;
 begin
   inherited Create;
@@ -878,15 +963,19 @@ begin
   FDOSStub := TMemoryStream.Create;
 end;
 
-(*----------------------------------------------------------------------*
- | procedure TPEModule.Decode                                            |
- |                                                                      |
- | Decode the PE file.  Load the DOS header, the COFF header and the    |
- | 'optional' header, then load each section into FSectionList          |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEModule.Decode                                                // 
+//                                                                            //
+//  Decode the PE file.  Load the DOS header, the COFF header and the         //
+//  'optional' header, then load each Section into FSectionList               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEModule.Decode(Memory: pointer; exeSize: Integer);
 var
-  offset: LongInt;
+  Offset: LongInt;
   i: Integer;
   sectionHeader: PImageSectionHeader;
   commentOffset: Integer;
@@ -900,24 +989,24 @@ begin
                                 // Load the DOS header
   FDOSHeader := PImageDosHeader(Memory)^;
 
-  offset := FDOSHeader._lfanew;
+  Offset := FDOSHeader._lfanew;
   FDOSStub.Write((PChar(Memory) + SizeOf(FDOSHeader))^,
     FDOSHeader._lfanew - SizeOf(FDOSHeader));
 
                                 // Check the COFF signature
-  if PDWORD(PChar(Memory) + offset)^ <> IMAGE_NT_SIGNATURE then
+  if PDWORD(PChar(Memory) + Offset)^ <> IMAGE_NT_SIGNATURE then
     raise EPEException.Create(rstInvalidCOFFSignature);
 
                                 // Load the COFF header
-  Inc(offset, SizeOf(DWORD));
-  FCOFFHeader := PImageFileHEader(PChar(Memory) + offset)^;
+  Inc(Offset, SizeOf(DWORD));
+  FCOFFHeader := PImageFileHEader(PChar(Memory) + Offset)^;
 
-  Inc(offset, SizeOf(FCOFFHeader));
+  Inc(Offset, SizeOf(FCOFFHeader));
 
                                 // Check the Optional Header signature.  nb
                                 // the optional header is compulsory for
                                 // 32 bit windows modules!
-  if PWORD(PChar(Memory) + offset)^ <> IMAGE_NT_OPTIONAL_HDR_MAGIC then
+  if PWORD(PChar(Memory) + Offset)^ <> IMAGE_NT_OPTIONAL_HDR_MAGIC then
     raise EPEException.Create(rstInvalidOptionalHeader);
 
                                 // Save the 'optional' header
@@ -925,14 +1014,14 @@ begin
   Move((PChar(Memory) + Offset)^, FOptionalHeader^,
     FCOFFHeader.SizeOfOptionalHeader);
 
-  Inc(offset, FCOFFHeader.SizeOfOptionalHeader);
+  Inc(Offset, FCOFFHeader.SizeOfOptionalHeader);
 
-  sectionHeader := PImageSectionHeader(PChar(memory) + offset);
-  commentOffset := offset + FCOFFHeader.NumberOfSections *
+  sectionHeader := PImageSectionHeader(PChar(memory) + Offset);
+  commentOffset := Offset + FCOFFHeader.NumberOfSections *
     SizeOf(TImageSectionHeader);
 
-// Save padding between the end of the section headers, and the start of the
-// 1st section.  TDump reports this as 'comment', and it seems to be important
+// Save padding between the end of the Section headers, and the start of the
+// 1st Section.  TDump reports this as 'comment', and it seems to be important
 // to MS clock.exe...
 
   FCommentSize := Integer(sectionHeader^.PointerToRawData) - commentOffset;
@@ -942,18 +1031,18 @@ begin
     GetMem(FCommentBlock, FCommentSize);
     Move((PChar(memory) + commentOffset)^, FCommentBlock^, FCommentSize)
    end;
-                                // Now save each image section in the FSectionList
+                                // Now save each image Section in the FSectionList
   for i := 0 to FCOFFHeader.NumberOfSections - 1 do
    begin
-    sectionHeader := PImageSectionHeader(PChar(memory) + offset);
+    sectionHeader := PImageSectionHeader(PChar(memory) + Offset);
     FSectionList.Add(TImageSection.Create(self, sectionHeader^,
       PChar(memory) + sectionHeader^.PointertoRawData));
-    Inc(offset, SizeOf(TImageSectionHeader));
+    Inc(Offset, SizeOf(TImageSectionHeader));
    end;
 
   i := sectionHeader^.PointerToRawData + sectionHeader^.SizeOfRawData;
 
-// Save the padding between the last section and the end of the file.
+// Save the padding between the last Section and the end of the file.
 // This appears to hold debug info and things ??
 
   FEndCommentSize := exeSize - i;
@@ -964,11 +1053,15 @@ begin
    end
 end;
 
-(*----------------------------------------------------------------------*
- | destructor TPEModule.Destroy                                          |
- |                                                                      |
- | Destructor for TPEModule instance.                                   |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  destructor TPEModule.Destroy                                              //
+//                                                                            //
+//  Destructor for TPEModule instance.                                        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 destructor TPEModule.Destroy;
 begin
   ReallocMem(FOptionalHeader, 0);
@@ -979,18 +1072,22 @@ begin
   inherited;
 end;
 
-(*----------------------------------------------------------------------*
- | procedure TPEModule.Encode                                            |
- |                                                                      |
- | Fix up the data prior to writing to stream.                          |
- |                                                                      |
- | Ensure that the headers match what we've got...                      |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEModule.Encode                                                //
+//                                                                            //
+//  Fix up the data prior to writing to stream.                               //
+//                                                                            //
+//  Ensure that the headers match what we've got...                           //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEModule.Encode;
 var
-  offset: DWORD;
+  Offset: DWORD;
   i: Integer;
-  section: TImageSection;
+  Section: TImageSection;
   align: Integer;
   addrAlign: Integer;
   address: Integer;
@@ -1007,21 +1104,21 @@ begin
   FCOFFHeader.NumberOfSections := FSectionList.Count;
 
   iSize := FDOSHeader._lfanew +
-               // File offset for start of sections
+               // File Offset for start of sections
     SizeOf(DWORD) +                   // NT signature
     SizeOf(FCOFFHeader) +
     FCOFFHeader.SizeOfOptionalHeader + FSectionList.Count *
     SizeOf(TImageSectionHeader);
 
-  offset := iSize + FCommentSize;
+  Offset := iSize + FCommentSize;
 
   align := FOptionalHeader^.FileAlignment;
   addrAlign := FOptionalHeader^.SectionAlignment;
 
   address := addrAlign;
-  offset := DWORD((integer(offset) + align - 1) div align * align);
+  Offset := DWORD((integer(Offset) + align - 1) div align * align);
 
-                                                // First section starts at $1000 (when loaded)
+                                                // First Section starts at $1000 (when loaded)
                                                 // and at 'offset' in file.
 
   FOptionalHeader^.SizeOfHeaders :=
@@ -1036,36 +1133,36 @@ begin
     addrAlign * addrAlign);
 
   for i := 0 to FSectionList.Count - 1 do
-      // Recalculate the section offsets
+      // Recalculate the Section offsets
    begin
-    section := TImageSection(FSectionList[i]);
+    Section := TImageSection(FSectionList[i]);
 
-    section.FSectionHeader.PointerToRawData := offset;
-    section.FSectionHeader.VirtualAddress := address;
+    Section.FSectionHeader.PointerToRawData := Offset;
+    Section.FSectionHeader.VirtualAddress := address;
 
-// Virtual size is size of data in memory, and is not padded to an 'alignment'.
+// Virtual Size is Size of data in memory, and is not padded to an 'alignment'.
 
-// SizeOfRawData is size of data in file, padded to (file) alignment.
+// SizeOfRawData is Size of data in file, padded to (file) alignment.
 
 // 1.  If VirtualSize < SizeOfRawData, that's simply because the raw data is aligned, and virt data isn't.
 
-// 2.  If VirtualSize > SizeOfRawData, the additional memory is filled with zeros when it's loaded.
+// 2.  If VirtualSize > SizeOfRawData, the additional memory is filled with Zeros when it's loaded.
 
 // Because SizeOfRawData is padded it's impossible to tell how much Virtual Memory is really required.
 
 // We do our best by saving the original difference in '2.' above in fUninitializeDataSize
 
-    section.FSectionHeader.Misc.VirtualSize :=
-      section.FRawData.Size + section.FUninitializedDataSize;
-    section.FSectionHeader.SizeOfRawData :=
-      (section.FRawData.Size + align - 1) div align * align;
+    Section.FSectionHeader.Misc.VirtualSize :=
+      Section.FRawData.Size + Section.FUninitializedDataSize;
+    Section.FSectionHeader.SizeOfRawData :=
+      (Section.FRawData.Size + align - 1) div align * align;
 
-    alignedSize := (Integer(section.FSectionHeader.Misc.VirtualSize) +
+    alignedSize := (Integer(Section.FSectionHeader.Misc.VirtualSize) +
       align - 1) div align * align;
-    addrAlignedSize := (Integer(section.FSectionHeader.Misc.VirtualSize) +
+    addrAlignedSize := (Integer(Section.FSectionHeader.Misc.VirtualSize) +
       addrAlign - 1) div addrAlign * addrAlign;
 
-    if (section.FSectionHeader.Characteristics and
+    if (Section.FSectionHeader.Characteristics and
       IMAGE_SCN_MEM_EXECUTE) <> 0 then
      begin
       Inc(codeSize, alignedSize);
@@ -1073,17 +1170,17 @@ begin
         FOptionalHeader^.BaseOfCode := address
      end
     else
-    if (section.FSectionHeader.Characteristics and
+    if (Section.FSectionHeader.Characteristics and
       IMAGE_SCN_CNT_INITIALIZED_DATA) <> 0 then
       Inc(iDataSize, alignedSize)
     else
-    if (section.FSectionHeader.Characteristics and
+    if (Section.FSectionHeader.Characteristics and
       IMAGE_SCN_CNT_UNINITIALIZED_DATA) <> 0 then
       Inc(uDataSize, alignedSize);
 
     Inc(iSize, addrAlignedSize);
-    Inc(offset, section.FSectionHeader.SizeOfRawData);
-    Inc(address, (Integer(section.FSectionHeader.Misc.VirtualSize) +
+    Inc(Offset, Section.FSectionHeader.SizeOfRawData);
+    Inc(address, (Integer(Section.FSectionHeader.Misc.VirtualSize) +
       addrAlign - 1) div addrAlign * addrAlign);
    end;
 
@@ -1112,22 +1209,26 @@ begin
   FOptionalHeader^.SizeOfImage := iSize;
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.FindDictionaryEntrySection                         |
- |                                                                      |
- | Return the index of the specified section.  The 'entryNo' to find    |
- | should be a 'IMAGE_DIRECTORY_ENTRY_xxxx' constant defined in         |
- | Windows.pas.                                                         |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.FindDictionaryEntrySection                             //
+//                                                                            //
+//  Return the index of the specified Section.  The 'entryNo' to find         //
+//  should be a 'IMAGE_DIRECTORY_ENTRY_xxxx' constant defined in              //
+//  Windows.pas.                                                              // 
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.FindDictionaryEntrySection(entryNo: Integer;
-  var offset: Integer): Integer;
+  var Offset: Integer): Integer;
 var
   i: Integer;
   p: PImageDataDirectory;
 begin
   Result := -1;
   p := DataDictionary[entryNo];
-                                // Find section with matching virt address.
+                                // Find Section with matching virt address.
   for i := 0 to ImageSectionCount - 1 do
     if (p^.VirtualAddress >=
       ImageSection[i].FSectionHeader.VirtualAddress) and
@@ -1135,28 +1236,36 @@ begin
       ImageSection[i].FSectionHeader.Misc.VirtualSize) then
      begin
       Result := i;
-      offset := p^.VirtualAddress -
+      Offset := p^.VirtualAddress -
         ImageSection[i].FSectionHeader.VirtualAddress;
       break
      end
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetCOFFHeader                                     |
- |                                                                      |
- | Return COFF header                                                   |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetCOFFHeader                                          // 
+//                                                                            //
+//  Return COFF header                                                        // 
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetCOFFHeader: TImageFileHeader;
 begin
   Result := FCOFFHeader;
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetDataDictionary                                 |
- |                                                                      |
- | Return the data dictionary for a specified                           |
- | IMAGE_DIRECTORY_ENTRY_xxxx  index                                    |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetDataDictionary                                      //
+//                                                                            //
+//  Return the data dictionary for a specified                                //
+//  IMAGE_DIRECTORY_ENTRY_xxxx  index                                         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetDataDictionary(index: Integer): PImageDataDirectory;
 var
   p: PImageDataDirectory;
@@ -1171,42 +1280,54 @@ begin
     raise ERangeError.Create(rstBadDictionaryIndex);
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetDataDictionaryCount                            |
- |                                                                      |
- | Return no of entries in the Data Directory                           |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetDataDictionaryCount                                 //
+//                                                                            //
+//  Return no of entries in the Data Directory                                //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetDataDictionaryCount: Integer;
 begin
   Result := FOptionalHeader^.NumberOfRvaAndSizes
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetDosHeader                                      |
- |                                                                      |
- | Return DOS header                                                    |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetDosHeader                                           // 
+//                                                                            //
+//  Return DOS header                                                         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetDOSHeader: TImageDosHeader;
 begin
   Result := FDOSHeader;
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetImageSection () : TImageSection                |
- |                                                                      |
- | Get the specified image section                                      |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetImageSection () : TImageSection                     // 
+//                                                                            //
+//  Get the specified image Section                                           //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetExportCount: Integer;
 var
   ExportSection: PImageExportDirectory;
-  section: TImageSection;
-  offset: Integer;
+  Section: TImageSection;
+  Offset: Integer;
 begin
-  section := GetExportSection(offset);
-  if Assigned(section) then
+  Section := GetExportSection(Offset);
+  if Assigned(Section) then
    begin
     ExportSection := PImageExportDirectory(
-      PChar(section.FRawData.memory) + offset);
+      PChar(Section.FRawData.memory) + Offset);
     Result := ExportSection^.NumberOfNames
    end
   else
@@ -1217,19 +1338,19 @@ procedure TPEModule.GetExportDetails(idx: Integer; var Name: string;
   var ordinal: DWORD);
 var
   ExportSection: PImageExportDirectory;
-  section: TImageSection;
-  offset: Integer;
+  Section: TImageSection;
+  Offset: Integer;
   po: DWORD;
   pw: PWORD;
   p: PDWORD;
   Data: PChar;
 begin
-  section := GetExportSection(offset);
-  if Assigned(section) then
+  Section := GetExportSection(Offset);
+  if Assigned(Section) then
    begin
     Data := GetExportSectionData;
     ExportSection := PImageExportDirectory(
-      PChar(section.FRawData.memory) + offset);
+      PChar(Section.FRawData.memory) + Offset);
     po := DWORD(ExportSection^.AddressOfNameOrdinals);
     pw := PWORD(Data + po);
     Inc(pw, idx);
@@ -1242,12 +1363,12 @@ begin
    end
 end;
 
-function TPEModule.GetExportSection(var offset: Integer): TImageSection;
+function TPEModule.GetExportSection(var Offset: Integer): TImageSection;
 var
   idx: Integer;
 begin
-  offset := 0;
-  idx := FindDictionaryEntrySection(IMAGE_DIRECTORY_ENTRY_EXPORT, offset);
+  Offset := 0;
+  idx := FindDictionaryEntrySection(IMAGE_DIRECTORY_ENTRY_EXPORT, Offset);
   if idx = -1 then
     Result := nil
   else
@@ -1256,12 +1377,12 @@ end;
 
 function TPEModule.GetExportSectionData: PChar;
 var
-  section: TImageSection;
-  offset: Integer;
+  Section: TImageSection;
+  Offset: Integer;
 begin
-  section := GetExportSection(offset);
-  Result := PChar(section.FRawData.Memory) -
-    section.FSectionHeader.VirtualAddress;
+  Section := GetExportSection(Offset);
+  Result := PChar(Section.FRawData.Memory) -
+    Section.FSectionHeader.VirtualAddress;
 end;
 
 function TPEModule.GetImageSection(index: Integer): TImageSection;
@@ -1269,11 +1390,15 @@ begin
   Result := TImageSection(FSectionList[index]);
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetImageSectionCount                              |
- |                                                                      |
- | Return no of image sections                                          |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetImageSectionCount                                   //
+//                                                                            //
+//  Return no of image sections                                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetImageSectionCount: Integer;
 begin
   Result := FSectionList.Count
@@ -1286,24 +1411,28 @@ begin
     (dir^.FirstThunk <> 0)
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEModule.GetImageSectionCount                              |
- |                                                                      |
- | Get the optional header                                              |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEModule.GetImageSectionCount                                   //
+//                                                                            //
+//  Get the optional header                                                   //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEModule.GetImport(idx: Integer): PImageImportDirectory;
 var
   ImportSection: PImageImportDirectory;
-  section: TImageSection;
-  offset: Integer;
+  Section: TImageSection;
+  Offset: Integer;
 
 begin
-  section := GetImportSection(offset);
+  Section := GetImportSection(Offset);
   Result := nil;
-  if Assigned(section) then
+  if Assigned(Section) then
    begin
     ImportSection := PImageImportDirectory(
-      PChar(section.FRawData.memory) + offset);
+      PChar(Section.FRawData.memory) + Offset);
 
     while DirValid(ImportSection) and (idx > 0) do
      begin
@@ -1319,15 +1448,15 @@ end;
 function TPEModule.GetImportCount: Integer;
 var
   ImportSection: PImageImportDirectory;
-  section: TImageSection;
-  offset: Integer;
+  Section: TImageSection;
+  Offset: Integer;
 begin
-  section := GetImportSection(offset);
+  Section := GetImportSection(Offset);
   Result := 0;
-  if Assigned(section) then
+  if Assigned(Section) then
    begin
     ImportSection := PImageImportDirectory(
-      PChar(section.FRawData.memory) + offset);
+      PChar(Section.FRawData.memory) + Offset);
 
     while DirValid(ImportSection) do
      begin
@@ -1337,11 +1466,11 @@ begin
    end
 end;
 
-function TPEModule.GetImportSection(var offset: Integer): TImageSection;
+function TPEModule.GetImportSection(var Offset: Integer): TImageSection;
 var
   idx: Integer;
 begin
-  idx := FindDictionaryEntrySection(IMAGE_DIRECTORY_ENTRY_IMPORT, offset);
+  idx := FindDictionaryEntrySection(IMAGE_DIRECTORY_ENTRY_IMPORT, Offset);
   if idx = -1 then
     Result := nil
   else
@@ -1350,12 +1479,12 @@ end;
 
 function TPEModule.GetImportSectionData: PChar;
 var
-  section: TImageSection;
-  offset: Integer;
+  Section: TImageSection;
+  Offset: Integer;
 begin
-  section := GetImportSection(offset);
-  Result := PChar(section.FRawData.Memory) -
-    section.FSectionHeader.VirtualAddress;
+  Section := GetImportSection(Offset);
+  Result := PChar(Section.FRawData.Memory) -
+    Section.FSectionHeader.VirtualAddress;
 end;
 
 function TPEModule.GetOptionalHeader: TImageOptionalHeader;
@@ -1363,22 +1492,25 @@ begin
   Result := FOptionalHeader^
 end;
 
-function TPEModule.GetResourceSection(var offset: Integer): TImageSection;
+function TPEModule.GetResourceSection(var Offset: Integer): TImageSection;
 var
   idx: Integer;
 begin
-  idx := FindDictionaryEntrySection(IMAGE_DIRECTORY_ENTRY_RESOURCE, offset);
-  if idx = -1 then
-    Result := nil
-  else
-    Result := ImageSection[idx]
+  idx := FindDictionaryEntrySection(IMAGE_DIRECTORY_ENTRY_RESOURCE, Offset);
+  if idx = -1
+   then Result := nil
+   else Result := ImageSection[idx]
 end;
 
-(*----------------------------------------------------------------------*
- | procedure TPEModule.LoadFromFile                                     |
- |                                                                      |
- | Load the module from a file                                          |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEModule.LoadFromFile                                          //
+//                                                                            //
+//  Load the module from a file                                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEModule.LoadFromFile(const Name: string);
 var
   f: TFileStream;
@@ -1391,11 +1523,15 @@ begin
    end
 end;
 
-(*----------------------------------------------------------------------*
- | procedure TPEModule.LoadFromFile                                     |
- |                                                                      |
- | Load the module from a stream                                        |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEModule.LoadFromFile                                          //
+//                                                                            //
+//  Load the module from a stream                                             //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEModule.LoadFromStream(s: TStream);
 var
   m: TMemoryStream;
@@ -1404,17 +1540,21 @@ begin
    try
     m.CopyFrom(s, 0);
 
-    Decode(m.memory, m.size)
+    Decode(m.memory, m.Size)
    finally
     m.Free
    end
 end;
 
-(*----------------------------------------------------------------------*
- | procedure TPEModule.SaveToFile                                       |
- |                                                                      |
- | Save the module to a file                                            |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEModule.SaveToFile                                            //
+//                                                                            //
+//  Save the module to a file                                                 //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 (*
 procedure TPEModule.SaveToFile(const name: string);
 var
@@ -1428,11 +1568,15 @@ begin
   end
 end;
 *)
-(*----------------------------------------------------------------------*
- | procedure TPEModule.SaveToStream                                     |
- |                                                                      |
- | Save the module to a stream                                          |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEModule.SaveToStream                                          //
+//                                                                            //
+//  Save the module to a stream                                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEModule.SaveToStream(Stream: TStream);
 var
   NTSignature : DWORD;
@@ -1469,7 +1613,7 @@ begin
    Stream.Write(Section.FSectionHeader, SizeOf(Section.FSectionHeader))
   end;
 
- // Save the 'comment' Section.  See 'Decode' for details
+ // Save the 'comment' Section.  See 'Decode' for Details
  if FCommentSize > 0
   then Stream.Write(FCommentBlock^, FCommentSize);
 
@@ -1479,7 +1623,7 @@ begin
  try
   for i := 0 to FSectionList.Count - 1 do
    begin
-    // Write Padding up to file offset of the Section
+    // Write Padding up to file Offset of the Section
     Section := TImageSection(FSectionList[i]);
     PaddingSize := Section.FSectionHeader.PointerToRawData - DWORD(Stream.Position);
 
@@ -1542,11 +1686,15 @@ end;
 {$IFDEF DELPHI10_UP} {$region 'TImageSection implementation'} {$ENDIF}
 { TImageSection }
 
-(*----------------------------------------------------------------------*
- | constructor TImageSection.Create                                     |
- |                                                                      |
- | Constructor for TImageSection.                                       |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  constructor TImageSection.Create                                          //
+//                                                                            //
+//  Constructor for TImageSection.                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 constructor TImageSection.Create(AParent: TPEModule;
   const AHeader: TImageSectionHeader; rawData: pointer);
 begin
@@ -1580,21 +1728,29 @@ begin
   FParent := AParent;
 end;
 
-(*----------------------------------------------------------------------*
- | function TImageSection.GetSectionName                                |
- |                                                                      |
- | Return the section name - eg. .data                                  |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TImageSection.GetSectionName                                     //
+//                                                                            //
+//  Return the Section name - eg. .data                                       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TImageSection.GetSectionName: string;
 begin
   Result := PChar(@FSectionHeader.Name)
 end;
 
-(*----------------------------------------------------------------------*
- | destructor TImageSection.Destroy                                     |
- |                                                                      |
- | destructor for TImageSection.                                        |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  destructor TImageSection.Destroy                                          //
+//                                                                            //
+//  destructor for TImageSection.                                             //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 destructor TImageSection.Destroy;
 begin
   FRawData.Free;
@@ -1603,13 +1759,17 @@ end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 {$IFDEF DELPHI10_UP} {$region 'TPEResourceModule implementation'} {$ENDIF}
+
 { TPEResourceModule }
 
-(*----------------------------------------------------------------------*
- | procedure TPEResourceModule.DeleteResource                           |
- |                                                                      |
- | Delete the specified resource (by index)                             |
- *----------------------------------------------------------------------*)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  procedure TPEResourceModule.DeleteResource                                //
+//                                                                            //
+//  Delete the specified resource (by index)                                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEResourceModule.DeleteResource(resourceNo: Integer);
 var
   res: TResourceDetails;
@@ -1621,42 +1781,54 @@ begin
     FDetailList.Delete(resourceNo);
 end;
 
-(*----------------------------------------------------------------------*
- | constructor TPEResourceModule.Create                                 |
- |                                                                      |
- | Constructor for TPEResourceModule                                    |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  constructor TPEResourceModule.Create                                      //
+//                                                                            //
+//  Constructor for TPEResourceModule                                         // 
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 constructor TPEResourceModule.Create;
 begin
   inherited Create;
   FDetailList := TObjectList.Create;
 end;
 
-(*----------------------------------------------------------------------*
- | destructor TPEResourceModule.Destroy                                 |
- |                                                                      |
- | Destructor for TPEResourceModule                                     |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  destructor TPEResourceModule.Destroy                                      // 
+//                                                                            //
+//  Destructor for TPEResourceModule                                          // 
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 destructor TPEResourceModule.Destroy;
 begin
   FDetailList.Free;
   inherited;
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEResourceModule.Decode                                    |
- |                                                                      |
- | Decode the section's resource tree into a list of resource details   |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEResourceModule.Decode                                         //
+//                                                                            //
+//  Decode the Section's resource tree into a list of resource details        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEResourceModule.Decode;
 var
-  section: TImageSection;
+  Section: TImageSection;
   tp, Name: string;
   lang: Integer;
-  offset: Integer;
+  Offset: Integer;
 
   // Get string resource name
-  function GetResourceStr(IdorName: boolean; section: TImageSection;
+  function GetResourceStr(IdorName: boolean; Section: TImageSection;
     n: DWORD): string;
   var
     p: PWideChar;
@@ -1665,345 +1837,367 @@ var
       Result := IntToStr(n)
     else
      begin
-      p := PWideChar(PChar(section.FRawData.Memory) + (n and $7fffffff));
+      p := PWideChar(PChar(Section.FRawData.Memory) + (n and $7fffffff));
       Result := ResourceWideCharToStr(p, CP_ACP)
      end
   end;
 
   // (recursively) get resources
-  procedure GetResource(offset, level: Integer);
+  procedure GetResource(Offset, level: Integer);
   var
-    entry: PResourceDirectoryEntry;
+    Entry: PResourceDirectoryEntry;
     i, Count: Integer;
     IDorName: boolean;
-    dataEntry: PResourceDataEntry;
-    table: PResourceDirectoryTable;
-    details: TResourceDetails;
+    DataEntry: PResourceDataEntry;
+    Table: PResourceDirectoryTable;
+    Details: TResourceDetails;
   begin
-    table := PResourceDirectoryTable(
-      PChar(section.FRawData.memory) + offset);
-    with table^ do
-      Count := cNameEntries + cIDEntries;
+    Table := PResourceDirectoryTable(
+      PChar(Section.FRawData.memory) + Offset);
+    with Table^ do
+      Count := CNameEntries + CIDEntries;
 
-    entry := PResourceDirectoryEntry(PChar(section.FRawData.memory) +
-      offset + SizeOf(TResourceDirectoryTable));
+    Entry := PResourceDirectoryEntry(PChar(Section.FRawData.memory) +
+      Offset + SizeOf(TResourceDirectoryTable));
     for i := 0 to Count - 1 do
      begin
-      idOrName := i >= table^.cNameEntries;
+      idOrName := i >= Table^.CNameEntries;
       case level of
-        0 : tp := GetResourceStr(IDOrName, section, entry^.Name);
+        0 : tp := GetResourceStr(IDOrName, Section, Entry^.Name);
         1 :
-          Name := GetResourceStr(IDOrName, section, entry^.Name);
+          Name := GetResourceStr(IDOrName, Section, Entry^.Name);
         2 :
          begin
           if not IdOrName then
             raise EPEException.Create(rstBadLangID);
 
-          lang := entry^.Name
+          lang := Entry^.Name
          end
        end;
 
-      if (entry^.RVA and $80000000) > 0 then
- // Not a leaf node - traverse the tree
-        GetResource(entry^.RVA and $7fffffff, level + 1)
+      if (Entry^.RVA and $80000000) > 0 then
+ // Not a Leaf node - traverse the tree
+        GetResource(Entry^.RVA and $7fffffff, level + 1)
       else
        begin
                                              // It's a leaf node - create resource details
-        dataEntry := PResourceDataEntry(PChar(section.FRawData.Memory) +
-          entry^.RVA);
-        details := TResourceDetails.CreateResourceDetails(self,
-          lang, Name, tp, dataEntry^.Size, PChar(section.FRawData.Memory) +
-          dataEntry^.OffsetToData - section.FSectionHeader.VirtualAddress);
-        details.CodePage := dataEntry^.CodePage;
-        details.Characteristics := table^.characteristics;
-        details.DataVersion :=
-          DWORD(table^.versionMajor) * 65536 + DWORD(table^.versionMinor);
-        FDetailList.Add(details);
+        DataEntry := PResourceDataEntry(PChar(Section.FRawData.Memory) +
+          Entry^.RVA);
+        Details := TResourceDetails.CreateResourceDetails(self,
+          lang, Name, tp, DataEntry^.Size, PChar(Section.FRawData.Memory) +
+          DataEntry^.OffsetToData - Section.FSectionHeader.VirtualAddress);
+        Details.CodePage := DataEntry^.CodePage;
+        Details.Characteristics := Table^.Characteristics;
+        Details.DataVersion :=
+          DWORD(Table^.VersionMajor) * 65536 + DWORD(Table^.VersionMinor);
+        FDetailList.Add(Details);
 
        end;
 
-      Inc(entry)
+      Inc(Entry)
      end
   end;
 
 begin
   inherited;
-  section := GetResourceSection(offset);
-  if section <> nil then
-    GetResource(offset, 0)
+  Section := GetResourceSection(Offset);
+  if Section <> nil then
+    GetResource(Offset, 0)
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEResourceModule.GetResourceCount                          |
- |                                                                      |
- | Return the number of resources in the resource section               |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEResourceModule.GetResourceCount                               //
+//                                                                            //
+//  Return the number of resources in the resource Section                    //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEResourceModule.GetResourceCount: Integer;
 begin
   Result := FDetailList.Count
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEResourceModule.GetResourceDetails                        |
- |                                                                      |
- | Get the resource details for the specified resource.                 |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEResourceModule.GetResourceDetails                             //
+//                                                                            //
+//  Get the resource Details for the specified resource.                      //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 function TPEResourceModule.GetResourceDetails(idx: Integer):
 TResourceDetails;
 begin
   Result := TResourceDetails(FDetailList[idx]);
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEResourceModule.IndexOfResource                           |
- |                                                                      |
- | Return the index of the specified resource details in the resource   |
- *----------------------------------------------------------------------*)
-function TPEResourceModule.IndexOfResource(details: TResourceDetails): Integer;
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEResourceModule.IndexOfResource                                //
+//                                                                            //
+//  Return the index of the specified resource Details in the resource        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function TPEResourceModule.IndexOfResource(Details: TResourceDetails): Integer;
 begin
-  Result := FDetailList.IndexOf(details);
+  Result := FDetailList.IndexOf(Details);
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEResourceModule.InsertResource                            |
- |                                                                      |
- | Insert a resource in the list.                                       |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEResourceModule.InsertResource                                 //
+//                                                                            //
+//  Insert a resource in the list.                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEResourceModule.InsertResource(idx: Integer;
-  details: TResourceDetails);
+  Details: TResourceDetails);
 begin
-  FDetailList.Insert(idx, details);
+  FDetailList.Insert(idx, Details);
 end;
 
-(*----------------------------------------------------------------------*
- | function TPEResourceModule.Encode                                    |
- |                                                                      |
- | Complicated?  I'll give you complicated ...                          |
- *----------------------------------------------------------------------*)
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  function TPEResourceModule.Encode                                         //
+//                                                                            //
+//  Complicated?  I'll give you complicated ...                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TPEResourceModule.Encode;
 var
-  i: Integer;
-  details: TResourceDetails;
-  section: TImageSection;
-  root: TResourceNode;
-  versMajor, versMinor: word;
-  TimeStamp: DWORD;
-  nameSize, nameOffset, namePos, tableOffset: DWORD;
-  deOffset, dePos, deSize: DWORD;
-  dataOffset, dataPos, dataSize: DWORD;
-  offset: Integer;
+  i           : Integer;
+  Details     : TResourceDetails;
+  Section     : TImageSection;
+  root        : TResourceNode;
+  versMajor   : Word;
+  versMinor   : Word;
+  TimeStamp   : DWORD;
+  NameSize    : DWORD;
+  NameOffset  : DWORD;
+  NamePos     : DWORD;
+  TableOffset : DWORD;
+  deOffset    : DWORD;
+  dePos       : DWORD;
+  deSize      : DWORD;
+  DataOffset  : DWORD;
+  DataPos     : DWORD;
+  DataSize    : DWORD;
+  Offset      : Integer;
 
-  nameTable: PChar;
-  deTable: PChar;
-  Data: PChar;
-  zeros: PChar;
+  nameTable   : PChar;
+  deTable     : PChar;
+  Data        : PChar;
+  Zeros       : PChar;
 
   //------------------------------------------------------------------
-  // Calculate offset and size of name table and DirectoryEntry table.
-  // Calculate size of data
+  // Calculate Offset and Size of name Table and DirectoryEntry Table.
+  // Calculate Size of data
 
   procedure GetNameTableSize(node: TResourceNode);
   var
     i: Integer;
   begin
-    Inc(nameOffset, SizeOf(TResourceDirectoryTable));
+    Inc(NameOffset, SizeOf(TResourceDirectoryTable));
     Inc(deOffset, SizeOf(TResourceDirectoryTable));
 
     for i := 0 to node.Count - 1 do
      begin
-      Inc(nameOffset, SizeOf(TResourceDirectoryEntry));
+      Inc(NameOffset, SizeOf(TResourceDirectoryEntry));
       Inc(deOffset, SizeOf(TResourceDirectoryEntry));
 
-      if not node.nodes[i].intID then
-        Inc(nameSize, Length(node.nodes[i].id) * SizeOf(WideChar) +
+      if not node.Nodes[i].IntID then
+        Inc(NameSize, Length(node.Nodes[i].Id) * SizeOf(WideChar) +
           SizeOf(word));
 
-      if not node.nodes[i].leaf then
-        GetNameTableSize(node.nodes[i].Next)
+      if not node.Nodes[i].Leaf then
+        GetNameTableSize(node.Nodes[i].Next)
       else
        begin
-        Inc(nameOffset, SizeOf(TResourceDataEntry));
+        Inc(NameOffset, SizeOf(TResourceDataEntry));
         Inc(deSize, SizeOf(TResourceDataEntry));
-        dataSize := (dataSize + DWORD(node.nodes[i].Data.Size) +
-          3) div 4 * 4;
+        DataSize := (DataSize + DWORD(node.Nodes[i].Data.Size) + 3) div 4 * 4;
        end
      end
   end;
 
   //------------------------------------------------------------------
-  // Save a node to section.FRawData (and save it's child nodes recursively)
+  // Save a node to Section.FRawData (and save it's child nodes recursively)
 
   procedure SaveToSection(node: TResourceNode);
   var
-    table: TResourceDirectoryTable;
-    entry: TResourceDirectoryEntry;
-    dataEntry: PResourceDataEntry;
-    i, n: Integer;
-    w: WideString;
-    wl: word;
+    Table     : TResourceDirectoryTable;
+    Entry     : TResourceDirectoryEntry;
+    DataEntry : PResourceDataEntry;
+    i, n      : Integer;
+    w         : WideString;
+    wl        : word;
 
   //------------------------------------------------------------------
-  // Save entry (i), and the child nodes
+  // Save Entry (i), and the child Nodes
 
     procedure SaveNode(i: Integer);
     begin
-      if node.nodes[i].intID then      // id is a simple integer
-        entry.Name := StrToInt(node.nodes[i].id)
+      if node.Nodes[i].IntID then // Id is a simple integer
+        Entry.Name := StrToInt(node.Nodes[i].Id)
       else
-       begin                             // id is an offset to a name in the
-                                        // name table.
-        entry.Name := nameOffset + namePos + $80000000;
-        w := node.nodes[i].id;
-        wl := Length(node.nodes[i].id);
-        Move(wl, nameTable[namePos], SizeOf(wl));
-        Inc(namePos, SizeOf(wl));
-        Move(w[1], nameTable[namePos], wl * SizeOf(WideChar));
-        Inc(namePos, wl * SizeOf(WideChar))
+       begin
+        // Id is an offset to a name in the name table.
+        Entry.Name := NameOffset + NamePos + $80000000;
+        w := node.Nodes[i].Id;
+        wl := Length(node.Nodes[i].Id);
+        Move(wl, nameTable[NamePos], SizeOf(wl));
+        Inc(NamePos, SizeOf(wl));
+        Move(w[1], nameTable[NamePos], wl * SizeOf(WideChar));
+        Inc(NamePos, wl * SizeOf(WideChar))
        end;
 
-      if node.nodes[i].leaf then
-       // RVA points to a TResourceDataEntry in the
-       begin                             // data entry table.
-        entry.RVA := deOffset + dePos;
-        dataEntry := PResourceDataEntry(deTable + dePos);
-        dataEntry^.CodePage := node.nodes[i].CodePage;
-        dataEntry^.Reserved := 0;
-        dataEntry^.Size := node.nodes[i].Data.Size;
-        dataEntry^.OffsetToData :=
-          dataOffset + dataPos + section.FSectionHeader.VirtualAddress;
+      if node.Nodes[i].Leaf then
+       // RVA points to a TResourceDataEntry in the data entry table.
+       begin                            
+        Entry.RVA := deOffset + dePos;
+        DataEntry := PResourceDataEntry(deTable + dePos);
+        DataEntry^.CodePage := node.Nodes[i].CodePage;
+        DataEntry^.Reserved := 0;
+        DataEntry^.Size := node.Nodes[i].Data.Size;
+        DataEntry^.OffsetToData :=
+          DataOffset + DataPos + Section.FSectionHeader.VirtualAddress;
 
-        Move(node.nodes[i].Data.memory^, Data[dataPos], dataEntry^.Size);
+        Move(node.Nodes[i].Data.memory^, Data[DataPos], DataEntry^.Size);
 
         Inc(dePos, SizeOf(TResourceDataEntry));
-        dataPos := (dataPos + dataEntry^.size + 3) div 4 * 4;
-        section.FRawData.Write(entry, SizeOf(entry));
+        DataPos := (DataPos + DataEntry^.Size + 3) div 4 * 4;
+        Section.FRawData.Write(Entry, SizeOf(Entry));
        end
-      else                              // RVA points to another table.
+      else // RVA points to another Table.
        begin
-        entry.RVA := $80000000 + tableOffset;
-        section.FRawData.Write(entry, SizeOf(entry));
-        n := section.FRawData.Position;
-        SaveToSection(node.nodes[i].Next);
-        section.FRawData.Seek(n, soFromBeginning);
+        Entry.RVA := $80000000 + TableOffset;
+        Section.FRawData.Write(Entry, SizeOf(Entry));
+        n := Section.FRawData.Position;
+        SaveToSection(node.Nodes[i].Next);
+        Section.FRawData.Seek(n, soFromBeginning);
        end
     end;
 
   begin { SaveToSection }
-    table.characteristics := 0;
-    table.timeDateStamp := TimeStamp;
-    table.versionMajor := versMajor;
-    table.versionMinor := versMinor;
-    table.cNameEntries := 0;
-    table.cIDEntries := 0;
+    Table.Characteristics := 0;
+    Table.TimeDateStamp := TimeStamp;
+    Table.VersionMajor := versMajor;
+    Table.VersionMinor := versMinor;
+    Table.CNameEntries := 0;
+    Table.CIDEntries := 0;
 
-                                        // Calculate no of integer and string IDs
+    // Calculate no of integer and string IDs
     for i := 0 to node.Count - 1 do
-      if node.nodes[i].intID then
-        Inc(table.cIDEntries)
-      else
-        Inc(table.cNameEntries);
+     if node.Nodes[i].IntID
+      then Inc(Table.CIDEntries)
+      else Inc(Table.CNameEntries);
 
-    section.FRawData.Seek(tableOffset, soFromBeginning);
-    section.FRawData.Write(table, SizeOf(table));
+    Section.FRawData.Seek(TableOffset, soFromBeginning);
+    Section.FRawData.Write(Table, SizeOf(Table));
 
-    tableOffset := tableOffset + SizeOf(TResourceDirectoryTable) +
+    TableOffset := TableOffset + SizeOf(TResourceDirectoryTable) +
       DWORD(node.Count) * SizeOf(TResourceDirectoryEntry);
 
-                                        // The docs suggest that you save the nodes
-                                        // with string entries first.  Goodness knows why,
-                                        // but play along...
-    for i := 0 to node.Count - 1 do
-      if not node.nodes[i].intID then
-        SaveNode(i);
+    // The docs suggest that you save the Nodes with string entries first.
+    // Goodness knows why, but play along...
 
     for i := 0 to node.Count - 1 do
-      if node.nodes[i].intID then
-        SaveNode(i);
+     if not node.Nodes[i].IntID then SaveNode(i);
 
-    section.FRawData.Seek(0, soFromEnd);
+    for i := 0 to node.Count - 1 do
+     if node.Nodes[i].IntID then SaveNode(i);
+
+    Section.FRawData.Seek(0, soFromEnd);
   end;
 
 
 begin { Encode }
- section := GetResourceSection(offset);
+ Section := GetResourceSection(Offset);
 
- // Get the details in a tree structure
+ // Get the Details in a tree structure
  root := nil;
  Data := nil;
  deTable := nil;
- zeros := nil;
+ Zeros := nil;
 
  try
   for i := 0 to FDetailList.Count - 1 do
    begin
-    details := TResourceDetails(FDetailList.Items[i]);
+    Details := TResourceDetails(FDetailList.Items[i]);
     if root = nil
-     then root := TResourceNode.Create(details.ResourceType,
-            details.ResourceName, details.ResourceLanguage, details.Data,
-            details.CodePage)
-     else root.Add(details.ResourceType, details.ResourceName,
-            details.ResourceLanguage, details.Data, details.CodePage)
+     then root := TResourceNode.Create(Details.ResourceType,
+            Details.ResourceName, Details.ResourceLanguage, Details.Data,
+            Details.CodePage)
+     else root.Add(Details.ResourceType, Details.ResourceName,
+            Details.ResourceLanguage, Details.Data, Details.CodePage)
    end;
 
   // Save elements of their original EXE
-  versMajor := PResourceDirectoryTable(section.FRawData.Memory)^.versionMajor;
-  versMinor := PResourceDirectoryTable(section.FRawData.Memory)^.versionMinor;
-  TimeStamp := PResourceDirectoryTable(section.FRawData.Memory)^.timeDateStamp;
-
+  versMajor := PResourceDirectoryTable(Section.FRawData.Memory)^.VersionMajor;
+  versMinor := PResourceDirectoryTable(Section.FRawData.Memory)^.VersionMinor;
+  TimeStamp := PResourceDirectoryTable(Section.FRawData.Memory)^.TimeDateStamp;
 
   // Clear the data.  We're gonna recreate  it from our resource details.
   Section.FRawData.Clear;
 
-  nameSize := 0;
-  nameOffset := offset;
-  deSize := 0;
-  deOffset := offset;
-  dataSize := 0;
+  NameSize   := 0;
+  NameOffset := Offset;
+  deSize     := 0;
+  deOffset   := Offset;
+  DataSize   := 0;
 
-  GetNameTableSize(root);              // Calculate sizes and offsets of the
-                                       // name table, the data entry table and
-                                       // the size of the data.
+  GetNameTableSize(root);  // Calculate sizes and offsets of the name table,
+                           // the data entry table and the size of the data.
 
-                                          // Calculate the data offset.  Must be aligned.
-  DataOffset := (nameOffset + nameSize + 15) div 16 * 16;
+  // Calculate the data Offset.  Must be aligned.
+  DataOffset := (NameOffset + NameSize + 15) div 16 * 16;
 
   // Initialize globals...
 
-  // Offset of next entry in the string table
-  namePos := 0;
-  // Offset of next entry in the data entry table
+  // Offset of next entry in the string Table
+  NamePos := 0;
+  // Offset of next entry in the data entry Table
   dePos := 0;
   // Offset of next data block.
-  dataPos := 0;
+  DataPos := 0;
   // Offset of next TResourceDirectoryTable
-  tableOffset := 0;
+  TableOffset := 0;
 
-  GetMem(nameTable, nameSize);         // Allocate buffers for tables
-  GetMem(Data, dataSize);
+  GetMem(nameTable, NameSize);         // Allocate buffers for tables
+  GetMem(Data, DataSize);
   GetMem(deTable, deSize);
 
   SaveToSection(root);               // Do the work.
 
   // Save the tables
-  section.FRawData.Write(deTable^, deSize);
-  section.FRawData.Write(nameTable^, nameSize);
+  Section.FRawData.Write(deTable^, deSize);
+  Section.FRawData.Write(nameTable^, NameSize);
 
   // Add padding so the data goes on a
   // 16 byte boundary.
-  if DWORD(section.FRawData.Position) < dataOffset then
+  if DWORD(Section.FRawData.Position) < DataOffset then
    begin
-    GetMem(zeros, dataOffset - DWORD(section.FRawData.Position));
-    ZeroMemory(zeros, dataOffset - DWORD(section.FRawData.Position));
-    section.FRawData.Write(zeros^, dataOffset - DWORD(section.FRawData.Position))
+    GetMem(Zeros, DataOffset - DWORD(Section.FRawData.Position));
+    ZeroMemory(Zeros, DataOffset - DWORD(Section.FRawData.Position));
+    Section.FRawData.Write(Zeros^, DataOffset - DWORD(Section.FRawData.Position))
    end;
 
   // Write the data.
-  section.FRawData.Write(Data^, dataSize);
+  Section.FRawData.Write(Data^, DataSize);
 
   inherited; // **** Must call inherited !
 
  finally       // Tidy up.
-  ReallocMem(zeros, 0);
+  Dispose(Zeros);
   FreeMem(nameTable);
   FreeMem(deTable);
   FreeMem(Data);
@@ -2022,19 +2216,18 @@ var
 
 begin
   for i := 0 to Count - 1 do
-    if AType = nodes[i].id then
-     begin
-      nodes[i].Next.AddName(AName, ALang, aData, codePage);
-      exit
-     end;
+   if AType = Nodes[i].Id then
+    begin
+     Nodes[i].Next.AddName(AName, ALang, aData, codePage);
+     exit;
+    end;
 
   Inc(Count);
-  SetLength(nodes, Count);
-  nodes[Count - 1].id := AType;
-  nodes[Count - 1].intID := isID(Count - 1);
-  nodes[Count - 1].leaf := False;
-  nodes[Count - 1].Next :=
-    TResourceNode.CreateNameNode(AName, ALang, AData, codePage)
+  SetLength(Nodes, Count);
+  Nodes[Count - 1].Id := AType;
+  Nodes[Count - 1].IntID := isID(Count - 1);
+  Nodes[Count - 1].Leaf := False;
+  Nodes[Count - 1].Next := TResourceNode.CreateNameNode(AName, ALang, AData, codePage)
 end;
 
 procedure TResourceNode.AddLang(ALang: Integer; aData: TMemoryStream;
@@ -2043,19 +2236,19 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    if IntToStr(ALang) = nodes[i].id then
-     begin
-      nodes[i].Data := aData;
-      exit
-     end;
+   if IntToStr(ALang) = Nodes[i].Id then
+    begin
+     Nodes[i].Data := aData;
+     exit;
+    end;
 
   Inc(Count);
-  SetLength(nodes, Count);
-  nodes[Count - 1].id := IntToStr(ALang);
-  nodes[Count - 1].intId := True;
-  nodes[Count - 1].leaf := True;
-  nodes[Count - 1].Data := aData;
-  nodes[Count - 1].CodePage := codePage;
+  SetLength(Nodes, Count);
+  Nodes[Count - 1].Id := IntToStr(ALang);
+  Nodes[Count - 1].IntID := True;
+  Nodes[Count - 1].Leaf := True;
+  Nodes[Count - 1].Data := aData;
+  Nodes[Count - 1].CodePage := codePage;
 end;
 
 procedure TResourceNode.AddName(const AName: string; ALang: Integer;
@@ -2064,18 +2257,18 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    if AName = nodes[i].id then
+    if AName = Nodes[i].Id then
      begin
-      nodes[i].Next.AddLang(ALang, aData, codePage);
-      exit
+      Nodes[i].Next.AddLang(ALang, aData, codePage);
+      exit;
      end;
 
   Inc(Count);
-  SetLength(nodes, Count);
-  nodes[Count - 1].id := AName;
-  nodes[Count - 1].intID := isID(Count - 1);
-  nodes[Count - 1].leaf := False;
-  nodes[Count - 1].Next :=
+  SetLength(Nodes, Count);
+  Nodes[Count - 1].Id := AName;
+  Nodes[Count - 1].IntID := isID(Count - 1);
+  Nodes[Count - 1].Leaf := False;
+  Nodes[Count - 1].Next :=
     TResourceNode.CreateLangNode(ALang, aData, codePage)
 end;
 
@@ -2083,36 +2276,35 @@ constructor TResourceNode.Create(const AType, AName: string;
   ALang: Integer; aData: TMemoryStream; codePage: DWORD);
 begin
   Count := 1;
-  SetLength(nodes, 1);
-  nodes[0].id := AType;
-  nodes[Count - 1].intID := isID(Count - 1);
-  nodes[0].leaf := False;
-  nodes[0].Next := TResourceNode.CreateNameNode(AName, ALang,
-    aData, codePage);
+  SetLength(Nodes, 1);
+  Nodes[0].Id := AType;
+  Nodes[Count - 1].IntID := isID(Count - 1);
+  Nodes[0].Leaf := False;
+  Nodes[0].Next := TResourceNode.CreateNameNode(AName, ALang, aData, codePage);
 end;
 
 constructor TResourceNode.CreateLangNode(ALang: Integer;
   aData: TMemoryStream; codePage: DWORD);
 begin
   Count := 1;
-  SetLength(nodes, 1);
-  nodes[0].id := IntToStr(ALang);
-  nodes[Count - 1].intID := True;
-  nodes[0].leaf := True;
-  nodes[0].Data := aData;
-  nodes[0].CodePage := codePage
+  SetLength(Nodes, 1);
+  Nodes[0].Id := IntToStr(ALang);
+  Nodes[Count - 1].IntID := True;
+  Nodes[0].Leaf := True;
+  Nodes[0].Data := aData;
+  Nodes[0].CodePage := codePage
 end;
 
 constructor TResourceNode.CreateNameNode(const AName: string;
   ALang: Integer; aData: TMemoryStream; codePage: DWORD);
 begin
   Count := 1;
-  SetLength(nodes, 1);
-  nodes[0].id := AName;
-  nodes[Count - 1].intID := isID(Count - 1);
+  SetLength(Nodes, 1);
+  Nodes[0].Id := AName;
+  Nodes[Count - 1].IntID := isID(Count - 1);
 
-  nodes[0].leaf := False;
-  nodes[0].Next := TResourceNode.CreateLangNode(ALang, aData, codePage)
+  Nodes[0].Leaf := False;
+  Nodes[0].Next := TResourceNode.CreateLangNode(ALang, aData, codePage)
 end;
 
 destructor TResourceNode.Destroy;
@@ -2120,8 +2312,8 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    if not nodes[i].leaf then
-      nodes[i].Next.Free;
+    if not Nodes[i].Leaf then
+      Nodes[i].Next.Free;
 
   inherited;
 end;
@@ -2131,25 +2323,25 @@ var
   i: Integer;
 begin
   Result := True;
-  for i := 1 to Length(nodes[idx].id) do
-    if not (nodes[idx].id[i] in ['0'..'9']) then
+  for i := 1 to Length(Nodes[idx].Id) do
+    if not (Nodes[idx].Id[i] in ['0'..'9']) then
      begin
       Result := False;
       break
      end;
 
   if Result then
-    Result := IntToStr(StrToInt(nodes[idx].id)) = nodes[idx].id;
+    Result := IntToStr(StrToInt(Nodes[idx].Id)) = Nodes[idx].Id;
 end;
 
-function TPEResourceModule.AddResource(details: TResourceDetails): Integer;
+function TPEResourceModule.AddResource(Details: TResourceDetails): Integer;
 begin
-  Result := FDetailList.Add(details);
+  Result := FDetailList.Add(Details);
 end;
 
 procedure TPEResourceModule.SortResources;
 begin
-  FDetailList.Sort(compareDetails);
+  FDetailList.Sort(CompareDetails);
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 

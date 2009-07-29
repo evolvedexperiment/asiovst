@@ -56,7 +56,7 @@ begin
 
  {$IFDEF UseEmbedding}
  FContainedData := TStringList.Create;
- EnumResourceNames(HInstance, 'Wavetable', @EnumNamesFunc, LongWord(FContainedData));
+ EnumResourceNames(HInstance, 'WAVETABLE', @EnumNamesFunc, LongWord(FContainedData));
 
  if FContainedData.Count > 0
   then Integer(FFileName) := 0
@@ -133,7 +133,7 @@ var
 begin
  if (ID >= 0) and (ID < FContainedData.Count) then
   begin
-   RS := TResourceStream.Create(HInstance, FContainedData[ID], 'Wavetable');
+   RS := TResourceStream.Create(HInstance, FContainedData[ID], 'WAVETABLE');
    try
     FAudioData.LoadFromStream(RS);
    finally
@@ -182,17 +182,18 @@ begin
  {$IFDEF UseEmbedding}
  ContainedData := TStringList.Create;
  try
-  EnumResourceNames(HInstance, 'Wavetable', @EnumNamesFunc, LongWord(ContainedData));
+  EnumResourceNames(HInstance, 'WAVETABLE', @EnumNamesFunc, LongWord(ContainedData));
   {$ENDIF}
   with Properties^ do
    begin
     {$IFDEF UseEmbedding}
     if ContainedData.Count > 0 then
      begin
-      Name := 'Embedded Simple Audio File Oscillator';
+      Name := 'Embedded Simple Audio File Osc.';
       str  := 'DAV ESAFO';
       for i := 0 to ContainedData.Count - 1
        do str := str + ContainedData[i];
+      ID := PAnsiChar(str);
      end
     else
     {$ENDIF}

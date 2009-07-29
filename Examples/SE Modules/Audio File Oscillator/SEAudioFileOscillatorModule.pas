@@ -9,20 +9,24 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEAudioFileOscillatorPins = (pinFileName, pinReset, pinPlaybackSpeed,
-    pinOutput);
+  TSEAudioFileOscillatorPins = (pinFileName, pinInterpolation, pinReset,
+    pinPlaybackSpeed, pinOutput);
+
+  TInterpolationMethod = (imNone, imLinear, imHermite);
 
   TSEAudioFileOscillatorModule = class(TSEModuleBase)
   private
-    FOutputBuffer    : PDAVSingleFixedArray;
-    FPlaybackSpeed   : PDAVSingleFixedArray;
-    FAudioData       : TAudioDataCollection32;
-    FFileName        : TFileName;
-    FPosition        : Single;
-    FReset           : Boolean;
-    FCriticalSection : TCriticalSection;
+    FOutputBuffer       : PDAVSingleFixedArray;
+    FPlaybackSpeed      : PDAVSingleFixedArray;
+    FAudioData          : TAudioDataCollection32;
+    FFileName           : TFileName;
+    FPosition           : Single;
+    FReset              : Boolean;
+    FInterpolation      : TInterpolationMethod;
+    FCriticalSection    : TCriticalSection;
     {$IFDEF UseEmbedding}
-    FContainedData   : TStringList;
+    FContainedData      : TStringList;
+    FExtraOutputBuffers : array of PDAVSingleFixedArray;
     procedure LoadFromResource(ID: Integer);
     {$ENDIF}
   protected
@@ -35,8 +39,13 @@ type
 
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessNoInterpolation(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessLinearInterpolation(const BufferOffset, SampleFrames: Integer);
+    {$IFDEF UseEmbedding}
+    procedure SubProcessNoInterpolationMulti(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessLinearInterpolationMulti(const BufferOffset, SampleFrames: Integer);
+    {$ENDIF}
   end;
 
 implementation
@@ -58,7 +67,7 @@ begin
 
  {$IFDEF UseEmbedding}
  FContainedData := TStringList.Create;
- EnumResourceNames(HInstance, 'Wavetable', @EnumNamesFunc, LongWord(FContainedData));
+ EnumResourceNames(HInstance, 'WAVETABLE', @EnumNamesFunc, LongWord(FContainedData));
 
  if FContainedData.Count > 0
   then Integer(FFileName) := 0
@@ -81,6 +90,7 @@ begin
  inherited Open;
 
  // choose which function is used to process audio
+ FInterpolation := imNone;
  ChooseProcess;
 
  // 'transmit' new output status to next module 'downstream'
@@ -92,27 +102,28 @@ procedure TSEAudioFileOscillatorModule.PlugStateChange(
 begin
  inherited;
  case TSEAudioFileOscillatorPins(CurrentPin.PinID) of
-  pinFileName : begin
-                 FCriticalSection.Enter;
-                 try
- {$IFDEF UseEmbedding}
-                  if FContainedData.Count <= 0 then
- {$ENDIF}
-                   if FileExists(FFileName) then
-                    try
-                     FAudioData.LoadFromFile(FFileName);
-                     FPosition := 0;
-                    except
-                    end else
- {$IFDEF UseEmbedding}
-                   else LoadFromResource(Integer(FFileName));
- {$ENDIF}
+       pinFileName : begin
+                      FCriticalSection.Enter;
+                      try
+                       {$IFDEF UseEmbedding}
+                       if FContainedData.Count <= 0 then
+                       {$ENDIF}
+                        if FileExists(FFileName) then
+                         try
+                          FAudioData.LoadFromFile(FFileName);
+                          FPosition := 0;
+                         except
+                         end else
+                        {$IFDEF UseEmbedding}
+                        else LoadFromResource(Integer(FFileName));
+                        {$ENDIF}
 
-                  ChooseProcess;
-                 finally
-                  FCriticalSection.Leave
-                 end;
-                end;
+                       ChooseProcess;
+                      finally
+                       FCriticalSection.Leave
+                      end;
+                     end;
+  pinInterpolation : ChooseProcess;
      pinReset : if FReset then
                  begin
                   FPosition := 0;
@@ -128,7 +139,7 @@ var
 begin
  if (ID >= 0) and (ID < FContainedData.Count) then
   begin
-   RS := TResourceStream.Create(HInstance, FContainedData[ID], 'Wavetable');
+   RS := TResourceStream.Create(HInstance, FContainedData[ID], 'WAVETABLE');
    try
     FAudioData.LoadFromStream(RS);
    finally
@@ -142,11 +153,24 @@ procedure TSEAudioFileOscillatorModule.ChooseProcess;
 begin
  if  {$IFDEF UseEmbedding} (FContainedData.Count = 0) and {$ENDIF} (not FileExists(FFileName))
   then OnProcess := SubProcessBypass
-  else OnProcess := SubProcess
+  else
+    {$IFDEF UseEmbedding}
+    if (FContainedData.Count = 1) and (FAudioData.ChannelCount > 1) then
+     case FInterpolation of
+        imNone : OnProcess := SubProcessNoInterpolationMulti;
+      imLinear : OnProcess := SubProcessLinearInterpolationMulti;
+     end
+    else
+    {$ENDIF}
+     case FInterpolation of
+        imNone : OnProcess := SubProcessNoInterpolation;
+      imLinear : OnProcess := SubProcessLinearInterpolation;
+     end;
 end;
 
 // The most important part, processing the audio
-procedure TSEAudioFileOscillatorModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSEAudioFileOscillatorModule.SubProcessNoInterpolation(const BufferOffset,
+  SampleFrames: Integer);
 var
   Sample : Integer;
 begin
@@ -168,6 +192,146 @@ begin
  end;
 end;
 
+{$IFDEF UseEmbedding}
+procedure TSEAudioFileOscillatorModule.SubProcessNoInterpolationMulti(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Channel : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
+     for Channel := 0 to Length(FExtraOutputBuffers) - 1
+      do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+           FAudioData[Channel + 1].ChannelDataPointer^[round(FPosition)];
+
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     while round(FPosition) >= FAudioData[0].SampleCount
+      do FPosition := FPosition - FAudioData[0].SampleCount;
+     while round(FPosition) < 0
+      do FPosition := FPosition + FAudioData[0].SampleCount;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+{$ENDIF}
+
+// The most important part, processing the audio
+procedure TSEAudioFileOscillatorModule.SubProcessLinearInterpolation(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Sample : Integer;
+  Offset : Integer;
+  Ratio  : Single;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     Offset := FastTrunc(FPosition);
+     if Offset + 1 >= FAudioData[0].SampleCount then
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         Ratio * FAudioData[0].ChannelDataPointer^[0] +
+         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset]
+      end
+     else
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         Ratio * FAudioData[0].ChannelDataPointer^[Offset + 1] +
+         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset]
+      end;
+
+     // wrap around 
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     Offset := FastTrunc(FPosition) + 1;
+     while Offset >= FAudioData[0].SampleCount do
+      begin
+       FPosition := FPosition - FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+     while Offset < 0 do
+      begin
+       FPosition := FPosition + FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+{$IFDEF UseEmbedding}
+procedure TSEAudioFileOscillatorModule.SubProcessLinearInterpolationMulti(
+  const BufferOffset, SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Offset  : Integer;
+  Channel : Integer;
+  Ratio   : Single;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     Offset := FastTrunc(FPosition);
+     if Offset + 1 >= FAudioData[0].SampleCount then
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         Ratio * FAudioData[0].ChannelDataPointer^[0] +
+         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset];
+
+       for Channel := 0 to Length(FExtraOutputBuffers) - 1
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+             Ratio * FAudioData[Channel + 1].ChannelDataPointer^[0] +
+             (1 - Ratio) * FAudioData[Channel + 1].ChannelDataPointer^[Offset];
+      end
+     else
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         Ratio * FAudioData[0].ChannelDataPointer^[Offset + 1] +
+         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset];
+
+       for Channel := 0 to Length(FExtraOutputBuffers) - 1
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+             Ratio * FAudioData[Channel + 1].ChannelDataPointer^[Offset + 1] +
+             (1 - Ratio) * FAudioData[Channel + 1].ChannelDataPointer^[Offset];
+      end;
+
+     // wrap around 
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     Offset := FastTrunc(FPosition) + 1;
+     while Offset >= FAudioData[0].SampleCount do
+      begin
+       FPosition := FPosition - FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+     while Offset < 0 do
+      begin
+       FPosition := FPosition + FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+{$ENDIF}
+
 procedure TSEAudioFileOscillatorModule.SubProcessBypass(const BufferOffset,
   SampleFrames: Integer);
 begin
@@ -186,7 +350,7 @@ begin
  {$IFDEF UseEmbedding}
  ContainedData := TStringList.Create;
  try
-  EnumResourceNames(HInstance, 'Wavetable', @EnumNamesFunc, LongWord(ContainedData));
+  EnumResourceNames(HInstance, 'WAVETABLE', @EnumNamesFunc, LongWord(ContainedData));
  {$ENDIF}
   with Properties^ do
    begin
@@ -197,7 +361,7 @@ begin
       str  := 'DAV EAFO';
       for i := 0 to ContainedData.Count - 1
        do str := str + ContainedData[i];
-      ID   := PAnsiChar(str);
+      ID := PAnsiChar(str);
      end
     else
     {$ENDIF}
@@ -245,6 +409,14 @@ begin
                         Direction       := drIn;
                         DataType        := dtText;
                        end;
+  pinInterpolation : with Properties^ do
+                      begin
+                       Name            := 'Interpolation';
+                       VariableAddress := @FInterpolation;
+                       Direction       := drIn;
+                       Datatype        := dtEnum;
+                       DatatypeExtra   := 'none, linear';
+                      end;
           pinReset : with Properties^ do
                       begin
                        Name            := 'Reset';
@@ -266,7 +438,26 @@ begin
                        Direction       := drOut;
                        Datatype        := dtFSample;
                       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else
+   begin
+    result := False;
+    {$IFDEF UseEmbedding}
+    if (FContainedData.Count = 1) then
+     begin
+      LoadFromResource(0);
+      SetLength(FExtraOutputBuffers, FAudioData.ChannelCount - 1);
+      if Index - Integer(pinOutput) < FAudioData.ChannelCount then
+       with Properties^ do
+        begin
+         Name            := 'Output';
+         VariableAddress := @FExtraOutputBuffers[Index - Integer(pinOutput) - 1];
+         Direction       := drOut;
+         Datatype        := dtFSample;
+         result          := True;
+        end;
+     end;
+    {$ENDIF}
+   end;
  end;
 end;
 

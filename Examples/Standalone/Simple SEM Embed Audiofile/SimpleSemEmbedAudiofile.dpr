@@ -22,6 +22,7 @@ begin
  DotPos := Pos('.', result);
  if DotPos > 0
   then result := Copy(result, 1, DotPos - 1);
+ result := Uppercase(result); 
 end;
 
 begin
@@ -53,17 +54,15 @@ begin
            try
             LoadFromFile(DLLName);
             RD := TResourceDetails.CreateResourceDetails(SeModule, 0,
-              RemoveFileExt(ExtractFilename(DLLName)), 'WaveTable', Size, Memory);
-            SeModule.AddResource(RD);
-            SeModule.Dirty := True;
-
-            SeModule.SortResources;
-            SeModule.SaveToFile(FileName);
-
+              RemoveFileExt(ExtractFilename(DLLName)), 'WAVETABLE', Size, Memory);
+            SeModule.InsertResource(0, RD);
            finally
             Free;
            end;
 
+          SeModule.SortResources;
+
+          SeModule.SaveToFile(FileName);
          finally
           FreeAndNil(SeModule);
          end;
