@@ -241,7 +241,7 @@ begin
 // Spare Plug  Flags           := [iofAutoDuplicate, iofRename,  iofSetableOutput, iofCustomisable];
               end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 {$IFNDEF PUREPASCAL}
@@ -435,7 +435,7 @@ begin
        Datatype        := dtFSample;
       end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 {$IFNDEF PUREPASCAL}
@@ -644,7 +644,7 @@ begin
        Datatype        := dtFSample;
       end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 {$IFNDEF PUREPASCAL}
