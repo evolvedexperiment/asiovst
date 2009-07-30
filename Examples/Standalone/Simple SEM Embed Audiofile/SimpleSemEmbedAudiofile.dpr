@@ -9,10 +9,10 @@ uses
 {$R *.res}
 
 var
-  SeModule : TPEResourceModule;
-  RS       : TResourceStream;
-  RD       : TResourceDetails;
-  DLLName  : string;
+  SeModule  : TPEResourceModule;
+  RS        : TResourceStream;
+  RD        : TResourceDetails;
+  AudioName : string;
 
 function RemoveFileExt(Filename: TFileName): TFileName;
 var
@@ -30,14 +30,15 @@ begin
   try
    DefaultExt := '.WAV';
    Filter := 'WAV File (*.wav)|*.wav|AIFF File (*.aiff)|*.aif*|AU File (*.au)|*.au';
-   Options := [ofHideReadOnly, ofAllowMultiSelect, ofFileMustExist, ofEnableSizing];
+   Options := [ofHideReadOnly, {ofAllowMultiSelect, } ofFileMustExist, ofEnableSizing];
    if Execute then
     begin
-     DLLName := FileName;
+     AudioName := FileName;
      with TSaveDialog.Create(nil) do
       try
        DefaultExt := '.SEM';
        Filter := 'SE Module (*.SEM)|*.SEM';
+       FileName := ChangeFileExt(AudioName, '.SEM');
        if Execute then
         begin
          SeModule := TPEResourceModule.Create;
@@ -52,16 +53,15 @@ begin
          try
           with TMemoryStream.Create do
            try
-            LoadFromFile(DLLName);
+            LoadFromFile(AudioName);
             RD := TResourceDetails.CreateResourceDetails(SeModule, 0,
-              RemoveFileExt(ExtractFilename(DLLName)), 'WAVETABLE', Size, Memory);
+              RemoveFileExt(ExtractFilename(AudioName)), 'WAVETABLE', Size, Memory);
             SeModule.InsertResource(0, RD);
            finally
             Free;
            end;
 
           SeModule.SortResources;
-
           SeModule.SaveToFile(FileName);
          finally
           FreeAndNil(SeModule);

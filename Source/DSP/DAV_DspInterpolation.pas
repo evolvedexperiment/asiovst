@@ -27,6 +27,8 @@ function LinearInterpolation(const Fractional: Double; const Data: PDAV2DoubleAr
 function CubicInterpolation(const Fractional, inm1, inp, inp1, inp2: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation4Point3rdOrder(const Fractional: Single; const Data: TDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation4Point3rdOrder(const Fractional: Double; const Data: TDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function BSplineInterpolation4Point3rdOrder(const Fractional: Single; Data: PDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function BSplineInterpolation4Point3rdOrder(const Fractional: Double; Data: PDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation6Point5thOrder(const Fractional: Single; const Data: TDAV6SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation6Point5thOrder(const Fractional: Double; const Data: TDAV6DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 
@@ -351,6 +353,16 @@ begin
  c[2] := CHalf32 * b - Data[1];
  c[3] := CHalf32 * (Data[1] - Data[2]) + COneSixth64 * (Data[3] - Data[0]);
  result := ((c[3] * Fractional + c[2]) * Fractional + c[1]) * Fractional + c[0];
+end;
+
+function BSplineInterpolation4Point3rdOrder(const Fractional: Single; Data: PDAV4SingleArray): Single;
+begin
+ result := BSplineInterpolation4Point3rdOrder(Fractional, Data^);
+end;
+
+function BSplineInterpolation4Point3rdOrder(const Fractional: Double; Data: PDAV4DoubleArray): Double;
+begin
+ result := BSplineInterpolation4Point3rdOrder(Fractional, Data^);
 end;
 
 function BSplineInterpolation6Point5thOrder(const Fractional: Single; const Data: TDAV6SingleArray): Single;

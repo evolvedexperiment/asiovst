@@ -599,8 +599,8 @@ begin
   FCodePage := LCIDToCodePage(FResourceLanguage);
   FResourceName := AName;
   FResourceType := GetBaseType;
-  if Assigned(AParent) then
-    AParent.AddResource(Self);
+  if Assigned(AParent)
+   then AParent.AddResource(Self);
   FData := TMemoryStream.Create;
   InitNew
 end;
@@ -629,8 +629,8 @@ end;
 
 destructor TResourceDetails.Destroy;
 begin
-  FData.Free;
-  inherited;
+ FreeAndNil(FData);
+ inherited;
 end;
 
 
@@ -1065,8 +1065,8 @@ end;
 destructor TPEModule.Destroy;
 begin
   ReallocMem(FOptionalHeader, 0);
-  FSectionList.Free;
-  FDOSStub.Free;
+  FreeAndNil(FSectionList);
+  FreeAndNil(FDOSStub);
   ReallocMem(FCommentBlock, 0);
   ReallocMem(FEndComment, 0);
   inherited;
@@ -1533,17 +1533,14 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TPEModule.LoadFromStream(s: TStream);
-var
-  m: TMemoryStream;
 begin
-  m := TMemoryStream.Create;
-   try
-    m.CopyFrom(s, 0);
-
-    Decode(m.memory, m.Size)
-   finally
-    m.Free
-   end
+ with TMemoryStream.Create do
+  try
+   CopyFrom(s, 0);
+   Decode(Memory, Size)
+  finally
+   Free
+  end
 end;
 
 
@@ -1560,12 +1557,12 @@ procedure TPEModule.SaveToFile(const name: string);
 var
   f : TFileStream;
 begin
-  f := TFileStream.Create (name, fmCreate);
-  try
-    SaveToStream (f)
-  finally
-    f.Free
-  end
+ f := TFileStream.Create (name, fmCreate);
+ try
+  SaveToStream(f)
+ finally
+  f.Free
+ end
 end;
 *)
 
@@ -1739,7 +1736,7 @@ end;
 
 function TImageSection.GetSectionName: string;
 begin
-  Result := PChar(@FSectionHeader.Name)
+ Result := PChar(@FSectionHeader.Name)
 end;
 
 
@@ -1753,8 +1750,8 @@ end;
 
 destructor TImageSection.Destroy;
 begin
-  FRawData.Free;
-  inherited;
+ FreeAndNil(FRawData);
+ inherited;
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -1774,11 +1771,11 @@ procedure TPEResourceModule.DeleteResource(resourceNo: Integer);
 var
   res: TResourceDetails;
 begin
-  res := ResourceDetails[resourceNo];
-  inherited;
-  resourceNo := IndexOfResource(Res);
-  if resourceNo <> -1 then
-    FDetailList.Delete(resourceNo);
+ res := ResourceDetails[resourceNo];
+ inherited;
+ resourceNo := IndexOfResource(Res);
+ if resourceNo <> -1
+  then FDetailList.Delete(resourceNo);
 end;
 
 
@@ -1792,8 +1789,8 @@ end;
 
 constructor TPEResourceModule.Create;
 begin
-  inherited Create;
-  FDetailList := TObjectList.Create;
+ inherited Create;
+ FDetailList := TObjectList.Create;
 end;
 
 
@@ -1807,8 +1804,8 @@ end;
 
 destructor TPEResourceModule.Destroy;
 begin
-  FDetailList.Free;
-  inherited;
+ FreeAndNil(FDetailList);
+ inherited;
 end;
 
 
@@ -2311,11 +2308,11 @@ destructor TResourceNode.Destroy;
 var
   i: Integer;
 begin
-  for i := 0 to Count - 1 do
-    if not Nodes[i].Leaf then
-      Nodes[i].Next.Free;
+ for i := 0 to Count - 1 do
+  if not Nodes[i].Leaf
+   then Nodes[i].Next.Free;
 
-  inherited;
+ inherited;
 end;
 
 function TResourceNode.IsID(idx: Integer): boolean;

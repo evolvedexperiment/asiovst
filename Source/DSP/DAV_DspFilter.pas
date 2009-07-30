@@ -12,45 +12,28 @@ type
 
   TCustomFilter = class(TDspObject)
   private
-    procedure SetFrequency(Value: Double);
     procedure SetSampleRate(const Value: Double);
-    procedure SetGaindB(const Value: Double);
   protected
-    FGain_dB           : Double;
-    FGainFactor        : Double;
-    FGainFactorSquared : Double;
-    FSampleRate        : Double;
-    FFrequency, FW0    : Double;
-    FExpW0             : TComplexDouble;
-    FSRR               : Double; // reciprocal of FSampleRate
-    FOnChange          : TNotifyEvent;
-    procedure CalculateW0; virtual;
-    procedure CalculateGainFactor; virtual;
-    procedure CalculateCoefficients; virtual; abstract;
-    procedure AssignTo(Dest: TPersistent); override;
+    FSampleRate : Double;
+    FSRR        : Double; // reciprocal of FSampleRate
+    FOnChange   : TNotifyEvent;
     procedure SampleRateChanged; virtual;
-    procedure FrequencyChanged; virtual;
-    procedure GainChanged; virtual;
+    procedure CalculateReciprocalSamplerate; virtual;
     procedure Changed; virtual;
 
-    // Order
-    function GetOrder: Cardinal; virtual; abstract;
-    procedure SetOrder(const Value: Cardinal); virtual; abstract;
-
-    property GainFactor: Double read FGainFactor;
     property SampleRateReciprocal: Double read FSRR;
-    property ExpW0: TComplexDouble read FExpW0;
-    property W0: Double read FW0;
   public
     constructor Create; virtual;
+    function ProcessSampleASM: Double; virtual;
     function ProcessSample(const Input: Double): Double; overload; virtual; abstract;
     function ProcessSample(const Input: Int64): Int64; overload; virtual; abstract;
-    function ProcessSampleASM: Double; virtual;
     function MagnitudeSquared(const Frequency: Double): Double; virtual; abstract;
     function MagnitudeLog10(const Frequency: Double): Double; virtual; abstract;
-    function Phase(const Frequency: Double): Double; virtual;
     function Real(const Frequency: Double): Double; virtual; abstract;
     function Imaginary(const Frequency: Double): Double; virtual; abstract;
+    function Phase(const Frequency: Double): Double; virtual;
+    procedure PushStates; virtual; abstract;
+    procedure PopStates; virtual; abstract;
     procedure Complex(const Frequency: Double; out Real, Imaginary : Double); overload; virtual; abstract;
     procedure Complex(const Frequency: Double; out Real, Imaginary : Single); overload; virtual;
     procedure ResetStates; virtual; abstract;
@@ -58,18 +41,84 @@ type
     procedure Reset; virtual; abstract;
     procedure GetIR(ImpulseResonse : TDAVSingleDynArray); overload;
     procedure GetIR(ImpulseResonse : TDAVDoubleDynArray); overload;
-    procedure PushStates; virtual; abstract;
-    procedure PopStates; virtual; abstract;
 
-    property Gain: Double read FGain_dB write SetGaindB;
-    property Frequency: Double read FFrequency write SetFrequency;
-    property Order: Cardinal read GetOrder write SetOrder;
     property SampleRate: Double read FSampleRate write SetSampleRate;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
+  TCustomFilterCascade = class(TCustomFilter)
+  private
+    FOwnFilters: Boolean;
+    function GetFilter(Index: Integer): TCustomFilter;
+  protected
+    FFilterArray : array of TCustomFilter;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    function ProcessSample(const Input: Double): Double; overload; override;
+    function ProcessSample(const Input: Int64): Int64; overload; override;
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    function MagnitudeLog10(const Frequency: Double): Double; override;
+    function Real(const Frequency: Double): Double; override;
+    function Imaginary(const Frequency: Double): Double; override;
+    procedure AddFilter(Filter: TCustomFilter); virtual;
+    procedure Clear; virtual;
+    procedure Delete(Filter: TCustomFilter); overload; virtual;
+    procedure Delete(Index: Integer); overload; virtual;
+    procedure PushStates; override;
+    procedure PopStates; override;
+    procedure Complex(const Frequency: Double; out Real, Imaginary : Double); overload; override;
+    procedure ResetStates; override;
+    procedure ResetStatesInt64; override;
+    procedure Reset; override;
+
+    property OwnFilters: Boolean read FOwnFilters write FOwnFilters;
+    property Filter[Index: Integer]: TCustomFilter read GetFilter;
+  end;
+
+  TFilterCascade = class(TCustomFilterCascade)
+  published
+    property OwnFilters;
+  end;
+
+  TCustomFilterWithOrder = class(TCustomFilter)
+  protected
+    function GetOrder: Cardinal; virtual; abstract;
+    procedure SetOrder(const Value: Cardinal); virtual; abstract;
+  public  
+    property Order: Cardinal read GetOrder write SetOrder;
+  end;
+
+  TCustomGainFrequencyFilter = class(TCustomFilterWithOrder)
+  private
+    procedure SetFrequency(Value: Double);
+    procedure SetGaindB(const Value: Double);
+  protected
+    FGain_dB           : Double;
+    FGainFactor        : Double;
+    FGainFactorSquared : Double;
+    FFrequency, FW0    : Double;
+    FExpW0             : TComplexDouble;
+    procedure CalculateW0; virtual;
+    procedure CalculateGainFactor; virtual;
+    procedure CalculateCoefficients; virtual; abstract;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure FrequencyChanged; virtual;
+    procedure GainChanged; virtual;
+    procedure SampleRateChanged; override;
+
+    property GainFactor: Double read FGainFactor;
+    property ExpW0: TComplexDouble read FExpW0;
+    property W0: Double read FW0;
+  public
+    constructor Create; override;
+    property Gain: Double read FGain_dB write SetGaindB;
+    property Frequency: Double read FFrequency write SetFrequency;
+  end;
+
   TOrderFilterClass = class of TCustomOrderFilter;
-  TCustomOrderFilter = class(TCustomFilter)
+  TCustomOrderFilter = class(TCustomGainFrequencyFilter)
   protected
     FOrder: Cardinal;
     class function GetMaxOrder: Cardinal; virtual; abstract;
@@ -81,7 +130,7 @@ type
   end;
 
   TFIRFilterClass = class of TCustomFIRFilter;
-  TCustomFIRFilter = class(TCustomFilter)
+  TCustomFIRFilter = class(TCustomGainFrequencyFilter)
   private
     procedure SetKernelSize(const Value: Integer);
   protected
@@ -109,7 +158,7 @@ type
   end;
 
   TIIRFilterClass = class of TCustomIIRFilter;
-  TCustomIIRFilter = class(TCustomFilter)
+  TCustomIIRFilter = class(TCustomGainFrequencyFilter)
   end;
 
   TFirstOrderAllpassFilter = class(TCustomIIRFilter)
@@ -218,45 +267,40 @@ implementation
 uses
   Math, SysUtils, DAV_DspDFT;
 
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+
 { TCustomFilter }
 
 constructor TCustomFilter.Create;
 begin
- FGain_dB           := 0;
- FGainFactor        := 1;
- FGainFactorSquared := 1;
- FSampleRate        := 44100;
- FSRR               := 1 / FSampleRate;
- FFrequency         := 1000;
- CalculateW0;
+ FSampleRate := 44100;
+ CalculateReciprocalSamplerate;
 end;
 
-procedure TCustomFilter.AssignTo(Dest: TPersistent);
+procedure TCustomFilter.Changed;
 begin
- if Dest is TCustomFilter then
+ if assigned(FOnChange) then FOnChange(Self);
+end;
+
+procedure TCustomFilter.SampleRateChanged;
+begin
+ Changed;
+end;
+
+procedure TCustomFilter.CalculateReciprocalSamplerate;
+begin
+ FSRR := 1 / FSampleRate;
+end;
+
+procedure TCustomFilter.SetSampleRate(const Value: Double);
+begin
+ if FSampleRate <> Value then
   begin
-   TCustomFilter(Dest).FGain_dB    := FGain_dB;
-   TCustomFilter(Dest).FGainFactor := FGainFactor;
-   TCustomFilter(Dest).FSampleRate := FSampleRate;
-   TCustomFilter(Dest).FSRR        := FSRR;
-   TCustomFilter(Dest).FW0         := FW0;
-   TCustomFilter(Dest).FExpW0      := FExpW0;
-  end
- else inherited;
-end;
-
-procedure TCustomFilter.CalculateGainFactor;
-begin
- FGainFactor := dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
- FGainFactorSquared := sqr(FGainFactor);
-end;
-
-procedure TCustomFilter.CalculateW0;
-begin
- FW0 := 2 * Pi * FFrequency * FSRR;
- GetSinCos(FW0, FExpW0.Im, FExpW0.Re);
- if FW0 > 3.141
-  then FW0 := 3.141;
+   FSampleRate := Value;
+   CalculateReciprocalSamplerate;
+   SampleRateChanged;
+  end;
 end;
 
 procedure TCustomFilter.Complex(const Frequency: Double; out Real,
@@ -268,25 +312,6 @@ begin
  Complex(Frequency, Complex64.Re, Complex64.Im);
  Real := Complex64.Re;
  Imaginary := Complex64.Im;
-end;
-
-procedure TCustomFilter.Changed;
-begin
- if assigned(FOnChange) then FOnChange(Self);
-end;
-
-procedure TCustomFilter.FrequencyChanged;
-begin
- CalculateW0;
- CalculateCoefficients;
- Changed;
-end;
-
-procedure TCustomFilter.GainChanged;
-begin
- CalculateGainFactor;
- CalculateCoefficients;
- Changed;
 end;
 
 procedure TCustomFilter.GetIR(ImpulseResonse: TDAVSingleDynArray);
@@ -340,14 +365,258 @@ asm
 end;
 {$ENDIF}
 
-procedure TCustomFilter.SampleRateChanged;
+{ TCustomFilterCascade }
+
+constructor TCustomFilterCascade.Create;
+begin
+ inherited;
+ SetLength(FFilterArray, 0);
+ OwnFilters := True;
+end;
+
+procedure TCustomFilterCascade.Delete(Filter: TCustomFilter);
+var
+  i : Integer;
+begin
+ i := 0;
+ while i < Length(FFilterArray) do
+  if FFilterArray[i] = Filter then
+   begin
+    if (Length(FFilterArray) - 1 - i) > 0
+     then Move(FFilterArray[i + 1], FFilterArray[i], (Length(FFilterArray) - 1 - i) * SizeOf(Single));
+    SetLength(FFilterArray, Length(FFilterArray) - 1);
+   end
+  else inc(i);
+ if OwnFilters
+  then FreeAndNil(Filter);
+end;
+
+procedure TCustomFilterCascade.Delete(Index: Integer);
+begin
+ if (Index >= 0) and (Index < Length(FFilterArray))
+  then
+   begin
+    if OwnFilters then FreeAndNil(FFilterArray[Index]);
+    if (Length(FFilterArray) - 1 - Index) > 0
+     then Move(FFilterArray[Index + 1], FFilterArray[Index], (Length(FFilterArray) - 1 - Index) * SizeOf(Single));
+    SetLength(FFilterArray, Length(FFilterArray) - 1);
+   end
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
+end;
+
+destructor TCustomFilterCascade.Destroy;
+begin
+ Clear;
+ inherited;
+end;
+
+procedure TCustomFilterCascade.AddFilter(Filter: TCustomFilter);
+begin
+ SetLength(FFilterArray, Length(FFilterArray) + 1);
+ FFilterArray[Length(FFilterArray) - 1] := Filter;
+end;
+
+function TCustomFilterCascade.GetFilter(Index: Integer): TCustomFilter;
+begin
+ if (Index >= 0) and (Index < Length(FFilterArray))
+  then result := FFilterArray[Index]
+  else result := nil;
+end;
+
+procedure TCustomFilterCascade.Complex(const Frequency: Double; out Real,
+  Imaginary: Double);
+var
+  i   : Integer;
+  Tmp : TComplexDouble;
+begin
+ if Length(FFilterArray) = 0 then exit;
+ assert(assigned(FFilterArray[0]));
+ FFilterArray[0].Complex(Frequency, Real, Imaginary);
+ for i := 1 to Length(FFilterArray) - 1 do
+  begin
+   assert(assigned(FFilterArray[i]));
+   FFilterArray[i].Complex(Frequency, Tmp.Re, Tmp.Im);
+   ComplexMultiply(Real, Imaginary, Tmp.Re, Tmp.Im);
+  end;
+end;
+
+function TCustomFilterCascade.Real(const Frequency: Double): Double;
+var
+  Imag : Double;
+begin
+ Complex(Frequency, Result, Imag);
+end;
+
+function TCustomFilterCascade.Imaginary(const Frequency: Double): Double;
+var
+  Real : Double;
+begin
+ Complex(Frequency, Real, Result);
+end;
+
+function TCustomFilterCascade.MagnitudeLog10(const Frequency: Double): Double;
+begin
+ Result := 10 * log10(MagnitudeSquared(Frequency));
+end;
+
+function TCustomFilterCascade.MagnitudeSquared(const Frequency: Double): Double;
+var
+  i   : Integer;
+begin
+ if Length(FFilterArray) = 0 then
+  begin
+   result := 1;
+   exit;
+  end;
+ assert(assigned(FFilterArray[0]));
+ result := FFilterArray[0].MagnitudeSquared(Frequency);
+ for i := 1 to Length(FFilterArray) - 1 do
+  begin
+   assert(assigned(FFilterArray[i]));
+   result := result * FFilterArray[i].MagnitudeSquared(Frequency);
+  end;
+end;
+
+procedure TCustomFilterCascade.PopStates;
+var
+  i : Integer;
+begin
+ for i := 0 to Length(FFilterArray) - 1
+  do FFilterArray[i].PopStates;
+end;
+
+procedure TCustomFilterCascade.PushStates;
+var
+  i : Integer;
+begin
+ for i := 0 to Length(FFilterArray) - 1
+  do FFilterArray[i].PushStates;
+end;
+
+procedure TCustomFilterCascade.Reset;
+var
+  i : Integer;
+begin
+ for i := 0 to Length(FFilterArray) - 1
+  do FFilterArray[i].Reset;
+end;
+
+procedure TCustomFilterCascade.ResetStates;
+var
+  i : Integer;
+begin
+ for i := 0 to Length(FFilterArray) - 1
+  do FFilterArray[i].ResetStates;
+end;
+
+procedure TCustomFilterCascade.ResetStatesInt64;
+var
+  i : Integer;
+begin
+ for i := 0 to Length(FFilterArray) - 1
+  do FFilterArray[i].ResetStatesInt64;
+end;
+
+procedure TCustomFilterCascade.Clear;
+var
+  i : Integer;
+begin
+ if OwnFilters then
+  for i := 0 to Length(FFilterArray) - 1 do
+   if assigned(FFilterArray[i])
+    then FreeAndNil(FFilterArray[i]);
+ SetLength(FFilterArray, 0);
+end;
+
+procedure TCustomFilterCascade.SampleRateChanged;
+var
+  i : Integer;
+begin
+ inherited;
+ for i := 0 to Length(FFilterArray) - 1
+  do FFilterArray[i].SampleRate := SampleRate;
+end;
+
+function TCustomFilterCascade.ProcessSample(const Input: Double): Double;
+var
+  i : Integer;
+begin
+ result := Input;
+ for i := 0 to Length(FFilterArray) - 1
+  do result := FFilterArray[i].ProcessSample(result);
+end;
+
+function TCustomFilterCascade.ProcessSample(const Input: Int64): Int64;
+var
+  i : Integer;
+begin
+ result := Input;
+ for i := 0 to Length(FFilterArray) - 1
+  do result := FFilterArray[i].ProcessSample(result);
+end;
+
+{ TCustomGainFrequencyFilter }
+
+constructor TCustomGainFrequencyFilter.Create;
+begin
+ inherited;
+ FGain_dB           := 0;
+ FGainFactor        := 1;
+ FGainFactorSquared := 1;
+ FFrequency         := 1000;
+ CalculateW0;
+end;
+
+procedure TCustomGainFrequencyFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomGainFrequencyFilter then
+  begin
+   TCustomGainFrequencyFilter(Dest).FGain_dB    := FGain_dB;
+   TCustomGainFrequencyFilter(Dest).FGainFactor := FGainFactor;
+   TCustomGainFrequencyFilter(Dest).FSampleRate := FSampleRate;
+   TCustomGainFrequencyFilter(Dest).FSRR        := FSRR;
+   TCustomGainFrequencyFilter(Dest).FW0         := FW0;
+   TCustomGainFrequencyFilter(Dest).FExpW0      := FExpW0;
+  end
+ else inherited;
+end;
+
+procedure TCustomGainFrequencyFilter.CalculateGainFactor;
+begin
+ FGainFactor := dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
+ FGainFactorSquared := sqr(FGainFactor);
+end;
+
+procedure TCustomGainFrequencyFilter.CalculateW0;
+begin
+ FW0 := 2 * Pi * FFrequency * FSRR;
+ GetSinCos(FW0, FExpW0.Im, FExpW0.Re);
+ if FW0 > 3.141
+  then FW0 := 3.141;
+end;
+
+procedure TCustomGainFrequencyFilter.FrequencyChanged;
 begin
  CalculateW0;
  CalculateCoefficients;
  Changed;
 end;
 
-procedure TCustomFilter.SetFrequency(Value: Double);
+procedure TCustomGainFrequencyFilter.GainChanged;
+begin
+ CalculateGainFactor;
+ CalculateCoefficients;
+ Changed;
+end;
+
+procedure TCustomGainFrequencyFilter.SampleRateChanged;
+begin
+ CalculateW0;
+ CalculateCoefficients;
+ inherited;
+end;
+
+procedure TCustomGainFrequencyFilter.SetFrequency(Value: Double);
 begin
  if Value > 1E-10
   then Value := Value
@@ -359,7 +628,7 @@ begin
   end;
 end;
 
-procedure TCustomFilter.SetGaindB(const Value: Double);
+procedure TCustomGainFrequencyFilter.SetGaindB(const Value: Double);
 begin
  if FGain_dB <> Value then
   begin
@@ -367,17 +636,6 @@ begin
    GainChanged;
   end;
 end;
-
-procedure TCustomFilter.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   FSRR :=  1 / FSampleRate;
-   SampleRateChanged;
-  end;
-end;
-
 
 { TCustomOrderFilter }
 

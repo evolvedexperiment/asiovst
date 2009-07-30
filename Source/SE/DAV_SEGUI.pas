@@ -563,7 +563,7 @@ begin
 *)
 end;
 
-function TSEGUIBase.getPin(Index: Integer): TSeGuiPin;
+function TSEGUIBase.GetPin(Index: Integer): TSeGuiPin;
 begin
   // there are no pins.
   // pins currently hold no state, implement them as a flyweight (saves having
