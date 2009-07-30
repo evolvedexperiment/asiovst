@@ -7,8 +7,9 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEFiltersPins = (pinInput, pinOutput, pinFilterReference, pinFrequency,
-    pinGain, pinBandwidth, pinShape);
+  TSEFiltersPins = (pinInput, pinOutput,
+    {$IFDEF FilterReference} pinFilterReference, {$ENDIF}
+    pinFrequency, pinGain, pinBandwidth, pinShape);
 
   TCustomSEFiltersModule = class(TSEModuleBase)
   private
@@ -16,7 +17,9 @@ type
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFilter       : TBiquadIIRFilter;
+    {$IFDEF FilterReference}
     FFilterRef    : Pointer;
+    {$ENDIF}
     FStaticCount  : Integer;
     procedure ChooseProcess;
     procedure Open; override;
@@ -24,6 +27,7 @@ type
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
@@ -134,14 +138,51 @@ type
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
   end;
 
+  {$IFDEF FilterReference}
+  TFilterCascadeModule = class(TSEModuleBase)
+  protected
+    FInputBuffer   : PDAVSingleFixedArray; // pointer to circular buffer of samples
+    FOutputBuffer  : PDAVSingleFixedArray;
+    FFilterCascade : TFilterCascade;
+    FFilterRef     : Pointer;
+    FFilterRefs    : array of Pointer;
+    FStaticCount   : Integer;
+    procedure ChooseProcess;
+    procedure Open; override;
+    procedure SampleRateChanged; override;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
+  public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
+    destructor Destroy; override;
+
+    function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
+    class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
+    procedure SubProcess(const BufferOffset, SampleFrames: Integer); virtual;
+  end;
+  {$ENDIF}
+
 implementation
 
 uses
   Math, SysUtils;
 
+constructor TCustomSEFiltersModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ {$IFDEF FilterReference}
+ FFilterRef := FFilter;
+ {$ENDIF}
+end;
+
 destructor TCustomSEFiltersModule.Destroy;
 begin
- // This is where you free any memory/resources your module has created
+ {$IFDEF FilterReference}
+ FFilterRef := nil;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stRun);
+ {$ENDIF}
+
  FreeAndNil(FFilter);
  inherited;
 end;
@@ -152,9 +193,11 @@ begin
 
  // choose which function is used to process audio
  OnProcess := SubProcess;
- FFilterRef := FFilter;
 
- Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stStatic);
+ {$IFDEF FilterReference}
+ FFilterRef := FFilter;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stRun);
+ {$ENDIF}
 
  // let 'downstream' modules know audio data is coming
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
@@ -163,11 +206,12 @@ end;
 procedure TCustomSEFiltersModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- if CurrentPin.PinID = 0 then
-  begin
-   ChooseProcess;
-   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
-  end;
+ case TSEFiltersPins(CurrentPin.PinID) of
+  pinInput : begin
+              ChooseProcess;
+              Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+             end;
+ end;
 end;
 
 // The most important part, processing the audio
@@ -185,9 +229,6 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
- FFilterRef := @FFilter;
- Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stStatic);
 
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
@@ -251,6 +292,7 @@ begin
       Datatype        := dtFSample;
      end;
 
+  {$IFDEF FilterReference}
   // filter reference
   pinFilterReference:
     with Properties^ do
@@ -258,11 +300,14 @@ begin
       Name            := 'Filter Reference';
       VariableAddress := @FFilterRef;
       Direction       := drOut;
-      Datatype        := dtInteger;
+      Datatype        := dtFilterReference;
+      DefaultValue    := PAnsiChar(IntToStr(Integer(FFilterRef)));
+//      Flags           := [iofHideWhenLocked];
      end;
+  {$ENDIF}
 
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+ end;
 end;
 
 
@@ -340,11 +385,11 @@ end;
 
 constructor TSEBasicLowpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicLowpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicLowpassModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -367,11 +412,11 @@ end;
 
 constructor TSEBasicHighpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicHighpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicHighpassModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -394,11 +439,11 @@ end;
 
 constructor TSEBasicBandpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicBandpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicBandpassModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -421,11 +466,11 @@ end;
 
 constructor TSEBasicNotchModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicNotchFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicNotchModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -448,11 +493,11 @@ end;
 
 constructor TSEBasicLowshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicLowShelfFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicLowshelfModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -476,11 +521,11 @@ end;
 constructor TSEBasicLowshelfAModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicLowShelfAFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicLowshelfAModule.GetModuleProperties(
@@ -505,11 +550,11 @@ end;
 constructor TSEBasicLowshelfBModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicLowShelfBFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicLowshelfBModule.GetModuleProperties(
@@ -533,11 +578,11 @@ end;
 
 constructor TSEBasicHighshelfModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicHighshelfFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicHighshelfModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -561,11 +606,11 @@ end;
 constructor TSEBasicHighshelfAModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicHighshelfAFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicHighshelfAModule.GetModuleProperties(
@@ -590,11 +635,11 @@ end;
 constructor TSEBasicHighshelfBModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicHighshelfBFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicHighshelfBModule.GetModuleProperties(
@@ -618,11 +663,11 @@ end;
 
 constructor TSEBasicPeakModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicPeakFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicPeakModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -645,11 +690,11 @@ end;
 
 constructor TSEBasicAllpassModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TBasicAllpassFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicAllpassModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -753,11 +798,11 @@ end;
 
 constructor TSEBasicShapeModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- inherited;
  FFilter := TShapeFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
+ inherited;
 end;
 
 class procedure TSEBasicShapeModule.GetModuleProperties(Properties: PSEModuleProperties);
@@ -823,5 +868,161 @@ begin
    Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
   end;
 end;
+
+{ TFilterCascadeModule }
+
+{$IFDEF FilterReference}
+constructor TFilterCascadeModule.Create(SEAudioMaster: TSE2audioMasterCallback;
+  Reserved: Pointer);
+begin
+ inherited;
+ FFilterCascade := TFilterCascade.Create;
+ FFilterCascade.OwnFilters := False;
+ FFilterRef := FFilterCascade;
+end;
+
+destructor TFilterCascadeModule.Destroy;
+begin
+ FFilterRef := nil;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stRun);
+ FreeAndNil(FFilterCascade);
+ inherited;
+end;
+
+procedure TFilterCascadeModule.Open;
+var
+  DynamicPlugCount : Integer;
+  Plug             : Integer;
+begin
+ inherited Open;
+
+ // choose which function is used to process audio
+ OnProcess := SubProcess;
+
+ DynamicPlugCount := CallHost(SEAudioMasterGetTotalPinCount) - 3;
+ SetLength(FFilterRefs, DynamicPlugCount);
+ FFilterCascade.Clear;
+
+ for Plug := 0 to DynamicPlugCount - 1 do
+  try
+   FFilterRefs[Plug] := Pointer(CallHost(SEAudioMasterGetPinVarAddress, 3 + Plug));
+   if FFilterRefs[Plug] <> nil
+    then FFilterCascade.AddFilter(TCustomFilter(FFilterRefs[Plug]^));
+  except  
+  end;
+
+ // FFilterRef := FFilter;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stRun);
+
+ // let 'downstream' modules know audio data is coming
+ Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
+end;
+
+procedure TFilterCascadeModule.ChooseProcess;
+begin
+ if Pin[Integer(pinInput)].Status = stRun
+  then OnProcess := SubProcess
+  else
+   begin
+    FStaticCount := BlockSize;
+    OnProcess := SubProcessStatic;
+   end;
+end;
+
+class procedure TFilterCascadeModule.GetModuleProperties(Properties: PSEModuleProperties);
+begin
+ inherited;
+
+ with Properties^ do
+  begin
+   Name := 'Filter Cascade';
+
+   // Info, may include Author, Web page whatever
+   About := 'by Christian-W. Budde';
+
+   SdkVersion := CSeSdkVersion;
+  end;
+end;
+
+function TFilterCascadeModule.GetPinProperties(const Index: Integer;
+  Properties: PSEPinProperties): Boolean;
+begin
+ result := True;
+ case Index of
+  0: with Properties^ do
+      begin
+       Name            := 'Input';
+       VariableAddress := @FInputBuffer;
+       Direction       := drIn;
+       Flags           := [iofLinearInput];
+       Datatype        := dtFSample;
+       DefaultValue    := '0';
+      end;
+  1: with Properties^ do
+      begin
+       Name            := 'Output';
+       VariableAddress := @FOutputBuffer;
+       Direction       := drOut;
+       Datatype        := dtFSample;
+      end;
+  2: with Properties^ do
+      begin
+       Name            := 'Filter Reference';
+       VariableAddress := @FFilterRef;
+       Direction       := drOut;
+       Datatype        := dtFilterReference;
+      end;
+  3: with Properties^ do
+      begin
+       Name            := 'Filter Reference';
+       Direction       := drIn;
+       Datatype        := dtFilterReference;
+       Flags           := [iofAutoDuplicate, iofRename];
+      end;
+
+  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;;
+end;
+
+procedure TFilterCascadeModule.PlugStateChange(const CurrentPin: TSEPin);
+begin
+ inherited;
+ case TSEFiltersPins(CurrentPin.PinID) of
+  pinInput : begin
+              ChooseProcess;
+              Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+             end;
+ end;
+end;
+
+procedure TFilterCascadeModule.SampleRateChanged;
+begin
+ inherited;
+ FFilterCascade.SampleRate := SampleRate;
+end;
+
+procedure TFilterCascadeModule.SubProcess(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Sample : Integer;
+begin
+ Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
+ Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+
+ for Sample := 0 to SampleFrames - 1
+  do Output^[Sample] := FFilterCascade.ProcessSample(Input[Sample] + cDenorm64);
+end;
+
+procedure TFilterCascadeModule.SubProcessStatic(const BufferOffset,
+  SampleFrames: Integer);
+begin
+ SubProcess(BufferOffset, SampleFrames);
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+end;
+{$ENDIF}
 
 end.

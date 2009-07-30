@@ -8,8 +8,9 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSELightweightFiltersPins = (pinInput, pinOutput, pinFilterReference, pinFrequency,
-    pinGain, pinBandwidth, pinShape);
+  TSELightweightFiltersPins = (pinInput, pinOutput,
+    {$IFDEF FilterReference} pinFilterReference, {$ENDIF}
+    pinFrequency, pinGain, pinBandwidth, pinShape);
 
   TCustomSELightweightFiltersModule = class(TSEModuleBase)
   private
@@ -17,7 +18,9 @@ type
     FInputBuffer  : PDAVSingleFixedArray; // pointer to circular buffer of samples
     FOutputBuffer : PDAVSingleFixedArray;
     FFilter       : TBiquadIIRFilter;
+    {$IFDEF FilterReference}
     FFilterRef    : Pointer;
+    {$ENDIF}
     FStaticCount  : Integer;
     procedure ChooseProcess;
     procedure Open; override;
@@ -25,6 +28,7 @@ type
     procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
+    constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
 
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
@@ -140,9 +144,22 @@ implementation
 uses
   Math, SysUtils;
 
+constructor TCustomSELightweightFiltersModule.Create(
+  SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
+begin
+ inherited;
+ {$IFDEF FilterReference}
+ FFilterRef := FFilter;
+ {$ENDIF}
+end;
+
 destructor TCustomSELightweightFiltersModule.Destroy;
 begin
- // This is where you free any memory/resources your module has created
+ {$IFDEF FilterReference}
+ FFilterRef := nil;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stRun);
+ {$ENDIF}
+
  FreeAndNil(FFilter);
  inherited;
 end;
@@ -153,9 +170,11 @@ begin
 
  // choose which function is used to process audio
  OnProcess := SubProcess;
- FFilterRef := FFilter;
 
- Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stStatic);
+ {$IFDEF FilterReference}
+ FFilterRef := FFilter;
+ Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stRun);
+ {$ENDIF}
 
  // let 'downstream' modules know audio data is coming
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
@@ -186,9 +205,6 @@ var
 begin
  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
-
- FFilterRef := @FFilter;
- Pin[Integer(pinFilterReference)].TransmitStatusChange(SampleClock, stStatic);
 
  for Sample := 0 to SampleFrames - 1
   do Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
@@ -252,6 +268,7 @@ begin
       Datatype        := dtFSample;
      end;
 
+  {$IFDEF FilterReference}
   // filter reference
   pinFilterReference:
     with Properties^ do
@@ -261,6 +278,7 @@ begin
       Direction       := drOut;
       Datatype        := dtInteger;
      end;
+  {$ENDIF}
 
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;

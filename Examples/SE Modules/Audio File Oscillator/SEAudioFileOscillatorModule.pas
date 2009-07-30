@@ -10,9 +10,9 @@ uses
 type
   // define some constants to make referencing in/outs clearer
   TSEAudioFileOscillatorPins = (pinFileName, pinInterpolation, pinReset,
-    pinPlaybackSpeed, pinOutput);
+    pinPlaybackSpeed, pinOutput, pinAudiodata);
 
-  TInterpolationMethod = (imNone, imLinear, imHermite);
+  TInterpolationMethod = (imNone, imLinear, imHermite, imBSpline4);
 
   TSEAudioFileOscillatorModule = class(TSEModuleBase)
   private
@@ -42,13 +42,20 @@ type
     procedure SubProcessBypass(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessNoInterpolation(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessLinearInterpolation(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessHermiteInterpolation(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessBSpline4Interpolation(const BufferOffset, SampleFrames: Integer);
     {$IFDEF UseEmbedding}
     procedure SubProcessNoInterpolationMulti(const BufferOffset, SampleFrames: Integer);
     procedure SubProcessLinearInterpolationMulti(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessHermiteInterpolationMulti(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessBSpline4InterpolationMulti(const BufferOffset, SampleFrames: Integer);
     {$ENDIF}
   end;
 
 implementation
+
+uses
+  DAV_DspInterpolation;
 
 {$IFDEF UseEmbedding}
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
@@ -157,14 +164,18 @@ begin
     {$IFDEF UseEmbedding}
     if (FContainedData.Count = 1) and (FAudioData.ChannelCount > 1) then
      case FInterpolation of
-        imNone : OnProcess := SubProcessNoInterpolationMulti;
-      imLinear : OnProcess := SubProcessLinearInterpolationMulti;
+          imNone : OnProcess := SubProcessNoInterpolationMulti;
+        imLinear : OnProcess := SubProcessLinearInterpolationMulti;
+       imHermite : OnProcess := SubProcessHermiteInterpolationMulti;
+      imBSpline4 : OnProcess := SubProcessBSpline4InterpolationMulti;
      end
     else
     {$ENDIF}
      case FInterpolation of
-        imNone : OnProcess := SubProcessNoInterpolation;
-      imLinear : OnProcess := SubProcessLinearInterpolation;
+          imNone : OnProcess := SubProcessNoInterpolation;
+        imLinear : OnProcess := SubProcessLinearInterpolation;
+       imHermite : OnProcess := SubProcessHermiteInterpolation;
+      imBSpline4 : OnProcess := SubProcessBSpline4Interpolation;
      end;
 end;
 
@@ -222,7 +233,6 @@ begin
 end;
 {$ENDIF}
 
-// The most important part, processing the audio
 procedure TSEAudioFileOscillatorModule.SubProcessLinearInterpolation(const BufferOffset,
   SampleFrames: Integer);
 var
@@ -332,6 +342,260 @@ begin
 end;
 {$ENDIF}
 
+procedure TSEAudioFileOscillatorModule.SubProcessHermiteInterpolation(const BufferOffset,
+  SampleFrames: Integer);
+var
+  Sample : Integer;
+  Offset : Integer;
+  Ratio  : Single;
+  Data   : TDAV4SingleArray;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     Offset := FastTrunc(FPosition);
+     if Offset + 3 >= FAudioData[0].SampleCount then
+      begin
+       Ratio := FPosition - Offset;
+       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       FOutputBuffer[BufferOffset + Sample] := Hermite32_asm(Ratio, @Data[0]);
+      end
+     else
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         Hermite32_asm(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+      end;
+
+     // wrap around
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     Offset := FastTrunc(FPosition) + 1;
+     while Offset >= FAudioData[0].SampleCount do
+      begin
+       FPosition := FPosition - FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+     while Offset < 0 do
+      begin
+       FPosition := FPosition + FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+{$IFDEF UseEmbedding}
+procedure TSEAudioFileOscillatorModule.SubProcessHermiteInterpolationMulti(
+  const BufferOffset, SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Offset  : Integer;
+  Channel : Integer;
+  Ratio   : Single;
+  Data    : TDAV4SingleArray;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     Offset := FastTrunc(FPosition);
+     if Offset + 1 >= FAudioData[0].SampleCount then
+      begin
+       Ratio := FPosition - Offset;
+       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       FOutputBuffer[BufferOffset + Sample] := Hermite32_asm(Ratio, @Data[0]);
+      end
+     else
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         Hermite32_asm(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+
+       for Channel := 0 to Length(FExtraOutputBuffers) - 1
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+           Hermite32_asm(Ratio, @FAudioData[Channel + 1].ChannelDataPointer^[Offset]);
+      end;
+
+     // wrap around 
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     Offset := FastTrunc(FPosition) + 1;
+     while Offset >= FAudioData[0].SampleCount do
+      begin
+       FPosition := FPosition - FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+     while Offset < 0 do
+      begin
+       FPosition := FPosition + FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+{$ENDIF}
+
+procedure TSEAudioFileOscillatorModule.SubProcessBSpline4Interpolation(
+  const BufferOffset, SampleFrames: Integer);
+var
+  Sample : Integer;
+  Offset : Integer;
+  Ratio  : Single;
+  Data   : TDAV4SingleArray;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     Offset := FastTrunc(FPosition);
+     if Offset + 3 >= FAudioData[0].SampleCount then
+      begin
+       Ratio := FPosition - Offset;
+       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       FOutputBuffer[BufferOffset + Sample] := BSplineInterpolation4Point3rdOrder(Ratio, Data);
+      end
+     else
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+      end;
+
+     // wrap around
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     Offset := FastTrunc(FPosition) + 1;
+     while Offset >= FAudioData[0].SampleCount do
+      begin
+       FPosition := FPosition - FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+     while Offset < 0 do
+      begin
+       FPosition := FPosition + FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+{$IFDEF UseEmbedding}
+procedure TSEAudioFileOscillatorModule.SubProcessBSpline4InterpolationMulti(
+  const BufferOffset, SampleFrames: Integer);
+var
+  Sample  : Integer;
+  Offset  : Integer;
+  Channel : Integer;
+  Ratio   : Single;
+  Data    : TDAV4SingleArray;
+begin
+ FCriticalSection.Enter;
+ try
+  if FAudioData.SampleFrames > 0 then
+   for Sample := 0 to SampleFrames - 1 do
+    begin
+     Offset := FastTrunc(FPosition);
+     if Offset + 1 >= FAudioData[0].SampleCount then
+      begin
+       Ratio := FPosition - Offset;
+       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       inc(Offset);
+       if Offset >= FAudioData[0].SampleCount then Offset := 0;
+       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+
+       FOutputBuffer[BufferOffset + Sample] := BSplineInterpolation4Point3rdOrder(Ratio, Data);
+      end
+     else
+      begin
+       Ratio := FPosition - Offset;
+       FOutputBuffer[BufferOffset + Sample] :=
+         BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+
+       for Channel := 0 to Length(FExtraOutputBuffers) - 1
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+           BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[Channel + 1].ChannelDataPointer^[Offset]);
+      end;
+
+     // wrap around
+     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+     Offset := FastTrunc(FPosition) + 1;
+     while Offset >= FAudioData[0].SampleCount do
+      begin
+       FPosition := FPosition - FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+     while Offset < 0 do
+      begin
+       FPosition := FPosition + FAudioData[0].SampleCount;
+       Offset := FastTrunc(FPosition) + 1;
+      end;
+    end
+   else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+{$ENDIF}
+
 procedure TSEAudioFileOscillatorModule.SubProcessBypass(const BufferOffset,
   SampleFrames: Integer);
 begin
@@ -415,7 +679,7 @@ begin
                        VariableAddress := @FInterpolation;
                        Direction       := drIn;
                        Datatype        := dtEnum;
-                       DatatypeExtra   := 'none, linear';
+                       DatatypeExtra   := 'none, linear, hermite, bspline4';
                       end;
           pinReset : with Properties^ do
                       begin
@@ -437,6 +701,13 @@ begin
                        VariableAddress := @FOutputBuffer;
                        Direction       := drOut;
                        Datatype        := dtFSample;
+                      end;
+      pinAudiodata : with Properties^ do
+                      begin
+                       Name            := 'Audiodata';
+                       VariableAddress := @FOutputBuffer;
+                       Direction       := drOut;
+                       Datatype        := dtExperimental;
                       end;
   else
    begin

@@ -11,8 +11,11 @@ uses
 {$E sem}
 {$R *.res}
 
+{$UNDEF FilterReference}
+
 const
-  CModuleClasses : array [0..25] of TSEModuleBaseClass = (
+  CX = {$IFDEF FilterReference}1{$ELSE}0{$ENDIF};
+  CModuleClasses : array [0..25 + CX] of TSEModuleBaseClass = (
     TSEBasicLowpassModule, TSEBasicHighpassModule, TSEBasicBandpassModule,
     TSEBasicNotchModule, TSEBasicLowshelfModule, TSEBasicLowshelfAModule,
     TSEBasicLowshelfBModule, TSEBasicHighshelfModule, TSEBasicHighshelfAModule,
@@ -23,7 +26,8 @@ const
     TSELightweightLowshelfAModule, TSELightweightLowshelfBModule,
     TSELightweightHighshelfModule, TSELightweightHighshelfAModule,
     TSELightweightHighshelfBModule, TSELightweightPeakModule,
-    TSELightweightAllpassModule, TSELightweightShapeModule);
+    TSELightweightAllpassModule, TSELightweightShapeModule
+    {$IFDEF FilterReference}, TFilterCascadeModule{$ENDIF});
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
