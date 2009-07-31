@@ -309,17 +309,10 @@ end;
 
 procedure TCustomGuiGroup.Paint;
 var
-  BorderRect,
-  TextBounds     : TRect;
-  Format         : UINT;
-  Buffer         : TBitmap;
+  BorderRect : TRect;
+  Buffer     : TBitmap;
 begin
-
  BorderRect := ClientRect;
- if BidiMode = bdRightToLeft
-  then Format := DT_Top or DT_Right or DT_SINGLELINE
-  else Format := DT_Top or DT_Left or DT_SINGLELINE;
- Format := DT_Top or DT_Left or DT_SINGLELINE;
 
  if not FOwnerDraw or (Width <= 0) or (Height <= 0) then
   begin
@@ -439,7 +432,7 @@ var
   Steps, i : Integer;
   LineOffs : array[0..1] of Integer;
   PntArray : array of TPoint;
-  rct      : TRect;
+//  rct      : TRect;
   tmp      : Single;
   rad      : Integer;
   TextSize : TSize;

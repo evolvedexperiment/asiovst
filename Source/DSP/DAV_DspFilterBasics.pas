@@ -57,13 +57,21 @@ type
   end;
 
   TBasicHighcutFilter = class(TBiquadIIRFilter)
+  private
   protected
     procedure CalculateCoefficients; override;
+  public
+    function MagnitudeSquared(const Frequency: Double): Double; override;
+    procedure Complex(const Frequency: Double; out Real: Double;
+      out Imaginary: Double); override;
   end;
 
   TBasicLowcutFilter = class(TBiquadIIRFilter)
   protected
     procedure CalculateCoefficients; override;
+  public
+    procedure Complex(const Frequency: Double; out Real: Double;
+      out Imaginary: Double); override;
   end;
 
   TBasicLowpassFilter = class(TBasicHighcutFilter);
@@ -273,6 +281,30 @@ begin
  CalcPolesZeros;
 end;
 
+function TBasicHighcutFilter.MagnitudeSquared(const Frequency: Double): Double;
+var
+  cw : Double;
+begin
+ cw := 2 * cos(2 * Frequency * Pi * FSRR);
+ Result := (sqr(FNominator[0]) * sqr(cw + 2))
+         / (sqr(1 - FDenominator[2]) + sqr(FDenominator[1]) +
+           (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw);
+end;
+
+procedure TBasicHighcutFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
+var
+  cw, Divider : Double;
+begin
+ cw := cos(2 * Frequency * Pi * FSRR);
+ Divider   := FNominator[0] / (sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
+                    + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
+ Real      := (1 + (2 * FDenominator[1] + FDenominator[2])
+              + 2 * cw * (FDenominator[2] + FDenominator[1] + 1)
+              + (2 * sqr(cw)-1) * (FDenominator[2] + 1)) * Divider;
+ Imaginary := (2 * (1 - FDenominator[2])
+              + 2 * cw * (1 - FDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
+end;
+
 { TBasicLowcutFilter }
 
 procedure TBasicLowcutFilter.CalculateCoefficients;
@@ -287,6 +319,21 @@ begin
  FDenominator[1] := -2 * cn * t;
  FDenominator[2] := (1 - FAlpha) * t;
  CalcPolesZeros;
+end;
+
+procedure TBasicLowcutFilter.Complex(const Frequency: Double; out Real,
+  Imaginary: Double);
+var
+  cw, Divider : Double;
+begin
+ cw := cos(2 * Frequency * Pi * FSRR);
+ Divider   := FNominator[0] / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
+                + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
+ Real      := ((1 - 2 * FDenominator[1] + FDenominator[2])
+              + cw * 2 * (FDenominator[1] + FDenominator[2] - 1)
+              + (2 * sqr(cw) - 1) * (FDenominator[2] + 1)) * Divider;
+ Imaginary := ( 2 * (FDenominator[2] - 1)
+              + 2 * cw * (1 - FDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
 end;
 
 { TBasicBandpassFilter }

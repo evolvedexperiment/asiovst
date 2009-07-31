@@ -6,13 +6,15 @@ interface
 
 uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter,
-  DAV_DspFeedbackDelayNetwork, DAV_DspVibrato;
+  DAV_DspFeedbackDelayNetwork, DAV_DspFilterBasics, DAV_DspVibrato;
 
 type
-  TDampingFilter = class(TCustomFilter)
+  TDampingFilter = class(TCustomGainFrequencyFilter)
   protected
     FCoeffs : array [0..1] of Double;
     FState  : Double;
+    function GetOrder: Cardinal; override;
+    procedure SetOrder(const Value: Cardinal); override;
   public
     constructor Create; override;
     function Imaginary(const Frequency: Double): Double; override;
@@ -54,7 +56,7 @@ type
     FModulationActive  : Boolean;
     FNonLinearActive   : Boolean;
     FGeometry          : TReverbGeometry;
-    FBaseDelay: Double;
+    FBaseDelay         : Double;
     function GetFeedbackRotation(Index: Integer): Double;
     procedure SetDamping(const Value: Double);
     procedure SetDryMix(const Value: Double);
@@ -157,6 +159,11 @@ begin
  CalculateCoefficients;
 end;
 
+function TDampingFilter.GetOrder: Cardinal;
+begin
+ result := 1;
+end;
+
 procedure TDampingFilter.Reset;
 begin
  FState := 0;
@@ -176,10 +183,15 @@ procedure TDampingFilter.SetFilterValues(const AFrequency, AGain : Single);
 const
   ln10_0025 : Double = 5.7564627325E-2;
 begin
- fFrequency := AFrequency;
+ FFrequency := AFrequency;
  FGain_dB := AGain;
  FGainFactor := Exp(FGain_dB * ln10_0025);
  CalculateW0;
+end;
+
+procedure TDampingFilter.SetOrder(const Value: Cardinal);
+begin
+ // read only!
 end;
 
 function TDampingFilter.Real(const Frequency: Double): Double;
@@ -240,8 +252,8 @@ var
   cmplx : TComplexDouble;
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
- Real := cmplx.Re;
- Imaginary := cmplx.Im;
+ Real := Cmplx.Re;
+ Imaginary := Cmplx.Im;
 end;
 
 function TDampingFilter.MagnitudeLog10(const Frequency: Double): Double;
@@ -261,7 +273,7 @@ procedure TDampingFilter.CalculateCoefficients;
 var
   K, t : Double;
 begin
- K := tan(FW0 * 0.5);
+ K := Tan(FW0 * 0.5);
  t := 1 / (K + 1);
  FCoeffs[0] := K * t;
  FCoeffs[1] := (1 - K) * t;

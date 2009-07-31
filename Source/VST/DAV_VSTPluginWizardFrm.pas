@@ -251,15 +251,16 @@ procedure TVSTPluginWizardForm.btnBrowseClick(Sender: TObject);
 var
   sDirectory: string;
 begin
-  if SelectDirectory(BROWSE_PATH_DIALOG_CAPTION, '', sDirectory) then
-    edtProjectPath.Text := sDirectory;
+ sDirectory := edtProjectPath.Text;
+ if SelectDirectory(BROWSE_PATH_DIALOG_CAPTION, '', sDirectory)
+  then edtProjectPath.Text := sDirectory;
 end;
 
 procedure TVSTPluginWizardForm.edtVersionMajorKeyPress(Sender: TObject;
   var Key: Char);
 begin
-  if not (Key in [#8, '0'..'9']) then
-    Key := #0;
+ if not (Key in [#8, '0'..'9'])
+  then Key := #0;
 end;
 
 procedure TVSTPluginWizardForm.chkUseEditorClick(Sender: TObject);
