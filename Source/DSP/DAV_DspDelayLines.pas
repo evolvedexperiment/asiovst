@@ -280,8 +280,8 @@ begin
  if FBufferPos >= BufferSize - 1
   then FBufferPos := 0;
 
- Move(FIntBuffer[1], FIntBuffer[0], 2 * SizeOf(Single));
- FIntBuffer[2] := FBuffer^[FBufferPos];
+ Move(FIntBuffer[0], FIntBuffer[1], 3 * SizeOf(Single));
+ FIntBuffer[0] := FBuffer^[FBufferPos];
  result := Hermite32_asm(FFractional, @FIntBuffer);
 end;
 
