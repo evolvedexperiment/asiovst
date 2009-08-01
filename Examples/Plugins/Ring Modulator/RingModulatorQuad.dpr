@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library RingModulatorStereo;
+library RingModulatorQuad;
 
 {$IFNDEF Wrapper}
 {$R 'RingModulator.res' 'RingModulator.rc'}

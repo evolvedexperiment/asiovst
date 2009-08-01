@@ -20,7 +20,7 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFilter: array [0..1] of TCustomButterworthFilter;
+    FFilter: array of TCustomButterworthFilter;
   end;
 
 implementation
@@ -36,6 +36,9 @@ procedure TButterworthLPModule.VSTModuleOpen(Sender: TObject);
 var
   ch : Integer;
 begin
+ assert(numInputs = numOutputs);
+ assert(numInputs > 0);
+ SetLength(FFilter, numInputs);
  for ch := 0 to numInputs - 1 do
   begin
    FFilter[ch] := TButterworthLowPassFilter.Create;
@@ -50,7 +53,7 @@ procedure TButterworthLPModule.VSTModuleClose(Sender: TObject);
 var
   ch : Integer;
 begin
- for ch := 0 to numInputs - 1
+ for ch := 0 to Length(FFilter) - 1
   do FreeAndNil(FFilter[ch]);
 end;
 
@@ -64,7 +67,7 @@ procedure TButterworthLPModule.ParamOrderChange(
 var
   ch : Integer;
 begin
- for ch := 0 to numInputs - 1 do
+ for ch := 0 to Length(FFilter) - 1 do
   begin
    if assigned(FFilter[ch])
     then FFilter[ch].Order := round(Value);
@@ -79,7 +82,7 @@ procedure TButterworthLPModule.ParamFrequencyChange(
 var
   ch : Integer;
 begin
- for ch := 0 to numInputs - 1 do
+ for ch := 0 to Length(FFilter) - 1 do
   if assigned(FFilter[ch])
    then FFilter[ch].Frequency := Value;
  if EditorForm is TFmButterworth then
@@ -87,36 +90,34 @@ begin
    do UpdateFrequency;
 end;
 
+procedure TButterworthLPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+var
+  ch : Integer;
+begin
+ for ch := 0 to Length(FFilter) - 1
+  do FFilter[ch].SampleRate := SampleRate;
+end;
+
 procedure TButterworthLPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i : Integer;
+  Sample  : Integer;
+  Channel : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
-  end;
+ for Channel := 0 to Length(FFilter) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
 end;
 
 procedure TButterworthLPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  i : Integer;
+  Sample  : Integer;
+  Channel : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
-  begin
-   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
-  end;
-end;
-
-procedure TButterworthLPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-var
-  ch : Integer;
-begin
- for ch := 0 to numInputs - 1
-  do FFilter[ch].SampleRate := SampleRate;
+ for Channel := 0 to Length(FFilter) - 1 do
+  for Sample := 0 to SampleFrames - 1
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
 end;
 
 {$IFDEF FPC}

@@ -1,5 +1,5 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library RingModulatorStereo;
+library BodeFrequencyShifterStereo;
 
 {$IFNDEF Wrapper}
 {$R 'BodeFrequencyShifter.res' 'BodeFrequencyShifter.rc'}
@@ -7,24 +7,24 @@ library RingModulatorStereo;
 uses
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  RingModulatorDM in 'BodeFrequencyShifterDM.pas' {RingModulatorDataModule: TVSTModule},
-  RingModulatorGUI in 'BodeFrequencyShifterGUI.pas' {FmRingModulator};
+  BodeFrequencyShifterDM in 'BodeFrequencyShifterDM.pas' {BodeFrequencyShifterDataModule: TVSTModule},
+  BodeFrequencyShifterGUI in 'BodeFrequencyShifterGUI.pas' {FmBodeFrequencyShifter};
 
 {$ELSE}
 
 uses
   DAV_VSTEffect;
 
-function RingModulatorMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; external 'BodeFrequencyShifter.dll' name 'VSTPluginMain';
+function BodeFrequencyShifterMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; external 'BodeFrequencyShifter.dll' name 'VSTPluginMain';
 
 {$ENDIF}
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  {$IFNDEF Wrapper}
- Result := VstModuleMain(AudioMasterCallback, TRingModulatorDataModule);
+ Result := VstModuleMain(AudioMasterCallback, TBodeFrequencyShifterDataModule);
  {$ELSE}
- Result := RingModulatorMain(AudioMasterCallback);
+ Result := BodeFrequencyShifterMain(AudioMasterCallback);
  {$ENDIF}
  Result^.numInputs := 2;
  Result^.numOutputs := 2;
