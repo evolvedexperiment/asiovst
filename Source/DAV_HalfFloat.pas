@@ -2,6 +2,8 @@ unit DAV_HalfFloat;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 type
   THalfFloat = Word;
   TDAVHalfFloatFixedArray = array [0..0] of THalfFloat;
