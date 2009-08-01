@@ -9,30 +9,36 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEAudioFileOscillatorPins = (pinFileName, pinInterpolation, pinReset,
-    pinPlaybackSpeed, pinOutput, pinAudiodata);
+  TSEAudioFileOscillatorPins = (pinFileName, pinInterpolation, pinTrigger,
+    pinMode, pinPlaybackSpeed, pinOutput, pinAudiodata);
 
   TInterpolationMethod = (imNone, imLinear, imHermite, imBSpline4);
+  TLoopMode = (lmLooped, lmOneShot);
 
   TSEAudioFileOscillatorModule = class(TSEModuleBase)
   private
     FOutputBuffer       : PDAVSingleFixedArray;
     FPlaybackSpeed      : PDAVSingleFixedArray;
+    FTrigger            : PDAVSingleFixedArray;
     FAudioData          : TAudioDataCollection32;
     FFileName           : TFileName;
     FPosition           : Single;
-    FReset              : Boolean;
+    FMode               : TLoopMode;
+    FIsPlaying          : Boolean;
     FInterpolation      : TInterpolationMethod;
     FCriticalSection    : TCriticalSection;
+    FLastProcessMethod  : TSE2ProcessEvent;
     {$IFDEF UseEmbedding}
     FContainedData      : TStringList;
     FExtraOutputBuffers : array of PDAVSingleFixedArray;
     procedure LoadFromResource(ID: Integer);
+    procedure CheckTrigger(Trigger: Boolean);
     {$ENDIF}
   protected
     procedure Open; override;
     procedure ChooseProcess; virtual;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SubProcessStatic(const BufferOffset, SampleFrames: Integer);
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -131,11 +137,6 @@ begin
                       end;
                      end;
   pinInterpolation : ChooseProcess;
-     pinReset : if FReset then
-                 begin
-                  FPosition := 0;
-                  FReset := False;
-                 end;
  end;
 end;
 
@@ -161,41 +162,96 @@ begin
  if  {$IFDEF UseEmbedding} (FContainedData.Count = 0) and {$ENDIF} (not FileExists(FFileName))
   then OnProcess := SubProcessBypass
   else
-    {$IFDEF UseEmbedding}
-    if (FContainedData.Count = 1) and (FAudioData.ChannelCount > 1) then
-     case FInterpolation of
-          imNone : OnProcess := SubProcessNoInterpolationMulti;
-        imLinear : OnProcess := SubProcessLinearInterpolationMulti;
-       imHermite : OnProcess := SubProcessHermiteInterpolationMulti;
-      imBSpline4 : OnProcess := SubProcessBSpline4InterpolationMulti;
-     end
-    else
-    {$ENDIF}
-     case FInterpolation of
-          imNone : OnProcess := SubProcessNoInterpolation;
-        imLinear : OnProcess := SubProcessLinearInterpolation;
-       imHermite : OnProcess := SubProcessHermiteInterpolation;
-      imBSpline4 : OnProcess := SubProcessBSpline4Interpolation;
-     end;
+//   if Pin[Integer(pinInput)].Status = stRun then
+    begin
+     {$IFDEF UseEmbedding}
+     if (FContainedData.Count = 1) and (FAudioData.ChannelCount > 1) then
+      case FInterpolation of
+           imNone : OnProcess := SubProcessNoInterpolationMulti;
+         imLinear : OnProcess := SubProcessLinearInterpolationMulti;
+        imHermite : OnProcess := SubProcessHermiteInterpolationMulti;
+       imBSpline4 : OnProcess := SubProcessBSpline4InterpolationMulti;
+      end
+     else
+     {$ENDIF}
+      case FInterpolation of
+           imNone : OnProcess := SubProcessNoInterpolation;
+         imLinear : OnProcess := SubProcessLinearInterpolation;
+        imHermite : OnProcess := SubProcessHermiteInterpolation;
+       imBSpline4 : OnProcess := SubProcessBSpline4Interpolation;
+      end;
+
+     FLastProcessMethod := OnProcess;
+(*
+    end
+  else
+   begin
+    FStaticCount := BlockSize + FConvolver.IRSize;
+    OnProcess := SubProcessStatic;
+*)
+   end;
+end;
+
+procedure TSEAudioFileOscillatorModule.SubProcessStatic(const BufferOffset,
+  SampleFrames: Integer);
+begin
+ FLastProcessMethod(BufferOffset, SampleFrames);
+(*
+ FStaticCount := FStaticCount - SampleFrames;
+ if FStaticCount <= 0
+  then CallHost(SEAudioMasterSleepMode);
+*)
+end;
+
+procedure TSEAudioFileOscillatorModule.CheckTrigger(Trigger: Boolean);
+begin
+ // check if trigger state changed
+ if Trigger <> FIsPlaying then
+  begin
+   if Trigger then
+    begin
+     FIsPlaying := True;
+     FPosition := 0;
+    end
+   else
+    if FMode <> lmOneShot
+     then FIsPlaying := False;
+  end;
 end;
 
 // The most important part, processing the audio
 procedure TSEAudioFileOscillatorModule.SubProcessNoInterpolation(const BufferOffset,
   SampleFrames: Integer);
 var
-  Sample : Integer;
+  Sample  : Integer;
 begin
  FCriticalSection.Enter;
  try
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     while round(FPosition) >= FAudioData[0].SampleCount
-      do FPosition := FPosition - FAudioData[0].SampleCount;
-     while round(FPosition) < 0
-      do FPosition := FPosition + FAudioData[0].SampleCount;
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
+
+     if FIsPlaying then
+      begin
+       FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          while round(FPosition) >= FAudioData[0].SampleCount
+           do FPosition := FPosition - FAudioData[0].SampleCount;
+          while round(FPosition) < 0
+           do FPosition := FPosition + FAudioData[0].SampleCount;
+         end;
+      end
+     else FOutputBuffer[BufferOffset + Sample] := 0;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
  finally
@@ -215,65 +271,100 @@ begin
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
-     for Channel := 0 to Length(FExtraOutputBuffers) - 1
-      do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
-           FAudioData[Channel + 1].ChannelDataPointer^[round(FPosition)];
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
 
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     while round(FPosition) >= FAudioData[0].SampleCount
-      do FPosition := FPosition - FAudioData[0].SampleCount;
-     while round(FPosition) < 0
-      do FPosition := FPosition + FAudioData[0].SampleCount;
+     if FIsPlaying then
+      begin
+       FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[round(FPosition)];
+       for Channel := 0 to Length(FExtraOutputBuffers) - 1
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+             FAudioData[Channel + 1].ChannelDataPointer^[round(FPosition)];
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          while round(FPosition) >= FAudioData[0].SampleCount
+           do FPosition := FPosition - FAudioData[0].SampleCount;
+          while round(FPosition) < 0
+           do FPosition := FPosition + FAudioData[0].SampleCount;
+         end;
+      end
+     else
+      begin
+       FOutputBuffer[BufferOffset + Sample] := 0;
+       for Channel := 0 to Length(FExtraOutputBuffers) - 1
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] := 0;
+      end;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
  finally
   FCriticalSection.Leave;
  end;
 end;
+
 {$ENDIF}
 
 procedure TSEAudioFileOscillatorModule.SubProcessLinearInterpolation(const BufferOffset,
   SampleFrames: Integer);
 var
-  Sample : Integer;
-  Offset : Integer;
-  Ratio  : Single;
+  Sample  : Integer;
+  Offset  : Integer;
+  Ratio   : Single;
 begin
  FCriticalSection.Enter;
  try
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     Offset := FastTrunc(FPosition);
-     if Offset + 1 >= FAudioData[0].SampleCount then
-      begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         Ratio * FAudioData[0].ChannelDataPointer^[0] +
-         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset]
-      end
-     else
-      begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         Ratio * FAudioData[0].ChannelDataPointer^[Offset + 1] +
-         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset]
-      end;
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
 
-     // wrap around 
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     Offset := FastTrunc(FPosition) + 1;
-     while Offset >= FAudioData[0].SampleCount do
+     if FIsPlaying then
       begin
-       FPosition := FPosition - FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
-     while Offset < 0 do
-      begin
-       FPosition := FPosition + FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
+       Offset := FastTrunc(FPosition);
+       if Offset + 1 >= FAudioData[0].SampleCount then
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           Ratio * FAudioData[0].ChannelDataPointer^[0] +
+           (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset]
+        end
+       else
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           Ratio * FAudioData[0].ChannelDataPointer^[Offset + 1] +
+           (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset]
+        end;
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          Offset := FastTrunc(FPosition) + 1;
+          while Offset >= FAudioData[0].SampleCount do
+           begin
+            FPosition := FPosition - FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+          while Offset < 0 do
+           begin
+            FPosition := FPosition + FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+         end;
+      end
+     else FOutputBuffer[BufferOffset + Sample] := 0;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
  finally
@@ -295,45 +386,66 @@ begin
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     Offset := FastTrunc(FPosition);
-     if Offset + 1 >= FAudioData[0].SampleCount then
-      begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         Ratio * FAudioData[0].ChannelDataPointer^[0] +
-         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset];
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
 
-       for Channel := 0 to Length(FExtraOutputBuffers) - 1
-        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
-             Ratio * FAudioData[Channel + 1].ChannelDataPointer^[0] +
-             (1 - Ratio) * FAudioData[Channel + 1].ChannelDataPointer^[Offset];
+     if FIsPlaying then
+      begin
+       Offset := FastTrunc(FPosition);
+       if Offset + 1 >= FAudioData[0].SampleCount then
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           Ratio * FAudioData[0].ChannelDataPointer^[0] +
+           (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset];
+
+         for Channel := 0 to Length(FExtraOutputBuffers) - 1
+          do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+               Ratio * FAudioData[Channel + 1].ChannelDataPointer^[0] +
+               (1 - Ratio) * FAudioData[Channel + 1].ChannelDataPointer^[Offset];
+        end
+       else
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           Ratio * FAudioData[0].ChannelDataPointer^[Offset + 1] +
+           (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset];
+
+         for Channel := 0 to Length(FExtraOutputBuffers) - 1
+          do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+               Ratio * FAudioData[Channel + 1].ChannelDataPointer^[Offset + 1] +
+               (1 - Ratio) * FAudioData[Channel + 1].ChannelDataPointer^[Offset];
+        end;
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          Offset := FastTrunc(FPosition) + 1;
+          while Offset >= FAudioData[0].SampleCount do
+           begin
+            FPosition := FPosition - FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+          while Offset < 0 do
+           begin
+            FPosition := FPosition + FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+         end;
       end
      else
       begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         Ratio * FAudioData[0].ChannelDataPointer^[Offset + 1] +
-         (1 - Ratio) * FAudioData[0].ChannelDataPointer^[Offset];
+       FOutputBuffer[BufferOffset + Sample] := 0;
 
        for Channel := 0 to Length(FExtraOutputBuffers) - 1
-        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
-             Ratio * FAudioData[Channel + 1].ChannelDataPointer^[Offset + 1] +
-             (1 - Ratio) * FAudioData[Channel + 1].ChannelDataPointer^[Offset];
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] := 0;
       end;
 
-     // wrap around 
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     Offset := FastTrunc(FPosition) + 1;
-     while Offset >= FAudioData[0].SampleCount do
-      begin
-       FPosition := FPosition - FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
-     while Offset < 0 do
-      begin
-       FPosition := FPosition + FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
  finally
@@ -345,56 +457,70 @@ end;
 procedure TSEAudioFileOscillatorModule.SubProcessHermiteInterpolation(const BufferOffset,
   SampleFrames: Integer);
 var
-  Sample : Integer;
-  Offset : Integer;
-  Ratio  : Single;
-  Data   : TDAV4SingleArray;
+  Sample  : Integer;
+  Offset  : Integer;
+  Ratio   : Single;
+  Data    : TDAV4SingleArray;
 begin
  FCriticalSection.Enter;
  try
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     Offset := FastTrunc(FPosition);
-     if Offset + 3 >= FAudioData[0].SampleCount then
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
+
+     if FIsPlaying then
       begin
-       Ratio := FPosition - Offset;
-       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+       Offset := FastTrunc(FPosition);
+       if Offset + 3 >= FAudioData[0].SampleCount then
+        begin
+         Ratio := FPosition - Offset;
+         Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       FOutputBuffer[BufferOffset + Sample] := Hermite32_asm(Ratio, @Data[0]);
+         FOutputBuffer[BufferOffset + Sample] := Hermite32_asm(Ratio, @Data[0]);
+        end
+       else
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           Hermite32_asm(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+        end;
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          Offset := FastTrunc(FPosition) + 1;
+          while Offset >= FAudioData[0].SampleCount do
+           begin
+            FPosition := FPosition - FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+          while Offset < 0 do
+           begin
+            FPosition := FPosition + FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+         end;
       end
-     else
-      begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         Hermite32_asm(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
-      end;
-
-     // wrap around
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     Offset := FastTrunc(FPosition) + 1;
-     while Offset >= FAudioData[0].SampleCount do
-      begin
-       FPosition := FPosition - FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
-     while Offset < 0 do
-      begin
-       FPosition := FPosition + FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
+     else FOutputBuffer[BufferOffset + Sample] := 0;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
  finally
@@ -417,49 +543,69 @@ begin
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     Offset := FastTrunc(FPosition);
-     if Offset + 1 >= FAudioData[0].SampleCount then
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
+
+     if FIsPlaying then
       begin
-       Ratio := FPosition - Offset;
-       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+       Offset := FastTrunc(FPosition);
+       if Offset + 1 >= FAudioData[0].SampleCount then
+        begin
+         Ratio := FPosition - Offset;
+         Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       FOutputBuffer[BufferOffset + Sample] := Hermite32_asm(Ratio, @Data[0]);
+         FOutputBuffer[BufferOffset + Sample] := Hermite32_asm(Ratio, @Data[0]);
+        end
+       else
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           Hermite32_asm(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+
+         for Channel := 0 to Length(FExtraOutputBuffers) - 1
+          do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+             Hermite32_asm(Ratio, @FAudioData[Channel + 1].ChannelDataPointer^[Offset]);
+        end;
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          Offset := FastTrunc(FPosition) + 1;
+          while Offset >= FAudioData[0].SampleCount do
+           begin
+            FPosition := FPosition - FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+          while Offset < 0 do
+           begin
+            FPosition := FPosition + FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+         end;
       end
      else
       begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         Hermite32_asm(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+       FOutputBuffer[BufferOffset + Sample] := 0;
 
        for Channel := 0 to Length(FExtraOutputBuffers) - 1
-        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
-           Hermite32_asm(Ratio, @FAudioData[Channel + 1].ChannelDataPointer^[Offset]);
-      end;
-
-     // wrap around 
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     Offset := FastTrunc(FPosition) + 1;
-     while Offset >= FAudioData[0].SampleCount do
-      begin
-       FPosition := FPosition - FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
-     while Offset < 0 do
-      begin
-       FPosition := FPosition + FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] := 0;
       end;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
@@ -482,46 +628,60 @@ begin
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     Offset := FastTrunc(FPosition);
-     if Offset + 3 >= FAudioData[0].SampleCount then
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
+
+     if FIsPlaying then
       begin
-       Ratio := FPosition - Offset;
-       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+       Offset := FastTrunc(FPosition);
+       if Offset + 3 >= FAudioData[0].SampleCount then
+        begin
+         Ratio := FPosition - Offset;
+         Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       FOutputBuffer[BufferOffset + Sample] := BSplineInterpolation4Point3rdOrder(Ratio, Data);
+         FOutputBuffer[BufferOffset + Sample] := BSplineInterpolation4Point3rdOrder(Ratio, Data);
+        end
+       else
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+        end;
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          Offset := FastTrunc(FPosition) + 1;
+          while Offset >= FAudioData[0].SampleCount do
+           begin
+            FPosition := FPosition - FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+          while Offset < 0 do
+           begin
+            FPosition := FPosition + FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+         end;
       end
-     else
-      begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
-      end;
-
-     // wrap around
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     Offset := FastTrunc(FPosition) + 1;
-     while Offset >= FAudioData[0].SampleCount do
-      begin
-       FPosition := FPosition - FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
-     while Offset < 0 do
-      begin
-       FPosition := FPosition + FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
+     else FOutputBuffer[BufferOffset + Sample] := 0;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
  finally
@@ -544,49 +704,69 @@ begin
   if FAudioData.SampleFrames > 0 then
    for Sample := 0 to SampleFrames - 1 do
     begin
-     Offset := FastTrunc(FPosition);
-     if Offset + 1 >= FAudioData[0].SampleCount then
+     CheckTrigger(FTrigger[BufferOffset + Sample] > 0.5);
+
+     if FIsPlaying then
       begin
-       Ratio := FPosition - Offset;
-       Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
+       Offset := FastTrunc(FPosition);
+       if Offset + 1 >= FAudioData[0].SampleCount then
+        begin
+         Ratio := FPosition - Offset;
+         Data[0] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[1] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[2] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       inc(Offset);
-       if Offset >= FAudioData[0].SampleCount then Offset := 0;
-       Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
+         inc(Offset);
+         if Offset >= FAudioData[0].SampleCount then Offset := 0;
+         Data[3] := FAudioData[0].ChannelDataPointer^[Offset];
 
-       FOutputBuffer[BufferOffset + Sample] := BSplineInterpolation4Point3rdOrder(Ratio, Data);
+         FOutputBuffer[BufferOffset + Sample] := BSplineInterpolation4Point3rdOrder(Ratio, Data);
+        end
+       else
+        begin
+         Ratio := FPosition - Offset;
+         FOutputBuffer[BufferOffset + Sample] :=
+           BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+
+         for Channel := 0 to Length(FExtraOutputBuffers) - 1
+          do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
+             BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[Channel + 1].ChannelDataPointer^[Offset]);
+        end;
+
+       // advance position
+       FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
+
+       // handle one shot
+       if FMode = lmOneShot
+        then FIsPlaying := (FPosition >= 0) and (FPosition < FAudioData[0].SampleCount)
+        else
+         begin
+          // wrap around
+          Offset := FastTrunc(FPosition) + 1;
+          while Offset >= FAudioData[0].SampleCount do
+           begin
+            FPosition := FPosition - FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+          while Offset < 0 do
+           begin
+            FPosition := FPosition + FAudioData[0].SampleCount;
+            Offset := FastTrunc(FPosition) + 1;
+           end;
+         end;
       end
      else
       begin
-       Ratio := FPosition - Offset;
-       FOutputBuffer[BufferOffset + Sample] :=
-         BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[0].ChannelDataPointer^[Offset]);
+       FOutputBuffer[BufferOffset + Sample] := 0;
 
        for Channel := 0 to Length(FExtraOutputBuffers) - 1
-        do FExtraOutputBuffers[Channel, BufferOffset + Sample] :=
-           BSplineInterpolation4Point3rdOrder(Ratio, @FAudioData[Channel + 1].ChannelDataPointer^[Offset]);
-      end;
-
-     // wrap around
-     FPosition := FPosition + FPlaybackSpeed[BufferOffset + Sample];
-     Offset := FastTrunc(FPosition) + 1;
-     while Offset >= FAudioData[0].SampleCount do
-      begin
-       FPosition := FPosition - FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
-      end;
-     while Offset < 0 do
-      begin
-       FPosition := FPosition + FAudioData[0].SampleCount;
-       Offset := FastTrunc(FPosition) + 1;
+        do FExtraOutputBuffers[Channel, BufferOffset + Sample] := 0;
       end;
     end
    else FillChar(FOutputBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
@@ -621,11 +801,24 @@ begin
     {$IFDEF UseEmbedding}
     if ContainedData.Count > 0 then
      begin
+      // build name
       Name := 'Embedded Audio File Oscillator';
-      str  := 'DAV EAFO';
+      if (ContainedData.Count = 1) and (Length(ContainedData[0]) <= 11) then
+       begin
+        str := 'Audio File Osc. (' + Trim(ContainedData[0]) + ')';
+        if Length(str) > 31 then SetLength(str, 31);
+        GetMem(Name, Length(str) + 1);
+        StrPCopy(Name, str);
+       end;
+
+      // build ID
+      ID := 'DAV Audio File Oscillator';
+      str := 'DAV EAFO';
       for i := 0 to ContainedData.Count - 1
-       do str := str + ContainedData[i];
-      ID := PAnsiChar(str);
+       do str := str + ' ' + Trim(ContainedData[i]);
+      if Length(str) > 31 then SetLength(str, 31);
+      GetMem(ID, Length(str) + 1);
+      StrPCopy(ID, str);
      end
     else
     {$ENDIF}
@@ -681,12 +874,20 @@ begin
                        Datatype        := dtEnum;
                        DatatypeExtra   := 'none, linear, hermite, bspline4';
                       end;
-          pinReset : with Properties^ do
+        pinTrigger : with Properties^ do
                       begin
-                       Name            := 'Reset';
-                       VariableAddress := @FReset;
+                       Name            := 'Trigger';
+                       VariableAddress := @FTrigger;
                        Direction       := drIn;
-                       Datatype        := dtBoolean;
+                       Datatype        := dtFSample;
+                      end;
+          pinMode : with Properties^ do
+                      begin
+                       Name            := 'Mode';
+                       VariableAddress := @FMode;
+                       Direction       := drIn;
+                       Datatype        := dtEnum;
+                       DatatypeExtra   := 'loop, one shot';
                       end;
   pinPlaybackSpeed : with Properties^ do
                       begin
@@ -702,6 +903,7 @@ begin
                        Direction       := drOut;
                        Datatype        := dtFSample;
                       end;
+(*
       pinAudiodata : with Properties^ do
                       begin
                        Name            := 'Audiodata';
@@ -709,6 +911,7 @@ begin
                        Direction       := drOut;
                        Datatype        := dtExperimental;
                       end;
+*)
   else
    begin
     result := False;

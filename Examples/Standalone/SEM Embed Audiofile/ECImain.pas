@@ -69,6 +69,7 @@ begin
     ListBox.Clear;
 
     FSEModule.LoadFromFile(FileName);
+    SaveDialogSEM.FileName := FileName;
 
     for i := 0 to FSEModule.ResourceCount - 1 do
      if FSEModule.ResourceDetails[i].ResourceType = 'WAVETABLE'

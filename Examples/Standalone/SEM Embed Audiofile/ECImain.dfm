@@ -63,6 +63,7 @@ object FmSemEmbedAudioFile: TFmSemEmbedAudioFile
     DefaultExt = '.SEM'
     Filter = 'SE Module (*.sem)|*.sem'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
+    Title = 'Please select an existing Audio File Oscillator Module'
     Left = 40
     Top = 8
   end

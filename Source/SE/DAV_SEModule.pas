@@ -268,7 +268,7 @@ type
   PSEModuleProperties = ^TSEModuleProperties;
   TSEModuleProperties = record
     Name       : PChar;
-    ID         : PChar;
+    ID         : PChar; // max. 32 chars
     About      : PChar;
     Flags      : TUgFlags;
     GuiFlags   : TGuiFlags;
