@@ -74,8 +74,6 @@ procedure TDitherNoiseshaperModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
  GUI := TFmDitherNoiseshaper.Create(Self);
- with TFmDitherNoiseshaper(GUI)
-  do CBNoiseshaperType.ItemIndex := Round(Parameter[1])
 end;
 
 procedure TDitherNoiseshaperModule.ParameterDitherTypeChange(
@@ -175,17 +173,18 @@ end;
 procedure TDitherNoiseshaperModule.ParameterNoiseshaperTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case TNoiseShaperType(Round(Parameter[Index])) of
-          ns9Fc  : PreDefined := 'F-weighting (9th Order';
-          ns3Fc  : PreDefined := 'F-weighting (3rd Order)';
+          nsNone : PreDefined := 'None';
+          nsEFB  : PreDefined := 'Simple Error Feedback (1st Order)';
+          ns2Sc  : PreDefined := 'Simple Highpass (2nd Order)';
           ns2MEc : PreDefined := 'mod. E-weighting (2nd Order)';
           ns3MEc : PreDefined := 'mod. E-weighting (3rd Order)';
           ns9MEc : PreDefined := 'mod. E-weighting (9th Order)';
           ns5IEc : PreDefined := 'improved E-weighting (5th Order)';
           ns9IEc : PreDefined := 'improved E-weighting (9th Order)';
-          ns2Sc  : PreDefined := 'Simple Highpass (2nd Order)';
+          ns3Fc  : PreDefined := 'F-weighting (3rd Order)';
+          ns9Fc  : PreDefined := 'F-weighting (9th Order';
           nsSBM  : PreDefined := 'Sony "Super Bit Mapping"';
           nsSBMr : PreDefined := 'Reduced "Super Bit Mapping"';
-          nsEFB  : PreDefined := 'Error Feedback';
   nsExperimental : PreDefined := 'Experimental';
  end;
 end;

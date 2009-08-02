@@ -128,6 +128,8 @@ type
   // dB stuff
   function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function SqrAmp2dB(const Value: Single): Single; overload;
+  function SqrAmp2dB(const Value: Double): Double; overload;
   function Amp_to_dB(const Value: Single): Single; overload;
   function Amp_to_dB(const Value: Double): Double; overload;
   {$IFNDEF FPC}
@@ -247,6 +249,7 @@ const
   CFourPI32          : Single = 4 * Pi;
   CHalf32            : Single = 0.5;
   CQuarter32         : Single = 0.25;
+  CTen32             : Single = 10;
   CTwenty32          : Single = 20;
   COneTwelfth32      : Single = 1 / 12;
   CMinusOneSixteenth : Single = -0.0625;
@@ -257,6 +260,7 @@ const
   CFourPI64          : Double = 4 * Pi;
   CHalf64            : Double = 0.5;
   CQuarter64         : Double = 0.25;
+  CTen64             : Double = 10;
   CTwenty64          : Double = 20;
 
   CMaxLongInt        : Integer =  $7FFFFFFF;
@@ -442,6 +446,34 @@ begin
   then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
   else Result := 0;
 end;                                                             // e^(x) = 2^(log2(e^x)) = 2^(x / ln(2))
+
+function SqrAmp2dB(const Value: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ result := 10 * Log10(Value);
+end;
+{$ELSE}
+asm
+ fldlg2
+ fld Value
+ fyl2x
+ fmul CTen32
+end;
+{$ENDIF}
+
+function SqrAmp2dB(const Value: Double): Double;
+{$IFDEF PUREPASCAL}
+begin
+ result := 10 * Log10(Value);
+end;
+{$ELSE}
+asm
+ fldlg2
+ fld Value
+ fyl2x
+ fmul CTen64
+end;
+{$ENDIF}
 
 function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}

@@ -12,19 +12,19 @@ uses
   DAV_Common, SysUtils, Classes;
 
 type
-  TDiffEvolPopulation = TDAVDoubleDynArray;
-  TDiffEvolEvent = function(Sender: TObject; const Population: TDiffEvolPopulation): Double of object;
+  TDifferentialEvolutionPopulation = TDAVDoubleDynArray;
+  TDifferentialEvolutionEvent = function(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double of object;
 
   TEvaluatedPopulation = class(TObject)
   public
-    FPopulation    : TDiffEvolPopulation;
+    FPopulation    : TDifferentialEvolutionPopulation;
     FCost          : Double;
     FValidCostFlag : Boolean;
     constructor Create; overload;
-    constructor Create(const DiffEvolPopulation: TDiffEvolPopulation; Cost: Double); overload;
+    constructor Create(const DiffEvolPopulation: TDifferentialEvolutionPopulation; Cost: Double); overload;
   end;
 
-  TDiffEvol = class(TComponent)
+  TDifferentialEvolution = class(TComponent)
   private
     FPopulationCount    : Integer; // Number of populations
     FVariableCount      : Integer; // Number of variables in population
@@ -35,8 +35,8 @@ type
     FGainR2             : Double;
     FGainR3             : Double;
     FCrossOver          : Double;
-    FMinArr, FMaxArr    : TDiffEvolPopulation;
-    FBestArr            : TDiffEvolPopulation;
+    FMinArr, FMaxArr    : TDifferentialEvolutionPopulation;
+    FBestArr            : TDifferentialEvolutionPopulation;
     FCurrentGeneration  : array of TEvaluatedPopulation;
     FNextGeneration     : array of TEvaluatedPopulation;
     procedure RandomizePopulation;
@@ -57,22 +57,22 @@ type
     function GetMaxArr(Index: Integer): Double;
     procedure RecreatePopulation;
   protected
-    FOnCalcCosts : TDiffEvolEvent;
-    FOnInitPopulation : TDiffEvolEvent;
+    FOnCalcCosts : TDifferentialEvolutionEvent;
+    FOnInitPopulation : TDifferentialEvolutionEvent;
     FAutoInitialize : Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Initialize;
     function Evolve: Double;
-    function GetBestPopulation: TDiffEvolPopulation;
+    function GetBestPopulation: TDifferentialEvolutionPopulation;
     function GetBestCost: Double;
     property MinArr[Index: Integer] : Double read GetMinArr write SetMinArr;
     property MaxArr[Index: Integer] : Double read GetMaxArr write SetMaxArr;
     property BestArr[Index: Integer] : Double read GetBestArr write SetBestArr;
   published
-    property OnCalcCosts: TDiffEvolEvent read FOnCalcCosts write FOnCalcCosts;
-    property OnInitPopulation: TDiffEvolEvent read FOnInitPopulation write FOnInitPopulation;
+    property OnCalcCosts: TDifferentialEvolutionEvent read FOnCalcCosts write FOnCalcCosts;
+    property OnInitPopulation: TDifferentialEvolutionEvent read FOnInitPopulation write FOnInitPopulation;
     property PopulationCount :Integer read FPopulationCount write SetPopulationCount;
     property VariableCount :Integer read FVariableCount write SetVariableCount;
     property GainBest :Double read FGainBest write SetGainBest;
@@ -101,7 +101,7 @@ begin
  FValidCostFlag := False;
 end;
 
-constructor TEvaluatedPopulation.Create(const DiffEvolPopulation: TDiffEvolPopulation; Cost: Double);
+constructor TEvaluatedPopulation.Create(const DiffEvolPopulation: TDifferentialEvolutionPopulation; Cost: Double);
 begin
  inherited Create;
  FCost := Cost;
@@ -109,9 +109,9 @@ begin
 end;
 
 
-{ TDiffEvol }
+{ TDifferentialEvolution }
 
-constructor TDiffEvol.Create(AOwner: TComponent);
+constructor TDifferentialEvolution.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
  Randomize;
@@ -127,7 +127,7 @@ begin
  VariableCount := 1;
 end;
 
-destructor TDiffEvol.Destroy;
+destructor TDifferentialEvolution.Destroy;
 var
   Generation : Integer;
 begin
@@ -161,7 +161,7 @@ end;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-function TDiffEvol.Evolve: Double;
+function TDifferentialEvolution.Evolve: Double;
 var
   NewBestPopulation : Integer;
   NewBestCost       : Double;
@@ -179,18 +179,18 @@ begin
    // Find 3 different populations randomly
    repeat
     RandomPopulation[0] := Random(FPopulationCount);
-   until (RandomPopulation[0] <> Pop) and
+   until (RandomPopulation[0] <> Population) and
          (RandomPopulation[0] <> FBestPopulation);
 
    repeat
     RandomPopulation[1] := Random(FPopulationCount);
-   until (RandomPopulation[1] <> Pop) and
+   until (RandomPopulation[1] <> Population) and
          (RandomPopulation[1] <> FBestPopulation) and
          (RandomPopulation[1] <> RandomPopulation[0]);
 
    repeat
     RandomPopulation[2] := Random(FPopulationCount);
-   until (RandomPopulation[2] <> Pop) and
+   until (RandomPopulation[2] <> Population) and
          (RandomPopulation[2] <> FBestPopulation) and
          (RandomPopulation[2] <> RandomPopulation[1]) and
          (RandomPopulation[2] <> RandomPopulation[0]);
@@ -199,7 +199,7 @@ begin
    CurVar := Random(FVariableCount);
    VarCnt := 0;
 
-   if Pop = NewBestPopulation
+   if Population = NewBestPopulation
     then VarCnt := 0;
 
    repeat
@@ -216,30 +216,30 @@ begin
 
    while (VarCnt < FVariableCount) do
     begin
-     FNextGeneration[Pop].FPopulation[CurVar] := FCurrentGeneration[Pop].FPopulation[CurVar];
+     FNextGeneration[Population].FPopulation[CurVar] := FCurrentGeneration[Population].FPopulation[CurVar];
      Inc(CurVar);
      if CurVar >= FVariableCount then CurVar := 0;
      Inc(VarCnt);
     end;
 
    // Evaluate the new population
-   FNextGeneration[Pop].FCost := FOnCalcCosts(self, FNextGeneration[Pop].FPopulation);
-   FNextGeneration[Pop].FValidCostFlag := True;
+   FNextGeneration[Population].FCost := FOnCalcCosts(Self, FNextGeneration[Population].FPopulation);
+   FNextGeneration[Population].FValidCostFlag := True;
 
 //   if IsNan(FNextGeneration[Pop].FCost)
 //    then FNextGeneration[Pop].FCost := FOnCalcCosts(self, FNextGeneration[Pop].FPopulation);
 
-   if (FNextGeneration[Pop].FCost < FCurrentGeneration[Pop].FCost)
+   if (FNextGeneration[Population].FCost < FCurrentGeneration[Population].FCost)
     then
      begin
-      if (FNextGeneration[Pop].FCost < NewBestCost) then
+      if (FNextGeneration[Population].FCost < NewBestCost) then
        begin // New best
-        NewBestPopulation := Pop;
-        NewBestCost := FNextGeneration[Pop].FCost;
+        NewBestPopulation := Population;
+        NewBestCost := FNextGeneration[Population].FCost;
        end;
-      Move(FNextGeneration[Pop].FPopulation[0], FCurrentGeneration[Pop].FPopulation[0], FVariableCount * SizeOf(Double));
-      FCurrentGeneration[Pop].FCost := FNextGeneration[Pop].FCost;
-      FCurrentGeneration[Pop].FValidCostFlag := FNextGeneration[Pop].FValidCostFlag;
+      Move(FNextGeneration[Population].FPopulation[0], FCurrentGeneration[Population].FPopulation[0], FVariableCount * SizeOf(Double));
+      FCurrentGeneration[Population].FCost := FNextGeneration[Population].FCost;
+      FCurrentGeneration[Population].FValidCostFlag := FNextGeneration[Population].FValidCostFlag;
      end;
   end;
 
@@ -264,7 +264,7 @@ end;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-function TDiffEvol.GetBestPopulation: TDiffEvolPopulation;
+function TDifferentialEvolution.GetBestPopulation: TDifferentialEvolutionPopulation;
 begin
  assert (FBestPopulation >= 0);
  Result := (FCurrentGeneration[FBestPopulation].FPopulation);
@@ -284,14 +284,14 @@ end;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-function TDiffEvol.GetBestCost: Double;
+function TDifferentialEvolution.GetBestCost: Double;
 begin
  assert (FBestPopulation >= 0);
  assert (FCurrentGeneration[FBestPopulation].FValidCostFlag);
  Result := FCurrentGeneration[FBestPopulation].FCost;
 end;
 
-procedure TDiffEvol.Initialize;
+procedure TDifferentialEvolution.Initialize;
 var
   Population : Integer;
 begin
@@ -320,7 +320,7 @@ begin
  *)
 end;
 
-procedure TDiffEvol.RandomizePopulation;
+procedure TDifferentialEvolution.RandomizePopulation;
 var
   Offset  : Double;
   Mul     : Double;
@@ -341,7 +341,7 @@ begin
  FBestPopulation := -1;
 end;
 
-function TDiffEvol.FindBest;
+function TDifferentialEvolution.FindBest;
 var
   CurCost  : Double;
   Pop, i   : Integer;
@@ -376,7 +376,7 @@ begin
   do FBestArr[i] := FCurrentGeneration[FBestPopulation].FPopulation[i];
 end;
 
-procedure TDiffEvol.SetVariableCount(const Value: Integer);
+procedure TDifferentialEvolution.SetVariableCount(const Value: Integer);
 var
   i : Integer;
 begin
@@ -397,7 +397,7 @@ begin
   end;
 end;
 
-procedure TDiffEvol.SetPopulationCount(const Value: Integer);
+procedure TDifferentialEvolution.SetPopulationCount(const Value: Integer);
 var
   i : Integer;
 begin
@@ -415,7 +415,7 @@ begin
  RecreatePopulation;
 end;
 
-function TDiffEvol.GetMaxArr(Index: Integer): Double;
+function TDifferentialEvolution.GetMaxArr(Index: Integer): Double;
 begin
  if (Index < 0) or (Index >= Length(FMaxArr))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -423,7 +423,7 @@ begin
  Result := FMaxArr[Index];
 end;
 
-function TDiffEvol.GetMinArr(Index: Integer): Double;
+function TDifferentialEvolution.GetMinArr(Index: Integer): Double;
 begin
  if (Index < 0) or (Index >= Length(FMinArr))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -431,7 +431,7 @@ begin
  Result := FMinArr[Index];
 end;
 
-function TDiffEvol.GetBestArr(Index: Integer): Double;
+function TDifferentialEvolution.GetBestArr(Index: Integer): Double;
 begin
  if (Index < 0) or (Index >= Length(FBestArr))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -439,7 +439,7 @@ begin
  Result := FBestArr[Index];
 end;
 
-procedure TDiffEvol.SetBestArr(Index: Integer; const Value: Double);
+procedure TDifferentialEvolution.SetBestArr(Index: Integer; const Value: Double);
 begin
  if (Index < 0) or (Index >= Length(FBestArr))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -448,7 +448,7 @@ begin
 // raise Exception.Create('Not Supported!');
 end;
 
-procedure TDiffEvol.SetMinArr(Index: Integer; const Value: Double);
+procedure TDifferentialEvolution.SetMinArr(Index: Integer; const Value: Double);
 begin
  if (Index < 0) or (Index >= Length(FMinArr))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -464,7 +464,7 @@ begin
   end;
 end;
 
-procedure TDiffEvol.SetMaxArr(Index: Integer; const Value: Double);
+procedure TDifferentialEvolution.SetMaxArr(Index: Integer; const Value: Double);
 begin
  if (Index < 0) or (Index >= Length(FMaxArr))
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
@@ -480,14 +480,14 @@ begin
   end;
 end;
 
-procedure TDiffEvol.SetCrossOver(const Value: Double);
+procedure TDifferentialEvolution.SetCrossOver(const Value: Double);
 begin
  if not ((Value >= 0) and (Value <= 1))
   then raise Exception.Create(RCStrCrossOverBoundError);
  FCrossOver := Value;
 end;
 
-procedure TDiffEvol.SetGainBest(const Value: Double);
+procedure TDifferentialEvolution.SetGainBest(const Value: Double);
 begin
  if FGainBest <> Value then
   begin
@@ -496,7 +496,7 @@ begin
   end;
 end;
 
-procedure TDiffEvol.SetGainR1(const Value: Double);
+procedure TDifferentialEvolution.SetGainR1(const Value: Double);
 begin
  if FGainR1 <> Value then
   begin
@@ -505,7 +505,7 @@ begin
   end;
 end;
 
-procedure TDiffEvol.SetGainR2(const Value: Double);
+procedure TDifferentialEvolution.SetGainR2(const Value: Double);
 begin
  if FGainR2 <> Value then
   begin
@@ -514,7 +514,7 @@ begin
   end;
 end;
 
-procedure TDiffEvol.SetGainR3(const Value: Double);
+procedure TDifferentialEvolution.SetGainR3(const Value: Double);
 begin
  if FGainR3 <> Value then
   begin
@@ -523,12 +523,12 @@ begin
   end;
 end;
 
-procedure TDiffEvol.CalculateGainR0;
+procedure TDifferentialEvolution.CalculateGainR0;
 begin
  FGainBase := 1 - FGainBest - FGainR1 - FGainR2 - FGainR3;
 end;
 
-procedure TDiffEvol.RecreatePopulation;
+procedure TDifferentialEvolution.RecreatePopulation;
 var
   I : Integer;
 begin

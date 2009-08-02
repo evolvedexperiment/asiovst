@@ -99,21 +99,23 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       OnParameterChange = ParameterDitherChangeAmplitude
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
-      DisplayName = 'Noiseshaper Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Curve = ctLogarithmic
+      CurveFactor = 10.000000000000000000
+      DisplayName = 'Frequency'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
-      Max = 11.000000000000000000
-      MaxInteger = 11
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 200.000000000000000000
+      MinInteger = 200
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      Units = 'Hz'
       VSTModule = Owner
-      OnParameterChange = ParameterNoiseshaperTypeChange
-      OnCustomParameterDisplay = ParameterNoiseshaperTypeDisplay
+      OnParameterChange = ParameterNoiseshaperFrequencyChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
@@ -122,6 +124,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 218
   Top = 81
   Height = 150

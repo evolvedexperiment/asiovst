@@ -58,6 +58,7 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Height = 24
     CircleColor = clBtnShadow
     CurveMapping = -1.000000000000000000
+    DefaultPosition = 1.000000000000000000
     DialImageIndex = -1
     LineColor = clBtnHighlight
     LineWidth = 2
@@ -78,22 +79,21 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
-    ItemIndex = 0
     TabOrder = 0
-    Text = 'F-weighting (9th Order)'
     OnChange = CbNoiseshaperTypeChange
     Items.Strings = (
-      'F-weighting (9th Order)'
-      'F-weighting (3rd Order)'
+      'None'
+      'Simple Error Feedback (1st Order)'
+      'Simple Highpass (2nd Order)'
       'mod. E-weighting (2nd Order)'
       'mod. E-weighting (3rd Order)'
       'mod. E-weighting (9th Order)'
       'improved E-weighting (5th Order)'
       'improved E-weighting (9th Order)'
-      'Simple Highpass (2nd Order)'
+      'F-weighting (3rd Order)'
+      'F-weighting (9th Order)'
       'Sony "Super Bit Mapping"'
       'Reduced "Super Bit Mapping"'
-      'Simple Error Feedback (1st Order)'
       'Experimental')
   end
   object SeBitDepth: TSpinEdit

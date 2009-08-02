@@ -19,7 +19,7 @@ type
     procedure MICalculationClick(Sender: TObject);
     procedure MISaveAsClick(Sender: TObject);
   private
-    procedure CoefficientUptdate(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double);
+    procedure CoefficientUpdate(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double);
   end;
 
 var
@@ -49,7 +49,7 @@ begin
   end;
 end;
 
-procedure TFmNoiseshapingFilterDesigner.CoefficientUptdate(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double);
+procedure TFmNoiseshapingFilterDesigner.CoefficientUpdate(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double);
 var
   Sample : Integer;
 begin
@@ -66,7 +66,7 @@ procedure TFmNoiseshapingFilterDesigner.MICalculationClick(Sender: TObject);
 begin
  with TNoiseShapingFilterDesigner.Create do
   try
-   OnCoefficientUpdate := CoefficientUptdate;
+   OnCoefficientUpdate := CoefficientUpdate;
    Calculate;
   finally
    Free;
