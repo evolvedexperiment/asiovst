@@ -159,16 +159,18 @@ type
   function LimitAngle(const Angle: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function LimitAngle(const Angle: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+  function RandomGauss: Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Factorial(const Order: Integer): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastFractional(const Value: Single): Single; overload;
   function FastFractional(const Value: Double): Double; overload;
-  procedure FastNegative(var Value: Single); overload;
+  function FastRandom: Single;
   procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   procedure FastAbs(var Value: TDAV4SingleArray); overload;
+  procedure FastNegative(var Value: Single); overload;
   function FastSgn(const Value: Single): Integer;
   function FastMin(const A, B: Single) : Single;
   function FastMax(const A, B: Single) : Single;
@@ -240,27 +242,28 @@ var
   ln10, ln2, ln22, ln2Rez : Double;
 
 const
-  CDenorm32      : Single = 1E-24;
-  CTwoPI32       : Single = 2 * Pi;
-  CFourPI32      : Single = 4 * Pi;
-  CHalf32        : Single = 0.5;
-  CQuarter32     : Single = 0.25;
-  CTwenty32      : Single = 20;
-  COneTwelfth32  : Single = 1 / 12;
+  CDenorm32          : Single = 1E-24;
+  CTwoPI32           : Single = 2 * Pi;
+  CFourPI32          : Single = 4 * Pi;
+  CHalf32            : Single = 0.5;
+  CQuarter32         : Single = 0.25;
+  CTwenty32          : Single = 20;
+  COneTwelfth32      : Single = 1 / 12;
+  CMinusOneSixteenth : Single = -0.0625;
+  CTwoMulTwo2Neg32   : Single = ((2.0/$10000) / $10000);  // 2^-32
 
-  CDenorm64      : Double = 1E-34;
-  CTwoPI64       : Double = 2 * Pi;
-  CFourPI64      : Double = 4 * Pi;
-  CHalf64        : Double = 0.5;
-  CQuarter64     : Double = 0.25;
-  CTwenty64      : Double = 20;
+  CDenorm64          : Double = 1E-34;
+  CTwoPI64           : Double = 2 * Pi;
+  CFourPI64          : Double = 4 * Pi;
+  CHalf64            : Double = 0.5;
+  CQuarter64         : Double = 0.25;
+  CTwenty64          : Double = 20;
 
-const
-  kMaxLong  = $7FFFFFFF;
-  kMinLong  = -$7FFFFFFF-1;
-  kMaxInt64 = 9223372036854775807;
-  kMinInt64 = -9223372036854775807-1;
-  kMaxFloat = 3.40282346638528860e+38;
+  CMaxLongInt        : Integer =  $7FFFFFFF;
+  CMinLongInt        : Integer = -$7FFFFFFF - 1;
+  CMaxInt64          : Int64 =  9223372036854775807;
+  CMinInt64          : Int64 = -9223372036854775807 - 1;
+  CMaxSingle         : Single = 3.40282346638528860e+38;
 
 implementation
 
@@ -751,6 +754,32 @@ asm
  fsubp
 end;
 {$ENDIF}
+
+function FastRandom: Single;
+asm
+ IMUL  EDX, RandSeed, 08088405H
+ INC   EDX
+ MOV   RandSeed, EDX
+ FLD   CTwoMulTwo2Neg32
+ PUSH  0
+ PUSH  EDX
+ FILD  qword ptr [ESP]
+ ADD   ESP,8
+ FMULP ST(1), ST(0)
+ FLD1
+ FSUBP
+end;
+
+function RandomGauss: Extended;
+var
+  U1, S2: Extended;
+begin
+  repeat
+    U1 := 2 * Random - 1;
+    S2 := Sqr(U1) + Sqr(2 * Random - 1);
+  until S2 < 1;
+  Result := Sqrt(CMinusOneSixteenth * Ln(S2) / S2) * U1;
+end;
 
 procedure FastAbs(var Value: Single);
 var

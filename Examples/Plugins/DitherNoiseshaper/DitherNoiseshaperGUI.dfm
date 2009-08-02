@@ -1,10 +1,10 @@
 object FmDitherNoiseshaper: TFmDitherNoiseshaper
-  Left = 218
+  Left = 264
   Top = 81
   BorderStyle = bsNone
   Caption = 'Dither & Noiseshaper Example'
-  ClientHeight = 56
-  ClientWidth = 249
+  ClientHeight = 85
+  ClientWidth = 251
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,11 +13,12 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object LbNoiseshaperType: TLabel
-    Left = 4
-    Top = 34
+    Left = 8
+    Top = 62
     Width = 90
     Height = 13
     Caption = 'Noiseshaper Type:'
@@ -36,36 +37,101 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Height = 13
     Caption = 'Bit'
   end
-  object CBNoiseshaperType: TComboBox
-    Left = 100
-    Top = 31
+  object LbDitherType: TLabel
+    Left = 8
+    Top = 36
+    Width = 60
+    Height = 13
+    Caption = 'Dither Type:'
+  end
+  object LbDitherAmp: TLabel
+    Left = 182
+    Top = 36
+    Width = 25
+    Height = 13
+    Caption = 'Amp:'
+  end
+  object DialAmplitude: TGuiDial
+    Left = 210
+    Top = 29
+    Width = 24
+    Height = 24
+    CircleColor = clBtnShadow
+    CurveMapping = -1.000000000000000000
+    DialImageIndex = -1
+    LineColor = clBtnHighlight
+    LineWidth = 2
+    Max = 4.000000000000000000
+    OnChange = DialAmplitudeChange
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 1.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
+  end
+  object CbNoiseshaperType: TComboBox
+    Left = 104
+    Top = 59
     Width = 145
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
     ItemIndex = 0
     TabOrder = 0
-    Text = '9th Order F-weighting'
-    OnChange = CBNoiseshaperTypeChange
+    Text = 'F-weighting (9th Order)'
+    OnChange = CbNoiseshaperTypeChange
     Items.Strings = (
-      '9th Order F-weighting'
-      '3rd Order F-weighting'
-      '2nd Order mod. E-weighting'
-      '3rd Order mod. E-weighting'
-      '9th Order mod. E-weighting'
-      '5th Order improved E-weighting'
-      '9th Order improved E-weighting'
-      '2nd Order simple highpass')
+      'F-weighting (9th Order)'
+      'F-weighting (3rd Order)'
+      'mod. E-weighting (2nd Order)'
+      'mod. E-weighting (3rd Order)'
+      'mod. E-weighting (9th Order)'
+      'improved E-weighting (5th Order)'
+      'improved E-weighting (9th Order)'
+      'Simple Highpass (2nd Order)'
+      'Sony "Super Bit Mapping"'
+      'Reduced "Super Bit Mapping"'
+      'Simple Error Feedback (1st Order)'
+      'Experimental')
   end
-  object SEBitDepth: TSpinEdit
+  object SeBitDepth: TSpinEdit
     Left = 100
     Top = 4
     Width = 49
     Height = 22
     MaxValue = 32
-    MinValue = 2
+    MinValue = 1
     TabOrder = 1
     Value = 16
-    OnChange = SEBitDepthChange
+    OnChange = SeBitDepthChange
+  end
+  object CbLimit: TCheckBox
+    Left = 187
+    Top = 6
+    Width = 42
+    Height = 17
+    Caption = 'Limit'
+    TabOrder = 2
+    OnClick = CbLimitClick
+  end
+  object CbDitherType: TComboBox
+    Left = 74
+    Top = 32
+    Width = 99
+    Height = 21
+    Style = csDropDownList
+    ItemHeight = 13
+    ItemIndex = 4
+    TabOrder = 3
+    Text = 'Fast Gauss'
+    OnChange = CbDitherTypeChange
+    Items.Strings = (
+      'none'
+      'Rectangle'
+      'Triangular'
+      'Gauss'
+      'Fast Gauss')
   end
 end
