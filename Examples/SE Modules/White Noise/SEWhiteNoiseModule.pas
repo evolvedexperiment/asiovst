@@ -7,17 +7,24 @@ uses
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEWhiteNoisePins = (pinOutput);
+  TSEWhiteNoisePins = (pinDistribution, pinOutput);
 
+  TNoiseDistribution = (ndRectangle, ndTriangle, ndGauss, ndFastGauss);
   TSEWhiteNoiseModule = class(TSEModuleBase)
   private
     FOutputBuffer : PDAVSingleFixedArray;
+    FDistribution : TNoiseDistribution;
+    procedure ChooseProcess;
   protected
     procedure Open; override;
+    procedure PlugStateChange(const CurrentPin: TSEPin); override;
   public
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
-    procedure SubProcess(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessRectangle(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessTriangle(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessGauss(const BufferOffset, SampleFrames: Integer);
+    procedure SubProcessFastGauss(const BufferOffset, SampleFrames: Integer);
   end;
 
 implementation
@@ -29,21 +36,28 @@ procedure TSEWhiteNoiseModule.Open;
 begin
  inherited Open;
  // choose which function is used to process audio
- OnProcess := SubProcess;
+ OnProcess := SubProcessRectangle;
 
  // 'transmit' new output status to next module 'downstream'
  Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-// The most important part, processing the audio
-procedure TSEWhiteNoiseModule.SubProcess(const BufferOffset, SampleFrames: Integer);
-var
-  Sample : Integer;
+procedure TSEWhiteNoiseModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
- for Sample := 0 to SampleFrames - 1 do
-  begin
-   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
-  end;
+ inherited;
+ case TSEWhiteNoisePins(CurrentPin.PinID) of
+  pinDistribution : ChooseProcess;
+ end;
+end;
+
+procedure TSEWhiteNoiseModule.ChooseProcess;
+begin
+ case FDistribution of
+  ndRectangle : OnProcess := SubProcessRectangle;
+   ndTriangle : OnProcess := SubProcessTriangle;
+      ndGauss : OnProcess := SubProcessGauss;
+  ndFastGauss : OnProcess := SubProcessFastGauss;
+ end;
 end;
 
 // describe your module
@@ -71,17 +85,64 @@ function TSEWhiteNoiseModule.GetPinProperties(const Index: Integer; Properties: 
 begin
  result := True;
  case TSEWhiteNoisePins(index) of
-  // typical output plug
-  pinOutput: with Properties^ do
-              begin
-               Name            := 'Output';
-               VariableAddress := @FOutputBuffer;
-               Direction       := drOut;
-               Datatype        := dtFSample;
-//               Flags           := [iofAutoDuplicate, iofRename, iofCustomisable];
-              end;
+  pinDistribution : with Properties^ do
+                     begin
+                      Name            := 'Distribution';
+                      VariableAddress := @FDistribution;
+                      Direction       := drIn;
+                      Datatype        := dtEnum;
+                      DatatypeExtra   := 'Rectangle, Triangle, Gauss, Fast Gauss'
+                     end;
+        pinOutput : with Properties^ do
+                     begin
+                      Name            := 'Output';
+                      VariableAddress := @FOutputBuffer;
+                      Direction       := drOut;
+                      Datatype        := dtFSample;
+                     end;
   else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
+end;
+
+// The most important part, processing the audio
+procedure TSEWhiteNoiseModule.SubProcessRectangle(const BufferOffset, SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+  end;
+end;
+
+procedure TSEWhiteNoiseModule.SubProcessTriangle(const BufferOffset, SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+  end;
+end;
+
+procedure TSEWhiteNoiseModule.SubProcessGauss(const BufferOffset, SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+  end;
+end;
+
+procedure TSEWhiteNoiseModule.SubProcessFastGauss(const BufferOffset, SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+  end;
 end;
 
 end.
