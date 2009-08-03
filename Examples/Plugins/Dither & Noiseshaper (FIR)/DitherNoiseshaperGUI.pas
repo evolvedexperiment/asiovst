@@ -8,22 +8,22 @@ uses
 
 type
   TFmDitherNoiseshaper = class(TForm)
+    CbDitherType: TComboBox;
     CbLimit: TCheckBox;
     CbNoiseshaperType: TComboBox;
+    DialAmplitude: TGuiDial;
     LbBit: TLabel;
+    LbDitherAmp: TLabel;
+    LbDitherType: TLabel;
     LbFinalBitDepth: TLabel;
     LbNoiseshaperType: TLabel;
     SeBitDepth: TSpinEdit;
-    LbDitherType: TLabel;
-    CbDitherType: TComboBox;
-    LbDitherAmp: TLabel;
-    DialAmplitude: TGuiDial;
     procedure FormShow(Sender: TObject);
+    procedure CbDitherTypeChange(Sender: TObject);
     procedure CbLimitClick(Sender: TObject);
     procedure CbNoiseshaperTypeChange(Sender: TObject);
-    procedure SeBitDepthChange(Sender: TObject);
-    procedure CbDitherTypeChange(Sender: TObject);
     procedure DialAmplitudeChange(Sender: TObject);
+    procedure SeBitDepthChange(Sender: TObject);
   public
     procedure UpdateBitDepth;
     procedure UpdateLimit;

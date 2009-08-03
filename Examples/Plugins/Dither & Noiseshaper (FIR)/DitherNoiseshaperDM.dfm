@@ -105,8 +105,8 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
-      Max = 12.000000000000000000
-      MaxInteger = 12
+      Max = 15.000000000000000000
+      MaxInteger = 15
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000

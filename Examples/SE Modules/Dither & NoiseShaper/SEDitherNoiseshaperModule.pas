@@ -243,12 +243,13 @@ begin
      VariableAddress := @FNoiseshaperType;
      Direction       := drParameter;
      Datatype        := dtEnum;
-     DatatypeExtra   := 'F-weighting (9th Order), F-weighting (3rd Order), ' +
+     DatatypeExtra   := 'None, Error Feedback, Simple Highpass (2nd Order), ' +
        'mod. E-weighting (2nd Order), mod. E-weighting (3rd Order), ' +
-       'mod. E-weighting (9th Order), improved E-weighting (5th Order), ' +
-       'improved E-weighting (9th Order), Simple Highpass (2nd Order), ' +
-       'Sony "Super Bit Mapping", Reduced "Super Bit Mapping", ' +
-       'Error Feedback, Experimental';
+       'mod. E-weighting (5th Order), improved E-weighting (9th Order), ' +
+       'improved E-weighting (9th Order), F-weighting (9th Order), ' +
+       'F-weighting (3rd Order), Sony "Super Bit Mapping", ' +
+       'Reduced "Super Bit Mapping", Sharp 14k (7th Order), ' +
+       'Sharp 15k (8th Order), Sharp 16k (9th Order), Experimental';
      Result          := True;
     end;
  end;

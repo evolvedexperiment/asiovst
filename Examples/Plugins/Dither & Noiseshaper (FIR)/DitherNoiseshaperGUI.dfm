@@ -79,7 +79,9 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
+    ItemIndex = 2
     TabOrder = 0
+    Text = 'Simple Highpass (2nd Order)'
     OnChange = CbNoiseshaperTypeChange
     Items.Strings = (
       'None'
@@ -94,6 +96,9 @@ object FmDitherNoiseshaper: TFmDitherNoiseshaper
       'F-weighting (9th Order)'
       'Sony "Super Bit Mapping"'
       'Reduced "Super Bit Mapping"'
+      'Sharp 14 kHz (7th Order)'
+      'Sharp 15kHz (8th Order)'
+      'Sharp 16kHz (9th Order)'
       'Experimental')
   end
   object SeBitDepth: TSpinEdit

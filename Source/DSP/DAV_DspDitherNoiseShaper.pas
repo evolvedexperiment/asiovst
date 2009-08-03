@@ -45,15 +45,26 @@ const
     2.8516E-2, 1.23066E-3);
 
   // Experimental
-(*
-  CNoiseShaperCoefficientsEX  : array [0..8] of Single = (1.2940729308906,
-    -1.93533661172589, 2.41835654695818, -2.63629236563197, 2.53289979187073,
-    -2.14036968780081, 1.57065554340267, -0.972696652444237, 0.453903672592887);
-*)
-
   CNoiseShaperCoefficientsEX  : array [0..8] of Single = (1.2194769820734,
     -1.77912468394129, 2.18256539389233, -2.33622087251503, 2.2010985277411,
     -1.81964871362306, 1.29830681491534, -0.767889385169331, 0.320990893363264);
+
+  CNoiseShaperCoefficients14kSharp44100 : array [0..6] of Single = (
+    1.62019206878484, -2.26551157411517, 2.50884415683988, -2.25007947643775,
+    1.62160867255441, -0.899114621685913, 0.35350816625238);
+
+  CNoiseShaperCoefficients15kSharpEx44100  : array [0..7] of Single = (
+    2.13029284627951, -3.37834026386511, 4.18650513140503, -4.13744252026737,
+    3.33572681086378, -2.10101859689547, 1.01512367881576, -0.286474308856534);
+
+  CNoiseShaperCoefficients15kSharp44100 : array [0..7] of Single = (
+    1.34860378444905, -1.80123976889643, 2.04804746376671, -1.93234174830592,
+    1.59264693241396, -1.04979311664936, 0.599422666305319, -0.213194268754789);
+
+  CNoiseShaperCoefficients16kSharp44100 : array [0..8] of Single = (
+    1.07618924753262, -1.41232919229157, 1.61374140100329, -1.5996973679788,
+    1.42711666927426, -1.09986023030973, 0.750589080482029, -0.418709259968069,
+    0.185132272731155);
 
 (*
   CNoiseShaperCoefficientsEX   : array [0..7] of Single = (-0.952727263532277,
@@ -64,7 +75,9 @@ const
 
 type
   TNoiseShaperType = (nsNone, nsEFB, ns2Sc, ns2MEc, ns3MEc, ns9MEc, ns5IEc,
-    ns9IEc, ns3Fc, ns9Fc, nsSBM, nsSBMr, nsExperimental);
+    ns9IEc, ns3Fc, ns9Fc, nsSBM, nsSBMr, nsSharp14k7thOrder,
+    nsSharp15k8thOrder, nsSharp16k9thOrder, nsExperimental);
+
   TDitherType = (dtNone, dtEqual, dtTriangular, dtGauss, dtFastGauss);  
 
   TCustomDitherNoiseShaper = class(TDspObject)
@@ -418,6 +431,21 @@ begin
     Order := Length(CNoiseShaperCoefficientsSBMr);
     Move(CNoiseShaperCoefficientsSBMr[0], FCoefficients[0], FOrder * SizeOf(Single));
    end;
+  nsSharp14k7thOrder :
+   begin
+    Order := Length(CNoiseShaperCoefficients14kSharp44100);
+    Move(CNoiseShaperCoefficients14kSharp44100[0], FCoefficients[0], FOrder * SizeOf(Single));
+   end;
+  nsSharp15k8thOrder :
+   begin
+    Order := Length(CNoiseShaperCoefficients15kSharp44100);
+    Move(CNoiseShaperCoefficients15kSharp44100[0], FCoefficients[0], FOrder * SizeOf(Single));
+   end;
+  nsSharp16k9thOrder :
+   begin
+    Order := Length(CNoiseShaperCoefficients16kSharp44100);
+    Move(CNoiseShaperCoefficients16kSharp44100[0], FCoefficients[0], FOrder * SizeOf(Single));
+   end;
   nsExperimental :
    begin
     Order := Length(CNoiseShaperCoefficientsEX);
@@ -571,24 +599,42 @@ begin
     for Coef := 0 to Order - 1
      do FCoefficients[Coef] := CNoiseShaperCoefficients9IEc[Coef];
    end;
-   nsSBM :
-    begin
-     Order := Length(CNoiseShaperCoefficientsSBM);
-     for Coef := 0 to Order - 1
-      do FCoefficients[Coef] := CNoiseShaperCoefficientsSBM[Coef];
-    end;
-   nsSBMr :
-    begin
-     Order := Length(CNoiseShaperCoefficientsSBMr);
-     for Coef := 0 to Order - 1
-      do FCoefficients[Coef] := CNoiseShaperCoefficientsSBMr[Coef];
-    end;
-   nsExperimental :
-    begin
-     Order := Length(CNoiseShaperCoefficientsEX);
-     for Coef := 0 to Order - 1
-      do FCoefficients[Coef] := CNoiseShaperCoefficientsEX[Coef];
-    end;
+  nsSBM :
+   begin
+    Order := Length(CNoiseShaperCoefficientsSBM);
+    for Coef := 0 to Order - 1
+     do FCoefficients[Coef] := CNoiseShaperCoefficientsSBM[Coef];
+   end;
+  nsSBMr :
+   begin
+    Order := Length(CNoiseShaperCoefficientsSBMr);
+    for Coef := 0 to Order - 1
+     do FCoefficients[Coef] := CNoiseShaperCoefficientsSBMr[Coef];
+   end;
+  nsSharp14k7thOrder :
+   begin
+    Order := Length(CNoiseShaperCoefficients14kSharp44100);
+    for Coef := 0 to Order - 1
+     do FCoefficients[Coef] := CNoiseShaperCoefficients14kSharp44100[Coef];
+   end;
+  nsSharp15k8thOrder :
+   begin
+    Order := Length(CNoiseShaperCoefficients15kSharp44100);
+    for Coef := 0 to Order - 1
+     do FCoefficients[Coef] := CNoiseShaperCoefficients15kSharp44100[Coef];
+   end;
+  nsSharp16k9thOrder :
+   begin
+    Order := Length(CNoiseShaperCoefficients16kSharp44100);
+    for Coef := 0 to Order - 1
+     do FCoefficients[Coef] := CNoiseShaperCoefficients16kSharp44100[Coef];
+   end;
+  nsExperimental :
+   begin
+    Order := Length(CNoiseShaperCoefficientsEX);
+    for Coef := 0 to Order - 1
+     do FCoefficients[Coef] := CNoiseShaperCoefficientsEX[Coef];
+   end;
  end;
 end;
 

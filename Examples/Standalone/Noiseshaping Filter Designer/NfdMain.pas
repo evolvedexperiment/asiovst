@@ -34,7 +34,11 @@ type
     FImpResp   : PDAVSingleFixedArray;
     FFreqResp  : PDAVComplexSingleFixedArray;
     FMagnitude : PDAVSingleFixedArray;
-    function DiffEvolCalcCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+    function DiffEvolCalcSharpCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+    procedure RenderImpulseResponse(const Population: TDifferentialEvolutionPopulation);
+    procedure CalculateMagnitude;
+    function DiffEvolCalcSoftCosts(Sender: TObject;
+      const Population: TDifferentialEvolutionPopulation): Double;
   public
     function DiffEvolInitPopulation(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
   end;
@@ -83,7 +87,7 @@ begin
    GainR3 := 1;
    CrossOver := 1;
    AutoInitialize := False;
-   OnCalcCosts := DiffEvolCalcCosts;
+   OnCalcCosts := DiffEvolCalcSoftCosts;
   end;
 end;
 
@@ -137,7 +141,7 @@ begin
         do Memo.Lines.Add(FloatToStr(BestPopulation[VariableNo]));
       end;
      inc(EvolveCounter);
-     sleep(10);
+//     sleep(10);
      Application.ProcessMessages;
     end;
   end else BtCalculate.Caption := 'Calculate';
@@ -154,51 +158,145 @@ begin
  result := 1000;  
 end;
 
-function TFmNoiseshapingFilterDesigner.DiffEvolCalcCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+function AbsoluteThresholdOfHearing(Frequency: Single;
+  HighFrequencyModification: Single): Single;
+(* from Painter & Spanias
+   modified by Gabriel Bouvigne to better fit the reality
+
+   ath =    3.640 * pow(f,-0.8)
+          - 6.800 * exp(-0.6*pow(f-3.4,2.0))
+          + 6.000 * exp(-0.15*pow(f-8.7,2.0))
+          + 0.6 * 0.001 * pow(f,4.0);
+
+   In the past LAME was using the Painter & Spanias formula. But we had some
+   recurrent problems with HF content. We measured real ATH values, and found
+   the older formula to be inacurate in the higher part. So we made this new
+   formula and this solved most of HF problematic testcases. The tradeoff is
+   that in VBR mode it increases a lot the bitrate. *)
+begin
+(*
+This curve can be adjusted according to the VBR scale:
+  it adjusts from something close to Painter & Spanias
+  on V9 up to Bouvigne's formula for V0. This way the VBR
+  bitrate is more balanced according to the -V value.
+*)
+
+ (* the following hack allows to ask for the lowest value *)
+ if (Frequency < -0.3) then Frequency := 3410;
+
+ Frequency := Frequency / 1000;    // convert to kHz
+ Frequency := Max(0.1, Frequency); // clip value for lower frequency (100 Hz)
+// Frequency := Min(21.0, Frequency);
+
+ Result := 3.640 * Power(Frequency, -0.8)
+   - 6.800 * Exp(-0.6 * Power(Frequency - 3.4, 2.0))
+   + 6.000 * Exp(-0.15 * Power(Frequency - 8.7, 2.0))
+   + (0.6 + 0.04 * HighFrequencyModification) * 0.001 * Power(Frequency, 4.0);
+end;
+
+procedure TFmNoiseshapingFilterDesigner.RenderImpulseResponse(const Population: TDifferentialEvolutionPopulation);
 var
-  VarNo        : Integer;
-  BinNo        : Integer;
-  Above, Below : Single;
-  BinBandWidth : Single;
-  Freq, Max    : Single;
+  VarNo : Integer;
 begin
  // render FIR filter
  FImpResp[0] := 1;
  for VarNo := 0 to Length(Population) - 1
   do FImpResp[1 + VarNo] := -Population[VarNo];
  FFFT.PerformFFT(FFreqResp, FImpResp);
+end;
 
+procedure TFmNoiseshapingFilterDesigner.CalculateMagnitude;
+var
+  BinNo : Integer;
+begin
  // calculate magnitude
  FMagnitude[0] := Amp_to_dB(CDenorm32 + abs(FFreqResp[0].Re));
- for BinNo := 1 to FFFT.BinCount - 2 do
-  begin
-(*
-   assert(FFreqResp[BinNo].Re <> 0);
-   assert(FFreqResp[BinNo].Im <> 0);
-*)
-   FMagnitude[BinNo] := SqrAmp2dB(CDenorm32 + sqr(FFreqResp[BinNo].Re) + sqr(FFreqResp[BinNo].Im));
-  end;
+ for BinNo := 1 to FFFT.BinCount - 2
+  do FMagnitude[BinNo] := SqrAmp2dB(CDenorm32 + sqr(FFreqResp[BinNo].Re) + sqr(FFreqResp[BinNo].Im));
  FMagnitude[FFFT.BinCount - 1] := Amp_to_dB(CDenorm32 + abs(FFreqResp[FFFT.BinCount - 1].Re));
+end;
+
+function TFmNoiseshapingFilterDesigner.DiffEvolCalcSharpCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+var
+  BinNo        : Integer;
+  Above, Below : Single;
+  RelFrq, Avg  : Single;
+  Min, Max     : Single;
+begin
+ // render FIR filter
+ RenderImpulseResponse(Population);
+
+ // calculate magnitude
+ CalculateMagnitude;
 
  // evaluate magnitude
- Above := 0;
- Below := 0;
+ Above  := 0;
+ Below  := 0;
  Result := 0;
- Max := -1000;
- Freq := SeFrequency.Value;
- BinBandWidth := SeSampleRate.Value / FFFT.FFTSize;
+ Min    :=  1000;
+ Max    := -1000;
+ RelFrq := SeFrequency.Value * FFFT.FFTSize / SeSampleRate.Value;
  for BinNo := 0 to FFFT.BinCount - 1 do
   begin
    if FMagnitude[BinNo] > 0 then Above := Above + FMagnitude[BinNo] else
    if FMagnitude[BinNo] < 0 then Below := Below - FMagnitude[BinNo];
-   if BinNo * BinBandWidth < Freq then
+   if BinNo < RelFrq then
     begin
      Result := Result + FMagnitude[BinNo];
      if FMagnitude[BinNo] > Max then Max := FMagnitude[BinNo];
+     if FMagnitude[BinNo] < Min then Min := FMagnitude[BinNo];
     end;
   end;
+ Avg := Result / round(RelFrq);
+ Result := 2 * Avg + 2 * Max - Min + abs(Above - Below);
+end;
 
- Result := ((Result / round(Freq / BinBandWidth)) + 2 * Max) + 10 * abs(Above - Below);
+function TFmNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+var
+  BinNo        : Integer;
+  Above, Below : Single;
+  RelFrq, Avg  : Single;
+  Min, Max     : Single;
+  Weights      : Single;
+begin
+ // render FIR filter
+ RenderImpulseResponse(Population);
+
+ // calculate magnitude
+ CalculateMagnitude;
+
+ // evaluate magnitude
+ Above   := 0;
+ Below   := 0;
+ Result  := 0;
+ Min     :=  1000;
+ Max     := -1000;
+ Weights := 0;
+ RelFrq := SeFrequency.Value * FFFT.FFTSize / SeSampleRate.Value;
+ for BinNo := 0 to FFFT.BinCount - 1 do
+  begin
+   if FMagnitude[BinNo] > 0 then Above := Above + FMagnitude[BinNo] else
+   if FMagnitude[BinNo] < 0 then Below := Below - FMagnitude[BinNo];
+   if BinNo < RelFrq then
+    begin
+     if BinNo > 0.8 * RelFrq then
+      begin
+       Result := Result + 0.7 * FMagnitude[BinNo];
+       Weights := Weights + 0.7;
+       if (FMagnitude[BinNo] > Max) and (BinNo < 0.9 * RelFrq)
+        then Max := FMagnitude[BinNo];
+      end
+     else
+      begin
+       Result := Result + FMagnitude[BinNo];
+       Weights := Weights + 1;
+       if FMagnitude[BinNo] > Max then Max := FMagnitude[BinNo];
+      end;
+     if FMagnitude[BinNo] < Min then Min := FMagnitude[BinNo];
+    end;
+  end;
+ Avg := Result / Weights;
+ Result := 2 * Avg + 1.7 * Max - Min + abs(Above - Below);
 end;
 
 end.

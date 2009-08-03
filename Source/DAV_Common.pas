@@ -125,6 +125,11 @@ type
   function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+  function FrequencyToBark(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FrequencyToBark(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Frequency2CriticalBandwidth(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Frequency2CriticalBandwidth(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
   // dB stuff
   function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -431,21 +436,79 @@ begin
 end;
 
 
-// Convert a value in dB's to a linear amplitude
+////////////////////////////////////////////////////////////////////////
+//                                                                    //
+// see for example "Zwicker: Psychoakustik, 1982; ISBN 3-540-11401-7  //
+//                                                                    //
+// input: freq in hz                                                  //
+// output: barks                                                      //
+//                                                                    //
+////////////////////////////////////////////////////////////////////////
+
+function FrequencyToBark(Frequency: Single): Single;
+begin
+ if (Frequency < 0) then Frequency := 0;
+ Frequency := Frequency * 0.001;
+ Result := 13.0 * arctan(0.76 * Frequency) +
+   3.5 * arctan(sqr(Frequency * 0.1333333333333333));
+end;
+
+function FrequencyToBark(Frequency: Double): Double;
+begin
+ if (Frequency < 0) then Frequency := 0;
+ Frequency := Frequency * 0.001;
+ Result := 13.0 * arctan(0.76 * Frequency) +
+   3.5 * arctan(sqr(Frequency / 7.5));
+end;
+
+
+////////////////////////////////////////////////////////////////////////
+//                                                                    //
+// see for example "Zwicker: Psychoakustik, 1982; ISBN 3-540-11401-7  //
+//                                                                    //
+// input: freq in hz                                                  //
+// output: critical band width                                        //
+//                                                                    //
+////////////////////////////////////////////////////////////////////////
+
+function Frequency2CriticalBandwidth(Frequency: Single): Single;
+begin
+ Result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency * 0.001), 0.69);
+end;
+
+function Frequency2CriticalBandwidth(Frequency: Double): Double;
+begin
+ Result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency * 0.001), 0.69);
+end;
+
+
+
+////////////////////////////////////////////////////
+//                                                //
+// Convert a value in dB's to a linear amplitude  //
+//                                                //
+////////////////////////////////////////////////////
+
 function dB_to_Amp(const Value: Single): Single;
 begin
- if (Value > -300.0)
+ if (Value > -400.0)
   then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
   else Result := 0;
 end;
 
-// Convert a value in dB's to a linear amplitude
 function dB_to_Amp(const Value: Double): Double;
 begin
- if (Value > -300.0)
+ if (Value > -1000.0)
   then Result := Exp(Value * 0.11512925464970228420089957273422) //Power(10, g / 20) //Power(2, g * 0.015051499783199059760686944736225)
   else Result := 0;
 end;                                                             // e^(x) = 2^(log2(e^x)) = 2^(x / ln(2))
+
+
+///////////////////////////////////////////////////////////
+//                                                       //
+// Convert a squared value in dB's to a linear amplitude //
+//                                                       //
+///////////////////////////////////////////////////////////
 
 function SqrAmp2dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
@@ -536,7 +599,13 @@ asm
 end;
 {$ENDIF}
 
-// scale logarithmicly from 20 Hz to 20 kHz
+
+//////////////////////////////////////////////
+//                                          //
+// scale logarithmicly from 20 Hz to 20 kHz //
+//                                          //
+//////////////////////////////////////////////
+
 function FreqLinearToLog(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin

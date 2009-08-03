@@ -1,6 +1,8 @@
 program NoiseshapingFilterDesigner;
 
 uses
+  FastMM4,
+  FastMove,
   Forms,
   NfdMain in 'NfdMain.pas' {FmNoiseshapingFilterDesigner};
 

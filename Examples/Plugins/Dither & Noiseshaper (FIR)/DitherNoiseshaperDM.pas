@@ -173,19 +173,22 @@ end;
 procedure TDitherNoiseshaperModule.ParameterNoiseshaperTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case TNoiseShaperType(Round(Parameter[Index])) of
-          nsNone : PreDefined := 'None';
-          nsEFB  : PreDefined := 'Simple Error Feedback (1st Order)';
-          ns2Sc  : PreDefined := 'Simple Highpass (2nd Order)';
-          ns2MEc : PreDefined := 'mod. E-weighting (2nd Order)';
-          ns3MEc : PreDefined := 'mod. E-weighting (3rd Order)';
-          ns9MEc : PreDefined := 'mod. E-weighting (9th Order)';
-          ns5IEc : PreDefined := 'improved E-weighting (5th Order)';
-          ns9IEc : PreDefined := 'improved E-weighting (9th Order)';
-          ns3Fc  : PreDefined := 'F-weighting (3rd Order)';
-          ns9Fc  : PreDefined := 'F-weighting (9th Order';
-          nsSBM  : PreDefined := 'Sony "Super Bit Mapping"';
-          nsSBMr : PreDefined := 'Reduced "Super Bit Mapping"';
-  nsExperimental : PreDefined := 'Experimental';
+              nsNone : PreDefined := 'None';
+              nsEFB  : PreDefined := 'Simple Error Feedback (1st Order)';
+              ns2Sc  : PreDefined := 'Simple Highpass (2nd Order)';
+              ns2MEc : PreDefined := 'mod. E-weighting (2nd Order)';
+              ns3MEc : PreDefined := 'mod. E-weighting (3rd Order)';
+              ns9MEc : PreDefined := 'mod. E-weighting (9th Order)';
+              ns5IEc : PreDefined := 'improved E-weighting (5th Order)';
+              ns9IEc : PreDefined := 'improved E-weighting (9th Order)';
+              ns3Fc  : PreDefined := 'F-weighting (3rd Order)';
+              ns9Fc  : PreDefined := 'F-weighting (9th Order';
+              nsSBM  : PreDefined := 'Sony "Super Bit Mapping"';
+              nsSBMr : PreDefined := 'Reduced "Super Bit Mapping"';
+  nsSharp14k7thOrder : PreDefined := 'Sharp 14 kHz (7th Order)';
+  nsSharp15k8thOrder : PreDefined := 'Sharp 15 kHz (8th Order)';
+  nsSharp16k9thOrder : PreDefined := 'Sharp 16 kHz (9th Order)';
+      nsExperimental : PreDefined := 'Experimental';
  end;
 end;
 
