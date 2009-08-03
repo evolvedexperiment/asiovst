@@ -211,33 +211,6 @@ implementation
 uses
   Math, SysUtils, DAV_Approximations;
 
-function FastRandomGauss: Single;
-var
-  U1, S2 : Single;
-  Val    : Integer absolute S2;
-  Res    : Integer absolute Result;
-const
-  CScaledLog2ofEInv32 : Single = -4.3321698784996581838577007591125E-2;
-begin
-  repeat
-    U1 := FastRandom; //2 * Random - 1;
-    S2 := Sqr(U1) + Sqr(2 * Random - 1);
-  until S2 < 1;
-
-  // fast log
-  Res := Val and (not ($FF shl 23)) + $7F shl 23;
-  Result := (((Val shr 23) and $FF) - $80) + ((CL2Continous4[0] *
-    Result + CL2Continous4[1]) * Result + CL2Continous4[2]) *
-    Result + CL2Continous4[3];
-
-  // fast sqrt
-  S2 := CScaledLog2ofEInv32 * Result / S2;
-  Result := S2;
-  Res := ((Res - (1 shl 23)) shr 1) + (1 shl 29);
-  Result := CHalf32 * (Result + S2 / Result) * U1;
-end;
-
-
 { TCustomDitherNoiseShaper }
 
 constructor TCustomDitherNoiseShaper.Create;

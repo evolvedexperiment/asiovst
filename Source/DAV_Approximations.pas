@@ -27,6 +27,7 @@ uses
   function FastFloorLn2(const Value: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastArctanLike(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastArctanLike(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastRandomGauss: Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   function FastSinLike(const Value: Single): Single; overload;
   function FastSinLike(const Value: Double): Double; overload;
@@ -482,6 +483,7 @@ const
   CL2Laurent5 : array [0..4] of Single = (-8.00848677328682978E-2,
     6.38108601387251673E-1, -2.11019449052551389, 4.06509622185509922,
     -1.51292537160088569);
+  CGaussScaledLog2ofEInv32 : Single = -4.3321698784996581838577007591125E-2;
 
 implementation
 
@@ -1799,6 +1801,37 @@ begin
  Result := (((IntCast and $7F800000) shr 23) - $7F) +
              (IntCast and $007FFFFF) / $800000;
 end;
+
+function FastRandomGauss: Single;
+var
+  U1, S2 : Single;
+  Val    : Integer absolute S2;
+  Res    : Integer absolute Result;
+begin
+  repeat
+   U1 := FastRandom;
+   S2 := Sqr(U1) + Sqr(FastRandom);
+  until S2 < 1;
+
+  // fast log
+  Res := Val and (not ($FF shl 23)) + $7F shl 23;
+  Result := (((Val shr 23) and $FF) - $80) + ((CL2Continous4[0] *
+    Result + CL2Continous4[1]) * Result + CL2Continous4[2]) *
+    Result + CL2Continous4[3];
+
+  // fast sqrt
+  S2 := CGaussScaledLog2ofEInv32 * Result / S2;
+  Result := S2;
+  Res := ((Res - (1 shl 23)) shr 1) + (1 shl 29);
+  Result := CHalf32 * (Result + S2 / Result) * U1;
+end;
+
+
+///////////////////////////////
+//                           //
+//  Fast 2^x approximations  //
+//                           //
+///////////////////////////////
 
 function FastPower2MinError2(Value: Single): Single;
 var

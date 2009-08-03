@@ -876,8 +876,8 @@ var
   U1, S2: Extended;
 begin
   repeat
-    U1 := 2 * Random - 1;
-    S2 := Sqr(U1) + Sqr(2 * Random - 1);
+    U1 := FastRandom;
+    S2 := Sqr(U1) + Sqr(FastRandom);
   until S2 < 1;
   Result := Sqrt(CMinusOneSixteenth * Ln(S2) / S2) * U1;
 end;

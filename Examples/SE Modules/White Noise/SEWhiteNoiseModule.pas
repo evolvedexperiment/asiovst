@@ -30,7 +30,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Approximations;
 
 procedure TSEWhiteNoiseModule.Open;
 begin
@@ -111,7 +111,7 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+   FOutputBuffer[BufferOffset + Sample] := FastRandom;
   end;
 end;
 
@@ -121,7 +121,7 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+   FOutputBuffer[BufferOffset + Sample] := random - random;
   end;
 end;
 
@@ -131,7 +131,7 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+   FOutputBuffer[BufferOffset + Sample] := RandomGauss;
   end;
 end;
 
@@ -141,7 +141,7 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FOutputBuffer[BufferOffset + Sample] := 2 * random - 1;
+   FOutputBuffer[BufferOffset + Sample] := FastRandomGauss;
   end;
 end;
 
