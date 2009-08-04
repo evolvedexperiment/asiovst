@@ -8,25 +8,39 @@ uses
   Classes, DAV_Common, DAV_DspCommon, DAV_ModularPin;
 
 type
-  TCustomModularBase = class(TDspComponent)
+  TCustomModularBase = class(TDspObject)
   private
-    function GetPinInput(Index: Integer): TModularPin;
-    function GetPinOutput(Index: Integer): TModularPin;
+    FName                 : string;
+    FDescription          : string;
+    FOnNameChanged        : TNotifyEvent;
+    FOnDescriptionChanged : TNotifyEvent;
+    FOnPinCountChanged    : TNotifyEvent;
+    function GetPinInput(Index: Integer): TModularPinInput;
+    function GetPinOutput(Index: Integer): TModularPinOutput;
     procedure SetPinsInput(const Value: TModularInputPins);
     procedure SetPinsOutput(const Value: TModularOutputPins);
+    procedure SetDescription(const Value: string);
+    procedure SetName(const Value: string);
+    procedure DescriptionChanged;
+    procedure NameChanged;
   protected
     FPinsInput  : TModularInputPins;
     FPinsOutput : TModularOutputPins;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure ProcessData; virtual; abstract;
-
     property PinsInput: TModularInputPins read FPinsInput write SetPinsInput;
     property PinsOutput: TModularOutputPins read FPinsOutput write SetPinsOutput;
+  public
+    constructor Create; virtual;
+    destructor Destroy; override;
+    procedure ProcessModule; virtual; abstract;
 
-    property PinInput[Index: Integer]: TModularPin read GetPinInput;
-    property PinOutput[Index: Integer]: TModularPin read GetPinOutput;
+    property Name: string read FName write SetName;
+    property Description: string read FDescription write SetDescription;
+    property PinInput[Index: Integer]: TModularPinInput read GetPinInput;
+    property PinOutput[Index: Integer]: TModularPinOutput read GetPinOutput;
+
+    property OnNameChanged: TNotifyEvent read FOnNameChanged write FOnNameChanged;
+    property OnDescriptionChanged: TNotifyEvent read FOnDescriptionChanged write FOnDescriptionChanged;
+    property OnPinCountChange: TNotifyEvent read FOnPinCountChanged write FOnPinCountChanged;
   end;
 
   TModularBase = class(TCustomModularBase)
@@ -42,11 +56,11 @@ uses
 
 { TCustomModularBase }
 
-constructor TCustomModularBase.Create(AOwner: TComponent);
+constructor TCustomModularBase.Create;
 begin
  inherited;
- FPinsInput  := TModularInputPins.Create(Self);
- FPinsOutput := TModularOutputPins.Create(Self);
+ FPinsInput  := TModularInputPins.Create;
+ FPinsOutput := TModularOutputPins.Create;
 end;
 
 destructor TCustomModularBase.Destroy;
@@ -56,18 +70,48 @@ begin
  inherited;
 end;
 
-function TCustomModularBase.GetPinInput(Index: Integer): TModularPin;
+function TCustomModularBase.GetPinInput(Index: Integer): TModularPinInput;
 begin
  if Index in [0..FPinsInput.Count - 1]
-  then result := FPinsInput[Index]
+  then result := TModularPinInput(FPinsInput[Index])
   else result := nil;
 end;
 
-function TCustomModularBase.GetPinOutput(Index: Integer): TModularPin;
+function TCustomModularBase.GetPinOutput(Index: Integer): TModularPinOutput;
 begin
  if Index in [0..FPinsOutput.Count - 1]
-  then result := FPinsOutput[Index]
+  then result := TModularPinOutput(FPinsOutput[Index])
   else result := nil;
+end;
+
+procedure TCustomModularBase.SetDescription(const Value: string);
+begin
+ if FDescription <> Value then
+  begin
+   FDescription := Value;
+   DescriptionChanged;
+  end;
+end;
+
+procedure TCustomModularBase.SetName(const Value: string);
+begin
+ if FName <> Value then
+  begin
+   FName := Value;
+   NameChanged;
+  end;
+end;
+
+procedure TCustomModularBase.DescriptionChanged;
+begin
+ if assigned(FOnDescriptionChanged)
+  then FOnDescriptionChanged(Self);
+end;
+
+procedure TCustomModularBase.NameChanged;
+begin
+ if assigned(FOnNameChanged)
+  then FOnNameChanged(Self);
 end;
 
 procedure TCustomModularBase.SetPinsInput(const Value: TModularInputPins);
