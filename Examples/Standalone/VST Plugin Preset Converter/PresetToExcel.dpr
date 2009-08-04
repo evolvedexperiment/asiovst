@@ -18,7 +18,6 @@ var
   PresetFile    : TFileName;
   Prgs, Params  : Integer;
   VstHost       : TVstHost;
-  XlsFileName   : TFileName;
   FileExtention : string;
 
 begin
@@ -44,14 +43,14 @@ begin
   end;
 
  OutputFile := ParamStr(2);
- if XlsFileName = '' then
+ if OutputFile = '' then
   with TSaveDialog.Create(nil) do
    try
     DefaultExt := '.xls';
     Filter := 'Excel (*.xls)|*.xls|CSV (*.csv)|*.csv|RTF (*.rtf)|*.rtf|HTML (*.html)|*.html|Text (*.txt)|*.txt';
     FileName := ChangeFileExt(VstDllFile, '.xls');
     Title := 'Save as...';
-    if Execute then XlsFileName := FileName;
+    if Execute then OutputFile := FileName;
    finally
     Free;
    end;
@@ -60,7 +59,7 @@ begin
    MessageDlg('No output file selected!', mtError, [mbOK], 0);
    Exit;
   end;
-  
+
  PresetFile := ParamStr(3);
 
  VstHost := TVstHost.Create(nil);
@@ -82,8 +81,6 @@ begin
 
     if numPrograms < numParams then
      begin
-
-      XlsFileName := OutputFile;
       with TXLSWorkbook.Create do
        try
         // add new sheet
@@ -173,12 +170,12 @@ begin
           // autofit parameter names
           RCRange[3, 2, 2 + numParams, 2].AutoFit(True);
          end;
-        FileExtention := LowerCase(ExtractFileExt(XlsFileName));
-        if FileExtention = '.xls' then SaveAs(XlsFileName) else
-        if FileExtention = '.csv' then SaveAs(XlsFileName, xlCSV) else
-        if FileExtention = '.rtf' then SaveAs(XlsFileName, xlRTF) else
-        if FileExtention = '.html' then SaveAs(XlsFileName, xlHTML) else
-        if FileExtention = '.txt' then SaveAs(XlsFileName, xlText)
+        FileExtention := LowerCase(ExtractFileExt(OutputFile));
+        if FileExtention = '.xls' then SaveAs(OutputFile) else
+        if FileExtention = '.csv' then SaveAs(OutputFile, xlCSV) else
+        if FileExtention = '.rtf' then SaveAs(OutputFile, xlRTF) else
+        if FileExtention = '.html' then SaveAs(OutputFile, xlHTML) else
+        if FileExtention = '.txt' then SaveAs(OutputFile, xlText)
          else raise Exception.Create(RCStrUnknownFileExtensi);
        finally
         Free;
@@ -186,7 +183,6 @@ begin
      end
     else
      begin
-      XlsFileName := OutputFile;
       with TXLSWorkbook.Create do
        try
         // add new sheet
@@ -195,23 +191,11 @@ begin
           Name := EffectName;
 
           // programs title
-          with RCRange[1, 3, 2 + numPrograms, 1] do
+          with RCRange[3, 1, 2 + numPrograms, 1] do
            begin
             Merge(False);
             Font.Size := 14;
             Value := 'Programs';
-            Borders.ColorIndex := xlColorIndexAutomatic;
-            HorizontalAlignment := xlHAlignCenter;
-            VerticalAlignment := xlVAlignCenter;
-            Borders[xlAround].Weight := xlMedium;
-           end;
-
-          // parameters title
-          with RCRange[3, 1, 1, 2 + numParams] do
-           begin
-            Merge(False);
-            Font.Size := 14;
-            Value := 'Parameters';
             Borders.ColorIndex := xlColorIndexAutomatic;
             HorizontalAlignment := xlHAlignCenter;
             VerticalAlignment := xlVAlignCenter;
@@ -220,8 +204,20 @@ begin
             Borders[xlAround].Weight := xlMedium;
            end;
 
+          // parameters title
+          with RCRange[1, 3, 1, 2 + numParams] do
+           begin
+            Merge(False);
+            Font.Size := 14;
+            Value := 'Parameters';
+            Borders.ColorIndex := xlColorIndexAutomatic;
+            HorizontalAlignment := xlHAlignCenter;
+            VerticalAlignment := xlVAlignCenter;
+            Borders[xlAround].Weight := xlMedium;
+           end;
+
           // format programs
-          with RCRange[2, 3, 2 + numPrograms, 2] do
+          with RCRange[3, 2, 2 + numPrograms, 2] do
            begin
             Font.Size := 10;
             Font.Bold := True;
@@ -230,7 +226,7 @@ begin
            end;
 
           // format parameters
-          with RCRange[3, 2, 2, 2 + numParams] do
+          with RCRange[2, 3, 2, 2 + numParams] do
            begin
             Font.Size := 10;
             Font.Bold := True;
@@ -243,8 +239,7 @@ begin
           for Params := 0 to numParams - 1 do
            begin
             if ParameterLabel[Params] <> ''
-             then Cells.Item[2, 3 + Params].Value :=
-              ParameterName[Params] + ' [' + ParameterLabel[Params] + ']'
+             then Cells.Item[2, 3 + Params].Value := ParameterName[Params] + ' [' + ParameterLabel[Params] + ']'
              else Cells.Item[2, 3 + Params].Value := ParameterName[Params];
            end;
 
@@ -271,17 +266,17 @@ begin
            end;
 
           // autofit parameter values
-          RCRange[2, 3, 2 + numPrograms, 2 + numParams].AutoFit(True);
+          RCRange[3, 2, 2 + numPrograms, 2 + numParams].AutoFit(True);
 
           // autofit parameter names
-          RCRange[3, 2, 2, 2 + numParams].AutoFit(True);
+          RCRange[2, 3, 2, 2 + numParams].AutoFit(True);
          end;
-        FileExtention := LowerCase(ExtractFileExt(XlsFileName));
-        if FileExtention = '.xls' then SaveAs(XlsFileName) else
-        if FileExtention = '.csv' then SaveAs(XlsFileName, xlCSV) else
-        if FileExtention = '.rtf' then SaveAs(XlsFileName, xlRTF) else
-        if FileExtention = '.html' then SaveAs(XlsFileName, xlHTML) else
-        if FileExtention = '.txt' then SaveAs(XlsFileName, xlText)
+        FileExtention := LowerCase(ExtractFileExt(OutputFile));
+        if FileExtention = '.xls' then SaveAs(OutputFile) else
+        if FileExtention = '.csv' then SaveAs(OutputFile, xlCSV) else
+        if FileExtention = '.rtf' then SaveAs(OutputFile, xlRTF) else
+        if FileExtention = '.html' then SaveAs(OutputFile, xlHTML) else
+        if FileExtention = '.txt' then SaveAs(OutputFile, xlText)
          else raise Exception.Create(RCStrUnknownFileExtensi);
        finally
         Free;

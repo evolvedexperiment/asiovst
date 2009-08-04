@@ -53,9 +53,29 @@ const
     1.62019206878484, -2.26551157411517, 2.50884415683988, -2.25007947643775,
     1.62160867255441, -0.899114621685913, 0.35350816625238);
 
-  CNoiseShaperCoefficients15kSharpEx44100  : array [0..7] of Single = (
+  CNoiseShaperCoefficients15kSharpEx40000 : array [0..7] of Single = (
+    0.919387305668676, -1.04843437730544, 1.04843048925451, -0.868972788711174,
+    0.60853001063849, -0.3449209471469, 0.147484332561636, -0.0370652871194614);
+
+  CNoiseShaperCoefficients15kSharpEx44100 : array [0..7] of Single = (
     2.13029284627951, -3.37834026386511, 4.18650513140503, -4.13744252026737,
     3.33572681086378, -2.10101859689547, 1.01512367881576, -0.286474308856534);
+
+  CNoiseShaperCoefficients15kSharpEx48000 : array [0..7] of Single = (
+    1.4247141061364, -1.5437678148854, 1.0967969510044, -0.32075758107035,
+    -0.32074811729292, 0.525494723539046, -0.38058984415197, 0.14824460513256);
+
+  CNoiseShaperCoefficients15kSharpEx64000 : array [0..7] of Single = (
+    2.49725554745212, -3.23587161287721, 2.31844946822861, -0.54326047010533,
+    -0.54325301319653, 0.543289788745007, -0.142132484905, -0.0202120370327948);
+
+  CNoiseShaperCoefficients15kSharpEx88200 : array [0..7] of Single = (
+    2.90080649054909, -3.31387104345925, 1.07060472618978, 1.07052060977363,
+   -0.68687433463692, -0.686840576074174, 0.888606037761557, -0.298648374809776);
+
+  CNoiseShaperCoefficients15kSharpEx96000 : array [0..7] of Single = (
+    3.14014081409305, -3.76888037179035, 1.26107138314221, 1.26088059917107,
+    -0.807698715053922, -0.80767075968406, 1.0101984930848, -0.322351688402064);
 
   CNoiseShaperCoefficients15kSharp44100 : array [0..7] of Single = (
     1.34860378444905, -1.80123976889643, 2.04804746376671, -1.93234174830592,
@@ -100,26 +120,33 @@ type
     property DitherType: TDitherType read FDitherType write SetDitherType default dtTriangular;
   end;
 
-  TCustomFIRDitherNoiseShaper = class(TCustomDitherNoiseShaper)
+  TCustomDitherFIRNoiseShaper = class(TCustomDitherNoiseShaper)
   private
     FOrder           : Integer;
     FHistoryPos      : Integer;
-    FNoiseshaperType : TNoiseShaperType;
-    procedure SetNoiseshaperType(Value: TNoiseShaperType);
     procedure SetOrder(const Value: Integer);
   protected
-    procedure NoiseshaperTypeChanged; virtual;
     procedure OrderChanged; virtual; abstract;
     procedure Reset; override;
 
     property Order: Integer read FOrder write SetOrder;
   public
     constructor Create; override;
+  end;
+
+  TCustomDitherPredefinedNoiseShaper = class(TCustomDitherFIRNoiseShaper)
+  private
+    FNoiseshaperType : TNoiseShaperType;
+    procedure SetNoiseshaperType(Value: TNoiseShaperType);
+  protected
+    procedure NoiseshaperTypeChanged; virtual;
+  public
+    constructor Create; override;
 
     property NoiseshaperType: TNoiseShaperType read FNoiseshaperType write SetNoiseshaperType default ns9Fc;
   end;
 
-  TCustomIIRDitherNoiseShaper = class(TCustomDitherNoiseShaper)
+  TCustomDitherIIRNoiseShaper = class(TCustomDitherNoiseShaper)
   private
     FFilter : TCustomFilter;
   protected
@@ -129,7 +156,7 @@ type
     destructor Destroy; override;
   end;
 
-  TDitherNoiseShaper32 = class(TCustomFIRDitherNoiseShaper)
+  TDitherNoiseShaper32 = class(TCustomDitherPredefinedNoiseShaper)
   private
     FBitMul, FBitDiv : Single;
     FDitherAmplitude : Single;
@@ -154,7 +181,7 @@ type
     property NoiseshaperType;
   end;
 
-  TDitherNoiseShaper64 = class(TCustomFIRDitherNoiseShaper)
+  TDitherNoiseShaper64 = class(TCustomDitherPredefinedNoiseShaper)
   private
     FBitMul, FBitDiv : Double;
     FDitherAmplitude : Double;
@@ -179,7 +206,33 @@ type
     property NoiseshaperType;
   end;
 
-  TDitherHighShelfNoiseShaper32 = class(TCustomIIRDitherNoiseShaper)
+  TDitherSharpNoiseShaper32 = class(TCustomDitherFIRNoiseShaper)
+  private
+    FBitMul, FBitDiv : Single;
+    FDitherAmplitude : Single;
+    FSampleRate      : Single;
+    procedure ChooseNoiseshaper;
+    procedure SetSampleRate(const Value: Single);
+    procedure SamplerateChanged;
+  protected
+    FCoefficients : PDAVSingleFixedArray; // Coefficients
+    FHistory      : PDAVSingleFixedArray; // Error History
+    procedure BitDepthChanged; override;
+    procedure OrderChanged; override;
+  public
+    constructor Create; override;
+    function ProcessInteger(Input: Single): Integer;
+    function ProcessFloat(Input: Single): Single;
+    procedure Reset; override;
+  published
+    property BitDepth;
+    property DitherAmplitude: Single read FDitherAmplitude write FDitherAmplitude;
+    property DitherType;
+    property Limit;
+    property Samplerate: Single read FSampleRate write SetSampleRate;  
+  end;
+
+  TDitherHighShelfNoiseShaper32 = class(TCustomDitherIIRNoiseShaper)
   private
     FBitMul, FBitDiv : Single;
     FDitherAmplitude : Single;
@@ -248,26 +301,15 @@ begin
  Reset;
 end;
 
-{ TCustomFIRDitherNoiseShaper }
+{ TCustomDitherFIRNoiseShaper }
 
-constructor TCustomFIRDitherNoiseShaper.Create;
+constructor TCustomDitherFIRNoiseShaper.Create;
 begin
  inherited;
  FHistoryPos := 0;
- FNoiseshaperType := ns9Fc;
- NoiseshaperTypeChanged;
 end;
 
-procedure TCustomFIRDitherNoiseShaper.SetNoiseshaperType(Value: TNoiseShaperType);
-begin
- if FNoiseshaperType <> Value then
-  begin
-   FNoiseshaperType := Value;
-   NoiseshaperTypeChanged;
-  end;
-end;
-
-procedure TCustomFIRDitherNoiseShaper.SetOrder(const Value: Integer);
+procedure TCustomDitherFIRNoiseShaper.SetOrder(const Value: Integer);
 begin
  if FOrder <> Value then
   begin
@@ -276,31 +318,50 @@ begin
   end;
 end;
 
-procedure TCustomFIRDitherNoiseShaper.NoiseshaperTypeChanged;
-begin
- Reset;
-end;
-
-procedure TCustomFIRDitherNoiseShaper.Reset;
+procedure TCustomDitherFIRNoiseShaper.Reset;
 begin
  FHistoryPos := 0;
 end;
 
-{ TCustomIIRDitherNoiseShaper }
+{ TCustomDitherPredefinedNoiseShaper }
 
-constructor TCustomIIRDitherNoiseShaper.Create;
+constructor TCustomDitherPredefinedNoiseShaper.Create;
+begin
+ inherited;
+ FNoiseshaperType := ns9Fc;
+ NoiseshaperTypeChanged;
+end;
+
+procedure TCustomDitherPredefinedNoiseShaper.SetNoiseshaperType(
+  Value: TNoiseShaperType);
+begin
+ if FNoiseshaperType <> Value then
+  begin
+   FNoiseshaperType := Value;
+   NoiseshaperTypeChanged;
+  end;
+end;
+
+procedure TCustomDitherPredefinedNoiseShaper.NoiseshaperTypeChanged;
+begin
+ Reset;
+end;
+
+{ TCustomDitherIIRNoiseShaper }
+
+constructor TCustomDitherIIRNoiseShaper.Create;
 begin
  inherited;
 
 end;
 
-destructor TCustomIIRDitherNoiseShaper.Destroy;
+destructor TCustomDitherIIRNoiseShaper.Destroy;
 begin
  FreeAndNil(FFilter);
  inherited;
 end;
 
-procedure TCustomIIRDitherNoiseShaper.Reset;
+procedure TCustomDitherIIRNoiseShaper.Reset;
 begin
  FFilter.ResetStates;
 end;
@@ -479,6 +540,7 @@ end;
 
 procedure TDitherNoiseShaper32.Reset;
 begin
+ inherited;
  FillChar(FHistory^[0], FOrder * SizeOf(Single), 0);
 end;
 
@@ -655,7 +717,112 @@ end;
 
 procedure TDitherNoiseShaper64.Reset;
 begin
+ inherited;
  FillChar(FHistory^[0], FOrder * SizeOf(Double), 0);
+end;
+
+{ TDitherSharpNoiseShaper32 }
+
+constructor TDitherSharpNoiseShaper32.Create;
+begin
+ inherited;
+ FOrder := 8;
+ OrderChanged;
+end;
+
+procedure TDitherSharpNoiseShaper32.BitDepthChanged;
+begin
+ FBitMul := IntPower(2, FBitDepth - 1) - CHalf32;
+ FBitDiv := 1 / FBitMul;
+ FLimits[0] := round(-FBitMul - CHalf32);
+ FLimits[1] := round( FBitMul - CHalf32);
+end;
+
+procedure TDitherSharpNoiseShaper32.ChooseNoiseshaper;
+begin
+ if SampleRate < 41000
+  then Move(CNoiseShaperCoefficients15kSharpEx40000[0], FCoefficients[0], FOrder * SizeOf(Single)) else
+ if SampleRate < 46000
+  then Move(CNoiseShaperCoefficients15kSharpEx44100[0], FCoefficients[0], FOrder * SizeOf(Single)) else
+ if SampleRate < 55000
+  then Move(CNoiseShaperCoefficients15kSharpEx48000[0], FCoefficients[0], FOrder * SizeOf(Single)) else
+ if SampleRate < 75100
+  then Move(CNoiseShaperCoefficients15kSharpEx64000[0], FCoefficients[0], FOrder * SizeOf(Single))
+  else Move(CNoiseShaperCoefficients15kSharpEx96000[0], FCoefficients[0], FOrder * SizeOf(Single));
+end;
+
+procedure TDitherSharpNoiseShaper32.OrderChanged;
+begin
+ ReallocMem(FCoefficients, FOrder * SizeOf(Single));
+ ReallocMem(FHistory, FOrder * SizeOf(Single));
+end;
+
+function TDitherSharpNoiseShaper32.ProcessFloat(Input: Single): Single;
+{$IFDEF RenderFIR}
+var
+  Coef : Integer;
+{$ENDIF}
+begin
+ {$IFDEF RenderFIR}
+ Result := Input;
+ for Coef := 0 to FOrder - 1
+  do Result := Result - FCoefficients[Coef] * FHistory[(FOrder + FHistoryPos - Coef) mod FOrder];
+ FHistoryPos := (FHistoryPos + 1) mod FOrder;
+ FHistory[FHistoryPos] := Input;
+ {$ELSE}
+ result := (ProcessInteger(Input) + CHalf32) * FBitDiv;
+ {$ENDIF}
+end;
+
+function TDitherSharpNoiseShaper32.ProcessInteger(Input: Single): Integer;
+var
+  Coef : Integer;
+begin
+ // scale input to bit range
+ Input := FBitMul * Input;
+
+ // Direct FIR filter implementation
+ for Coef := 0 to FOrder - 1
+  do Input := Input - FCoefficients[Coef] * FHistory[(FOrder + FHistoryPos - Coef) mod FOrder];
+
+ FHistoryPos := (FHistoryPos + 1) mod FOrder;
+
+ // add triangular distributed noise
+ case FDitherType of
+        dtNone : Result := round(Input - CHalf32);
+       dtEqual : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandom);
+  dtTriangular : Result := round(Input - CHalf32 + FDitherAmplitude * (random - random));
+       dtGauss : Result := round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
+   dtFastGauss : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
+  else Result := 0;
+ end;
+
+ if FLimit then
+  if Result < FLimits[0] then Result := FLimits[0] else
+  if Result > FLimits[1] then Result := FLimits[1];
+
+ // update buffer
+ FHistory[FHistoryPos] := Result - Input;
+end;
+
+procedure TDitherSharpNoiseShaper32.Reset;
+begin
+ inherited;
+ FillChar(FHistory^[0], FOrder * SizeOf(Single), 0);
+end;
+
+procedure TDitherSharpNoiseShaper32.SetSampleRate(const Value: Single);
+begin
+ if FSampleRate <> Value then
+  begin
+   FSampleRate := Value;
+   SamplerateChanged;
+  end;
+end;
+
+procedure TDitherSharpNoiseShaper32.SamplerateChanged;
+begin
+ ChooseNoiseshaper;
 end;
 
 { TDitherHighShelfNoiseShaper32 }

@@ -1809,7 +1809,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetParamName(index: Integer): string;
+function TCustomVstPlugIn.GetParamName(Index: Integer): string;
 var
   Temp : PAnsiChar;
 const
@@ -1823,7 +1823,7 @@ begin
  try
   FillChar(Temp^, Lngth, 0);
   if FActive then
-   if VstDispatch(effGetParamName, index, 0, Temp) = 0 // check is not part of the official specification
+   if VstDispatch(effGetParamName, Index, 0, Temp) = 0 // check is not part of the official specification
     then result := StrPas(Temp);
 
   // check whether the result string accords to the specs

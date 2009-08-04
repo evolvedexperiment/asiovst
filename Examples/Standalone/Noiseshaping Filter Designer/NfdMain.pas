@@ -14,16 +14,16 @@ uses
 
 type
   TFmNoiseshapingFilterDesigner = class(TForm)
-    SECoefficientCount: TSpinEdit;
-    LbCoefficients: TLabel;
-    Memo: TMemo;
     BtCalculate: TButton;
-    SeSampleRate: TSpinEdit;
-    LbSampleRate: TLabel;
+    LbCoefficients: TLabel;
     LbFrequency: TLabel;
-    SeFrequency: TSpinEdit;
-    LbSampleRateUnit: TLabel;
     LbFrequencyUnit: TLabel;
+    LbSampleRate: TLabel;
+    LbSampleRateUnit: TLabel;
+    Memo: TMemo;
+    SECoefficientCount: TSpinEdit;
+    SeFrequency: TSpinEdit;
+    SeSampleRate: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BtCalculateClick(Sender: TObject);
@@ -35,10 +35,9 @@ type
     FFreqResp  : PDAVComplexSingleFixedArray;
     FMagnitude : PDAVSingleFixedArray;
     function DiffEvolCalcSharpCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
+    function DiffEvolCalcSoftCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
     procedure RenderImpulseResponse(const Population: TDifferentialEvolutionPopulation);
     procedure CalculateMagnitude;
-    function DiffEvolCalcSoftCosts(Sender: TObject;
-      const Population: TDifferentialEvolutionPopulation): Double;
   public
     function DiffEvolInitPopulation(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
   end;
@@ -253,11 +252,12 @@ end;
 
 function TFmNoiseshapingFilterDesigner.DiffEvolCalcSoftCosts(Sender: TObject; const Population: TDifferentialEvolutionPopulation): Double;
 var
-  BinNo        : Integer;
+  BinNo, Coeff : Integer;
   Above, Below : Single;
   RelFrq, Avg  : Single;
   Min, Max     : Single;
   Weights      : Single;
+  MaxCoeff     : Single;
 begin
  // render FIR filter
  RenderImpulseResponse(Population);
@@ -295,8 +295,20 @@ begin
      if FMagnitude[BinNo] < Min then Min := FMagnitude[BinNo];
     end;
   end;
+
  Avg := Result / Weights;
  Result := 2 * Avg + 1.7 * Max - Min + abs(Above - Below);
+
+ // penalties
+ MaxCoeff := 0;
+ for Coeff := 0 to Length(Population) - 1 do
+  if abs(Population[Coeff]) > MaxCoeff
+   then MaxCoeff := abs(Population[Coeff]);
+ if MaxCoeff > 6 then Result := 1000 + Result;
+
+ for Coeff := 1 to Length(Population) - 1 do
+  if abs(Population[Coeff - 1]) < abs(Population[Coeff])
+   then Result := Result + 10 * abs(abs(Population[Coeff - 1]) - abs(Population[Coeff]));
 end;
 
 end.

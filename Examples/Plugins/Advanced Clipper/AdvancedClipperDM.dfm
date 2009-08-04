@@ -14,7 +14,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   IORatio = 1.000000000000000000
   UniqueID = 'AdCr'
   ShellPlugins = <>
-  TruncateStrings = True
   Programs = <
     item
       DisplayName = 'Default'

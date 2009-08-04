@@ -63,7 +63,7 @@ begin
  FInputGain  := 1;
  FOutputGain := 1;
  for ch := 0 to 3
-  do FUpDownSampling[ch] := TDAVUpDownsampling.Create(Self);
+  do FUpDownSampling[ch] := TDAVUpDownsampling.Create;
 
  Parameter[0] := -0.1;
  Parameter[1] := 4;
