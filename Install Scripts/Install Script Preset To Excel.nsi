@@ -59,6 +59,7 @@ SetCompressor lzma
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -84,6 +85,19 @@ Section "Preset To Excel" SecProgramFiles
   WriteUninstaller "$INSTDIR\Uninstall_Preset_To_Excel.exe"
 SectionEnd
 
+Section "Preset To Excel" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\VST Plugin Preset Converter.pdf"
+
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_Preset_To_Excel.exe"
+SectionEnd
+
 ;--------------------------------
 ;Descriptions
 
@@ -92,10 +106,13 @@ SectionEnd
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Preset To Excel"
 
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "Preset To Excel"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Manual"
+  
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
