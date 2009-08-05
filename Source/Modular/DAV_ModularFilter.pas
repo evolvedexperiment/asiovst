@@ -5,17 +5,73 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_ModularBase,
-  DAV_ModularPin;
+  Classes, DAV_Common, DAV_DspCommon, DAV_ModularBase, DAV_ModularPin,
+  DAV_DspFilter, DAV_DspFilterBasics, DAV_DspFilterButterworth;
 
 type
   TCustomModularFilter = class(TCustomModularBase)
   protected
     FFilter : TCustomFilter;
+    procedure SetupPins; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessModule; override;
+  end;
+
+  TCustomModularBandwidthIIRFilter = class(TCustomModularFilter)
+  protected
+    procedure SetupPins; override;
+  end;
+
+  TModularBasicGainFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicPeakFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicAllpassFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicLowShelfFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicLowShelfAFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicLowShelfBFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicHighShelfFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicHighShelfAFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TModularBasicHighShelfBFilter = class(TCustomModularBandwidthIIRFilter)
+  public
+    constructor Create; override;
+  end;
+
+  TCustomModularOrderFilter = class(TCustomModularFilter)
+  protected
+    procedure SetupPins; override;
   end;
 
 implementation
@@ -28,26 +84,30 @@ uses
 constructor TCustomModularFilter.Create;
 begin
  inherited;
-
- // setup input pin
- with FPinsInput.Add do
-  begin
-   Datatype := mdtSingle;
-   TriggerType := mttBlock;
-  end;
-
- // setup output pin
- with FPinsOutput.Add do
-  begin
-   Datatype := mdtSingle;
-   TriggerType := mttBlock;
-  end;
+ SetupPins;
 end;
 
 destructor TCustomModularFilter.Destroy;
 begin
  FreeAndNil(FFilter);
  inherited;
+end;
+
+procedure TCustomModularFilter.SetupPins;
+begin
+ // setup input pin
+ with FPinsInput.Add do
+  begin
+   Datatype    := mdtSingle;
+   DisplayName := 'Input';
+  end;
+
+ // setup output pin
+ with FPinsOutput.Add do
+  begin
+   Datatype := mdtSingle;
+   DisplayName := 'Output';
+  end;
 end;
 
 procedure TCustomModularFilter.ProcessModule;
@@ -70,6 +130,132 @@ begin
  for Sample := 0 to FPinsInput[0].Buffersize - 1
   do Output[Sample] := FFilter.ProcessSample(Input[Sample]);
 
+end;
+
+{ TCustomModularBandwidthIIRFilter }
+
+procedure TCustomModularBandwidthIIRFilter.SetupPins;
+begin
+ inherited;
+
+ // setup frequency pin
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtSingle;
+   DisplayName := 'Frequency';
+  end;
+
+ // setup gain pin
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtSingle;
+   DisplayName := 'Gain';
+  end;
+
+ // setup bandwidth pin
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtSingle;
+   DisplayName := 'Bandwidth';
+  end;
+end;
+
+{ TModularBasicGainFilter }
+
+constructor TModularBasicGainFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicGainFilter.Create;
+end;
+
+{ TModularBasicPeakFilter }
+
+constructor TModularBasicPeakFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicPeakFilter.Create;
+end;
+
+{ TModularBasicAllpassFilter }
+
+constructor TModularBasicAllpassFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicAllpassFilter.Create;
+end;
+
+{ TModularBasicLowShelfFilter }
+
+constructor TModularBasicLowShelfFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicLowShelfFilter.Create;
+end;
+
+{ TModularBasicLowShelfAFilter }
+
+constructor TModularBasicLowShelfAFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicLowShelfAFilter.Create;
+end;
+
+{ TModularBasicLowShelfBFilter }
+
+constructor TModularBasicLowShelfBFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicLowShelfBFilter.Create;
+end;
+
+{ TModularBasicHighShelfFilter }
+
+constructor TModularBasicHighShelfFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicHighShelfFilter.Create;
+end;
+
+{ TModularBasicHighShelfAFilter }
+
+constructor TModularBasicHighShelfAFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicHighShelfAFilter.Create;
+end;
+
+{ TModularBasicHighShelfBFilter }
+
+constructor TModularBasicHighShelfBFilter.Create;
+begin
+ inherited;
+ FFilter := TBasicHighShelfBFilter.Create;
+end;
+
+{ TCustomModularOrderFilter }
+
+procedure TCustomModularOrderFilter.SetupPins;
+begin
+ // setup frequency pin
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtSingle;
+   DisplayName := 'Frequency';
+  end;
+
+ // setup gain pin
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtSingle;
+   DisplayName := 'Gain';
+  end;
+
+ // setup order pin
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtInteger;
+   DisplayName := 'Order';
+  end;
 end;
 
 end.

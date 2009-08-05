@@ -1125,7 +1125,7 @@ begin
    FInputChannelInfos[i].channel := i;
    FInputChannelInfos[i].isInput := ASIOTrue;
    FDriver.GetChannelInfo(FInputChannelInfos[i]);
-   FInConverters[i] := GetInConverter(FInputChannelInfos[i].vType);
+   FInConverters[i] := GetInConverter(FInputChannelInfos[i].SampleType);
 
    currentbuffer^.isInput := ASIOTrue;
    currentbuffer^.channelNum := i;
@@ -1142,7 +1142,7 @@ begin
    FOutputChannelInfos[i].channel := i;
    FOutputChannelInfos[i].isInput := ASIOFalse;   //  output
    FDriver.GetChannelInfo(FOutputChannelInfos[i]);
-   FOutConverters[i] := GetOutConverter(FOutputChannelInfos[i].vType);
+   FOutConverters[i] := GetOutConverter(FOutputChannelInfos[i].SampleType);
 
    currentbuffer^.isInput := ASIOFalse;  // create an output buffer
    currentbuffer^.channelNum := i;
@@ -1385,10 +1385,10 @@ begin
       for i := 0 to FOutputChannelCount - 1 do
        with FOutputChannelInfos[i] do
         begin
-         if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB]     then sz := SizeOf(Word) else
-         if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB]     then sz := 3 else
-         if vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
-         if vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
+         if SampleType in [ASIOSTInt16MSB,ASIOSTInt16LSB]     then sz := SizeOf(Word) else
+         if SampleType in [ASIOSTInt24MSB,ASIOSTInt24LSB]     then sz := 3 else
+         if SampleType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+         if SampleType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
           else sz := SizeOf(Integer);
 
          assert(assigned(currentbuffer));
@@ -1404,10 +1404,10 @@ begin
       for i := 0 to FInputChannelCount - 1 do
        with FInputChannelInfos[i] do
         begin
-         if vType in [ASIOSTInt16MSB,ASIOSTInt16LSB]     then sz := SizeOf(Word) else
-         if vType in [ASIOSTInt24MSB,ASIOSTInt24LSB]     then sz := 3 else
-         if vType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
-         if vType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
+         if SampleType in [ASIOSTInt16MSB,ASIOSTInt16LSB]     then sz := SizeOf(Word) else
+         if SampleType in [ASIOSTInt24MSB,ASIOSTInt24LSB]     then sz := 3 else
+         if SampleType in [ASIOSTFloat32LSB,ASIOSTFloat32MSB] then sz := SizeOf(Single) else
+         if SampleType in [ASIOSTFloat64LSB,ASIOSTFloat64MSB] then sz := SizeOf(Double)
           else sz := SizeOf(Integer);
 
          assert(assigned(currentbuffer));

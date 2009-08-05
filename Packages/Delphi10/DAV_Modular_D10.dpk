@@ -48,6 +48,9 @@ contains
   DAV_ModularBaseOsc in '..\..\Source\Modular\DAV_ModularBaseOsc.pas',
   DAV_ModularVoiceController in '..\..\Source\Modular\DAV_ModularVoiceController.pas',
   DAV_ModularVoiceList in '..\..\Source\Modular\DAV_ModularVoiceList.pas',
-  DAV_ModularEnvelope in '..\..\Source\Modular\DAV_ModularEnvelope.pas';
+  DAV_ModularEnvelope in '..\..\Source\Modular\DAV_ModularEnvelope.pas',
+  DAV_ModularContainer in '..\..\Source\Modular\DAV_ModularContainer.pas',
+  DAV_ModularFilter in '..\..\Source\Modular\DAV_ModularFilter.pas',
+  DAV_ModularPin in '..\..\Source\Modular\DAV_ModularPin.pas';
 
 end.

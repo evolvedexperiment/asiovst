@@ -52,8 +52,8 @@ const
 type
   // use the function ASIOSamplesToInt64 to convert to an Int64
   TASIOInt64 = record
-    hi : dword;
-    lo : dword;
+    Hi : DWORD;
+    Lo : DWORD;
   end;
 
   TASIOSamples = TASIOInt64;
@@ -178,7 +178,7 @@ type
                                      // optional; set to 0. or 1. if not supported
     TimecodeSamples : TASIOSamples;  // time in samples
     Flags           : Longword;      // some information flags (see below)
-    Future          : array[0..63] of Char;
+    Future          : array[0..63] of AnsiChar;
   end;
 
 type
@@ -194,14 +194,14 @@ const
 
 type
   TAsioTimeInfo = packed record
-    speed          : Double;           // absolute speed (1. = nominal)
-    systemTime     : TASIOTimeStamp;   // system time related to samplePosition, in nanoseconds
+    Speed          : Double;           // absolute speed (1. = nominal)
+    SystemTime     : TASIOTimeStamp;   // system time related to samplePosition, in nanoseconds
                                        // on mac, must be derived from Microseconds() (not UpTime()!)
                                        // on windows, must be derived from timeGetTime()
-    samplePosition : TASIOSamples;
-    sampleRate     : TASIOSampleRate;  // current rate
-    flags          : Longword;         // (see below)
-    reserved       : array[0..11] of Char;
+    SamplePosition : TASIOSamples;
+    SampleRate     : TASIOSampleRate;  // current rate
+    Flags          : Longword;         // (see below)
+    Reserved       : array[0..11] of AnsiChar;
   end;
   TAsioTimeInfoFlags = LongInt;
 
@@ -339,7 +339,7 @@ type
 type
   TASIOBufferSwitchProc = procedure(doubleBufferIndex: LongInt; directProcess: TASIOBool); cdecl;
   TASIOSampleRateDidChangeProc = procedure(sRate: TASIOSampleRate); cdecl;
-  TASIOMessageFunc = function(selector, value: LongInt; message: pointer; opt: pdouble): LongInt; cdecl;
+  TASIOMessageFunc = function(selector, value: LongInt; message: Pointer; opt: pdouble): LongInt; cdecl;
   TASIOBufferSwitchTimeInfoFunc = function(var params: TASIOTime; doubleBufferIndex: LongInt; directProcess: TASIOBool): PASIOTime; cdecl;
 
   TASIOCallbacks = packed record
@@ -414,37 +414,37 @@ const                                // asioMessage selectors
 
 type
   TASIODriverInfo = packed record
-    asioVersion   : LongInt;        // currently, 2
-    driverVersion : LongInt;        // driver specific
-    name          : array[0..31] of Char;
-    errorMessage  : array[0..123] of Char;
-    sysRef        : pointer;        // on input: system reference
+    AsioVersion   : LongInt;        // currently, 2
+    DriverVersion : LongInt;        // driver specific
+    Name          : array[0..31] of AnsiChar;
+    ErrorMessage  : array[0..123] of AnsiChar;
+    SysRef        : Pointer;        // on input: system reference
                                     // (Windows: application main window handle, Mac & SGI: 0)
   end;
 
   PASIOClockSource = ^TASIOClockSource;
   TASIOClockSource = packed record
-    index             : LongInt;    // as used for ASIOSetClockSource()
-    associatedChannel : LongInt;    // for instance, S/PDIF or AES/EBU
-    associatedGroup   : LongInt;    // see channel groups (ASIOGetChannelInfo())
-    isCurrentSource   : TASIOBool;  // ASIOTrue if this is the current clock source
-    name              : array[0..31] of Char;   // for user selection
+    Index             : LongInt;    // as used for ASIOSetClockSource()
+    AssociatedChannel : LongInt;    // for instance, S/PDIF or AES/EBU
+    AssociatedGroup   : LongInt;    // see channel groups (ASIOGetChannelInfo())
+    IsCurrentSource   : TASIOBool;  // ASIOTrue if this is the current clock source
+    Name              : array[0..31] of AnsiChar;   // for user selection
   end;
 
   TASIOChannelInfo = packed record
-    channel      : LongInt;                // on input, channel index
-    isInput      : TASIOBool;              // on input
-    isActive     : TASIOBool;              // on exit
-    channelGroup : LongInt;                // dto
-    vType        : TASIOSampleType;        // dto
-    name         : array[0..31] of Char;   // dto
+    Channel      : LongInt;                  // on input, channel index
+    IsInput      : TASIOBool;                // on input
+    IsActive     : TASIOBool;                // on exit
+    ChannelGroup : LongInt;                  // dto
+    SampleType   : TASIOSampleType;          // dto
+    Name         : array[0..31] of AnsiChar; // dto
   end;
 
   PASIOBufferInfo = ^TASIOBufferInfo;
   TASIOBufferInfo = packed record
-    isInput    : TASIOBool;               // on input:  ASIOTrue: input, else output
-    channelNum : LongInt;                 // on input:  channel index
-    buffers    : array[0..1] of pointer;  // on output: double buffer addresses
+    IsInput    : TASIOBool;               // on input:  ASIOTrue: input, else output
+    ChannelNum : LongInt;                 // on input:  channel index
+    Buffers    : array[0..1] of Pointer;  // on output: double buffer addresses
   end;
 
 const
@@ -482,19 +482,19 @@ type
   end;
 
   TASIOChannelControls = packed record
-    channel   : LongInt;        // on input, channel index
-    isInput   : TASIOBool;      // on input
-    gain      : LongInt;        // on input,  ranges 0 thru 0x7fffffff
-    meter     : LongInt;        // on return, ranges 0 thru 0x7fffffff
-    future    : array[0..31] of Char;
+    Channel   : LongInt;        // on input, channel index
+    IsInput   : TASIOBool;      // on input
+    Gain      : LongInt;        // on input,  ranges 0 thru 0x7fffffff
+    Meter     : LongInt;        // on return, ranges 0 thru 0x7fffffff
+    Future    : array[0..31] of AnsiChar;
   end;
 
   TASIOTransportParameters = packed record
-    command        : LongInt;                   // see enum below
-    samplePosition : TASIOSamples;
-    track          : LongInt;
-    trackSwitches  : array[0..15] of LongInt;   // 512 tracks on/off
-    future         : array[0..63] of Char;
+    Command        : LongInt;                   // see enum below
+    SamplePosition : TASIOSamples;
+    Track          : LongInt;
+    TrackSwitches  : array[0..15] of LongInt;   // 512 tracks on/off
+    Future         : array[0..63] of AnsiChar;
   end;
 
 // DSD support
@@ -522,7 +522,7 @@ type
 
   TASIOIoFormat_s = packed record
     FormatType : TASIOIoFormatType;
-    future     : array [0..512 - SizeOf(TASIOIoFormatType)] of Char;
+    Future     : array [0..512 - SizeOf(TASIOIoFormatType)] of Char;
   end;
 
 const
@@ -540,15 +540,15 @@ const
 
 implementation
 
-function ASIOSamplesToInt64(const samples: TAsioSamples): Int64;
+function ASIOSamplesToInt64(const Samples: TAsioSamples): Int64;
 begin
-  Result := (samples.hi * $100000000) + samples.lo;
+  Result := (Samples.Hi * $100000000) + Samples.Lo;
 end;
 
-function Int64ToASIOSamples(const value: Int64): TASIOSamples;
+function Int64ToASIOSamples(const Value: Int64): TASIOSamples;
 begin
-  Result.hi := (value and $FFFFFFFF00000000) shr 32;
-  Result.lo := (value and $00000000FFFFFFFF);
+  Result.Hi := (Value and $FFFFFFFF00000000) shr 32;
+  Result.Lo := (Value and $00000000FFFFFFFF);
 end;
 
 end.

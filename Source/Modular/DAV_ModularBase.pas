@@ -10,8 +10,6 @@ uses
 type
   TCustomModularBase = class(TDspObject)
   private
-    FName                 : string;
-    FDescription          : string;
     FOnNameChanged        : TNotifyEvent;
     FOnDescriptionChanged : TNotifyEvent;
     FOnPinCountChanged    : TNotifyEvent;
@@ -21,11 +19,19 @@ type
     procedure SetPinsOutput(const Value: TModularOutputPins);
     procedure SetDescription(const Value: string);
     procedure SetName(const Value: string);
-    procedure DescriptionChanged;
-    procedure NameChanged;
+    procedure PinCountChangeHandler(Sender: TObject);
   protected
-    FPinsInput  : TModularInputPins;
-    FPinsOutput : TModularOutputPins;
+    FName        : string;
+    FDescription : string;
+    FPinsInput   : TModularInputPins;
+    FPinsOutput  : TModularOutputPins;
+
+    procedure DescriptionChanged; virtual;
+    procedure NameChanged; virtual;
+    procedure InputPinCountChanged; virtual;
+    procedure OutputPinCountChanged; virtual;
+    procedure PinCountChanged; virtual;
+
     property PinsInput: TModularInputPins read FPinsInput write SetPinsInput;
     property PinsOutput: TModularOutputPins read FPinsOutput write SetPinsOutput;
   public
@@ -43,16 +49,21 @@ type
     property OnPinCountChange: TNotifyEvent read FOnPinCountChanged write FOnPinCountChanged;
   end;
 
+(*
   TModularBase = class(TCustomModularBase)
   published
     property PinsInput;
     property PinsOutput;
   end;
+*)
 
 implementation
 
 uses
   SysUtils;
+
+resourcestring
+  RCStrErrorUnknownPins = 'Error: unknown pin collection';
 
 { TCustomModularBase }
 
@@ -61,6 +72,8 @@ begin
  inherited;
  FPinsInput  := TModularInputPins.Create;
  FPinsOutput := TModularOutputPins.Create;
+ FPinsInput.OnPinCountChange := PinCountChangeHandler;
+ FPinsOutput.OnPinCountChange := PinCountChangeHandler;
 end;
 
 destructor TCustomModularBase.Destroy;
@@ -112,6 +125,29 @@ procedure TCustomModularBase.NameChanged;
 begin
  if assigned(FOnNameChanged)
   then FOnNameChanged(Self);
+end;
+
+procedure TCustomModularBase.PinCountChangeHandler(Sender: TObject);
+begin
+ if Sender = FPinsInput then InputPinCountChanged else
+ if Sender = FPinsOutput then OutputPinCountChanged
+  else raise Exception.Create(RCStrErrorUnknownPins);
+end;
+
+procedure TCustomModularBase.InputPinCountChanged;
+begin
+ PinCountChanged;
+end;
+
+procedure TCustomModularBase.OutputPinCountChanged;
+begin
+ PinCountChanged;
+end;
+
+procedure TCustomModularBase.PinCountChanged;
+begin
+ if assigned(FOnPinCountChanged)
+  then FOnPinCountChanged(Self);
 end;
 
 procedure TCustomModularBase.SetPinsInput(const Value: TModularInputPins);

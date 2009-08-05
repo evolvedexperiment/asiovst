@@ -78,11 +78,11 @@ begin
       Add('input channels: ' + IntToStr(InputChannelCount));
       Add('output channels: ' + IntToStr(OutputChannelCount));
       Add('input format: ' +
-        ChannelTypeToString(InputChannelInfos[0].vType) +
-        ' (' + IntToStr(InputChannelInfos[0].vType) + ')');
+        ChannelTypeToString(InputChannelInfos[0].SampleType) +
+        ' (' + IntToStr(InputChannelInfos[0].SampleType) + ')');
       Add('output format: ' +
-        ChannelTypeToString(OutputChannelInfos[0].vType) +
-        ' (' + IntToStr(OutputChannelInfos[0].vType) + ')');
+        ChannelTypeToString(OutputChannelInfos[0].SampleType) +
+        ' (' + IntToStr(OutputChannelInfos[0].SampleType) + ')');
       Add('input latency: '  + IntToStr(InputLatency));
       Add('output latency: ' + IntToStr(OutputLatency));
       Add('buffer size: ' + IntToStr(BufferSize));

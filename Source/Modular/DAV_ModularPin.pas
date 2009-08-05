@@ -9,32 +9,76 @@ uses
 
 type
   TModularPinDataType = (mdtInteger, mdtBoolean, mdtSingle, mdtDouble);
-  TModularPinTriggerType = (mttEvent, mttBlock);
 
   TCustomModularPin = class(TCollectionItem)
   private
     FDisplayName            : string;
-    FDataType               : TModularPinDataType;
-    FBuffer                 : Pointer;
-    FBufferSize             : Integer;
-    FTriggerType            : TModularPinTriggerType;
-    FOnPinConnectionChanged : TNotifyEvent;
-    procedure SetDataType(const Value: TModularPinDataType);
-    procedure SetBufferSize(const Value: Integer);
-    procedure SetTriggerType(const Value: TModularPinTriggerType);
-    function GetBufferAsDoubleArray: PDAVDoubleFixedArray;
-    function GetBufferAsSingleArray: PDAVSingleFixedArray;
   protected
     function GetDisplayName: string; override;
     procedure SetDisplayName(const AValue: string); override;
     procedure AssignTo(Dest: TPersistent); override;
 
+    procedure DisplayNameChanged; virtual;
+  public
+    {$IFDEF FPC}
+    constructor Create(ACollection: TCollection); override;
+    {$ELSE}
+    constructor Create(Collection: TCollection); override;
+    {$ENDIF}
+
+    property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
+  end;
+
+  TManagedModularIOPin = class(TCustomModularPin)
+  published
+    property DisplayName;
+  end;
+
+  TManagedModularIOPins = class(TOwnedCollection)
+  protected
+    FOnPinCountChange: TNotifyEvent;
+    function IndexOf(Value: TManagedModularIOPin): Integer;
+    function GetItem(Index: Integer): TManagedModularIOPin; virtual;
+    procedure SetItem(Index: Integer; const Value: TManagedModularIOPin); virtual;
+    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
+    property Items[Index: Integer]: TManagedModularIOPin read GetItem write SetItem; default;
+  public
+    constructor Create(AOwner: TPersistent); virtual;
+    destructor Destroy; override;
+    function Add: TManagedModularIOPin;
+    function Insert(const Index: Integer): TManagedModularIOPin;
+    procedure Delete(const Index: Integer);
+
+    property Count;
+    property OnPinCountChange: TNotifyEvent read FOnPinCountChange write FOnPinCountChange;
+  end;
+
+  TCustomModularConnectPin = class(TCustomModularPin)
+  private
+    FOnPinConnectionChanged : TNotifyEvent;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+
     procedure PinConnected; virtual; abstract;
     procedure PinDisconnected; virtual; abstract;
-    procedure PinConnectionChanged; virtual; abstract; 
+    procedure PinConnectionChanged; virtual; abstract;
+  public
+    property OnPinConnectionChanged: TNotifyEvent read FOnPinConnectionChanged write FOnPinConnectionChanged;
+  end;
+
+  TCustomModularIOPin = class(TCustomModularConnectPin)
+  private
+    FDataType   : TModularPinDataType;
+    FBuffer     : Pointer;
+    FBufferSize : Integer;
+    procedure SetDataType(const Value: TModularPinDataType);
+    procedure SetBufferSize(const Value: Integer);
+    function GetBufferAsDoubleArray: PDAVDoubleFixedArray;
+    function GetBufferAsSingleArray: PDAVSingleFixedArray;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
 
     procedure BufferSizeChanged; virtual;
-    procedure TriggerTypeChanged; virtual;
     procedure DisplayNameChanged; virtual;
     procedure DataTypeChanged; virtual;
     procedure AllocateBuffer; virtual;
@@ -47,40 +91,36 @@ type
     {$ENDIF}
     destructor Destroy; override;
 
-    property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Datatype: TModularPinDataType read FDataType write SetDataType default mdtSingle;
     property BufferSize: Integer read FBufferSize write SetBufferSize default 1;
     property BufferAsSingleArray: PDAVSingleFixedArray read GetBufferAsSingleArray;
     property BufferAsDoubleArray: PDAVDoubleFixedArray read GetBufferAsDoubleArray;
-    property TriggerType: TModularPinTriggerType read FTriggerType write SetTriggerType default mttEvent;
-
-    property OnPinConnectionChanged: TNotifyEvent read FOnPinConnectionChanged write FOnPinConnectionChanged; 
   end;
 
-  TCustomModularPins = class(TCollection)
+  TCustomModularIOPins = class(TCollection)
   protected
     FOnPinCountChange: TNotifyEvent;
-    function IndexOf(Value: TCustomModularPin): Integer;
-    function GetItem(Index: Integer): TCustomModularPin; virtual;
-    procedure SetItem(Index: Integer; const Value: TCustomModularPin); virtual;
+    function IndexOf(Value: TCustomModularIOPin): Integer;
+    function GetItem(Index: Integer): TCustomModularIOPin; virtual;
+    procedure SetItem(Index: Integer; const Value: TCustomModularIOPin); virtual;
     procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
-    property Items[Index: Integer]: TCustomModularPin read GetItem write SetItem; default;
+    property Items[Index: Integer]: TCustomModularIOPin read GetItem write SetItem; default;
   public
     destructor Destroy; override;
-    function Add: TCustomModularPin;
-    function Insert(const Index: Integer): TCustomModularPin;
+    function Add: TCustomModularIOPin;
+    function Insert(const Index: Integer): TCustomModularIOPin;
     procedure Delete(const Index: Integer);
 
     property Count;
     property OnPinCountChange: TNotifyEvent read FOnPinCountChange write FOnPinCountChange;
   end;
 
-  TModularInputPins = class(TCustomModularPins)
+  TModularInputPins = class(TCustomModularIOPins)
   public
     constructor Create; virtual;
   end;
 
-  TModularOutputPins = class(TCustomModularPins)
+  TModularOutputPins = class(TCustomModularIOPins)
   public
     constructor Create; virtual;
   end;
@@ -88,7 +128,7 @@ type
   TCustomModularPinInput = class;
   TCustomModularPinOutput = class;
 
-  TCustomModularPinInput = class(TCustomModularPin)
+  TCustomModularPinInput = class(TCustomModularIOPin)
   protected
     FOutputPins : array of TCustomModularPinOutput;
     procedure AddOutputPin(Pin: TCustomModularPinOutput);
@@ -103,7 +143,7 @@ type
     procedure Disconnect(Pin: TCustomModularPinOutput); virtual;
   end;
 
-  TCustomModularPinOutput = class(TCustomModularPin)
+  TCustomModularPinOutput = class(TCustomModularIOPin)
   private
     procedure DisconnectPin; virtual;
   protected
@@ -143,12 +183,125 @@ constructor TCustomModularPin.Create(Collection: TCollection);
 begin
  inherited;
  FDisplayName := 'Pin ' + IntToStr(Collection.Count);
+end;
+
+procedure TCustomModularPin.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomModularPin then
+  with TCustomModularPin(Dest) do
+   try
+    DisplayName := Self.DisplayName;
+   except
+    inherited;
+   end
+  else inherited;
+end;
+
+function TCustomModularPin.GetDisplayName: string;
+begin
+ result := FDisplayName;
+end;
+
+procedure TCustomModularPin.SetDisplayName(const AValue: string);
+begin
+ if AValue <> FDisplayName then
+  begin
+   FDisplayName := AValue;
+   DisplayNameChanged;
+  end;
+ inherited;
+end;
+
+procedure TCustomModularPin.DisplayNameChanged;
+begin
+
+end;
+
+
+{ TManagedModularIOPins }
+
+constructor TManagedModularIOPins.Create(AOwner: TPersistent);
+begin
+ inherited Create(AOwner, TManagedModularIOPin);
+end;
+
+destructor TManagedModularIOPins.Destroy;
+begin
+ while Count > 0 do Delete(0);
+ inherited;
+end;
+
+function TManagedModularIOPins.Add: TManagedModularIOPin;
+begin
+ Result := TManagedModularIOPin(inherited Add);
+end;
+
+procedure TManagedModularIOPins.Delete(const Index: Integer);
+begin
+ inherited Delete(Index);
+end;
+
+function TManagedModularIOPins.GetItem(Index: Integer): TManagedModularIOPin;
+begin
+ Result := TManagedModularIOPin(inherited GetItem(Index));
+end;
+
+function TManagedModularIOPins.IndexOf(Value: TManagedModularIOPin): Integer;
+var
+  i : Integer;
+begin
+ result := -1;
+ for i := 0 to Count - 1 do
+  if Items[i] = Value then
+   begin
+    result := i;
+    exit;
+   end;
+end;
+
+function TManagedModularIOPins.Insert(const Index: Integer): TManagedModularIOPin;
+begin
+ Result := TManagedModularIOPin(inherited Insert(Index));
+end;
+
+procedure TManagedModularIOPins.Notify(Item: TCollectionItem;
+  Action: TCollectionNotification);
+begin
+ inherited;
+ if assigned(FOnPinCountChange)
+  then FOnPinCountChange(Self);
+end;
+
+procedure TManagedModularIOPins.SetItem(Index: Integer; const Value: TManagedModularIOPin);
+begin
+ inherited SetItem(Index, Value);
+end;
+
+
+{ TCustomModularConnectPin }
+
+procedure TCustomModularConnectPin.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomModularConnectPin then
+  with TCustomModularConnectPin(Dest) do
+   begin
+    FOnPinConnectionChanged := Self.FOnPinConnectionChanged
+   end;
+end;
+
+
+{ TCustomModularIOPin }
+
+constructor TCustomModularIOPin.Create(Collection: TCollection);
+begin
+ inherited;
  FDataType    := mdtSingle;
  FBufferSize  := 1;
  FBuffer      := nil;
 end;
 
-destructor TCustomModularPin.Destroy;
+destructor TCustomModularIOPin.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
@@ -164,42 +317,49 @@ begin
  end;
 end;
 
-procedure TCustomModularPin.AllocateBuffer;
+procedure TCustomModularIOPin.AssignTo(Dest: TPersistent);
 begin
- case FTriggerType of
-  mttEvent : ReallocMem(FBuffer, CalculateByteSizeByDataType(FDataType));
-  mttBlock : ReallocMem(FBuffer, FBufferSize * CalculateByteSizeByDataType(FDataType));
- end;
-end;
-
-procedure TCustomModularPin.AssignTo(Dest: TPersistent);
-begin
+ inherited;
  if Dest is TCustomModularPin then
   with TCustomModularPin(Dest) do
-   try
-    DisplayName := Self.DisplayName;
-   except
-    inherited;
-   end
-  else inherited;
+   begin
+    FDataType   := Self.FDataType;
+    FBuffer     := Self.FBuffer;
+    FBufferSize := Self.FBufferSize;
+   end;
 end;
 
-function TCustomModularPin.GetBufferAsDoubleArray: PDAVDoubleFixedArray;
+procedure TCustomModularIOPin.AllocateBuffer;
+begin
+ ReallocMem(FBuffer, FBufferSize * CalculateByteSizeByDataType(FDataType));
+end;
+
+procedure TCustomModularIOPin.BufferSizeChanged;
+begin
+ AllocateBuffer;
+end;
+
+procedure TCustomModularIOPin.DataTypeChanged;
+begin
+ AllocateBuffer;
+end;
+
+procedure TCustomModularIOPin.DisplayNameChanged;
+begin
+ // nothing in here yet
+end;
+
+function TCustomModularIOPin.GetBufferAsDoubleArray: PDAVDoubleFixedArray;
 begin
  result := PDAVDoubleFixedArray(FBuffer);
 end;
 
-function TCustomModularPin.GetBufferAsSingleArray: PDAVSingleFixedArray;
+function TCustomModularIOPin.GetBufferAsSingleArray: PDAVSingleFixedArray;
 begin
  result := PDAVSingleFixedArray(FBuffer);
 end;
 
-function TCustomModularPin.GetDisplayName: string;
-begin
- result := FDisplayName;
-end;
-
-procedure TCustomModularPin.SetBufferSize(const Value: Integer);
+procedure TCustomModularIOPin.SetBufferSize(const Value: Integer);
 begin
  if FBufferSize <> Value then
   begin
@@ -208,7 +368,7 @@ begin
   end;
 end;
 
-procedure TCustomModularPin.SetDataType(const Value: TModularPinDataType);
+procedure TCustomModularIOPin.SetDataType(const Value: TModularPinDataType);
 begin
  if FDataType <> Value then
   begin
@@ -217,69 +377,31 @@ begin
   end;
 end;
 
-procedure TCustomModularPin.BufferSizeChanged;
-begin
- AllocateBuffer;
-end;
 
-procedure TCustomModularPin.DataTypeChanged;
-begin
- AllocateBuffer;
-end;
+{ TCustomModularIOPins }
 
-procedure TCustomModularPin.SetDisplayName(const AValue: string);
-begin
- if AValue <> FDisplayName then
-  begin
-   FDisplayName := AValue;
-   DisplayNameChanged;
-  end;
- inherited;
-end;
-
-procedure TCustomModularPin.SetTriggerType(const Value: TModularPinTriggerType);
-begin
- if FTriggerType <> Value then
-  begin
-   FTriggerType := Value;
-   TriggerTypeChanged;
-  end;
-end;
-
-procedure TCustomModularPin.TriggerTypeChanged;
-begin
- AllocateBuffer;
-end;
-
-procedure TCustomModularPin.DisplayNameChanged;
-begin
-
-end;
-
-{ TCustomModularPins }
-
-destructor TCustomModularPins.Destroy;
+destructor TCustomModularIOPins.Destroy;
 begin
  while Count > 0 do Delete(0);
  inherited;
 end;
 
-function TCustomModularPins.Add: TCustomModularPin;
+function TCustomModularIOPins.Add: TCustomModularIOPin;
 begin
- Result := TCustomModularPin(inherited Add);
+ Result := TCustomModularIOPin(inherited Add);
 end;
 
-procedure TCustomModularPins.Delete(const Index: Integer);
+procedure TCustomModularIOPins.Delete(const Index: Integer);
 begin
  inherited Delete(Index);
 end;
 
-function TCustomModularPins.GetItem(Index: Integer): TCustomModularPin;
+function TCustomModularIOPins.GetItem(Index: Integer): TCustomModularIOPin;
 begin
- Result := TCustomModularPin(inherited GetItem(Index));
+ Result := TCustomModularIOPin(inherited GetItem(Index));
 end;
 
-function TCustomModularPins.IndexOf(Value: TCustomModularPin): Integer;
+function TCustomModularIOPins.IndexOf(Value: TCustomModularIOPin): Integer;
 var
   i : Integer;
 begin
@@ -292,12 +414,12 @@ begin
    end;
 end;
 
-function TCustomModularPins.Insert(const Index: Integer): TCustomModularPin;
+function TCustomModularIOPins.Insert(const Index: Integer): TCustomModularIOPin;
 begin
- Result := TCustomModularPin(inherited Insert(Index));
+ Result := TCustomModularIOPin(inherited Insert(Index));
 end;
 
-procedure TCustomModularPins.Notify(Item: TCollectionItem;
+procedure TCustomModularIOPins.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
 begin
  inherited;
@@ -305,7 +427,7 @@ begin
   then FOnPinCountChange(Self);
 end;
 
-procedure TCustomModularPins.SetItem(Index: Integer; const Value: TCustomModularPin);
+procedure TCustomModularIOPins.SetItem(Index: Integer; const Value: TCustomModularIOPin);
 begin
  inherited SetItem(Index, Value);
 end;
@@ -337,10 +459,6 @@ begin
  // check whether the data types match
  if Pin.Datatype <> Datatype
   then raise Exception.Create(RCStrDataTypeMismatch);
-
- // check whether the trigger types match
- if Pin.TriggerType <> TriggerType
-  then raise Exception.Create(RCStrTriggerTypeMismatch);
 
  if FInputPin <> Pin then
   begin
@@ -425,10 +543,6 @@ begin
  // check whether the data types match
  if Pin.Datatype <> Datatype
   then raise Exception.Create(RCStrDataTypeMismatch);
-
- // check whether the trigger types match
- if Pin.TriggerType <> TriggerType
-  then raise Exception.Create(RCStrTriggerTypeMismatch);
 
  // finally add output pin
  AddOutputPin(Pin);

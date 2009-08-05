@@ -17,6 +17,15 @@ procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexDoubleFixedArr
 procedure ComplexMultiply(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
   const OutBuffer: PDAVComplexDoubleFixedArray); overload;
 
+function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
+function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
+procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TDAVMinMaxSingle); overload;
+procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TDAVMinMaxDouble); overload;
+procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
+procedure ConvertSingleToDouble(Singles : PDAVSingleFixedArray; Doubles : PDAVDoubleFixedArray; SampleFrames:Integer);
+procedure ConvertDoubleToSingle(Doubles : PDAVDoubleFixedArray; Singles : PDAVSingleFixedArray; SampleFrames:Integer);
+
 implementation
 
 procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle; SampleFrames: Integer); overload;
@@ -232,5 +241,271 @@ asm
  pop ebx
 end;
 
+procedure DCSubstract(InBuffer: PSingle; Samples: Integer);
+{$IFDEF PUREPASCAL}
+var
+  InBuf : array [0..0] of Double absolute InBuffer;
+  d : Double;
+  i : Integer;
+begin
+ if Samples = 0 then Exit;
+ d := InBuf[0];
+ for i := 1 to Samples - 1
+  do d := d + InBuf[i];
+ d := d / Samples;
+ for i := 0 to Samples - 1
+  do InBuf[i] := InBuf[i] - d;
+end;
+{$ELSE}
+asm
+ test EDX, EDX
+ jz @End
+
+ push EDX
+ fldz                            // DC
+ @CalcDCLoop:
+   dec EDX
+   fadd  [EAX + 4 * EDX].Single  // DC = DC + Value
+ jnz @CalcDCLoop
+ pop edx
+
+ mov  [ESP - 4], EDX
+ fild [ESP - 4].Integer          // Length, DC
+ fdivp                           // RealDC = DC / Length
+
+ @SubstractDCLoop:
+   dec EDX
+   fld  [EAX + 4 * edx].Single   // Value, RealDC
+   fsub st(0), st(1)             // Value-RealDC, RealDC
+   fstp  [EAX + 4 * edx].Single  // RealDC
+ jnz @SubstractDCLoop
+ fstp st(0)                      // clear stack
+
+ @End:
+end;
+{$ENDIF}
+
+procedure DCSubstract(InBuffer: PDouble; Samples: Integer);
+{$IFDEF PUREPASCAL}
+var
+  InBuf : array [0..0] of Double absolute InBuffer;
+  d : Double;
+  i : Integer;
+begin
+ if Samples = 0 then Exit;
+ d := InBuf[0];
+ for i := 1 to Samples - 1
+  do d := d + InBuf[i];
+ d := d / Samples;
+ for i := 0 to Samples - 1
+  do InBuf[i] := InBuf[i] - d;
+end;
+{$ELSE}
+asm
+ test edx,edx
+ jz @End
+
+ push edx
+ fldz                          // DC
+ @CalcDCLoop:
+   dec edx
+   fadd  [eax+8*edx].Double    // DC = DC + Value
+ jnz @CalcDCLoop
+ pop edx
+
+ mov [esp-4],edx
+ fild [esp-4].Integer          // Length, DC
+ fdivp                         // RealDC = DC / Length
+
+ @SubstractDCLoop:
+   dec edx
+   fld  [eax+8*edx].Double     // Value, RealDC
+   fsub st(0),st(1)            // Value-RealDC, RealDC
+   fstp  [eax+8*edx].Double    // RealDC
+ jnz @SubstractDCLoop
+ fstp st(0)                    // clear stack
+
+ @End:
+end;
+{$ENDIF}
+
+procedure ConvertSingleToDouble(Singles : PDAVSingleFixedArray; Doubles : PDAVDoubleFixedArray; SampleFrames: Integer);
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   Doubles^ := Singles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
+end;
+{$ELSE}
+asm
+@MarioLand:
+ fld  [eax + ecx * 4 - 4].Single
+ fstp [edx + ecx * 8 - 8].Double
+ loop @MarioLand
+end;
+{$ENDIF}
+
+procedure ConvertDoubleToSingle(Doubles : PDAVDoubleFixedArray; Singles : PDAVSingleFixedArray; SampleFrames: Integer);
+{$IFDEF PUREPASCAL}
+var i : Integer;
+begin
+ for i:=0 to SampleFrames-1 do
+  begin
+   Singles^:=Doubles^;
+   inc(Singles);
+   inc(Doubles);
+  end;
+end;
+{$ELSE}
+asm
+@MarioLand:
+ fld [eax + ecx * 8 - 8].Double
+ fstp [edx + ecx * 4 - 4].Single
+ loop @MarioLand
+end;
+{$ENDIF}
+
+function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer;
+{$IFDEF PUREPASCAL}
+var i : Integer;
+    d : Double;
+begin
+ result := 0;
+ assert(Samples > 0);
+ d := abs(InBuffer^);
+ for i:=1 to Samples-1 do
+  begin
+   if abs(InBuffer^) > d then
+    begin
+     Result := i;
+     d := abs(InBuffer^);
+    end;
+   inc(InBuffer);
+  end;
+end;
+{$ELSE}
+asm
+ test edx,edx
+ jz @End
+
+ mov result,edx                // Result := edx
+ dec edx
+ jnz @End                      // only one sample -> exit!
+ fld  [eax+4*edx].Single       // Value
+ fabs                          // |Value| = Max
+
+ @FindMaxLoop:
+   fld  [eax+4*edx-4].Single   // Value, Max
+   fabs                        // |Value|, Max
+
+   fcomi st(0), st(1)          // |Value| <-> Max ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jae @NextSample             // if |Value| <-> Max then next sample!
+   fxch                        // OldMax, |Value|
+   mov result,edx              // Result := edx
+
+   @NextSample:
+   fstp st(0)                  // Value, Max
+   dec edx
+ jnz @FindMaxLoop
+
+ mov edx,result              // edx := Result
+ sub edx,1                   // edx := edx - 1  -> index starts at 0!
+ mov result,edx              // Result := edx
+
+ @End:
+end;
+{$ENDIF}
+
+function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer;
+{$DEFINE PUREPASCAL}
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+  d : Double;
+begin
+ result := 0;
+ assert(Samples > 0);
+ d := abs(InBuffer^);
+ for i := 1 to Samples - 1 do
+  begin
+   if abs(InBuffer^) > d then
+    begin
+     Result := i;
+     d := abs(InBuffer^);
+    end;
+   inc(InBuffer);
+  end;
+end;
+{$ELSE}
+asm
+ test edx,edx
+ jz @End
+
+ mov result,edx                // Result := edx
+ dec edx
+ jz @End                       // only one sample -> exit!
+ fld  [eax+8*edx].Double       // Value
+ fabs                          // |Value| = Max
+
+ @FindMaxLoop:
+   fld  [eax+8*edx-8].Double   // Value, Max
+   fabs                        // |Value|, Max
+
+   fcomi st(0), st(1)          // |Value| <-> Max ?
+   fstsw ax                    // ax = FPU Status Word
+   sahf                        // ax -> EFLAGS register
+   jae @NextSample             // if |Value| <-> Max then next sample!
+   fxch                        // OldMax, |Value|
+   mov result,edx              // Result := edx
+
+   @NextSample:
+   fstp st(0)                  // Value, Max
+   dec edx
+ jnz @FindMaxLoop
+
+ mov edx,result              // edx := Result
+ sub edx,1                   // edx := edx - 1  -> index starts at 0!
+ mov result,edx              // Result := edx
+
+ @End:
+end;
+{$ENDIF}
+
+procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax: TDAVMinMaxSingle);
+var
+  i : Integer;
+begin
+ assert(Samples > 0);
+ MinMax.min := InBuffer^;
+ MinMax.max := InBuffer^;
+ for i := 1 to Samples - 1 do
+  begin
+   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
+   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
+   inc(InBuffer);
+  end;
+end;
+
+procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax: TDAVMinMaxDouble);
+var
+  i : Integer;
+begin
+ assert(Samples > 0);
+ MinMax.min := InBuffer^;
+ MinMax.max := InBuffer^;
+ for i := 1 to Samples - 1 do
+  begin
+   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
+   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
+   inc(InBuffer);
+  end;
+end;
 
 end.

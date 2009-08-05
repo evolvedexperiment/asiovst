@@ -18,7 +18,8 @@
       <Projects Name="DAV_SEHost_D10.bpl">DAV_SEHost_D10.bdsproj</Projects>
       <Projects Name="DAV_GUI_D10.bpl">DAV_GUI_D10.bdsproj</Projects>
       <Projects Name="DAV_VSTCloner_D10.bpl">DAV_VSTCloner_D10.bdsproj</Projects>
-      <Projects Name="Targets">DAV_Common_D10.bpl DAV_DSP_D10.bpl DAV_Modular_D10.bpl DAV_VSTPlugin_D10.bpl DAV_VSTHost_D10.bpl DAV_ASIOHost_D10.bpl DAV_SEHost_D10.bpl DAV_GUI_D10.bpl DAV_VSTCloner_D10.bpl</Projects>
+      <Projects Name="ModularHost.exe">..\..\Examples\Standalone\Modular Host\ModularHost.bdsproj</Projects>
+      <Projects Name="Targets">DAV_Common_D10.bpl DAV_DSP_D10.bpl DAV_Modular_D10.bpl DAV_VSTPlugin_D10.bpl DAV_VSTHost_D10.bpl DAV_ASIOHost_D10.bpl DAV_SEHost_D10.bpl DAV_GUI_D10.bpl DAV_VSTCloner_D10.bpl ModularHost.exe</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{EA6C899F-BFF7-4C22-A8D6-8ADA4A6D1102}">

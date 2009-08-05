@@ -435,7 +435,7 @@ type
 implementation
 
 uses
-  Math;
+  Math, DAV_BlockRoutines;
 
 resourcestring
   RCStrNoAudioFileFormat = 'No audio file format registered';
@@ -632,8 +632,8 @@ begin
   then Move(FChannelData, TAudioData32(Dest).FChannelData, FSampleCount * SizeOf(Single))
   else
  if Dest is TAudioData64
-  then ConvertSingleToDouble(PSingle(FChannelData),
-                             PDouble(TAudioData64(Dest).FChannelData),
+  then ConvertSingleToDouble(FChannelData,
+                             PDAVDoubleFixedArray(TAudioData64(Dest).FChannelData),
                              FSampleCount);
 end;
 
@@ -801,8 +801,8 @@ begin
   then Move(FChannelData, TAudioData64(Dest).FChannelData, FSampleCount * SizeOf(Double))
   else
  if Dest is TAudioData32
-  then ConvertDoubleToSingle(PDouble(FChannelData),
-                             PSingle(TAudioData32(Dest).FChannelData),
+  then ConvertDoubleToSingle(FChannelData,
+                             PDAVSingleFixedArray(TAudioData32(Dest).FChannelData),
                              FSampleCount);
 end;
 

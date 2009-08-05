@@ -53,6 +53,7 @@ contains
   DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
   DAV_ProcessingComponent in '..\..\Source\DAV_ProcessingComponent.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
+  DAV_Classes in '..\..\Source\DAV_Classes.pas';
 
 end.
