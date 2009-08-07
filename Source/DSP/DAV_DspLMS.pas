@@ -1,10 +1,14 @@
-unit DAV_LMS;
+unit DAV_DspLMS;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
+uses
+  Classes, DAV_Common, DAV_DspCommon;
+
 type
-  TLMS = class(TObject)
-  private
+  TLMS = class(TDspObject)
   protected
     FCoeffs   : array[0..7] of Double;
     FHistory  : array[0..15] of Single;

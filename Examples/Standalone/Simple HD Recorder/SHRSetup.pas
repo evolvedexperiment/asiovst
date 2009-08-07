@@ -37,6 +37,16 @@ uses
 {$R *.dfm}
 {$ENDIF}
 
+procedure TFmSetup.CBInputChange(Sender: TObject);
+begin
+ FmSimpleHDRecorder.InputChannelOffset := CBInput.ItemIndex;
+end;
+
+procedure TFmSetup.CBOutputChange(Sender: TObject);
+begin
+ FmSimpleHDRecorder.OutputChannelOffset := CBOutput.ItemIndex;
+end;
+
 procedure TFmSetup.FormCreate(Sender: TObject);
 var
   i : Integer;
@@ -70,35 +80,17 @@ begin
     Active := False;
     DriverIndex := CBDrivers.ItemIndex;
     CBInput.Clear;
-    for i := 0 to (InputChannelCount div 2) - 1 do
-     begin
-      CBInput.Items.Add(
-        InputChannelInfos[2 * i].name + ' / ' +
-        InputChannelInfos[2 * i + 1].name);
-     end;
+    for i := 0 to InputChannelCount - 1
+     do CBInput.Items.Add(InputChannelInfos[i].Name);
     CBOutput.Clear;
-    for i := 0 to (OutputChannelCount div 2) - 1 do
-     begin
-      CBOutput.Items.Add(
-        OutputChannelInfos[2 * i].name + ' / ' +
-        OutputChannelInfos[2 * i + 1].name);
-     end;
+    for i := 0 to OutputChannelCount - 1
+     do CBOutput.Items.Add(OutputChannelInfos[i].Name);
     CBInput.ItemIndex := 0;
     CBOutput.ItemIndex := 0;
     if assigned(OnReset)
      then OnReset(Self);
     Active := True;
    end;
-end;
-
-procedure TFmSetup.CBInputChange(Sender: TObject);
-begin
- FmSimpleHDRecorder.ASIOHost.InputChannelOffset := CBInput.ItemIndex * 2;
-end;
-
-procedure TFmSetup.CBOutputChange(Sender: TObject);
-begin
- FmSimpleHDRecorder.ASIOHost.OutputChannelOffset := CBOutput.ItemIndex * 2;
 end;
 
 procedure TFmSetup.FormDestroy(Sender: TObject);

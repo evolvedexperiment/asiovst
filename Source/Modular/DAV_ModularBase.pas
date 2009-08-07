@@ -20,6 +20,8 @@ type
     procedure SetDescription(const Value: string);
     procedure SetName(const Value: string);
     procedure PinCountChangeHandler(Sender: TObject);
+    function GetPinCountInput: Integer;
+    function GetPinCountOutput: Integer;
   protected
     FName        : string;
     FDescription : string;
@@ -43,6 +45,8 @@ type
     property Description: string read FDescription write SetDescription;
     property PinInput[Index: Integer]: TModularPinInput read GetPinInput;
     property PinOutput[Index: Integer]: TModularPinOutput read GetPinOutput;
+    property PinCountInput: Integer read GetPinCountInput;
+    property PinCountOutput: Integer read GetPinCountOutput;
 
     property OnNameChanged: TNotifyEvent read FOnNameChanged write FOnNameChanged;
     property OnDescriptionChanged: TNotifyEvent read FOnDescriptionChanged write FOnDescriptionChanged;
@@ -81,6 +85,16 @@ begin
  FreeAndNil(FPinsInput);
  FreeAndNil(FPinsOutput);
  inherited;
+end;
+
+function TCustomModularBase.GetPinCountInput: Integer;
+begin
+ result := FPinsInput.Count;
+end;
+
+function TCustomModularBase.GetPinCountOutput: Integer;
+begin
+ result := FPinsOutput.Count;
 end;
 
 function TCustomModularBase.GetPinInput(Index: Integer): TModularPinInput;
@@ -131,7 +145,7 @@ procedure TCustomModularBase.PinCountChangeHandler(Sender: TObject);
 begin
  if Sender = FPinsInput then InputPinCountChanged else
  if Sender = FPinsOutput then OutputPinCountChanged
-  else raise Exception.Create(RCStrErrorUnknownPins);
+  else; // raise Exception.Create(RCStrErrorUnknownPins);
 end;
 
 procedure TCustomModularBase.InputPinCountChanged;

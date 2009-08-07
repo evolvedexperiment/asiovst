@@ -23,7 +23,7 @@ type
     SETempo: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure Bt_PlayClick(Sender: TObject);
@@ -159,7 +159,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch(Sender: TObject; InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i, j : Integer;
   s    : Single;

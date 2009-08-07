@@ -36,7 +36,6 @@ type
     SEFullscaleGain: TSpinEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
     procedure Bt_AnalyseClick(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -45,6 +44,8 @@ type
     procedure RB_SlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
     procedure AnalyserChartDblClick(Sender: TObject);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+      OutBuffer: TDAVAsioBuffer32);
   private
     FFilterArray : Array [0..CNumFrequencies - 1] of TBasicBandpassFilter;
     FFilterRMS   : Array [0..CNumFrequencies - 1] of Single;
@@ -72,7 +73,7 @@ uses
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
-  i : Integer;
+  Sample : Integer;
 begin
  FChannelNr := 0;
  FSpeedConst[0] := 0.999;
@@ -98,15 +99,15 @@ begin
    Free;
   end;
 
- for i := 0 to cNumFrequencies - 1 do
+ for Sample := 0 to CNumFrequencies - 1 do
   begin
-   FFilterArray[i] := TBasicBandpassFilter.Create;
-   with FFilterArray[i] do
+   FFilterArray[Sample] := TBasicBandpassFilter.Create;
+   with FFilterArray[Sample] do
     begin
      SampleRate := 44100;
      Gain := 0;
      Bandwidth := 1;
-     Frequency := cThirdOctaveFrequencies[i];
+     Frequency := cThirdOctaveFrequencies[Sample];
      {$IFNDEF FPC}
      if Frequency < 1000
       then BarSeries.Add(0,FloatToStr(Frequency) + ' Hz')
@@ -122,7 +123,7 @@ end;
 
 procedure TFmAnalyser.FormDestroy(Sender: TObject);
 var
-  i : Integer;
+  Sample : Integer;
 begin
  ASIOHost.Active := False;
  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
@@ -134,7 +135,7 @@ begin
   finally
    Free;
   end;
- for i := 0 to cNumFrequencies - 1 do FreeAndNil(FFilterArray[i]);
+ for Sample := 0 to CNumFrequencies - 1 do FreeAndNil(FFilterArray[Sample]);
 end;
 
 procedure TFmAnalyser.RB_FastClick(Sender: TObject);
@@ -162,7 +163,7 @@ end;
 
 procedure TFmAnalyser.DriverComboChange(Sender: TObject);
 var
-  i : Integer;
+  Sample : Integer;
 begin
  Bt_CP.Enabled := False;
  Bt_Analyse.Enabled := False;
@@ -171,8 +172,8 @@ begin
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
-   for i := 0 to ASIOHost.InputChannelCount - 1
-    do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].name);
+   for Sample := 0 to ASIOHost.InputChannelCount - 1
+    do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[Sample].name);
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try
      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
@@ -206,15 +207,15 @@ end;
 
 procedure TFmAnalyser.UpdateBarGraph;
 var
-  j : Integer;
+  Band : Integer;
 begin
  {$IFNDEF FPC}
- for j := 0 to cNumFrequencies - 1
-  do BarSeries.YValue[j] := FFilterRMS[j] + FFSGain;
+ for Band := 0 to CNumFrequencies - 1
+  do BarSeries.YValue[Band] := FFilterRMS[Band] + FFSGain;
  AnalyserChart.Invalidate;
  {$ELSE}
- for j := 0 to cNumFrequencies - 1
-  do TBar(AnalyserChart.Bars.Items[j]).Value := round(FFilterRMS[j] + FFSGain);
+ for Band := 0 to CNumFrequencies - 1
+  do TBar(AnalyserChart.Bars.Items[Band]).Value := round(FFilterRMS[Band] + FFSGain);
  AnalyserChart.Invalidate;
  {$ENDIF}
 end;
@@ -232,23 +233,24 @@ begin
     end;
 end;
 
-procedure TFmAnalyser.ASIOHostBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+procedure TFmAnalyser.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+  OutBuffer: TDAVAsioBuffer32);
 var
-  i, j : Integer;
-  s    : Single;
+  Sample, Band : Integer;
+  Data         : Single;
 begin
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   s := InBuffer[FChannelNr,i];
-   for j := 0 to cNumFrequencies - 1
-    do FFilterRMS[j] := FSpeedConst[0] * FFilterRMS[j] + FSpeedConst[1] * Amp_to_dB(abs(FFilterArray[j].ProcessSample(s + 1E-24)));
+   Data := InBuffer[FChannelNr, Sample];
+   for Band := 0 to CNumFrequencies - 1
+    do FFilterRMS[Band] := FSpeedConst[0] * FFilterRMS[Band] + FSpeedConst[1] * Amp_to_dB(abs(FFilterArray[Band].ProcessSample(Data + 1E-24)));
   end;
  UpdateBarGraph;
 end;
 
 {$IFDEF FPC}
 initialization
-  {$i AnalyserForm.lrs}
+  {$Sample AnalyserForm.lrs}
 {$ENDIF}
 
 end.

@@ -36,7 +36,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormActivate(Sender: TObject);
     procedure FormDeactivate(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure BtSetupClick(Sender: TObject);
     procedure BtExitClick(Sender: TObject);
@@ -44,9 +44,13 @@ type
     procedure MILoadPresetClick(Sender: TObject);
     procedure MISavePresetClick(Sender: TObject);
   private
-    FVSTInBuffer  : array of PDAVSingleFixedArray;
-    FVSTOutBuffer : array of PDAVSingleFixedArray;
+    FVSTInBuffer         : array of PDAVSingleFixedArray;
+    FVSTOutBuffer        : array of PDAVSingleFixedArray;
+    FInputChannelOffset  : Integer;
+    FOutputChannelOffset : Integer;
   public
+    property InputChannelOffset: Integer read FInputChannelOffset write FInputChannelOffset;
+    property OutputChannelOffset: Integer read FOutputChannelOffset write FOutputChannelOffset;
   end;
 
 var
@@ -233,11 +237,11 @@ begin
 end;
 
 procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
  if VSTHost[0].Active
-  then VSTHost[0].ProcessReplacing(@InBuffer[ASIOHost.InputChannelOffset],
-                                   @OutBuffer[ASIOHost.OutputChannelOffset],
+  then VSTHost[0].ProcessReplacing(@InBuffer[InputChannelOffset],
+                                   @OutBuffer[OutputChannelOffset],
                                    ASIOHost.BufferSize);
 end;
 

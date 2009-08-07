@@ -39,6 +39,7 @@ object FmAudioEditor: TFmAudioEditor
     Align = alClient
     AntiAlias = gaaLinear2x
     AudioDataCollection = AudioDataCollection32
+    DisplayChannels = <>
     LineColor = clMaroon
     LineWidth = 0
     XAxis.SampleUpper = 8191
@@ -263,17 +264,6 @@ object FmAudioEditor: TFmAudioEditor
       end
     end
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    CanDos = []
-    ConvertOptimizations = [coSSE, co3DNow]
-    SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    Left = 40
-    Top = 32
-  end
   object AudioDataCollection32: TAudioDataCollection32
     Channels = <
       item
@@ -302,6 +292,16 @@ object FmAudioEditor: TFmAudioEditor
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
     VstVersion = 2300
     Left = 104
+    Top = 32
+  end
+  object ASIOHost: TASIOHost
+    ASIOTime.Speed = 1.000000000000000000
+    ASIOTime.SampleRate = 44100.000000000000000000
+    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+    ConvertOptimizations = [coSSE, co3DNow]
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
+    Left = 40
     Top = 32
   end
 end

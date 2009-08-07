@@ -11,29 +11,29 @@ uses
 type
   TFmASIO = class(TForm)
     ASIOHost: TASIOHost;
-    Bt_Play: TButton;
+    BtStartStop: TButton;
     DriverCombo: TComboBox;
-    Lb_Copyright: TLabel;
-    Lb_Drivername: TLabel;
+    LbCopyright: TLabel;
+    LbDrivername: TLabel;
     LbPanorama: TLabel;
     LbVolume: TLabel;
     SbPan: TScrollBar;
     SbVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
-    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure Bt_CPClick(Sender: TObject);
-    procedure Bt_PlayClick(Sender: TObject);
+    procedure BtStartStopClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
     procedure SbVolumeChange(Sender: TObject);
   private
-    fVol, fPan : Single;  
+    FVol, FPan : Single;  
   end;
 
 var
-  FmASIO        : TFmASIO;
+  FmASIO : TFmASIO;
 
 implementation
 
@@ -68,7 +68,7 @@ end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
 begin
- Bt_Play.Enabled := False;
+ BtStartStop.Enabled := False;
  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
  if DriverCombo.ItemIndex >= 0 then
   begin
@@ -79,7 +79,7 @@ begin
     finally
      Free;
     end;
-   Bt_Play.Enabled := True;
+   BtStartStop.Enabled := True;
   end;
 end;
 
@@ -100,60 +100,60 @@ begin
   end; 
 end;
 
-procedure TFmASIO.Bt_PlayClick(Sender: TObject);
+procedure TFmASIO.BtStartStopClick(Sender: TObject);
 begin
- if Bt_Play.Caption = 'Start Audio' then
+ if BtStartStop.Caption = 'Start Audio' then
   begin
    ASIOHost.Active := True; // Start Audio
-   Bt_Play.Caption := 'Stop Audio';
+   BtStartStop.Caption := 'Stop Audio';
   end
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   Bt_Play.Caption := 'Start Audio';
+   BtStartStop.Caption := 'Start Audio';
   end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  i, j : integer;
+  Channel, Sample : integer;
 begin
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for Channel := 0 to ASIOHost.BufferSize - 1 do
   begin
-   for j := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[j, i] := (2 * random - 1) * fVol;
+   for Sample := 0 to ASIOHost.OutputChannelCount - 1
+    do OutBuffer[Sample, Channel] := (2 * random - 1) * FVol;
   end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfDoubleDynArray);
+  OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
-  i, j : integer;
+  Channel, Sample : integer;
 begin
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for Channel := 0 to ASIOHost.BufferSize - 1 do
   begin
-   for j := 0 to ASIOHost.OutputChannelCount - 1
-    do OutBuffer[j, i] := (2 * random - 1) * fVol;
+   for Sample := 0 to ASIOHost.OutputChannelCount - 1
+    do OutBuffer[Sample, Channel] := (2 * random - 1) * FVol;
   end;
 end;
 
 procedure TFmASIO.SbVolumeChange(Sender: TObject);
 begin
- fVol := SbVolume.position * 0.00001;
- if fVol=0
+ FVol := SbVolume.position * 0.00001;
+ if FVol=0
   then LbVolume.Caption := 'Volume: 0 equals -oo dB'
   else LbVolume.Caption := 'Volume: ' +
-                           FloattostrF(fVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(fVol), ffGeneral, 2, 2) + ' dB';
+                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
+                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
 end;
 
 procedure TFmASIO.SbPanChange(Sender: TObject);
 begin
- fPan := SbPan.Position * 0.01;
- if fPan = 0.5
+ FPan := SbPan.Position * 0.01;
+ if FPan = 0.5
   then LbPanorama.Caption := 'Panorama: C'
-  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (fPan * 2 - 1)));
+  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (FPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

@@ -99,15 +99,15 @@ object FmASIO: TFmASIO
     OnChange = SbVolumeChange
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    PreventClipping = pcDigital
-    ConvertOptimizations = [coSSE]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    OnSampleRateChanged = ASIOHostSampleRateChanged
+    ConvertOptimizations = [coSSE]
+    PreventClipping = pcDigital
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch
+    OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 52
     Top = 8
   end

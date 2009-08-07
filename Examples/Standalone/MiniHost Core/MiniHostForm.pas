@@ -144,7 +144,7 @@ type
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure MIPanicClick(Sender: TObject);
     procedure MILoadPresetClick(Sender: TObject);
     procedure MISavePresetClick(Sender: TObject);
@@ -1045,23 +1045,19 @@ end;
 procedure TFmMiniHost.SetChannel(Sender: TObject);
 begin
  (Sender as TMenuItem).Checked := True;
- FCurrentOutputChannel := (Sender as TMenuItem).tag;
+ FCurrentOutputChannel := (Sender as TMenuItem).Tag;
  if ASIOHost.Active then
  begin
   StopAudio;
-  ASIOHost.OutputChannelOffset := FCurrentOutputChannel * 2;
   StartAudio;
- end else
- begin
-  FProcessing := False;
-  ASIOHost.OutputChannelOffset := FCurrentOutputChannel * 2;
- end;
+ end else FProcessing := False;
  FmOptions.LbOutputs.Caption := 'Outputs: ' + MIASIOOutputChannel.Items[FCurrentOutputChannel].Caption;
 end;
 
 procedure TFmMiniHost.ASIOChange(Sender: TObject);
-var i, j: Integer;
-    m: TMenuItem;
+var
+  i, j: Integer;
+  m: TMenuItem;
 begin
  assert(Sender is TMenuItem);
  (Sender as TMenuItem).Checked := True;
@@ -1135,11 +1131,11 @@ begin
  else
   FmOptions.LbInputs.Caption := 'Inputs: None';
  if ASIOHost.OutputChannelCount > 0 then
-  FmOptions.LbFormat.Caption := 'Format: ' + inttostr(ASIOHost.OutputChannelInfos[0].vType) + ' ' + ChannelTypeToString(ASIOHost.OutputChannelInfos[0].vType)
+  FmOptions.LbFormat.Caption := 'Format: ' + IntToStr(ASIOHost.OutputChannelInfos[0].SampleType) + ' ' + ChannelTypeToString(ASIOHost.OutputChannelInfos[0].SampleType)
  else
   FmOptions.LbFormat.Caption := 'Format: None';
- FmOptions.LbBufferSize.Caption := 'Buffersize: ' + inttostr(ASIOHost.BufferSize);
- FmOptions.LbSampleRate.Caption := 'Samplerate: ' + inttostr(round(ASIOHost.SampleRate));
+ FmOptions.LbBufferSize.Caption := 'Buffersize: ' + IntToStr(ASIOHost.BufferSize);
+ FmOptions.LbSampleRate.Caption := 'Samplerate: ' + IntToStr(round(ASIOHost.SampleRate));
 
  ASIOHostReset(Sender);
  StartAudio;
@@ -1574,7 +1570,7 @@ begin
   begin
    FCurProg := i;
    FCurProgName := s;
-   s := inttostr(FCurProg);
+   s := IntToStr(FCurProg);
    if FCurProg < 10 then s := '00' + s else
    if FCurProg < 100 then s := '0' + s;
  if (PresetBox.items.Count > 0) and (FCurProg>=0) then
@@ -1692,7 +1688,7 @@ begin
  VSTHost[0].Idle;
  VSTHost[0].EditIdle;
 
- s2 := inttostr(FCurProg);
+ s2 := IntToStr(FCurProg);
  if FCurProg < 10 then s2 := '00' + s2 else
  if FCurProg < 100 then s2 := '0' + s2;
 
@@ -1728,16 +1724,9 @@ begin
 end;
 
 procedure TFmMiniHost.SetChannelI(Sender: TObject);
-var
-  f : Boolean;
 begin
  (Sender as TMenuItem).Checked := True;
  FCurrentInputChannel := (Sender as TMenuItem).Tag;
- f := ASIOHost.Active;
- if FCurrentInputChannel = 0
-  then ASIOHost.InputChannelOffset := 0
-  else ASIOHost.InputChannelOffset := (FCurrentInputChannel - 1) * 2;
- if f then StartAudio;
  FmOptions.LbInputs.Caption := 'Inputs: ' + MIASIOInputChannel.Items[FCurrentInputChannel].Caption;
 end;
 
@@ -1858,7 +1847,7 @@ var
   s: string;
 begin
  MIShowPreset.Checked := not MIShowPreset.Checked;
- s := inttostr(FCurProg);
+ s := IntToStr(FCurProg);
  if FCurProg < 10 then s := '00' + s else
  if FCurProg < 100 then s := '0' + s;
  if MIShowPreset.Checked
@@ -2307,7 +2296,7 @@ begin
 end;
 
 procedure TFmMiniHost.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   j, i      : Integer;
   bs, ChOfs : Integer;
@@ -2344,7 +2333,7 @@ begin
   FDataSection.Release;
  end; 
 
- ChOfs := ASIOHost.OutputChannelOffset;
+ ChOfs := FCurrentOutputChannel * 2;
  if FCurrentInputChannel = 0 then
   begin
    for i := 0 to bs - 1 do
@@ -2357,8 +2346,8 @@ begin
   begin
    for i := 0 to bs - 1 do
     begin
-     FInBufL[i] := InputVol * InBuffer[ASIOHost.InputChannelOffset    , i];
-     FInBufR[i] := InputVol * InBuffer[ASIOHost.InputChannelOffset + 1, i];
+     FInBufL[i] := InputVol * InBuffer[(FCurrentInputChannel - 1) * 2, i];
+     FInBufR[i] := InputVol * InBuffer[(FCurrentInputChannel - 1) * 2 + 1, i];
     end;
   end;
 

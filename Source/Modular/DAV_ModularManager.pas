@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Contnrs, DAV_Common, DAV_Classes, DAV_DspCommon, DAV_ModularBase,
-  DAV_ModularContainer, DAV_ModularPin;
+  Classes, Contnrs, SysUtils, DAV_Common, DAV_Classes, DAV_DspCommon,
+  DAV_ModularBase, DAV_ModularContainer, DAV_ModularPin;
 
 type
   TCustomModularManager = class(TComponent)
@@ -17,6 +17,7 @@ type
     FOnChange         : TNotifyEvent;
     function GetModule(Index: Integer): TCustomModularBase;
     function GetModuleCount: Integer;
+    function GetModuleItem(Index: Integer): TCustomModularItem;
   protected
     procedure Changed; virtual;
   public
@@ -26,14 +27,20 @@ type
     procedure BeginUpdate;
     procedure EndUpdate;
 
-    procedure AddModule(Module: TCustomModularBase);
+    procedure Clear;
+    procedure LoadFromFile(FileName: TFileName);
+    procedure SaveToFile(FileName: TFileName);
+
+    function AddModule(Module: TCustomModularBase): TCustomModularItem; overload;
+    function AddModule(Module: TCustomModularBase; X, Y: Integer): TCustomModularItem; overload;
     procedure RemoveModule(Module: TCustomModularBase);
 
     procedure Process(const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray;
       SampleFrames: Integer);
 
     property ModuleCount: Integer read GetModuleCount;
-    property Module[Index: Integer]: TCustomModularBase read GetModule; default;
+    property Module[Index: Integer]: TCustomModularBase read GetModule;
+    property ModuleItem[Index: Integer]: TCustomModularItem read GetModuleItem; default;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -47,7 +54,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  Math;
 
 resourcestring
   RCStrUnpairedUpdate = 'Please call BeginUpdate before calling EndUpdate';
@@ -97,10 +104,20 @@ begin
   end;
 end;
 
-procedure TCustomModularManager.AddModule(Module: TCustomModularBase);
+function TCustomModularManager.AddModule(Module: TCustomModularBase): TCustomModularItem;
 begin
- FModularContainer.AddModule(Module);
+ Result := FModularContainer.AddModule(Module);
  Changed;
+end;
+
+function TCustomModularManager.AddModule(Module: TCustomModularBase; X, Y: Integer): TCustomModularItem;
+begin
+ Result := FModularContainer.AddModule(Module);
+ with Result do
+  begin
+   Result.Left := X;
+   Result.Top := Y;
+  end;
 end;
 
 procedure TCustomModularManager.RemoveModule(Module: TCustomModularBase);
@@ -109,16 +126,38 @@ begin
  Changed;
 end;
 
+procedure TCustomModularManager.Clear;
+begin
+ // yet todo
+end;
+
+procedure TCustomModularManager.LoadFromFile(FileName: TFileName);
+begin
+ // yet todo
+end;
+
+procedure TCustomModularManager.SaveToFile(FileName: TFileName);
+begin
+ // yet todo
+end;
+
 function TCustomModularManager.GetModule(Index: Integer): TCustomModularBase;
 begin
  if (Index >= 0) and (Index < ModuleCount)
-  then result := TCustomModularBase(FModularContainer[Index])
+  then result := FModularContainer[Index].Module
   else result := nil;
 end;
 
 function TCustomModularManager.GetModuleCount: Integer;
 begin
  result := FModularContainer.ModuleCount;
+end;
+
+function TCustomModularManager.GetModuleItem(Index: Integer): TCustomModularItem;
+begin
+ if (Index >= 0) and (Index < ModuleCount)
+  then result := FModularContainer[Index]
+  else result := nil;
 end;
 
 procedure TCustomModularManager.Process(const InBuffer,

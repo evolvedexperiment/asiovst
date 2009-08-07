@@ -5,17 +5,26 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_ModularBase, DAV_ModularPin;
+  Classes, Controls, DAV_Common, DAV_DspCommon, DAV_ModularBase,
+  DAV_ModularPin;
 
 type
   TCustomModularItem = class(TCollectionItem)
   private
     FModuleProcessed: Boolean;
   protected
-    FModule : TCustomModularBase;
+    FModule  : TCustomModularBase;
+    FControl : TCustomControl;
+    FLeft    : Integer;
+    FTop     : Integer;
+    function GetDisplayName: string; override;
+    procedure SetDisplayName(const Value: string); override;
   public
+    destructor Destroy; override;
     property Module: TCustomModularBase read FModule write FModule;
     property ModuleProcessed: Boolean read FModuleProcessed write FModuleProcessed;
+    property Left: Integer read FLeft write FLeft;
+    property Top: Integer read FTop write FTop;
   end;
 
   TCustomModularCollection = class(TCollection)
@@ -41,7 +50,10 @@ type
   TCustomModularIO = class(TCustomModularBase)
   public
     constructor Create; override;
+    procedure ProcessModule; override;
   end;
+
+  TModularIO = class(TCustomModularIO);
 
   TCustomModularContainer = class(TCustomModularBase)
   private
@@ -49,6 +61,7 @@ type
 
     FProcessRelevant  : Boolean;
     function GetModule(Index: Integer): TCustomModularBase;
+    function GetModuleItem(Index: Integer): TCustomModularItem;
     function GetModuleCount: Integer;
     function GetInputPinCount: Integer;
     function GetOutputPinCount: Integer;
@@ -64,13 +77,14 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessModule; override;
-    procedure AddModule(NewModule : TCustomModularBase);
+    function AddModule(NewModule : TCustomModularBase): TCustomModularItem;
     procedure RemoveModule(Module : TCustomModularBase);
 
     property InputPinCount: Integer read GetInputPinCount;
     property OutputPinCount: Integer read GetOutputPinCount;
 
-    property Module[Index: Integer]: TCustomModularBase read GetModule; default;
+    property Module[Index: Integer]: TCustomModularBase read GetModule;
+    property ModuleItem[Index: Integer]: TCustomModularItem read GetModuleItem; default;
     property ModuleCount: Integer read GetModuleCount;
     property ProcessOnlyRelevantSubmodules: Boolean read FProcessRelevant write FProcessRelevant default False;
   end;
@@ -87,6 +101,27 @@ uses
 
 resourcestring
   RCStrModuleIsInContainer = 'Module is already in the container!';
+
+{ TCustomModularItem }
+
+destructor TCustomModularItem.Destroy;
+begin
+ FreeAndNil(FModule);
+ inherited;
+end;
+
+function TCustomModularItem.GetDisplayName: string;
+begin
+ if assigned(FModule)
+  then result := FModule.Name;
+end;
+
+procedure TCustomModularItem.SetDisplayName(const Value: string);
+begin
+ if assigned(FModule)
+  then FModule.Name := Value
+  else inherited;
+end;
 
 { TCustomModularCollection }
 
@@ -168,6 +203,25 @@ begin
  inherited;
  FName := 'I/O';
  FDescription := 'Module for handling the I/Os of a container';
+
+(*
+ with FPinsInput.Add do
+  begin
+   Datatype := mdtSpare;
+   DisplayName := 'Input'
+  end;
+ with FPinsOutput.Add do
+  begin
+   Datatype := mdtSpare;
+   DisplayName := 'Output'
+  end;
+*)
+end;
+
+procedure TCustomModularIO.ProcessModule;
+begin
+ inherited;
+
 end;
 
 { TCustomModularContainer }
@@ -195,6 +249,13 @@ end;
 function TCustomModularContainer.GetModuleCount: Integer;
 begin
  result := FModuleCollection.Count;
+end;
+
+function TCustomModularContainer.GetModuleItem(Index: Integer): TCustomModularItem;
+begin
+ if (Index >= 0) and (Index < FModuleCollection.Count)
+  then result := FModuleCollection.Items[Index]
+  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
 function TCustomModularContainer.GetInputPinCount: Integer;
@@ -264,13 +325,14 @@ begin
  FPinsOutput.Clear;
 end;
 
-procedure TCustomModularContainer.AddModule(NewModule: TCustomModularBase);
+function TCustomModularContainer.AddModule(NewModule: TCustomModularBase): TCustomModularItem;
 begin
  // check whether the module is not already in the container
  if FModuleCollection.IndexOf(NewModule) >= 0
   then raise Exception.Create(RCStrModuleIsInContainer);
 
- with FModuleCollection.Add do
+ Result := FModuleCollection.Add;
+ with Result do
   begin
    Module := NewModule;
   end;

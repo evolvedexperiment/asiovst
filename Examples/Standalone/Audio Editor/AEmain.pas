@@ -19,55 +19,55 @@ type
     MainMenu: TMainMenu;
     MIAbout: TMenuItem;
     MIASIOSetup: TMenuItem;
+    MIAusschneiden: TMenuItem;
+    MIDelete: TMenuItem;
     MIEdit: TMenuItem;
     MIExit: TMenuItem;
     MIFile: TMenuItem;
     MIGenerate: TMenuItem;
     MIHelp: TMenuItem;
     MIInvert: TMenuItem;
+    MIKopieren: TMenuItem;
     MINew: TMenuItem;
     MINoise: TMenuItem;
     MINormalize: TMenuItem;
     MIOpen: TMenuItem;
     MIOptions: TMenuItem;
+    MIPaste: TMenuItem;
+    MIPinkNoise: TMenuItem;
     MIProcess: TMenuItem;
     MIRectify: TMenuItem;
+    MIRedo: TMenuItem;
     MIRemoveDC: TMenuItem;
     MISave: TMenuItem;
     MISaveAs: TMenuItem;
+    MISelectAll: TMenuItem;
+    MISelectNone: TMenuItem;
+    MIUndo: TMenuItem;
     MIView: TMenuItem;
+    MIVstSetup: TMenuItem;
+    MIWaveform: TMenuItem;
     N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
     SpeedButton1: TSpeedButton;
     Splitter1: TSplitter;
     ToolBar1: TToolBar;
     ToolBar2: TToolBar;
-    MIUndo: TMenuItem;
-    MIRedo: TMenuItem;
-    N2: TMenuItem;
-    MIAusschneiden: TMenuItem;
-    MIKopieren: TMenuItem;
-    MIPaste: TMenuItem;
-    MIDelete: TMenuItem;
-    N3: TMenuItem;
-    MISelectAll: TMenuItem;
-    MISelectNone: TMenuItem;
-    MIWaveform: TMenuItem;
-    WhiteNoise1: TMenuItem;
-    MIPinkNoise: TMenuItem;
     VstHost: TVstHost;
-    MIVstSetup: TMenuItem;
+    WhiteNoise1: TMenuItem;
     procedure FormCreate(Sender: TObject);
-    procedure MIExitClick(Sender: TObject);
+    procedure DataChangedHandler(Sender: TObject);
     procedure MIASIOSetupClick(Sender: TObject);
-    procedure MIOpenClick(Sender: TObject);
-    procedure MISaveAsClick(Sender: TObject);
+    procedure MIExitClick(Sender: TObject);
+    procedure MIInvertClick(Sender: TObject);
     procedure MINormalizeClick(Sender: TObject);
-    procedure MIWhiteNoiseClick(Sender: TObject);
+    procedure MIOpenClick(Sender: TObject);
     procedure MIRectifyClick(Sender: TObject);
     procedure MIRemoveDCClick(Sender: TObject);
-    procedure MIInvertClick(Sender: TObject);
-    procedure DataChangedHandler(Sender: TObject);
+    procedure MISaveAsClick(Sender: TObject);
     procedure MIVstSetupClick(Sender: TObject);
+    procedure MIWhiteNoiseClick(Sender: TObject);
   private
     FFileName : TFileName;
   public
@@ -84,11 +84,6 @@ implementation
 uses
   AEAsioSetup, AEVstSetup;
 
-procedure TFmAudioEditor.DataChangedHandler(Sender: TObject);
-begin
- GuiAudioDataDisplay.Invalidate;
-end;
-
 procedure TFmAudioEditor.FormCreate(Sender: TObject);
 var
   Sample: Integer;
@@ -97,6 +92,11 @@ begin
   begin
    AudioDataCollection32[0].ChannelData[Sample] := 2 * random - 1;
   end;
+end;
+
+procedure TFmAudioEditor.DataChangedHandler(Sender: TObject);
+begin
+ GuiAudioDataDisplay.Invalidate;
 end;
 
 procedure TFmAudioEditor.MIExitClick(Sender: TObject);

@@ -24,8 +24,6 @@ object FmVST2SEM: TFmVST2SEM
     ActivePage = TSVSTPlugin
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 324
-    ExplicitHeight = 323
     object TSVSTPlugin: TTabSheet
       Caption = 'VST Plugin Properties'
       ImageIndex = 1
@@ -60,10 +58,6 @@ object FmVST2SEM: TFmVST2SEM
     end
     object TSSEMProperties: TTabSheet
       Caption = 'SEM Properties'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 316
-      ExplicitHeight = 295
       DesignSize = (
         313
         206)
@@ -98,7 +92,6 @@ object FmVST2SEM: TFmVST2SEM
           'DAV VST-Wrapper')
         ReadOnly = True
         TabOrder = 0
-        ExplicitWidth = 273
       end
       object MemoID: TMemo
         Left = 40
@@ -110,7 +103,6 @@ object FmVST2SEM: TFmVST2SEM
           'VST2SEM')
         ReadOnly = True
         TabOrder = 1
-        ExplicitWidth = 273
       end
       object MemoAbout: TMemo
         Left = 40
@@ -122,7 +114,6 @@ object FmVST2SEM: TFmVST2SEM
           'Wrapper created by Christian-W. Budde')
         ReadOnly = True
         TabOrder = 2
-        ExplicitWidth = 273
       end
     end
   end

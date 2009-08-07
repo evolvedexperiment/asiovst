@@ -71,7 +71,7 @@ object FmASIO: TFmASIO
     TabOrder = 0
     OnChange = DriverComboChange
   end
-  object Bt_CP: TButton
+  object BtControlPanel: TButton
     Left = 352
     Top = 7
     Width = 121
@@ -79,7 +79,7 @@ object FmASIO: TFmASIO
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = Bt_CPClick
+    OnClick = BtControlPanelClick
   end
   object ChannelBox: TComboBox
     Left = 104
@@ -91,7 +91,7 @@ object FmASIO: TFmASIO
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
-  object Bt_Play: TButton
+  object BtStartStop: TButton
     Left = 352
     Top = 32
     Width = 121
@@ -100,7 +100,7 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = Bt_PlayClick
+    OnClick = BtStartStopClick
   end
   object SbFreq: TScrollBar
     Left = 8
@@ -140,15 +140,12 @@ object FmASIO: TFmASIO
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    CanDos = []
-    ConvertOptimizations = [coSSE]
+    ConvertOptimizations = [coSSE, co3DNow]
     PreFillOutBuffer = bpfZero
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
     SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnSampleRateChanged = ASIOHostSampleRateChanged
-    Left = 308
-    Top = 32
   end
 end

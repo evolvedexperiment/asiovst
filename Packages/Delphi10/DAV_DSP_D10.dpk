@@ -86,6 +86,18 @@ contains
   DAV_DspVocoder in '..\..\Source\DSP\DAV_DspVocoder.pas',
   DAV_DspVoiceSynth in '..\..\Source\DSP\DAV_DspVoiceSynth.pas',
   DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas',
-  DAV_DspWindowing in '..\..\Source\DSP\DAV_DspWindowing.pas';
+  DAV_DspWindowing in '..\..\Source\DSP\DAV_DspWindowing.pas',
+  DAV_DspAmbience in '..\..\Source\DSP\DAV_DspAmbience.pas',
+  DAV_DspBarberpoleTuner in '..\..\Source\DSP\DAV_DspBarberpoleTuner.pas',
+  DAV_DspChorus in '..\..\Source\DSP\DAV_DspChorus.pas',
+  DAV_DspCircularBuffer in '..\..\Source\DSP\DAV_DspCircularBuffer.pas',
+  DAV_DspDownsampleScheduler in '..\..\Source\DSP\DAV_DspDownsampleScheduler.pas',
+  DAV_DspExciter in '..\..\Source\DSP\DAV_DspExciter.pas',
+  DAV_DspLightweightDynamics in '..\..\Source\DSP\DAV_DspLightweightDynamics.pas',
+  DAV_DspLMS in '..\..\Source\DSP\DAV_DspLMS.pas',
+  DAV_DspModDelay in '..\..\Source\DSP\DAV_DspModDelay.pas',
+  DAV_DspPinkNoiseGenerator in '..\..\Source\DSP\DAV_DspPinkNoiseGenerator.pas',
+  DAV_DspPsychoacousticBassEnhancer in '..\..\Source\DSP\DAV_DspPsychoacousticBassEnhancer.pas',
+  DAV_DspRingModulator in '..\..\Source\DSP\DAV_DspRingModulator.pas';
 
 end.

@@ -18,6 +18,17 @@
   The default is enabled. }
 {$DEFINE UseNativeTypes}
 
+//////////////////////////////
+//  ASIO Compiler Switches  //
+//////////////////////////////
+
+{ In the official ASIO specifications there is only one ASIO driver allowed
+  per application. Based on this requirement the callback can only address one
+  single driver (globally). Though it might work with multiple drivers. To test
+  this you can disable the error by allowing multiple ASIO hosts.
+  The default is disabled.}
+{$DEFINE AllowMultipleAsioHosts}
+
 ////////////////////////////////////
 //  VST Plugin Compiler Switches  //
 ////////////////////////////////////

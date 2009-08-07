@@ -12,63 +12,63 @@ uses
 
 type
   TFmASIO = class(TForm)
-    ASIOHost: TASIOHost;
-    BtPlay: TButton;
-    DriverCombo: TComboBox;
-    Lb_Drivername: TLabel;
-    ShBackText: TShape;
-    MiddleL: TShape;
-    Lb20: TLabel;
-    Lb40: TLabel;
-    Lb80: TLabel;
-    Lb160: TLabel;
-    Lb320: TLabel;
-    Lb640: TLabel;
-    Lb1200: TLabel;
-    Lb2500: TLabel;
-    Lb5k: TLabel;
-    Lb10k: TLabel;
-    Lb20k: TLabel;
-    LbLM: TLabel;
-    LbRS: TLabel;
-    MiddleR: TShape;
-    SB1200L: TScrollBar;
-    SB640L: TScrollBar;
-    SB320L: TScrollBar;
-    SB160L: TScrollBar;
-    SB80L: TScrollBar;
-    SB40L: TScrollBar;
-    SB20L: TScrollBar;
-    SB10kL: TScrollBar;
-    SB5kL: TScrollBar;
-    SB2500L: TScrollBar;
-    SB20kL: TScrollBar;
-    SB1200R: TScrollBar;
-    SB640R: TScrollBar;
-    SB320R: TScrollBar;
-    SB160R: TScrollBar;
-    SB80R: TScrollBar;
-    SB40R: TScrollBar;
-    SB20R: TScrollBar;
-    SB10kR: TScrollBar;
-    SB5kR: TScrollBar;
-    SB2500R: TScrollBar;
-    SB20kR: TScrollBar;
-    BtControlPanel: TButton;
-    Label1: TLabel;
-    EdFileName: TEdit;
-    BtSelect: TButton;
     ADC: TAudioDataCollection32;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
+    ASIOHost: TASIOHost;
+    BtControlPanel: TButton;
+    BtPlay: TButton;
+    BtSelect: TButton;
+    DriverCombo: TComboBox;
+    EdFileName: TEdit;
+    Lb10k: TLabel;
+    Lb1200: TLabel;
+    Lb160: TLabel;
+    Lb20: TLabel;
+    Lb20k: TLabel;
+    Lb2500: TLabel;
+    Lb320: TLabel;
+    Lb40: TLabel;
+    Lb5k: TLabel;
+    Lb640: TLabel;
+    Lb80: TLabel;
+    LbDrivername: TLabel;
+    LbFile: TLabel;
+    LbLeft15dB: TLabel;
+    LbLeftM15dB: TLabel;
+    LbLeftZero: TLabel;
+    LbLM: TLabel;
+    LbRight0dB: TLabel;
+    LbRight15dB: TLabel;
+    LbRightM15dB: TLabel;
+    LbRS: TLabel;
+    MiddleL: TShape;
+    MiddleR: TShape;
+    SB10kL: TScrollBar;
+    SB10kR: TScrollBar;
+    SB1200L: TScrollBar;
+    SB1200R: TScrollBar;
+    SB160L: TScrollBar;
+    SB160R: TScrollBar;
+    SB20kL: TScrollBar;
+    SB20kR: TScrollBar;
+    SB20L: TScrollBar;
+    SB20R: TScrollBar;
+    SB2500L: TScrollBar;
+    SB2500R: TScrollBar;
+    SB320L: TScrollBar;
+    SB320R: TScrollBar;
+    SB40L: TScrollBar;
+    SB40R: TScrollBar;
+    SB5kL: TScrollBar;
+    SB5kR: TScrollBar;
+    SB640L: TScrollBar;
+    SB640R: TScrollBar;
+    SB80L: TScrollBar;
+    SB80R: TScrollBar;
+    ShBackText: TShape;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
-    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure BtPlayClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
     procedure SliderChange(Sender: TObject);
@@ -226,7 +226,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample : integer;
 begin
@@ -260,7 +260,7 @@ begin
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfDoubleDynArray);
+  OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
   Sample : integer;
 begin

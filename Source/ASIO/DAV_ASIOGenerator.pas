@@ -9,7 +9,7 @@ uses
 
 type
   TNoiseColor = (ncWhite, ncPink, ncBrown);
-  TToneFlavor = (tfSine, tfSaw, tfSquare, tfTriangle, tfPulse);
+  TWaveform = (wfSine, wfSaw, wfSquare, wfTriangle, wfPulse);
   TASIOGenerator = class(TComponent)
   private
     FSampleRate  : Double;
@@ -19,7 +19,8 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True); virtual;
+    procedure ProcessBuffer32(Buffer: TDAVArrayOfSingleFixedArray; IsOutput: Boolean = True); virtual;
+    procedure ProcessBuffer64(Buffer: TDAVArrayOfDoubleFixedArray; IsOutput: Boolean = True); virtual;
   published
     property SampleRate: Double read FSampleRate write SetSampleRate;
     property BlockSize: Cardinal read FBlockSize write SetBlockSize;
@@ -27,32 +28,36 @@ type
 
   TASIOGeneratorNoise = class(TASIOGenerator)
   private
-   FNoiZe      : Array[0..7] of Single;
-   FNoiseColor : TNoiseColor;
+    FNoiZe      : Array[0..7] of Single;
+    FNoiseColor : TNoiseColor;
   public
-   procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True); override;
+    procedure ProcessBuffer32(Buffer: TDAVArrayOfSingleFixedArray; isOutput: Boolean = True); override;
+    procedure ProcessBuffer64(Buffer: TDAVArrayOfDoubleFixedArray; IsOutput: Boolean = True); override;
   published
-   property NoiseColor: TNoiseColor read FNoiseColor write FNoiseColor;
+    property NoiseColor: TNoiseColor read FNoiseColor write FNoiseColor;
   end;
 
   TASIOGeneratorTone = class(TASIOGenerator)
   private
-   FFrequency  : Single;
-   FToneFlavor : TToneFlavor;
-   FPhase      : Double;
-   procedure SetFrequency(value: Single);
+    FFrequency  : Single;
+    FToneFlavor : TWaveform;
+    FPhase      : Double;
+    procedure SetFrequency(value: Single);
   public
-   constructor Create(AOwner: TComponent); override;
-   procedure ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True); override;
+    constructor Create(AOwner: TComponent); override;
+    procedure ProcessBuffer32(Buffer: TDAVArrayOfSingleFixedArray; isOutput: Boolean = True); override;
+    procedure ProcessBuffer64(Buffer: TDAVArrayOfDoubleFixedArray; IsOutput: Boolean = True); override;
   published
-   property Frequency: Single read FFrequency write SetFrequency;
-   property ToneFlavor:TToneFlavor read FToneFlavor write FToneFlavor;
+    property Frequency: Single read FFrequency write SetFrequency;
+    property Waveform: TWaveform read FToneFlavor write FToneFlavor;
   end;
 
 implementation
 
 uses
   Math, DAV_ASIOHost;
+
+{ TASIOGenerator }
 
 constructor TASIOGenerator.Create(AOwner: TComponent);
 begin
@@ -68,9 +73,14 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TASIOGenerator.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray; isOutput: Boolean = True);
+procedure TASIOGenerator.ProcessBuffer32(Buffer: TDAVArrayOfSingleFixedArray; IsOutput: Boolean = True);
 begin
- FillChar(SingleBlock[0], BlockSize * SizeOf(Single), 0);
+ FillChar(Buffer[0], BlockSize * SizeOf(Single), 0);
+end;
+
+procedure TASIOGenerator.ProcessBuffer64(Buffer: TDAVArrayOfDoubleFixedArray; IsOutput: Boolean = True);
+begin
+ FillChar(Buffer[0], BlockSize * SizeOf(Double), 0);
 end;
 
 procedure TASIOGenerator.SetSampleRate(const Value: Double);
@@ -83,17 +93,20 @@ begin
  FBlockSize := Value;
 end;
 
-procedure TASIOGeneratorNoise.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray;
- isOutput: Boolean = True);
-var i, j : integer;
+{ TASIOGeneratorNoise }
+
+procedure TASIOGeneratorNoise.ProcessBuffer32(Buffer: TDAVArrayOfSingleFixedArray;
+  IsOutput: Boolean = True);
+var
+  Channel, Sample : integer;
 begin
  if NoiseColor = ncWhite then
-  for i := 0 to Length(SingleBlock) - 1 do
-   for j := 0 to Blocksize - 1 do
-    SingleBlock[i, j] := (2 * Random - 1)
+  for Channel := 0 to Length(Buffer) - 1 do
+   for Sample := 0 to Blocksize - 1
+    do Buffer[Channel, Sample] := (2 * Random - 1)
  else if NoiseColor = ncPink then
-  for i := 0 to Length(SingleBlock) - 1 do
-   for j := 0 to Blocksize - 1 do
+  for Channel := 0 to Length(Buffer) - 1 do
+   for Sample := 0 to Blocksize - 1 do
     begin
      FNoiZe[0]:=(2 * Random - 1);
      FNoiZe[1]:= 0.99886 * FNoiZe[1] + FNoiZe[0] * 0.0555179;
@@ -102,17 +115,51 @@ begin
      FNoiZe[4]:= 0.86650 * FNoiZe[4] + FNoiZe[0] * 0.3104856;
      FNoiZe[5]:= 0.55000 * FNoiZe[5] + FNoiZe[0] * 0.5329522;
      FNoiZe[6]:= -0.7616 * FNoiZe[6] - FNoiZe[0] * 0.0168980;
-     SingleBlock[i,j] := 0.1 * (FNoiZe[0] + FNoiZe[1] + FNoiZe[2] + FNoiZe[3] + FNoiZe[4] + FNoiZe[5] + FNoiZe[6] + FNoiZe[7] * 0.5362);   FNoiZe[7]:= FNoiZe[0] * 0.115926;
+     Buffer[Channel,Sample] := 0.1 * (FNoiZe[0] + FNoiZe[1] + FNoiZe[2] + FNoiZe[3] + FNoiZe[4] + FNoiZe[5] + FNoiZe[6] + FNoiZe[7] * 0.5362);   FNoiZe[7]:= FNoiZe[0] * 0.115926;
     end
  else if NoiseColor = ncBrown then
-  for i := 0 to Length(SingleBlock) - 1 do
-   for j := 0 to Blocksize - 1 do
+  for Channel := 0 to Length(Buffer) - 1 do
+   for Sample := 0 to Blocksize - 1 do
     begin
-     SingleBlock[i, j] := FNoiZe[i] + 0.0002 * (2 * Random - 1);
-     FNoiZe[i] := 0.999 * SingleBlock[i, j];
-     SingleBlock[i, j] := 150 * SingleBlock[i, j];
+     Buffer[Channel, Sample] := FNoiZe[Channel] + 0.0002 * (2 * Random - 1);
+     FNoiZe[Channel] := 0.999 * Buffer[Channel, Sample];
+     Buffer[Channel, Sample] := 150 * Buffer[Channel, Sample];
    end;
 end;
+
+procedure TASIOGeneratorNoise.ProcessBuffer64(Buffer: TDAVArrayOfDoubleFixedArray;
+  IsOutput: Boolean);
+var
+  Channel, Sample : integer;
+begin
+ if NoiseColor = ncWhite then
+  for Channel := 0 to Length(Buffer) - 1 do
+   for Sample := 0 to Blocksize - 1
+    do Buffer[Channel, Sample] := (2 * Random - 1)
+ else if NoiseColor = ncPink then
+  for Channel := 0 to Length(Buffer) - 1 do
+   for Sample := 0 to Blocksize - 1 do
+    begin
+     FNoiZe[0]:=(2 * Random - 1);
+     FNoiZe[1]:= 0.99886 * FNoiZe[1] + FNoiZe[0] * 0.0555179;
+     FNoiZe[2]:= 0.99332 * FNoiZe[2] + FNoiZe[0] * 0.0750759;
+     FNoiZe[3]:= 0.96900 * FNoiZe[3] + FNoiZe[0] * 0.1538520;
+     FNoiZe[4]:= 0.86650 * FNoiZe[4] + FNoiZe[0] * 0.3104856;
+     FNoiZe[5]:= 0.55000 * FNoiZe[5] + FNoiZe[0] * 0.5329522;
+     FNoiZe[6]:= -0.7616 * FNoiZe[6] - FNoiZe[0] * 0.0168980;
+     Buffer[Channel,Sample] := 0.1 * (FNoiZe[0] + FNoiZe[1] + FNoiZe[2] + FNoiZe[3] + FNoiZe[4] + FNoiZe[5] + FNoiZe[6] + FNoiZe[7] * 0.5362);   FNoiZe[7]:= FNoiZe[0] * 0.115926;
+    end
+ else if NoiseColor = ncBrown then
+  for Channel := 0 to Length(Buffer) - 1 do
+   for Sample := 0 to Blocksize - 1 do
+    begin
+     Buffer[Channel, Sample] := FNoiZe[Channel] + 0.0002 * (2 * Random - 1);
+     FNoiZe[Channel] := 0.999 * Buffer[Channel, Sample];
+     Buffer[Channel, Sample] := 150 * Buffer[Channel, Sample];
+   end;
+end;
+
+{ TASIOGeneratorTone }
 
 procedure TASIOGeneratorTone.SetFrequency(value:Single);
 begin
@@ -125,35 +172,69 @@ begin
  FFrequency := 1000;
 end;
 
-procedure TASIOGeneratorTone.ProcessBlock(SingleBlock: TDAVArrayOfSingleDynArray;
- isOutput: Boolean = True);
-var i, j : Integer;
-    fPh: Double;
+procedure TASIOGeneratorTone.ProcessBuffer32(Buffer: TDAVArrayOfSingleFixedArray;
+  IsOutput: Boolean = True);
+var
+  Channel, Sample : Integer;
+  CurrentPhase    : Double;
 begin
- fPh := Frequency / SampleRate;
- i := 0;
- for j := 0 to Blocksize - 1 do
+ CurrentPhase := Frequency / SampleRate;
+ Channel := 0;
+ for Sample := 0 to Blocksize - 1 do
  begin
-  case ToneFlavor of
-  tfSine: SingleBlock[i, j] := sin(FPhase * 2 * PI);
-  tfSaw: if FPhase <= 0.5 then SingleBlock[i, j] := 2 * FPhase
-         else SingleBlock[i, j] := 2 * FPhase - 2;
-  tfSquare: if FPhase <= 0.5 then SingleBlock[i, j] := 1 else
-   SingleBlock[i, j] := -1;
-  tfTriangle: if (FPhase >= 0.25) and (FPhase < 0.75) then
-   SingleBlock[i, j] := -4 * (FPhase + 0.25) + 3
-   else if (FPhase < 0.25) then SingleBlock[i, j] := 4 * (FPhase + 0.25) - 1
-   else SingleBlock[i, j] := 4 * (FPhase + 0.25) - 5;
-  tfPulse: if j = 0 then SingleBlock[i, j] := 0 else
-   SingleBlock[i, j] := 1;
+  case Waveform of
+  wfSine: Buffer[Channel, Sample] := sin(FPhase * 2 * PI);
+  wfSaw: if FPhase <= 0.5 then Buffer[Channel, Sample] := 2 * FPhase
+         else Buffer[Channel, Sample] := 2 * FPhase - 2;
+  wfSquare: if FPhase <= 0.5 then Buffer[Channel, Sample] := 1 else
+   Buffer[Channel, Sample] := -1;
+  wfTriangle: if (FPhase >= 0.25) and (FPhase < 0.75) then
+   Buffer[Channel, Sample] := -4 * (FPhase + 0.25) + 3
+   else if (FPhase < 0.25) then Buffer[Channel, Sample] := 4 * (FPhase + 0.25) - 1
+   else Buffer[Channel, Sample] := 4 * (FPhase + 0.25) - 5;
+  wfPulse: if Sample = 0 then Buffer[Channel, Sample] := 0 else
+   Buffer[Channel, Sample] := 1;
   else
   end;
-  FPhase := FPhase + fPh;
+  FPhase := FPhase + CurrentPhase;
   if FPhase >= 1 then FPhase := FPhase - 1;
  end;
- for i := 1 to High(SingleBlock) do
-  for j := 0 to Blocksize - 1 do
-   SingleBlock[i, j] := SingleBlock[0, j];
+
+ for Channel := 1 to Length(Buffer) - 1
+  do Move(Buffer[0, 0], Buffer[Channel, 0], Blocksize * SizeOf(Double));
+end;
+
+procedure TASIOGeneratorTone.ProcessBuffer64(Buffer: TDAVArrayOfDoubleFixedArray;
+  IsOutput: Boolean);
+var
+  Channel, Sample : Integer;
+  CurrentPhase    : Double;
+begin
+ CurrentPhase := Frequency / SampleRate;
+ Channel := 0;
+ for Sample := 0 to Blocksize - 1 do
+ begin
+  case Waveform of
+  wfSine: Buffer[Channel, Sample] := sin(FPhase * 2 * PI);
+  wfSaw: if FPhase <= 0.5 then Buffer[Channel, Sample] := 2 * FPhase
+         else Buffer[Channel, Sample] := 2 * FPhase - 2;
+  wfSquare: if FPhase <= 0.5 then Buffer[Channel, Sample] := 1 else
+    Buffer[Channel, Sample] := -1;
+  wfTriangle: if (FPhase >= 0.25) and (FPhase < 0.75) then
+    Buffer[Channel, Sample] := -4 * (FPhase + 0.25) + 3
+    else if (FPhase < 0.25) then Buffer[Channel, Sample] := 4 * (FPhase + 0.25) - 1
+    else Buffer[Channel, Sample] := 4 * (FPhase + 0.25) - 5;
+  wfPulse: if Sample = 0 then Buffer[Channel, Sample] := 0 else
+    Buffer[Channel, Sample] := 1;
+  else
+  end;
+
+  FPhase := FPhase + CurrentPhase;
+  if FPhase >= 1 then FPhase := FPhase - 1;
+ end;
+
+ for Channel := 1 to Length(Buffer) - 1
+  do Move(Buffer[0, 0], Buffer[Channel, 0], Blocksize * SizeOf(Double));
 end;
 
 initialization

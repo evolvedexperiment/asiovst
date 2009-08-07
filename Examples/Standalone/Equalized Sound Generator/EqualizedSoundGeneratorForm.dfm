@@ -1,6 +1,6 @@
 object FmASIO: TFmASIO
-  Left = 250
-  Top = 188
+  Left = 299
+  Top = 185
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Demo application for ASIO-Host'
@@ -17,7 +17,7 @@ object FmASIO: TFmASIO
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDrivername: TLabel
     Left = 7
     Top = 12
     Width = 31
@@ -251,14 +251,14 @@ object FmASIO: TFmASIO
     Height = 2
     Pen.Color = clBtnShadow
   end
-  object Label1: TLabel
+  object LbFile: TLabel
     Left = 8
     Top = 36
     Width = 19
     Height = 13
     Caption = 'File:'
   end
-  object Label2: TLabel
+  object LbRight15dB: TLabel
     Left = 564
     Top = 72
     Width = 13
@@ -271,7 +271,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Label3: TLabel
+  object LbLeftM15dB: TLabel
     Left = 564
     Top = 220
     Width = 11
@@ -284,7 +284,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Label4: TLabel
+  object LbLeftZero: TLabel
     Left = 569
     Top = 146
     Width = 4
@@ -297,7 +297,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Label5: TLabel
+  object LbLeft15dB: TLabel
     Left = 564
     Top = 273
     Width = 13
@@ -310,7 +310,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Label6: TLabel
+  object LbRightM15dB: TLabel
     Left = 564
     Top = 421
     Width = 11
@@ -323,7 +323,7 @@ object FmASIO: TFmASIO
     Font.Style = []
     ParentFont = False
   end
-  object Label7: TLabel
+  object LbRight0dB: TLabel
     Left = 569
     Top = 347
     Width = 4
@@ -673,7 +673,6 @@ object FmASIO: TFmASIO
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    CanDos = []
     ConvertOptimizations = [coSSE]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000

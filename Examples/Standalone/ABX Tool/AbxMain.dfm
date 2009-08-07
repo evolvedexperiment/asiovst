@@ -983,7 +983,6 @@ object FmAbxMain: TFmAbxMain
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    CanDos = []
     ConvertOptimizations = [coSSE, co3DNow]
     SampleRate = 44100.000000000000000000
     SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]

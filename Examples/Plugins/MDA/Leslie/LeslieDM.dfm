@@ -16,6 +16,14 @@ object LeslieDataModule: TLeslieDataModule
     item
       DisplayName = 'Leslie Simulator'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Slow'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Fast'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
@@ -29,6 +37,7 @@ object LeslieDataModule: TLeslieDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterLeslieSpeedChange
       OnCustomParameterDisplay = ParamSpeedDisplay
     end
     item
@@ -114,10 +123,10 @@ object LeslieDataModule: TLeslieDataModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
-      Max = 20.000000000000000000
-      MaxInteger = 20
-      Min = -20.000000000000000000
-      MinInteger = -20
+      Max = 12.000000000000000000
+      MaxInteger = 12
+      Min = -28.000000000000000000
+      MinInteger = -28
       ShortLabel = 'Output'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -139,13 +148,14 @@ object LeslieDataModule: TLeslieDataModule
       VSTModule = Owner
       OnParameterChange = ParameterSpeedChange
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
-  Left = 218
-  Top = 81
+  OnSampleRateChange = VSTModuleSampleRateChange
+  Left = 161
+  Top = 134
   Height = 150
   Width = 215
 end

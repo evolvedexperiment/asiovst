@@ -149,14 +149,13 @@ object FmASIO: TFmASIO
   end
   object ASIOHost: TASIOHost
     PreventClipping = pcDigital
-    ConvertOptimizations = [coSSE]
     SampleRate = 44100
     ASIOTime.Speed = 1
     ASIOTime.SampleRate = 44100
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     OnSampleRateChanged = ASIOHostSampleRateChanged
     OnBufferSwitch64 = ASIOHostBufferSwitch64
-    left = 308
-    top = 32
+    Left = 308
+    Top = 32
   end
 end

@@ -72,7 +72,7 @@ type
 
   TReplaceOrAccumulate = (roa0NotSupported, roa1Replace, roa2Accumulate);
   TCurrentProcessLevel = (cpl0NotSupported, cpl1UserThread, cpl2AudioThread,
-   cpl3Sequencer, cpl4OfflineProcessing);
+    cpl3Sequencer, cpl4OfflineProcessing);
   TAutomationState = (as0NotSupported, as1Off, as2Read, as3Write, as4ReadWrite);
 
   TCustomVstHost = class;
@@ -567,7 +567,7 @@ type
 var
   AudioMaster : TAudioMasterCallbackFunc;
 
-function string2Language(LanguageString: string): TVstHostLanguage;
+function String2Language(LanguageString: string): TVstHostLanguage;
 function PlugCategory2String(Category: TVstPluginCategory):string;
 function EffOptions2String(EffOpts: TEffFlags):string;
 function CheckValidVstPlugin(const FileName: TFilename): Boolean;
@@ -632,7 +632,7 @@ begin
  result := 1;
 end;
 
-function string2Language(LanguageString : string): TVSTHostLanguage;
+function String2Language(LanguageString : string): TVSTHostLanguage;
 begin
  if      LanguageString = 'English'  then Result := kVstLangEnglish
  else if LanguageString = 'French'   then Result := kVstLangGerman

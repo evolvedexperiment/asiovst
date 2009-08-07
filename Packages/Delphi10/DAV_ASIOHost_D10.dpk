@@ -27,6 +27,7 @@ package DAV_ASIOHost_D10;
 requires
   vcl,
   rtl,
+  designide,
   DAV_Common_D10;
 
 contains

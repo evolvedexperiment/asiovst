@@ -37,9 +37,9 @@ type
   TDAVArrayOfDoubleDynArray = array of TDAVDoubleDynArray;
   PDAVArrayOfDoubleDynArray = ^TDAVArrayOfDoubleDynArray;
 
-  TDAVArrayOfSingleFixedArray = array [0..0] of TDAVSingleFixedArray;
+  TDAVArrayOfSingleFixedArray = array of PDAVSingleFixedArray;
   PDAVArrayOfSingleFixedArray = ^TDAVArrayOfSingleFixedArray;
-  TDAVArrayOfDoubleFixedArray = array [0..0] of TDAVDoubleFixedArray;
+  TDAVArrayOfDoubleFixedArray = array of PDAVDoubleFixedArray;
   PDAVArrayOfDoubleFixedArray = ^TDAVArrayOfDoubleFixedArray;
 
   TDAVSingleDynMatrix = TDAVArrayOfSingleDynArray;
@@ -202,6 +202,8 @@ type
   procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
 
   function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function NextPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
+  function PrevPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
   function RoundToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function TruncToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function ExtendToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -1114,8 +1116,44 @@ end;
 {$ENDIF}
 
 function IsPowerOf2(const Value: Integer): Boolean;
+//returns true when X = 1,2,4,8,16 etc.
 begin
- result := abs(IntPower(2, round(Log2(Value))) - Value) < 1E-20;
+  Result := Value and (Value - 1) = 0;
+end;
+
+function PrevPowerOf2(Value: Integer): Integer;
+//returns X rounded down to the power of two
+{$IFNDEF TARGET_x86}
+begin
+  Result := 1;
+  while Value shr 1 > 0 do
+    Result := Result shl 1;
+{$ELSE}
+asm
+ bsr ecx, eax
+ shr eax, cl
+ shl eax, cl
+{$ENDIF}
+end;
+
+function NextPowerOf2(Value: Integer): Integer;
+//returns X rounded up to the power of two, i.e. 5 -> 8, 7 -> 8, 15 -> 16
+{$IFDEF PUREPASCAL}
+begin
+  Result := 2;
+  while Value shr 1 > 0 do
+    Result := Result shl 1;
+{$ELSE}
+asm
+ dec eax
+ jle @1
+ bsr ecx, eax
+ mov eax, 2
+ shl eax, cl
+ ret
+@1:
+ mov eax, 1
+{$ENDIF}
 end;
 
 function RoundToPowerOf2(const Value: Integer): Integer;

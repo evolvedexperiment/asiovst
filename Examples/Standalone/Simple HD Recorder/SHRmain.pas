@@ -38,16 +38,17 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure BtSetupClick(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
-    procedure ASIOHostBufferSwitch32Recording(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure ASIOHostBufferSwitch32Recording(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
   private
     FBackgrounBitmap : TBitmap;
+    FChannelOffsets  : Array [0..1] of Integer;
     FPeaks           : Array [0..3] of Single;
     FDataBuffers     : Array [0..1, 0..3] of PDAVSingleFixedArray;
     FDataBufferIndex : Integer;
     FDataBufferPos   : Integer;
     FDataBufferSize  : Integer;
-    FRecordTimeInSec : Integer;      
+    FRecordTimeInSec : Integer;
     FStorageThread   : TStorageThread;
     procedure PrepareRecording;
     procedure SwitchRecordingBuffer;
@@ -55,6 +56,8 @@ type
   public
     procedure StoreData(const Index: Integer);
     property DataBufferIndex: Integer read FDataBufferIndex;
+    property InputChannelOffset: Integer read FChannelOffsets[0] write FChannelOffsets[0];
+    property OutputChannelOffset: Integer read FChannelOffsets[1] write FChannelOffsets[1];
   end;
 
 var
@@ -97,18 +100,19 @@ end;
 { TFmSimpleHDRecorder }
 
 procedure TFmSimpleHDRecorder.ASIOHostBufferSwitch32Recording(Sender: TObject;
-  const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+  const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  sample, ch : Integer;
+  Sample, Channel, AsioChannel : Integer;
 begin
- for sample := 0 to ASIOHost.BufferSize - 1 do
+ for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   for ch := 0 to min(4, ASIOHost.InputChannelCount) - 1 do
+   for Channel := 0 to 3 do
     begin
-     FPeaks[ch] := 0.999 * FPeaks[ch];
-     if abs(InBuffer[ch, sample]) > FPeaks[ch]
-      then FPeaks[ch] := abs(InBuffer[ch, sample]);
-     FDataBuffers[FDataBufferIndex, ch]^[FDataBufferPos] := InBuffer[ch, sample];
+     AsioChannel := (FChannelOffsets[0] + Channel) mod ASIOHost.InputChannelCount;
+     FPeaks[Channel] := 0.999 * FPeaks[Channel];
+     if abs(InBuffer[AsioChannel, Sample]) > FPeaks[Channel]
+      then FPeaks[Channel] := abs(InBuffer[AsioChannel, Sample]);
+     FDataBuffers[FDataBufferIndex, Channel]^[FDataBufferPos] := InBuffer[AsioChannel, Sample];
     end;
    Inc(FDataBufferPos);
    if FDataBufferPos >= FDataBufferSize then SwitchRecordingBuffer;
@@ -116,16 +120,17 @@ begin
 end;
 
 procedure TFmSimpleHDRecorder.ASIOHostBufferSwitch32(Sender: TObject;
-  const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+  const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  sample, ch : Integer;
+  Sample, Channel, AsioChannel : Integer;
 begin
- for sample := 0 to ASIOHost.BufferSize - 1 do
-  for ch := 0 to min(4, ASIOHost.InputChannelCount) - 1 do
+ for Sample := 0 to ASIOHost.BufferSize - 1 do
+  for Channel := 0 to 3 do
    begin
-    FPeaks[ch] := 0.999 * FPeaks[ch];
-    if abs(InBuffer[ch, sample]) > FPeaks[ch]
-     then FPeaks[ch] := abs(InBuffer[ch, sample]);
+    AsioChannel := (FChannelOffsets[0] + Channel) mod ASIOHost.InputChannelCount;
+    FPeaks[Channel] := 0.999 * FPeaks[Channel];
+    if abs(InBuffer[AsioChannel, sample]) > FPeaks[Channel]
+     then FPeaks[Channel] := abs(InBuffer[AsioChannel, sample]);
    end;
 end;
 

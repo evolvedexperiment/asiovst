@@ -52,8 +52,8 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
-    procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure Bt_AnalyseClick(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -496,7 +496,7 @@ begin
  UpdateFilters;
 end;
 
-procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i,j : Integer;
   d,z : Double;
@@ -524,7 +524,7 @@ begin
 end;
 
 procedure TFmAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i, j : Integer;
   d, z, s : Double;

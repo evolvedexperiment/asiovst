@@ -166,6 +166,7 @@ constructor TModularBasicGainFilter.Create;
 begin
  inherited;
  FFilter := TBasicGainFilter.Create;
+ FName := 'Gain Filter';
 end;
 
 { TModularBasicPeakFilter }
@@ -174,6 +175,7 @@ constructor TModularBasicPeakFilter.Create;
 begin
  inherited;
  FFilter := TBasicPeakFilter.Create;
+ FName := 'Peak Filter';
 end;
 
 { TModularBasicAllpassFilter }
@@ -182,6 +184,7 @@ constructor TModularBasicAllpassFilter.Create;
 begin
  inherited;
  FFilter := TBasicAllpassFilter.Create;
+ FName := 'Allpass Filter';
 end;
 
 { TModularBasicLowShelfFilter }
@@ -190,6 +193,7 @@ constructor TModularBasicLowShelfFilter.Create;
 begin
  inherited;
  FFilter := TBasicLowShelfFilter.Create;
+ FName := 'Lowshelf Filter';
 end;
 
 { TModularBasicLowShelfAFilter }
@@ -198,6 +202,7 @@ constructor TModularBasicLowShelfAFilter.Create;
 begin
  inherited;
  FFilter := TBasicLowShelfAFilter.Create;
+ FName := 'Lowshelf (Type A) Filter';
 end;
 
 { TModularBasicLowShelfBFilter }
@@ -206,6 +211,7 @@ constructor TModularBasicLowShelfBFilter.Create;
 begin
  inherited;
  FFilter := TBasicLowShelfBFilter.Create;
+ FName := 'Lowshelf (Type B) Filter';
 end;
 
 { TModularBasicHighShelfFilter }
@@ -214,6 +220,7 @@ constructor TModularBasicHighShelfFilter.Create;
 begin
  inherited;
  FFilter := TBasicHighShelfFilter.Create;
+ FName := 'HighShelf Filter';
 end;
 
 { TModularBasicHighShelfAFilter }
@@ -222,6 +229,7 @@ constructor TModularBasicHighShelfAFilter.Create;
 begin
  inherited;
  FFilter := TBasicHighShelfAFilter.Create;
+ FName := 'HighShelf (Type A) Filter';
 end;
 
 { TModularBasicHighShelfBFilter }
@@ -230,6 +238,7 @@ constructor TModularBasicHighShelfBFilter.Create;
 begin
  inherited;
  FFilter := TBasicHighShelfBFilter.Create;
+ FName := 'HighShelf (Type B) Filter';
 end;
 
 { TCustomModularOrderFilter }

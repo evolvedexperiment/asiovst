@@ -10,40 +10,40 @@ uses
 
 type
   TFmASIO = class(TForm)
-    Bt_CP: TButton;
-    Bt_Play: TButton;
-    DriverCombo: TComboBox;
-    ChannelBox: TComboBox;
     ASIOHost: TASIOHost;
-    SbFreq: TScrollBar;
-    SbVolume: TScrollBar;
-    SbPan: TScrollBar;
-    LbFreq: TLabel;
-    LbVolume: TLabel;
-    LbPanorama: TLabel;
-    Lb_Drivername: TLabel;
+    BtControlPanel: TButton;
+    BtStartStop: TButton;
+    ChannelBox: TComboBox;
+    DriverCombo: TComboBox;
     Lb_Channels: TLabel;
     Lb_Copyright: TLabel;
+    Lb_Drivername: TLabel;
+    LbFreq: TLabel;
+    LbPanorama: TLabel;
+    LbVolume: TLabel;
+    SbFreq: TScrollBar;
+    SbPan: TScrollBar;
+    SbVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure Bt_CPClick(Sender: TObject);
-    procedure Bt_PlayClick(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
+    procedure BtStartStopClick(Sender: TObject);
     procedure ChannelBoxChange(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
     procedure SbFreqChange(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
     procedure SbVolumeChange(Sender: TObject);
-    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleDynArray);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
   private
     procedure SetFrequency(const Value: Double);
   public
-    fAngle, fPosition   : TComplexDouble;
-    fPan, fFreq, fVol   : Double;
-    fChannelOffset      : Byte;
+    FAngle, FPosition   : TComplexDouble;
+    FPan, FFreq, FVol   : Double;
+    FChannelOffset      : Byte;
   published
-    property Frequency : Double read fFreq write SetFrequency;
+    property Frequency : Double read FFreq write SetFrequency;
   end;
 
 var
@@ -80,20 +80,20 @@ begin
    Free;
   end;
 
- fPosition.Re   :=    0;
- fPosition.Im   :=   -1;
- fFreq          := 1000;
- fPan           :=    0.5;
- fVol           :=    1;
- fChannelOffset :=    0;
- GetSinCos(2 * Pi * fFreq / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
+ FPosition.Re   :=    0;
+ FPosition.Im   :=   -1;
+ FFreq          := 1000;
+ FPan           :=    0.5;
+ FVol           :=    1;
+ FChannelOffset :=    0;
+ GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
 var i : Integer;
 begin
- Bt_CP.Enabled := False;
- Bt_Play.Enabled := False;
+ BtControlPanel.Enabled := False;
+ BtStartStop.Enabled := False;
  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
  if DriverCombo.ItemIndex >= 0 then
   begin
@@ -111,13 +111,13 @@ begin
     finally
      Free;
     end;
-   Bt_CP.Enabled := True;
-   Bt_Play.Enabled := True;
+   BtControlPanel.Enabled := True;
+   BtStartStop.Enabled := True;
    ChannelBox.ItemIndex := 0;
   end;
 end;
 
-procedure TFmASIO.Bt_CPClick(Sender: TObject);
+procedure TFmASIO.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
 end;
@@ -135,23 +135,23 @@ begin
   end; 
 end;
 
-procedure TFmASIO.Bt_PlayClick(Sender: TObject);
+procedure TFmASIO.BtStartStopClick(Sender: TObject);
 begin
- if Bt_Play.Caption = 'Start Audio' then
+ if BtStartStop.Caption = 'Start Audio' then
   begin
    ASIOHost.Active := True; // Start Audio
-   Bt_Play.Caption := 'Stop Audio';
+   BtStartStop.Caption := 'Stop Audio';
   end
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   Bt_Play.Caption := 'Start Audio';
+   BtStartStop.Caption := 'Start Audio';
   end;
 end;
 
 procedure TFmASIO.ChannelBoxChange(Sender: TObject);
 begin
- fChannelOffset := ChannelBox.ItemIndex * 2;
+ FChannelOffset := ChannelBox.ItemIndex * 2;
 end;
 
 procedure TFmASIO.SbFreqChange(Sender: TObject);
@@ -161,73 +161,73 @@ end;
 
 procedure TFmASIO.SetFrequency(const Value: Double);
 begin
- if fFreq <> Value then
+ if FFreq <> Value then
   begin
-   fFreq := Value;
-   LbFreq.Caption := 'Frequency: ' + FloatTostrF(fFreq, ffGeneral, 5, 5) + ' Hz';
-   GetSinCos(2 * Pi * fFreq / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
+   FFreq := Value;
+   LbFreq.Caption := 'Frequency: ' + FloatTostrF(FFreq, ffGeneral, 5, 5) + ' Hz';
+   GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
   end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
-  i    : Integer;
-  d    : Double;
-  L, R : Integer;
+  Sample : Integer;
+  Data   : Double;
+  L, R   : Integer;
 begin
- L := fChannelOffset;
+ L := FChannelOffset;
  R := L + 1;
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
-   fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
-   fPosition.Re := d; d := d * fVol;
-   OutBuffer[L, i] := (1 - fPan) * d;
-   OutBuffer[R, i] := fPan * d;
+   Data := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+   FPosition.Re := Data; Data := Data * FVol;
+   OutBuffer[L, Sample] := (1 - FPan) * Data;
+   OutBuffer[R, Sample] := FPan * Data;
   end;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfDoubleDynArray);
+  OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
-  i    : Integer;
-  d    : Double;
-  L, R : Integer;
+  Sample : Integer;
+  Data   : Double;
+  L, R   : Integer;
 begin
- L := fChannelOffset;
+ L := FChannelOffset;
  R := L + 1;
- for i := 0 to ASIOHost.BufferSize - 1 do
+ for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   d := fPosition.Re * fAngle.Re - fPosition.Im * fAngle.Im;
-   fPosition.Im := fPosition.Im * fAngle.Re + fPosition.Re * fAngle.Im;
-   fPosition.Re := d; d := d * fVol;
-   OutBuffer[L, i] := (1 - fPan) * d;
-   OutBuffer[R, i] := fPan * d;
+   Data := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
+   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
+   FPosition.Re := Data; Data := Data * FVol;
+   OutBuffer[L, Sample] := (1 - FPan) * Data;
+   OutBuffer[R, Sample] := FPan * Data;
   end;
 end;
 
 procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- GetSinCos(2 * Pi * fFreq / ASIOHost.SampleRate, fAngle.Im, fAngle.Re);
+ GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
 end;
 
 procedure TFmASIO.SbVolumeChange(Sender: TObject);
 begin
- fVol := SbVolume.position * 0.00001;
- if fVol = 0
+ FVol := SbVolume.Position * 0.00001;
+ if FVol = 0
   then LbVolume.Caption := 'Volume: 0 equals -oo dB'
   else LbVolume.Caption := 'Volume: ' +
-                           FloattostrF(fVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(fVol), ffGeneral, 2, 2) + ' dB';
+                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
+                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
 end;
 
 procedure TFmASIO.SbPanChange(Sender: TObject);
 begin
- fPan := SbPan.Position * 0.01;
- if fPan = 0.5
+ FPan := SbPan.Position * 0.01;
+ if FPan = 0.5
   then LbPanorama.Caption := 'Panorama: C'
-  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (fPan * 2 - 1)));
+  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (FPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

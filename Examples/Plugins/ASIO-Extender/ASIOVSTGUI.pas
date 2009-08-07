@@ -57,10 +57,10 @@ begin
    Lines.Add('Latency: ' + IntToStr(InputLatency + OutputLatency + Integer(BufferSize)));
    Lines.Add('Channel 1: ' + OutputChannelInfos[0].name);
    Lines.Add('Channel 2: ' + OutputChannelInfos[1].name);
-   Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].vType));
-   Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].vType));
-   Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].vType));
-   Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].vType));
+   Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
+   Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
+   Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
+   Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
   end;
 end;
 

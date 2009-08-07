@@ -14,8 +14,8 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
-    procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
     procedure VSTModuleBlockSizeChange(Sender: TObject;
@@ -129,42 +129,49 @@ begin
  InternalBufferSizeChanged;
 end;
 
-procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+var
+  BufferByteSize : Integer;
 begin
+ BufferByteSize := FASIOHost.BufferSize * SizeOf(Single);
  if (FIntWritePos > FIntReadPos) and (FIntWritePos < FIntReadPos + Integer(FASIOHost.BufferSize))
   then inc(FBufferUnderruns);
- Move(FInBuffer[0, FIntReadPos], OutBuffer[0, 0], FASIOHost.BufferSize * SizeOf(Single));
- Move(FInBuffer[1, FIntReadPos], OutBuffer[1, 0], FASIOHost.BufferSize * SizeOf(Single));
- Move(InBuffer[0, 0], FOutBuffer[0, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
- Move(InBuffer[1, 0], FOutBuffer[1, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
+ Move(FInBuffer[0, FIntReadPos], OutBuffer[0, 0], BufferByteSize);
+ Move(FInBuffer[1, FIntReadPos], OutBuffer[1, 0], BufferByteSize);
+ Move(InBuffer[0, 0], FOutBuffer[0, FIntReadPos], BufferByteSize);
+ Move(InBuffer[1, 0], FOutBuffer[1, FIntReadPos], BufferByteSize);
  FIntReadPos := (FIntReadPos + Integer(FASIOHost.BufferSize)) mod (FNrOfBuffers * Integer(FASIOHost.BufferSize));
 end;
 
-procedure TASIOVSTModule.AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+procedure TASIOVSTModule.AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+var
+  BufferByteSize : Integer;
 begin
+ BufferByteSize := FASIOHost.BufferSize * SizeOf(Single);
  if (FIntWritePos > FIntReadPos) and (FIntWritePos < FIntReadPos + Integer(FASIOHost.BufferSize))
   then inc(FBufferUnderruns);
- Move(FInBuffer[0, FIntReadPos], FOutBuffer[0, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
- Move(FInBuffer[1, FIntReadPos], FOutBuffer[0, FIntReadPos], FASIOHost.BufferSize * SizeOf(Single));
+ Move(FInBuffer[0, FIntReadPos], FOutBuffer[0, FIntReadPos], BufferByteSize);
+ Move(FInBuffer[1, FIntReadPos], FOutBuffer[0, FIntReadPos], BufferByteSize);
  FIntReadPos := (FIntReadPos + Integer(FASIOHost.BufferSize)) mod (FNrOfBuffers * Integer(FASIOHost.BufferSize));
 end;
 
 procedure TASIOVSTModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var i, j : Integer;
+var
+  Sample, DelayCnt : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   FInBuffer[0, FIntWritePos] := Inputs[0, i];
-   FInBuffer[1, FIntWritePos] := Inputs[1, i];
-   Outputs[0, i] := FOutBuffer[0, FIntWritePos];
-   Outputs[1, i] := FOutBuffer[1, FIntWritePos];
+   FInBuffer[0, FIntWritePos] := Inputs[0, Sample];
+   FInBuffer[1, FIntWritePos] := Inputs[1, Sample];
+   Outputs[0, Sample] := FOutBuffer[0, FIntWritePos];
+   Outputs[1, Sample] := FOutBuffer[1, FIntWritePos];
    Inc(FIntWritePos);
    if FIntWritePos >= FIntBufSize then FIntWritePos := 0;
-   j := 0;
-   while (j < 500) and (FIntWritePos = FIntReadPos) and FASIOHost.Active do
+   DelayCnt := 0;
+   while (DelayCnt < 500) and (FIntWritePos = FIntReadPos) and FASIOHost.Active do
     begin
-     inc(j);
+     inc(DelayCnt);
      Sleep(1);
     end;
   end;

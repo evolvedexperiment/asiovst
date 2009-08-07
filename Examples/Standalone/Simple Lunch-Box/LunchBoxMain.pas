@@ -83,7 +83,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostReset(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BtClearClick(Sender: TObject);
@@ -690,7 +690,7 @@ begin
 end;
 
 procedure TFmLunchBox.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i    : Integer;
   d, t : Double;
@@ -698,8 +698,8 @@ begin
  // render output data
  FASIOData.SampleFrames := ASIOHost.BufferSize;
  RenderOutput(FASIOData, True);
- move(FASIOData[0].ChannelDataPointer^[0], OutBuffer[0], FASIOData.SampleFrames);
- move(FASIOData[1].ChannelDataPointer^[0], OutBuffer[1], FASIOData.SampleFrames);
+ Move(FASIOData[0].ChannelDataPointer^[0], OutBuffer[0], FASIOData.SampleFrames);
+ Move(FASIOData[1].ChannelDataPointer^[0], OutBuffer[1], FASIOData.SampleFrames);
 
  // process input detection
  for i := 0 to ASIOHost.BufferSize - 1 do

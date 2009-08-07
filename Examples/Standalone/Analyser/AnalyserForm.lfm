@@ -158,13 +158,12 @@ object FmAnalyser: TFmAnalyser
   object ASIOHost: TASIOHost
     PreventClipping = pcDigital
     PreFillOutBuffer = bpfZero
-    ConvertOptimizations = [coSSE]
     SampleRate = 44100
     ASIOTime.Speed = 1
     ASIOTime.SampleRate = 44100
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     OnBufferSwitch32 = ASIOHostBufferSwitch
-    left = 252
-    top = 24
+    Left = 252
+    Top = 24
   end
 end

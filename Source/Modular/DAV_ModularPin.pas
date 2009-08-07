@@ -71,18 +71,20 @@ type
     FDataType   : TModularPinDataType;
     FBuffer     : Pointer;
     FBufferSize : Integer;
+    FSparePin   : Boolean;
     procedure SetDataType(const Value: TModularPinDataType);
     procedure SetBufferSize(const Value: Integer);
+    procedure SetSparePin(const Value: Boolean);
     function GetBufferAsDoubleArray: PDAVDoubleFixedArray;
     function GetBufferAsSingleArray: PDAVSingleFixedArray;
   protected
     procedure AssignTo(Dest: TPersistent); override;
 
-    procedure BufferSizeChanged; virtual;
-    procedure DisplayNameChanged; virtual;
-    procedure DataTypeChanged; virtual;
     procedure AllocateBuffer; virtual;
-
+    procedure BufferSizeChanged; virtual;
+    procedure DataTypeChanged; virtual;
+    procedure DisplayNameChanged; virtual;
+    procedure SparePinChanged; virtual;
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
@@ -91,15 +93,20 @@ type
     {$ENDIF}
     destructor Destroy; override;
 
-    property Datatype: TModularPinDataType read FDataType write SetDataType default mdtSingle;
-    property BufferSize: Integer read FBufferSize write SetBufferSize default 1;
     property BufferAsSingleArray: PDAVSingleFixedArray read GetBufferAsSingleArray;
     property BufferAsDoubleArray: PDAVDoubleFixedArray read GetBufferAsDoubleArray;
+    property BufferSize: Integer read FBufferSize write SetBufferSize default 1;
+    property Datatype: TModularPinDataType read FDataType write SetDataType default mdtSingle;
+    property SparePin: Boolean read FSparePin write SetSparePin;
   end;
 
   TCustomModularIOPins = class(TCollection)
+  private
+    procedure SetSparePins(const Value: Boolean);
+    procedure PinCountChanged;
   protected
-    FOnPinCountChange: TNotifyEvent;
+    FSparePins        : Boolean;
+    FOnPinCountChange : TNotifyEvent;
     function IndexOf(Value: TCustomModularIOPin): Integer;
     function GetItem(Index: Integer): TCustomModularIOPin; virtual;
     procedure SetItem(Index: Integer; const Value: TCustomModularIOPin); virtual;
@@ -112,6 +119,7 @@ type
     procedure Delete(const Index: Integer);
 
     property Count;
+    property SparePins: Boolean read FSparePins write SetSparePins;
     property OnPinCountChange: TNotifyEvent read FOnPinCountChange write FOnPinCountChange;
   end;
 
@@ -331,7 +339,9 @@ end;
 
 procedure TCustomModularIOPin.AllocateBuffer;
 begin
- ReallocMem(FBuffer, FBufferSize * CalculateByteSizeByDataType(FDataType));
+ if FSparePin
+  then if assigned(FBuffer) then Dispose(FBuffer) else
+  else ReallocMem(FBuffer, FBufferSize * CalculateByteSizeByDataType(FDataType));
 end;
 
 procedure TCustomModularIOPin.BufferSizeChanged;
@@ -375,6 +385,20 @@ begin
    FDataType := Value;
    DataTypeChanged;
   end;
+end;
+
+procedure TCustomModularIOPin.SetSparePin(const Value: Boolean);
+begin
+ if FSparePin <> Value then
+  begin
+   FSparePin := Value;
+   SparePinChanged;
+  end;
+end;
+
+procedure TCustomModularIOPin.SparePinChanged;
+begin
+ AllocateBuffer;
 end;
 
 
@@ -423,13 +447,27 @@ procedure TCustomModularIOPins.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
 begin
  inherited;
- if assigned(FOnPinCountChange)
+ PinCountChanged;
+end;
+
+procedure TCustomModularIOPins.PinCountChanged;
+begin
+ if assigned(FOnPinCountChange) and assigned(Self)
   then FOnPinCountChange(Self);
 end;
 
 procedure TCustomModularIOPins.SetItem(Index: Integer; const Value: TCustomModularIOPin);
 begin
  inherited SetItem(Index, Value);
+end;
+
+procedure TCustomModularIOPins.SetSparePins(const Value: Boolean);
+begin
+ if FSparePins <> Value then
+  begin
+   FSparePins := Value;
+   PinCountChanged;
+  end;
 end;
 
 

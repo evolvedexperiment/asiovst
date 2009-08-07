@@ -20,14 +20,20 @@ object FmASIO: TFmASIO
     155)
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDrivername: TLabel
     Left = 7
     Top = 12
-    Width = 31
+    Width = 39
     Height = 13
     Caption = 'Driver:'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
   end
-  object Lb_Copyright: TLabel
+  object LbCopyright: TLabel
     Left = 87
     Top = 134
     Width = 310
@@ -36,7 +42,6 @@ object FmASIO: TFmASIO
     Caption = 
       '(C)opyright in 2004-2008 by  Christian Budde and Tobias Fleische' +
       'r'
-    ExplicitTop = 154
   end
   object LbVolume: TLabel
     Left = 8
@@ -45,7 +50,6 @@ object FmASIO: TFmASIO
     Height = 13
     Anchors = [akLeft, akBottom]
     Caption = 'Volume: 1,00 equals 0 dB'
-    ExplicitTop = 64
   end
   object LbPanorama: TLabel
     Left = 8
@@ -54,19 +58,18 @@ object FmASIO: TFmASIO
     Height = 13
     Anchors = [akLeft, akBottom]
     Caption = 'Panorama: C'
-    ExplicitTop = 104
   end
   object DriverCombo: TComboBox
-    Left = 64
+    Left = 52
     Top = 7
-    Width = 273
+    Width = 285
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
-  object Bt_Play: TButton
+  object BtStartStop: TButton
     Left = 343
     Top = 7
     Width = 121
@@ -75,7 +78,7 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 1
-    OnClick = Bt_PlayClick
+    OnClick = BtStartStopClick
   end
   object SbVolume: TScrollBar
     Left = 8
@@ -101,14 +104,13 @@ object FmASIO: TFmASIO
     OnChange = SbPanChange
   end
   object ASIOHost: TASIOHost
-    CanDos = []
-    PreventClipping = pcDigital
-    ConvertOptimizations = [coSSE]
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
-    SampleRate = 44100.000000000000000000
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+    ConvertOptimizations = [coSSE]
+    PreventClipping = pcDigital
+    SampleRate = 44100.000000000000000000
+    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     Left = 300
     Top = 8

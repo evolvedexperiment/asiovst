@@ -82,12 +82,12 @@ end;
 
 procedure TFmSetup.CBInputChange(Sender: TObject);
 begin
- FmVSTEditor.ASIOHost.InputChannelOffset := CBInput.ItemIndex * 2;
+ FmVSTEditor.InputChannelOffset := CBInput.ItemIndex * 2;
 end;
 
 procedure TFmSetup.CBOutputChange(Sender: TObject);
 begin
- FmVSTEditor.ASIOHost.OutputChannelOffset := CBOutput.ItemIndex * 2;
+ FmVSTEditor.OutputChannelOffset := CBOutput.ItemIndex * 2;
 end;
 
 procedure TFmSetup.FormDestroy(Sender: TObject);
