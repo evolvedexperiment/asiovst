@@ -6,7 +6,6 @@ interface
 
 uses
   DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
-  DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics,
   DAV_DspFilterBasics;
 
 type
@@ -18,19 +17,18 @@ type
     FOutputGain : Single;
     FSampleRate : Single;
     function GetMix: Single;
-    procedure DryChanged;
-    procedure FlushBuffers;
-    procedure OutputGainChanged;
-    procedure RoomsizeChanged;
     procedure SetDamping(const Value: Single);
     procedure SetDry(const Value: Single);
     procedure SetMix(const Value: Single);
     procedure SetOutputGain(const Value: Single);
     procedure SetRoomSize(const Value: Single);
     procedure SetWet(const Value: Single);
-    procedure WetChanged;
     procedure SetSampleRate(const Value: Single);
-    procedure SampleRateChanged;
+    procedure CalculateDryFactor;
+    procedure CalculateWetFactor;
+    procedure CalculateDampingFactor;
+    procedure CalculateRoomsizeFactor;
+    procedure CalculateOutputFactor;
   protected
     FBuffers        : Array [0..3] of PDAVSingleFixedArray;
     FPos            : Integer;
@@ -42,7 +40,14 @@ type
     FWetFactor      : Single;
     FFlushedBuffers : Boolean;
     FHighShelf      : TBasicHighShelfFilter;
-    procedure DampingChanged;
+    procedure AllocateBuffers; virtual;
+    procedure DampingChanged; virtual;
+    procedure DryChanged; virtual;
+    procedure FlushBuffers; virtual;
+    procedure OutputGainChanged; virtual;
+    procedure RoomsizeChanged; virtual;
+    procedure SampleRateChanged; virtual;
+    procedure WetChanged; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -76,19 +81,18 @@ uses
 
 const
   CBufferSize = 1024;
-  CFeedBack = 0.8;
+  CFeedback = 0.8;
 
 { TCustomAmbience }
 
 constructor TCustomAmbience.Create;
 begin
  inherited;
- GetMem(FBuffers[0], CBufferSize * SizeOf(Single));
- GetMem(FBuffers[1], CBufferSize * SizeOf(Single));
- GetMem(FBuffers[2], CBufferSize * SizeOf(Single));
- GetMem(FBuffers[3], CBufferSize * SizeOf(Single));
+
+ AllocateBuffers;
 
  FHfDampState := 0.0;
+ FSampleRate  := 44100;
  FFlushedBuffers := FPos = 0;
 
  // initialize
@@ -98,14 +102,19 @@ begin
  FDry        := 0.1;
  FOutputGain := 0.5;
  FHighShelf  := TBasicHighShelfFilter.Create;
- FHighShelf.Frequency := 1900;
- FHighShelf.SampleRate := SampleRate;
- FHighShelf.Bandwidth := 2.8;
- FHighShelf.Gain := 12;
+ with FHighShelf do
+  begin
+   Frequency := 1900;
+   SampleRate := Self.SampleRate;
+   Bandwidth := 2.8;
+   Gain := 12;
+  end;
 
- RoomsizeChanged;
- DampingChanged;
- OutputGainChanged;
+ CalculateOutputFactor;
+ CalculateDryFactor;
+ CalculateWetFactor;
+ CalculateDampingFactor;
+ CalculateRoomsizeFactor;
 end;
 
 destructor TCustomAmbience.Destroy;
@@ -116,6 +125,14 @@ begin
  Dispose(FBuffers[2]);
  Dispose(FBuffers[3]);
  inherited;
+end;
+
+procedure TCustomAmbience.AllocateBuffers;
+begin
+ GetMem(FBuffers[0], CBufferSize * SizeOf(Single));
+ GetMem(FBuffers[1], CBufferSize * SizeOf(Single));
+ GetMem(FBuffers[2], CBufferSize * SizeOf(Single));
+ GetMem(FBuffers[3], CBufferSize * SizeOf(Single));
 end;
 
 function TCustomAmbience.GetMix: Single;
@@ -171,9 +188,14 @@ end;
 
 procedure TCustomAmbience.OutputGainChanged;
 begin
+ CalculateOutputFactor;
+ CalculateDryFactor;
+ CalculateWetFactor;
+end;
+
+procedure TCustomAmbience.CalculateOutputFactor;
+begin
  FOutputFactor := dB_to_Amp(FOutputGain);
- DryChanged;
- WetChanged;
 end;
 
 procedure TCustomAmbience.SetRoomSize(const Value: Single);
@@ -201,8 +223,13 @@ end;
 
 procedure TCustomAmbience.RoomsizeChanged;
 begin
- FRoomsizeFactor := 0.025 + 0.2665 * FRoomSize;
+ CalculateRoomsizeFactor;
  FlushBuffers;
+end;
+
+procedure TCustomAmbience.CalculateRoomsizeFactor;
+begin
+ FRoomsizeFactor := 0.025 + 0.2665 * FRoomSize;
 end;
 
 procedure TCustomAmbience.FlushBuffers;
@@ -224,15 +251,30 @@ end;
 
 procedure TCustomAmbience.DryChanged;
 begin
+ CalculateDryFactor;
+end;
+
+procedure TCustomAmbience.CalculateDryFactor;
+begin
  FDryFactor := FOutputFactor - sqr(FDry) * FOutputFactor;
 end;
 
 procedure TCustomAmbience.WetChanged;
 begin
+ CalculateWetFactor;
+end;
+
+procedure TCustomAmbience.CalculateWetFactor;
+begin
  FWetFactor := 0.8 * FWet * FOutputFactor;
 end;
 
 procedure TCustomAmbience.DampingChanged;
+begin
+ CalculateDampingFactor; 
+end;
+
+procedure TCustomAmbience.CalculateDampingFactor;
 begin
  FDampFactor := 0.05 + 0.01 * FDamping;
 end;
@@ -265,26 +307,26 @@ begin
 
  // decorrelation allpass delay filters
  t := FBuffers[0]^[FPos];
- r := r - CFeedBack * t;
- FBuffers[0]^[FPos + round(107 * FRoomsize) and 1023] := r; // Allpass
+ r := r - CFeedback * t;
+ FBuffers[0]^[(FPos + round(107 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
 
  t := FBuffers[1]^[FPos];
- r := r - CFeedBack * t;
- FBuffers[1]^[FPos + round(142 * FRoomsize) and 1023] := r; // Allpass
+ r := r - CFeedback * t;
+ FBuffers[1]^[(FPos + round(142 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
 
  t := FBuffers[2]^[FPos];
- r := r - CFeedBack * t;
- FBuffers[2]^[FPos + round(277 * FRoomsize) and 1023] := r; // Allpass
+ r := r - CFeedback * t;
+ FBuffers[2]^[(FPos + round(277 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
- result := FDry * Input + r - FHfDampState; // Left Output
+ Result := FDry * Input + r - FHfDampState; // Left Output
 
  t := FBuffers[3]^[FPos];
- r := r - CFeedBack * t;
- FBuffers[3]^[FPos + round(379 * FRoomsize) and 1023] := r; // Allpass
+ r := r - CFeedback * t;
+ FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
- result := FDry * Input + r - FHfDampState; // Right Output
+ result := CHalf32 * (result + (FDry * Input + r - FHfDampState)); // Right Output
 
  // advance position
  FPos := (FPos + 1) and 1023;
@@ -294,8 +336,6 @@ procedure TCustomAmbience.Process(var Left, Right: Single);
 var
   r : Double;
   t : Double;
-  i : Integer;
-  d : Array [0..3] of Integer;
 begin
  // apply HF damping
  FHfDampState := FHfDampState + FDampFactor * (FWet * FHighShelf.ProcessSample(Left + Right) - FHfDampState);  // HF damping
@@ -318,23 +358,23 @@ begin
 
  // decorrelation allpass delay filters
  t := FBuffers[0]^[FPos];
- r := r - CFeedBack * t;
+ r := r - CFeedback * t;
  FBuffers[0]^[(FPos + round(107 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
 
  t := FBuffers[1]^[FPos];
- r := r - CFeedBack * t;
+ r := r - CFeedback * t;
  FBuffers[1]^[(FPos + round(142 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
 
  t := FBuffers[2]^[FPos];
- r := r - CFeedBack * t;
+ r := r - CFeedback * t;
  FBuffers[2]^[(FPos + round(277 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
  Left := FDry * Left + r - FHfDampState; // Left Output
 
  t := FBuffers[3]^[FPos];
- r := r - CFeedBack * t;
+ r := r - CFeedback * t;
  FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
  Right := FDry * Right + r - FHfDampState; // Right Output

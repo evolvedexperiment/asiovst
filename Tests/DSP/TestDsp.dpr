@@ -23,6 +23,8 @@ uses
   DAV_DspBesselFilter in '..\..\Source\DSP\DAV_DspBesselFilter.pas',
   DAV_DspChorus in '..\..\Source\DSP\DAV_DspChorus.pas',
   DAV_DspConvolution in '..\..\Source\DSP\DAV_DspConvolution.pas',
+  DAV_DspCrosstalkCancellation in '..\..\Source\DSP\DAV_DspCrosstalkCancellation.pas',
+  DAV_DspCrosstalkSimulator in '..\..\Source\DSP\DAV_DspCrosstalkSimulator.pas',
   DAV_DspDelayLines in '..\..\Source\DSP\DAV_DspDelayLines.pas',
   DAV_DspDitherNoiseShaper in '..\..\Source\DSP\DAV_DspDitherNoiseShaper.pas',
   DAV_DspDynamics in '..\..\Source\DSP\DAV_DspDynamics.pas',
@@ -36,6 +38,8 @@ uses
   TestDAV_DspBesselFilter in 'TestDAV_DspBesselFilter.pas',
   TestDAV_DspChorus in 'TestDAV_DspChorus.pas',
   TestDAV_DspConvolution in 'TestDAV_DspConvolution.pas',
+  TestDAV_DspCrosstalkCancellation in 'TestDAV_DspCrosstalkCancellation.pas',
+  TestDAV_DspCrosstalkSimulator in 'TestDAV_DspCrosstalkSimulator.pas',
   TestDAV_DspDelayLines in 'TestDAV_DspDelayLines.pas',
   TestDAV_DspDitherNoiseShaper in 'TestDAV_DspDitherNoiseShaper.pas',
   TestDAV_DspDynamics in 'TestDAV_DspDynamics.pas',
@@ -45,10 +49,10 @@ uses
   TestDAV_DspFilterChebyshev in 'TestDAV_DspFilterChebyshev.pas',
   TestDAV_DspFilterLinearPhaseCrossover in 'TestDAV_DspFilterLinearPhaseCrossover.pas',
   TestDAV_DspFilterLinkwitzRiley in 'TestDAV_DspFilterLinkwitzRiley.pas',
-  TestDAV_DspCrosstalkCancellation in 'TestDAV_DspCrosstalkCancellation.pas',
-  DAV_DspCrosstalkCancellation in '..\..\Source\DSP\DAV_DspCrosstalkCancellation.pas',
-  TestDAV_DspCrosstalkSimulator in 'TestDAV_DspCrosstalkSimulator.pas',
-  DAV_DspCrosstalkSimulator in '..\..\Source\DSP\DAV_DspCrosstalkSimulator.pas';
+  TestDAV_DspAmbience in 'TestDAV_DspAmbience.pas',
+  DAV_DspAmbience in '..\..\Source\DSP\DAV_DspAmbience.pas',
+  TestDAV_DspBarberpoleTuner in 'TestDAV_DspBarberpoleTuner.pas',
+  DAV_DspBarberpoleTuner in '..\..\Source\DSP\DAV_DspBarberpoleTuner.pas';
 
 {$R *.RES}
 

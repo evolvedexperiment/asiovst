@@ -18,9 +18,9 @@ uses
 
 type
   // Test methods for class TDitherNoiseShaper
-  TestTDitherNoiseShaper = class(TTestCase)
+  TestTDitherNoiseShaper32 = class(TTestCase)
   strict private
-    FDitherNoiseShaper: TDitherNoiseShaper;
+    FDitherNoiseShaper: TDitherNoiseShaper32;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -33,59 +33,119 @@ type
 implementation
 
 uses
-  SysUtils;
+  Math, SysUtils;
 
-procedure TestTDitherNoiseShaper.SetUp;
+procedure TestTDitherNoiseShaper32.SetUp;
 begin
- FDitherNoiseShaper := TDitherNoiseShaper.Create;
+ FDitherNoiseShaper := TDitherNoiseShaper32.Create;
 end;
 
-procedure TestTDitherNoiseShaper.TearDown;
+procedure TestTDitherNoiseShaper32.TearDown;
 begin
  FreeAndNil(FDitherNoiseShaper);
 end;
 
-procedure TestTDitherNoiseShaper.TestProcessInteger;
+procedure TestTDitherNoiseShaper32.TestProcessInteger;
 var
-  ReturnValue : Integer;
   Input       : Double;
 begin
  with FDitherNoiseShaper do
   begin
-   BitDepth    := 8;
-   Input       := 1 / (2 shl BitDepth - 1);
-   DitherType  := dtor2Sc;
-   ReturnValue := ProcessInteger(Input);
+   BitDepth        := 8;
+   Input           := 1 / (2 shl BitDepth - 1);
+   DitherType      := dtNone;
+   DitherAmplitude := 0;
+   NoiseshaperType := nsNone;
+   Limit           := False;
 
-   // Validate method results
-   CheckTrue(ReturnValue <> (2 shl BitDepth - 1));
+   // test zero input
+   CheckTrue(ProcessInteger(0) = 0, 'No dither, no noiseshaper and no input (0) but still a result <> 0!');
+
+   DitherType      := dtTriangular;
+   DitherAmplitude := 1;
+   NoiseshaperType := ns9Fc;
+
+   // process impulse
+   ProcessInteger(1 shl 15);
+
+   // check any processing
+   CheckTrue(ProcessInteger(0) <> 0, 'Neither dither or noiseshaper does work!');
+
+   CheckTrue(ProcessInteger(Input) <> Input);
   end;
 end;
 
-procedure TestTDitherNoiseShaper.TestProcessFloat;
+procedure TestTDitherNoiseShaper32.TestProcessFloat;
 var
-  ReturnValue : Double;
   Input       : Double;
+  Sample      : Integer;
+const
+  CSampleFrames = 1000;
 begin
  with FDitherNoiseShaper do
   begin
-   BitDepth    := 8;
-   Input       := 1 / (2 shl BitDepth - 1);
-   DitherType  := dtor2Sc;
-   ReturnValue := ProcessFloat(Input);
+   BitDepth        := 8;
+   Input           := 1 / (2 shl BitDepth - 1);
+   DitherType      := dtNone;
+   DitherAmplitude := 0;
+   NoiseshaperType := nsNone;
+   Limit           := False;
 
-   // Validate method results
-   CheckTrue(Input <> ReturnValue);
+   // test zero input
+   CheckTrue(ProcessFloat(0) = 0, 'No dither, no noiseshaper and no input (0) but still a result <> 0!');
+
+   DitherType      := dtTriangular;
+   DitherAmplitude := 1;
+   NoiseshaperType := ns9Fc;
+
+   // process impulse
+   ProcessFloat(1);
+
+   // check any processing
+   CheckTrue(ProcessFloat(0) <> 0, 'Neither dither or noiseshaper does work!');
+
+   // check limit stability
+   Limit := True;
+
+   // process very loud random noise (will clip for sure!)
+   for Sample := 0 to CSampleFrames do ProcessFloat(100 * random);
+
+   CheckFalse(IsNan(ProcessFloat(100 * random)), 'Return value is not a number');
+
+   CheckTrue(ProcessInteger(Input) <> Input);
   end;
 end;
 
-procedure TestTDitherNoiseShaper.TestReset;
+procedure TestTDitherNoiseShaper32.TestReset;
+var
+  Sample      : Integer;
+const
+  CSampleFrames = 1000;
 begin
+ // Initialize chorus
+ with FDitherNoiseShaper do
+  begin
+   BitDepth        := 31;
+   DitherAmplitude := 0;
+   DitherType      := dtNone;
+   Limit           := False;
+   NoiseshaperType := nsEFB;
+  end;
+
+ // Test chorus process series
+ for Sample := 0 to CSampleFrames
+  do FDitherNoiseShaper.ProcessFloat(Random);
+
+ // reset quque
  FDitherNoiseShaper.Reset;
+
+ // check whether process call of 0 results in anything else then 0
+ CheckEquals(0, FDitherNoiseShaper.ProcessFloat(0), 'Reset was not successful!');
 end;
 
 initialization
   // Alle Testfälle beim Test-Runner registrieren
-  RegisterTest(TestTDitherNoiseShaper.Suite);
+  RegisterTest(TestTDitherNoiseShaper32.Suite);
+  
 end.
 

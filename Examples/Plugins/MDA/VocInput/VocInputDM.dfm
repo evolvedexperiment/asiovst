@@ -93,12 +93,13 @@ object VocInputDataModule: TVocInputDataModule
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
-  Left = 188
-  Top = 77
+  Left = 726
+  Top = 89
   Height = 150
   Width = 215
 end

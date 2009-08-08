@@ -81,7 +81,7 @@ begin
  // Validate method results
  CheckTrue(ReturnValue <> 0);
 
- // Test chorus process series
+ // Test barberpole flanger process series is stable
  for Sample := 0 to CSampleFrames do
   begin
    ReturnValue := FDspBarberpole32.Process(0);

@@ -2,14 +2,15 @@
 library mdaVocInput;
 
 uses
-  FastMM4, // either download the library or comment if there is an error here
-  FastMove, // either download the library or comment if there is an error here
-  madExcept, // either download madExcept or remove mad* if there is an error here
+  FastMM4,
+  FastMove,
+  madExcept,
   madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  VocInputDM in 'VocInputDM.pas' {VocInputDataModule: TVSTModule};
+  VocInputDM in 'VocInputDM.pas' {VocInputDataModule: TVSTModule},
+  DAV_DspVoiceInput in '..\..\..\..\Source\DSP\DAV_DspVoiceInput.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
