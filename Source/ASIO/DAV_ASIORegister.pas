@@ -12,7 +12,7 @@ implementation
 
 uses
   {$IFDEF FPC} LResources, {$ENDIF} Classes,
-  {$IFDEF DELPHI7_UP} PropertyCategories, DesignIntf,{$ENDIF}
+  {$IFDEF DELPHI7_UP} DesignIntf, {$ENDIF}
   DAV_ASIOHOST, DAV_ASIOGenerator;
 
 procedure Register;
@@ -29,7 +29,6 @@ begin
      'BufferPreferredSize', 'BufferSize']);
  RegisterPropertiesInCategory('Input', TCustomASIOHostBasic,
     ['InputChannelCount', 'InputChannelInfo', 'InputLatency', 'InputMeter']);
-
  {$ENDIF}
 end;
 

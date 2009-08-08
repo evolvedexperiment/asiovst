@@ -6,7 +6,6 @@ object TransientDataModule: TTransientDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Transient Processor'
@@ -25,6 +24,8 @@ object TransientDataModule: TTransientDataModule
       DisplayName = 'Attack'
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
+      Min = -100.000000000000000000
+      MinInteger = -100
       ShortLabel = 'Attack'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -38,6 +39,8 @@ object TransientDataModule: TTransientDataModule
       DisplayName = 'Release'
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
+      Min = -100.000000000000000000
+      MinInteger = -100
       ShortLabel = 'Release'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -66,13 +69,16 @@ object TransientDataModule: TTransientDataModule
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter'
       LargeStepFloat = 2.000000000000000000
-      Max = 1.000000000000000000
+      Max = 100.000000000000000000
+      Min = -100.000000000000000000
+      MinInteger = -100
       ShortLabel = 'Filter'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
-      Units = 'Lo <> Hi'
+      Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterFilterChange
+      OnCustomParameterDisplay = ParameterFilterDisplay
     end
     item
       Curve = ctLinear
@@ -100,7 +106,9 @@ object TransientDataModule: TTransientDataModule
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChangeHold
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   Left = 188

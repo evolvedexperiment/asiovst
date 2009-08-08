@@ -2,26 +2,29 @@
 library mdaTransient;
 
 uses
-  Forms,
+  FastMM4,
+  FastMove,
+  madExcept,
+  madLinkDisAsm,
+  DAV_WinAmp,
   DAV_VSTEffect,
-  DAV_VSTModule,
-  TransientDM in 'TransientDM.pas' {TransientDataModule: TVSTModule};
+  DAV_VSTBasicModule,
+  TransientDM in 'TransientDM.pas' {TransientDataModule: TVSTModule},
+  DAV_DspTransientProcessor in '..\..\..\..\Source\DSP\DAV_DspTransientProcessor.pas';
 
-function main(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- try
-  with TTransientDataModule.Create(Application) do
-   begin
-    AudioMaster := AudioMasterCallback;
-    Result := Effect;
-   end;
- except
-  Result := nil;
- end;
+ Result := VstModuleMain(AudioMasterCallback, TTransientDataModule);
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
+begin
+ Result := WinampDSPModuleHeader(TTransientDataModule);
+end;
+
+exports VstPluginMain name 'main';
+exports VstPluginMain name 'VSTPluginMain';
+exports WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.
