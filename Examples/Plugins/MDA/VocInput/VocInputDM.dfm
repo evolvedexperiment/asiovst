@@ -6,7 +6,6 @@ object VocInputDataModule: TVocInputDataModule
   ProductName = 'DAV mda'
   VendorName = 'Delphi ASIO & VST Project / mda'
   PlugCategory = vpcEffect
-  CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgram = 0
   CurrentProgramName = 'Vocoder Carrier Signal'
@@ -31,6 +30,7 @@ object VocInputDataModule: TVocInputDataModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterTrackingChange
       OnCustomParameterDisplay = ParameterTrackingDisplay
     end
     item
@@ -43,6 +43,8 @@ object VocInputDataModule: TVocInputDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterPitchChange
+      OnCustomParameterDisplay = ParameterPitchDisplay
     end
     item
       Curve = ctLinear
@@ -55,6 +57,7 @@ object VocInputDataModule: TVocInputDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterBreathChange
     end
     item
       Curve = ctLinear
@@ -67,27 +70,32 @@ object VocInputDataModule: TVocInputDataModule
       StepFloat = 1.000000000000000000
       Units = '%'
       VSTModule = Owner
+      OnParameterChange = ParameterVoicedUnvoicedDetectorChange
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Max Freq'
+      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 93.000000000000000000
       MaxInteger = 93
       Min = 45.000000000000000000
       MinInteger = 45
+      ReportVST2Properties = True
       ShortLabel = 'MaxFreq'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
+      OnParameterChange = ParameterMaxFrequencyChange
       OnCustomParameterDisplay = ParameterMaxFrequencyDisplay
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
-  OnResume = VSTModuleResume
+  OnSampleRateChange = VSTModuleSampleRateChange
   OnSuspend = VSTModuleSuspend
   Left = 188
   Top = 77

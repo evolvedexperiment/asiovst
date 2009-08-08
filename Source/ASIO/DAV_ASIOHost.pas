@@ -1820,87 +1820,87 @@ procedure TCustomASIOHost.CreateFloatBuffers;
 var
   Channel : Integer;
 begin
- assert(FBufferSize > 0);
- case FConvertMethod of
-  cm32 :
-   begin
-    // input buffers
-    SetLength(FSingleInBuffer, FInputChannelCount);
-    for Channel := 0 to Length(FSingleInBuffer) - 1 do
-     begin
-      ReallocMem(FSingleInBuffer[Channel], FBufferSize * SizeOf(Single));
-      FillChar(FSingleInBuffer[Channel, 0], FBufferSize * SizeOf(Single), 0);
-     end;
+ if FBufferSize > 0 then
+  case FConvertMethod of
+   cm32 :
+    begin
+     // input buffers
+     SetLength(FSingleInBuffer, FInputChannelCount);
+     for Channel := 0 to Length(FSingleInBuffer) - 1 do
+      begin
+       ReallocMem(FSingleInBuffer[Channel], FBufferSize * SizeOf(Single));
+       FillChar(FSingleInBuffer[Channel, 0], FBufferSize * SizeOf(Single), 0);
+      end;
 
-    // output buffers
-    SetLength(FSingleOutBuffer, FOutputChannelCount);
-    for Channel := 0 to Length(FSingleOutBuffer) - 1 do
-     begin
-      ReallocMem(FSingleOutBuffer[Channel], FBufferSize * SizeOf(Single));
-      FillChar(FSingleOutBuffer[Channel, 0], FBufferSize * SizeOf(Single), 0);
-     end;
+     // output buffers
+     SetLength(FSingleOutBuffer, FOutputChannelCount);
+     for Channel := 0 to Length(FSingleOutBuffer) - 1 do
+      begin
+       ReallocMem(FSingleOutBuffer[Channel], FBufferSize * SizeOf(Single));
+       FillChar(FSingleOutBuffer[Channel, 0], FBufferSize * SizeOf(Single), 0);
+      end;
 
-    // dispose unused input buffers
-    for Channel := 0 to Length(FDoubleInBuffer) - 1
-     do Dispose(FDoubleInBuffer[Channel]);
-    SetLength(FDoubleInBuffer, 0);
+     // dispose unused input buffers
+     for Channel := 0 to Length(FDoubleInBuffer) - 1
+      do Dispose(FDoubleInBuffer[Channel]);
+     SetLength(FDoubleInBuffer, 0);
 
-    // dispose unused output buffers
-    for Channel := 0 to Length(FDoubleOutBuffer) - 1
-     do Dispose(FDoubleOutBuffer[Channel]);
-    SetLength(FDoubleOutBuffer, 0);
-   end;
-  cm64 :
-   begin
-    // input buffers
-    SetLength(FDoubleInBuffer, FInputChannelCount);
-    for Channel := 0 to FInputChannelCount - 1 do
-     begin
-      ReallocMem(FDoubleInBuffer[Channel], FBufferSize * SizeOf(Double));
-      FillChar(FDoubleInBuffer[Channel, 0], FBufferSize * SizeOf(Double), 0);
-     end;
+     // dispose unused output buffers
+     for Channel := 0 to Length(FDoubleOutBuffer) - 1
+      do Dispose(FDoubleOutBuffer[Channel]);
+     SetLength(FDoubleOutBuffer, 0);
+    end;
+   cm64 :
+    begin
+     // input buffers
+     SetLength(FDoubleInBuffer, FInputChannelCount);
+     for Channel := 0 to FInputChannelCount - 1 do
+      begin
+       ReallocMem(FDoubleInBuffer[Channel], FBufferSize * SizeOf(Double));
+       FillChar(FDoubleInBuffer[Channel, 0], FBufferSize * SizeOf(Double), 0);
+      end;
 
-    // output buffers
-    SetLength(FDoubleOutBuffer, FOutputChannelCount);
-    for Channel := 0 to FOutputChannelCount - 1 do
-     begin
-      ReallocMem(FDoubleOutBuffer[Channel], FBufferSize * SizeOf(Double));
-      FillChar(FDoubleOutBuffer[Channel, 0], FBufferSize * SizeOf(Double), 0);
-     end;
+     // output buffers
+     SetLength(FDoubleOutBuffer, FOutputChannelCount);
+     for Channel := 0 to FOutputChannelCount - 1 do
+      begin
+       ReallocMem(FDoubleOutBuffer[Channel], FBufferSize * SizeOf(Double));
+       FillChar(FDoubleOutBuffer[Channel, 0], FBufferSize * SizeOf(Double), 0);
+      end;
 
-    // dispose unused input buffers
-    for Channel := 0 to Length(FSingleInBuffer) - 1
-     do Dispose(FSingleInBuffer[Channel]);
-    SetLength(FSingleInBuffer, 0);
+     // dispose unused input buffers
+     for Channel := 0 to Length(FSingleInBuffer) - 1
+      do Dispose(FSingleInBuffer[Channel]);
+     SetLength(FSingleInBuffer, 0);
 
-    // dispose unused output buffers
-    for Channel := 0 to Length(FSingleOutBuffer) - 1
-     do Dispose(FSingleOutBuffer[Channel]);
-    SetLength(FSingleOutBuffer, 0);
-   end;
-  cmNone :
-   begin
-    // dispose unused single input buffers
-    for Channel := 0 to Length(FSingleInBuffer) - 1
-     do Dispose(FSingleInBuffer[Channel]);
-    SetLength(FSingleInBuffer, 0);
+     // dispose unused output buffers
+     for Channel := 0 to Length(FSingleOutBuffer) - 1
+      do Dispose(FSingleOutBuffer[Channel]);
+     SetLength(FSingleOutBuffer, 0);
+    end;
+   cmNone :
+    begin
+     // dispose unused single input buffers
+     for Channel := 0 to Length(FSingleInBuffer) - 1
+      do Dispose(FSingleInBuffer[Channel]);
+     SetLength(FSingleInBuffer, 0);
 
-    // dispose unused double input buffers
-    for Channel := 0 to Length(FDoubleInBuffer) - 1
-     do Dispose(FDoubleInBuffer[Channel]);
-    SetLength(FDoubleInBuffer, 0);
+     // dispose unused double input buffers
+     for Channel := 0 to Length(FDoubleInBuffer) - 1
+      do Dispose(FDoubleInBuffer[Channel]);
+     SetLength(FDoubleInBuffer, 0);
 
-    // dispose unused single output buffers
-    for Channel := 0 to Length(FSingleOutBuffer) - 1
-     do Dispose(FSingleOutBuffer[Channel]);
-    SetLength(FSingleOutBuffer, 0);
+     // dispose unused single output buffers
+     for Channel := 0 to Length(FSingleOutBuffer) - 1
+      do Dispose(FSingleOutBuffer[Channel]);
+     SetLength(FSingleOutBuffer, 0);
 
-    // dispose unused double output buffers
-    for Channel := 0 to Length(FDoubleOutBuffer) - 1
-     do Dispose(FDoubleOutBuffer[Channel]);
-    SetLength(FDoubleOutBuffer, 0);
-   end;
- end;
+     // dispose unused double output buffers
+     for Channel := 0 to Length(FDoubleOutBuffer) - 1
+      do Dispose(FDoubleOutBuffer[Channel]);
+     SetLength(FDoubleOutBuffer, 0);
+    end;
+  end;
 end;
 
 {$IFDEF ASIOMixer}
