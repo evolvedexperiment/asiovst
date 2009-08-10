@@ -16,13 +16,16 @@ type
     LbBandwidth: TLabel;
     LbDelay: TLabel;
     LbDrive: TLabel;
+    LbDry: TLabel;
     LbFeedback: TLabel;
     LbFilterType: TLabel;
     LbFreqShift: TLabel;
     LbFrequency: TLabel;
     LbGain: TLabel;
     LbLevel: TLabel;
+    LbMix: TLabel;
     LbPan: TLabel;
+    LbWet: TLabel;
     SbBalance: TScrollBar;
     SbDelay: TScrollBar;
     SbDrive: TScrollBar;
@@ -32,9 +35,10 @@ type
     SbFreqShift: TScrollBar;
     SbFrequency: TScrollBar;
     SbLevel: TScrollBar;
+    SbMix: TScrollBar;
     SbPan: TScrollBar;
-    TC: TTabControl;
     StatusBar: TStatusBar;
+    TC: TTabControl;
     procedure CbActiveClick(Sender: TObject);
     procedure CbInvertClick(Sender: TObject);
     procedure SbPanChange(Sender: TObject);
@@ -51,6 +55,7 @@ type
     procedure SbBalanceChange(Sender: TObject);
     procedure TCChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure SbMixChange(Sender: TObject);
   public
     procedure UpdateAll;
     procedure UpdateActive;
@@ -67,6 +72,7 @@ type
     procedure UpdateShiftFrequency;
     procedure UpdateDrive;
     procedure UpdateBalance;
+    procedure UpdateMix;
   end;
 
 implementation
@@ -74,7 +80,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PartyDelayDM;
+  Math, PartyDelayDM;
 
 procedure TFmPartyDelay.FormShow(Sender: TObject);
 begin
@@ -105,8 +111,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 1;
-   if Parameter[ParamNo] <> SbPan.Position
-    then Parameter[ParamNo] := SbPan.Position;
+   if Parameter[ParamNo] <> 0.1 * SbPan.Position
+    then Parameter[ParamNo] := 0.1 * SbPan.Position;
   end;
 end;
 
@@ -117,8 +123,17 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 2;
-   if Parameter[ParamNo] <> SbLevel.Position
-    then Parameter[ParamNo] := SbLevel.Position;
+   if Parameter[ParamNo] <> 0.1 * SbLevel.Position
+    then Parameter[ParamNo] := 0.1 * SbLevel.Position;
+  end;
+end;
+
+procedure TFmPartyDelay.SbMixChange(Sender: TObject);
+begin
+ with TPartyDelayDataModule(Owner) do
+  begin
+   if Parameter[60] <> 0.1 * SbMix.Position
+    then Parameter[60] := 0.1 * SbMix.Position;
   end;
 end;
 
@@ -141,8 +156,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 4;
-   if Parameter[ParamNo] <> SbDelay.Position
-    then Parameter[ParamNo] := SbDelay.Position;
+   if Parameter[ParamNo] <> ScaleLinearToLog(SbDelay.Position * 0.0001, 1, 2000)
+    then Parameter[ParamNo] := ScaleLinearToLog(SbDelay.Position * 0.0001, 1, 2000);
   end;
 end;
 
@@ -178,7 +193,7 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 7;
-   FreqLin := FreqLogToLinear(0.0001 * SbFrequency.Position);
+   FreqLin := FreqLinearToLog(0.0001 * SbFrequency.Position);
    if Parameter[ParamNo] <> FreqLin
     then Parameter[ParamNo] := FreqLin;
   end;
@@ -203,8 +218,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 9;
-   if Parameter[ParamNo] <> 0.1 * SbFilterBW.Position
-    then Parameter[ParamNo] := 0.1 * SbFilterBW.Position;
+   if Parameter[ParamNo] <> ScaleLinearToLog(SbFilterBW.Position * 0.0001, 0.1, 10)
+    then Parameter[ParamNo] := ScaleLinearToLog(SbFilterBW.Position * 0.0001, 0.1, 10);
   end;
 end;
 
@@ -227,8 +242,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 11;
-   if Parameter[ParamNo] <> 0.1 * SbFreqShift.Position
-    then Parameter[ParamNo] := 0.1 * SbFreqShift.Position;
+   if Parameter[ParamNo] <> ScaleLinearToLog(SbFreqShift.Position * 0.0001, 0.001, 100)
+    then Parameter[ParamNo] := ScaleLinearToLog(SbFreqShift.Position * 0.0001, 0.001, 100);
   end;
 end;
 
@@ -330,8 +345,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 4;
-   if SbDelay.Position <> round(10 * Parameter[ParamNo])
-    then SbDelay.Position := round(10 * Parameter[ParamNo]);
+   if SbDelay.Position <> round(10000 * ScaleLogToLinear(Parameter[ParamNo], 1, 2000))
+    then SbDelay.Position := round(10000 * ScaleLogToLinear(Parameter[ParamNo], 1, 2000));
   end;
 end;
 
@@ -367,7 +382,7 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 7;
-   FreqLog := round(10000 * FreqLinearToLog(Parameter[ParamNo]));
+   FreqLog := round(10000 * FreqLogToLinear(Parameter[ParamNo]));
    if SbFrequency.Position <> FreqLog
     then SbFrequency.Position := FreqLog;
   end;
@@ -392,8 +407,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 9;
-   if SbFilterBW.Position <> round(10 * Parameter[ParamNo])
-    then SbFilterBW.Position := round(10 * Parameter[ParamNo]);
+   if SbFilterBW.Position <> round(10000 * ScaleLogToLinear(Parameter[ParamNo], 0.1, 10))
+    then SbFilterBW.Position := round(10000 * ScaleLogToLinear(Parameter[ParamNo], 0.1, 10));
   end;
 end;
 
@@ -416,8 +431,8 @@ begin
  with TPartyDelayDataModule(Owner) do
   begin
    ParamNo := TC.TabIndex * ParametersPerBand + 11;
-   if SbFreqShift.Position <> round(10 * Parameter[ParamNo])
-    then SbFreqShift.Position := round(10 * Parameter[ParamNo]);
+   if SbFreqShift.Position <> round(10000 * ScaleLogToLinear(Parameter[ParamNo], 0.001, 100))
+    then SbFreqShift.Position := round(10000 * ScaleLogToLinear(Parameter[ParamNo], 0.001, 100));
   end;
 end;
 
@@ -442,6 +457,15 @@ begin
    ParamNo := TC.TabIndex * ParametersPerBand + 14;
    if SbBalance.Position <> round(10 * Parameter[ParamNo])
     then SbBalance.Position := round(10 * Parameter[ParamNo]);
+  end;
+end;
+
+procedure TFmPartyDelay.UpdateMix;
+begin
+ with TPartyDelayDataModule(Owner) do
+  begin
+   if SbMix.Position <> round(10 * Parameter[60])
+    then SbMix.Position := round(10 * Parameter[60]);
   end;
 end;
 

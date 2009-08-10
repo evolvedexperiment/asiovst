@@ -2,17 +2,27 @@ object PartyDelayDataModule: TPartyDelayDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Party Delay'
   ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Pr-D'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'PARTY'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -213,7 +223,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500000000000
+      CurveFactor = 99999.992187500010000000
       Category = 'Band 1'
       DisplayName = 'Shift Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -480,7 +490,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500000000000
+      CurveFactor = 99999.992187500010000000
       Category = 'Band 2'
       DisplayName = 'Shift Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -747,7 +757,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500000000000
+      CurveFactor = 99999.992187500010000000
       Category = 'Band 3'
       DisplayName = 'Shift Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -1014,7 +1024,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500000000000
+      CurveFactor = 99999.992187500010000000
       Category = 'Band 4'
       DisplayName = 'Shift Frequency'
       Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
@@ -1081,6 +1091,21 @@ object PartyDelayDataModule: TPartyDelayDataModule
       Units = '%'
       VSTModule = Owner
       OnParameterChange = ParameterBalanceChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Mix'
+      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Mix'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = '%'
+      VSTModule = Owner
+      OnParameterChange = ParameterMixChange
     end>
   ParameterCategories = <
     item
@@ -1102,6 +1127,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
+  OnParameterChange = VSTModuleParameterChange
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange

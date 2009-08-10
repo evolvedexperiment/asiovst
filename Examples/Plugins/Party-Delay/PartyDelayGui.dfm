@@ -3,7 +3,7 @@ object FmPartyDelay: TFmPartyDelay
   Top = 236
   BorderStyle = bsNone
   Caption = 'Party Delay'
-  ClientHeight = 331
+  ClientHeight = 358
   ClientWidth = 222
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,12 +16,33 @@ object FmPartyDelay: TFmPartyDelay
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object LbMix: TLabel
+    Left = 8
+    Top = 6
+    Width = 20
+    Height = 13
+    Caption = 'Mix:'
+  end
+  object LbDry: TLabel
+    Left = 39
+    Top = 6
+    Width = 17
+    Height = 13
+    Caption = 'Dry'
+  end
+  object LbWet: TLabel
+    Left = 194
+    Top = 6
+    Width = 20
+    Height = 13
+    Caption = 'Wet'
+  end
   object TC: TTabControl
     Left = 0
-    Top = 0
+    Top = 27
     Width = 222
     Height = 312
-    Align = alClient
+    Align = alBottom
     TabOrder = 0
     Tabs.Strings = (
       'Band 1'
@@ -102,8 +123,10 @@ object FmPartyDelay: TFmPartyDelay
       DialImageIndex = -1
       LineColor = clBtnHighlight
       LineWidth = 2
-      Max = 100.000000000000000000
+      Max = 1.000000000000000000
       OnChange = DialFreqShiftChange
+      PointerAngles.Start = 180
+      PointerAngles.Resolution = 360.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
       WheelStep = 1.000000000000000000
@@ -136,7 +159,8 @@ object FmPartyDelay: TFmPartyDelay
       Top = 29
       Width = 118
       Height = 16
-      Min = -100
+      Max = 1000
+      Min = -1000
       PageSize = 0
       TabOrder = 1
       OnChange = SbPanChange
@@ -268,9 +292,20 @@ object FmPartyDelay: TFmPartyDelay
   end
   object StatusBar: TStatusBar
     Left = 0
-    Top = 312
+    Top = 339
     Width = 222
     Height = 19
     Panels = <>
+    SimplePanel = True
+  end
+  object SbMix: TScrollBar
+    Left = 62
+    Top = 5
+    Width = 126
+    Height = 16
+    Max = 1000
+    PageSize = 0
+    TabOrder = 2
+    OnChange = SbMixChange
   end
 end

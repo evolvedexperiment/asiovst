@@ -34,6 +34,8 @@ type
     procedure ParameterShiftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
     FOnOff           : array [0..3] of Boolean;
@@ -46,12 +48,15 @@ type
     FFreqShift       : array [0..3] of TBodeFrequencyShifter32;
     FShiftOrder      : array [0..3] of Integer;
     FShiftFreq       : array [0..3] of Single;
+    FBalance         : array [0..3] of Single;
     FFSGain          : array [0..3, 0..2] of Single;
     FScale           : array [0..3, 0..1] of Single;
     FDrive           : array [0..3] of Single;
     FOutMix          : array [0..3, 0..1] of Single;
     FLastOutput      : array [0..3] of Single;
+    FDry, FWet       : Single;
     FParPrBand       : Integer;
+    procedure OutMixChanged(Band: Integer);
   protected
     procedure CalculateScale(Index: Integer);
   public
@@ -79,6 +84,8 @@ procedure TPartyDelayDataModule.VSTModuleOpen(Sender: TObject);
 var
   Band : Integer;
 begin
+ FDry := 0.707;
+ FWet := 0.707;
  FParPrBand := 15;
  for Band := 0 to Length(FDelayLine) - 1 do
   begin
@@ -156,6 +163,9 @@ begin
  Parameter[67] := 12;
  Parameter[68] := 0;
  Parameter[69] := 0;
+
+ // Mix
+ Parameter[70] := 50;
 end;
 
 procedure TPartyDelayDataModule.VSTModuleClose(Sender: TObject);
@@ -228,6 +238,21 @@ begin
   end;
 end;
 
+procedure TPartyDelayDataModule.ParameterMixChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FWet := 0.01 * Value;
+ FDry := sqrt(1 - FWet);
+ FWet := sqrt(FWet);
+ OutMixChanged(0);
+ OutMixChanged(1);
+ OutMixChanged(2);
+ OutMixChanged(3);
+
+ if EditorForm is TFmPartyDelay
+  then TFmPartyDelay(EditorForm).UpdateMix;
+end;
+
 procedure TPartyDelayDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
@@ -266,12 +291,22 @@ var
   Band  : Integer;
 begin
  Band := Index div ParametersPerBand;
- FOutMix[Band, 1] := 0.5 * (0.01 * Value + 1);
- FOutMix[Band, 0] := sqrt(1 - FOutMix[Band, 1]);
- FOutMix[Band, 1] := sqrt(FOutMix[Band, 1]);
+ if FBalance[Band] <> Value then
+  begin
+   FBalance[Band] := Value;
+   OutMixChanged(Band);
+  end;
 
  if EditorForm is TFmPartyDelay
   then TFmPartyDelay(EditorForm).UpdateBalance;
+end;
+
+
+procedure TPartyDelayDataModule.OutMixChanged(Band: Integer);
+begin
+ FOutMix[Band, 1] := 0.5 * (0.01 * FBalance[Band] + 1);
+ FOutMix[Band, 0] := FWet * sqrt(1 - FOutMix[Band, 1]);
+ FOutMix[Band, 1] := FWet * sqrt(FOutMix[Band, 1]);
 end;
 
 procedure TPartyDelayDataModule.ParameterBandwidthChange(
@@ -430,8 +465,11 @@ end;
 procedure TPartyDelayDataModule.ParameterDelayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FDelayLine[Index div ParametersPerBand])
-  then FDelayLine[Index div ParametersPerBand].Time := 0.001 * Value;
+ if assigned(FDelayLine[Index div ParametersPerBand]) then
+  begin
+   FDelayLine[Index div ParametersPerBand].Time := 0.001 * Value;
+   FDelayLine[Index div ParametersPerBand].Reset;
+  end;
 
  if EditorForm is TFmPartyDelay
   then TFmPartyDelay(EditorForm).UpdateDelay;
@@ -503,6 +541,17 @@ begin
    then FFilter[Band].Samplerate := SampleRate;
 end;
 
+procedure TPartyDelayDataModule.VSTModuleParameterChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
+begin
+ if assigned(EditorForm) then
+  with TFmPartyDelay(EditorForm) do
+   begin
+    StatusBar.SimpleText := ParameterProperties[Index].DisplayName + ': ' +
+      ParameterDisplay[Index] + ' ' + ParameterLabel[Index];
+   end;
+end;
+
 procedure TPartyDelayDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -518,6 +567,10 @@ begin
       // eventually filter last output
       FCriticalSection.Enter;
       try
+       FLastOutput[Band] := FScale[Band, 0] * Inputs[0, Sample] +
+         FScale[Band, 1] * Inputs[1, Sample] +
+         FFeedback[Band] * FLastOutput[Band];
+
        if assigned(FFilter[Band])
         then FLastOutput[Band] := FFilter[Band].ProcessSample(FLastOutput[Band]);
 
@@ -533,21 +586,20 @@ begin
        if FDrive[Band] > 0
         then FLastOutput[Band] := FastTanhContinousError4((1 + FDrive[Band]) * FLastOutput[Band]);
 
-       FLastOutput[Band] := FDelayLine[Band].ProcessSample(
-         FScale[Band, 0] * Inputs[0, Sample] +
-         FScale[Band, 1] * Inputs[1, Sample] +
-         FFeedback[Band] * FLastOutput[Band]);
+       FLastOutput[Band] := FDelayLine[Band].ProcessSample(FLastOutput[Band]);
       finally
        FCriticalSection.Leave;
       end;
      end
     else FLastOutput[Band] := 0; 
 
-   Outputs[0, Sample] := FOutMix[0, 0] * FLastOutput[0] +
+   Outputs[0, Sample] := FDry * Inputs[0, Sample] +
+     FOutMix[0, 0] * FLastOutput[0] +
      FOutMix[1, 0] * FLastOutput[1] +
      FOutMix[2, 0] * FLastOutput[2] +
      FOutMix[3, 0] * FLastOutput[3];
-   Outputs[1, Sample] := FOutMix[0, 1] * FLastOutput[0] +
+   Outputs[1, Sample] := FDry * Inputs[1, Sample] +
+     FOutMix[0, 1] * FLastOutput[0] +
      FOutMix[1, 1] * FLastOutput[1] +
      FOutMix[2, 1] * FLastOutput[2] +
      FOutMix[3, 1] * FLastOutput[3];
