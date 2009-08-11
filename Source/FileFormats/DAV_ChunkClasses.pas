@@ -549,7 +549,7 @@ begin
 
   // insert pad byte if necessary
   if cfPadSize in ChunkFlags
-   then Write(CZeroPad, CalculateZeroPad);
+   then Stream.Write(CZeroPad, CalculateZeroPad);
  except
   raise Exception.Create('Wrong Start Addess of Chunk: ' + ChunkName);
  end;

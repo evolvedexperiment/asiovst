@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_ChannelDataCoder;
+  Classes, SysUtils, DAV_Common, DAV_ChunkClasses, DAV_ChannelDataCoder;
 
 type
   TCodingEvent = procedure(Sender: TObject;
@@ -20,14 +20,16 @@ type
                     aeMuLaw = 7, aeALaw = 8, aeOther = 9);
   {$ENDIF}
 
-  TCustomAudioFile = class(TComponent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
+  TCustomAudioFile = class(TInterfacedPersistent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
-    FReadHeaderOnly : Boolean;
+    FStreamLocked : Boolean;
   protected
     FOnEncode     : TCodingEvent;
     FOnDecode     : TCodingEvent;
     FOnBeginRead  : TNotifyEvent;
     FOnBeginWrite : TNotifyEvent;
+    FStream       : TStream;
+    FBlockSize    : Integer;
     function GetChannels: Cardinal; virtual; abstract;
     function GetSampleFrames: Cardinal; virtual; abstract;
     function GetSampleRate: Double; virtual; abstract;
@@ -35,15 +37,27 @@ type
     procedure SetChannels(const Value: Cardinal); virtual; abstract;
     procedure SetSampleFrames(const Value: Cardinal); virtual; abstract;
     procedure SetSampleRate(const Value: Double); virtual; abstract;
+
+    procedure CheckHeader(const Stream: TStream); virtual; abstract;
+    procedure ParseStream(const Stream: TStream); virtual; abstract;
+
+    property StreamLocked: Boolean read FStreamLocked;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; overload; virtual;
+    constructor Create(const FileName: TFileName); overload; virtual;
+    constructor Create(const Stream: TStream); overload; virtual;
     destructor Destroy; override;
+
+    procedure Flush; virtual;
+
+    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); virtual;
+    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); virtual;
 
     procedure LoadFromFile(const FileName: TFileName); virtual;
     procedure SaveToFile(const FileName: TFileName); virtual;
 
-    procedure LoadFromStream(Stream: TStream); virtual; abstract;
-    procedure SaveToStream(Stream: TStream); virtual; abstract;
+    procedure LoadFromStream(Stream: TStream); virtual;
+    procedure SaveToStream(Stream: TStream); virtual;
 
     // file format identifier
     class function DefaultExtension: string; virtual; abstract;
@@ -52,7 +66,7 @@ type
     class function CanLoad(const FileName: TFileName): Boolean; overload; virtual;
     class function CanLoad(const Stream: TStream): Boolean; overload; virtual; abstract;
 
-    property ReadHeaderOnly: Boolean read FReadHeaderOnly write FReadHeaderOnly;
+    property BlockSize: Integer read FBlockSize write FBlockSize default 16384;
     property SampleRate: Double read GetSampleRate write SetSampleRate;
     property ChannelCount: Cardinal read GetChannels write SetChannels;
     property SampleFrames: Cardinal read GetSampleFrames write SetSampleFrames;
@@ -66,37 +80,73 @@ type
   TAudioFileClass = class of TCustomAudioFile;
 
 var
-  AudioFileFormats: array of TAudioFileClass;
+  GAudioFileFormats: array of TAudioFileClass;
 
 procedure RegisterFileFormat(AClass: TAudioFileClass);
+function ExtensionToFileFormat(Extension: string): TAudioFileClass;
+function FilenameToFileFormat(FileName: TFileName): TAudioFileClass;
 
 implementation
+
+resourcestring
+  RCStrFileAlreadyLoaded = 'File already loaded';
+  RCStrStreamInUse = 'Stream is already in use';
+  RCStrNoStreamAssigned = 'No stream assigned';
 
 procedure RegisterFileFormat(AClass: TAudioFileClass);
 var
   i : Integer;
 begin
  // check if file format is already registered
- for i := 0 to Length(AudioFileFormats) - 1 do
-  if AudioFileFormats[i] = AClass then exit;
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  if GAudioFileFormats[i] = AClass then exit;
 
  // add file format to list
- SetLength(AudioFileFormats, Length(AudioFileFormats) + 1);
- AudioFileFormats[Length(AudioFileFormats) - 1] := AClass;
+ SetLength(GAudioFileFormats, Length(GAudioFileFormats) + 1);
+ GAudioFileFormats[Length(GAudioFileFormats) - 1] := AClass;
+end;
+
+function ExtensionToFileFormat(Extension: string): TAudioFileClass;
+var
+  i : Integer;
+begin
+ result := nil;
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  if GAudioFileFormats[i].DefaultExtension = Extension
+   then result := GAudioFileFormats[i];
+end;
+
+function FilenameToFileFormat(FileName: TFileName): TAudioFileClass;
+var
+  i : Integer;
+begin
+ result := nil;
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  if GAudioFileFormats[i].CanLoad(FileName)
+   then result := GAudioFileFormats[i];
 end;
 
 { TCustomAudioFile }
 
-constructor TCustomAudioFile.Create(AOwner: TComponent);
+constructor TCustomAudioFile.Create;
 begin
- inherited;
- // yet empty
+ FBlockSize := 16384;
+ FStreamLocked := False;
 end;
 
-destructor TCustomAudioFile.Destroy;
+constructor TCustomAudioFile.Create(const FileName: TFileName);
 begin
- // yet empty
- inherited;
+ Create(TFileStream.Create(FileName, fmOpenRead));
+end;
+
+constructor TCustomAudioFile.Create(const Stream: TStream);
+begin
+ Create;
+ if CanLoad(Stream)
+  then LoadFromStream(Stream);
+
+ FStream := Stream;
+ FStreamLocked := True;
 end;
 
 class function TCustomAudioFile.CanLoad(const FileName: TFileName): Boolean;
@@ -111,6 +161,40 @@ begin
  end;
 end;
 
+destructor TCustomAudioFile.Destroy;
+begin
+ if FStreamLocked and assigned(FStream)
+  then FreeAndNil(FStream);
+ inherited;
+end;
+
+procedure TCustomAudioFile.Encode(Position: Cardinal; SampleFrames: Cardinal);
+begin
+ if not assigned(FStream)
+  then raise Exception.Create(RCStrNoStreamAssigned);
+
+ if Position + SampleFrames > Self.SampleFrames
+  then raise Exception.Create('Too many sampleframes!');
+
+end;
+
+procedure TCustomAudioFile.Decode(Position: Cardinal; SampleFrames: Cardinal);
+begin
+ if not assigned(FStream)
+  then raise Exception.Create(RCStrNoStreamAssigned);
+
+ if Position + SampleFrames > Self.SampleFrames
+  then raise Exception.Create('Too many sampleframes!');
+
+end;
+
+procedure TCustomAudioFile.Flush;
+begin
+ if assigned(FStream)
+  then SaveToStream(FStream);
+
+end;
+
 function TCustomAudioFile.GetTotalTime: Double;
 begin
  result := SampleFrames / SampleRate;
@@ -120,6 +204,9 @@ procedure TCustomAudioFile.LoadFromFile(const FileName: TFileName);
 var
   FileStream : TFileStream;
 begin
+ if FStreamLocked
+  then raise Exception.Create(RCStrFileAlreadyLoaded);
+
  FileStream := TFileStream.Create(FileName, fmOpenRead);
  with FileStream do
   try
@@ -127,6 +214,12 @@ begin
   finally
    FreeAndNil(FileStream);
   end;
+end;
+
+procedure TCustomAudioFile.LoadFromStream(Stream: TStream);
+begin
+ if FStreamLocked
+  then raise Exception.Create(RCStrFileAlreadyLoaded);
 end;
 
 procedure TCustomAudioFile.SaveToFile(const FileName: TFileName);
@@ -142,6 +235,12 @@ begin
   finally
    FreeAndNil(FileStream);
   end;
+end;
+
+procedure TCustomAudioFile.SaveToStream(Stream: TStream);
+begin
+ if FStream = Stream
+  then raise Exception.Create(RCStrStreamInUse);
 end;
 
 end.

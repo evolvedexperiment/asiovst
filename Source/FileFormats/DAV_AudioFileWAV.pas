@@ -76,7 +76,7 @@ type
   TCustomAudioFileWAV = class(TCustomAudioFile)
   private
     FChunkSize         : Cardinal;
-    FTotalNrOfSamples  : Cardinal;
+    FTotalSampleCount  : Cardinal;
     FFormatChunk       : TFormatChunk;
     FFactChunk         : TFactChunk;
     FBextChunk         : TBextChunk;
@@ -100,7 +100,15 @@ type
     function GetStartDate: string;
     function GetStartTime: string;
     function GetUserDef: string;
-    function GetVersion: Integer;
+    function GetCartVersion: Integer;
+    function GetBextVersion: Integer;
+    function GetBextDescription: string;
+    function GetOriginationDate: string;
+    function GetOriginationTime: string;
+    function GetOriginator: string;
+    function GetOriginatorRef: string;
+    function GetTimeRefHigh: Integer;
+    function GetTimeRefLow: Integer;
     procedure ReadAudioDataFromStream(const Stream: TStream);
     procedure WriteAudioDataToStream(const Stream: TStream);
     procedure ReadItaHeaderChunk(const Stream: TStream);
@@ -119,15 +127,22 @@ type
     procedure SetStartDate(const Value: string);
     procedure SetStartTime(const Value: string);
     procedure SetUserDef(const Value: string);
-    procedure SetVersion(const Value: Integer);
-    procedure CheckCreateCartChunk;
+    procedure SetBextVersion(const Value: Integer);
+    procedure SetCartVersion(const Value: Integer);
+    procedure SetBextDescription(const Value: string);
+    procedure SetOriginationDate(const Value: string);
+    procedure SetOriginationTime(const Value: string);
+    procedure SetOriginator(const Value: string);
+    procedure SetOriginatorRef(const Value: string);
+    procedure SetTimeRefHigh(const Value: Integer);
+    procedure SetTimeRefLow(const Value: Integer);
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
     function GetChannels: Cardinal; override;
     function GetSampleRate: Double; override;
     function GetSampleFrames: Cardinal; override;
-
+    
     procedure SetBitsPerSample(const Value: Byte); virtual;
     procedure SetEncoding(const Value: TAudioEncoding); virtual;
     procedure SetChannels(const Value: Cardinal); override;
@@ -135,8 +150,11 @@ type
     procedure SetSampleFrames(const Value: Cardinal); override;
 
     procedure CheckCartChunkEmpty; virtual;
-    procedure CheckHeader(const Stream: TStream); virtual;
-    procedure ParseChunkInformation(const Stream: TStream);
+    procedure CheckBextChunkEmpty; virtual;
+    procedure CheckCreateBextChunk; virtual;
+    procedure CheckCreateCartChunk; virtual;
+    procedure CheckHeader(const Stream: TStream); override;
+    procedure ParseStream(const Stream: TStream); override;
 
     function CreateDataCoder: TCustomChannelDataCoder;
     procedure ReadFactChunk(const Stream: TStream);
@@ -161,10 +179,16 @@ type
     procedure ReadPadChunk(const Stream: TStream);
     procedure ReadUnknownChunk(const Stream: TStream);
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
+
+    // load/save stream
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    // decode/encode
+    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); override;
+    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); override;
 
     // file format identifier
     class function DefaultExtension: string; override;
@@ -176,7 +200,8 @@ type
     property BytesPerSample: Integer read FBytesPerSample;
     property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
 
-    property Version: Integer read GetVersion write SetVersion;
+    // from CART chunk
+    property CartVersion: Integer read GetCartVersion write SetCartVersion;
     property Title: string read GetTitle write SetTitle;
     property Artist: string read GetArtist write SetArtist;
     property CutID: string read GetCutID write SetCutID;
@@ -192,6 +217,16 @@ type
     property ProducerAppVersion: string read GetProducerAppVersion write SetProducerAppVersion;
     property UserDef: string read GetUserDef write SetUserDef;
     property dbLevelReference: Integer read GetdbLevelReference write SetdbLevelReference;
+
+    // from BEXT chunk
+    property BextVersion: Integer read GetBextVersion write SetBextVersion;
+    property BextDescription: string read GetBextDescription write SetBextDescription;
+    property Originator: string read GetOriginator write SetOriginator;
+    property OriginatorRef: string read GetOriginatorRef write SetOriginatorRef;
+    property OriginationDate: string read GetOriginationDate write SetOriginationDate;
+    property OriginationTime: string read GetOriginationTime write SetOriginationTime;
+    property TimeRefLow: Integer read GetTimeRefLow write SetTimeRefLow;
+    property TimeRefHigh: Integer read GetTimeRefHigh write SetTimeRefHigh;
   end;
 
   TAudioFileWAV  = class(TCustomAudioFileWAV)
@@ -468,7 +503,7 @@ end;
 
 { TCustomAudioFileWAV }
 
-constructor TCustomAudioFileWAV.Create(AOwner: TComponent);
+constructor TCustomAudioFileWAV.Create;
 begin
  inherited;
  FAudioDataPosition := 0;
@@ -486,7 +521,7 @@ end;
 
 class function TCustomAudioFileWAV.DefaultExtension: string;
 begin
- result := 'WAV';
+ result := '.wav';
 end;
 
 class function TCustomAudioFileWAV.Description: string;
@@ -501,12 +536,17 @@ end;
 
 class function TCustomAudioFileWAV.CanLoad(const Stream: TStream): Boolean;
 var
-  ChunkName : TChunkName;
-  ChunkSize : Cardinal;
+  ChunkName   : TChunkName;
+  ChunkSize   : Cardinal;
+  OldPosition : Cardinal;
 begin
  result := False;
+
+ // store old position
+ OldPosition := Stream.Position;
+
  with Stream do
-  begin
+  try
    // check whether file is a resource interchange file format ('RIFF')
    Read(ChunkName, 4);
    if ChunkName <> 'RIFF' then exit;
@@ -518,8 +558,19 @@ begin
    // now specify the RIFF file to be a WAVE file
    Read(ChunkName, 4);
    if ChunkName <> 'WAVE' then exit;
+
+   Result := True;
+  finally
+   // restore old position
+   Position := OldPosition;
   end;
- result := True;
+end;
+
+function TCustomAudioFileWAV.GetBextDescription: string;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.Description
+  else result := '';
 end;
 
 function TCustomAudioFileWAV.GetCategory: string;
@@ -564,7 +615,7 @@ end;
 
 function TCustomAudioFileWAV.GetSampleFrames: Cardinal;
 begin
- result := FTotalNrOfSamples;
+ result := FTotalSampleCount;
 end;
 
 function TCustomAudioFileWAV.GetSampleRate: Double;
@@ -584,6 +635,20 @@ begin
  if assigned(FCartChunk)
   then result := FCartChunk.StartTime
   else result := '';
+end;
+
+function TCustomAudioFileWAV.GetTimeRefHigh: Integer;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.TimeRefHigh
+  else result := 0;
+end;
+
+function TCustomAudioFileWAV.GetTimeRefLow: Integer;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.TimeRefLow
+  else result := 0;
 end;
 
 function TCustomAudioFileWAV.GetTitle: string;
@@ -607,7 +672,14 @@ begin
   else result := '';
 end;
 
-function TCustomAudioFileWAV.GetVersion: Integer;
+function TCustomAudioFileWAV.GetBextVersion: Integer;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.Version
+  else result := 0;
+end;
+
+function TCustomAudioFileWAV.GetCartVersion: Integer;
 begin
  if assigned(FCartChunk)
   then result := FCartChunk.Version
@@ -642,6 +714,34 @@ function TCustomAudioFileWAV.GetEndTime: string;
 begin
  if assigned(FCartChunk)
   then result := FCartChunk.EndTime
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetOriginationDate: string;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.OriginationDate
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetOriginationTime: string;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.OriginationTime
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetOriginator: string;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.Originator
+  else result := '';
+end;
+
+function TCustomAudioFileWAV.GetOriginatorRef: string;
+begin
+ if assigned(FBextChunk)
+  then result := FBextChunk.OriginatorRef
   else result := '';
 end;
 
@@ -775,9 +875,40 @@ begin
   end;
 end;
 
+procedure TCustomAudioFileWAV.SetBextDescription(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.Description := Value;
+  end
+ else
+  begin
+   FBextChunk.Description := '';
+   CheckBextChunkEmpty;
+  end;
+end;
+
 procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
- // yet todo
+ case Value of
+   aeInteger : FFormatChunk.FormatTag := etPCM;
+     aeFloat : begin
+                FFormatChunk.FormatTag := etPCMFLOAT;
+                BitsPerSample := 32;
+               end;
+   aeMSADPCM : FFormatChunk.FormatTag := etMSADPCM;
+  aeDVIADPCM : FFormatChunk.FormatTag := etDVIADPCM;
+      aeALaw : begin
+                FFormatChunk.FormatTag := etALaw;
+                BitsPerSample := 8;
+               end;
+     aeMuLaw : begin
+                FFormatChunk.FormatTag := etMuLaw;
+                BitsPerSample := 8;
+               end;
+  else raise Exception.Create('Not yet implemented');
+ end;
 end;
 
 procedure TCustomAudioFileWAV.SetEndDate(const Value: string);
@@ -805,6 +936,62 @@ begin
   begin
    FCartChunk.EndTime := '';
    CheckCartChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetOriginationDate(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.OriginationDate := Value;
+  end
+ else
+  begin
+   FBextChunk.OriginationDate := '';
+   CheckBextChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetOriginationTime(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.OriginationTime := Value;
+  end
+ else
+  begin
+   FBextChunk.OriginationTime := '';
+   CheckBextChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetOriginator(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.Originator := Value;
+  end
+ else
+  begin
+   FBextChunk.Originator := '';
+   CheckBextChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetOriginatorRef(const Value: string);
+begin
+ if Value <> '' then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.OriginatorRef := Value;
+  end
+ else
+  begin
+   FBextChunk.OriginatorRef := '';
+   CheckBextChunkEmpty;
   end;
 end;
 
@@ -852,10 +1039,12 @@ end;
 
 procedure TCustomAudioFileWAV.SetSampleFrames(const Value: Cardinal);
 begin
- if FTotalNrOfSamples <> Value then
+ if FTotalSampleCount <> Value then
   begin
    inherited;
-   FTotalNrOfSamples := Value;
+   FTotalSampleCount := Value;
+   if assigned(FFactChunk)
+    then FFactChunk.SampleCount := FTotalSampleCount;
   end;
 end;
 
@@ -898,6 +1087,34 @@ begin
   end;
 end;
 
+procedure TCustomAudioFileWAV.SetTimeRefHigh(const Value: Integer);
+begin
+ if Value <> 0 then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.TimeRefHigh := Value;
+  end
+ else
+  begin
+   FBextChunk.TimeRefHigh := 0;
+   CheckBextChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetTimeRefLow(const Value: Integer);
+begin
+ if Value <> 0 then
+  begin
+   CheckCreateCartChunk;
+   FBextChunk.TimeRefLow := Value;
+  end
+ else
+  begin
+   FBextChunk.TimeRefLow := 0;
+   CheckBextChunkEmpty;
+  end;
+end;
+
 procedure TCustomAudioFileWAV.SetTitle(const Value: string);
 begin
  if Value <> '' then
@@ -926,7 +1143,21 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileWAV.SetVersion(const Value: Integer);
+procedure TCustomAudioFileWAV.SetBextVersion(const Value: Integer);
+begin
+ if Value <> 0 then
+  begin
+   CheckCreateBextChunk;
+   FBextChunk.Version := Value;
+  end
+ else
+  begin
+   FBextChunk.Version := 0;
+   CheckBextChunkEmpty;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.SetCartVersion(const Value: Integer);
 begin
  if Value <> 0 then
   begin
@@ -945,11 +1176,29 @@ begin
  // todo: not yet implemented!
 end;
 
+procedure TCustomAudioFileWAV.CheckBextChunkEmpty;
+begin
+ with FBextChunk do
+  if (Description = '') and (Originator = '') and (OriginatorRef = '') and
+    (OriginationDate = '') and (OriginationTime = '') and (TimeRefLow = 0) and
+    (TimeRefHigh = 0) and (Version = 0) then
+   begin
+    FreeAndNil(FBextChunk);
+   end;
+end;
+
 procedure TCustomAudioFileWAV.CheckCreateCartChunk;
 begin
  // eventually create cart chunk
  if not assigned(FCartChunk)
-  then FCartChunk := FCartChunk.Create;
+  then FCartChunk := TCartChunk.Create;
+end;
+
+procedure TCustomAudioFileWAV.CheckCreateBextChunk;
+begin
+ // eventually create bext chunk
+ if not assigned(FBextChunk)
+  then FBextChunk := TBextChunk.Create;
 end;
 
 procedure TCustomAudioFileWAV.CheckHeader(const Stream: TStream);
@@ -975,7 +1224,7 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileWAV.ParseChunkInformation(const Stream: TStream);
+procedure TCustomAudioFileWAV.ParseStream(const Stream: TStream);
 var
   ChunkName    : TChunkName;
   ChunkEnd     : Cardinal;
@@ -984,6 +1233,8 @@ begin
   begin
    // clear all chunks
    if assigned(FFactChunk) then FreeAndNil(FFactChunk);
+   if assigned(FCartChunk) then FreeAndNil(FCartChunk);
+   if assigned(FBextChunk) then FreeAndNil(FBextChunk);
 
    FFormatChunkFound := False;
 
@@ -1053,7 +1304,7 @@ begin
      LoadFromStream(Stream);
 
      // now only use the sample count information
-     FTotalNrOfSamples := SampleCount;
+     FTotalSampleCount := SampleCount;
     end;
   end;
 end;
@@ -1074,7 +1325,10 @@ begin
 
      // eventually set total number of samples
      if not assigned(FFactChunk)
-      then FTotalNrOfSamples := DataSize div FFormatChunk.BlockAlign;
+      then FTotalSampleCount := DataSize div FFormatChunk.BlockAlign
+      else
+     if FFormatChunk.FormatTag <> etPcm
+      then FTotalSampleCount := FFactChunk.SampleCount;
 
      Position := Position + DataSize;
 
@@ -1118,10 +1372,7 @@ procedure TCustomAudioFileWAV.ReadBextChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   // eventually create cart chunk
-   if not assigned(FBextChunk)
-    then FBextChunk := TBextChunk.Create;
-
+   CheckCreateBextChunk;
    FBextChunk.LoadFromStream(Stream);
   end;
 end;
@@ -1130,10 +1381,7 @@ procedure TCustomAudioFileWAV.ReadCartChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   // eventually create cart chunk
-   if not assigned(FCartChunk)
-    then FCartChunk := TCartChunk.Create;
-
+   CheckCreateCartChunk;
    FCartChunk.LoadFromStream(Stream);
   end;
 end;
@@ -1284,7 +1532,7 @@ procedure TCustomAudioFileWAV.LoadFromStream(Stream: TStream);
 begin
  inherited;
  CheckHeader(Stream);
- ParseChunkInformation(Stream);
+ ParseStream(Stream);
  ReadAudioDataFromStream(Stream);
 end;
 
@@ -1315,20 +1563,28 @@ begin
    // write format chunk
    FFormatChunk.SaveToStream(Stream);
 
-   // if exists, write the fact chunk
-   if FFormatChunk.FormatTag <> etPCM then
-    with TFactChunk.Create do
-     try
-      SampleFrames := FTotalNrOfSamples;
-      SaveToStream(Stream);
-     finally
-      Free;
-     end;
+   // check whether a fact chunk is necessary
+   if (FFormatChunk.FormatTag <> etPCM) then
+    begin
+     // if no fact chunk has been found, create it
+     if not assigned(FFactChunk)
+      then FFactChunk := TFactChunk.Create;
 
+     // store total number of samples to fact
+     FFactChunk.SampleCount := FTotalSampleCount;
+     FFactChunk.SaveToStream(Stream);
+    end;
 
    // ToDo: write data here!
-
    WriteAudioDataToStream(Stream);
+
+   // write cart chunk if available
+   if assigned(FCartChunk)
+    then FCartChunk.SaveToStream(Stream);
+
+   // write bext chunk if available
+   if assigned(FBextChunk)
+    then FBextChunk.SaveToStream(Stream);
 
    // finally write filesize
    ChunkSize := Position - (ChunkStart + 8);
@@ -1365,9 +1621,89 @@ begin
  if assigned(result) then
   with result do
    begin
-    BlockSize := 16384;
+    BlockSize := Self.FBlockSize;
     ChannelCount := FFormatChunk.Channels;
    end;
+end;
+
+procedure TCustomAudioFileWAV.Decode(Position, SampleFrames: Cardinal);
+var
+  DataDecoder : TCustomChannelDataCoder;
+  Samples     : Cardinal;
+begin
+ inherited;
+
+ // check for no samples to load
+ if SampleFrames = 0 then Exit;
+
+ with FStream do
+  begin
+   assert(FAudioDataPosition > 0);
+   Position := FAudioDataPosition + Position;
+
+   DataDecoder := CreateDataCoder;
+   if not assigned(DataDecoder) then exit;
+
+   if assigned(FOnBeginRead)
+    then FOnBeginRead(Self);
+
+   try
+    Samples := 0;
+    while Samples + DataDecoder.SampleFrames < SampleFrames do
+     begin
+      DataDecoder.LoadFromStream(FStream);
+      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+
+      Samples := Samples + DataDecoder.SampleFrames;
+     end;
+
+     DataDecoder.SampleFrames := SampleFrames - Samples;
+     DataDecoder.LoadFromStream(FStream);
+     if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+   finally
+    FreeAndNil(DataDecoder);
+   end;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.Encode(Position, SampleFrames: Cardinal);
+var
+  DataEncoder : TCustomChannelDataCoder;
+  Samples     : Cardinal;
+begin
+ inherited;
+
+ // check for no samples to load
+ if SampleFrames = 0 then Exit;
+
+ with FStream do
+  begin
+   assert(FAudioDataPosition > 0);
+   Position := FAudioDataPosition + Position;
+
+   DataEncoder := CreateDataCoder;
+   if not assigned(DataEncoder) then exit;
+
+   if assigned(FOnBeginWrite)
+    then FOnBeginWrite(Self);
+
+   try
+    Samples := 0;
+    while Samples + DataEncoder.SampleFrames < SampleFrames do
+     begin
+      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      DataEncoder.SaveToStream(FStream);
+
+      Samples := Samples + DataEncoder.SampleFrames;
+     end;
+
+     DataEncoder.SampleFrames := SampleFrames - Samples;
+     if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+     DataEncoder.SaveToStream(FStream);
+   finally
+    FreeAndNil(DataEncoder);
+   end;
+  end;
 end;
 
 procedure TCustomAudioFileWAV.ReadAudioDataFromStream(const Stream: TStream);
@@ -1377,6 +1713,9 @@ var
   DataDecoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
 begin
+ // check for no samples to load
+ if SampleFrames = 0 then Exit;
+
  with Stream do
   begin
    assert(FAudioDataPosition > 0);
@@ -1396,7 +1735,7 @@ begin
    with DataDecoder do
     try
      Samples := 0;
-     while Samples + SampleFrames < Self.FTotalNrOfSamples do
+     while Samples + SampleFrames < Self.SampleFrames do
       begin
        LoadFromStream(Stream);
        if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
@@ -1404,7 +1743,7 @@ begin
        Samples := Samples + SampleFrames;
       end;
 
-      SampleFrames := Self.FTotalNrOfSamples - Samples;
+      SampleFrames := Self.SampleFrames - Samples;
       LoadFromStream(Stream);
       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
     finally
@@ -1422,54 +1761,55 @@ var
   DataEncoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
 begin
- // check if sample
- if SampleFrames > 0 then
-  with Stream do
-   begin
-    FAudioDataPosition := Position;
+ // check for no samples to load
+ if SampleFrames = 0 then Exit;
 
-    // write 'data' chunk name
-    ChunkName := 'data';
-    Write(ChunkName, 4);
+ with Stream do
+  begin
+   FAudioDataPosition := Position;
 
-    // write chunk size
-    ChunkSize := FFormatChunk.BlockAlign * SampleFrames;
-    Write(ChunkSize, 4);
+   // write 'data' chunk name
+   ChunkName := 'data';
+   Write(ChunkName, 4);
 
-    // calculate chunk end (to ensure the above value is correct)
-    ChunkEnd := Stream.Position + ChunkSize;
+   // write chunk size
+   ChunkSize := FFormatChunk.BlockAlign * SampleFrames;
+   Write(ChunkSize, 4);
 
-    DataEncoder := CreateDataCoder;
-    if not assigned(DataEncoder) then exit;
+   // calculate chunk end (to ensure the above value is correct)
+   ChunkEnd := Stream.Position + ChunkSize;
 
-    if assigned(FOnBeginWrite)
-     then FOnBeginWrite(Self);
+   DataEncoder := CreateDataCoder;
+   if not assigned(DataEncoder) then exit;
 
-    with DataEncoder do
-     try
-      Samples := 0;
-      while Samples + SampleFrames < Self.FTotalNrOfSamples do
-       begin
-        if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
-        SaveToStream(Stream);
+   if assigned(FOnBeginWrite)
+    then FOnBeginWrite(Self);
 
-        Samples := Samples + SampleFrames;
-       end;
-
-       SampleFrames := Self.FTotalNrOfSamples - Samples;
+   with DataEncoder do
+    try
+     Samples := 0;
+     while Samples + SampleFrames < SampleFrames do
+      begin
        if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
        SaveToStream(Stream);
-      finally
-      FreeAndNil(DataEncoder);
-     end;
 
-    assert(Position = ChunkEnd);
-    Position := ChunkEnd;
-   end;
+       Samples := Samples + SampleFrames;
+      end;
+
+      SampleFrames := Self.SampleFrames - Samples;
+      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      SaveToStream(Stream);
+    finally
+     FreeAndNil(DataEncoder);
+    end;
+
+   assert(Position = ChunkEnd);
+   Position := ChunkEnd;
+  end;
 end;
 
 initialization
-  RegisterFileFormat(TCustomAudioFileWAV);
+  RegisterFileFormat(TAudioFileWAV);
 //  RegisterWaveChunk(TQualityChunk);
 
 end.

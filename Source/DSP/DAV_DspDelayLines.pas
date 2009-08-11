@@ -269,7 +269,7 @@ end;
 
 procedure TDelayLineTime32.BufferSizeChanged;
 begin
- ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
+ ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
 end;
 
 function TDelayLineTime32.ProcessSample(const Input: Single): Single;
@@ -288,7 +288,7 @@ end;
 procedure TDelayLineTime32.Reset;
 begin
  inherited;
- FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
+ FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
 procedure TDelayLineTime32.CalculateBufferSize;

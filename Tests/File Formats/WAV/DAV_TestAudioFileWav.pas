@@ -19,13 +19,20 @@ type
   // Test methods for class TAudioFileWav
   TestAudioFileWav = class(TTestCase)
   strict private
-    FAudioFileWav: TAudioFileWav;
+    FAudioFileWav : TAudioFileWav;
+    FAudioData    : TDAVArrayOfSingleFixedArray;
+  protected
+    procedure EncodeSimpleHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure DecodeSimpleHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure EncodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestScanning;
     procedure TestBasicWriting;
+    procedure TestAdvancedWriting;
   end;
 
 implementation
@@ -33,9 +40,30 @@ implementation
 uses
   Dialogs;
 
+resourcestring
+  RCStrTestTitle = 'Test Title';
+  RCStrTestArtist = 'Test Artist';
+  RCStrTestCutID = 'Test Cut ID';
+  RCStrTestClientID = 'Test Client ID';
+  RCStrTestCategory = 'Test Category';
+  RCStrTestClassification = 'Test Classification';
+  RCStrTestOutCue = 'Test Out Cue';
+  RCStrTestStartDate = 'Test Start Date';
+  RCStrTestEndDate = 'Test End Date';
+  RCStrTestStartTime = 'Test Start Time';
+  RCStrTestEndTime = 'Test End Time';
+  RCStrTestProducerAppID = 'Test Producer App ID';
+  RCStrTestProducerApp = 'Test Producer App Version';
+  RCStrTestUserDef = 'Test User Def';
+  RCStrTestDescription = 'Test Description';
+  RCStrTestOriginator = 'Test Originator';
+  RCStrTestOriginatorRef = 'Test Originator Ref';
+  RCStrTestOriginationDate = 'Test Origination Date';
+  RCStrTestOriginationTime = 'Test Origination Time';
+
 procedure TestAudioFileWav.SetUp;
 begin
-  FAudioFileWav := TAudioFileWav.Create(nil);
+  FAudioFileWav := TAudioFileWav.Create;
 end;
 
 procedure TestAudioFileWav.TearDown;
@@ -73,15 +101,236 @@ begin
  TempStream := TMemoryStream.Create;
  with TempStream do
   try
-   FAudioFileWAV.Name := 'Test';
 (*
+   FAudioFileWAV.Name := 'Test';
    FAudioFileWAV.Author := 'That''s me';
    FAudioFileWAV.Copyright := 'That''s also me';
 *)
-   FAudioFileWAV.SampleFrames := 100;
-   FAudioFileWAV.SaveToStream(TempStream);
-   TempStream.Position := 0;
-   FAudioFileWAV.LoadFromStream(TempStream);
+   with FAudioFileWAV do
+    begin
+     SampleFrames := 100;
+
+     // CART Chunk
+     CartVersion := 1000;
+     Title := RCStrTestTitle;
+     Artist := RCStrTestArtist;
+     CutID := RCStrTestCutID;
+     ClientID := RCStrTestClientID;
+     Category := RCStrTestCategory;
+     Classification := RCStrTestClassification;
+     OutCue := RCStrTestOutCue;
+     StartDate := RCStrTestStartDate + ': ' + DateToStr(Now);
+     EndDate := RCStrTestEndDate + ': ' + DateToStr(Now);
+     StartTime := RCStrTestStartTime + ': ' + TimeToStr(Now);
+     EndTime := RCStrTestEndTime + ': ' + TimeToStr(Now);
+     ProducerAppID := RCStrTestProducerAppID;
+     ProducerAppVersion := RCStrTestProducerApp;
+     UserDef := RCStrTestUserDef;
+     dbLevelReference := 10;
+
+     // BEXT Chunk
+     BextVersion := 1000;
+     BextDescription := RCStrTestDescription;
+     Originator := RCStrTestOriginator;
+     OriginatorRef := RCStrTestOriginatorRef;
+     OriginationDate := DateToStr(Now);
+     OriginationTime := TimeToStr(Now);
+     TimeRefLow := 10;
+     TimeRefHigh := 20;
+
+     SaveToStream(TempStream);
+     TempStream.Position := 0;
+     LoadFromStream(TempStream);
+
+     // CART Chunk
+     CheckTrue(CartVersion = 1000, 'Wrong Version');
+     CheckTrue(Title = RCStrTestTitle, 'Expected: ' + RCStrTestTitle + ', but was: ' + Title);
+     CheckTrue(Artist = RCStrTestArtist, 'Expected: ' + RCStrTestArtist + ', but was: ' + Artist);
+     CheckTrue(CutID = RCStrTestCutID, 'Expected: ' + RCStrTestCutID + ', but was: ' + CutID);
+     CheckTrue(ClientID = RCStrTestClientID, 'Expected: ' + RCStrTestClientID + ', but was: ' + ClientID);
+     CheckTrue(Category = RCStrTestCategory, 'Expected: ' + RCStrTestCategory + ', but was: ' + Category);
+     CheckTrue(Classification = RCStrTestClassification, 'Expected: ' + RCStrTestClassification + ', but was: ' + Classification);
+     CheckTrue(OutCue = RCStrTestOutCue, 'Expected: ' + RCStrTestOutCue + ', but was: ' + OutCue);
+     CheckTrue(ProducerAppID = RCStrTestProducerAppID, 'Expected: ' + RCStrTestProducerAppID + ', but was: ' + ProducerAppID);
+     CheckTrue(ProducerAppVersion = RCStrTestProducerApp, 'Expected: ' + RCStrTestProducerApp + ', but was: ' + ProducerAppVersion);
+     CheckTrue(UserDef = RCStrTestUserDef, 'Expected: ' + RCStrTestUserDef + ', but was: ' + UserDef);
+     CheckTrue(dbLevelReference = 10, 'Expected: 10, but was: ' + IntToStr(dbLevelReference));
+
+     // BEXT Chunk
+     CheckTrue(BextVersion = 1000, 'Wrong Version');
+     CheckTrue(BextDescription = RCStrTestDescription, 'Expected: ' + RCStrTestDescription + ', but was: ' + BextDescription);
+     CheckTrue(Originator = RCStrTestOriginator, 'Expected: ' + RCStrTestOriginator + ', but was: ' + Originator);
+     CheckTrue(OriginatorRef = RCStrTestOriginatorRef, 'Expected: ' + RCStrTestOriginatorRef + ', but was: ' + OriginatorRef);
+     CheckTrue(TimeRefLow = 10, 'Expected: 10, but was: ' + IntToStr(TimeRefLow));
+     CheckTrue(TimeRefHigh = 20, 'Expected: 20, but was: ' + IntToStr(TimeRefHigh));
+
+    end;
+  finally
+   Free;
+  end;
+end;
+
+procedure TestAudioFileWav.DecodeSimpleHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  for Channel := 0 to ChannelCount - 1
+   do FillChar(ChannelPointer[Channel]^[0], SampleFrames * SizeOf(Single), 0);
+end;
+
+procedure TestAudioFileWav.DecodeHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  for Channel := 0 to ChannelCount - 1
+   do Move(ChannelPointer[Channel]^[0], FAudioData[Channel]^[Position],
+        SampleFrames * SizeOf(Single));
+ // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
+end;
+
+procedure TestAudioFileWav.EncodeSimpleHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  for Channel := 0 to ChannelCount - 1
+   do FillChar(ChannelPointer[Channel]^[0], SampleFrames * SizeOf(Single), 0);
+end;
+
+procedure TestAudioFileWav.EncodeHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel  : Cardinal;
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  for Channel := 0 to ChannelCount - 1
+   do Move(FAudioData[Channel]^[Position], ChannelPointer[Channel]^[0],
+        SampleFrames * SizeOf(Single));
+ // Position := Position + Coder.SampleFrames; // not necessary, incremented by caller!
+end;
+
+procedure TestAudioFileWav.TestAdvancedWriting;
+var
+  TempStream  : TMemoryStream;
+  TestEpsilon : Single;
+
+  procedure ChannelLoop;
+  var
+    TestChannel : Integer;
+    Channel     : Integer;
+    Sample      : Integer;
+  begin
+   for TestChannel := 1 to 8 do
+  with FAudioFileWAV do
+   begin
+    // setup wave file
+    SampleFrames := 100;
+    ChannelCount := TestChannel;
+
+    // store data
+    SetLength(FAudioData, ChannelCount);
+    for Channel := 0 to ChannelCount - 1 do
+     begin
+      GetMem(FAudioData[Channel], SampleFrames * SizeOf(Single));
+      for Sample := 0 to SampleFrames - 1
+       do FAudioData[Channel]^[Sample] := (Channel + 1) / ChannelCount;
+     end;
+
+    // reset stream and write to stream
+    TempStream.Clear;
+    SaveToStream(TempStream);
+(*
+    SaveToFile('Test WAVE - Channels ' + IntToStr(TestChannel) + ' ' +
+      'Bits ' + IntToStr(BitsPerSample) + '.wav');
+*)
+
+    // load from stream
+    TempStream.Position := 0;
+    LoadFromStream(TempStream);
+
+    // check data
+    for Channel := 0 to ChannelCount - 1 do
+     for Sample := 0 to SampleFrames - 1 do
+      begin
+       CheckTrue(abs(FAudioData[Channel]^[Sample] * ChannelCount - (Channel + 1)) < TestEpsilon * ChannelCount,
+         'Expected: ' + FloatToStr((Channel + 1) / ChannelCount) + ', ' +
+         'but was: ' + FloatToStr(FAudioData[Channel]^[Sample]) + ' ' +
+         '(Channel: ' + IntToStr(Channel) + ' Sample: ' + IntToStr(Sample) + ')');
+      end;
+   end;
+   end;
+
+begin
+ TempStream := TMemoryStream.Create;
+ with TempStream do
+  try
+   with FAudioFileWAV do
+    begin
+     // write 100 samples of zeroes and discard
+     SampleFrames := 100;
+     OnEncode := EncodeSimpleHandler;
+     OnDecode := DecodeSimpleHandler;
+     SaveToStream(TempStream);
+     TempStream.Position := 0;
+     LoadFromStream(TempStream);
+
+     OnEncode := EncodeHandler;
+     OnDecode := DecodeHandler;
+
+     // integer encoding
+     Encoding := aeInteger;
+     BitsPerSample := 8;
+     TestEpsilon := 5E-1;
+     ChannelLoop;
+
+     BitsPerSample := 16;
+     TestEpsilon := 5E-4;
+     ChannelLoop;
+
+     BitsPerSample := 20;
+     TestEpsilon := 1E-5;
+     ChannelLoop;
+
+     BitsPerSample := 24;
+     TestEpsilon := 5E-7;
+     ChannelLoop;
+
+     BitsPerSample := 32;
+     TestEpsilon := 5E-8;
+     ChannelLoop;
+
+     // float encoding
+     Encoding := aeFloat;
+     ChannelLoop;
+
+     BitsPerSample := 64;
+     TestEpsilon := 1E-7;
+     ChannelLoop;
+
+     BitsPerSample := 16;
+     TestEpsilon := 5E-3;
+     ChannelLoop;
+
+     // alaw encoding
+     Encoding := aeALaw;
+     TestEpsilon := 5E-2;
+     ChannelLoop;
+
+     // mulaw encoding
+     Encoding := aeMuLaw;
+     TestEpsilon := 5E-2;
+     ChannelLoop;
+
+    end;
   finally
    Free;
   end;
@@ -90,6 +339,6 @@ end;
 initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestAudioFileWav.Suite);
-  
+
 end.
 

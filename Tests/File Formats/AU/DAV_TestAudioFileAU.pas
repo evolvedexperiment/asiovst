@@ -35,7 +35,7 @@ uses
 
 procedure TestAudioFileAU.SetUp;
 begin
-  FAudioFileAU := TAudioFileAU.Create(nil);
+  FAudioFileAU := TAudioFileAU.Create;
 end;
 
 procedure TestAudioFileAU.TearDown;
@@ -73,7 +73,7 @@ begin
  TempStream := TMemoryStream.Create;
  with TempStream do
   try
-   FAudioFileAU.Name := 'Test';
+//   FAudioFileAU.Name := 'Test';
    FAudioFileAU.SampleFrames := 100;
    FAudioFileAU.SampleRate := 44100;
    FAudioFileAU.ChannelCount := 1;

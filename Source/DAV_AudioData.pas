@@ -1334,18 +1334,18 @@ var
   CurrentFormat : Integer;
   StreamStart   : Int64;
 begin
- if Length(AudioFileFormats) = 0
+ if Length(GAudioFileFormats) = 0
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
  StreamStart := Stream.Position;
 
  // search file format that can load the file
- for CurrentFormat := 0 to Length(AudioFileFormats) - 1 do
+ for CurrentFormat := 0 to Length(GAudioFileFormats) - 1 do
   begin
-   if AudioFileFormats[CurrentFormat].CanLoad(Stream) then
+   if GAudioFileFormats[CurrentFormat].CanLoad(Stream) then
     begin
      Stream.Position := StreamStart;
-     with AudioFileFormats[CurrentFormat].Create(Self) do
+     with GAudioFileFormats[CurrentFormat].Create do
       try
        OnDecode := DataDecoding;
        OnBeginReadAudioData := BeginReadAudioData;
@@ -1367,13 +1367,13 @@ procedure TCustomAudioDataCollection.SaveToStream(const Stream: TStream);
 var
   i : Integer;
 begin
- if Length(AudioFileFormats) = 0
+ if Length(GAudioFileFormats) = 0
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
- for i := 0 to Length(AudioFileFormats) - 1 do
+ for i := 0 to Length(GAudioFileFormats) - 1 do
   if True then
    begin
-    with AudioFileFormats[i].Create(Self) do
+    with GAudioFileFormats[i].Create do
      try
       SampleFrames  := Self.SampleFrames;
       ChannelCount  := Self.ChannelCount;
@@ -1390,14 +1390,14 @@ procedure TCustomAudioDataCollection.LoadFromFile(const FileName: TFileName);
 var
   i : Integer;
 begin
- if Length(AudioFileFormats) = 0
+ if Length(GAudioFileFormats) = 0
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
  // search file format that can load the file
- for i := 0 to Length(AudioFileFormats) - 1 do
-  if AudioFileFormats[i].CanLoad(FileName) then
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  if GAudioFileFormats[i].CanLoad(FileName) then
    begin
-    with AudioFileFormats[i].Create(Self) do
+    with GAudioFileFormats[i].Create do
      try
       OnDecode := DataDecoding;
       OnBeginReadAudioData := BeginReadAudioData;
@@ -1420,13 +1420,13 @@ procedure TCustomAudioDataCollection.SaveToFile(const FileName: TFileName);
 var
   i : Integer;
 begin
- if Length(AudioFileFormats) = 0
+ if Length(GAudioFileFormats) = 0
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
- for i := 0 to Length(AudioFileFormats) - 1 do
-  if UpperCase(ExtractFileExt(FileName)) = '.' + AudioFileFormats[i].DefaultExtension then
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  if UpperCase(ExtractFileExt(FileName)) = '.' + GAudioFileFormats[i].DefaultExtension then
    begin
-    with AudioFileFormats[i].Create(Self) do
+    with GAudioFileFormats[i].Create do
      try
       SampleFrames  := Self.SampleFrames;
       ChannelCount  := Self.ChannelCount;

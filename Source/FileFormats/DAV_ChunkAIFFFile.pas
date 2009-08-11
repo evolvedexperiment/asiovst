@@ -11,9 +11,9 @@ const
   AIFCVersion1 = $A2805140;
 
 type
-   TAIFFCompressionType = (ctNotAvailable, ctNone, ctFL32, ctFL64, ctACE2,
-                           ctACE8, ctMACE3, ctMACE6, ctALAW, ctULAW, ctG722,
-                           ctG726, ctG728, ctGSM, ctUnknown);
+  TAIFFCompressionType = (ctNotAvailable, ctNone, ctFL32, ctFL64, ctACE2,
+                          ctACE8, ctMACE3, ctMACE6, ctALAW, ctULAW, ctG722,
+                          ctG726, ctG728, ctGSM, ctUnknown);
 
   TAIFFDefinedChunk = class(TDefinedChunk)
   public
@@ -53,10 +53,10 @@ type
     procedure SetChannels(const Value: SmallInt);
     procedure SetSampleRate(const Value: Extended);
     procedure SetSampleSize(const Value: SmallInt);
-    procedure CalculateChunkSize;
     procedure SetCompressionType(const Value: TAIFFCompressionType);
   protected
     procedure AssignTo(Dest: TPersistent); override;
+    procedure CalculateChunkSize; virtual;
   public
     AIFFCommonRecord : TAIFFCommonRecord;
     constructor Create; override;
@@ -508,7 +508,7 @@ begin
    Read(CompString[1], CompStrLen);
 
    // eventually zero pad chunk
-   if CompStrLen mod 2 = 0 then Position := Position + 1;
+   if (CompStrLen mod 2) <> 0 then Position := Position + 1;
   end;
 end;
 
@@ -516,6 +516,7 @@ procedure TAIFFCommonChunk.SaveToStream(Stream: TStream);
 var
   FlippedAIFFCommonRecord : TAIFFCommonRecord;
   CompressionTypeID       : TChunkName;
+  CompressionNameLength   : Byte;
 begin
  CalculateChunkSize;
  inherited;
@@ -552,7 +553,12 @@ begin
       ctUnknown : raise Exception.Create('Not supported');
      end;
      Write(CompressionTypeID, SizeOf(TChunkName));
-     Write(FCompressionName, Length(FCompressionName));
+     CompressionNameLength := Length(FCompressionName);
+     Write(CompressionNameLength, SizeOf(CompressionNameLength));
+     Write(FCompressionName[1], Length(FCompressionName));
+
+     // eventually zero pad chunk
+     if (CompressionNameLength mod 2) <> 0 then Position := Position + 1;
     end;
   end;
 end;

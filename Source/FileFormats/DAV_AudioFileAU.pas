@@ -44,13 +44,20 @@ type
     procedure SetSampleFrames(const Value: Cardinal); override;
 
     function CreateDataCoder: TCustomChannelDataCoder;
-    procedure CheckHeader(Stream: TStream);
+    procedure CheckHeader(const Stream: TStream); override;
+    procedure ParseStream(const Stream: TStream); override;
     procedure ReadAudioDataFromStream(Stream: TStream);
     procedure WriteAudioDataToStream(const Stream: TStream);
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
+
+    // load/save stream
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    // decode/encode
+    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); override;
+    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); override;
 
     // file format identifier
     class function DefaultExtension: string; override;
@@ -82,26 +89,33 @@ type
 
 implementation
 
+resourcestring
+  RCStrNoMagicFound = 'Not a Sound file!';
+  RCStrDatasizeTooLarge = 'Datasize larger than the file!';
+
 { TCustomAudioFileAU }
 
 class function TCustomAudioFileAU.CanLoad(const Stream: TStream): Boolean;
 var
-  Magic: TChunkName;
+  Magic : TChunkName;
 begin
- result := False;
- with Stream do
-  begin
-   if Size < SizeOf(TAUHeader)
-    then exit;
+ Result := False;
 
+ if Stream.Size < SizeOf(TAUHeader)
+  then Exit;
+
+ with Stream do
+  try
    // Read Header
    Read(Magic, SizeOf(TChunkName));
    if Magic = '.snd'
-    then result := True;
+    then Result := True;
+  finally
+   Position := Position - 4;
   end;
 end;
 
-constructor TCustomAudioFileAU.Create(AOwner: TComponent);
+constructor TCustomAudioFileAU.Create;
 begin
  inherited;
  with FAUHeader do
@@ -117,7 +131,7 @@ end;
 
 class function TCustomAudioFileAU.DefaultExtension: string;
 begin
- result := 'au';
+ result := '.au';
 end;
 
 class function TCustomAudioFileAU.Description: string;
@@ -267,12 +281,12 @@ begin
    // Write Header
    with FlippedHeader do
     begin
+     FlipLong(Magic);
      FlipLong(Offset);
      FlipLong(DataSize);
      FlipLong(Encoding);
      FlipLong(SampleRate);
      FlipLong(Channels);
-     FlipLong(Magic);
     end;
    Write(FlippedHeader, SizeOf(TAUHeader));
 
@@ -280,7 +294,19 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAU.CheckHeader(Stream: TStream);
+procedure TCustomAudioFileAU.CheckHeader(const Stream: TStream);
+begin
+ with Stream do
+  begin
+   // Check Magic
+   Read(FAUHeader.Magic, SizeOf(FAUHeader.Magic));
+   Position := Position - SizeOf(FAUHeader.Magic);
+   if FAUHeader.Magic <> $2E736E64
+    then raise EAUError.Create(RCStrNoMagicFound);
+  end;
+end;
+
+procedure TCustomAudioFileAU.ParseStream(const Stream: TStream);
 begin
  with Stream do
   begin
@@ -295,13 +321,11 @@ begin
      FlipLong(Channels);
 
      // some checks
-     if Magic <> $646E732E
-      then raise EAUError.Create('Not a Sound file!');
      assert(SampleRate > 0);
      assert(Channels > 0);
 
      if (DataSize > Size - Position)
-      then raise EAUError.Create('Datasize larger than the file!');
+      then raise EAUError.Create(RCStrDatasizeTooLarge);
     end;
   end;
 end;
@@ -311,58 +335,53 @@ begin
  case FAUHeader.Encoding of
   auePCM8:
    begin
-    result := TChannel32DataCoderFixedPoint.Create;
-    result.BlockSize := 16384;
-    result.ChannelCount := FAUHeader.Channels;
-    with TChannel32DataCoderFixedPoint(result)
+    Result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(Result)
      do SetBitsAndSampleSize(8, 1);
    end;
   auePCM16:
    begin
-    result := TChannel32DataCoderFixedPoint.Create;
-    result.BlockSize := 16384;
-    result.ChannelCount := FAUHeader.Channels;
-    with TChannel32DataCoderFixedPoint(result)
+    Result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(Result)
      do SetBitsAndSampleSize(16, 2);
    end;
   auePCM24:
    begin
-    result := TChannel32DataCoderFixedPoint.Create;
-    result.BlockSize := 16384;
-    result.ChannelCount := FAUHeader.Channels;
-    with TChannel32DataCoderFixedPoint(result)
+    Result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(Result)
      do SetBitsAndSampleSize(24, 3);
    end;
   auePCM32:
    begin
-    result := TChannel32DataCoderFixedPoint.Create;
-    result.BlockSize := 16384;
-    result.ChannelCount := FAUHeader.Channels;
-    with TChannel32DataCoderFixedPoint(result)
+    Result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(Result)
      do SetBitsAndSampleSize(32, 4);
    end;
-  aueIEEE32:
-   begin
-    result := TChannel32DataCoderFloat32.Create;
-    result.BlockSize := 16384;
-   end;
-  aueIEEE64:
-   begin
-    result := TChannel32DataCoderFloat64.Create;
-    result.BlockSize := 16384;
-   end;
-  aueISDN:
-   begin
-    result := TChannel32DataCoderMuLaw.Create;
-    result.BlockSize := 16384;
-   end;
-  aueALaw:
-   begin
-    result := TChannel32DataCoderALaw.Create;
-    result.BlockSize := 16384;
-   end;
-  else result := nil;
+  aueIEEE32 : Result := TChannel32DataCoderFloat32.Create;
+  aueIEEE64 : Result := TChannel32DataCoderFloat64.Create;
+    aueISDN : Result := TChannel32DataCoderMuLaw.Create;
+    aueALaw : Result := TChannel32DataCoderALaw.Create;
+  else Result := nil;
  end;
+
+ if assigned(Result) then
+  with Result do
+   begin
+    BlockSize := Self.FBlockSize;
+    ChannelCount := FAUHeader.Channels;
+   end;
+end;
+
+procedure TCustomAudioFileAU.Decode(Position, SampleFrames: Cardinal);
+begin
+  inherited;
+
+end;
+
+procedure TCustomAudioFileAU.Encode(Position, SampleFrames: Cardinal);
+begin
+  inherited;
+
 end;
 
 procedure TCustomAudioFileAU.ReadAudioDataFromStream(Stream: TStream);

@@ -147,6 +147,11 @@ type
   function FreqLogToLinear(const Value: Single): Single; overload;
   function FreqLogToLinear(const Value: Double): Double; overload;
 
+  function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single; overload;
+  function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
+  function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
+  function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
+
 
   { Limit & Clip, Min & Max }
 
@@ -603,7 +608,7 @@ end;
 function FreqLinearToLog(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := (CTwenty32 * Exp(value * 6.907755279));
+ Result := CTwenty32 * Exp(value * 6.907755279);
 end;
 {$ELSE}
 const
@@ -629,7 +634,7 @@ end;
 function FreqLinearToLog(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- Result := (CTwenty64 * Exp(value * 6.907755279));
+ Result := CTwenty64 * Exp(value * 6.907755279);
 end;
 {$ELSE}
 const
@@ -687,6 +692,27 @@ asm
  fmul fltl2
 end;
 {$ENDIF}
+
+function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single;
+begin
+ result := Min * Exp(Value * ln(Max / Min));
+end;
+
+function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
+begin
+ result := Min * Exp(Value * ln(Max / Min));
+end;
+
+function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
+begin
+ Result := ln(Value / Min) / ln(Max / Min);
+end;
+
+function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
+begin
+ Result := ln(Value / Min - Max / Min);
+end;
+
 
 
 { Limit & Clip, Min & Max }

@@ -77,7 +77,7 @@ type
     FDitherType  : TDitherType;
     FBits        : Byte;
     FSampleSize  : Byte;
-    FScaleFactor : Array [0..1] of Single;
+    FScaleFactor : Array [0..1] of Double;
     FByteAlign   : TByteAlign;
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
     procedure CalculateScaleFactors; virtual;
@@ -449,12 +449,14 @@ begin
  case FByteAlign of
   baLeft:
    begin
-    FScaleFactor[0] := (1 shl (8 * ((FBits + 7) div 8) - 1)) - 1;
+    FScaleFactor[0] := 1 shl (8 * ((FBits + 7) div 8) - 1) - 1;
     FScaleFactor[1] := 1 / FScaleFactor[0];
    end;
   baRight:
    begin
-    FScaleFactor[0] := (1 shl (FBits - 1)) - 1;
+    if FBits = 32
+     then FScaleFactor[0] := MaxInt
+     else FScaleFactor[0] := (1 shl (FBits - 1)) - 1;
     FScaleFactor[1] := 1 / FScaleFactor[0];
    end;
   else assert(False);
@@ -714,8 +716,8 @@ begin
  assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
  assert(Length(FChannelArray) = Integer(FChannelCount));
  for Sample := 0 to FSampleFrames - 1 do
-  for Channel := 0 to FChannelCount
-   do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := EncodeALaw(127 + FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
+  for Channel := 0 to FChannelCount - 1
+   do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := EncodeALaw(FChannelArray[Channel]^[Sample]);
 end;
 
 function DecodeALaw(Input: Byte): Single; overload;
@@ -846,26 +848,21 @@ const
      7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
      7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7);
 
-function LinearToMuLawSample(Input: SmallInt): Byte;
+function LinearToMuLawSample(Input: Single): Byte;
 var
+  InputInt : SmallInt;
   Sign     : Integer;
   Exponent : Integer;
   Mantissa : Integer;
 begin
- Sign := (Input shr 8) and $80;
- if Sign <> 0 then Input := -Input;
- if Input > CClip then Input := cClip;
- Input := Input + cBias;
- Exponent := CMuLawCompressTable[(Input shr 7) and $FF];
- Mantissa := (Input shr (Exponent + 3)) and $0F;
- result := not (sign or (exponent shl 4) or mantissa);
-end;
-
-function EncodeMuLaw(Input: Single):Single;
-const
-  CS : Single = 0.18033688011112042591999058512524;
-begin
- Result := Sign(Input) * Ln(1 + 255 * abs(Input)) * CS
+ InputInt := round(Input * $7FFF);
+ Sign := (InputInt shr 8) and $80;
+ if Sign <> 0 then InputInt := -InputInt;
+ if InputInt > CClip then InputInt := cClip;
+ InputInt := InputInt + cBias;
+ Exponent := CMuLawCompressTable[(InputInt shr 7) and $FF];
+ Mantissa := (InputInt shr (Exponent + 3)) and $0F;
+ result := not (Sign or (Exponent shl 4) or Mantissa);
 end;
 
 procedure TChannel32DataCoderMuLaw.InterleaveData;
@@ -876,8 +873,8 @@ begin
  assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
  assert(Length(FChannelArray) = Integer(FChannelCount));
  for Sample := 0 to FSampleFrames - 1 do
-  for Channel := 0 to FChannelCount
-   do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(EncodeMuLaw(127 + FChannelArray[Channel]^[Sample] * FScaleFactor[0]));
+  for Channel := 0 to FChannelCount - 1
+   do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := LinearToMuLawSample(FChannelArray[Channel]^[Sample]);
 end;
 
 const
@@ -1638,7 +1635,7 @@ begin
  assert(Length(FChannelArray) = Integer(FChannelCount));
  case SampleSize of
   1: for Sample := 0 to FSampleFrames - 1 do
-      for Channel := 0 to FChannelCount
+      for Channel := 0 to FChannelCount - 1
        do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := 127 + round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
   2: for Sample := 0 to FSampleFrames - 1 do
       for Channel := 0 to FChannelCount
@@ -1650,7 +1647,7 @@ begin
         Move(DataInt, PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel], 3);
        end;
   4: for Sample := 0 to FSampleFrames - 1 do
-      for Channel := 0 to FChannelCount
+      for Channel := 0 to FChannelCount - 1
        do PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
  end;
 end;

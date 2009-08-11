@@ -65,26 +65,33 @@ type
     procedure SetSampleRate(const Value: Double); override;
     procedure SetSampleFrames(const Value: Cardinal); override;
     procedure ReadAndSkipSize(const Stream: TStream);
-    procedure CheckHeader(const Stream: TStream);
-    procedure ParseChunkInformation(const Stream: TStream);
+    procedure CheckHeader(const Stream: TStream); override;
+    procedure ParseStream(const Stream: TStream); override;
     procedure ReadAudioDataFromStream(const Stream: TStream);
     procedure WriteAudioDataToStream(const Stream: TStream);
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create; override;
     destructor Destroy; override;
+
+    // load/save stream
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
-    property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
-    property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
-    property AiffChunkScans: TAiffChunkScans read FAiffChunkScans write
-      FAiffChunkScans default [acsName, acsAuthor, acsCopyright, acsMarker,
-      acsComment, acsInstrument];
+
+    // decode/encode
+    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); override;
+    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); override;
 
     // file format identifier
     class function DefaultExtension: string; override;
     class function Description: string; override;
     class function FileFormatFilter: string; override;
     class function CanLoad(const Stream: TStream): Boolean; override;
+
+    property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
+    property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
+    property AiffChunkScans: TAiffChunkScans read FAiffChunkScans write
+      FAiffChunkScans default [acsName, acsAuthor, acsCopyright, acsMarker,
+      acsComment, acsInstrument];
 
     property Name: string read GetAIFFName write SetAIFFName;
     property Author: string read GetAuthor write SetAuthor;
@@ -130,7 +137,7 @@ resourcestring
 
 { TCustomAudioFileAIFF }
 
-constructor TCustomAudioFileAIFF.Create(AOwner: TComponent);
+constructor TCustomAudioFileAIFF.Create;
 begin
  inherited;
  FCommonChunk := TAIFFCommonChunk.Create;
@@ -154,7 +161,7 @@ end;
 
 class function TCustomAudioFileAIFF.DefaultExtension: string;
 begin
- result := 'AIFF';
+ result := '.aiff';
 end;
 
 class function TCustomAudioFileAIFF.Description: string;
@@ -169,12 +176,17 @@ end;
 
 class function TCustomAudioFileAIFF.CanLoad(const Stream: TStream): Boolean;
 var
-  ChunkName : TChunkName;
-  ChunkSize : Cardinal;
+  ChunkName   : TChunkName;
+  ChunkSize   : Cardinal;
+  OldPosition : Cardinal;
 begin
  result := False;
+
+ // store old position
+ OldPosition := Stream.Position;
+
  with Stream do
-  begin
+  try
    // check minimum file size
    if Size < 12 then exit;
 
@@ -191,9 +203,12 @@ begin
    // now specify the RIFF file to be a WAVE file
    Read(ChunkName, 4);
    if (ChunkName <> 'AIFF') and (ChunkName <> 'AIFC') then Exit;
-  end;
 
- result := True;
+   Result := True;
+  finally
+   // restore old position
+   Position := OldPosition;
+  end;
 end;
 
 function TCustomAudioFileAIFF.GetAuthor: string;
@@ -284,8 +299,28 @@ end;
 
 procedure TCustomAudioFileAIFF.SetEncoding(const Value: TAudioEncoding);
 begin
- if Value <> aeInteger
-  then raise EAIFFError.Create(RCStrIntegerEncodingOnly);
+ case Value of
+  aeInteger : begin
+               FIsCompressed := False;
+               FCommonChunk.Compression := ctNotAvailable;
+              end;
+    aeFloat : begin
+               FCommonChunk.Compression := ctFL32;
+               FCommonChunk.SampleSize := 32;
+               FIsCompressed := True;
+              end;
+    aeALaw : begin
+               FCommonChunk.Compression := ctALAW;
+               FCommonChunk.SampleSize := 8;
+               FIsCompressed := True;
+              end;
+   aeMuLaw : begin
+               FCommonChunk.Compression := ctULAW;
+               FCommonChunk.SampleSize := 8;
+               FIsCompressed := True;
+              end;
+  else raise EAIFFError.Create(RCStrIntegerEncodingOnly);
+ end;
 end;
 
 procedure TCustomAudioFileAIFF.SetAESChannelStatusData(const Value: string);
@@ -347,7 +382,7 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAIFF.ParseChunkInformation(const Stream: TStream);
+procedure TCustomAudioFileAIFF.ParseStream(const Stream: TStream);
 var
   ChunkName    : TChunkName;
   ChunkEnd     : Cardinal;
@@ -620,7 +655,7 @@ procedure TCustomAudioFileAIFF.LoadFromStream(Stream: TStream);
 begin
  inherited;
  CheckHeader(Stream);
- ParseChunkInformation(Stream);
+ ParseStream(Stream);
 end;
 
 procedure TCustomAudioFileAIFF.SaveToStream(Stream: TStream);
@@ -675,24 +710,103 @@ begin
  case FCommonChunk.Compression of
   ctNotAvailable, ctNone:
    begin
-    result := TChannel32DataCoderFixedPoint.Create;
-    result.BlockSize := 16384;
-    result.ChannelCount := FCommonChunk.Channels;
-    with TChannel32DataCoderFixedPoint(result), FCommonChunk
+    Result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(Result), FCommonChunk
      do SetBitsAndSampleSize(SampleSize, (SampleSize + 7) div 8);
    end;
-   ctFL32:
-    begin
-     result := TChannel32DataCoderFloat32.Create;
-     result.BlockSize := 16384;
-    end;
-   ctFL64:
-    begin
-     result := TChannel32DataCoderFloat64.Create;
-     result.BlockSize := 16384;
-    end;
-  else result := nil;  
+   ctFL32 : Result := TChannel32DataCoderFloat32.Create;
+   ctFL64 : Result := TChannel32DataCoderFloat64.Create;
+   ctALAW : Result := TChannel32DataCoderALaw.Create;
+   ctULAW : Result := TChannel32DataCoderMuLaw.Create;
+  else Result := nil;
  end;
+
+ if assigned(Result) then
+  with Result do
+   begin
+    BlockSize := Self.FBlockSize;
+    ChannelCount := FCommonChunk.Channels;
+   end;
+end;
+
+procedure TCustomAudioFileAIFF.Decode(Position, SampleFrames: Cardinal);
+var
+  DataDecoder : TCustomChannelDataCoder;
+  Samples     : Cardinal;
+begin
+ inherited;
+
+ // check for no samples to load
+ if SampleFrames = 0 then Exit;
+
+ with FStream do
+  begin
+   assert(FAudioDataPosition > 0);
+   Position := FAudioDataPosition + Position;
+
+   DataDecoder := CreateDataCoder;
+   if not assigned(DataDecoder) then exit;
+
+   if assigned(FOnBeginRead)
+    then FOnBeginRead(Self);
+
+   try
+    Samples := 0;
+    while Samples + DataDecoder.SampleFrames < SampleFrames do
+     begin
+      DataDecoder.LoadFromStream(FStream);
+      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+
+      Samples := Samples + DataDecoder.SampleFrames;
+     end;
+
+     DataDecoder.SampleFrames := SampleFrames - Samples;
+     DataDecoder.LoadFromStream(FStream);
+     if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+   finally
+    FreeAndNil(DataDecoder);
+   end;
+  end;
+end;
+
+procedure TCustomAudioFileAIFF.Encode(Position, SampleFrames: Cardinal);
+var
+  DataEncoder : TCustomChannelDataCoder;
+  Samples     : Cardinal;
+begin
+ inherited;
+
+ // check for no samples to load
+ if SampleFrames = 0 then Exit;
+
+ with FStream do
+  begin
+   assert(FAudioDataPosition > 0);
+   Position := FAudioDataPosition + Position;
+
+   DataEncoder := CreateDataCoder;
+   if not assigned(DataEncoder) then exit;
+
+   if assigned(FOnBeginWrite)
+    then FOnBeginWrite(Self);
+
+   try
+    Samples := 0;
+    while Samples + DataEncoder.SampleFrames < SampleFrames do
+     begin
+      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      DataEncoder.SaveToStream(FStream);
+
+      Samples := Samples + DataEncoder.SampleFrames;
+     end;
+
+     DataEncoder.SampleFrames := SampleFrames - Samples;
+     if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+     DataEncoder.SaveToStream(FStream);
+   finally
+    FreeAndNil(DataEncoder);
+   end;
+  end;
 end;
 
 procedure TCustomAudioFileAIFF.ReadAudioDataFromStream(const Stream: TStream);
@@ -761,14 +875,15 @@ begin
     Write(ChunkName, 4);
 
     ChunkSize := 8 + FCommonChunk.SampleFrames * FCommonChunk.Channels *
-      (FCommonChunk.SampleSize + 7) div 8;
+      ((FCommonChunk.SampleSize + 7) div 8);
+    FlipLong(ChunkSize);
     Write(ChunkSize, 4);
 
     Write(CZero, 4); // offset
     Write(CZero, 4); // block align
 
     with FCommonChunk
-     do ChunkEnd := Position + SampleFrames * (SampleSize div 8) * Channels;
+     do ChunkEnd := Position + SampleFrames * ((SampleSize + 7) div 8) * Channels;
 
     DataDecoder := CreateDataCoder;
     if not assigned(DataDecoder) then exit;
@@ -797,6 +912,6 @@ begin
 end;
 
 initialization
-  RegisterFileFormat(TCustomAudioFileAIFF);
+  RegisterFileFormat(TAudioFileAIFF);
 
 end.

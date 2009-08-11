@@ -20,7 +20,6 @@
       <Projects Name="Convolution.dll">Convolution Engine\Convolution.bdsproj</Projects>
       <Projects Name="CrosstalkCancellation.dll">Crosstalk Cancellation\CrosstalkCancellation.bdsproj</Projects>
       <Projects Name="Decimator.dll">Decimator\Decimator.bdsproj</Projects>
-      <Projects Name="DitherNoiseshaper.dll">DitherNoiseshaper\DitherNoiseshaper.bdsproj</Projects>
       <Projects Name="Exciter.dll">Chebyshev Exciter\Exciter.bdsproj</Projects>
       <Projects Name="fReeverb.dll">fReeverb\fReeverb.bdsproj</Projects>
       <Projects Name="GranularPitchshifter.dll">Granular Pitchshifter\GranularPitchshifter.bdsproj</Projects>
@@ -43,7 +42,7 @@
       <Projects Name="SubBoost.dll">SubBoost\SubBoost.bdsproj</Projects>
       <Projects Name="TwoBandDistortion.dll">2-Band Distortion\TwoBandDistortion.bdsproj</Projects>
       <Projects Name="VariableDelay.dll">Variable Delay\VariableDelay.bdsproj</Projects>
-      <Projects Name="Targets">AdvancedClipper.dll AmpSim.dll ASIOVST.dll BarberpoleFlanger.dll BassExtender.dll ChebyshevWaveshaper.dll ChunkDemo.dll ConvoFx.dll Convolution.dll CrosstalkCancellation.dll Decimator.dll DitherNoiseshaper.dll Exciter.dll fReeverb.dll HeadphoneMix.dll HRTF3D.dll GranularPitchshifter.dll MaxxBassClone.dll OpAmp.dll OversampledTanh.dll Phaser.dll PlateReverb.dll Quadropolis.dll RenaissanceBassClone.dll SimpleChorus.dll SimpleFlanger.dll SimpleSampleDelay.dll SimpleVibrato.dll SoundTouchPitchShifter.dll SpinBugLite.dll SplitHarmonizer.dll SubBoost.dll TwoBandDistortion.dll VariableDelay.dll</Projects>
+      <Projects Name="Targets">AdvancedClipper.dll AmpSim.dll ASIOVST.dll BarberpoleFlanger.dll BassExtender.dll ChebyshevWaveshaper.dll ChunkDemo.dll ConvoFx.dll Convolution.dll CrosstalkCancellation.dll Decimator.dll Exciter.dll fReeverb.dll HeadphoneMix.dll HRTF3D.dll GranularPitchshifter.dll MaxxBassClone.dll OpAmp.dll OversampledTanh.dll Phaser.dll PlateReverb.dll Quadropolis.dll RenaissanceBassClone.dll SimpleChorus.dll SimpleFlanger.dll SimpleSampleDelay.dll SimpleVibrato.dll SoundTouchPitchShifter.dll SpinBugLite.dll SplitHarmonizer.dll SubBoost.dll TwoBandDistortion.dll VariableDelay.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>
