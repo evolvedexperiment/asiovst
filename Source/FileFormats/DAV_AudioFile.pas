@@ -22,7 +22,7 @@ type
 
   TCustomAudioFile = class(TInterfacedPersistent{$IFDEF Delphi6_Up}, IStreamPersist{$ENDIF})
   private
-    FStreamLocked : Boolean;
+    FStreamOwned : Boolean;
   protected
     FOnEncode     : TCodingEvent;
     FOnDecode     : TCodingEvent;
@@ -41,7 +41,7 @@ type
     procedure CheckHeader(const Stream: TStream); virtual; abstract;
     procedure ParseStream(const Stream: TStream); virtual; abstract;
 
-    property StreamLocked: Boolean read FStreamLocked;
+    property StreamOwned: Boolean read FStreamOwned;
   public
     constructor Create; overload; virtual;
     constructor Create(const FileName: TFileName); overload; virtual;
@@ -50,8 +50,8 @@ type
 
     procedure Flush; virtual;
 
-    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); virtual;
-    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); virtual;
+    procedure Decode(SamplePosition: Cardinal; SampleFrames: Cardinal); virtual;
+    procedure Encode(SamplePosition: Cardinal; SampleFrames: Cardinal); virtual;
 
     procedure LoadFromFile(const FileName: TFileName); virtual;
     procedure SaveToFile(const FileName: TFileName); virtual;
@@ -131,12 +131,13 @@ end;
 constructor TCustomAudioFile.Create;
 begin
  FBlockSize := 16384;
- FStreamLocked := False;
+ FStreamOwned := False;
 end;
 
 constructor TCustomAudioFile.Create(const FileName: TFileName);
 begin
  Create(TFileStream.Create(FileName, fmOpenRead));
+ FStreamOwned := True;
 end;
 
 constructor TCustomAudioFile.Create(const Stream: TStream);
@@ -146,7 +147,6 @@ begin
   then LoadFromStream(Stream);
 
  FStream := Stream;
- FStreamLocked := True;
 end;
 
 class function TCustomAudioFile.CanLoad(const FileName: TFileName): Boolean;
@@ -163,29 +163,27 @@ end;
 
 destructor TCustomAudioFile.Destroy;
 begin
- if FStreamLocked and assigned(FStream)
+ if FStreamOwned and assigned(FStream)
   then FreeAndNil(FStream);
  inherited;
 end;
 
-procedure TCustomAudioFile.Encode(Position: Cardinal; SampleFrames: Cardinal);
+procedure TCustomAudioFile.Encode(SamplePosition: Cardinal; SampleFrames: Cardinal);
 begin
  if not assigned(FStream)
   then raise Exception.Create(RCStrNoStreamAssigned);
 
- if Position + SampleFrames > Self.SampleFrames
+ if SamplePosition + SampleFrames > Self.SampleFrames
   then raise Exception.Create('Too many sampleframes!');
-
 end;
 
-procedure TCustomAudioFile.Decode(Position: Cardinal; SampleFrames: Cardinal);
+procedure TCustomAudioFile.Decode(SamplePosition: Cardinal; SampleFrames: Cardinal);
 begin
  if not assigned(FStream)
   then raise Exception.Create(RCStrNoStreamAssigned);
 
- if Position + SampleFrames > Self.SampleFrames
+ if SamplePosition + SampleFrames > Self.SampleFrames
   then raise Exception.Create('Too many sampleframes!');
-
 end;
 
 procedure TCustomAudioFile.Flush;
@@ -204,7 +202,7 @@ procedure TCustomAudioFile.LoadFromFile(const FileName: TFileName);
 var
   FileStream : TFileStream;
 begin
- if FStreamLocked
+ if assigned(FStream)
   then raise Exception.Create(RCStrFileAlreadyLoaded);
 
  FileStream := TFileStream.Create(FileName, fmOpenRead);
@@ -218,7 +216,7 @@ end;
 
 procedure TCustomAudioFile.LoadFromStream(Stream: TStream);
 begin
- if FStreamLocked
+ if assigned(FStream)
   then raise Exception.Create(RCStrFileAlreadyLoaded);
 end;
 

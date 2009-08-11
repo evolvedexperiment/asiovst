@@ -56,8 +56,8 @@ type
     procedure SaveToStream(Stream: TStream); override;
 
     // decode/encode
-    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); override;
-    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); override;
+    procedure Decode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
+    procedure Encode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
 
     // file format identifier
     class function DefaultExtension: string; override;
@@ -372,13 +372,13 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAU.Decode(Position, SampleFrames: Cardinal);
+procedure TCustomAudioFileAU.Decode(SamplePosition, SampleFrames: Cardinal);
 begin
   inherited;
 
 end;
 
-procedure TCustomAudioFileAU.Encode(Position, SampleFrames: Cardinal);
+procedure TCustomAudioFileAU.Encode(SamplePosition, SampleFrames: Cardinal);
 begin
   inherited;
 

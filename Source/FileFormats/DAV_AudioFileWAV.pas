@@ -187,8 +187,8 @@ type
     procedure SaveToStream(Stream: TStream); override;
 
     // decode/encode
-    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); override;
-    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); override;
+    procedure Decode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
+    procedure Encode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
 
     // file format identifier
     class function DefaultExtension: string; override;
@@ -516,6 +516,11 @@ begin
  FreeAndNil(FFormatChunk);
  if assigned(FFactChunk)
   then FreeAndNil(FFactChunk);
+ if assigned(FBextChunk)
+  then FreeAndNil(FBextChunk);
+ if assigned(FCartChunk)
+  then FreeAndNil(FCartChunk);
+
  inherited;
 end;
 
@@ -1601,32 +1606,32 @@ begin
  case FFormatChunk.FormatTag of
   etPcm:
    begin
-    result := TChannel32DataCoderFixedPoint.Create;
-    with TChannel32DataCoderFixedPoint(result), FFormatChunk
+    Result := TChannel32DataCoderFixedPoint.Create;
+    with TChannel32DataCoderFixedPoint(Result), FFormatChunk
      do SetBitsAndSampleSize(ValidBitsPerSample, BlockAlign div Channels);
    end;
   etPcmFloat:
     case FFormatChunk.BlockAlign div FFormatChunk.Channels of
-      2 : result := TChannel32DataCoderFloat16.Create;
-      4 : result := TChannel32DataCoderFloat32.Create;
-      8 : result := TChannel32DataCoderFloat64.Create;
-     else result := nil
+      2 : Result := TChannel32DataCoderFloat16.Create;
+      4 : Result := TChannel32DataCoderFloat32.Create;
+      8 : Result := TChannel32DataCoderFloat64.Create;
+     else Result := nil
     end;
-  etALaw: result := TChannel32DataCoderALaw.Create;
-  etMuLaw: result := TChannel32DataCoderMuLaw.Create;
-  else result := nil;
+  etALaw: Result := TChannel32DataCoderALaw.Create;
+  etMuLaw: Result := TChannel32DataCoderMuLaw.Create;
+  else Result := nil;
  end;
 
  // set blocksize
- if assigned(result) then
-  with result do
+ if assigned(Result) then
+  with Result do
    begin
     BlockSize := Self.FBlockSize;
     ChannelCount := FFormatChunk.Channels;
    end;
 end;
 
-procedure TCustomAudioFileWAV.Decode(Position, SampleFrames: Cardinal);
+procedure TCustomAudioFileWAV.Decode(SamplePosition, SampleFrames: Cardinal);
 var
   DataDecoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
@@ -1638,18 +1643,18 @@ begin
 
  with FStream do
   begin
-   assert(FAudioDataPosition > 0);
-   Position := FAudioDataPosition + Position;
-
    DataDecoder := CreateDataCoder;
    if not assigned(DataDecoder) then exit;
+
+   assert(FAudioDataPosition > 0);
+   Position := FAudioDataPosition + 8 + DataDecoder.SampleToByte(SamplePosition);
 
    if assigned(FOnBeginRead)
     then FOnBeginRead(Self);
 
    try
-    Samples := 0;
-    while Samples + DataDecoder.SampleFrames < SampleFrames do
+    Samples := SamplePosition;
+    while Samples - SamplePosition + DataDecoder.SampleFrames < SampleFrames do
      begin
       DataDecoder.LoadFromStream(FStream);
       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
@@ -1657,7 +1662,7 @@ begin
       Samples := Samples + DataDecoder.SampleFrames;
      end;
 
-     DataDecoder.SampleFrames := SampleFrames - Samples;
+     DataDecoder.SampleFrames := SampleFrames - Samples + SamplePosition;
      DataDecoder.LoadFromStream(FStream);
      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
    finally
@@ -1666,10 +1671,10 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileWAV.Encode(Position, SampleFrames: Cardinal);
+procedure TCustomAudioFileWAV.Encode(SamplePosition, SampleFrames: Cardinal);
 var
-  DataEncoder : TCustomChannelDataCoder;
-  Samples     : Cardinal;
+  DataEncoder  : TCustomChannelDataCoder;
+  Samples, Pos : Cardinal;
 begin
  inherited;
 
@@ -1678,27 +1683,29 @@ begin
 
  with FStream do
   begin
-   assert(FAudioDataPosition > 0);
-   Position := FAudioDataPosition + Position;
-
    DataEncoder := CreateDataCoder;
    if not assigned(DataEncoder) then exit;
+
+   assert(FAudioDataPosition > 0);
+   Position := FAudioDataPosition + 8 + DataEncoder.SampleToByte(SamplePosition);
 
    if assigned(FOnBeginWrite)
     then FOnBeginWrite(Self);
 
    try
     Samples := 0;
+    Pos := SamplePosition;
     while Samples + DataEncoder.SampleFrames < SampleFrames do
      begin
       if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
       DataEncoder.SaveToStream(FStream);
 
       Samples := Samples + DataEncoder.SampleFrames;
+      Pos := Pos + DataEncoder.SampleFrames;
      end;
 
      DataEncoder.SampleFrames := SampleFrames - Samples;
-     if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+     if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Pos);
      DataEncoder.SaveToStream(FStream);
    finally
     FreeAndNil(DataEncoder);

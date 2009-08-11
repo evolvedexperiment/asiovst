@@ -14,12 +14,14 @@ type
   PDAVSmallIntArray = ^TDAVSmallIntArray;
 
   TDitherType = (dtNone, dtUniform, dtTriangular, dtGauss);
+  TByteAlign = (baLeft, baRight);
 
   TCustomChannelDataCoder = class(TInterfacedPersistent, IStreamPersist)
   private
+    procedure SetBlockSize(Value: Cardinal);
     procedure SetChannelCount(const Value: Cardinal);
-    procedure SetBlockSize(const Value: Cardinal);
     procedure SetSampleFrames(const Value: Cardinal);
+    procedure AllocateBlockBuffer;
   protected
     FBlockSize    : Cardinal;
     FBlockBuffer  : PDAVByteArray;
@@ -34,6 +36,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
+    function SampleToByte(Sample: Cardinal): Cardinal; virtual; abstract;
     procedure SetBlockSizeAndChannelCount(const BlockSize, ChannelCount: Cardinal); virtual;
 
     procedure LoadFromStream(Stream: TStream); virtual; abstract;
@@ -68,7 +71,6 @@ type
     procedure SaveToPointer(const Data: Pointer); override;
   end;
 
-  TByteAlign = (baLeft, baRight);
   TCustomChannel32DataCoderFixedPoint = class(TCustomPCMChannel32DataCoder)
   private
     procedure SetDitherType(const Value: TDitherType);
@@ -80,14 +82,16 @@ type
     FScaleFactor : Array [0..1] of Double;
     FByteAlign   : TByteAlign;
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
-    procedure CalculateScaleFactors; virtual;
     procedure CalculateSampleFrames; virtual;
+    procedure CalculateScaleFactors; virtual;
     procedure CalculateBlockSize; virtual;
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
     procedure ChannelCountChanged; override;
   public
     constructor Create; override;
+
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
 
     property ByteAlign: TByteAlign read FByteAlign write SetByteAlign default baLeft;
     property Dither: TDitherType read FDitherType write SetDitherType default dtNone;
@@ -103,8 +107,8 @@ type
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
   public
-    procedure SetBitsAndSampleSize(const Bits, SampleSize: Byte);
     constructor Create; override;
+    procedure SetBitsAndSampleSize(const Bits, SampleSize: Byte);
   published
     property Dither;
     property Bits: Byte read FBits write SetBits;
@@ -140,6 +144,8 @@ type
     procedure SampleFramesChanged; override;
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
+  public
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
   end;
 
   TChannel32DataCoderFloat32 = class(TCustomPCMChannel32DataCoder)
@@ -153,10 +159,11 @@ type
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
     procedure ChannelCountChanged; override;
+  public
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
   end;
 
   TChannel32DataCoderFloat64 = class(TCustomPCMChannel32DataCoder)
-  private
   protected
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
@@ -164,6 +171,8 @@ type
     procedure SampleFramesChanged; override;
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
+  public
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
   end;
 
   TCustomADPCMChannel32DataCoder = class(TCustomChannel32DataCoder)
@@ -224,6 +233,8 @@ type
     procedure SaveToPointer(const Data: Pointer); override;
   end;
 
+////////////////////////////////////////////////////////////////////////////////
+
   TCustomChannel64DataCoder = class(TCustomChannelDataCoder)
   private
     function GetChannelPointer(Index: Integer): PDAVDoubleFixedArray;
@@ -247,45 +258,54 @@ type
     procedure SaveToPointer(const Data: Pointer); override;
   end;
 
-  TCustomChannel64DataCoderFixed = class(TCustomPCMChannel64DataCoder)
+  TCustomChannel64DataCoderFixedPoint = class(TCustomPCMChannel32DataCoder)
   private
     procedure SetDitherType(const Value: TDitherType);
-    procedure SetBits(const Value: Byte);
-    procedure SetSampleSize(const Value: Byte);
-    procedure CalculateScaleFactors;
+    procedure SetByteAlign(const Value: TByteAlign);
   protected
     FDitherType  : TDitherType;
     FBits        : Byte;
     FSampleSize  : Byte;
     FScaleFactor : Array [0..1] of Double;
-    procedure BitsChanged; virtual;
-    procedure SampleSizeChanged; virtual;
+    FByteAlign   : TByteAlign;
+    function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
+    procedure CalculateSampleFrames; virtual;
+    procedure CalculateScaleFactors; virtual;
+    procedure CalculateBlockSize; virtual;
+    procedure BlockSizeChanged; override;
+    procedure SampleFramesChanged; override;
+    procedure ChannelCountChanged; override;
   public
     constructor Create; override;
-    procedure SetBitsAndSampleSize(const Bits, SampleSize: Byte);
+
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
+
+    property ByteAlign: TByteAlign read FByteAlign write SetByteAlign default baLeft;
     property Dither: TDitherType read FDitherType write SetDitherType default dtNone;
+  end;
+
+  TChannel64DataCoderFixedPoint = class(TCustomChannel64DataCoderFixedPoint)
+  private
+    procedure SetBits(const Value: Byte);
+    procedure SetSampleSize(const Value: Byte);
+  protected
+    procedure BitsChanged; virtual;
+    procedure SampleSizeChanged; virtual;
+    procedure InterleaveData; override;
+    procedure DeinterleaveData; override;
+  public
+    constructor Create; override;
+
+    procedure SetBitsAndSampleSize(const Bits, SampleSize: Byte);
+  published
+    property Dither;
     property Bits: Byte read FBits write SetBits;
     property SampleSize: Byte read FSampleSize write SetSampleSize;
   end;
 
-  TChannel64DataCoderFixed = class(TCustomChannel64DataCoderFixed)
-  private
-    procedure CalculateSampleFrames;
-    procedure CalculateBlockSize;
-  protected
-    function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
-
-    procedure BlockSizeChanged; override;
-    procedure SampleFramesChanged; override;
-    procedure InterleaveData; override;
-    procedure DeinterleaveData; override;
-  published
-    property Dither;
-    property Bits;
-  end;
-
   TChannel64DataCoderFloat32 = class(TCustomPCMChannel64DataCoder)
   private
+    procedure CalculateBlocksize;
   protected
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
@@ -293,10 +313,12 @@ type
     procedure SampleFramesChanged; override;
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
+    procedure ChannelCountChanged; override;
+  public
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
   end;
 
   TChannel64DataCoderFloat64 = class(TCustomPCMChannel64DataCoder)
-  private
   protected
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 
@@ -304,6 +326,8 @@ type
     procedure SampleFramesChanged; override;
     procedure InterleaveData; override;
     procedure DeinterleaveData; override;
+  public
+    function SampleToByte(Sample: Cardinal): Cardinal; override;
   end;
 
 implementation
@@ -328,9 +352,15 @@ begin
  inherited;
 end;
 
-procedure TCustomChannelDataCoder.BlockSizeChanged;
+procedure TCustomChannelDataCoder.AllocateBlockBuffer;
 begin
  ReallocMem(FBlockBuffer, FBlockSize);
+ FillChar(FBlockBuffer^, FBlockSize, 0);
+end;
+
+procedure TCustomChannelDataCoder.BlockSizeChanged;
+begin
+ AllocateBlockBuffer;
 end;
 
 procedure TCustomChannelDataCoder.SetBlockSizeAndChannelCount(const BlockSize,
@@ -345,14 +375,12 @@ begin
  result := Value;
 end;
 
-procedure TCustomChannelDataCoder.SetBlockSize(const Value: Cardinal);
-var
-  CorrectedBlocksize: Cardinal;
+procedure TCustomChannelDataCoder.SetBlockSize(Value: Cardinal);
 begin
- CorrectedBlocksize := CorrectBlocksize(Value);
- if FBlockSize <> CorrectedBlocksize then
+ Value := CorrectBlocksize(Value);
+ if FBlockSize <> Value then
   begin
-   FBlockSize := CorrectedBlocksize;
+   FBlockSize := Value;
    BlockSizeChanged;
   end;
 end;
@@ -378,7 +406,14 @@ end;
 { TCustomChannel32DataCoder }
 
 procedure TCustomChannel32DataCoder.ChannelCountChanged;
+var
+  Channel : Integer;
 begin
+ inherited;
+ if FChannelCount < Length(FChannelArray) then
+  for Channel := FChannelCount to Length(FChannelArray) - 1
+   do Dispose(FChannelArray[Channel]);
+
  SetLength(FChannelArray, FChannelCount);
  ReallocateChannelMemory;
 end;
@@ -404,8 +439,11 @@ procedure TCustomChannel32DataCoder.ReallocateChannelMemory;
 var
   i : Integer;
 begin
- for i := 0 to Length(FChannelArray) - 1
-  do ReallocMem(FChannelArray[i], FSampleFrames * SizeOf(Single));
+ for i := 0 to Length(FChannelArray) - 1 do
+  begin
+   ReallocMem(FChannelArray[i], FSampleFrames * SizeOf(Single));
+   FillChar(FChannelArray[i]^, FSampleFrames * SizeOf(Single), 0);
+  end;
 end;
 
 { TCustomPCMChannel32DataCoder }
@@ -444,6 +482,12 @@ begin
  CalculateScaleFactors;
 end;
 
+procedure TCustomChannel32DataCoderFixedPoint.CalculateSampleFrames;
+begin
+ inherited;
+ SampleFrames := FBlockSize div FChannelCount div FSampleSize;
+end;
+
 procedure TCustomChannel32DataCoderFixedPoint.CalculateScaleFactors;
 begin
  case FByteAlign of
@@ -461,22 +505,6 @@ begin
    end;
   else assert(False);
  end;
-end;
-
-procedure TChannel32DataCoderFixedPoint.SetBitsAndSampleSize(const Bits,
-  SampleSize: Byte);
-begin
- if (Bits > 8 * SampleSize)
-  then raise Exception.Create('Number of bits must fit into the sample size!');
-
- FBits := Bits;
- FSampleSize := SampleSize;
-
- if BlockSize <> CorrectBlocksize(BlockSize)
-  then BlockSize := CorrectBlocksize(BlockSize)
-  else BlockSizeChanged;
-
- CalculateScaleFactors;
 end;
 
 procedure TCustomChannel32DataCoderFixedPoint.SetByteAlign(const Value: TByteAlign);
@@ -504,11 +532,6 @@ begin
  result := Granularity * (Value div Granularity);
 end;
 
-procedure TCustomChannel32DataCoderFixedPoint.CalculateSampleFrames;
-begin
- SampleFrames := FBlockSize div FChannelCount div FSampleSize;
-end;
-
 procedure TCustomChannel32DataCoderFixedPoint.CalculateBlockSize;
 begin
  BlockSize := FSampleFrames * ChannelCount * FSampleSize;
@@ -516,8 +539,8 @@ end;
 
 procedure TCustomChannel32DataCoderFixedPoint.BlockSizeChanged;
 begin
- inherited;
  CalculateSampleFrames;
+ inherited;
 end;
 
 procedure TCustomChannel32DataCoderFixedPoint.ChannelCountChanged;
@@ -533,7 +556,19 @@ begin
 end;
 
 
+function TCustomChannel32DataCoderFixedPoint.SampleToByte(Sample: Cardinal): Cardinal;
+begin
+ result := Sample * FSampleSize;
+end;
+
 { TChannel32DataCoderFixedPoint }
+
+constructor TChannel32DataCoderFixedPoint.Create;
+begin
+ FBits       := 32;
+ FSampleSize := 4;
+ inherited;
+end;
 
 procedure TChannel32DataCoderFixedPoint.SetSampleSize(const Value: Byte);
 begin
@@ -573,6 +608,22 @@ begin
  CalculateScaleFactors;
 end;
 
+procedure TChannel32DataCoderFixedPoint.SetBitsAndSampleSize(const Bits,
+  SampleSize: Byte);
+begin
+ if (Bits > 8 * SampleSize)
+  then raise Exception.Create('Number of bits must fit into the sample size!');
+
+ FBits := Bits;
+ FSampleSize := SampleSize;
+
+ CalculateBlockSize;
+ if BlockSize <> CorrectBlocksize(BlockSize)
+  then BlockSize := CorrectBlocksize(BlockSize);
+
+ CalculateScaleFactors;
+end;
+
 procedure TChannel32DataCoderFixedPoint.InterleaveData;
 var
   Sample  : Cardinal;
@@ -600,13 +651,6 @@ begin
  end;
 end;
 
-constructor TChannel32DataCoderFixedPoint.Create;
-begin
- FBits       := 32;
- FSampleSize := 4;
- inherited;
-end;
-
 procedure TChannel32DataCoderFixedPoint.DeinterleaveData;
 var
   Sample  : Cardinal;
@@ -624,7 +668,7 @@ begin
   3: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
        do FChannelArray[Channel]^[Sample] := (ShortInt(PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 2]) shl 16 +
-                                                       PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 1]  shl 8 +
+                                                       PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 1]  shl  8 +
                                                        PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel)]) * FScaleFactor[1];
   4: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
@@ -975,6 +1019,11 @@ begin
  ReallocateChannelMemory;
 end;
 
+function TChannel32DataCoderFloat16.SampleToByte(Sample: Cardinal): Cardinal;
+begin
+ result := Sample * SizeOf(THalfFloat);
+end;
+
 { TChannel32DataCoderFloat32 }
 
 function TChannel32DataCoderFloat32.CorrectBlocksize(const Value: Cardinal): Cardinal;
@@ -994,7 +1043,7 @@ begin
  assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
-    do PDAVSingleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := FChannelArray[Channel]^[Sample];
+   do PDAVSingleFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := FChannelArray[Channel]^[Sample];
 end;
 
 procedure TChannel32DataCoderFloat32.DeinterleaveData;
@@ -1002,7 +1051,7 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = SampleFrames * FChannelCount * SizeOf(Single));
+ assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(Single)));
  assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
@@ -1018,6 +1067,11 @@ end;
 procedure TChannel32DataCoderFloat32.SampleFramesChanged;
 begin
  CalculateBlocksize;
+end;
+
+function TChannel32DataCoderFloat32.SampleToByte(Sample: Cardinal): Cardinal;
+begin
+ result := Sample * SizeOf(Single);
 end;
 
 procedure TChannel32DataCoderFloat32.ChannelCountChanged;
@@ -1076,6 +1130,11 @@ procedure TChannel32DataCoderFloat64.SampleFramesChanged;
 begin
  BlockSize := FSampleFrames * ChannelCount * SizeOf(Double);
  ReallocateChannelMemory;
+end;
+
+function TChannel32DataCoderFloat64.SampleToByte(Sample: Cardinal): Cardinal;
+begin
+ result := Sample * SizeOf(Double);
 end;
 
 { TCustomADPCMChannel32DataCoder }
@@ -1481,6 +1540,7 @@ end;
 
 procedure TCustomChannel64DataCoder.ChannelCountChanged;
 begin
+ inherited;
  SetLength(FChannelArray, FChannelCount);
  ReallocateChannelMemory;
 end;
@@ -1506,8 +1566,11 @@ procedure TCustomChannel64DataCoder.ReallocateChannelMemory;
 var
   i : Integer;
 begin
- for i := 0 to Length(FChannelArray) - 1
-  do ReallocMem(FChannelArray[i], FSampleFrames * SizeOf(Double));
+ for i := 0 to Length(FChannelArray) - 1 do
+  begin
+   ReallocMem(FChannelArray[i], FSampleFrames * SizeOf(Double));
+   FillChar(FChannelArray[i]^, FSampleFrames * SizeOf(Double), 0);
+  end;
 end;
 
 { TCustomPCMChannel64DataCoder }
@@ -1536,69 +1599,45 @@ begin
  Move(FBlockBuffer^[0], Data^, FBlockSize);
 end;
 
-{ TCustomChannel64DataCoderFixed }
+{ TCustomChannel64DataCoderFixedPoint }
 
-constructor TCustomChannel64DataCoderFixed.Create;
+constructor TCustomChannel64DataCoderFixedPoint.Create;
 begin
  FDitherType := dtNone;
- FBits       := 64;
- FSampleSize := 4;
+ FByteAlign  := baLeft;
  inherited;
  CalculateScaleFactors;
 end;
 
-procedure TCustomChannel64DataCoderFixed.CalculateScaleFactors;
+procedure TCustomChannel64DataCoderFixedPoint.CalculateScaleFactors;
 begin
- FScaleFactor[0] := (1 shl Bits - 1) - 1;
- FScaleFactor[1] := 1 / FScaleFactor[0];
+ case FByteAlign of
+  baLeft:
+   begin
+    FScaleFactor[0] := 1 shl (8 * ((FBits + 7) div 8) - 1) - 1;
+    FScaleFactor[1] := 1 / FScaleFactor[0];
+   end;
+  baRight:
+   begin
+    if FBits = 32
+     then FScaleFactor[0] := MaxInt
+     else FScaleFactor[0] := (1 shl (FBits - 1)) - 1;
+    FScaleFactor[1] := 1 / FScaleFactor[0];
+   end;
+  else assert(False);
+ end;
 end;
 
-procedure TCustomChannel64DataCoderFixed.BitsChanged;
+procedure TCustomChannel64DataCoderFixedPoint.SetByteAlign(const Value: TByteAlign);
 begin
- if Bits > 8 * SampleSize then
+ if FByteAlign <> Value then
   begin
-   FSampleSize := (Bits + 7) div 8;
-   SampleSizeChanged;
-  end;
- CalculateScaleFactors;
-end;
-
-procedure TCustomChannel64DataCoderFixed.SampleSizeChanged;
-begin
- if Bits > 8 * SampleSize then
-  begin
-   FBits := SampleSize * 8;
-   BitsChanged;
-  end;
- SampleFramesChanged;
-end;
-
-procedure TCustomChannel64DataCoderFixed.SetBits(const Value: Byte);
-begin
- if Bits <> Value then
-  begin
-   FBits := Value;
-   BitsChanged;
+   FByteAlign := Value;
+   CalculateScaleFactors;
   end;
 end;
 
-procedure TCustomChannel64DataCoderFixed.SetBitsAndSampleSize(const Bits,
-  SampleSize: Byte);
-begin
- if (Bits > 8 * SampleSize)
-  then raise Exception.Create('Number of bits must fit into the sample size!');
-
- FBits := Bits;
- FSampleSize := SampleSize;
-
- if BlockSize <> CorrectBlocksize(BlockSize)
-  then BlockSize := CorrectBlocksize(BlockSize)
-  else BlockSizeChanged;
-
- CalculateScaleFactors;
-end;
-
-procedure TCustomChannel64DataCoderFixed.SetDitherType(const Value: TDitherType);
+procedure TCustomChannel64DataCoderFixedPoint.SetDitherType(const Value: TDitherType);
 begin
  if FDitherType <> Value then
   begin
@@ -1606,7 +1645,59 @@ begin
   end;
 end;
 
-procedure TCustomChannel64DataCoderFixed.SetSampleSize(const Value: Byte);
+function TCustomChannel64DataCoderFixedPoint.CorrectBlocksize(const Value: Cardinal): Cardinal;
+var
+  Granularity : Cardinal;
+begin
+ Granularity := ChannelCount * FSampleSize;
+ result := Granularity * (Value div Granularity);
+end;
+
+procedure TCustomChannel64DataCoderFixedPoint.CalculateSampleFrames;
+begin
+ SampleFrames := FBlockSize div FChannelCount div FSampleSize;
+end;
+
+procedure TCustomChannel64DataCoderFixedPoint.CalculateBlockSize;
+begin
+ BlockSize := FSampleFrames * ChannelCount * FSampleSize;
+end;
+
+procedure TCustomChannel64DataCoderFixedPoint.BlockSizeChanged;
+begin
+ CalculateSampleFrames;
+ inherited;
+end;
+
+procedure TCustomChannel64DataCoderFixedPoint.ChannelCountChanged;
+begin
+ inherited;
+ CalculateSampleFrames;
+end;
+
+procedure TCustomChannel64DataCoderFixedPoint.SampleFramesChanged;
+begin
+ CalculateBlockSize;
+ ReallocateChannelMemory;
+end;
+
+
+function TCustomChannel64DataCoderFixedPoint.SampleToByte(
+  Sample: Cardinal): Cardinal;
+begin
+ result := Sample * FSampleSize;
+end;
+
+{ TChannel64DataCoderFixedPoint }
+
+constructor TChannel64DataCoderFixedPoint.Create;
+begin
+ FBits       := 64;
+ FSampleSize := 8;
+ inherited;
+end;
+
+procedure TChannel64DataCoderFixedPoint.SetSampleSize(const Value: Byte);
 begin
  if SampleSize <> Value then
   begin
@@ -1615,36 +1706,71 @@ begin
   end;
 end;
 
-{ TChannel64DataCoderFixed }
-
-function TChannel64DataCoderFixed.CorrectBlocksize(const Value: Cardinal): Cardinal;
-var
-  Granularity : Cardinal;
+procedure TChannel64DataCoderFixedPoint.SampleSizeChanged;
 begin
- Granularity := ChannelCount * SampleSize;
- result := Granularity * (Value div Granularity);
+ if FBits > 8 * FSampleSize then
+  begin
+   FBits := FSampleSize * 8;
+   BitsChanged;
+  end;
+ SampleFramesChanged;
 end;
 
-procedure TChannel64DataCoderFixed.InterleaveData;
+procedure TChannel64DataCoderFixedPoint.SetBits(const Value: Byte);
+begin
+ if Bits <> Value then
+  begin
+   FBits := Value;
+   BitsChanged;
+  end;
+end;
+
+procedure TChannel64DataCoderFixedPoint.BitsChanged;
+begin
+ if FBits > 8 * FSampleSize then
+  begin
+   FSampleSize := (FBits + 7) div 8;
+   SampleSizeChanged;
+  end;
+ CalculateScaleFactors;
+end;
+
+procedure TChannel64DataCoderFixedPoint.SetBitsAndSampleSize(const Bits,
+  SampleSize: Byte);
+begin
+ if (Bits > 8 * SampleSize)
+  then raise Exception.Create('Number of bits must fit into the sample size!');
+
+ FBits := Bits;
+ FSampleSize := SampleSize;
+
+ CalculateBlockSize;
+ if BlockSize <> CorrectBlocksize(BlockSize)
+  then BlockSize := CorrectBlocksize(BlockSize);
+
+ CalculateScaleFactors;
+end;
+
+procedure TChannel64DataCoderFixedPoint.InterleaveData;
 var
   Sample  : Cardinal;
   Channel : Cardinal;
   DataInt : Integer;
 begin
- assert(FBlocksize = SampleFrames * FChannelCount * FSampleSize);
+ assert(FBlocksize = (SampleFrames * FChannelCount * FSampleSize));
  assert(Length(FChannelArray) = Integer(FChannelCount));
  case SampleSize of
   1: for Sample := 0 to FSampleFrames - 1 do
       for Channel := 0 to FChannelCount - 1
        do PDAVByteArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := 127 + round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
   2: for Sample := 0 to FSampleFrames - 1 do
-      for Channel := 0 to FChannelCount
+      for Channel := 0 to FChannelCount - 1
        do PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);
   3: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1 do
        begin
         DataInt := round(FChannelArray[Channel]^[Sample] * FScaleFactor[0]);// shl 8;
-        Move(DataInt, PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel], 3);
+        Move(DataInt, PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel)], 3);
        end;
   4: for Sample := 0 to FSampleFrames - 1 do
       for Channel := 0 to FChannelCount - 1
@@ -1652,7 +1778,7 @@ begin
  end;
 end;
 
-procedure TChannel64DataCoderFixed.DeinterleaveData;
+procedure TChannel64DataCoderFixedPoint.DeinterleaveData;
 var
   Sample  : Cardinal;
   Channel : Cardinal;
@@ -1668,35 +1794,13 @@ begin
        do FChannelArray[Channel]^[Sample] := PDAVSmallIntArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * FScaleFactor[1];
   3: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
-       do FChannelArray[Channel]^[Sample] := (ShortInt(PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel]) shl 16 +
-                                              PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel + 1] shl 8  +
-                                              PDAVByteArray(FBlockBuffer)^[Sample * 3 * FChannelCount + Channel + 2]) * FScaleFactor[1];
+       do FChannelArray[Channel]^[Sample] := (ShortInt(PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 2]) shl 16 +
+                                                       PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel) + 1]  shl  8 +
+                                                       PDAVByteArray(FBlockBuffer)^[3 * (Sample * FChannelCount + Channel)]) * FScaleFactor[1];
   4: for Channel := 0 to FChannelCount - 1 do
       for Sample := 0 to FSampleFrames - 1
        do FChannelArray[Channel]^[Sample] := PIntegerArray(FBlockBuffer)^[Sample * FChannelCount + Channel] * FScaleFactor[1];
  end;
-end;
-
-procedure TChannel64DataCoderFixed.CalculateSampleFrames;
-begin
- SampleFrames := FBlockSize div FChannelCount div SampleSize;
-end;
-
-procedure TChannel64DataCoderFixed.CalculateBlockSize;
-begin
- BlockSize := FSampleFrames * ChannelCount * SampleSize;
-end;
-
-procedure TChannel64DataCoderFixed.BlockSizeChanged;
-begin
- inherited;
- CalculateSampleFrames;
-end;
-
-procedure TChannel64DataCoderFixed.SampleFramesChanged;
-begin
- CalculateBlockSize;
- ReallocateChannelMemory;
 end;
 
 
@@ -1741,6 +1845,22 @@ begin
 end;
 
 procedure TChannel64DataCoderFloat32.SampleFramesChanged;
+begin
+ CalculateBlocksize;
+end;
+
+function TChannel64DataCoderFloat32.SampleToByte(Sample: Cardinal): Cardinal;
+begin
+ result := Sample * SizeOf(Single);
+end;
+
+procedure TChannel64DataCoderFloat32.ChannelCountChanged;
+begin
+ inherited;
+ CalculateBlocksize;
+end;
+
+procedure TChannel64DataCoderFloat32.CalculateBlocksize;
 begin
  BlockSize := FSampleFrames * ChannelCount * SizeOf(Single);
  ReallocateChannelMemory;
@@ -1790,6 +1910,11 @@ procedure TChannel64DataCoderFloat64.SampleFramesChanged;
 begin
  BlockSize := FSampleFrames * ChannelCount * SizeOf(Double);
  ReallocateChannelMemory;
+end;
+
+function TChannel64DataCoderFloat64.SampleToByte(Sample: Cardinal): Cardinal;
+begin
+ result := Sample * SizeOf(Double);
 end;
 
 end.

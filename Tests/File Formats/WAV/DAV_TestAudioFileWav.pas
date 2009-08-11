@@ -33,6 +33,7 @@ type
     procedure TestScanning;
     procedure TestBasicWriting;
     procedure TestAdvancedWriting;
+    procedure TestRandomAccess;
   end;
 
 implementation
@@ -108,7 +109,10 @@ begin
 *)
    with FAudioFileWAV do
     begin
+     ChannelCount := 1;
      SampleFrames := 100;
+     BitsPerSample := 16;
+     Encoding := aeInteger;
 
      // CART Chunk
      CartVersion := 1000;
@@ -138,6 +142,7 @@ begin
      TimeRefLow := 10;
      TimeRefHigh := 20;
 
+     TempStream.Clear;
      SaveToStream(TempStream);
      TempStream.Position := 0;
      LoadFromStream(TempStream);
@@ -230,43 +235,46 @@ var
     Sample      : Integer;
   begin
    for TestChannel := 1 to 8 do
-  with FAudioFileWAV do
-   begin
-    // setup wave file
-    SampleFrames := 100;
-    ChannelCount := TestChannel;
-
-    // store data
-    SetLength(FAudioData, ChannelCount);
-    for Channel := 0 to ChannelCount - 1 do
+    with FAudioFileWAV do
      begin
-      GetMem(FAudioData[Channel], SampleFrames * SizeOf(Single));
-      for Sample := 0 to SampleFrames - 1
-       do FAudioData[Channel]^[Sample] := (Channel + 1) / ChannelCount;
-     end;
+      // setup wave file
+      SampleFrames := 100;
+      ChannelCount := TestChannel;
 
-    // reset stream and write to stream
-    TempStream.Clear;
-    SaveToStream(TempStream);
-(*
-    SaveToFile('Test WAVE - Channels ' + IntToStr(TestChannel) + ' ' +
-      'Bits ' + IntToStr(BitsPerSample) + '.wav');
-*)
+      // store data
+      SetLength(FAudioData, ChannelCount);
+      for Channel := 0 to ChannelCount - 1 do
+       begin
+        GetMem(FAudioData[Channel], SampleFrames * SizeOf(Single));
+        for Sample := 0 to SampleFrames - 1
+         do FAudioData[Channel]^[Sample] := (Channel + 1) / ChannelCount;
+       end;
 
-    // load from stream
-    TempStream.Position := 0;
-    LoadFromStream(TempStream);
+      // reset stream and write to stream
+      TempStream.Clear;
+      SaveToStream(TempStream);
+  (*
+      SaveToFile('Test WAVE - Channels ' + IntToStr(TestChannel) + ' ' +
+        'Bits ' + IntToStr(BitsPerSample) + '.wav');
+  *)
 
-    // check data
-    for Channel := 0 to ChannelCount - 1 do
-     for Sample := 0 to SampleFrames - 1 do
-      begin
-       CheckTrue(abs(FAudioData[Channel]^[Sample] * ChannelCount - (Channel + 1)) < TestEpsilon * ChannelCount,
-         'Expected: ' + FloatToStr((Channel + 1) / ChannelCount) + ', ' +
-         'but was: ' + FloatToStr(FAudioData[Channel]^[Sample]) + ' ' +
-         '(Channel: ' + IntToStr(Channel) + ' Sample: ' + IntToStr(Sample) + ')');
-      end;
-   end;
+      // load from stream
+      TempStream.Position := 0;
+      LoadFromStream(TempStream);
+
+      // check data
+      for Channel := 0 to ChannelCount - 1 do
+       begin
+        for Sample := 0 to SampleFrames - 1 do
+         begin
+          CheckTrue(abs(FAudioData[Channel]^[Sample] * ChannelCount - (Channel + 1)) < TestEpsilon * ChannelCount,
+            'Expected: ' + FloatToStr((Channel + 1) / ChannelCount) + ', ' +
+            'but was: ' + FloatToStr(FAudioData[Channel]^[Sample]) + ' ' +
+            '(Channel: ' + IntToStr(Channel) + ' Sample: ' + IntToStr(Sample) + ')');
+         end;
+        Dispose(FAudioData[Channel]);
+       end;
+     end;  
    end;
 
 begin
@@ -336,9 +344,86 @@ begin
   end;
 end;
 
+procedure TestAudioFileWav.TestRandomAccess;
+var
+  TempStream  : TMemoryStream;
+  Channel     : Integer;
+  Sample      : Integer;
+  AudioFile   : TAudioFileWAV;    
+
+begin
+ TempStream := TMemoryStream.Create;
+ with TempStream do
+  try
+   with FAudioFileWAV do
+    begin
+     // setup wave file
+     SampleFrames := 25000;
+     ChannelCount := 1;
+
+     OnEncode := EncodeHandler;
+     OnDecode := DecodeHandler;
+
+     BitsPerSample := 16;
+     with FAudioFileWAV do
+      begin
+       // store data
+       SetLength(FAudioData, ChannelCount);
+       for Channel := 0 to ChannelCount - 1 do
+        begin
+         GetMem(FAudioData[Channel], SampleFrames * SizeOf(Single));
+         for Sample := 0 to SampleFrames - 1
+          do FAudioData[Channel]^[Sample] := Sample / SampleFrames;
+        end;
+
+       // reset stream and write to stream
+       TempStream.Clear;
+       SaveToStream(TempStream);
+       TempStream.Position := 0;
+
+       // clear audio data
+       for Channel := 0 to ChannelCount - 1
+        do FillChar(FAudioData[Channel]^, SampleFrames * SizeOf(Single), 0);
+
+       AudioFile := TAudioFileWAV.Create(TempStream);
+       try
+        AudioFile.OnEncode := EncodeHandler;
+        AudioFile.OnDecode := DecodeHandler;
+        // decode in one go
+        AudioFile.Decode(0, SampleFrames);
+
+        // decode in two goes
+        AudioFile.Decode(0, 100);
+        AudioFile.Decode(100, SampleFrames - 100);
+
+        // decode only parts
+        AudioFile.Decode(0, 7000);
+        AudioFile.Decode(20000, 5000);
+        AudioFile.Decode(13000, 8000);
+       finally
+        FreeAndNil(AudioFile);
+       end;
+
+      for Channel := 0 to ChannelCount - 1 do
+       begin
+        for Sample := 0 to SampleFrames - 1
+         do CheckTrue(abs(FAudioData[Channel]^[Sample] * SampleFrames - Sample) < 1E-3 * SampleFrames,
+         'Expected: ' + FloatToStr(Sample / SampleFrames) + ', ' +
+         'but was: ' + FloatToStr(FAudioData[Channel]^[Sample]) + ' ' +
+         '(Sample: ' + IntToStr(Sample) + ')');
+
+        Dispose(FAudioData[Channel]);
+       end;
+      end;
+
+    end;
+  finally
+   Free;
+  end;
+end;
+
 initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestAudioFileWav.Suite);
 
 end.
-

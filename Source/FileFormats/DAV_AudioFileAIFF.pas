@@ -78,8 +78,8 @@ type
     procedure SaveToStream(Stream: TStream); override;
 
     // decode/encode
-    procedure Decode(Position: Cardinal; SampleFrames: Cardinal); override;
-    procedure Encode(Position: Cardinal; SampleFrames: Cardinal); override;
+    procedure Decode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
+    procedure Encode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
 
     // file format identifier
     class function DefaultExtension: string; override;
@@ -729,7 +729,7 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAIFF.Decode(Position, SampleFrames: Cardinal);
+procedure TCustomAudioFileAIFF.Decode(SamplePosition, SampleFrames: Cardinal);
 var
   DataDecoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
@@ -742,7 +742,7 @@ begin
  with FStream do
   begin
    assert(FAudioDataPosition > 0);
-   Position := FAudioDataPosition + Position;
+   Position := FAudioDataPosition + 8 + SamplePosition;
 
    DataDecoder := CreateDataCoder;
    if not assigned(DataDecoder) then exit;
@@ -769,7 +769,7 @@ begin
   end;
 end;
 
-procedure TCustomAudioFileAIFF.Encode(Position, SampleFrames: Cardinal);
+procedure TCustomAudioFileAIFF.Encode(SamplePosition, SampleFrames: Cardinal);
 var
   DataEncoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
@@ -782,7 +782,7 @@ begin
  with FStream do
   begin
    assert(FAudioDataPosition > 0);
-   Position := FAudioDataPosition + Position;
+   Position := FAudioDataPosition + 8 + SamplePosition;
 
    DataEncoder := CreateDataCoder;
    if not assigned(DataEncoder) then exit;

@@ -15,6 +15,8 @@ program WavTest;
 {$ENDIF}
 
 uses
+  FastMM4,
+  FastMove, 
   Forms,
   TestFramework,
   GUITestRunner,
