@@ -182,7 +182,7 @@ begin
  if not assigned(FStream)
   then raise Exception.Create(RCStrNoStreamAssigned);
 
- if SamplePosition + SampleFrames > Self.SampleFrames
+ if SamplePosition + SampleFrames > Self.ChannelCount * Self.SampleFrames
   then raise Exception.Create('Too many sampleframes!');
 end;
 
@@ -190,7 +190,6 @@ procedure TCustomAudioFile.Flush;
 begin
  if assigned(FStream)
   then SaveToStream(FStream);
-
 end;
 
 function TCustomAudioFile.GetTotalTime: Double;

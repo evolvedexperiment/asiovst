@@ -595,33 +595,36 @@ begin
  SetLength(List, 0);
 
  Keys := TStringList.Create;
- with TRegistry.Create do
-  try
-   RootKey := HKEY_LOCAL_MACHINE;
-   if OpenKeyReadOnly(CAsioPath) then
-    begin
-     GetKeyNames(Keys);
-     CloseKey;
-    end;
-   for i := 0 to Keys.Count - 1 do
-    begin
-     if OpenKeyReadOnly(CAsioPath + '\' + Keys[i]) then
-      begin
-       id := ReadString(CComClsId);
-       if FindDrivervDLL(id, DriverDll) = 0 then  // check if the dll exists
-        begin
-         SetLength(List, Length(List) + 1);
-         List[Length(List) - 1].id := StringToGUID(id);
-         StrPLCopy(List[Length(List) - 1].Name, Keys[i], 512);
-         StrPLCopy(List[Length(List) - 1].Path, DriverDll, 512);
-        end;
-       CloseKey;
-      end;
-    end;
-  finally
-   FreeAndNil(keys);
-   Free;
-  end;
+ try
+  with TRegistry.Create do
+   try
+    RootKey := HKEY_LOCAL_MACHINE;
+    if OpenKeyReadOnly(CAsioPath) then
+     begin
+      GetKeyNames(Keys);
+      CloseKey;
+     end;
+    for i := 0 to Keys.Count - 1 do
+     begin
+      if OpenKeyReadOnly(CAsioPath + '\' + Keys[i]) then
+       begin
+        id := ReadString(CComClsId);
+        if FindDrivervDLL(id, DriverDll) = 0 then  // check if the dll exists
+         begin
+          SetLength(List, Length(List) + 1);
+          List[Length(List) - 1].id := StringToGUID(id);
+          StrPLCopy(List[Length(List) - 1].Name, Keys[i], 512);
+          StrPLCopy(List[Length(List) - 1].Path, DriverDll, 512);
+         end;
+        CloseKey;
+       end;
+     end;
+   finally
+    Free;
+   end;
+ finally
+  FreeAndNil(Keys);
+ end;
 end;
 
 {$IFDEF DELPHI5}
@@ -1655,8 +1658,27 @@ begin
 end;
 
 destructor TCustomASIOHost.Destroy;
+var
+  Channel : Integer;
 begin
  SetLength(FOutputVolume, 0);
+
+ // dispose single input buffers
+ for Channel := 0 to Length(FSingleInBuffer) - 1
+  do Dispose(FSingleInBuffer[Channel]);
+
+ // dispose single output buffers
+ for Channel := 0 to Length(FSingleOutBuffer) - 1
+  do Dispose(FSingleOutBuffer[Channel]);
+
+ // dispose double input buffers
+ for Channel := 0 to Length(FDoubleInBuffer) - 1
+  do Dispose(FDoubleInBuffer[Channel]);
+
+ // dispose double output buffers
+ for Channel := 0 to Length(FDoubleOutBuffer) - 1
+  do Dispose(FDoubleOutBuffer[Channel]);
+
  {$IFDEF ASIOMixer} FASIOMixer.Free; {$ENDIF}
  inherited;
 end;
@@ -1915,7 +1937,6 @@ var
   Sample, Channel : Integer;
   CurrentBuffer   : PASIOBufferInfo;
   ChannelData     : Pointer;
-  SampleSize      : Integer;
 begin
  if FDriver = nil then exit;
  PMUpdSamplePos.wParam := Params.timeInfo.samplePosition.hi;
@@ -1931,8 +1952,6 @@ begin
  if FConvertMethod = cm64 then
   begin
    // 64bit float processing
-   SampleSize := SizeOf(Double);
-
    case FInBufferPreFill of
       bpfZero : for Channel := 0 to FInputChannelCount - 1
                  do FillChar(FDoubleInBuffer[Channel, 0], FBufferSize * SizeOf(Double), 0);
@@ -1991,7 +2010,6 @@ begin
  else
   begin
    // 32bit float processing
-   SampleSize := SizeOf(Single);
    case FInBufferPreFill of
       bpfZero : for Channel := 0 to FInputChannelCount - 1
                  do FillChar(FSingleInBuffer[Channel,0], FBufferSize * SizeOf(Single), 0);

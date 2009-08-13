@@ -1,6 +1,8 @@
 program ASIODemo;
 
 uses
+  FastMM4,
+  FastMove,
   Forms,
   AsioDemoForm in 'ASIODemoForm.pas' {FmASIO};
 
