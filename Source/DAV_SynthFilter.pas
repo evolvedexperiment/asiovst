@@ -3,9 +3,10 @@ unit DAV_SynthFilter;
 interface
 
 {$I DAV_Compiler.inc}
+{$DEFINE FastCalculation}
 
 uses
-  DAV_Common;
+  DAV_Common, DAV_Complex;
 
 type
   TNewPCMSample = procedure(Sender: TObject; Sample: Single) of object;
@@ -34,9 +35,9 @@ type
 implementation
 
 const
+  // Note: These values are not in the same order
+  // as in Annex 3-B.3 of the ISO/IEC DIS 11172-3
   CAnnex3B3Table: array[0..511] of Single = (
-    // Note: These values are not in the same order
-    // as in Annex 3-B.3 of the ISO/IEC DIS 11172-3
      0.000000000, -0.000442505,  0.003250122, -0.007003784,
      0.031082153, -0.078628540,  0.100311279, -0.572036743,
      1.144989014,  0.572036743,  0.100311279,  0.078628540,
@@ -167,10 +168,7 @@ const
      0.007919312, -0.003326416,  0.000473022,  0.000015259);
 
 var
-  GCos1_64, GCos3_64, GCos5_64, GCos7_64, GCos9_64, GCos11_64, GCos13_64, GCos15_64,
-  GCos17_64, GCos19_64, GCos21_64, GCos23_64, GCos25_64, GCos27_64, GCos29_64,
-  GCos31_64, GCos1_32, GCos3_32, GCos5_32, GCos7_32, GCos9_32, GCos11_32, GCos13_32,
-  GCos15_32, GCos1_16, GCos3_16, GCos5_16, GCos7_16, GCos1_8, GCos3_8, GCos1_4: Single;
+  GCosTable : array [0..30] of Single;
 
 { TSynthesisFilter }
 
@@ -226,65 +224,65 @@ begin
  pp[ 5] :=  p[5] + p[10];
  pp[ 6] :=  p[6] + p[ 9];
  pp[ 7] :=  p[7] + p[ 8];
- pp[ 8] := (p[0] - p[15]) * GCos1_32;
- pp[ 9] := (p[1] - p[14]) * GCos3_32;
- pp[10] := (p[2] - p[13]) * GCos5_32;
- pp[11] := (p[3] - p[12]) * GCos7_32;
- pp[12] := (p[4] - p[11]) * GCos9_32;
- pp[13] := (p[5] - p[10]) * GCos11_32;
- pp[14] := (p[6] - p[ 9]) * GCos13_32;
- pp[15] := (p[7] - p[ 8]) * GCos15_32;
+ pp[ 8] := (p[0] - p[15]) * GCosTable[14];
+ pp[ 9] := (p[1] - p[14]) * GCosTable[13];
+ pp[10] := (p[2] - p[13]) * GCosTable[12];
+ pp[11] := (p[3] - p[12]) * GCosTable[11];
+ pp[12] := (p[4] - p[11]) * GCosTable[10];
+ pp[13] := (p[5] - p[10]) * GCosTable[9];
+ pp[14] := (p[6] - p[ 9]) * GCosTable[8];
+ pp[15] := (p[7] - p[ 8]) * GCosTable[7];
 
  p[ 0] :=  pp[0] + pp[7];
  p[ 1] :=  pp[1] + pp[6];
  p[ 2] :=  pp[2] + pp[5];
  p[ 3] :=  pp[3] + pp[4];
- p[ 4] := (pp[0] - pp[7]) * GCos1_16;
- p[ 5] := (pp[1] - pp[6]) * GCos3_16;
- p[ 6] := (pp[2] - pp[5]) * GCos5_16;
- p[ 7] := (pp[3] - pp[4]) * GCos7_16;
+ p[ 4] := (pp[0] - pp[7]) * GCosTable[6];
+ p[ 5] := (pp[1] - pp[6]) * GCosTable[5];
+ p[ 6] := (pp[2] - pp[5]) * GCosTable[4];
+ p[ 7] := (pp[3] - pp[4]) * GCosTable[3];
  p[ 8] :=  pp[8] + pp[15];
  p[ 9] :=  pp[9] + pp[14];
  p[10] :=  pp[10] + pp[13];
  p[11] :=  pp[11] + pp[12];
- p[12] := (pp[8] - pp[15]) * GCos1_16;
- p[13] := (pp[9] - pp[14]) * GCos3_16;
- p[14] := (pp[10] - pp[13]) * GCos5_16;
- p[15] := (pp[11] - pp[12]) * GCos7_16;
+ p[12] := (pp[8] - pp[15]) * GCosTable[6];
+ p[13] := (pp[9] - pp[14]) * GCosTable[5];
+ p[14] := (pp[10] - pp[13]) * GCosTable[4];
+ p[15] := (pp[11] - pp[12]) * GCosTable[3];
 
  pp[ 0] :=  p[0] + p[3];
  pp[ 1] :=  p[1] + p[2];
- pp[ 2] := (p[0] - p[3]) * GCos1_8;
- pp[ 3] := (p[1] - p[2]) * GCos3_8;
+ pp[ 2] := (p[0] - p[3]) * GCosTable[2];
+ pp[ 3] := (p[1] - p[2]) * GCosTable[1];
  pp[ 4] :=  p[4] + p[7];
  pp[ 5] :=  p[5] + p[6];
- pp[ 6] := (p[4] - p[7]) * GCos1_8;
- pp[ 7] := (p[5] - p[6]) * GCos3_8;
+ pp[ 6] := (p[4] - p[7]) * GCosTable[2];
+ pp[ 7] := (p[5] - p[6]) * GCosTable[1];
  pp[ 8] :=  p[8] + p[11];
  pp[ 9] :=  p[9] + p[10];
- pp[10] := (p[8] - p[11]) * GCos1_8;
- pp[11] := (p[9] - p[10]) * GCos3_8;
+ pp[10] := (p[8] - p[11]) * GCosTable[2];
+ pp[11] := (p[9] - p[10]) * GCosTable[1];
  pp[12] :=  p[12] + p[15];
  pp[13] :=  p[13] + p[14];
- pp[14] := (p[12] - p[15]) * GCos1_8;
- pp[15] := (p[13] - p[14]) * GCos3_8;
+ pp[14] := (p[12] - p[15]) * GCosTable[2];
+ pp[15] := (p[13] - p[14]) * GCosTable[1];
 
  p[ 0] :=  pp[0] + pp[1];
- p[ 1] := (pp[0] - pp[1]) * GCos1_4;
+ p[ 1] := (pp[0] - pp[1]) * GCosTable[0];
  p[ 2] :=  pp[2] + pp[3];
- p[ 3] := (pp[2] - pp[3]) * GCos1_4;
+ p[ 3] := (pp[2] - pp[3]) * GCosTable[0];
  p[ 4] :=  pp[4] + pp[5];
- p[ 5] := (pp[4] - pp[5]) * GCos1_4;
+ p[ 5] := (pp[4] - pp[5]) * GCosTable[0];
  p[ 6] :=  pp[6] + pp[7];
- p[ 7] := (pp[6] - pp[7]) * GCos1_4;
+ p[ 7] := (pp[6] - pp[7]) * GCosTable[0];
  p[ 8] :=  pp[8] + pp[9];
- p[ 9] := (pp[8] - pp[9]) * GCos1_4;
+ p[ 9] := (pp[8] - pp[9]) * GCosTable[0];
  p[10] :=  pp[10] + pp[11];
- p[11] := (pp[10] - pp[11]) * GCos1_4;
+ p[11] := (pp[10] - pp[11]) * GCosTable[0];
  p[12] :=  pp[12] + pp[13];
- p[13] := (pp[12] - pp[13]) * GCos1_4;
+ p[13] := (pp[12] - pp[13]) * GCosTable[0];
  p[14] :=  pp[14] + pp[15];
- p[15] := (pp[14] - pp[15]) * GCos1_4;
+ p[15] := (pp[14] - pp[15]) * GCosTable[0];
 
  new_v[12] := p[7];
  new_v[4] := new_v[12] + p[5];
@@ -304,22 +302,22 @@ begin
  new_v[8] := p[3];
  new_v[40-17] := -new_v[8] - p[2];
 
- p[ 0] := (x1[ 0] - x1[31]) * GCos1_64;
- p[ 1] := (x1[ 1] - x1[30]) * GCos3_64;
- p[ 2] := (x1[ 2] - x1[29]) * GCos5_64;
- p[ 3] := (x1[ 3] - x1[28]) * GCos7_64;
- p[ 4] := (x1[ 4] - x1[27]) * GCos9_64;
- p[ 5] := (x1[ 5] - x1[26]) * GCos11_64;
- p[ 6] := (x1[ 6] - x1[25]) * GCos13_64;
- p[ 7] := (x1[ 7] - x1[24]) * GCos15_64;
- p[ 8] := (x1[ 8] - x1[23]) * GCos17_64;
- p[ 9] := (x1[ 9] - x1[22]) * GCos19_64;
- p[10] := (x1[10] - x1[21]) * GCos21_64;
- p[11] := (x1[11] - x1[20]) * GCos23_64;
- p[12] := (x1[12] - x1[19]) * GCos25_64;
- p[13] := (x1[13] - x1[18]) * GCos27_64;
- p[14] := (x1[14] - x1[17]) * GCos29_64;
- p[15] := (x1[15] - x1[16]) * GCos31_64;
+ p[ 0] := (x1[ 0] - x1[31]) * GCosTable[30];
+ p[ 1] := (x1[ 1] - x1[30]) * GCosTable[29];
+ p[ 2] := (x1[ 2] - x1[29]) * GCosTable[28];
+ p[ 3] := (x1[ 3] - x1[28]) * GCosTable[27];
+ p[ 4] := (x1[ 4] - x1[27]) * GCosTable[26];
+ p[ 5] := (x1[ 5] - x1[26]) * GCosTable[25];
+ p[ 6] := (x1[ 6] - x1[25]) * GCosTable[24];
+ p[ 7] := (x1[ 7] - x1[24]) * GCosTable[23];
+ p[ 8] := (x1[ 8] - x1[23]) * GCosTable[22];
+ p[ 9] := (x1[ 9] - x1[22]) * GCosTable[21];
+ p[10] := (x1[10] - x1[21]) * GCosTable[20];
+ p[11] := (x1[11] - x1[20]) * GCosTable[19];
+ p[12] := (x1[12] - x1[19]) * GCosTable[18];
+ p[13] := (x1[13] - x1[18]) * GCosTable[17];
+ p[14] := (x1[14] - x1[17]) * GCosTable[16];
+ p[15] := (x1[15] - x1[16]) * GCosTable[15];
 
  pp[0] := p[0] + p[15];
  pp[1] := p[1] + p[14];
@@ -329,65 +327,65 @@ begin
  pp[5] := p[5] + p[10];
  pp[6] := p[6] + p[9];
  pp[7] := p[7] + p[8];
- pp[8] := (p[0] - p[15]) * GCos1_32;
- pp[9] := (p[1] - p[14]) * GCos3_32;
- pp[10] := (p[2] - p[13]) * GCos5_32;
- pp[11] := (p[3] - p[12]) * GCos7_32;
- pp[12] := (p[4] - p[11]) * GCos9_32;
- pp[13] := (p[5] - p[10]) * GCos11_32;
- pp[14] := (p[6] - p[9]) * GCos13_32;
- pp[15] := (p[7] - p[8]) * GCos15_32;
+ pp[8] := (p[0] - p[15]) * GCosTable[14];
+ pp[9] := (p[1] - p[14]) * GCosTable[13];
+ pp[10] := (p[2] - p[13]) * GCosTable[12];
+ pp[11] := (p[3] - p[12]) * GCosTable[11];
+ pp[12] := (p[4] - p[11]) * GCosTable[10];
+ pp[13] := (p[5] - p[10]) * GCosTable[9];
+ pp[14] := (p[6] - p[9]) * GCosTable[8];
+ pp[15] := (p[7] - p[8]) * GCosTable[7];
 
  p[0] := pp[0] + pp[7];
  p[1] := pp[1] + pp[6];
  p[2] := pp[2] + pp[5];
  p[3] := pp[3] + pp[4];
- p[4] := (pp[0] - pp[7]) * GCos1_16;
- p[5] := (pp[1] - pp[6]) * GCos3_16;
- p[6] := (pp[2] - pp[5]) * GCos5_16;
- p[7] := (pp[3] - pp[4]) * GCos7_16;
+ p[4] := (pp[0] - pp[7]) * GCosTable[6];
+ p[5] := (pp[1] - pp[6]) * GCosTable[5];
+ p[6] := (pp[2] - pp[5]) * GCosTable[4];
+ p[7] := (pp[3] - pp[4]) * GCosTable[3];
  p[8] := pp[8] + pp[15];
  p[9] := pp[9] + pp[14];
  p[10] := pp[10] + pp[13];
  p[11] := pp[11] + pp[12];
- p[12] := (pp[8] - pp[15]) * GCos1_16;
- p[13] := (pp[9] - pp[14]) * GCos3_16;
- p[14] := (pp[10] - pp[13]) * GCos5_16;
- p[15] := (pp[11] - pp[12]) * GCos7_16;
+ p[12] := (pp[8] - pp[15]) * GCosTable[6];
+ p[13] := (pp[9] - pp[14]) * GCosTable[5];
+ p[14] := (pp[10] - pp[13]) * GCosTable[4];
+ p[15] := (pp[11] - pp[12]) * GCosTable[3];
 
  pp[0] := p[0] + p[3];
  pp[1] := p[1] + p[2];
- pp[2] := (p[0] - p[3]) * GCos1_8;
- pp[3] := (p[1] - p[2]) * GCos3_8;
+ pp[2] := (p[0] - p[3]) * GCosTable[2];
+ pp[3] := (p[1] - p[2]) * GCosTable[1];
  pp[4] := p[4] + p[7];
  pp[5] := p[5] + p[6];
- pp[6] := (p[4] - p[7]) * GCos1_8;
- pp[7] := (p[5] - p[6]) * GCos3_8;
+ pp[6] := (p[4] - p[7]) * GCosTable[2];
+ pp[7] := (p[5] - p[6]) * GCosTable[1];
  pp[8] := p[8] + p[11];
  pp[9] := p[9] + p[10];
- pp[10] := (p[8] - p[11]) * GCos1_8;
- pp[11] := (p[9] - p[10]) * GCos3_8;
+ pp[10] := (p[8] - p[11]) * GCosTable[2];
+ pp[11] := (p[9] - p[10]) * GCosTable[1];
  pp[12] := p[12] + p[15];
  pp[13] := p[13] + p[14];
- pp[14] := (p[12] - p[15]) * GCos1_8;
- pp[15] := (p[13] - p[14]) * GCos3_8;
+ pp[14] := (p[12] - p[15]) * GCosTable[2];
+ pp[15] := (p[13] - p[14]) * GCosTable[1];
 
  p[0] := pp[0] + pp[1];
- p[1] := (pp[0] - pp[1]) * GCos1_4;
+ p[1] := (pp[0] - pp[1]) * GCosTable[0];
  p[2] := pp[2] + pp[3];
- p[3] := (pp[2] - pp[3]) * GCos1_4;
+ p[3] := (pp[2] - pp[3]) * GCosTable[0];
  p[4] := pp[4] + pp[5];
- p[5] := (pp[4] - pp[5]) * GCos1_4;
+ p[5] := (pp[4] - pp[5]) * GCosTable[0];
  p[6] := pp[6] + pp[7];
- p[7] := (pp[6] - pp[7]) * GCos1_4;
+ p[7] := (pp[6] - pp[7]) * GCosTable[0];
  p[8] := pp[8] + pp[9];
- p[9] := (pp[8] - pp[9]) * GCos1_4;
+ p[9] := (pp[8] - pp[9]) * GCosTable[0];
  p[10] := pp[10] + pp[11];
- p[11] := (pp[10] - pp[11]) * GCos1_4;
+ p[11] := (pp[10] - pp[11]) * GCosTable[0];
  p[12] := pp[12] + pp[13];
- p[13] := (pp[12] - pp[13]) * GCos1_4;
+ p[13] := (pp[12] - pp[13]) * GCosTable[0];
  p[14] := pp[14] + pp[15];
- p[15] := (pp[14] - pp[15]) * GCos1_4;
+ p[15] := (pp[14] - pp[15]) * GCosTable[0];
 
  new_v[15] := p[15];
  new_v[13] := new_v[15] + p[7];
@@ -434,7 +432,7 @@ begin
  // V[16] is always 0.0:
  x2[256] := 0.0;
 
- // insert V[17-31] (== -new_v[15-1]) into actual v:
+ // insert V[17-31] (= -new_v[15-1]) into actual v:
  x2[272] := -x1[15];
  x2[288] := -x1[14];
  x2[304] := -x1[13];
@@ -451,14 +449,14 @@ begin
  x2[480] := -x1[2];
  x2[496] := -x1[1];
 
- // insert V[32] (== -new_v[0]) into other v:
+ // insert V[32] (= -new_v[0]) into other v:
  if (FActualVector = @FVector[0])
   then x2 := @FVector[1][FActualWritePos]
   else x2 := @FVector[0][FActualWritePos];
 
  x2[0] := -x1[0];
 
- // insert V[33-48] (== new_v[16-31]) into other v:
+ // insert V[33-48] (= new_v[16-31]) into other v:
  x2[16] := x1[16];
  x2[32] := x1[17];
  x2[48] := x1[18];
@@ -476,7 +474,7 @@ begin
  x2[240] := x1[30];
  x2[256] := x1[31];
 
- // insert V[49-63] (==new_v[30-16]) into other v:
+ // insert V[49-63] (=new_v[30-16]) into other v:
  x2[272] := x1[30];
  x2[288] := x1[29];
  x2[304] := x1[28];
@@ -499,6 +497,8 @@ var
   vp          : PDAV512SingleArray;
   Coefficient : PDAV512SingleArray;
   PcmSample   : Single;
+const
+  C2048 = 2048;  
 begin
  if not assigned(FOnNewPCMSample) then exit;
 
@@ -506,7 +506,7 @@ begin
  case FActualWritePos of
   0: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 0] * Coefficient[ 0]) + (vp[15] * Coefficient[ 1]) +
                       (vp[14] * Coefficient[ 2]) + (vp[13] * Coefficient[ 3]) +
@@ -524,7 +524,7 @@ begin
 
   1: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 1] * Coefficient[ 0]) + (vp[ 0] * Coefficient[ 1]) +
                       (vp[15] * Coefficient[ 2]) + (vp[14] * Coefficient[ 3]) +
@@ -542,7 +542,7 @@ begin
 
   2: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 2] * Coefficient[ 0]) + (vp[ 1] * Coefficient[ 1]) +
                       (vp[ 0] * Coefficient[ 2]) + (vp[15] * Coefficient[ 3]) +
@@ -561,7 +561,7 @@ begin
 
   3: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 3] * Coefficient[ 0]) + (vp[ 2] * Coefficient[ 1]) +
                       (vp[ 1] * Coefficient[ 2]) + (vp[ 0] * Coefficient[ 3]) +
@@ -579,7 +579,7 @@ begin
 
   4: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 4] * Coefficient[ 0]) + (vp[ 3] * Coefficient[ 1]) +
                       (vp[ 2] * Coefficient[ 2]) + (vp[ 1] * Coefficient[ 3]) +
@@ -597,7 +597,7 @@ begin
 
   5: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 5] * Coefficient[ 0]) + (vp[ 4] * Coefficient[ 1]) +
                       (vp[ 3] * Coefficient[ 2]) + (vp[ 2] * Coefficient[ 3]) +
@@ -615,7 +615,7 @@ begin
 
   6: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 6] * Coefficient[ 0]) + (vp[ 5] * Coefficient[ 1]) +
                       (vp[ 4] * Coefficient[ 2]) + (vp[ 3] * Coefficient[ 3]) +
@@ -633,7 +633,7 @@ begin
 
   7: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 7] * Coefficient[ 0]) + (vp[ 6] * Coefficient[ 1]) +
                       (vp[ 5] * Coefficient[ 2]) + (vp[ 4] * Coefficient[ 3]) +
@@ -651,7 +651,7 @@ begin
 
   8: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 8] * Coefficient[ 0]) + (vp[ 7] * Coefficient[ 1]) +
                       (vp[ 6] * Coefficient[ 2]) + (vp[ 5] * Coefficient[ 3]) +
@@ -669,7 +669,7 @@ begin
 
   9: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[ 9] * Coefficient[ 0]) + (vp[ 8] * Coefficient[ 1]) +
                       (vp[ 7] * Coefficient[ 2]) + (vp[ 6] * Coefficient[ 3]) +
@@ -687,7 +687,7 @@ begin
 
  10: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[10] * Coefficient[ 0]) + (vp[ 9] * Coefficient[ 1]) +
                       (vp[ 8] * Coefficient[ 2]) + (vp[ 7] * Coefficient[ 3]) +
@@ -705,7 +705,7 @@ begin
 
  11: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[11] * Coefficient[ 0]) + (vp[10] * Coefficient[ 1]) +
                       (vp[ 9] * Coefficient[ 2]) + (vp[ 8] * Coefficient[ 3]) +
@@ -723,7 +723,7 @@ begin
 
  12: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[12] * Coefficient[ 0]) + (vp[11] * Coefficient[ 1]) +
                       (vp[10] * Coefficient[ 2]) + (vp[ 9] * Coefficient[ 3]) +
@@ -741,7 +741,7 @@ begin
 
  13: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[13] * Coefficient[ 0]) + (vp[12] * Coefficient[ 1]) +
                       (vp[11] * Coefficient[ 2]) + (vp[10] * Coefficient[ 3]) +
@@ -759,7 +759,7 @@ begin
 
  14: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[14] * Coefficient[ 0]) + (vp[13] * Coefficient[ 1]) +
                       (vp[12] * Coefficient[ 2]) + (vp[11] * Coefficient[ 3]) +
@@ -777,7 +777,7 @@ begin
 
  15: begin
       Coefficient := @CAnnex3B3Table;
-      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + 2048) do
+      while (Cardinal(Coefficient) < Cardinal(@CAnnex3B3Table) + C2048) do
        begin
         PcmSample := ((vp[15] * Coefficient[ 0]) + (vp[14] * Coefficient[ 1]) +
                       (vp[13] * Coefficient[ 2]) + (vp[12] * Coefficient[ 3]) +
@@ -809,42 +809,124 @@ begin
  FActualWritePos := 15;
 end;
 
+procedure CalculateCosTable;
+{$IFDEF FastCalculation}
+var
+  Position, Offset: TComplexDouble;
+{$ELSE}
 const
   COne64th = 1 / 64;
   COne32th = 1 / 32;
   COne16th = 1 / 16;
   COne8th  = 1 /  8;
-
+  COne4th  = 1 /  4;
+{$ENDIF}
 begin
- GCos1_64  := 1.0 / (2.0 * cos(Pi        * COne64th));
- GCos3_64  := 1.0 / (2.0 * cos(Pi * 3.0  * COne64th));
- GCos5_64  := 1.0 / (2.0 * cos(Pi * 5.0  * COne64th));
- GCos7_64  := 1.0 / (2.0 * cos(Pi * 7.0  * COne64th));
- GCos9_64  := 1.0 / (2.0 * cos(Pi * 9.0  * COne64th));
- GCos11_64 := 1.0 / (2.0 * cos(Pi * 11.0 * COne64th));
- GCos13_64 := 1.0 / (2.0 * cos(Pi * 13.0 * COne64th));
- GCos15_64 := 1.0 / (2.0 * cos(Pi * 15.0 * COne64th));
- GCos17_64 := 1.0 / (2.0 * cos(Pi * 17.0 * COne64th));
- GCos19_64 := 1.0 / (2.0 * cos(Pi * 19.0 * COne64th));
- GCos21_64 := 1.0 / (2.0 * cos(Pi * 21.0 * COne64th));
- GCos23_64 := 1.0 / (2.0 * cos(Pi * 23.0 * COne64th));
- GCos25_64 := 1.0 / (2.0 * cos(Pi * 25.0 * COne64th));
- GCos27_64 := 1.0 / (2.0 * cos(Pi * 27.0 * COne64th));
- GCos29_64 := 1.0 / (2.0 * cos(Pi * 29.0 * COne64th));
- GCos31_64 := 1.0 / (2.0 * cos(Pi * 31.0 * COne64th));
- GCos1_32  := 1.0 / (2.0 * cos(Pi        * COne32th));
- GCos3_32  := 1.0 / (2.0 * cos(Pi * 3.0  * COne32th));
- GCos5_32  := 1.0 / (2.0 * cos(Pi * 5.0  * COne32th));
- GCos7_32  := 1.0 / (2.0 * cos(Pi * 7.0  * COne32th));
- GCos9_32  := 1.0 / (2.0 * cos(Pi * 9.0  * COne32th));
- GCos11_32 := 1.0 / (2.0 * cos(Pi * 11.0 * COne32th));
- GCos13_32 := 1.0 / (2.0 * cos(Pi * 13.0 * COne32th));
- GCos15_32 := 1.0 / (2.0 * cos(Pi * 15.0 * COne32th));
- GCos1_16  := 1.0 / (2.0 * cos(Pi        * COne16th));
- GCos3_16  := 1.0 / (2.0 * cos(Pi * 3.0  * COne16th));
- GCos5_16  := 1.0 / (2.0 * cos(Pi * 5.0  * COne16th));
- GCos7_16  := 1.0 / (2.0 * cos(Pi * 7.0  * COne16th));
- GCos1_8   := 1.0 / (2.0 * cos(Pi        * COne8th));
- GCos3_8   := 1.0 / (2.0 * cos(Pi * 3.0  * COne8th));
- GCos1_4   := 1.0 / (2.0 * cos(Pi / 4.0));
+{$IFDEF FastCalculation}
+ Position.Re := 1;
+ Position.Im := 0;
+ GetSinCos(Pi / 64, Offset.Im, Offset.Re);
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[30] := 0.5 / Position.Re;
+ GCosTable[15] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[14] := 0.5 / Position.Re;
+ GCosTable[ 7] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[29] := 0.5 / Position.Re;
+ GCosTable[16] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[ 6] := 0.5 / Position.Re;
+ GCosTable[ 3] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[28] := 0.5 / Position.Re;
+ GCosTable[17] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[13] := 0.5 / Position.Re;
+ GCosTable[ 8] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[27] := 0.5 / Position.Re;
+ GCosTable[18] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[ 2] := 0.5 / Position.Re;
+ GCosTable[ 1] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[26] := 0.5 / Position.Re;
+ GCosTable[19] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[12] := 0.5 / Position.Re;
+ GCosTable[ 9] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[25] := 0.5 / Position.Re;
+ GCosTable[20] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[ 5] := 0.5 / Position.Re;
+ GCosTable[ 4] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[24] := 0.5 / Position.Re;
+ GCosTable[21] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[11] := 0.5 / Position.Re;
+ GCosTable[10] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[23] := 0.5 / Position.Re;
+ GCosTable[22] := 0.5 / Position.Im;
+
+ ComplexMultiplyInplace(Position, Offset);
+ GCosTable[0] := 0.5 / Position.Re;
+
+{$ELSE}
+
+ GCosTable[0]  := 1 / (2 * cos(Pi      * COne4th));
+ GCosTable[1]  := 1 / (2 * cos(Pi * 3  * COne8th));
+ GCosTable[2]  := 1 / (2 * cos(Pi      * COne8th));
+ GCosTable[3]  := 1 / (2 * cos(Pi * 7  * COne16th));
+ GCosTable[4]  := 1 / (2 * cos(Pi * 5  * COne16th));
+ GCosTable[5]  := 1 / (2 * cos(Pi * 3  * COne16th));
+ GCosTable[6]  := 1 / (2 * cos(Pi      * COne16th));
+ GCosTable[7]  := 1 / (2 * cos(Pi * 15 * COne32th));
+ GCosTable[8]  := 1 / (2 * cos(Pi * 13 * COne32th));
+ GCosTable[9]  := 1 / (2 * cos(Pi * 11 * COne32th));
+ GCosTable[10] := 1 / (2 * cos(Pi * 9  * COne32th));
+ GCosTable[11] := 1 / (2 * cos(Pi * 7  * COne32th));
+ GCosTable[12] := 1 / (2 * cos(Pi * 5  * COne32th));
+ GCosTable[13] := 1 / (2 * cos(Pi * 3  * COne32th));
+ GCosTable[14] := 1 / (2 * cos(Pi      * COne32th));
+ GCosTable[15] := 1 / (2 * cos(Pi * 31 * COne64th));
+ GCosTable[16] := 1 / (2 * cos(Pi * 29 * COne64th));
+ GCosTable[17] := 1 / (2 * cos(Pi * 27 * COne64th));
+ GCosTable[18] := 1 / (2 * cos(Pi * 25 * COne64th));
+ GCosTable[19] := 1 / (2 * cos(Pi * 23 * COne64th));
+ GCosTable[20] := 1 / (2 * cos(Pi * 21 * COne64th));
+ GCosTable[21] := 1 / (2 * cos(Pi * 19 * COne64th));
+ GCosTable[22] := 1 / (2 * cos(Pi * 17 * COne64th));
+ GCosTable[23] := 1 / (2 * cos(Pi * 15 * COne64th));
+ GCosTable[24] := 1 / (2 * cos(Pi * 13 * COne64th));
+ GCosTable[25] := 1 / (2 * cos(Pi * 11 * COne64th));
+ GCosTable[26] := 1 / (2 * cos(Pi * 9  * COne64th));
+ GCosTable[27] := 1 / (2 * cos(Pi * 7  * COne64th));
+ GCosTable[28] := 1 / (2 * cos(Pi * 5  * COne64th));
+ GCosTable[29] := 1 / (2 * cos(Pi * 3  * COne64th));
+ GCosTable[30] := 1 / (2 * cos(Pi      * COne64th));
+ {$ENDIF}
+end;
+
+initialization
+ CalculateCosTable;
+
 end.

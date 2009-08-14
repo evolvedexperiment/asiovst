@@ -4,7 +4,7 @@ interface
 
 uses
   {$IFDEF UseEmbedding}Windows, Classes, {$ENDIF} SysUtils, SyncObjs,
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_MpegAudio;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspBufferedMP3Player;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -14,14 +14,17 @@ type
   private
     FOutLeftBuffer   : PDAVSingleFixedArray;
     FOutRightBuffer  : PDAVSingleFixedArray;
-    FMpegAudio       : TMpegAudio;
     FFileName        : TFileName;
     FPosition        : Integer;
     FReset           : Boolean;
     FCriticalSection : TCriticalSection;
     {$IFDEF UseEmbedding}
+    FBufferedPlayer  : TBufferedMP3StreamPlayer;
+    FResourceStream  : TResourceStream;
     FContainedData   : TStringList;
     procedure LoadFromResource(ID: Integer);
+    {$ELSE}
+    FBufferedPlayer  : TBufferedMP3FilePlayer;
     {$ENDIF}
   protected
     procedure Open; override;
@@ -55,12 +58,15 @@ begin
  FCriticalSection := TCriticalSection.Create;
 
  {$IFDEF UseEmbedding}
+ FBufferedPlayer := TBufferedMP3StreamPlayer.Create;
  FContainedData := TStringList.Create;
  EnumResourceNames(HInstance, 'MP3', @EnumNamesFunc, LongWord(FContainedData));
 
  if FContainedData.Count > 0
   then Integer(FFileName) := 0
   else FFileName := '';
+ {$ELSE}
+ FBufferedPlayer := TBufferedMP3FilePlayer.Create;
  {$ENDIF}
 end;
 
@@ -70,8 +76,8 @@ begin
  FreeAndNil(FContainedData);
  {$ENDIF}
  FreeAndNil(FCriticalSection);
- if assigned(FMpegAudio)
-  then FreeAndNil(FMpegAudio);
+ if assigned(FBufferedPlayer)
+  then FreeAndNil(FBufferedPlayer);
  inherited;
 end;
 
@@ -90,13 +96,12 @@ end;
 procedure TSESimpleMp3PlayerModule.Close;
 begin
  OnProcess := SubProcessBypass;
- sleep(1);
  inherited;
 end;
 
 procedure TSESimpleMp3PlayerModule.ChooseProcess;
 begin
- if {$IFDEF UseEmbedding}(FContainedData.Count = 0) {$ELSE} (not FileExists(FFileName)) {$ENDIF} or (not assigned(FMpegAudio))
+ if {$IFDEF UseEmbedding}(FContainedData.Count = 0) {$ELSE} (not FileExists(FFileName)) {$ENDIF}
   then OnProcess := SubProcessBypass
   else OnProcess := SubProcess
 end;
@@ -116,9 +121,7 @@ begin
                   {$ENDIF}
                     if FileExists(FFileName) then
                      try
-                      if assigned(FMpegAudio)
-                       then FreeAndNil(FMpegAudio);
-                      FMpegAudio := TMPEGAudio.Create(FFileName);
+                      FBufferedPlayer.Filename := FFileName;
                       FPosition := 0;
                      except
                      end;
@@ -132,8 +135,8 @@ begin
                  begin
                   FPosition := 0;
                   FReset := False;
-                  if assigned(FMpegAudio)
-                   then FMpegAudio.Reset;
+                  if assigned(FBufferedPlayer)
+                   then FBufferedPlayer.Reset;
                   Pin[Integer(pinReset)].TransmitStatusChange(SampleClock, stOneOff);
                  end;
  end;
@@ -141,17 +144,12 @@ end;
 
 {$IFDEF UseEmbedding}
 procedure TSESimpleMp3PlayerModule.LoadFromResource(ID: Integer);
-var
-  RS  : TResourceStream;
 begin
  if (ID >= 0) and (ID < FContainedData.Count) then
   begin
-   RS := TResourceStream.Create(HInstance, FContainedData[ID], 'MP3');
-   try
-    FAudioData.LoadFromStream(RS);
-   finally
-    FreeAndNil(RS);
-   end;
+   if assigned(FResourceStream) then FreeAndNil(FResourceStream)
+   FResourceStream := TResourceStream.Create(HInstance, FContainedData[ID], 'MP3');
+   FBufferedPlayer.Stream := FResourceStream;
   end;
 end;
 {$ENDIF}
@@ -161,23 +159,7 @@ procedure TSESimpleMp3PlayerModule.SubProcess(const BufferOffset, SampleFrames: 
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FMpegAudio)
-   then FMpegAudio.ReadBuffer(@FOutLeftBuffer^[BufferOffset], @FOutRightBuffer^[BufferOffset], SampleFrames)
-(*
-  if FAudioData.SampleFrames > 0 then
-   for Sample := 0 to SampleFrames - 1 do
-    begin
-     FOutputBuffer[BufferOffset + Sample] := FAudioData[0].ChannelDataPointer^[FPosition];
-     inc(FPosition);
-     if FPosition >= FAudioData[0].SampleCount
-      then FPosition := 0;
-    end
-*)
-   else
-    begin
-     FillChar(FOutLeftBuffer^[BufferOffset], SampleFrames * SizeOf(Single), 0);
-     FillChar(FOutRightBuffer^[BufferOffset], SampleFrames * SizeOf(Single), 0);
-    end;
+  FBufferedPlayer.GetSamples(@FOutLeftBuffer^[BufferOffset], @FOutRightBuffer^[BufferOffset], SampleFrames)
  finally
   FCriticalSection.Leave;
  end;
@@ -191,7 +173,7 @@ begin
 end;
 
 // describe your module
-class procedure TSESimpleMp3PlayerModule.getModuleProperties(Properties : PSEModuleProperties);
+class procedure TSESimpleMp3PlayerModule.GetModuleProperties(Properties : PSEModuleProperties);
 {$IFDEF UseEmbedding}
 var
   ContainedData : TStringList;

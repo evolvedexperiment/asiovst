@@ -9,7 +9,7 @@ uses
 type
   // define some constants to make referencing in/outs clearer
   TSEMp3PlayerPins = (pinFileName, pinInterpolation, pinTrigger,
-    pinMode, pinPlaybackSpeed, pinOutput, pinAudiodata);
+    pinMode, pinPlaybackSpeed, pinOutputLeft, pinOutputRight);
 
   TInterpolationMethod = (imNone, imLinear, imHermite, imBSpline4);
   TLoopMode = (lmLooped, lmOneShot);
@@ -106,7 +106,8 @@ begin
  ChooseProcess;
 
  // 'transmit' new output status to next module 'downstream'
- Pin[Integer(pinOutput)].TransmitStatusChange(SampleClock, stRun);
+ Pin[Integer(pinOutputLeft)].TransmitStatusChange(SampleClock, stRun);
+ Pin[Integer(pinOutputRight)].TransmitStatusChange(SampleClock, stRun);
 end;
 
 procedure TSEMp3PlayerModule.PlugStateChange(
@@ -895,22 +896,20 @@ begin
                        Direction       := drIn;
                        Datatype        := dtFSample;
                       end;
-         pinOutput : with Properties^ do
+     pinOutputLeft : with Properties^ do
                       begin
-                       Name            := 'Output';
-                       VariableAddress := @FOutputBuffer;
+                       Name            := 'Left';
+                       VariableAddress := @FOutputLeftBuffer;
                        Direction       := drOut;
                        Datatype        := dtFSample;
                       end;
-(*
-      pinAudiodata : with Properties^ do
+    pinOutputRight : with Properties^ do
                       begin
-                       Name            := 'Audiodata';
-                       VariableAddress := @FOutputBuffer;
+                       Name            := 'Right';
+                       VariableAddress := @FOutputRightBuffer;
                        Direction       := drOut;
-                       Datatype        := dtExperimental;
+                       Datatype        := dtFSample;
                       end;
-*)
   else
    begin
     result := False;
