@@ -8,7 +8,7 @@ uses
   DAV_Common;
 
 type
-  TOBuffer = class
+  TStereoBuffer = class
   private
     FBufferPos  : array [0..1] of Integer;
     FBufferSize : Integer;
@@ -30,7 +30,7 @@ implementation
 const
   COutputBufferSize  = 1152; // max. 2 * 1152 samples per frame
 
-constructor TOBuffer.Create;
+constructor TStereoBuffer.Create;
 begin
  inherited;
  FBufferSize := COutputBufferSize;
@@ -39,32 +39,32 @@ begin
  Reset;
 end;
 
-destructor TOBuffer.Destroy;
+destructor TStereoBuffer.Destroy;
 begin
  Dispose(Output[0]);
  Dispose(Output[1]);
  inherited;
 end;
 
-procedure TOBuffer.Append(Channel: Cardinal; Value: Single);
+procedure TStereoBuffer.Append(Channel: Cardinal; Value: Single);
 begin
  Output[Channel, FBufferPos[Channel]] := Value;
  FBufferPos[Channel] := FBufferPos[Channel] + 1;
 end;
 
-procedure TOBuffer.Clear;
+procedure TStereoBuffer.Clear;
 begin
  FillChar(Output[0]^, FBufferSize * SizeOf(Single), 0);
  FillChar(Output[1]^, FBufferSize * SizeOf(Single), 0);
 end;
 
-procedure TOBuffer.Reset;
+procedure TStereoBuffer.Reset;
 begin
  FBufferPos[0] := 0;
  FBufferPos[1] := 0;
 end;
 
-procedure TOBuffer.SetBufferSize(const Value: Integer);
+procedure TStereoBuffer.SetBufferSize(const Value: Integer);
 begin
  if FBufferSize <> Value then
   begin
@@ -73,7 +73,7 @@ begin
   end;
 end;
 
-procedure TOBuffer.BufferSizeChanged;
+procedure TStereoBuffer.BufferSizeChanged;
 begin
  ReallocMem(Output[0], FBufferSize * SizeOf(Single));
  ReallocMem(Output[1], FBufferSize * SizeOf(Single));

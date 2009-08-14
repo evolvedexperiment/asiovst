@@ -16,9 +16,9 @@ type
   TSynthesisFilter = class
   private
     FVector         : array[0..1, 0..511] of Single;
-    FActualVector   : PDAV512SingleArray; // FVector[0] or FVector[1]
-    FActualWritePos : Cardinal;         // 0-15
-    FSample         : array[0..31] of Single;  // 32 new subband samples
+    FActualVector   : PDAV512SingleArray;     // FVector[0] or FVector[1]
+    FActualWritePos : Cardinal;               // 0-15
+    FSample         : array[0..31] of Single; // 32 new subband samples
     FOnNewPCMSample : TNewPCMSample;
     procedure ComputeNewVector;
     procedure ComputePCMSample;

@@ -628,7 +628,7 @@ type
     FPrevBlock     : array[0..1, 0..(SBLIMIT*SSLIMIT)-1] of Single;     
     FK             : array[0..1, 0..(SBLIMIT*SSLIMIT)-1] of Single;     
     FNonZero       : array[0..1] of Integer;     
-    FBuffer        : TOBuffer;     
+    FBuffer        : TStereoBuffer;     
     FBitStream     : TBitStream;     
     FHeader        : THeader;
     FFilter        : array [0..1] of TSynthesisFilter;
@@ -656,7 +656,7 @@ type
     procedure Hybrid(ch: Cardinal; gr: Cardinal);
     procedure DoDownmix;
   public
-    constructor Create(Stream: TBitStream; Header: THeader; FilterA, FilterB: TSynthesisFilter; Buffer: TOBuffer; Which_Ch: TChannels);
+    constructor Create(Stream: TBitStream; Header: THeader; FilterA, FilterB: TSynthesisFilter; Buffer: TStereoBuffer; Which_Ch: TChannels);
     destructor Destroy; override;
     procedure SeekNotify; // Notify decoder that a seek is being made
     procedure Decode; // Decode one frame, filling the buffer with the output samples
@@ -669,7 +669,7 @@ type
     FWhichC     : TChannels;
     FFilter     : array [0..1] of TSynthesisFilter;
     FCRC        : TCRC16;
-    FBuffer     : TOBuffer;
+    FBuffer     : TStereoBuffer;
     FLayer      : Cardinal;
     FLayer3     : TLayerIII_Decoder;
     FOPos       : Integer;
@@ -925,7 +925,7 @@ begin
    Result := THeader(Header).ReadHeader(Self, CRC);
   end;
 
- if (CRC <> nil) then FreeAndNil(CRC);
+ if assigned(CRC) then FreeAndNil(CRC);
 end;
 
 procedure TBitStream.SetSyncWord(SyncWord: Cardinal);
@@ -953,14 +953,13 @@ end;
 
 destructor THeader.Destroy;
 begin
- if (FOffset <> nil)
-  then FreeMem(FOffset);
+ if assigned(FOffset) then Dispose(FOffset);
  inherited;
 end;
 
 function THeader.Bitrate: Cardinal;
 begin
-  Result := CBitrates[FVersion, FLayer-1, FBitrateIndex];
+  Result := CBitrates[FVersion, FLayer - 1, FBitrateIndex];
 end;
 
 // calculates framesize in bytes excluding header size
@@ -1053,7 +1052,7 @@ function THeader.ReadHeader(Stream: TBitStream; var CRC: TCRC16): Boolean;
 var
   HeaderString   : Cardinal;
   ChannelBitrate : Cardinal;
-  max, cf, lf, i : Integer;
+  Max, Cf, Lf    : Integer;
 begin
  Result := True;
  try
@@ -1132,14 +1131,14 @@ begin
    begin
     if (FOffset = nil) then
      begin
-      max := MaxNumberOfFrames(Stream);
-      FOffset := AllocMem(Max * sizeof(Cardinal));
-      for i := 0 to max-1 do FOffset[i] := 0;
+      Max := MaxNumberOfFrames(Stream);
+      GetMem(FOffset, Max * SizeOf(Cardinal));
+      FillChar(FOffset^, Max * SizeOf(Cardinal), 0);
      end;
-    cf := Stream.CurrentFrame;
-    lf := Stream.LastFrame;
-    if ((cf > 0) and (cf = lf))
-     then FOffset[cf] := FOffset[cf - 1] + FPaddingBit
+    Cf := Stream.CurrentFrame;
+    Lf := Stream.LastFrame;
+    if ((Cf > 0) and (Cf = Lf))
+     then FOffset[Cf] := FOffset[Cf - 1] + FPaddingBit
      else FOffset[0] := FPaddingBit;
    end;
   {$ENDIF}
@@ -1711,7 +1710,7 @@ var
 { TLayerIII_Decoder }
 
 constructor TLayerIII_Decoder.Create(Stream: TBitStream; Header: THeader;
-  FilterA, FilterB: TSynthesisFilter; Buffer: TOBuffer; Which_Ch: TChannels);
+  FilterA, FilterB: TSynthesisFilter; Buffer: TStereoBuffer; Which_Ch: TChannels);
 begin
  FBitStream := Stream;
  FHeader := Header;
@@ -1754,15 +1753,17 @@ end;
 destructor TLayerIII_Decoder.Destroy;
 begin
  FreeAndNil(FBitReserve);
- FreeMem(FSideInfo);
+ if assigned(FSideInfo)
+  then Dispose(FSideInfo);
  inherited Destroy;
 end;
 
 procedure TLayerIII_Decoder.Antialias(ch, gr: Cardinal);
-var ss, sb18, sb18lim: Cardinal;
-    GrInfo: PGRInfo;
-    bu, bd: Single;
-    src_idx1, src_idx2: Integer;
+var
+  Ss, Sb18, Ssb18lim: Cardinal;
+  GrInfo: PGRInfo;
+  bu, bd: Single;
+  SrcIdx: array [0..1] of Integer;
 begin
  GrInfo := @FSideInfo.ch[ch].gr[gr];
 
@@ -1771,41 +1772,43 @@ begin
  if (GrInfo.WindowSwitchingFlag <> 0) and (GrInfo.BlockType = 2) and (GrInfo.MixedBlockFlag = 0) then Exit;
 
  if (GrInfo.WindowSwitchingFlag <> 0) and (GrInfo.MixedBlockFlag <> 0) and (GrInfo.BlockType = 2)
-  then sb18lim := 18
-  else sb18lim := 558;
+  then Ssb18lim := 18
+  else Ssb18lim := 558;
 
- sb18 := 0;
- while (sb18 < sb18lim) do
+ Sb18 := 0;
+ while (Sb18 < Ssb18lim) do
   begin
-   for ss := 0 to 7 do
+   for Ss := 0 to 7 do
     begin
-     src_idx1 := sb18 + 17 - ss;
-     src_idx2 := sb18 + 18 + ss;
-     bu := FOut1D[src_idx1];
-     bd := FOut1D[src_idx2];
-     FOut1D[src_idx1] := (bu * cs[ss]) - (bd * ca[ss]);
-     FOut1D[src_idx2] := (bd * cs[ss]) + (bu * ca[ss]);
+     SrcIdx[0] := Sb18 + 17 - Ss;
+     SrcIdx[1] := Sb18 + 18 + Ss;
+     bu := FOut1D[SrcIdx[0]];
+     bd := FOut1D[SrcIdx[1]];
+     FOut1D[SrcIdx[0]] := (bu * cs[Ss]) - (bd * ca[Ss]);
+     FOut1D[SrcIdx[1]] := (bd * cs[Ss]) + (bu * ca[Ss]);
     end;
-   Inc(sb18, 18);
+   Inc(Sb18, 18);
  end;
 end;
 
 procedure TLayerIII_Decoder.Decode;
-var nSlots: Cardinal;
-    flush_main, ch, ss, sb, sb18: Cardinal;
-    MainDataEnd: Integer;
-    BytesToDiscard: Integer;
-    i, gr: Cardinal;
+var
+  nSlots           : Cardinal;
+  FlushMain        : Cardinal;
+  ch, ss, sb, sb18 : Cardinal;
+  MainDataEnd      : Integer;
+  BytesToDiscard   : Integer;
+  i, gr            : Cardinal;
 begin
  nSlots := FHeader.Slots;
  GetSideInfo;
  for i := 0 to nSlots - 1
   do FBitReserve.WriteToBitstream(FBitStream.GetBits(8));
  MainDataEnd := FBitReserve.TotalBits shr 3;  // of previous frame
- flush_main := (FBitReserve.TotalBits and 7);
- if (flush_main <> 0) then
+ FlushMain := (FBitReserve.TotalBits and 7);
+ if (FlushMain <> 0) then
   begin
-   FBitReserve.GetBits(8 - flush_main);
+   FBitReserve.GetBits(8 - FlushMain);
    Inc(MainDataEnd);
   end;
 
@@ -1826,9 +1829,9 @@ begin
    Dec(BytesToDiscard);
   end;
 
- for gr := 0 to FMaxGr-1 do
+ for gr := 0 to FMaxGr - 1 do
   begin
-   for ch := 0 to FChannels-1 do
+   for ch := 0 to FChannels - 1 do
     begin
      FPart2Start := FBitReserve.TotalBits;
 
@@ -1902,13 +1905,14 @@ end;
 procedure TLayerIII_Decoder.DequantizeSample(var xr: TSArray; ch,
   gr: Cardinal);
 var
-  GrInfo: PGRInfo;
-  Cb: Integer;
-  j, NextCbBoundary, CbBegin, CbWidth: Integer;
-  Index, t_index: Integer;
-  g_gain: Single;
-  xr1d: PDAV1024SingleArray;
-  abv, idx: Cardinal;
+  GrInfo            : PGRInfo;
+  Cb                : Integer;
+  j, NextCbBoundary : Integer;
+  CbBegin, CbWidth  : Integer;
+  Index, t_index    : Integer;
+  g_gain            : Single;
+  xr1d              : PDAV1024SingleArray;
+  abv, idx          : Cardinal;
 begin
  GrInfo := @FSideInfo.ch[ch].gr[gr];
  Cb := 0;
@@ -2020,7 +2024,7 @@ begin
     Inc(Index);
   end;
 
- for j := FNonZero[ch] to 576-1 do xr1d[j] := 0.0;
+ for j := FNonZero[ch] to 575 do xr1d[j] := 0.0;
 end;
 
 procedure TLayerIII_Decoder.DoDownmix;
@@ -2979,8 +2983,8 @@ begin
            end
           else
            begin
-            FLR[1,sb,ss] := FRO[0,sb,ss] / (1 + IsRatio[i]);
-            FLR[0,sb,ss] := FLR[1,sb,ss] * IsRatio[i];
+            FLR[1, sb, ss] := FRO[0, sb, ss] / (1 + IsRatio[i]);
+            FLR[0, sb, ss] := FLR[1, sb, ss] * IsRatio[i];
            end;
          end;
        Inc(i);
@@ -2998,7 +3002,7 @@ begin
  FFilter[1] := TSynthesisFilter.Create;
  FFilter[0].OnNewPCMSample := NewPCMSample;
  FFilter[1].OnNewPCMSample := NewPCMSample;
- FBuffer := TOBuffer.Create;
+ FBuffer := TStereoBuffer.Create;
  FCRC := nil;
  FOPos := 0;
 end;
@@ -3132,8 +3136,8 @@ begin
       until (ReadReady);
      end;
 
-    for i := 0 to NumSubBands - 1 do
-      FreeAndNil(SubBands[i]);
+    for i := 0 to NumSubBands - 1
+     do FreeAndNil(SubBands[i]);
    end
   else FLayer3.Decode; // Layer III
 end;

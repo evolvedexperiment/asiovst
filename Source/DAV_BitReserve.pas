@@ -16,7 +16,7 @@ type
     FOffset     : Cardinal;
     FTotalBits  : Cardinal;
     FBufByteIdx : Cardinal;
-    FBuf        : PCardinalArray;
+    FBuffer     : PCardinalArray;
     FBufBitIdx  : Cardinal;
     FPutMask    : PCardinalArray;
   protected
@@ -54,7 +54,7 @@ begin
  FOffset := 0;
  FTotalBits := 0;
  FBufByteIdx := 0;
- GetMem(FBuf, CBufferSize * SizeOf(Cardinal));
+ GetMem(FBuffer, CBufferSize * SizeOf(Cardinal));
  FBufBitIdx := 8;
  GetMem(FPutMask, 32 * SizeOf(Cardinal));
 
@@ -69,7 +69,7 @@ end;
 destructor TBitReserve.Destroy;
 begin
  Dispose(FPutMask);
- Dispose(FBuf);
+ Dispose(FBuffer);
  inherited Destroy;
 end;
 
@@ -85,7 +85,7 @@ begin
 
  // CBufferSize = 4096 = 2^12, so
  // FBufByteIdx mod CBufferSize = FBufByteIdx and $FFF
- Result := FBuf[FBufByteIdx and $FFF] and FPutMask[FBufBitIdx];
+ Result := FBuffer[FBufByteIdx and $FFF] and FPutMask[FBufBitIdx];
  Dec(FBufBitIdx);
  Result := Result shr FBufBitIdx;
 end;
@@ -115,8 +115,8 @@ begin
     else k := FBufBitIdx;
 
    // CBufferSize = 4096 = 2^12, so
-   // buf_byte_idx%CBufferSize == buf_byte_idx & 0xfff
-   Temp := FBuf[FBufByteIdx and $fff] and FPutMask[FBufBitIdx];
+   // FBufByteIdx mod CBufferSize = FBufByteIdx and $FFF
+   Temp := FBuffer[FBufByteIdx and $FFF] and FPutMask[FBufBitIdx];
    Dec(FBufBitIdx, k);
    Temp := Temp shr FBufBitIdx;
    Dec(Bit, k);
@@ -127,7 +127,7 @@ end;
 // write 8 bits into the bit stream
 procedure TBitReserve.WriteToBitstream(Value: Cardinal);
 begin
- FBuf[FOffset] := Value;
+ FBuffer[FOffset] := Value;
  FOffset := (FOffset + 1) and $FFF;
 end;
 
