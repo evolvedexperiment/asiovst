@@ -67,6 +67,16 @@ type
   TDAV8DoubleArray = Array [0..7] of Double;
   PDAV8DoubleArray = ^TDAV8SingleArray;
 
+  PDAV512SingleArray = ^TDAV1024SingleArray;
+  TDAV512SingleArray = array[0..512] of Single;
+  PDAV512DoubleArray = ^TDAV1024DoubleArray;
+  TDAV512DoubleArray = array[0..512] of Double;
+
+  PDAV1024SingleArray = ^TDAV1024SingleArray;
+  TDAV1024SingleArray = array[0..1024] of Single;
+  PDAV1024DoubleArray = ^TDAV1024DoubleArray;
+  TDAV1024DoubleArray = array[0..1024] of Double;
+
   TDAVMinMaxSingle = record
     min : Single;
     max : Single;
