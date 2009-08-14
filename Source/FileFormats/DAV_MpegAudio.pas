@@ -10,8 +10,8 @@ uses
   DAV_StereoBuffer, DAV_MpegAudioLayer3;
 
 const
-  SSLIMIT = 18;
-  SBLIMIT = 32;
+  CSsLimit = 18;
+  CSbLimit = 32;
 
   // Size of the table of whole numbers raised to 4/3 power.
   // This may be adjusted for performance without any problems.
@@ -368,8 +368,8 @@ const
     $0000FFFF, $0001FFFF);
 
 type
-  TSyncMode = (smInitialSync, imStrictSync);
-  TChannels = (Both, Left, Right, Downmix);
+  TSyncMode        = (smInitialSync, imStrictSync);
+  TChannels        = (Both, Left, Right, Downmix);
   TVersion         = (MPEG2_LSF, MPEG1);
   TMode            = (Stereo, JointStereo, DualChannel, SingleChannel);
   TSampleFrequency = (FourtyFourPointOne, FourtyEight, ThirtyTwo, Unknown);
@@ -397,7 +397,7 @@ type
   private
     FStream             : TStream;
     FOwnedStream        : Boolean;
-    FBuffer             : array[0..CBufferIntSize - 1] of Cardinal;
+    FBuffer             : array [0..CBufferIntSize - 1] of Cardinal;
     FFrameSize          : Cardinal;  // number of valid bytes in buffer
     FWordPointer        : PCardinal; // position of next unsigned int for get_bits()
     FBitIndex           : Cardinal;  // number (0-31, from MSB to LSB) of next bit for get_bits()
@@ -617,16 +617,16 @@ type
 
 type
   PSArray = ^TSArray;
-  TSArray = array[0..SBLIMIT-1, 0..SSLIMIT-1] of Single;
+  TSArray = array[0..CSbLimit-1, 0..CSsLimit-1] of Single;
 
   TLayerIII_Decoder = class
   private
     FRO            : array[0..1] of TSArray;     
     FLR            : array[0..1] of TSArray;     
-    FIs1D          : array[0..(SBLIMIT*SSLIMIT)-1] of Integer;     
-    FOut1D         : array[0..(SBLIMIT*SSLIMIT)-1] of Single;     
-    FPrevBlock     : array[0..1, 0..(SBLIMIT*SSLIMIT)-1] of Single;     
-    FK             : array[0..1, 0..(SBLIMIT*SSLIMIT)-1] of Single;     
+    FIs1D          : array[0..(CSbLimit * CSsLimit) - 1] of Integer;
+    FOut1D         : array[0..(CSbLimit * CSsLimit) - 1] of Single;
+    FPrevBlock     : array[0..1, 0..(CSbLimit * CSsLimit) - 1] of Single;
+    FK             : array[0..1, 0..(CSbLimit * CSsLimit) - 1] of Single;
     FNonZero       : array[0..1] of Integer;     
     FBuffer        : TStereoBuffer;     
     FBitStream     : TBitStream;     
@@ -706,6 +706,9 @@ implementation
 
 uses
   Math, DAV_Huffman, DAV_InvMDCT;
+
+var
+  GScaleFacBuffer: array[0..53] of Cardinal;
 
 function SwapInt32(Value: Cardinal): Cardinal;
 begin
@@ -841,7 +844,7 @@ begin
  while (Cardinal(WordP) >= Cardinal(@FBuffer)) do
   begin
    WordP^ := SwapInt32(WordP^);
-   dec(WordP);
+   Dec(WordP);
   end;
  {$ENDIF}
 
@@ -959,13 +962,13 @@ end;
 
 function THeader.Bitrate: Cardinal;
 begin
-  Result := CBitrates[FVersion, FLayer - 1, FBitrateIndex];
+ Result := CBitrates[FVersion, FLayer - 1, FBitrateIndex];
 end;
 
 // calculates framesize in bytes excluding header size
 function THeader.CalculateFrameSize: Cardinal;
 var
-  Val1, Val2: Cardinal;
+  Value: array [0..1] of Cardinal;
 begin
  if (FLayer = 1) then
   begin
@@ -986,28 +989,28 @@ begin
      if (FVersion = MPEG1) then
       begin
        if (FMode = SingleChannel)
-        then Val1 := 17
-        else Val1 := 32;
+        then Value[0] := 17
+        else Value[0] := 32;
        if (FProtectionBit <> 0)
-        then Val2 := 0
-        else Val2 := 2;
-       FNumSlots := FFramesize - Val1 - Val2 - 4;                      // header size
+        then Value[1] := 0
+        else Value[1] := 2;
+       FNumSlots := FFramesize - Value[0] - Value[1] - 4;                      // header size
       end
      else
       begin  // MPEG-2 LSF
        if (FMode = SingleChannel)
-        then Val1 := 9
-        else Val1 := 17;
+        then Value[0] := 9
+        else Value[0] := 17;
        if (FProtectionBit <> 0)
-        then Val2 := 0
-        else Val2 := 2;
-       FNumSlots := FFramesize - Val1 - Val2 - 4;                      // header size
+        then Value[1] := 0
+        else Value[1] := 2;
+       FNumSlots := FFramesize - Value[0] - Value[1] - 4;                      // header size
       end;
     end
    else FNumSlots := 0;
   end;
 
- dec(FFrameSize, 4);  // subtract header size
+ Dec(FFrameSize, 4);  // subtract header size
  Result := FFrameSize;
 end;
 
@@ -1094,7 +1097,7 @@ begin
      if (FMode <> SingleChannel) then
       if (ChannelBitrate = 4)
        then ChannelBitrate := 1
-       else dec(ChannelBitrate, 4);
+       else Dec(ChannelBitrate, 4);
      if ((ChannelBitrate = 1) or (ChannelBitrate = 2)) then
       begin
        if (FSampleFrequency = ThirtyTwo)
@@ -1171,7 +1174,8 @@ begin
 end;
 
 function TSubBandLayer1.PutNextSample(Channels: TChannels; Filter1, Filter2: TSynthesisFilter): Boolean;
-var ScaledSample: Single;
+var
+  ScaledSample: Single;
 begin
  if (FAllocation <> 0) and (Channels <> Right) then
   begin
@@ -1217,27 +1221,28 @@ end;
 
 function TSubBandLayer1IntensityStereo.PutNextSample(Channels: TChannels;
   Filter1, Filter2: TSynthesisFilter): Boolean;
-var Sample1, Sample2: Single;
+var
+  Sample: array [0..1] of Single;
 begin
  if (FAllocation <> 0) then
   begin
   FSample := FSample * FFactor + FOffset;  // requantization
   if (Channels = Both) then
    begin
-    Sample1 := FSample * FScalefactor;
-    Sample2 := FSample * FChannel2ScaleFactor;
-    Filter1.InputSample(Sample1, FSubBandNumber);
-    Filter2.InputSample(Sample2, FSubBandNumber);
+    Sample[0] := FSample * FScalefactor;
+    Sample[1] := FSample * FChannel2ScaleFactor;
+    Filter1.InputSample(Sample[0], FSubBandNumber);
+    Filter2.InputSample(Sample[1], FSubBandNumber);
    end
   else if (Channels = Left) then
    begin
-    Sample1 := FSample * FScaleFactor;
-    Filter1.InputSample(Sample1, FSubBandNumber);
+    Sample[0] := FSample * FScaleFactor;
+    Filter1.InputSample(Sample[0], FSubBandNumber);
    end
   else
    begin
-    Sample2 := FSample * FChannel2ScaleFactor;
-    Filter2.InputSample(Sample2, FSubBandNumber);
+    Sample[1] := FSample * FChannel2ScaleFactor;
+    Filter2.InputSample(Sample[1], FSubBandNumber);
    end;
   end;
  Result := True;
@@ -1257,15 +1262,16 @@ end;
 
 function TSubBandLayer1Stereo.PutNextSample(Channels: TChannels; Filter1,
   Filter2: TSynthesisFilter): Boolean;
-var Sample2: Single;
+var
+  Sample: Single;
 begin
  inherited PutNextSample(Channels, Filter1, Filter2);
  if (FChannel2Allocation <> 0) and (Channels <> Left) then
   begin
-   Sample2 := (FChannel2Sample * FChannel2Factor + FChannel2Offset) * FChannel2ScaleFactor;
+   Sample := (FChannel2Sample * FChannel2Factor + FChannel2Offset) * FChannel2ScaleFactor;
    if (Channels = Both)
-    then Filter2.InputSample(Sample2, FSubBandNumber)
-    else Filter1.InputSample(Sample2, FSubBandNumber);
+    then Filter2.InputSample(Sample, FSubBandNumber)
+    else Filter1.InputSample(Sample, FSubBandNumber);
   end;
  Result := True;
 end;
@@ -1316,7 +1322,8 @@ begin
 end;
 
 function TSubBandLayer2.GetAllocationLength(Header: THeader): Cardinal;
-var ChannelBitrate: Cardinal;
+var
+  ChannelBitrate: Cardinal;
 begin
  if (Header.Version = MPEG1) then
   begin
@@ -1326,7 +1333,7 @@ begin
    if (Header.Mode <> SingleChannel) then
     if (ChannelBitrate = 4)
      then ChannelBitrate := 1
-     else dec(ChannelBitrate, 4);
+     else Dec(ChannelBitrate, 4);
 
     if (ChannelBitrate = 1) or (ChannelBitrate = 2) then
      begin // table 3-B.2c or 3-B.2d
@@ -1355,14 +1362,15 @@ end;
 procedure TSubBandLayer2.PrepareSampleReading(Header: THeader; Allocation: Cardinal;
   var GroupingTable: PDAV1024SingleArray; var Factor: Single; var CodeLength: Cardinal; var C,
   D: Single);
-var ChannelBitrate: Cardinal;
+var
+  ChannelBitrate: Cardinal;
 begin
   ChannelBitrate := Header.BitrateIndex;
   // calculate bitrate per channel:
   if (Header.Mode <> SingleChannel) then
    if (ChannelBitrate = 4)
     then ChannelBitrate := 1
-    else dec(ChannelBitrate, 4);
+    else Dec(ChannelBitrate, 4);
 
   if (ChannelBitrate = 1) or (ChannelBitrate = 2) then
    begin // table 3-B.2c or 3-B.2d
@@ -1412,7 +1420,8 @@ end;
 
 function TSubBandLayer2.PutNextSample(Channels: TChannels; Filter1,
   Filter2: TSynthesisFilter): boolean;
-var Sample: Single;
+var
+  Sample: Single;
 begin
  if (FAllocation <> 0) and (Channels <> Right) then
   begin
@@ -1428,7 +1437,8 @@ begin
 end;
 
 procedure TSubBandLayer2.ReadAllocation(Stream: TBitStream; Header: THeader; CRC: TCRC16);
-var Length: Cardinal;
+var
+  Length: Cardinal;
 begin
  Length := GetAllocationLength(Header);
  FAllocation := Stream.GetBits(Length);
@@ -1436,7 +1446,8 @@ begin
 end;
 
 function TSubBandLayer2.ReadSampleData(Stream: TBitStream): boolean;
-var SampleCode: Cardinal;
+var
+  SampleCode: Cardinal;
 begin
  if (FAllocation <> 0) then
   if (FGroupingTable <> nil) then
@@ -1507,46 +1518,47 @@ end;
 
 function TSubbandLayer2IntensityStereo.PutNextSample(Channels: TChannels;
   Filter1, Filter2: TSynthesisFilter): boolean;
-var Sample, Sample2: Single;
+var
+  Sample: array [0..1] of Single;
 begin
  if (FAllocation <> 0) then
   begin
-   Sample := FSamples[FSampleNumber];
-   if (FGroupingTable = nil) then Sample := (Sample + FD) * FC;
+   Sample[0] := FSamples[FSampleNumber];
+   if (FGroupingTable = nil) then Sample[0] := (Sample[0] + FD) * FC;
    if (Channels = Both) then
     begin
-     Sample2 := Sample;
+     Sample[1] := Sample[0];
      if (FGroupNumber <= 4) then
       begin
-       Sample := Sample * FScaleFactor[0];
-       Sample2 := Sample2 * FChannel2ScaleFactor[0];
+       Sample[0] := Sample[0] * FScaleFactor[0];
+       Sample[1] := Sample[1] * FChannel2ScaleFactor[0];
       end
      else if (FGroupNumber <= 8) then
       begin
-       Sample := Sample * FScaleFactor[1];
-       Sample2 := Sample2 * FChannel2ScaleFactor[1];
+       Sample[0] := Sample[0] * FScaleFactor[1];
+       Sample[1] := Sample[1] * FChannel2ScaleFactor[1];
       end
      else
       begin
-       Sample := Sample * FScaleFactor[2];
-       Sample2 := Sample2 * FChannel2ScaleFactor[2];
+       Sample[0] := Sample[0] * FScaleFactor[2];
+       Sample[1] := Sample[1] * FChannel2ScaleFactor[2];
       end;
-     Filter1.InputSample(Sample, FSubBandNumber);
-     Filter2.InputSample(Sample2, FSubBandNumber);
+     Filter1.InputSample(Sample[0], FSubBandNumber);
+     Filter2.InputSample(Sample[1], FSubBandNumber);
     end
    else if (Channels = Left) then
     begin
-     if (FGroupNumber <= 4) then  Sample := Sample * FScaleFactor[0]
-     else if (FGroupNumber <= 8) then Sample := Sample * FScaleFactor[1]
-     else Sample := Sample * FScaleFactor[2];
-     Filter1.InputSample(Sample, FSubBandNumber);
+     if (FGroupNumber <= 4) then  Sample[0] := Sample[0] * FScaleFactor[0]
+     else if (FGroupNumber <= 8) then Sample[0] := Sample[0] * FScaleFactor[1]
+     else Sample[0] := Sample[0] * FScaleFactor[2];
+     Filter1.InputSample(Sample[0], FSubBandNumber);
     end
    else
     begin
-     if (FGroupNumber <= 4) then Sample := Sample * FChannel2ScaleFactor[0]
-     else if (FGroupNumber <= 8) then Sample := Sample * FChannel2ScaleFactor[1]
-     else Sample := Sample * FChannel2ScaleFactor[2];
-     Filter1.InputSample(Sample, FSubBandNumber);
+     if (FGroupNumber <= 4) then Sample[0] := Sample[0] * FChannel2ScaleFactor[0]
+     else if (FGroupNumber <= 8) then Sample[0] := Sample[0] * FChannel2ScaleFactor[1]
+     else Sample[0] := Sample[0] * FChannel2ScaleFactor[2];
+     Filter1.InputSample(Sample[0], FSubBandNumber);
     end;
   end;
  Inc(FSampleNumber);
@@ -1604,7 +1616,8 @@ end;
 
 function TSubbandLayer2Stereo.PutNextSample(Channels: TChannels; Filter1,
   Filter2: TSynthesisFilter): boolean;
-var Sample: Single;
+var
+  Sample: Single;
 begin
  Result := inherited PutNextSample(Channels, Filter1, Filter2);
 
@@ -1622,7 +1635,8 @@ begin
 end;
 
 procedure TSubbandLayer2Stereo.ReadAllocation(Stream: TBitStream; Header: THeader; CRC: TCRC16);
-var Length: Cardinal;
+var
+  Length: Cardinal;
 begin
   Length := GetAllocationLength(Header);
   FAllocation := Stream.GetBits(Length);
@@ -1635,7 +1649,8 @@ begin
 end;
 
 function TSubbandLayer2Stereo.ReadSampleData(Stream: TBitStream): boolean;
-var SampleCode: Cardinal;
+var
+  SampleCode: Cardinal;
 begin
   Result := inherited ReadSampleData(Stream);
   if (FChannel2Allocation <> 0) then
@@ -1704,9 +1719,6 @@ begin
   end;
 end;
 
-var
-  GScaleFacBuffer: array[0..53] of Cardinal;
-
 { TLayerIII_Decoder }
 
 constructor TLayerIII_Decoder.Create(Stream: TBitStream; Header: THeader;
@@ -1760,10 +1772,11 @@ end;
 
 procedure TLayerIII_Decoder.Antialias(ch, gr: Cardinal);
 var
-  Ss, Sb18, Ssb18lim: Cardinal;
-  GrInfo: PGRInfo;
-  bu, bd: Single;
-  SrcIdx: array [0..1] of Integer;
+  Ss, Sb18 : Cardinal;
+  Ssb18lim : Cardinal;
+  GrInfo   : PGRInfo;
+  bu, bd   : Single;
+  SrcIdx   : array [0..1] of Integer;
 begin
  GrInfo := @FSideInfo.ch[ch].gr[gr];
 
@@ -1857,7 +1870,7 @@ begin
      while (sb18 < 576) do
       begin  // Frequency inversion
        ss := 1;
-       while (ss < SSLIMIT) do
+       while (ss < CSsLimit) do
         begin
          FOut1D[sb18 + ss] := -FOut1D[sb18 + ss];
          Inc(ss, 2);
@@ -1868,7 +1881,7 @@ begin
 
      if ((ch = 0) or (FWhichChannels = Right)) then
       begin
-       for ss := 0 to SSLIMIT-1 do
+       for ss := 0 to CSsLimit-1 do
         begin  // Polyphase synthesis
          sb := 0;
          sb18 := 0;
@@ -1884,7 +1897,7 @@ begin
       end
      else
       begin
-       for ss := 0 to SSLIMIT-1 do
+       for ss := 0 to CSsLimit-1 do
         begin  // Polyphase synthesis
          sb := 0;
          sb18 := 0;
@@ -2031,10 +2044,10 @@ procedure TLayerIII_Decoder.DoDownmix;
 var
   ss, sb: Cardinal;
 begin
- for sb := 0 to SBLIMIT - 1 do
+ for sb := 0 to CSbLimit - 1 do
   begin
    ss := 0;
-   while (ss < SSLIMIT) do
+   while (ss < CSsLimit) do
     begin
      FLR[0, sb, ss    ] := (FLR[0, sb, ss    ] + FLR[1, sb, ss    ]) * 0.5;
      FLR[0, sb, ss + 1] := (FLR[0, sb, ss + 1] + FLR[1, sb, ss + 1]) * 0.5;
@@ -2046,13 +2059,15 @@ end;
 
 procedure TLayerIII_Decoder.GetLSFScaleData(ch, gr: Cardinal);
 var
-  NewSLength: array[0..3] of Cardinal;
-  ScaleFactorComp, IntScalefactorComp: Cardinal;
-  ModeExt: Cardinal;
-  m: Integer;
-  BlockTypeNumber, BlockNumber: Integer;
-  GrInfo: PGRInfo;
-  x, i, j: Cardinal;
+  NewSLength         : array[0..3] of Cardinal;
+  ScaleFactorComp    : Cardinal;
+  IntScalefactorComp : Cardinal;
+  ModeExt            : Cardinal;
+  m                  : Integer;
+  BlockTypeNumber    : Integer;
+  BlockNumber        : Integer;
+  GrInfo             : PGRInfo;
+  x, i, j            : Cardinal;
 begin
  ModeExt := FHeader.ModeExtension;
  GrInfo := @FSideInfo.ch[ch].gr[gr];
@@ -2062,62 +2077,74 @@ begin
  if (GrInfo.BlockType = 2) then
   begin
    if (GrInfo.MixedBlockFlag = 0)
-    then BlockTypeNumber := 1
-    else
-     if (GrInfo.MixedBlockFlag = 1)
-      then BlockTypeNumber := 2
-      else BlockTypeNumber := 0;
-  end else BlockTypeNumber := 0;
+    then BlockTypeNumber := 1 else
+   if (GrInfo.MixedBlockFlag = 1)
+    then BlockTypeNumber := 2
+    else BlockTypeNumber := 0;
+  end
+ else BlockTypeNumber := 0;
 
-  if (not (((ModeExt = 1) or (ModeExt = 3)) and (ch = 1))) then begin
-    if (ScaleFactorComp < 400) then begin
-      NewSLength[0] := (ScaleFactorComp shr 4) div 5;
-      NewSLength[1] := (ScaleFactorComp shr 4) mod 5;
-      NewSLength[2] := (ScaleFactorComp and $F) shr 2;
-      NewSLength[3] := (ScaleFactorComp and 3);
-      FSideInfo.ch[ch].gr[gr].Preflag := 0;
-      BlockNumber := 0;
-    end else if (ScaleFactorComp < 500) then begin
-      NewSLength[0] := ((ScaleFactorComp - 400) shr 2) div 5;
-      NewSLength[1] := ((ScaleFactorComp - 400) shr 2) mod 5;
-      NewSLength[2] := (ScaleFactorComp - 400) and 3;
-      NewSLength[3] := 0;
-      FSideInfo.ch[ch].gr[gr].Preflag := 0;
-      BlockNumber := 1;
-    end else if (ScaleFactorComp < 512) then begin
-      NewSLength[0] := (ScaleFactorComp - 500) div 3;
-      NewSLength[1] := (ScaleFactorComp - 500) mod 3;
-      NewSLength[2] := 0;
-      NewSLength[3] := 0;
-      FSideInfo.ch[ch].gr[gr].Preflag := 1;
-      BlockNumber := 2;
+ if (not (((ModeExt = 1) or (ModeExt = 3)) and (ch = 1))) then
+  begin
+   if (ScaleFactorComp < 400) then
+    begin
+     NewSLength[0] := (ScaleFactorComp shr 4) div 5;
+     NewSLength[1] := (ScaleFactorComp shr 4) mod 5;
+     NewSLength[2] := (ScaleFactorComp and $F) shr 2;
+     NewSLength[3] := (ScaleFactorComp and 3);
+     FSideInfo.ch[ch].gr[gr].Preflag := 0;
+     BlockNumber := 0;
+    end else
+   if (ScaleFactorComp < 500) then
+    begin
+     NewSLength[0] := ((ScaleFactorComp - 400) shr 2) div 5;
+     NewSLength[1] := ((ScaleFactorComp - 400) shr 2) mod 5;
+     NewSLength[2] := (ScaleFactorComp - 400) and 3;
+     NewSLength[3] := 0;
+     FSideInfo.ch[ch].gr[gr].Preflag := 0;
+     BlockNumber := 1;
+    end else
+   if (ScaleFactorComp < 512) then
+    begin
+     NewSLength[0] := (ScaleFactorComp - 500) div 3;
+     NewSLength[1] := (ScaleFactorComp - 500) mod 3;
+     NewSLength[2] := 0;
+     NewSLength[3] := 0;
+     FSideInfo.ch[ch].gr[gr].Preflag := 1;
+     BlockNumber := 2;
     end;
   end;
 
-  if ((((ModeExt = 1) or (ModeExt = 3)) and (ch = 1))) then begin
-    IntScalefactorComp := ScaleFactorComp shr 1;
+ if ((((ModeExt = 1) or (ModeExt = 3)) and (ch = 1))) then
+  begin
+   IntScalefactorComp := ScaleFactorComp shr 1;
 
-    if (IntScalefactorComp < 180) then begin
-      NewSLength[0] := IntScalefactorComp div 36;
-      NewSLength[1] := (IntScalefactorComp mod 36 ) div 6;
-      NewSLength[2] := (IntScalefactorComp mod 36) mod 6;
-      NewSLength[3] := 0;
-      FSideInfo.ch[ch].gr[gr].Preflag := 0;
-      BlockNumber := 3;
-    end else if (IntScalefactorComp < 244) then begin
-      NewSLength[0] := ((IntScalefactorComp - 180) and $3F) shr 4;
-      NewSLength[1] := ((IntScalefactorComp - 180) and $F) shr 2;
-      NewSLength[2] := (IntScalefactorComp - 180) and 3;
-      NewSLength[3] := 0;
-      FSideInfo.ch[ch].gr[gr].Preflag := 0;
-      BlockNumber := 4;
-    end else if (IntScalefactorComp < 255) then begin
-      NewSLength[0] := (IntScalefactorComp - 244) div 3;
-      NewSLength[1] := (IntScalefactorComp - 244) mod 3;
-      NewSLength[2] := 0;
-      NewSLength[3] := 0;
-      FSideInfo.ch[ch].gr[gr].Preflag := 0;
-      BlockNumber := 5;
+   if (IntScalefactorComp < 180) then
+    begin
+     NewSLength[0] := IntScalefactorComp div 36;
+     NewSLength[1] := (IntScalefactorComp mod 36 ) div 6;
+     NewSLength[2] := (IntScalefactorComp mod 36) mod 6;
+     NewSLength[3] := 0;
+     FSideInfo.ch[ch].gr[gr].Preflag := 0;
+     BlockNumber := 3;
+    end else
+   if (IntScalefactorComp < 244) then
+    begin
+     NewSLength[0] := ((IntScalefactorComp - 180) and $3F) shr 4;
+     NewSLength[1] := ((IntScalefactorComp - 180) and $F) shr 2;
+     NewSLength[2] := (IntScalefactorComp - 180) and 3;
+     NewSLength[3] := 0;
+     FSideInfo.ch[ch].gr[gr].Preflag := 0;
+     BlockNumber := 4;
+    end else
+   if (IntScalefactorComp < 255) then
+    begin
+     NewSLength[0] := (IntScalefactorComp - 244) div 3;
+     NewSLength[1] := (IntScalefactorComp - 244) mod 3;
+     NewSLength[2] := 0;
+     NewSLength[3] := 0;
+     FSideInfo.ch[ch].gr[gr].Preflag := 0;
+     BlockNumber := 5;
     end;
   end;
 
@@ -2518,12 +2545,12 @@ end;
 
 procedure TLayerIII_Decoder.Hybrid(ch, gr: Cardinal);
 var
-  rawout: array[0..35] of Single;
-  bt: Cardinal;
-  GrInfo: PGRInfo;
-  tsOut: PDAV1024SingleArray;
-  prvblk: PDAV1024SingleArray;
-  sb18: Cardinal;
+  rawout : array[0..35] of Single;
+  bt     : Cardinal;
+  GrInfo : PGRInfo;
+  tsOut  : PDAV1024SingleArray;
+  prvblk : PDAV1024SingleArray;
+  sb18   : Cardinal;
 begin
  GrInfo := @FSideInfo.ch[ch].gr[gr];
 
@@ -2602,12 +2629,16 @@ end;
 
 procedure TLayerIII_Decoder.Reorder(xr: PSArray; ch, gr: Cardinal);
 var
-  GrInfo: PGRInfo;
-  freq, freq3: Cardinal;
-  sfb, sfb_start, sfb_start3, sfb_lines: Cardinal;
-  src_line, des_line: Integer;
-  xr1d: PDAV1024SingleArray;
-  index: Cardinal;
+  GrInfo      : PGRInfo;
+  freq, freq3 : Cardinal;
+  sfb         : Cardinal;
+  sfb_start   : Cardinal;
+  sfb_start3  : Cardinal;
+  sfb_lines   : Cardinal;
+  src_line    : Integer;
+  des_line    : Integer;
+  xr1d        : PDAV1024SingleArray;
+  index       : Cardinal;
 begin
  xr1d := @xr[0, 0];
  GrInfo := @FSideInfo.ch[ch].gr[gr];
@@ -2671,10 +2702,10 @@ var
 begin
  if (FChannels = 1) then
   begin  // mono , bypass xr[0,,] to lr[0,,]
-   for sb := 0 to SBLIMIT-1 do
+   for sb := 0 to CSbLimit-1 do
     begin
      ss := 0;
-     while (ss < SSLIMIT) do
+     while (ss < CSsLimit) do
       begin
        FLR[0, sb, ss    ] := FRO[0, sb, ss    ];
        FLR[0, sb, ss + 1] := FRO[0, sb, ss + 1];
@@ -2957,8 +2988,8 @@ begin
     end;
 
     i := 0;
-    for sb := 0 to SBLIMIT-1 do
-     for ss := 0 to SSLIMIT-1 do
+    for sb := 0 to CSbLimit-1 do
+     for ss := 0 to CSsLimit-1 do
       begin
        if (IsPos[i] = 7) then
         begin
