@@ -24,13 +24,13 @@ type
   private
     FBuffer     : PDAVSingleFixedArray;
     FBufferPntr : PSingle;
-    FLooped,
+    FLooped     : Boolean;
     FInterpol   : Boolean;
-    FCnt2,
-    FSize,
+    FCnt2       : Integer;
+    FSize       : Integer;
     FSR, FCh    : Integer;
-    FSpeed,
-    FVol, FPan,
+    FSpeed      : Single; 
+    FVol, FPan  : Single;
     FSamplerate : Single;
     FCnt        : Double;
     FPMode      : TWavPlayerMode;
@@ -795,9 +795,9 @@ begin
  WaveTimer.Enabled := False;
  FProcessing := False;
  StopAudio;
- sleep(2);
+ Sleep(2);
  ClosePlugin;
- sleep(2);
+ Sleep(2);
 end;
 
 procedure TFmMiniHost.LoadPlugin(const VSTDll: TFileName; const DefaultProgram: Integer = 0);
@@ -917,7 +917,7 @@ begin
  Caption := FTitle;
  Left := Screen.Width div 2 - Width div 2;
  Top := Screen.Height div 2 - Height div 2;
- VSTHost[0].SetProgram(DefaultProgram);
+ VSTHost[0].CurrentProgram := DefaultProgram;
  FmOptions.SbTempoChange(nil);
 end;
 
@@ -1160,7 +1160,7 @@ procedure TFmMiniHost.MILoadPresetClick(Sender: TObject);
 begin
  with TOpenDialog.Create(Self) do
   try
-   sleep(2);
+   Sleep(2);
    Filename := '*.fxp';
    InitialDir := FDirPreset;
    DefaultExt := '.fxp';
@@ -1187,7 +1187,7 @@ begin
  j := FCurProg;
  for i := 0 to Files.Count - 1 do
  begin
-  if i > 0 then VSTHost[0].SetProgram(j + i);
+  if i > 0 then VSTHost[0].CurrentProgram := j + i;
   try
    VSTHost[0].LoadPreset(Files[i]);
   except
@@ -1197,7 +1197,7 @@ begin
    WaveTimer.Enabled := True;
    exit;
   end;
-  k := VSTHost[0].GetProgram;
+  k := VSTHost[0].CurrentProgram;
   s := IntToStr(k);
   if k < 10 then s := '00' + s else
   if k < 100 then s := '0' + s;
@@ -1211,7 +1211,7 @@ begin
  MIPanicClick(nil);
  with TSaveDialog.Create(Self) do
   try
-   sleep(2);
+   Sleep(2);
    DefaultExt := '.fxp';
    filename := '*.fxp';
    Filter := 'preset files (*.fxp)|*.fxp';
@@ -1241,7 +1241,7 @@ begin
  WaveTimer.Enabled := False;
  with TOpenDialog.Create(Self) do
   try
-   sleep(2);
+   Sleep(2);
    DefaultExt := '.fxb';
    filename := '*.fxb';
    Filter := 'bank files (*.fxb)|*.fxb';
@@ -1267,7 +1267,7 @@ begin
   finally
    Free;
    FCurProg := 0;
-   VSTHost[0].SetProgram(0);
+   VSTHost[0].CurrentProgram := 0;
    PresetBox.ItemIndex := 0;
    WaveTimer.Enabled := True;
   end;
@@ -1277,7 +1277,7 @@ procedure TFmMiniHost.MISaveBankClick(Sender: TObject);
 begin
  with TSaveDialog.Create(Self) do
   try
-   sleep(2);
+   Sleep(2);
    FileName := '*.fxb';
    DefaultExt := '.fxb';
    Filter := 'bank files (*.fxb)|*.fxb';
@@ -1305,7 +1305,7 @@ procedure TFmMiniHost.MIVSTLoadPluginClick(Sender: TObject);
 begin
  with TOpenDialog.Create(Self) do
   try
-   sleep(2);
+   Sleep(2);
    DefaultExt := '.dll';
    filename := '*.dll';
    Filter := 'VST Plugins (*.dll)|*.dll';
@@ -1354,7 +1354,7 @@ end;
 procedure TFmMiniHost.SetPreset(Sender: TObject);
 begin
  MIPanicClick(nil);
- VSTHost[0].SetProgram((sender as TMenuItem).Tag);
+ VSTHost[0].CurrentProgram := (Sender as TMenuItem).Tag;
 end;
 
 procedure TFmMiniHost.FormShow(Sender: TObject);
@@ -1411,7 +1411,7 @@ begin
  WaveTimer.Enabled := True;
  if FLoadProg >=0 then
   begin
-   VSTHost[0].SetProgram(FLoadProg);
+   VSTHost[0].CurrentProgram := FLoadProg;
    FLoadProg := -1;
   end;
  if PnStatus.Visible then PnStatus.SetFocus;
@@ -1454,8 +1454,9 @@ begin
 end;
 
 procedure TFmMiniHost.MIStartRecordingClick(Sender: TObject);
-var s: string;
-    i: Integer;
+var
+  s : string;
+  i : Integer;
 begin
  if Assigned(FWavWriter)
   then FreeAndNil(FWavWriter);
@@ -1495,16 +1496,17 @@ begin
 end;
 
 procedure TFmMiniHost.WaveTimerTimer(Sender: TObject);
-var s2, s: string;
-    i: Integer;
-    e: single;
+var
+  s2, s : string;
+  i     : Integer;
+  e     : single;
 begin
  if WaveFile.FPMode > wpmPause then
- begin
-  i := round(100 * WaveFile.FCnt2 / (WaveFile.Size-2));
-  Player.LbWavPosition.caption := 'position: ' + IntToStr(i) +' %';
-  Player.SbWavPosition.position := i;
- end;
+  begin
+   i := round(100 * WaveFile.FCnt2 / (WaveFile.Size - 2));
+   Player.LbWavPosition.caption := 'position: ' + IntToStr(i) +' %';
+   Player.SbWavPosition.position := i;
+  end;
 
  BorderOnOff.Visible := FProcessing;
  BorderOptions.Visible := FmOptions.Showing;
@@ -1519,44 +1521,44 @@ begin
  end;
 
  if FRecordState > rsStop then
- begin
-  e := FTotalFrames / ASIOHost.SampleRate;
-  Player.LbStatus.Caption :=
-   Player.LbStatus.Caption + ' (time: '
-   + FloatToStrF(e, ffFixed, 4, 2) + ' sec, size: ' + IntToStr(
-    round(e * FWavWriter.Format.nAvgBytesPerSec / 1000))
-   + ' kbytes)';
- end;
+  begin
+   e := FTotalFrames / ASIOHost.SampleRate;
+   Player.LbStatus.Caption :=
+    Player.LbStatus.Caption + ' (time: '
+    + FloatToStrF(e, ffFixed, 4, 2) + ' sec, size: ' + IntToStr(
+     round(e * FWavWriter.Format.nAvgBytesPerSec / 1000))
+    + ' kbytes)';
+  end;
 
  FDownMix := MIDownMixToStereo.Checked;
 
  if (MIDIPlaying) then
- begin
-  i := round(100 * FMidiFile.GetCurrentPos / FMidiFile.GetTrackLength2);
-  if i > 100 then i := 100 else if i < 0 then i := 0;
-  Player.SbMidiPosition.position := i;
-
-  if (FMidiFile.Ready) then
   begin
-   Player.SbMidiPosition.Position := 0;
-   if Player.CBMidiPlayMode.ItemIndex = 1 then
+   i := round(100 * FMidiFile.GetCurrentPos / FMidiFile.GetTrackLength2);
+   if i > 100 then i := 100 else if i < 0 then i := 0;
+   Player.SbMidiPosition.position := i;
+
+   if (FMidiFile.Ready) then
    begin
-    MIPanicClick(nil);
-    FMidiFile.StartPlaying;
-   end else
-   if (Player.CBMidiPlayMode.ItemIndex = 2) and (Player.MidiBox.Items.Count > 0) then
-   begin
-    Player.MidiBox.itemindex := (Player.MidiBox.itemindex + 1) mod Player.MidiBox.Items.Count;
-    Player.BtMidiPlayClick(nil);
-   end else
-   if (Player.CBMidiPlayMode.ItemIndex = 3) and (Player.MidiBox.Items.Count > 0) then
-   begin
-    Player.MidiBox.itemindex := random(Player.MidiBox.Items.Count);
-    Player.BtMidiPlayClick(nil);
-   end else
-    MIDIPlaying := False;
+    Player.SbMidiPosition.Position := 0;
+    if Player.CBMidiPlayMode.ItemIndex = 1 then
+     begin
+      MIPanicClick(nil);
+      FMidiFile.StartPlaying;
+     end else
+    if (Player.CBMidiPlayMode.ItemIndex = 2) and (Player.MidiBox.Items.Count > 0) then
+     begin
+      Player.MidiBox.itemindex := (Player.MidiBox.itemindex + 1) mod Player.MidiBox.Items.Count;
+      Player.BtMidiPlayClick(nil);
+     end else
+    if (Player.CBMidiPlayMode.ItemIndex = 3) and (Player.MidiBox.Items.Count > 0) then
+     begin
+      Player.MidiBox.itemindex := random(Player.MidiBox.Items.Count);
+      Player.BtMidiPlayClick(nil);
+     end
+    else MIDIPlaying := False;
+   end;
   end;
- end;
 
  if PresetBox.Items.Count = 0 then
   begin
@@ -1565,7 +1567,7 @@ begin
   end;
 
  s := VSTHost[0].GetProgramName;
- i := VSTHost[0].GetProgram;
+ i := VSTHost[0].CurrentProgram;
  if (FCurProg <> i) or (FCurProgName <> s) then
   begin
    FCurProg := i;
@@ -1573,16 +1575,16 @@ begin
    s := IntToStr(FCurProg);
    if FCurProg < 10 then s := '00' + s else
    if FCurProg < 100 then s := '0' + s;
- if (PresetBox.items.Count > 0) and (FCurProg>=0) then
-  begin
-   PresetBox.Items[FCurProg] := s + ': ' + FCurProgName;
-   PresetBox.ItemIndex := i;
+   if (PresetBox.items.Count > 0) and (FCurProg>=0) then
+    begin
+     PresetBox.Items[FCurProg] := s + ': ' + FCurProgName;
+     PresetBox.ItemIndex := i;
+    end;
+   s2 := FTitle;
+   if MIShowPreset.Checked
+    then s2 := s2 + ' - ' + s + ': ' + FCurProgName;
+   if caption <> s2 then caption := s2;
   end;
-  s2 := FTitle;
-  if MIShowPreset.Checked then
-   s2 := s2 + ' - ' + s + ': ' + FCurProgName;
-  if caption <> s2 then caption := s2;
- end;
 end;
 
 procedure TFmMiniHost.MIASIOControlPanelClick(Sender: TObject);
@@ -2091,7 +2093,7 @@ begin
  if not MIUseMouseWheel.Checked then exit;
  MIPanicClick(nil);
  if FCurProg > 0 then
-  VSTHost[0].SetProgram(FCurProg - 1);
+  VSTHost[0].CurrentProgram := FCurProg - 1;
 end;
 
 procedure TFmMiniHost.FormMouseWheelDown(Sender: TObject;
@@ -2099,8 +2101,8 @@ procedure TFmMiniHost.FormMouseWheelDown(Sender: TObject;
 begin
  if not MIUseMouseWheel.Checked then exit;
  MIPanicClick(nil);
- if FCurProg + 1 < VSTHost[0].numPrograms then
-  VSTHost[0].SetProgram(FCurProg + 1);
+ if FCurProg + 1 < VSTHost[0].numPrograms
+  then VSTHost[0].CurrentProgram := FCurProg + 1;
 end;
 
 procedure TFmMiniHost.MIExitClick(Sender: TObject);
@@ -2119,7 +2121,7 @@ procedure TFmMiniHost.PresetBoxClick(Sender: TObject);
 begin
  WaveTimer.Enabled := False;
  MIPanicClick(nil);
- VSTHost[0].SetProgram(PresetBox.ItemIndex);
+ VSTHost[0].CurrentProgram := PresetBox.ItemIndex;
  FCurProg := PresetBox.ItemIndex;
  WaveTimer.Enabled := True;
 end;
@@ -2142,10 +2144,11 @@ procedure TFmMiniHost.IBtLeftRightMouseUp(Sender: TObject; Button: TMouseButton;
 begin
  MIPanicClick(nil);
  if x < IBtLeftRight.width shr 1 then
-  if FCurProg > 0 then
-   VSTHost[0].SetProgram(FCurProg - 1) else else
- if FCurProg + 1 < VSTHost[0].numPrograms then
-   VSTHost[0].SetProgram(FCurProg + 1);
+  if FCurProg > 0
+   then VSTHost[0].CurrentProgram := FCurProg - 1
+   else else
+ if FCurProg + 1 < VSTHost[0].numPrograms
+  then VSTHost[0].CurrentProgram := FCurProg + 1;
 end;
 
 procedure TFmMiniHost.IBtDropDownMouseDown(Sender: TObject;

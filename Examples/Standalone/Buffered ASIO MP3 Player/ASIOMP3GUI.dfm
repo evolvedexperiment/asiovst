@@ -1,6 +1,7 @@
 object FmASIOMP3: TFmASIOMP3
   Left = 459
   Top = 285
+  BorderStyle = bsSingle
   Caption = 'Demo application for ASIO-Host & MP3'
   ClientHeight = 134
   ClientWidth = 429
@@ -36,6 +37,20 @@ object FmASIOMP3: TFmASIOMP3
     Height = 13
     Caption = 'MP3 File:'
   end
+  object LbBuffer: TLabel
+    Left = 344
+    Top = 36
+    Width = 34
+    Height = 13
+    Caption = 'Buffer: '
+  end
+  object LbBufferValue: TLabel
+    Left = 384
+    Top = 36
+    Width = 29
+    Height = 13
+    Caption = '100 %'
+  end
   object DriverCombo: TComboBox
     Left = 64
     Top = 7
@@ -70,7 +85,7 @@ object FmASIOMP3: TFmASIOMP3
     Top = 88
     Width = 423
     Height = 41
-    Caption = 'Start Audio'
+    Caption = '&Start Audio'
     Enabled = False
     TabOrder = 3
     OnClick = BtStartStopClick
@@ -108,6 +123,12 @@ object FmASIOMP3: TFmASIOMP3
     DefaultExt = 'mp3'
     Filter = 'MP3 File (*.mp3)|*.mp3'
     Left = 160
+    Top = 24
+  end
+  object Timer: TTimer
+    Interval = 200
+    OnTimer = TimerTimer
+    Left = 192
     Top = 24
   end
 end

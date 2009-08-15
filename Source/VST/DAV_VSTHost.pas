@@ -198,7 +198,7 @@ type
     function GetParamName(index: Integer): string;
     function GetPlugCategory: TVstPluginCategory;
     function GetProductString: string;
-    function GetProgram: Integer;
+    function GetCurrentProgram: Integer;
     function GetProgramName: string;
     function GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: string): Integer;
     function GetRect: TRect;
@@ -267,7 +267,7 @@ type
     procedure SetBlockSize(const Value: Integer);
     procedure SetPanLaw(const PanLaw: TVstPanLawType; const Gain: Single);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
-    procedure SetProgram(const lValue: Integer);
+    procedure SetCurrentProgram(const lValue: Integer);
     procedure SetProgramName(const newName: string);
     procedure SetSampleRate(const Value: Single);
     procedure SetTotalSampleToProcess;
@@ -327,7 +327,7 @@ type
     property PluginVstVersion: Integer read FVstVersion stored False default -1;
     property ProductString: string read GetProductString stored False;
     property ProgramName: string read GetProgramName write SetProgramName;
-    property ProgramNr: Integer read GetProgram write SetProgram default -1;
+    property CurrentProgram: Integer read GetCurrentProgram write SetCurrentProgram default -1;
     property ReplaceOrAccumulate: TReplaceOrAccumulate read FReplaceOrAccumulate write FReplaceOrAccumulate default roa0NotSupported;
     property VendorString: string read GetVendorString stored False;
     property VendorVersion: Integer read GetVendorVersion stored False default -1;
@@ -376,7 +376,7 @@ type
     property PluginVstVersion;
     property ProductString;
     property ProgramName;
-    property ProgramNr;
+    property CurrentProgram;
     property ReplaceOrAccumulate;
     property UniqueID;
     property VendorString;
@@ -1704,7 +1704,7 @@ begin
   else result := FVstEffect.GetParameter(FVstEffect, Index);
 end;
 
-procedure TCustomVstPlugIn.SetProgram(const lValue: Integer);
+procedure TCustomVstPlugIn.SetCurrentProgram(const lValue: Integer);
 begin
  if FActive and (FProgramNr <> lValue) then
   begin
@@ -1713,7 +1713,7 @@ begin
   end;
 end;
 
-function TCustomVstPlugIn.GetProgram: Integer;
+function TCustomVstPlugIn.GetCurrentProgram: Integer;
 begin
  if FActive
   then result := VstDispatch(effGetProgram)
@@ -3097,7 +3097,7 @@ var
   str : string;
   i   : Integer;
 begin
- SetProgram(ProgramNo);
+ SetCurrentProgram(ProgramNo);
  with result do
   begin
    ChunkMagic := 'CcnK';
@@ -3193,7 +3193,7 @@ begin
    end
   else
    begin
-    FXPreset := GetPreset(GetProgram);
+    FXPreset := GetPreset(GetCurrentProgram);
     try
      Stream.WriteBuffer(FXPreset, SizeOf(FXPreset) - SizeOf(Single));
      Stream.WriteBuffer(FXPreset.Params^, SizeOf(Single) * numParams);
@@ -3281,7 +3281,7 @@ begin
    for i := 0 to FXSet.numPrograms - 1 do
     begin
      Stream.Read(FXPreset, SizeOf(TFXPreset) - SizeOf(Pointer));
-     SetProgram(i);
+     SetCurrentProgram(i);
      SetProgramName(FXPreset.prgName);
      SwapLong(FXPreset.numParams);
      for j := 0 to FXPreset.numParams - 1 do

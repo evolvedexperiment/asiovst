@@ -62,7 +62,7 @@ interface
     read number of FTracks in current file
 
   property TicksPerQuarter: Integer
-    ticks per quarter, tells how to interpret the time value in midi FEvents
+    ticks per quarter, tells how to interpret the Time value in midi FEvents
 
   property FileFormat: TFileFormat
     tells the format of the current FMidiFile
@@ -71,23 +71,23 @@ interface
     tells Beats per minut
 
   property OnMidiEvent:TOnMidiEvent
-    called while playing for each midi event
+    called while playing for each midi Event
 
   procedure StartPlaying;
-    start playing the current loaded FMidiFile from the beginning
+    start playing the current loaded midi file from the beginning
 
   procedure StopPlaying;
-    stop playing the current FMidiFile
+    stop playing the current midi file
 
-  procedure PlayToTime(time : Integer);
-    if playing yourSelf then FEvents from last time to this time are produced
+  procedure PlayToTime(Time : Integer);
+    if playing yourSelf then FEvents from last Time to this Time are produced
 
 
   function KeyToStr(Key: Integer): string;
       give note string on key value:  e.g. C4
 
   function MyTimeToStr(Value: Integer): string;
-      give time string from msec time
+      give Time string from msec Time
 
   function  GetTrackLength:Integer;
       gives the track lenght in msec (assuming the bpm at the start oof the file)
@@ -107,18 +107,18 @@ type
   PByte = ^Byte;
 
   TMidiEvent = record
-    event   : Byte;
-    data1   : Byte;
-    data2   : Byte;
-    str     : String;
-    dticks  : Integer;
-    time    : Integer;
-    mtime   : Integer;
-    len     : Integer;
+    Event   : Byte;
+    Data1   : Byte;
+    Data2   : Byte;
+    Str     : String;
+    DTicks  : Integer;
+    Time    : Integer;
+    MTime   : Integer;
+    Len     : Integer;
   end;
   PMidiEvent = ^TMidiEvent;
 
-  TOnMidiEvent = procedure(event: PMidiEvent) of object;
+  TOnMidiEvent = procedure(Event: PMidiEvent) of object;
   TEvent = procedure of object;
 
   TMidiTrack = class(TObject)
@@ -143,7 +143,7 @@ type
     procedure PlayUntil(const pos: Integer);
     procedure GoUntil(const pos: Integer);
 
-    procedure PutEvent(event: PMidiEvent);
+    procedure PutEvent(Event: PMidiEvent);
     function GetEvent(const index: Integer): PMidiEvent;
   public
     property Name: string read FName;
@@ -164,8 +164,7 @@ type
     FMidiTimer       : TTimer;
     FMidiFileHandle  : THandle;
 
-    { Protected declarations }
-    FMidiFile        : file of Byte;
+    FMidiFile        : File of Byte;
     FChunkType       : TChunkType;
     FChunkLength     : Integer;
     FChunkData       : PByte;
@@ -181,7 +180,7 @@ type
     FDeltaTicks      : Integer;
     FBPM             : Integer;
     FBeatsPerMeasure : Integer;
-    FFusPerTick       : Double;
+    FFusPerTick      : Double;
     FFilename        : string;
 
     FTracks          : TList;
@@ -196,16 +195,16 @@ type
     FCurrentPos      : Double;  // Current Position in ticks
 
     procedure OnTrackReady;
-    procedure SetFileName(val: string);
+    procedure SetFileName(Value: string);
     procedure ReadChunkHeader;
     procedure ReadChunkContent;
     procedure ReadChunk;
     procedure ProcessHeaderChunk;
     procedure ProcessTrackChunk;
     function ReadVarLength: Integer;
-    function ReadString(l: Integer): string;
+    function ReadString(Index: Integer): string;
     procedure SetOnMidiEvent(handler: TOnMidiEvent);
-    procedure SetBpm(val: Integer);
+    procedure SetBpm(Value: Integer);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -220,11 +219,11 @@ type
     procedure StopPlaying;
     procedure ContinuePlaying;
 
-    procedure PlayToTime(time: Integer);
-    procedure GoToTime(time: Integer);
+    procedure PlayToTime(Time: Integer);
+    procedure GoToTime(Time: Integer);
     function GetCurrentTime: Integer;
     function GetCurrentPos: Double;
-    function GetfFusPerTick : Double;
+    function GetFusPerTick : Double;
     function GetTrackLength: Integer;
     function Ready: Boolean;
   published
@@ -235,6 +234,7 @@ type
     property FileFormat: TFileFormat read FFileFormat;
     property Playing: Boolean read FPlaying;
     property Bpm: Integer read FBPM write SetBpm;
+
     property OnMidiEvent: TOnMidiEvent read FOnMidiEvent write SetOnMidiEvent;
     property OnUpdateEvent: TNotifyEvent read FOnUpdateEvent write FOnUpdateEvent;
   end;
@@ -246,6 +246,11 @@ implementation
 
 uses
   MMSystem;
+
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+
+{ TMidiTrack }
 
 constructor TMidiTrack.Create;
 begin
@@ -259,80 +264,80 @@ destructor TMidiTrack.Destroy;
 var
   i: Integer;
 begin
-  for i := 0 to FEvents.count - 1 do
+  for i := 0 to FEvents.Count - 1 do
     Dispose(PMidiEvent(FEvents.items[i]));
   FEvents.Free;
   inherited Destroy;
 end;
 
-procedure TMidiTRack.PutEvent(event: PMidiEvent);
+procedure TMidiTRack.PutEvent(Event: PMidiEvent);
 var
   command : Integer;
   i       : Integer;
   pevent  : PMidiEvent;
 begin
-  if (event.event = $FF) then
+  if (Event.Event = $FF) then
    begin
-    if (event.data1 = 3) then FName := event.str;
-    if (event.data1 = 4) then FInstrument := event.str;
+    if (Event.Data1 = 3) then FName := Event.Str;
+    if (Event.Data1 = 4) then FInstrument := Event.Str;
    end;
-  FCurrentTime := FCurrentTime + event.dticks;
-  event.time := FCurrentTime; // for the moment just add dticks
-  event.len := 0;
-  FEvents.Add(TObject(event));
-  command := event.event and $F0;
+  FCurrentTime := FCurrentTime + Event.DTicks;
+  Event.Time := FCurrentTime; // for the moment just add DTicks
+  Event.Len := 0;
+  FEvents.Add(TObject(Event));
+  command := Event.Event and $F0;
 
   if ((command = $80) // note off
-    or ((command = $90) and (event.data2 = 0))) //note on with speed 0
+    or ((command = $90) and (Event.Data2 = 0))) //note on with speed 0
   then
   begin
     // this is a note off, try to find the accompanion note on
-    command := event.event or $90;
-    i := FEvents.count - 2;
+    command := Event.Event or $90;
+    i := FEvents.Count - 2;
     while i >= 0 do
     begin
       pevent := PMidiEvent(FEvents[i]);
-      if (pevent.event = command) and
-        (pevent.data1 = event.data1)
+      if (pevent.Event = command) and
+        (pevent.Data1 = Event.Data1)
         then
       begin
-        pevent.len := FCurrentTime - pevent.time;
+        pevent.Len := FCurrentTime - pevent.Time;
         i := 0;
-        event.len := -1;
+        Event.Len := -1;
       end;
       dec(i);
     end;
   end;
 end;
 
-function TMiditrack.GetEventCount: Integer;
+function TMidiTrack.GetEventCount: Integer;
 begin
-  result := FEvents.count;
+  result := FEvents.Count;
 end;
 
-function TMiditrack.GetEvent(const index: Integer): PMidiEvent;
+function TMidiTrack.GetEvent(const index: Integer): PMidiEvent;
 begin
-  if ((index < FEvents.count) and (index >= 0))
+  if ((index < FEvents.Count) and (index >= 0))
    then result := FEvents[index]
    else result := nil;
 end;
 
-procedure TMiditrack.Rewind(const Pos: Integer);
+procedure TMidiTrack.Rewind(const Pos: Integer);
 begin
  if FCurrentPos = FEvents.Count then dec(FCurrentPos);
- while ((FCurrentPos > 0) and (PMidiEvent(FEvents[FCurrentPos]).time > Pos))
+ while ((FCurrentPos > 0) and (PMidiEvent(FEvents[FCurrentPos]).Time > Pos))
   do dec(FCurrentPos);
  CheckReady;
 end;
 
-procedure TMiditrack.PlayUntil(const pos: Integer);
+procedure TMidiTrack.PlayUntil(const pos: Integer);
 begin
  if assigned(OnMidiEvent) then
   begin
-   while ((FCurrentPos < FEvents.count) and (PMidiEvent(FEvents[FCurrentPos]).time < pos)) do
+   while ((FCurrentPos < FEvents.Count) and (PMidiEvent(FEvents[FCurrentPos]).Time < pos)) do
     begin
      OnMidiEvent(PMidiEvent(FEvents[FCurrentPos]));
-     inc(FCurrentPos);
+     Inc(FCurrentPos);
     end;
   end;
  CheckReady;
@@ -340,14 +345,14 @@ end;
 
 procedure TMidiTrack.GoUntil(const pos: Integer);
 begin
- while ((FCurrentPos < FEvents.count) and (PMidiEvent(FEvents[FCurrentPos]).time < pos))
-  do inc(FCurrentPos);
+ while ((FCurrentPos < FEvents.Count) and (PMidiEvent(FEvents[FCurrentPos]).Time < pos))
+  do Inc(FCurrentPos);
  CheckReady;
 end;
 
 procedure TMidiTrack.CheckReady;
 begin
- if FCurrentPos >= FEvents.count then
+ if FCurrentPos >= FEvents.Count then
   begin
    FReady := True;
    if assigned(OnTrackReady)
@@ -358,16 +363,17 @@ end;
 
 function TMidiTrack.GetTrackLength: Integer;
 begin
-  result := PMidiEvent(FEvents[FEvents.count-1]).time
+  result := PMidiEvent(FEvents[FEvents.Count-1]).Time
 end;
 
 constructor TMidiFile.Create(AOwner: TComponent);
 begin
- inherited Create(AOWner);
+ inherited Create(AOwner);
  FManual := False;
  FChunkData := nil;
  FChunkType := ctIllegal;
  FTracks := TList.Create;
+
  FMidiTimer := TTimer.Create(nil);
  FMidiTimer.Interval := 2;
  FMidiTimer.OnTimer := MidiTimer;
@@ -376,45 +382,52 @@ end;
 
 destructor TMidiFile.Destroy;
 var
-  i: Integer;
+  Track: Integer;
 begin
- FMidiTimer.Free;
- if not (FChunkData = nil) then FreeMem(FChunkData);
- for i := 0 to FTracks.Count - 1
-  do TMidiTrack(FTracks.Items[i]).Free;
- FTracks.Free;
- inherited Destroy;
+ FreeAndNil(FMidiTimer);
+
+ if assigned(FChunkData)
+  then Dispose(FChunkData);
+
+ for Track := 0 to FTracks.Count - 1
+  do TMidiTrack(FTracks.Items[Track]).Free;
+
+ FreeAndNil(FTracks);
+
+ inherited;
 end;
 
-function TMidiFile.GetTrack(index: Integer): TMidiTrack;
+function TMidiFile.GetTrack(Index: Integer): TMidiTrack;
 begin
-  result := FTracks.Items[index];
+ if (Index >= 0) and (Index < FTracks.Count)
+  then result := FTracks.Items[Index]
+  else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
-procedure TMidiFile.SetFileName(val: string);
+procedure TMidiFile.SetFileName(Value: string);
 begin
-  FFilename := val;
+  FFilename := Value;
 //  ReadFile;
 end;
 
-procedure TMidiFile.SetOnMidiEvent(handler: TOnMidiEvent);
+procedure TMidiFile.SetOnMidiEvent(Handler: TOnMidiEvent);
 var
   i: Integer;
 begin
-//  if not (FOnMidiEvent = handler) then
+//  if not (FOnMidiEvent = Handler) then
 //  begin
-  FOnMidiEvent := handler;
-  for i := 0 to FTracks.count - 1 do
-    TMidiTrack(FTracks.items[i]).OnMidiEvent := handler;
+  FOnMidiEvent := Handler;
+  for i := 0 to FTracks.Count - 1
+   do TMidiTrack(FTracks.items[i]).OnMidiEvent := Handler;
 //  end;
 end;
 
 procedure TMidiFile.MidiTimer(Sender: TObject);
 begin
-  if FPlaying then
+ if FPlaying then
   begin
-    PlayToTime(GetTickCount - Cardinal(FPlayStartTime));
-    if assigned(FOnUpdateEvent) then FOnUpdateEvent(Self);
+   PlayToTime(GetTickCount - Cardinal(FPlayStartTime));
+   if assigned(FOnUpdateEvent) then FOnUpdateEvent(Self);
   end;
 end;
 
@@ -422,7 +435,7 @@ procedure TMidiFile.StartPlaying;
 var
   i: Integer;
 begin
-  for i := 0 to FTracks.count - 1 do TMidiTrack(FTracks[i]).Rewind(0);
+  for i := 0 to FTracks.Count - 1 do TMidiTrack(FTracks[i]).Rewind(0);
   FPlayStartTime := getTickCount;
   FPlaying := True;
   if not FManual then FMidiTimer.Enabled := True;
@@ -441,7 +454,7 @@ procedure TMidiFile.StopPlaying;
 var
   i: Integer;
 begin
- for i := 0 to FTracks.count - 1
+ for i := 0 to FTracks.Count - 1
   do TMidiTrack(FTracks.items[i]).Rewind(0);
 
  FPlaying := False;
@@ -455,7 +468,7 @@ begin
   Result := FCurrentTime;
 end;
 
-procedure TMidiFile.PlayToTime(time: Integer);
+procedure TMidiFile.PlayToTime(Time: Integer);
 var
   i         : Integer;
   pos       : Integer;
@@ -464,36 +477,37 @@ begin
  // calculate the pos in the file.
  // pos is actually tick
  // Current FFusPerTick is uses to determine the actual pos
- deltaTime := time - FCurrentTime;
+ deltaTime := Time - FCurrentTime;
  FCurrentPos := FCurrentPos + (deltaTime * 1000) / FFusPerTick;
  pos := round(FCurrentPos);
- for i := 0 to FTracks.count - 1 do TMidiTrack(FTracks.items[i]).PlayUntil(pos);
- FCurrentTime := time;
+ for i := 0 to FTracks.Count - 1
+  do TMidiTrack(FTracks.items[i]).PlayUntil(pos);
+ FCurrentTime := Time;
 end;
 
-procedure TMidiFile.GoToTime(time: Integer);
+procedure TMidiFile.GoToTime(Time: Integer);
 var
   i   : Integer;
   pos : Integer;
 begin
  // this function should be changed because FFusPerTick might not be constant
- pos := round((time * 1000) / FFusPerTick);
- for i := 0 to FTracks.count - 1 do
+ pos := round((Time * 1000) / FFusPerTick);
+ for i := 0 to FTracks.Count - 1 do
   with TMidiTrack(FTracks.items[i]) do
    begin
     Rewind(0);
     GoUntil(pos);
    end;
- FCurrentTime := time;
+ FCurrentTime := Time;
 end;
 
-procedure TMidiFile.SetBpm(val: Integer);
+procedure TMidiFile.SetBpm(Value: Integer);
 var
   us_per_quarter: Integer;
 begin
- if not (val = FBPM) then
+ if not (Value = FBPM) then
   begin
-   us_per_quarter := 60000000 div val;
+   us_per_quarter := 60000000 div Value;
    FBPM := 60000000 div us_per_quarter;
    FFusPerTick := us_per_quarter / FDeltaTicks;
   end;
@@ -527,47 +541,47 @@ end;
 
 procedure TMidiFile.ReadChunk;
 begin
-  ReadChunkHeader;
-  ReadChunkContent;
-  case FChunkType of
-   ctHeader : ProcessHeaderChunk;
-    ctTrack : ProcessTrackChunk;
-  end;
+ ReadChunkHeader;
+ ReadChunkContent;
+ case FChunkType of
+  ctHeader : ProcessHeaderChunk;
+   ctTrack : ProcessTrackChunk;
+ end;
 end;
 
 procedure TMidiFile.ProcessHeaderChunk;
 begin
  FChunkIndex := FChunkData;
- inc(FChunkIndex);
+ Inc(FChunkIndex);
  if FChunkType = ctHeader then
   begin
-    case FChunkIndex^ of
-     0: FFileFormat := ffSingleSynch;
-     1: FFileFormat := ffMultiSynch;
-     2: FFileFormat := ffMultiAsynch;
-    end;
-    inc(FChunkIndex);
-    FNumberTracks := FChunkIndex^ * $100;
-    inc(FChunkIndex);
-    FNumberTracks := FNumberTracks + FChunkIndex^;
-    inc(FChunkIndex);
-    FDeltaTicks := FChunkIndex^ * $100;
-    inc(FChunkIndex);
-    FDeltaTicks := FDeltaTicks + FChunkIndex^;
+   case FChunkIndex^ of
+    0: FFileFormat := ffSingleSynch;
+    1: FFileFormat := ffMultiSynch;
+    2: FFileFormat := ffMultiAsynch;
+   end;
+   Inc(FChunkIndex);
+   FNumberTracks := FChunkIndex^ * $100;
+   Inc(FChunkIndex);
+   FNumberTracks := FNumberTracks + FChunkIndex^;
+   Inc(FChunkIndex);
+   FDeltaTicks := FChunkIndex^ * $100;
+   Inc(FChunkIndex);
+   FDeltaTicks := FDeltaTicks + FChunkIndex^;
   end;
 end;
 
 procedure TMidiFile.ProcessTrackChunk;
 var
   dTime          : Integer;
-  event          : Integer;
-  len            : Integer;
+  Event          : Integer;
+  Len            : Integer;
   midiEvent      : PMidiEvent;
   us_per_quarter : Integer;
 begin
   FChunkIndex := FChunkData;
-//  inc(FChunkIndex);
-  event := 0;
+//  Inc(FChunkIndex);
+  Event := 0;
   if FChunkType = ctTrack then
    begin
     FCurrentTrack := TMidiTrack.Create;
@@ -575,107 +589,107 @@ begin
     FTracks.add(FCurrentTrack);
     while Integer(FChunkIndex) < Integer(FChunkEnd) do
      begin
-      // each event starts with var length delta time
+      // each Event starts with var length delta Time
       dTime := ReadVarLength;
       if FChunkIndex^ >= $80 then
        begin
-        event := FChunkIndex^;
-        inc(FChunkIndex);
+        Event := FChunkIndex^;
+        Inc(FChunkIndex);
        end;
-      // else it is a running status event (just the same event as before)
+      // else it is a running status Event (just the same Event as before)
 
-      if event = $FF then
+      if Event = $FF then
        begin
 {        case FChunkIndex^ of
         $00: // sequence number, not implemented jet
             begin
-              inc(FChunkIndex); // $02
-              inc(FChunkIndex);
+              Inc(FChunkIndex); // $02
+              Inc(FChunkIndex);
             end;
-        $01 .. $0f: // text FEvents  FF ty len text
+        $01 .. $0f: // text FEvents  FF ty Len text
             begin
               New(midiEvent);
-              midiEvent.event := $FF;
-              midiEvent.data1 := FChunkIndex^;     // type is stored in data1
-              midiEvent.dticks := dtime;
+              midiEvent.Event := $FF;
+              midiEvent.Data1 := FChunkIndex^;     // type is stored in Data1
+              midiEvent.DTicks := dtime;
 
-              inc(FChunkIndex);
-              len := ReadVarLength;
-              midiEvent.str    := ReadString(len);
+              Inc(FChunkIndex);
+              Len := ReadVarLength;
+              midiEvent.Str    := ReadString(Len);
 
               FCurrentTrack.PutEvent(midiEvent);
             end;
         $20: // Midi channel prefix  FF 20 01 cc
              begin
-               inc(FChunkIndex); // $01
-               inc(FChunkIndex); // channel
-               inc(FChunkIndex);
+               Inc(FChunkIndex); // $01
+               Inc(FChunkIndex); // channel
+               Inc(FChunkIndex);
              end;
         $2F: // End of ctTrack FF 2F 00
              begin
-               inc(FChunkIndex); // $00
-               inc(FChunkIndex);
+               Inc(FChunkIndex); // $00
+               Inc(FChunkIndex);
              end;
         $51: // Set Tempo  FF 51 03 tttttt
              begin
-               inc(FChunkIndex); // $03
-               inc(FChunkIndex); // tt
-               inc(FChunkIndex); // tt
-               inc(FChunkIndex); // tt
-               inc(FChunkIndex);
+               Inc(FChunkIndex); // $03
+               Inc(FChunkIndex); // tt
+               Inc(FChunkIndex); // tt
+               Inc(FChunkIndex); // tt
+               Inc(FChunkIndex);
              end;
         $54: // SMPTE offset  FF 54 05 hr mn se fr ff
              begin
-               inc(FChunkIndex); // $05
-               inc(FChunkIndex); // hr
-               inc(FChunkIndex); // mn
-               inc(FChunkIndex); // se
-               inc(FChunkIndex); // fr
-               inc(FChunkIndex); // ff
-               inc(FChunkIndex);
+               Inc(FChunkIndex); // $05
+               Inc(FChunkIndex); // hr
+               Inc(FChunkIndex); // mn
+               Inc(FChunkIndex); // se
+               Inc(FChunkIndex); // fr
+               Inc(FChunkIndex); // ff
+               Inc(FChunkIndex);
              end;
         $58: // Time signature FF 58 04 nn dd cc bb
              begin
-               inc(FChunkIndex); // $04
-               inc(FChunkIndex); // nn
-               inc(FChunkIndex); // dd
-               inc(FChunkIndex); // cc
-               inc(FChunkIndex); // bb
-               inc(FChunkIndex);
+               Inc(FChunkIndex); // $04
+               Inc(FChunkIndex); // nn
+               Inc(FChunkIndex); // dd
+               Inc(FChunkIndex); // cc
+               Inc(FChunkIndex); // bb
+               Inc(FChunkIndex);
              end;
         $59: // Key signature FF 59 02 df mi
              begin
-               inc(FChunkIndex); // $02
-               inc(FChunkIndex); // df
-               inc(FChunkIndex); // mi
-               inc(FChunkIndex);
+               Inc(FChunkIndex); // $02
+               Inc(FChunkIndex); // df
+               Inc(FChunkIndex); // mi
+               Inc(FChunkIndex);
              end;
         $7F: // Sequence specific Meta-event
             begin
-              inc(FChunkIndex);
-              len := ReadVarLength;
-              str := ReadString(len);
+              Inc(FChunkIndex);
+              Len := ReadVarLength;
+              Str := ReadString(Len);
             end;
-        else // unknown meta event
+        else // unknown meta Event
         }
          begin
           New(midiEvent);
-          midiEvent.event := $FF;
-          midiEvent.data1 := FChunkIndex^; // type is stored in data1
-          midiEvent.dticks := dtime;
+          midiEvent.Event := $FF;
+          midiEvent.Data1 := FChunkIndex^; // type is stored in Data1
+          midiEvent.DTicks := dtime;
 
-          inc(FChunkIndex);
-          len := ReadVarLength;
-          midiEvent.str := ReadString(len);
+          Inc(FChunkIndex);
+          Len := ReadVarLength;
+          midiEvent.Str := ReadString(Len);
           FCurrentTrack.PutEvent(midiEvent);
 
-          case midiEvent.data1 of
+          case midiEvent.Data1 of
             $51:
               begin
                 us_per_quarter :=
-                  (Integer(Byte(midiEvent.str[1])) shl 16 +
-                  Integer(Byte(midiEvent.str[2])) shl 8 +
-                  Integer(Byte(midiEvent.str[3])));
+                  (Integer(Byte(midiEvent.Str[1])) shl 16 +
+                  Integer(Byte(midiEvent.Str[2])) shl 8 +
+                  Integer(Byte(midiEvent.Str[3])));
                 FBPM := 60000000 div us_per_quarter;
                 FBpmOld := FBPM;
                 FFusPerTick := us_per_quarter / FDeltaTicks;
@@ -688,23 +702,23 @@ begin
        begin
       // these are all midi FEvents
         New(midiEvent);
-        midiEvent.event := event;
-        midiEvent.dticks := dtime;
-//         inc(FChunkIndex);
-        case event of
+        midiEvent.Event := Event;
+        midiEvent.DTicks := dtime;
+//         Inc(FChunkIndex);
+        case Event of
           $80..$8F, // note off
           $90..$9F, // note on
           $A0..$AF, // key aftertouch
           $B0..$BF, // control change
           $E0..$EF: // pitch wheel change
             begin
-              midiEvent.data1 := FChunkIndex^; inc(FChunkIndex);
-              midiEvent.data2 := FChunkIndex^; inc(FChunkIndex);
+              midiEvent.Data1 := FChunkIndex^; Inc(FChunkIndex);
+              midiEvent.Data2 := FChunkIndex^; Inc(FChunkIndex);
             end;
           $C0..$CF, // program change
           $D0..$DF: // channel aftertouch
             begin
-              midiEvent.data1 := FChunkIndex^; inc(FChunkIndex);
+              midiEvent.Data1 := FChunkIndex^; Inc(FChunkIndex);
             end;
         else
            // error
@@ -728,32 +742,32 @@ begin
    i := i shl 7;
    b := FChunkIndex^;
    i := i + b and $7F;
-   inc(FChunkIndex);
+   Inc(FChunkIndex);
   end;
  result := i;
 end;
 
-function TMidiFile.ReadString(l: Integer): string;
+function TMidiFile.ReadString(Index: Integer): string;
 var
   s: PChar;
   i: Integer;
 begin
- GetMem(s, l + 1); ;
- s[l] := chr(0);
- for i := 0 to l - 1 do
+ GetMem(s, Index + 1); ;
+ s[Index] := chr(0);
+ for i := 0 to Index - 1 do
   begin
    s[i] := Chr(FChunkIndex^);
-   inc(FChunkIndex);
+   Inc(FChunkIndex);
   end;
  result := string(s);
 end;
 
 procedure TMidiFile.ReadFile;
 var
-  i: Integer;
+  Track: Integer;
 begin
-  for i := 0 to FTracks.Count - 1
-   do TMidiTrack(FTracks.Items[i]).Free;
+  for Track := 0 to FTracks.Count - 1
+   do TMidiTrack(FTracks.Items[Track]).Free;
   FTracks.Clear;
   FChunkType := ctIllegal;
 
@@ -768,33 +782,33 @@ end;
 function KeyToStr(const Key: Integer): string;
 var
   n   : Integer;
-  str : string;
+  Str : string;
 begin
   n := key mod 12;
   case n of
-    0: str := 'C';
-    1: str := 'C#';
-    2: str := 'D';
-    3: str := 'D#';
-    4: str := 'E';
-    5: str := 'F';
-    6: str := 'F#';
-    7: str := 'G';
-    8: str := 'G#';
-    9: str := 'A';
-   10: str := 'A#';
-   11: str := 'B';
+    0: Str := 'C';
+    1: Str := 'C#';
+    2: Str := 'D';
+    3: Str := 'D#';
+    4: Str := 'E';
+    5: Str := 'F';
+    6: Str := 'F#';
+    7: Str := 'G';
+    8: Str := 'G#';
+    9: Str := 'A';
+   10: Str := 'A#';
+   11: Str := 'B';
   end;
-  Result := str + IntToStr(key div 12);
+  Result := Str + IntToStr(key div 12);
 end;
 
-function IntToLenStr(val: Integer; len: Integer): string;
+function IntToLenStr(val: Integer; Len: Integer): string;
 var
-  str: string;
+  Str: string;
 begin
-  str := IntToStr(val);
-  while Length(str) < len do str := '0' + str;
-  Result := str;
+  Str := IntToStr(val);
+  while Length(Str) < Len do Str := '0' + Str;
+  Result := Str;
 end;
 
 function MyTimeToStr(const Value: Integer): string;
@@ -814,7 +828,7 @@ begin
             IntToLenStr(sec, 2) + '.' + IntToLenStr(msec, 3);
 end;
 
-function TMidiFile.GetfFusPerTick: Double;
+function TMidiFile.GetFusPerTick: Double;
 begin
  Result := FFusPerTick;
 end;
@@ -822,15 +836,15 @@ end;
 function  TMidiFile.GetTrackLength: Integer;
 var
   i, length : Integer;
-  time      : Extended;
+  Time      : Extended;
 begin
  length := 0;
  for i := 0 to FTracks.Count - 1 do
   if TMidiTrack(FTracks.Items[i]).GetTrackLength > length
    then length := TMidiTrack(FTracks.Items[i]).GetTrackLength;
- time := length * FFusPerTick;
- time := time / 1000.0;
- result := round(time);
+ Time := length * FFusPerTick;
+ Time := Time / 1000.0;
+ result := round(Time);
 end;
 
 function TMidiFile.GetTrackLength2: Integer;

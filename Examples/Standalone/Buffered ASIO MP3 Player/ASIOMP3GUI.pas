@@ -3,8 +3,8 @@ unit ASIOMP3GUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_Common, DAV_ASIOHost, DAV_DspBufferedMp3Player;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ExtCtrls, DAV_Common, DAV_DspBufferedMp3Player, DAV_ASIOHost;
 
 type
   TFmASIOMP3 = class(TForm)
@@ -19,6 +19,9 @@ type
     LbChannels: TLabel;
     LbDrivername: TLabel;
     OpenDialog: TOpenDialog;
+    LbBuffer: TLabel;
+    LbBufferValue: TLabel;
+    Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
@@ -29,7 +32,9 @@ type
     procedure DriverComboChange(Sender: TObject);
     procedure EdFileChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
+    FIniFile        : TIniFile;
     FVolumeFactor   : Single;
     FChannelOffset  : Byte;
     FBufferedPlayer : TBufferedMP3FilePlayer;
@@ -45,24 +50,33 @@ implementation
 uses
   IniFiles;
 
+resourcestring
+  RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
+
 { TFmASIOMP3 }
 
 procedure TFmASIOMP3.FormCreate(Sender: TObject);
 begin
+ FIniFile := ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI';
  DriverCombo.Items := ASIOHost.DriverList;
  if DriverCombo.Items.Count = 0 then
   begin
-   MessageDlg('No ASIO Driver present! Application Terminated!',
+   MessageDlg(RCStrNoASIODriverPresent,
      mtError, [mbOK], 0);
    Application.Terminate;
   end;
 
  FVolumeFactor := 1;
  FChannelOffset := 0;
- FBufferedPlayer := TBufferedMP3FilePlayer.Create; 
+ FBufferedPlayer := TBufferedMP3FilePlayer.Create;
+ with FBufferedPlayer do
+  begin
+   BufferSize := 65536;
+   BlockSize  := 4096
+  end;
 
  // and make sure all controls are enabled or disabled
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+ with TIniFile.Create(FIniFile) do
   try
    Left := ReadInteger('Layout', 'Audio Left', Left);
    Top := ReadInteger('Layout', 'Audio Top', Top);
@@ -83,7 +97,7 @@ begin
   ASIOHost.Active := False;
   FreeAndNil(FBufferedPlayer);
 
-  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+  with TIniFile.Create(FIniFile) do
    try
     WriteInteger('Layout', 'Audio Left', Left);
     WriteInteger('Layout', 'Audio Top', Top);
@@ -93,6 +107,11 @@ begin
    finally
     Free;
    end;
+end;
+
+procedure TFmASIOMP3.TimerTimer(Sender: TObject);
+begin
+ LbBufferValue.Caption := IntToStr(Round(FBufferedPlayer.BufferFill)) + ' %';
 end;
 
 procedure TFmASIOMP3.DriverComboChange(Sender: TObject);
@@ -111,7 +130,7 @@ begin
        ASIOHost.OutputChannelInfos[2 * i].Name + ' / ' +
        ASIOHost.OutputChannelInfos[2 * i + 1].Name);
 
-   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+   with TIniFile.Create(FIniFile) do
     try
      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
     finally
@@ -142,16 +161,16 @@ end;
 
 procedure TFmASIOMP3.BtStartStopClick(Sender: TObject);
 begin
- if BtStartStop.Caption = 'Start Audio' then
+ if BtStartStop.Caption = '&Start Audio' then
   begin
    ASIOHost.Active := True;
-   BtStartStop.Caption := 'Stop Audio';
+   BtStartStop.Caption := '&Stop Audio';
   end
  else
   begin
    ASIOHost.Active := False;
    FBufferedPlayer.Reset;
-   BtStartStop.Caption := 'Start Audio';
+   BtStartStop.Caption := '&Start Audio';
   end;
 end;
 

@@ -59,6 +59,18 @@ implementation
 uses
   IniFiles, VAPlotIR;
 
+procedure TFmVSTAnalyser.FormCreate(Sender: TObject);
+begin
+ if ParamCount > 0 then LoadVSTPlugin(ParamStr(1));
+ with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
+  try
+   Top := ReadInteger('Layout', 'Main Top', Top);
+   Left := ReadInteger('Layout', 'Main Left', Left);
+  finally
+   Free;
+  end;
+end;
+
 procedure TFmVSTAnalyser.FormActivate(Sender: TObject);
 begin
  VstHost[0].EditActivate;
@@ -112,7 +124,7 @@ end;
 procedure TFmVSTAnalyser.MIPresetClick(Sender: TObject);
 begin
  with Sender as TMenuItem
-  do VstHost[0].ProgramNr := Tag;
+  do VstHost[0].CurrentProgram := Tag;
 end;
 
 procedure TFmVSTAnalyser.LoadVSTPlugin(DLLName : TFileName);
@@ -160,18 +172,6 @@ begin
   begin
    ClientWidth := Right - Left;
    ClientHeight := Bottom - Top;
-  end;
-end;
-
-procedure TFmVSTAnalyser.FormCreate(Sender: TObject);
-begin
- if ParamCount > 0 then LoadVSTPlugin(ParamStr(1));
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
-  try
-   Top := ReadInteger('Layout', 'Main Top', Top);
-   Left := ReadInteger('Layout', 'Main Left', Left);
-  finally
-   Free;
   end;
 end;
 

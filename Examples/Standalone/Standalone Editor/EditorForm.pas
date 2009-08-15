@@ -154,14 +154,14 @@ begin
    CBPreset.Text := s;
    for i := 0 to VstHost[0].numPrograms - 1 do
     begin
-     VstHost[0].ProgramNr := i;
+     VstHost[0].CurrentProgram := i;
      s := VstHost[0].GetProgramName;
      s := IntToStr(i) + ' - ' + s;
      if i < 10 then s := '00' + s else
      if i < 100 then s := '0' + s;
      CBPreset.Items[i] := s;
     end;
-   VstHost[0].ProgramNr := 0;
+   VstHost[0].CurrentProgram := 0;
    CBPreset.ItemIndex := 0;
   end;
  if (effFlagsHasEditor in VstHost[0].EffectOptions) then
@@ -233,7 +233,7 @@ end;
 
 procedure TFmVSTEditor.CBPresetChange(Sender: TObject);
 begin
- VstHost[0].ProgramNr := CBPreset.ItemIndex;
+ VstHost[0].CurrentProgram := CBPreset.ItemIndex;
 end;
 
 procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,

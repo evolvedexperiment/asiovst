@@ -62,7 +62,7 @@ begin
        Memo.Lines.Clear;
        for prgs := 0 to numPrograms - 1 do
         begin
-         ProgramNr := prgs;
+         CurrentProgram := prgs;
          str := 'Program: ' + ProgramName;
          Memo.Lines.Add(str);
          FillChar(str[1], Length(str), '-');
