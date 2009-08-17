@@ -34,7 +34,7 @@ type
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    FIniFile        : TIniFile;
+    FIniFile        : TFileName;
     FVolumeFactor   : Single;
     FChannelOffset  : Byte;
     FBufferedPlayer : TBufferedMP3FilePlayer;
@@ -186,8 +186,17 @@ end;
 
 procedure TFmASIOMP3.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+var
+  Sample : Integer;
 begin
  FBufferedPlayer.GetSamples(OutBuffer[0], OutBuffer[1], ASIOHost.Buffersize);
+(*
+ for Sample := 0 to ASIOHost.Buffersize - 1 do
+  begin
+   OutBuffer[0, Sample] := 0.125 * OutBuffer[0, Sample];
+   OutBuffer[1, Sample] := 0.125 * OutBuffer[1, Sample];
+  end;
+*)
 end;
 
 end.

@@ -8,8 +8,8 @@ uses
   DAV_Common;
 
 type
-  PGrInfo = ^TGrInfo;
-  TGrInfo = record
+  PGranuleInfo = ^TGranuleInfo;
+  TGranuleInfo = record
     part2_3_length      : Cardinal;
     BigValues           : Cardinal;
     GlobalGain          : Cardinal;
@@ -29,14 +29,14 @@ type
   TIIISideInfo = record
     MainDataBegin: Integer;
     PrivateBits: Cardinal;
-    ch: array[0..1] of record
+    Channel: array[0..1] of record
       scfsi: array[0..3] of Cardinal;
-      gr: array[0..1] of TGrInfo;
+      Granule: array[0..1] of TGranuleInfo;
     end;
   end;
 
-  PIIIScaleFac = ^TIIIScaleFac;
-  TIIIScaleFac = array[0..1] of record
+  PIIIScaleFactor = ^TIIIScaleFactor;
+  TIIIScaleFactor = array[0..1] of record
     Long: array[0..22] of Integer;
     Short: array[0..2, 0..12] of Integer;  // [window][cb]
   end;

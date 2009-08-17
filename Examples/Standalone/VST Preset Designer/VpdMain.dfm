@@ -43,7 +43,7 @@ object FmVstPresetDesigner: TFmVstPresetDesigner
   end
   object VstHost: TVstHost
     CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdReportConnectionChanges, hcdAcceptIOChanges, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdStartStopProcess]
-    ManageIdleAutomaticly = False
+    ManageIdleAutomaticly = True
     ParameterQuantization = 0
     PlugInDir = 'C:\Program Files\Audio\Plugins\VST\=Delphi='
     Tempo = 120.000000000000000000

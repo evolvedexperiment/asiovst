@@ -11,13 +11,14 @@ uses
 type
   TBufferThread = class(TThread)
   private
-    FMP3        : TMPEGAudio;
-    FBufferSize : Integer;
-    FBuffer     : TCircularStereoBuffer32;
-    FSampleRate : Single;
-    FMP3Buffer  : array [0..1] of PDAVSingleFixedArray;
-    FMP3BufSize : Integer;
-    FTimeOut    : Integer;
+    FMpegAudio     : TMpegAudio;
+    FBufferSize    : Integer;
+    FBuffer        : TCircularStereoBuffer32;
+    FSampleRate    : Single;
+    FStreamBuffer  : array [0..1] of PDAVSingleFixedArray;
+    FStreamBufSize : Integer;
+    FTimeOut       : Integer;
+    FAllowSuspend  : Boolean;
     procedure SetBufferSize(const Value: Integer);
     procedure SetBlockSize(Value: Integer);
     function GetBufferFill: Single;
@@ -38,23 +39,29 @@ type
     procedure LoadFromFile(FileName: TFileName);
     procedure LoadFromStream(Stream: TStream);
 
+    property AllowSuspend: Boolean read FAllowSuspend write FAllowSuspend;
     property BufferSize: Integer read FBufferSize write SetBufferSize;
-    property BlockSize: Integer read FMP3BufSize write SetBlockSize;
+    property BlockSize: Integer read FStreamBufSize write SetBlockSize;
     property SampleRate: Single read FSampleRate;
     property BufferFill: Single read GetBufferFill;
+
+    property MpegAudio: TMPEGAudio read FMpegAudio;
   end;
 
   TCustomBufferedMP3Player = class(TDspObject)
   private
     FSampleRate : Single;
     FRatio      : Single;
+    FAllowSuspend: Boolean;
     function GetBlockSize: Integer;
     function GetBufferSize: Integer;
+    function GetBufferFill: Single;
+    function GetMpegAudio: TMpegAudio;
     procedure SetBlockSize(const Value: Integer);
     procedure SetBufferSize(const Value: Integer);
     procedure SetSampleRate(const Value: Single);
     procedure CalculateSampleRateRatio;
-    function GetBufferFill: Single;
+    procedure SetAllowSuspend(const Value: Boolean);
   protected
     FBufferThread : TBufferThread;
     procedure SampleRateChanged; virtual;
@@ -69,6 +76,9 @@ type
     property BlockSize: Integer read GetBlockSize write SetBlockSize;
     property SampleRate: Single read FSampleRate write SetSampleRate;
     property BufferFill: Single read GetBufferFill;
+    property AllowSuspend: Boolean read FAllowSuspend write SetAllowSuspend;
+
+    property MpegAudio: TMpegAudio read GetMpegAudio;
   end;
 
   TBufferedMP3FilePlayer = class(TCustomBufferedMP3Player)
@@ -112,21 +122,22 @@ begin
  inherited Create(True);
  FBufferSize := 16384;
  FSampleRate := 44100;
- FMP3BufSize := 4096;
+ FStreamBufSize := 4096;
+ FAllowSuspend := False;
  CalculateTimeOut;
 
- GetMem(FMP3Buffer[0], FMP3BufSize * SizeOf(Single));
- GetMem(FMP3Buffer[1], FMP3BufSize * SizeOf(Single));
+ GetMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
+ GetMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
 
  FBuffer := TCircularStereoBuffer32.Create(FBufferSize);
 end;
 
 destructor TBufferThread.Destroy;
 begin
- Dispose(FMP3Buffer[0]);
- Dispose(FMP3Buffer[1]);
+ Dispose(FStreamBuffer[0]);
+ Dispose(FStreamBuffer[1]);
  FreeAndNil(FBuffer);
- FreeAndNil(FMP3);
+ FreeAndNil(FMpegAudio);
  inherited;
 end;
 
@@ -134,23 +145,25 @@ procedure TBufferThread.Execute;
 var
   IdleLoops: Integer;
 begin
- IdleLoops := 10;
+ IdleLoops := 20;
  while not Terminated do
   begin
-   while (FBuffer.BufferSize - FBuffer.SamplesInBuffer) > FMP3BufSize do
+   while (FBuffer.BufferSize - FBuffer.SamplesInBuffer) > FStreamBufSize do
     begin
-     IdleLoops := 10;
-     if assigned(FMP3) 
-      then FMP3.ReadBuffer(FMP3Buffer[0], FMP3Buffer[1], FMP3BufSize)
+     IdleLoops := 20;
+
+     if assigned(FMpegAudio)
+      then FMpegAudio.ReadBuffer(FStreamBuffer[0], FStreamBuffer[1], FStreamBufSize)
       else
        begin
-        FillChar(FMP3Buffer[0], FMP3BufSize * SizeOf(Single), 0);
-        FillChar(FMP3Buffer[1], FMP3BufSize * SizeOf(Single), 0);
+        FillChar(FStreamBuffer[0]^, FStreamBufSize * SizeOf(Single), 0);
+        FillChar(FStreamBuffer[1]^, FStreamBufSize * SizeOf(Single), 0);
        end;
-     FBuffer.WriteBuffer(FMP3Buffer[0], FMP3Buffer[1], FMP3BufSize);
+     FBuffer.WriteBuffer(FStreamBuffer[0], FStreamBuffer[1], FStreamBufSize);
     end;
+
    Dec(IdleLoops);
-   if IdleLoops <= 0
+   if FAllowSuspend and (IdleLoops <= 0)
     then Suspend
     else Sleep(FTimeOut);
   end;
@@ -180,36 +193,36 @@ end;
 
 procedure TBufferThread.LoadFromFile(FileName: TFileName);
 begin
- if assigned(FMP3) then FreeAndNil(FMP3);
+ if assigned(FMpegAudio) then FreeAndNil(FMpegAudio);
  if FileExists(FileName) then
   begin
-   FMP3 := TMPEGAudio.Create(FileName);
+   FMpegAudio := TMPEGAudio.Create(FileName);
    MP3Changed;
   end;
 end;
 
 procedure TBufferThread.LoadFromStream(Stream: TStream);
 begin
- if assigned(FMP3) then FreeAndNil(FMP3);
+ if assigned(FMpegAudio) then FreeAndNil(FMpegAudio);
  if Stream <> nil then
   begin
-   FMP3 := TMPEGAudio.Create(Stream);
+   FMpegAudio := TMPEGAudio.Create(Stream);
    MP3Changed;
   end;
 end;
 
 procedure TBufferThread.MP3Changed;
 begin
- if assigned(FMP3) then
+ if assigned(FMpegAudio) then
   begin
-   FSampleRate := FMP3.Frequency;
+   FSampleRate := FMpegAudio.SampleRate;
    SampleRateChanged;
   end;
 end;
 
 procedure TBufferThread.Reset;
 begin
- if assigned(FMP3) then FMP3.Reset;
+ if assigned(FMpegAudio) then FMpegAudio.Reset;
 end;
 
 procedure TBufferThread.BufferSizeChanged;
@@ -219,13 +232,13 @@ end;
 
 procedure TBufferThread.BlockSizeChanged;
 begin
- ReallocMem(FMP3Buffer[0], FMP3BufSize * SizeOf(Single));
- ReallocMem(FMP3Buffer[1], FMP3BufSize * SizeOf(Single));
+ ReallocMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
+ ReallocMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
 end;
 
 procedure TBufferThread.CalculateTimeOut;
 begin
- FTimeOut := round(1000 * FMP3BufSize / FSampleRate);
+ FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
 end;
 
 procedure TBufferThread.SampleRateChanged;
@@ -238,9 +251,9 @@ begin
  if Value > FBufferSize div 2
   then Value := FBufferSize div 2;
  
- if FMP3BufSize <> Value then
+ if FStreamBufSize <> Value then
   begin
-   FMP3BufSize := Value;
+   FStreamBufSize := Value;
    BlockSizeChanged;
   end;
 end;
@@ -262,9 +275,11 @@ end;
 constructor TCustomBufferedMP3Player.Create;
 begin
  inherited;
- FSampleRate := 44100; 
+ FSampleRate := 44100;
+ FAllowSuspend := False; 
  FBufferThread := TBufferThread.Create;
- FBufferThread.Priority := tpHigher;
+ FBufferThread.Priority := tpNormal;
+ FBufferThread.AllowSuspend := FAllowSuspend;
 end;
 
 destructor TCustomBufferedMP3Player.Destroy;
@@ -293,6 +308,20 @@ end;
 function TCustomBufferedMP3Player.GetBufferSize: Integer;
 begin
  result := FBufferThread.BufferSize;
+end;
+
+function TCustomBufferedMP3Player.GetMpegAudio: TMpegAudio;
+begin
+ result := FBufferThread.MpegAudio;
+end;
+
+procedure TCustomBufferedMP3Player.SetAllowSuspend(const Value: Boolean);
+begin
+ if FAllowSuspend <> Value then
+  begin
+   FAllowSuspend := Value;
+   FBufferThread.AllowSuspend := True;
+  end;
 end;
 
 procedure TCustomBufferedMP3Player.SetBlockSize(const Value: Integer);
@@ -328,7 +357,7 @@ procedure TCustomBufferedMP3Player.GetSamples(Left, Right: PDAVSingleFixedArray;
   SampleFrames: Integer);
 begin
  // eventually reactivate thread
- if FBufferThread.Suspended then FBufferThread.Resume;
+ if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Resume;
  FBufferThread.GetSamples(Left, Right, SampleFrames);
 end;
 

@@ -4,8 +4,7 @@ uses
   FastMM4,
   FastMove,
   Forms,
-  ASIOMP3GUI in 'ASIOMP3GUI.pas' {FmASIOMP3},
-  DAV_DspBufferedMp3Player in '..\..\..\Source\DSP\DAV_DspBufferedMp3Player.pas';
+  ASIOMP3GUI in 'ASIOMP3GUI.pas' {FmASIOMP3};
 
 {$R *.res}
 

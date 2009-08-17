@@ -69,7 +69,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Inifiles, VpdDesign;
+  Inifiles, VpdModifier;
 
 procedure TFmVstPresetDesigner.FormCreate(Sender: TObject);
 var

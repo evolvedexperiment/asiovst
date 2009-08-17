@@ -10,12 +10,12 @@ uses
 type
   TStereoBuffer = class
   private
+    FOutput     : array [0..1] of PDAVSingleFixedArray;
     FBufferPos  : array [0..1] of Integer;
     FBufferSize : Integer;
     procedure SetBufferSize(const Value: Integer);
     procedure BufferSizeChanged;
   public
-    Output : array [0..1] of PDAVSingleFixedArray;
     constructor Create;
     destructor Destroy; override;
     procedure Append(Channel: Cardinal; Value: Single);
@@ -23,6 +23,8 @@ type
     procedure Clear;
 
     property BufferSize: Integer read FBufferSize write SetBufferSize;
+    property OutputLeft: PDAVSingleFixedArray read FOutput[0];
+    property OutputRight: PDAVSingleFixedArray read FOutput[1];
   end;
 
 implementation
@@ -34,28 +36,29 @@ constructor TStereoBuffer.Create;
 begin
  inherited;
  FBufferSize := COutputBufferSize;
- GetMem(Output[0], FBufferSize * SizeOf(Single));
- GetMem(Output[1], FBufferSize * SizeOf(Single));
+ GetMem(FOutput[0], FBufferSize * SizeOf(Single));
+ GetMem(FOutput[1], FBufferSize * SizeOf(Single));
  Reset;
 end;
 
 destructor TStereoBuffer.Destroy;
 begin
- Dispose(Output[0]);
- Dispose(Output[1]);
+ Dispose(FOutput[0]);
+ Dispose(FOutput[1]);
  inherited;
 end;
 
 procedure TStereoBuffer.Append(Channel: Cardinal; Value: Single);
 begin
- Output[Channel, FBufferPos[Channel]] := Value;
+ FOutput[Channel, FBufferPos[Channel]] := Value;
  FBufferPos[Channel] := FBufferPos[Channel] + 1;
+ assert(FBufferPos[Channel] <= FBufferSize);
 end;
 
 procedure TStereoBuffer.Clear;
 begin
- FillChar(Output[0]^, FBufferSize * SizeOf(Single), 0);
- FillChar(Output[1]^, FBufferSize * SizeOf(Single), 0);
+ FillChar(FOutput[0]^, FBufferSize * SizeOf(Single), 0);
+ FillChar(FOutput[1]^, FBufferSize * SizeOf(Single), 0);
 end;
 
 procedure TStereoBuffer.Reset;
@@ -75,8 +78,8 @@ end;
 
 procedure TStereoBuffer.BufferSizeChanged;
 begin
- ReallocMem(Output[0], FBufferSize * SizeOf(Single));
- ReallocMem(Output[1], FBufferSize * SizeOf(Single));
+ ReallocMem(FOutput[0], FBufferSize * SizeOf(Single));
+ ReallocMem(FOutput[1], FBufferSize * SizeOf(Single));
 end;
 
 end.
