@@ -416,9 +416,9 @@ type
     property Id3Artist: string read GetArtist;
     property Id3Album: string read GetAlbum;
     property Id3Year: string read GetYear;
-    property Comment: string read GetComment;
-    property TrackNumber: Byte read GetTrackNumber;
-    property Genre: TMusicGenre read GetGenre;
+    property Id3Comment: string read GetComment;
+    property Id3TrackNumber: Byte read GetTrackNumber;
+    property Id3Genre: TMusicGenre read GetGenre;
 
     property Mode: TChannelMode read GetMode;
     property Channels: TChannels read GetChannels;
@@ -441,9 +441,9 @@ type
     property Id3Artist;
     property Id3Album;
     property Id3Year;
-    property Comment;
-    property TrackNumber;
-    property Genre;
+    property Id3Comment;
+    property Id3TrackNumber;
+    property Id3Genre;
 
     property EstimatedLength;
     property TotalLength;
@@ -815,8 +815,8 @@ const
 
   // addend d for requantization from table 3-B.4
   CTableAB1D: array [0..15] of Single = (0, 0.5, 0.25, 0.125, 0.0625, 0.03125,
-    0.015625, 0.0078125, 0.00390625, 0.001953125, 0.0009765625, 0.00048828125,
-    0.00024414063, 0.00012207031, 0.00006103516, 0.00003051758);
+    0.015625, 7.8125E-3, 3.90625E-3, 1.953125E-3, 9.765625E-4, 4.8828125E-4,
+    2.4414063E-4, 1.2207031E-4, 6.103516E-5, 3.051758E-5);
 
   // subbands 3-... tables 3-B.2a and 2b:
   CTableAB234GroupingTables: array [0..15] of PDAV1024SingleArray = (
@@ -839,7 +839,7 @@ const
 
   CTableAB2D: array [0..15] of Single = (0, 0.5, 0.5, 0.25, 0.5, 0.125,
     0.0625, 0.03125, 0.015625, 0.0078125, 0.00390625, 0.001953125,
-    0.0009765625, 0.00048828125, 0.00024414063, 0.00003051758);
+    0.0009765625, 4.8828125E-4, 2.4414063E-4, 3.051758E-5);
 
   // subbands 11-22 in tables 3-B.2a and 2b:
   CTableAB3CodeLength: array [0..7] of Cardinal = (
@@ -851,18 +851,17 @@ const
   CTableAB3C: array [0..7] of Single = (0, 1.33333333333, 1.6, 1.14285714286,
     1.77777777777, 1.06666666666, 1.03225806452, 1.00001525902);
 
-  CTableAB3D: array [0..7] of Single = (0, 0.5, 0.5, 0.25, 0.5,
-    0.125, 0.0625, 0.00003051758);
+  CTableAB3D: array [0..7] of Single = (0, 0.5, 0.5, 0.25, 0.5, 0.125, 0.0625,
+    3.051758E-5);
 
   // subbands 23-... in tables 3-B.2a and 2b:
-  CTableAB4CodeLength: array [0..3] of Cardinal = (
-    0, 5, 7, 16);
+  CTableAB4CodeLength: array [0..3] of Cardinal = (0, 5, 7, 16);
 
   CTableAB4Factor: array [0..3] of Single = (0, 1/2, 1/4, 1/32768);
 
   CTableAB4C: array [0..3] of Single = (0, 1.33333333333, 1.6, 1.00001525902);
 
-  CTableAB4D: array [0..3] of Single = (0, 0.5, 0.5, 0.00003051758);
+  CTableAB4D: array [0..3] of Single = (0, 0.5, 0.5, 3.051758E-5);
 
   // subbands in tables 3-B.2c and 2d:
   CTableCDCodeLength: array [0..15] of Cardinal = (
@@ -940,7 +939,7 @@ var
 begin
  Sum := FBitIndex + NumberOfBits;
 
- if (sum <= 32) then
+ if (Sum <= 32) then
   begin
    // all bits contained in *wordpointer
    Result := (FWordPointer^[0] shr (32 - sum)) and CBitMask[NumberOfBits];
@@ -3615,7 +3614,7 @@ begin
    Read(Encoding, 1);
    SetLength(Album, ChunkSize);
    Read(Album[1], ChunkSize);
-   Move(Album[1], FId3Tag.Album[1], min(ChunkSize, SizeOf(FId3Tag.Album)));
+//   Move(Album[1], FId3Tag.Album[1], min(ChunkSize, SizeOf(FId3Tag.Album)));
    Position := Position - ChunkSize;
   end;
 end;
@@ -3630,7 +3629,7 @@ begin
    Read(Encoding, 1);
    SetLength(Artist, ChunkSize);
    Read(Artist[1], ChunkSize);
-   Move(Artist[1], FId3Tag.Artist[1], min(ChunkSize, SizeOf(FId3Tag.Artist)));
+//   Move(Artist[1], FId3Tag.Artist[1], min(ChunkSize, SizeOf(FId3Tag.Artist)));
    Position := Position - ChunkSize;
   end;
 end;
@@ -3665,7 +3664,7 @@ begin
    Read(Encoding, 1);
    SetLength(Title, ChunkSize);
    Read(Title[1], ChunkSize);
-   Move(Title[1], FId3Tag.Title[1], min(ChunkSize, SizeOf(FId3Tag.Title)));
+//   Move(Title[1], FId3Tag.Title[1], min(ChunkSize, SizeOf(FId3Tag.Title)));
    Position := Position - ChunkSize;
   end;
 end;
@@ -3708,7 +3707,7 @@ begin
    Read(Encoding, 1);
    SetLength(Year, ChunkSize);
    Read(Year[1], ChunkSize);
-   Move(Year[1], FId3Tag.Year[1], min(ChunkSize, SizeOf(FId3Tag.Year)));
+//   Move(Year[1], FId3Tag.Year[1], min(ChunkSize, SizeOf(FId3Tag.Year)));
    Position := Position - ChunkSize;
   end;
 end;

@@ -28,7 +28,7 @@ type
     procedure BufferSizeChanged; virtual;
     procedure CalculateTimeOut; virtual;
     procedure SampleRateChanged; virtual;
-    procedure MP3Changed; virtual;
+    procedure MpegAudioChanged; virtual;
   public
     constructor Create;
     destructor Destroy; override;
@@ -193,25 +193,27 @@ end;
 
 procedure TBufferThread.LoadFromFile(FileName: TFileName);
 begin
- if assigned(FMpegAudio) then FreeAndNil(FMpegAudio);
  if FileExists(FileName) then
   begin
+   if assigned(FMpegAudio)
+    then FreeAndNil(FMpegAudio);
    FMpegAudio := TMPEGAudio.Create(FileName);
-   MP3Changed;
+   MpegAudioChanged;
   end;
 end;
 
 procedure TBufferThread.LoadFromStream(Stream: TStream);
 begin
- if assigned(FMpegAudio) then FreeAndNil(FMpegAudio);
  if Stream <> nil then
   begin
+   if assigned(FMpegAudio)
+    then FreeAndNil(FMpegAudio);
    FMpegAudio := TMPEGAudio.Create(Stream);
-   MP3Changed;
+   MpegAudioChanged;
   end;
 end;
 
-procedure TBufferThread.MP3Changed;
+procedure TBufferThread.MpegAudioChanged;
 begin
  if assigned(FMpegAudio) then
   begin

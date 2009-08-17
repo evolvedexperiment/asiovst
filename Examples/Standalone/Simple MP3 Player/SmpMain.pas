@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, DAV_Common, DAV_DspBufferedMp3Player, DAV_ASIOHost,
-  ComCtrls;
+  StdCtrls, ExtCtrls, ComCtrls, DAV_Common, DAV_DspBufferedMp3Player,
+  DAV_DspBufferedAudioFilePlayer, DAV_ASIOHost;
 
 type
   TFmSimpleMp3Player = class(TForm)
@@ -157,8 +157,7 @@ begin
      then TmpStr := TmpStr + '0' + IntToStr(Sec)
      else TmpStr := TmpStr + IntToStr(Sec);
     LbTimeInfo.Caption := TmpStr;
-    if FUpdatePosition
-     then TbPosition.Position := Round(1000 * CurrentSamplePosition / SampleFrames);
+    TbPosition.Position := Round(1000 * CurrentSamplePosition / SampleFrames);
    end;
 end;
 

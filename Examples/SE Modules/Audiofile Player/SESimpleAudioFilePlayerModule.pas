@@ -1,18 +1,18 @@
-unit SESimpleMp3PlayerModule;
+unit SESimpleAudioFilePlayerModule;
 
 interface
 
 uses
   {$IFDEF UseEmbedding}Windows, Classes, {$ENDIF} SysUtils, SyncObjs,
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspBufferedMP3Player;
+  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspBufferedAudioFilePlayer,
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 type
   // define some constants to make referencing in/outs clearer
-  TSEMp3PlayerPins = (pinFileName, pinBufferSize, pinReset, 
-    pinOutputLeft, pinOutputRight, pinTitle, pinArtist, pinAlbum, pinYear,
-    pinComment);
+  TSEAudioFilePlayerPins = (pinFileName, pinBufferSize, pinReset,
+    pinOutputLeft, pinOutputRight);
 
-  TSESimpleMp3PlayerModule = class(TSEModuleBase)
+  TSESimpleAudioFilePlayerModule = class(TSEModuleBase)
   private
     FOutLeftBuffer   : PDAVSingleFixedArray;
     FOutRightBuffer  : PDAVSingleFixedArray;
@@ -20,19 +20,14 @@ type
     FPosition        : Integer;
     FReset           : Boolean;
     FBufferSize      : Integer;
-    FTitle           : PChar;
-    FArtist          : PChar;
-    FAlbum           : PChar;
-    FComment         : PChar;
-    FYear            : PChar;
     FCriticalSection : TCriticalSection;
     {$IFDEF UseEmbedding}
-    FBufferedPlayer  : TBufferedMP3StreamPlayer;
+    FBufferedPlayer  : TBufferedAudioFileStreamPlayer;
     FResourceStream  : TResourceStream;
     FContainedData   : TStringList;
     procedure LoadFromResource(ID: Integer);
     {$ELSE}
-    FBufferedPlayer  : TBufferedMP3FilePlayer;
+    FBufferedPlayer  : TBufferedAudioFileFilePlayer;
     {$ENDIF}
   protected
     procedure Open; override;
@@ -59,26 +54,26 @@ begin
 end;
 {$ENDIF}
 
-constructor TSESimpleMp3PlayerModule.Create(
+constructor TSESimpleAudioFilePlayerModule.Create(
   AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited;
  FCriticalSection := TCriticalSection.Create;
 
  {$IFDEF UseEmbedding}
- FBufferedPlayer := TBufferedMP3StreamPlayer.Create;
+ FBufferedPlayer := TBufferedAudioFileStreamPlayer.Create;
  FContainedData := TStringList.Create;
- EnumResourceNames(HInstance, 'MP3', @EnumNamesFunc, LongWord(FContainedData));
+ EnumResourceNames(HInstance, 'AudioFile', @EnumNamesFunc, LongWord(FContainedData));
 
  if FContainedData.Count > 0
   then Integer(FFileName) := 0
   else FFileName := '';
  {$ELSE}
- FBufferedPlayer := TBufferedMP3FilePlayer.Create;
+ FBufferedPlayer := TBufferedAudioFileFilePlayer.Create;
  {$ENDIF}
 end;
 
-destructor TSESimpleMp3PlayerModule.Destroy;
+destructor TSESimpleAudioFilePlayerModule.Destroy;
 begin
  {$IFDEF UseEmbedding}
  FreeAndNil(FContainedData);
@@ -89,7 +84,7 @@ begin
  inherited;
 end;
 
-procedure TSESimpleMp3PlayerModule.Open;
+procedure TSESimpleAudioFilePlayerModule.Open;
 begin
  inherited Open;
 
@@ -101,24 +96,24 @@ begin
  Pin[Integer(pinOutputRight)].TransmitStatusChange(SampleClock, stRun);
 end;
 
-procedure TSESimpleMp3PlayerModule.Close;
+procedure TSESimpleAudioFilePlayerModule.Close;
 begin
  OnProcess := SubProcessBypass;
  inherited;
 end;
 
-procedure TSESimpleMp3PlayerModule.ChooseProcess;
+procedure TSESimpleAudioFilePlayerModule.ChooseProcess;
 begin
  if {$IFDEF UseEmbedding}(FContainedData.Count = 0) {$ELSE} (not FileExists(FFileName)) {$ENDIF}
   then OnProcess := SubProcessBypass
   else OnProcess := SubProcess
 end;
 
-procedure TSESimpleMp3PlayerModule.PlugStateChange(
+procedure TSESimpleAudioFilePlayerModule.PlugStateChange(
   const CurrentPin: TSEPin);
 begin
  inherited;
- case TSEMp3PlayerPins(CurrentPin.PinID) of
+ case TSEAudioFilePlayerPins(CurrentPin.PinID) of
     pinFileName : begin
                    FCriticalSection.Enter;
                    try
@@ -133,16 +128,6 @@ begin
                         FPosition := 0;
                        except
                        end;
-
-                    if assigned(FBufferedPlayer.MpegAudio) then
-                     with FBufferedPlayer.MpegAudio do
-                      begin
-                       if assigned(FTitle)   then StrPCopy(FTitle, Id3Title);
-                       if assigned(FArtist)  then StrPCopy(FArtist, Id3Artist);
-                       if assigned(FAlbum)   then StrPCopy(FAlbum, Id3Album);
-                       if assigned(FYear)    then StrPCopy(FYear, Id3Year);
-                       if assigned(FComment) then StrPCopy(FComment, Id3Comment);
-                      end;
 
                     ChooseProcess;
                    finally
@@ -167,19 +152,19 @@ begin
 end;
 
 {$IFDEF UseEmbedding}
-procedure TSESimpleMp3PlayerModule.LoadFromResource(ID: Integer);
+procedure TSESimpleAudioFilePlayerModule.LoadFromResource(ID: Integer);
 begin
  if (ID >= 0) and (ID < FContainedData.Count) then
   begin
    if assigned(FResourceStream) then FreeAndNil(FResourceStream)
-   FResourceStream := TResourceStream.Create(HInstance, FContainedData[ID], 'MP3');
+   FResourceStream := TResourceStream.Create(HInstance, FContainedData[ID], 'AudioFile');
    FBufferedPlayer.Stream := FResourceStream;
   end;
 end;
 {$ENDIF}
 
 // The most important part, processing the audio
-procedure TSESimpleMp3PlayerModule.SubProcess(const BufferOffset, SampleFrames: Integer);
+procedure TSESimpleAudioFilePlayerModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  FCriticalSection.Enter;
  try
@@ -189,7 +174,7 @@ begin
  end;
 end;
 
-procedure TSESimpleMp3PlayerModule.SubProcessBypass(
+procedure TSESimpleAudioFilePlayerModule.SubProcessBypass(
   const BufferOffset, SampleFrames: Integer);
 begin
  FillChar(FOutLeftBuffer[BufferOffset], SampleFrames * SizeOf(Single), 0);
@@ -197,7 +182,7 @@ begin
 end;
 
 // describe your module
-class procedure TSESimpleMp3PlayerModule.GetModuleProperties(Properties : PSEModuleProperties);
+class procedure TSESimpleAudioFilePlayerModule.GetModuleProperties(Properties : PSEModuleProperties);
 {$IFDEF UseEmbedding}
 var
   ContainedData : TStringList;
@@ -208,15 +193,15 @@ begin
  {$IFDEF UseEmbedding}
  ContainedData := TStringList.Create;
  try
-  EnumResourceNames(HInstance, 'MP3', @EnumNamesFunc, LongWord(ContainedData));
+  EnumResourceNames(HInstance, 'AudioFile', @EnumNamesFunc, LongWord(ContainedData));
   {$ENDIF}
   with Properties^ do
    begin
     {$IFDEF UseEmbedding}
     if ContainedData.Count > 0 then
      begin
-      Name := 'Embedded Simple MP3 Player';
-      str  := 'DAV ESMP3';
+      Name := 'Embedded Simple AudioFile Player';
+      str  := 'DAV ESAudioFile';
       for i := 0 to ContainedData.Count - 1
        do str := str + ContainedData[i];
       ID := PAnsiChar(str);
@@ -224,8 +209,8 @@ begin
     else
     {$ENDIF}
      begin
-      Name := 'Simple MP3 Player';
-      ID := 'DAV Simple MP3 Player';
+      Name := 'Simple AudioFile Player';
+      ID := 'DAV Simple AudioFile Player';
      end;
 
     // Info, may include Author, Web page whatever
@@ -240,19 +225,19 @@ begin
 end;
 
 // describe the pins (plugs)
-function TSESimpleMp3PlayerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
+function TSESimpleAudioFilePlayerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 {$IFDEF UseEmbedding}
 var
   str : string;
 {$ENDIF}
 begin
  Result := True;
- case TSEMp3PlayerPins(index) of
+ case TSEAudioFilePlayerPins(index) of
        pinFileName : with Properties^ do
                       {$IFDEF UseEmbedding}
                       if FContainedData.Count > 0 then
                        begin
-                        Name            := 'MP3 ID';
+                        Name            := 'AudioFile ID';
                         VariableAddress := @FFileName;
                         Direction       := drIn;
                         DataType        := dtEnum;
@@ -269,13 +254,6 @@ begin
                         Direction       := drIn;
                         DataType        := dtText;
                        end;
-     pinBufferSize : with Properties^ do
-                      begin
-                       Name            := 'BufferSize';
-                       VariableAddress := @FBufferSize;
-                       Direction       := drIn;
-                       Datatype        := dtInteger;
-                      end;
           pinReset : with Properties^ do
                       begin
                        Name            := 'Reset';
@@ -283,6 +261,16 @@ begin
                        Direction       := drIn;
                        Datatype        := dtBoolean;
                       end;
+     pinBufferSize : with Properties^ do
+                      begin
+                       Name            := 'BufferSize';
+                       VariableAddress := @FBufferSize;
+                       Direction       := drIn;
+                       Datatype        := dtInteger;
+//                       DatatypeExtra   := 'range 1024,65536';
+                       DefaultValue    := '16384';
+                      end;
+
      pinOutputLeft : with Properties^ do
                       begin
                        Name            := 'Left';
@@ -296,41 +284,6 @@ begin
                        VariableAddress := @FOutRightBuffer;
                        Direction       := drOut;
                        Datatype        := dtFSample;
-                      end;
-          pinTitle : with Properties^ do
-                      begin
-                       Name            := 'Title';
-                       VariableAddress := @FTitle;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-          pinArtist : with Properties^ do
-                      begin
-                       Name            := 'Artist';
-                       VariableAddress := @FArtist;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-          pinAlbum : with Properties^ do
-                      begin
-                       Name            := 'Album';
-                       VariableAddress := @FAlbum;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-           pinYear : with Properties^ do
-                      begin
-                       Name            := 'Year';
-                       VariableAddress := @FYear;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-        pinComment : with Properties^ do
-                      begin
-                       Name            := 'Comment';
-                       VariableAddress := @FComment;
-                       Direction       := drOut;
-                       Datatype        := dtText;
                       end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;

@@ -84,7 +84,8 @@ var
 
 procedure RegisterFileFormat(AClass: TAudioFileClass);
 function ExtensionToFileFormat(Extension: string): TAudioFileClass;
-function FilenameToFileFormat(FileName: TFileName): TAudioFileClass;
+function FileNameToFormat(FileName: TFileName): TAudioFileClass;
+function StreamToFormat(Stream: TStream): TAudioFileClass;
 
 implementation
 
@@ -116,13 +117,27 @@ begin
    then result := GAudioFileFormats[i];
 end;
 
-function FilenameToFileFormat(FileName: TFileName): TAudioFileClass;
+function FileNameToFormat(FileName: TFileName): TAudioFileClass;
 var
   i : Integer;
 begin
  result := nil;
+ if not FileExists(FileName) then Exit;
+
  for i := 0 to Length(GAudioFileFormats) - 1 do
   if GAudioFileFormats[i].CanLoad(FileName)
+   then result := GAudioFileFormats[i];
+end;
+
+function StreamToFormat(Stream: TStream): TAudioFileClass;
+var
+  i : Integer;
+begin
+ result := nil;
+ if not assigned(Stream) then Exit;
+
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  if GAudioFileFormats[i].CanLoad(Stream)
    then result := GAudioFileFormats[i];
 end;
 
