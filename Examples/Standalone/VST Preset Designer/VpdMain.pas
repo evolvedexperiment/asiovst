@@ -69,7 +69,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Inifiles, VpdModifier;
+  Inifiles; //, VpdModifier;
 
 procedure TFmVstPresetDesigner.FormCreate(Sender: TObject);
 var
@@ -266,9 +266,11 @@ end;
 
 procedure TFmVstPresetDesigner.MiDesignClick(Sender: TObject);
 begin
+(*
  if FmModifier.ShowModal = mrOK then
   begin
   end;
+*)
 end;
 
 procedure TFmVstPresetDesigner.MiExitClick(Sender: TObject);
