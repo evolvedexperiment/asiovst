@@ -122,7 +122,11 @@ var
   i : Integer;
 begin
  result := nil;
- if not FileExists(FileName) then Exit;
+ if not FileExists(FileName) then
+  begin
+   result := ExtensionToFileFormat(Lowercase(ExtractFileExt(FileName)));
+   Exit;
+  end;
 
  for i := 0 to Length(GAudioFileFormats) - 1 do
   if GAudioFileFormats[i].CanLoad(FileName)
@@ -151,7 +155,9 @@ end;
 
 constructor TCustomAudioFile.Create(const FileName: TFileName);
 begin
- Create(TFileStream.Create(FileName, fmOpenRead));
+ if FileExists(FileName)
+  then Create(TFileStream.Create(FileName, fmOpenRead))
+  else Create(TFileStream.Create(FileName, fmCreate));
  FStreamOwned := True;
 end;
 

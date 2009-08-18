@@ -97,6 +97,8 @@ object FmOversampler: TFmOversampler
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
       DialImageIndex = -1
+      LineColor = 2830643
+      LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOversamplingChange
@@ -107,6 +109,7 @@ object FmOversampler: TFmOversampler
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
       Visible = False
+      WheelStep = 1.000000000000000000
     end
   end
   object PnGui: TPanel
@@ -119,7 +122,7 @@ object FmOversampler: TFmOversampler
     TabOrder = 1
   end
   object PUSettings: TPopupMenu
-    Left = 120
+    Left = 144
     Top = 8
     object MIAllowResizing: TMenuItem
       Caption = 'Allow Resizing'

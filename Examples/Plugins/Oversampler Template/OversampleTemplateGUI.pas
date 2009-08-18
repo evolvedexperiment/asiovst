@@ -4,20 +4,20 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ExtCtrls, DAV_Common, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiLED,
-  DAV_GuiDial, DAV_GuiPanel, DAV_VSTWindowSizer, Menus;
+  ExtCtrls, Menus, DAV_Common, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiLED,
+  DAV_GuiDial, DAV_GuiPanel, DAV_VSTWindowSizer;
 
 type
   TFmOversampler = class(TForm)
     DialOversampling: TGuiDial;
     GuiLEDOversampling: TGuiLED;
-    PnControl: TGuiPanel;
     LbOversampling: TGuiLabel;
     LbOversamplingFactor: TGuiLabel;
-    PnGui: TPanel;
-    ShBorder: TShape;
-    PUSettings: TPopupMenu;
     MIAllowResizing: TMenuItem;
+    PnControl: TGuiPanel;
+    PnGui: TPanel;
+    PUSettings: TPopupMenu;
+    ShBorder: TShape;
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -27,8 +27,8 @@ type
     procedure GuiLEDOversamplingClick(Sender: TObject);
     procedure MIAllowResizingClick(Sender: TObject);
   private
-    fBackground : TBitmap;
-    fWinSizer   : TVstWindowSizer;
+    FBackground : TBitmap;
+    FWinSizer   : TVstWindowSizer;
   public
     procedure UpdateOSFactor;
     procedure UpdateOverSampling;
@@ -41,6 +41,40 @@ implementation
 
 uses
   OversampleTemplateDM, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+
+procedure TFmOversampler.FormDestroy(Sender: TObject);
+begin
+ if assigned(FBackground)
+  then FreeAndNil(FBackground);
+ if assigned(FWinSizer)
+  then FreeAndNil(FWinSizer);
+end;
+
+procedure TFmOversampler.FormShow(Sender: TObject);
+begin
+ UpdateOSFactor;
+ UpdateOverSampling;
+ ShowPlugin;
+end;
+
+procedure TFmOversampler.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ with TOversampleTemplateDataModule(Owner) do
+  try
+   if VstHost[0].EditVisible then VstHost[0].CloseEdit;
+   if VstHost[1].EditVisible then VstHost[1].CloseEdit;
+   if assigned(FWinSizer)
+    then FreeAndNil(FWinSizer);
+   MIAllowResizing.Checked := False;
+  except
+  end;
+end;
+
+procedure TFmOversampler.FormPaint(Sender: TObject);
+begin
+ if assigned(FBackground)
+  then Canvas.Draw(0, PnControl.Height, FBackground);
+end;
 
 procedure TFmOversampler.ShowPlugin;
 var
@@ -92,41 +126,6 @@ begin
   end;
 end;
 
-procedure TFmOversampler.DialOversamplingChange(Sender: TObject);
-begin
- with TOversampleTemplateDataModule(Owner) do
-  begin
-   ParameterByName['OS Factor'] := DialOversampling.Position;
-  end;
-end;
-
-procedure TFmOversampler.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
- with TOversampleTemplateDataModule(Owner) do
-  try
-   if VstHost[0].EditVisible then VstHost[0].CloseEdit;
-   if VstHost[1].EditVisible then VstHost[1].CloseEdit;
-   if assigned(fWinSizer)
-    then FreeAndNil(fWinSizer);
-   MIAllowResizing.Checked := False; 
-  except
-  end;
-end;
-
-procedure TFmOversampler.FormDestroy(Sender: TObject);
-begin
- if assigned(fBackground)
-  then FreeAndNil(fBackground);
- if assigned(fWinSizer)
-  then FreeAndNil(fWinSizer);
-end;
-
-procedure TFmOversampler.FormPaint(Sender: TObject);
-begin
- if assigned(fBackground)
-  then Canvas.Draw(0, PnControl.Height, fBackground);
-end;
-
 procedure Lighten(var Pixel: TRGB24; Amount: Byte);
 begin
  Pixel.B := round($2B - Amount);
@@ -143,9 +142,9 @@ var
   b      : Byte;
 begin
  // Create Background Image (if not already done
- if not assigned(fBackground)
-  then fBackground := TBitmap.Create;
- with fBackground do
+ if not assigned(FBackground)
+  then FBackground := TBitmap.Create;
+ with FBackground do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -184,11 +183,12 @@ begin
   end;
 end;
 
-procedure TFmOversampler.FormShow(Sender: TObject);
+procedure TFmOversampler.DialOversamplingChange(Sender: TObject);
 begin
- UpdateOSFactor;
- UpdateOverSampling;
- ShowPlugin;
+ with TOversampleTemplateDataModule(Owner) do
+  begin
+   ParameterByName['OS Factor'] := DialOversampling.Position;
+  end;
 end;
 
 procedure TFmOversampler.GuiLEDOversamplingClick(Sender: TObject);
@@ -204,15 +204,15 @@ begin
  MIAllowResizing.Checked := not MIAllowResizing.Checked;
  if MIAllowResizing.Checked then
   begin
-   if not assigned(fWinSizer)
-    then fWinSizer := TVstWindowSizer.Create;
-   fWinSizer.Effect := TOversampleTemplateDataModule(Owner);
-   fWinSizer.SetEditorHwnd(Self.Handle);
+   if not assigned(FWinSizer)
+    then FWinSizer := TVstWindowSizer.Create;
+   FWinSizer.Effect := TOversampleTemplateDataModule(Owner);
+   FWinSizer.SetEditorHwnd(Self.Handle);
   end
  else
   begin
-   if assigned(fWinSizer)
-    then FreeAndNil(fWinSizer);
+   if assigned(FWinSizer)
+    then FreeAndNil(FWinSizer);
   end;
 end;
 

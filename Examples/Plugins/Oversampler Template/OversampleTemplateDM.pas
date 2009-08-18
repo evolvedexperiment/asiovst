@@ -115,11 +115,13 @@ end;
 
 procedure TOversampleTemplateDataModule.VSTModuleCreate(Sender: TObject);
 var
-  RN       : TStringList;
-  RS       : TResourceStream;
-  PI       : TCustomVstPlugIn;
-  ch, i, j : Integer;
-  str      : string;
+  RN    : TStringList;
+  RS    : TResourceStream;
+  PI    : TCustomVstPlugIn;
+  ch, j : Integer;
+  Param : Integer;
+  Prog  : Integer;
+  str   : string;
 begin
  FBaseParCount            := numParams;
  FOSFactor                := 1;
@@ -148,7 +150,7 @@ begin
     end;
 
     // set parameter count
-    for i := 0 to VstHost[0].numParams - 1 do
+    for Param := 0 to VstHost[0].numParams - 1 do
      with ParameterProperties.Add do
       begin
        OnParameterChange        := VSTModuleParameterChange;
@@ -160,9 +162,9 @@ begin
     PI.Active := True;
 
     // scan and rename parameters
-    for i := 0 to VstHost[0].numParams - 1 do
-     with ParameterProperties[FBaseParCount + i]
-      do DisplayName := VstHost[0].GetParamName(i);
+    for Param := 0 to VstHost[0].numParams - 1 do
+     with ParameterProperties[FBaseParCount + Param]
+      do DisplayName := VstHost[0].GetParamName(Param);
 
     UniqueID    := VstHost[0].UniqueID[1] +
                    VstHost[0].UniqueID[2] +
@@ -180,12 +182,12 @@ begin
     Parameter[5] := 4;
     Parameter[6] := 99;
 
-    for i := 0 to VstHost[0].numPrograms - 1 do
+    for Prog := 0 to VstHost[0].numPrograms - 1 do
      with Programs.Add do
       begin
-       PI.GetProgramNameIndexed(0, i, str);
-       if PI.CurrentProgram <> i
-        then PI.CurrentProgram := i;
+       PI.GetProgramNameIndexed(0, Prog, str);
+       if PI.CurrentProgram <> Prog
+        then PI.CurrentProgram := Prog;
        Parameter[0] := 0;
        Parameter[1] := 2;
        Parameter[2] := 4;

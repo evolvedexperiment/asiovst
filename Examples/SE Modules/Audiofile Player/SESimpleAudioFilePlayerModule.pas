@@ -27,13 +27,14 @@ type
     FContainedData   : TStringList;
     procedure LoadFromResource(ID: Integer);
     {$ELSE}
-    FBufferedPlayer  : TBufferedAudioFileFilePlayer;
+    FBufferedPlayer  : TBufferedAudioFilePlayer;
     {$ENDIF}
   protected
     procedure Open; override;
     procedure Close; override;
     procedure ChooseProcess; virtual;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SampleRateChanged; override;
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -69,7 +70,7 @@ begin
   then Integer(FFileName) := 0
   else FFileName := '';
  {$ELSE}
- FBufferedPlayer := TBufferedAudioFileFilePlayer.Create;
+ FBufferedPlayer := TBufferedAudioFilePlayer.Create;
  {$ENDIF}
 end;
 
@@ -164,6 +165,12 @@ end;
 {$ENDIF}
 
 // The most important part, processing the audio
+procedure TSESimpleAudioFilePlayerModule.SampleRateChanged;
+begin
+ inherited;
+ FBufferedPlayer.SampleRate := SampleRate;
+end;
+
 procedure TSESimpleAudioFilePlayerModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  FCriticalSection.Enter;

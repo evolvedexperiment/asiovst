@@ -3,7 +3,7 @@ unit SEMp3PlayerModule;
 interface
 
 uses
-  {$IFDEF UseEmbedding}Windows, Classes, {$ENDIF} SysUtils, SyncObjs,
+  {$IFDEF UseEmbedding}Classes, {$ENDIF} Windows, SysUtils, SyncObjs,
   DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspBufferedMP3Player;
 
 type
@@ -41,6 +41,7 @@ type
     procedure Close; override;
     procedure ChooseProcess; virtual;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SampleRateChanged; override;
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -187,6 +188,12 @@ end;
 {$ENDIF}
 
 // The most important part, processing the audio
+procedure TSEMp3PlayerModule.SampleRateChanged;
+begin
+ inherited;
+ FBufferedPlayer.SampleRate := SampleRate;
+end;
+
 procedure TSEMp3PlayerModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  FCriticalSection.Enter;

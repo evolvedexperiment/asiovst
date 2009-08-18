@@ -15,7 +15,7 @@ type
   TGuiDialImageList = class;
   TGuiDialImageCollectionItem = class;
 
-  {$IFDEF DELPHI10_UP} {$region 'TGuiDialPointerAngles'} {$ENDIF}
+  {$IFDEF DELPHI10_UP} {$region 'Pointer Angles'} {$ENDIF}
 
   TGuiDialSettings = class(TPersistent)
   private

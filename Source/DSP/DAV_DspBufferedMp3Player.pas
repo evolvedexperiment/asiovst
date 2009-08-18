@@ -84,15 +84,14 @@ type
     procedure GetSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
     procedure Reset;
 
-    property BufferSize: Integer read GetBufferSize write SetBufferSize;
-    property BlockSize: Integer read GetBlockSize write SetBlockSize;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
-    property BufferFill: Single read GetBufferFill;
     property AllowSuspend: Boolean read FAllowSuspend write SetAllowSuspend;
-    property Pitch: Single read FPitch write SetPitch;
-
-    property MpegAudio: TMpegAudio read GetMpegAudio;
+    property BlockSize: Integer read GetBlockSize write SetBlockSize;
+    property BufferFill: Single read GetBufferFill;
+    property BufferSize: Integer read GetBufferSize write SetBufferSize;
     property Interpolation: TBufferInterpolation read FInterpolation write SetInterpolation;
+    property MpegAudio: TMpegAudio read GetMpegAudio;
+    property Pitch: Single read FPitch write SetPitch;
+    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TBufferedMP3FilePlayer = class(TCustomBufferedMP3Player)
@@ -109,6 +108,8 @@ type
     property BlockSize;
     property SampleRate;
     property BufferFill;
+    property Interpolation;
+    property Pitch;
   end;
 
   TBufferedMP3StreamPlayer = class(TCustomBufferedMP3Player)
@@ -125,6 +126,8 @@ type
     property BlockSize;
     property SampleRate;
     property BufferFill;
+    property Interpolation;
+    property Pitch;
   end;
 
 implementation

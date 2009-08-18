@@ -95,11 +95,11 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Oversampler" SecExecutable
+Section "Standalone Converter" SecExecutable
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\OversampleVSTPlugin.dll"
+  File "..\Bin\OversampleVstPlugin.exe"
   
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -107,7 +107,7 @@ Section "Oversampler" SecExecutable
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\OversampleVSTPlugin.dll" 
+  StrCpy $0 "$INSTDIR\OversampleVSTPlugin.exe" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -116,7 +116,35 @@ Section "Oversampler" SecExecutable
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
 
-  ExecWait '$SYSDIR\regsvr32.exe /s "$INSTDIR\OversampleVSTPlugin.dll"'
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_Oversample_VSTPlugin.exe"
+
+SectionEnd
+
+Section "Shell Extension" SecShellExtension
+  SetOutPath "$INSTDIR"
+  
+  !system 'copy "..\Bin\OversampleVstPlugin.dll" "..\Bin\Oversample Shell Extension.dll"'  
+
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Oversample Shell Extension.dll"
+  
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  IntCmp $BugReportState 0 SkipDLLCall
+    
+  SetOutPath $TEMP                      ; create temp directory
+  File "madExcept Patch.dll"            ; copy dll there
+  
+  StrCpy $0 "$INSTDIR\Oversample Shell Extension.dll" 
+  System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
+  System::Free 0
+  Delete "madExcept Patch.dll"
+  
+  IntCmp $1 0 SkipDLLCall
+  DetailPrint  "Bug Report DLL Patch applied"
+SkipDLLCall:
+
+  ExecWait '$SYSDIR\regsvr32.exe /s "$INSTDIR\Oversample Shell Extension.dll"'
 
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Oversample_VSTPlugin.exe"
@@ -148,11 +176,13 @@ FunctionEnd
 ;  LangString TEXT_IO_TITLE ${LANG_GERMAN} "Auswahlseite"
 ;  LangString TEXT_IO_SUBTITLE ${LANG_GERMAN} "Oversampler"
 
-  LangString DESC_SecExecutable ${LANG_ENGLISH} "Oversampler"
+  LangString DESC_SecExecutable ${LANG_ENGLISH} "Standalone application to build oversampled plugins"
+  LangString DESC_SecShellExtension ${LANG_ENGLISH} "Shell extension to build oversampled plugins"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecExecutable} $(DESC_SecExecutable)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecShellExtension} $(DESC_SecShellExtension)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------

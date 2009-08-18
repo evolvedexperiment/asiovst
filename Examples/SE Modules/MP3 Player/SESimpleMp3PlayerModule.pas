@@ -33,6 +33,7 @@ type
     procedure Close; override;
     procedure ChooseProcess; virtual;
     procedure PlugStateChange(const CurrentPin: TSEPin); override;
+    procedure SampleRateChanged; override;
   public
     constructor Create(AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer); override;
     destructor Destroy; override;
@@ -163,6 +164,12 @@ end;
 {$ENDIF}
 
 // The most important part, processing the audio
+procedure TSESimpleMp3PlayerModule.SampleRateChanged;
+begin
+ inherited;
+ FBufferedPlayer.SampleRate := SampleRate;
+end;
+
 procedure TSESimpleMp3PlayerModule.SubProcess(const BufferOffset, SampleFrames: Integer);
 begin
  FCriticalSection.Enter;
