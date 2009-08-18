@@ -9,8 +9,7 @@ uses
 type
   // define some constants to make referencing in/outs clearer
   TSEMp3PlayerPins = (pinFileName, pinBufferSize, pinReset, 
-    pinOutputLeft, pinOutputRight, pinTitle, pinArtist, pinAlbum, pinYear,
-    pinComment);
+    pinOutputLeft, pinOutputRight);
 
   TSESimpleMp3PlayerModule = class(TSEModuleBase)
   private
@@ -20,11 +19,6 @@ type
     FPosition        : Integer;
     FReset           : Boolean;
     FBufferSize      : Integer;
-    FTitle           : PChar;
-    FArtist          : PChar;
-    FAlbum           : PChar;
-    FComment         : PChar;
-    FYear            : PChar;
     FCriticalSection : TCriticalSection;
     {$IFDEF UseEmbedding}
     FBufferedPlayer  : TBufferedMP3StreamPlayer;
@@ -133,16 +127,6 @@ begin
                         FPosition := 0;
                        except
                        end;
-
-                    if assigned(FBufferedPlayer.MpegAudio) then
-                     with FBufferedPlayer.MpegAudio do
-                      begin
-                       if assigned(FTitle)   then StrPCopy(FTitle, Id3Title);
-                       if assigned(FArtist)  then StrPCopy(FArtist, Id3Artist);
-                       if assigned(FAlbum)   then StrPCopy(FAlbum, Id3Album);
-                       if assigned(FYear)    then StrPCopy(FYear, Id3Year);
-                       if assigned(FComment) then StrPCopy(FComment, Id3Comment);
-                      end;
 
                     ChooseProcess;
                    finally
@@ -296,41 +280,6 @@ begin
                        VariableAddress := @FOutRightBuffer;
                        Direction       := drOut;
                        Datatype        := dtFSample;
-                      end;
-          pinTitle : with Properties^ do
-                      begin
-                       Name            := 'Title';
-                       VariableAddress := @FTitle;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-          pinArtist : with Properties^ do
-                      begin
-                       Name            := 'Artist';
-                       VariableAddress := @FArtist;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-          pinAlbum : with Properties^ do
-                      begin
-                       Name            := 'Album';
-                       VariableAddress := @FAlbum;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-           pinYear : with Properties^ do
-                      begin
-                       Name            := 'Year';
-                       VariableAddress := @FYear;
-                       Direction       := drOut;
-                       Datatype        := dtText;
-                      end;
-        pinComment : with Properties^ do
-                      begin
-                       Name            := 'Comment';
-                       VariableAddress := @FComment;
-                       Direction       := drOut;
-                       Datatype        := dtText;
                       end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;

@@ -1,13 +1,12 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
 library OversampleTemplate;
 
-{$R 'Test.res' 'Test.rc'}
+{-$R 'Test.res' 'Test.rc'}
 
 uses
   FastMM4,  // either download the library or comment if there is an error here
   FastMove, // either download the library or comment if there is an error here
   RTLVCLOptimize, // "
-  Forms,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

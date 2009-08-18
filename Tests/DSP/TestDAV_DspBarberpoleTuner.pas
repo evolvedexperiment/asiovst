@@ -57,8 +57,12 @@ end;
 
 
 procedure TestTBarberpoleFilter.TestProcess;
+var
+  Sample : Integer;
 begin
- FBarberpoleTuner.Process();
+ CheckTrue(abs(FBarberpoleFilter.Process(1)) <= 1, 'Filter seems to be a bit unstable');
+ for Sample := 0 to 1000
+  do CheckTrue(abs(FBarberpoleFilter.Process(1)) <= 1, 'Filter seems to be a bit unstable');
 end;
 
 { TestTBarberpoleTuner }
@@ -75,8 +79,7 @@ end;
 
 procedure TestTBarberpoleTuner.TestProcess;
 begin
- FBarberpoleTuner.Process();
- //   procedure Process(Input: Single); override;
+ FBarberpoleTuner.Process(random);
 end;
 
 initialization

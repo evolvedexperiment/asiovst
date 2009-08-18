@@ -3,9 +3,9 @@ library OversampleVSTPlugin;
 {$R 'OversampleTemplate.res' 'OversampleTemplate.rc'}
 
 uses
-  FastMM4,
-  FastMove,
-  RTLVCLOptimize,
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  RTLVCLOptimize, // "
   ComServ,
   SysUtils,
   Classes,

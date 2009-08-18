@@ -184,8 +184,8 @@ begin
      with Programs.Add do
       begin
        PI.GetProgramNameIndexed(0, i, str);
-       if PI.ProgramNr <> i
-        then PI.ProgramNr := i;
+       if PI.CurrentProgram <> i
+        then PI.CurrentProgram := i;
        Parameter[0] := 0;
        Parameter[1] := 2;
        Parameter[2] := 4;
@@ -199,7 +199,7 @@ begin
       end;
     if numPrograms > 0 then
      begin
-      PI.ProgramNr := 0;
+      PI.CurrentProgram := 0;
       for j := 0 to PI.numParams - 1
        do Parameter[FBaseParCount + j] := PI.Parameter[j];
      end

@@ -43,6 +43,7 @@ object FmASIOMP3: TFmASIOMP3
     Width = 34
     Height = 13
     Caption = 'Buffer: '
+    OnClick = LbBufferClick
   end
   object LbBufferValue: TLabel
     Left = 384

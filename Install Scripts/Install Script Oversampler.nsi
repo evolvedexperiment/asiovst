@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "Oversampler"
-  OutFile "OversamplerInstall.exe"
+  OutFile "Oversample_Shell_Extension_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -125,12 +125,6 @@ SectionEnd
 
 ;--------------------------------
 ;Installer Functions
-
-Function .onInit
-
-;  !insertmacro MUI_LANGDLL_DISPLAY
-
-FunctionEnd
 
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecExecutable}

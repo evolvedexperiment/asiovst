@@ -33,6 +33,7 @@ type
     procedure EdFileChange(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure LbBufferClick(Sender: TObject);
   private
     FIniFile        : TFileName;
     FVolumeFactor   : Single;
@@ -69,6 +70,8 @@ begin
  FVolumeFactor := 1;
  FChannelOffset := 0;
  FBufferedPlayer := TBufferedMP3FilePlayer.Create;
+ FBufferedPlayer.Pitch := 1;
+ FBufferedPlayer.Interpolation := biBSpline6Point5thOrder;
  with FBufferedPlayer do
   begin
    BufferSize := 65536;
@@ -107,6 +110,11 @@ begin
    finally
     Free;
    end;
+end;
+
+procedure TFmASIOMP3.LbBufferClick(Sender: TObject);
+begin
+ ASIOHost.SampleRate := 48000;
 end;
 
 procedure TFmASIOMP3.TimerTimer(Sender: TObject);
@@ -186,17 +194,8 @@ end;
 
 procedure TFmASIOMP3.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-var
-  Sample : Integer;
 begin
  FBufferedPlayer.GetSamples(OutBuffer[0], OutBuffer[1], ASIOHost.Buffersize);
-(*
- for Sample := 0 to ASIOHost.Buffersize - 1 do
-  begin
-   OutBuffer[0, Sample] := 0.125 * OutBuffer[0, Sample];
-   OutBuffer[1, Sample] := 0.125 * OutBuffer[1, Sample];
-  end;
-*)
 end;
 
 end.

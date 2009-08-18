@@ -48,11 +48,18 @@ type
     property MpegAudio: TMPEGAudio read FMpegAudio;
   end;
 
+  TBufferInterpolation = (biNone, biLinear, biHermite, biBSpline6Point5thOrder);
+
   TCustomBufferedMP3Player = class(TDspObject)
   private
-    FSampleRate : Single;
-    FRatio      : Single;
-    FAllowSuspend: Boolean;
+    FSampleRate          : Single;
+    FRatio               : Single;
+    FAllowSuspend        : Boolean;
+    FFractalPos          : Single;
+    FInterpolation       : TBufferInterpolation;
+    FPitch               : Single;
+    FPitchFactor         : Single;
+    FInterpolationBuffer : array [0..1] of PDAV8SingleArray;
     function GetBlockSize: Integer;
     function GetBufferSize: Integer;
     function GetBufferFill: Single;
@@ -60,11 +67,16 @@ type
     procedure SetBlockSize(const Value: Integer);
     procedure SetBufferSize(const Value: Integer);
     procedure SetSampleRate(const Value: Single);
-    procedure CalculateSampleRateRatio;
     procedure SetAllowSuspend(const Value: Boolean);
+    procedure SetInterpolation(const Value: TBufferInterpolation);
+    procedure SetPitch(const Value: Single);
   protected
     FBufferThread : TBufferThread;
+    procedure CalculatePitchFactor; virtual;
+    procedure CalculateSampleRateRatio; virtual;
     procedure SampleRateChanged; virtual;
+    procedure InterpolationChanged; virtual;
+    procedure PitchChanged; virtual;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -77,8 +89,10 @@ type
     property SampleRate: Single read FSampleRate write SetSampleRate;
     property BufferFill: Single read GetBufferFill;
     property AllowSuspend: Boolean read FAllowSuspend write SetAllowSuspend;
+    property Pitch: Single read FPitch write SetPitch;
 
     property MpegAudio: TMpegAudio read GetMpegAudio;
+    property Interpolation: TBufferInterpolation read FInterpolation write SetInterpolation;
   end;
 
   TBufferedMP3FilePlayer = class(TCustomBufferedMP3Player)
@@ -114,6 +128,9 @@ type
   end;
 
 implementation
+
+uses
+  Math, DAV_DspInterpolation;
 
 { TBufferThread }
 
@@ -267,7 +284,7 @@ begin
    FBufferSize := Value;
    if BlockSize > FBufferSize div 2
     then BlockSize := FBufferSize div 2;
-   
+
    BufferSizeChanged;
   end;
 end;
@@ -278,10 +295,17 @@ constructor TCustomBufferedMP3Player.Create;
 begin
  inherited;
  FSampleRate := 44100;
- FAllowSuspend := False; 
+ FAllowSuspend := False;
+ FPitch := 0;
+ FRatio := 1;
+ CalculatePitchFactor;
  FBufferThread := TBufferThread.Create;
  FBufferThread.Priority := tpNormal;
  FBufferThread.AllowSuspend := FAllowSuspend;
+
+ FInterpolation := biNone;
+ GetMem(FInterpolationBuffer[0], 1 * SizeOf(Single));
+ GetMem(FInterpolationBuffer[1], 1 * SizeOf(Single));
 end;
 
 destructor TCustomBufferedMP3Player.Destroy;
@@ -294,6 +318,9 @@ begin
    WaitFor;
   end;
  FreeAndNil(FBufferThread);
+
+ Dispose(FInterpolationBuffer[0]);
+ Dispose(FInterpolationBuffer[1]);
  inherited;
 end;
 
@@ -331,6 +358,62 @@ begin
  FBufferThread.BlockSize := Value;
 end;
 
+procedure TCustomBufferedMP3Player.SetInterpolation(
+  const Value: TBufferInterpolation);
+begin
+ if FInterpolation <> Value then
+  begin
+   FInterpolation := Value;
+   InterpolationChanged;
+  end;
+end;
+
+procedure TCustomBufferedMP3Player.SetPitch(const Value: Single);
+begin
+ if FPitch <> Value then
+  begin
+   FPitch := Value;
+   PitchChanged;
+  end;
+end;
+
+procedure TCustomBufferedMP3Player.InterpolationChanged;
+begin
+ case FInterpolation of
+  biNone:
+   begin
+    ReallocMem(FInterpolationBuffer[0], 1 * SizeOf(Single));
+    ReallocMem(FInterpolationBuffer[1], 1 * SizeOf(Single));
+   end;
+  biLinear:
+   begin
+    ReallocMem(FInterpolationBuffer[0], 2 * SizeOf(Single));
+    ReallocMem(FInterpolationBuffer[1], 2 * SizeOf(Single));
+   end;
+  biHermite:
+   begin
+    ReallocMem(FInterpolationBuffer[0], 4 * SizeOf(Single));
+    ReallocMem(FInterpolationBuffer[1], 4 * SizeOf(Single));
+   end;
+  biBSpline6Point5thOrder:
+   begin
+    ReallocMem(FInterpolationBuffer[0], 6 * SizeOf(Single));
+    ReallocMem(FInterpolationBuffer[1], 6 * SizeOf(Single));
+   end;
+ end;
+end;
+
+procedure TCustomBufferedMP3Player.PitchChanged;
+begin
+ CalculatePitchFactor;
+ CalculateSampleRateRatio;
+end;
+
+procedure TCustomBufferedMP3Player.CalculatePitchFactor;
+begin
+ FPitchFactor := Power(2, FPitch / 12);
+end;
+
 procedure TCustomBufferedMP3Player.SetBufferSize(const Value: Integer);
 begin
  FBufferThread.BufferSize := Value;
@@ -352,15 +435,79 @@ end;
 
 procedure TCustomBufferedMP3Player.CalculateSampleRateRatio;
 begin
- FRatio := FBufferThread.SampleRate / FSampleRate;
+ FRatio := FPitchFactor * FBufferThread.SampleRate / FSampleRate;
 end;
 
 procedure TCustomBufferedMP3Player.GetSamples(Left, Right: PDAVSingleFixedArray;
   SampleFrames: Integer);
+var
+  Sample : Integer;
 begin
  // eventually reactivate thread
  if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Resume;
- FBufferThread.GetSamples(Left, Right, SampleFrames);
+ if FRatio = 1
+  then FBufferThread.GetSamples(Left, Right, SampleFrames)
+  else
+   case FInterpolation of
+    biNone:
+     for Sample := 0 to SampleFrames - 1 do
+      begin
+       FFractalPos := FFractalPos + FRatio;
+       while FFractalPos > 1 do
+        begin
+         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
+           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         FFractalPos := FFractalPos - 1;
+        end;
+       Left^[Sample]  := FInterpolationBuffer[0]^[0];
+       Right^[Sample] := FInterpolationBuffer[1]^[0];
+      end;
+    biLinear:
+     for Sample := 0 to SampleFrames - 1 do
+      begin
+       FFractalPos := FFractalPos + FRatio;
+       while FFractalPos > 1 do
+        begin
+         FInterpolationBuffer[0]^[1] := FInterpolationBuffer[0]^[0];
+         FInterpolationBuffer[1]^[1] := FInterpolationBuffer[1]^[0];
+         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
+           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         FFractalPos := FFractalPos - 1;
+        end;
+       Left^[Sample]  := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[0]));
+       Right^[Sample] := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[1]));
+      end;
+    biHermite:
+     for Sample := 0 to SampleFrames - 1 do
+      begin
+       FFractalPos := FFractalPos + FRatio;
+       while FFractalPos > 1 do
+        begin
+         Move(FInterpolationBuffer[0]^[0], FInterpolationBuffer[0]^[1], 3 * SizeOf(Single));
+         Move(FInterpolationBuffer[1]^[0], FInterpolationBuffer[1]^[1], 3 * SizeOf(Single));
+         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
+           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         FFractalPos := FFractalPos - 1;
+        end;
+       Left^[Sample]  := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[0]));
+       Right^[Sample] := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[1]));
+      end;
+    biBSpline6Point5thOrder:
+     for Sample := 0 to SampleFrames - 1 do
+      begin
+       FFractalPos := FFractalPos + FRatio;
+       while FFractalPos > 1 do
+        begin
+         Move(FInterpolationBuffer[0]^[0], FInterpolationBuffer[0]^[1], 5 * SizeOf(Single));
+         Move(FInterpolationBuffer[1]^[0], FInterpolationBuffer[1]^[1], 5 * SizeOf(Single));
+         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
+           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         FFractalPos := FFractalPos - 1;
+        end;
+       Left^[Sample]  := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[0])^);
+       Right^[Sample] := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[1])^);
+      end;
+   end;
 end;
 
 procedure TCustomBufferedMP3Player.Reset;

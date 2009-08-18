@@ -5,10 +5,10 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Graphics, Forms, Themes, DAV_Common,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
   DAV_VSTCustomModule, DAV_DSPFilterButterworth, DAV_DspUpDownsampling,
-  DAV_VstHost, DAV_DSPLFO, Themes;
+  DAV_VstHost, DAV_DSPLFO;
 
 type
   TLowPassArray = array [0..1] of TButterworthLowPassFilter;
@@ -74,6 +74,8 @@ type
     procedure VSTModuleStartProcess(Sender: TObject);
     procedure VSTModuleStopProcess(Sender: TObject);
     procedure VSTModuleSuspend(Sender: TObject);
+    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean;
+    function VSTModuleInputProperties(Sender: TObject; const Index: Integer; var VstPinProperties: TVstPinProperties): Boolean;
 
     // Parameters
     procedure CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -93,10 +95,6 @@ type
     procedure ParamOSFactorDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOversamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    function VSTModuleOutputProperties(Sender: TObject; const Index: Integer;
-      var VstPinProperties: TVstPinProperties): Boolean;
-    function VSTModuleInputProperties(Sender: TObject; const Index: Integer;
-      var VstPinProperties: TVstPinProperties): Boolean;
   private
     FLowpass          : array of TLowPassArray;
     FHighpass         : array of THighPassArray;
@@ -195,7 +193,7 @@ begin
          DisplayName              := VstHost[n].GetParamName(i);
         end;
       if PI.numPrograms > 0
-       then PI.SetProgram(0);
+       then PI.CurrentProgram := 0;
      end;
     UniqueID    := 'S' + VstHost[0].UniqueID[1] + VstHost[0].UniqueID[2] + '2';
     EffectName  := 'Splitted ' + VstHost[0].EffectName;
