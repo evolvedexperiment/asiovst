@@ -1,4 +1,4 @@
-library OversampleVSTPlugin;
+library OversampleShellExtension;
 
 {$R 'OversampleTemplate.res' 'OversampleTemplate.rc'}
 
