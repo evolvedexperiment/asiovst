@@ -85,6 +85,8 @@ type
     procedure TestSamplitude;
     procedure TestAbletonLiveScan;
     procedure TestAbletonLive;
+    procedure TestEnergyXT;
+    procedure TestEnergyXTBug;
   end;
 
   // I/O test methods for VST Plugins
@@ -222,7 +224,7 @@ begin
    if numPrograms > 0 then
     for i := 0 to 999 do
      begin
-      ProgramNr := random(numPrograms);
+      CurrentProgram := random(numPrograms);
       if numParams > 0 then
        begin
         Parameter[random(numParams)] := random;
@@ -1428,6 +1430,102 @@ begin
   end;
 end;
 
+procedure TVstPluginHostTests.TestEnergyXT;
+var
+  i, j : Integer;
+  pp   : TVstPinProperties;
+  Data : PChar;
+  prct : PRect;
+  rct  : TRect;
+begin
+ FVstHost.VendorString := 'XT Software';
+ FVstHost.ProductString := 'energyXT';
+
+ with FVstHost[0] do
+  begin
+   // open
+   VstDispatch(effOpen);
+
+   // CanDo sendVstMidiEvent
+   VstDispatch(effCanDo, 0, 0, PChar('sendVstMidiEvent'));
+
+   // set program
+   VstDispatch(effSetProgram);
+
+   // set samplerate
+   VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+   // set blocksize
+   VstDispatch(effSetBlockSize, 0, 256);
+
+   // switch on
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // get input properties
+   for i := 0 to numInputs - 1 do
+    begin
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetInputProperties, i, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetInputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+      end;
+    end;
+
+   // get output properties
+   for i := 0 to numOutputs - 1 do
+    begin
+     FillChar(pp, SizeOf(pp), 0);
+     if VstDispatch(effGetOutputProperties, 0, 0, @pp) <> 0 then
+      begin
+       CheckTrue(pp.Caption[63] = #0, 'effGetOutputProperties: Caption probably too long');
+       CheckTrue(pp.Future[47] = 0, 'effGetInputProperties: Future field <> 0');
+      end;
+    end;
+
+   // idle
+   VstDispatch(effIdle);
+
+   GetMem(Data, 1024);
+   try
+    with TForm.Create(nil) do
+     try
+      // get edit open
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+      // get editor rect
+      prct := @rct;
+      VstDispatch(effEditGetRect, 0, 0, @prct);
+
+      // Get Program Name Indexed
+      VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
+     finally
+      Dispose(Data);
+     end;
+   finally
+    Free;
+   end;
+
+   // edit idle
+   VstDispatch(effEditIdle);
+
+   // get program
+   VstDispatch(effGetProgram);
+
+   // idle
+   VstDispatch(effIdle);
+
+   // close
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestEnergyXTBug;
+begin
+ FVstHost[0].VstEffectPointer.User := Pointer(random($7FFFFFFF));
+ TestEnergyXT;
+end;
+
 procedure TVstPluginHostTests.TestAbletonLive;
 var
   i, j : Integer;
@@ -2371,9 +2469,9 @@ begin
        end;
       if IsDen then break;
      end;
-    CheckFalse(IsDen, 'Denormal found! (in program ' + IntToStr(ProgramNr));
+    CheckFalse(IsDen, 'Denormal found! (in program ' + IntToStr(CurrentProgram));
     if numPrograms > 0
-     then ProgramNr := random(numPrograms)
+     then CurrentProgram := random(numPrograms)
      else break;
     inc(Cnt);
     for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 1E-6;
