@@ -214,12 +214,20 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
         DisplayName = 'Wrapped Plugin'
         VstOfflineTasks = <>
         OnAudioMasterAutomate = ParamAutomate
+        OnAudioMasterIdle = AudioMasterIdle
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
     VstVersion = 2300
     Left = 8
+    Top = 8
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = PluginIdle
+    Left = 56
     Top = 8
   end
 end

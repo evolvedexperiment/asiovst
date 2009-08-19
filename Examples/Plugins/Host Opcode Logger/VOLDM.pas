@@ -8,12 +8,11 @@ uses
 
 type
   TVOLDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
-    procedure ParamChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure ParamChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FOpcodeLog  : TStringList;
     FLastOpcode : TDispatcherOpcode;
@@ -48,7 +47,7 @@ end;
 procedure TVOLDataModule.VSTModuleOpen(Sender: TObject);
 begin
  if not assigned(FOpcodeLog)
-  then exit;
+  then Exit;
 
  FOpcodeLog.Add('HostProduct: ' + HostProduct);
  FOpcodeLog.Add('HostVendor: ' + HostVendor);

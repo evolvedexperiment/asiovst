@@ -119,10 +119,6 @@ begin
       finally
        FreeAndNil(ContainedVSTPlugins);
       end;
-
-      if FileExists(DLLFileName)
-       then LoadFromFile(DLLFileName);
-
      end;
 
    Active := True;

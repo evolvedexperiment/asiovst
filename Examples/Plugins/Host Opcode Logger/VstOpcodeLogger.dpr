@@ -3,12 +3,11 @@ library VstOpcodeLogger;
 
 uses
   FastMM4,
+  FastMove,
   madExcept,
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  FastMove,
-  Forms,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
@@ -17,7 +16,6 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- PauseMadExcept(True);
  Result := VstModuleMain(AudioMasterCallback, TVOLDataModule);
 end;
 

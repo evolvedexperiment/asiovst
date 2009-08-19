@@ -28,6 +28,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'VST Plugin Unit Test';
   if IsConsole
    then TextTestRunner.RunRegisteredTests
    else GUITestRunner.RunRegisteredTests;

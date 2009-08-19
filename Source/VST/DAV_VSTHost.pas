@@ -320,7 +320,7 @@ type
     property EffectName: string read GetEffectName;
     {$IFDEF VstHostGUI}
     property GUIControl: TWinControl read FGUIControl;
-    property GUIStyle : TGUIStyle read fGUIStyle write SetGUIStyle default gsDefault;
+    property GUIStyle : TGUIStyle read FGUIStyle write SetGUIStyle default gsDefault;
     {$ENDIF}
     property Loaded: Boolean read FLoaded stored False;
     property PlugCategory: TVstPluginCategory read FPlugCategory stored False;
@@ -775,7 +775,7 @@ begin
                                               thePlug.FNeedIdle := True;
                                               if Assigned(thePlug.FOnAMIdle)
                                                then thePlug.FOnAMIdle(thePlug);
-                                              if assigned(theHost) and theHost.FautoIdle then
+                                              if assigned(theHost) and theHost.FAutoIdle then
                                                begin
                                                 if thePlug.EditVisible then thePlug.EditIdle;
                                                 for i := 0 to theHost.VstPlugIns.Count - 1 do // Norm-Konform!
@@ -1954,7 +1954,7 @@ procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
 begin
  if Control = nil
   then raise Exception.Create('Control must exist!');
- if (effFlagsHasEditor in FVstEffect.EffectFlags) and (fGUIStyle = gsDefault) then
+ if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then
   begin
    if not FEditOpen then
     begin
@@ -1965,7 +1965,7 @@ begin
 //  else raise Exception.Create('Editor is already open!');
   end
  else // Vst has no GUI
-  case fGUIStyle of
+  case FGUIStyle of
    gsOld: ShowDefaultEditOld(Control);
    gsDefault, gsList: ShowDefaultEditList(Control);
   end;
@@ -1974,7 +1974,7 @@ end;
 
 procedure TCustomVstPlugIn.ShowDefaultEditOld(Control: TWinControl);
 var
-  param : string;
+  Param : string;
   i     : Integer;
 begin
  FGUIControl := Control;
@@ -3536,7 +3536,7 @@ procedure TCustomVstPlugIn.SetGUIStyle(const Value: TGUIStyle);
 begin
  if FEditOpen
   then raise Exception.Create(RStrCloseEditorFirst)
-  else fGUIStyle := Value;
+  else FGUIStyle := Value;
 end;
 {$ENDIF}
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}

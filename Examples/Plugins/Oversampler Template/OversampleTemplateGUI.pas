@@ -13,11 +13,12 @@ type
     GuiLEDOversampling: TGuiLED;
     LbOversampling: TGuiLabel;
     LbOversamplingFactor: TGuiLabel;
-    MIAllowResizing: TMenuItem;
+    MiAllowResizing: TMenuItem;
     PnControl: TGuiPanel;
     PnGui: TPanel;
     PUSettings: TPopupMenu;
     ShBorder: TShape;
+    MiManualIdle: TMenuItem;
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -25,7 +26,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure DialOversamplingChange(Sender: TObject);
     procedure GuiLEDOversamplingClick(Sender: TObject);
-    procedure MIAllowResizingClick(Sender: TObject);
+    procedure MiAllowResizingClick(Sender: TObject);
+    procedure MiManualIdleClick(Sender: TObject);
   private
     FBackground : TBitmap;
     FWinSizer   : TVstWindowSizer;
@@ -199,7 +201,7 @@ begin
   end;
 end;
 
-procedure TFmOversampler.MIAllowResizingClick(Sender: TObject);
+procedure TFmOversampler.MiAllowResizingClick(Sender: TObject);
 begin
  MIAllowResizing.Checked := not MIAllowResizing.Checked;
  if MIAllowResizing.Checked then
@@ -214,6 +216,12 @@ begin
    if assigned(FWinSizer)
     then FreeAndNil(FWinSizer);
   end;
+end;
+
+procedure TFmOversampler.MiManualIdleClick(Sender: TObject);
+begin
+ MiManualIdle.Checked := not MiManualIdle.Checked;
+ TOversampleTemplateDataModule(Owner).ManualIdle := MiManualIdle.Checked;
 end;
 
 procedure TFmOversampler.UpdateOverSampling;

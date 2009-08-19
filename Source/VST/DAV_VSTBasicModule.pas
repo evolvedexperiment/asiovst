@@ -276,7 +276,7 @@ begin
     AudioMaster := AudioMasterCallback;
     Result := Effect;
    end;
- GVstInstanceList.Add(BasicVstModule);
+  GVstInstanceList.Add(BasicVstModule);
  except
   Result := nil;
  end;

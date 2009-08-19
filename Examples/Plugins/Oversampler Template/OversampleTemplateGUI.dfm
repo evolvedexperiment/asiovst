@@ -124,9 +124,13 @@ object FmOversampler: TFmOversampler
   object PUSettings: TPopupMenu
     Left = 144
     Top = 8
-    object MIAllowResizing: TMenuItem
-      Caption = 'Allow Resizing'
-      OnClick = MIAllowResizingClick
+    object MiAllowResizing: TMenuItem
+      Caption = 'Allow &Resizing'
+      OnClick = MiAllowResizingClick
+    end
+    object MiManualIdle: TMenuItem
+      Caption = 'Manual &Idle'
+      OnClick = MiManualIdleClick
     end
   end
 end

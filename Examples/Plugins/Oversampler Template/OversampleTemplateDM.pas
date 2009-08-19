@@ -9,11 +9,12 @@ uses
   {$IFDEF UseCriticalSection} SyncObjs, {$ENDIF} 
   DAV_Common, DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VstHost,
   DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, DAV_DspUpDownsampling,
-  DAV_VstOfflineTask;
+  DAV_VstOfflineTask, ExtCtrls;
 
 type
   TOversampleTemplateDataModule = class(TVSTModule)
     VstHost: TVstHost;
+    Timer: TTimer;
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -62,6 +63,8 @@ type
     procedure ParamPostOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostFilterBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamPostCharChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure AudioMasterIdle(Sender: TObject);
+    procedure PluginIdle(Sender: TObject);
   private
     FUpsampler        : array of TDAVUpsampling;
     FDownsampler      : array of TDAVDownsampling;
@@ -72,6 +75,7 @@ type
     FOSFactor         : Integer;
     FMaximumBlockSize : Integer;
     FTempBufferSize   : Integer;
+    FManualIdle       : Boolean;
     {$IFDEF UseSemaphore}
     FSemaphore        : Integer;
     {$ENDIF}
@@ -80,14 +84,18 @@ type
     {$ENDIF}
     procedure SetOSFactor(const NewOSFactor: Integer);
     procedure SetTempBufferSize(const Value: Integer);
-    procedure VSTBuffersChanged;
-    procedure PluginSampleRateChanged;
     procedure CheckSampleFrames(const SampleFrames: Integer);
+    procedure SetManualIdle(const Value: Boolean);
+  protected
+    procedure ManualIdleChanged; virtual;
+    procedure PluginSampleRateChanged; virtual;
+    procedure VSTBuffersChanged; virtual;
   public
     function HostCallIdle(const Index, Value: Integer; const ptr: Pointer; const opt: Single): Integer; override;
     function HostCallGetTailSize(const Index, Value: Integer; const ptr: Pointer; const opt: Single): Integer; override;
   published
     property TempBufferSize: Integer read FTempBufferSize write SetTempBufferSize default 0;
+    property ManualIdle: Boolean read FManualIdle write SetManualIdle;
   end;
 
 function ConvertOrderToString(Order: Integer): string;
@@ -107,6 +115,7 @@ begin
   TStringList(lParam).Add(lpName);
 end;
 
+(*
 function EnumRCDATANamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin
   Result := True;
@@ -119,6 +128,7 @@ begin
   ShowMessage(IntToStr(Integer(lpType)));
 //  ShowMessage(lpType);
 end;
+*)
 
 procedure TOversampleTemplateDataModule.VSTModuleCreate(Sender: TObject);
 var
@@ -542,6 +552,22 @@ begin
  {$ENDIF}
 end;
 
+procedure TOversampleTemplateDataModule.AudioMasterIdle(Sender: TObject);
+begin
+ if not ManualIdle
+  then PluginIdle(Sender);
+end;
+
+procedure TOversampleTemplateDataModule.PluginIdle(Sender: TObject);
+begin
+ with VstHost[0] do
+  if Active then
+   begin
+    Idle;
+    EditIdle;
+   end;
+end;
+
 procedure TOversampleTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
@@ -800,6 +826,20 @@ begin
 
  if EditorForm is TFmOversampler
   then TFmOversampler(EditorForm).UpdateOSFactor;
+end;
+
+procedure TOversampleTemplateDataModule.SetManualIdle(const Value: Boolean);
+begin
+ if FManualIdle <> Value then
+  begin
+   FManualIdle := Value;
+   ManualIdleChanged;
+  end;
+end;
+
+procedure TOversampleTemplateDataModule.ManualIdleChanged;
+begin
+ Timer.Enabled := ManualIdle;
 end;
 
 procedure TOversampleTemplateDataModule.SetOSFactor(const NewOSFactor: Integer);

@@ -3,6 +3,7 @@ library OversampleTemplate;
 
 {-$R 'Test.res' 'Test.rc'}
 {-$R 'Chainer.res' 'Chainer.rc'}
+{-$R 'Helix.res' 'Helix.rc'}
 
 uses
   FastMM4,  // either download the library or comment if there is an error here
