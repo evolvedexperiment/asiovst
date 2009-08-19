@@ -120,8 +120,8 @@ begin
    then FEnhancedGates[Channel].Threshold_dB := Value;
 
  // update GUI if necessary
- if EditorForm is TEditorForm then
-  then (EditorForm As TEditorForm).UpdateThreshold;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateThreshold;
 end;
 
 procedure TEnhancedGateDataModule.EAGRangeChange(Sender: TObject;
@@ -134,8 +134,8 @@ begin
    then FEnhancedGates[Channel].Range_dB := Value;
 
  // update GUI if necessary
- if EditorForm is TEditorForm then
-  with EditorForm As TEditorForm do UpdateRange;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateRange;
 end;
 
 procedure TEnhancedGateDataModule.EAGRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -147,8 +147,8 @@ begin
    then FEnhancedGates[Channel].Ratio := Value;
 
  // update GUI if necessary
- if EditorForm is TEditorForm then
-  with EditorForm As TEditorForm do UpdateRatio;
+ if EditorForm is TEditorForm
+  then TEditorForm(EditorForm).UpdateRatio;
 end;
 
 procedure TEnhancedGateDataModule.EAGSideChainSourceChange(Sender: TObject;
@@ -202,7 +202,7 @@ begin
    then FEnhancedGates[Channel].Attack := Value;
 
  // update GUI if necessary
- if EditorForm is TEditorForm then
+ if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateAttack;
 end;
 
@@ -215,7 +215,7 @@ begin
    then FEnhancedGates[Channel].Hold := Value;
 
  // update GUI if necessary
- if EditorForm is TEditorForm then
+ if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateHold;
 end;
 
@@ -241,7 +241,7 @@ begin
    then FEnhancedGates[Channel].Release := Value;
 
  // update GUI if necessary
- if EditorForm is TEditorForm then
+ if EditorForm is TEditorForm
   then TEditorForm(EditorForm).UpdateDecay;
 end;
 

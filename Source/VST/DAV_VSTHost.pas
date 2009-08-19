@@ -3032,6 +3032,9 @@ begin
   if not Assigned(FMainFunction)
    then FMainFunction := FInternalDllLoader.FindExport('main');
 
+  if not Assigned(FMainFunction)
+   then FMainFunction := FInternalDllLoader.FindExportPerIndex(0);
+
   InitializeVstEffect;
   FLoaded := True;
  except

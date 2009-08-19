@@ -10,9 +10,11 @@ uses
 type
   TFmHrtfConvolver = class(TForm)
     AudioDataDisplay: TGuiAudioDataDisplay;
+    AudioDataDisplayIR: TGuiAudioDataDisplay;
     BtLoadHrtfFile: TButton;
     EdHrtfSet: TEdit;
     Gb3D: TGroupBox;
+    GbImpulseResponse: TGroupBox;
     GbImpulseResponses: TGroupBox;
     GBPosition: TGroupBox;
     GLCamera: TGLCamera;
@@ -33,11 +35,11 @@ type
     SERadius: TSpinEdit;
     TSHrtf: TTabSheet;
     TSReverb: TTabSheet;
+    procedure FormCreate(Sender: TObject);
     procedure BtLoadHrtfFileClick(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure FormCreate(Sender: TObject);
     procedure SEAzimuthChange(Sender: TObject);
     procedure SEElevationChange(Sender: TObject);
   private
@@ -186,7 +188,7 @@ begin
 
  with THrtfConvolverDataModule(Owner) do
   begin
-   AudioDataDisplay.AudioDataCollection := AudioDataCollection;
+   AudioDataDisplay.AudioDataCollection := AudioDataCollectionHRTF;
   end;
 end;
 

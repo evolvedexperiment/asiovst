@@ -22,15 +22,16 @@ type
     procedure ParameterElevationChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterRadiusChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSemaphore           : TSemaphore;
-    FConvolution         : array [0..1] of TLowLatencyConvolution32;
-    FAudioDataCollection : TAudioDataCollection32;
-    FHRTFs               : THrtfs;
+    FSemaphore   : TSemaphore;
+    FConvolution : array [0..1] of TLowLatencyConvolution32;
+    FAdcHrtf     : TAudioDataCollection32;
+    FAdcIR       : TAudioDataCollection32;
+    FHRTFs       : THrtfs;
     function GetConvolution(Index: Integer): TLowLatencyConvolution32;
   public
     procedure HRTFChanged;
 
-    property AudioDataCollection: TAudioDataCollection32 read FAudioDataCollection;
+    property AudioDataCollectionHRTF: TAudioDataCollection32 read FAdcHrtf;
     property Convolution[Index: Integer]: TLowLatencyConvolution32 read GetConvolution;
     property HRTFs: THrtfs read FHRTFs;
     property Semaphore: TSemaphore read FSemaphore write FSemaphore;
@@ -68,15 +69,8 @@ begin
    FConvolution[Channel].MaximumIRBlockOrder := 18;
   end;
 
- FAudioDataCollection := TAudioDataCollection32.Create(Self);
- with FAudioDataCollection do
-  begin
-   SampleFrames := 0;
-   SampleRate := Self.SampleRate;
-  end;
-
+ // create and load HRTF data
  FHRTFs := THRTFs.Create;
-
  RS := TResourceStream.Create(hInstance, 'Default', 'HRTF');
  try
   FHRTFs.LoadFromStream(RS);
@@ -84,13 +78,28 @@ begin
   RS.Free;
  end;
 
- FAudioDataCollection.SampleFrames := FHRTFs.MinimumHrirSize;
- FAudioDataCollection.ChannelCount := 2;
+ // create HRTF audio data collection
+ FAdcHrtf := TAudioDataCollection32.Create(Self);
+ with FAdcHrtf do
+  begin
+   SampleFrames := FHRTFs.MinimumHrirSize;
+   ChannelCount := 2;
+   SampleRate   := Self.SampleRate;
+  end;
+
+ FAdcIR := TAudioDataCollection32.Create(Self);
+ with FAdcIR do
+  begin
+   SampleFrames := 1024;
+   ChannelCount := 2;
+   SampleRate   := Self.SampleRate;
+  end;
 end;
 
 procedure THrtfConvolverDataModule.VSTModuleClose(Sender: TObject);
 begin
- FreeAndNil(FAudioDataCollection);
+ FreeAndNil(FAdcHrtf);
+ FreeAndNil(FAdcIR);
  FreeAndNil(FConvolution[0]);
  FreeAndNil(FConvolution[1]);
 end;
@@ -156,7 +165,7 @@ const
   CDeg2Rad = 2 * Pi / 360;
 begin
  if assigned(FHRTFs) then
-  with FAudioDataCollection do
+  with FAdcHrtf do
    begin
     FHRTFs.InterpolateHrir(Parameter[0] * CDeg2Rad, Parameter[1] * CDeg2Rad,
       SampleFrames, ChannelDataPointer[0], ChannelDataPointer[1]);

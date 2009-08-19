@@ -581,7 +581,9 @@ begin
    HlfHght := FOSFactor * FHalfHeight;
    PixelPerSample := FOSFactor * Self.Width / (SampleFrames - 1);
    Pen.Width := FOSFactor * FLineWidth;
-   Pen.Color := FLineColor;
+   if Channel < FDisplayChannels.Count
+    then Pen.Color := TCustomDisplayChannel(FDisplayChannels[Channel]).Color
+    else Pen.Color := FLineColor;
 
    if (FAudioDataCollection.Channels.Items[Channel] is TAudioChannel32) then
     with TAudioChannel32(FAudioDataCollection.Channels.Items[Channel]) do

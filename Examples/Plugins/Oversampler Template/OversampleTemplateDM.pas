@@ -5,9 +5,11 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Forms, DAV_Common,
-  DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
-  DAV_VSTCustomModule, DAV_DspUpDownsampling, DAV_VstHost, DAV_VstOfflineTask;
+  Windows, Messages, SysUtils, Classes, Graphics, Forms,
+  {$IFDEF UseCriticalSection} SyncObjs, {$ENDIF} 
+  DAV_Common, DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VstHost,
+  DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, DAV_DspUpDownsampling,
+  DAV_VstOfflineTask;
 
 type
   TOversampleTemplateDataModule = class(TVSTModule)
@@ -70,7 +72,12 @@ type
     FOSFactor         : Integer;
     FMaximumBlockSize : Integer;
     FTempBufferSize   : Integer;
+    {$IFDEF UseSemaphore}
     FSemaphore        : Integer;
+    {$ENDIF}
+    {$IFDEF UseCriticalSection}
+    FCriticalSection  : TCriticalSection;
+    {$ENDIF}
     procedure SetOSFactor(const NewOSFactor: Integer);
     procedure SetTempBufferSize(const Value: Integer);
     procedure VSTBuffersChanged;
@@ -127,7 +134,12 @@ begin
  FOSFactor                := 1;
  FOSActive                := False;
  FTempBufferSize          := 0;
+ {$IFDEF UseSemaphore}
  FSemaphore               := 0;
+ {$ENDIF}
+ {$IFDEF UseCriticalSection}
+ FCriticalSection         := TCriticalSection.Create;
+ {$ENDIF}
  FMaximumBlockSize        := VstHost.BlockSize;
  OnProcess                := VSTModuleProcess32OversampleSingle;
  OnProcessReplacing       := VSTModuleProcess32OversampleSingle;
@@ -265,16 +277,21 @@ end;
 
 procedure TOversampleTemplateDataModule.VSTModuleDestroy(Sender: TObject);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
+ {$IFDEF UseSemaphore}
  FSemaphore := 0;
- for ch := 0 to Length(FIn64) - 1 do Dispose(FIn64[ch]);
- for ch := 0 to Length(FOut64) - 1 do Dispose(FOut64[ch]);
+ {$ENDIF}
+ {$IFDEF UseCriticalSection}
+ FreeAndNil(FCriticalSection);
+ {$ENDIF}
+ for Channel := 0 to Length(FIn64) - 1 do Dispose(FIn64[Channel]);
+ for Channel := 0 to Length(FOut64) - 1 do Dispose(FOut64[Channel]);
 
- for ch := 0 to Length(FUpsampler) - 1
-  do FreeAndNil(FUpsampler[ch]);
- for ch := 0 to Length(FDownsampler) - 1
-  do FreeAndNil(FDownsampler[ch]);
+ for Channel := 0 to Length(FUpsampler) - 1
+  do FreeAndNil(FUpsampler[Channel]);
+ for Channel := 0 to Length(FDownsampler) - 1
+  do FreeAndNil(FDownsampler[Channel]);
 
  VSTHost.VstPlugIns.Clear;
 end;
@@ -444,7 +461,7 @@ begin
    PinProperties := VstHost[0].GetOutputProperties(Index);
    Flags         := PinProperties.Flags;
    vLabel        := StrPas(@PinProperties.Caption[0]);
-   shortLabel    := StrPas(@PinProperties.ShortLabel[0]);
+   ShortLabel    := StrPas(@PinProperties.ShortLabel[0]);
   except
    Result        := False;
   end;
@@ -464,10 +481,10 @@ end;
 procedure TOversampleTemplateDataModule.ParamPreTransBWChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FUpsampler) - 1
-  do FUpsampler[ch].TransitionBandwidth := 0.01 * Value;
+ for Channel := 0 to Length(FUpsampler) - 1
+  do FUpsampler[Channel].TransitionBandwidth := 0.01 * Value;
 end;
 
 procedure TOversampleTemplateDataModule.ParamOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -504,28 +521,48 @@ end;
 
 procedure TOversampleTemplateDataModule.VSTBuffersChanged;
 begin
- VstHost.BlockSize := BlockSize * FOSFactor;
- with VstHost[0] do if Active then SetBlockSizeAndSampleRate(BlockSize * FOSFactor, SampleRate * FOSFactor);
- FMaximumBlockSize := BlockSize;
- TempBufferSize := FMaximumBlockSize * FOSFactor;
+ {$IFDEF UseCriticalSection}
+ FCriticalSection.Enter;
+ try
+  {$ENDIF}
+  VstHost.BlockSize := BlockSize * FOSFactor;
+  with VstHost[0] do
+   if Active then
+    begin
+     SetBlockSizeAndSampleRate(BlockSize * FOSFactor, SampleRate * FOSFactor);
+     SetBlockSize(BlockSize * FOSFactor);
+     SetSampleRate(SampleRate * FOSFactor);
+    end;
+  FMaximumBlockSize := BlockSize;
+  TempBufferSize := FMaximumBlockSize * FOSFactor;
+ {$IFDEF UseCriticalSection}
+ finally
+  FCriticalSection.Leave;
+ end;
+ {$ENDIF}
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FUpsampler) - 1
-  do FUpsampler[ch].SampleRate := SampleRate;
- for ch := 0 to Length(FDownsampler) - 1
-  do FDownsampler[ch].SampleRate := SampleRate;
+ for Channel := 0 to Length(FUpsampler) - 1
+  do FUpsampler[Channel].SampleRate := SampleRate;
+ for Channel := 0 to Length(FDownsampler) - 1
+  do FDownsampler[Channel].SampleRate := SampleRate;
 
  PluginSampleRateChanged;
 end;
 
 procedure TOversampleTemplateDataModule.PluginSampleRateChanged;
 begin
- with VstHost[0] do if Active then SetSampleRate(FOSFactor * SampleRate);
+ with VstHost[0] do
+  if Active then
+   begin
+    SetSampleRate(FOSFactor * SampleRate);
+    SetBlockSize(FOSFactor * FBlockSize);
+   end;
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleStartProcess(Sender: TObject);
@@ -546,8 +583,8 @@ end;
 function TOversampleTemplateDataModule.VSTModuleVendorSpecific(Sender: TObject;
   const lArg1, lArg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
 begin
- result := 0;
- with VstHost[0] do if Active then result := VendorSpecific(lArg1, lArg2, ptrArg, floatArg);
+ Result := 0;
+ with VstHost[0] do if Active then Result := VendorSpecific(lArg1, lArg2, ptrArg, floatArg);
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcessVarIO(Sender: TObject;
@@ -618,8 +655,8 @@ function TOversampleTemplateDataModule.HostCallGetTailSize(const Index,
 begin
  with VstHost[0] do
   if Active
-   then result := VstHost[0].GetTailSize
-   else result := -1;
+   then Result := VstHost[0].GetTailSize
+   else Result := -1;
 end;
 
 function TOversampleTemplateDataModule.HostCallIdle(const Index, Value: Integer;
@@ -628,8 +665,8 @@ begin
  with VstHost[0] do if Active then
   begin
    Idle;
-   result := 0;
-  end else result := -1;
+   Result := 0;
+  end else Result := -1;
 end;
 
 procedure TOversampleTemplateDataModule.ParamPostCharChange(
@@ -688,11 +725,11 @@ end;
 function ConvertOrderToString(Order: Integer): string;
 begin
  case Order of
-   0 : result := 'Off';
-   1 : result := IntToStr(Order) + 'st';
-   2 : result := IntToStr(Order) + 'nd';
-   3 : result := IntToStr(Order) + 'rd';
-  else result := IntToStr(Order) + 'th';
+   0 : Result := 'Off';
+   1 : Result := IntToStr(Order) + 'st';
+   2 : Result := IntToStr(Order) + 'nd';
+   3 : Result := IntToStr(Order) + 'rd';
+  else Result := IntToStr(Order) + 'th';
  end;
 end;
 
@@ -707,16 +744,30 @@ end;
 procedure TOversampleTemplateDataModule.ParamOversamplingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do sleep(1);
- inc(FSemaphore);
+ {$IFDEF UseCriticalSection}
+ FCriticalSection.Enter;
  try
-  FOSActive := Boolean(round(Value));
-  if FOSActive = True
-   then SetOSFactor(round(ParameterByName['OS Factor']))
-   else SetOSFactor(1);
+ {$ENDIF}
+  {$IFDEF UseSemaphore}
+  while FSemaphore > 0 do sleep(1);
+  inc(FSemaphore);
+  try
+  {$ENDIF}
+   FOSActive := Boolean(round(Value));
+   if FOSActive = True
+    then SetOSFactor(round(ParameterByName['OS Factor']))
+    else SetOSFactor(1);
+  {$IFDEF UseSemaphore}
+  finally
+   Dec(FSemaphore);
+  end;
+  {$ENDIF}
+ {$IFDEF UseCriticalSection}
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+ {$ENDIF}
+
  if EditorForm is TFmOversampler
   then TFmOversampler(EditorForm).UpdateOverSampling;
 end;
@@ -724,15 +775,28 @@ end;
 procedure TOversampleTemplateDataModule.ParamOSFactorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do sleep(1);
- inc(FSemaphore);
+ {$IFDEF UseCriticalSection}
+ FCriticalSection.Enter;
  try
-  if FOSActive = True
-   then SetOSFactor(round(Value))
-   else SetOSFactor(1);
+ {$ENDIF}
+  {$IFDEF UseSemaphore}
+  while FSemaphore > 0 do sleep(1);
+  inc(FSemaphore);
+  try
+  {$ENDIF}
+   if FOSActive = True
+    then SetOSFactor(round(Value))
+    else SetOSFactor(1);
+  {$IFDEF UseSemaphore}
+  finally
+   Dec(FSemaphore);
+  end;
+  {$ENDIF}
+ {$IFDEF UseCriticalSection}
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+ {$ENDIF}
 
  if EditorForm is TFmOversampler
   then TFmOversampler(EditorForm).UpdateOSFactor;
@@ -762,6 +826,7 @@ begin
    {$IFDEF DELPHI10}
    SetMinimumBlockAlignment(mba16Byte);
    {$ENDIF}
+
    for i := 0 to numInputs - 1 do
     begin
      ReallocMem(FIn64[i], FTempBufferSize * SizeOf(Double));
@@ -799,90 +864,122 @@ end;
 procedure TOversampleTemplateDataModule.VSTModuleProcess32OversampleSingle(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  ch, i  : Integer;
+  Channel, Sample : Integer;
 begin
- CheckSampleFrames(SampleFrames);
+ {$IFDEF UseCriticalSection}
+ FCriticalSection.Enter;
+ try
+ {$ENDIF}
+  {$IFDEF UseSemaphore}
+  while FSemaphore > 0 do;
+  Inc(FSemaphore);
+  try
+  {$ENDIF}
+   CheckSampleFrames(SampleFrames);
 
- while FSemaphore > 0 do;
- inc(FSemaphore);
- if FOSActive then
-  begin
-   // upsample
-   for ch := 0 to numInputs - 1 do
-    for i := 0 to SampleFrames - 1
-     do FUpsampler[ch].Upsample32(Inputs[ch, i], @FIn32[ch, i * FOSFactor]);
+   if FOSActive then
+    begin
+     // upsample
+     for Channel := 0 to numInputs - 1 do
+      for Sample := 0 to SampleFrames - 1
+       do FUpsampler[Channel].Upsample32(Inputs[Channel, Sample], @FIn32[Channel, Sample * FOSFactor]);
 
-(*
-   for ch := 0 to numInputs - 1 do
-    for i := 0 to SampleFrames * FOSFactor - 1
-     do assert(not IsNaN(FIn32[ch, i]));
+  (*
+     for Channel := 0 to numInputs - 1 do
+      for Sample := 0 to SampleFrames * FOSFactor - 1
+       do assert(not IsNaN(FIn32[Channel, Sample]));
 
-   DontRaiseExceptionsAndSetFPUcodeword;
-*)
-   // process serial chain
-   if VstHost[0].Active
-    then VstHost[0].ProcessReplacing(@FIn32[0], @FOut32[0], SampleFrames * FOSFactor)
-    else
-     for ch := 0 to min(numInputs, numOutputs) - 1
-      do Move(FIn32[ch, 0], FOut32[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
+     DontRaiseExceptionsAndSetFPUcodeword;
+  *)
+     // process serial chain
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@FIn32[0], @FOut32[0], SampleFrames * FOSFactor)
+      else
+       for Channel := 0 to min(numInputs, numOutputs) - 1
+        do Move(FIn32[Channel, 0], FOut32[Channel, 0], SampleFrames * SizeOf(Single) * FOSFactor);
 
-(*
-   for ch := 0 to numInputs - 1 do
-    for i := 0 to SampleFrames * FOSFactor - 1
-     do assert(not IsNaN(FOut32[ch, i]));
-*)
+  (*
+     for Channel := 0 to numInputs - 1 do
+      for Sample := 0 to SampleFrames * FOSFactor - 1
+       do assert(not IsNaN(FOut32[Channel, Sample]));
+  *)
 
-   // downsample
-   for ch := 0 to numOutputs - 1 do
-    for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := FDownsampler[ch].Downsample32(@FOut32[ch, i * FOSFactor]);
-  end
- else
-  begin
-   if VstHost[0].Active
-    then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
-    else
-     for ch := 0 to min(numInputs, numOutputs) - 1
-      do Move(Inputs[ch, 0], Outputs[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
+     // downsample
+     for Channel := 0 to numOutputs - 1 do
+      for Sample := 0 to SampleFrames - 1
+       do Outputs[Channel, Sample] := FDownsampler[Channel].Downsample32(@FOut32[Channel, Sample * FOSFactor]);
+    end
+   else
+    begin
+     if VstHost[0].Active
+      then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
+      else
+       for Channel := 0 to min(numInputs, numOutputs) - 1
+        do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single) * FOSFactor);
+    end;
+  {$IFDEF UseSemaphore}
+  finally
+   Dec(FSemaphore);
   end;
- dec(FSemaphore);
+  {$ENDIF}
+ {$IFDEF UseCriticalSection}
+ finally
+  FCriticalSection.Leave;
+ end;
+ {$ENDIF}
 end;
 
 procedure TOversampleTemplateDataModule.VSTModuleProcess64OversampleSingle(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  ch, i  : Integer;
+  Channel, Sample  : Integer;
 begin
- CheckSampleFrames(SampleFrames);
+ {$IFDEF UseCriticalSection}
+ FCriticalSection.Enter;
+ try
+ {$ENDIF}
+  {$IFDEF UseSemaphore}
+  while FSemaphore > 0 do;
+  Inc(FSemaphore);
+  try
+  {$ENDIF}
+   CheckSampleFrames(SampleFrames);
 
- while FSemaphore > 0 do;
- inc(FSemaphore);
- if FOSActive then
-  begin
-   // upsample
-   for ch := 0 to numInputs - 1 do
-    for i := 0 to SampleFrames - 1
-     do FUpsampler[ch].Upsample64(Inputs[ch, i], @FIn64[ch, i * FOSFactor]);
+   if FOSActive then
+    begin
+     // upsample
+     for Channel := 0 to numInputs - 1 do
+      for Sample := 0 to SampleFrames - 1
+       do FUpsampler[Channel].Upsample64(Inputs[Channel, Sample], @FIn64[Channel, Sample * FOSFactor]);
 
-   // process serial chain
-   if VstHost[0].Active
-    then VstHost[0].ProcessDoubleReplacing(@FIn64[0], @FOut64[0], SampleFrames * FOSFactor)
-    else
-     for ch := 0 to min(numInputs, numOutputs) - 1
-      do Move(FIn64[ch, 0], FOut64[ch, 0], SampleFrames * SizeOf(Single) * FOSFactor);
+     // process serial chain
+     if VstHost[0].Active
+      then VstHost[0].ProcessDoubleReplacing(@FIn64[0], @FOut64[0], SampleFrames * FOSFactor)
+      else
+       for Channel := 0 to min(numInputs, numOutputs) - 1
+        do Move(FIn64[Channel, 0], FOut64[Channel, 0], SampleFrames * SizeOf(Single) * FOSFactor);
 
-   // downsample
-   for ch := 0 to numOutputs - 1 do
-    for i := 0 to SampleFrames - 1
-     do Outputs[ch, i] := FDownsampler[ch].Downsample64(@FOut64[ch, i * FOSFactor]);
-  end
- else
-  if VstHost[0].Active
-   then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
+     // downsample
+     for Channel := 0 to numOutputs - 1 do
+      for Sample := 0 to SampleFrames - 1
+       do Outputs[Channel, Sample] := FDownsampler[Channel].Downsample64(@FOut64[Channel, Sample * FOSFactor]);
+    end
    else
-    for ch := 0 to min(numInputs, numOutputs) - 1
-     do Move(Inputs[ch], Outputs[ch, 0], SampleFrames * SizeOf(Double) * FOSFactor);
- dec(FSemaphore);
+    if VstHost[0].Active
+     then VstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames * FOSFactor)
+     else
+      for Channel := 0 to min(numInputs, numOutputs) - 1
+       do Move(Inputs[Channel], Outputs[Channel, 0], SampleFrames * SizeOf(Double) * FOSFactor);
+  {$IFDEF UseSemaphore}
+  finally
+   Dec(FSemaphore);
+  end;
+  {$ENDIF}
+ {$IFDEF UseCriticalSection}
+ finally
+  FCriticalSection.Leave;
+ end;
+ {$ENDIF}
 end;
 
 end.

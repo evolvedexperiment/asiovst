@@ -21,7 +21,7 @@ object FmHrtfConvolver: TFmHrtfConvolver
     Top = 0
     Width = 590
     Height = 305
-    ActivePage = TSHrtf
+    ActivePage = TSReverb
     Align = alClient
     TabOrder = 0
     object TSHrtf: TTabSheet
@@ -134,11 +134,11 @@ object FmHrtfConvolver: TFmHrtfConvolver
           DisplayChannels = <
             item
               DisplayName = 'Channel 1'
-              Color = clBlack
+              Color = clBlue
             end
             item
               DisplayName = 'Channel 2'
-              Color = clBlack
+              Color = clRed
             end>
           LineWidth = 0
           XAxis.SampleUpper = 511
@@ -173,6 +173,37 @@ object FmHrtfConvolver: TFmHrtfConvolver
     object TSReverb: TTabSheet
       Caption = 'Reverb Convolution'
       ImageIndex = 1
+      object GbImpulseResponse: TGroupBox
+        Left = 3
+        Top = 80
+        Width = 576
+        Height = 194
+        Caption = 'Impulse Responses'
+        TabOrder = 0
+        DesignSize = (
+          576
+          194)
+        object AudioDataDisplayIR: TGuiAudioDataDisplay
+          Left = 6
+          Top = 17
+          Width = 564
+          Height = 171
+          Anchors = [akLeft, akTop, akRight, akBottom]
+          DisplayChannels = <
+            item
+              DisplayName = 'Channel 1'
+              Color = clBlue
+            end
+            item
+              DisplayName = 'Channel 2'
+              Color = clRed
+            end>
+          LineWidth = 0
+          XAxis.SampleUpper = 511
+          XAxis.FractionalLower = -0.500000000000000000
+          XAxis.FractionalUpper = 0.500000000000000000
+        end
+      end
     end
   end
   object GLScene: TGLScene
