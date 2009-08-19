@@ -133,6 +133,11 @@ function ComplexSqrt(const Re, Im: Double): TComplexDouble; overload;
 function ComplexSqrt(const a: TComplexSingle): TComplexSingle; overload;
 function ComplexSqrt(const a: TComplexDouble): TComplexDouble; overload;
 
+function ComplexExp(const Re, Im: Single): TComplexSingle; overload;
+function ComplexExp(const Re, Im: Double): TComplexDouble; overload;
+function ComplexExp(const a: TComplexSingle): TComplexSingle; overload;
+function ComplexExp(const a: TComplexDouble): TComplexDouble; overload;
+
 implementation
 
 uses
@@ -789,6 +794,34 @@ begin
   Result.Im := FSqrt(0.5 * (Mag - a.Re));
   if (a.Im < 0.0) then
     Result.Im := -Result.Im;
+end;
+
+function ComplexExp(const Re, Im: Single): TComplexSingle;
+begin
+ Result.Im := Exp(Re);
+ Result.Re := Result.Im * cos(Im);
+ Result.Im := Result.Im * Sin(Im);
+end;
+
+function ComplexExp(const Re, Im: Double): TComplexDouble;
+begin
+ Result.Im := Exp(Re);
+ Result.Re := Result.Im * cos(Im);
+ Result.Im := Result.Im * Sin(Im);
+end;
+
+function ComplexExp(const a: TComplexSingle): TComplexSingle;
+begin
+ Result.Im := Exp(a.Re);
+ Result.Re := Result.Im * cos(a.Im);
+ Result.Im := Result.Im * Sin(a.Im);
+end;
+
+function ComplexExp(const a: TComplexDouble): TComplexDouble;
+begin
+ Result.Im := Exp(a.Re);
+ Result.Re := Result.Im * cos(a.Im);
+ Result.Im := Result.Im * Sin(a.Im);
 end;
 
 end.
