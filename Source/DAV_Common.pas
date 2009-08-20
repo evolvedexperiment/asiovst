@@ -185,7 +185,7 @@ type
 
   function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Factorial(const Order: Integer): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function Factorial(const Order: Integer): Int64; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastFractional(const Value: Single): Single; overload;
   function FastFractional(const Value: Double): Double; overload;
   function FastRandom: Single;
@@ -827,31 +827,31 @@ end;
 
 { Math }
 
+function Factorial(const Order : Integer): Int64;
+var
+  i : Integer;
+begin
+ Result := 1;
+ for i := 2 to Order
+  do Result := Result * i;
+end;
+
 function Factorial(const Order : Single): Single;
 var
   i : Integer;
 begin
- result := 1;
- for i := 2 to round(Order)
-  do result := result * i;
+ Result := 1;
+ for i := 2 to Round(Order)
+  do Result := Result * i;
 end;
 
 function Factorial(const Order : Double): Double;
 var
   i : Integer;
 begin
- result := 1;
+ Result := 1;
  for i := 2 to round(Order)
-  do result := result * i;
-end;
-
-function Factorial(const Order : Integer): Integer;
-var
-  i : Integer;
-begin
- result := 1;
- for i := 2 to Order
-  do result := result * i;
+  do Result := Result * i;
 end;
 
 function FastFractional(const Value: Single): Single;

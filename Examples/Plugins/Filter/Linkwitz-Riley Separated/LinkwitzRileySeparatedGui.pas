@@ -11,10 +11,10 @@ type
   TFmLinkwitzRiley = class(TForm)
     GpStage1: TGuiGroup;
     DialFrequency: TGuiDial;
-    DialOrder: TGuiDial;
+    DialSlope: TGuiDial;
     DialType: TGuiDial;
     LbIFrequency: TGuiLabel;
-    LbOrder: TGuiLabel;
+    LbSlope: TGuiLabel;
     LbType: TGuiLabel;
     PnDisplay: TGuiPanel;
     LbDisplay: TGuiLabel;
@@ -23,7 +23,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure DialTypeChange(Sender: TObject);
-    procedure DialOrderChange(Sender: TObject);
+    procedure DialSlopeChange(Sender: TObject);
     procedure DialFrequencyChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     function GuiEQGraphGetFilterGain(Sender: TObject;
@@ -32,7 +32,7 @@ type
     FBackgrounBitmap : TBitmap;
   public
     procedure UpdateFrequency;
-    procedure UpdateOrder;
+    procedure UpdateSlope;
     procedure UpdateType;
   end;
 
@@ -85,7 +85,7 @@ begin
   try
    PngBmp.LoadFromStream(RS);
    DialFrequency.DialBitmap.Assign(PngBmp);
-   DialOrder.DialBitmap.Assign(PngBmp);
+   DialSlope.DialBitmap.Assign(PngBmp);
    DialType.DialBitmap.Assign(PngBmp);
   finally
    RS.Free;
@@ -103,7 +103,7 @@ end;
 procedure TFmLinkwitzRiley.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
- UpdateOrder;
+ UpdateSlope;
  UpdateType;
  LbDisplay.Caption := 'Linkwitz-Riley';
 end;
@@ -126,12 +126,12 @@ begin
   end;
 end;
 
-procedure TFmLinkwitzRiley.DialOrderChange(Sender: TObject);
+procedure TFmLinkwitzRiley.DialSlopeChange(Sender: TObject);
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if Parameter[1] <> DialOrder.Position
-    then Parameter[1] := DialOrder.Position;
+   if Parameter[1] <> DialSlope.Position
+    then Parameter[1] := DialSlope.Position;
   end;
 end;
 
@@ -154,13 +154,13 @@ begin
   end;
 end;
 
-procedure TFmLinkwitzRiley.UpdateOrder;
+procedure TFmLinkwitzRiley.UpdateSlope;
 begin
  with Owner as TLinkwitzRileySeparatedModule do
   begin
-   if DialOrder.Position <> Parameter[1]
-    then DialOrder.Position := Parameter[1];
-   LbDisplay.Caption := 'Order: ' + ParameterDisplay[1];
+   if DialSlope.Position <> Parameter[1]
+    then DialSlope.Position := Parameter[1];
+   LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + 'dB/Oct';
   end;
 end;
 

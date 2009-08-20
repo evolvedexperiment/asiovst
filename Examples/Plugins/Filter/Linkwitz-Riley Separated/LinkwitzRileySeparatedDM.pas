@@ -63,8 +63,11 @@ begin
 end;
 
 procedure TLinkwitzRileySeparatedModule.VSTModuleClose(Sender: TObject);
+var
+  Channel: Integer;
 begin
- FreeAndNil(FLinkwitzRiley);
+ for Channel := 0 to Length(FLinkwitzRiley) - 1
+  do FreeAndNil(FLinkwitzRiley[Channel]);
 end;
 
 procedure TLinkwitzRileySeparatedModule.VSTModuleEditOpen(Sender: TObject;
@@ -90,7 +93,7 @@ end;
 procedure TLinkwitzRileySeparatedModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- Predefined := IntToStr(2 * round(Parameter[Index]));
+ Predefined := IntToStr(12 * round(Parameter[Index]));
 end;
 
 procedure TLinkwitzRileySeparatedModule.ParameterFrequencyDisplay(
@@ -160,7 +163,7 @@ begin
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
-  then TFmLinkwitzRiley(EditorForm).UpdateOrder;
+  then TFmLinkwitzRiley(EditorForm).UpdateSlope;
 end;
 
 procedure TLinkwitzRileySeparatedModule.VSTModuleSampleRateChange(Sender: TObject;

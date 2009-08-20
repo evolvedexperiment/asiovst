@@ -123,6 +123,16 @@ procedure ComplexDivideInplace(var A: TComplexDouble; const B: TComplexDouble); 
 procedure ComplexDivideInplace(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 procedure ComplexDivideInplace(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
+function ComplexReciprocal(const A: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal(const A: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal(const ARe, AIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal(const ARe, AIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
+procedure ComplexReciprocalInplace(var A: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace(var A: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace(var ARe, AIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace(var ARe, AIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
 function ComplexSqr(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexSqr(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexSqr(const a: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -648,47 +658,126 @@ begin
   Result.Im := (A.Im * B.Re - A.Re * B.Im) * Divisor;
 end;
 
+////////////////////////////////////////////////////////////////////////////////
+
 procedure ComplexDivideInplace(var A: TComplexSingle; const B: TComplexSingle);
 var
   Divisor, Temp: Double;
 begin
-  Divisor := sqr(B.Re) + sqr(B.Im);
+  Divisor := 1 / (sqr(B.Re) + sqr(B.Im));
   Temp := A.Re;
-  A.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
-  A.Im := (A.Im * B.Re - Temp * B.Im) / Divisor;
+  A.Re := (A.Re * B.Re + A.Im * B.Im) * Divisor;
+  A.Im := (A.Im * B.Re - Temp * B.Im) * Divisor;
 end;
 
 procedure ComplexDivideInplace(var A: TComplexDouble; const B: TComplexDouble);
 var
   Divisor, Temp: Double;
 begin
-  Divisor := sqr(B.Re) + sqr(B.Im);
+  Divisor := 1 / (sqr(B.Re) + sqr(B.Im));
   Temp := A.Re;
-  A.Re := (A.Re * B.Re + A.Im * B.Im) / Divisor;
-  A.Im := (A.Im * B.Re - Temp * B.Im) / Divisor;
+  A.Re := (A.Re * B.Re + A.Im * B.Im) * Divisor;
+  A.Im := (A.Im * B.Re - Temp * B.Im) * Divisor;
 end;
 
 procedure ComplexDivideInplace(var ARe, AIm: Single; const BRe, BIm: Single);
 var
   Divisor, Temp: Double;
 begin
-  Divisor := sqr(BRe) + sqr(BIm);
+  Divisor := 1 / (sqr(BRe) + sqr(BIm));
   Temp := ARe;
-  ARe := (ARe * BRe + AIm * BIm) / Divisor;
-  AIm := (AIm * BRe - Temp * BIm) / Divisor;
+  ARe := (ARe * BRe + AIm * BIm) * Divisor;
+  AIm := (AIm * BRe - Temp * BIm) * Divisor;
 end;
 
 procedure ComplexDivideInplace(var ARe, AIm: Double; const BRe, BIm: Double);
 var
   Divisor, Temp: Double;
 begin
-  Divisor := sqr(BRe) + sqr(BIm);
+  Divisor := 1 / (sqr(BRe) + sqr(BIm));
   Temp := ARe;
-  ARe := (ARe * BRe + AIm * BIm) / Divisor;
-  AIm := (AIm * BRe - Temp * BIm) / Divisor;
+  ARe := (ARe * BRe + AIm * BIm) * Divisor;
+  AIm := (AIm * BRe - Temp * BIm) * Divisor;
 end;
 
 
+////////////////////////////////////////////////////////////////////////////////
+
+function ComplexReciprocal(const A: TComplexSingle): TComplexSingle;
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(A.Re) + sqr(A.Im));
+  Result.Re := Result.Re * Divisor;
+  Result.Im := Result.Im * Divisor;
+end;
+
+function ComplexReciprocal(const A: TComplexDouble): TComplexDouble;
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(A.Re) + sqr(A.Im));
+  Result.Re := Result.Re * Divisor;
+  Result.Im := Result.Im * Divisor;
+end;
+
+function ComplexReciprocal(const ARe, AIm: Single): TComplexSingle;
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(ARe) + sqr(AIm));
+  Result.Re := Result.Re * Divisor;
+  Result.Im := Result.Im * Divisor;
+end;
+
+function ComplexReciprocal(const ARe, AIm: Double): TComplexDouble;
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(ARe) + sqr(AIm));
+  Result.Re := Result.Re * Divisor;
+  Result.Im := Result.Im * Divisor;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure ComplexReciprocalInplace(var A: TComplexSingle);
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(A.Re) + sqr(A.Im));
+  A.Re := A.Re * Divisor;
+  A.Im := A.Im * Divisor;
+end;
+
+procedure ComplexReciprocalInplace(var A: TComplexDouble);
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(A.Re) + sqr(A.Im));
+  A.Re := A.Re * Divisor;
+  A.Im := A.Im * Divisor;
+end;
+
+procedure ComplexReciprocalInplace(var ARe, AIm: Single);
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(ARe) + sqr(AIm));
+  ARe := ARe * Divisor;
+  AIm := AIm * Divisor;
+end;
+
+procedure ComplexReciprocalInplace(var ARe, AIm: Double);
+var
+  Divisor: Double;
+begin
+  Divisor := 1 / (sqr(ARe) + sqr(AIm));
+  ARe := ARe * Divisor;
+  AIm := AIm * Divisor;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
 
 function ComplexSqr(const Re, Im: Single): TComplexSingle;
 begin
@@ -806,7 +895,7 @@ end;
 function ComplexExp(const Re, Im: Double): TComplexDouble;
 begin
  Result.Im := Exp(Re);
- Result.Re := Result.Im * cos(Im);
+ Result.Re := Result.Im * Cos(Im);
  Result.Im := Result.Im * Sin(Im);
 end;
 
