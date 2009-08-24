@@ -223,6 +223,14 @@ type
     property Min;
     property NumGlyphs;
     property OnChange;
+    property OnMouseWheelUp;
+    property OnMouseWheelDown;
+    property OnMouseWheel;
+    property OnMouseMove;
+    property OnMouseLeave;
+    property OnMouseEnter;
+    property OnMouseUp;
+    property OnMouseDown;
     property ParentColor;
     property PointerAngles;
     property Position;

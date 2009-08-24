@@ -21,39 +21,52 @@ function NomeQk(k: Double): Double; overload;
 function NomeQm(m: Double): Double; overload;
 function NomeQk(k: TComplexDouble): TComplexDouble; overload;
 function NomeQm(m: TComplexDouble): TComplexDouble; overload;
-function Theta00(z: Double; q: Double): Double; overload;
-function Theta01(z: Double; q: Double): Double; overload;
-function Theta10(z: Double; q: Double): Double; overload;
-function Theta11(z: Double; q: Double): Double; overload;
+function Theta00(z, q: Double): Double; overload;
+function Theta01(z, q: Double): Double; overload;
+function Theta10(z, q: Double): Double; overload;
+function Theta11(z, q: Double): Double; overload;
 function Theta00(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
 function Theta01(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
 function Theta10(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
 function Theta11(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
-function Theta1(z: Double; q: Double): Double; overload;
-function Theta2(z: Double; q: Double): Double; overload;
-function Theta3(z: Double; q: Double): Double; overload;
-function Theta4(z: Double; q: Double): Double; overload;
+function Theta1(z, q: Double): Double; overload;
+function Theta2(z, q: Double): Double; overload;
+function Theta3(z, q: Double): Double; overload;
+function Theta4(z, q: Double): Double; overload;
 function Theta1(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
 function Theta2(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
 function Theta3(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
 function Theta4(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble; overload;
-function Sn(z: Double; k: Double): Double;
-function Cn(z: Double; k: Double): Double;
-function Dn(z: Double; k: Double): Double;
-function Ns(z: Double; k: Double): Double;
-function Nc(z: Double; k: Double): Double;
-function Nd(z: Double; k: Double): Double;
-function Sd(z: Double; k: Double): Double;
-function Sc(z: Double; k: Double): Double;
-function Cd(z: Double; k: Double): Double;
-function Cs(z: Double; k: Double): Double;
-function Dc(z: Double; k: Double): Double;
-function Ds(z: Double; k: Double): Double;
+function Sn(z: Double; k: Double): Double; overload;
+function Cn(z: Double; k: Double): Double; overload;
+function Dn(z: Double; k: Double): Double; overload;
+function Ns(z: Double; k: Double): Double; overload;
+function Nc(z: Double; k: Double): Double; overload;
+function Nd(z: Double; k: Double): Double; overload;
+function Sd(z: Double; k: Double): Double; overload;
+function Sc(z: Double; k: Double): Double; overload;
+function Cd(z: Double; k: Double): Double; overload;
+function Cs(z: Double; k: Double): Double; overload;
+function Dc(z: Double; k: Double): Double; overload;
+function Ds(z: Double; k: Double): Double; overload;
+
+function Sn(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Cn(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Dn(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Ns(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Nc(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Nd(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Sd(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Sc(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Cd(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Cs(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Dc(z: TComplexDouble; k: Double): TComplexDouble; overload;
+function Ds(z: TComplexDouble; k: Double): TComplexDouble; overload;
 
 implementation
 
 uses
-  Math;
+  Math, SysUtils;
 
 
 function DoubleFactorial(n: Integer): Integer;
@@ -160,6 +173,44 @@ begin
  Result := Phi * Result;
 end;
 
+////////////////////////////////////////////////////////////////////////////////
+
+function CompleteEllipticIntegral1stKind(k: Double; Steps: Integer = 30): Double;
+var
+  Factor : Double;
+  Temp   : Double;
+  Step   : Integer;
+
+ function CalculateFactor(Step: Integer): Single;
+ var
+   n : Integer;
+ begin
+  Result := 1;
+  for n := 1 to Step do Result := Result * ((n - 0.5) / n);
+  Result := sqr(Result);
+ end;
+
+begin
+ // zero & first step at once
+ Factor    := 0.25;
+ Temp      := k;
+ Result := 1 + Factor * Temp;
+
+ // second step
+ Temp := Temp * k;
+ Factor := 0.140625;
+ Result := Result + Factor * Temp;
+
+ // n-th step
+ for Step := 3 to Steps do
+  begin
+   Temp := Temp * k;
+   Factor  := CalculateFactor(Step);
+   Result := Result + Factor * Temp;
+  end;
+ Result := 0.5 * Pi * Result;
+end;
+
 function CompleteEllipticIntegral1stKind(k: TComplexDouble; Steps: Integer = 30): TComplexDouble; overload;
 var
   Factor : Double;
@@ -200,41 +251,7 @@ begin
  Result.Im := 0.5 * Pi * Result.Im;
 end;
 
-function CompleteEllipticIntegral1stKind(k: Double; Steps: Integer = 30): Double;
-var
-  Factor : Double;
-  Temp   : Double;
-  Step   : Integer;
-
- function CalculateFactor(Step: Integer): Single;
- var
-   n : Integer;
- begin
-  Result := 1;
-  for n := 1 to Step do Result := Result * ((n - 0.5) / n);
-  Result := sqr(Result);
- end;
-
-begin
- // zero & first step at once
- Factor    := 0.25;
- Temp      := k;
- Result := 1 + Factor * Temp;
-
- // second step
- Temp := Temp * k;
- Factor := 0.140625;
- Result := Result + Factor * Temp;
-
- // n-th step
- for Step := 3 to Steps do
-  begin
-   Temp := Temp * k;
-   Factor  := CalculateFactor(Step);
-   Result := Result + Factor * Temp;
-  end;
- Result := 0.5 * Pi * Result;
-end;
+////////////////////////////////////////////////////////////////////////////////
 
 function CompleteEllipticIntegral2ndKind(k: Double; Steps: Integer = 1000): Double;
 var
@@ -311,15 +328,16 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function Theta00(z: Double; Theta: Double): Double;
+function Theta00(z, q: Double): Double;
 var
   Step    : Integer;
   Current : Double;
 begin
+ assert(q < 0);
  Result := 0;
  Step := 1;
  repeat
-  Current := Power(q, sqr(Step)) * cos(2 * Step * z);
+  Current := IntPower(q, sqr(Step)) * cos(2 * Step * z);
 
   // add current value to result
   Result := Result + Current;
@@ -330,19 +348,66 @@ begin
  Result := 1 + 2 * Result;
 end;
 
-function Theta01(z: Double; Theta: Double): Double;
+function Theta01(z, q: Double): Double;
+var
+  Step    : Integer;
+  Current : Double;
 begin
+ assert(q < 0);
+ Result := 0;
+ Step := 1;
+ repeat
+  Current := IntPower(q, sqr(Step)) * cos(2 * Step * z);
+  if Step mod 2 = 1 then Current := -Current;
 
+  // add current value to result
+  Result := Result + Current;
+
+  Inc(Step);
+ until Current < 1E-10;
+
+ Result := 1 + 2 * Result;
 end;
 
-function Theta10(z: Double; Theta: Double): Double;
+function Theta10(z, q: Double): Double;
+var
+  Step    : Integer;
+  Current : Double;
 begin
+ assert(q < 0);
+ Result := 0;
+ Step := 0;
+ repeat
+  Current := IntPower(q, Step * (Step + 1)) * cos((2 * Step + 1) * z);
 
+  // add current value to result
+  Result := Result + Current;
+
+  Inc(Step);
+ until Current < 1E-10;
+
+ Result := 2 * Power(Q, 0.25) * Result;
 end;
 
-function Theta11(z: Double; Theta: Double): Double;
+function Theta11(z, q: Double): Double;
+var
+  Step    : Integer;
+  Current : Double;
 begin
+ assert(q < 0);
+ Result := 0;
+ Step := 0;
+ repeat
+  Current := IntPower(q, Step * (Step + 1)) * sin((2 * Step + 1) * z);
+  if Step mod 2 = 1 then Current := -Current;
 
+  // add current value to result
+  Result := Result + Current;
+
+  Inc(Step);
+ until Current < 1E-10;
+
+ Result := -2 * Power(Q, 0.25) * Result;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -399,15 +464,18 @@ begin
  Result := Theta10(z, Theta);
 end;
 
-function Theta1(z: Double; q: Double): Double;
+////////////////////////////////////////////////////////////////////////////////
+
+function Theta1(z, q: Double): Double;
 var
   Step    : Integer;
   Current : Double;
 begin
+ assert(q < 0);
  Result := 0;
  Step := 0;
  repeat
-  Current := Power(q, Step * (Step + 1)) * sin((2 * Step + 1) * z);
+  Current := IntPower(q, Step * (Step + 1)) * sin((2 * Step + 1) * z);
   if Step mod 2 = 1 then Current := -Current;
 
   // add current value to result
@@ -419,15 +487,16 @@ begin
  Result := 2 * Power(Q, 0.25) * Result;
 end;
 
-function Theta2(z: Double; q: Double): Double;
+function Theta2(z, q: Double): Double;
 var
   Step    : Integer;
   Current : Double;
 begin
+ assert(q < 0);
  Result := 0;
  Step := 0;
  repeat
-  Current := Power(q, Step * (Step + 1)) * cos((2 * Step + 1) * z);
+  Current := IntPower(q, Step * (Step + 1)) * cos((2 * Step + 1) * z);
 
   // add current value to result
   Result := Result + Current;
@@ -438,15 +507,16 @@ begin
  Result := 2 * Power(Q, 0.25) * Result;
 end;
 
-function Theta3(z: Double; q: Double): Double;
+function Theta3(z, q: Double): Double;
 var
   Step    : Integer;
   Current : Double;
 begin
+ assert(q < 0);
  Result := 0;
  Step := 1;
  repeat
-  Current := Power(q, sqr(Step)) * cos(2 * Step * z);
+  Current := IntPower(q, sqr(Step)) * cos(2 * Step * z);
 
   // add current value to result
   Result := Result + Current;
@@ -457,11 +527,12 @@ begin
  Result := 1 + 2 * Result;
 end;
 
-function Theta4(z: Double; q: Double): Double;
+function Theta4(z, q: Double): Double;
 var
   Step    : Integer;
   Current : Double;
 begin
+ assert(q < 0);
  Result := 0;
  Step := 1;
  repeat
@@ -476,6 +547,8 @@ begin
 
  Result := 1 + 2 * Result;
 end;
+
+////////////////////////////////////////////////////////////////////////////////
 
 function Theta1(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble;
 begin
@@ -498,6 +571,99 @@ function Theta4(z: TComplexDouble; Theta: TComplexDouble): TComplexDouble;
 begin
  Result := Theta01(z, Theta);
 end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+function Sn(z: Double; k: Double): Double;
+var
+  Temp  : Double;
+  Kcomp : Double;
+  Theta : Double;
+  ScArg : Double;  
+begin
+ Temp   := sqrt(1 - sqr(k));
+ Kcomp  := CompleteEllipticIntegral1stKind(k);
+ Theta  := CompleteEllipticIntegral1stKind(Temp) / Kcomp;
+ ScArg  := Z / (2 * Kcomp);
+ Result := Theta2(ScArg, Theta) / (sqrt(k) * Theta1(ScArg, Theta))
+end;
+
+function Cn(z: Double; k: Double): Double;
+var
+  Temp  : Double;
+  Kcomp : Double;
+  Theta : Double;
+  ScArg : Double;
+begin
+ Temp   := sqrt(1 - sqr(k));
+ Kcomp  := CompleteEllipticIntegral1stKind(k);
+ Theta  := CompleteEllipticIntegral1stKind(Temp) / Kcomp;
+ ScArg  := Z / (2 * Kcomp);
+ result := sqrt(Temp / k) * Theta3(ScArg, Theta) / Theta1(ScArg, Theta)
+end;
+
+function Dn(z: Double; k: Double): Double;
+var
+  Temp  : Double;
+  Kcomp : Double;
+  Theta : Double;
+  ScArg : Double;
+begin
+ Temp   := sqrt(1 - sqr(k));
+ Kcomp  := CompleteEllipticIntegral1stKind(k);
+ Theta  := CompleteEllipticIntegral1stKind(Temp) / Kcomp;
+ ScArg  := Z / (2 * Kcomp);
+ Result := Theta4(ScArg, Theta) / (Theta1(ScArg, Theta) * sqrt(Temp))
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+function Ns(z: Double; k: Double): Double;
+begin
+ result := 1 / Dn(z, k);
+end;
+
+function Nc(z: Double; k: Double): Double;
+begin
+ result := 1 / Dn(z, k);
+end;
+
+function Nd(z: Double; k: Double): Double;
+begin
+ result := 1 / Dn(z, k);
+end;
+
+function Sd(z: Double; k: Double): Double;
+begin
+ result := Sn(z, k) / Dn(z, k);
+end;
+
+function Sc(z: Double; k: Double): Double;
+begin
+ result := Sn(z, k) / Cn(z, k);
+end;
+
+function Cd(z: Double; k: Double): Double;
+begin
+ result := Cn(z, k) / Dn(z, k);
+end;
+
+function Cs(z: Double; k: Double): Double;
+begin
+ result := Cn(z, k) / Sn(z, k);
+end;
+
+function Dc(z: Double; k: Double): Double;
+begin
+ result := Dn(z, k) / Cn(z, k);
+end;
+
+function Ds(z: Double; k: Double): Double;
+begin
+ result := Dn(z, k) / Sn(z, k);
+end;
+
+////////////////////////////////////////////////////////////////////////////////
 
 function Sn(z: TComplexDouble; k: Double): TComplexDouble;
 var
@@ -531,16 +697,17 @@ begin
  {$ENDIF}
 end;
 
-function Cn(z: TComplexDouble; k: Double): TComplexDouble;
+function Cn(z: TComplexDouble; k: Double): TComplexDouble; overload;
 begin
 
 end;
 
-function Dn(z: TComplexDouble; k: Double): TComplexDouble;
+function Dn(z: TComplexDouble; k: Double): TComplexDouble; overload;
 begin
 
 end;
 
+////////////////////////////////////////////////////////////////////////////////
 
 function Ns(z: TComplexDouble; k: Double): TComplexDouble;
 begin

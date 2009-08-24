@@ -136,7 +136,6 @@ type
   end;
 
   TChannel32DataCoderFloat16 = class(TCustomPCMChannel32DataCoder)
-  private
   protected
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
 

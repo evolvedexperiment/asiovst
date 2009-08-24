@@ -7,7 +7,7 @@ interface
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilterButterworth;
+  DAV_DSPFilterButterworth, DAV_DSPFilterLinkwitzRiley;
 
 type
   TDualButterworthFiltersModule = class(TVSTModule)
@@ -31,6 +31,7 @@ type
   private
     FLowpass   : array of array [0..1] of TButterworthLowPassFilter;
     FHighpass  : array of array [0..1] of TButterworthHighPassFilter;
+    FSign      : Single;
   public
   end;
 
@@ -71,6 +72,7 @@ begin
  OnProcessReplacing := VSTModuleProcess;
  {$ENDIF}
 
+ FSign := 1;
  Parameter[0] := 10000;
  Parameter[1] := 2;
  Parameter[2] := 100;
@@ -218,6 +220,8 @@ begin
     then FHighpass[Channel][1].Order := round(Value);
   end;
 
+ FSign := 1 - 2 * (round(Value) mod 2);
+
  // update GUI
  if EditorForm is TFmLinkwitzRiley
   then TFmLinkwitzRiley(EditorForm).UpdateHighpassSlope;
@@ -268,7 +272,7 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FLowpass) - 1
-   do Outputs[Channel, Sample] := FHighpass[Channel][0].ProcessSample(
+   do Outputs[Channel, Sample] := FSign * FHighpass[Channel][0].ProcessSample(
         FHighpass[Channel][1].ProcessSample(Inputs[Channel, Sample]));
 end;
 
@@ -280,7 +284,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FLowpass) - 1 do
    begin
-    Outputs[Channel, Sample] := FLowpass[Channel][0].ProcessSample(
+    Outputs[Channel, Sample] := FSign * FLowpass[Channel][0].ProcessSample(
       FLowpass[Channel][1].ProcessSample(
       FHighpass[Channel][0].ProcessSample(
       FHighpass[Channel][1].ProcessSample(Inputs[Channel, Sample]))));

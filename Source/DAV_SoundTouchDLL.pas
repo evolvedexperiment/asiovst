@@ -338,7 +338,7 @@ begin
  SoundTouchSetPitch(FHandle, FPitch);
 end;
 
-procedure TSoundTouch.putSamples(const Samples: PSingle;
+procedure TSoundTouch.PutSamples(const Samples: PSingle;
   const NumSamples: Cardinal);
 begin
  SoundTouchPutSamples(FHandle, Samples, NumSamples);

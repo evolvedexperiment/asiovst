@@ -9,33 +9,36 @@ uses
 
 type
   TFmLinkwitzRiley = class(TForm)
-    GpLiknwitzRiley: TGuiGroup;
-    DialLowpassFrequency: TGuiDial;
-    DialLowpassSlope: TGuiDial;
-    LbFrequency: TGuiLabel;
-    LbSlope: TGuiLabel;
-    PnDisplay: TGuiPanel;
-    LbDisplay: TGuiLabel;
-    GbFrequencyResponse: TGuiGroup;
-    GuiEQGraph: TGuiEQGraph;
     DialHighpassFrequency: TGuiDial;
     DialHighpassSlope: TGuiDial;
-    LbLowpass: TGuiLabel;
+    DialLowpassFrequency: TGuiDial;
+    DialLowpassSlope: TGuiDial;
+    GbFrequencyResponse: TGuiGroup;
+    GpDualLiknwitzRiley: TGuiGroup;
+    GuiEQGraph: TGuiEQGraph;
+    LbDisplay: TGuiLabel;
+    LbFrequency: TGuiLabel;
     LbHighpass: TGuiLabel;
+    LbLowpass: TGuiLabel;
+    LbSlope: TGuiLabel;
     LedHighCut: TGuiLED;
     LedLowCut: TGuiLED;
-    procedure FormPaint(Sender: TObject);
+    PnDisplay: TGuiPanel;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure DialLowpassSlopeChange(Sender: TObject);
     procedure DialLowpassFrequencyChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    function GuiEQGraphGetFilterGain(Sender: TObject;
-      const Frequency: Single): Single;
     procedure DialHighpassSlopeChange(Sender: TObject);
     procedure DialHighpassFrequencyChange(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure LedHighCutClick(Sender: TObject);
     procedure LedLowCutClick(Sender: TObject);
+    procedure DialLowpassFrequencyMouseEnter(Sender: TObject);
+    procedure DialLowpassSlopeMouseEnter(Sender: TObject);
+    procedure DialHighpassFrequencyMouseEnter(Sender: TObject);
+    procedure DialHighpassSlopeMouseEnter(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -118,6 +121,8 @@ end;
 
 procedure TFmLinkwitzRiley.FormShow(Sender: TObject);
 begin
+ UpdateLowpassFrequency;
+ UpdateLowpassSlope;
  UpdateHighpassFrequency;
  UpdateHighpassSlope;
  UpdateType;
@@ -142,6 +147,11 @@ begin
   end;
 end;
 
+procedure TFmLinkwitzRiley.DialLowpassFrequencyMouseEnter(Sender: TObject);
+begin
+ UpdateLowpassFrequency;
+end;
+
 procedure TFmLinkwitzRiley.DialLowpassSlopeChange(Sender: TObject);
 begin
  with Owner as TDualButterworthFiltersModule do
@@ -149,6 +159,11 @@ begin
    if Parameter[1] <> DialLowpassSlope.Position
     then Parameter[1] := DialLowpassSlope.Position;
   end;
+end;
+
+procedure TFmLinkwitzRiley.DialLowpassSlopeMouseEnter(Sender: TObject);
+begin
+ UpdateLowpassSlope;
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassFrequencyChange(Sender: TObject);
@@ -160,6 +175,11 @@ begin
   end;
 end;
 
+procedure TFmLinkwitzRiley.DialHighpassFrequencyMouseEnter(Sender: TObject);
+begin
+ UpdateHighpassFrequency;
+end;
+
 procedure TFmLinkwitzRiley.DialHighpassSlopeChange(Sender: TObject);
 begin
  with Owner as TDualButterworthFiltersModule do
@@ -167,6 +187,11 @@ begin
    if Parameter[3] <> DialHighpassSlope.Position
     then Parameter[3] := DialHighpassSlope.Position;
   end;
+end;
+
+procedure TFmLinkwitzRiley.DialHighpassSlopeMouseEnter(Sender: TObject);
+begin
+ UpdateHighpassSlope;
 end;
 
 procedure TFmLinkwitzRiley.LedHighCutClick(Sender: TObject);
@@ -197,7 +222,7 @@ begin
   begin
    if DialLowpassFrequency.Position <> Parameter[0]
     then DialLowpassFrequency.Position := Parameter[0];
-   LbDisplay.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
 
@@ -217,7 +242,7 @@ begin
   begin
    if DialHighpassFrequency.Position <> Parameter[2]
     then DialHighpassFrequency.Position := Parameter[2];
-   LbDisplay.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
   end;
 end;
 

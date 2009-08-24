@@ -2,7 +2,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   Left = 396
   Top = 138
   BorderStyle = bsNone
-  Caption = 'Linkwitz-Riley'
+  Caption = 'Dual Linkwitz-Riley Filters'
   ClientHeight = 170
   ClientWidth = 232
   Color = 7373965
@@ -18,13 +18,13 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object GpLiknwitzRiley: TGuiGroup
+  object GpDualLiknwitzRiley: TGuiGroup
     Left = 8
     Top = 9
     Width = 217
     Height = 154
     AntiAlias = gaaLinear4x
-    Caption = 'Dual Linkwitz Riley Filters'
+    Caption = 'Dual Linkwitz-Riley Filters'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 7373965
     Font.Height = -16
@@ -51,6 +51,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialLowpassFrequencyChange
+      OnMouseEnter = DialLowpassFrequencyMouseEnter
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -74,6 +75,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialLowpassSlopeChange
+      OnMouseEnter = DialLowpassSlopeMouseEnter
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -125,6 +127,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialHighpassFrequencyChange
+      OnMouseEnter = DialHighpassFrequencyMouseEnter
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -148,6 +151,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialHighpassSlopeChange
+      OnMouseEnter = DialHighpassSlopeMouseEnter
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -164,7 +168,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Highcut'
-      Color = 7373965
       Font.Charset = ANSI_CHARSET
       Font.Color = 15659506
       Font.Height = -16

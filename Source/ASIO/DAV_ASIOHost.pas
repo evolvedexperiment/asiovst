@@ -323,7 +323,7 @@ type
     procedure PreventClippingChanged; virtual;
     procedure CreateFloatBuffers; virtual;
 
-    property ConvertMethod: TConvertMethod read FConvertMethod write SetConvertMethod;
+    property ConvertMethod: TConvertMethod read FConvertMethod write SetConvertMethod default cmNone;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -444,7 +444,7 @@ type
     procedure ConvertMethodChanged; virtual;
     procedure ConvertOptimizationsChanged; virtual;
 
-    property ConvertMethod: TConvertMethod read FConvertMethod write SetConvertMethod;
+    property ConvertMethod: TConvertMethod read FConvertMethod write SetConvertMethod default cmNone;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -1648,10 +1648,11 @@ end;
 
 constructor TCustomASIOHost.Create(AOwner: TComponent);
 begin
-  FClipPrevent := ClipDigital;
+  FClipPrevent          := ClipDigital;
   FConvertOptimizations := [coSSE, co3DNow];
-  FOutputDither := odNone;
-  FInputMonitor := False;
+  FOutputDither         := odNone;
+  FInputMonitor         := False;
+  FConvertMethod        := cmNone;
 
   {$IFDEF ASIOMixer} FASIOMixer := TFmASIOMixer.Create(nil); {$ENDIF}
   inherited;
@@ -2006,8 +2007,8 @@ begin
       then FOutConverters[Channel].oc64(@FDoubleOutBuffer[Channel, 0], ChannelData, FBufferSize);
      inc(CurrentBuffer);
     end;
-  end
- else
+  end else
+ if FConvertMethod = cm32 then
   begin
    // 32bit float processing
    case FInBufferPreFill of
@@ -2110,6 +2111,7 @@ constructor TCustomASIOHostAudioData.Create(AOwner: TComponent);
 begin
   FClipPrevent          := ClipDigital;
   FConvertOptimizations := [coSSE, co3DNow];
+  FConvertMethod        := cmNone;
   FOutputDither         := odNone;
 
   {$IFDEF ASIOMixer} FASIOMixer := TFmASIOMixer.Create(nil); {$ENDIF}
