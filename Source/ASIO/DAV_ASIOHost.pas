@@ -81,10 +81,10 @@ type
     FOnChange: TNotifyEvent;
     function GetATInt64(Index: Integer): Int64;
     function GetATdouble(Index: Integer): Double;
-    function GetATflags: TATFlags;
+    function GetATFlags: TATFlags;
     procedure SetATInt64(Index: Integer; Value: Int64);
     procedure SetATdouble(Index: Integer; Value: Double);
-    procedure SetATflags(Flags: TATFlags);
+    procedure SetATFlags(Flags: TATFlags);
   protected
     FBufferTime: TASIOTime;
     procedure Change; dynamic;
@@ -96,7 +96,7 @@ type
     property SamplePos: Int64 index 0 read GetATInt64 write SetATInt64;
     property Speed : Double index 0 read  GetATdouble write SetATdouble; //absolute speed (1. = nominal)
     property SampleRate: Double Index 1 read GetATdouble write SetATdouble;
-    property Flags : TATFlags read GetATflags Write SetATflags;
+    property Flags : TATFlags read GetATFlags Write SetATFlags;
   end;
   {$IFDEF DELPHI10_UP} {$endregion 'TASIOTimeSub'} {$ENDIF}
 
@@ -197,7 +197,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function CanSampleRate(sampleRate: TASIOSampleRate): TASIOError; virtual;
+    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; virtual;
     function GetNumDrivers: Integer; virtual;
     procedure CloseDriver; virtual;
     procedure ControlPanel; virtual;
@@ -684,30 +684,30 @@ begin
  else inherited AssignTo(Dest);
 end;
 
-function TASIOTimeSub.GetATflags: TATFlags;
+function TASIOTimeSub.GetATFlags: TATFlags;
 begin
- result := [];
- if (FBufferTime.timeInfo.flags and kSystemTimeValid) <> 0
-  then result := result + [atSystemTimeValid]
-  else result := result - [atSystemTimeValid];
- if (FBufferTime.timeInfo.flags and kSamplePositionValid) <> 0
-  then result := result + [atSamplePositionValid]
-  else result := result - [atSamplePositionValid];
- if (FBufferTime.timeInfo.flags and kSampleRateValid) <> 0
-  then result := result + [atSampleRateValid]
-  else result := result - [atSampleRateValid];
- if (FBufferTime.timeInfo.flags and kSpeedValid) <> 0
-  then result := result + [atSpeedValid]
-  else result := result - [atSpeedValid];
- if (FBufferTime.timeInfo.flags and kSampleRateChanged) <> 0
-  then result := result + [atSampleRateChanged]
-  else result := result - [atSampleRateChanged];
- if (FBufferTime.timeInfo.flags and kClockSourceChanged) <> 0
-  then result := result + [atClockSourceChanged]
-  else result := result - [atClockSourceChanged];
+ Result := [];
+ if (FBufferTime.TimeInfo.Flags and kSystemTimeValid) <> 0
+  then Result := Result + [atSystemTimeValid]
+  else Result := Result - [atSystemTimeValid];
+ if (FBufferTime.TimeInfo.Flags and kSamplePositionValid) <> 0
+  then Result := Result + [atSamplePositionValid]
+  else Result := Result - [atSamplePositionValid];
+ if (FBufferTime.TimeInfo.Flags and kSampleRateValid) <> 0
+  then Result := Result + [atSampleRateValid]
+  else Result := Result - [atSampleRateValid];
+ if (FBufferTime.TimeInfo.Flags and kSpeedValid) <> 0
+  then Result := Result + [atSpeedValid]
+  else Result := Result - [atSpeedValid];
+ if (FBufferTime.TimeInfo.Flags and kSampleRateChanged) <> 0
+  then Result := Result + [atSampleRateChanged]
+  else Result := Result - [atSampleRateChanged];
+ if (FBufferTime.TimeInfo.Flags and kClockSourceChanged) <> 0
+  then Result := Result + [atClockSourceChanged]
+  else Result := Result - [atClockSourceChanged];
 end;
 
-procedure TASIOTimeSub.SetATflags(Flags: TATFlags);
+procedure TASIOTimeSub.SetATFlags(Flags: TATFlags);
 var
   temp: Integer;
 begin
@@ -718,29 +718,29 @@ begin
  if (atSpeedValid in Flags) then temp := temp + kSpeedValid;
  if (atSampleRateChanged in Flags) then temp := temp + kSampleRateChanged;
  if (atClockSourceChanged in Flags) then temp := temp + kClockSourceChanged;
- FBufferTime.timeInfo.flags := temp;
+ FBufferTime.TimeInfo.Flags := temp;
 end;
 
 function TASIOTimeSub.GetATdouble(Index :Integer): Double;
 begin
  Result := 0;
  case Index of
-  0: Result := FBufferTime.timeInfo.speed;
-  1: Result := FBufferTime.timeInfo.sampleRate;
+  0: Result := FBufferTime.TimeInfo.speed;
+  1: Result := FBufferTime.TimeInfo.sampleRate;
  end;
 end;
 
 procedure TASIOTimeSub.SetATdouble(Index :Integer; Value: Double);
 begin
  case Index of
-  0: if Value <> FBufferTime.timeInfo.speed then
+  0: if Value <> FBufferTime.TimeInfo.speed then
   begin
-   FBufferTime.timeInfo.speed := Value;
+   FBufferTime.TimeInfo.speed := Value;
    Change;
   end;
-  1: if Value <> FBufferTime.timeInfo.sampleRate then
+  1: if Value <> FBufferTime.TimeInfo.sampleRate then
   begin
-   FBufferTime.timeInfo.sampleRate := Value;
+   FBufferTime.TimeInfo.sampleRate := Value;
    Change;
   end;
  end;
@@ -750,16 +750,16 @@ function TASIOTimeSub.GetATInt64(Index :Integer): Int64;
 begin
  Result := 0;
  case Index of
-  0: Result := ASIOSamplesToInt64(FBufferTime.timeInfo.samplePosition);
+  0: Result := ASIOSamplesToInt64(FBufferTime.TimeInfo.samplePosition);
  end;
 end;
 
 procedure TASIOTimeSub.SetATInt64(Index :Integer; Value: Int64);
 begin
  case Index of
-  0: if Value <> ASIOSamplesToInt64(FBufferTime.timeInfo.samplePosition) then
+  0: if Value <> ASIOSamplesToInt64(FBufferTime.TimeInfo.samplePosition) then
        begin
-        FBufferTime.timeInfo.SamplePosition := Int64ToASIOSamples(Value);
+        FBufferTime.TimeInfo.SamplePosition := Int64ToASIOSamples(Value);
         Change;
        end;
  end;
@@ -979,7 +979,7 @@ begin
  with Msg do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 {$ELSE}
-function DefWindowProc(hWnd:THandle; Msg:UINT; wParam:WPARAM; lParam:LPARAM):LRESULT; external 'user32' name 'DefWindowProcA';
+function DefWindowProc(hWnd:THandle; Msg:UINT; wParam:WPARAM; lParam:LPARAM):LResult; external 'user32' name 'DefWindowProcA';
 
 procedure TCustomASIOHostBasic.WndProc(var Msg: TLMessage);
 begin
@@ -1238,7 +1238,7 @@ begin
 
  Assert(FBufferSize > 0);
 
- result := (FDriver.CreateBuffers(FInputBuffer,
+ Result := (FDriver.CreateBuffers(FInputBuffer,
    (FInputChannelCount + FOutputChannelCount), FBufferSize, FCallbacks) = ASE_OK);
  if Assigned (FOnBuffersCreate) then FOnBuffersCreate(Self);
 
@@ -1273,14 +1273,11 @@ end;
 
 procedure TCustomASIOHostBasic.OpenDriver;
 var
-  tmpActive: Boolean;
-
-  function Succeeded(Res: HResult): Boolean;
-  begin Result := Res and $80000000 = 0; end;
-
+  OldActive    : Boolean;
+  ErrorMessage : PChar;
 begin
  // store last active state and deactivate current driver
- tmpActive := False;
+ OldActive := False;
  if assigned(FDriver) then
   try
    Active := False;
@@ -1299,7 +1296,18 @@ begin
     try
      if assigned(FDriver) then
       case FDriver.Init(FHandle) of
-       0                    : FDriver := nil; // equals to false here
+       0 : begin
+            // equals false
+            GetMem(ErrorMessage, 128);
+            try
+             FDriver.GetErrorMessage(ErrorMessage);
+             raise Exception.Create(ErrorMessage);
+            finally
+             Dispose(ErrorMessage);
+            end;
+           end;
+
+       // the below codes are here due to incompatibility of some soundcards    
        ASE_NotPresent       : raise Exception.Create(RCStrDriverNotPresent);
        ASE_HWMalfunction    : raise Exception.Create(RCStrHardwareMalfunction);
        ASE_InvalidParameter : raise Exception.Create(RCStrInputParameterInvalid);
@@ -1325,7 +1333,7 @@ begin
   then raise Exception.Create(RStrASIONoBuffersCreated);
 
  // eventually reactivate
- Active := tmpActive and FBuffersCreated;
+ Active := OldActive and FBuffersCreated;
 end;
 
 procedure TCustomASIOHostBasic.CloseDriver;
@@ -1415,8 +1423,8 @@ begin
  FillChar(ASIOTime.FBufferTime, SizeOf(TASIOTime), 0);
  // get the time stamp of the buffer, not necessary if no
  // synchronization to other media is required
- if FDriver.GetSamplePosition(ASIOTime.FBufferTime.timeInfo.samplePosition,
-   ASIOTime.FBufferTime.timeInfo.systemTime) = ASE_OK then
+ if FDriver.GetSamplePosition(ASIOTime.FBufferTime.TimeInfo.samplePosition,
+   ASIOTime.FBufferTime.TimeInfo.SystemTime) = ASE_OK then
    ASIOTime.Flags := ASIOTime.Flags + [atSystemTimeValid,atSamplePositionValid];
 
  BufferSwitchTimeInfo(Index, ASIOTime.FBufferTime);
@@ -1426,8 +1434,8 @@ procedure TCustomASIOHostBasic.BufferSwitchTimeInfo(Index: Integer;
  const params: TASIOTime);
 begin
  if FDriver = nil then exit;
- PMUpdSamplePos.wParam := params.timeInfo.samplePosition.hi;
- PMUpdSamplePos.LParam := params.timeInfo.samplePosition.lo;
+ PMUpdSamplePos.wParam := params.TimeInfo.samplePosition.hi;
+ PMUpdSamplePos.LParam := params.TimeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
 
  if assigned(FOnBufferSwitch) then FOnBufferSwitch(Self,@(FInputBuffer^), Index);
@@ -1441,10 +1449,15 @@ begin
  if (Value = 0) or (Value > 1048575)
   then Value := 44100;
 
+ // check if samplerate is supported 
+ if assigned(FDriver) then
+  if FDriver.CanSampleRate(Value) <> ASE_OK
+   then Exit;
+
  if FSampleRate <> Value then
   begin
    if assigned(FDriver) then
-    if FDriver.SetSampleRate(FSampleRate) = ASE_OK then
+    if FDriver.SetSampleRate(Value) = ASE_OK then
      begin
       FSampleRate := Value;
       ASIOTime.SampleRate := FSampleRate;
@@ -1535,14 +1548,14 @@ end;
 
 function TCustomASIOHostBasic.GetNumDrivers: Integer;
 begin
- result := length(FAsioDriverList);
+ Result := length(FAsioDriverList);
 end;
 
 function TCustomASIOHostBasic.CanSampleRate(sampleRate: TASIOSampleRate): TASIOError;
 begin
  if assigned(FDriver)
-  then result := FDriver.CanSampleRate(SampleRate)
-  else result := ASE_NotPresent;
+  then Result := FDriver.CanSampleRate(SampleRate)
+  else Result := ASE_NotPresent;
 end;
 
 {$IFDEF FPC}
@@ -1568,7 +1581,7 @@ begin
  if (Index < 0) or (Index >= FInputChannelCount)
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 
- result := FInputChannelInfos[Index];
+ Result := FInputChannelInfos[Index];
 end;
 
 function TCustomASIOHostBasic.GetOutputChannelInfo(Index: Integer): TASIOChannelInfo;
@@ -1576,7 +1589,7 @@ begin
  if (Index < 0) or (Index >= FOutputChannelCount)
   then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 
- result := FOutputChannelInfos[Index];
+ Result := FOutputChannelInfos[Index];
 end;
 
 function TCustomASIOHostBasic.GetInputMeter(Channel: Integer): Integer;
@@ -1586,7 +1599,7 @@ begin
  // check if command can be transmitted
  if (FDriver = nil) and not (acdInputMeter in FASIOCanDos) then
   begin
-   result := -1;
+   Result := -1;
    Exit;
   end;
 
@@ -1602,7 +1615,7 @@ begin
  // check if command can be transmitted
  if (FDriver = nil) and not (acdOutputMeter in FASIOCanDos) then
   begin
-   result := -1;
+   Result := -1;
    Exit;
   end;
 
@@ -1940,8 +1953,8 @@ var
   ChannelData     : Pointer;
 begin
  if FDriver = nil then exit;
- PMUpdSamplePos.wParam := Params.timeInfo.samplePosition.hi;
- PMUpdSamplePos.LParam := Params.timeInfo.samplePosition.lo;
+ PMUpdSamplePos.wParam := Params.TimeInfo.samplePosition.hi;
+ PMUpdSamplePos.LParam := Params.TimeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
 
  CurrentBuffer := FInputBuffer;
@@ -2295,8 +2308,8 @@ var
   PChannelArray  : Pointer;
 begin
  if FDriver = nil then exit;
- PMUpdSamplePos.wParam := params.timeInfo.samplePosition.hi;
- PMUpdSamplePos.LParam := params.timeInfo.samplePosition.lo;
+ PMUpdSamplePos.wParam := params.TimeInfo.samplePosition.hi;
+ PMUpdSamplePos.LParam := params.TimeInfo.samplePosition.lo;
  Dispatch(PMUpdSamplePos);
  CurrentBuffer := FInputBuffer;
 

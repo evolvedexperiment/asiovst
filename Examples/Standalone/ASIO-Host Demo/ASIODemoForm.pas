@@ -156,7 +156,7 @@ end;
 
 procedure TFmASIO.SbFreqChange(Sender: TObject);
 begin
- Frequency:=FreqLinearToLog(SbFreq.Position * 0.00001);
+ Frequency := FreqLinearToLog(SbFreq.Position * 0.00001);
 end;
 
 procedure TFmASIO.SetFrequency(const Value: Double);

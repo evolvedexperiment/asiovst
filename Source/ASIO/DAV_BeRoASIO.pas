@@ -25,14 +25,14 @@ type
     function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
     function GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function Init(SysHandle: HWND): TASIOError; stdcall;
+    function Init(SysHandle: HWND): TASIOBool; stdcall;
     function OutputReady: TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): Hresult; stdcall;
+    function SetClockSource(Reference: LongInt): HResult; stdcall;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
-    procedure GetDriverName(Name: PCHAR); stdcall;
-    procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
+    procedure GetDriverName(Name: PAnsiChar); stdcall;
+    procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
   end;
 
   TBeRoASIO = class(TInterfacedObject, IBeRoASIO)
@@ -54,18 +54,18 @@ type
     function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
     function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function Init(SysHandle: HWND): TASIOError; stdcall;
+    function Init(SysHandle: HWND): TASIOBool; stdcall;
     function OutputReady: TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): Hresult; stdcall;
+    function SetClockSource(Reference: LongInt): HResult; stdcall;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
-    procedure GetDriverName(Name: PCHAR); stdcall;
-    procedure GetErrorMessage(ErrorString: PCHAR); stdcall;
+    procedure GetDriverName(Name: PAnsiChar); stdcall;
+    procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
   end;
 
-function CreateBeRoASIO(const AsioCLSID: TClsId;var ASIODriver: IBeRoASIO): Boolean; overload;
-function CreateBeRoASIO(const AsioCLSID: TClsId;var ASIODriver: TBeRoASIO): Boolean; overload;
+function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: IBeRoASIO): Boolean; overload;
+function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: TBeRoASIO): Boolean; overload;
 {$ENDIF}
 
 IMPLEMENTATION
@@ -112,7 +112,7 @@ begin
  inherited Destroy;
 end;
 
-function TBeRoASIO.Init(SysHandle: HWND): TASIOError; assembler;
+function TBeRoASIO.Init(SysHandle: HWND): TASIOBool; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR SysHandle
@@ -131,7 +131,7 @@ asm
 end;
 {$ENDIF}
 
-procedure TBeRoASIO.GetDriverName(Name: PCHAR); assembler;
+procedure TBeRoASIO.GetDriverName(Name: PAnsiChar); assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Name
@@ -167,7 +167,7 @@ asm
 end;
 {$ENDIF}
 
-procedure TBeRoASIO.GetErrorMessage(ErrorString: PCHAR); assembler;
+procedure TBeRoASIO.GetErrorMessage(ErrorString: PAnsiChar); assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR ErrorString
@@ -370,7 +370,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.SetClockSource(Reference: LongInt): Hresult; assembler;
+function TBeRoASIO.SetClockSource(Reference: LongInt): HResult; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Reference
@@ -533,28 +533,28 @@ var
   BeRoASIO: TBeRoASIO;
 begin
  try
-  BeRoASIO := TBeRoASIO.Create(AsioCLSID, result);
-  if result
+  BeRoASIO := TBeRoASIO.Create(AsioCLSID, Result);
+  if Result
    then ASIODriver := BeRoASIO
    else ASIODriver := nil;
-  result := assigned(ASIODriver);
+  Result := Assigned(ASIODriver);
  except
-  result := False;
+  Result := False;
  end;
 end;
 
 function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: TBeRoASIO): Boolean; overload;
 begin
  try
-  ASIODriver := TBeRoASIO.Create(AsioCLSID, result);
-  if not result then
+  ASIODriver := TBeRoASIO.Create(AsioCLSID, Result);
+  if not Result then
    begin
     ASIODriver.Destroy;
     ASIODriver := nil;
    end;
-  result := assigned(ASIODriver);
+  Result := Assigned(ASIODriver);
  except
-  result := False;
+  Result := False;
  end;
 end;
 

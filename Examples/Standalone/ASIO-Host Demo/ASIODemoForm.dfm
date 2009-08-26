@@ -147,5 +147,7 @@ object FmASIO: TFmASIO
     SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnSampleRateChanged = ASIOHostSampleRateChanged
+    Left = 8
+    Top = 8
   end
 end

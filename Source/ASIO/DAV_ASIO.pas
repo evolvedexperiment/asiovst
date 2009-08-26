@@ -418,7 +418,7 @@ type
     DriverVersion : LongInt;        // driver specific
     Name          : array[0..31] of AnsiChar;
     ErrorMessage  : array[0..123] of AnsiChar;
-    SysRef        : Pointer;        // on input: system reference
+    SysRef        : HWND;           // on input: system reference
                                     // (Windows: application main window handle, Mac & SGI: 0)
   end;
 
