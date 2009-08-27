@@ -7,8 +7,6 @@ uses
   FastMove, // either download the library or comment if there is an error here
   RTLVCLOptimize, // "
   ComServ,
-  SysUtils,
-  Classes,
   OversamplePlugin in 'OversamplePlugin.pas';
 
 {$R *.res}

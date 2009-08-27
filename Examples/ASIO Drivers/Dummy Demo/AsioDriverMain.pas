@@ -27,6 +27,15 @@ type
   ['{A8DD45FD-34CC-4996-9695-CDD2AE483B47}']
   end;
 
+  TAsioDriver = class;
+
+  TAsioProcessingThread = class(TThread)
+  private
+    FDriver : TAsioDriver;
+  protected
+    procedure Execute; override;
+  end;
+
   TAsioDriver = class(TComObject, IDavAsio)
   private
     FSamplePosition : Double;
@@ -45,10 +54,11 @@ type
     FMilliSeconds   : LongInt;
     FActive         : Boolean;
     FStarted        : Boolean;
-    FTcRead         : Boolean;
+    FTimeCodeRead   : Boolean;
     FTimeInfoMode   : Boolean;
     FDriverVersion  : Integer;
     FSystemHandle   : HWND;
+    FAsioProcessing : TAsioProcessingThread;
     FErrorMessage   : array [0..127] of Char;
     FInputBuffers   : TDAVArrayOfSingleFixedArray;
     FOutputBuffers  : TDAVArrayOfSingleFixedArray;
@@ -68,7 +78,6 @@ type
 
     procedure TimerOn;
     procedure TimerOff;
-    procedure BufferSwitch;
     procedure BufferSwitchX;
     function SetInternalClockSource(Reference: Integer): TASIOError;
     {$IFDEF TESTWAVES}
@@ -76,6 +85,8 @@ type
     procedure MakeSaw(const Data: PDAVSingleFixedArray);
     {$ENDIF}
   protected
+    procedure BufferSwitch;
+
     function GetInternalBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError;
     function GetInternalChannelInfo(var Info: TASIOChannelInfo): TASIOError;
     function GetInternalChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
@@ -89,6 +100,7 @@ type
     function InternalDisposeBuffers: TASIOError;
     function InternalFuture(Selector: LongInt; Opt: Pointer): TASIOError;
     function InternalInit(SysHandle: HWND): TASIOBool;
+    function InternalOutputReady: TASIOError;
     function InternalStart: TASIOError;
     function InternalStop: TASIOError;
     function SetInternalSampleRate(SampleRate: TASIOSampleRate): TASIOError;
@@ -138,9 +150,9 @@ const
   CTwoRaisedTo32Reciprocal : Double = 1 / 4294967296;
 
 {$IFDEF TESTWAVES}
-  CStupidOffset = $18C; // = InstanceSize
+  CStupidOffset = $194; // = InstanceSize
 {$ELSE}
-  CStupidOffset = $188; // = InstanceSize
+  CStupidOffset = $18C; // = InstanceSize
 {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,6 +195,23 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+{ TAsioProcessingThread }
+
+procedure TAsioProcessingThread.Execute;
+begin
+ while not Terminated do
+  begin
+   if assigned(FDriver) then
+    with TAsioDriver(FDriver) do
+     begin
+      BufferSwitch;
+      Sleep(round(1000 * CBlockFrames / FSampleRate));
+     end
+   else Sleep(round(1000 * CBlockFrames / 44100));
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
 
 { TAsioDriver }
 
@@ -204,7 +233,7 @@ begin
  FActive         := False;
  FStarted        := False;
  FTimeInfoMode   := False;
- FTcRead         := False;
+ FTimeCodeRead   := False;
  FDriverVersion  := 1;
 
  // input channels
@@ -275,15 +304,9 @@ end;
 
 function TAsioDriver.InternalInit(SysHandle: HWND): TASIOBool;
 begin
-//  sysRef := sysRef;
  Result := 1;
+ FSystemHandle := SysHandle;
  if FActive then Exit;
-
- if SysHandle = 0 then
-  begin
-   Result := 0;
-   StrCopy(FErrorMessage, 'No handle passed!');
-  end;
 
  StrCopy(FErrorMessage, 'ASIO Driver open Failure not ');
  if InputOpen and OutputOpen
@@ -471,45 +494,28 @@ end;
 
 procedure TAsioDriver.TimerOn;
 begin
-(*
- theDriver := this;
- asioId : DWORD ;
- done := false;
- ASIOThreadHandle := CreateThread (0, 0, @ASIOThread, 0, 0, @asioId);
-*)
+ if Assigned(FAsioProcessing)
+  then TimerOff;
+
+ FAsioProcessing := TAsioProcessingThread.Create(True);
+ FAsioProcessing.FDriver := Self;
+ FAsioProcessing.Resume;
 end;
 
 procedure TAsioDriver.TimerOff;
 begin
-(*
- done := true;
- if (ASIOThreadHandle) then
-   WaitForSingleObject(ASIOThreadHandle, 1000);
- ASIOThreadHandle := 0;
-*)
-end;
-
-(*
-//------------------------------------------------------------------------------------------
- DWORD __stdcall ASIOThread (Pointer param)
-begin
- do
- begin
-   if (theDriver) then
-   begin
-     theDriver^.bufferSwitch ();
-     Sleep (theDriver^.getMilliSeconds ());
+ FStarted := False;
+ if assigned(FAsioProcessing) then
+  begin
+   with FAsioProcessing do
+    begin
+     if Suspended then Resume;
+     Terminate;
+     WaitFor;
     end;
-   else
-   begin
-     Double a := 1000. / 44100.;
-     Sleep ((LongInt)(a * (Double)kBlockFrames));
-
-    end;
-  end; while ( not done);
- result:= 0;
+   FreeAndNil(FAsioProcessing);
+  end;
 end;
-*)
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -704,7 +710,7 @@ begin
     begin
       FSampleRate := SampleRate;
       FAsioTime.TimeInfo.SampleRate := SampleRate;
-      FAsioTime.TimeInfo.flags:= FAsioTime.TimeInfo.flags or kSampleRateChanged;
+      FAsioTime.TimeInfo.Flags := FAsioTime.TimeInfo.Flags or kSampleRateChanged;
       FMilliSeconds := round((CBlockFrames * 1000) / FSampleRate);
       if assigned(FCallbacks) and assigned(FCallbacks^.SampleRateDidChange)
        then FCallbacks^.SampleRateDidChange(FSampleRate);
@@ -905,7 +911,7 @@ begin
       end;
     end;
   end;
- StrPCopy(Info.Name, 'Sample ' + IntToStr(Info.Channel + 1));
+ StrPCopy(Info.Name, 'Channel ' + IntToStr(Info.Channel + 1));
  Result := ASE_OK;
 end;
 
@@ -1033,18 +1039,24 @@ begin
  if (Callbacks.AsioMessage(kAsioSupportsTimeInfo, 0, nil, nil)) <> 0 then
   begin
    FTimeInfoMode := True;
-   FAsioTime.TimeInfo.Speed := 1.;
-   FAsioTime.TimeInfo.SystemTime.Hi := 0;
-   FAsioTime.TimeInfo.SystemTime.Lo := 0;
-   FAsioTime.TimeInfo.SamplePosition.Hi := 0;
-   FAsioTime.TimeInfo.SamplePosition.Lo := 0;
-   FAsioTime.TimeInfo.SampleRate := FSampleRate;
-   FAsioTime.TimeInfo.Flags := kSystemTimeValid or kSamplePositionValid or kSampleRateValid;
+   with FAsioTime.TimeInfo do
+    begin
+     Speed := 1.;
+     SystemTime.Hi := 0;
+     SystemTime.Lo := 0;
+     SamplePosition.Hi := 0;
+     SamplePosition.Lo := 0;
+     SampleRate := FSampleRate;
+     Flags := kSystemTimeValid or kSamplePositionValid or kSampleRateValid;
+    end;
 
-   FAsioTime.TimeCode.Speed := 1.;
-   FAsioTime.TimeCode.TimeCodeSamples.Lo := 0;
-   FAsioTime.TimeCode.TimeCodeSamples.Hi := 0;
-   FAsioTime.TimeCode.Flags := kTcValid or kTcRunning;
+   with FAsioTime.TimeCode do
+    begin
+    Speed := 1.;
+    TimeCodeSamples.Lo := 0;
+    TimeCodeSamples.Hi := 0;
+    Flags := kTcValid or kTcRunning;
+   end;
   end
  else FTimeInfoMode := False;
  Result := ASE_OK;
@@ -1154,8 +1166,8 @@ function TAsioDriver.InternalFuture(Selector: Integer;
 begin
  Result := ASE_SUCCESS;
  case Selector of
-   kAsioEnableTimeCodeRead : FTcRead := True;
-  kAsioDisableTimeCodeRead : FTcRead := False;
+   kAsioEnableTimeCodeRead : FTimeCodeRead := True;
+  kAsioDisableTimeCodeRead : FTimeCodeRead := False;
       kAsioSetInputMonitor : Result := ASE_SUCCESS;  // for testing!!!
       kAsioCanInputMonitor : Result := ASE_SUCCESS;  // for testing!!!
           kAsioCanTimeInfo : Result := ASE_SUCCESS;
@@ -1173,22 +1185,24 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
-function TAsioDriver.inputOpen: Boolean;
+function TAsioDriver.InputOpen: Boolean;
 begin 
  {$IFDEF TESTWAVES}
  GetMem(FSineWave, FBlockFrames * SizeOf(Single));
- if Assigned(FSineWave) then
+ if not Assigned(FSineWave) then
   begin
-   StrCopy(FErrorMessage, 'ASIO Sample Driver: Out of Memory not ');
+   StrCopy(FErrorMessage, 'ASIO Driver: Out of Memory');
    Result := False;
+   Exit;
   end;
  MakeSine(FSineWave);
 
  GetMem(FSawTooth, FBlockFrames * SizeOf(Single));
- if Assigned(FSawTooth) then
+ if not Assigned(FSawTooth) then
   begin
-   StrCopy(FErrorMessage, 'ASIO Sample Driver: Out of Memory not ');
+   StrCopy(FErrorMessage, 'ASIO Driver: Out of Memory');
    Result := False;
+   Exit;
   end;
  MakeSaw(FSawTooth);
  {$ENDIF}
@@ -1227,11 +1241,11 @@ begin
  {$IFDEF TESTWAVES}
  if Assigned(FSineWave)
   then Dispose(FSineWave);
- FSineWave := 0;
+ FSineWave := nil;
 
  if Assigned(FSawTooth)
   then Dispose(FSawTooth);
- FSawTooth := 0;
+ FSawTooth := nil;
  {$ENDIF}
 end;
 
@@ -1245,11 +1259,9 @@ var
 {$ENDIF}
 begin
  {$IFDEF TESTWAVES}
- Data := nil;
-
  for Channel := 0 to FActiveInputs - 1 do
   begin
-   Data := FInputBuffers[Channel];
+   Data := @FInputBuffers[Channel]^[0];
    if assigned(Data) then
     begin
      if FToggle = 0
@@ -1257,15 +1269,15 @@ begin
       else Offset := FBlockFrames;
 
      if Channel mod 2 = 0
-      then Move(FSawTooth[0], Data[Offset], Round(2 * FBlockFrames * SizeOf(Single)))
-      else Move(FSineWave[0], Data[Offset], Round(2 * FBlockFrames * SizeOf(Single)));
+      then Move(FSawTooth[0], Data[Offset], Round(FBlockFrames * SizeOf(Single)))
+      else Move(FSineWave[0], Data[Offset], Round(FBlockFrames * SizeOf(Single)));
     end;
   end;
  {$ENDIF}
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-// output
+// Output
 ////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1306,24 +1318,51 @@ procedure TAsioDriver.BufferSwitchX;
 var
   Offset : Integer;
 begin
- GetSamplePosition(FAsioTime.TimeInfo.SamplePosition, FAsioTime.TimeInfo.SystemTime);
- if FToggle = 0
-  then Offset := 0
-  else Offset := FBlockFrames;
-
- if FTcRead then 
+ with FAsioTime, TimeInfo do
   begin
-   // Create a fake time code, which is 10 minutes ahead of the card's sample position
-   // Please note that for simplicity here time code will wrap after 32 bit are reached
-   FAsioTime.TimeCode.TimeCodeSamples.Lo := FAsioTime.TimeInfo.samplePosition.Lo + Round(600.0 * FSampleRate);
-   FAsioTime.TimeCode.TimeCodeSamples.Hi := 0;
+   GetInternalSamplePosition(SamplePosition, SystemTime);
+   if FToggle = 0
+    then Offset := 0
+    else Offset := FBlockFrames;
+
+   if FTimeCodeRead then
+    with FAsioTime.TimeCode do
+     begin
+      // Create a fake time code, which is 10 minutes ahead of the card's sample position
+      // Please note that for simplicity here time code will wrap after 32 bit are reached
+      TimeCodeSamples.Lo := SamplePosition.Lo + Round(600.0 * FSampleRate);
+      TimeCodeSamples.Hi := 0;
+     end;
+   FCallbacks^.BufferSwitchTimeInfo(FAsioTime, FToggle, ASIOFalse);
+   Flags := Flags and not (kSampleRateChanged or kClockSourceChanged);
   end;
- FCallbacks^.BufferSwitchTimeInfo(FAsioTime, FToggle, ASIOFalse);
- FAsioTime.TimeInfo.Flags:= FAsioTime.TimeInfo.Flags and  not (kSampleRateChanged or kClockSourceChanged);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
+
 function TAsioDriver.OutputReady: TASIOError;
+asm
+ // shift/store saved ESP
+ MOV EAX, [ESP]
+ MOV [ESP - 4], EAX
+
+ // shift/store saved EIP (return adress)
+ MOV EAX, [ESP + 4]
+ MOV [ESP], EAX
+ // shift stack pointer to get a valid return address on return
+ SUB ESP, 4
+
+ // pass variables
+ MOV EAX, ECX
+
+ // stupid
+ SUB EAX, CStupidOffset
+ ADD [EBP + $8], CStupidOffset
+
+ CALL InternalOutputReady
+end;
+
+function TAsioDriver.InternalOutputReady: TASIOError;
 begin
  Result := ASE_NotPresent;
 end;

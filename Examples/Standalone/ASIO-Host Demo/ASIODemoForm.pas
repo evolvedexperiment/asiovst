@@ -90,7 +90,8 @@ begin
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
-var i : Integer;
+var
+  Channel : Integer;
 begin
  BtControlPanel.Enabled := False;
  BtStartStop.Enabled := False;
@@ -99,11 +100,11 @@ begin
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
-   for i := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
+   for Channel := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
    begin
     ChannelBox.Items.Add(
-     ASIOHost.OutputChannelInfos[2 * i].name + ' / ' +
-     ASIOHost.OutputChannelInfos[2 * i + 1].name);
+     ASIOHost.OutputChannelInfos[2 * Channel].name + ' / ' +
+     ASIOHost.OutputChannelInfos[2 * Channel + 1].name);
    end;
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try
@@ -169,6 +170,29 @@ begin
   end;
 end;
 
+procedure TFmASIO.SbVolumeChange(Sender: TObject);
+begin
+ FVol := SbVolume.Position * 0.00001;
+ if FVol = 0
+  then LbVolume.Caption := 'Volume: 0 equals -oo dB'
+  else LbVolume.Caption := 'Volume: ' +
+                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
+                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
+end;
+
+procedure TFmASIO.SbPanChange(Sender: TObject);
+begin
+ FPan := SbPan.Position * 0.01;
+ if FPan = 0.5
+  then LbPanorama.Caption := 'Panorama: C'
+  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (FPan * 2 - 1)));
+end;
+
+procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
+begin
+ GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
+end;
+
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleFixedArray);
 var
@@ -205,29 +229,6 @@ begin
    OutBuffer[L, Sample] := (1 - FPan) * Data;
    OutBuffer[R, Sample] := FPan * Data;
   end;
-end;
-
-procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
-begin
- GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
-end;
-
-procedure TFmASIO.SbVolumeChange(Sender: TObject);
-begin
- FVol := SbVolume.Position * 0.00001;
- if FVol = 0
-  then LbVolume.Caption := 'Volume: 0 equals -oo dB'
-  else LbVolume.Caption := 'Volume: ' +
-                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
-end;
-
-procedure TFmASIO.SbPanChange(Sender: TObject);
-begin
- FPan := SbPan.Position * 0.01;
- if FPan = 0.5
-  then LbPanorama.Caption := 'Panorama: C'
-  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (FPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

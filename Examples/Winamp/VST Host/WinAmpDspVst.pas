@@ -536,7 +536,7 @@ end;
 procedure TWinAmpObject.AudioMasterUpdateDisplay(Sender: TObject);
 begin
  if assigned(FEditorForm)
-  then FEditorForm.CBPreset.ItemIndex := FVstHost[0].ProgramNr;
+  then FEditorForm.CBPreset.ItemIndex := FVstHost[0].CurrentProgram;
 end;
 
 procedure TWinAmpObject.Config;

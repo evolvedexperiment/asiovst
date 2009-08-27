@@ -212,14 +212,14 @@ begin
       CBPreset.Text := s;
       for i := 0 to numPrograms - 1 do
        begin
-        ProgramNr := i;
+        CurrentProgram := i;
         s := GetProgramName;
         s := IntToStr(i) + ' - ' + s;
         if i < 10 then s := '00' + s else
         if i < 100 then s := '0' + s;
         CBPreset.Items[i] := s;
        end;
-      ProgramNr := 0;
+      CurrentProgram := 0;
       CBPreset.ItemIndex := 0;
      end;
    except
@@ -260,9 +260,9 @@ begin
 
    if GetEffectName = '' then
     begin
-     EdVSTName.text := ExtractFileName(DLLFileName);
+     EdVSTName.Text := ExtractFileName(DLLFileName);
      EdVSTName.Text := Copy(EdVSTName.Text, 0, Pos('.dll', EdVSTName.Text) - 1);
-    end else EdVSTName.text := GetEffectName;
+    end else EdVSTName.Text := GetEffectName;
   end;
 end;
 
@@ -329,7 +329,7 @@ procedure TFmWinAmpVST.CBPresetChange(Sender: TObject);
 begin
  with TWinAmpObject(Owner).VSTHost[0] do
   begin
-   ProgramNr := CBPreset.ItemIndex;
+   CurrentProgram := CBPreset.ItemIndex;
    EditIdle; Idle;
   end;
 end;
