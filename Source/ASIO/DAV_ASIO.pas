@@ -342,6 +342,7 @@ type
   TASIOMessageFunc = function(Selector, Value: LongInt; message: Pointer; opt: pdouble): LongInt; cdecl;
   TASIOBufferSwitchTimeInfoFunc = function(var Params: TASIOTime; DoubleBufferIndex: LongInt; DirectProcess: TASIOBool): PASIOTime; cdecl;
 
+  PASIOCallbacks = ^TASIOCallbacks;
   TASIOCallbacks = packed record
     bufferSwitch : TASIOBufferSwitchProc;
     // bufferSwitch indicates that both input and output are to be processed.
@@ -444,7 +445,7 @@ type
   TASIOBufferInfo = packed record
     IsInput    : TASIOBool;               // on input:  ASIOTrue: input, else output
     ChannelNum : LongInt;                 // on input:  channel index
-    Buffers    : array[0..1] of Pointer;  // on output: double buffer addresses
+    Buffers    : array [0..1] of Pointer; // on output: double buffer addresses
   end;
 
 const
@@ -489,6 +490,7 @@ type
     Future    : array[0..31] of AnsiChar;
   end;
 
+  PASIOTransportParameters = ^TASIOTransportParameters;
   TASIOTransportParameters = packed record
     Command        : LongInt;                   // see enum below
     SamplePosition : TASIOSamples;

@@ -12,27 +12,28 @@ uses
 
 type
   IBeRoASIO = interface(IUnknown)
-    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function ControlPanel: TASIOError; stdcall;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
-    function DisposeBuffers: TASIOError; stdcall;
-    function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
-    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
-    function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
-    function GetClockSources(Clocks: PASIOClockSource;out NumSources: LongInt): TASIOError; stdcall;
-    function GetDriverVersion: LongInt; stdcall;
-    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
-    function GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
-    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    // never ever change the order of the functions!!!
     function Init(SysHandle: HWND): TASIOBool; stdcall;
-    function OutputReady: TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): HResult; stdcall;
-    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    procedure GetDriverName(Name: PAnsiChar); stdcall;
+    function GetDriverVersion: LongInt; stdcall;
+    procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
-    procedure GetDriverName(Name: PAnsiChar); stdcall;
-    procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
+    function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
+    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
+    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
+    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; stdcall;
+    function SetClockSource(Reference: LongInt): TASIOError; stdcall;
+    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
+    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; stdcall;
+    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
+    function DisposeBuffers: TASIOError; stdcall;
+    function ControlPanel: TASIOError; stdcall;
+    function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
+    function OutputReady: TASIOError; stdcall;
   end;
 
   TBeRoASIO = class(TInterfacedObject, IBeRoASIO)
@@ -41,22 +42,22 @@ type
   public
     constructor Create(AsioCLSID: TClsID; var Okay: Boolean);
     destructor Destroy; override;
+    function Init(SysHandle: HWND): TASIOBool; stdcall;
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
     function ControlPanel: TASIOError; stdcall;
     function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
     function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
-    function GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; stdcall;
+    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; stdcall;
     function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; stdcall;
     function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; stdcall;
     function GetDriverVersion: LongInt; stdcall;
     function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
     function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function Init(SysHandle: HWND): TASIOBool; stdcall;
     function OutputReady: TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): HResult; stdcall;
+    function SetClockSource(Reference: LongInt): TASIOError; stdcall;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
@@ -171,17 +172,17 @@ procedure TBeRoASIO.GetErrorMessage(ErrorString: PAnsiChar); assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR ErrorString
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetErrorMessage]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR ErrorString
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetErrorMessage]
 end;
 {$ENDIF}
@@ -189,16 +190,16 @@ end;
 function TBeRoASIO.Start: TASIOError; assembler;
 {$IFDEF FPC}
 asm
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baStart]
 end;
 {$ELSE}
 asm
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baStart]
 end;
 {$ENDIF}
@@ -206,24 +207,24 @@ end;
 function TBeRoASIO.Stop: TASIOError; assembler;
 {$IFDEF FPC}
 asm
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baStop]
 end;
 {$ELSE}
 asm
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baStop]
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; assembler;
+function TBeRoASIO.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
- PUSH DWORD PTR NumoutputChannels
+ PUSH DWORD PTR NumOutputChannels
  PUSH DWORD PTR NumInputChannels
  MOV ECX, SELF
  MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
@@ -232,32 +233,32 @@ asm
 end;
 {$ELSE}
 asm
- PUSH DWORD PTR NumoutputChannels
+ PUSH DWORD PTR NumOutputChannels
  PUSH DWORD PTR NumInputChannels
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetChannels]
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetLatencies(out InputLatency, outputLatency:LongInt): TASIOError; assembler;
+function TBeRoASIO.GetLatencies(out InputLatency, OutputLatency:LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR outputLatency
  PUSH DWORD PTR InputLatency
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetLatencies]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR outputLatency
  PUSH DWORD PTR InputLatency
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetLatencies]
 end;
 {$ENDIF}
@@ -269,9 +270,9 @@ asm
  PUSH DWORD PTR PreferredSize
  PUSH DWORD PTR MaxSize
  PUSH DWORD PTR MinSize
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetBufferSize]
 end;
 {$ELSE}
@@ -280,9 +281,9 @@ asm
  PUSH DWORD PTR PreferredSize
  PUSH DWORD PTR MaxSize
  PUSH DWORD PTR MinSize
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetBufferSize]
 end;
 {$ENDIF}
@@ -292,18 +293,18 @@ function TBeRoASIO.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; assem
 asm
  PUSH DWORD PTR [SampleRate + 4]
  PUSH DWORD PTR SampleRate
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baCanSampleRate]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR [SampleRate + 4]
  PUSH DWORD PTR SampleRate
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baCanSampleRate]
 end;
 {$ENDIF}
@@ -312,17 +313,17 @@ function TBeRoASIO.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; a
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR SampleRate
- MOV ECX,SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetSampleRate]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR SampleRate
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetSampleRate]
 end;
 {$ENDIF}
@@ -332,18 +333,18 @@ function TBeRoASIO.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; assem
 asm
  PUSH DWORD PTR [SampleRate + 4]
  PUSH DWORD PTR SampleRate
- MOV ECX,DWORD PTR SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baSetSampleRate]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR [SampleRate + 4]
  PUSH DWORD PTR SampleRate
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baSetSampleRate]
 end;
 {$ENDIF}
@@ -354,23 +355,23 @@ function TBeRoASIO.GetClockSources(Clocks: PASIOClockSource;
 asm
  PUSH DWORD PTR NumSources
  PUSH DWORD PTR Clocks
- MOV ECX,DWORD PTR SELF
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR SELF
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetClockSources]
 end;
 {$ELSE}
 asm
  PUSH DWORD PTR NumSources
  PUSH DWORD PTR Clocks
- MOV ECX,DWORD PTR [SELF]
- MOV ECX,DWORD PTR [ECX + ASIODriverInterface]
- MOV EAX,DWORD PTR [ECX]
+ MOV ECX, DWORD PTR [SELF]
+ MOV ECX, DWORD PTR [ECX + ASIODriverInterface]
+ MOV EAX, DWORD PTR [ECX]
  CALL DWORD PTR [EAX + baGetClockSources]
 end;
 {$ENDIF}
 
-function TBeRoASIO.SetClockSource(Reference: LongInt): HResult; assembler;
+function TBeRoASIO.SetClockSource(Reference: LongInt): TAsioError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Reference
@@ -411,7 +412,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetChannelInfo(out Info: TASIOChannelInfo): TASIOError; assembler;
+function TBeRoASIO.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Info

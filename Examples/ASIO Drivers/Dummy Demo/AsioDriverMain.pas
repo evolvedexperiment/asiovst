@@ -9,8 +9,7 @@ interface
 uses
   Windows, SysUtils, Classes, ComObj, DAV_Common, DAV_ASIO, DAV_BeroAsio;
 
-{.$DEFINE TESTWAVES}
-{.$DEFINE CheckReference}
+{$DEFINE TESTWAVES}
 
 const
   CBlockFrames = 256;
@@ -24,30 +23,8 @@ type
     procedure UpdateRegistry(Register: Boolean); override;
   end;
 
-  IDavAsio = interface(IUnknown)
+  IDavAsio = interface(IBeroASIO)
   ['{A8DD45FD-34CC-4996-9695-CDD2AE483B47}']
-    // never ever change the order of the functions!!!
-    function Init(SysHandle: HWND): TASIOBool; stdcall;
-    procedure GetDriverName(Name: PAnsiChar); stdcall;
-    function GetDriverVersion: LongInt; stdcall;
-    procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
-    function Start: TASIOError; stdcall;
-    function Stop: TASIOError; stdcall;
-    function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
-    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
-    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; stdcall;
-    function SetClockSource(Reference: LongInt): TASIOError; stdcall;
-    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
-    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; stdcall;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
-    function DisposeBuffers: TASIOError; stdcall;
-    function ControlPanel: TASIOError; stdcall;
-    function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
-    function OutputReady: TASIOError; stdcall;
   end;
 
   TAsioDriver = class(TComObject, IDavAsio)
@@ -71,7 +48,8 @@ type
     FTcRead         : Boolean;
     FTimeInfoMode   : Boolean;
     FDriverVersion  : Integer;
-    FErrorMessage   : array[0..127] of Char;
+    FSystemHandle   : HWND;
+    FErrorMessage   : array [0..127] of Char;
     FInputBuffers   : TDAVArrayOfSingleFixedArray;
     FOutputBuffers  : TDAVArrayOfSingleFixedArray;
 
@@ -150,11 +128,6 @@ procedure GetNanoSeconds(var Time: TASIOTimeStamp);
 // local
 function AsioSamples2Double(const Samples: TASIOSamples): Double;
 
-{$IFDEF CheckReference}
-var
-  Ref : TAsioDriver;
-{$ENDIF}
-
 implementation
 
 uses
@@ -163,7 +136,12 @@ uses
 const
   CTwoRaisedTo32 : Double = 4294967296;
   CTwoRaisedTo32Reciprocal : Double = 1 / 4294967296;
-  CStupidOffset = $184; // = SizeOf(TAsioDriver) ?!?
+
+{$IFDEF TESTWAVES}
+  CStupidOffset = $18C; // = InstanceSize
+{$ELSE}
+  CStupidOffset = $188; // = InstanceSize
+{$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -213,6 +191,7 @@ var
   Channel : Integer;
 begin
  inherited;
+ Assert(CStupidOffset = InstanceSize - 4);
  FBlockFrames    := CBlockFrames;
  FInputLatency   := FBlockFrames;    // typically
  FOutputLatency  := FBlockFrames * 2;
@@ -255,10 +234,6 @@ begin
  FActiveInputs := 0;
  FActiveOutputs := 0;
  FToggle := 0;
-
- {$IFDEF CheckReference}
- Ref := Self;
- {$ENDIF}
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1264,23 +1239,26 @@ end;
 procedure TAsioDriver.Input;
 {$IFDEF TESTWAVES}
 var
-  i : Integer;
+  Channel : Integer;
+  Offset  : Integer;
+  Data    : PDavSingleFixedArray;
 {$ENDIF}
 begin
  {$IFDEF TESTWAVES}
- SmallInt *in := 0;
+ Data := nil;
 
- for (i := 0; i < activeInputs; i++)
- begin
-   in := inputBuffers[i];
-   if (in) then
-   begin
-     if (toggle) then
-       in:= in + blockFrames;
-     if ((i and 1) and sawTooth) then
-       memcpy(in, sawTooth, round(blockFrames * 2));
-     else if (sineWave) then
-       memcpy(in, sineWave, round(blockFrames * 2));
+ for Channel := 0 to FActiveInputs - 1 do
+  begin
+   Data := FInputBuffers[Channel];
+   if assigned(Data) then
+    begin
+     if FToggle = 0
+      then Offset := 0
+      else Offset := FBlockFrames;
+
+     if Channel mod 2 = 0
+      then Move(FSawTooth[0], Data[Offset], Round(2 * FBlockFrames * SizeOf(Single)))
+      else Move(FSineWave[0], Data[Offset], Round(2 * FBlockFrames * SizeOf(Single)));
     end;
   end;
  {$ENDIF}

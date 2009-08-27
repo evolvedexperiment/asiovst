@@ -1215,7 +1215,7 @@ begin
    Buffer^.ChannelNum := Channel;
    Buffer^.Buffers[0] := nil;
    Buffer^.Buffers[1] := nil;
-   inc(Buffer);
+   Inc(Buffer);
   end;
 
  // setup input channel info and converter
@@ -1233,13 +1233,15 @@ begin
    Buffer^.ChannelNum := Channel;
    Buffer^.Buffers[0] := nil;
    Buffer^.Buffers[1] := nil;
-   inc(Buffer);
+   Inc(Buffer);
   end;
 
  Assert(FBufferSize > 0);
 
  Result := (FDriver.CreateBuffers(FInputBuffer,
    (FInputChannelCount + FOutputChannelCount), FBufferSize, FCallbacks) = ASE_OK);
+ if not Result then Exit;
+  
  if Assigned (FOnBuffersCreate) then FOnBuffersCreate(Self);
 
  // get current latencies
