@@ -1,5 +1,6 @@
 package HostASIO_D11;
 
+{ $R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,7 +28,8 @@ package HostASIO_D11;
 requires
   vcl,
   rtl,
-  DAV_Common_D11;
+  DAV_Common_D11,
+  designide;
 
 contains
   DAV_ASIO in '..\..\Source\ASIO\DAV_ASIO.pas',
