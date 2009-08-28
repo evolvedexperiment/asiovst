@@ -1553,7 +1553,7 @@ begin
  Result := length(FAsioDriverList);
 end;
 
-function TCustomASIOHostBasic.CanSampleRate(sampleRate: TASIOSampleRate): TASIOError;
+function TCustomASIOHostBasic.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
  if assigned(FDriver)
   then Result := FDriver.CanSampleRate(SampleRate)
