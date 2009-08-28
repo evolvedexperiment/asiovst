@@ -220,7 +220,7 @@ var
   Channel : Integer;
 begin
  inherited;
- Assert(CStupidOffset = InstanceSize - 4);
+ Assert(CStupidOffset = GetInterfaceEntry(CClass_AsioDriver)^.IOffset);
  FBlockFrames    := CBlockFrames;
  FInputLatency   := FBlockFrames;    // typically
  FOutputLatency  := FBlockFrames * 2;
