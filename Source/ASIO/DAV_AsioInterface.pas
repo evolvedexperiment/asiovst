@@ -1,6 +1,13 @@
-// BeRoASIO - A ASIO interface wrapper for Delphi & FreePascal
-// Copyright (C) 2005-2006, Benjamin Rosseaux ( http://bero.0ok.de/ )
-unit DAV_BeRoASIO;
+unit DAV_AsioInterface;
+
+// Several different ASIO interface wrappers are contained in this unit
+// The IStdCallAsio has been written and contributed as IBEROASIO interface
+// as an ASIO interface wrapper for Delphi & FreePascal by Benjamin Rosseaux
+// see http://bero.0ok.de/ Copyright (C) 2005-2006,
+// The IStdCallAsio is basically identical to this (except for the name).
+//
+// Furthermore an IDelphiAsio interface has been developed to simplify the
+// interface for an ASIO driver written in Delphi
 
 interface
 
@@ -11,7 +18,7 @@ uses
   Windows, ActiveX, DAV_ASIO;
 
 type
-  IBeRoASIO = interface(IUnknown)
+  IStdCallAsio = interface(IUnknown)
     // never ever change the order of the functions!!!
     function Init(SysHandle: HWND): TASIOBool; stdcall;
     procedure GetDriverName(Name: PAnsiChar); stdcall;
@@ -19,7 +26,7 @@ type
     procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
     function Start: TASIOError; stdcall;
     function Stop: TASIOError; stdcall;
-    function GetChannels(out NumInputChannels, NumoutputChannels: LongInt): TASIOError; stdcall;
+    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; stdcall;
     function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; stdcall;
     function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
@@ -36,9 +43,34 @@ type
     function OutputReady: TASIOError; stdcall;
   end;
 
-  TBeRoASIO = class(TInterfacedObject, IBeRoASIO)
+  IDelphiAsio = interface(IUnknown)
+    // never ever change the order of the functions!!!
+    function Init(SysHandle: HWND): TASIOBool;
+    procedure GetDriverName(Name: PAnsiChar);
+    function GetDriverVersion: LongInt;
+    procedure GetErrorMessage(ErrorString: PAnsiChar);
+    function Start: TASIOError;
+    function Stop: TASIOError;
+    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
+    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
+    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+    function SetClockSource(Reference: LongInt): TASIOError;
+    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
+    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
+    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
+    function DisposeBuffers: TASIOError;
+    function ControlPanel: TASIOError;
+    function Future(Selector: LongInt; Opt: Pointer): TASIOError;
+    function OutputReady: TASIOError; 
+  end;
+
+  TStdCallAsio = class(TInterfacedObject, IStdCallAsio)
   private
-    ASIODriverInterface: IBeRoASIO;
+    ASIODriverInterface: IStdCallAsio;
   public
     constructor Create(AsioCLSID: TClsID; var Okay: Boolean);
     destructor Destroy; override;
@@ -65,8 +97,8 @@ type
     procedure GetErrorMessage(ErrorString: PAnsiChar); stdcall;
   end;
 
-function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: IBeRoASIO): Boolean; overload;
-function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: TBeRoASIO): Boolean; overload;
+function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: IStdCallAsio): Boolean; overload;
+function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: TStdCallAsio): Boolean; overload;
 {$ENDIF}
 
 IMPLEMENTATION
@@ -98,7 +130,7 @@ const
   baFuture            = 88;
   baOutputReady       = 92;
 
-constructor TBeRoASIO.Create(AsioCLSID: TClsID; var Okay: Boolean);
+constructor TStdCallAsio.Create(AsioCLSID: TClsID; var Okay: Boolean);
 begin
  inherited Create;
  CoInitialize(nil);
@@ -106,14 +138,14 @@ begin
  Okay := assigned(ASIODriverInterface);
 end;
 
-destructor TBeRoASIO.Destroy;
+destructor TStdCallAsio.Destroy;
 begin
  if assigned(ASIODriverInterface) then ASIODriverInterface := nil;
  CoUninitialize;
  inherited Destroy;
 end;
 
-function TBeRoASIO.Init(SysHandle: HWND): TASIOBool; assembler;
+function TStdCallAsio.Init(SysHandle: HWND): TASIOBool; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR SysHandle
@@ -132,7 +164,7 @@ asm
 end;
 {$ENDIF}
 
-procedure TBeRoASIO.GetDriverName(Name: PAnsiChar); assembler;
+procedure TStdCallAsio.GetDriverName(Name: PAnsiChar); assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Name
@@ -151,7 +183,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetDriverVersion: LongInt; assembler;
+function TStdCallAsio.GetDriverVersion: LongInt; assembler;
 {$IFDEF FPC}
 asm
  MOV ECX, SELF
@@ -168,7 +200,7 @@ asm
 end;
 {$ENDIF}
 
-procedure TBeRoASIO.GetErrorMessage(ErrorString: PAnsiChar); assembler;
+procedure TStdCallAsio.GetErrorMessage(ErrorString: PAnsiChar); assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR ErrorString
@@ -187,7 +219,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.Start: TASIOError; assembler;
+function TStdCallAsio.Start: TASIOError; assembler;
 {$IFDEF FPC}
 asm
  MOV ECX, SELF
@@ -204,7 +236,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.Stop: TASIOError; assembler;
+function TStdCallAsio.Stop: TASIOError; assembler;
 {$IFDEF FPC}
 asm
  MOV ECX, SELF
@@ -221,7 +253,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR NumOutputChannels
@@ -242,7 +274,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetLatencies(out InputLatency, OutputLatency:LongInt): TASIOError; assembler;
+function TStdCallAsio.GetLatencies(out InputLatency, OutputLatency:LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR outputLatency
@@ -263,7 +295,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Granularity
@@ -288,7 +320,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
+function TStdCallAsio.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR [SampleRate + 4]
@@ -309,7 +341,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; assembler;
+function TStdCallAsio.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR SampleRate
@@ -328,7 +360,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
+function TStdCallAsio.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR [SampleRate + 4]
@@ -349,7 +381,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetClockSources(Clocks: PASIOClockSource;
+function TStdCallAsio.GetClockSources(Clocks: PASIOClockSource;
   out NumSources: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
@@ -371,7 +403,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.SetClockSource(Reference: LongInt): TAsioError; assembler;
+function TStdCallAsio.SetClockSource(Reference: LongInt): TAsioError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Reference
@@ -390,7 +422,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetSamplePosition(out SamplePosition: TASIOSamples;
+function TStdCallAsio.GetSamplePosition(out SamplePosition: TASIOSamples;
   out TimeStamp: TASIOTimeStamp): TASIOError; assembler;
 {$IFDEF FPC}
 asm
@@ -412,7 +444,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; assembler;
+function TStdCallAsio.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Info
@@ -431,7 +463,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
+function TStdCallAsio.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
   BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; assembler;
 {$IFDEF FPC}
 asm
@@ -457,7 +489,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.DisposeBuffers: TASIOError; assembler;
+function TStdCallAsio.DisposeBuffers: TASIOError; assembler;
 {$IFDEF FPC}
 asm
  MOV ECX, SELF
@@ -474,7 +506,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.ControlPanel: TASIOError; assembler;
+function TStdCallAsio.ControlPanel: TASIOError; assembler;
 {$IFDEF FPC}
 asm
  MOV ECX, SELF
@@ -491,7 +523,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.Future(Selector: LongInt; Opt: Pointer): TASIOError; assembler;
+function TStdCallAsio.Future(Selector: LongInt; Opt: Pointer): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Opt
@@ -512,7 +544,7 @@ asm
 end;
 {$ENDIF}
 
-function TBeRoASIO.OutputReady: TASIOError; assembler;
+function TStdCallAsio.OutputReady: TASIOError; assembler;
 {$IFDEF FPC}
 asm
  MOV ECX, DWORD PTR SELF
@@ -529,14 +561,14 @@ asm
 end;
 {$ENDIF}
 
-function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: IBeRoASIO): Boolean; overload;
+function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: IStdCallAsio): Boolean; overload;
 var
-  BeRoASIO: TBeRoASIO;
+  StdCallASIO: TStdCallAsio;
 begin
  try
-  BeRoASIO := TBeRoASIO.Create(AsioCLSID, Result);
+  StdCallASIO := TStdCallAsio.Create(AsioCLSID, Result);
   if Result
-   then ASIODriver := BeRoASIO
+   then ASIODriver := StdCallASIO
    else ASIODriver := nil;
   Result := Assigned(ASIODriver);
  except
@@ -544,10 +576,10 @@ begin
  end;
 end;
 
-function CreateBeRoASIO(const AsioCLSID: TClsId; var ASIODriver: TBeRoASIO): Boolean; overload;
+function CreateStdCallASIO(const AsioCLSID: TClsId; var ASIODriver: TStdCallAsio): Boolean; overload;
 begin
  try
-  ASIODriver := TBeRoASIO.Create(AsioCLSID, Result);
+  ASIODriver := TStdCallAsio.Create(AsioCLSID, Result);
   if not Result then
    begin
     ASIODriver.Destroy;

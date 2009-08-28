@@ -12,7 +12,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
   {$ELSE}Windows, Messages,{$ENDIF}
-  {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_BeroASIO {$ENDIF},
+  {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_AsioInterface {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAVASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF}
   SysUtils, Classes, Controls,
@@ -27,7 +27,6 @@ const
   AM_BufferSwitchTimeInfo = 2;     // new buffer index in lParam
                                    // time passed in MainForm.BufferTime
   AM_LatencyChanged       = 3;
-
   
   PM_UpdateSamplePos      = PM_ASIO + 1;  // sample pos in wParam (hi) and lParam (lo)
 
@@ -116,7 +115,7 @@ type
   TCustomASIOHostBasic = class(TCustomAudioDevice)
   private
     FMin, FMax            : Integer;
-    Fpref, FGran          : Integer;
+    FPref, FGran          : Integer;
     FOnBufferSwitchNative : TBufferSwitchEventNative;
     function GetInputChannelInfo(Index: Integer): TASIOChannelInfo;
     function GetOutputChannelInfo(Index: Integer): TASIOChannelInfo;
@@ -163,7 +162,7 @@ type
     {$IFDEF OpenASIO}
     FDriver               : IOpenAsio;
     {$ELSE}
-    FDriver               : IBeroASIO;
+    FDriver               : IStdCallASIO;
     {$ENDIF}
     FASIOSelectorSupport  : TASIOSelectorSupports;
     procedure SetActive(Value: Boolean); virtual;
@@ -211,7 +210,7 @@ type
     property BufferGranularity: Integer read FGran stored False;
     property BufferMaximum: Integer read FMax stored False;
     property BufferMinimum: Integer read FMin stored False;
-    property BufferPreferredSize: Integer read Fpref stored False;
+    property BufferPreferredSize: Integer read FPref stored False;
     property BufferSize: Cardinal read FBufferSize stored False default 1;
     property CanDos : TASIOCanDos read FASIOCanDos;
     property DriverIndex: Integer read FDriverIndex Write SetDriverIndex default -1;
@@ -841,10 +840,10 @@ begin
   end;
 end;
 
-function ASIOMessage(selector, value: Integer; message: pointer; opt: pdouble): Integer; cdecl;
+function ASIOMessage(Selector, Value: Integer; message: Pointer; Opt: pdouble): Integer; cdecl;
 begin
  Result := 0;
- case selector of
+ case Selector of
   kASIOSelectorSupported :   // return 1 if a selector is supported
    begin
     case value of
@@ -858,7 +857,7 @@ begin
      kASIOSupportsInputMonitor : if assigned(GAsioHost) then Result := Integer(assSupportsInputMonitor in GAsioHost.FASIOSelectorSupport) else Result := 0;
     end;
    end;
-  kASIOEngineVersion :  Result := 2;   // ASIO 2 is supported
+  kASIOEngineVersion : Result := 2;   // ASIO 2 is supported
   kASIOResetRequest :
    if assigned(GAsioHost) then
     begin
@@ -1065,14 +1064,14 @@ end;
 
 procedure TCustomASIOHostBasic.DetermineBuffersize;
 begin
- FDriver.GetBufferSize(FMin, FMax, Fpref, FGran);
- if FMin = FMax then Fpref := FMin;
+ FDriver.GetBufferSize(FMin, FMax, FPref, FGran);
+ if FMin = FMax then FPref := FMin;
 
  // check prefered buffersize is valid
- if Fpref <= 0
+ if FPref <= 0
   then raise Exception.Create(RCStrPreferedBufferSize);
 
- FBufferSize := Fpref;
+ FBufferSize := FPref;
 end;
 
 procedure TCustomASIOHostBasic.AquireCurrentSampleRate;
@@ -1293,7 +1292,7 @@ begin
    {$IFDEF OpenASIO}
    if OpenASIOCreate(FAsioDriverList[FDriverIndex].Id, FDriver) then
    {$ELSE}
-   if CreateBeRoASIO(FAsioDriverList[FDriverIndex].Id, FDriver) then
+   if CreateStdCallASIO(FAsioDriverList[FDriverIndex].Id, FDriver) then
     {$ENDIF}
     try
      if assigned(FDriver) then

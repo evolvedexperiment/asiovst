@@ -13,9 +13,9 @@ type
     BtControlPanel: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
     procedure CbDriverChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
     FRegName : string;
   public
