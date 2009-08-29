@@ -75,9 +75,47 @@ type
 
     function Init(SysHandle: HWND): boolean; virtual;
     function GetDriverName: string; virtual;
+    function GetDriverVersion: LongInt; virtual;
+    function GetErrorMessage: string; virtual;
+    function Start: TASIOError; virtual;
+    function Stop: TASIOError; virtual;
+    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; virtual;
+    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError; virtual;
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; virtual;
+    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; virtual;
+    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; virtual;
+    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; virtual;
+    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; virtual;
+    function SetClockSource(Reference: LongInt): TASIOError; virtual;
+    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; virtual;
+    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; virtual;
+    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; virtual;
+    function DisposeBuffers: TASIOError; virtual;
+    function ControlPanel: TASIOError; virtual;
+    function Future(Selector: LongInt; Opt: Pointer): TASIOError; virtual;
+    function OutputReady: TASIOError; virtual;
 
     function AsioInit(SysHandle: HWND): TASIOBool;
     procedure AsioGetDriverName(Name: PAnsiChar);
+    function AsioGetDriverVersion: Longint;  
+    procedure AsioGetErrorMessage(Msg: PAnsiChar);  
+    function AsioStart: TASIOError;
+    function AsioStop: TASIOError;
+    function AsioGetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
+    function AsioGetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError;
+    function AsioGetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError;
+    function AsioCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+    function AsioGetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
+    function AsioSetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+    function AsioGetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+    function AsioSetClockSource(Reference: LongInt): TASIOError;
+    function AsioGetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
+    function AsioGetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
+    function AsioCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+    function AsioDisposeBuffers: TASIOError;
+    function AsioControlPanel: TASIOError;
+    function AsioFuture(Selector: LongInt; Opt: Pointer): TASIOError;
+    function AsioOutputReady: TASIOError;
   end;
 
   TDavAsioDriverFactory = class(TComObjectFactory)
@@ -91,6 +129,9 @@ IMPLEMENTATION
 uses sysutils;
 
 const DavASIOInterfaceOffset = $24;
+
+
+{ TDavASIOTCWrapper }
 
 procedure TDavASIOTCWrapper.Initialize;
 begin
@@ -108,13 +149,13 @@ end;
 
 procedure TDavASIOTCWrapper.Init;
 asm
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
-
   // generate new "self" pointer for this object
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -123,14 +164,14 @@ end;
 
 procedure TDavASIOTCWrapper.GetDriverName;
 asm
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
-
   // generate new "self" pointer for this object
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+  
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
   call FDestinationClass.AsioGetDriverName-FDestinationClass
@@ -138,97 +179,280 @@ end;
 
 procedure TDavASIOTCWrapper.GetDriverVersion;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetDriverVersion-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetErrorMessage;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetErrorMessage-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.Start;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioStart-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.Stop;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioStop-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetChannels;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  pop ecx   // get 2. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetChannels-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetLatencies;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  pop ecx   // get 2. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetLatencies-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetBufferSize;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter (min)
+  pop ecx   // get 2. parameter (max)
+  pop edi   // get 3. parameter (pref)
+  pop esi   // get 4. parameter (gran)
+  push ebx  // push return adress again
+  push edi  // push 3. parameter (pref)
+  push esi  // push 4. parameter (gran)
+
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetBufferSize-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.CanSampleRate;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioCanSampleRate-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetSampleRate;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetSampleRate-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.SetSampleRate;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioSetSampleRate-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetClockSources;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  pop ecx   // get 2. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetClockSources-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.SetClockSource;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioSetClockSource-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetSamplePosition;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  pop ecx   // get 2. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetSamplePosition-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetChannelInfo;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetChannelInfo-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.CreateBuffers;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter (BufferInfos)
+  pop ecx   // get 2. parameter (NumChannels)
+  pop edi   // get 3. parameter (BufferSize)
+  pop esi   // get 4. parameter (Callbacks)
+  push ebx  // push return adress again
+  push edi  // push 3. parameter (BufferSize)
+  push esi  // push 4. parameter (Callbacks)
+
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioCreateBuffers-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.DisposeBuffers;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioDisposeBuffers-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.ControlPanel;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioControlPanel-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.Future;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  pop ecx   // get 2. parameter
+  push ebx  // push return adress again
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioFuture-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.OutputReady;
 asm
-  nop
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioOutputReady-FDestinationClass
 end;
 
 
@@ -249,10 +473,7 @@ end;
 
 
 
-
-
-
-
+{ TDavASIODriver }
 
 constructor TDavASIODriver.create(TCWrapper: TDavASIOTCWrapper);
 begin
@@ -260,14 +481,147 @@ begin
 end;
 
 
+
+
+function TDavASIODriver.Init(SysHandle: HWND): boolean;
+begin
+  result := true;
+end;
+
 function TDavASIODriver.GetDriverName: string;
 begin
   result := 'DAV Abstract Driver';
 end;
 
-function TDavASIODriver.Init(SysHandle: HWND): boolean;
+function TDavASIODriver.GetDriverVersion: LongInt;
 begin
-  result := true;
+  result := 0;
+end;
+
+function TDavASIODriver.GetErrorMessage: string;
+begin
+  result := '';
+end;
+
+function TDavASIODriver.Start: TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.Stop: TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.GetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
+begin
+  NumInputChannels  := 1;
+  NumOutputChannels := 1;
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.GetLatencies(out InputLatency, OutputLatency: Integer): TASIOError;
+begin
+  InputLatency  := 0;
+  OutputLatency := 0; 
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
+begin
+  MinSize       := 256;
+  MaxSize       := 1024;
+  PreferredSize := 512;
+  Granularity   := -1;
+  result := ASE_OK;
+end;
+
+
+function TDavASIODriver.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
+begin
+  SampleRate := 44100;
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+
+function TDavASIODriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+begin
+  with Clocks^ do
+  begin
+    Index := 0;
+    AssociatedChannel := -1;
+    AssociatedGroup := -1;
+    IsCurrentSource := ASIOTrue;
+    StrCopy(Name, 'Internal');
+  end;
+  NumSources := 1;
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.SetClockSource(Reference: LongInt): TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
+begin
+  SamplePosition.Hi := 0;
+  SamplePosition.Lo := 0;
+  TimeStamp.Hi := 0;
+  TimeStamp.Lo := 0;
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;     
+begin
+  if (Info.Channel <> 0) then
+  begin
+    Result := ASE_InvalidParameter;
+    Exit;
+  end;
+
+  Info.SampleType := ASIOSTFloat32LSB;
+  Info.ChannelGroup := 0;
+  Info.IsActive := ASIOFalse;
+  StrPCopy(Info.Name, 'Default channel');
+
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+begin
+  result := ASE_NotPresent; // doesn't allocate anything right now
+end;
+
+
+function TDavASIODriver.DisposeBuffers: TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.ControlPanel: TASIOError;
+begin
+  result := ASE_OK;
+end;
+
+function TDavASIODriver.Future(Selector: LongInt; Opt: Pointer): TASIOError;
+begin
+  result := ASE_NotPresent;
+end;
+
+function TDavASIODriver.OutputReady: TASIOError;
+begin
+  result := ASE_OK;
 end;
 
 
@@ -284,5 +638,101 @@ procedure TDavASIODriver.AsioGetDriverName(Name: PAnsiChar);
 begin
   strcopy(Name,pchar(GetDriverName));
 end;
+
+function TDavASIODriver.AsioGetDriverVersion: Longint;
+begin
+  result := GetDriverVersion;
+end;
+
+procedure TDavASIODriver.AsioGetErrorMessage(Msg: PAnsiChar);
+begin
+  strcopy(Msg,pchar(GetErrorMessage));
+end;
+
+function TDavASIODriver.AsioStart: TASIOError;
+begin
+  result := Start;
+end;
+
+function TDavASIODriver.AsioStop: TASIOError;
+begin
+  result := Stop;
+end;
+
+function TDavASIODriver.AsioGetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
+begin
+  result := GetChannels(NumInputChannels, NumOutputChannels);
+end;
+
+function TDavASIODriver.AsioGetLatencies(out InputLatency, OutputLatency: Integer): TASIOError;
+begin
+  result := GetLatencies(InputLatency, OutputLatency);
+end;
+
+function TDavASIODriver.AsioGetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
+begin
+  result := GetBufferSize(MinSize, MaxSize, PreferredSize, Granularity);
+end;
+
+function TDavASIODriver.AsioCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+begin
+  result := CanSampleRate(SampleRate);
+end;
+
+function TDavASIODriver.AsioGetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
+begin
+  result := GetSampleRate(SampleRate);
+end;
+
+function TDavASIODriver.AsioSetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+begin
+  result := SetSampleRate(SampleRate);
+end;
+
+function TDavASIODriver.AsioGetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+begin
+  result := GetClockSources(Clocks, NumSources);
+end;
+
+function TDavASIODriver.AsioSetClockSource(Reference: LongInt): TASIOError;
+begin
+  result := SetClockSource(Reference);
+end;
+
+function TDavASIODriver.AsioGetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
+begin
+  result := GetSamplePosition(SamplePosition, TimeStamp);
+end;
+
+function TDavASIODriver.AsioGetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
+begin
+  result := GetChannelInfo(Info);
+end;
+
+function TDavASIODriver.AsioCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+begin
+  result := CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
+end;
+
+function TDavASIODriver.AsioDisposeBuffers: TASIOError;
+begin
+  result := DisposeBuffers;
+end;
+
+function TDavASIODriver.AsioControlPanel: TASIOError;
+begin
+  result := ControlPanel;
+end;
+
+function TDavASIODriver.AsioFuture(Selector: LongInt; Opt: Pointer): TASIOError;
+begin
+  result := Future(Selector, Opt);
+end;
+
+function TDavASIODriver.AsioOutputReady: TASIOError;
+begin
+  result:=OutputReady;
+end;
+
 
 end.

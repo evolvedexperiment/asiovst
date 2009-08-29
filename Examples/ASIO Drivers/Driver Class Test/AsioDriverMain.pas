@@ -22,6 +22,7 @@ type
   TDriverTest = class(TDavASIODriver)
   public
     function GetDriverName: string; override;
+    function GetDriverVersion: Longint; override;
   end;
 
   TTestTCWrapper = class(TDavASIOTCWrapper, IDriverTest)
@@ -45,6 +46,11 @@ end;
 function TDriverTest.GetDriverName: string;
 begin
   result := DTest_name;
+end;
+
+function TDriverTest.GetDriverVersion: Longint;
+begin
+  result := 5;
 end;
 
 initialization
