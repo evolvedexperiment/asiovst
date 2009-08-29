@@ -3,7 +3,7 @@ unit DAV_ASIOTCWrapper;
 interface
 
 uses
-  Windows, ActiveX, ComObj, DAV_ASIO, DAV_ASIODriver;
+  Windows, ActiveX, ComObj, DAV_ASIO;
 
 type
   IDavASIODriverInterface = interface(IUnknown)
@@ -31,16 +31,19 @@ type
     procedure OutputReady;
   end;
 
+  TDavASIODriver = class;
+  TTDavASIODriver = class of TDavASIODriver;
+
   TDavASIOTCWrapper = class(TComObject)
   private
     FDestinationClass: TDavASIODriver;
   protected
     function GetDriverClass: TTDavASIODriver; virtual; abstract;
-  public                              
+  public
     procedure Initialize; override;
     destructor Destroy; override;
 
-    procedure Init; 
+    procedure Init;
     procedure GetDriverName;
     procedure GetDriverVersion;
     procedure GetErrorMessage;
@@ -61,10 +64,20 @@ type
     procedure ControlPanel;
     procedure Future;
     procedure OutputReady;
-    procedure GetDriverClass2; virtual; abstract;
-    procedure GetDriverClass3; virtual; abstract;
-    procedure GetDriverClass4; virtual; abstract;
-    procedure GetDriverClass5; virtual; abstract;
+  end;
+
+  TDavASIODriver = class
+  private
+    fTCWrapper: TDavASIOTCWrapper;
+  public
+    constructor create(TCWrapper: TDavASIOTCWrapper);
+
+
+    function Init(SysHandle: HWND): boolean; virtual;
+    function GetDriverName: string; virtual;
+
+    function AsioInit(SysHandle: HWND): TASIOBool;
+    procedure AsioGetDriverName(Name: PAnsiChar);
   end;
 
   TDavAsioDriverFactory = class(TComObjectFactory)
@@ -74,7 +87,8 @@ type
 
 IMPLEMENTATION
 
-{ TAsioDriver }
+
+uses sysutils;
 
 const DavASIOInterfaceOffset = $24;
 
@@ -82,7 +96,7 @@ procedure TDavASIOTCWrapper.Initialize;
 begin
   inherited;
   Assert(DavASIOInterfaceOffset = GetInterfaceTable^.Entries[0].IOffset);
-  FDestinationClass:=GetDriverClass.Create;
+  FDestinationClass:=GetDriverClass.Create(self);
 end;
 
 destructor TDavASIOTCWrapper.Destroy;
@@ -95,20 +109,32 @@ end;
 procedure TDavASIOTCWrapper.Init;
 asm
   pop ebx   // pop return address
-  pop edx
-  push ebx  // push retur adress again
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
 
-  // generate new "self" pointer for the called class function
+  // generate new "self" pointer for this object
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
-  call FDestinationClass.init-FDestinationClass 
+  call FDestinationClass.AsioInit-FDestinationClass
 end;
 
 procedure TDavASIOTCWrapper.GetDriverName;
 asm
-  nop
-end;
+  pop ebx   // pop return address
+  pop edx   // get 1. parameter
+  push ebx  // push return adress again
+
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
+  // now generate "self" pointer for called class using the "self" pointer of this object
+  mov eax,[self.FDestinationClass]
+  call FDestinationClass.AsioGetDriverName-FDestinationClass
+end;  
 
 procedure TDavASIOTCWrapper.GetDriverVersion;
 asm
@@ -219,6 +245,44 @@ begin
    CreateRegKey('SOFTWARE\ASIO\' + Description, 'Description', Description, HKEY_LOCAL_MACHINE);
   end
  else DeleteRegKey('SOFTWARE\ASIO\' + Description, HKEY_LOCAL_MACHINE);
+end;
+
+
+
+
+
+
+
+
+constructor TDavASIODriver.create(TCWrapper: TDavASIOTCWrapper);
+begin
+  fTCWrapper := TCWrapper;
+end;
+
+
+function TDavASIODriver.GetDriverName: string;
+begin
+  result := 'DAV Abstract Driver';
+end;
+
+function TDavASIODriver.Init(SysHandle: HWND): boolean;
+begin
+  result := true;
+end;
+
+
+// methods used by the Asio-Wrapper, they are forwarded to local
+// functions that can get overwritten, don't overwrite this functions
+// the wrapper would never call them.
+
+function TDavASIODriver.AsioInit(SysHandle: HWND): TASIOBool;
+begin
+  result := TASIOBool(Init(SysHandle));
+end;
+
+procedure TDavASIODriver.AsioGetDriverName(Name: PAnsiChar);
+begin
+  strcopy(Name,pchar(GetDriverName));
 end;
 
 end.
