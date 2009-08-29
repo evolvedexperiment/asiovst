@@ -1,6 +1,5 @@
 package HostASIO_D11;
 
-{ $R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -29,17 +28,20 @@ requires
   vcl,
   rtl,
   DAV_Common_D11,
-  designide;
+  designide,
+  xmlrtl,
+  vclactnband,
+  vclx;
 
 contains
   DAV_ASIO in '..\..\Source\ASIO\DAV_ASIO.pas',
-  DAV_BeRoASIO in '..\..\Source\ASIO\DAV_BeRoASIO.pas',
   DAV_OpenASIO in '..\..\Source\ASIO\DAV_OpenASIO.pas',
   DAV_ASIOHost in '..\..\Source\ASIO\DAV_ASIOHost.pas',
   DAV_ASIOConvert in '..\..\Source\ASIO\DAV_ASIOConvert.pas',
   DAV_ASIOGenerator in '..\..\Source\ASIO\DAV_ASIOGenerator.pas',
   DAV_ASIOChannelStrip in '..\..\Source\ASIO\DAV_ASIOChannelStrip.pas',
   DAV_ASIOMixer in '..\..\Source\ASIO\DAV_ASIOMixer.pas',
-  DAV_ASIORegister in '..\..\Source\ASIO\DAV_ASIORegister.pas';
+  DAV_ASIORegister in '..\..\Source\ASIO\DAV_ASIORegister.pas',
+  DAV_AsioInterface in '..\..\Source\ASIO\DAV_AsioInterface.pas';
 
 end.
