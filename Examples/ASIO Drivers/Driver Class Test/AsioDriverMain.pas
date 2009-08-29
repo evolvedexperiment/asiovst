@@ -7,7 +7,7 @@ unit AsioDriverMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, ComObj, DAV_ASIO, DAV_ASIOTCWrapper;
+  Windows, SysUtils, Classes, ComObj, DAV_ASIO, DAV_ASIODriver;
 
 const
   DTest_guid: TGUID = '{A8DD45FD-34CC-4996-9695-CDD2AE483B47}';
