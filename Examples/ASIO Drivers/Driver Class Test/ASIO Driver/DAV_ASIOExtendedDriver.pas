@@ -12,7 +12,6 @@ type
   end;
 
   TDavASIOEDChannelListItem = class
-    IsInput: boolean;
     IsActive: boolean;
     ChannelGroup: LongInt;
     SampleType: TASIOSampleType;
@@ -24,11 +23,12 @@ type
     fDriverName: string;
     fDriverVersion: LongInt;
     fClockList: TList;
-    fChannelList: TList;
+    fInChannelList: TList;
+    fOutChannelList: TList;
     fClocksAreDefault: boolean;
     fChannelsAreDefault: boolean;
     procedure ClearClockList;
-    procedure ClearChannelList;
+    procedure ClearChannelLists;
   protected
     procedure InitializeDriverParams; virtual;
     procedure SetDriverName(name: string);
@@ -40,6 +40,8 @@ type
     destructor Destroy; override;
 
     function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; override;
+    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; override;
+    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
   end;
 
 implementation
@@ -52,7 +54,8 @@ constructor TDavASIOExtendedDriver.Create(TCWrapper: TDavASIOTCWrapper);
 begin
   inherited;
   fClockList:=TList.Create;
-  fChannelList:=TList.Create;
+  fInChannelList:=TList.Create;
+  fOutChannelList:=TList.Create;
   fDriverName := 'DAV Abstract Ext';
   fDriverVersion := 1;
 
@@ -74,8 +77,9 @@ begin
   ClearClockList;
   FreeAndNil(fClockList);
 
-  ClearChannelList;
-  FreeAndNil(fChannelList);
+  ClearChannelLists;
+  FreeAndNil(fInChannelList);
+  FreeAndNil(fOutChannelList);
 
   inherited;
 end;
@@ -87,11 +91,13 @@ begin
   fClockList.Clear;
 end;
 
-procedure TDavASIOExtendedDriver.ClearChannelList;
+procedure TDavASIOExtendedDriver.ClearChannelLists;
 var i:integer;
 begin
-  for i := fChannelList.Count-1 downto 0 do TDavASIOEDChannelListItem(fChannelList.Items[i]).Free;
-  fChannelList.Clear;
+  for i := fInChannelList.Count-1 downto 0 do TDavASIOEDChannelListItem(fInChannelList.Items[i]).Free;
+  for i := fOutChannelList.Count-1 downto 0 do TDavASIOEDChannelListItem(fOutChannelList.Items[i]).Free;
+  fInChannelList.Clear;
+  fOutChannelList.Clear;
 end;
 
 procedure TDavASIOExtendedDriver.InitializeDriverParams;
@@ -130,7 +136,7 @@ var t: TDavASIOEDChannelListItem;
 begin
   if fChannelsAreDefault then
   begin
-    ClearChannelList;
+    ClearChannelLists;
     fChannelsAreDefault := false;
   end;
 
@@ -138,13 +144,17 @@ begin
   t.Name := copy(name,0,32);
   t.ChannelGroup := channelgroup;
   t.SampleType := SampleType;
-  t.IsInput := IsInput;
   t.IsActive := false;
-  fChannelList.Add(t);
+
+  if IsInput then
+    fInChannelList.Add(t)
+  else
+    fOutChannelList.Add(t);
 end;
 
 function TDavASIOExtendedDriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
 begin
+ // still a todo part
   showmessage(inttostr(NumSources));
   with Clocks^ do
   begin
@@ -158,5 +168,34 @@ begin
   result := ASE_OK;
 end;
 
+function TDavASIOExtendedDriver.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
+begin
+  NumInputChannels:=fInChannelList.Count;
+  NumOutputChannels:=fOutChannelList.Count;
+
+  if NumInputChannels+NumOutputChannels<1 then
+    result := ASE_NotPresent
+  else
+    result := ASE_OK;
+end;
+
+function TDavASIOExtendedDriver.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
+var querylist: TList;
+begin
+  if Info.IsInput=ASIOTrue then
+    querylist := fInChannelList
+  else
+    querylist := fOutChannelList;
+
+  if Info.Channel>=querylist.Count then
+    result := ASE_InvalidParameter
+  else with TDavASIOEDChannelListItem(querylist.Items[Info.Channel]) do begin
+    Info.SampleType := SampleType;
+    Info.ChannelGroup := ChannelGroup;
+    Info.IsActive := TASIOBool(IsActive);
+    StrPCopy(Info.Name, Pchar(Name));
+    result := ASE_OK;
+  end;
+end;
 
 end.

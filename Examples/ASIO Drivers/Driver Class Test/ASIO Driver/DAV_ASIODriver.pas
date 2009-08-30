@@ -126,7 +126,7 @@ type
 IMPLEMENTATION
 
 
-uses sysutils;
+uses sysutils,{for debug}dialogs;
 
 const DavASIOInterfaceOffset = $24;
 
@@ -151,7 +151,7 @@ procedure TDavASIOTCWrapper.Init;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -171,7 +171,7 @@ procedure TDavASIOTCWrapper.GetDriverName;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -202,7 +202,7 @@ procedure TDavASIOTCWrapper.GetErrorMessage;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -248,7 +248,7 @@ asm
 
   mov ecx, [esp + 8] // get second parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming second parameter
   mov edx, [esp]
   mov [esp + 8], edx
 
@@ -270,7 +270,7 @@ asm
 
   mov ecx, [esp + 8] // get second parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming second parameter
   mov edx, [esp]
   mov [esp + 8], edx
 
@@ -303,20 +303,6 @@ asm
 
   // move stack pointer to the new fourth parameter
   add esp, 8
-  {
-  // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,DavASIOInterfaceOffset
-
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter (min)
-  pop ecx   // get 2. parameter (max)
-  pop edi   // get 3. parameter (pref)
-  pop esi   // get 4. parameter (gran)
-  push ebx  // push return adress again
-  push edi  // push 3. parameter (pref)
-  push esi  // push 4. parameter (gran)
-                  }
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -327,7 +313,7 @@ procedure TDavASIOTCWrapper.CanSampleRate;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -347,7 +333,7 @@ procedure TDavASIOTCWrapper.GetSampleRate;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -367,7 +353,7 @@ procedure TDavASIOTCWrapper.SetSampleRate;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -391,7 +377,7 @@ asm
 
   mov ecx, [esp + 8] // get second parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming second parameter
   mov edx, [esp]
   mov [esp + 8], edx
 
@@ -409,7 +395,7 @@ procedure TDavASIOTCWrapper.SetClockSource;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -433,7 +419,7 @@ asm
 
   mov ecx, [esp + 8] // get second parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming second parameter
   mov edx, [esp]
   mov [esp + 8], edx
 
@@ -451,7 +437,7 @@ procedure TDavASIOTCWrapper.GetChannelInfo;
 asm
   mov edx, [esp + 4] // get first parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming parameter
   mov eax, [esp]
   mov [esp + 4], eax
 
@@ -473,15 +459,19 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter (BufferInfos)
-  pop ecx   // get 2. parameter (NumChannels)
-  pop edi   // get 3. parameter (BufferSize)
-  pop esi   // get 4. parameter (Callbacks)
-  push ebx  // push return adress again
-  push edi  // push 3. parameter (BufferSize)
-  push esi  // push 4. parameter (Callbacks)   }
+  mov ecx, [esp + 8]   // get second parameter
 
+  mov edx, [esp + 16]  // get fourth parameter
+  mov [esp + 8], edx   // set fourth parameter
+
+  // move return address on the stack position of the incoming fourth parameter
+  mov edx, [esp]
+  mov [esp + 16], edx
+
+  mov edx, [esp + 4]   // get first parameter
+
+  // move stack pointer to the new fourth parameter
+  add esp, 8
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -518,7 +508,7 @@ asm
 
   mov ecx, [esp + 8] // get second parameter
 
-  // move return address on the stack position of first parameter
+  // move return address on the stack position of the incoming second parameter
   mov edx, [esp]
   mov [esp + 8], edx
 
@@ -670,7 +660,7 @@ begin
   result := ASE_OK;
 end;
 
-function TDavASIODriver.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;     
+function TDavASIODriver.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
 begin
   if (Info.Channel <> 0) then
   begin
