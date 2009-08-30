@@ -13,7 +13,7 @@ type
     procedure GetDriverVersion;
     procedure GetErrorMessage;
     procedure Start;
-    procedure Stop; 
+    procedure Stop;
     procedure GetChannels;
     procedure GetLatencies;
     procedure GetBufferSize;
@@ -126,7 +126,7 @@ type
 IMPLEMENTATION
 
 
-uses sysutils,{for debug}dialogs;
+uses sysutils;
 
 const DavASIOInterfaceOffset = $24;
 
@@ -311,18 +311,23 @@ end;
 
 procedure TDavASIOTCWrapper.CanSampleRate;
 asm
-  mov edx, [esp + 4] // get first parameter
+  // double uses 2 Words, they come in on the stack,
+  // and delphi function calls use the same method
+  // so we just move the return address to stack positions up
+  // and are done
 
-  // move return address on the stack position of the incoming parameter
-  mov eax, [esp]
-  mov [esp + 4], eax
+  mov edx,[esp]   // backup return address
+
+  mov eax,[esp + 4]
+  mov [esp], eax
+  mov eax,[esp + 8]
+  mov [esp+4], eax
+
+  mov [esp+8],edx    // set return address
 
   // generate new "self" pointer for this object in ECX
   mov eax,ecx
-  sub eax,DavASIOInterfaceOffset   
-
-  // move stack pointer to the return address position
-  add esp, 4
+  sub eax,DavASIOInterfaceOffset
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -346,23 +351,28 @@ asm
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
-  call FDestinationClass.AsioGetSampleRate-FDestinationClass
+  call FDestinationClass.AsioGetSampleRate-FDestinationClass  
 end;
 
 procedure TDavASIOTCWrapper.SetSampleRate;
 asm
-  mov edx, [esp + 4] // get first parameter
+    // double uses 2 Words, they come in on the stack,
+  // and delphi function calls use the same method
+  // so we just move the return address to stack positions up
+  // and are done
 
-  // move return address on the stack position of the incoming parameter
-  mov eax, [esp]
-  mov [esp + 4], eax
+  mov edx,[esp]   // backup return address
+
+  mov eax,[esp + 4]
+  mov [esp], eax
+  mov eax,[esp + 8]
+  mov [esp+4], eax
+
+  mov [esp+8],edx    // set return address
 
   // generate new "self" pointer for this object in ECX
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
-
-  // move stack pointer to the return address position
-  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
