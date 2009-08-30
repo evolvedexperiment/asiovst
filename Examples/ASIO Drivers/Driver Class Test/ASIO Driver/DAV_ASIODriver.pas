@@ -70,7 +70,7 @@ type
   private
     fTCWrapper: TDavASIOTCWrapper;
   public
-    constructor create(TCWrapper: TDavASIOTCWrapper);
+    constructor Create(TCWrapper: TDavASIOTCWrapper); virtual;
 
 
     function Init(SysHandle: HWND): boolean; virtual;
@@ -98,7 +98,7 @@ type
     function AsioInit(SysHandle: HWND): TASIOBool;
     procedure AsioGetDriverName(Name: PAnsiChar);
     function AsioGetDriverVersion: Longint;  
-    procedure AsioGetErrorMessage(Msg: PAnsiChar);  
+    procedure AsioGetErrorMessage(Msg: PAnsiChar);
     function AsioStart: TASIOError;
     function AsioStop: TASIOError;
     function AsioGetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
@@ -149,13 +149,18 @@ end;
 
 procedure TDavASIOTCWrapper.Init;
 asm
-  // generate new "self" pointer for this object
+  mov edx, [esp + 4] // get first parameter
+
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -164,14 +169,19 @@ end;
 
 procedure TDavASIOTCWrapper.GetDriverName;
 asm
-  // generate new "self" pointer for this object
+  mov edx, [esp + 4] // get first parameter
+
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
-  
+  // move stack pointer to the return address position
+  add esp, 4
+
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
   call FDestinationClass.AsioGetDriverName-FDestinationClass
@@ -190,13 +200,18 @@ end;
 
 procedure TDavASIOTCWrapper.GetErrorMessage;
 asm
-  // generate new "self" pointer for this object
+  mov edx, [esp + 4] // get first parameter
+
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -231,10 +246,16 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  pop ecx   // get 2. parameter
-  push ebx  // push return adress again
+  mov ecx, [esp + 8] // get second parameter
+
+  // move return address on the stack position of first parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
+
+  mov edx, [esp + 4] // get first parameter
+
+  // move stack pointer to the return address position
+  add esp, 8
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -247,10 +268,16 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  pop ecx   // get 2. parameter
-  push ebx  // push return adress again
+  mov ecx, [esp + 8] // get second parameter
+
+  // move return address on the stack position of first parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
+
+  mov edx, [esp + 4] // get first parameter
+
+  // move stack pointer to the return address position
+  add esp, 8
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -263,6 +290,24 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
+  mov ecx, [esp + 8]   // get second parameter
+
+  mov edx, [esp + 16]  // get fourth parameter
+  mov [esp + 8], edx   // set fourth parameter
+
+  // move return address on the stack position of the incoming fourth parameter
+  mov edx, [esp]
+  mov [esp + 16], edx
+
+  mov edx, [esp + 4]   // get first parameter
+
+  // move stack pointer to the new fourth parameter
+  add esp, 8
+  {
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset
+
   pop ebx   // pop return address
   pop edx   // get 1. parameter (min)
   pop ecx   // get 2. parameter (max)
@@ -271,7 +316,7 @@ asm
   push ebx  // push return adress again
   push edi  // push 3. parameter (pref)
   push esi  // push 4. parameter (gran)
-
+                  }
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -280,13 +325,18 @@ end;
 
 procedure TDavASIOTCWrapper.CanSampleRate;
 asm
-  // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,DavASIOInterfaceOffset
+  mov edx, [esp + 4] // get first parameter
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset   
+
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -295,13 +345,18 @@ end;
 
 procedure TDavASIOTCWrapper.GetSampleRate;
 asm
-  // generate new "self" pointer for this object
+  mov edx, [esp + 4] // get first parameter
+
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -310,13 +365,18 @@ end;
 
 procedure TDavASIOTCWrapper.SetSampleRate;
 asm
-  // generate new "self" pointer for this object
+  mov edx, [esp + 4] // get first parameter
+
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -329,10 +389,16 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  pop ecx   // get 2. parameter
-  push ebx  // push return adress again
+  mov ecx, [esp + 8] // get second parameter
+
+  // move return address on the stack position of first parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
+
+  mov edx, [esp + 4] // get first parameter
+
+  // move stack pointer to the return address position
+  add esp, 8
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -341,13 +407,18 @@ end;
 
 procedure TDavASIOTCWrapper.SetClockSource;
 asm
-  // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,DavASIOInterfaceOffset
+  mov edx, [esp + 4] // get first parameter
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset    
+
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -360,10 +431,16 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  pop ecx   // get 2. parameter
-  push ebx  // push return adress again
+  mov ecx, [esp + 8] // get second parameter
+
+  // move return address on the stack position of first parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
+
+  mov edx, [esp + 4] // get first parameter
+
+  // move stack pointer to the return address position
+  add esp, 8
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -372,13 +449,18 @@ end;
 
 procedure TDavASIOTCWrapper.GetChannelInfo;
 asm
-  // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,DavASIOInterfaceOffset
+  mov edx, [esp + 4] // get first parameter
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  push ebx  // push return adress again
+  // move return address on the stack position of first parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
+
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,DavASIOInterfaceOffset    
+
+  // move stack pointer to the return address position
+  add esp, 4
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -398,7 +480,7 @@ asm
   pop esi   // get 4. parameter (Callbacks)
   push ebx  // push return adress again
   push edi  // push 3. parameter (BufferSize)
-  push esi  // push 4. parameter (Callbacks)
+  push esi  // push 4. parameter (Callbacks)   }
 
 
   // now generate "self" pointer for called class using the "self" pointer of this object
@@ -434,10 +516,16 @@ asm
   mov eax,ecx
   sub eax,DavASIOInterfaceOffset
 
-  pop ebx   // pop return address
-  pop edx   // get 1. parameter
-  pop ecx   // get 2. parameter
-  push ebx  // push return adress again
+  mov ecx, [esp + 8] // get second parameter
+
+  // move return address on the stack position of first parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
+
+  mov edx, [esp + 4] // get first parameter
+
+  // move stack pointer to the return address position
+  add esp, 8
 
   // now generate "self" pointer for called class using the "self" pointer of this object
   mov eax,[self.FDestinationClass]
@@ -475,7 +563,7 @@ end;
 
 { TDavASIODriver }
 
-constructor TDavASIODriver.create(TCWrapper: TDavASIOTCWrapper);
+constructor TDavASIODriver.Create(TCWrapper: TDavASIOTCWrapper);
 begin
   fTCWrapper := TCWrapper;
 end;
@@ -516,7 +604,7 @@ end;
 function TDavASIODriver.GetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
 begin
   NumInputChannels  := 1;
-  NumOutputChannels := 1;
+  NumOutputChannels := 2;
   result := ASE_OK;
 end;
 

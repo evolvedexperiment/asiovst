@@ -7,7 +7,7 @@ unit AsioDriverMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, ComObj, DAV_ASIO, DAV_ASIODriver;
+  Windows, SysUtils, Classes, ComObj, DAV_ASIO, DAV_ASIOExtendedDriver, DAV_ASIODriver;
 
 const
   DTest_guid: TGUID = '{A8DD45FD-34CC-4996-9695-CDD2AE483B47}';
@@ -19,10 +19,9 @@ type
     ['{A8DD45FD-34CC-4996-9695-CDD2AE483B47}']
   end;
 
-  TDriverTest = class(TDavASIODriver)
-  public
-    function GetDriverName: string; override;
-    function GetDriverVersion: Longint; override;
+  TDriverTest = class(TDavASIOExtendedDriver)
+  protected
+    procedure InitializeDriverParams; override;
   end;
 
   TTestTCWrapper = class(TDavASIOTCWrapper, IDriverTest)
@@ -43,14 +42,11 @@ end;
 
 { TDriverTest }
 
-function TDriverTest.GetDriverName: string;
+procedure TDriverTest.InitializeDriverParams;
 begin
-  result := DTest_name;
-end;
-
-function TDriverTest.GetDriverVersion: Longint;
-begin
-  result := 5;
+  SetDriverName(DTest_name);
+  SetDriverVersion(1);
+//  AddClock('Default Clock',0);
 end;
 
 initialization
