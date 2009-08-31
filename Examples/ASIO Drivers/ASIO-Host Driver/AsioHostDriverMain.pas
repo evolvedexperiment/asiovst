@@ -583,15 +583,16 @@ asm
  // subtract stupid interface offset
  SUB ECX, CStupidOffset
 
- // copy parameters
- MOV EDX, [ESP + $4]
+ MOV EDX, [ESP]   // backup return address
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
+ MOV EAX,[ESP + 4]
+ MOV [ESP], EAX
+ MOV EAX,[ESP + 8]
  MOV [ESP + 4], EAX
- ADD ESP, 4
 
- // copy this [ECX] -> self [EAX]
+ MOV [ESP + 8], EDX    // set return address
+
+ // generate new "self" pointer for this object in ECX
  MOV EAX, ECX
 
  CALL SetInternalSampleRate
@@ -1115,7 +1116,7 @@ begin
  if Assigned(FCallbacks) then
   if Assigned(FCallbacks.AsioMessage) then
    begin
-    FCallbacks.AsioMessage(kAsioResetRequest);
+    FCallbacks.AsioMessage(kAsioResetRequest, 0, nil, nil);
    end;
 end;
 
@@ -1124,7 +1125,7 @@ begin
  if Assigned(FCallbacks) then
   if Assigned(FCallbacks.AsioMessage) then
    begin
-    FCallbacks.AsioMessage(kAsioResetRequest);
+    FCallbacks.AsioMessage(kAsioResetRequest, 0, nil, nil);
    end;
 end;
 
