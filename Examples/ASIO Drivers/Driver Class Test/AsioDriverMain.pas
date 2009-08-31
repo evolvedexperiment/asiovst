@@ -46,11 +46,12 @@ procedure TDriverTest.InitializeDriverParams;
 begin
   SetDriverName(DTest_name);
   SetDriverVersion(1);
-//  AddClock('Default Clock',0);
+  AddClock('Default Clock',0);
+  AddClock('Second Clock',1);
   AddChannel('c1i',0,ASIOSTFloat32LSB,true);
-  AddChannel('c2i',0,ASIOSTFloat32LSB,true);
+  AddChannel('c2i',1,ASIOSTFloat32LSB,true);
   AddChannel('c1o',0,ASIOSTFloat32LSB,false);
-  AddChannel('c2o',0,ASIOSTFloat32LSB,false);
+  AddChannel('c2o',1,ASIOSTFloat32LSB,false);
 end;
 
 initialization

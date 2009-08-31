@@ -714,7 +714,7 @@ end;
 
 
 // methods used by the Asio-Wrapper, they are forwarded to local
-// functions that can get overwritten, don't overwrite this functions
+// functions that can get overwritten, don't overwrite these functions
 // the wrapper would never call them.
 
 function TDavASIODriver.AsioInit(SysHandle: HWND): TASIOBool;
@@ -724,7 +724,7 @@ end;
 
 procedure TDavASIODriver.AsioGetDriverName(Name: PAnsiChar);
 begin
-  strcopy(Name,pchar(GetDriverName));
+  strcopy(Name,pchar(copy(GetDriverName,0,32)));
 end;
 
 function TDavASIODriver.AsioGetDriverVersion: Longint;
@@ -734,7 +734,7 @@ end;
 
 procedure TDavASIODriver.AsioGetErrorMessage(Msg: PAnsiChar);
 begin
-  strcopy(Msg,pchar(GetErrorMessage));
+  strcopy(Msg,pchar(copy(GetErrorMessage,0,124)));
 end;
 
 function TDavASIODriver.AsioStart: TASIOError;
