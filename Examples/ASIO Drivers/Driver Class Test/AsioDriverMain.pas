@@ -33,7 +33,7 @@ type
 implementation
 
 uses
-  ComServ;
+  ComServ,AsioDriverMainCPanel;
 
 function TTestTCWrapper.GetDriverClass: TTDavASIODriver;
 begin
@@ -52,6 +52,7 @@ begin
   AddChannel('c2i',1,ASIOSTFloat32LSB,true);
   AddChannel('c1o',0,ASIOSTFloat32LSB,false);
   AddChannel('c2o',1,ASIOSTFloat32LSB,false);
+  SetControlPanelClass(TDriverTestCP);
 end;
 
 initialization

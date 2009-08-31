@@ -2,7 +2,7 @@ unit DAV_ASIOExtendedDriver;
 
 interface
 
-uses Classes, windows, DAV_ASIO, DAV_ASIODriver;
+uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver;
 
 type
   TDavASIOEDClockListItem = class
@@ -23,9 +23,22 @@ type
     procedure DestroyBuffer;
   end;
 
+  TDavASIOExtendedDriver = class;
+
+  TDavASIODriverControlPanel = class(TForm)
+  protected
+    Driver: TDavASIOExtendedDriver;
+  public
+    constructor Create(AOwner: TComponent; cDriver: TDavASIOExtendedDriver); reintroduce;
+  end;
+
+  TTDavASIODriverControlPanel = class of TDavASIODriverControlPanel;
+
   TDavASIOExtendedDriver = class(TDavASIODriver)
   private
     fHostHandle: HWND;
+    fControlPanel: TDavASIODriverControlPanel;
+    fControlPanelClass: TTDavASIODriverControlPanel;
     fLastErrorMsg: string;
     fDriverName: string;
     fDriverVersion: LongInt;
@@ -44,6 +57,7 @@ type
     procedure SetErrorMessage(s: string);
     procedure AddClock(name: string; channelgroup: LongInt);
     procedure AddChannel(name: string; channelgroup: LongInt; SampleType: TASIOSampleType; IsInput: Boolean);
+    procedure SetControlPanelClass(cp: TTDavASIODriverControlPanel);
     function GetCurrentClockSource: Integer;   
   public
     constructor Create(TCWrapper: TDavASIOTCWrapper); override;
@@ -55,7 +69,10 @@ type
 
     function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; override;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
+    function GetDriverName: string; override;
+    function GetDriverVersion: LongInt; override;
     function GetErrorMessage: string; override;
+    function ControlPanel: TASIOError; override;
     function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
     function DisposeBuffers: TASIOError; override;
   end;
@@ -125,12 +142,20 @@ begin
 
   fClocksAreDefault:=true;
   fChannelsAreDefault:=true;
+  fControlPanelClass := nil;
+  fControlPanel := nil;
 
   InitializeDriverParams;
+
+  if assigned(fControlPanelClass) then
+    fControlPanel := fControlPanelClass.Create(nil, self);
 end;
 
 destructor TDavASIOExtendedDriver.destroy;
 begin
+  Stop;
+  DisposeBuffers;
+
   ClearClockList;
   FreeAndNil(fClockList);
 
@@ -138,6 +163,7 @@ begin
   FreeAndNil(fInChannelList);
   FreeAndNil(fOutChannelList);
 
+  if Assigned(fControlPanel) then FreeAndNil(fControlPanel);
   inherited;
 end;
 
@@ -208,6 +234,11 @@ begin
     fInChannelList.Add(t)
   else
     fOutChannelList.Add(t);
+end;  
+
+procedure TDavASIOExtendedDriver.SetControlPanelClass(cp: TTDavASIODriverControlPanel);
+begin
+  fControlPanelClass := cp;
 end;
 
 function TDavASIOExtendedDriver.GetCurrentClockSource: Integer;
@@ -327,9 +358,29 @@ begin
   end;
 end;
 
+function TDavASIOExtendedDriver.GetDriverName: string;
+begin
+  result := fDriverName;
+end;
+
+function TDavASIOExtendedDriver.GetDriverVersion: LongInt;
+begin
+  result := fDriverVersion;
+end;
+
 function TDavASIOExtendedDriver.GetErrorMessage: string;
 begin
   result := fLastErrorMsg;
+end;
+
+function TDavASIOExtendedDriver.ControlPanel: TASIOError;
+begin
+  if Assigned(fControlPanel) then
+  begin
+    fControlPanel.ShowModal;
+    Result := ASE_OK;
+  end else
+    Result := ASE_NotPresent;
 end;
 
 function TDavASIOExtendedDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
@@ -339,12 +390,24 @@ begin
    begin
      // TODO
    end;
+
+   // TODO
+   result := ASE_NotPresent;
 end;
 
 function TDavASIOExtendedDriver.DisposeBuffers: TASIOError;
 begin
-  // TODO
+  // TODO  
+   result := ASE_NotPresent;
 end;
 
+
+{ TDavASIODriverControlPanel }
+
+constructor TDavASIODriverControlPanel.Create(AOwner: TComponent; cDriver: TDavASIOExtendedDriver);
+begin
+  inherited Create(AOwner);
+  Driver := cDriver;
+end;
 
 end.
