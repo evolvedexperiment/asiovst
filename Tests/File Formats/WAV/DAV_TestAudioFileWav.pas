@@ -80,14 +80,14 @@ begin
  if FindFirst('*.wav*', faAnyFile, SR) = 0 then
   try
    repeat
-    succeed := True;
+    Succeed := True;
     try
      FAudioFileWav.LoadFromFile(SR.Name)
     except
      on e: EWavError do MessageDlg(SR.Name + ': ' + e.Message, mtError, [mbOK], 0);
-     else succeed := False;
+     else Succeed := False;
     end;
-    Check(succeed, 'Error loading file: ' + SR.Name);
+    Check(Succeed, 'Error loading file: ' + SR.Name);
    until FindNext(SR) <> 0;
   finally
    // Must free up resources used by these successful finds

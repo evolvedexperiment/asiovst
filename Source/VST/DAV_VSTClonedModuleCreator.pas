@@ -201,7 +201,7 @@ begin
    for i := 0 to VSTPlugin.numPrograms - 1 do
     with Programs.Add do
      begin
-      VSTPlugin.ProgramNr := i;
+      VSTPlugin.CurrentProgram := i;
       DisplayName := VSTPlugin.ProgramName;
      end;
   end;
@@ -333,7 +333,7 @@ begin
 
     for i := 0 to FConfig.VSTPlugin.numPrograms - 1 do
      begin
-      FConfig.VSTPlugin.ProgramNr := i;
+      FConfig.VSTPlugin.CurrentProgram := i;
       s := s + ' with Programs[' + IntToStr(i) + '] do'  + CRLF +
         '  begin' + CRLF;
 

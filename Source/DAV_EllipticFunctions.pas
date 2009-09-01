@@ -17,6 +17,9 @@ function CompleteEllipticIntegral1stKind(k: TComplexDouble; Steps: Integer = 30)
 function CompleteEllipticIntegral1stKind(k: Double; Steps: Integer = 30): Double; overload;
 function CompleteEllipticIntegral2ndKind(k: Double; Steps: Integer = 1000): Double;
 function CompleteEllipticIntegral3rdKind(n, k: Double; Steps: Integer = 1000): Double;
+function Pochhammer(x: Double; n: Integer): Double;
+function PochhammerRisingSequentialProduct(x: Double; n: Integer): Double;
+function PochhammerFallingSequentialProduct(x: Double; n: Integer): Double;
 function NomeQk(k: Double): Double; overload;
 function NomeQm(m: Double): Double; overload;
 function NomeQk(k: TComplexDouble): TComplexDouble; overload;
@@ -74,11 +77,50 @@ function Cs(z, k: TComplexDouble): TComplexDouble; overload;
 function Dc(z, k: TComplexDouble): TComplexDouble; overload;
 function Ds(z, k: TComplexDouble): TComplexDouble; overload;
 
+function HypergeometricFunction2F1(a, b, c: Double; z: Double; Steps: Integer = 30): Double;
+
+function InverseCd(z, m: Double; Steps: Integer = 10): Double; overload;
+function InverseCd(z, m: TComplexDouble; Steps: Integer = 10): TComplexDouble; overload;
+
+function RationalEllipticFunction(Order: Integer; Selectivity, x : Double): Double;
+
+function EvaluatePolynom01(Input: Double; Coefficients: PDAVDoubleFixedArray; Length: Integer): Double;
+function EvaluatePolynom11(Input: Double; Coefficients: PDAVDoubleFixedArray; Length: Integer): Double;
+function JacobianEllipticFunctions(u, m: Double; var sn, cn, dn, ph: Double): Integer;
+function IncompleteEllipticIntegral2ndKindX(phi, m: Double): Double;
+function IncompleteEllipticIntegral1stKindX(phi, m: Double): Double;
+function CompleteEllipticIntegral1stKindX(x: Double): Double;
+
 implementation
 
 uses
   Math, SysUtils;
 
+const
+  {$IFDEF UNK}
+  CMachEP = 1.11022302462515654042E-16;
+  {$ELSE}
+  CMachEP = 1.38777878078144567553E-17;
+  {$ENDIF}
+
+  {$IFDEF DENORMAL}
+  CMaxLog: Double =  7.09782712893383996732E2;      // log(MaxNum)
+  CMinLog: Double = -7.451332191019412076235E2;     // log(2^-1075)
+  {$ELSE}
+  CMaxLog: Double =  7.08396418532264106224E2;      // log 2^1022
+  CMinLog: Double = -7.08396418532264106224E2;      // log 2^-1022
+  {$ENDIF}
+  MaxNum: Double =  1.79769313486231570815E308;    // 2^1024 * (1 - CMachEP)
+  PiO2: Double   =  1.57079632679489661923;        // Pi / 2
+  PiO4: Double   =  7.85398163397448309616E-1;     // Pi / 4
+  Sqrt2: Double  =  1.41421356237309504880;        // sqrt(2)
+  SqrtH: Double  =  7.07106781186547524401E-1;     // sqrt(2) / 2
+  Log2E: Double  =  1.4426950408889634073599;      // 1 / log(2)
+  Sq2OPi: Double =  7.9788456080286535587989E-1;   // sqrt(2 / Pi)
+  LogE2: Double  =  6.93147180559945309417E-1;     // log(2)
+  LogSQ2: Double =  3.46573590279972654709E-1;     // log(2) / 2
+  ThPiO4: Double =  2.35619449019234492885;        // 3 * Pi / 4
+  PiHalf: Double =  6.36619772367581343075535E-1;  // 2 / Pi
 
 function DoubleFactorial(n: Integer): Integer;
 begin
@@ -935,6 +977,765 @@ end;
 function Ds(z, k: TComplexDouble): TComplexDouble;
 begin
  Result := ComplexDivide(Dn(z, k), Sn(z, k));
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Evaluate polynomial                                                       //
+//  -------------------                                                       //
+//                                                                            //
+//                                                                            //
+//  SYNOPSIS:                                                                 //
+//    EvaluatePolynom11(Input: Double; Coefficients: PDAVDoubleFixedArray;    //
+//      Length: Integer): Double;                                             //
+//                                                                            //
+//                                                                            //
+//  DESCRIPTION:                                                              //
+//    Evaluates polynomial of degree N:                                       //
+//                                                                            //
+//                        2          N                                        //
+//    y  =  C  + C x + C x  +Args: array of const+ C x                        //
+//           0    1     2          N                                          //
+//                                                                            //
+//    Coefficients are stored in reverse order:                               //
+//                                                                            //
+//    coef[0] = C  , Args: array of const, coef[N] = C  .                     //
+//               N                                    0                       //
+//                                                                            //
+//    The function EvaluatePolynom01() assumes that coef[N] = 1.0 and is      //
+//    omitted from the array.  Its calling arguments are otherwise the same   //
+//    as EvaluatePolynom11().                                                 //
+//                                                                            //
+//                                                                            //
+//  SPEED:                                                                    //
+//    In the interest of speed, there are no checks for out of bounds         //
+//    arithmetic.  This routine is used by most of the functions in the       //
+//    library.  Depending on available equipment features, the user           //
+//    may wish to rewrite the program in microcode or assembly language.      //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function EvaluatePolynom11(Input: Double; Coefficients: PDAVDoubleFixedArray; Length: Integer): Double;
+var
+  x : Double;
+  i : Integer;
+begin
+ Result := Coefficients[0];
+ i := 1;
+
+ while i < Length do
+  begin
+    Result := Result * Input + Coefficients[i];
+    inc(i);
+  end;
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                           N                                //
+//  Evaluate polynomial when coefficient of x  is 1.0.                        //
+//  Otherwise same as EvaluatePolynom11.                                      //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function EvaluatePolynom01(Input: Double; Coefficients: PDAVDoubleFixedArray; Length: Integer): Double;
+var
+  x : Double;
+  i : Integer;
+begin
+ Result := Result * Input + Coefficients[0];
+ i := 1;
+
+ while i < Length do
+  begin
+    Result := Result * Input + Coefficients[i];
+    inc(i);
+  end;
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Complete Elliptic Integral of the Second Kind                             //
+//  ---------------------------------------------                             //
+//                                                                            //
+//  SYNOPSIS:                                                                 //
+//    function CompleteEllipticIntegral2ndKind(x: Double): Double;            //
+//                                                                            //
+//  DESCRIPTION:                                                              //
+//    Approximates the integral                                               //
+//                                                                            //
+//                                                                            //
+//               Pi/2                                                         //
+//                -                                                           //
+//               | |                 2                                        //
+//    E(m)  =    |    sqrt( 1 - m sin t ) dt                                  //
+//             | |                                                            //
+//              -                                                             //
+//               0                                                            //
+//                                                                            //
+//  Where m = 1 - m1, using the approximation                                 //
+//                                                                            //
+//       P(x)  -  x log x Q(x).                                               //
+//                                                                            //
+//  Though there are no singularities, the argument m1 is used                //
+//  rather than m for compatibility with CompleteEllipticIntegral1stKind.     //
+//                                                                            //
+//  E(1) := 1; E(0) = Pi/2.                                                   //
+//                                                                            //
+//                                                                            //
+//  ACCURACY:                                                                 //
+//                                                                            //
+//                       Relative error:                                      //
+//  arithmetic   domain     # trials      peak         rms                    //
+//     DEC        0, 1       13000       3.1E-17     9.4E-18                  //
+//     IEEE       0, 1       10000       2.1E-16     7.3E-17                  //
+//                                                                            //
+//                                                                            //
+//  ERROR MESSAGES:                                                           //
+//                                                                            //
+//                                    message   condition   value returned    //
+//  CompleteEllipticIntegral2ndKind   domain     x<0, x>1         0.0         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function CompleteEllipticIntegral2ndKindX(x: Double): Double;
+const
+  P : array [0..10] of Double = (1.53552577301013293365E-4,
+      2.50888492163602060990E-3, 8.68786816565889628429E-3,
+      1.07350949056076193403E-2, 7.77395492516787092951E-3,
+      7.58395289413514708519E-3, 1.15688436810574127319E-2,
+      2.18317996015557253103E-2, 5.68051945617860553470E-2,
+      4.43147180560990850618E-1, 1.00000000000000000299E0);
+
+  Q : array [0..9] of Double = (3.27954898576485872656E-5,
+     1.00962792679356715133E-3, 6.50609489976927491433E-3,
+     1.68862163993311317300E-2, 2.61769742454493659583E-2,
+     3.34833904888224918614E-2, 4.27180926518931511717E-2,
+     5.85936634471101055642E-2, 9.37499997197644278445E-2,
+     2.49999999999888314361E-1);
+begin
+ if (x <= 0.0) or (x > 1.0) then
+  begin
+   if x = 0.0 then Result := 1.0;
+//   mtherr('CompleteEllipticIntegral2ndKind', DOMAIN);
+   Result := 0.0;
+  end;
+ Result := EvaluatePolynom11(x, @P[0], Length(P)) - log10(x) * x * EvaluatePolynom11(x, @Q[0], Length(Q));
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Incomplete Elliptic Integral of Second Kind                               //
+//  -------------------------------------------                               //
+//                                                                            //
+//  SYNOPSIS:                                                                 //
+//    function IncompleteEllipticIntegral2ndKind(phi, m: Double): Double;     //
+//                                                                            //
+//  DESCRIPTION:                                                              //
+//    Approximates the integral                                               //
+//                                                                            //
+//                    phi                                                     //
+//                     -                                                      //
+//                    | |                                                     //
+//                    |                   2                                   //
+//    E(phi | m)  =   |    sqrt( 1 - m sin t ) dt                             //
+//                    |                                                       //
+//                  | |                                                       //
+//                   -                                                        //
+//                   0                                                        //
+//                                                                            //
+//    of amplitude phi and modulus m, using the arithmetic - geometric        //
+//    mean algorithm.                                                         //
+//                                                                            //
+//                                                                            //
+//                                                                            //
+//  ACCURACY:                                                                 //
+//    Tested at random arguments with phi in [-10, 10] and m in [0, 1].       //
+//                      Relative error:                                       //
+//  arithmetic   domain     # trials      peak         rms                    //
+//     DEC        0,2         2000       1.9E-16     3.4E-17                  //
+//     IEEE     -10,10      150000       3.3E-15     1.4E-16                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function IncompleteEllipticIntegral2ndKindX(phi, m: Double): Double;
+var
+  a, b, c, e  : Double;
+  lphi, t, Ex : Double;
+  d, md       : Integer;
+  npio2, sign : Integer;
+label
+  done;  
+begin
+ if m = 0 then Result := phi;
+ lphi := phi;
+ npio2 := floor(lphi / PiO2);
+
+ if (npio2 and 1) <> 0 then npio2 := npio2 + 1;
+ lphi := lphi - npio2 * PiO2;
+
+ if lphi < 0.0 then
+  begin
+   lphi := -lphi;
+   sign := -1;
+  end
+ else sign := 1;
+
+ a := 1.0 - m;
+ Ex := CompleteEllipticIntegral2ndKind(a);
+ if a = 0.0 then
+  begin
+   Result := sin(lphi);
+   goto done;
+  end;
+ t := tan(lphi);
+ b := sqrt(a);
+
+ (* Thanks to Brian Fitzgerald <fitzgb@mml0.meche.rpi.edu>
+    for pointing out an instability near odd multiples of Pi/2.  *)
+ if abs(t) > 10 then
+  begin
+   (* Transform the amplitude *)
+   e := 1 / (b * t);
+   (* ... but avoid multiple recursions.  *)
+   if abs(e) < 10 then
+    begin
+     e := ArcTan(e);
+     Result := Ex + m * sin(lphi) * sin(e) - IncompleteEllipticIntegral2ndKind(e, m);
+     goto done;
+    end;
+  end;
+ c := Sqrt(m);
+ a := 1.0;
+ d := 1;
+ e := 0.0;
+ md := 0;
+
+ while abs(c / a) > CMachEP do 
+  begin
+   Result := b / a;
+   lphi := lphi + arctan(t * Result) + md * Pi;
+   md := round ((lphi + PiO2) / Pi);
+   t := t * (1 + Result) / (1 - Result * sqr(t));
+   c := (a - b) * 0.5;
+   Result := sqrt(a * b);
+   a := (a + b) * 0.5;
+   b := Result;
+   d:= d + d;
+   e:= e + c * sin(lphi);
+  end;
+
+ Result := Ex / CompleteEllipticIntegral1stKind(1 - m);
+ Result := Result * (arctan(t) + md * Pi) / (d * a);
+ Result := Result + e;
+
+done:
+
+ if sign < 0 then  Result := -Result;
+ Result := Result + npio2 * Ex;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Incomplete elliptic integral of the first kind                            //
+//  ----------------------------------------------                            //
+//                                                                            //
+//  SYNOPSIS:                                                                 //
+//    function IncompleteEllipticIntegral1stKind(phi, m: Double): Double;     //
+//                                                                            //
+//                                                                            //
+//  DESCRIPTION:                                                              //
+//    Approximates the integral                                               //
+//                                                                            //
+//                   phi                                                      //
+//                    -                                                       //
+//                   |  |                                                     //
+//                   |           dt                                           //
+//    F(phi_\m)  =   |    ------------------                                  //
+//                   |                   2                                    //
+//                 | |    sqrt( 1 - m sin t )                                 //
+//                  -                                                         //
+//                  0                                                         //
+//                                                                            //
+//  of amplitude phi and modulus m, using the arithmetic - geometric mean     //
+//  algorithm.                                                                //
+//                                                                            //
+//                                                                            //
+// ACCURACY:                                                                  //
+//                                                                            //
+//   Tested at random points with m in [0, 1] and phi as indicated.           //
+//                                                                            //
+//                        Relative error:                                     //
+//   arithmetic   domain     # trials      peak         rms                   //
+//      IEEE     -10,10       200000      7.4E-16     1.0E-16                 //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function IncompleteEllipticIntegral1stKindX(phi, m: Double): Double;
+var
+  a, b, c, e, t, K   : Double;
+  d, md, sign, npio2 : Integer;
+label
+  done;  
+begin
+ if m = 0 then Result := (phi);
+ a := 1 - m;
+ if a = 0 then
+  begin
+   if abs(phi) >= PiO2 then
+    begin
+//     mtherr('IncompleteEllipticIntegral1stKind', SING);
+     Result := (MaxNum);
+    end;
+   Result:= log10(tan((PiO2 + phi) * 0.5));
+  end;
+ npio2 := floor(phi / PiO2);
+
+ if (npio2 and 1) <> 0
+  then npio2 := npio2 + 1;
+
+ if npio2 <> 0 then
+  begin
+   K := CompleteEllipticIntegral1stKind(a);
+   phi := phi - npio2 * PiO2;
+  end
+ else K := 0;
+
+ if phi < 0 then 
+  begin 
+   phi := -phi;
+   sign := -1;
+  end
+ else sign := 0;
+
+ b := sqrt(a);
+ t := tan(phi);
+ if abs(t) > 10 then
+  begin
+   (* Transform the amplitude *)
+   e := 1 / (b * t);
+
+   (* ... but avoid multiple recursions.  *)
+   if abs(e) < 10 then
+    begin 
+     e := arctan(e);
+     if (npio2 = 0) then K := CompleteEllipticIntegral1stKindX(a);
+     Result := K - IncompleteEllipticIntegral1stKindX(e, m);
+     goto done;
+    end;
+  end;
+
+ a := 1.0;
+ c := sqrt(m);
+ d := 1;
+ md := 0;
+
+ while abs(c / a) > CMachEP do
+  begin 
+   Result := b/a;
+   phi := phi + arctan(t * Result) + md * Pi;
+   md := round((phi + PiO2) / Pi);
+   t := t * (1.0 + Result) / (1.0 - Result * sqr(t));
+   c := (a - b) * 0.5;
+   Result := sqrt(a * b);
+   a := (a + b) * 0.5;
+   b := Result;
+   d:= d + d;
+  end;
+
+ Result := (arctan(t) + md * Pi) / (d * a);
+
+done:
+ if( sign < 0 ) then  Result := -Result;
+
+ Result := Result + npio2 * K;
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Complete elliptic integral of the first kind                              //
+//  --------------------------------------------                              //
+//                                                                            //
+//  SYNOPSIS:                                                                 //
+//    function CompleteEllipticIntegral1stKind(x: Double): Double;            //
+//                                                                            //
+//  DESCRIPTION:                                                              //
+//    Approximates the integral                                               //
+//                                                                            //
+//               Pi/2                                                         //
+//                -                                                           //
+//               | |                                                          //
+//               |          dt                                                //
+//    K(m)  =    |   ------------------                                       //
+//               |                  2                                         //
+//             | |   sqrt( 1 - m sin t )                                      //
+//              -                                                             //
+//              0                                                             //
+//                                                                            //
+//    where m = 1 - m1, using the approximation                               //
+//                                                                            //
+//      P(x)  -  log x Q(x).                                                  //
+//                                                                            //
+//    The argument m1 is used rather than m so that the logarithmic           //
+//    singularity at m := 1 will be shifted to the origin; this preserves     //
+//    maximum accuracy.                                                       //
+//                                                                            //
+//    K(0) = Pi/2.                                                            //
+//                                                                            //
+//  ACCURACY:                                                                 //
+//                                                                            //
+//                         Relative error:                                    //
+//    arithmetic   domain     # trials      peak         rms                  //
+//       DEC        0,1        16000       3.5E-17     1.1E-17                //
+//       IEEE       0,1        30000       2.5E-16     6.8E-17                //
+//                                                                            //
+//  ERROR MESSAGES:                                                           //
+//                                                                            //
+//                                   message  condition  value returned       //
+//   CompleteEllipticIntegral1stKind domain   x<0, x>1        0.0             //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function CompleteEllipticIntegral1stKindX(x: Double): Double;
+const
+  P : array [0..10] of Double = (1.37982864606273237150E-4,
+      2.28025724005875567385E-3, 7.97404013220415179367E-3,
+      9.85821379021226008714E-3, 6.87489687449949877925E-3,
+      6.18901033637687613229E-3, 8.79078273952743772254E-3,
+      1.49380448916805252718E-2, 3.08851465246711995998E-2,
+      9.65735902811690126535E-2, 1.38629436111989062502E0);
+
+  Q : array [0..10] of Double = (2.94078955048598507511E-5,
+      9.14184723865917226571E-4, 5.94058303753167793257E-3,
+      1.54850516649762399335E-2, 2.39089602715924892727E-2,
+      3.01204715227604046988E-2, 3.73774314173823228969E-2,
+      4.88280347570998239232E-2, 7.03124996963957469739E-2,
+      1.24999999999870820058E-1, 4.99999999999999999821E-1);
+
+ C1 : Double = 1.3862943611198906188E0;
+
+begin
+ if (x < 0) or (x > 1) then
+  begin
+//   mtherr( 'CompleteEllipticIntegral1stKind', DOMAIN );
+   Result := 0;
+  end;
+
+ if (x > CMachEP)
+  then Result := EvaluatePolynom11(x, @P[0], Length(P)) - log10(x) * EvaluatePolynom11(x, @Q[0], Length(Q))
+  else
+   if x = 0.0 then
+    begin
+//     mtherr( 'CompleteEllipticIntegral1stKind', SING);
+     Result := MaxNum;
+    end
+   else Result:= C1 - 0.5 * log10(x);
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Jacobian Elliptic Functions                                               //
+//                                                                            //
+//                                                                            //
+//  SYNOPSIS:                                                                 //
+//                                                                            //
+//   function JacobianEllipticFunctions(u, m: Double;                         //
+//     var sn, cn, dn, ph: Double): Integer;                                  //
+//                                                                            //
+//                                                                            //
+//  DESCRIPTION:                                                              //
+//    Evaluates the Jacobian elliptic functions sn(u | m), cn(u | m),         //
+//    and dn(u | m) of parameter m between 0 and 1, and Single                //
+//    argument u.                                                             //
+//                                                                            //
+//    These functions are periodic, with quarter-period on the                //
+//    Single axis equal to the complete elliptic integral                     //
+//    CompleteEllipticIntegral1stKind(1 - m).                                 //
+//                                                                            //
+//    Relation to incomplete elliptic integral:                               //
+//    If u = IncompleteEllipticIntegral1stKind(phi, m),                       //
+//      then sn(u | m) = sin(phi),                                            //
+//    and cn(u | m) = cos(phi).  Phi is called the amplitude of u.            //
+//                                                                            //
+//    Computation is by means of the arithmetic-geometric mean                //
+//    algorithm, except when m is within 1E-9 of 0 | 1.  In the               //
+//    latter  with m close to 1, the approximation applies                    //
+//    only for phi < Pi/2.                                                    //
+//                                                                            //
+//  ACCURACY:                                                                 //
+//                                                                            //
+//    Tested at random points with u between 0 and 10, m between              //
+//    0 and 1.                                                                //
+//                                                                            //
+//               Absolute error ( = relative error):                          //
+//    arithmetic   function   # trials      peak         rms                  //
+//       DEC       sn           1800       4.5E-16     8.7E-17                //
+//       IEEE      phi         10000       9.2E-16*    1.4E-16*               //
+//       IEEE      sn          50000       4.1E-15     4.6E-16                //
+//       IEEE      cn          40000       3.6E-15     4.4E-16                //
+//       IEEE      dn          10000       1.3E-12     1.8E-14                //
+//                                                                            //
+//    Peak error observed in consistency check using addition                 //
+//    theorem for sn(u+v) was 4E-16 (absolute).  Also tested by               //
+//    the above relation to the incomplete elliptic integral.                 //
+//    Accuracy deteriorates when u is large.                                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+function JacobianEllipticFunctions(u, m: Double; var sn, cn, dn, ph: Double): Integer;
+var
+  ai, b, phi : Double;
+  t, twon    : Double;
+  i          : Integer;
+  a          : array[0..8] of Double;
+  c          : array[0..8] of Double;
+label
+  done;  
+begin
+
+ (* Check for special cases *)
+ if (m < 0.0) or (m > 1.0) then
+  begin
+//   mtherr( 'JacobianEllipticFunctions', DOMAIN );
+   sn := 0.0;
+   cn := 0.0;
+   ph := 0.0;
+   dn := 0.0;
+   Result := -1;
+  end;
+ if (m < 1.0E-9) then
+  begin
+   t  := sin(u);
+   b  := cos(u);
+   ai := 0.25 * m * (u - t * b);
+   sn := t - ai * b;
+   cn := b + ai * t;
+   ph := u - ai;
+   dn := 1.0 - 0.5 * m * t * t;
+   Result := 0;
+  end;
+
+ if (m >= 0.9999999999) then
+  begin
+   ai   := 0.25 * (1.0-m);
+   b    := cosh(u);
+   t    := tanh(u);
+   phi  := 1.0 / b;
+   twon := b * sinh(u);
+   sn   := t + ai * (twon - u)/(b*b);
+   ph   := 2.0 * arctan(exp(u)) - PiO2 + ai * (twon - u) / b;
+   ai   := ai * t * phi;
+   cn   := phi - ai * (twon - u);
+   dn   := phi + ai * (twon + u);
+   Result := 0;
+  end;
+
+ (*  A. G. M. scale  *)
+ a[0] := 1;
+ b    := sqrt(1 - m);
+ c[0] := sqrt(m);
+ twon := 1;
+ i    := 0;
+
+ while abs(c[i] / a[i]) > CMachEP do
+  begin
+   if (i > 7) then
+    begin
+//     mtherr( 'JacobianEllipticFunctions', OVERFLOW );
+     goto done;
+    end;
+   ai := a[i];
+   inc(i);
+   c[i] := (ai - b) * 0.5;
+   t := sqrt(ai * b);
+   a[i] := (ai + b) * 0.5;
+   b := t;
+   twon:= twon * 2.0;
+  end;
+
+done:
+
+ (*  backward recurrence  *)
+ phi := twon * a[i] * u;
+ while i > 0 do
+  begin
+   t   := c[i] * sin(phi) / a[i];
+   b   := phi;
+   phi := (arcsin(t) + phi) * 0.5;
+   dec(i);
+  end;
+
+ sn := sin(phi);
+ t  := cos(phi);
+ cn := t;
+ dn := t / cos(phi - b);
+ ph := phi;
+ Result := 0;
+end;
+
+
+
+function PochhammerRisingSequentialProduct(x: Double; n: Integer): Double;
+var
+  Step : Integer;
+begin
+ Result := 1;
+ for Step := 1 to n
+  do Result := Result * ((x - 1) + Step);
+end;
+
+function PochhammerFallingSequentialProduct(x: Double; n: Integer): Double;
+var
+  Step : Integer;
+begin
+ Result := 1;
+ for Step := 1 to n
+  do Result := Result * (x - Step);
+end;
+
+function Pochhammer(x: Double; n: Integer): Double;
+begin
+ Result := PochhammerRisingSequentialProduct(x, n);
+end;
+
+function HypergeometricFunction2F1(a, b, c: Double; z: Double; Steps: Integer = 30): Double;
+var
+  n : Integer;
+begin
+ Assert(Steps > 0);
+
+ Result := 1;
+
+ for n := 1 to Steps do
+  begin
+   Result := Result + Pochhammer(a, n) * Pochhammer(b, n) * Power(z, n) /
+     (Pochhammer(c, n) * Factorial(n));
+  end;
+end;
+
+function SpecialPochhammer(k: Double; n: Integer): Double;
+var
+  Step : Integer;
+begin
+ Result := 1;
+ for Step := 1 to n
+  do Result := Result * (-0.5 + Step) * (-0.5 + k + Step) / ((0.5 + k + Step) * Step);
+end;
+
+function SpecialHypergeometricFunction(k: Double; z: Double; Steps: Integer = 5): Double;
+var
+  n : Integer;
+begin
+ Assert(Steps > 0);
+
+ Result := 1;
+
+ for n := 1 to Steps do
+  begin
+   Result := Result + SpecialPochhammer(k, n) * Power(z, 2 * n);
+  end;
+end;
+
+function InverseCd(z, m: Double; Steps: Integer): Double;
+var
+  i, j    : Integer;
+  Scale   : Extended;
+  Inner   : Extended;
+  PochFac : array [0..1] of Extended;
+begin
+(*
+ // constraints
+ assert(z > -1);
+ assert(z < +1);
+*)
+
+ Result := 0;
+ PochFac[0] := 1;
+ for i := 0 to Steps - 1 do
+  begin
+   if i > 0
+    then PochFac[0] := PochFac[0] * (-0.5 + i) / i;
+
+   PochFac[1] := 1;
+   for j := 0 to Steps - 1 do
+    begin
+     if j > 0
+      then PochFac[1] := PochFac[1] * (-0.5 + j) / j;
+     Result := Result + PochFac[0] * PochFac[1] *
+       Power(m, j) * Power(z, 2 * i + 2 * j + 1) /
+       (2 * i + 2 * j + 1);
+    end;
+  end;
+ Result := CompleteEllipticIntegral1stKind(sqrt(m)) - Result;
+
+(*
+ assert(abs(m) < 1);
+ Result := 0;
+ for i := 0 to Steps - 1 do
+  begin
+   Inner := 0;
+   for j := 1 to i
+    do Inner := Inner + Factorial(j - 1) * Power(z, 2 * j) / Pochhammer(0.5, j);
+
+   Inner := (arccos(z) + sqrt(1 - sqr(z)) / (2 * z) * Inner) * Power(m, i);
+
+   Result := Result + sqr(Pochhammer(0.5, i) / Factorial(i)) * Inner;
+  end;
+*)
+
+(*
+ Result := 0;
+ for i := 0 to Steps - 1 do
+  begin
+   Result := Result + (0.5 * Pi * sqr(Pochhammer(0.5, i) / Factorial(i)) -
+     (Pochhammer(0.5, i) * Power(z, 2 * i + 1)) /
+     ((2 * i + 1) * Factorial(i)) *
+     SpecialHypergeometricFunction(i, z)) * Power(m, i);
+  end;
+*)
+end;
+
+function InverseCd(z, m: TComplexDouble; Steps: Integer): TComplexDouble;
+begin
+ raise Exception.Create('not yet implemented');
+end;
+
+function CalculateLn(Order: Integer; Selectivity : Double): Double;
+var
+  t : array [0..1] of Double;
+begin
+ case Order of
+  1 : Result := Selectivity;
+  2 : Result := sqr(Selectivity + sqrt(sqr(Selectivity) + 1));
+  3 : begin
+       t[0] := sqrt(1 - sqr(1 / Selectivity));
+       t[1] := Power(2 * t[0] * (1 - 2 * t[0]), 1 / 3);
+       t[0] := 0.5 * (- (1 - 2 * t[0]) / sqrt(1 + t[1] + sqr(t[1])) - 1 +
+         sqrt(2 + t[1] + 2 * sqrt(1 + t[1] + sqr(t[1]))));
+       Result := sqr(1 + t[0]) * Selectivity * (sqr(Selectivity) -
+         ((1 + 2 * t[0]) / sqr(1 + t[0]))) / ((sqr(t[0]) - 1) * sqr(Selectivity) + 1); 
+      end;
+  4 : Result := sqr(sqr(sqrt(Selectivity) + Power(sqr(Selectivity) - 1, 0.25))) * sqr(Selectivity + Sqrt(Sqr(Selectivity) - 1));    
+//  4 : Result := sqr(Selectivity + sqrt(sqr(Selectivity) + 1));
+//  3 : Result :=
+//       Temp := sqrt(1 - sqr(1 / Selectivity));
+ end;
+end;
+
+function RationalEllipticFunction(Order: Integer; Selectivity, x : Double): Double;
+var
+  Ln : Double;
+begin
+ Ln := CalculateLn(Order, Selectivity);
+ Result := Cd(Order * CompleteEllipticIntegral1stKind(1 / Ln) /
+   CompleteEllipticIntegral1stKind(1 / Selectivity) *
+   InverseCd(x, 1 / Selectivity), 1 / Ln);
 end;
 
 end.

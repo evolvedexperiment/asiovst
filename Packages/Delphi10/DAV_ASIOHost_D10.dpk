@@ -32,7 +32,7 @@ requires
 
 contains
   DAV_ASIO in '..\..\Source\ASIO\DAV_ASIO.pas',
-  DAV_BeRoASIO in '..\..\Source\ASIO\DAV_BeRoASIO.pas',
+  DAV_AsioInterface in '..\..\Source\ASIO\DAV_AsioInterface.pas',
   DAV_OpenASIO in '..\..\Source\ASIO\DAV_OpenASIO.pas',
   DAV_ASIOHost in '..\..\Source\ASIO\DAV_ASIOHost.pas',
   DAV_ASIOConvert in '..\..\Source\ASIO\DAV_ASIOConvert.pas',

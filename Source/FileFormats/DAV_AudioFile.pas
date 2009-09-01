@@ -93,6 +93,7 @@ resourcestring
   RCStrFileAlreadyLoaded = 'File already loaded';
   RCStrStreamInUse = 'Stream is already in use';
   RCStrNoStreamAssigned = 'No stream assigned';
+  RCStrTooManySampleframes = 'Too many sampleframes!';
 
 procedure RegisterFileFormat(AClass: TAudioFileClass);
 var
@@ -156,7 +157,7 @@ end;
 constructor TCustomAudioFile.Create(const FileName: TFileName);
 begin
  if FileExists(FileName)
-  then Create(TFileStream.Create(FileName, fmOpenRead))
+  then Create(TFileStream.Create(FileName, fmOpenReadWrite))
   else Create(TFileStream.Create(FileName, fmCreate));
  FStreamOwned := True;
 end;
@@ -165,8 +166,9 @@ constructor TCustomAudioFile.Create(const Stream: TStream);
 begin
  Create;
  if CanLoad(Stream)
-  then LoadFromStream(Stream);
-
+  then LoadFromStream(Stream) else
+ if Stream.Size = 0
+  then SaveToStream(Stream);
  FStream := Stream;
 end;
 
@@ -195,7 +197,7 @@ begin
   then raise Exception.Create(RCStrNoStreamAssigned);
 
  if SamplePosition + SampleFrames > Self.SampleFrames
-  then raise Exception.Create('Too many sampleframes!');
+  then Self.SampleFrames := SamplePosition + SampleFrames;
 end;
 
 procedure TCustomAudioFile.Decode(SamplePosition: Cardinal; SampleFrames: Cardinal);
@@ -204,7 +206,7 @@ begin
   then raise Exception.Create(RCStrNoStreamAssigned);
 
  if SamplePosition + SampleFrames > Self.ChannelCount * Self.SampleFrames
-  then raise Exception.Create('Too many sampleframes!');
+  then raise Exception.Create(RCStrTooManySampleFrames);
 end;
 
 procedure TCustomAudioFile.Flush;
