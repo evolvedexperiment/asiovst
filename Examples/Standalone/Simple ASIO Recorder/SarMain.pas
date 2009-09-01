@@ -134,10 +134,8 @@ begin
   begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
-   for i := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
-     ChannelBox.Items.Add(
-       ASIOHost.OutputChannelInfos[2 * i].Name + ' / ' +
-       ASIOHost.OutputChannelInfos[2 * i + 1].Name);
+   for i := 0 to (ASIOHost.InputChannelCount) - 1
+    do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].Name);
 
    with TIniFile.Create(FIniFile) do
     try

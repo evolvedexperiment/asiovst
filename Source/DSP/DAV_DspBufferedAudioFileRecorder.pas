@@ -9,26 +9,21 @@ uses
   DAV_AudioFile, DAV_ChannelDataCoder;
 
 type
-  TBufferThread = class(TThread)
+  TCustomBufferThread = class(TThread)
   private
     FAudioFile        : TCustomAudioFile;
     FBufferSize       : Integer;
-    FBuffer           : TCircularBuffer32;
     FSampleRate       : Single;
-    FStreamBuffer     : PDAVSingleFixedArray;
     FStreamBufSize    : Integer;
     FTimeOut          : Integer;
     FAllowSuspend     : Boolean;
     FCurrentPosition  : Integer;
     FSubBlockPosition : Integer;
-    function GetBufferFill: Single;
     procedure SetBufferSize(const Value: Integer);
     procedure SetBlockSize(Value: Integer);
-    procedure EncodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
   protected
-    procedure Execute; override;
-    procedure BlockSizeChanged; virtual;
-    procedure BufferSizeChanged; virtual;
+    procedure BlockSizeChanged; virtual; abstract;
+    procedure BufferSizeChanged; virtual; abstract;
     procedure CalculateTimeOut; virtual;
     procedure SampleRateChanged; virtual;
     procedure AudioFileChanged; virtual;
@@ -36,7 +31,6 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure PutSamples(Data: PDAVSingleFixedArray; SampleFrames: Integer);
     procedure Reset;
 
     procedure OpenFile(FileName: TFileName);
@@ -46,9 +40,72 @@ type
     property BufferSize: Integer read FBufferSize write SetBufferSize;
     property BlockSize: Integer read FStreamBufSize write SetBlockSize;
     property SampleRate: Single read FSampleRate;
-    property BufferFill: Single read GetBufferFill;
 
     property AudioFile: TCustomAudioFile read FAudioFile;
+  end;
+
+  TMonoBufferThread = class(TCustomBufferThread)
+  private
+    FBuffer       : TCircularBuffer32;
+    FStreamBuffer : PDAVSingleFixedArray;
+    function GetBufferFill: Single;
+    procedure EncodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+  protected
+    procedure BlockSizeChanged; override;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Execute; override; 
+
+    procedure PutSamples(Data: PDAVSingleFixedArray; SampleFrames: Integer);
+
+    property BufferFill: Single read GetBufferFill;
+  end;
+
+  TStereoBufferThread = class(TCustomBufferThread)
+  private
+    FBuffer       : TCircularStereoBuffer32;
+    FStreamBuffer : array [0..1] of PDAVSingleFixedArray;
+    function GetBufferFill: Single;
+    procedure EncodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+  protected
+    procedure BlockSizeChanged; override;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Execute; override;
+
+    procedure PutSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
+
+    property BufferFill: Single read GetBufferFill;
+  end;
+
+  TMultiBufferThread = class(TCustomBufferThread)
+  private
+    FBuffer       : TCircularMultiBuffer32;
+    FChannelCount : Integer;
+    FStreamBuffer : TDAVArrayOfSingleFixedArray;
+    function GetBufferFill: Single;
+    procedure EncodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure SetChannelCount(const Value: Integer);
+    procedure ChannelCountChanged;
+  protected
+    procedure BlockSizeChanged; override;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Execute; override;
+
+    procedure PutSamples(Data: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
+
+    property BufferFill: Single read GetBufferFill;
+    property ChannelCount: Integer read FChannelCount write SetChannelCount;
   end;
 
   TBufferInterpolation = (biNone, biLinear, biHermite, biBSpline6Point5thOrder);
@@ -74,7 +131,7 @@ type
     procedure SetInterpolation(const Value: TBufferInterpolation);
     procedure SetPitch(const Value: Single);
   protected
-    FBufferThread : TBufferThread;
+    FBufferThread : TMonoBufferThread;
     procedure CalculatePitchFactor; virtual;
     procedure CalculateSampleRateRatio; virtual;
     procedure SampleRateChanged; virtual;
@@ -138,9 +195,9 @@ implementation
 uses
   Math, DAV_DspInterpolation;
 
-{ TBufferThread }
+{ TCustomBufferThread }
 
-constructor TBufferThread.Create;
+constructor TCustomBufferThread.Create;
 begin
  inherited Create(True);
  FBufferSize := 16384;
@@ -148,20 +205,165 @@ begin
  FStreamBufSize := 4096;
  FAllowSuspend := False;
  CalculateTimeOut;
+end;
+
+destructor TCustomBufferThread.Destroy;
+begin
+ FreeAndNil(FAudioFile);
+ inherited;
+end;
+
+procedure TCustomBufferThread.OpenFile(FileName: TFileName);
+var
+  AudioFileClass : TAudioFileClass;
+begin
+ AudioFileClass := FileNameToFormat(FileName);
+ if Assigned(AudioFileClass) then
+  begin
+   if assigned(FAudioFile)
+    then FreeAndNil(FAudioFile);
+
+   FAudioFile := AudioFileClass.Create(FileName);
+   FCurrentPosition := 0;
+  end;
+
+ AudioFileChanged;
+end;
+
+procedure TCustomBufferThread.OpenStream(Stream: TStream);
+var
+  AudioFileClass : TAudioFileClass;
+begin
+ AudioFileClass := StreamToFormat(Stream);
+ if Assigned(AudioFileClass) then
+  begin
+   if assigned(FAudioFile)
+    then FreeAndNil(FAudioFile);
+
+   FAudioFile := AudioFileClass.Create(Stream);
+   FCurrentPosition := 0;
+  end;
+
+ AudioFileChanged;
+end;
+
+procedure TCustomBufferThread.AudioFileChanged;
+begin
+ if assigned(FAudioFile) then
+  begin
+   FSampleRate := FAudioFile.SampleRate;
+   SampleRateChanged;
+  end;
+end;
+
+procedure TCustomBufferThread.Reset;
+begin
+ FCurrentPosition := 0;
+end;
+
+procedure TCustomBufferThread.CalculateTimeOut;
+begin
+ FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
+end;
+
+procedure TCustomBufferThread.SampleRateChanged;
+begin
+ CalculateTimeOut;
+end;
+
+procedure TCustomBufferThread.SetBlockSize(Value: Integer);
+begin
+ if Value > FBufferSize div 2
+  then Value := FBufferSize div 2;
+ 
+ if FStreamBufSize <> Value then
+  begin
+   FStreamBufSize := Value;
+   FAudioFile.BlockSize := FAudioFile.ChannelCount * FStreamBufSize;
+   BlockSizeChanged;
+  end;
+end;
+
+procedure TCustomBufferThread.SetBufferSize(const Value: Integer);
+begin
+ if FBufferSize <> Value then
+  begin
+   FBufferSize := Value;
+   if BlockSize > FBufferSize div 2
+    then BlockSize := FBufferSize div 2;
+
+   BufferSizeChanged;
+  end;
+end;
+
+
+{ TMonoBufferThread }
+
+constructor TMonoBufferThread.Create;
+begin
+ inherited Create;
 
  GetMem(FStreamBuffer, FStreamBufSize * SizeOf(Single));
  FBuffer := TCircularBuffer32.Create(FBufferSize);
 end;
 
-destructor TBufferThread.Destroy;
+destructor TMonoBufferThread.Destroy;
 begin
  Dispose(FStreamBuffer);
  FreeAndNil(FBuffer);
- FreeAndNil(FAudioFile);
  inherited;
 end;
 
-procedure TBufferThread.Execute;
+function TMonoBufferThread.GetBufferFill: Single;
+begin
+ result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize); 
+end;
+
+procedure TMonoBufferThread.PutSamples(Data: PDAVSingleFixedArray;
+  SampleFrames: Integer);
+var
+  SampleInBuffer: Integer;  
+begin
+ SampleInBuffer := FBuffer.SamplesInBuffer;
+ if (FBuffer.BufferSize - SampleInBuffer) > SampleFrames
+  then FBuffer.WriteBuffer(Data, SampleFrames)
+  else
+   begin
+    if SampleInBuffer > 0
+     then FBuffer.WriteBuffer(Data, (FBuffer.BufferSize - SampleInBuffer));
+    // eventually enlarge buffer here!
+   end;
+end;
+
+procedure TMonoBufferThread.BufferSizeChanged;
+begin
+ FBuffer.BufferSize := FBufferSize;
+end;
+
+procedure TMonoBufferThread.BlockSizeChanged;
+begin
+ ReallocMem(FStreamBuffer, FStreamBufSize * SizeOf(Single));
+end;
+
+procedure TMonoBufferThread.EncodeHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  begin
+   if ChannelCount = 0 then Exit else
+   if ChannelCount = 1
+    then Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single))
+    else
+     begin
+      Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single));
+      Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[1]^[0], SampleFrames * SizeOf(Single));
+     end;
+   FSubBlockPosition := FSubBlockPosition + SampleFrames;
+  end;
+end;
+
+procedure TMonoBufferThread.Execute;
 var
   IdleLoops: Integer;
 begin
@@ -190,15 +392,135 @@ begin
   end;
 end;
 
-function TBufferThread.GetBufferFill: Single;
+
+{ TStereoBufferThread }
+
+constructor TStereoBufferThread.Create;
 begin
- result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize); 
+ inherited Create;
+
+ GetMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
+ GetMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
+ FBuffer := TCircularStereoBuffer32.Create(FBufferSize);
 end;
 
-procedure TBufferThread.PutSamples(Data: PDAVSingleFixedArray;
+destructor TStereoBufferThread.Destroy;
+begin
+ Dispose(FStreamBuffer[0]);
+ Dispose(FStreamBuffer[1]);
+ FreeAndNil(FBuffer);
+ inherited;
+end;
+
+function TStereoBufferThread.GetBufferFill: Single;
+begin
+ result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+end;
+
+procedure TStereoBufferThread.PutSamples(Left, Right: PDAVSingleFixedArray;
   SampleFrames: Integer);
 var
-  SampleInBuffer: Integer;  
+  SampleInBuffer: Integer;
+begin
+ SampleInBuffer := FBuffer.SamplesInBuffer;
+ if (FBuffer.BufferSize - SampleInBuffer) > SampleFrames
+  then FBuffer.WriteBuffer(Left, Right, SampleFrames)
+  else
+   begin
+    if SampleInBuffer > 0
+     then FBuffer.WriteBuffer(Left, Right, (FBuffer.BufferSize - SampleInBuffer));
+    // eventually enlarge buffer here!
+   end;
+end;
+
+
+procedure TStereoBufferThread.BufferSizeChanged;
+begin
+ FBuffer.BufferSize := FBufferSize;
+end;
+
+procedure TStereoBufferThread.BlockSizeChanged;
+begin
+ ReallocMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
+ ReallocMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
+end;
+
+procedure TStereoBufferThread.EncodeHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+begin
+ assert(Coder is TCustomChannel32DataCoder);
+ with TCustomChannel32DataCoder(Coder) do
+  begin
+   if ChannelCount = 0 then Exit else
+   if ChannelCount = 1
+    then Move(FStreamBuffer[0]^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single))
+    else
+     begin
+      Move(FStreamBuffer[0]^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single));
+      Move(FStreamBuffer[1]^[FSubBlockPosition], ChannelPointer[1]^[0], SampleFrames * SizeOf(Single));
+     end;
+   FSubBlockPosition := FSubBlockPosition + SampleFrames;
+  end;
+end;
+
+procedure TStereoBufferThread.Execute;
+var
+  IdleLoops: Integer;
+begin
+ IdleLoops := 20;
+ while not Terminated do
+  begin
+   while (not Terminated) and
+     (FBuffer.SamplesInBuffer > FStreamBufSize) do
+    begin
+     IdleLoops := 20;
+
+     FBuffer.ReadBuffer(FStreamBuffer[0], FStreamBuffer[1], FStreamBufSize);
+     if assigned(FAudioFile) then
+      begin
+       FAudioFile.OnEncode := EncodeHandler;
+       FSubBlockPosition := 0;
+       FAudioFile.Encode(FCurrentPosition * FAudioFile.ChannelCount, FStreamBufSize);
+       Inc(FCurrentPosition, FStreamBufSize);
+      end;
+    end;
+
+   Dec(IdleLoops);
+   if FAllowSuspend and (IdleLoops <= 0)
+    then Suspend
+    else Sleep(FTimeOut);
+  end;
+end;
+
+
+{ TMultiBufferThread }
+
+constructor TMultiBufferThread.Create;
+begin
+ inherited Create;
+
+ GetMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
+ GetMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
+ FBuffer := TCircularMultiBuffer32.Create(FBufferSize);
+end;
+
+destructor TMultiBufferThread.Destroy;
+begin
+ Dispose(FStreamBuffer[0]);
+ Dispose(FStreamBuffer[1]);
+ FreeAndNil(FBuffer);
+ inherited;
+end;
+
+function TMultiBufferThread.GetBufferFill: Single;
+begin
+ result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+end;
+
+procedure TMultiBufferThread.PutSamples(Data: TDAVArrayOfSingleFixedArray;
+  SampleFrames: Integer);
+var
+  SampleInBuffer: Integer;
 begin
  SampleInBuffer := FBuffer.SamplesInBuffer;
  if (FBuffer.BufferSize - SampleInBuffer) > SampleFrames
@@ -207,45 +529,22 @@ begin
    begin
     if SampleInBuffer > 0
      then FBuffer.WriteBuffer(Data, (FBuffer.BufferSize - SampleInBuffer));
-    // eventually enlarge buffer here! 
+    // eventually enlarge buffer here!
    end;
 end;
 
-procedure TBufferThread.OpenFile(FileName: TFileName);
-var
-  AudioFileClass : TAudioFileClass;
+procedure TMultiBufferThread.BufferSizeChanged;
 begin
- AudioFileClass := FileNameToFormat(FileName);
- if Assigned(AudioFileClass) then
-  begin
-   if assigned(FAudioFile)
-    then FreeAndNil(FAudioFile);
-
-   FAudioFile := AudioFileClass.Create(FileName);
-   FCurrentPosition := 0;
-  end;
-
- AudioFileChanged;
+ FBuffer.BufferSize := FBufferSize;
 end;
 
-procedure TBufferThread.OpenStream(Stream: TStream);
-var
-  AudioFileClass : TAudioFileClass;
+procedure TMultiBufferThread.BlockSizeChanged;
 begin
- AudioFileClass := StreamToFormat(Stream);
- if Assigned(AudioFileClass) then
-  begin
-   if assigned(FAudioFile)
-    then FreeAndNil(FAudioFile);
-
-   FAudioFile := AudioFileClass.Create(Stream);
-   FCurrentPosition := 0;
-  end;
-
- AudioFileChanged;
+ ReallocMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
+ ReallocMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
 end;
 
-procedure TBufferThread.EncodeHandler(Sender: TObject;
+procedure TMultiBufferThread.EncodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 begin
  assert(Coder is TCustomChannel32DataCoder);
@@ -253,73 +552,75 @@ begin
   begin
    if ChannelCount = 0 then Exit else
    if ChannelCount = 1
-    then Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single))
+    then Move(FStreamBuffer[0]^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single))
     else
      begin
-      Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single));
-      Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[1]^[0], SampleFrames * SizeOf(Single));
+      Move(FStreamBuffer[0]^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single));
+      Move(FStreamBuffer[1]^[FSubBlockPosition], ChannelPointer[1]^[0], SampleFrames * SizeOf(Single));
      end;
    FSubBlockPosition := FSubBlockPosition + SampleFrames;
   end;
 end;
 
-procedure TBufferThread.AudioFileChanged;
+procedure TMultiBufferThread.Execute;
+var
+  IdleLoops: Integer;
 begin
- if assigned(FAudioFile) then
+ IdleLoops := 20;
+ while not Terminated do
   begin
-   FSampleRate := FAudioFile.SampleRate;
-   SampleRateChanged;
+   while (not Terminated) and
+     (FBuffer.SamplesInBuffer > FStreamBufSize) do
+    begin
+     IdleLoops := 20;
+
+     FBuffer.ReadBuffer(FStreamBuffer, FStreamBufSize);
+     if assigned(FAudioFile) then
+      begin
+       FAudioFile.OnEncode := EncodeHandler;
+       FSubBlockPosition := 0;
+       FAudioFile.Encode(FCurrentPosition * FAudioFile.ChannelCount, FStreamBufSize);
+       Inc(FCurrentPosition, FStreamBufSize);
+      end;
+    end;
+
+   Dec(IdleLoops);
+   if FAllowSuspend and (IdleLoops <= 0)
+    then Suspend
+    else Sleep(FTimeOut);
   end;
 end;
 
-procedure TBufferThread.Reset;
+procedure TMultiBufferThread.SetChannelCount(const Value: Integer);
 begin
- FCurrentPosition := 0;
-end;
-
-procedure TBufferThread.BufferSizeChanged;
-begin
- FBuffer.BufferSize := FBufferSize;
-end;
-
-procedure TBufferThread.BlockSizeChanged;
-begin
- ReallocMem(FStreamBuffer, FStreamBufSize * SizeOf(Single));
-end;
-
-procedure TBufferThread.CalculateTimeOut;
-begin
- FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
-end;
-
-procedure TBufferThread.SampleRateChanged;
-begin
- CalculateTimeOut;
-end;
-
-procedure TBufferThread.SetBlockSize(Value: Integer);
-begin
- if Value > FBufferSize div 2
-  then Value := FBufferSize div 2;
- 
- if FStreamBufSize <> Value then
+ if FChannelCount <> Value then
   begin
-   FStreamBufSize := Value;
-   FAudioFile.BlockSize := FAudioFile.ChannelCount * FStreamBufSize;
-   BlockSizeChanged;
+   FChannelCount := Value;
+   ChannelCountChanged;
   end;
 end;
 
-procedure TBufferThread.SetBufferSize(const Value: Integer);
+procedure TMultiBufferThread.ChannelCountChanged;
+var
+  Channel         : Integer;
+  OldChannelCount : Integer;
 begin
- if FBufferSize <> Value then
+ if ChannelCount < Length(FStreamBuffer) then
   begin
-   FBufferSize := Value;
-   if BlockSize > FBufferSize div 2
-    then BlockSize := FBufferSize div 2;
-   
-   BufferSizeChanged;
+   for Channel := Length(FStreamBuffer) - 1 downto ChannelCount
+    do Dispose(FStreamBuffer[Channel]);
+   SetLength(FStreamBuffer, ChannelCount);
+  end else
+ if ChannelCount > Length(FStreamBuffer) then
+  begin
+   SetLength(FStreamBuffer, ChannelCount);
+   for Channel := FBuffer.ChannelCount to ChannelCount - 1 do
+    begin
+     ReallocMem(FStreamBuffer[Channel], FStreamBufSize * SizeOf(Single));
+     FillChar(FStreamBuffer[Channel]^, FStreamBufSize * SizeOf(Single), 0);
+    end;
   end;
+ FBuffer.ChannelCount := FChannelCount;
 end;
 
 { TCustomBufferedAudioRecorder }
@@ -330,8 +631,8 @@ begin
  FSampleRate := 44100;
  FPitchFactor := 1;
  FRatio := 1;
- FAllowSuspend := False; 
- FBufferThread := TBufferThread.Create;
+ FAllowSuspend := False;
+ FBufferThread := TMonoBufferThread.Create;
  FBufferThread.Priority := tpNormal;
  FBufferThread.AllowSuspend := FAllowSuspend;
 end;

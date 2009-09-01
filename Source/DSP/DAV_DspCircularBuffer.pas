@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon;
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
   TCustomCircularBuffer = class(TDspObject)
@@ -75,6 +75,54 @@ type
     function WriteBuffer(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
   end;
 
+  TCustomCircularMultiBuffer = class(TCustomCircularBuffer)
+  private
+    FChannelCount          : Integer;
+    FOnChannelCountChanged : TNotifyEvent;
+    procedure SetChannelCount(const Value: Integer);
+  protected
+    procedure ChannelCountChanged; virtual;
+  public
+    constructor Create(const BufferSize: Integer = 0); override;
+
+    property ChannelCount: Integer read FChannelCount write SetChannelCount default 1;
+    property OnChannelCountChanged: TNotifyEvent read FOnChannelCountChanged write FOnChannelCountChanged;
+  end;
+
+  TCustomCircularMultiBuffer32 = class(TCustomCircularMultiBuffer)
+  private
+    procedure AllocateChannelData(Channel: Integer);
+  protected
+    FBuffer : array of PDAVSingleFixedArray;
+    procedure BufferSizeChanged; override;
+    procedure ChannelCountChanged; override;
+  public
+    constructor Create(const BufferSize: Integer = 0); override;
+    destructor Destroy; override;
+
+    procedure Reset; override;
+
+    function ReadBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer; overload;
+    function WriteBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer; overload;
+  end;
+
+  TCustomCircularMultiBuffer64 = class(TCustomCircularMultiBuffer)
+  private
+    procedure AllocateChannelData(Channel: Integer);
+  protected
+    FBuffer : array of PDAVDoubleFixedArray;
+    procedure BufferSizeChanged; override;
+    procedure ChannelCountChanged; override;
+  public
+    constructor Create(const BufferSize: Integer = 0); override;
+    destructor Destroy; override;
+
+    procedure Reset; override;
+
+    function ReadBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer; overload;
+    function WriteBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer; overload;
+  end;
+
   TCircularBuffer32 = class(TCustomCircularBuffer32)
   published
     property BufferSize;
@@ -96,6 +144,20 @@ type
   TCircularStereoBuffer64 = class(TCustomCircularStereoBuffer64)
   published
     property BufferSize;
+    property SamplesInBuffer;
+  end;
+
+  TCircularMultiBuffer32 = class(TCustomCircularMultiBuffer32)
+  published
+    property BufferSize;
+    property ChannelCount;
+    property SamplesInBuffer;
+  end;
+
+  TCircularMultiBuffer64 = class(TCustomCircularMultiBuffer64)
+  published
+    property BufferSize;
+    property ChannelCount;
     property SamplesInBuffer;
   end;
 
@@ -470,6 +532,284 @@ begin
   begin
    Move( Left^[0], FBuffer[0]^[FWriteBufferPos], Result * SizeOf(Double));
    Move(Right^[0], FBuffer[1]^[FWriteBufferPos], Result * SizeOf(Double));
+   FWriteBufferPos := FWriteBufferPos + Result;
+  end;
+end;
+
+{ TCustomCircularMultiBuffer }
+
+constructor TCustomCircularMultiBuffer.Create(const BufferSize: Integer);
+begin
+ inherited Create(Buffersize);
+ FChannelCount := 1;
+ ChannelCountChanged;
+end;
+
+procedure TCustomCircularMultiBuffer.ChannelCountChanged;
+begin
+ if assigned(FOnChannelCountChanged)
+  then FOnChannelCountChanged(Self);
+end;
+
+procedure TCustomCircularMultiBuffer.SetChannelCount(const Value: Integer);
+begin
+ if FChannelCount <> Value then
+  begin
+   FChannelCount := Value;
+   ChannelCountChanged;
+  end;
+end;
+
+{ TCustomCircularMultiBuffer32 }
+
+constructor TCustomCircularMultiBuffer32.Create(const BufferSize: Integer);
+begin
+ inherited Create(Buffersize);
+end;
+
+destructor TCustomCircularMultiBuffer32.Destroy;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannelCount - 1
+  do Dispose(FBuffer[Channel]);
+ inherited;
+end;
+
+procedure TCustomCircularMultiBuffer32.ChannelCountChanged;
+var
+  Channel         : Integer;
+  OldChannelCount : Integer;
+begin
+ if ChannelCount < Length(FBuffer) then
+  begin
+   for Channel := Length(FBuffer) - 1 downto ChannelCount
+    do Dispose(FBuffer[Channel]);
+   SetLength(FBuffer, ChannelCount);
+  end else
+ if ChannelCount > Length(FBuffer) then
+  begin
+   OldChannelCount := Length(FBuffer);
+   SetLength(FBuffer, ChannelCount);
+   for Channel := OldChannelCount to ChannelCount - 1
+    do AllocateChannelData(Channel);
+  end;
+ inherited;
+end;
+
+procedure TCustomCircularMultiBuffer32.BufferSizeChanged;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannelCount - 1
+  do AllocateChannelData(Channel);
+end;
+
+procedure TCustomCircularMultiBuffer32.AllocateChannelData(Channel: Integer);
+begin
+ ReallocMem(FBuffer[Channel], FBufferSize * SizeOf(Single));
+ FillChar(FBuffer[Channel]^, FBufferSize * SizeOf(Single), 0);
+end;
+
+procedure TCustomCircularMultiBuffer32.Reset;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannelCount - 1
+  do FillChar(FBuffer[Channel]^, FBufferSize * SizeOf(Single), 0);
+ inherited;
+end;
+
+function TCustomCircularMultiBuffer32.ReadBuffer(
+  const Data: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Integer): Integer;
+var
+  Channel        : Integer;
+  PartialSamples : Integer;
+begin
+ Assert(Length(Data) >= ChannelCount);
+
+ if SampleFrames < SamplesInBuffer
+  then Result := SampleFrames
+  else Result := SamplesInBuffer;
+
+ if FReadBufferPos + Result >= FBufferSize then
+  begin
+   PartialSamples := FBufferSize - FReadBufferPos;
+   for Channel := 0 to ChannelCount - 1 do
+    begin
+     Move(FBuffer[Channel]^[FReadBufferPos],  Data[Channel]^[0], PartialSamples * SizeOf(Single));
+     Move(FBuffer[Channel]^[0],  Data[Channel]^[PartialSamples], (Result - PartialSamples) * SizeOf(Single));
+    end;
+
+   FReadBufferPos := (Result - PartialSamples);
+
+   if FReadBufferPos >= FBufferSize
+    then FReadBufferPos := FReadBufferPos - FBufferSize;
+  end
+ else
+  begin
+   for Channel := 0 to ChannelCount - 1
+    do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
+   FReadBufferPos := FReadBufferPos + Result;
+  end;
+end;
+
+function TCustomCircularMultiBuffer32.WriteBuffer(
+  const Data: TDAVArrayOfSingleFixedArray;
+  const SampleFrames: Integer): Integer;
+var
+  Channel        : Integer;
+  PartialSamples : Integer;
+begin
+ if SampleFrames < (FBufferSize - SamplesInBuffer)
+  then Result := SampleFrames
+  else Result := (FBufferSize - SamplesInBuffer);
+
+ if FWriteBufferPos + Result >= FBufferSize then
+  begin
+   PartialSamples := FBufferSize - FWriteBufferPos;
+   for Channel := 0 to ChannelCount - 1 do
+    begin
+     Move(Data[Channel]^[0], FBuffer[0]^[FWriteBufferPos], PartialSamples * SizeOf(Single));
+     Move(Data[Channel]^[PartialSamples], FBuffer[1]^[PartialSamples], (Result - PartialSamples) * SizeOf(Single));
+    end;
+   FWriteBufferPos := (Result - PartialSamples);
+
+   if FWriteBufferPos >= FBufferSize
+    then FWriteBufferPos := FWriteBufferPos - FBufferSize;
+  end
+ else
+  begin
+   for Channel := 0 to ChannelCount - 1
+    do Move(Data[Channel]^[0], FBuffer[0]^[FWriteBufferPos], Result * SizeOf(Single));
+   FWriteBufferPos := FWriteBufferPos + Result;
+  end;
+end;
+
+{ TCustomCircularMultiBuffer64 }
+
+constructor TCustomCircularMultiBuffer64.Create(const BufferSize: Integer);
+begin
+ inherited Create(Buffersize);
+end;
+
+destructor TCustomCircularMultiBuffer64.Destroy;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannelCount - 1
+  do Dispose(FBuffer[Channel]);
+ inherited;
+end;
+
+procedure TCustomCircularMultiBuffer64.ChannelCountChanged;
+var
+  Channel         : Integer;
+  OldChannelCount : Integer;
+begin
+ if ChannelCount < Length(FBuffer) then
+  begin
+   for Channel := Length(FBuffer) - 1 downto ChannelCount
+    do Dispose(FBuffer[Channel]);
+   SetLength(FBuffer, ChannelCount);
+  end else
+ if ChannelCount > Length(FBuffer) then
+  begin
+   OldChannelCount := Length(FBuffer);
+   SetLength(FBuffer, ChannelCount);
+   for Channel := OldChannelCount to ChannelCount - 1
+    do AllocateChannelData(Channel);
+  end;
+ inherited;
+end;
+
+procedure TCustomCircularMultiBuffer64.BufferSizeChanged;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannelCount - 1
+  do AllocateChannelData(Channel);
+end;
+
+procedure TCustomCircularMultiBuffer64.AllocateChannelData(Channel: Integer);
+begin
+ ReallocMem(FBuffer[Channel], FBufferSize * SizeOf(Double));
+ FillChar(FBuffer[Channel]^, FBufferSize * SizeOf(Double), 0);
+end;
+
+procedure TCustomCircularMultiBuffer64.Reset;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannelCount - 1
+  do FillChar(FBuffer[Channel]^, FBufferSize * SizeOf(Double), 0);
+ inherited;
+end;
+
+function TCustomCircularMultiBuffer64.ReadBuffer(
+  const Data: TDAVArrayOfDoubleFixedArray;
+  const SampleFrames: Integer): Integer;
+var
+  Channel        : Integer;
+  PartialSamples : Integer;
+begin
+ Assert(Length(Data) >= ChannelCount);
+
+ if SampleFrames < SamplesInBuffer
+  then Result := SampleFrames
+  else Result := SamplesInBuffer;
+
+ if FReadBufferPos + Result >= FBufferSize then
+  begin
+   PartialSamples := FBufferSize - FReadBufferPos;
+   for Channel := 0 to ChannelCount - 1 do
+    begin
+     Move(FBuffer[Channel]^[FReadBufferPos],  Data[Channel]^[0], PartialSamples * SizeOf(Double));
+     Move(FBuffer[Channel]^[0],  Data[Channel]^[PartialSamples], (Result - PartialSamples) * SizeOf(Double));
+    end;
+
+   FReadBufferPos := (Result - PartialSamples);
+
+   if FReadBufferPos >= FBufferSize
+    then FReadBufferPos := FReadBufferPos - FBufferSize;
+  end
+ else
+  begin
+   for Channel := 0 to ChannelCount - 1
+    do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Double));
+   FReadBufferPos := FReadBufferPos + Result;
+  end;
+end;
+
+function TCustomCircularMultiBuffer64.WriteBuffer(
+  const Data: TDAVArrayOfDoubleFixedArray;
+  const SampleFrames: Integer): Integer;
+var
+  Channel        : Integer;
+  PartialSamples : Integer;
+begin
+ if SampleFrames < (FBufferSize - SamplesInBuffer)
+  then Result := SampleFrames
+  else Result := (FBufferSize - SamplesInBuffer);
+
+ if FWriteBufferPos + Result >= FBufferSize then
+  begin
+   PartialSamples := FBufferSize - FWriteBufferPos;
+   for Channel := 0 to ChannelCount - 1 do
+    begin
+     Move(Data[Channel]^[0], FBuffer[0]^[FWriteBufferPos], PartialSamples * SizeOf(Double));
+     Move(Data[Channel]^[PartialSamples], FBuffer[1]^[PartialSamples], (Result - PartialSamples) * SizeOf(Double));
+    end;
+   FWriteBufferPos := (Result - PartialSamples);
+
+   if FWriteBufferPos >= FBufferSize
+    then FWriteBufferPos := FWriteBufferPos - FBufferSize;
+  end
+ else
+  begin
+   for Channel := 0 to ChannelCount - 1
+    do Move(Data[Channel]^[0], FBuffer[0]^[FWriteBufferPos], Result * SizeOf(Double));
    FWriteBufferPos := FWriteBufferPos + Result;
   end;
 end;
