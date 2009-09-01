@@ -199,7 +199,7 @@ end;
 procedure TFmRecordAudio.ASIOHostBufferSwitch32(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
- FBufferedRecorder.PutSamples(InBuffer[0], InBuffer[1], ASIOHost.Buffersize);
+ FBufferedRecorder.PutSamples(InBuffer[0], ASIOHost.Buffersize);
 end;
 
 end.

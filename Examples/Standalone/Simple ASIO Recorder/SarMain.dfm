@@ -25,9 +25,9 @@ object FmRecordAudio: TFmRecordAudio
   object LbChannels: TLabel
     Left = 7
     Top = 36
-    Width = 77
+    Width = 72
     Height = 13
-    Caption = 'Input Channels:'
+    Caption = 'Input Channel:'
   end
   object LbRecordedFile: TLabel
     Left = 8

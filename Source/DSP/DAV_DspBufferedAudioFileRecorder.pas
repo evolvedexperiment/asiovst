@@ -13,9 +13,9 @@ type
   private
     FAudioFile        : TCustomAudioFile;
     FBufferSize       : Integer;
-    FBuffer           : TCircularStereoBuffer32;
+    FBuffer           : TCircularBuffer32;
     FSampleRate       : Single;
-    FStreamBuffer     : array [0..1] of PDAVSingleFixedArray;
+    FStreamBuffer     : PDAVSingleFixedArray;
     FStreamBufSize    : Integer;
     FTimeOut          : Integer;
     FAllowSuspend     : Boolean;
@@ -36,7 +36,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure PutSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
+    procedure PutSamples(Data: PDAVSingleFixedArray; SampleFrames: Integer);
     procedure Reset;
 
     procedure OpenFile(FileName: TFileName);
@@ -84,7 +84,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    procedure PutSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
+    procedure PutSamples(Data: PDAVSingleFixedArray; SampleFrames: Integer);
     procedure Reset;
 
     property AllowSuspend: Boolean read FAllowSuspend write SetAllowSuspend;
@@ -149,16 +149,13 @@ begin
  FAllowSuspend := False;
  CalculateTimeOut;
 
- GetMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
- GetMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
-
- FBuffer := TCircularStereoBuffer32.Create(FBufferSize);
+ GetMem(FStreamBuffer, FStreamBufSize * SizeOf(Single));
+ FBuffer := TCircularBuffer32.Create(FBufferSize);
 end;
 
 destructor TBufferThread.Destroy;
 begin
- Dispose(FStreamBuffer[0]);
- Dispose(FStreamBuffer[1]);
+ Dispose(FStreamBuffer);
  FreeAndNil(FBuffer);
  FreeAndNil(FAudioFile);
  inherited;
@@ -176,7 +173,7 @@ begin
     begin
      IdleLoops := 20;
 
-     FBuffer.ReadBuffer(FStreamBuffer[0], FStreamBuffer[1], FStreamBufSize);
+     FBuffer.ReadBuffer(FStreamBuffer, FStreamBufSize);
      if assigned(FAudioFile) then
       begin
        FAudioFile.OnEncode := EncodeHandler;
@@ -198,18 +195,18 @@ begin
  result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize); 
 end;
 
-procedure TBufferThread.PutSamples(Left, Right: PDAVSingleFixedArray;
+procedure TBufferThread.PutSamples(Data: PDAVSingleFixedArray;
   SampleFrames: Integer);
 var
   SampleInBuffer: Integer;  
 begin
  SampleInBuffer := FBuffer.SamplesInBuffer;
  if (FBuffer.BufferSize - SampleInBuffer) > SampleFrames
-  then FBuffer.WriteBuffer(Left, Right, SampleFrames)
+  then FBuffer.WriteBuffer(Data, SampleFrames)
   else
    begin
     if SampleInBuffer > 0
-     then FBuffer.WriteBuffer(Left, Right, (FBuffer.BufferSize - SampleInBuffer));
+     then FBuffer.WriteBuffer(Data, (FBuffer.BufferSize - SampleInBuffer));
     // eventually enlarge buffer here! 
    end;
 end;
@@ -256,11 +253,11 @@ begin
   begin
    if ChannelCount = 0 then Exit else
    if ChannelCount = 1
-    then Move(FStreamBuffer[0]^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single))
+    then Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single))
     else
      begin
-      Move(FStreamBuffer[0]^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single));
-      Move(FStreamBuffer[1]^[FSubBlockPosition], ChannelPointer[1]^[0], SampleFrames * SizeOf(Single));
+      Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[0]^[0], SampleFrames * SizeOf(Single));
+      Move(FStreamBuffer^[FSubBlockPosition], ChannelPointer[1]^[0], SampleFrames * SizeOf(Single));
      end;
    FSubBlockPosition := FSubBlockPosition + SampleFrames;
   end;
@@ -287,8 +284,7 @@ end;
 
 procedure TBufferThread.BlockSizeChanged;
 begin
- ReallocMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
- ReallocMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
+ ReallocMem(FStreamBuffer, FStreamBufSize * SizeOf(Single));
 end;
 
 procedure TBufferThread.CalculateTimeOut;
@@ -467,7 +463,7 @@ begin
  FRatio := FPitchFactor * FBufferThread.SampleRate / FSampleRate;
 end;
 
-procedure TCustomBufferedAudioRecorder.PutSamples(Left, Right: PDAVSingleFixedArray;
+procedure TCustomBufferedAudioRecorder.PutSamples(Data: PDAVSingleFixedArray;
   SampleFrames: Integer);
 var
   Sample : Integer;  
@@ -475,7 +471,7 @@ begin
  // eventually reactivate thread
  if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Resume;
  if FRatio = 1
-  then FBufferThread.PutSamples(Left, Right, SampleFrames)
+  then FBufferThread.PutSamples(Data, SampleFrames)
   else raise Exception.Create('not yet implemented');
 (*
    case FInterpolation of
