@@ -2,8 +2,7 @@ program SimpleAsioRecorder;
 
 uses
   Forms,
-  SarMain in 'SarMain.pas' {FmRecordAudio},
-  DAV_DspBufferedAudioFileRecorder in '..\..\..\..\VSTPack\Source\DSP\DAV_DspBufferedAudioFileRecorder.pas';
+  SarMain in 'SarMain.pas' {FmRecordAudio};
 
 {$R *.res}
 

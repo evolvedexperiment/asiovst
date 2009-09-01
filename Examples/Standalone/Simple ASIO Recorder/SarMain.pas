@@ -21,7 +21,7 @@ type
     LbBufferValue: TLabel;
     LbChannels: TLabel;
     LbDrivername: TLabel;
-    LbMp3File: TLabel;
+    LbRecordedFile: TLabel;
     Timer: TTimer;
     SaveDialog: TSaveDialog;
     procedure FormCreate(Sender: TObject);
@@ -88,7 +88,8 @@ begin
    if DriverCombo.ItemIndex >= 0 then
      DriverComboChange(DriverCombo);
    ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
-   EdFile.Text := ReadString('Audio', 'MP3 File', EdFile.Text);
+   EdFile.Text := ReadString('Audio', 'File', EdFile.Text);
+   EdFileChange(Self);
    BtStartStop.Enabled := (EdFile.Text <> '') and (DriverCombo.ItemIndex >= 0);
   finally
    Free;
@@ -103,7 +104,7 @@ begin
     WriteInteger('Layout', 'Audio Top', Top);
     WriteInteger('Audio', 'ASIO Driver', DriverCombo.ItemIndex);
     WriteInteger('Audio', 'Channels', ChannelBox.ItemIndex);
-    WriteString('Audio', 'MP3 File', EdFile.Text);
+    WriteString('Audio', 'File', EdFile.Text);
    finally
     Free;
    end;

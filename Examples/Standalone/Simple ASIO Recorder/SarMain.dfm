@@ -29,7 +29,7 @@ object FmRecordAudio: TFmRecordAudio
     Height = 13
     Caption = 'Input Channels:'
   end
-  object LbMp3File: TLabel
+  object LbRecordedFile: TLabel
     Left = 8
     Top = 60
     Width = 20
@@ -96,6 +96,7 @@ object FmRecordAudio: TFmRecordAudio
     Width = 303
     Height = 21
     TabOrder = 4
+    Text = 'Test.wav'
     OnChange = EdFileChange
   end
   object BtSelect: TButton

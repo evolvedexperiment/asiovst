@@ -333,6 +333,7 @@ begin
  inherited;
  FSampleRate := 44100;
  FPitchFactor := 1;
+ FRatio := 1;
  FAllowSuspend := False; 
  FBufferThread := TBufferThread.Create;
  FBufferThread.Priority := tpNormal;
