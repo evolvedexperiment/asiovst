@@ -19,10 +19,16 @@ type
     ['{A8DD45FD-34CC-4996-9695-CDD2AE483B47}']
   end;
 
-  TDriverTest = class(TDavASIOExtendedDriver)
+  TDriverTest = class(TDavASIODriver)
+  public
+    function GetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError; override;
+    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
+  end;
+
+{  TDriverTest = class(TDavASIOExtendedDriver)
   protected
     procedure InitializeDriverParams; override;
-  end;
+  end;  }
 
   TTestTCWrapper = class(TDavASIOTCWrapper, IDriverTest)
   protected
@@ -41,7 +47,7 @@ begin
 end;
 
 { TDriverTest }
-
+  {
 procedure TDriverTest.InitializeDriverParams;
 begin
   SetDriverName(DTest_name);
@@ -52,8 +58,33 @@ begin
   AddChannel('c2i',1,ASIOSTFloat32LSB,true);
   AddChannel('c1o',0,ASIOSTFloat32LSB,false);
   AddChannel('c2o',1,ASIOSTFloat32LSB,false);
+  SetSampleRateMode(edsrm_List);
+  AddSampleRate(11025);
+  AddSampleRate(22050);
+  AddSampleRate(44100);
+  AddSampleRate(48000);
+  AddSampleRate(96000);
   SetControlPanelClass(TDriverTestCP);
+end;}
+
+
+function TDriverTest.GetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
+begin
+  NumInputChannels  := 2;
+  NumOutputChannels := 2;
+  result := ASE_OK;
 end;
+
+function TDriverTest.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
+begin
+  Info.SampleType := ASIOSTFloat32LSB;
+  Info.ChannelGroup := 0;
+  Info.IsActive := ASIOFalse;
+  StrPCopy(Info.Name, 'Default channel');
+
+  result := ASE_OK;
+end;
+
 
 initialization
   TDavAsioDriverFactory.Create(ComServer, TTestTCWrapper, DTest_guid,

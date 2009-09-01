@@ -45,27 +45,27 @@ type
 
   IDelphiAsio = interface(IUnknown)
     // never ever change the order of the functions!!!
-    function Init(SysHandle: HWND): TASIOBool;
-    procedure GetDriverName(Name: PAnsiChar);
-    function GetDriverVersion: LongInt;
-    procedure GetErrorMessage(ErrorString: PAnsiChar);
-    function Start: TASIOError;
-    function Stop: TASIOError;
-    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
-    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
-    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
-    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
-    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
-    function SetClockSource(Reference: LongInt): TASIOError;
-    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
-    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
-    function DisposeBuffers: TASIOError;
-    function ControlPanel: TASIOError;
-    function Future(Selector: LongInt; Opt: Pointer): TASIOError;
-    function OutputReady: TASIOError; 
+    procedure Init;
+    procedure GetDriverName;
+    procedure GetDriverVersion;
+    procedure GetErrorMessage;
+    procedure Start;
+    procedure Stop;
+    procedure GetChannels;
+    procedure GetLatencies;
+    procedure GetBufferSize;
+    procedure CanSampleRate;
+    procedure GetSampleRate;
+    procedure SetSampleRate;
+    procedure GetClockSources;
+    procedure SetClockSource;
+    procedure GetSamplePosition;
+    procedure GetChannelInfo;
+    procedure CreateBuffers;
+    procedure DisposeBuffers;
+    procedure ControlPanel;
+    procedure Future;
+    procedure OutputReady;
   end;
 
   TStdCallAsio = class(TInterfacedObject, IStdCallAsio)

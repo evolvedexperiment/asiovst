@@ -86,27 +86,29 @@ type
     destructor Destroy; override;
 
     procedure Initialize; override;
-    function Init(SysHandle: HWND): TASIOBool;
-    procedure GetDriverName(Name: PAnsiChar);
-    function GetDriverVersion: LongInt;
-    procedure GetErrorMessage(ErrorString: PAnsiChar);
-    function Start: TASIOError;
-    function Stop: TASIOError;
-    function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
-    function GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError;
-    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; stdcall;
-    function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
-    function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
-    function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
-    function SetClockSource(Reference: LongInt): TASIOError;
-    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
-    function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
-    function DisposeBuffers: TASIOError;
-    function ControlPanel: TASIOError;
-    function Future(Selector: LongInt; Opt: Pointer): TASIOError;
-    function OutputReady: TASIOError;
+   
+    procedure Init;
+    procedure GetDriverName;
+    procedure GetDriverVersion;
+    procedure GetErrorMessage;
+    procedure Start;
+    procedure Stop;
+    procedure GetChannels;
+    procedure GetLatencies;
+    procedure GetBufferSize;
+    procedure CanSampleRate;
+    procedure GetSampleRate;
+    procedure SetSampleRate;
+    procedure GetClockSources;
+    procedure SetClockSource;
+    procedure GetSamplePosition;
+    procedure GetChannelInfo;
+    procedure CreateBuffers;
+    procedure DisposeBuffers;
+    procedure ControlPanel;
+    procedure Future;
+    procedure OutputReady;
+
     function GetMilliSeconds: LongInt;
 
     property AsioHost: TAsioHost read FAsioHost;
@@ -126,7 +128,7 @@ uses
 const
   CTwoRaisedTo32 : Double = 4294967296;
   CTwoRaisedTo32Reciprocal : Double = 1 / 4294967296;
-  CStupidOffset = $17C; // = InstanceSize
+  CStupidOffset = $17C;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -175,7 +177,7 @@ var
   Channel : Integer;
 begin
  inherited;
- Assert(CStupidOffset = InstanceSize - 4);
+ Assert(CStupidOffset = GetInterfaceTable^.Entries[0].IOffset);
 
  // typically blockFrames * 2; try to get 1 by offering direct buffer
  // access, and using asioPostOutput for lower latency
@@ -235,23 +237,22 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.Init(SysHandle: HWND): TASIOBool;
+procedure TAsioHostDriver.Init;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  mov edx, [esp + 4] // get first parameter
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  // move return address on the stack position of the incoming parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  // move stack pointer to the return address position
+  add esp, 4
 
- CALL InternalInit
+  call InternalInit
 end;
 
 function TAsioHostDriver.InternalInit(SysHandle: HWND): TASIOBool;
@@ -275,23 +276,22 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TAsioHostDriver.GetDriverName(Name: PAnsiChar);
+procedure TAsioHostDriver.GetDriverName;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  mov edx, [esp + 4] // get first parameter
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  // move return address on the stack position of the incoming parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  // move stack pointer to the return address position
+  add esp, 4
 
- CALL GetInternalDriverName
+  call GetInternalDriverName
 end;
 
 procedure TAsioHostDriver.GetInternalDriverName(Name: PAnsiChar);
@@ -301,15 +301,13 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetDriverVersion: LongInt;
+procedure TAsioHostDriver.GetDriverVersion;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
-
- CALL GetInternalDriverVersion
+  call GetInternalDriverVersion
 end;
 
 function TAsioHostDriver.GetInternalDriverVersion: LongInt;
@@ -319,23 +317,22 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure TAsioHostDriver.GetErrorMessage(ErrorString: PAnsiChar);
+procedure TAsioHostDriver.GetErrorMessage;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  mov edx, [esp + 4] // get first parameter
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  // move return address on the stack position of the incoming parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  // move stack pointer to the return address position
+  add esp, 4
 
- CALL GetInternalErrorMessage
+  call GetInternalErrorMessage
 end;
 
 procedure TAsioHostDriver.GetInternalErrorMessage(ErrorString: PAnsiChar);
@@ -345,15 +342,13 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.Start: TASIOError;
+procedure TAsioHostDriver.Start;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
-
- CALL InternalStart
+  call InternalStart
 end;
 
 function TAsioHostDriver.InternalStart: TASIOError;
@@ -377,15 +372,13 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.Stop: TASIOError;
+procedure TAsioHostDriver.Stop;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
-
- CALL InternalStop
+  call InternalStop
 end;
 
 function TAsioHostDriver.InternalStop: TASIOError;
@@ -409,26 +402,24 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
+procedure TAsioHostDriver.GetChannels;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  mov ecx, [esp + 8] // get second parameter
 
- // copy first parameter
- MOV EDX, [ESP + $8]
+  // move return address on the stack position of the incoming second parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
 
- // shift/store saved EIP (return adress)
- MOV ECX, [ESP]
- MOV [ESP + 8], ECX
- ADD ESP, 8
+  mov edx, [esp + 4] // get first parameter
 
- // copy second parameter
- MOV ECX, [ESP - $4]
+  // move stack pointer to the return address position
+  add esp, 8
 
- CALL GetInternalChannels
+  call GetInternalChannels
 end;
 
 function TAsioHostDriver.GetInternalChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
@@ -440,26 +431,23 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetLatencies(out InputLatency, OutputLatency: LongInt): TASIOError;
+procedure TAsioHostDriver.GetLatencies;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  mov ecx, [esp + 8] // get second parameter
 
- // copy first parameter
- MOV EDX, [ESP + $8]
+  // move return address on the stack position of the incoming second parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
 
- // shift/store saved EIP (return adress)
- MOV ECX, [ESP]
- MOV [ESP + 8], ECX
- ADD ESP, 8
+  mov edx, [esp + 4] // get first parameter
 
- // copy second parameter
- MOV ECX, [ESP - $4]
-
- CALL GetInternalLatencies
+  // move stack pointer to the return address position
+  add esp, 8
+  call GetInternalLatencies
 end;
 
 function TAsioHostDriver.GetInternalLatencies(out InputLatency, OutputLatency: LongInt): TASIOError;
@@ -478,36 +466,29 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetBufferSize(out MinSize, MaxSize, PreferredSize,
-  Granularity: LongInt): TASIOError;
+procedure TAsioHostDriver.GetBufferSize;
 asm
- // shift/store saved ESP
- MOV EAX, [ESP]
- MOV [ESP - 4], EAX
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP + 4]
- MOV [ESP], EAX
+  mov ecx, [esp + 8]   // get second parameter
 
- // shift stack pointer to get a valid return address on return
- SUB ESP, 4
+  mov edx, [esp + 16]  // get fourth parameter
+  mov [esp + 8], edx   // set fourth parameter
 
- // pass variables
- MOV EAX, ECX
- MOV EDX, [EBP + $8]
- MOV ECX, [EBP + $C]
- PUSH [EBP + $10]
- PUSH [EBP + $14]
+  // move return address on the stack position of the incoming fourth parameter
+  mov edx, [esp]
+  mov [esp + 16], edx
 
- // stupid
- SUB EAX, CStupidOffset
- ADD EDX, CStupidOffset
+  mov edx, [esp + 4]   // get first parameter
 
- CALL GetInternalBufferSize
+  // move stack pointer to the new fourth parameter
+  add esp, 8
+  call GetInternalBufferSize
 end;
 
-function TAsioHostDriver.GetInternalBufferSize(out MinSize, MaxSize, PreferredSize,
-  Granularity: Integer): TASIOError;
+function TAsioHostDriver.GetInternalBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
 begin
  // allow one fixed size only
  if FAsioHost.DriverIndex >= 0 then
@@ -523,23 +504,27 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+procedure TAsioHostDriver.CanSampleRate;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // double uses 2 Words, they come in on the stack,
+  // and delphi function calls use the same method
+  // so we just move the return address to stack positions up
+  // and are done
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  mov edx,[esp]   // backup return address
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  mov eax,[esp + 4]
+  mov [esp], eax
+  mov eax,[esp + 8]
+  mov [esp+4], eax
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  mov [esp+8],edx    // set return address
 
- CALL InternalCanSampleRate
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset
+
+  call InternalCanSampleRate
 end;
 
 function TAsioHostDriver.InternalCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
@@ -551,23 +536,22 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
+procedure TAsioHostDriver.GetSampleRate;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  mov edx, [esp + 4] // get first parameter
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  // move return address on the stack position of the incoming parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  // move stack pointer to the return address position
+  add esp, 4
 
- CALL GetInternalSampleRate
+  call GetInternalSampleRate
 end;
 
 function TAsioHostDriver.GetInternalSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
@@ -578,24 +562,26 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+procedure TAsioHostDriver.SetSampleRate;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // double uses 2 Words, they come in on the stack,
+  // and delphi function calls use the same method
+  // so we just move the return address to stack positions up
+  // and are done
 
- MOV EDX, [ESP]   // backup return address
+  mov edx,[esp]   // backup return address
 
- MOV EAX,[ESP + 4]
- MOV [ESP], EAX
- MOV EAX,[ESP + 8]
- MOV [ESP + 4], EAX
+  mov eax,[esp + 4]
+  mov [esp], eax
+  mov eax,[esp + 8]
+  mov [esp+4], eax
 
- MOV [ESP + 8], EDX    // set return address
+  mov [esp+8],edx    // set return address
 
- // generate new "self" pointer for this object in ECX
- MOV EAX, ECX
-
- CALL SetInternalSampleRate
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset
+  call SetInternalSampleRate
 end;
 
 function TAsioHostDriver.SetInternalSampleRate(SampleRate: TASIOSampleRate): TASIOError;
@@ -623,26 +609,24 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+procedure TAsioHostDriver.GetClockSources;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+ // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  mov ecx, [esp + 8] // get second parameter
 
- // copy first parameter
- MOV EDX, [ESP + $8]
+  // move return address on the stack position of the incoming second parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
 
- // shift/store saved EIP (return adress)
- MOV ECX, [ESP]
- MOV [ESP + 8], ECX
- ADD ESP, 8
+  mov edx, [esp + 4] // get first parameter
 
- // copy second parameter
- MOV ECX, [ESP - $4]
+  // move stack pointer to the return address position
+  add esp, 8
 
- CALL GetInternalClockSources
+  call GetInternalClockSources
 end;
 
 function TAsioHostDriver.GetInternalClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
@@ -661,23 +645,22 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.SetClockSource(Reference: LongInt): TASIOError;
+procedure TAsioHostDriver.SetClockSource;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  mov edx, [esp + 4] // get first parameter
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  // move return address on the stack position of the incoming parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset    
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  // move stack pointer to the return address position
+  add esp, 4
 
- CALL SetInternalClockSource
+  call SetInternalClockSource
 end;
 
 function TAsioHostDriver.SetInternalClockSource(Reference: LongInt): TASIOError;
@@ -692,26 +675,24 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
+procedure TAsioHostDriver.GetSamplePosition;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  mov ecx, [esp + 8] // get second parameter
 
- // copy first parameter
- MOV EDX, [ESP + $8]
+  // move return address on the stack position of the incoming second parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
 
- // shift/store saved EIP (return adress)
- MOV ECX, [ESP]
- MOV [ESP + 8], ECX
- ADD ESP, 8
+  mov edx, [esp + 4] // get first parameter
 
- // copy second parameter
- MOV ECX, [ESP - $4]
+  // move stack pointer to the return address position
+  add esp, 8
 
- CALL GetInternalSamplePosition
+  call GetInternalSamplePosition
 end;
 
 function TAsioHostDriver.GetInternalSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
@@ -733,23 +714,22 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
+procedure TAsioHostDriver.GetChannelInfo;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  mov edx, [esp + 4] // get first parameter
 
- // copy parameters
- MOV EDX, [ESP + $4]
+  // move return address on the stack position of the incoming parameter
+  mov eax, [esp]
+  mov [esp + 4], eax
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP]
- MOV [ESP + 4], EAX
- ADD ESP, 4
+  // generate new "self" pointer for this object in ECX
+  mov eax,ecx
+  sub eax,CStupidOffset    
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  // move stack pointer to the return address position
+  add esp, 4
 
- CALL GetInternalChannelInfo
+  call GetInternalChannelInfo
 end;
 
 function TAsioHostDriver.GetInternalChannelInfo(var Info: TASIOChannelInfo): TASIOError;
@@ -806,36 +786,30 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
-  BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+procedure TAsioHostDriver.CreateBuffers;
 asm
- // shift/store saved ESP
- MOV EAX, [ESP]
- MOV [ESP - 4], EAX
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // shift/store saved EIP (return adress)
- MOV EAX, [ESP + 4]
- MOV [ESP], EAX
+  mov ecx, [esp + 8]   // get second parameter
 
- // shift stack pointer to get a valid return address on return
- SUB ESP, 4
+  mov edx, [esp + 16]  // get fourth parameter
+  mov [esp + 8], edx   // set fourth parameter
 
- // pass variables
- MOV EAX, ECX
- MOV EDX, [EBP + $8]
- MOV ECX, [EBP + $C]
- PUSH [EBP + $10]
- PUSH [EBP + $14]
+  // move return address on the stack position of the incoming fourth parameter
+  mov edx, [esp]
+  mov [esp + 16], edx
 
- // stupid
- SUB EAX, CStupidOffset
- ADD EDX, CStupidOffset
+  mov edx, [esp + 4]   // get first parameter
 
- CALL InternalCreateBuffers
+  // move stack pointer to the new fourth parameter
+  add esp, 8
+
+  call InternalCreateBuffers
 end;
 
-function TAsioHostDriver.InternalCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
-  BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+function TAsioHostDriver.InternalCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 var
   BufferInfo   : PASIOBufferInfo;
   Channel      : Integer;
@@ -954,15 +928,13 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.DisposeBuffers: TASIOError;
+procedure TAsioHostDriver.DisposeBuffers;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
-
- CALL InternalDisposeBuffers
+  call InternalDisposeBuffers
 end;
 
 function TAsioHostDriver.InternalDisposeBuffers: TASIOError;
@@ -985,15 +957,13 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.ControlPanel: TASIOError;
+procedure TAsioHostDriver.ControlPanel;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
-
- CALL InternalControlPanel
+  call InternalControlPanel
 end;
 
 function TAsioHostDriver.InternalControlPanel: TASIOError;
@@ -1014,30 +984,27 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.Future(Selector: Integer; Opt: Pointer): TASIOError;
+procedure TAsioHostDriver.Future;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
+  mov ecx, [esp + 8] // get second parameter
 
- // copy first parameter
- MOV EDX, [ESP + $8]
+  // move return address on the stack position of the incoming second parameter
+  mov edx, [esp]
+  mov [esp + 8], edx
 
- // shift/store saved EIP (return adress)
- MOV ECX, [ESP]
- MOV [ESP + 8], ECX
- ADD ESP, 8
+  mov edx, [esp + 4] // get first parameter
 
- // copy second parameter
- MOV ECX, [ESP - $4]
+  // move stack pointer to the return address position
+  add esp, 8
 
- CALL InternalFuture
+  call InternalFuture
 end;
 
-function TAsioHostDriver.InternalFuture(Selector: Integer;
-  Opt: Pointer): TASIOError;
+function TAsioHostDriver.InternalFuture(Selector: Integer; Opt: Pointer): TASIOError;
 begin
  Result := ASE_SUCCESS;
  case Selector of
@@ -1093,15 +1060,13 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.OutputReady: TASIOError;
+procedure TAsioHostDriver.OutputReady;
 asm
- // subtract stupid interface offset
- SUB ECX, CStupidOffset
+  // generate new "self" pointer for this object
+  mov eax,ecx
+  sub eax,CStupidOffset
 
- // copy this [ECX] -> self [EAX]
- MOV EAX, ECX
-
- CALL InternalOutputReady
+  call InternalOutputReady
 end;
 
 function TAsioHostDriver.InternalOutputReady: TASIOError;

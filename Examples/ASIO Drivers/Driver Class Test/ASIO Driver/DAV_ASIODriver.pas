@@ -145,7 +145,7 @@ begin
   FDestinationClass.Free;
   FDestinationClass:=nil;
   inherited;
-end;
+end;  
 
 procedure TDavASIOTCWrapper.Init;
 asm
@@ -356,7 +356,7 @@ end;
 
 procedure TDavASIOTCWrapper.SetSampleRate;
 asm
-    // double uses 2 Words, they come in on the stack,
+  // double uses 2 Words, they come in on the stack,
   // and delphi function calls use the same method
   // so we just move the return address to stack positions up
   // and are done
@@ -604,7 +604,7 @@ end;
 function TDavASIODriver.GetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
 begin
   NumInputChannels  := 1;
-  NumOutputChannels := 2;
+  NumOutputChannels := 1;
   result := ASE_OK;
 end;
 
@@ -652,7 +652,7 @@ begin
     IsCurrentSource := ASIOTrue;
     StrCopy(Name, 'Internal');
   end;
-  NumSources := 1;
+  NumSources := 1;  
   result := ASE_OK;
 end;
 

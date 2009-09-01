@@ -30,9 +30,6 @@
       
       
       
-      
-      
-      
       <Excluded_Packages Name="$(BDS)\bin\dcldbxcds4100.bpl">CodeGear SimpleDataset-Komponente (DBX)</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\dclwebsnap100.bpl">CodeGear WebSnap-Komponenten</Excluded_Packages>
       <Excluded_Packages Name="$(BDS)\bin\dclsoap100.bpl">CodeGear SOAP-Komponenten</Excluded_Packages>
@@ -44,7 +41,10 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="ASIO Driver\DAV_ASIODriver.pas" />
-    <DCCReference Include="ASIO Driver\DAV_ASIOExtendedDriver.pas" />
+    <DCCReference Include="ASIO Driver\DAV_ASIOExtendedDriver.pas">
+      <Form>,
+  AsioDriverMainCPanel in 'AsioDriverMainCPanel.pas' {DriverTestCP</Form>
+    </DCCReference>
     <DCCReference Include="AsioDriverMain.pas" />
     <DCCReference Include="AsioDriverMainCPanel.pas">
       <Form>DriverTestCP</Form>

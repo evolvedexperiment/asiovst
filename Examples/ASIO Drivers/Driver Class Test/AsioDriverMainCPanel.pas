@@ -7,7 +7,7 @@ uses
   Dialogs, DAV_ASIOExtendedDriver, StdCtrls;
 
 type
-  TDriverTestCP = class(TDavASIODriverControlPanel)
+  TDriverTestCP = class(TDavASIOExtendedDriverCP)
     btnDone: TButton;
     lbStupid: TLabel;
     procedure FormCreate(Sender: TObject);
