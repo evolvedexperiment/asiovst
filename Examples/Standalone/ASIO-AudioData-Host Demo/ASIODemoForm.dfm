@@ -142,7 +142,6 @@ object FmASIO: TFmASIO
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     ConvertOptimizations = [coSSE, co3DNow]
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostAudioDataBufferSwitch32
     Left = 24
     Top = 16

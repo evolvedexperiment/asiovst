@@ -140,22 +140,19 @@ object FmAnalyser: TFmAnalyser
     Top = 96
     Width = 430
     Height = 222
-    OnMouseWheel = GLSceneViewerMouseWheel
     Camera = GLCamera
     Buffer.BackgroundColor = 789774
     FieldOfView = 100.000000000000000000
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    OnMouseWheel = GLSceneViewerMouseWheel
   end
   object ASIOHost: TASIOHost
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    ConvertOptimizations = [coSSE]
     PreFillOutBuffer = bpfZero
-    PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = BSDownSampled
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 253

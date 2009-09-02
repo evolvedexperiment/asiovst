@@ -105,7 +105,6 @@ object FmASIO: TFmASIO
     ConvertOptimizations = [coSSE]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 52

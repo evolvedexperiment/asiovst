@@ -1,13 +1,13 @@
-{******************************************************************************}
-{                                                                              }
-{ Code to generate the VSTModule-derived Data Module unit, where the audio     }
-{ processing code will reside.                                                 }
-{                                                                              }
-{ Part of the VST Plugin Framework by Christian Budde and Tobybear.            }
-{                                                                              }
-{******************************************************************************}
+unit DAV_AsioDriverModuleCreator;
 
-unit DAV_VSTModuleCreator;
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Code to generate the VSTModule-derived Data Module unit, where the audio  //
+//  processing code will reside.                                              //
+//                                                                            //
+//  Part of the ASIO Driver Framework by Christian Budde and Tobybear.         //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
@@ -15,10 +15,10 @@ interface
 
 uses
   ToolsAPI,
-  DAV_VSTPluginConfig;
+  DAV_AsioDriverConfig;
 
 type
-  TVSTModuleCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)
+  TAsioDriverModuleCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)
   private
     FConfig: TConfig;
   public
@@ -48,28 +48,29 @@ type
 implementation
 
 uses
-  SysUtils,
-  DAV_VSTCustomModule, DAV_VSTModule, DAV_VSTEffect, DAV_OpenToolsUtils;
+  SysUtils, DAV_AsioDriverBasicModule, DAV_AsioDriverModule,
+  DAV_OpenToolsUtils;
 
 const
   CRLF               = #13#10;
-  CAnchestorName     = 'VSTModule';
+  CAnchestorName     = 'AsioDriverModule';
   CNumInputsEffect   = 2;
   CNumOutputsEffect  = 2;
   CNumInputsSynth    = 0;
   CNumOutputsSynth   = 2;
 
-constructor TVSTModuleCreator.Create(Config: TConfig);
+constructor TAsioDriverModuleCreator.Create(Config: TConfig);
 begin
   FConfig := Config;
 end;
 
-procedure TVSTModuleCreator.FormCreated(const FormEditor: IOTAFormEditor);
+procedure TAsioDriverModuleCreator.FormCreated(const FormEditor: IOTAFormEditor);
 var
   NativeFormEditor: INTAFormEditor;
 begin
-  with TVSTModule(INTAComponent(FormEditor.GetRootComponent).GetComponent) do
+  with TAsioDriverModule(INTAComponent(FormEditor.GetRootComponent).GetComponent) do
   begin
+(*
     UniqueID       := FConfig.UniqueID;
     EffectName     := FConfig.EffectName;
     VersionMajor   := FConfig.VersionMajor;
@@ -84,7 +85,7 @@ begin
       NumInputs    := CNumInputsSynth;
       NumOutputs   := CNumOutputsSynth;
       PlugCategory := vpcSynth;
-      CanDos := CanDos + [vcdReceiveVstEvents, vcdReceiveVstMidiEvent];
+      CanDos := CanDos + [vcdReceiveAsioDriverEvents, vcdReceiveAsioDriverMidiEvent];
       Flags := Flags + [effFlagsIsSynth];
     end
     else
@@ -121,95 +122,96 @@ begin
     if FConfig.UseEditor then
     begin
       Flags := Flags + [effFlagsHasEditor];
-      // wire the OnEditOpen event handler to our VSTModuleEditOpen method
+      // wire the OnEditOpen event handler to our AsioDriverModuleEditOpen method
       if Supports(FormEditor, INTAFormEditor, NativeFormEditor) then
       begin
         if NativeFormEditor.FormDesigner <> nil then
         begin
           DoCreateMethod(NativeFormEditor.FormDesigner,
             NativeFormEditor.FormDesigner.GetRoot, 'EditOpen',
-            'VSTModuleEditOpen');
+            'AsioDriverModuleEditOpen');
         end;
       end;
     end;
+*)
   end;
 end;
 
-function TVSTModuleCreator.GetAncestorName: string;
+function TAsioDriverModuleCreator.GetAncestorName: string;
 begin
   Result := CAnchestorName;
 end;
 
-function TVSTModuleCreator.GetCreatorType: string;
+function TAsioDriverModuleCreator.GetCreatorType: string;
 begin
   Result := sForm;
 end;
 
-function TVSTModuleCreator.GetExisting: Boolean;
+function TAsioDriverModuleCreator.GetExisting: Boolean;
 begin
   Result := False;
 end;
 
-function TVSTModuleCreator.GetFileSystem: string;
+function TAsioDriverModuleCreator.GetFileSystem: string;
 begin
   Result := '';
 end;
 
-function TVSTModuleCreator.GetFormName: string;
+function TAsioDriverModuleCreator.GetFormName: string;
 begin
-  Result := FConfig.PluginFormName;
+  Result := FConfig.AsioDriverFormName;
 end;
 
-function TVSTModuleCreator.GetImplFileName: string;
+function TAsioDriverModuleCreator.GetImplFileName: string;
 begin
   //Result := '';
   Result := IncludeTrailingPathDelimiter(FConfig.ProjectPath) +
-    FConfig.PluginUnitName + '.pas';
+    FConfig.AsioDriverUnitName + '.pas';
 end;
 
-function TVSTModuleCreator.GetIntfFileName: string;
+function TAsioDriverModuleCreator.GetIntfFileName: string;
 begin
   Result := '';
 end;
 
-function TVSTModuleCreator.GetMainForm: Boolean;
+function TAsioDriverModuleCreator.GetMainForm: Boolean;
 begin
   Result := True;
 end;
 
-function TVSTModuleCreator.GetOwner: IOTAModule;
+function TAsioDriverModuleCreator.GetOwner: IOTAModule;
 begin
   Result := GetModuleOwner;
 end;
 
-function TVSTModuleCreator.GetShowForm: Boolean;
+function TAsioDriverModuleCreator.GetShowForm: Boolean;
 begin
   Result := True;
 end;
 
-function TVSTModuleCreator.GetShowSource: Boolean;
+function TAsioDriverModuleCreator.GetShowSource: Boolean;
 begin
   Result := True;
 end;
 
-function TVSTModuleCreator.GetUnnamed: Boolean;
+function TAsioDriverModuleCreator.GetUnnamed: Boolean;
 begin
   Result := False; // False still queries for a project name!
 end;
 
-function TVSTModuleCreator.NewFormFile(const FormIdent, AncestorIdent: string):
+function TAsioDriverModuleCreator.NewFormFile(const FormIdent, AncestorIdent: string):
   IOTAFile;
 begin
   Result := nil;
 end;
 
-function TVSTModuleCreator.NewImplSource(const ModuleIdent, FormIdent,
+function TAsioDriverModuleCreator.NewImplSource(const ModuleIdent, FormIdent,
   AncestorIdent: string): IOTAFile;
 var
   s: string;
 begin
-  // Can use either FConfig.PluginFormName or FormIdent here, as they are set to
-  // to the same value in TVSTModuleCreator.GetFormName
+  // Can use either FConfig.DriverFormName or FormIdent here, as they are set to
+  // to the same value in TAsioDriverModuleCreator.GetFormName
   s :=
     'unit ' + ModuleIdent + ';' + CRLF +
     CRLF +
@@ -217,15 +219,15 @@ begin
     CRLF +
     'uses ' + CRLF +
     '  Windows, Messages, SysUtils, Classes, Forms, ' + CRLF +
-    '  DAV_Common, DAV_VSTModule;' + CRLF +
+    '  DAV_Common, DAV_AsioDriverModule;' + CRLF +
     CRLF +
     'type' + CRLF +
     '  T' + FormIdent + ' = class(T' + AncestorIdent + ')' + CRLF;
 
-  if FConfig.UseEditor then
+  if FConfig.UseControlPanel then
   begin
     s := s +
-      '    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' +
+      '    procedure AsioDriverModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' +
       CRLF;
   end;
 
@@ -239,15 +241,15 @@ begin
     '{$R *.DFM}' + CRLF +
     CRLF;
 
-  if FConfig.UseEditor then
+  if FConfig.UseControlPanel then
   begin
     s := s +
       'uses' + CRLF +
-      '  ' + FConfig.EditorUnitName + ';' + CRLF +
+      '  ' + FConfig.ControlPanelUnitName + ';' + CRLF +
       CRLF +
-      'procedure T' + FormIdent + '.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' + CRLF +
+      'procedure T' + FormIdent + '.AsioDriverModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' + CRLF +
       'begin' + CRLF +
-      '  GUI := T' + FConfig.EditorFormName + '.Create(Self);' + CRLF +
+      '  GUI := T' + FConfig.ControlPanelFormName + '.Create(Self);' + CRLF +
       'end;' + CRLF +
       CRLF;
   end;
@@ -257,7 +259,7 @@ begin
   Result := StringToIOTAFile(s);
 end;
 
-function TVSTModuleCreator.NewIntfSource(const ModuleIdent, FormIdent,
+function TAsioDriverModuleCreator.NewIntfSource(const ModuleIdent, FormIdent,
   AncestorIdent: string): IOTAFile;
 begin
   Result := nil;

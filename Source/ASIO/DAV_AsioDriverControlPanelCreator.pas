@@ -1,12 +1,12 @@
-{******************************************************************************}
-{                                                                              }
-{ Code to generate the GUI editor form.                                        }
-{                                                                              }
-{ Part of the VST Plugin Framework by Christian Budde and Tobybear.            }
-{                                                                              }
-{******************************************************************************}
+unit DAV_AsioDriverControlPanelCreator;
 
-unit DAV_VSTEditorCreator;
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Code to generate the GUI ControlPanel form.                               //
+//                                                                            //
+//  Part of the ASIO Driver Framework by Christian Budde and Tobybear.        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
@@ -14,10 +14,10 @@ interface
 
 uses
   ToolsAPI,
-  DAV_VSTPluginConfig;
+  DAV_AsioDriverConfig;
 
 type
-  TVSTEditorCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)
+  TAsioDriverControlPanelCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)
   private
     FConfig: TConfig;
   public
@@ -41,7 +41,7 @@ type
       IOTAFile;
     function NewIntfSource(const ModuleIdent, FormIdent, AncestorIdent: string):
       IOTAFile;
-    procedure FormCreated(const FormEditor: IOTAFormEditor);
+    procedure FormCreated(const FormControlPanel: IOTAFormEditor);
   end;
 
 implementation
@@ -54,82 +54,82 @@ const
   CRLF          = #13#10;
   ANCESTOR_NAME = 'Form';
 
-constructor TVSTEditorCreator.Create(Config: TConfig);
+constructor TAsioDriverControlPanelCreator.Create(Config: TConfig);
 begin
   FConfig := Config;
 end;
 
-procedure TVSTEditorCreator.FormCreated(const FormEditor: IOTAFormEditor);
+procedure TAsioDriverControlPanelCreator.FormCreated(const FormControlPanel: IOTAFormEditor);
 begin
-  with TForm(INTAComponent(FormEditor.GetRootComponent).GetComponent) do
+  with TForm(INTAComponent(FormControlPanel.GetRootComponent).GetComponent) do
   begin
     BorderStyle := bsNone;
     Scaled := False;
   end;
 end;
 
-function TVSTEditorCreator.GetAncestorName: string;
+function TAsioDriverControlPanelCreator.GetAncestorName: string;
 begin
   Result := ANCESTOR_NAME;
 end;
 
-function TVSTEditorCreator.GetCreatorType: string;
+function TAsioDriverControlPanelCreator.GetCreatorType: string;
 begin
   Result := sForm;
 end;
 
-function TVSTEditorCreator.GetExisting: Boolean;
+function TAsioDriverControlPanelCreator.GetExisting: Boolean;
 begin
   Result := False;
 end;
 
-function TVSTEditorCreator.GetFileSystem: string;
+function TAsioDriverControlPanelCreator.GetFileSystem: string;
 begin
   Result := '';
 end;
 
-function TVSTEditorCreator.GetFormName: string;
-begin
-  Result := FConfig.EditorFormName;
+function TAsioDriverControlPanelCreator.GetFormName: string;
+begin                             
+  Result := FConfig.ControlPanelFormName;
 end;
 
-function TVSTEditorCreator.GetImplFileName: string;
+function TAsioDriverControlPanelCreator.GetImplFileName: string;
 begin
   Result := {$IFDEF DELPHI6_UP}IncludeTrailingPathDelimiter{$ENDIF}(FConfig.ProjectPath) +
-    FConfig.EditorUnitName + '.pas';
+    FConfig.ControlPanelUnitName + '.pas';
 end;
 
-function TVSTEditorCreator.GetIntfFileName: string;
+function TAsioDriverControlPanelCreator.GetIntfFileName: string;
 begin
   Result := '';
 end;
 
-function TVSTEditorCreator.GetMainForm: Boolean;
+function TAsioDriverControlPanelCreator.GetMainForm: Boolean;
 begin
   Result := False;
 end;
 
-function TVSTEditorCreator.GetOwner: IOTAModule;
+function TAsioDriverControlPanelCreator.GetOwner: IOTAModule;
 begin
   Result := GetModuleOwner;
 end;
 
-function TVSTEditorCreator.GetShowForm: Boolean;
+function TAsioDriverControlPanelCreator.GetShowForm: Boolean;
 begin
   Result := True;
 end;
 
-function TVSTEditorCreator.GetShowSource: Boolean;
+function TAsioDriverControlPanelCreator.GetShowSource: Boolean;
 begin
   Result := True;
 end;
 
-function TVSTEditorCreator.GetUnnamed: Boolean;
+function TAsioDriverControlPanelCreator.GetUnnamed: Boolean;
 begin
   Result := False; // False still queries for a project name!
 end;
 
-function TVSTEditorCreator.NewFormFile(const FormIdent, AncestorIdent: string):
+function TAsioDriverControlPanelCreator.NewFormFile(const FormIdent, AncestorIdent: string):
   IOTAFile;
 begin
   // we initialise the form in the FormCreated procedure instead of writing out
@@ -137,7 +137,7 @@ begin
   Result := nil
 end;
 
-function TVSTEditorCreator.NewImplSource(const ModuleIdent, FormIdent,
+function TAsioDriverControlPanelCreator.NewImplSource(const ModuleIdent, FormIdent,
   AncestorIdent: string): IOTAFile;
 var
   s: string;
@@ -148,12 +148,12 @@ begin
     'interface' + CRLF +
     CRLF +
     'uses ' + CRLF +
-    '  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;' + CRLF +
+    '  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_AsioDriverModule;' + CRLF +
     CRLF +
     'type' + CRLF +
     '  T' + FormIdent + ' = class(T' + AncestorIdent + ')' + CRLF +
     //'  public' + CRLF +
-    //'    ' + FConfig.PluginFormName + ': TVSTModule;' + CRLF +
+    //'    ' + FConfig.PluginFormName + ': TAsioDriverModule;' + CRLF +
     '  end;' + CRLF + CRLF +
     'implementation' + CRLF +
     CRLF +
@@ -164,7 +164,7 @@ begin
   Result := StringToIOTAFile(s);
 end;
 
-function TVSTEditorCreator.NewIntfSource(const ModuleIdent, FormIdent,
+function TAsioDriverControlPanelCreator.NewIntfSource(const ModuleIdent, FormIdent,
   AncestorIdent: string): IOTAFile;
 begin
   Result := nil;

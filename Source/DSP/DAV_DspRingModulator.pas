@@ -16,6 +16,24 @@ type
     function ProcessSample(Input: Single; Carrier: Single): Single; virtual;
   end;
 
+  TCustomAnalogRingModulator = class(TCustomRingModulator)
+  private
+    FCoefficients : array [0..3] of Single;
+  public
+    constructor Create; virtual;
+    function ProcessSample(Input: Single; Carrier: Single): Single; virtual; abstract;
+  end;
+
+  TAnalogRingModulator = class(TCustomAnalogRingModulator)
+  public
+    function ProcessSample(Input: Single; Carrier: Single): Single; override;
+  end;
+
+  TLightweightAnalogRingModulator = class(TCustomAnalogRingModulator)
+  public
+    function ProcessSample(Input: Single; Carrier: Single): Single; override;
+  end;
+
   TCustomAutoRingModulator = class(TCustomRingModulator)
   private
     FSampleRate : Single;
@@ -31,6 +49,13 @@ type
     property Frequency: Single read FFrequency write SetFrequency;
   end;
 
+  TCustomAnalogAutoRingModulator = class(TCustomAutoRingModulator)
+  private
+    FCoefficients : array [0..3] of Single;
+  public
+    constructor Create; override;
+  end;
+
   TCustomAutoRingModulator32 = class(TCustomAutoRingModulator)
   private
     FLfo : TLFOSine32;
@@ -43,7 +68,84 @@ type
     function ProcessSample(Input: Single): Single; virtual;
   end;
 
+  TCustomAnalogAutoRingModulator32 = class(TCustomAnalogAutoRingModulator)
+  private
+    FLfo : TLFOSine32;
+  protected
+    procedure FrequencyChanged; override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    function ProcessSample(Input: Single): Single; virtual; abstract;
+  end;
+
+  TCustomAutoRingModulator64 = class(TCustomAutoRingModulator)
+  private
+    FLfo : TLFOSine64;
+  protected
+    procedure FrequencyChanged; override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    function ProcessSample(Input: Double): Double; virtual;
+  end;
+
+  TCustomAnalogAutoRingModulator64 = class(TCustomAutoRingModulator)
+  private
+    FLfo : TLFOSine64;
+  protected
+    procedure FrequencyChanged; override;
+    procedure SampleRateChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    function ProcessSample(Input: Double): Double; virtual; abstract;
+  end;
+
+
   TAutoRingModulator32 = class(TCustomAutoRingModulator32)
+  published
+    property Frequency;
+    property SampleRate;
+  end;
+
+  TAnalogAutoRingModulator32 = class(TCustomAnalogAutoRingModulator32)
+  public
+    function ProcessSample(Input: Single): Single; override;
+  published
+    property Frequency;
+    property SampleRate;
+  end;
+
+  TLightweightAnalogAutoRingModulator32 = class(TCustomAnalogAutoRingModulator32)
+  public
+    function ProcessSample(Input: Single): Single; override;
+  published
+    property Frequency;
+    property SampleRate;
+  end;
+
+  TAutoRingModulator64 = class(TCustomAutoRingModulator32)
+  published
+    property Frequency;
+    property SampleRate;
+  end;
+
+  TAnalogAutoRingModulator64 = class(TCustomAnalogAutoRingModulator32)
+  public
+    function ProcessSample(Input: Single): Single; override;
+  published
+    property Frequency;
+    property SampleRate;
+  end;
+
+  TLightweightAnalogAutoRingModulator64 = class(TCustomAnalogAutoRingModulator32)
+  public
+    function ProcessSample(Input: Single): Single; override;
   published
     property Frequency;
     property SampleRate;
@@ -52,14 +154,59 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Approximations;
+
+
+function GermaniumDiode(Voltage: Double): Double
+begin
+ Result := 0.085 * (Voltage + abs(Voltage)) * sqr(Voltage) * Voltage
+end;
+
+function SiliconDiode(Voltage: Double): Double
+begin
+ Result := 40.6728602E-9 * (exp(17.7493332 * (Voltage + 0.3)) - 1);
+end;
 
 { TRingModulator }
 
 function TRingModulator.ProcessSample(Input, Carrier: Single): Single;
 begin
- result := Input * Carrier;
+ Result := Input * Carrier;
 end;
+
+
+{ TCustomAnalogRingModulator }
+
+constructor TCustomAnalogRingModulator.Create;
+begin
+ inherited;
+ FCoefficients[0] := 0.01;
+ FCoefficients[1] := 0.01;
+ FCoefficients[2] := 0.01;
+ FCoefficients[3] := 0.01;
+end;
+
+
+{ TAnalogRingModulator }
+
+function TAnalogRingModulator.ProcessSample(Input, Carrier: Single): Single;
+begin
+ Result := (Input + FCoefficients[0] * Carrier) *
+   Tanh(Carrier + FCoefficients[1] * Input) + FCoefficients[2] * Carrier +
+   FCoefficients[3] * Input
+end;
+
+
+{ TLightweightAnalogRingModulator }
+
+function TLightweightAnalogRingModulator.ProcessSample(Input,
+  Carrier: Single): Single;
+begin
+ Result := (Input + FCoefficients[0] * Carrier) *
+   FastTanhContinousError3(Carrier + FCoefficients[1] * Input) +
+   FCoefficients[2] * Carrier + FCoefficients[3] * Input
+end;
+
 
 { TCustomAutoRingModulator }
 
@@ -87,6 +234,19 @@ begin
   end;
 end;
 
+
+{ TCustomAnalogAutoRingModulator }
+
+constructor TCustomAnalogAutoRingModulator.Create;
+begin
+ inherited;
+ FCoefficients[0] := 0.01;
+ FCoefficients[1] := 0.01;
+ FCoefficients[2] := 0.01;
+ FCoefficients[3] := 0.01;
+end;
+
+
 { TCustomAutoRingModulator32 }
 
 constructor TCustomAutoRingModulator32.Create;
@@ -94,7 +254,7 @@ begin
  inherited;
  FLfo := TLFOSine32.Create;
  FLfo.SampleRate := SampleRate;
- FLfo.Frequency := Frequency; 
+ FLfo.Frequency := Frequency;
 end;
 
 destructor TCustomAutoRingModulator32.Destroy;
@@ -115,7 +275,137 @@ end;
 
 function TCustomAutoRingModulator32.ProcessSample(Input: Single): Single;
 begin
- result := Input * FLfo.Sine;
+ Result := Input * FLfo.Sine;
+ FLfo.CalculateNextSample;
+end;
+
+
+{ TCustomAutoRingModulator64 }
+
+constructor TCustomAutoRingModulator64.Create;
+begin
+ inherited;
+ FLfo := TLFOSine64.Create;
+ FLfo.SampleRate := SampleRate;
+ FLfo.Frequency := Frequency;
+end;
+
+destructor TCustomAutoRingModulator64.Destroy;
+begin
+ FreeAndNil(FLFO);
+ inherited;
+end;
+
+procedure TCustomAutoRingModulator64.FrequencyChanged;
+begin
+ FLfo.Frequency := Frequency;
+end;
+
+procedure TCustomAutoRingModulator64.SampleRateChanged;
+begin
+ FLfo.SampleRate := SampleRate;
+end;
+
+function TCustomAutoRingModulator64.ProcessSample(Input: Double): Double;
+begin
+ Result := Input * FLfo.Sine;
+ FLfo.CalculateNextSample;
+end;
+
+{ TCustomAnalogAutoRingModulator32 }
+
+constructor TCustomAnalogAutoRingModulator32.Create;
+begin
+ inherited;
+ FLfo := TLFOSine32.Create;
+ FLfo.SampleRate := SampleRate;
+ FLfo.Frequency := Frequency;
+end;
+
+destructor TCustomAnalogAutoRingModulator32.Destroy;
+begin
+ FreeAndNil(FLFO);
+ inherited;
+end;
+
+procedure TCustomAnalogAutoRingModulator32.FrequencyChanged;
+begin
+ FLfo.Frequency := Frequency;
+end;
+
+procedure TCustomAnalogAutoRingModulator32.SampleRateChanged;
+begin
+ FLfo.SampleRate := SampleRate;
+end;
+
+
+{ TCustomAnalogAutoRingModulator64 }
+
+constructor TCustomAnalogAutoRingModulator64.Create;
+begin
+ inherited;
+ FLfo := TLFOSine64.Create;
+ FLfo.SampleRate := SampleRate;
+ FLfo.Frequency := Frequency;
+end;
+
+destructor TCustomAnalogAutoRingModulator64.Destroy;
+begin
+ FreeAndNil(FLFO);
+ inherited;
+end;
+
+procedure TCustomAnalogAutoRingModulator64.FrequencyChanged;
+begin
+ FLfo.Frequency := Frequency;
+end;
+
+procedure TCustomAnalogAutoRingModulator64.SampleRateChanged;
+begin
+ FLfo.SampleRate := SampleRate;
+end;
+
+
+{ TAnalogAutoRingModulator32 }
+
+function TAnalogAutoRingModulator32.ProcessSample(Input: Single): Single;
+begin
+ Result := (Input + FCoefficients[0] * FLfo.Sine) *
+   Tanh(FLfo.Sine + FCoefficients[1] * Input) +
+   FCoefficients[2] * FLfo.Sine + FCoefficients[3] * Input;
+ FLfo.CalculateNextSample;
+end;
+
+
+{ TLightweightAnalogAutoRingModulator32 }
+
+function TLightweightAnalogAutoRingModulator32.ProcessSample(Input: Single): Single;
+begin
+ Result := (Input + FCoefficients[0] * FLfo.Sine) *
+   FastTanhContinousError3(FLfo.Sine + FCoefficients[1] * Input) +
+   FCoefficients[2] * FLfo.Sine + FCoefficients[3] * Input;
+ FLfo.CalculateNextSample;
+end;
+
+
+{ TAnalogAutoRingModulator64 }
+
+function TAnalogAutoRingModulator64.ProcessSample(Input: Single): Single;
+begin
+ Result := (Input + FCoefficients[0] * FLfo.Sine) *
+   Tanh(FLfo.Sine + FCoefficients[1] * Input) +
+   FCoefficients[2] * FLfo.Sine + FCoefficients[3] * Input;
+ FLfo.CalculateNextSample;
+end;
+
+
+{ TLightweightAnalogAutoRingModulator64 }
+
+function TLightweightAnalogAutoRingModulator64.ProcessSample(Input: Single): Single;
+begin
+ Result := (Input + FCoefficients[0] * FLfo.Sine) *
+   FastTanhContinousError3(FLfo.Sine + FCoefficients[1] * Input) +
+   FCoefficients[2] * FLfo.Sine + FCoefficients[3] * Input;
  FLfo.CalculateNextSample;
 end;
 

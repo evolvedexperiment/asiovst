@@ -36,6 +36,7 @@ type
     procedure SbVolumeChange(Sender: TObject);
     procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure Lb_ChannelsClick(Sender: TObject);
   private
     procedure SetFrequency(const Value: Double);
   public
@@ -134,6 +135,14 @@ begin
   finally
    Free;
   end; 
+end;
+
+procedure TFmASIO.Lb_ChannelsClick(Sender: TObject);
+begin
+ AsioHost.CanSampleRate(48000);
+ AsioHost.SampleRate := 48000;
+ AsioHost.CanSampleRate(44100);
+ AsioHost.SampleRate := 44100;
 end;
 
 procedure TFmASIO.BtStartStopClick(Sender: TObject);

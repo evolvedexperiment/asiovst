@@ -516,14 +516,14 @@ asm
   // so we just move the return address to stack positions up
   // and are done
 
-  mov edx,[esp]   // backup return address
+  mov edx, [esp]   // backup return address
 
-  mov eax,[esp + 4]
+  mov eax, [esp + 4]
   mov [esp], eax
-  mov eax,[esp + 8]
-  mov [esp+4], eax
+  mov eax, [esp + 8]
+  mov [esp + 4], eax
 
-  mov [esp+8],edx    // set return address
+  mov [esp + 8], edx    // set return address
 
   // generate new "self" pointer for this object in ECX
   mov eax, ecx
