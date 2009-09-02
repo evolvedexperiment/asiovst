@@ -170,8 +170,8 @@ type
     procedure CalculateCoefficients; override;
     procedure SetOrder(const Value: Cardinal); override;
   public
-    function ProcessSample(const Input: Double): Double; override;
     constructor Create; override;
+    function ProcessSample(const Input: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Reset; override;
@@ -618,9 +618,8 @@ end;
 
 procedure TCustomGainFrequencyFilter.SetFrequency(Value: Double);
 begin
- if Value > 1E-10
-  then Value := Value
-  else Value := 1E-10;
+ if Value < 1E-10
+  then Value := 1E-10;
  if FFrequency <> Value then
   begin
    FFrequency := Value;
@@ -827,6 +826,7 @@ procedure TFirstOrderAllpassFilter.FrequencyChanged;
 begin
  assert (FFrequency >= -0.5);
  assert (FFrequency <= 1);
+// inherited;
 end;
 
 function TFirstOrderAllpassFilter.GetOrder: Cardinal;
@@ -854,8 +854,8 @@ end;
 
 function TFirstOrderAllpassFilter.ProcessSample(const Input: Double): Double;
 begin
- result := FState + FFrequency * Input;
- FState := Input - FFrequency * result;
+ Result := FState + FFrequency * Input;
+ FState := Input - FFrequency * Result;
 end;
 
 procedure TFirstOrderAllpassFilter.PushStates;
