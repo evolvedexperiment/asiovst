@@ -3,8 +3,8 @@ object FmVSTEditor: TFmVSTEditor
   Top = 224
   BorderStyle = bsDialog
   Caption = 'VST Plugin Editor'
-  ClientHeight = 228
-  ClientWidth = 329
+  ClientHeight = 112
+  ClientWidth = 321
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object FmVSTEditor: TFmVSTEditor
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 329
+    Width = 321
     Height = 27
     ButtonHeight = 24
     Color = clBtnFace
@@ -115,8 +115,8 @@ object FmVSTEditor: TFmVSTEditor
   object VSTPanel: TPanel
     Left = 0
     Top = 27
-    Width = 329
-    Height = 201
+    Width = 321
+    Height = 85
     Align = alClient
     BevelOuter = bvNone
     Font.Charset = DEFAULT_CHARSET

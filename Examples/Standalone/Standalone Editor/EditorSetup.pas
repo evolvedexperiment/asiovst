@@ -11,8 +11,8 @@ uses
 type
   TFmSetup = class(TForm)
     LbPreset: TLabel;
-    LbIn: TLabel;
-    Label1: TLabel;
+    LbInput: TLabel;
+    LbOutput: TLabel;
     CBDrivers: TComboBox;
     CBInput: TComboBox;
     CBOutput: TComboBox;
