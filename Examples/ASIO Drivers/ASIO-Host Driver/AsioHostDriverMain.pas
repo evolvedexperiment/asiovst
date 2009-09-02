@@ -704,7 +704,7 @@ function TAsioHostDriver.GetInternalSamplePosition(out SamplePosition: TASIOSamp
 begin
  TimeStamp.Lo := FSystemTime.Lo;
  TimeStamp.Hi := FSystemTime.Hi;
- if (FSamplePosition >= CTwoRaisedTo32) then 
+ if (FSamplePosition >= CTwoRaisedTo32) then
   begin
    SamplePosition.Hi := round(FSamplePosition * CTwoRaisedTo32Reciprocal);
    SamplePosition.Lo := round(FSamplePosition - (SamplePosition.Hi * CTwoRaisedTo32));
@@ -714,6 +714,7 @@ begin
    SamplePosition.Hi := 0;
    SamplePosition.Lo := Round(FSamplePosition);
   end;
+
  Result := ASE_OK;
 end;
 
@@ -984,14 +985,13 @@ function TAsioHostDriver.InternalControlPanel: TASIOError;
 begin
  if Assigned(FControlPanel) then
   begin
-   FControlPanel.Show;
-   FControlPanel.BringToFront;
+   FControlPanel.Showmodal; // Important, there are Host that push the window back... eg. SynthMaker
   end
  else
   begin
    FControlPanel := TFmAsioDriverControlPanel.Create(FAsioHost);
 //   FControlPanel.ParentWindow := FSystemHandle;
-   FControlPanel.Show;
+   FControlPanel.ShowModal; // Important, there are Host that push the window back... eg. SynthMaker
   end;
  Result := ASE_OK;
 end;
@@ -1052,15 +1052,10 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TAsioHostDriver.BufferSwitchX;
-var
-  Offset : Integer;
 begin
  with FAsioTime, TimeInfo, TimeCode do
   begin
    GetInternalSamplePosition(SamplePosition, SystemTime);
-   if FToggle = 0
-    then Offset := 0
-    else Offset := FBlockFrames;
 
    if FTimeCodeRead then
     begin
@@ -1110,6 +1105,8 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+
 procedure TAsioHostDriver.BufferSwitch32EventHandler(Sender: TObject;
   const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
@@ -1131,7 +1128,8 @@ begin
     do Move(FOutputBuffers[Channel]^[Offset], OutBuffer[Channel]^[0], AsioHost.BufferSize * SizeOf(Single));
 
    FSamplePosition := FSamplePosition + FBlockFrames;
-   if FTimeInfoMode
+
+  if FTimeInfoMode
     then BufferSwitchX
     else FCallbacks^.BufferSwitch(FToggle, ASIOFalse);
    FToggle := 1 - FToggle;
