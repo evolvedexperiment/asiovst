@@ -229,9 +229,14 @@ begin
  InternalStop;
  InternalClose;
  InternalDisposeBuffers;
+ SetLength(FInputBuffers,0);
+ SetLength(FOutputBuffers,0);
+ SetLength(FInMap,0);
+ SetLength(FOutMap,0);
+
  if Assigned(FControlPanel)
   then FreeAndNil(FControlPanel);
- FreeAndNil(FAsioHost); 
+ FreeAndNil(FAsioHost);
  inherited;
 end;
 
@@ -933,7 +938,6 @@ asm
   // generate new "self" pointer for this object
   mov eax,ecx
   sub eax,CStupidOffset
-
   call InternalDisposeBuffers
 end;
 
@@ -944,15 +948,25 @@ begin
  FCallbacks := nil;
  InternalStop;
 
- for Channel := 0 to FActiveInputs - 1 do Dispose(FInputBuffers[Channel]);
- SetLength(FInputBuffers, 0);
+ for Channel := 0 to FActiveInputs - 1 do
+   if assigned(FInputBuffers[Channel]) then
+   begin
+     Dispose(FInputBuffers[Channel]);
+     FInputBuffers[Channel] := nil;
+   end;
+
  FActiveInputs := 0;
 
- for Channel := 0 to FActiveOutputs - 1 do Dispose(FOutputBuffers[Channel]);
- SetLength(FOutputBuffers, 0);
+ for Channel := 0 to FActiveOutputs - 1 do 
+   if assigned(FOutputBuffers[Channel]) then
+   begin
+     Dispose(FOutputBuffers[Channel]);
+     FOutputBuffers[Channel] := nil;
+   end;
+
  FActiveOutputs := 0;
 
- Result := ASE_OK;
+ Result := ASE_OK; 
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1110,10 +1124,10 @@ begin
     then Offset := 0
     else Offset := FBlockFrames;
 
-   for Channel := 0 to Min(Length(FInputBuffers), AsioHost.InputChannelCount) - 1
+   for Channel := 0 to Min(FActiveInputs,AsioHost.InputChannelCount) - 1
     do Move(InBuffer[Channel]^[0], FInputBuffers[Channel]^[Offset], AsioHost.BufferSize * SizeOf(Single));
 
-   for Channel := 0 to Min(Length(FOutputBuffers), AsioHost.OutputChannelCount) - 1
+   for Channel := 0 to Min(FActiveOutputs,AsioHost.OutputChannelCount) - 1
     do Move(FOutputBuffers[Channel]^[Offset], OutBuffer[Channel]^[0], AsioHost.BufferSize * SizeOf(Single));
 
    FSamplePosition := FSamplePosition + FBlockFrames;
