@@ -128,7 +128,7 @@ uses
 const
   CTwoRaisedTo32 : Double = 4294967296;
   CTwoRaisedTo32Reciprocal : Double = 1 / 4294967296;
-  CStupidOffset = $17C;
+  CInterfaceOffset = $17C;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -177,7 +177,7 @@ var
   Channel : Integer;
 begin
  inherited;
- Assert(CStupidOffset = GetInterfaceTable^.Entries[0].IOffset);
+ Assert(CInterfaceOffset = GetInterfaceTable^.Entries[0].IOffset);
 
  // typically blockFrames * 2; try to get 1 by offering direct buffer
  // access, and using asioPostOutput for lower latency
@@ -229,10 +229,10 @@ begin
  InternalStop;
  InternalClose;
  InternalDisposeBuffers;
- SetLength(FInputBuffers,0);
- SetLength(FOutputBuffers,0);
- SetLength(FInMap,0);
- SetLength(FOutMap,0);
+ SetLength(FInputBuffers, 0);
+ SetLength(FOutputBuffers, 0);
+ SetLength(FInMap, 0);
+ SetLength(FOutMap, 0);
 
  if Assigned(FControlPanel)
   then FreeAndNil(FControlPanel);
@@ -251,8 +251,8 @@ asm
   mov [esp + 4], eax
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   // move stack pointer to the return address position
   add esp, 4
@@ -290,8 +290,8 @@ asm
   mov [esp + 4], eax
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   // move stack pointer to the return address position
   add esp, 4
@@ -309,8 +309,8 @@ end;
 procedure TAsioHostDriver.GetDriverVersion;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   call GetInternalDriverVersion
 end;
@@ -331,8 +331,8 @@ asm
   mov [esp + 4], eax
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   // move stack pointer to the return address position
   add esp, 4
@@ -350,8 +350,8 @@ end;
 procedure TAsioHostDriver.Start;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   call InternalStart
 end;
@@ -380,8 +380,8 @@ end;
 procedure TAsioHostDriver.Stop;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   call InternalStop
 end;
@@ -410,8 +410,8 @@ end;
 procedure TAsioHostDriver.GetChannels;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8] // get second parameter
 
@@ -439,8 +439,8 @@ end;
 procedure TAsioHostDriver.GetLatencies;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8] // get second parameter
 
@@ -474,8 +474,8 @@ end;
 procedure TAsioHostDriver.GetBufferSize;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8]   // get second parameter
 
@@ -526,8 +526,8 @@ asm
   mov [esp+8],edx    // set return address
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   call InternalCanSampleRate
 end;
@@ -550,8 +550,8 @@ asm
   mov [esp + 4], eax
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   // move stack pointer to the return address position
   add esp, 4
@@ -584,8 +584,8 @@ asm
   mov [esp+8],edx    // set return address
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
   call SetInternalSampleRate
 end;
 
@@ -617,8 +617,8 @@ end;
 procedure TAsioHostDriver.GetClockSources;
 asm
  // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8] // get second parameter
 
@@ -659,8 +659,8 @@ asm
   mov [esp + 4], eax
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset    
+  mov eax, ecx
+  sub eax, CInterfaceOffset    
 
   // move stack pointer to the return address position
   add esp, 4
@@ -683,8 +683,8 @@ end;
 procedure TAsioHostDriver.GetSamplePosition;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8] // get second parameter
 
@@ -729,8 +729,8 @@ asm
   mov [esp + 4], eax
 
   // generate new "self" pointer for this object in ECX
-  mov eax,ecx
-  sub eax,CStupidOffset    
+  mov eax, ecx
+  sub eax, CInterfaceOffset    
 
   // move stack pointer to the return address position
   add esp, 4
@@ -795,8 +795,8 @@ end;
 procedure TAsioHostDriver.CreateBuffers;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8]   // get second parameter
 
@@ -937,8 +937,8 @@ end;
 procedure TAsioHostDriver.DisposeBuffers;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
   call InternalDisposeBuffers
 end;
 
@@ -975,8 +975,8 @@ end;
 procedure TAsioHostDriver.ControlPanel;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   call InternalControlPanel
 end;
@@ -1001,8 +1001,8 @@ end;
 procedure TAsioHostDriver.Future;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   mov ecx, [esp + 8] // get second parameter
 
@@ -1072,8 +1072,8 @@ end;
 procedure TAsioHostDriver.OutputReady;
 asm
   // generate new "self" pointer for this object
-  mov eax,ecx
-  sub eax,CStupidOffset
+  mov eax, ecx
+  sub eax, CInterfaceOffset
 
   call InternalOutputReady
 end;

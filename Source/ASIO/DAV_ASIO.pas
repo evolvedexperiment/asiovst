@@ -52,8 +52,10 @@ const
 type
   // use the function ASIOSamplesToInt64 to convert to an Int64
   TASIOInt64 = record
-    Hi : DWORD;
-    Lo : DWORD;
+    case Integer of
+    0: (Hi : DWORD;
+        Lo : DWORD);
+//    1: (Native: Int64);
   end;
 
   TASIOSamples = TASIOInt64;
@@ -431,6 +433,8 @@ type
     IsCurrentSource   : TASIOBool;  // ASIOTrue if this is the current clock source
     Name              : array[0..31] of AnsiChar;   // for user selection
   end;
+  TASIOClockSources = array [0..0] of TASIOClockSource;
+  PASIOClockSources = ^TASIOClockSources;
 
   TASIOChannelInfo = packed record
     Channel      : LongInt;                  // on input, channel index
@@ -447,6 +451,8 @@ type
     ChannelNum : LongInt;                 // on input:  channel index
     Buffers    : array [0..1] of Pointer; // on output: double buffer addresses
   end;
+  TASIOBufferInfos = array [0..0] of TASIOBufferInfo;
+  PASIOBufferInfos = ^TASIOBufferInfos;
 
 const
   kAsioEnableTimeCodeRead  =  1;    // no arguments

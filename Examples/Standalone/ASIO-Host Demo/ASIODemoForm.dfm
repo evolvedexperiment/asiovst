@@ -30,6 +30,7 @@ object FmASIO: TFmASIO
     Width = 82
     Height = 13
     Caption = 'Output Channels:'
+    OnClick = Lb_ChannelsClick
   end
   object Lb_Copyright: TLabel
     Left = 87
@@ -144,7 +145,6 @@ object FmASIO: TFmASIO
     PreFillOutBuffer = bpfZero
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 8

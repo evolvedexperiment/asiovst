@@ -1,20 +1,19 @@
 unit AsioDriverMain;
 
 {$I DAV_Compiler.inc}
-
-{$WARN SYMBOL_PLATFORM OFF}
+{$DEFINE SupportTimeInfo}
 
 interface
 
 uses
-  Windows, SysUtils, Classes, ComObj, DAV_Common, DAV_ASIO, DAV_BeroAsio;
+  Windows, SysUtils, Classes, ComObj, DAV_Common, DAV_ASIO, DAV_AsioInterface;
 
 {$DEFINE TESTWAVES}
 
 const
   CBlockFrames = 256;
-  CNumInputs = 16;
-  CNumOutputs = 16;
+  CNumInputs = 2;
+  CNumOutputs = 2;
   CClass_AsioDriver: TGUID = '{A8DD45FD-34CC-4996-9695-CDD2AE483B47}';
 
 type
@@ -23,7 +22,7 @@ type
     procedure UpdateRegistry(Register: Boolean); override;
   end;
 
-  IDavAsio = interface(IBeroASIO)
+  IDavAsio = interface(IStdCallASIO)
   ['{A8DD45FD-34CC-4996-9695-CDD2AE483B47}']
   end;
 
@@ -79,7 +78,6 @@ type
     procedure TimerOn;
     procedure TimerOff;
     procedure BufferSwitchX;
-    function SetInternalClockSource(Reference: Integer): TASIOError;
     {$IFDEF TESTWAVES}
     procedure MakeSine(const Data: PDAVSingleFixedArray);
     procedure MakeSaw(const Data: PDAVSingleFixedArray);
@@ -90,13 +88,14 @@ type
     function GetInternalBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError;
     function GetInternalChannelInfo(var Info: TASIOChannelInfo): TASIOError;
     function GetInternalChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
-    function GetInternalClockSources(Clocks: PASIOClockSource; out NumSources: Integer): TASIOError;
+    function GetInternalClockSources(var Clocks: TASIOClockSource; out NumSources: Integer): TASIOError;
     function GetInternalDriverVersion: LongInt;
     function GetInternalLatencies(out InputLatency, OutputLatency: Integer): TASIOError;
     function GetInternalSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
     function GetInternalSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
+    function InternalCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
     function InternalControlPanel: TASIOError;
-    function InternalCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
+    function InternalCreateBuffers(var BufferInfos: TASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
     function InternalDisposeBuffers: TASIOError;
     function InternalFuture(Selector: LongInt; Opt: Pointer): TASIOError;
     function InternalInit(SysHandle: HWND): TASIOBool;
@@ -104,6 +103,7 @@ type
     function InternalStart: TASIOError;
     function InternalStop: TASIOError;
     function SetInternalSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+    function SetInternalClockSource(Reference: Integer): TASIOError;
     procedure GetInternalDriverName(Name: PAnsiChar);
     procedure GetInternalErrorMessage(ErrorString: PAnsiChar);
   public
@@ -122,11 +122,11 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; stdcall;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; stdcall;
+    function GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; stdcall;
     function SetClockSource(Reference: LongInt): TASIOError; stdcall;
     function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; stdcall;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; stdcall;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
+    function CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; stdcall;
     function DisposeBuffers: TASIOError; stdcall;
     function ControlPanel: TASIOError; stdcall;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; stdcall;
@@ -166,11 +166,17 @@ end;
 
 procedure GetNanoSeconds(var Time: TASIOTimeStamp);
 var
-  NanoSeconds : Double;
+  SystemTime  : TSystemTime;
+  NanoSeconds : Int64;
+const
+  CTwoRaisedTo32 : Int64 = 4294967296;
 begin
- NanoSeconds := 0; // (double)((unsigned long)timeGetTime ()) * 1000000.;
- Time.Hi := round(NanoSeconds / CTwoRaisedTo32);
- Time.Lo := round(NanoSeconds - (Time.Hi * CTwoRaisedTo32));
+ GetLocalTime(SystemTime);
+ with SystemTime
+  do NanoSeconds := 1000 * (Int64(wMilliseconds) + 1000 * (Int64(wSecond) +
+    60 * (Int64(wMinute) + 60 * Int64(wHour))));
+ Time.Hi := NanoSeconds div CTwoRaisedTo32;
+ Time.Lo := NanoSeconds - (Time.Hi * CTwoRaisedTo32);
 end;
 
 
@@ -445,8 +451,8 @@ begin
   begin
    FStarted := False;
    FSamplePosition := 0;
-   FSystemTime.Lo := 0;
    FSystemTime.Hi := 0;
+   FSystemTime.Lo := 0;
    FToggle := 0;
 
    // activate 'hardware'
@@ -636,6 +642,31 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 function TAsioDriver.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
+asm
+ // shift/store saved ESP
+ MOV EAX, [ESP]
+ MOV [ESP - 4], EAX
+
+ // shift/store saved EIP (return adress)
+ MOV EAX, [ESP + 4]
+ MOV [ESP], EAX
+
+ // shift stack pointer to get a valid return address on return
+ SUB ESP, 4
+
+ // stupid
+ SUB ECX, CStupidOffset
+ ADD [EBP + $8], CStupidOffset
+
+ // pass variables
+ MOV EAX, ECX
+ PUSH [EBP + $C]
+ PUSH [EBP + $8]
+
+ CALL InternalCanSampleRate
+end;
+
+function TAsioDriver.InternalCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
  // allow these rates only
  if (SampleRate = 44100) or (SampleRate = 48000)
@@ -685,16 +716,18 @@ asm
  // shift/store saved EIP (return adress)
  MOV EAX, [ESP + 4]
  MOV [ESP], EAX
+
  // shift stack pointer to get a valid return address on return
  SUB ESP, 4
 
+ // stupid
+ SUB ECX, CStupidOffset
+ ADD [EBP + $8], CStupidOffset
+
  // pass variables
  MOV EAX, ECX
- MOV EDX, [EBP + $8]
-
- // stupid
- SUB EAX, CStupidOffset
- ADD EDX, CStupidOffset
+ PUSH [EBP + $C]
+ PUSH [EBP + $8]
 
  CALL SetInternalSampleRate
 end;
@@ -707,8 +740,9 @@ begin
   else
    begin
     if (SampleRate <> FSampleRate) then
-    begin
+     begin
       FSampleRate := SampleRate;
+      FillChar(FAsioTime.Reserved, 4, 0);
       FAsioTime.TimeInfo.SampleRate := SampleRate;
       FAsioTime.TimeInfo.Flags := FAsioTime.TimeInfo.Flags or kSampleRateChanged;
       FMilliSeconds := round((CBlockFrames * 1000) / FSampleRate);
@@ -721,7 +755,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioDriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+function TAsioDriver.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
 asm
  // shift/store saved ESP
  MOV EAX, [ESP]
@@ -746,14 +780,14 @@ asm
  CALL GetInternalClockSources
 end;
 
-function TAsioDriver.GetInternalClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+function TAsioDriver.GetInternalClockSources(var Clocks: TASIOClockSource; out NumSources: LongInt): TASIOError;
 begin
  // internal
- Clocks^.Index := 0;
- Clocks^.AssociatedChannel := -1;
- Clocks^.AssociatedGroup := -1;
- Clocks^.IsCurrentSource := ASIOTrue;
- StrCopy(Clocks^.Name, 'Internal');
+ Clocks.Index := 0;
+ Clocks.AssociatedChannel := -1;
+ Clocks.AssociatedGroup := -1;
+ Clocks.IsCurrentSource := ASIOTrue;
+ StrPCopy(Clocks.Name, 'Internal');
  numSources := 1;
  Result := ASE_OK;
 end;
@@ -787,7 +821,8 @@ function TAsioDriver.SetInternalClockSource(Reference: LongInt): TASIOError;
 begin
  if Reference = 0 then
   begin
-   FAsioTime.TimeInfo.Flags:= FAsioTime.TimeInfo.Flags or kClockSourceChanged;
+   with FAsioTime.TimeInfo
+    do Flags := Flags or kClockSourceChanged;
    Result := ASE_OK;
   end
  else Result := ASE_NotPresent;
@@ -824,16 +859,8 @@ function TAsioDriver.GetInternalSamplePosition(out SamplePosition: TASIOSamples;
 begin
  TimeStamp.Lo := FSystemTime.Lo;
  TimeStamp.Hi := FSystemTime.Hi;
- if (FSamplePosition >= CTwoRaisedTo32) then 
-  begin
-   SamplePosition.Hi := round(FSamplePosition * CTwoRaisedTo32Reciprocal);
-   SamplePosition.Lo := round(FSamplePosition - (SamplePosition.Hi * CTwoRaisedTo32));
-  end
- else
-  begin
-   SamplePosition.Hi := 0;
-   SamplePosition.Lo := round(FSamplePosition);
-  end;
+ SamplePosition.Lo := round(FSamplePosition);
+ SamplePosition.Hi := 0;
  Result := ASE_OK;
 end;
 
@@ -884,7 +911,7 @@ begin
     Exit;
    end;
 
- Info.SampleType := ASIOSTFloat32LSB;
+ Info.SampleType := ASIOSTFloat32LSB; 
 
  Info.ChannelGroup := 0;
  Info.IsActive := ASIOFalse;
@@ -917,7 +944,7 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
+function TAsioDriver.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels,
   BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 asm
  // shift/store saved ESP
@@ -945,14 +972,14 @@ asm
  CALL InternalCreateBuffers
 end;
 
-function TAsioDriver.InternalCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels,
+function TAsioDriver.InternalCreateBuffers(var BufferInfos: TASIOBufferInfo; NumChannels,
   BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 var
   BufferInfo   : PASIOBufferInfo;
   Channel      : Integer;
   NotEnoughMem : Boolean;
 begin
- BufferInfo := BufferInfos;
+ BufferInfo := @BufferInfos;
  NotEnoughMem := False;
 
  FActiveInputs := 0;
@@ -960,9 +987,9 @@ begin
  FBlockFrames := BufferSize;
  for Channel := 0 to numChannels - 1 do
   begin
-   if BufferInfo^.IsInput <> 0 then
+   if BufferInfo.IsInput <> 0 then
     begin
-     if (BufferInfo^.ChannelNum < 0) or (BufferInfo^.ChannelNum >= CNumInputs) then
+     if (BufferInfo.ChannelNum < 0) or (BufferInfo.ChannelNum >= CNumInputs) then
       begin
        InternalDisposeBuffers;
        Result := ASE_InvalidParameter;
@@ -1036,16 +1063,18 @@ begin
   end;
 
  FCallbacks := @Callbacks;
+
+ {$IFDEF SupportTimeInfo}
  if (Callbacks.AsioMessage(kAsioSupportsTimeInfo, 0, nil, nil)) <> 0 then
   begin
    FTimeInfoMode := True;
    with FAsioTime.TimeInfo do
     begin
      Speed := 1.;
-     SystemTime.Hi := 0;
      SystemTime.Lo := 0;
-     SamplePosition.Hi := 0;
+     SystemTime.Hi := 0;
      SamplePosition.Lo := 0;
+     SamplePosition.Hi := 0;
      SampleRate := FSampleRate;
      Flags := kSystemTimeValid or kSamplePositionValid or kSampleRateValid;
     end;
@@ -1059,6 +1088,7 @@ begin
    end;
   end
  else FTimeInfoMode := False;
+ {$ENDIF}
  Result := ASE_OK;
 end;
 
@@ -1095,11 +1125,11 @@ begin
  InternalStop;
 
  for Channel := 0 to FActiveInputs - 1 do Dispose(FInputBuffers[Channel]);
- SetLength(FInputBuffers, 0);
+// SetLength(FInputBuffers, 0);
  FActiveInputs := 0;
 
  for Channel := 0 to FActiveOutputs - 1 do Dispose(FOutputBuffers[Channel]);
- SetLength(FOutputBuffers, 0);
+// SetLength(FOutputBuffers, 0);
  FActiveOutputs := 0;
 
  Result := ASE_OK;
@@ -1320,21 +1350,21 @@ var
 begin
  with FAsioTime, TimeInfo do
   begin
-   GetInternalSamplePosition(SamplePosition, SystemTime);
+   GetInternalSamplePosition(FAsioTime.TimeInfo.SamplePosition, SystemTime);
    if FToggle = 0
     then Offset := 0
     else Offset := FBlockFrames;
 
    if FTimeCodeRead then
-    with FAsioTime.TimeCode do
+    with TimeCode do
      begin
-      // Create a fake time code, which is 10 minutes ahead of the card's sample position
-      // Please note that for simplicity here time code will wrap after 32 bit are reached
-      TimeCodeSamples.Lo := SamplePosition.Lo + Round(600.0 * FSampleRate);
-      TimeCodeSamples.Hi := 0;
+      // Create a fake time code, which is identical to the sample position
+      TimeCodeSamples.Lo := SamplePosition.Lo;
+      TimeCodeSamples.Hi := SamplePosition.Hi;
      end;
+
    FCallbacks^.BufferSwitchTimeInfo(FAsioTime, FToggle, ASIOFalse);
-   Flags := Flags and not (kSampleRateChanged or kClockSourceChanged);
+   Flags := FAsioTime.TimeInfo.Flags and not (kSampleRateChanged or kClockSourceChanged);
   end;
 end;
 
@@ -1364,7 +1394,7 @@ end;
 
 function TAsioDriver.InternalOutputReady: TASIOError;
 begin
- Result := ASE_NotPresent;
+ Result := ASE_OK;
 end;
 
 initialization
