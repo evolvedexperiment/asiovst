@@ -68,7 +68,7 @@ object FmASIO: TFmASIO
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -88,7 +88,7 @@ object FmASIO: TFmASIO
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -141,7 +141,6 @@ object FmASIO: TFmASIO
     ASIOTime.Speed = 1.000000000000000000
     ASIOTime.SampleRate = 44100.000000000000000000
     ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    ConvertOptimizations = [coSSE, co3DNow]
     PreFillOutBuffer = bpfZero
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000

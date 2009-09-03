@@ -62,6 +62,7 @@ uses
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
  DriverCombo.Items := ASIOHost.DriverList;
+
  if DriverCombo.Items.Count = 0 then
   try
    raise Exception.Create('No ASIO Driver present! Application Terminated!');
@@ -88,6 +89,7 @@ begin
  FVol           :=    1;
  FChannelOffset :=    0;
  GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
+
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);

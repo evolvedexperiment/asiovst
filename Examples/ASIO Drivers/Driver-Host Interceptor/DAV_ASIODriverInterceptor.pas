@@ -2,49 +2,10 @@ unit DAV_ASIODriverInterceptor;
 
 interface
 
-uses Classes,SysUtils,Registry,Windows,Forms, DAV_ASIO,DAV_ASIODriver,DAV_AsioInterface;
-
-const
-  DAVIntASIOInprocServer = 'InprocServer32';
-  DAVIntASIOPath         = 'software\asio';
-  DAVIntASIOComClsId     = 'clsid';
-  DAVIntASIODescription  = 'description';
+uses Classes,SysUtils,Windows,Forms,
+     DAV_ASIO,DAV_ASIOList,DAV_ASIODriver,DAV_AsioInterface;
 
 type
-  TDAVIntAsioDriverDesc = class
-  private
-    fGuid: TGUID;
-    fName: string;
-    fFilename: string;
-  public
-    constructor Create(nGuid: TGUID; nName: string; nFilename: string); overload;
-    constructor Create(nGuid, nName, nFilename: string); overload;
-    property Guid: TGUID read fGuid;
-    property Name: string read fName;
-    property Filename: string read fFilename;
-  end;
-
-  TDAVIntAsioDriverList = class
-  private
-    fIgnoreGuid: TGuid;
-    fHasIgnoreGuid: boolean;
-    fList: TList;
-    procedure ClearList;
-    procedure LoadList;
-    function GetDriverFileName(DrvGuidStr: string): string;
-    function GetItem(Index: Integer): TDAVIntAsioDriverDesc;
-    function GetCount: Integer;
-  public
-    constructor Create(Ignore: TGuid); overload;
-    constructor Create; overload;
-    destructor Destroy; override;
-
-    procedure UpdateList;
-    function GetDriverNames: TStrings;
-    property Items[Index: Integer]: TDAVIntAsioDriverDesc read GetItem;
-    property Count: Integer read GetCount;
-  end;
-
   TDavASIOInterceptor = class;
 
   TDavASIOInterceptorCP = class(TForm)
@@ -60,7 +21,7 @@ type
   protected
     fDriverName: string;
     fDriverVersion: Longint;
-    fDriverList: TDAVIntAsioDriverList;
+    fDriverList: TDAVAsioDriverList;
     fHostInterface: IStdCallASIO;
     fCurrentDriverIndex: integer;
     fHostCallbacks: PASIOCallbacks;
@@ -133,155 +94,6 @@ begin
 end;
 
 
-{ TDAVIntAsioDriverDesc }
-
-constructor TDAVIntAsioDriverDesc.Create(nGuid: TGUID; nName: string; nFilename: string);
-begin
-  fGuid:=nGuid;
-  fName:=nName;
-  fFilename:=nFilename;
-end;
-
-constructor TDAVIntAsioDriverDesc.Create(nGuid, nName, nFilename: string);
-begin
-  fGuid:=StringToGUID(nGuid);
-  fName:=nName;
-  fFilename:=nFilename;
-end;
-
-{ TDAVIntAsioDriverList }
-
-constructor TDAVIntAsioDriverList.Create;
-begin
-  fHasIgnoreGuid := false;
-  fList:=TList.Create;
-end;
-
-constructor TDAVIntAsioDriverList.Create(Ignore: TGuid);
-begin
-  Create;
-  fIgnoreGuid := Ignore;
-  fHasIgnoreGuid := true;
-end;
-
-destructor TDAVIntAsioDriverList.Destroy;
-begin
-  ClearList;
-  fList.Free;
-  inherited;
-end;
-
-procedure TDAVIntAsioDriverList.ClearList;
-var i:integer;
-begin
-  for i := Count-1 downto 0 do Items[i].Free;
-
-  fList.Clear;
-end;
-
-function TDAVIntAsioDriverList.GetCount: Integer;
-begin
-  Result := fList.Count;
-end;
-
-function TDAVIntAsioDriverList.GetDriverFileName(DrvGuidStr: string): string;
-var Filename: string;
-    DirStr : PChar;
-begin
-  result := '';
-  if DrvGuidStr='' then exit;
-
-  with TRegistry.Create do
-  try
-    RootKey := HKEY_CLASSES_ROOT;
-    if OpenKeyReadOnly(DAVIntASIOComClsId + '\' + Lowercase(DrvGuidStr) + '\' + DAVIntASIOInprocServer) then
-    begin
-      result := ReadString('');
-      Filename := ExtractFileName(result);
-      DirStr := StrAlloc(MAX_PATH);
-
-      if not FileExists(result) and (GetSystemDirectory(DirStr, MAX_PATH) <> 0) then
-        result := StrPas(DirStr) + '\' + Filename;
-      
-      if not FileExists(result) and (GetWindowsDirectory(DirStr, MAX_PATH) <> 0) then
-        result := StrPas(DirStr) + '\' + Filename;
-
-      if not FileExists(result) then
-        Result := '';
-
-      StrDispose(DirStr);
-      CloseKey;
-    end;
-  
-  finally
-    Free;
-  end;
-end;
-
-function TDAVIntAsioDriverList.GetItem(Index: Integer): TDAVIntAsioDriverDesc;
-begin
-  Result := TDAVIntAsioDriverDesc(fList.Items[Index]);
-end;
-
-procedure TDAVIntAsioDriverList.LoadList;
-var SubKeys: TStringList;
-    i: Integer;
-    DrvName: string;
-    DrvGuidStr: string;
-    DrvFile: string;
-    DrvGuid: TGuid;
-    newAsioDriverItem: TDAVIntAsioDriverDesc;
-begin
-  SubKeys := TStringList.Create;
-  with TRegistry.Create do
-  try
-    RootKey:=HKEY_LOCAL_MACHINE;
-    if OpenKeyReadOnly(DAVIntASIOPath) then
-    begin
-      GetKeyNames(SubKeys);
-      CloseKey;
-    end;
-
-    for i:=0 to SubKeys.Count-1 do
-    begin
-      if OpenKeyReadOnly(DAVIntASIOPath + '\' + SubKeys[i]) then
-      begin
-        DrvGuidStr := ReadString(DAVIntASIOComClsId);
-        DrvGuid := StringToGUID(DrvGuidStr);
-
-        DrvFile:=GetDriverFileName(DrvGuidStr);
-        if (DrvFile<>'') and not ( fHasIgnoreGuid and IsEqualGUID(DrvGuid,fIgnoreGuid) ) then
-        begin
-          DrvName := ReadString(DAVIntASIODescription);
-          if DrvName='' then DrvName:=SubKeys[i];
-
-          newAsioDriverItem:=TDAVIntAsioDriverDesc.Create(DrvGuidStr,DrvName,DrvFile);
-          fList.Add(newAsioDriverItem);
-        end;
-
-        CloseKey;
-      end;
-    end;
-  finally
-    Free;
-    SubKeys.Free;
-  end;
-end;
-
-procedure TDAVIntAsioDriverList.UpdateList;
-begin
-  ClearList;
-  LoadList;
-end;
-
-function TDAVIntAsioDriverList.GetDriverNames: TStrings;
-var i:integer;
-begin
-  result:=TStringList.Create;
-  for i := 0 to Count-1 do Result.Add(Items[i].Name);
-end;
-
-
 { TDavASIOInterceptorCP }
 
 constructor TDavASIOInterceptorCP.Create(AOwner: TComponent; cInterceptor: TDavASIOInterceptor);
@@ -296,7 +108,7 @@ constructor TDavASIOInterceptor.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGU
 begin
   inherited;
   GlobalCallbackInst := self;
-  fDriverList := TDAVIntAsioDriverList.Create(InterfaceGUID);
+  fDriverList := TDAVAsioDriverList.Create(InterfaceGUID);
   fDriverList.UpdateList;
   fCurrentDriverIndex:=0;
   fHostInterface := nil;
@@ -367,7 +179,7 @@ begin
     result:=false
   else begin
     try
-      result := CreateStdCallASIO(TDAVIntAsioDriverDesc(fDriverList.Items[fCurrentDriverIndex]).Guid,fHostInterface);
+      result := CreateStdCallASIO(TDAVAsioDriverDesc(fDriverList.Items[fCurrentDriverIndex]).Guid,fHostInterface);
       if result then
         result := fHostInterface.Init(SysHandle) = ASIOTrue;
     except

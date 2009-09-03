@@ -16,9 +16,10 @@ uses
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAVASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF}
   SysUtils, Classes, Controls,
-  DAV_ASIO, DAV_ASIOConvert, DAV_ASIOGenerator, DAV_Common, DAV_AudioData;
+  DAV_ASIO, DAV_ASIOList, DAV_ASIOConvert, DAV_ASIOGenerator, DAV_Common, DAV_AudioData;
 
 const
+  {$IFDEF DELPHI10_UP} {$region 'Message constants'} {$ENDIF}
   // private message
   PM_ASIO = WM_User + 1652;        // unique we hope
   // ASIO message(s), as wParam for PM_ASIO
@@ -33,14 +34,10 @@ const
   PM_BufferSwitch         = PM_ASIO + 2;
   PM_BufferSwitchTimeInfo = PM_ASIO + 3;
   PM_Reset                = PM_ASIO + 4;
+  {$IFDEF DELPHI10_UP} {$endregion 'Message constants'} {$ENDIF}
 
 type
-  TAsioDriverDesc = packed record
-    Id   : TGUID; //TCLSID;
-    Name : array[0..511] of AnsiChar;
-    Path : array[0..511] of AnsiChar;
-  end;
-  PAsioDriverDesc = ^TAsioDriverDesc;
+  {$IFDEF DELPHI10_UP} {$region 'Basic types'} {$ENDIF}
   TASIOBufferList = array [0..0] of TASIOBufferInfo;
   PASIOBufferList = ^TASIOBufferList;
 
@@ -48,7 +45,6 @@ type
     assSupportsInputMonitor);
   TAsioSupports = set of TAsioSupport;                        
 
-  TAsioDriverList = array of TAsioDriverDesc;
   TASIOCanDo = (acdInputMonitor, acdTimeInfo, acdTimeCode, acdTransport,
                 acdInputGain, acdInputMeter, acdOutputGain, acdOutputMeter);
   TASIOCanDos = set of TASIOCanDo;
@@ -65,8 +61,31 @@ type
   TBufferSwitchEventNative = procedure(Sender: TObject; const BufferInfo: PASIOBufferList; const BufferIndex : Integer) of object;
 
   TBufferPreFill = (bpfNone, bpfZero, bpfNoise, bpfCustom);
-
   TPreventClipping = (pcNone, pcDigital, pcAnalog);
+
+  TCustomAudioDevice = class(TComponent);
+
+  TASIOAudioData32 = class(TAudioData32);
+  TASIOAudioData64 = class(TAudioData64);
+
+  TASIOAudioChannel32 = class(TAudioChannel32);
+  TASIOAudioChannel64 = class(TAudioChannel64);
+
+  TASIOAudioDataCollection32 = class(TCustomAudioDataCollection32)
+  published
+    property Channels;
+    property SampleRate;
+  end;
+
+  TASIOAudioDataCollection64 = class(TCustomAudioDataCollection64)
+  published
+    property Channels;
+    property SampleRate;
+  end;
+
+  TBufferSwitchAudioData32Event = procedure(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection32) of object;
+  TBufferSwitchAudioData64Event = procedure(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection64) of object;
+  {$IFDEF DELPHI10_UP} {$endregion 'Basic types'} {$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'TASIOTimeSub'} {$ENDIF}
   TATFlag = (atSystemTimeValid, atSamplePositionValid, atSampleRateValid,
@@ -97,6 +116,7 @@ type
   end;
   {$IFDEF DELPHI10_UP} {$endregion 'TASIOTimeSub'} {$ENDIF}
 
+  {$IFDEF DELPHI10_UP} {$region 'Delphi5 Control panel'} {$ENDIF}
   {$IFDEF D5CP}
   TASIOControlPanel = class(TComponentEditor)
   public
@@ -106,8 +126,7 @@ type
     function GetVerbCount: Integer; override;
   end;
   {$ENDIF}
-
-  TCustomAudioDevice = class(TComponent);
+  {$IFDEF DELPHI10_UP} {$endregion 'Delphi5 Control panel'} {$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'TASIOHostBasic'} {$ENDIF}
   TCustomASIOHostBasic = class(TCustomAudioDevice)
@@ -144,7 +163,7 @@ type
     FOnUpdateSamplePos    : TSamplePositionUpdateEvent;
     FOnBufferSwitch       : TBufferSwitchEventNative;
     FASIOCanDos           : TASIOCanDos;
-    FAsioDriverList       : TASIODriverList;
+    FAsioDriverList       : TDAVAsioDriverList;
     FCallbacks            : TASIOCallbacks;
     FUnAlignedBuffer      : PASIOBufferInfo;
     FSampleRate           : Double;
@@ -152,7 +171,6 @@ type
     FOutputBuffers        : PASIOBufferInfos;
     FActive               : Boolean;
     FDriverIndex          : Integer;
-    FDriverList           : TStrings;
     FDriverName           : String;
     FDriverVersion        : Integer;
     FInputLatency         : Integer;
@@ -165,6 +183,7 @@ type
     FInConverters         : array of TInConverter;
     FOutConverters        : array of TOutConverter;
     FAsioSupports         : TAsioSupports;
+    function GetDriverList: TStrings;
     procedure SetActive(Value: Boolean); virtual;
     procedure SetDriverIndex(Value: Integer); virtual;
     procedure SetDriverName(const s: String); virtual;
@@ -182,7 +201,6 @@ type
     procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
     {$ENDIF}
     function CreateBuffers: Boolean; virtual;
-    function GetDriverList: TStrings;
     function GetInputMeter(Channel: Integer): Integer; virtual;
     function GetOutputMeter(Channel: Integer): Integer; virtual;
     function GetInConverter(ConverterType: TASIOSampleType): TInConverter;
@@ -215,7 +233,7 @@ type
     property BufferSize: Cardinal read FBufferSize stored False default 1;
     property CanDos : TASIOCanDos read FASIOCanDos;
     property DriverIndex: Integer read FDriverIndex Write SetDriverIndex default -1;
-    property DriverList: TStrings read FDriverList;
+    property DriverList: TStrings read GetDriverList;
     property DriverName: string read FDriverName write SetDriverName;
     property DriverVersion: Integer read FDriverVersion;
     property InputChannelCount: Integer read FInputChannelCount stored False default 0;
@@ -272,9 +290,6 @@ type
     property OnUpdateSamplePos;
   end;
   {$IFDEF DELPHI10_UP} {$endregion 'TASIOHostBasic'} {$ENDIF}
-
-  TASIOAudioData32 = class(TAudioData32);
-  TASIOAudioData64 = class(TAudioData64);
 
   {$IFDEF DELPHI10_UP} {$region 'TASIOHost'} {$ENDIF}
   TCustomASIOHost = class(TCustomASIOHostBasic)
@@ -388,24 +403,6 @@ type
   end;
   {$IFDEF DELPHI10_UP} {$endregion 'TASIOHost'} {$ENDIF}
 
-  TASIOAudioChannel32 = class(TAudioChannel32);
-  TASIOAudioChannel64 = class(TAudioChannel64);
-
-  TASIOAudioDataCollection32 = class(TCustomAudioDataCollection32)
-  published
-    property Channels;
-    property SampleRate;
-  end;
-
-  TASIOAudioDataCollection64 = class(TCustomAudioDataCollection64)
-  published
-    property Channels;
-    property SampleRate;
-  end;
-
-  TBufferSwitchAudioData32Event = procedure(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection32) of object;
-  TBufferSwitchAudioData64Event = procedure(Sender: TObject; const InBuffer, OutBuffer: TASIOAudioDataCollection64) of object;
-
   {$IFDEF DELPHI10_UP} {$region 'TASIOHostAudioData'} {$ENDIF}
   TCustomASIOHostAudioData = class(TCustomASIOHostBasic)
   private
@@ -514,7 +511,6 @@ var
   {$ENDIF}
 
 function ChannelTypeToString(vType: TASIOSampleType): string;
-procedure ListAsioDrivers(var List: TAsioDriverList);
 
 implementation
 
@@ -522,111 +518,26 @@ uses
   Registry, ComObj, Math {$IFDEF ASIOMixer}, DAVASIOChannelStrip {$ENDIF};
 
 resourcestring
-  RStrASIODriverFailed = 'ASIO driver failed!';
-  RStrASIONoBuffersCreated = 'ASIO buffers could not be created!';
-  RStrConverterTypeUnknown = 'Converter type unknown';
-  RCStrIndexOutOfBounds = 'Index out of bounds %d';
-  RCStrOnlyOneASIOHost = 'Only one ASIO host is allowed per instance';
-  RCStrPreferedBufferSize = 'Prefered buffer size invalid!';
-  RCStrDriverNotPresent = 'Driver not present';
-  RCStrHardwareMalfunction = 'Hardware malfunctioning';
-  RCStrInputParameterInvalid = 'Input parameter invalid';
-  RCStrInvalidMode = 'Hardware is in a bad mode or used in a bad mode';
-  RCStrSPNotAdvancing = 'Hardware is not running when sample position is inquired';
-  RCStrNoClock = 'Sample clock or rate cannot be determined or is not present';
-  RCStrNoMemory = 'Not enough memory for completing the request';
+  RStrASIODriverFailed        = 'ASIO driver failed!';
+  RStrASIONoBuffersCreated    = 'ASIO buffers could not be created!';
+  RStrConverterTypeUnknown    = 'Converter type unknown';
+  RCStrIndexOutOfBounds       = 'Index out of bounds %d';
+  RCStrOnlyOneASIOHost        = 'Only one ASIO host is allowed per instance';
+  RCStrPreferedBufferSize     = 'Prefered buffer size invalid!';
+  RCStrDriverNotPresent       = 'Driver not present';
+  RCStrHardwareMalfunction    = 'Hardware malfunctioning';
+  RCStrInputParameterInvalid  = 'Input parameter invalid';
+  RCStrInvalidMode            = 'Hardware is in a bad mode or used in a bad mode';
+  RCStrSPNotAdvancing         = 'Hardware is not running when sample position is inquired';
+  RCStrNoClock                = 'Sample clock or rate cannot be determined or is not present';
+  RCStrNoMemory               = 'Not enough memory for completing the request';
 
 const
   CInprocServer = 'InprocServer32';
   CAsioPath     = 'software\asio';
   CComClsId     = 'clsid';
 
-function FindDrivervDLL(const ClsIdStr: string; var DrivervDLL: TFileName): Integer;
-{$IFNDEF FPC}
-var
-  CharBuffer : array[0..1024] of AnsiChar;
-  DriverName : TFileName;
-{$ENDIF}
-begin
- Result := -1;
-
- with TRegistry.Create do
-  try
-   RootKey := HKEY_CLASSES_ROOT;
-   if OpenKeyReadOnly(CComClsId + '\' + Lowercase(clsidstr) + '\' + CInprocServer) then
-    begin
-     DrivervDLL := ReadString('');
-     {$IFNDEF FPC}
-     if not FileExists(DrivervDLL) then
-      begin
-       CharBuffer[0] := #0;
-       DriverName := ExtractFileName(DrivervDLL);   // backup the value
-
-       // try the system directory first
-       if GetSystemDirectory(CharBuffer, 1023) <> 0
-        then DrivervDLL := StrPas(CharBuffer) + '\' + DriverName;
-
-       // try the windows dir if necessary
-       if not FileExists(DrivervDLL) then
-        begin
-         CharBuffer[0] := #0;
-         if GetWindowsDirectory(CharBuffer, 1023) <> 0
-          then DrivervDLL := StrPas(CharBuffer) + '\' + DriverName;
-        end;
-      end;
-     {$ENDIF}
-
-     // if driver found set result to zero (no error occured)
-     if FileExists(DrivervDLL) then Result := 0;
-     CloseKey;
-    end;
-  finally
-   Free;
-  end;
-end;
-
-procedure ListAsioDrivers(var List: TAsioDriverList);
-var
-  Keys      : TStringList;
-  i         : Integer;
-  ID        : string;
-  DriverDll : TFileName;
-begin
- SetLength(List, 0);
-
- Keys := TStringList.Create;
- try
-  with TRegistry.Create do
-   try
-    RootKey := HKEY_LOCAL_MACHINE;
-    if OpenKeyReadOnly(CAsioPath) then
-     begin
-      GetKeyNames(Keys);
-      CloseKey;
-     end;
-    for i := 0 to Keys.Count - 1 do
-     begin
-      if OpenKeyReadOnly(CAsioPath + '\' + Keys[i]) then
-       begin
-        id := ReadString(CComClsId);
-        if FindDrivervDLL(id, DriverDll) = 0 then  // check if the dll exists
-         begin
-          SetLength(List, Length(List) + 1);
-          List[Length(List) - 1].id := StringToGUID(id);
-          StrPLCopy(List[Length(List) - 1].Name, Keys[i], 512);
-          StrPLCopy(List[Length(List) - 1].Path, DriverDll, 512);
-         end;
-        CloseKey;
-       end;
-     end;
-   finally
-    Free;
-   end;
- finally
-  FreeAndNil(Keys);
- end;
-end;
-
+{$IFDEF DELPHI10_UP} {$region 'Delphi5 Control panel implementation'} {$ENDIF}
 {$IFDEF DELPHI5}
 {$IFDEF D5CP}
 procedure TASIOControlPanel.Edit;
@@ -655,6 +566,7 @@ begin
 end;
 {$ENDIF}
 {$ENDIF}
+{$IFDEF DELPHI10_UP} {$endregion 'Delphi5 Control panel implementation'} {$ENDIF}
 
 {$IFDEF DELPHI10_UP} {$region 'TASIOTimeSub implementation'} {$ENDIF}
 constructor TASIOTimeSub.Create;
@@ -766,6 +678,8 @@ begin
 end;
 {$IFDEF DELPHI10_UP} {$endregion 'TASIOTimeSub implementation'} {$ENDIF}
 
+
+{$IFDEF DELPHI10_UP} {$region 'Global functions'} {$ENDIF}
 function ChannelTypeToString(vType: TASIOSampleType): string;
 begin
  Result := '';
@@ -797,7 +711,9 @@ begin
   ASIOSTInt32LSB24 : Result := 'Int32LSB24';
  end;
 end;
+{$IFDEF DELPHI10_UP} {$endregion 'Global functions'} {$ENDIF}
 
+{$IFDEF DELPHI10_UP} {$region 'ASIO callback functions'} {$ENDIF}
 procedure ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); cdecl;
 begin
  if assigned(GAsioHost) then
@@ -898,6 +814,7 @@ begin
      else Result := 1;
  end;
 end;
+{$IFDEF DELPHI10_UP} {$endregion 'ASIO callback functions'} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// TCustomASIOHostBasic /////////////////////////////
@@ -928,7 +845,10 @@ begin
   FOutputBuffers   := nil;
   FSampleRate      := 44100;
   FAsioTime        := TASIOTimeSub.Create;
-  FDriverList      := GetDriverList;
+
+  FAsioDriverList := TDAVAsioDriverList.Create;
+  FAsioDriverList.UpdateList;
+
   FEngineVersion   := 2;
   FAsioSupports    := [assSupportsTimeInfo, assSupportsTimeCode];
 
@@ -960,10 +880,9 @@ begin
   CloseDriver;
   if FHandleOwned
    then DeallocateHWnd(FHandle);
-  SetLength(FAsioDriverList, 0);
+  FAsioDriverList.Free;
   SetLength(FInConverters, 0);
   SetLength(FOutConverters, 0);
-  FreeAndNil(FDriverList);
   FreeAndNil(FAsioTime);
  finally
   inherited;
@@ -1004,17 +923,6 @@ begin
 *)
 end;
 
-function TCustomASIOHostBasic.GetDriverList: TStrings;
-var
-  i : Integer;
-begin
- Result := TStringList.Create;
- SetLength(FAsioDriverList, 0);
- ListASIODrivers(FAsioDriverList);
- for i := Low(FAsioDriverList) to High(FAsioDriverList)
-  do Result.Add(FAsioDriverList[i].Name);
-end;
-
 procedure TCustomASIOHostBasic.ResetDriverSpecificData;
 begin
  FDriverName := '';
@@ -1025,10 +933,14 @@ begin
  FBufferSize := 0;
 end;
 
+function TCustomASIOHostBasic.GetDriverList: TStrings;
+begin
+  result := FAsioDriverList.DriverNames;
+end;
+
 procedure TCustomASIOHostBasic.SetDriverName(const s: string);
 begin
- if FDriverList.IndexOf(s) > -1
-  then DriverIndex := FDriverList.IndexOf(s);
+  DriverIndex := FAsioDriverList.DriverNumberByName(s);
 end;
 
 procedure TCustomASIOHostBasic.SetDriverIndex(Value: Integer);
@@ -1041,7 +953,7 @@ begin
    tmpActive := Active;
    Active := False;
    if Value < -1 then FDriverIndex := -1 else
-    if Value >= FDriverList.Count
+    if Value >= FAsioDriverList.Count
      then FDriverIndex := -1
      else FDriverIndex := Value;
 
@@ -1055,7 +967,7 @@ begin
     begin
      try
       CloseDriver;
-      FDriverName := FDriverList[FDriverIndex];
+      FDriverName := FAsioDriverList.Items[FDriverIndex].Name;
       OpenDriver;
      except
       FDriverIndex := -1;
@@ -1307,9 +1219,9 @@ begin
  if FDriverIndex >= 0 then
   try
    {$IFDEF OpenASIO}
-   if OpenASIOCreate(FAsioDriverList[FDriverIndex].Id, FDriver) then
+   if OpenASIOCreate(FAsioDriverList.Items[FDriverIndex].Guid, FDriver) then
    {$ELSE}
-   if CreateStdCallASIO(FAsioDriverList[FDriverIndex].Id, FDriver) then
+   if CreateStdCallASIO(FAsioDriverList.Items[FDriverIndex].Guid, FDriver) then
     {$ENDIF}
     try
      if assigned(FDriver) then
@@ -1570,7 +1482,7 @@ end;
 
 function TCustomASIOHostBasic.GetNumDrivers: Integer;
 begin
- Result := length(FAsioDriverList);
+ Result := FAsioDriverList.Count;
 end;
 
 function TCustomASIOHostBasic.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
