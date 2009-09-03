@@ -51,6 +51,7 @@ contains
   DAV_AsioDriverModuleCreator in '..\..\Source\ASIO\DAV_AsioDriverModuleCreator.pas',
   DAV_AsioDriverProjectCreator in '..\..\Source\ASIO\DAV_AsioDriverProjectCreator.pas',
   DAV_AsioDriverControlPanelCreator in '..\..\Source\ASIO\DAV_AsioDriverControlPanelCreator.pas',
-  DAV_AsioDriverConfig in '..\..\Source\ASIO\DAV_AsioDriverConfig.pas';
+  DAV_AsioDriverConfig in '..\..\Source\ASIO\DAV_AsioDriverConfig.pas',
+  DAV_ASIODriver in '..\..\Source\ASIO\DAV_ASIODriver.pas';
 
 end.

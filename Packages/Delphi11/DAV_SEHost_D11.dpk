@@ -1,6 +1,5 @@
 package DAV_SEHost_D11;
 
-{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -23,15 +22,19 @@ package DAV_SEHost_D11;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $528000}
 {$DESCRIPTION 'ASIO & VST Project - SE Host Package'}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
+  vcl,
+  designide,
   DAV_Common_D11;
 
 contains
+  DAV_SECommon in '..\..\Source\SE\DAV_SECommon.pas',
   DAV_SEHost in '..\..\Source\SE\DAV_SEHost.pas',
+  DAV_SEModule in '..\..\Source\SE\DAV_SEModule.pas',
+  DAV_SEGUI in '..\..\Source\SE\DAV_SEGUI.pas',
   DAV_SEHostRegister in '..\..\Source\SE\DAV_SEHostRegister.pas';
 
 end.

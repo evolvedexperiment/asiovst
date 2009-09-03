@@ -104,7 +104,8 @@ uses
   {$WARN UNIT_PLATFORM ON}
   Dialogs, SysUtils;
 
-{$R *.DFM}
+// removed, because it's missing  
+{ $R *.DFM}
 
 const
   STEP_WELCOME        = 0;

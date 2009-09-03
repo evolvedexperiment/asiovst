@@ -1,5 +1,6 @@
-package HostASIO_D11;
+package DAV_ASIOHost_D11;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,14 +28,16 @@ package HostASIO_D11;
 requires
   vcl,
   rtl,
-  DAV_Common_D11,
   designide,
+  DAV_Common_D11,
   xmlrtl,
   vclactnband,
-  vclx;
+  vclx,
+  DAV_VSTPlugin_D11;
 
 contains
   DAV_ASIO in '..\..\Source\ASIO\DAV_ASIO.pas',
+  DAV_AsioInterface in '..\..\Source\ASIO\DAV_AsioInterface.pas',
   DAV_OpenASIO in '..\..\Source\ASIO\DAV_OpenASIO.pas',
   DAV_ASIOHost in '..\..\Source\ASIO\DAV_ASIOHost.pas',
   DAV_ASIOConvert in '..\..\Source\ASIO\DAV_ASIOConvert.pas',
@@ -42,6 +45,13 @@ contains
   DAV_ASIOChannelStrip in '..\..\Source\ASIO\DAV_ASIOChannelStrip.pas',
   DAV_ASIOMixer in '..\..\Source\ASIO\DAV_ASIOMixer.pas',
   DAV_ASIORegister in '..\..\Source\ASIO\DAV_ASIORegister.pas',
-  DAV_AsioInterface in '..\..\Source\ASIO\DAV_AsioInterface.pas';
+  DAV_AsioDriverWizardReg in '..\..\Source\ASIO\DAV_AsioDriverWizardReg.pas',
+  DAV_AsioDriverWizardFrm in '..\..\Source\ASIO\DAV_AsioDriverWizardFrm.pas',
+  DAV_AsioDriverWizard in '..\..\Source\ASIO\DAV_AsioDriverWizard.pas',
+  DAV_AsioDriverModuleCreator in '..\..\Source\ASIO\DAV_AsioDriverModuleCreator.pas',
+  DAV_AsioDriverProjectCreator in '..\..\Source\ASIO\DAV_AsioDriverProjectCreator.pas',
+  DAV_AsioDriverControlPanelCreator in '..\..\Source\ASIO\DAV_AsioDriverControlPanelCreator.pas',
+  DAV_AsioDriverConfig in '..\..\Source\ASIO\DAV_AsioDriverConfig.pas',
+  DAV_ASIODriver in '..\..\Source\ASIO\DAV_ASIODriver.pas';
 
 end.

@@ -2,7 +2,7 @@ unit DAV_ASIOExtendedDriver;
 
 interface
 
-uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver;
+uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver,{test}DAV_Common;
 
 type
   TDavASIOEDClockListItem = class
@@ -74,6 +74,10 @@ type
     fClocksAreDefault: boolean;
     fChannelsAreDefault: boolean;
     fSampleRate: Double;
+
+    {test}
+    FOutputBuffers  : TDAVArrayOfSingleFixedArray;
+
     procedure ClearClockList;
     procedure ClearChannelLists;
     function GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint; 
@@ -281,6 +285,9 @@ begin
   fControlPanelClass := nil;
   fControlPanel := nil;
 
+  {test}
+  SetLength(FOutputBuffers, 1);
+  FOutputBuffers[0] := nil;
   InitializeDriverParams;
 
   fSampleRate := fSampleRateManager.GetDefaultSampleRate;
@@ -304,6 +311,8 @@ begin
   FreeAndNil(fOutChannelList);
 
   if Assigned(fControlPanel) then FreeAndNil(fControlPanel);
+  {test}
+  setlength(FOutputBuffers,0);
   inherited;
 end;
 
@@ -538,11 +547,17 @@ end;
 
 function TDavASIOExtendedDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
 //var Channel: integer;
+//var glo: array[0..1] of psingle;
 begin
  //  for Channel := 0 to NumChannels-1 do
  //  begin
      // TODO
  //  end;
+
+ {test}
+// GetMem(glo[0], 1024 * SizeOf(Single));
+// Dispose(glo[0]);
+GetMem(FOutputBuffers[0], 1024 * SizeOf(Single));
 
    // TODO
    result := ASE_InvalidMode;
@@ -550,6 +565,13 @@ end;
 
 function TDavASIOExtendedDriver.DisposeBuffers: TASIOError;
 begin
+
+{test}
+if assigned(FOutputBuffers[0]) then
+begin
+  Dispose(FOutputBuffers[0]);
+  FOutputBuffers[0]:=nil;
+end;
   // TODO
    result := ASE_InvalidMode;
 end;
