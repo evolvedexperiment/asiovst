@@ -23,7 +23,7 @@ type
     fDriverVersion: Longint;
     fDriverList: TDAVAsioDriverList;
     fHostInterface: IStdCallASIO;
-    fCurrentDriverIndex: integer;
+    fDriverIndex: integer;
     fHostCallbacks: PASIOCallbacks;
     fDriverCallbacks: TASIOCallbacks;
 
@@ -35,7 +35,9 @@ type
     procedure SetDriverName(name: string);
     procedure SetDriverVersion(version: LongInt);
     procedure SetControlPanelClass(cp: TTDavASIOInterceptorCP);
-  public
+    function GetDriverNames: TStrings;
+    procedure SetDriverIndex(index: integer);
+  public      
     constructor Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid); override;
     destructor Destroy; override;
 
@@ -60,11 +62,18 @@ type
     function ControlPanel: TASIOError; override;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; override;
     function OutputReady: TASIOError; override;
-
+    
+    function DriverControlPanel: TASIOError;
+    
     procedure ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
     function ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime; virtual;
     procedure ASIOSampleRateDidChange(SampleRate: TASIOSampleRate); virtual;
-    function ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; virtual;
+    function ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; virtual;    
+
+    procedure RequestReset;
+
+    property DriverNames: TStrings read GetDriverNames;
+    property DriverIndex: integer read fDriverIndex write SetDriverIndex;
   end;
 
 implementation
@@ -110,7 +119,7 @@ begin
   GlobalCallbackInst := self;
   fDriverList := TDAVAsioDriverList.Create(InterfaceGUID);
   fDriverList.UpdateList;
-  fCurrentDriverIndex:=0;
+  fDriverIndex:=0;
   fHostInterface := nil;
   fDriverName := 'DAV Abstract Int';
   fDriverVersion := 1; 
@@ -159,6 +168,14 @@ begin
   fDriverVersion := version;
 end;
 
+procedure TDavASIOInterceptor.SetDriverIndex(index: integer);
+begin
+  if fDriverIndex=index then exit;
+  // range check is done in the init method
+  fDriverIndex := index;
+  if assigned(fHostInterface) then RequestReset;
+end;
+
 procedure TDavASIOInterceptor.SetControlPanelClass(cp: TTDavASIOInterceptorCP);
 begin
   fControlPanelClass := cp;
@@ -172,14 +189,19 @@ begin
   fHostInterface := nil;
 end;
 
+function TDavASIOInterceptor.GetDriverNames: TStrings;
+begin
+  result := fDriverList.DriverNames;
+end;
+
 function TDavASIOInterceptor.Init(SysHandle: HWND): boolean;
 begin
   UnloadHostInterface;
-  if fCurrentDriverIndex>fDriverList.Count-1 then
+  if fDriverIndex>fDriverList.Count-1 then
     result:=false
   else begin
     try
-      result := CreateStdCallASIO(TDAVAsioDriverDesc(fDriverList.Items[fCurrentDriverIndex]).Guid,fHostInterface);
+      result := CreateStdCallASIO(TDAVAsioDriverDesc(fDriverList.Items[fDriverIndex]).Guid,fHostInterface);
       if result then
         result := fHostInterface.Init(SysHandle) = ASIOTrue;
     except
@@ -393,6 +415,8 @@ end;
 
 function TDavASIOInterceptor.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
 begin   
+  fHostCallbacks := @Callbacks;
+  
   if not assigned(fHostInterface) then
   begin
     result := ASE_NotPresent;
@@ -400,7 +424,7 @@ begin
   end;
   
   try
-    result := fHostInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
+    result := fHostInterface.CreateBuffers(BufferInfos, NumChannels, BufferSize, fDriverCallbacks);
   except
     result := ASE_NotPresent;
   end;
@@ -431,6 +455,12 @@ begin
     exit;
   end;
 
+  
+  result := DriverControlPanel;
+end;   
+
+function TDavASIOInterceptor.DriverControlPanel: TASIOError;
+begin
   if not assigned(fHostInterface) then
   begin
     result := ASE_NotPresent;
@@ -500,6 +530,11 @@ begin
   if assigned(fHostCallbacks) and assigned(fHostCallbacks^.asioMessage) then
     result := fHostCallbacks^.asioMessage(Selector, Value, msg, Opt)
   else result := 0;
+end;
+
+procedure TDavASIOInterceptor.RequestReset;
+begin
+  AsioMessage(kAsioResetRequest, 0, nil, nil);
 end;
 
 initialization
