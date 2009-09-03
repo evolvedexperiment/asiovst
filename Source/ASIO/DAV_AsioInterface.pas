@@ -356,8 +356,7 @@ asm
 end;
 {$ENDIF}
 
-function TStdCallAsio.GetClockSources(Clocks: PASIOClockSources;
-  out NumSources: LongInt): TASIOError; assembler;
+function TStdCallAsio.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR NumSources
@@ -438,8 +437,7 @@ asm
 end;
 {$ENDIF}
 
-function TStdCallAsio.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels,
-  BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; assembler;
+function TStdCallAsio.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; assembler;
 {$IFDEF FPC}
 asm
  PUSH DWORD PTR Callbacks

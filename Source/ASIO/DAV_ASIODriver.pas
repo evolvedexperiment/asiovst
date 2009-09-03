@@ -86,11 +86,11 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; virtual;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; virtual;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; virtual;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; virtual;
+    function GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; virtual;
     function SetClockSource(Reference: LongInt): TASIOError; virtual;
     function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; virtual;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; virtual;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; virtual;
+    function CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; virtual;
     function DisposeBuffers: TASIOError; virtual;
     function ControlPanel: TASIOError; virtual;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; virtual;
@@ -108,11 +108,11 @@ type
     function AsioCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
     function AsioGetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
     function AsioSetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
-    function AsioGetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+    function AsioGetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
     function AsioSetClockSource(Reference: LongInt): TASIOError;
     function AsioGetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
     function AsioGetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
-    function AsioCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+    function AsioCreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
     function AsioDisposeBuffers: TASIOError;
     function AsioControlPanel: TASIOError;
     function AsioFuture(Selector: LongInt; Opt: Pointer): TASIOError;
@@ -644,9 +644,9 @@ begin
 end;
 
 
-function TDavASIODriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+function TDavASIODriver.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
 begin
-  with Clocks^ do
+  with Clocks^[0] do
   begin
     Index := 0;
     AssociatedChannel := -1;
@@ -688,7 +688,7 @@ begin
   result := ASE_OK;
 end;
 
-function TDavASIODriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+function TDavASIODriver.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 begin
   result := ASE_NotPresent; // doesn't allocate anything right now
 end;
@@ -779,7 +779,7 @@ begin
   result := SetSampleRate(SampleRate);
 end;
 
-function TDavASIODriver.AsioGetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+function TDavASIODriver.AsioGetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
 begin
   result := GetClockSources(Clocks, NumSources);
 end;
@@ -799,7 +799,7 @@ begin
   result := GetChannelInfo(Info);
 end;
 
-function TDavASIODriver.AsioCreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+function TDavASIODriver.AsioCreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 begin
   result := CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
 end;

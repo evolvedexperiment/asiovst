@@ -77,11 +77,11 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; override;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; override;
+    function GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; override;
     function SetClockSource(Reference: LongInt): TASIOError; override;
     function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; override;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
+    function CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
     function DisposeBuffers: TASIOError; override;
     function ControlPanel: TASIOError; override;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; override;
@@ -365,9 +365,9 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+function TAsioHostDriver.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
 begin
- with Clocks^ do
+ with Clocks^[0] do
   begin
    Index := 0;
    AssociatedChannel := -1;
@@ -467,9 +467,9 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
+function TAsioHostDriver.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 var
-  BufferInfo   : PASIOBufferInfo;
+  BufferInfo   : PASIOBufferInfos;
   Channel      : Integer;
   NotEnoughMem : Boolean;
 begin
@@ -481,27 +481,27 @@ begin
  FBlockFrames := BufferSize;
  for Channel := 0 to numChannels - 1 do
   begin
-   if BufferInfo^.IsInput <> 0 then
+   if BufferInfo^[Channel].IsInput <> 0 then
     begin
-     if (BufferInfo^.ChannelNum < 0) or (BufferInfo^.ChannelNum >= CNumInputs) then
+     if (BufferInfo^[Channel].ChannelNum < 0) or (BufferInfo^[Channel].ChannelNum >= CNumInputs) then
       begin
        DisposeBuffers;
        Result := ASE_InvalidParameter;
        Exit;
       end;
-     FInMap[FActiveInputs] := BufferInfo^.ChannelNum;
+     FInMap[FActiveInputs] := BufferInfo^[Channel].ChannelNum;
 
      // double buffer
      GetMem(FInputBuffers[FActiveInputs], 2 * FBlockFrames * SizeOf(Single));
      if Assigned(FInputBuffers[FActiveInputs]) then
       begin
-       BufferInfo^.Buffers[0] := @FInputBuffers[FActiveInputs]^[0];
-       BufferInfo^.Buffers[1] := @FInputBuffers[FActiveInputs]^[FBlockFrames];
+       BufferInfo^[Channel].Buffers[0] := @FInputBuffers[FActiveInputs]^[0];
+       BufferInfo^[Channel].Buffers[1] := @FInputBuffers[FActiveInputs]^[FBlockFrames];
       end
      else
       begin
-       BufferInfo^.Buffers[0] := nil;
-       BufferInfo^.Buffers[1] := nil;
+       BufferInfo^[Channel].Buffers[0] := nil;
+       BufferInfo^[Channel].Buffers[1] := nil;
        NotEnoughMem := True;
       end;
 
@@ -515,25 +515,25 @@ begin
     end
    else  // output
     begin
-     if (BufferInfo^.ChannelNum < 0) or (BufferInfo^.ChannelNum >= CNumOutputs) then
+     if (BufferInfo^[Channel].ChannelNum < 0) or (BufferInfo^[Channel].ChannelNum >= CNumOutputs) then
       begin
        DisposeBuffers;
        Result := ASE_InvalidParameter;
        Exit;
       end;
-     FOutMap[FActiveOutputs] := BufferInfo^.ChannelNum;
+     FOutMap[FActiveOutputs] := BufferInfo^[Channel].ChannelNum;
 
      // double buffer
      GetMem(FOutputBuffers[FActiveOutputs], 2 * FBlockFrames * SizeOf(Single));
      if Assigned(FOutputBuffers[FActiveOutputs]) then
       begin
-       BufferInfo^.Buffers[0] := @FOutputBuffers[FActiveOutputs]^[0];
-       BufferInfo^.Buffers[1] := @FOutputBuffers[FActiveOutputs]^[FBlockFrames];
+       BufferInfo^[Channel].Buffers[0] := @FOutputBuffers[FActiveOutputs]^[0];
+       BufferInfo^[Channel].Buffers[1] := @FOutputBuffers[FActiveOutputs]^[FBlockFrames];
       end
      else
       begin
-       BufferInfo^.Buffers[0] := nil;
-       BufferInfo^.Buffers[1] := nil;
+       BufferInfo^[Channel].Buffers[0] := nil;
+       BufferInfo^[Channel].Buffers[1] := nil;
        NotEnoughMem := True;
       end;
      FActiveOutputs:= FActiveOutputs + 1;
@@ -546,7 +546,7 @@ begin
       end;
     end;
 
-   Inc(BufferInfo);
+   //Inc(BufferInfo);
   end;
 
  if NotEnoughMem then
