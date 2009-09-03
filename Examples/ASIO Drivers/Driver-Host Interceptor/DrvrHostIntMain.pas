@@ -34,7 +34,7 @@ type
 implementation
 
 uses
-  ComServ;
+  ComServ,DrvrHostIntCPanel;
 
 function TTestTCWrapper.GetDriverClass: TTDavASIODriver;
 begin
@@ -46,6 +46,7 @@ procedure TInterceptorTest.InitializeDriverParams;
 begin
   SetDriverName(DIntercept_name);
   SetDriverVersion(DIntercept_version);
+  SetControlPanelClass(TInterceptorTestCP);
 end;
 
 initialization
