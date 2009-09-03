@@ -62,7 +62,7 @@ type
     procedure DriverIndexChangedHandler(Sender: TObject);
     procedure ResetRequestedHandler(Sender: TObject);
   public
-    constructor Create(TCWrapper: TDavASIOTCWrapper); override;
+    constructor Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid); override;
     destructor Destroy; override;
 
     function Init(SysHandle: HWND): boolean; override;
@@ -139,7 +139,7 @@ end;
 
 { TAsioHostDriver }
 
-constructor TAsioHostDriver.Create(TCWrapper: TDavASIOTCWrapper);
+constructor TAsioHostDriver.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid);
 var
   Channel : Integer;
 begin

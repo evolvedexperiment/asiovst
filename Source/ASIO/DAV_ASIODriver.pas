@@ -67,10 +67,11 @@ type
   end;
 
   TDavASIODriver = class
-  private
+  protected
     fTCWrapper: TDavASIOTCWrapper;
+    fInterfaceGUID: TGuid;
   public
-    constructor Create(TCWrapper: TDavASIOTCWrapper); virtual;
+    constructor Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid); virtual;
 
 
     function Init(SysHandle: HWND): boolean; virtual;
@@ -137,7 +138,7 @@ procedure TDavASIOTCWrapper.Initialize;
 begin
   inherited;
   Assert(DavASIOInterfaceOffset = GetInterfaceTable^.Entries[0].IOffset);
-  FDestinationClass:=GetDriverClass.Create(self);
+  FDestinationClass:=GetDriverClass.Create(self, GetInterfaceTable^.Entries[0].IID);
 end;
 
 destructor TDavASIOTCWrapper.Destroy;
@@ -563,9 +564,10 @@ end;
 
 { TDavASIODriver }
 
-constructor TDavASIODriver.Create(TCWrapper: TDavASIOTCWrapper);
+constructor TDavASIODriver.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid);
 begin
   fTCWrapper := TCWrapper;
+  fInterfaceGUID := InterfaceGUID;
 end;
 
 
