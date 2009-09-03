@@ -52,6 +52,8 @@ type
     fDriverList: TDAVIntAsioDriverList;
     FHostInterface: IStdCallASIO;
     FCurrentDriverIndex: integer;
+    FHostCallbacks: PASIOCallbacks;
+    FDriverCallbacks: TASIOCallbacks;
     procedure UnloadHostInterface;
     procedure InitializeDriverParams; virtual;
     procedure SetDriverName(name: string);
@@ -72,21 +74,48 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
     function GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError; override;
     function SetSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; override;
+    function GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; override;
     function SetClockSource(Reference: LongInt): TASIOError; override;
     function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; override;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
+    function CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
     function DisposeBuffers: TASIOError; override;
     function ControlPanel: TASIOError; override;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; override;
     function OutputReady: TASIOError; override;
+
+    procedure ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
+    function ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime; virtual;
+    procedure ASIOSampleRateDidChange(SampleRate: TASIOSampleRate); virtual;
+    function ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; virtual;
   end;
 
 implementation
 
-{debug:}
-uses dialogs;
+var GlobalCallbackInst: TDavASIOInterceptor;
+
+procedure callbackBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); cdecl;
+begin
+  if assigned(GlobalCallbackInst) then GlobalCallbackInst.ASIOBufferSwitch(DoubleBufferIndex, DirectProcess);
+end;
+
+function callbackBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime; cdecl;
+begin
+  if assigned(GlobalCallbackInst) then result:=GlobalCallbackInst.ASIOBufferSwitchTimeInfo(params, DoubleBufferIndex, DirectProcess)
+  else result := @Params; // dummy
+end;
+
+procedure callbackSampleRateDidChange(SampleRate: TASIOSampleRate); cdecl;
+begin
+  if assigned(GlobalCallbackInst) then GlobalCallbackInst.ASIOSampleRateDidChange(SampleRate);
+end;
+
+function callbackMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; cdecl;
+begin
+  if assigned(GlobalCallbackInst) then result := GlobalCallbackInst.ASIOMessage(Selector, Value, msg, Opt)
+  else result := 0;
+end;
+
 
 { TDAVIntAsioDriverDesc }
 
@@ -243,12 +272,23 @@ end;
 constructor TDavASIOInterceptor.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid);
 begin
   inherited;
+  GlobalCallbackInst := self;
   fDriverList := TDAVIntAsioDriverList.Create(InterfaceGUID);
   fDriverList.UpdateList;
   FCurrentDriverIndex:=0;
   FHostInterface := nil;
   fDriverName := 'DAV Abstract Int';
   fDriverVersion := 1;
+
+  FHostCallbacks := nil;
+  with FDriverCallbacks do
+   begin
+    BufferSwitch := callbackBufferSwitch;
+    SampleRateDidChange := callbackSampleRateDidChange;
+    BufferSwitchTimeInfo := callbackBufferSwitchTimeInfo;
+    ASIOMessage := callbackMessage;
+   end;
+
   InitializeDriverParams;
 end;
 
@@ -441,7 +481,7 @@ begin
   end;
 end;
 
-function TDavASIOInterceptor.GetClockSources(Clocks: PASIOClockSource;out NumSources: Integer): TASIOError;
+function TDavASIOInterceptor.GetClockSources(Clocks: PASIOClockSources;out NumSources: Integer): TASIOError;
 begin  
   if not assigned(FHostInterface) then
   begin
@@ -501,7 +541,7 @@ begin
   end;
 end;
 
-function TDavASIOInterceptor.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
+function TDavASIOInterceptor.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
 begin   
   if not assigned(FHostInterface) then
   begin
@@ -576,5 +616,36 @@ begin
     result := ASE_NotPresent;
   end;
 end;
+
+procedure TDavASIOInterceptor.ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool);
+begin
+  if assigned(FHostCallbacks) and assigned(FHostCallbacks^.bufferSwitch) then
+    FHostCallbacks^.bufferSwitch(DoubleBufferIndex, DirectProcess);
+end;
+
+function TDavASIOInterceptor.ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime;
+begin
+  if assigned(FHostCallbacks) and assigned(FHostCallbacks^.bufferSwitchTimeInfo) then
+    result := FHostCallbacks^.bufferSwitchTimeInfo(Params, DoubleBufferIndex, DirectProcess)
+  else
+    result := @Params; // dummy
+end;
+
+procedure TDavASIOInterceptor.ASIOSampleRateDidChange(SampleRate: TASIOSampleRate);
+begin
+  if assigned(FHostCallbacks) and assigned(FHostCallbacks^.sampleRateDidChange) then
+    FHostCallbacks^.sampleRateDidChange(SampleRate);
+end;
+
+function TDavASIOInterceptor.ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer;
+begin
+  if assigned(FHostCallbacks) and assigned(FHostCallbacks^.asioMessage) then
+    result := FHostCallbacks^.asioMessage(Selector, Value, msg, Opt)
+  else result := 0;
+end;
+
+initialization
+
+GlobalCallbackInst:=nil;
 
 end.
