@@ -36,6 +36,8 @@ type
     procedure SetControlPanelClass(cp: TTDavASIOInterceptorCP);
     function GetDriverNames: TStrings;
     procedure SetDriverIndex(index: integer);
+    procedure LoadDriverSettings; virtual;
+    procedure SaveDriverSettings; virtual;
   public      
     constructor Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid); override;
     destructor Destroy; override;
@@ -137,6 +139,7 @@ begin
    end;
 
   InitializeDriverParams;
+  LoadDriverSettings;
 
   if assigned(fControlPanelClass) then
   begin
@@ -179,6 +182,17 @@ end;
 procedure TDavASIOInterceptor.SetControlPanelClass(cp: TTDavASIOInterceptorCP);
 begin
   fControlPanelClass := cp;
+end;
+
+
+procedure TDavASIOInterceptor.LoadDriverSettings;
+begin
+  // this is default: does nothing
+end;
+
+procedure TDavASIOInterceptor.SaveDriverSettings;
+begin
+  // this is default: does nothing
 end;
 
 procedure TDavASIOInterceptor.UnloadHostInterface;
@@ -540,6 +554,8 @@ end;
 
 function TDavASIOInterceptor.ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer;
 begin
+  if Selector = kAsioResetRequest then SaveDriverSettings;
+  
   if assigned(fHostCallbacks) and assigned(fHostCallbacks^.asioMessage) then
     result := fHostCallbacks^.asioMessage(Selector, Value, msg, Opt)
   else result := 0;

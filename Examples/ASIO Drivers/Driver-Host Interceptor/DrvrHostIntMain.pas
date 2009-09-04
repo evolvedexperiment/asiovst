@@ -23,6 +23,9 @@ type
   TInterceptorTest = class(TDavASIOInterceptor)
   protected
     procedure InitializeDriverParams; override;
+
+    procedure LoadDriverSettings; override;
+    procedure SaveDriverSettings; override;
   end;
 
   TTestTCWrapper = class(TDavASIOTCWrapper, IInterceptorTest)
@@ -34,7 +37,7 @@ type
 implementation
 
 uses
-  ComServ,DrvrHostIntCPanel;
+  ComServ,Registry,DrvrHostIntCPanel;
 
 function TTestTCWrapper.GetDriverClass: TTDavASIODriver;
 begin
@@ -49,6 +52,29 @@ begin
 
   SetControlPanelClass(TInterceptorTestCP);
   //DriverIndex := 1; //Test
+end;
+
+procedure TInterceptorTest.LoadDriverSettings;
+begin
+  with TRegistry.Create do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    if OpenKeyReadOnly('software\asio\' + DIntercept_name) then
+      if ValueExists('DriverIndex') then DriverIndex := ReadInteger('DriverIndex');
+  finally
+    Free;
+  end;
+end;
+
+procedure TInterceptorTest.SaveDriverSettings;
+begin
+  with TRegistry.Create do
+  try
+    RootKey:=HKEY_LOCAL_MACHINE;
+    if OpenKey('software\asio\' + DIntercept_name, true) then WriteInteger('DriverIndex', DriverIndex);
+  finally
+    Free;
+  end;
 end;
 
 initialization
