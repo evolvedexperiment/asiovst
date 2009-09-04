@@ -46,7 +46,9 @@ procedure TInterceptorTest.InitializeDriverParams;
 begin
   SetDriverName(DIntercept_name);
   SetDriverVersion(DIntercept_version);
+
   SetControlPanelClass(TInterceptorTestCP);
+  //DriverIndex := 1; //Test
 end;
 
 initialization

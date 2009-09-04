@@ -12,13 +12,14 @@ type
   protected
     Interceptor: TDavASIOInterceptor;
   public
-    constructor Create(AOwner: TComponent; cInterceptor: TDavASIOInterceptor); reintroduce;
+    constructor Create(AOwner: TComponent); override;
   end;
 
   TTDavASIOInterceptorCP = class of TDavASIOInterceptorCP;
 
   TDavASIOInterceptor = class(TDavASIODriver)
   protected
+    fParentWindowHandle: HWND;
     fDriverName: string;
     fDriverVersion: Longint;
     fDriverList: TDAVAsioDriverList;
@@ -26,8 +27,6 @@ type
     fDriverIndex: integer;
     fHostCallbacks: PASIOCallbacks;
     fDriverCallbacks: TASIOCallbacks;
-
-    fControlPanel: TDavASIOInterceptorCP;
     fControlPanelClass: TTDavASIOInterceptorCP;
 
     procedure UnloadHostInterface;
@@ -75,9 +74,11 @@ type
     property DriverNames: TStrings read GetDriverNames;
     property DriverIndex: integer read fDriverIndex write SetDriverIndex;
   end;
+  
 
 implementation
 
+var GlobalControlPanel: TDavASIOInterceptorCP;
 var GlobalCallbackInst: TDavASIOInterceptor;
 
 procedure callbackBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); cdecl;
@@ -105,10 +106,10 @@ end;
 
 { TDavASIOInterceptorCP }
 
-constructor TDavASIOInterceptorCP.Create(AOwner: TComponent; cInterceptor: TDavASIOInterceptor);
+constructor TDavASIOInterceptorCP.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  Interceptor := cInterceptor;
+  Interceptor := nil;
 end;
 
 { TDavASIOInterceptor }
@@ -122,9 +123,9 @@ begin
   fDriverIndex:=0;
   fHostInterface := nil;
   fDriverName := 'DAV Abstract Int';
-  fDriverVersion := 1; 
+  fDriverVersion := 1;
   fControlPanelClass := nil;
-  fControlPanel := nil;
+  fParentWindowHandle := 0;
 
   fHostCallbacks := nil;
   with fDriverCallbacks do
@@ -139,15 +140,14 @@ begin
 
   if assigned(fControlPanelClass) then
   begin
-    fControlPanel := fControlPanelClass.Create(nil, self);
-    //fControlPanel.ParentWindow := GetDesktopWindow;
+    if not assigned(GlobalControlPanel) then GlobalControlPanel := fControlPanelClass.Create(nil);
+    GlobalControlPanel.Interceptor := self;
+    if GlobalControlPanel.Visible then GlobalControlPanel.BringToFront;
   end;
 end;
 
 destructor TDavASIOInterceptor.Destroy;
 begin
-  if Assigned(fControlPanel) then FreeAndNil(fControlPanel);
-
   UnloadHostInterface;
   fDriverList.Free;
   inherited;
@@ -200,6 +200,7 @@ begin
   if fDriverIndex>fDriverList.Count-1 then
     result:=false
   else begin
+    fParentWindowHandle := SysHandle;
     try
       result := CreateStdCallASIO(TDAVAsioDriverDesc(fDriverList.Items[fDriverIndex]).Guid,fHostInterface);
       if result then
@@ -446,18 +447,30 @@ begin
 end;
 
 function TDavASIOInterceptor.ControlPanel: TASIOError;
+var r: TRect;
 begin
-  if Assigned(fControlPanel) then
+  if Assigned(GlobalControlPanel) then
   begin
-    fControlPanel.ShowModal;
-    //TODO: Event handler with ModalResult
+    // Hardcore centering ;)
+    if fParentWindowHandle<>0 then
+      GetWindowRect(fParentWindowHandle, r)
+    else
+      GetWindowRect(GetDesktopWindow, r);
+
+    with GlobalControlPanel do
+    begin
+      left := r.Left + round(((r.Right-r.Left)-Width)*0.5);
+      top  := r.Top + round(((r.Bottom-r.Top)-Height)*0.5);
+      ShowModal;
+    end;
+
     Result := ASE_OK;
     exit;
-  end;
+  end;  
 
   
   result := DriverControlPanel;
-end;   
+end;
 
 function TDavASIOInterceptor.DriverControlPanel: TASIOError;
 begin
@@ -537,8 +550,9 @@ begin
   AsioMessage(kAsioResetRequest, 0, nil, nil);
 end;
 
+
 initialization
 
 GlobalCallbackInst:=nil;
-
+GlobalControlPanel:=nil;
 end.

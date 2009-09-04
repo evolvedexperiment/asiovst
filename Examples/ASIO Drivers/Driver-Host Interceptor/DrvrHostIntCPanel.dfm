@@ -2,7 +2,7 @@ object InterceptorTestCP: TInterceptorTestCP
   Left = 0
   Top = 0
   Caption = 'DriverTestCP'
-  ClientHeight = 66
+  ClientHeight = 69
   ClientWidth = 194
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -11,7 +11,6 @@ object InterceptorTestCP: TInterceptorTestCP
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
