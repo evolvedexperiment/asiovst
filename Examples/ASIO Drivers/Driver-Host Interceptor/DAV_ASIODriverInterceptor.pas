@@ -80,6 +80,8 @@ type
 
 implementation
 
+uses MMSystem, Math;
+
 var GlobalControlPanel: TDavASIOInterceptorCP;
 var GlobalCallbackInst: TDavASIOInterceptor;
 
@@ -399,13 +401,13 @@ begin
 end;
 
 function TDavASIOInterceptor.GetSamplePosition(out SamplePosition: TASIOSamples;out TimeStamp: TASIOTimeStamp): TASIOError;
-begin 
+begin
   if not assigned(fHostInterface) then
   begin
     result := ASE_NotPresent;
     exit;
   end;
-  
+
   try
     result := fHostInterface.GetSamplePosition(SamplePosition, TimeStamp);
   except

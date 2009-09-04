@@ -101,7 +101,7 @@ function AsioSamples2Double(const Samples: TASIOSamples): Double;
 implementation
 
 uses
-  Math, ComServ, Registry, AsioHostDriverControlPanel;
+  Math, MMSystem, ComServ, Registry, AsioHostDriverControlPanel;
 
 const
   CTwoRaisedTo32 : Double = 4294967296;
@@ -117,12 +117,14 @@ begin
 end;
 
 procedure GetNanoSeconds(var Time: TASIOTimeStamp);
-var
-  NanoSeconds : Double;
+var NanoSeconds : Double;
 begin
- NanoSeconds := 0; // (double)((unsigned long)timeGetTime ()) * 1000000.;
- Time.Hi := Round(NanoSeconds / CTwoRaisedTo32);
- Time.Lo := Round(NanoSeconds - (Time.Hi * CTwoRaisedTo32));
+ // it looks stupid, but this has to be in to lines, otherwise it would be an integer multiplication
+ // this fucking bullshit took me 10 hours to find it :)
+ NanoSeconds := timegettime;
+ NanoSeconds := NanoSeconds*1000000;
+ Time.Hi := floor(NanoSeconds / CTwoRaisedTo32);
+ Time.Lo := floor(NanoSeconds - Time.Hi * CTwoRaisedTo32);
 end;
 
 
@@ -721,9 +723,10 @@ begin
 
    FSamplePosition := FSamplePosition + FBlockFrames;
 
-  if FTimeInfoMode
+   if FTimeInfoMode
     then BufferSwitchX
     else FCallbacks^.BufferSwitch(FToggle, ASIOFalse);
+
    FToggle := 1 - FToggle;
   end;
 end;
