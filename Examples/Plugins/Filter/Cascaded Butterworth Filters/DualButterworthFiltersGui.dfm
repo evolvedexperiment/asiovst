@@ -41,6 +41,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 25
       Width = 48
       Height = 48
+      PopupMenu = PuFrequency
       CircleColor = 3226174
       CurveMapping = -2.099999904632568000
       DefaultPosition = 20.000000000000000000
@@ -117,6 +118,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 98
       Width = 48
       Height = 48
+      PopupMenu = PuFrequency
       CircleColor = 3226174
       CurveMapping = -2.099999904632568000
       DefaultPosition = 20.000000000000000000
@@ -290,6 +292,171 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
       ParentColor = False
+    end
+  end
+  object PuFrequency: TPopupMenu
+    OnPopup = PuFrequencyPopup
+    Left = 64
+    Top = 80
+    object Mi16Hz: TMenuItem
+      Tag = 16
+      Caption = '16 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi20Hz: TMenuItem
+      Tag = 20
+      Caption = '20 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object N251: TMenuItem
+      Tag = 25
+      Caption = '25 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi31Hz5: TMenuItem
+      Tag = 32
+      Caption = '31.5 Hz'
+      OnClick = Mi31Hz5Click
+    end
+    object Mi40Hz: TMenuItem
+      Tag = 40
+      Caption = '40 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi50Hz: TMenuItem
+      Tag = 50
+      Caption = '50 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi63Hz: TMenuItem
+      Tag = 63
+      Caption = '63 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi80Hz: TMenuItem
+      Tag = 80
+      Caption = '80 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi100Hz: TMenuItem
+      Tag = 100
+      Caption = '100 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi125Hz: TMenuItem
+      Tag = 125
+      Caption = '125 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi160Hz: TMenuItem
+      Tag = 160
+      Caption = '160 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi200Hz: TMenuItem
+      Tag = 200
+      Caption = '200 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi250Hz: TMenuItem
+      Tag = 250
+      Caption = '250 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi315Hz: TMenuItem
+      Tag = 315
+      Caption = '315 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi400Hz: TMenuItem
+      Tag = 400
+      Caption = '400 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi500Hz: TMenuItem
+      Tag = 500
+      Caption = '500 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi630Hz: TMenuItem
+      Tag = 630
+      Caption = '630 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi800Hz: TMenuItem
+      Tag = 800
+      Caption = '800 Hz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi1kHz: TMenuItem
+      Tag = 1000
+      Caption = '1 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi1k25Hz: TMenuItem
+      Tag = 1250
+      Caption = '1.25 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi1k6Hz: TMenuItem
+      Tag = 1600
+      Caption = '1.6 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi2kHz: TMenuItem
+      Tag = 2000
+      Caption = '2 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi2k5Hz: TMenuItem
+      Tag = 2500
+      Caption = '2.5 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi31k5Hz: TMenuItem
+      Tag = 3150
+      Caption = '3.15 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi4kHz: TMenuItem
+      Tag = 4000
+      Caption = '4 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi5kHz: TMenuItem
+      Tag = 5000
+      Caption = '5 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi6k3Hz: TMenuItem
+      Tag = 6300
+      Caption = '6.3 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi8kHz: TMenuItem
+      Tag = 8000
+      Caption = '8 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi10kHz: TMenuItem
+      Tag = 10000
+      Caption = '10 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi12k5Hz: TMenuItem
+      Tag = 12500
+      Caption = '12.5 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi16kHz: TMenuItem
+      Tag = 16000
+      Caption = '16 kHz'
+      OnClick = MiFrequencyClick
+    end
+    object Mi20kHz: TMenuItem
+      Tag = 20000
+      Caption = '20 kHz'
+      OnClick = MiFrequencyClick
     end
   end
 end

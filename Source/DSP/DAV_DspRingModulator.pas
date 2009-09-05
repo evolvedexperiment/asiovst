@@ -157,16 +157,6 @@ uses
   SysUtils, DAV_Approximations;
 
 
-function GermaniumDiode(Voltage: Double): Double;
-begin
- Result := 0.085 * (Voltage + abs(Voltage)) * sqr(Voltage) * Voltage
-end;
-
-function SiliconDiode(Voltage: Double): Double;
-begin
- Result := 40.6728602E-9 * (exp(17.7493332 * (Voltage + 0.3)) - 1);
-end;
-
 { TRingModulator }
 
 function TRingModulator.ProcessSample(Input, Carrier: Single): Single;

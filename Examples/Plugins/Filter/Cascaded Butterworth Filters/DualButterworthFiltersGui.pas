@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ExtCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiDial, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED;
+  DAV_GuiDial, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED, Menus;
 
 type
   TFmLinkwitzRiley = class(TForm)
@@ -24,6 +24,39 @@ type
     LedHighCut: TGuiLED;
     LedLowCut: TGuiLED;
     PnDisplay: TGuiPanel;
+    PuFrequency: TPopupMenu;
+    Mi20Hz: TMenuItem;
+    Mi31Hz5: TMenuItem;
+    N251: TMenuItem;
+    Mi16Hz: TMenuItem;
+    Mi40Hz: TMenuItem;
+    Mi50Hz: TMenuItem;
+    Mi63Hz: TMenuItem;
+    Mi80Hz: TMenuItem;
+    Mi100Hz: TMenuItem;
+    Mi125Hz: TMenuItem;
+    Mi160Hz: TMenuItem;
+    Mi200Hz: TMenuItem;
+    Mi250Hz: TMenuItem;
+    Mi315Hz: TMenuItem;
+    Mi400Hz: TMenuItem;
+    Mi500Hz: TMenuItem;
+    Mi630Hz: TMenuItem;
+    Mi800Hz: TMenuItem;
+    Mi1kHz: TMenuItem;
+    Mi1k25Hz: TMenuItem;
+    Mi1k6Hz: TMenuItem;
+    Mi2kHz: TMenuItem;
+    Mi2k5Hz: TMenuItem;
+    Mi31k5Hz: TMenuItem;
+    Mi4kHz: TMenuItem;
+    Mi5kHz: TMenuItem;
+    Mi6k3Hz: TMenuItem;
+    Mi8kHz: TMenuItem;
+    Mi10kHz: TMenuItem;
+    Mi12k5Hz: TMenuItem;
+    Mi16kHz: TMenuItem;
+    Mi20kHz: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -39,8 +72,12 @@ type
     procedure DialLowpassSlopeMouseEnter(Sender: TObject);
     procedure DialHighpassFrequencyMouseEnter(Sender: TObject);
     procedure DialHighpassSlopeMouseEnter(Sender: TObject);
+    procedure MiFrequencyClick(Sender: TObject);
+    procedure Mi31Hz5Click(Sender: TObject);
+    procedure PuFrequencyPopup(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
+    FCurrentDial     : TGuiDial;
   public
     procedure UpdateLowpassFrequency;
     procedure UpdateLowpassSlope;
@@ -150,6 +187,8 @@ end;
 procedure TFmLinkwitzRiley.DialLowpassFrequencyMouseEnter(Sender: TObject);
 begin
  UpdateLowpassFrequency;
+ if Sender is TGuiDial
+  then FCurrentDial := TGuiDial(Sender)
 end;
 
 procedure TFmLinkwitzRiley.DialLowpassSlopeChange(Sender: TObject);
@@ -178,6 +217,8 @@ end;
 procedure TFmLinkwitzRiley.DialHighpassFrequencyMouseEnter(Sender: TObject);
 begin
  UpdateHighpassFrequency;
+ if Sender is TGuiDial
+  then FCurrentDial := TGuiDial(Sender)
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassSlopeChange(Sender: TObject);
@@ -214,6 +255,26 @@ begin
    CurrentBit := round(Parameter[4]);
    Parameter[4] := (CurrentBit and $1) or ((not CurrentBit) and $2)
   end;
+end;
+
+procedure TFmLinkwitzRiley.MiFrequencyClick(Sender: TObject);
+begin
+ assert(Sender is TMenuItem);
+ if assigned(FCurrentDial)
+  then FCurrentDial.Position := TMenuItem(Sender).Tag;
+end;
+
+procedure TFmLinkwitzRiley.PuFrequencyPopup(Sender: TObject);
+begin
+ if Sender is TGuiDial
+  then FCurrentDial := TGuiDial(Sender)
+end;
+
+procedure TFmLinkwitzRiley.Mi31Hz5Click(Sender: TObject);
+begin
+ assert(Sender is TMenuItem);
+ if assigned(FCurrentDial)
+  then FCurrentDial.Position := 31.5;
 end;
 
 procedure TFmLinkwitzRiley.UpdateLowpassFrequency;

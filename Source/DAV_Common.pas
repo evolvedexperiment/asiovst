@@ -140,6 +140,9 @@ type
   function Frequency2CriticalBandwidth(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function Frequency2CriticalBandwidth(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+  function GermaniumDiode(Voltage: Double): Double;
+  function SiliconDiode(Voltage: Double): Double;
+
   // dB stuff
   function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -490,6 +493,16 @@ begin
  Result := 25 + 75 * Power(1 + 1.4 * sqr(Frequency * 0.001), 0.69);
 end;
 
+
+function GermaniumDiode(Voltage: Double): Double;
+begin
+ Result := 0.085 * (Voltage + abs(Voltage)) * sqr(Voltage) * Voltage
+end;
+
+function SiliconDiode(Voltage: Double): Double;
+begin
+ Result := 40.6728602E-9 * (exp(17.7493332 * (Voltage + 0.3)) - 1);
+end;
 
 
 ////////////////////////////////////////////////////

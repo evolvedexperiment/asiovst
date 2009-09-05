@@ -203,6 +203,7 @@ type
 
   TGuiDial = class(TCustomGuiDial)
   published
+    property PopupMenu;
     property Anchors;
     property AntiAlias;
     property AutoColor;
