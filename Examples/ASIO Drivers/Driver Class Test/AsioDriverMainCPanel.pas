@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_ASIOExtendedDriver, StdCtrls;
+  Dialogs, DAV_ASIODriver, DAV_ASIOExtendedDriver, StdCtrls;
 
 type
-  TDriverTestCP = class(TDavASIOExtendedDriverCP)
+  TDriverTestCP = class(TDavASIODriverCP)
     btnDone: TButton;
     lbStupid: TLabel;
     procedure FormCreate(Sender: TObject);

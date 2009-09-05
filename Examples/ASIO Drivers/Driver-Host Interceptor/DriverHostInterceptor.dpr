@@ -3,8 +3,7 @@ library DriverHostInterceptor;
 uses
   ComServ,
   DrvrHostIntMain in 'DrvrHostIntMain.pas',
-  DAV_ASIODriverInterceptor in 'DAV_ASIODriverInterceptor.pas',
-  DrvrHostIntCPanel in 'DrvrHostIntCPanel.pas';
+  DrvrHostIntCPanel in 'DrvrHostIntCPanel.pas' {DriverTestCP};
 
 exports
   DllGetClassObject,

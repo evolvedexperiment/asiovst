@@ -2,10 +2,10 @@ unit DAV_ASIOExtendedDriver;
 
 interface
 
-uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver,{test}DAV_Common;
+uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver;
 
 type
-  TDavASIOEDClockListItem = class
+{  TDavASIOEDClockListItem = class
     ClockName: string;
     ChannelGroup: LongInt;
     IsCurrentSource: boolean;
@@ -19,7 +19,7 @@ type
     DoubleBuffer: array [0..1] of Pointer;
     constructor Create(cname: string; cchannelgroup: LongInt; cSampleType: TASIOSampleType; cIsInput: Boolean);
     destructor Destroy; override;
-    procedure CreateBuffer({todo});
+    procedure CreateBuffer((*todo*));
     procedure DestroyBuffer;
   end;
 
@@ -28,13 +28,6 @@ type
   end;
 
   TDavASIOExtendedDriver = class;
-
-  TDavASIOExtendedDriverCP = class(TForm)
-  protected
-    Driver: TDavASIOExtendedDriver;
-  public
-    constructor Create(AOwner: TComponent; cDriver: TDavASIOExtendedDriver); reintroduce;
-  end;
 
   TTDavASIOExtDrvSampleRateMode = (edsrm_Single, // Only one sample rate
                                    edsrm_Range,  // A range of sample rates eg. 11025..44100
@@ -56,14 +49,10 @@ type
     function CanSampleRate(sr: double): boolean;
     function GetDefaultSampleRate: Double;
   end;
-
-  TTDavASIOExtendedDriverCP = class of TDavASIOExtendedDriverCP;
-
+}
   TDavASIOExtendedDriver = class(TDavASIODriver)
   private
-    fHostHandle: HWND;
-    fControlPanel: TDavASIOExtendedDriverCP;
-    fControlPanelClass: TTDavASIOExtendedDriverCP;
+{    fHostHandle: HWND;
     fSampleRateManager: TTDavASIOExtDrvSampleRateManager;
     fLastErrorMsg: string;
     fDriverName: string;
@@ -75,15 +64,12 @@ type
     fChannelsAreDefault: boolean;
     fSampleRate: Double;
 
-    {test}
-    FOutputBuffers  : TDAVArrayOfSingleFixedArray;
-
     procedure ClearClockList;
     procedure ClearChannelLists;
-    function GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint; 
+    function GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint;  }
   protected
     procedure InitializeDriverParams; virtual;
-    procedure SetDriverName(name: string);
+   { procedure SetDriverName(name: string);
     procedure SetDriverVersion(version: LongInt);
     procedure SetErrorMessage(s: string);
     procedure AddClock(name: string; channelgroup: LongInt);
@@ -91,9 +77,9 @@ type
     procedure SetControlPanelClass(cp: TTDavASIOExtendedDriverCP);
     function GetCurrentClockSource: Integer;
     procedure AddSampleRate(sr: double);
-    procedure SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode); 
+    procedure SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode); }
   public
-    constructor Create(TCWrapper: TDavASIOTCWrapper); override;
+    {constructor Create(TCWrapper: TDavASIOTCWrapper); override;
     destructor Destroy; override;
 
     function Init(SysHandle: HWND): boolean; override;
@@ -111,26 +97,16 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
     function GetSampleRate(out nSampleRate: TASIOSampleRate): TASIOError; override;
     function SetSampleRate(nSampleRate: TASIOSampleRate): TASIOError; override;
-    property SampleRate: Double read fSampleRate; 
+    property SampleRate: Double read fSampleRate;}
   end;
 
 implementation
 
-uses sysutils, math, {for debug:}dialogs;
-
-
-{ TDavASIODriverControlPanel }
-
-constructor TDavASIOExtendedDriverCP.Create(AOwner: TComponent; cDriver: TDavASIOExtendedDriver);
-begin
-  inherited Create(AOwner);
-  Driver := cDriver;
-end;   
-
+uses sysutils;
 
 
 { TTDavASIOExtDrvSampleRateManager }
-
+{
 constructor TTDavASIOExtDrvSampleRateManager.Create;
 begin
   fSampleRateList := TList.Create;
@@ -221,10 +197,10 @@ end;
 procedure TTDavASIOExtDrvSampleRateManager.SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode);
 begin
   fSampleRateMode := md;
-end;
+end;  }
 
 { TDavASIOEDChannelListItem }
-
+{
 constructor TDavASIOEDChannelListItem.Create(cname: string; cchannelgroup: Integer; cSampleType: TASIOSampleType; cIsInput: Boolean);
 begin
   ChannelName := copy(cname,0,32);
@@ -241,7 +217,7 @@ begin
   inherited;
 end;
 
-procedure TDavASIOEDChannelListItem.CreateBuffer({todo});
+procedure TDavASIOEDChannelListItem.CreateBuffer((*todo*));
 begin
   if IsActive then DestroyBuffer;
 
@@ -258,10 +234,10 @@ begin
 
   FreeMem(DoubleBuffer[0]);
   FreeMem(DoubleBuffer[1]);
-end;
+end; }
 
 { TDavASIOExtendedDriver }
-
+{
 constructor TDavASIOExtendedDriver.Create(TCWrapper: TDavASIOTCWrapper);
 begin
   inherited;
@@ -285,9 +261,6 @@ begin
   fControlPanelClass := nil;
   fControlPanel := nil;
 
-  {test}
-  SetLength(FOutputBuffers, 1);
-  FOutputBuffers[0] := nil;
   InitializeDriverParams;
 
   fSampleRate := fSampleRateManager.GetDefaultSampleRate;
@@ -311,8 +284,6 @@ begin
   FreeAndNil(fOutChannelList);
 
   if Assigned(fControlPanel) then FreeAndNil(fControlPanel);
-  {test}
-  setlength(FOutputBuffers,0);
   inherited;
 end;
 
@@ -332,11 +303,11 @@ begin
   fOutChannelList.Clear;
 end;
 
-procedure TDavASIOExtendedDriver.InitializeDriverParams;
+}procedure TDavASIOExtendedDriver.InitializeDriverParams;
 begin
   raise Exception.Create('You have to overwrite InitializeDriverParams');
 end;
-
+ {
 procedure TDavASIOExtendedDriver.SetDriverName(name: string);
 begin
   fDriverName := name;
@@ -546,18 +517,11 @@ begin
 end;
 
 function TDavASIOExtendedDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
-//var Channel: integer;
-//var glo: array[0..1] of psingle;
 begin
  //  for Channel := 0 to NumChannels-1 do
  //  begin
      // TODO
  //  end;
-
- {test}
-// GetMem(glo[0], 1024 * SizeOf(Single));
-// Dispose(glo[0]);
-GetMem(FOutputBuffers[0], 1024 * SizeOf(Single));
 
    // TODO
    result := ASE_InvalidMode;
@@ -566,12 +530,6 @@ end;
 function TDavASIOExtendedDriver.DisposeBuffers: TASIOError;
 begin
 
-{test}
-if assigned(FOutputBuffers[0]) then
-begin
-  Dispose(FOutputBuffers[0]);
-  FOutputBuffers[0]:=nil;
-end;
   // TODO
    result := ASE_InvalidMode;
 end;
@@ -599,7 +557,7 @@ begin
     result := ASE_OK;
   end else
     result := ASE_NoClock;
-end;
+end; }
 
 
 end.
