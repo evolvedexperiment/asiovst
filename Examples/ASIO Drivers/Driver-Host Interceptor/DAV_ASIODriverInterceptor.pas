@@ -6,20 +6,9 @@ uses Classes,SysUtils,Windows,Forms,
      DAV_ASIO,DAV_ASIOList,DAV_ASIODriver,DAV_AsioInterface;
 
 type
-  TDavASIOInterceptor = class;
-
-  TDavASIOInterceptorCP = class(TForm)
-  protected
-    Interceptor: TDavASIOInterceptor;
-  public
-    constructor Create(AOwner: TComponent); override;
-  end;
-
-  TTDavASIOInterceptorCP = class of TDavASIOInterceptorCP;
-
+  {$IFDEF DELPHI10_UP} {$region 'Interceptor declaration'} {$ENDIF}
   TDavASIOInterceptor = class(TDavASIODriver)
   protected
-    fParentWindowHandle: HWND;
     fDriverName: string;
     fDriverVersion: Longint;
     fDriverList: TDAVAsioDriverList;
@@ -27,13 +16,11 @@ type
     fDriverIndex: integer;
     fHostCallbacks: PASIOCallbacks;
     fDriverCallbacks: TASIOCallbacks;
-    fControlPanelClass: TTDavASIOInterceptorCP;
 
     procedure UnloadHostInterface;
     procedure InitializeDriverParams; virtual;
     procedure SetDriverName(name: string);
     procedure SetDriverVersion(version: LongInt);
-    procedure SetControlPanelClass(cp: TTDavASIOInterceptorCP);
     function GetDriverNames: TStrings;
     procedure SetDriverIndex(index: integer);
     procedure LoadDriverSettings; virtual;
@@ -76,14 +63,14 @@ type
     property DriverNames: TStrings read GetDriverNames;
     property DriverIndex: integer read fDriverIndex write SetDriverIndex;
   end;
-  
+  {$IFDEF DELPHI10_UP} {$endregion 'Interceptor declaration'} {$ENDIF}
+
 
 implementation
 
-uses MMSystem, Math;
-
-var GlobalControlPanel: TDavASIOInterceptorCP;
 var GlobalCallbackInst: TDavASIOInterceptor;
+
+{$IFDEF DELPHI10_UP} {$region 'Callback methods'} {$ENDIF}
 
 procedure callbackBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); cdecl;
 begin
@@ -106,17 +93,13 @@ begin
   if assigned(GlobalCallbackInst) then result := GlobalCallbackInst.ASIOMessage(Selector, Value, msg, Opt)
   else result := 0;
 end;
+ 
+{$IFDEF DELPHI10_UP} {$endregion 'Callback methods'} {$ENDIF}
 
-
-{ TDavASIOInterceptorCP }
-
-constructor TDavASIOInterceptorCP.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  Interceptor := nil;
-end;
 
 { TDavASIOInterceptor }
+
+{$IFDEF DELPHI10_UP} {$region 'Interceptor implementation'} {$ENDIF}
 
 constructor TDavASIOInterceptor.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid);
 begin
@@ -128,8 +111,6 @@ begin
   fHostInterface := nil;
   fDriverName := 'DAV Abstract Int';
   fDriverVersion := 1;
-  fControlPanelClass := nil;
-  fParentWindowHandle := 0;
 
   fHostCallbacks := nil;
   with fDriverCallbacks do
@@ -143,12 +124,7 @@ begin
   InitializeDriverParams;
   LoadDriverSettings;
 
-  if assigned(fControlPanelClass) then
-  begin
-    if not assigned(GlobalControlPanel) then GlobalControlPanel := fControlPanelClass.Create(nil);
-    GlobalControlPanel.Interceptor := self;
-    if GlobalControlPanel.Visible then GlobalControlPanel.BringToFront;
-  end;
+  InitControlPanel;
 end;
 
 destructor TDavASIOInterceptor.Destroy;
@@ -180,12 +156,6 @@ begin
   fDriverIndex := index;
   if assigned(fHostInterface) then RequestReset;
 end;
-
-procedure TDavASIOInterceptor.SetControlPanelClass(cp: TTDavASIOInterceptorCP);
-begin
-  fControlPanelClass := cp;
-end;
-
 
 procedure TDavASIOInterceptor.LoadDriverSettings;
 begin
@@ -463,29 +433,11 @@ begin
 end;
 
 function TDavASIOInterceptor.ControlPanel: TASIOError;
-var r: TRect;
 begin
-  if Assigned(GlobalControlPanel) then
-  begin
-    // Hardcore centering ;)
-    if fParentWindowHandle<>0 then
-      GetWindowRect(fParentWindowHandle, r)
-    else
-      GetWindowRect(GetDesktopWindow, r);
+  result := inherited ControlPanel;
 
-    with GlobalControlPanel do
-    begin
-      left := r.Left + round(((r.Right-r.Left)-Width)*0.5);
-      top  := r.Top + round(((r.Bottom-r.Top)-Height)*0.5);
-      ShowModal;
-    end;
-
-    Result := ASE_OK;
-    exit;
-  end;  
-
-  
-  result := DriverControlPanel;
+  if Result<>ASE_OK then
+    result := DriverControlPanel;
 end;
 
 function TDavASIOInterceptor.DriverControlPanel: TASIOError;
@@ -568,9 +520,10 @@ begin
   AsioMessage(kAsioResetRequest, 0, nil, nil);
 end;
 
+{$IFDEF DELPHI10_UP} {$endregion 'Interceptor implementation'} {$ENDIF}
 
 initialization
 
 GlobalCallbackInst:=nil;
-GlobalControlPanel:=nil;
+
 end.

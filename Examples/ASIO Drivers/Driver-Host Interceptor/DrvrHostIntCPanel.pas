@@ -4,10 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_ASIODriverInterceptor, StdCtrls;
+  Dialogs, DAV_ASIODriver, DAV_ASIODriverInterceptor, StdCtrls;
 
 type
-  TInterceptorTestCP = class(TDavASIOInterceptorCP)
+  TInterceptorTestCP = class(TDavASIODriverCP)
     btnDone: TButton;
     cbDrivers: TComboBox;
     btnControlPanel: TButton;
@@ -26,21 +26,21 @@ implementation
 
 procedure TInterceptorTestCP.btnControlPanelClick(Sender: TObject);
 begin
-  if assigned(Interceptor) then Interceptor.DriverControlPanel;
+  if assigned(Driver) then TDavASIOInterceptor(Driver).DriverControlPanel;
 end;
 
 procedure TInterceptorTestCP.cbDriversChange(Sender: TObject);
 begin
-  Interceptor.DriverIndex := cbDrivers.ItemIndex;
+  TDavASIOInterceptor(Driver).DriverIndex := cbDrivers.ItemIndex;
 end;
 
 procedure TInterceptorTestCP.FormShow(Sender: TObject);
 begin
-  if not assigned(Interceptor) then exit;
-  Caption:=Interceptor.GetDriverName + ' (Version ' + inttostr(Interceptor.GetDriverVersion) + ')';
-  cbDrivers.Items:=Interceptor.DriverNames;
+  if not assigned(Driver) then exit;
+  Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';
+  cbDrivers.Items:=TDavASIOInterceptor(Driver).DriverNames;
 
-  cbDrivers.ItemIndex := Interceptor.DriverIndex;
+  cbDrivers.ItemIndex := TDavASIOInterceptor(Driver).DriverIndex;
 end;
 
 end.

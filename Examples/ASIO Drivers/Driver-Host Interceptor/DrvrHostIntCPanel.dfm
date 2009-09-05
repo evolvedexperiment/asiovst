@@ -30,7 +30,7 @@ object InterceptorTestCP: TInterceptorTestCP
     Width = 178
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
+    ItemHeight = 0
     TabOrder = 1
     OnChange = cbDriversChange
   end

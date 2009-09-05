@@ -3,9 +3,10 @@ unit DAV_ASIODriver;
 interface
 
 uses
-  Windows, ActiveX, ComObj, DAV_ASIO;
+  Classes, Windows, Forms, ActiveX, ComObj, DAV_ASIO;
 
 type
+  {$IFDEF DELPHI10_UP} {$region 'Driver interface declaration'} {$ENDIF}
   IDavASIODriverInterface = interface(IUnknown)
     // never ever change the order of the functions!!!
     procedure Init;
@@ -30,10 +31,22 @@ type
     procedure Future;
     procedure OutputReady;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Driver interface declaration'} {$ENDIF}
 
   TDavASIODriver = class;
   TTDavASIODriver = class of TDavASIODriver;
 
+  {$IFDEF DELPHI10_UP} {$region 'Control panel declaration'} {$ENDIF}
+  TDavASIODriverCP = class(TForm)
+  public
+    Driver: TDavASIODriver;
+    constructor Create(AOwner: TComponent); override;
+  end;
+
+  TTDavASIODriverCP = class of TDavASIODriverCP;
+  {$IFDEF DELPHI10_UP} {$endregion 'Control panel declaration'} {$ENDIF}
+
+  {$IFDEF DELPHI10_UP} {$region 'Thiscall wrapper declaration'} {$ENDIF}
   TDavASIOTCWrapper = class(TComObject)
   private
     FDestinationClass: TDavASIODriver;
@@ -65,14 +78,20 @@ type
     procedure Future;
     procedure OutputReady;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Thiscall wrapper declaration'} {$ENDIF}
 
+  {$IFDEF DELPHI10_UP} {$region 'Asio driver class declaration'} {$ENDIF}
   TDavASIODriver = class
   protected
     fTCWrapper: TDavASIOTCWrapper;
     fInterfaceGUID: TGuid;
+    fControlPanelClass: TTDavASIODriverCP;
+    fParentWindowHandle: HWND;
+
+    procedure SetControlPanelClass(cp: TTDavASIODriverCP);
+    procedure InitControlPanel; virtual;
   public
     constructor Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid); virtual;
-
 
     function Init(SysHandle: HWND): boolean; virtual;
     function GetDriverName: string; virtual;
@@ -118,21 +137,40 @@ type
     function AsioFuture(Selector: LongInt; Opt: Pointer): TASIOError;
     function AsioOutputReady: TASIOError;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Asio driver class declaration'} {$ENDIF}
 
+  {$IFDEF DELPHI10_UP} {$region 'Asio driver factory declaration'} {$ENDIF}
   TDavAsioDriverFactory = class(TComObjectFactory)
   public
     procedure UpdateRegistry(Register: Boolean); override;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Asio driver factory declaration'} {$ENDIF}
+
+  var GlobalDriverControlPanel: TDavASIODriverCP;
 
 IMPLEMENTATION
-
 
 uses sysutils;
 
 const DavASIOInterfaceOffset = $24;
 
 
+{ TDavASIOInterceptorCP }
+
+{$IFDEF DELPHI10_UP} {$region 'Control panel implementation'} {$ENDIF}
+
+constructor TDavASIODriverCP.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+  Driver := nil;
+end;
+
+{$IFDEF DELPHI10_UP} {$endregion 'Control panel implementation'} {$ENDIF}
+
+
 { TDavASIOTCWrapper }
+
+{$IFDEF DELPHI10_UP} {$region 'Thiscall wrapper implementation'} {$ENDIF}
 
 procedure TDavASIOTCWrapper.Initialize;
 begin
@@ -544,37 +582,39 @@ asm
   call FDestinationClass.AsioOutputReady-FDestinationClass
 end;
 
-
-{ TDavAsioDriverFactory }
-
-procedure TDavAsioDriverFactory.UpdateRegistry(Register: Boolean);
-begin
- inherited UpdateRegistry(Register);
-
- if Register then
-  begin
-   CreateRegKey('CLSID\' + GUIDToString(ClassID) + '\' + ComServer.ServerKey, 'ThreadingModel', 'Apartment');
-   CreateRegKey('SOFTWARE\ASIO\' + Description, 'CLSID', GUIDToString(ClassID), HKEY_LOCAL_MACHINE);
-   CreateRegKey('SOFTWARE\ASIO\' + Description, 'Description', Description, HKEY_LOCAL_MACHINE);
-  end
- else DeleteRegKey('SOFTWARE\ASIO\' + Description, HKEY_LOCAL_MACHINE);
-end;
-
+{$IFDEF DELPHI10_UP} {$endregion 'Thiscall wrapper implementation'} {$ENDIF}
 
 
 { TDavASIODriver }
+
+{$IFDEF DELPHI10_UP} {$region 'Asio driver class implementation'} {$ENDIF}
 
 constructor TDavASIODriver.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid);
 begin
   fTCWrapper := TCWrapper;
   fInterfaceGUID := InterfaceGUID;
+  fControlPanelClass := nil;
+  fParentWindowHandle := 0;
 end;
 
+procedure TDavASIODriver.SetControlPanelClass(cp: TTDavASIODriverCP);
+begin
+  fControlPanelClass := cp;
+end;  
 
-
+procedure TDavASIODriver.InitControlPanel;
+begin
+  if assigned(fControlPanelClass) then
+  begin
+    if not assigned(GlobalDriverControlPanel) then GlobalDriverControlPanel := fControlPanelClass.Create(nil);
+    GlobalDriverControlPanel.Driver := self;
+    if GlobalDriverControlPanel.Visible then GlobalDriverControlPanel.BringToFront;
+  end;
+end;
 
 function TDavASIODriver.Init(SysHandle: HWND): boolean;
 begin
+  fParentWindowHandle := SysHandle;
   result := true;
 end;
 
@@ -700,8 +740,27 @@ begin
 end;
 
 function TDavASIODriver.ControlPanel: TASIOError;
+var r: TRect;
 begin
-  result := ASE_OK;
+  result:=ASE_NotPresent;
+  if Assigned(GlobalDriverControlPanel) then
+  begin
+    // Hardcore centering ;)
+    if fParentWindowHandle<>0 then
+      GetWindowRect(fParentWindowHandle, r)
+    else
+      GetWindowRect(GetDesktopWindow, r);
+
+    with GlobalDriverControlPanel do
+    begin
+      left := r.Left + round(((r.Right-r.Left)-Width)*0.5);
+      top  := r.Top + round(((r.Bottom-r.Top)-Height)*0.5);
+      ShowModal;
+    end;
+
+    Result := ASE_OK;
+    exit;
+  end;
 end;
 
 function TDavASIODriver.Future(Selector: LongInt; Opt: Pointer): TASIOError;
@@ -824,5 +883,30 @@ begin
   result:=OutputReady;
 end;
 
+{$IFDEF DELPHI10_UP} {$endregion 'Asio driver class implementation'} {$ENDIF}
+
+
+{ TDavAsioDriverFactory }
+
+{$IFDEF DELPHI10_UP} {$region 'Asio driver factory implementation'} {$ENDIF}
+
+procedure TDavAsioDriverFactory.UpdateRegistry(Register: Boolean);
+begin
+ inherited UpdateRegistry(Register);
+
+ if Register then
+  begin
+   CreateRegKey('CLSID\' + GUIDToString(ClassID) + '\' + ComServer.ServerKey, 'ThreadingModel', 'Apartment');
+   CreateRegKey('SOFTWARE\ASIO\' + Description, 'CLSID', GUIDToString(ClassID), HKEY_LOCAL_MACHINE);
+   CreateRegKey('SOFTWARE\ASIO\' + Description, 'Description', Description, HKEY_LOCAL_MACHINE);
+  end
+ else DeleteRegKey('SOFTWARE\ASIO\' + Description, HKEY_LOCAL_MACHINE);
+end;
+
+{$IFDEF DELPHI10_UP} {$endregion 'Asio driver factory implementation'} {$ENDIF}
+
+initialization
+
+GlobalDriverControlPanel:=nil;
 
 end.
