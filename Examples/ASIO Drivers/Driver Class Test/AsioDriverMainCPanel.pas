@@ -10,7 +10,7 @@ type
   TDriverTestCP = class(TDavASIODriverCP)
     btnDone: TButton;
     lbStupid: TLabel;
-    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -21,7 +21,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TDriverTestCP.FormCreate(Sender: TObject);
+procedure TDriverTestCP.FormShow(Sender: TObject);
 begin
   Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';
 end;

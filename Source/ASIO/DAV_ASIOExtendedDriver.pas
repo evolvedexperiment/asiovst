@@ -5,38 +5,54 @@ interface
 uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver;
 
 type
-{  TDavASIOEDClockListItem = class
+  TDavASIOExtDrvrDoubleBuffer = array [0..1] of Pointer;
+
+  {$IFDEF DELPHI10_UP} {$region 'Buffersizes declaration'} {$ENDIF}
+  TDavASIOExtDrvrBufferSizes = record
+    Minimum,
+    Maximum,
+    Prefered,
+    Granularity,
+    Current: LongInt;
+  end;  
+  {$IFDEF DELPHI10_UP} {$endregion 'Buffersizes declaration'} {$ENDIF}
+
+  {$IFDEF DELPHI10_UP} {$region 'Clock list declaration'} {$ENDIF}
+  TDavASIOExtDrvrClockListItem = class
     ClockName: string;
     ChannelGroup: LongInt;
     IsCurrentSource: boolean;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Clock list declaration'} {$ENDIF}
 
-  TDavASIOEDChannelListItem = class
+  {$IFDEF DELPHI10_UP} {$region 'Channel list declaration'} {$ENDIF}
+  TDavASIOExtDrvrChannelListItem = class
     IsActive: boolean;
     ChannelGroup: LongInt;
     SampleType: TASIOSampleType;
     ChannelName: string;
-    DoubleBuffer: array [0..1] of Pointer;
+    DoubleBuffer: TDavASIOExtDrvrDoubleBuffer;
     constructor Create(cname: string; cchannelgroup: LongInt; cSampleType: TASIOSampleType; cIsInput: Boolean);
     destructor Destroy; override;
-    procedure CreateBuffer((*todo*));
-    procedure DestroyBuffer;
+    function CreateBuffers(out Buffers: array of Pointer; size: Integer): boolean;
+    procedure DisposeBuffers;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Channel list declaration'} {$ENDIF}
 
-  TDavASIOExtDrvSampleRateItem = class
+  {$IFDEF DELPHI10_UP} {$region 'Samplerate list declaration'} {$ENDIF}
+ TDavASIOExtDrvrSampleRateItem = class
     SampleRate: Double;
   end;
 
-  TDavASIOExtendedDriver = class;
 
-  TTDavASIOExtDrvSampleRateMode = (edsrm_Single, // Only one sample rate
-                                   edsrm_Range,  // A range of sample rates eg. 11025..44100
-                                   edsrm_List,   // A list of sample rates eg. 11025,22050,44100
-                                   edsrm_All);   // Sample rate doesn't matter, everything is accepted
+  TTDavASIOExtDrvrSampleRateMode = (edsrm_Single, // Only one sample rate
+                                    edsrm_Range,  // A range of sample rates eg. 11025..44100
+                                    edsrm_List,   // A list of sample rates eg. 11025,22050,44100
+                                    edsrm_All);   // Sample rate doesn't matter, everything is accepted
 
-  TTDavASIOExtDrvSampleRateManager = class
+  TTDavASIOExtDrvrSampleRateManager = class
   private
-    fSampleRateMode: TTDavASIOExtDrvSampleRateMode;
+    fSampleRateMode: TTDavASIOExtDrvrSampleRateMode;
     fSampleRateList: TList;
     fDefaultSampleRate: Double;
   public
@@ -45,45 +61,52 @@ type
 
     procedure AddSampleRate(sr: double);
     procedure SetDefaultSampleRate(sr: double);
-    procedure SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode);
+    procedure SetSampleRateMode(md: TTDavASIOExtDrvrSampleRateMode);
     function CanSampleRate(sr: double): boolean;
     function GetDefaultSampleRate: Double;
   end;
-}
+  {$IFDEF DELPHI10_UP} {$endregion 'Samplerate list declaration'} {$ENDIF}
+
+  {$IFDEF DELPHI10_UP} {$region 'Extended driver declaration'} {$ENDIF}
   TDavASIOExtendedDriver = class(TDavASIODriver)
   private
-{    fHostHandle: HWND;
-    fSampleRateManager: TTDavASIOExtDrvSampleRateManager;
-    fLastErrorMsg: string;
     fDriverName: string;
     fDriverVersion: LongInt;
+    fLastErrorMsg: string;
+    fSampleRateManager: TTDavASIOExtDrvrSampleRateManager;
     fClockList: TList;
     fInChannelList: TList;
     fOutChannelList: TList;
+    fBufferSize: TDavASIOExtDrvrBufferSizes;
     fClocksAreDefault: boolean;
     fChannelsAreDefault: boolean;
     fSampleRate: Double;
+    fHostCallbacks: PASIOCallbacks;
 
     procedure ClearClockList;
     procedure ClearChannelLists;
-    function GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint;  }
+    function GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint;
   protected
     procedure InitializeDriverParams; virtual;
-   { procedure SetDriverName(name: string);
+    procedure SetDriverName(name: string);
     procedure SetDriverVersion(version: LongInt);
     procedure SetErrorMessage(s: string);
     procedure AddClock(name: string; channelgroup: LongInt);
     procedure AddChannel(name: string; channelgroup: LongInt; SampleType: TASIOSampleType; IsInput: Boolean);
-    procedure SetControlPanelClass(cp: TTDavASIOExtendedDriverCP);
+    procedure ChangeClockSource(fromIndex, ToIndex: LongInt); virtual;
     function GetCurrentClockSource: Integer;
     procedure AddSampleRate(sr: double);
-    procedure SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode); }
+    procedure SetSampleRateMode(md: TTDavASIOExtDrvrSampleRateMode);
+    procedure SetBufferSizes(MinSize, MaxSize, PreferredSize, Granularity: LongInt);
+    function CheckBufferSize(test: Integer): boolean;
+
+    procedure LoadDriverSettings; virtual;
+    procedure SaveDriverSettings; virtual;
   public
-    {constructor Create(TCWrapper: TDavASIOTCWrapper); override;
+    constructor Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid); override;
     destructor Destroy; override;
 
-    function Init(SysHandle: HWND): boolean; override;
-    function GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError; override;
+    function GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; override;
     function SetClockSource(Reference: LongInt): TASIOError; override;
    
     function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; override;
@@ -91,23 +114,95 @@ type
     function GetDriverName: string; override;
     function GetDriverVersion: LongInt; override;
     function GetErrorMessage: string; override;
-    function ControlPanel: TASIOError; override;
-    function CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;  
+    function GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: LongInt): TASIOError; override;
+    function CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
     function DisposeBuffers: TASIOError; override; 
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
     function GetSampleRate(out nSampleRate: TASIOSampleRate): TASIOError; override;
     function SetSampleRate(nSampleRate: TASIOSampleRate): TASIOError; override;
-    property SampleRate: Double read fSampleRate;}
+
+    procedure ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
+    function ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime; virtual;
+    procedure ASIOSampleRateDidChange(SampleRate: TASIOSampleRate); virtual;
+    {function ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; virtual;
+    procedure ASIORequestReset;}
+
+    property SampleRate: Double read fSampleRate;
   end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Extended driver declaration'} {$ENDIF}
 
 implementation
 
-uses sysutils;
+uses SysUtils, Math;
+
+{ TDavASIOExtDrvrChannelListItem }
+
+{$IFDEF DELPHI10_UP} {$region 'Channel list implementation'} {$ENDIF}
+
+constructor TDavASIOExtDrvrChannelListItem.Create(cname: string; cchannelgroup: Integer; cSampleType: TASIOSampleType; cIsInput: Boolean);
+begin
+  ChannelName := copy(cname,0,32);
+  ChannelGroup := cchannelgroup;
+  SampleType := cSampleType;
+  IsActive := false;
+  DoubleBuffer[0] := nil;
+  DoubleBuffer[1] := nil;
+end;
+
+destructor TDavASIOExtDrvrChannelListItem.Destroy;
+begin
+  DisposeBuffers;
+  inherited;
+end;
+
+function TDavASIOExtDrvrChannelListItem.CreateBuffers(out Buffers: array of pointer; size: Integer): boolean;
+var samplesize: integer;
+begin
+  if IsActive then DisposeBuffers;
+
+  samplesize := 4;
+  case SampleType of
+    ASIOSTDSDInt8LSB1,
+    ASIOSTDSDInt8MSB1, ASIOSTDSDInt8NER8: samplesize := 1;
+    ASIOSTInt16MSB,    ASIOSTInt16LSB:    samplesize := 2;
+    ASIOSTInt24MSB,    ASIOSTInt24LSB:    samplesize := 3;
+    ASIOSTFloat64MSB,  ASIOSTFloat64LSB:  samplesize := 8;
+  end;                                                      
+
+  GetMem(DoubleBuffer[0], size * samplesize);
+  GetMem(DoubleBuffer[1], size * samplesize);
+
+  if not assigned(DoubleBuffer[0]) or not assigned(DoubleBuffer[1]) then
+  begin
+    IsActive := false;
+    if assigned(DoubleBuffer[0]) then FreeMem(DoubleBuffer[0]);
+    if assigned(DoubleBuffer[1]) then FreeMem(DoubleBuffer[1]);
+  end else begin
+    IsActive := true;
+    Buffers[0] := DoubleBuffer[0];
+    Buffers[1] := DoubleBuffer[1];
+  end;
+
+  result := IsActive;
+end;
+
+procedure TDavASIOExtDrvrChannelListItem.DisposeBuffers;
+begin
+  if not IsActive then exit;
+  IsActive := false;
+
+  if assigned(DoubleBuffer[0]) then FreeMem(DoubleBuffer[0]);
+  if assigned(DoubleBuffer[1]) then FreeMem(DoubleBuffer[1]);
+end;
+
+{$IFDEF DELPHI10_UP} {$endregion 'Channel list implementation'} {$ENDIF}
 
 
-{ TTDavASIOExtDrvSampleRateManager }
-{
-constructor TTDavASIOExtDrvSampleRateManager.Create;
+{ TTDavASIOExtDrvrSampleRateManager }
+
+{$IFDEF DELPHI10_UP} {$region 'Samplerate list implementation'} {$ENDIF}
+
+constructor TTDavASIOExtDrvrSampleRateManager.Create;
 begin
   fSampleRateList := TList.Create;
   fSampleRateList.Clear;
@@ -115,25 +210,25 @@ begin
   fDefaultSampleRate := -1;
 end;
 
-destructor TTDavASIOExtDrvSampleRateManager.Destroy;
+destructor TTDavASIOExtDrvrSampleRateManager.Destroy;
 var i: integer;
 begin
   for i := fSampleRateList.count-1 downto 0 do
-    TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[i]).Free;
+    TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[i]).Free;
 
   fSampleRateList.Clear;
   inherited;
 end;
 
-procedure TTDavASIOExtDrvSampleRateManager.AddSampleRate(sr: double);
-var t: TDavASIOExtDrvSampleRateItem;
+procedure TTDavASIOExtDrvrSampleRateManager.AddSampleRate(sr: double);
+var t: TDavASIOExtDrvrSampleRateItem;
 begin
-  t:=TDavASIOExtDrvSampleRateItem.Create;
+  t:=TDavASIOExtDrvrSampleRateItem.Create;
   t.SampleRate:=sr;
   fSampleRateList.Add(t);
 end;
 
-function TTDavASIOExtDrvSampleRateManager.CanSampleRate(sr: double): boolean;
+function TTDavASIOExtDrvrSampleRateManager.CanSampleRate(sr: double): boolean;
 var i: integer;
 begin
   case fSampleRateMode of
@@ -142,7 +237,7 @@ begin
         if fSampleRateList.Count<1 then
           result := false
         else
-          result := TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[0]).SampleRate = sr;
+          result := TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[0]).SampleRate = sr;
 
         exit;
       end;
@@ -152,8 +247,8 @@ begin
          if fSampleRateList.Count<2 then
           result := false
         else
-          result := (TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[0]).SampleRate <= sr) and (TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[1]).SampleRate >= sr)
-                 or (TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[0]).SampleRate >= sr) and (TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[1]).SampleRate <= sr);
+          result := (TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[0]).SampleRate <= sr) and (TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[1]).SampleRate >= sr)
+                 or (TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[0]).SampleRate >= sr) and (TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[1]).SampleRate <= sr);
 
         exit;
       end;
@@ -164,7 +259,7 @@ begin
 
         if fSampleRateList.Count>0 then
           for i := 0 to fSampleRateList.Count-1 do
-            if TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[i]).SampleRate=sr then
+            if TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[i]).SampleRate=sr then
             begin
               result:=true;
               break;
@@ -178,76 +273,55 @@ begin
   result:=true;
 end;
 
-procedure TTDavASIOExtDrvSampleRateManager.SetDefaultSampleRate(sr: double);
+procedure TTDavASIOExtDrvrSampleRateManager.SetDefaultSampleRate(sr: double);
 begin
   fDefaultSampleRate := sr;
 end;
 
-function TTDavASIOExtDrvSampleRateManager.GetDefaultSampleRate: Double;
+function TTDavASIOExtDrvrSampleRateManager.GetDefaultSampleRate: Double;
 begin
   if fDefaultSampleRate>0 then result := fDefaultSampleRate
   else begin
     result := 44100;
     if CanSampleRate(result) or (fSampleRateList.Count<1) then exit;
 
-    result := TDavASIOExtDrvSampleRateItem(fSampleRateList.Items[0]).SampleRate;
+    result := TDavASIOExtDrvrSampleRateItem(fSampleRateList.Items[0]).SampleRate;
   end;
 end;
 
-procedure TTDavASIOExtDrvSampleRateManager.SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode);
+procedure TTDavASIOExtDrvrSampleRateManager.SetSampleRateMode(md: TTDavASIOExtDrvrSampleRateMode);
 begin
   fSampleRateMode := md;
-end;  }
-
-{ TDavASIOEDChannelListItem }
-{
-constructor TDavASIOEDChannelListItem.Create(cname: string; cchannelgroup: Integer; cSampleType: TASIOSampleType; cIsInput: Boolean);
-begin
-  ChannelName := copy(cname,0,32);
-  ChannelGroup := cchannelgroup;
-  SampleType := cSampleType;
-  IsActive := false;
-  DoubleBuffer[0] := nil;
-  DoubleBuffer[1] := nil;
 end;
 
-destructor TDavASIOEDChannelListItem.Destroy;
-begin
-  DestroyBuffer;
-  inherited;
-end;
+{$IFDEF DELPHI10_UP} {$endregion 'Samplerate list implementation'} {$ENDIF}
 
-procedure TDavASIOEDChannelListItem.CreateBuffer((*todo*));
-begin
-  if IsActive then DestroyBuffer;
-
-  // TODO
-
-  // on success:
-  IsActive := true;
-end;
-
-procedure TDavASIOEDChannelListItem.DestroyBuffer;
-begin
-  if not IsActive then exit;
-  IsActive := false;
-
-  FreeMem(DoubleBuffer[0]);
-  FreeMem(DoubleBuffer[1]);
-end; }
 
 { TDavASIOExtendedDriver }
-{
-constructor TDavASIOExtendedDriver.Create(TCWrapper: TDavASIOTCWrapper);
+
+{$IFDEF DELPHI10_UP} {$region 'Extended driver implemention'} {$ENDIF}
+
+constructor TDavASIOExtendedDriver.Create(TCWrapper: TDavASIOTCWrapper; InterfaceGUID: TGuid);
 begin
   inherited;
   fClockList:=TList.Create;
   fInChannelList:=TList.Create;
   fOutChannelList:=TList.Create;
-  fLastErrorMsg := '';
+  fHostCallbacks := nil;
   fDriverName := 'DAV Abstract Ext';
   fDriverVersion := 1;
-  fSampleRateManager := TTDavASIOExtDrvSampleRateManager.Create;
+
+  with fBufferSize do
+  begin
+    Minimum     := 64;
+    Maximum     := 4096;
+    Prefered    := 512;
+    Granularity := -1;
+    Current     := 512;
+  end;
+
+  fLastErrorMsg := '';
+  fSampleRateManager := TTDavASIOExtDrvrSampleRateManager.Create;
 
   fClocksAreDefault:=false;
   fChannelsAreDefault:=false;
@@ -258,15 +332,12 @@ begin
 
   fClocksAreDefault:=true;
   fChannelsAreDefault:=true;
-  fControlPanelClass := nil;
-  fControlPanel := nil;
 
   InitializeDriverParams;
+  LoadDriverSettings;
 
   fSampleRate := fSampleRateManager.GetDefaultSampleRate;
-
-  if assigned(fControlPanelClass) then
-    fControlPanel := fControlPanelClass.Create(nil, self);  
+  InitControlPanel;
 end;
 
 destructor TDavASIOExtendedDriver.destroy;
@@ -283,31 +354,40 @@ begin
   FreeAndNil(fInChannelList);
   FreeAndNil(fOutChannelList);
 
-  if Assigned(fControlPanel) then FreeAndNil(fControlPanel);
   inherited;
+end;
+
+procedure TDavASIOExtendedDriver.LoadDriverSettings;
+begin
+  // this is default: does nothing
+end;
+
+procedure TDavASIOExtendedDriver.SaveDriverSettings;
+begin
+  // this is default: does nothing
 end;
 
 procedure TDavASIOExtendedDriver.ClearClockList;
 var i:integer;
 begin
-  for i := fClockList.Count-1 downto 0 do TDavASIOEDClockListItem(fClockList.Items[i]).Free;
+  for i := fClockList.Count-1 downto 0 do TDavASIOExtDrvrClockListItem(fClockList.Items[i]).Free;
   fClockList.Clear;
 end;
 
 procedure TDavASIOExtendedDriver.ClearChannelLists;
 var i:integer;
 begin
-  for i := fInChannelList.Count-1 downto 0 do TDavASIOEDChannelListItem(fInChannelList.Items[i]).Free;
-  for i := fOutChannelList.Count-1 downto 0 do TDavASIOEDChannelListItem(fOutChannelList.Items[i]).Free;
+  for i := fInChannelList.Count-1 downto 0 do TDavASIOExtDrvrChannelListItem(fInChannelList.Items[i]).Free;
+  for i := fOutChannelList.Count-1 downto 0 do TDavASIOExtDrvrChannelListItem(fOutChannelList.Items[i]).Free;
   fInChannelList.Clear;
   fOutChannelList.Clear;
 end;
 
-}procedure TDavASIOExtendedDriver.InitializeDriverParams;
+procedure TDavASIOExtendedDriver.InitializeDriverParams;
 begin
   raise Exception.Create('You have to overwrite InitializeDriverParams');
 end;
- {
+ 
 procedure TDavASIOExtendedDriver.SetDriverName(name: string);
 begin
   fDriverName := name;
@@ -323,10 +403,8 @@ begin
   fLastErrorMsg := s;
 end;
 
-
-
 procedure TDavASIOExtendedDriver.AddClock(name: string; channelgroup: Integer);
-var t: TDavASIOEDClockListItem;
+var t: TDavASIOExtDrvrClockListItem;
 begin
   if fClocksAreDefault then
   begin
@@ -334,7 +412,7 @@ begin
     fClocksAreDefault := false;
   end;
 
-  t := TDavASIOEDClockListItem.Create;
+  t := TDavASIOExtDrvrClockListItem.Create;
   t.ClockName := copy(name,0,32);
   t.ChannelGroup := channelgroup;
   t.IsCurrentSource := false;
@@ -342,7 +420,7 @@ begin
 end;
 
 procedure TDavASIOExtendedDriver.AddChannel(name: string; channelgroup: Integer; SampleType: TASIOSampleType; IsInput: Boolean);
-var t: TDavASIOEDChannelListItem;
+var t: TDavASIOExtDrvrChannelListItem;
 begin
   if fChannelsAreDefault then
   begin
@@ -350,18 +428,13 @@ begin
     fChannelsAreDefault := false;
   end;
 
-  t := TDavASIOEDChannelListItem.Create(name, channelgroup, SampleType, IsInput);
+  t := TDavASIOExtDrvrChannelListItem.Create(name, channelgroup, SampleType, IsInput);
 
   if IsInput then
     fInChannelList.Add(t)
   else
     fOutChannelList.Add(t);
 end;  
-
-procedure TDavASIOExtendedDriver.SetControlPanelClass(cp: TTDavASIOExtendedDriverCP);
-begin
-  fControlPanelClass := cp;
-end;
 
 function TDavASIOExtendedDriver.GetCurrentClockSource: Integer;
 var i: integer;
@@ -370,7 +443,7 @@ begin
   if fClockList.Count<1 then exit;
 
   for i:=0 to fClockList.Count-1 do
-    with TDavASIOEDClockListItem(fClockList.Items[i]) do
+    with TDavASIOExtDrvrClockListItem(fClockList.Items[i]) do
     begin
       if IsCurrentSource then
       begin
@@ -385,9 +458,17 @@ begin
   fSampleRateManager.AddSampleRate(sr);
 end;
 
-procedure TDavASIOExtendedDriver.SetSampleRateMode(md: TTDavASIOExtDrvSampleRateMode);
+procedure TDavASIOExtendedDriver.SetSampleRateMode(md: TTDavASIOExtDrvrSampleRateMode);
 begin
   fSampleRateManager.SetSampleRateMode(md);
+end;
+
+procedure TDavASIOExtendedDriver.SetBufferSizes(MinSize, MaxSize, PreferredSize, Granularity: Integer);
+begin
+  fBufferSize.Minimum     := MinSize;
+  fBufferSize.Maximum     := MaxSize;
+  fBufferSize.Prefered    := PreferredSize;
+  fBufferSize.Granularity := Granularity;
 end;
 
 function TDavASIOExtendedDriver.GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint;
@@ -402,7 +483,7 @@ begin
 
   if querylist.Count>0 then
     for i := 0 to querylist.Count-1 do
-      with TDavASIOEDChannelListItem(querylist.Items[i]) do
+      with TDavASIOExtDrvrChannelListItem(querylist.Items[i]) do
         if ChannelGroup=GroupNr then
         begin
           result := i;
@@ -410,13 +491,7 @@ begin
         end;
 end;
 
-function TDavASIOExtendedDriver.Init(SysHandle: HWND): boolean;
-begin
-  fHostHandle := SysHandle;
-  result := true;
-end;
-
-function TDavASIOExtendedDriver.GetClockSources(Clocks: PASIOClockSource; out NumSources: LongInt): TASIOError;
+function TDavASIOExtendedDriver.GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
 var i: integer;
 begin
   Result := ASE_NotPresent;
@@ -425,15 +500,13 @@ begin
   if NumSources>0 then
   begin
     for i := 0 to fClockList.Count-1 do
-      with TDavASIOEDClockListItem(fClockList.Items[i]) do
+      with TDavASIOExtDrvrClockListItem(fClockList.Items[i]) do
       begin
-        Clocks^.Index := i;
-        Clocks^.AssociatedChannel := GetFirstGroupChannel(ChannelGroup,true);
-        Clocks^.AssociatedGroup := ChannelGroup ;
-        Clocks^.IsCurrentSource := TASIOBool(IsCurrentSource);
-        StrCopy(Clocks^.Name, PChar(ClockName));
-
-        Inc(Clocks);
+        Clocks^[i].Index := i;
+        Clocks^[i].AssociatedChannel := GetFirstGroupChannel(ChannelGroup,true);
+        Clocks^[i].AssociatedGroup := ChannelGroup ;
+        Clocks^[i].IsCurrentSource := TASIOBool(IsCurrentSource);
+        StrCopy(Clocks^[i].Name, PChar(ClockName));
       end;
 
     result := ASE_OK;
@@ -454,10 +527,14 @@ begin
   last:=GetCurrentClockSource;
   if Reference=last then exit;
 
-  if last>=0 then TDavASIOEDClockListItem(fClockList.Items[last]).IsCurrentSource := false;
-  TDavASIOEDClockListItem(fClockList.Items[Reference]).IsCurrentSource := true;
+  ChangeClockSource(last,Reference);
+end;
 
-  // TODO: call Event handler here, with last and Reference as params
+procedure TDavASIOExtendedDriver.ChangeClockSource(fromIndex, ToIndex: LongInt);
+begin
+  // you can override this and fill the sample rate list here, to have clock dependent samplerates
+  if fromIndex>=0 then TDavASIOExtDrvrClockListItem(fClockList.Items[fromIndex]).IsCurrentSource := false;
+  TDavASIOExtDrvrClockListItem(fClockList.Items[ToIndex]).IsCurrentSource := true;
 end;
 
 function TDavASIOExtendedDriver.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
@@ -481,7 +558,7 @@ begin
 
   if Info.Channel>=querylist.Count then
     result := ASE_InvalidParameter
-  else with TDavASIOEDChannelListItem(querylist.Items[Info.Channel]) do begin
+  else with TDavASIOExtDrvrChannelListItem(querylist.Items[Info.Channel]) do begin
     Info.SampleType := SampleType;
     Info.ChannelGroup := ChannelGroup;
     Info.IsActive := TASIOBool(IsActive);
@@ -505,36 +582,6 @@ begin
   result := fLastErrorMsg;
 end;
 
-function TDavASIOExtendedDriver.ControlPanel: TASIOError;
-begin
-  if Assigned(fControlPanel) then
-  begin
-    fControlPanel.ShowModal;
-    //TODO: Event handler with ModalResult
-    Result := ASE_OK;
-  end else
-    Result := ASE_NotPresent;
-end;
-
-function TDavASIOExtendedDriver.CreateBuffers(BufferInfos: PASIOBufferInfo; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
-begin
- //  for Channel := 0 to NumChannels-1 do
- //  begin
-     // TODO
- //  end;
-
-   // TODO
-   result := ASE_InvalidMode;
-end;
-
-function TDavASIOExtendedDriver.DisposeBuffers: TASIOError;
-begin
-
-  // TODO
-   result := ASE_InvalidMode;
-end;
-
-
 function TDavASIOExtendedDriver.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
   if fSampleRateManager.CanSampleRate(SampleRate) then
@@ -553,11 +600,156 @@ function TDavASIOExtendedDriver.SetSampleRate(nSampleRate: TASIOSampleRate): TAS
 begin
   if fSampleRateManager.CanSampleRate(nSampleRate) then
   begin
-    fSampleRate := nSampleRate;
+    if fSampleRate <> nSampleRate then
+    begin
+      fSampleRate := nSampleRate;
+      ASIOSampleRateDidChange(fSampleRate);
+    end;
     result := ASE_OK;
   end else
     result := ASE_NoClock;
-end; }
+end; 
 
+function TDavASIOExtendedDriver.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
+begin
+  MinSize       := fBufferSize.Minimum;
+  MaxSize       := fBufferSize.Maximum;
+  PreferredSize := fBufferSize.Prefered;
+  Granularity   := fBufferSize.Granularity;
+
+  Result := ASE_OK;
+end;
+
+function TDavASIOExtendedDriver.CheckBufferSize(test: Integer): boolean;
+var tmp: LongInt;
+begin
+  with fBufferSize do
+  begin
+    if (test=Minimum) or (test=Maximum) or (test=Prefered) then
+    begin
+      // in this case it should be valid
+      result := true;
+      exit;
+    end;
+
+    if Granularity=0 then
+    begin
+      // no chance
+      result:=false;
+      exit;
+    end;
+
+    result := false;
+    if (test>=Minimum) and (test<=Maximum) then
+    begin
+      if Granularity>0 then
+      begin
+        result:=(test-Minimum) mod Granularity = 0;
+      end else begin
+        if Minimum>0 then begin
+          tmp := test div Minimum;
+          result := ( (test mod Minimum) = 0) and (tmp and (tmp-1) = 0);
+        end else if Maximum>0 then begin
+          tmp := Maximum div test;
+          result := ( (Maximum mod test) = 0) and (tmp and (tmp-1) = 0);
+        end;
+      end;
+    end;
+  end;
+end;
+
+function TDavASIOExtendedDriver.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
+var i: integer;
+    querylist: TList;
+begin
+  DisposeBuffers; // clear the previous buffers
+  result := ASE_OK;
+
+  if not CheckBufferSize(BufferSize) then
+    result := ASE_InvalidMode
+  else begin
+    fBufferSize.Current := BufferSize;
+
+    for i := 0 to NumChannels-1 do with BufferInfos^[i] do
+    begin
+      if IsInput=ASIOTrue then
+        querylist := fInChannelList
+      else
+        querylist := fOutChannelList;
+
+      if (ChannelNum<0) or (ChannelNum>=querylist.Count) then
+      begin
+        result := ASE_InvalidParameter;
+        break;
+      end;
+
+      if not TDavASIOExtDrvrChannelListItem(querylist.Items[ChannelNum]).CreateBuffers(Buffers, fBufferSize.Current) then
+      begin
+        result := ASE_NoMemory;
+        break;
+      end;
+    end;
+  end;
+
+  if result<>ASE_OK then
+  begin
+    DisposeBuffers;
+    exit;
+  end;
+
+  fHostCallbacks := @Callbacks;
+
+  // Todo request supported asiomessages
+end;
+
+function TDavASIOExtendedDriver.DisposeBuffers: TASIOError;
+var i: integer;
+begin
+  for i := 0 to fInChannelList.Count-1 do TDavASIOExtDrvrChannelListItem(fInChannelList.Items[i]).DisposeBuffers;
+  for i := 0 to fOutChannelList.Count-1 do TDavASIOExtDrvrChannelListItem(fOutChannelList.Items[i]).DisposeBuffers;
+    
+  result := ASE_OK;
+end;
+
+
+
+
+
+
+procedure TDavASIOExtendedDriver.ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool);
+begin
+  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.bufferSwitch) then
+    fHostCallbacks^.bufferSwitch(DoubleBufferIndex, DirectProcess);
+end;
+
+function TDavASIOExtendedDriver.ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime;
+begin
+  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.bufferSwitchTimeInfo) then
+    result := fHostCallbacks^.bufferSwitchTimeInfo(Params, DoubleBufferIndex, DirectProcess)
+  else
+    result := @Params; // dummy
+end;
+
+procedure TDavASIOExtendedDriver.ASIOSampleRateDidChange(SampleRate: TASIOSampleRate);
+begin
+  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.sampleRateDidChange) then
+    fHostCallbacks^.sampleRateDidChange(SampleRate);
+end;
+{ Implement later again
+function TDavASIOExtendedDriver.ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer;
+begin
+  if Selector = kAsioResetRequest then SaveDriverSettings;
+
+  if assigned(fHostCallbacks) and assigned(fHostCallbacks^.asioMessage) then
+    result := fHostCallbacks^.asioMessage(Selector, Value, msg, Opt)
+  else result := 0;
+end;
+
+procedure TDavASIOExtendedDriver.ASIORequestReset;
+begin
+  ASIOMessage(kAsioResetRequest, 0, nil, nil);
+end;
+}
+{$IFDEF DELPHI10_UP} {$endregion 'Extended driver implemention'} {$ENDIF}
 
 end.

@@ -44,7 +44,7 @@ end;
 
 procedure TDriverTest.InitializeDriverParams;
 begin
- { SetDriverName(DTest_name);
+  SetDriverName(DTest_name);
   SetDriverVersion(1);
   AddClock('Default Clock',0);
   AddClock('Second Clock',1);
@@ -57,7 +57,8 @@ begin
   AddSampleRate(22050);
   AddSampleRate(44100);
   AddSampleRate(48000);
-  AddSampleRate(96000);       }
+  AddSampleRate(96000);
+  SetBufferSizes(64,1024,512,-1);
   SetControlPanelClass(TDriverTestCP);
 end;
 

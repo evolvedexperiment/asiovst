@@ -58,7 +58,7 @@ type
     procedure ASIOSampleRateDidChange(SampleRate: TASIOSampleRate); virtual;
     function ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; virtual;    
 
-    procedure RequestReset;
+    procedure ASIORequestReset;
 
     property DriverNames: TStrings read GetDriverNames;
     property DriverIndex: integer read fDriverIndex write SetDriverIndex;
@@ -154,7 +154,7 @@ begin
   if fDriverIndex=index then exit;
   // range check is done in the init method
   fDriverIndex := index;
-  if assigned(fHostInterface) then RequestReset;
+  if assigned(fHostInterface) then ASIORequestReset;
 end;
 
 procedure TDavASIOInterceptor.LoadDriverSettings;
@@ -515,7 +515,7 @@ begin
   else result := 0;
 end;
 
-procedure TDavASIOInterceptor.RequestReset;
+procedure TDavASIOInterceptor.ASIORequestReset;
 begin
   AsioMessage(kAsioResetRequest, 0, nil, nil);
 end;
