@@ -5,6 +5,8 @@ interface
 uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver;
 
 type
+  TDavASIOExtendedDriver = class;
+
   TDavASIOExtDrvrDoubleBuffer = array [0..1] of Pointer;
 
   TDavASIOExtDrvrTimings = record
@@ -22,6 +24,15 @@ type
     SupportsTimeInfo,
     SupportsTimeCode: Boolean;
   end;
+
+  {$IFDEF DELPHI10_UP} {$region 'Processing thread declaration'} {$ENDIF}
+  TDavASIOExtDrvrProcessingThread = class(TThread)
+  protected
+    procedure Execute; override;
+  public
+    Driver: TDavASIOExtendedDriver;
+  end;
+  {$IFDEF DELPHI10_UP} {$endregion 'Processing thread declaration'} {$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'Buffersizes declaration'} {$ENDIF}
   TDavASIOExtDrvrBufferSizes = record
@@ -107,6 +118,9 @@ type
     fSupportsTimeCode: boolean;
     fAsioTime: TASIOTime;
     fSwitchTimings: TDavASIOExtDrvrTimings;
+    fIsProcessing: boolean;
+    fProcessingThread: TDavASIOExtDrvrProcessingThread;
+    fCurrentBuffer: LongInt;
 
     procedure InitializeDriverParams; virtual;
     procedure SetDriverName(name: string);
@@ -130,6 +144,10 @@ type
 
     function GetTimecodeSamples: TASIOSamples; virtual;
     procedure UpdateTimings; virtual;
+    procedure StartProcessingThread; virtual;
+    procedure StopProcessingThread; virtual;
+
+    procedure ProcessBuffers; virtual;
 
     procedure LoadDriverSettings; virtual;
     procedure SaveDriverSettings; virtual;
@@ -144,6 +162,7 @@ type
     procedure SetLatencies(InLatency, OutLatency: LongInt); virtual;
     procedure GetNanoSeconds(var Time: TASIOTimeStamp);
 
+
     function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; override;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
     function GetDriverName: string; override;
@@ -156,6 +175,8 @@ type
     function GetSampleRate(out nSampleRate: TASIOSampleRate): TASIOError; override;
     function SetSampleRate(nSampleRate: TASIOSampleRate): TASIOError; override;
     function GetLatencies(out InLatency, OutLatency: LongInt): TASIOError; override;
+    function Start: TASIOError; override;
+    function Stop: TASIOError; override;
 
     procedure ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
     procedure ASIOBufferSwitchTimeInfo(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
@@ -175,6 +196,21 @@ type
 implementation
 
 uses SysUtils, Math, MMSystem;
+
+{ TDavASIOExtDrvrProcessingThread }
+
+{$IFDEF DELPHI10_UP} {$region 'Processing thread implementation'} {$ENDIF}
+
+procedure TDavASIOExtDrvrProcessingThread.Execute;
+begin
+  while not Terminated do
+    if assigned(Driver) then
+      Driver.ProcessBuffers
+    else Terminate;
+end;
+
+{$IFDEF DELPHI10_UP} {$endregion 'Processing thread implementation'} {$ENDIF}
+
 
 { TDavASIOExtDrvrChannelListItem }
 
@@ -348,6 +384,7 @@ begin
   fClockList:=TList.Create;
   fInChannelList     := TList.Create;
   fOutChannelList    := TList.Create;
+  fProcessingThread  := nil;
   fHostCallbacks     := nil;
   fDriverName        := 'DAV Abstract Ext';
   fDriverVersion     := 1;
@@ -357,6 +394,8 @@ begin
   fBuffersCreated    := false;
   fInputLatency      := 0;
   fOutputLatency     := 0;
+  fCurrentBuffer     := 0;
+  fIsProcessing      := false;
 
   with fSwitchTimings do
   begin
@@ -877,6 +916,63 @@ begin
   fBuffersCreated := false;
   result := ASE_OK;
 end;
+
+function TDavASIOExtendedDriver.Start: TASIOError;
+begin
+  if assigned(fHostCallbacks) then
+  begin
+    InitializeTimeInfo;
+    fCurrentBuffer := 0;
+    StartProcessingThread;
+    fIsProcessing := true;
+    result := ASE_OK;
+  end else
+    result := ASE_NotPresent;
+end;
+
+function TDavASIOExtendedDriver.Stop: TASIOError;
+begin
+  fIsProcessing := false;
+  StopProcessingThread;
+  result := ASE_OK;
+end;
+
+procedure TDavASIOExtendedDriver.StartProcessingThread;
+begin
+  if assigned(fProcessingThread) then StopProcessingThread;
+
+  fProcessingThread := TDavASIOExtDrvrProcessingThread.Create(true);
+  fProcessingThread.Driver := self;
+  fProcessingThread.Resume;
+end;
+
+procedure TDavASIOExtendedDriver.StopProcessingThread;
+begin
+  if assigned(fProcessingThread) then
+  begin
+    with fProcessingThread do
+    begin
+      if Suspended then Resume;
+
+      Terminate;
+      WaitFor;
+    end;
+    FreeAndNil(fProcessingThread);
+  end;
+end;
+
+procedure TDavASIOExtendedDriver.ProcessBuffers;
+begin
+  // this is a dummy, override it
+  ASIOBufferSwitch(fCurrentBuffer, ASIOTrue);
+  Sleep(round(1000 * fBufferSize.Current / fSampleRate));
+  fCurrentBuffer := 1-fCurrentBuffer;
+end;
+
+
+
+
+
 
 procedure TDavASIOExtendedDriver.GetNanoSeconds(var Time: TASIOTimeStamp);
 var NanoSeconds : Double;
