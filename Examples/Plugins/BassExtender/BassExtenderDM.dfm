@@ -35,7 +35,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 10000.000000000000000000
       Category = 'Frequency Splitter'
       DisplayName = 'Split Frequency'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
@@ -57,7 +57,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Frequency Splitter'
       DisplayName = 'Split Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 4.000000000000000000
       LargeStepInteger = 4
       Max = 32.000000000000000000
@@ -77,7 +77,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Frequency Divider'
       DisplayName = 'Divider'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -93,7 +93,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Frequency Divider'
       DisplayName = 'Shape'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -109,7 +109,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 1.000000000000000000
@@ -128,7 +128,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1000.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Ratio'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 1000.000000000000000000
@@ -147,7 +147,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1000000.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 1000000.000000000000000000
@@ -168,7 +168,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 10000.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Release'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 10000.000000000000000000
@@ -189,7 +189,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Compression Mix'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -205,7 +205,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Balance'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -223,7 +223,7 @@ object BassExtenderModule: TBassExtenderModule
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Mode'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 3.000000000000000000

@@ -64,7 +64,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -84,7 +84,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -103,7 +103,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 5.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -122,7 +122,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -140,7 +140,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 3000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 30.000000000000000000
       MaxInteger = 30
@@ -160,7 +160,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 7.500000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1500.000000000000000000
       MaxInteger = 1500
@@ -180,7 +180,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -196,7 +196,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Active'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -214,7 +214,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'PeakClip'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -232,7 +232,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'Sidechain Filter'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 2000.000000000000000000
       MaxInteger = 2000
@@ -251,7 +251,7 @@ object AdhesiveDataModule: TAdhesiveDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'External Sidechain'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

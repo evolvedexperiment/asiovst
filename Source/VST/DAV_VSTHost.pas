@@ -523,7 +523,7 @@ type
     property CanDos: THostCanDos read getHostCanDos write setHostCanDos;
     property Count: Integer read GetPluginCount;
     property CheckStringLengths: Boolean read FCheckStringLengths write FCheckStringLengths default false;
-    property Language: TVstHostLanguage read FLanguage write FLanguage default kVstLangEnglish;
+    property Language: TVstHostLanguage read FLanguage write FLanguage default hlEnglish;
     property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
     property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
     property ManageIdleAutomaticly : Boolean read FautoIdle write FautoIdle;
@@ -634,13 +634,13 @@ end;
 
 function String2Language(LanguageString : string): TVSTHostLanguage;
 begin
- if      LanguageString = 'English'  then Result := kVstLangEnglish
- else if LanguageString = 'French'   then Result := kVstLangGerman
- else if LanguageString = 'German'   then Result := kVstLangFrench
- else if LanguageString = 'Italian'  then Result := kVstLangItalian
- else if LanguageString = 'Japanese' then Result := kVstLangSpanish
- else if LanguageString = 'Spanish'  then Result := kVstLangJapanese
- else Result := kVstLangEnglish
+ if      LanguageString = 'English'  then Result := hlEnglish
+ else if LanguageString = 'French'   then Result := hlGerman
+ else if LanguageString = 'German'   then Result := hlFrench
+ else if LanguageString = 'Italian'  then Result := hlItalian
+ else if LanguageString = 'Japanese' then Result := hlSpanish
+ else if LanguageString = 'Spanish'  then Result := hlJapanese
+ else Result := hlEnglish
 end;
 
 function PlugCategory2String(Category: TVstPluginCategory): string;
@@ -927,7 +927,7 @@ begin
                                             end;
    audioMasterGetLanguage                 : if assigned(theHost)
                                              then result := Integer(theHost.FLanguage)
-                                             else result := Integer(kVstLangUnknown);
+                                             else result := Integer(hlUnknown);
    audioMasterOpenWindow                  : if assigned(ptr) then
                                              begin
                                              {$IFDEF VstHostGUI}
@@ -1221,7 +1221,7 @@ begin
  {$ENDIF}
  FSampleRate := 44100;
  FBlocksize  := 2048;
- FLanguage   := kVstLangEnglish;
+ FLanguage   := hlEnglish;
  FHostCanDos := [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
                  hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
                  hcdReceiveVstTimeInfo, hcdReportConnectionChanges,

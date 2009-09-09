@@ -32,7 +32,7 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
       Curve = ctLogarithmic
       CurveFactor = 100.000000000000000000
       DisplayName = 'Smooth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000

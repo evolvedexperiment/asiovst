@@ -20,7 +20,7 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
       CurveFactor = 1.000000000000000000
       Category = 'HRTF'
       DisplayName = 'Azimuth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 180.000000000000000000
       MaxInteger = 180
@@ -39,7 +39,7 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
       CurveFactor = 1.000000000000000000
       Category = 'HRTF'
       DisplayName = 'Elevation'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 90.000000000000000000
       MaxInteger = 90
@@ -58,7 +58,7 @@ object HrtfConvolverDataModule: THrtfConvolverDataModule
       CurveFactor = 1.000000000000000000
       Category = 'HRTF'
       DisplayName = 'Radius'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10

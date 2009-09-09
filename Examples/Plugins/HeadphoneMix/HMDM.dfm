@@ -17,7 +17,7 @@ object HMModule: THMModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Effect'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 10.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -33,7 +33,7 @@ object HMModule: THMModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Model'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000
@@ -49,7 +49,7 @@ object HMModule: THMModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Polarity'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

@@ -19,7 +19,7 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -36,7 +36,7 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -53,7 +53,7 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Coefficients'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 32.000000000000000000
@@ -71,7 +71,7 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transition Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 0.200000002980232200
       MaxInteger = 1

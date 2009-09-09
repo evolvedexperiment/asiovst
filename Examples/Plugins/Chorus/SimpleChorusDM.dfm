@@ -54,7 +54,7 @@ object SimpleChorusModule: TSimpleChorusModule
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
       DisplayName = 'Speed'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -72,7 +72,7 @@ object SimpleChorusModule: TSimpleChorusModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stages'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 8.000000000000000000
@@ -91,7 +91,7 @@ object SimpleChorusModule: TSimpleChorusModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
@@ -108,7 +108,7 @@ object SimpleChorusModule: TSimpleChorusModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -123,7 +123,7 @@ object SimpleChorusModule: TSimpleChorusModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Drift'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

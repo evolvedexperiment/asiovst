@@ -4,8 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Dialogs, StdCtrls,
-  DAV_Common, DAV_VSTModule, GLScene, GLObjects, GLMisc, GLTexture, GLFile3DS,
-  GLWin32Viewer, GLVectorFileObjects;
+  DAV_Common, DAV_VSTModule, BaseClasses, GLScene, GLObjects, GLMisc,
+  GLTexture, GLFile3DS, GLWin32Viewer, GLVectorFileObjects, GLCoordinates,
+  GLCrossPlatform;
 
 type
   TVSTGUI = class(TForm)

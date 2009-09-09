@@ -22,7 +22,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -38,7 +38,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -54,7 +54,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Minimum'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 200.000000000000000000
       LargeStepInteger = 200
       Max = 20000.000000000000000000
@@ -74,7 +74,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Maximum'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 200.000000000000000000
       LargeStepInteger = 200
       Max = 20000.000000000000000000
@@ -94,7 +94,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLogarithmic
       CurveFactor = 1.000000000000000000
       DisplayName = 'Rate'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 10.000000000000000000
@@ -110,7 +110,7 @@ object PhaserModule: TPhaserModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stages'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 5.000000000000000000

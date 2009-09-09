@@ -35,7 +35,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
@@ -54,7 +54,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
@@ -73,7 +73,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'Width'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
@@ -92,7 +92,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'RoomSize'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1.000000000000000000
@@ -110,7 +110,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'FreeZe'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1.000000000000000000
@@ -128,7 +128,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'Stretch'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 20.000000000000000000
@@ -146,7 +146,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'Damp'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
@@ -165,7 +165,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Filter Count'
       DisplayName = 'NumAllPasses'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 16.000000000000000000
@@ -184,7 +184,7 @@ object fReeverbVST: TfReeverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Filter Count'
       DisplayName = 'NumCombs'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 16.000000000000000000

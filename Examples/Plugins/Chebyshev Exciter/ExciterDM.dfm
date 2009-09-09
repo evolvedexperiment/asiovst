@@ -26,7 +26,7 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLogarithmic
       CurveFactor = 200.000000000000000000
       DisplayName = 'Tune'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16000.000000000000000000
@@ -45,7 +45,7 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -63,7 +63,7 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Shape'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -78,7 +78,7 @@ object ExciterDataModule: TExciterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000

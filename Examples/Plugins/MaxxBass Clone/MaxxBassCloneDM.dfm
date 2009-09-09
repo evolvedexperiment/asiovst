@@ -40,7 +40,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 256.000000000000000000
       MaxInteger = 256
@@ -59,7 +59,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 1.000000000000000000
       Category = 'Dynamics'
       DisplayName = 'Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 4.000000000000000000
       MaxInteger = 4
@@ -78,7 +78,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 1.000000000000000000
       Category = 'Dynamics'
       DisplayName = 'Response'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 30.000000000000000000
       MaxInteger = 30
@@ -97,7 +97,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 1.000000000000000000
       Category = 'Harmonics'
       DisplayName = 'Highpass Select'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000
@@ -115,7 +115,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 1.000000000000000000
       Category = 'Harmonics'
       DisplayName = 'Decay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = -9.000000000000000000
       MaxInteger = -9
@@ -134,7 +134,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 101.000000000000000000
       Category = 'Mix'
       DisplayName = 'Input'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 1
@@ -152,7 +152,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 101.000000000000000000
       Category = 'Mix'
       DisplayName = 'Original Bass'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 3.990524530410767000
       MaxInteger = 4
@@ -170,7 +170,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 101.000000000000000000
       Category = 'Mix'
       DisplayName = 'Maxx Bass'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 3.990524530410767000
       MaxInteger = 4
@@ -188,7 +188,7 @@ object HarmonicBassModule: THarmonicBassModule
       CurveFactor = 1.000000000000000000
       Category = 'Control'
       DisplayName = 'Listen'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000

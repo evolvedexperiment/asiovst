@@ -28,7 +28,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 6.000000000000000000
       MaxInteger = 6
@@ -48,7 +48,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -64,7 +64,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1100.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Lowpass'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 22000.000000000000000000
       MaxInteger = 22000
@@ -84,7 +84,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 40.000000000000000000
       MaxInteger = 40
@@ -101,7 +101,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Depth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -117,7 +117,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Rate'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -134,7 +134,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -152,7 +152,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 6.000000000000000000
       MaxInteger = 6
@@ -172,7 +172,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -188,7 +188,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1100.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Lowpass'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 22000.000000000000000000
       MaxInteger = 22000
@@ -208,7 +208,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 40.000000000000000000
       MaxInteger = 40
@@ -225,7 +225,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Depth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -241,7 +241,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Rate'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -258,7 +258,7 @@ object ModDelay2Module: TModDelay2Module
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000

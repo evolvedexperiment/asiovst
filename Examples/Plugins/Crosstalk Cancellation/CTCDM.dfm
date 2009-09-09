@@ -27,7 +27,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Loudspeaker Distance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 500.000000000000000000
       MaxInteger = 500
@@ -47,7 +47,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Listener Distance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 500.000000000000000000
       MaxInteger = 500
@@ -67,7 +67,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Recursion Steps'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 16.000000000000000000
@@ -85,7 +85,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attenuation'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 0.000000000999999972
       MaxInteger = 0
@@ -120,7 +120,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -140,7 +140,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 3.000000000000000000
       MaxInteger = 3
@@ -158,7 +158,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 3.000000000000000000
       MaxInteger = 3
@@ -176,7 +176,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bypass'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -191,7 +191,7 @@ object CTCDataModule: TCTCDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'AGC'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

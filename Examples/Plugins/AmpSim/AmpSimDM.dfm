@@ -136,7 +136,7 @@ object ComboDataModule: TComboDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Noise'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = -20.000000000000000000

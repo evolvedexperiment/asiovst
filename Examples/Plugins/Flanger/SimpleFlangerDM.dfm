@@ -34,7 +34,7 @@ object SimpleFlangerModule: TSimpleFlangerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
@@ -51,7 +51,7 @@ object SimpleFlangerModule: TSimpleFlangerModule
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
       DisplayName = 'Speed'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10

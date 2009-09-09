@@ -30,7 +30,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay Length'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 44100.000000000000000000
@@ -47,7 +47,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ShortLabel = 'FB'
@@ -61,7 +61,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Invert Feedback'
-      Flags = [kVstParameterIsSwitch]
+      Flags = [ppfParameterIsSwitch]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -78,7 +78,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ShortLabel = 'Dry Mix'
@@ -93,7 +93,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ShortLabel = 'Wet Mix'

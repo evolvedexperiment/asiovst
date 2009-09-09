@@ -34,7 +34,7 @@ object VOLDataModule: TVOLDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Category 1'
       DisplayName = 'Parameter 1'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -49,7 +49,7 @@ object VOLDataModule: TVOLDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Category 1'
       DisplayName = 'Parameter 2'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20.000000000000000000
       MaxInteger = 20
@@ -66,7 +66,7 @@ object VOLDataModule: TVOLDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Parameter 3'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True

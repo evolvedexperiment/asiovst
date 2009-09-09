@@ -23,7 +23,7 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Input Volume'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
@@ -42,7 +42,7 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Synth Volume'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
@@ -61,7 +61,7 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Vocoder Volume'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0
@@ -80,7 +80,7 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.009999999776482582
@@ -96,7 +96,7 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.009999999776482582

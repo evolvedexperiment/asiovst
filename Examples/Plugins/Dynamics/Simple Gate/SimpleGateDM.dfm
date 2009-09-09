@@ -22,7 +22,7 @@ object SimpleGateDataModule: TSimpleGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

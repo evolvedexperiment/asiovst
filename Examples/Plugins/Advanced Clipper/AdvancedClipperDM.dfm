@@ -76,7 +76,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage 1'
       DisplayName = 'Stage 1: Oversampling Factor'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -96,7 +96,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage 1'
       DisplayName = 'Stage 1: Filter Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 64.000000000000000000
@@ -130,7 +130,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage 2'
       DisplayName = 'Stage 2: Oversampling Factor'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -150,7 +150,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage 2'
       DisplayName = 'Stage 2: Filter Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 64.000000000000000000
@@ -203,7 +203,7 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Output Section'
       DisplayName = 'Hard Clip'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

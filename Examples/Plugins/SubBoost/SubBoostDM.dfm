@@ -22,7 +22,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 3.000000000000000000
@@ -38,7 +38,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -53,7 +53,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 400.000000000000000000
@@ -73,7 +73,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dry Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -88,7 +88,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thresh'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = -0.000000000100000001
       MaxInteger = 0
@@ -106,7 +106,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -122,7 +122,7 @@ object SubBoostDataModule: TSubBoostDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 64.000000000000000000

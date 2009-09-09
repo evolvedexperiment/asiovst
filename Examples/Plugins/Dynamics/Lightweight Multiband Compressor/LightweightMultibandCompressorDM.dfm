@@ -24,7 +24,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Low Split Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -45,7 +45,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Mid Split Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -66,7 +66,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'High Split Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -87,7 +87,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -105,7 +105,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Low Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -125,7 +125,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Low Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -145,7 +145,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -165,7 +165,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -181,7 +181,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -199,7 +199,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -217,7 +217,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Low Mode'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000
@@ -234,7 +234,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'LowMid Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -254,7 +254,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'LowMid Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -274,7 +274,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -294,7 +294,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -310,7 +310,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -328,7 +328,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -346,7 +346,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LowMid Mode'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000
@@ -363,7 +363,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'HighMid Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -383,7 +383,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'HighMid Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -403,7 +403,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -423,7 +423,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -439,7 +439,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -457,7 +457,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -475,7 +475,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'HighMid Mode'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000
@@ -492,7 +492,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'High Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -512,7 +512,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'High Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -532,7 +532,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -552,7 +552,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -568,7 +568,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -586,7 +586,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -604,7 +604,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High Mode'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000

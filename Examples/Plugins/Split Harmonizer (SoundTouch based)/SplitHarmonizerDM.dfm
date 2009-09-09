@@ -36,7 +36,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Encoding'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -52,7 +52,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage A'
       DisplayName = 'Semi Tones A'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 12000.000000000000000000
@@ -72,7 +72,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage A'
       DisplayName = 'Delay A'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 200.000000000000000000
       MaxInteger = 200
@@ -89,7 +89,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage A'
       DisplayName = 'Mix A'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -107,7 +107,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage B'
       DisplayName = 'Semi Tones B'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 12000.000000000000000000
@@ -127,7 +127,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage B'
       DisplayName = 'Delay B'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 200.000000000000000000
       MaxInteger = 200
@@ -144,7 +144,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       CurveFactor = 1.000000000000000000
       Category = 'Stage B'
       DisplayName = 'Mix B'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -161,7 +161,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Use AntiAlias Filter'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -177,7 +177,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Use Quick Seek'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -193,7 +193,7 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Use Auto Settings'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 1

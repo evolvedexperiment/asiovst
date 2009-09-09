@@ -17,7 +17,7 @@ object ButterworthLPModule: TButterworthLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
@@ -37,7 +37,7 @@ object ButterworthLPModule: TButterworthLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000

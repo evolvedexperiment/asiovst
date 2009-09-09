@@ -30,7 +30,7 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Azimuth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 360.000000000000000000
@@ -48,7 +48,7 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Polar'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 140.000000000000000000
@@ -65,7 +65,7 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Radius'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 2.000000000000000000
@@ -84,7 +84,7 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Interpolation'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 3.000000000000000000
@@ -103,7 +103,7 @@ object VSTHRTF3DModule: TVSTHRTF3DModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Display HRTFs'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

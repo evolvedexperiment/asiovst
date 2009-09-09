@@ -549,21 +549,21 @@ begin
     Flags := ParameterProperties[Index].Flags;
 
     // use integer min/max
-    if kVstParameterUsesIntegerMinMax in Flags then
+    if ppfParameterUsesIntegerMinMax in Flags then
      begin
       minInteger := ParameterProperties[Index].MinInteger;
       maxInteger := ParameterProperties[Index].MaxInteger;
      end;
 
     // use integer steps
-    if kVstParameterUsesIntStep in Flags then
+    if ppfParameterUsesIntStep in Flags then
      begin
       stepInteger      := ParameterProperties[Index].StepInteger;
       largeStepInteger := ParameterProperties[Index].LargeStepInteger;
      end;
 
     // use float steps
-    if kVstParameterUsesFloatStep in Flags then
+    if ppfParameterUsesFloatStep in Flags then
      begin
       stepFloat        := ParameterProperties[Index].StepFloat;
       largeStepFloat   := ParameterProperties[Index].LargeStepFloat;
@@ -571,11 +571,11 @@ begin
      end;
 
     // assign display index
-    if kVstParameterSupportsDisplayIndex in Flags
+    if ppfParameterSupportsDisplayIndex in Flags
      then displayIndex := Index;
 
     // copy category label
-    if kVstParameterSupportsDisplayCategory in Flags then
+    if ppfParameterSupportsDisplayCategory in Flags then
      begin
       str := ParameterProperties[Index].Category;
       SetLength(str, 24);

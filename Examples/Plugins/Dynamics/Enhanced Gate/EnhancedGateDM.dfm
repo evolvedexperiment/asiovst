@@ -23,7 +23,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -40,7 +40,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -60,7 +60,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 300
@@ -79,7 +79,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 250.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Hold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 2.500000000000000000
@@ -100,7 +100,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Decay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 100.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 370
@@ -118,7 +118,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Duck'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -135,7 +135,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo Link'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -153,7 +153,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'Side Chain Source'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -171,7 +171,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 200.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'Lo Cut'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 20.000000000000000000
       LargeStepInteger = 20
       Max = 4000.000000000000000000
@@ -192,7 +192,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'Hi Cut'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 20.000000000000000000
       LargeStepInteger = 20
       Max = 20.000000000000000000
@@ -213,7 +213,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -232,7 +232,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 6.000000000000000000
@@ -252,7 +252,7 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Range'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 0

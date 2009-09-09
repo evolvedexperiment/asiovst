@@ -22,7 +22,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 0.000000000100000001
       MaxInteger = 0
@@ -41,7 +41,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fine'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 0.000000000100000001
       MaxInteger = 0
@@ -60,7 +60,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Decay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 50.000000000000000000
       MaxInteger = 50
@@ -78,7 +78,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 0.000000000100000001
       MaxInteger = 0
@@ -96,7 +96,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Hold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -112,7 +112,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 10.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -127,7 +127,7 @@ object RePsychoDataModule: TRePsychoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Quality'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

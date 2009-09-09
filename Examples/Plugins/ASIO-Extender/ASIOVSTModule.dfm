@@ -21,10 +21,12 @@ object ASIOVSTModule: TASIOVSTModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'ASIO Driver'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 0.500000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'ASIO Dr'
       SmallStepFloat = 0.009999999776482582
       SmoothingFactor = 1.000000000000000000

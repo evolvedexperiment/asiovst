@@ -21,7 +21,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Oversampling'
       DisplayName = 'Oversampling'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -39,7 +39,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Oversampling'
       DisplayName = 'OS Factor'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -59,7 +59,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -77,7 +77,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Transition Bandw'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -94,7 +94,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Pre-Filter'
       DisplayName = 'OS Pre-Filter Characteristic'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 6.000000000000000000
@@ -112,7 +112,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -130,7 +130,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Transition'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -147,7 +147,7 @@ object OversampleTemplateDataModule: TOversampleTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Post-Filter'
       DisplayName = 'OS Post-Filter Characteristic'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 6.000000000000000000

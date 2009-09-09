@@ -22,7 +22,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
@@ -42,7 +42,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ripple'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -59,7 +59,7 @@ object ChebyshevLPModule: TChebyshevLPModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000

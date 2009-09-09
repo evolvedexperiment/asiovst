@@ -32,7 +32,7 @@ object VariableDelayVST: TVariableDelayVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay Length'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 1000.000000000000000000
@@ -50,7 +50,7 @@ object VariableDelayVST: TVariableDelayVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ShortLabel = 'Dry Mix'
@@ -65,7 +65,7 @@ object VariableDelayVST: TVariableDelayVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ShortLabel = 'Wet Mix'

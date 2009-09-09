@@ -32,7 +32,7 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 20000.000000000000000000
@@ -52,7 +52,7 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -71,7 +71,7 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Distortion'
       DisplayName = 'Low Distortion'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -88,7 +88,7 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Distortion'
       DisplayName = 'High Distortion'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000

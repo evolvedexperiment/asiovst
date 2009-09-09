@@ -28,7 +28,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 20 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -47,7 +47,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 40 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -66,7 +66,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 80 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -85,7 +85,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 160 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -104,7 +104,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 320 Hz '
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -123,7 +123,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 640 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -142,7 +142,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 1250 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -161,7 +161,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 2500 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -180,7 +180,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 5 kHz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -199,7 +199,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 10 kHz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -218,7 +218,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 20 kHz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -237,7 +237,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 20 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -256,7 +256,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 40 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -275,7 +275,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 80 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -294,7 +294,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 160 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -313,7 +313,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 320 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -332,7 +332,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 640 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -351,7 +351,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 1250 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -370,7 +370,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 2500 Hz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -389,7 +389,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 5 kHz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -408,7 +408,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 10 kHz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000
@@ -427,7 +427,7 @@ object PluginDataModule: TPluginDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 20 kHz'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 3
       Max = 15.000000000000000000

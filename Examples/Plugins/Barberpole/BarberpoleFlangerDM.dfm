@@ -37,7 +37,7 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stages'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -99,7 +99,7 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Algorithm'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 3.000000000000000000

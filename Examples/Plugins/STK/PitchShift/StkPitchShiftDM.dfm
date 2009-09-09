@@ -39,7 +39,7 @@ object StkPitchShiftModule: TStkPitchShiftModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semitones'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 24.000000000000000000
       MaxInteger = 24
@@ -56,7 +56,7 @@ object StkPitchShiftModule: TStkPitchShiftModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Effect Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

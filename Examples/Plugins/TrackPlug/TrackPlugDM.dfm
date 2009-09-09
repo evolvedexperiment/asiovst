@@ -22,7 +22,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 10000.000000000000000000
       Category = 'DC Filter'
       DisplayName = 'DC Filter Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 200.000000000000000000
       MaxInteger = 200
@@ -40,7 +40,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'DC Filter'
       DisplayName = 'DC Filter Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -59,7 +59,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -78,7 +78,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -97,7 +97,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -114,7 +114,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 1'
       DisplayName = 'EQ Filter 1 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -132,7 +132,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -151,7 +151,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -170,7 +170,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -187,7 +187,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 2'
       DisplayName = 'EQ Filter 2 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -205,7 +205,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -224,7 +224,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -243,7 +243,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -260,7 +260,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 3'
       DisplayName = 'EQ Filter 3 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -278,7 +278,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -297,7 +297,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -316,7 +316,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -333,7 +333,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 4'
       DisplayName = 'EQ Filter 4 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -351,7 +351,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -370,7 +370,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -389,7 +389,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -406,7 +406,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 5'
       DisplayName = 'EQ Filter 5 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -424,7 +424,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 6'
       DisplayName = 'EQ Filter 6 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -443,7 +443,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 6'
       DisplayName = 'EQ Filter 6 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -462,7 +462,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 6'
       DisplayName = 'EQ Filter 6 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -479,7 +479,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 6'
       DisplayName = 'EQ Filter 6 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -497,7 +497,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 7'
       DisplayName = 'EQ Filter 7 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -516,7 +516,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 7'
       DisplayName = 'EQ Filter 7 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -535,7 +535,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 7'
       DisplayName = 'EQ Filter 7 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -552,7 +552,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 7'
       DisplayName = 'EQ Filter 7 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -570,7 +570,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 8'
       DisplayName = 'EQ Filter 8 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -589,7 +589,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 8'
       DisplayName = 'EQ Filter 8 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -608,7 +608,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 8'
       DisplayName = 'EQ Filter 8 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -625,7 +625,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 8'
       DisplayName = 'EQ Filter 8 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -643,7 +643,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1000.000000000000000000
       Category = 'EQ Filter 9'
       DisplayName = 'EQ Filter 9 Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -662,7 +662,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 9'
       DisplayName = 'EQ Filter 9 Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -681,7 +681,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100.000000000000000000
       Category = 'EQ Filter 9'
       DisplayName = 'EQ Filter 9 Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -698,7 +698,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'EQ Filter 9'
       DisplayName = 'EQ Filter 9 Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -716,7 +716,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -736,7 +736,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -756,7 +756,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -776,7 +776,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Gate'
       DisplayName = 'Gate Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 1
@@ -794,7 +794,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Gate Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -812,7 +812,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100000.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -832,7 +832,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100000.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -852,7 +852,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -872,7 +872,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 10000.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.009999999776482582
@@ -890,7 +890,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -908,7 +908,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -927,7 +927,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Auto Make Up Gain'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -945,7 +945,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 1'
       DisplayName = 'Compressor 1 Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -961,7 +961,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100000.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -981,7 +981,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 100000.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -1001,7 +1001,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -1021,7 +1021,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 10000.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.009999999776482582
@@ -1039,7 +1039,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -1057,7 +1057,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -1076,7 +1076,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Auto Make Up Gain'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -1094,7 +1094,7 @@ object TrackPlugModule: TTrackPlugModule
       CurveFactor = 1.000000000000000000
       Category = 'Compressor 2'
       DisplayName = 'Compressor 2 Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

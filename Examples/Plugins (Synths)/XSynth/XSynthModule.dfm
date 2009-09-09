@@ -28,7 +28,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Type'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 10.000000000000000000
@@ -46,7 +46,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Attack'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -63,7 +63,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Decay'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -80,7 +80,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Release'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -97,7 +97,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Sustain'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -114,7 +114,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc1'
       DisplayName = 'Osc1 Level'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -131,7 +131,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Type'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 10.000000000000000000
@@ -149,7 +149,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Attack'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -166,7 +166,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Decay'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -183,7 +183,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Release'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -200,7 +200,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Sustain'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -217,7 +217,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Osc2'
       DisplayName = 'Osc2 Level'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -234,7 +234,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Drive'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 10.000000000000000000
@@ -251,7 +251,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Cutoff'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 20000.000000000000000000
@@ -272,7 +272,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Resonance'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -290,7 +290,7 @@ object VSTSSModule: TVSTSSModule
       CurveFactor = 1.000000000000000000
       Category = 'Output Stage'
       DisplayName = 'Output Level'
-      Flags = [kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 5.000000000000000000
       LargeStepInteger = 5
       Max = 100.000000000000000000

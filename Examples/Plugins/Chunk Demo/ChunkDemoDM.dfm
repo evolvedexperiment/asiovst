@@ -26,7 +26,7 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Alpha'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -41,7 +41,7 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Beta'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -56,7 +56,7 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gamma'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -71,7 +71,7 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delta'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

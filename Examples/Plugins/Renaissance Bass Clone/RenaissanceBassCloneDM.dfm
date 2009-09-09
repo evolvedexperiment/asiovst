@@ -40,7 +40,7 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 256.000000000000000000
       MaxInteger = 256
@@ -59,7 +59,7 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
       CurveFactor = 1.000000000000000000
       Category = 'Dynamics'
       DisplayName = 'Add Original Bass'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       MaxInteger = 1
@@ -76,7 +76,7 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Intensity'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 24.000000000000000000
       MaxInteger = 24
@@ -95,7 +95,7 @@ object ResurrectionBassCloneModule: TResurrectionBassCloneModule
       CurveFactor = 101.000000000000000000
       Category = 'Mix'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 3.990524530410767000
       MaxInteger = 4

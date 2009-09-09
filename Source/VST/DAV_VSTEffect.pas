@@ -8,7 +8,7 @@ uses
   {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common;
 
 const
-  kEffectMagic = 'VstP';
+  CEffectMagic = 'VstP';
 
 type
   PPSingle = ^PSingle;
@@ -285,7 +285,7 @@ type
   TVstCanDos = set of TVstCanDo;
 
   TVSTEffect = record
-    Magic            : TChunkName;           // must be kEffectMagic ('VstP')
+    Magic            : TChunkName;           // must be CEffectMagic ('VstP')
     Dispatcher       : TDispatcherFunc;
     Process          : TProcessProc;         // Not used since 2.4, use ProcessReplacing instead!
     SetParameter     : TSetParameterProc;
@@ -330,7 +330,7 @@ type
 
   PVstEvents = ^TVstEvents;
   TVstEvents = packed record  // a block of events for the current audio block
-    numEvents : LongInt;
+    NumEvents : LongInt;
     Reserved  : LongInt;                     // zero
     Events    : array[0..2047] of PVstEvent; // variable
   end;
@@ -401,7 +401,7 @@ type
     SamplePos          : Double;            // current location
     SampleRate         : Double;
     NanoSeconds        : Double;            // system time
-    ppqPos             : Double;            // 1 ppq
+    PpqPos             : Double;            // 1 ppq
     Tempo              : Double;            // in bpm
     BarStartPos        : Double;            // last bar start, in 1 ppq
     CycleStartPos      : Double;            // 1 ppq
@@ -418,30 +418,30 @@ type
   TVstVariableIo = packed record
     Inputs                    : PPSingle;
     Outputs                   : PPSingle;
-    numSamplesInput           : LongInt;
-    numSamplesOutput          : LongInt;
-    numSamplesInputProcessed  : PLongInt;
-    numSamplesOutputProcessed : PLongInt;
+    NumSamplesInput           : LongInt;
+    NumSamplesOutput          : LongInt;
+    NumSamplesInputProcessed  : PLongInt;
+    NumSamplesOutputProcessed : PLongInt;
   end;
 
   TVstHostLanguage = (
-    kVstLangUnknown,
-    kVstLangEnglish,
-    kVstLangGerman,
-    kVstLangFrench,
-    kVstLangItalian,
-    kVstLangSpanish,
-    kVstLangJapanese
+    hlUnknown,
+    hlEnglish,
+    hlGerman,
+    hlFrench,
+    hlItalian,
+    hlSpanish,
+    hlJapanese
   );
 
   TVstParameterPropertiesFlag = (
-    kVstParameterIsSwitch,
-    kVstParameterUsesIntegerMinMax,
-    kVstParameterUsesFloatStep,
-    kVstParameterUsesIntStep,
-    kVstParameterSupportsDisplayIndex,
-    kVstParameterSupportsDisplayCategory,
-    kVstParameterCanRamp);
+    ppfParameterIsSwitch,
+    ppfParameterUsesIntegerMinMax,
+    ppfParameterUsesFloatStep,
+    ppfParameterUsesIntStep,
+    ppfParameterSupportsDisplayIndex,
+    ppfParameterSupportsDisplayCategory,
+    ppfParameterCanRamp);
   TVstParameterPropertiesFlags = set of TVstParameterPropertiesFlag;
 
   PVstParameterPropertyRecord = ^TVstParameterPropertyRecord;
@@ -458,7 +458,7 @@ type
     ShortLabel       : array [0..7] of AnsiChar;   // recommended: 6 + delimiter
 
     // the following are for remote controller display purposes.
-    // note that the kVstParameterSupportsDisplayIndex flag must be set.
+    // note that the ppfParameterSupportsDisplayIndex flag must be set.
     // host can scan all parameters, and find out in what order
     // to display them:
     DisplayIndex     : SmallInt;  // for remote controllers, the index where this parameter
@@ -469,9 +469,9 @@ type
     // Osc 1
     // Wave  Detune  Octave  Mod
     // ---------------------------
-    // if the plug supports it (flag kVstParameterSupportsDisplayCategory)
+    // if the plug supports it (flag ppfParameterSupportsDisplayCategory)
     Category                : SmallInt;     // 0: no category, else group index + 1
-    numParametersInCategory : SmallInt;
+    NumParametersInCategory : SmallInt;
     Reserved                : SmallInt;
     CategoryLabel           : array [0..23] of AnsiChar; // for instance, "Osc 1"
     Future                  : array [0..15] of AnsiChar;

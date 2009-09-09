@@ -32,7 +32,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Decimator'
       DisplayName = 'Samplerate'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 44100.000000000000000000
@@ -53,7 +53,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Decimator'
       DisplayName = 'Bits'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 24.000000000000000000
@@ -72,7 +72,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Post Filter'
       DisplayName = 'Cutoff Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 20000.000000000000000000
@@ -93,7 +93,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Post Filter'
       DisplayName = 'Resonance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 8.000000000000000000
@@ -112,7 +112,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Post Filter'
       DisplayName = 'FilterType'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -130,7 +130,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet/Dry Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 100.000000000000000000
       MaxInteger = 0
@@ -147,7 +147,7 @@ object VSTDecimator: TVSTDecimator
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Output Volume'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 3.000000000000000000
       LargeStepInteger = 3
       Max = 6.000000000000000000

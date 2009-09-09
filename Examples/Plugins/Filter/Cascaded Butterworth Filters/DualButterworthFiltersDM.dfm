@@ -24,7 +24,7 @@ object DualButterworthFiltersModule: TDualButterworthFiltersModule
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
       DisplayName = 'Lowpass Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -44,7 +44,7 @@ object DualButterworthFiltersModule: TDualButterworthFiltersModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Lowpass Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 16.000000000000000000
@@ -93,7 +93,7 @@ object DualButterworthFiltersModule: TDualButterworthFiltersModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 3.000000000000000000

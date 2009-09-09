@@ -43,7 +43,7 @@ object SpinBugLiteModule: TSpinBugLiteModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Coefficients'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 32.000000000000000000
@@ -63,7 +63,7 @@ object SpinBugLiteModule: TSpinBugLiteModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Process Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -84,7 +84,7 @@ object SpinBugLiteModule: TSpinBugLiteModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Speed'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 13.000000000000000000
@@ -103,7 +103,7 @@ object SpinBugLiteModule: TSpinBugLiteModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'TBW'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 0.499999910593032800

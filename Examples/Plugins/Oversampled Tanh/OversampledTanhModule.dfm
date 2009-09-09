@@ -27,7 +27,7 @@ object OversampledTanhModule: TOversampledTanhModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Number of Coeffs'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 32.000000000000000000
       MaxInteger = 32
@@ -44,7 +44,7 @@ object OversampledTanhModule: TOversampledTanhModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transition'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 0.500000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000

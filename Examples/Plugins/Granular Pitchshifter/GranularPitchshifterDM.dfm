@@ -37,7 +37,7 @@ object GranularPitchShifterModule: TGranularPitchShifterModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semitones'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 12.000000000000000000
       MaxInteger = 12
@@ -54,7 +54,7 @@ object GranularPitchShifterModule: TGranularPitchShifterModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Granularity'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -71,7 +71,7 @@ object GranularPitchShifterModule: TGranularPitchShifterModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stages'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000

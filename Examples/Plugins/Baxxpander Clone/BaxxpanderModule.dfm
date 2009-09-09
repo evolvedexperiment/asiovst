@@ -51,7 +51,7 @@ object BaxxpanderModule: TBaxxpanderModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dry/Wet'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -66,7 +66,7 @@ object BaxxpanderModule: TBaxxpanderModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limit'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -81,7 +81,7 @@ object BaxxpanderModule: TBaxxpanderModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mixer'
-      Flags = [kVstParameterUsesFloatStep]
+      Flags = [ppfParameterUsesFloatStep]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -111,7 +111,7 @@ object BaxxpanderModule: TBaxxpanderModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Shape'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

@@ -23,7 +23,7 @@ object VSTOpAmp: TVSTOpAmp
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 20.000000000000000000

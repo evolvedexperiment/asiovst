@@ -22,7 +22,7 @@ object UniQuEDataModule: TUniQuEDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -39,7 +39,7 @@ object UniQuEDataModule: TUniQuEDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Pad'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
       Max = -12.000000000000000000
@@ -57,7 +57,7 @@ object UniQuEDataModule: TUniQuEDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Phase'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -75,7 +75,7 @@ object UniQuEDataModule: TUniQuEDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'Low'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -94,7 +94,7 @@ object UniQuEDataModule: TUniQuEDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'Mid'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -113,7 +113,7 @@ object UniQuEDataModule: TUniQuEDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'Pres'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -132,7 +132,7 @@ object UniQuEDataModule: TUniQuEDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Gains'
       DisplayName = 'High'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15

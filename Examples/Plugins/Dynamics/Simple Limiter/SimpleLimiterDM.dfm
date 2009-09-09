@@ -22,7 +22,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -41,7 +41,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 5.000000000000000000
       LargeStepInteger = 2
       Max = 20.000000000000000000
@@ -60,7 +60,7 @@ object SimpleLimiterDataModule: TSimpleLimiterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 5
       Max = 200.000000000000000000

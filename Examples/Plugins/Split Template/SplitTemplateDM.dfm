@@ -50,7 +50,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Split'
       DisplayName = 'Mode'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 12.000000000000000000
@@ -68,7 +68,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Split'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000
@@ -91,7 +91,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Split'
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000
@@ -111,7 +111,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Volume'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 6.000000000000000000
@@ -131,7 +131,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Oversampling'
       DisplayName = 'Oversampling'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -149,7 +149,7 @@ object SplitTemplateDataModule: TSplitTemplateDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Oversampling'
       DisplayName = 'OS Factor'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 16.000000000000000000

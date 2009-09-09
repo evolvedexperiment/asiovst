@@ -23,7 +23,7 @@ object VSTSSModule: TVSTSSModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntStep]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 32.000000000000000000

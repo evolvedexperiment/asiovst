@@ -52,7 +52,7 @@ object StkChorusModule: TStkChorusModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mod Frequency'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000

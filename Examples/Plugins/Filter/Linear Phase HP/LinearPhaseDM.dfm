@@ -26,7 +26,7 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
       LargeStepInteger = 100
       Max = 20000.000000000000000000

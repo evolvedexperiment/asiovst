@@ -50,7 +50,7 @@ object SimpleVibratoModule: TSimpleVibratoModule
       Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
       DisplayName = 'Speed'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -68,7 +68,7 @@ object SimpleVibratoModule: TSimpleVibratoModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semitones'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesFloatStep, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 12.000000000000000000
       MaxInteger = 12

@@ -37,7 +37,7 @@ object PlateReverbVST: TPlateReverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
@@ -56,7 +56,7 @@ object PlateReverbVST: TPlateReverbVST
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 100.000000000000000000
@@ -74,7 +74,7 @@ object PlateReverbVST: TPlateReverbVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Pre-Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -89,7 +89,7 @@ object PlateReverbVST: TPlateReverbVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Decay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -104,7 +104,7 @@ object PlateReverbVST: TPlateReverbVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Damping Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -122,7 +122,7 @@ object PlateReverbVST: TPlateReverbVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Input Diffusion'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -137,7 +137,7 @@ object PlateReverbVST: TPlateReverbVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Decay Diffusion'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -152,7 +152,7 @@ object PlateReverbVST: TPlateReverbVST
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Modulation'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

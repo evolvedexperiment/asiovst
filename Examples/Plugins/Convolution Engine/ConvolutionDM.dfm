@@ -26,7 +26,7 @@ object ConvolutionDataModule: TConvolutionDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Latency Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 16.000000000000000000
@@ -43,7 +43,7 @@ object ConvolutionDataModule: TConvolutionDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum IR Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 20.000000000000000000

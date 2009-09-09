@@ -22,7 +22,7 @@ object LA1701DataModule: TLA1701DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'On/Off'
-      Flags = [kVstParameterIsSwitch, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -40,7 +40,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Input'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 24.000000000000000000
@@ -60,7 +60,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Output'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 24.000000000000000000
@@ -80,7 +80,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 50.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 20.000000000000000000
@@ -101,7 +101,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 20.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
-      Flags = [kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       LargeStepInteger = 5
       Max = 500.000000000000000000
@@ -121,7 +121,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
@@ -139,7 +139,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Soft Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -155,7 +155,7 @@ object LA1701DataModule: TLA1701DataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Flags = [kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
@@ -172,7 +172,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1.000000000000000000
       Category = 'VUMeter'
       DisplayName = 'VUMeterDisplay'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 2.000000000000000000
@@ -190,7 +190,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1000.000000000000000000
       Category = 'VUMeter'
       DisplayName = 'VUMeterSpeed'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 1000.000000000000000000
@@ -210,7 +210,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 20.000000000000000000
       Category = 'Sidechain Filter'
       DisplayName = 'Highpass Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 20.000000000000000000
@@ -230,7 +230,7 @@ object LA1701DataModule: TLA1701DataModule
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain Filter'
       DisplayName = 'Highpass Order'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 4.000000000000000000
       MaxInteger = 4

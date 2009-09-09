@@ -29,7 +29,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'On/Off'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -47,7 +47,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Pan'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -65,7 +65,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 6.000000000000000000
       MaxInteger = 6
@@ -84,7 +84,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Polarity'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -102,7 +102,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 2000.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 2000.000000000000000000
       MaxInteger = 2000
@@ -121,7 +121,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -139,7 +139,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Filter Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 8.000000000000000000
       MaxInteger = 8
@@ -156,7 +156,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Filter Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -175,7 +175,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Filter Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -194,7 +194,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Filter Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -211,7 +211,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Frequency Shift'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -226,7 +226,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 99999.992187500010000000
       Category = 'Band 1'
       DisplayName = 'Shift Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.001000000047497451
@@ -243,7 +243,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Shift Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 32.000000000000000000
@@ -262,7 +262,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Drive'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -278,7 +278,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Balance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -296,7 +296,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'On/Off'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -314,7 +314,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Pan'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -332,7 +332,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 6.000000000000000000
       MaxInteger = 6
@@ -351,7 +351,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Polarity'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -369,7 +369,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 2000.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 2000.000000000000000000
       MaxInteger = 2000
@@ -388,7 +388,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -406,7 +406,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Filter Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 8.000000000000000000
       MaxInteger = 8
@@ -423,7 +423,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Filter Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -442,7 +442,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Filter Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -461,7 +461,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Filter Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -478,7 +478,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Frequency Shift'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -493,7 +493,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 99999.992187500010000000
       Category = 'Band 2'
       DisplayName = 'Shift Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.001000000047497451
@@ -510,7 +510,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Shift Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 32.000000000000000000
@@ -529,7 +529,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Drive'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -545,7 +545,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Balance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -563,7 +563,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'On/Off'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -581,7 +581,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Pan'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -599,7 +599,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 6.000000000000000000
       MaxInteger = 6
@@ -618,7 +618,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Polarity'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -636,7 +636,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 2000.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 2000.000000000000000000
       MaxInteger = 2000
@@ -655,7 +655,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -673,7 +673,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Filter Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 8.000000000000000000
       MaxInteger = 8
@@ -690,7 +690,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Filter Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -709,7 +709,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Filter Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -728,7 +728,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Filter Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -745,7 +745,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Frequency Shift'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -760,7 +760,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 99999.992187500010000000
       Category = 'Band 3'
       DisplayName = 'Shift Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.001000000047497451
@@ -777,7 +777,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Shift Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 32.000000000000000000
@@ -796,7 +796,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Drive'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -812,7 +812,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Balance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -830,7 +830,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'On/Off'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -848,7 +848,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Pan'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -866,7 +866,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 6.000000000000000000
       MaxInteger = 6
@@ -885,7 +885,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Polarity'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -903,7 +903,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 2000.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Delay'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 2000.000000000000000000
       MaxInteger = 2000
@@ -922,7 +922,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Feedback'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -940,7 +940,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Filter Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 8.000000000000000000
       MaxInteger = 8
@@ -957,7 +957,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Filter Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -976,7 +976,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Filter Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -995,7 +995,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Filter Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -1012,7 +1012,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Frequency Shift'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1.000000000000000000
       ReportVST2Properties = True
@@ -1027,7 +1027,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 99999.992187500010000000
       Category = 'Band 4'
       DisplayName = 'Shift Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 0.001000000047497451
@@ -1044,7 +1044,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Shift Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 32.000000000000000000
@@ -1063,7 +1063,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Drive'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True
@@ -1079,7 +1079,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Balance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = -100.000000000000000000
@@ -1096,7 +1096,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       ReportVST2Properties = True

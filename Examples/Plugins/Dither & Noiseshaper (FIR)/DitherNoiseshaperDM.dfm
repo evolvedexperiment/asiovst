@@ -32,7 +32,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bit Depth'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 32.000000000000000000
@@ -52,7 +52,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limit'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -69,7 +69,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dither Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 4.000000000000000000
@@ -86,7 +86,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dither Amplitude'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 4.000000000000000000
       MaxInteger = 4
@@ -102,7 +102,7 @@ object DitherNoiseshaperModule: TDitherNoiseshaperModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Noiseshaper Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
       Max = 15.000000000000000000

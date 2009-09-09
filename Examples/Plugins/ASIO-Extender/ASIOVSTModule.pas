@@ -14,12 +14,11 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
     procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
-    procedure VSTModuleBlockSizeChange(Sender: TObject;
-      const BlockSize: Integer);
   private
     FASIOHost        : TASIOHost;
     FInBuffer        : array of PDavSingleFixedArray;

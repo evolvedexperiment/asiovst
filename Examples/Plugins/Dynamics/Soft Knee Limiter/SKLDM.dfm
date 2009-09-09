@@ -22,7 +22,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -41,7 +41,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -59,7 +59,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       DisplayName = 'Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 0
       Max = 1000.000000000000000000
@@ -78,7 +78,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       Curve = ctLogarithmic
       CurveFactor = 1000.000000000000000000
       DisplayName = 'Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 5.000000000000000000
       LargeStepInteger = 5
       Max = 5000.000000000000000000
@@ -97,7 +97,7 @@ object SoftKneeLimiterDataModule: TSoftKneeLimiterDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Makeup  Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 40.000000000000000000
       MaxInteger = 40

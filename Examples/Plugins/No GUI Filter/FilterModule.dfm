@@ -29,7 +29,7 @@ object VSTFilter: TVSTFilter
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Cutoff Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 20000.000000000000000000
@@ -49,7 +49,7 @@ object VSTFilter: TVSTFilter
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Resonance'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000

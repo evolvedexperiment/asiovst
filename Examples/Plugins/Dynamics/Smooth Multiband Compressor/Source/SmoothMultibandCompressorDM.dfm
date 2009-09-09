@@ -23,7 +23,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Low Split Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -44,7 +44,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Crossover'
       DisplayName = 'High Split Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -65,7 +65,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
-      Flags = [kVstParameterIsSwitch, kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
@@ -83,7 +83,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Low Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -103,7 +103,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Low Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -123,7 +123,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -143,7 +143,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
@@ -161,7 +161,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -179,7 +179,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -197,7 +197,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Low State'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 15.000000000000000000
@@ -214,7 +214,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Mid Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -234,7 +234,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Mid Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -254,7 +254,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -274,7 +274,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
@@ -292,7 +292,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -310,7 +310,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Mid MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -328,7 +328,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mid State'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -345,7 +345,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'High Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -365,7 +365,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'High Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 5000.000000000000000000
       MaxInteger = 5000
@@ -385,7 +385,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -405,7 +405,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
       Min = 1.000000000000000000
@@ -423,7 +423,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Knee'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 10
@@ -441,7 +441,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High MakeUp Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 60.000000000000000000
@@ -459,7 +459,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High State'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 7.000000000000000000
@@ -475,7 +475,7 @@ object SmoothMultibandCompressorDataModule: TSmoothMultibandCompressorDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 6.000000000000000000

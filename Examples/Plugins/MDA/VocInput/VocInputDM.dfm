@@ -76,7 +76,7 @@ object VocInputDataModule: TVocInputDataModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Max Freq'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 93.000000000000000000

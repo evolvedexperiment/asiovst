@@ -35,7 +35,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Input'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -53,7 +53,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -72,7 +72,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -88,7 +88,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -107,7 +107,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -125,7 +125,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -144,7 +144,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -160,7 +160,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -179,7 +179,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -197,7 +197,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -216,7 +216,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -232,7 +232,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -251,7 +251,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -269,7 +269,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -288,7 +288,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -304,7 +304,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -323,7 +323,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -341,7 +341,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -360,7 +360,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -376,7 +376,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -395,7 +395,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -413,7 +413,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -432,7 +432,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -448,7 +448,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -467,7 +467,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -485,7 +485,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -504,7 +504,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -520,7 +520,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -539,7 +539,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -557,7 +557,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
@@ -576,7 +576,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Bandwidth'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
@@ -592,7 +592,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15
@@ -611,7 +611,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Type'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 14.000000000000000000
@@ -629,7 +629,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Output'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 15.000000000000000000
       MaxInteger = 15

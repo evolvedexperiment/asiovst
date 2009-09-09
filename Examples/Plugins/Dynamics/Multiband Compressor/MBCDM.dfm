@@ -23,7 +23,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 2
       Max = 15.000000000000000000
@@ -43,7 +43,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 20000.000000000000000000
@@ -64,7 +64,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 4.000000000000000000
       Max = 10.000000000000000000
       MaxInteger = 0
@@ -83,7 +83,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 3.000000000000000000
       LargeStepInteger = 3
       Max = 6.000000000000000000
@@ -103,7 +103,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 10.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -122,7 +122,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -141,7 +141,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -160,7 +160,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 2
       Max = 15.000000000000000000
@@ -180,7 +180,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 3.000000000000000000
       LargeStepInteger = 3
       Max = 6.000000000000000000
@@ -200,7 +200,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 10.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -219,7 +219,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -238,7 +238,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 100.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -257,7 +257,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1000.000000000000000000
       Category = 'High'
       DisplayName = 'High Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1000.000000000000000000
       LargeStepInteger = 1000
       Max = 20000.000000000000000000
@@ -278,7 +278,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'High'
       DisplayName = 'High Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 4.000000000000000000
       LargeStepInteger = 4
       Max = 10.000000000000000000
@@ -298,7 +298,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'High'
       DisplayName = 'High Gain'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 2
       Max = 15.000000000000000000
@@ -318,7 +318,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 1.000000000000000000
       Category = 'High'
       DisplayName = 'High Threshold'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 3.000000000000000000
       LargeStepInteger = 3
       Max = 6.000000000000000000
@@ -338,7 +338,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 10.000000000000000000
       Category = 'High'
       DisplayName = 'High Ratio'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 10.000000000000000000
@@ -357,7 +357,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 100.000000000000000000
       Category = 'High'
       DisplayName = 'High Attack'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
@@ -376,7 +376,7 @@ object MBCDataModule: TMBCDataModule
       CurveFactor = 100.000000000000000000
       Category = 'High'
       DisplayName = 'High Release'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 10.000000000000000000
       Max = 1000.000000000000000000
       MaxInteger = 1000
