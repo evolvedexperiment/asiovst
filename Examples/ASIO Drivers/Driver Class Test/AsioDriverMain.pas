@@ -22,6 +22,7 @@ type
   TDriverTest = class(TDavASIOExtendedDriver)
   protected
     procedure InitializeDriverParams; override;
+    procedure ProcessBuffers; override;
   end;
 
   TTestTCWrapper = class(TDavASIOTCWrapper, IDriverTest)
@@ -33,7 +34,7 @@ type
 implementation
 
 uses
-  ComServ,AsioDriverMainCPanel;
+  ComServ,AsioDriverMainCPanel, DAV_Common;
 
 function TTestTCWrapper.GetDriverClass: TTDavASIODriver;
 begin
@@ -60,6 +61,23 @@ begin
   AddSampleRate(96000);
   SetBufferSizes(64,1024,512,-1);
   SetControlPanelClass(TDriverTestCP);
+end;
+
+procedure TDriverTest.ProcessBuffers;
+var i, frame: LongInt;
+begin
+  for i := 0 to fInChannelList.Count-1 do
+    with TDavASIOExtDrvrChannelListItem(fInChannelList.Items[i]) do
+      if IsActive then
+        for frame:=0 to fBufferSize.Current-1 do
+        begin
+          TDAVSingleDynArray(DoubleBuffer[fCurrentBuffer])[frame] := sin(frame/fBufferSize.Current*2*Pi);
+        end;
+
+  // this is a dummy, override it
+  ASIOBufferSwitch(fCurrentBuffer, ASIOTrue);
+  Sleep(round(1000 * fBufferSize.Current / fSampleRate));
+  fCurrentBuffer := 1-fCurrentBuffer;
 end;
 
 initialization
