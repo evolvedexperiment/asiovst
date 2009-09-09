@@ -7,6 +7,11 @@ uses Classes, messages, windows, forms, DAV_ASIO, DAV_ASIODriver;
 type
   TDavASIOExtDrvrDoubleBuffer = array [0..1] of Pointer;
 
+  TDavASIOExtDrvrTimings = record
+    SystemTime: TASIOTimeStamp;
+    SamplePos: TASIOSamples;
+  end;
+
   TDavASIOExtDrvrSupported = record
     RequestsDone,      // only true, when all requests to the host are made
     EngineVersion,
@@ -92,12 +97,16 @@ type
     fClocksAreDefault: boolean;
     fChannelsAreDefault: boolean;
     fSampleRate: Double;
+    fInputLatency: LongInt;
+    fOutputLatency: LongInt;
     fHostCallbacks: PASIOCallbacks;
     fBuffersCreated: boolean;
     fSupportedSelectors: TDavASIOExtDrvrSupported;
     fHostEngineVersion: LongInt;
     fSupportsTimeInfo: boolean;
     fSupportsTimeCode: boolean;
+    fAsioTime: TASIOTime;
+    fSwitchTimings: TDavASIOExtDrvrTimings;
 
     procedure InitializeDriverParams; virtual;
     procedure SetDriverName(name: string);
@@ -114,8 +123,13 @@ type
     procedure ClearClockList;
     procedure ClearChannelLists;
     function GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint;
-    procedure ClearSupportedSelectors;
-    procedure CheckSupportedSelectors;
+
+    procedure ClearSupportedSelectors; virtual;
+    procedure CheckSupportedSelectors; virtual;
+    procedure InitializeTimeInfo; virtual;
+
+    function GetTimecodeSamples: TASIOSamples; virtual;
+    procedure UpdateTimings; virtual;
 
     procedure LoadDriverSettings; virtual;
     procedure SaveDriverSettings; virtual;
@@ -125,7 +139,10 @@ type
 
     function GetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError; override;
     function SetClockSource(Reference: LongInt): TASIOError; override;
-    procedure SetBufferSizes(MinSize, MaxSize, PreferredSize, Granularity: LongInt);
+    function GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError; override;
+    procedure SetBufferSizes(MinSize, MaxSize, PreferredSize, Granularity: LongInt); virtual;
+    procedure SetLatencies(InLatency, OutLatency: LongInt); virtual;
+    procedure GetNanoSeconds(var Time: TASIOTimeStamp);
 
     function GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError; override;
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
@@ -138,9 +155,10 @@ type
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; override;
     function GetSampleRate(out nSampleRate: TASIOSampleRate): TASIOError; override;
     function SetSampleRate(nSampleRate: TASIOSampleRate): TASIOError; override;
+    function GetLatencies(out InLatency, OutLatency: LongInt): TASIOError; override;
 
     procedure ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
-    function ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime; virtual;
+    procedure ASIOBufferSwitchTimeInfo(DoubleBufferIndex: Integer; DirectProcess: TASIOBool); virtual;
     procedure ASIOSampleRateDidChange(SampleRate: TASIOSampleRate); virtual;
     function ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer; virtual;
     procedure ASIORequestReset;
@@ -156,7 +174,7 @@ type
 
 implementation
 
-uses SysUtils, Math;
+uses SysUtils, Math, MMSystem;
 
 { TDavASIOExtDrvrChannelListItem }
 
@@ -328,15 +346,25 @@ constructor TDavASIOExtendedDriver.Create(TCWrapper: TDavASIOTCWrapper; Interfac
 begin
   inherited;
   fClockList:=TList.Create;
-  fInChannelList:=TList.Create;
-  fOutChannelList:=TList.Create;
-  fHostCallbacks := nil;
-  fDriverName := 'DAV Abstract Ext';
-  fDriverVersion := 1;
+  fInChannelList     := TList.Create;
+  fOutChannelList    := TList.Create;
+  fHostCallbacks     := nil;
+  fDriverName        := 'DAV Abstract Ext';
+  fDriverVersion     := 1;
   fHostEngineVersion := 1;
-  fSupportsTimeInfo := false;
-  fSupportsTimeCode := false;
-  fBuffersCreated := false;
+  fSupportsTimeInfo  := false;
+  fSupportsTimeCode  := false;
+  fBuffersCreated    := false;
+  fInputLatency      := 0;
+  fOutputLatency     := 0;
+
+  with fSwitchTimings do
+  begin
+    SystemTime.Lo := 0;
+    SystemTime.Hi := 0;
+    SamplePos.Lo  := 0;
+    SamplePos.Hi  := 0;
+  end;
 
   with fBufferSize do
   begin
@@ -366,6 +394,10 @@ begin
   LoadDriverSettings;
 
   fSampleRate := fSampleRateManager.GetDefaultSampleRate;
+  
+  FillChar(fAsioTime.Reserved, 4, 0);
+  InitializeTimeInfo;
+
   InitControlPanel;
 end;
 
@@ -506,6 +538,15 @@ begin
   if not CheckBufferSize(fBufferSize.Current) then ASIOBufferSizeChange(PreferredSize);
 end;
 
+procedure TDavASIOExtendedDriver.SetLatencies(InLatency, OutLatency: LongInt);
+begin
+  if (fInputLatency=InLatency) and (fOutputLatency=OutLatency) then exit;
+
+  fInputLatency := InLatency;
+  fOutputLatency := OutLatency;
+  ASIOLatenciesChanged;
+end;
+
 function TDavASIOExtendedDriver.GetFirstGroupChannel(GroupNr: Longint; IsInput: Boolean): Longint;
 var querylist: TList;
     i: integer;
@@ -563,6 +604,11 @@ begin
   if Reference=last then exit;
 
   ChangeClockSource(last,Reference);
+
+  if fSupportsTimeInfo then
+  begin
+    fAsioTime.TimeInfo.Flags := fAsioTime.TimeInfo.Flags or kClockSourceChanged;
+  end;
 end;
 
 procedure TDavASIOExtendedDriver.ChangeClockSource(fromIndex, ToIndex: LongInt);
@@ -570,6 +616,13 @@ begin
   // you can override this and fill the sample rate list here, to have clock dependent samplerates
   if fromIndex>=0 then TDavASIOExtDrvrClockListItem(fClockList.Items[fromIndex]).IsCurrentSource := false;
   TDavASIOExtDrvrClockListItem(fClockList.Items[ToIndex]).IsCurrentSource := true;
+end;
+
+function TDavASIOExtendedDriver.GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
+begin
+  TimeStamp := fSwitchTimings.SystemTime;
+  SamplePosition := fSwitchTimings.SamplePos;
+  Result := ASE_OK;
 end;
 
 function TDavASIOExtendedDriver.GetChannels(out NumInputChannels, NumOutputChannels: LongInt): TASIOError;
@@ -638,12 +691,25 @@ begin
     if fSampleRate <> nSampleRate then
     begin
       fSampleRate := nSampleRate;
+      if fSupportsTimeInfo then
+      begin
+        fAsioTime.TimeInfo.SampleRate := fSampleRate;
+        fAsioTime.TimeInfo.Flags := fAsioTime.TimeInfo.Flags or kSampleRateChanged;
+      end;
       ASIOSampleRateDidChange(fSampleRate);
     end;
     result := ASE_OK;
   end else
     result := ASE_NoClock;
-end; 
+end;
+
+function TDavASIOExtendedDriver.GetLatencies(out InLatency, OutLatency: LongInt): TASIOError;
+begin
+  InLatency := fInputLatency;
+  OutLatency := fOutputLatency;
+
+  result := ASE_OK;
+end;
 
 function TDavASIOExtendedDriver.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
 begin
@@ -725,6 +791,28 @@ begin
   end;
 end;
 
+procedure TDavASIOExtendedDriver.InitializeTimeInfo;
+begin
+  with fAsioTime.TimeInfo do
+  begin
+    Speed := 1;
+    SystemTime.Lo := 0;
+    SystemTime.Hi := 0;
+    SamplePosition.Lo := 0;
+    SamplePosition.Hi := 0;
+    SampleRate := fSampleRate;
+    Flags := kSystemTimeValid or kSamplePositionValid or kSampleRateValid;
+  end;
+
+  with fAsioTime.TimeCode do
+  begin
+    Speed := 1;
+    TimeCodeSamples.Lo := 0;
+    TimeCodeSamples.Hi := 0;
+    Flags := kTcValid or kTcRunning;
+  end;
+end;
+
 function TDavASIOExtendedDriver.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: Integer; const Callbacks: TASIOCallbacks): TASIOError;
 var i: integer;
     querylist: TList;
@@ -773,9 +861,11 @@ begin
   fHostCallbacks := @Callbacks;
   CheckSupportedSelectors;
 
-  if fSupportedSelectors.SupportsTimeInfo then fSupportsTimeInfo := ASIOMessage(kAsioSupportsTimeInfo,0,nil, nil) > 0;
-  if fSupportedSelectors.SupportsTimeCode then fSupportsTimeCode := ASIOMessage(kAsioSupportsTimeCode,0,nil, nil) > 0;
-  if fSupportedSelectors.EngineVersion then fHostEngineVersion := ASIOMessage(kAsioEngineVersion,0,nil, nil);
+  if fSupportedSelectors.SupportsTimeInfo then fSupportsTimeInfo  := ASIOMessage(kAsioSupportsTimeInfo,0,nil, nil) > 0;
+  if fSupportedSelectors.SupportsTimeCode then fSupportsTimeCode  := ASIOMessage(kAsioSupportsTimeCode,0,nil, nil) > 0;
+  if fSupportedSelectors.EngineVersion    then fHostEngineVersion := ASIOMessage(kAsioEngineVersion,0,nil, nil);
+
+  if fSupportsTimeInfo then InitializeTimeInfo;  
 end;
 
 function TDavASIOExtendedDriver.DisposeBuffers: TASIOError;
@@ -788,23 +878,74 @@ begin
   result := ASE_OK;
 end;
 
+procedure TDavASIOExtendedDriver.GetNanoSeconds(var Time: TASIOTimeStamp);
+var NanoSeconds : Double;
+const CTwoRaisedTo32 : Double = 4294967296;
+begin
+ // it looks stupid, but this has to be in to lines, otherwise it would be an integer multiplication
+ // this fucking bullshit took me 10 hours to find it :)
+ NanoSeconds := timegettime;
+ NanoSeconds := NanoSeconds*1000000;
+ Time.Hi := floor(NanoSeconds / CTwoRaisedTo32);
+ Time.Lo := floor(NanoSeconds - Time.Hi * CTwoRaisedTo32);
+end;
 
+function TDavASIOExtendedDriver.GetTimecodeSamples: TASIOSamples;
+begin
+  // override this if you need a custom timecode
+  result := fSwitchTimings.SamplePos;
+end;
 
+procedure TDavASIOExtendedDriver.UpdateTimings;
+var tmp: int64;
+begin
+  with fSwitchTimings.SamplePos do
+  begin
+    tmp := int64(Lo) + fBufferSize.Current;
 
+    Lo := tmp and $FFFFFFFF;
+    Hi := Hi + (tmp shr 32);
+  end;
 
+  GetNanoSeconds(fSwitchTimings.SystemTime);
+
+  if fSupportsTimeInfo then
+  begin
+    fAsioTime.timeInfo.SamplePosition := fSwitchTimings.SamplePos;
+    fAsioTime.timeInfo.SystemTime := fSwitchTimings.SystemTime;
+
+    if fSupportsTimeCode then fAsioTime.timeCode.TimecodeSamples := GetTimecodeSamples;
+  end;
+end;
 
 procedure TDavASIOExtendedDriver.ASIOBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TASIOBool);
 begin
+  if fSupportsTimeInfo then
+  begin
+    ASIOBufferSwitchTimeInfo(DoubleBufferIndex, DirectProcess);
+    exit;
+  end;
+
+  UpdateTimings;
+
   if assigned(fHostCallbacks) and assigned(fHostCallbacks^.bufferSwitch) then
     fHostCallbacks^.bufferSwitch(DoubleBufferIndex, DirectProcess);
 end;
 
-function TDavASIOExtendedDriver.ASIOBufferSwitchTimeInfo(var Params: TASIOTime; DoubleBufferIndex: Integer; DirectProcess: TASIOBool): PASIOTime;
+procedure TDavASIOExtendedDriver.ASIOBufferSwitchTimeInfo(DoubleBufferIndex: Integer; DirectProcess: TASIOBool);
 begin
+  if not fSupportsTimeInfo then
+  begin
+    ASIOBufferSwitch(DoubleBufferIndex, DirectProcess);
+    exit;
+  end;
+
+  UpdateTimings;
+
   if assigned(fHostCallbacks) and assigned(fHostCallbacks^.bufferSwitchTimeInfo) then
-    result := fHostCallbacks^.bufferSwitchTimeInfo(Params, DoubleBufferIndex, DirectProcess)
-  else
-    result := @Params; // dummy
+    fHostCallbacks^.bufferSwitchTimeInfo(fAsioTime, DoubleBufferIndex, DirectProcess);
+
+  fAsioTime.TimeInfo.Flags := fAsioTime.TimeInfo.Flags and not (kSampleRateChanged or kClockSourceChanged);
 end;
 
 procedure TDavASIOExtendedDriver.ASIOSampleRateDidChange(SampleRate: TASIOSampleRate);

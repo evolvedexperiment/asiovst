@@ -509,7 +509,7 @@ end;
 function TDavASIOInterceptor.ASIOMessage(Selector, Value: Integer; msg: Pointer; Opt: PDouble): Integer;
 begin
   if Selector = kAsioResetRequest then SaveDriverSettings;
-  
+
   if assigned(fHostCallbacks) and assigned(fHostCallbacks^.asioMessage) then
     result := fHostCallbacks^.asioMessage(Selector, Value, msg, Opt)
   else result := 0;
