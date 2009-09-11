@@ -68,7 +68,7 @@ object FmASIO: TFmASIO
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
+    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -88,7 +88,7 @@ object FmASIO: TFmASIO
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 0
+    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end

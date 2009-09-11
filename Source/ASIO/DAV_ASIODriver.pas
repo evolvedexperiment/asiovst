@@ -746,13 +746,15 @@ begin
   if Assigned(GlobalDriverControlPanel) then
   begin
     // Hardcore centering ;)
-    if fParentWindowHandle<>0 then
-      GetWindowRect(fParentWindowHandle, r)
-    else
-      GetWindowRect(GetDesktopWindow, r);
-
     with GlobalDriverControlPanel do
     begin
+      r := Rect(0,0,0,0);
+      if fParentWindowHandle<>0 then
+        GetWindowRect(fParentWindowHandle, r);
+
+      if (r.Right-r.Left<Width) or (r.Bottom-r.Top<Height) then
+        GetWindowRect(GetDesktopWindow, r);
+
       left := r.Left + round(((r.Right-r.Left)-Width)*0.5);
       top  := r.Top + round(((r.Bottom-r.Top)-Height)*0.5);
       ShowModal;
