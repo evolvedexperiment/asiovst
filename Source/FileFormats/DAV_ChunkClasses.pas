@@ -22,9 +22,10 @@ type
     FChunkFlags : TChunkFlags;
     function GetChunkName: string; virtual;
     function GetChunkSize: Cardinal; virtual;
+    function CalculateZeroPad: Integer;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetChunkName(const Value: string); virtual;
-    function CalculateZeroPad: Integer;
+    procedure CheckAddZeroPad(Stream: TStream);
   public
     constructor Create; virtual;
     procedure LoadFromStream(Stream : TStream); virtual;
@@ -215,6 +216,13 @@ implementation
 function TCustomChunk.CalculateZeroPad: Integer;
 begin
  Result := (2 - (FChunkSize and 1)) and 1;
+end;
+
+procedure TCustomChunk.CheckAddZeroPad(Stream: TStream);
+begin
+ // insert pad byte if necessary
+ if cfPadSize in ChunkFlags
+  then Stream.Write(CZeroPad, CalculateZeroPad);
 end;
 
 constructor TCustomChunk.Create;
@@ -420,8 +428,9 @@ begin
    inherited;
    FDataStream.Position := 0;
    CopyFrom(FDataStream, FDataStream.Position);
-   if cfPadSize in ChunkFlags
-    then Write(CZeroPad, CalculateZeroPad);
+
+   // check and eventually add zero pad
+   CheckAddZeroPad(Stream);
   end;
 end;
 
@@ -547,11 +556,10 @@ begin
  inherited;
  try
   BytesWritten := Stream.Write(FStartAddresses[0]^, GetClassChunkSize);
-  assert(BytesWritten = FChunkSize);
+  Assert(BytesWritten = FChunkSize);
 
-  // insert pad byte if necessary
-  if cfPadSize in ChunkFlags
-   then Stream.Write(CZeroPad, CalculateZeroPad);
+  // check and eventually add zero pad
+  CheckAddZeroPad(Stream);
  except
   raise Exception.Create('Wrong Start Addess of Chunk: ' + ChunkName);
  end;

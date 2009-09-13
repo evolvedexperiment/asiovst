@@ -12,7 +12,7 @@ unit DAV_TestAudioFileAIFF;
 interface
 
 uses
-  TestFramework, DAV_ChunkClasses, DAV_ChunkAIFFFile, Classes, DAV_Common, Contnrs,
+  TestFramework, DAV_ChunkClasses, DAV_ChunkAiffBasic, Classes, DAV_Common, Contnrs,
   SysUtils, DAV_ChannelDataCoder, DAV_AudioFileAIFF, DAV_AudioFile;
 
 type

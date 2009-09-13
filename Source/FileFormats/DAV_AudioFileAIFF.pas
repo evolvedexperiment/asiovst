@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_ChunkClasses,
-  DAV_ChunkAIFFFile, DAV_ChannelDataCoder;
+  DAV_ChunkAiffBasic, DAV_ChannelDataCoder;
 
 type
   TAiffChunkScan = (acsName, acsAuthor, acsCopyright, acsMarker,

@@ -23,7 +23,7 @@ type
     FFactChunk         : TFactChunk;
     FBextChunk         : TBextChunk;
     FCartChunk         : TCartChunk;
-    FChunkList         : TObjectList;
+    FChunkList         : TChunkList;
     FBytesPerSample    : Integer;
     FAudioDataPosition : Cardinal;
     FFormatChunkFound  : Boolean;
@@ -211,7 +211,7 @@ resourcestring
 constructor TCustomAudioFileWAV.Create;
 begin
  inherited;
- FChunkList := TObjectList.Create(True);
+ FChunkList := TChunkList.Create;
  FAudioDataPosition := 0;
  FBytesPerSample := 3; // 24 bit
  FFormatChunk := TFormatChunk.Create;

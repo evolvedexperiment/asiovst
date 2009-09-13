@@ -409,7 +409,7 @@ var
   Channel : Integer;
 begin
  inherited;
- if FChannelCount < Length(FChannelArray) then
+ if FChannelCount < Cardinal(Length(FChannelArray)) then
   for Channel := FChannelCount to Length(FChannelArray) - 1
    do Dispose(FChannelArray[Channel]);
 

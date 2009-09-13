@@ -32,6 +32,11 @@ type
     constructor Create; override;
   end;
 
+  TWavBinaryChunk = class(TCustomBinaryChunk)
+  public
+    constructor Create; override;
+  end;
+
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// Format Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -109,7 +114,7 @@ type
 *)
   end;
 
-  TQualityChunk = class(TCustomBinaryChunk)
+  TQualityChunk = class(TWavBinaryChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   end;
@@ -183,7 +188,7 @@ type
   ////////////////// Custom Cued Text Chunk (Label or Note) //////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TCustomCuedTextChunk = class(TWavDefinedChunk)
+  TCustomWavCuedTextChunk = class(TWavDefinedChunk)
   private
     procedure CalculateChunkSize;
   protected
@@ -200,7 +205,7 @@ type
   /////////////////////////////// Label Chunk ///////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TLabelChunk = class(TCustomCuedTextChunk)
+  TLabelChunk = class(TCustomWavCuedTextChunk)
   public
     class function GetClassChunkName : TChunkName; override;
   published
@@ -211,7 +216,7 @@ type
   //////////////////////////////// Note Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TNoteChunk = class(TCustomCuedTextChunk)
+  TNoteChunk = class(TCustomWavCuedTextChunk)
   public
     class function GetClassChunkName : TChunkName; override;
   published
@@ -364,7 +369,6 @@ type
     property NumberOfSilentSamples: Cardinal read SilentRecord.NumberOfSilentSamples write SilentRecord.NumberOfSilentSamples;
   end;
 
-(*
   ////////////////////////////////////////////////////////////////////////////
   ////////////////////////////// Wavelist Chunk //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -373,6 +377,7 @@ type
     NumberOfSilentSamples : Cardinal;
   end;
 
+(*
   TWavelistChunk = class(TWavFixedDefinedChunk)
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -387,17 +392,34 @@ type
 *)
 
   ////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////// Junk Chunk ////////////////////////////////
+  ////////////////////////////// Padding Chunks //////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
-  TJunkChunk = class(TWavDefinedChunk)
+  TCustomPaddingChunk = class(TWavDefinedChunk)
+  public
+    procedure LoadFromStream(Stream : TStream); override;
+  end;
+
+  TJunkChunk = class(TCustomPaddingChunk)
+  private
+    FPadding : Integer;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property Padding: Integer read FPadding write FPadding default 16;
+  end;
+
+  TPadChunk = class(TCustomPaddingChunk)
   private
     FAlignSize : Integer;
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
-    procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
     class function GetClassChunkName: TChunkName; override;
   published
@@ -458,61 +480,34 @@ type
   {$ELSE}
   TSMPTEFormat = (soZero = 0, so24 = 24, so25 = 25, so30Drop = 29, so30 = 30);
 
-  TMidiManufacturer = (mmUnknown            = $00,
-                       mmSequentialCircuits = $01,
-                       mmBigBriar           = $02,
-                       mmOctavePlateau      = $03,
-                       mmMoog               = $04,
-                       mmPassportDesigns    = $05,
-                       mmLexicon            = $06,
-                       mmKurzweil           = $07,
-                       mmFender             = $08,
-                       mmGulbransen         = $09,
-                       mmDeltaLabs          = $0A,
-                       mmSoundComp          = $0B,
-                       mmGeneralElectro     = $0C,
-                       mmTechmar            = $0D,
-                       mmMatthewsResearch   = $0E,
-                       mmOberheim           = $10,
-                       mmPAIA               = $11,
-                       mmSimmons            = $12,
-                       mmDigiDesign         = $13,
-                       mmFairlight          = $14,
-                       mmJLCooper           = $15,
-                       mmLowery             = $16,
-                       mmLin                = $17,
-                       mmEmu                = $18,
-                       mmPeavey             = $1B,
-                       mmBonTempi           = $20,
-                       mmSIEL               = $21,
-                       mmSyntheAxe          = $23,
-                       mmHohner             = $24,
-                       mmCrumar             = $25,
-                       mmSolton             = $26,
-                       mmJellinghausMs      = $27,
-                       mmCTS                = $28,
-                       mmPPG                = $29,
-                       mmElka               = $2F,
-                       mmCheetah            = $36,
-                       mmWaldorf            = $3E,
-                       mmKawai              = $40,
-                       mmRoland             = $41,
-                       mmKorg               = $42,
-                       mmYamaha             = $43,
-                       mmCasio              = $44,
-                       mmKamiyaStudio       = $46,
-                       mmAkai               = $47,
-                       mmVictor             = $48,
-                       mmFujitsu            = $4B,
-                       mmSony               = $4C,
-                       mmTeac               = $4E,
-                       mmMatsushita1        = $50,
-                       mmFostex             = $51,
-                       mmZoom               = $52,
-                       mmMatsushita2        = $54,
-                       mmSuzuki             = $55,
-                       mmFujiSound          = $56,
-                       mmAcousticTecLab     = $57);
+  TMidiManufacturer = (          mmUnknown            = $00,
+    mmSequentialCircuits = $01,  mmBigBriar           = $02,
+    mmOctavePlateau      = $03,  mmMoog               = $04,
+    mmPassportDesigns    = $05,  mmLexicon            = $06,
+    mmKurzweil           = $07,  mmFender             = $08,
+    mmGulbransen         = $09,  mmDeltaLabs          = $0A,
+    mmSoundComp          = $0B,  mmGeneralElectro     = $0C,
+    mmTechmar            = $0D,  mmMatthewsResearch   = $0E,
+    mmOberheim           = $10,  mmPAIA               = $11,
+    mmSimmons            = $12,  mmDigiDesign         = $13,
+    mmFairlight          = $14,  mmJLCooper           = $15,
+    mmLowery             = $16,  mmLin                = $17,
+    mmEmu                = $18,  mmPeavey             = $1B,
+    mmBonTempi           = $20,  mmSIEL               = $21,
+    mmSyntheAxe          = $23,  mmHohner             = $24,
+    mmCrumar             = $25,  mmSolton             = $26,
+    mmJellinghausMs      = $27,  mmCTS                = $28,
+    mmPPG                = $29,  mmElka               = $2F,
+    mmCheetah            = $36,  mmWaldorf            = $3E,
+    mmKawai              = $40,  mmRoland             = $41,
+    mmKorg               = $42,  mmYamaha             = $43,
+    mmCasio              = $44,  mmKamiyaStudio       = $46,
+    mmAkai               = $47,  mmVictor             = $48,
+    mmFujitsu            = $4B,  mmSony               = $4C,
+    mmTeac               = $4E,  mmMatsushita1        = $50,
+    mmFostex             = $51,  mmZoom               = $52,
+    mmMatsushita2        = $54,  mmSuzuki             = $55,
+    mmFujiSound          = $56,  mmAcousticTecLab     = $57);
   {$ENDIF}
 
   TSamplerRecord = packed record
@@ -853,6 +848,7 @@ begin
   do RegisterWaveChunk(AClasses[I]);
 end;
 
+
 { TWavDefinedChunk }
 
 constructor TWavDefinedChunk.Create;
@@ -860,6 +856,7 @@ begin
  inherited;
  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
+
 
 { TWavFixedDefinedChunk }
 
@@ -869,6 +866,7 @@ begin
  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
 
+
 { TWavChunkText }
 
 constructor TWavChunkText.Create;
@@ -877,6 +875,16 @@ begin
  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
 
+
+{ TWavBinaryChunk }
+
+constructor TWavBinaryChunk.Create;
+begin
+ inherited;
+ ChunkFlags := ChunkFlags + [cfPadSize];
+end;
+
+
 { TWavUnknownChunk }
 
 constructor TWavUnknownChunk.Create;
@@ -884,6 +892,7 @@ begin
  inherited;
  ChunkFlags := ChunkFlags + [cfPadSize];
 end;
+
 
 { TFormatChunk }
 
@@ -1181,21 +1190,28 @@ begin
  Result := SizeOf(TSilentRecord);
 end;
 
+{ TCustomPaddingChunk }
+
+procedure TCustomPaddingChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ with Stream
+  do Position := Position + FChunkSize;
+end;
+
 { TJunkChunk }
 
 constructor TJunkChunk.Create;
 begin
  inherited;
- FAlignSize := 2048;
+ FPadding := 16;
 end;
 
 procedure TJunkChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TJunkChunk then
-  begin
-   TJunkChunk(Dest).FAlignSize := FAlignSize;
-  end;
+ if Dest is TJunkChunk
+  then TJunkChunk(Dest).Padding := Padding;
 end;
 
 class function TJunkChunk.GetClassChunkName: TChunkName;
@@ -1203,14 +1219,38 @@ begin
  Result := 'junk';
 end;
 
-procedure TJunkChunk.LoadFromStream(Stream: TStream);
+procedure TJunkChunk.SaveToStream(Stream: TStream);
 begin
+ FChunkSize := FPadding;
  inherited;
  with Stream
   do Position := Position + FChunkSize;
 end;
 
-procedure TJunkChunk.SaveToStream(Stream: TStream);
+
+{ TPadChunk }
+
+constructor TPadChunk.Create;
+begin
+ inherited;
+ FAlignSize := 2048;
+end;
+
+procedure TPadChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomPaddingChunk then
+  begin
+   TPadChunk(Dest).FAlignSize := FAlignSize;
+  end;
+end;
+
+class function TPadChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'PAD ';
+end;
+
+procedure TPadChunk.SaveToStream(Stream: TStream);
 begin
  with Stream
   do FChunkSize := ((Position + FAlignSize) div FAlignSize) * FAlignSize - Position;
@@ -1219,19 +1259,20 @@ begin
   do Position := Position + FChunkSize;
 end;
 
-{ TCustomCuedTextChunk }
 
-procedure TCustomCuedTextChunk.AssignTo(Dest: TPersistent);
+{ TCustomWavCuedTextChunk }
+
+procedure TCustomWavCuedTextChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TCustomCuedTextChunk then
+ if Dest is TCustomWavCuedTextChunk then
   begin
-   TCustomCuedTextChunk(Dest).FText  := FText;
-   TCustomCuedTextChunk(Dest).FCueID := FCueID;
+   TCustomWavCuedTextChunk(Dest).FText  := FText;
+   TCustomWavCuedTextChunk(Dest).FCueID := FCueID;
   end;
 end;
 
-procedure TCustomCuedTextChunk.LoadFromStream(Stream: TStream);
+procedure TCustomWavCuedTextChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
  with Stream do
@@ -1242,24 +1283,32 @@ begin
   end;
 end;
 
-procedure TCustomCuedTextChunk.SaveToStream(Stream: TStream);
+procedure TCustomWavCuedTextChunk.SaveToStream(Stream: TStream);
 begin
+ // calculate chunk size
  CalculateChunkSize;
+
+ // write basic chunk information
  inherited;
+
+ // write custom chunk information
  with Stream do
   begin
    Write(FCueID, SizeOf(Cardinal));
    Write(FText[1], FChunkSize);
   end;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
-procedure TCustomCuedTextChunk.SetText(const Value: string);
+procedure TCustomWavCuedTextChunk.SetText(const Value: string);
 begin
  FText := Value;
  CalculateChunkSize;
 end;
 
-procedure TCustomCuedTextChunk.CalculateChunkSize;
+procedure TCustomWavCuedTextChunk.CalculateChunkSize;
 begin
  FChunkSize := Length(FText) + SizeOf(Cardinal);
 end;
@@ -1313,13 +1362,21 @@ end;
 
 procedure TLabeledTextChunk.SaveToStream(Stream: TStream);
 begin
+ // calculate chunk size
  CalculateChunkSize;
+
+ // write basic chunk information
  inherited;
+
+ // write custom chunk information
  with Stream do
   begin
    Write(LabeledTextRecord, SizeOf(TLabeledTextRecord));
    Write(FText[1], FChunkSize);
   end;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 procedure TLabeledTextChunk.SetText(const Value: string);
@@ -1370,8 +1427,13 @@ end;
 
 procedure TCuedFileChunk.SaveToStream(Stream: TStream);
 begin
+ // calculate chunk size
  CalculateChunkSize;
+
+ // write basic chunk information
  inherited;
+
+ // write custom chunk information
  with Stream do
   begin
    Write(FCueID, SizeOf(FCueID));
@@ -1380,25 +1442,28 @@ begin
    // write binary data:
    Write(FBinaryData[0], Length(FBinaryData));
   end;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 { TAssociatedDataListChunk }
 
 constructor TAssociatedDataListChunk.Create;
 begin
-  inherited;
-
+ inherited;
+ FChunkList := TChunkList.Create;
 end;
 
 destructor TAssociatedDataListChunk.Destroy;
 begin
-
-  inherited;
+ FreeAndNil(FChunkList);
+ inherited;
 end;
 
 procedure TAssociatedDataListChunk.AddChunk(Chunk: TCustomChunk);
 begin
-
+ FChunkList.Add(Chunk);
 end;
 
 procedure TAssociatedDataListChunk.AssignTo(Dest: TPersistent);
@@ -1450,17 +1515,21 @@ procedure TAssociatedDataListChunk.SaveToStream(Stream: TStream);
 var
   i : Integer;
 begin
+ // calculate chunk size
  FChunkSize := GetChunkSize;
+
+ // write basic chunk information
  inherited;
 
+ // write custom chunk information
  Stream.Write(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
 
+ // write sub chunks
  for i := 0 to FChunkList.Count - 1
   do FChunkList[i].SaveToStream(Stream);
 
- // insert pad byte if necessary
- if cfPadSize in ChunkFlags
-  then Stream.Write(CZeroPad, CalculateZeroPad);
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 procedure TAssociatedDataListChunk.ConvertStreamToChunk(
@@ -1524,6 +1593,7 @@ begin
  Move(Value[1], AssociatedDataListRecord.TypeID, 4);
 end;
 
+
 { TPlaylistSegmentItem }
 
 procedure TPlaylistSegmentItem.AssignTo(Dest: TPersistent);
@@ -1532,6 +1602,7 @@ begin
   then TPlaylistSegmentItem(Dest).PlaylistSegment := PlaylistSegment
   else inherited;
 end;
+
 
 { TPlaylistChunk }
 
@@ -1610,7 +1681,11 @@ begin
     with TPlaylistSegmentItem(FPlaylistSegments.Items[l])
      do Write(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
   end;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
+
 
 { TCueItem }
 
@@ -1620,6 +1695,7 @@ begin
   then TCueItem(Dest).CuePointRecord := CuePointRecord
   else inherited;
 end;
+
 
 { TCueChunk }
 
@@ -1698,6 +1774,7 @@ begin
  // write chunk name & size
  inherited;
 
+ // write custom chunk information
  with Stream do
   begin
    // write sampler header
@@ -1708,6 +1785,9 @@ begin
     with TCueItem(FCueCollection.Items[l])
      do Write(CuePointRecord, SizeOf(TCuePointRecord));
   end;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 { TLoopItem }
@@ -1802,6 +1882,7 @@ begin
  // write chunk name & size
  inherited;
 
+ // write custom chunk information
  with Stream do
   begin
    // write sampler header
@@ -1812,6 +1893,9 @@ begin
     with TLoopItem(FLoopCollection.Items[l])
      do Write(LoopRecord, SizeOf(TLoopRecord));
   end;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 procedure TSamplerChunk.SetManufacturer(const Value: TMidiManufacturer);
@@ -2094,8 +2178,8 @@ initialization
     TBWFAXMLChunk, TLabelChunk, TNoteChunk, TLabeledTextChunk, TCuedFileChunk,
     TPlaylistChunk, TSilentChunk, TCueChunk, TAssociatedDataListChunk,
     TInfoSoftwareNameChunk, TInfoCommentChunk, TInfoCreationDateChunk,
-    TInfoSubjectChunk, TInfoCopyrightChunk, TJunkChunk, TSamplerChunk,
-    TInstrumentChunk, TBextChunk, TCartChunk])
+    TInfoSubjectChunk, TInfoCopyrightChunk, TJunkChunk, TPadChunk,
+    TSamplerChunk, TInstrumentChunk, TBextChunk, TCartChunk])
 
 
 end.

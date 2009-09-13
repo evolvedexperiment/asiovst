@@ -1,4 +1,4 @@
-unit DAV_ChunkAIFFFile;
+unit DAV_ChunkAiffBasic;
 
 interface
 
