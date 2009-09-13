@@ -205,16 +205,16 @@ type
     property MemoryStream: TMemoryStream read GetMemoryStream;
   end;
 
-implementation
-
 const
   CZeroPad: Integer = 0;
+
+implementation
 
 { TCustomChunk }
 
 function TCustomChunk.CalculateZeroPad: Integer;
 begin
- result := (2 - (FChunkSize and 1)) and 1;
+ Result := (2 - (FChunkSize and 1)) and 1;
 end;
 
 constructor TCustomChunk.Create;
@@ -235,12 +235,12 @@ end;
 
 function TCustomChunk.GetChunkName: string;
 begin
- result := FChunkName;
+ Result := FChunkName;
 end;
 
 function TCustomChunk.GetChunkSize: Cardinal;
 begin
- result := FChunkSize;
+ Result := FChunkSize;
 end;
 
 procedure TCustomChunk.LoadFromFile(FileName: TFileName);
@@ -349,11 +349,11 @@ begin
  with FDataStream do
   begin
    Position := 0;
-   result := 0;
+   Result := 0;
    while Position < Size do
     begin
      Read(b, 1);
-     result := result + b;
+     Result := Result + b;
     end;
   end;
 end;
@@ -386,7 +386,7 @@ begin
    with FDataStream do
     begin
      Position := index;
-     Read(result, 1);
+     Read(Result, 1);
     end
   else raise Exception.CreateFmt('Index out of bounds (%d)', [index]);
 end;
@@ -397,12 +397,14 @@ begin
   begin
    inherited;
    assert(FChunkSize <= Size);
+   assert(FChunkName <> #0#0#0#0);
    FDataStream.Clear;
    FDataStream.Size := FChunkSize;
    FDataStream.Position := 0;
-   if cfIncludeChunkInSize in ChunkFlags
-    then FDataStream.CopyFrom(Stream, FChunkSize - 8)
-    else FDataStream.CopyFrom(Stream, FChunkSize);
+   if FChunkSize > 0 then
+    if cfIncludeChunkInSize in ChunkFlags
+     then FDataStream.CopyFrom(Stream, FChunkSize - 8)
+     else FDataStream.CopyFrom(Stream, FChunkSize);
 
    // eventually skip padded zeroes
    if cfPadSize in ChunkFlags
@@ -504,12 +506,12 @@ end;
 
 function TFixedDefinedChunk.GetChunkSize: Cardinal;
 begin
- result := GetClassChunkSize;
+ Result := GetClassChunkSize;
 end;
 
 function TFixedDefinedChunk.GetStartAddress: Pointer;
 begin
- result := FStartAddresses[0];
+ Result := FStartAddresses[0];
 end;
 
 procedure TFixedDefinedChunk.SetStartAddress(const Value: Pointer);
@@ -559,27 +561,27 @@ end;
 
 function TChunkList.Add(AChunk: TCustomChunk): Integer;
 begin
- result := inherited Add(TObject(AChunk));
+ Result := inherited Add(TObject(AChunk));
 end;
 
 function TChunkList.Extract(Item: TCustomChunk): TCustomChunk;
 begin
- result := TCustomChunk(inherited Extract(TObject(Item)));
+ Result := TCustomChunk(inherited Extract(TObject(Item)));
 end;
 
 function TChunkList.First: TCustomChunk;
 begin
- result := TCustomChunk(inherited First);
+ Result := TCustomChunk(inherited First);
 end;
 
 function TChunkList.GetItem(Index: Integer): TCustomChunk;
 begin
- result := TCustomChunk(inherited GetItem(Index));
+ Result := TCustomChunk(inherited GetItem(Index));
 end;
 
 function TChunkList.IndexOf(AChunk: TCustomChunk): Integer;
 begin
- result := inherited IndexOf(TObject(AChunk));
+ Result := inherited IndexOf(TObject(AChunk));
 end;
 
 procedure TChunkList.Insert(Index: Integer; AChunk: TCustomChunk);
@@ -589,12 +591,12 @@ end;
 
 function TChunkList.Last: TCustomChunk;
 begin
- result := TCustomChunk(inherited Last);
+ Result := TCustomChunk(inherited Last);
 end;
 
 function TChunkList.Remove(AChunk: TCustomChunk): Integer;
 begin
- result := inherited Remove(TObject(AChunk));
+ Result := inherited Remove(TObject(AChunk));
 end;
 
 procedure TChunkList.SetItem(Index: Integer; AChunk: TCustomChunk);
@@ -641,14 +643,14 @@ end;
 
 function TCustomChunkContainer.GetCount: Integer;
 begin
- result := FChunkList.Count;
+ Result := FChunkList.Count;
 end;
 
 function TCustomChunkContainer.GetSubChunk(index: Integer): TCustomChunk;
 begin
  if (index >= 0) and (index < FChunkList.Count)
-  then result := FChunkList[index]
-  else result := nil;
+  then Result := FChunkList[index]
+  else Result := nil;
 end;
 
 procedure TCustomChunkContainer.LoadFromStream(Stream: TStream);
@@ -699,9 +701,9 @@ function TCustomChunkContainer.GetChunkSize: Cardinal;
 var
   i : Integer;
 begin
- result := 0;
+ Result := 0;
  for i := 0 to FChunkList.Count - 1
-  do inc(result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
+  do inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
 end;
 
 procedure TCustomChunkContainer.SaveToStream(Stream: TStream);
@@ -734,12 +736,12 @@ function TChunkContainer.GetChunkClass(ChunkName: TChunkName): TCustomChunkClass
 var
   i : Integer;
 begin
- result := TUnknownChunk;
+ Result := TUnknownChunk;
  for i := 0 to Length(FRegisteredChunks) - 1 do
   if FRegisteredChunks[i].GetClassChunkName = ChunkName then
    begin
-    result := FRegisteredChunks[i];
-    exit;
+    Result := FRegisteredChunks[i];
+    Exit;
    end;
 end;
 
@@ -788,10 +790,10 @@ end;
 
 function TUnknownChunkContainer.ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream : TStream): TCustomChunk;
 begin
- result := ChunkClass.Create;
- result.ChunkFlags := ChunkFlags;
- result.LoadFromStream(Stream);
- FChunkList.Add(result);
+ Result := ChunkClass.Create;
+ Result.ChunkFlags := ChunkFlags;
+ Result.LoadFromStream(Stream);
+ FChunkList.Add(Result);
 end;
 
 function TUnknownChunkContainer.CheckForSubchunks: Boolean;
@@ -799,7 +801,7 @@ var
   TempSize : Cardinal;
   TempName : TChunkName;
 begin
- result := False;
+ Result := False;
  if (ChunkName = 'RIFF') or (ChunkName = 'FORM')
   then FDataStream.Position := 4
   else FDataStream.Position := 0;
@@ -834,8 +836,8 @@ begin
     then
      begin
       FDataStream.Position := FDataStream.Position + TempSize;
-      result := FDataStream.Position = FChunkSize;
-      if result then break;
+      Result := FDataStream.Position = FChunkSize;
+      if Result then break;
      end
     else exit;
   end;
@@ -873,21 +875,21 @@ function TUnknownChunkContainer.GetChunkSize: Cardinal;
 var
   i : Integer;
 begin
- result := 0;
+ Result := 0;
  for i := 0 to FChunkList.Count - 1
-  do inc(result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
+  do inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
 end;
 
 function TUnknownChunkContainer.GetCount: Integer;
 begin
- result := FChunkList.Count;
+ Result := FChunkList.Count;
 end;
 
 function TUnknownChunkContainer.GetSubChunk(index: Integer): TCustomChunk;
 begin
  if (index >= 0) and (index < FChunkList.Count)
-  then result := FChunkList[index]
-  else result := nil;
+  then Result := FChunkList[index]
+  else Result := nil;
 end;
 
 { TPNGChunkContainer }
@@ -897,7 +899,7 @@ var
   TempSize : Cardinal;
   TempName : TChunkName;
 begin
- result := False;
+ Result := False;
  FDataStream.Position := 0;
  while FDataStream.Position + 8 < FChunkSize do
   begin
@@ -933,8 +935,8 @@ begin
     then
      begin
       FDataStream.Position := FDataStream.Position + TempSize;
-      result := FDataStream.Position = FChunkSize;
-      if result then break;
+      Result := FDataStream.Position = FChunkSize;
+      if Result then break;
      end
     else exit;
   end;
@@ -1065,7 +1067,7 @@ end;
 function TCustomStreamChunk.GetChunkSize: Cardinal;
 begin
  FChunkSize := FStream.Size;
- result := inherited GetChunkSize;
+ Result := inherited GetChunkSize;
 end;
 
 procedure TCustomStreamChunk.LoadFromStream(Stream: TStream);
@@ -1102,7 +1104,7 @@ end;
 
 function TCustomMemoryStreamChunk.GetMemoryStream: TMemoryStream;
 begin
- result := TMemoryStream(FStream);
+ Result := TMemoryStream(FStream);
 end;
 
 end.

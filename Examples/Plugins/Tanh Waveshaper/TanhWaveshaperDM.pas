@@ -25,14 +25,17 @@ type
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOrderChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FOversampler    : array of TUpDownSampler;
     FOSFactor       : Integer;
     FGain           : Double;
     FTanhWaveShaper : TSimpleWaveshaper;
     function TanhWaveshaper(Input: Double): Double;
+    function TanhLike1Waveshaper(Input: Double): Double;
+    function TanhLike2Waveshaper(Input: Double): Double;
+    function TanhLike3Waveshaper(Input: Double): Double;
+    function TanhLike4Waveshaper(Input: Double): Double;
     function TanhOpt3Waveshaper(Input: Double): Double;
     function TanhOpt4Waveshaper(Input: Double): Double;
     function TanhOpt5Waveshaper(Input: Double): Double;
@@ -133,6 +136,26 @@ begin
   end;
 end;
 
+function TTanhWaveshaperModule.TanhLike1Waveshaper(Input: Double): Double;
+begin
+ Result := FastTanh2Like1Term(2 * FGain * Input);
+end;
+
+function TTanhWaveshaperModule.TanhLike2Waveshaper(Input: Double): Double;
+begin
+ Result := FastTanh2Like2Term(2 * FGain * Input);
+end;
+
+function TTanhWaveshaperModule.TanhLike3Waveshaper(Input: Double): Double;
+begin
+ Result := FastTanh2Like3Term(2 * FGain * Input);
+end;
+
+function TTanhWaveshaperModule.TanhLike4Waveshaper(Input: Double): Double;
+begin
+ Result := FastTanh2Like4Term(2 * FGain * Input);
+end;
+
 function TTanhWaveshaperModule.TanhOpt3Waveshaper(Input: Double): Double;
 begin
  Result := FastTanhOpt3Term(FGain * Input);
@@ -217,6 +240,10 @@ begin
   12 : FTanhWaveShaper := FastTanhMinError3Waveshaper;
   13 : FTanhWaveShaper := FastTanhMinError4Waveshaper;
   14 : FTanhWaveShaper := FastTanhMinError5Waveshaper;
+  15 : FTanhWaveShaper := TanhLike1Waveshaper;
+  16 : FTanhWaveShaper := TanhLike2Waveshaper;
+  17 : FTanhWaveShaper := TanhLike3Waveshaper;
+  18 : FTanhWaveShaper := TanhLike4Waveshaper;
  end;
 end;
 
@@ -239,6 +266,10 @@ begin
   12 : PreDefined := 'FastTanhMinError3Waveshaper';
   13 : PreDefined := 'FastTanhMinError4Waveshaper';
   14 : PreDefined := 'FastTanhMinError5Waveshaper';
+  15 : PreDefined := 'TanhLike1Waveshaper';
+  16 : PreDefined := 'TanhLike2Waveshaper';
+  17 : PreDefined := 'TanhLike3Waveshaper';
+  18 : PreDefined := 'TanhLike4Waveshaper';
  end;
 end;
 

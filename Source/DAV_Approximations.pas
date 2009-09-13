@@ -3215,7 +3215,7 @@ var
 begin
  a := abs(Input);
  b := 3 + a;
- Result := (Input * b) / (a * b + 6 );
+ Result := (Input * b) / (a * b + 6);
 {$ELSE}
 const
   c3: Single = 3;
@@ -3269,7 +3269,7 @@ function FastTanhMinError3(Value: Single): Single;
 var
   temp : Single;
 begin
- temp := FastPower2MinError2(C2Exp32 * Value);
+ temp := FastPower2MinError3(C2Exp32 * Value);
  Result := (temp - 1) / (temp + 1);
 end;
 

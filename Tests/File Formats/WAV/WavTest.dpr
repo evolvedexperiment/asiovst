@@ -16,7 +16,7 @@ program WavTest;
 
 uses
   FastMM4,
-  FastMove, 
+  FastMove,
   Forms,
   TestFramework,
   GUITestRunner,

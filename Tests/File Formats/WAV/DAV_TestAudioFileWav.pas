@@ -12,8 +12,8 @@ unit DAV_TestAudioFileWav;
 interface
 
 uses
-  TestFramework, DAV_ChunkClasses, DAV_ChunkWaveFile, Classes, DAV_Common, Contnrs,
-  SysUtils, DAV_ChannelDataCoder, DAV_AudioFileWav, DAV_AudioFile;
+  TestFramework, Classes, Contnrs, SysUtils, DAV_Common, DAV_ChunkClasses,
+  DAV_ChunkWaveBasic, DAV_AudioFile, DAV_AudioFileWav, DAV_ChannelDataCoder;
 
 type
   // Test methods for class TAudioFileWav

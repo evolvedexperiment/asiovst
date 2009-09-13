@@ -1,4 +1,4 @@
-unit DAV_ChunkWaveFile;
+unit DAV_ChunkWaveBasic;
 
 interface
 
@@ -9,7 +9,7 @@ uses
 
 type
   ////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////// Misc. Chunks ///////////////////////////////
+  /////////////////////////////// Base Chunks ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
   TWavDefinedChunk = class(TDefinedChunk)
@@ -18,6 +18,11 @@ type
   end;
 
   TWavFixedDefinedChunk = class(TFixedDefinedChunk)
+  public
+    constructor Create; override;
+  end;
+
+  TWavChunkText = class(TCustomTextChunk)
   public
     constructor Create; override;
   end;
@@ -110,12 +115,51 @@ type
   end;
 
   ////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////// INFO Chunks ////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  TInfoSoftwareNameChunk = class(TWavChunkText)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property SoftwareName: string read FText write FText;
+  end;
+
+  TInfoCommentChunk = class(TWavChunkText)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property Comment: string read FText write FText;
+  end;
+
+  TInfoCreationDateChunk = class(TWavChunkText)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property CreationDate: string read FText write FText;
+  end;
+
+  TInfoCopyrightChunk = class(TWavChunkText)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property Copyright: string read FText write FText;
+  end;
+
+  TInfoSubjectChunk = class(TWavChunkText)
+  public
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property Subject: string read FText write FText;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
   //////////////////////////////// Link Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
   // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s4_tcm6-10484.pdf
 
-  TBWFLinkChunk = class(TCustomTextChunk)
+  TBWFLinkChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
@@ -128,7 +172,7 @@ type
 
   // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s5_tcm6-10485.pdf
 
-  TBWFAXMLChunk = class(TCustomTextChunk)
+  TBWFAXMLChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
@@ -199,6 +243,7 @@ type
     LabeledTextRecord : TLabeledTextRecord;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
   published
     property Text: string read FText write FText;
     property CuePointID: Cardinal read LabeledTextRecord.CuePointID write LabeledTextRecord.CuePointID;
@@ -219,15 +264,15 @@ type
     procedure CalculateChunkSize;
   protected
     FCueID      : Cardinal;
-    fMediaType  : Cardinal;
-    fBinaryData : array of Byte;
+    FMediaType  : Cardinal;
+    FBinaryData : array of Byte;
     procedure AssignTo(Dest: TPersistent); override;
   public
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
   end;
 
-(*
   ////////////////////////////////////////////////////////////////////////////
   /////////////////////// Associated Data List Chunk /////////////////////////
   ////////////////////////////////////////////////////////////////////////////
@@ -238,17 +283,29 @@ type
 
   TAssociatedDataListChunk = class(TWavDefinedChunk)
   private
-    procedure CalculateChunkSize;
+    function GetSubChunk(Index: Integer): TCustomChunk;
+    function GetCount: Integer;
+    function GetTypeID: string;
+    procedure SetTypeID(const Value: string);
   protected
-    procedure AssignTo(Dest: TPersistent); override;
+    FChunkList : TChunkList;
+    function GetChunkClass(ChunkName : TChunkName): TCustomChunkClass; virtual;
+    function GetChunkSize: Cardinal; override;
+    procedure AssignTo(Dest: TPersistent); override; 
+    procedure ConvertStreamToChunk(ChunkClass: TCustomChunkClass; Stream: TStream); virtual;
   public
-    TextListRecord : TTextListRecord;
+    AssociatedDataListRecord : TAssociatedDataListRecord;
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure AddChunk(Chunk : TCustomChunk); virtual;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+    property SubChunk[Index : Integer] : TCustomChunk read GetSubChunk;
+    property Count : Integer read GetCount;
   published
     property TypeID: string read GetTypeID write SetTypeID;
   end;
-*)
 
   ////////////////////////////////////////////////////////////////////////////
   ////////////////////////////// Playlist Chunk //////////////////////////////
@@ -283,6 +340,7 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
   published
   end;
 
@@ -329,6 +387,24 @@ type
 *)
 
   ////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////// Junk Chunk ////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////
+
+  TJunkChunk = class(TWavDefinedChunk)
+  private
+    FAlignSize : Integer;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; override;
+    procedure LoadFromStream(Stream : TStream); override;
+    procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
+  published
+    property AlignSize: Integer read FAlignSize write FAlignSize default 2048;
+  end;
+
+  ////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////// Cue Chunk ////////////////////////////////
   ////////////////////////////////////////////////////////////////////////////
 
@@ -366,7 +442,7 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
-  published
+    class function GetClassChunkName: TChunkName; override;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -490,6 +566,7 @@ type
     destructor Destroy; override;
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
+    class function GetClassChunkName: TChunkName; override;
   published
     property Manufacturer: TMidiManufacturer read GetManufacturer write SetManufacturer;
     property Product: Cardinal read SamplerRecord.Product write SamplerRecord.Product;
@@ -548,7 +625,7 @@ type
     dwBlockSize      : Cardinal; // frames per value
     dwPeakChannels   : Cardinal; // number of channels
     dwNumPeakFrames  : Cardinal; // number of peak frames
-    dwPosPeakOfPeaks : Cardinal; // audio sample frame index or 0xFFFFFFFF if unknown
+    dwPosPeakOfPeaks : Cardinal; // audio sample frame Index or 0xFFFFFFFF if unknown
     dwOffsetToPeaks  : Cardinal; // should usually be equal to the size of this header, but could also be higher
     strTimestamp     : array [0..27] of char; // ASCII: time stamp of the peak data
     reserved         : array [0..59] of char; // reserved set to 0x00
@@ -706,12 +783,75 @@ type
     property dbLevelReference: Integer read CartRecord.dbLevelReference write CartRecord.dbLevelReference;
   end;
 
-  TWavSDA8Chunk = class(TUnknownChunk)
-  public
-    constructor Create; override;
-  end;
+var
+  WaveChunkClasses : array of TDefinedChunkClass;
+
+procedure RegisterWaveChunk(AClass: TDefinedChunkClass);
+procedure RegisterWaveChunks(AClasses: array of TDefinedChunkClass);
+function IsWaveChunkClassRegistered(AClass: TDefinedChunkClass): Boolean;
+function WaveChunkClassByName(Value: string): TDefinedChunkClass;
+function WaveChunkClassByChunkName(Value: TChunkName): TDefinedChunkClass;
 
 implementation
+
+function WaveChunkClassByName(Value: string): TDefinedChunkClass;
+var
+  X: Integer;
+begin
+ Result := nil;
+ for X := Length(WaveChunkClasses) - 1 downto 0 do
+  begin
+   if CompareText(WaveChunkClasses[X].ClassName, Value) = 0 then
+    begin
+     Result := WaveChunkClasses[X];
+     Break;
+    end;
+  end;
+end;
+
+function WaveChunkClassByChunkName(Value: TChunkName): TDefinedChunkClass;
+var
+  X: Integer;
+begin
+ Result := nil;
+ for X := 0 to Length(WaveChunkClasses) - 1 do
+  if CompareText(WaveChunkClasses[X].GetClassChunkName, Value) = 0 then
+   begin
+    Result := WaveChunkClasses[X];
+    Break;
+   end;
+end;
+
+function IsWaveChunkClassRegistered(AClass: TDefinedChunkClass): Boolean;
+var
+  X : Integer;
+begin
+ Result := False;
+ for X := Length(WaveChunkClasses) - 1 downto 0 do
+  begin
+   if WaveChunkClasses[X] = AClass then
+    begin
+     Result := True;
+     Break;
+    end;
+  end;
+end;
+
+procedure RegisterWaveChunk(AClass: TDefinedChunkClass);
+begin
+ Classes.RegisterClass(AClass);
+ Assert(not IsWaveChunkClassRegistered(AClass));
+ SetLength(WaveChunkClasses, Length(WaveChunkClasses) + 1);
+ WaveChunkClasses[Length(WaveChunkClasses) - 1] := AClass;
+end;
+
+procedure RegisterWaveChunks(AClasses: array of TDefinedChunkClass);
+var
+  i : Integer;
+begin
+ for I := 0 to Length(AClasses) - 1
+  do RegisterWaveChunk(AClasses[I]);
+end;
 
 { TWavDefinedChunk }
 
@@ -724,6 +864,14 @@ end;
 { TWavFixedDefinedChunk }
 
 constructor TWavFixedDefinedChunk.Create;
+begin
+ inherited;
+ ChunkFlags := ChunkFlags + [cfPadSize];
+end;
+
+{ TWavChunkText }
+
+constructor TWavChunkText.Create;
 begin
  inherited;
  ChunkFlags := ChunkFlags + [cfPadSize];
@@ -841,22 +989,22 @@ end;
 
 class function TFormatChunk.GetClassChunkName: TChunkName;
 begin
- result := 'fmt ';
+ Result := 'fmt ';
 end;
 
 function TFormatChunk.GetFormatTag: TWavEncoding;
 begin
  // check if extensible format
  if (FWaveFormatRecord.FormatTag <> $FFFE) or not assigned(FFormatExtensible)
-  then result := TWavEncoding(FWaveFormatRecord.FormatTag)
-  else move(FFormatExtensible^.GUID, result, SizeOf(Word));
+  then Result := TWavEncoding(FWaveFormatRecord.FormatTag)
+  else move(FFormatExtensible^.GUID, Result, SizeOf(Word));
 end;
 
 function TFormatChunk.GetValidBitsPerSample: Word;
 begin
  if (Length(FFormatSpecific) >= 2) and (FWaveFormatRecord.FormatTag = $FFFE)
-  then Move(FFormatSpecific[0], result, SizeOf(Word))
-  else result := FWaveFormatRecord.BitsPerSample;
+  then Move(FFormatSpecific[0], Result, SizeOf(Word))
+  else Result := FWaveFormatRecord.BitsPerSample;
 end;
 
 procedure TFormatChunk.SetBitsPerSample(const Value: Word);
@@ -948,33 +1096,64 @@ end;
 
 class function TFactChunk.GetClassChunkName: TChunkName;
 begin
- result := 'fact';
+ Result := 'fact';
 end;
 
 class function TFactChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TFactRecord);
+ Result := SizeOf(TFactRecord);
+end;
+
+{ TInfoSoftwareNameChunk }
+
+class function TInfoSoftwareNameChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'ISFT';
+end;
+
+{ TInfoCommnetChunk }
+
+class function TInfoCommentChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'ICMT';
+end;
+
+{ TInfoCreationDateChunk }
+
+class function TInfoCreationDateChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'ICRD';
+end;
+
+class function TInfoCopyrightChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'ICOP';
+end;
+
+class function TInfoSubjectChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'ISBJ';
 end;
 
 { TBWFLinkChunk }
 
 class function TBWFLinkChunk.GetClassChunkName: TChunkName;
 begin
- result := 'link';
+ Result := 'link';
 end;
 
 { TBWFAXMLChunk }
 
 class function TBWFAXMLChunk.GetClassChunkName: TChunkName;
 begin
- result := 'axml';
+ Result := 'axml';
 end;
 
 { TQualityChunk }
 
 class function TQualityChunk.GetClassChunkName: TChunkName;
 begin
- result := 'qlty';
+ Result := 'qlty';
 end;
 
 { TSilentChunk }
@@ -994,12 +1173,50 @@ end;
 
 class function TSilentChunk.GetClassChunkName: TChunkName;
 begin
- result := 'slnt';
+ Result := 'slnt';
 end;
 
 class function TSilentChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TSilentRecord);
+ Result := SizeOf(TSilentRecord);
+end;
+
+{ TJunkChunk }
+
+constructor TJunkChunk.Create;
+begin
+ inherited;
+ FAlignSize := 2048;
+end;
+
+procedure TJunkChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TJunkChunk then
+  begin
+   TJunkChunk(Dest).FAlignSize := FAlignSize;
+  end;
+end;
+
+class function TJunkChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'junk';
+end;
+
+procedure TJunkChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ with Stream
+  do Position := Position + FChunkSize;
+end;
+
+procedure TJunkChunk.SaveToStream(Stream: TStream);
+begin
+ with Stream
+  do FChunkSize := ((Position + FAlignSize) div FAlignSize) * FAlignSize - Position;
+ inherited;
+ with Stream
+  do Position := Position + FChunkSize;
 end;
 
 { TCustomCuedTextChunk }
@@ -1051,14 +1268,14 @@ end;
 
 class function TLabelChunk.GetClassChunkName: TChunkName;
 begin
- result := 'labl';
+ Result := 'labl';
 end;
 
 { TNoteChunk }
 
 class function TNoteChunk.GetClassChunkName: TChunkName;
 begin
- result := 'note';
+ Result := 'note';
 end;
 
 { TLabeledTextChunk }
@@ -1066,6 +1283,11 @@ end;
 procedure TLabeledTextChunk.CalculateChunkSize;
 begin
  FChunkSize := Length(FText) + SizeOf(TLabeledTextRecord);
+end;
+
+class function TLabeledTextChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'ltxt';
 end;
 
 procedure TLabeledTextChunk.AssignTo(Dest: TPersistent);
@@ -1114,17 +1336,22 @@ begin
  if Dest is TCuedFileChunk then
   begin
    TCuedFileChunk(Dest).FCueID            := FCueID;
-   TCuedFileChunk(Dest).fMediaType        := fMediaType;
+   TCuedFileChunk(Dest).FMediaType        := FMediaType;
 
    // copy binary data:
-   SetLength(TCuedFileChunk(Dest).fBinaryData, Length(fBinaryData));
-   Move(fBinaryData[0], TCuedFileChunk(Dest).fBinaryData[0], Length(fBinaryData));
+   SetLength(TCuedFileChunk(Dest).FBinaryData, Length(FBinaryData));
+   Move(FBinaryData[0], TCuedFileChunk(Dest).FBinaryData[0], Length(FBinaryData));
   end;
 end;
 
 procedure TCuedFileChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(FCueID) +  SizeOf(fMediaType) + Length(fBinaryData);
+ FChunkSize := SizeOf(FCueID) +  SizeOf(FMediaType) + Length(FBinaryData);
+end;
+
+class function TCuedFileChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'file';
 end;
 
 procedure TCuedFileChunk.LoadFromStream(Stream: TStream);
@@ -1133,11 +1360,11 @@ begin
  with Stream do
   begin
    Read(FCueID, SizeOf(FCueID));
-   Read(fMediaType, SizeOf(fMediaType));
+   Read(FMediaType, SizeOf(FMediaType));
 
    // read binary data:
-   SetLength(fBinaryData, FChunkSize - SizeOf(FCueID) - SizeOf(fMediaType));
-   Read(fBinaryData[0], Length(fBinaryData));
+   SetLength(FBinaryData, FChunkSize - SizeOf(FCueID) - SizeOf(FMediaType));
+   Read(FBinaryData[0], Length(FBinaryData));
   end;
 end;
 
@@ -1148,11 +1375,153 @@ begin
  with Stream do
   begin
    Write(FCueID, SizeOf(FCueID));
-   Write(fMediaType, SizeOf(fMediaType));
+   Write(FMediaType, SizeOf(FMediaType));
 
    // write binary data:
-   Write(fBinaryData[0], Length(fBinaryData));
+   Write(FBinaryData[0], Length(FBinaryData));
   end;
+end;
+
+{ TAssociatedDataListChunk }
+
+constructor TAssociatedDataListChunk.Create;
+begin
+  inherited;
+
+end;
+
+destructor TAssociatedDataListChunk.Destroy;
+begin
+
+  inherited;
+end;
+
+procedure TAssociatedDataListChunk.AddChunk(Chunk: TCustomChunk);
+begin
+
+end;
+
+procedure TAssociatedDataListChunk.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TAssociatedDataListChunk
+  then TAssociatedDataListChunk(Dest).AssociatedDataListRecord := AssociatedDataListRecord;
+end;
+
+procedure TAssociatedDataListChunk.LoadFromStream(Stream: TStream);
+var
+  ChunkEnd  : Integer;
+  ChunkName : TChunkName;
+begin
+ inherited;
+ with Stream do
+  begin
+   ChunkEnd := Position + FChunkSize;
+   Assert(ChunkEnd <= Stream.Size);
+
+   // read type ID
+   Read(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
+
+   while Position < ChunkEnd do
+    begin
+     if cfSizeFirst in ChunkFlags then
+      begin
+       Position := Position + 4;
+       Read(ChunkName, 4);
+       Position := Position - 8;
+      end
+     else
+      begin
+       Read(ChunkName, 4);
+       Position := Position - 4;
+      end;
+     ConvertStreamToChunk(GetChunkClass(ChunkName), Stream);
+    end;
+   if Position <> ChunkEnd
+    then Position := ChunkEnd;
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
+  end;
+end;
+
+procedure TAssociatedDataListChunk.SaveToStream(Stream: TStream);
+var
+  i : Integer;
+begin
+ FChunkSize := GetChunkSize;
+ inherited;
+
+ Stream.Write(AssociatedDataListRecord, SizeOf(AssociatedDataListRecord));
+
+ for i := 0 to FChunkList.Count - 1
+  do FChunkList[i].SaveToStream(Stream);
+
+ // insert pad byte if necessary
+ if cfPadSize in ChunkFlags
+  then Stream.Write(CZeroPad, CalculateZeroPad);
+end;
+
+procedure TAssociatedDataListChunk.ConvertStreamToChunk(
+  ChunkClass: TCustomChunkClass; Stream: TStream);
+var
+  Chunk : TCustomChunk;
+begin
+ Chunk := ChunkClass.Create;
+ Chunk.ChunkFlags := ChunkFlags;
+ Chunk.LoadFromStream(Stream);
+ AddChunk(Chunk);
+end;
+
+function TAssociatedDataListChunk.GetChunkClass(
+  ChunkName: TChunkName): TCustomChunkClass;
+var
+  X: Integer;
+begin
+ Result := TUnknownChunk;
+ for X := 0 to Length(WaveChunkClasses) - 1 do
+  if CompareText(WaveChunkClasses[X].GetClassChunkName, ChunkName) = 0 then
+   begin
+    Result := WaveChunkClasses[X];
+    Break;
+   end;
+end;
+
+function TAssociatedDataListChunk.GetChunkSize: Cardinal;
+var
+  i : Integer;
+begin
+ Result := SizeOf(AssociatedDataListRecord);
+ for i := 0 to FChunkList.Count - 1
+  do inc(Result, FChunkList[i].ChunkSize + 8); // Chunk Size + Chunk Frame (8)
+end;
+
+class function TAssociatedDataListChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'LIST';
+end;
+
+function TAssociatedDataListChunk.GetCount: Integer;
+begin
+ Result := FChunkList.Count;
+end;
+
+function TAssociatedDataListChunk.GetSubChunk(Index: Integer): TCustomChunk;
+begin
+ if (Index >= 0) and (Index < FChunkList.Count)
+  then Result := FChunkList[Index]
+  else Result := nil;
+end;
+
+function TAssociatedDataListChunk.GetTypeID: string;
+begin
+ Result := AssociatedDataListRecord.TypeID;
+end;
+
+procedure TAssociatedDataListChunk.SetTypeID(const Value: string);
+begin
+ Move(Value[1], AssociatedDataListRecord.TypeID, 4);
 end;
 
 { TPlaylistSegmentItem }
@@ -1176,6 +1545,11 @@ destructor TPlaylistChunk.Destroy;
 begin
  FreeAndNil(FPlaylistSegments);
  inherited;
+end;
+
+class function TPlaylistChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'plst';
 end;
 
 procedure TPlaylistChunk.AssignTo(Dest: TPersistent);
@@ -1261,6 +1635,11 @@ begin
  inherited;
 end;
 
+class function TCueChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'cue '; 
+end;
+
 procedure TCueChunk.AssignTo(Dest: TPersistent);
 begin
  inherited;
@@ -1278,20 +1657,31 @@ end;
 
 procedure TCueChunk.LoadFromStream(Stream: TStream);
 var
-  l : Integer;
+  CueCnt   : Integer;
+  ChunkEnd : Cardinal;
 begin
  inherited;
  with Stream do
   begin
+   // calculate end of chunk in case there are no cue items in this chunk
+   ChunkEnd := Position + FChunkSize;
+
+   // read number of cue items in this chunk
    Read(FCount, SizeOf(Cardinal));
 
    // clear all eventually existing cues
    FCueCollection.Clear;
 
    // load every single playlist segment and add to playlist collection
-   for l := 0 to FCount - 1 do
+   for CueCnt := 0 to FCount - 1 do
     with TCueItem(FCueCollection.Add)
      do Read(CuePointRecord, SizeOf(TCuePointRecord));
+
+   // make sure the position is still inside this chunk
+   assert(Position <= ChunkEnd);
+
+   // jump to the end of this chunk
+   Position := ChunkEnd;
   end;
 end;
 
@@ -1360,14 +1750,19 @@ begin
                SamplerRecord.SamplerData;
 end;
 
+class function TSamplerChunk.GetClassChunkName: TChunkName;
+begin
+ Result := 'Smpl';
+end;
+
 function TSamplerChunk.GetManufacturer: TMidiManufacturer;
 begin
- result := TMidiManufacturer(SamplerRecord.Manufacturer)
+ Result := TMidiManufacturer(SamplerRecord.Manufacturer)
 end;
 
 function TSamplerChunk.GetSMPTEFormat: TSMPTEFormat;
 begin
- result := TSMPTEFormat(SamplerRecord.SMPTEFormat);
+ Result := TSMPTEFormat(SamplerRecord.SMPTEFormat);
 end;
 
 procedure TSamplerChunk.LoadFromStream(Stream: TStream);
@@ -1446,12 +1841,12 @@ end;
 
 class function TInstrumentChunk.GetClassChunkName: TChunkName;
 begin
- result := 'inst';
+ Result := 'inst';
 end;
 
 class function TInstrumentChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TInstrumentRecord);
+ Result := SizeOf(TInstrumentRecord);
 end;
 
 { TCustomBextChunk }
@@ -1471,15 +1866,15 @@ end;
 
 class function TCustomBextChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TBextRecord);
+ Result := SizeOf(TBextRecord);
 end;
 
 // Some Wrapper Functions
-function TCustomBextChunk.GetDescription: string; begin result := BextRecord.Description; end;
-function TCustomBextChunk.GetOriginationDate: string; begin result := BextRecord.OriginationDate; end;
-function TCustomBextChunk.GetOriginationTime: string; begin result := BextRecord.OriginationTime; end;
-function TCustomBextChunk.GetOriginator: string; begin result := BextRecord.Originator; end;
-function TCustomBextChunk.GetOriginatorRef: string; begin result := BextRecord.OriginatorRef; end;
+function TCustomBextChunk.GetDescription: string; begin Result := BextRecord.Description; end;
+function TCustomBextChunk.GetOriginationDate: string; begin Result := BextRecord.OriginationDate; end;
+function TCustomBextChunk.GetOriginationTime: string; begin Result := BextRecord.OriginationTime; end;
+function TCustomBextChunk.GetOriginator: string; begin Result := BextRecord.Originator; end;
+function TCustomBextChunk.GetOriginatorRef: string; begin Result := BextRecord.OriginatorRef; end;
 
 procedure TCustomBextChunk.SetDescription(const Value: string);
 begin
@@ -1525,14 +1920,14 @@ end;
 
 class function TBextChunk.GetClassChunkName: TChunkName;
 begin
- result := 'bext';
+ Result := 'bext';
 end;
 
 { TBextChunkOld }
 
 class function TBextChunkOld.GetClassChunkName: TChunkName;
 begin
- result := 'BEXT';
+ Result := 'BEXT';
 end;
 
 procedure TBextChunkOld.SaveToStream(Stream: TStream);
@@ -1557,29 +1952,29 @@ end;
 
 class function TCartChunk.GetClassChunkName: TChunkName;
 begin
- result := 'cart';
+ Result := 'cart';
 end;
 
 class function TCartChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TCartRecord);
+ Result := SizeOf(TCartRecord);
 end;
 
 // Some Wrapper Functions 
-function TCartChunk.GetArtist: string; begin result := CartRecord.Artist; end;
-function TCartChunk.GetCategory: string; begin result := CartRecord.Category; end;
-function TCartChunk.GetClassification: string; begin result := CartRecord.Classification; end;
-function TCartChunk.GetClientID: string; begin result := CartRecord.ClientID; end;
-function TCartChunk.GetCutID: string; begin result := CartRecord.CutID; end;
-function TCartChunk.GetEndDate: string; begin result := CartRecord.EndDate; end;
-function TCartChunk.GetEndTime: string; begin result := CartRecord.EndTime; end;
-function TCartChunk.GetOutCue: string; begin result := CartRecord.OutCue; end;
-function TCartChunk.GetProducerAppID: string; begin result := CartRecord.ProducerAppID; end;
-function TCartChunk.GetProducerAppVersion: string; begin result := CartRecord.ProducerAppVersion; end;
-function TCartChunk.GetStartDate: string; begin result := CartRecord.StartDate; end;
-function TCartChunk.GetStartTime: string; begin result := CartRecord.StartTime; end;
-function TCartChunk.GetTitle: string; begin result := CartRecord.Title; end;
-function TCartChunk.GetUserDef: string; begin result := CartRecord.UserDef; end;
+function TCartChunk.GetArtist: string; begin Result := CartRecord.Artist; end;
+function TCartChunk.GetCategory: string; begin Result := CartRecord.Category; end;
+function TCartChunk.GetClassification: string; begin Result := CartRecord.Classification; end;
+function TCartChunk.GetClientID: string; begin Result := CartRecord.ClientID; end;
+function TCartChunk.GetCutID: string; begin Result := CartRecord.CutID; end;
+function TCartChunk.GetEndDate: string; begin Result := CartRecord.EndDate; end;
+function TCartChunk.GetEndTime: string; begin Result := CartRecord.EndTime; end;
+function TCartChunk.GetOutCue: string; begin Result := CartRecord.OutCue; end;
+function TCartChunk.GetProducerAppID: string; begin Result := CartRecord.ProducerAppID; end;
+function TCartChunk.GetProducerAppVersion: string; begin Result := CartRecord.ProducerAppVersion; end;
+function TCartChunk.GetStartDate: string; begin Result := CartRecord.StartDate; end;
+function TCartChunk.GetStartTime: string; begin Result := CartRecord.StartTime; end;
+function TCartChunk.GetTitle: string; begin Result := CartRecord.Title; end;
+function TCartChunk.GetUserDef: string; begin Result := CartRecord.UserDef; end;
 
 procedure TCartChunk.SetArtist(const Value: string);
 begin
@@ -1693,12 +2088,14 @@ begin
    else Move(Value[1], UserDef, SizeOf(UserDef));
 end;
 
-{ TWavSDA8Chunk }
 
-constructor TWavSDA8Chunk.Create;
-begin
- inherited;
- ChunkFlags := ChunkFlags + [cfPadSize, cfReversedByteOrder];
-end;
+initialization
+  RegisterWaveChunks([TFormatChunk, TFactChunk, TQualityChunk, TBWFLinkChunk,
+    TBWFAXMLChunk, TLabelChunk, TNoteChunk, TLabeledTextChunk, TCuedFileChunk,
+    TPlaylistChunk, TSilentChunk, TCueChunk, TAssociatedDataListChunk,
+    TInfoSoftwareNameChunk, TInfoCommentChunk, TInfoCreationDateChunk,
+    TInfoSubjectChunk, TInfoCopyrightChunk, TJunkChunk, TSamplerChunk,
+    TInstrumentChunk, TBextChunk, TCartChunk])
+
 
 end.
