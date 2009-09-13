@@ -78,6 +78,8 @@ type
     procedure SetTimeRefHigh(const Value: Integer);
     procedure SetTimeRefLow(const Value: Integer);
     function GetEmptyData: Boolean;
+    function GetSubChunk(Index: Integer): TCustomChunk;
+    function GetSubChunkCount: Cardinal;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -105,25 +107,6 @@ type
     procedure ReadDataChunk(const Stream: TStream);
     procedure ReadBextChunk(const Stream: TStream);
     procedure ReadCartChunk(const Stream: TStream);
-
-(*
-    procedure ReadItaHeaderChunk(const Stream: TStream);
-    procedure ReadCueChunk(const Stream: TStream);
-    procedure ReadJunkChunk(const Stream: TStream);
-    procedure ReadPeakChunk(const Stream: TStream);
-    procedure ReadListChunk(const Stream: TStream);
-    procedure ReadDispChunk(const Stream: TStream);
-    procedure ReadMextChunk(const Stream: TStream);
-    procedure ReadAFSPChunk(const Stream: TStream);
-//    procedure ReadSDA8Chunk(const Stream: TStream);
-    procedure ReadLevelChunk(const Stream: TStream);
-    procedure ReadAuxChunk(const Stream: TStream);
-    procedure ReadSilentChunk(const Stream: TStream);
-    procedure ReadPlaylistChunk(const Stream: TStream);
-    procedure ReadLableChunk(const Stream: TStream);
-    procedure ReadSampleChunk(const Stream: TStream);
-    procedure ReadPadChunk(const Stream: TStream);
-*)
     procedure ReadUnknownChunk(const Stream: TStream; const ChunkName: TChunkName);
 
     procedure WriteDataChunk(const Stream: TStream);
@@ -143,6 +126,11 @@ type
     procedure Decode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
     procedure Encode(SamplePosition: Cardinal; SampleFrames: Cardinal); override;
 
+    // sub chunks
+    procedure AddSubChunk(SubChunk: TCustomChunk); virtual;
+    procedure DeleteSubChunk(SubChunk: TCustomChunk); overload; virtual;
+    procedure DeleteSubChunk(const Index: Integer); overload; virtual;
+
     // file format identifier
     class function DefaultExtension: string; override;
     class function Description: string; override;
@@ -152,7 +140,11 @@ type
     property BitsPerSample: Byte read GetBitsPerSample write SetBitsPerSample;
     property BytesPerSample: Integer read FBytesPerSample;
     property Encoding: TAudioEncoding read GetEncoding write SetEncoding;
-    property DataSize: Cardinal read GetDataSize; 
+    property DataSize: Cardinal read GetDataSize;
+
+    // sub chunks
+    property SubChunkCount: Cardinal read GetSubChunkCount;
+    property SubChunk[Index: Integer]: TCustomChunk read GetSubChunk;
 
     // from CART chunk
     property CartVersion: Integer read GetCartVersion write SetCartVersion;
@@ -236,6 +228,24 @@ begin
  result := '.wav';
 end;
 
+procedure TCustomAudioFileWAV.DeleteSubChunk(SubChunk: TCustomChunk);
+var
+  i : Integer;
+begin
+ i := 0;
+ while i < FChunkList.Count do
+  if FChunkList[i] = SubChunk
+   then FChunkList.Delete(i)
+   else Inc(i);
+end;
+
+procedure TCustomAudioFileWAV.DeleteSubChunk(const Index: Integer);
+begin
+ if (Index >= 0) and (Index < FChunkList.Count)
+  then FChunkList.Delete(Index)
+  else raise EWavError.CreateFmt('Index out of bounds (%d)', [Index]);
+end;
+
 class function TCustomAudioFileWAV.Description: string;
 begin
  result := 'Microsoft RIFF WAVE';
@@ -244,6 +254,11 @@ end;
 class function TCustomAudioFileWAV.FileFormatFilter: string;
 begin
  result := Description + ' (*.' + DefaultExtension + ')|*.wav*'
+end;
+
+procedure TCustomAudioFileWAV.AddSubChunk(SubChunk: TCustomChunk);
+begin
+ FChunkList.Add(SubChunk);
 end;
 
 class function TCustomAudioFileWAV.CanLoad(const Stream: TStream): Boolean;
@@ -347,6 +362,18 @@ begin
  if assigned(FCartChunk)
   then result := FCartChunk.StartTime
   else result := '';
+end;
+
+function TCustomAudioFileWAV.GetSubChunk(Index: Integer): TCustomChunk;
+begin
+ if (Index >= 0) and (Index < FChunkList.Count)
+  then Result := FChunkList[Index]
+  else raise EWavError.CreateFmt('Index out of bounds (%d)', [Index]);
+end;
+
+function TCustomAudioFileWAV.GetSubChunkCount: Cardinal;
+begin
+ Result := FChunkList.Count;
 end;
 
 function TCustomAudioFileWAV.GetTimeRefHigh: Integer;

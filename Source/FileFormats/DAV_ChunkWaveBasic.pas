@@ -158,30 +158,18 @@ type
     property Subject: string read FText write FText;
   end;
 
-  ////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////// Link Chunk ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
-
-  // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s4_tcm6-10484.pdf
-
-  TBWFLinkChunk = class(TWavChunkText)
+  TInfoArtistChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property XMLData: string read FText write FText;
+    property Artist: string read FText write FText;
   end;
 
-  ////////////////////////////////////////////////////////////////////////////
-  //////////////////////////////// AXML Chunk ////////////////////////////////
-  ////////////////////////////////////////////////////////////////////////////
-
-  // -> see: http://www.ebu.ch/CMSimages/en/tec_doc_t3285_s5_tcm6-10485.pdf
-
-  TBWFAXMLChunk = class(TWavChunkText)
+  TInfoTitleChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property XMLData: string read FText write FText;
+    property Title: string read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -421,6 +409,7 @@ type
   public
     constructor Create; override;
     procedure SaveToStream(Stream : TStream); override;
+    procedure LoadFromStream(Stream: TStream); override;
     class function GetClassChunkName: TChunkName; override;
   published
     property AlignSize: Integer read FAlignSize write FAlignSize default 2048;
@@ -796,7 +785,7 @@ begin
  Result := nil;
  for X := Length(WaveChunkClasses) - 1 downto 0 do
   begin
-   if CompareText(WaveChunkClasses[X].ClassName, Value) = 0 then
+   if WaveChunkClasses[X].ClassName = Value then
     begin
      Result := WaveChunkClasses[X];
      Break;
@@ -1134,29 +1123,38 @@ begin
  Result := 'ICRD';
 end;
 
+
+{ TInfoCopyrightChunk }
+
 class function TInfoCopyrightChunk.GetClassChunkName: TChunkName;
 begin
  Result := 'ICOP';
 end;
+
+
+{ TInfoSubjectChunk }
 
 class function TInfoSubjectChunk.GetClassChunkName: TChunkName;
 begin
  Result := 'ISBJ';
 end;
 
-{ TBWFLinkChunk }
 
-class function TBWFLinkChunk.GetClassChunkName: TChunkName;
+{ TInfoTitleChunk }
+
+class function TInfoTitleChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'link';
+ Result := 'INAM';
 end;
 
-{ TBWFAXMLChunk }
 
-class function TBWFAXMLChunk.GetClassChunkName: TChunkName;
+{ TInfoArtistChunk }
+
+class function TInfoArtistChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'axml';
+ Result := 'IART';
 end;
+
 
 { TQualityChunk }
 
@@ -1164,6 +1162,7 @@ class function TQualityChunk.GetClassChunkName: TChunkName;
 begin
  Result := 'qlty';
 end;
+
 
 { TSilentChunk }
 
@@ -1221,10 +1220,18 @@ end;
 
 procedure TJunkChunk.SaveToStream(Stream: TStream);
 begin
+ // calculate chunk size
  FChunkSize := FPadding;
+
+ // write basic chunk information
  inherited;
+
+ // write custom chunk information
  with Stream
   do Position := Position + FChunkSize;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 
@@ -1250,13 +1257,28 @@ begin
  Result := 'PAD ';
 end;
 
+procedure TPadChunk.LoadFromStream(Stream: TStream);
+begin
+ inherited;
+ // set align size
+// FAlignSize :=
+end;
+
 procedure TPadChunk.SaveToStream(Stream: TStream);
 begin
+ // calculate chunk size
  with Stream
   do FChunkSize := ((Position + FAlignSize) div FAlignSize) * FAlignSize - Position;
+
+ // write basic chunk information
  inherited;
+
+ // write custom chunk information
  with Stream
   do Position := Position + FChunkSize;
+
+ // check and eventually add zero pad
+ CheckAddZeroPad(Stream);
 end;
 
 
@@ -1832,7 +1854,7 @@ end;
 
 class function TSamplerChunk.GetClassChunkName: TChunkName;
 begin
- Result := 'Smpl';
+ Result := 'smpl';
 end;
 
 function TSamplerChunk.GetManufacturer: TMidiManufacturer;
@@ -1850,6 +1872,7 @@ var
   l : Integer;
 begin
  inherited;
+
  with Stream do
   begin
    Read(SamplerRecord, SizeOf(TSamplerRecord));
@@ -2174,12 +2197,11 @@ end;
 
 
 initialization
-  RegisterWaveChunks([TFormatChunk, TFactChunk, TQualityChunk, TBWFLinkChunk,
-    TBWFAXMLChunk, TLabelChunk, TNoteChunk, TLabeledTextChunk, TCuedFileChunk,
-    TPlaylistChunk, TSilentChunk, TCueChunk, TAssociatedDataListChunk,
-    TInfoSoftwareNameChunk, TInfoCommentChunk, TInfoCreationDateChunk,
-    TInfoSubjectChunk, TInfoCopyrightChunk, TJunkChunk, TPadChunk,
-    TSamplerChunk, TInstrumentChunk, TBextChunk, TCartChunk])
-
+  RegisterWaveChunks([TFormatChunk, TFactChunk, TQualityChunk, TLabelChunk,
+    TNoteChunk, TLabeledTextChunk, TCuedFileChunk, TPlaylistChunk,
+    TSilentChunk, TCueChunk, TAssociatedDataListChunk, TInfoSoftwareNameChunk,
+    TInfoCommentChunk, TInfoCreationDateChunk, TInfoSubjectChunk,
+    TInfoCopyrightChunk, TInfoArtistChunk, TInfoTitleChunk, TJunkChunk,
+    TPadChunk, TSamplerChunk, TInstrumentChunk, TBextChunk, TCartChunk])
 
 end.

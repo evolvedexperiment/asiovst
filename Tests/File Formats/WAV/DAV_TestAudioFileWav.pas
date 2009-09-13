@@ -61,6 +61,8 @@ resourcestring
   RCStrTestOriginatorRef = 'Test Originator Ref';
   RCStrTestOriginationDate = 'Test Origination Date';
   RCStrTestOriginationTime = 'Test Origination Time';
+  RCStrLabelChunk = 'Label Chunk';
+  RCStrNoteChunk = 'Note Chunk';
 
 procedure TestAudioFileWav.SetUp;
 begin
@@ -98,6 +100,8 @@ end;
 procedure TestAudioFileWav.TestBasicWriting;
 var
   TempStream : TMemoryStream;
+  Chunk      : TCustomChunk;
+  I          : Integer;
 begin
  TempStream := TMemoryStream.Create;
  with TempStream do
@@ -113,6 +117,45 @@ begin
      SampleFrames := 100;
      BitsPerSample := 16;
      Encoding := aeInteger;
+
+     // label chunk
+     Chunk := TLabelChunk.Create;
+     TLabelChunk(Chunk).Text := RCStrLabelChunk;
+     AddSubChunk(Chunk);
+
+     // junk chunk
+     Chunk := TJunkChunk.Create;
+     AddSubChunk(Chunk);
+
+     // note chunk
+     Chunk := TNoteChunk.Create;
+     TNoteChunk(Chunk).Note := RCStrNoteChunk;
+     AddSubChunk(Chunk);
+
+     // silent chunk
+     Chunk := TSilentChunk.Create;
+     TSilentChunk(Chunk).NumberOfSilentSamples := 17;
+     AddSubChunk(Chunk);
+
+     // pad chunk
+     Chunk := TPadChunk.Create;
+     AddSubChunk(Chunk);
+
+     // instrument chunk
+     Chunk := TInstrumentChunk.Create;
+     AddSubChunk(Chunk);
+
+     // sampler chunk
+     Chunk := TSamplerChunk.Create;
+     AddSubChunk(Chunk);
+
+     // cue chunk
+     Chunk := TCueChunk.Create;
+     AddSubChunk(Chunk);
+
+     // playlist chunk
+     Chunk := TPlaylistChunk.Create;
+     AddSubChunk(Chunk);
 
      // CART Chunk
      CartVersion := 1000;
@@ -169,6 +212,13 @@ begin
      CheckTrue(TimeRefLow = 10, 'Expected: 10, but was: ' + IntToStr(TimeRefLow));
      CheckTrue(TimeRefHigh = 20, 'Expected: 20, but was: ' + IntToStr(TimeRefHigh));
 
+     for I := 0 to SubChunkCount - 1 do
+      if SubChunk[i] is TLabelChunk then
+       with TLabelChunk(SubChunk[i]) do CheckTrue(Text = RCStrLabelChunk, 'Expected: ' + RCStrLabelChunk + ', but was: ' + Text) else
+      if SubChunk[i] is TNoteChunk then
+       with TNoteChunk(SubChunk[i]) do CheckTrue(Note = RCStrNoteChunk, 'Expected: ' + RCStrNoteChunk + ', but was: ' + Note) else
+      if SubChunk[i] is TSilentChunk then
+       with TSilentChunk(SubChunk[i]) do CheckTrue(NumberOfSilentSamples = 17, 'Expected: 17, but was: ' + IntToStr(NumberOfSilentSamples));
     end;
   finally
    Free;
