@@ -180,7 +180,7 @@ begin
    MidiData[2] := b3;
    MidiData[3] := b4;
    DeltaFrames := offset;
-   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then inc(FMidiEvent.numEvents);
+   if FMidiEvent.numEvents < CMaxMidiEvents - 1 then Inc(FMidiEvent.numEvents);
   end;
 end;
 
