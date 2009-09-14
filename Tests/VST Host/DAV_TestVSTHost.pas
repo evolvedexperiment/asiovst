@@ -1432,7 +1432,7 @@ end;
 
 procedure TVstPluginHostTests.TestEnergyXT;
 var
-  i, j : Integer;
+  i    : Integer;
   pp   : TVstPinProperties;
   Data : PChar;
   prct : PRect;

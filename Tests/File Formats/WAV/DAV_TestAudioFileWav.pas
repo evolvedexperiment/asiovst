@@ -118,18 +118,8 @@ begin
      BitsPerSample := 16;
      Encoding := aeInteger;
 
-     // label chunk
-     Chunk := TLabelChunk.Create;
-     TLabelChunk(Chunk).Text := RCStrLabelChunk;
-     AddSubChunk(Chunk);
-
      // junk chunk
      Chunk := TJunkChunk.Create;
-     AddSubChunk(Chunk);
-
-     // note chunk
-     Chunk := TNoteChunk.Create;
-     TNoteChunk(Chunk).Note := RCStrNoteChunk;
      AddSubChunk(Chunk);
 
      // silent chunk
@@ -143,10 +133,52 @@ begin
 
      // instrument chunk
      Chunk := TInstrumentChunk.Create;
+     with TInstrumentChunk(Chunk) do
+      begin
+       UnshiftedNote := 1;
+       FineTune      := 1;
+       Gain_dB       := 1;
+       LowNote       := 1;
+       HighNote      := 1;
+       LowVelocity   := 1;
+       HighVelocity  := 1;
+      end;
      AddSubChunk(Chunk);
 
+(*
      // sampler chunk
      Chunk := TSamplerChunk.Create;
+     with TSamplerChunk(Chunk) do
+      begin
+       Manufacturer := mmSequentialCircuits;
+       Product := 1;
+       SamplePeriod := 1;
+       MIDIUnityNote := 1;
+       MIDIPitchFraction := 1;
+       SMPTEFormat := so30Drop;
+       SMPTEOffset := 1;
+       with TLoopItem(LoopCollection.Add) do
+        begin
+         CuePointID := 0;
+         LoopType   := 0;
+         LoopStart  := 0;
+         LoopEnd    := 0;
+         Fraction   := 0;
+         PlayCount  := 0;
+        end;
+      end;
+     AddSubChunk(Chunk);
+* )
+
+     // note chunk
+     Chunk := TNoteChunk.Create;
+     TNoteChunk(Chunk).Note := RCStrNoteChunk;
+     AddSubChunk(Chunk);
+*)
+
+     // label chunk
+     Chunk := TLabelChunk.Create;
+     TLabelChunk(Chunk).Text := RCStrLabelChunk;
      AddSubChunk(Chunk);
 
      // cue chunk
@@ -155,6 +187,10 @@ begin
 
      // playlist chunk
      Chunk := TPlaylistChunk.Create;
+     AddSubChunk(Chunk);
+
+     // data list chunk
+     Chunk := TAssociatedDataListChunk.Create;
      AddSubChunk(Chunk);
 
      // CART Chunk
@@ -185,6 +221,7 @@ begin
      TimeRefLow := 10;
      TimeRefHigh := 20;
 
+     // Save/Load stream!
      TempStream.Clear;
      SaveToStream(TempStream);
      TempStream.Position := 0;
@@ -217,6 +254,30 @@ begin
        with TLabelChunk(SubChunk[i]) do CheckTrue(Text = RCStrLabelChunk, 'Expected: ' + RCStrLabelChunk + ', but was: ' + Text) else
       if SubChunk[i] is TNoteChunk then
        with TNoteChunk(SubChunk[i]) do CheckTrue(Note = RCStrNoteChunk, 'Expected: ' + RCStrNoteChunk + ', but was: ' + Note) else
+      if SubChunk[i] is TInstrumentChunk then
+       with TInstrumentChunk(SubChunk[i]) do
+        begin
+         CheckTrue(UnshiftedNote = 1);
+         CheckTrue(FineTune = 1);
+         CheckTrue(Gain_dB = 1);
+         CheckTrue(LowNote = 1);
+         CheckTrue(HighNote = 1);
+         CheckTrue(LowVelocity = 1);
+         CheckTrue(HighVelocity = 1);
+        end else
+      if SubChunk[i] is TSamplerChunk then
+       with TSamplerChunk(SubChunk[i]) do
+        begin
+         CheckTrue(Manufacturer = mmSequentialCircuits);
+         CheckTrue(Product = 1);
+         CheckTrue(SamplePeriod = 1);
+         CheckTrue(MIDIUnityNote = 1);
+         CheckTrue(MIDIPitchFraction = 1);
+         CheckTrue(SMPTEFormat = so30Drop);
+         CheckTrue(SMPTEOffset = 1);
+         CheckTrue(NumSampleLoops = 1);
+         CheckTrue(SamplerData = 1);
+        end else
       if SubChunk[i] is TSilentChunk then
        with TSilentChunk(SubChunk[i]) do CheckTrue(NumberOfSilentSamples = 17, 'Expected: 17, but was: ' + IntToStr(NumberOfSilentSamples));
     end;

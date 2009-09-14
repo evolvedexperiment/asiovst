@@ -559,8 +559,9 @@ type
     property MIDIPitchFraction: Cardinal read SamplerRecord.MIDIPitchFraction write SamplerRecord.MIDIPitchFraction;
     property SMPTEFormat: TSMPTEFormat read GetSMPTEFormat write SetSMPTEFormat;
     property SMPTEOffset: Cardinal read SamplerRecord.SMPTEOffset write SamplerRecord.SMPTEOffset;
-    property NumSampleLoops: Cardinal read SamplerRecord.NumSampleLoops write SamplerRecord.NumSampleLoops;
+    property NumSampleLoops: Cardinal read SamplerRecord.NumSampleLoops;
     property SamplerData: Cardinal read SamplerRecord.SamplerData write SamplerRecord.SamplerData;
+    property LoopCollection: TOwnedCollection read FLoopCollection;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -585,6 +586,8 @@ type
     constructor Create; override;
     class function GetClassChunkSize: Integer; override;
     class function GetClassChunkName : TChunkName; override;
+    procedure SetNoteRange(Low, High: ShortInt);
+    procedure SetVelocityRange(Low, High: Byte);
   published
     property UnshiftedNote: Byte read InstrumentRecord.UnshiftedNote write InstrumentRecord.UnshiftedNote;
     property FineTune: ShortInt read InstrumentRecord.FineTune write InstrumentRecord.FineTune;
@@ -611,8 +614,8 @@ type
     dwNumPeakFrames  : Cardinal; // number of peak frames
     dwPosPeakOfPeaks : Cardinal; // audio sample frame Index or 0xFFFFFFFF if unknown
     dwOffsetToPeaks  : Cardinal; // should usually be equal to the size of this header, but could also be higher
-    strTimestamp     : array [0..27] of char; // ASCII: time stamp of the peak data
-    reserved         : array [0..59] of char; // reserved set to 0x00
+    StrTimestamp     : array [0..27] of char; // ASCII: time stamp of the peak data
+    Reserved         : array [0..59] of char; // reserved set to 0x00
     // CHAR peak_envelope_data[] // the peak point data
   end;
 
@@ -1194,8 +1197,15 @@ end;
 procedure TCustomPaddingChunk.LoadFromStream(Stream: TStream);
 begin
  inherited;
- with Stream
-  do Position := Position + FChunkSize;
+ with Stream do
+  begin
+   // advance position
+   Position := Position + FChunkSize;
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
+  end;
 end;
 
 { TJunkChunk }
@@ -1296,12 +1306,19 @@ end;
 
 procedure TCustomWavCuedTextChunk.LoadFromStream(Stream: TStream);
 begin
+ // load basic chunk information
  inherited;
+
+ // load custom chunk information
  with Stream do
   begin
    SetLength(FText, FChunkSize - SizeOf(Cardinal));
    Read(FCueID, SizeOf(Cardinal));
    Read(FText[1], Length(FText));
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1317,7 +1334,7 @@ begin
  with Stream do
   begin
    Write(FCueID, SizeOf(Cardinal));
-   Write(FText[1], FChunkSize);
+   Write(FText[1], Length(FText));
   end;
 
  // check and eventually add zero pad
@@ -1373,12 +1390,19 @@ end;
 
 procedure TLabeledTextChunk.LoadFromStream(Stream: TStream);
 begin
+ // load basic chunk information
  inherited;
+
+ // load custom chunk information
  with Stream do
   begin
    SetLength(FText, FChunkSize - SizeOf(TLabeledTextRecord));
    Read(LabeledTextRecord, SizeOf(TLabeledTextRecord));
    Read(FText[1], Length(FText));
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1435,15 +1459,22 @@ end;
 
 procedure TCuedFileChunk.LoadFromStream(Stream: TStream);
 begin
+ // calculate chunk size
  inherited;
+
+ // load custom chunk information
  with Stream do
   begin
    Read(FCueID, SizeOf(FCueID));
    Read(FMediaType, SizeOf(FMediaType));
 
-   // read binary data:
+   // read binary data
    SetLength(FBinaryData, FChunkSize - SizeOf(FCueID) - SizeOf(FMediaType));
    Read(FBinaryData[0], Length(FBinaryData));
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1500,7 +1531,10 @@ var
   ChunkEnd  : Integer;
   ChunkName : TChunkName;
 begin
+ // load basic chunk information
  inherited;
+
+ // load custom chunk information
  with Stream do
   begin
    ChunkEnd := Position + FChunkSize;
@@ -1664,7 +1698,10 @@ procedure TPlaylistChunk.LoadFromStream(Stream: TStream);
 var
   l : Integer;
 begin
+ // load basic chunk information
  inherited;
+
+ // load custom chunk information
  with Stream do
   begin
    Read(FCount, SizeOf(Cardinal));
@@ -1677,6 +1714,9 @@ begin
     with TPlaylistSegmentItem(FPlaylistSegments.Add)
      do Read(PlaylistSegment, SizeOf(TPlaylistSegmentRecord));
 
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1758,7 +1798,10 @@ var
   CueCnt   : Integer;
   ChunkEnd : Cardinal;
 begin
+ // load basic chunk information
  inherited;
+
+ // load custom chunk information
  with Stream do
   begin
    // calculate end of chunk in case there are no cue items in this chunk
@@ -1780,6 +1823,10 @@ begin
 
    // jump to the end of this chunk
    Position := ChunkEnd;
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1871,8 +1918,10 @@ procedure TSamplerChunk.LoadFromStream(Stream: TStream);
 var
   l : Integer;
 begin
+ // load basic chunk information
  inherited;
 
+ // load custom chunk information
  with Stream do
   begin
    Read(SamplerRecord, SizeOf(TSamplerRecord));
@@ -1888,6 +1937,10 @@ begin
    // read rest, should only be SamplerRecord.SamplerData
    assert(FChunkSize - SizeOf(TSamplerRecord) = SamplerRecord.SamplerData);
    Position := Position + FChunkSize - SizeOf(TSamplerRecord);
+
+   // eventually skip padded zeroes
+   if cfPadSize in ChunkFlags
+    then Position := Position + CalculateZeroPad;
   end;
 end;
 
@@ -1955,6 +2008,21 @@ class function TInstrumentChunk.GetClassChunkSize: Integer;
 begin
  Result := SizeOf(TInstrumentRecord);
 end;
+
+procedure TInstrumentChunk.SetNoteRange(Low, High: ShortInt);
+begin
+ Assert(Low <= High);
+ InstrumentRecord.LowNote := Low;
+ InstrumentRecord.HighNote := High;
+end;
+
+procedure TInstrumentChunk.SetVelocityRange(Low, High: Byte);
+begin
+ Assert(Low <= High);
+ InstrumentRecord.LowVelocity := Low;
+ InstrumentRecord.HighVelocity := High;
+end;
+
 
 { TCustomBextChunk }
 

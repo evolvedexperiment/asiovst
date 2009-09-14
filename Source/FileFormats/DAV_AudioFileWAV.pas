@@ -1031,6 +1031,7 @@ begin
    if assigned(FFactChunk) then FreeAndNil(FFactChunk);
    if assigned(FCartChunk) then FreeAndNil(FCartChunk);
    if assigned(FBextChunk) then FreeAndNil(FBextChunk);
+   FChunkList.Clear;
 
    FFormatChunkFound := False;
 
@@ -1209,6 +1210,7 @@ var
   ChunkName  : TChunkName;
   ChunkStart : Cardinal;
   ChunkSize  : Cardinal;
+  SubChunk   : Integer;
 begin
  inherited;
  with Stream do
@@ -1253,6 +1255,11 @@ begin
    // write bext chunk if available
    if assigned(FBextChunk)
     then FBextChunk.SaveToStream(Stream);
+
+   // write subchunks
+   if assigned(FChunkList) and (FChunkList.Count > 0) then
+    for SubChunk := 0 to FChunkList.Count - 1
+     do FChunkList[SubChunk].SaveToStream(Stream);
 
    // finally write filesize
    ChunkSize := Position - (ChunkStart + 8);

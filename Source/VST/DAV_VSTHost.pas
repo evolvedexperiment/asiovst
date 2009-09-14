@@ -600,6 +600,7 @@ resourcestring
   RStrPresetFileNotForThisPlugin = 'Preset file not for this plugin!';
   RStrCloseEditorFirst           = 'Close editor first!';
   RStrValue                      = 'Value';
+  RCStrInvalidSMTPEFrameRate = 'Invalid SMTPE FrameRate';
 {$IFDEF DELPHI10_UP} {$endregion 'Resource Strings'} {$ENDIF}
 
 var
@@ -629,7 +630,7 @@ const
 function WhatIfNoEntry: Integer;
 begin
  raise Exception.Create(RStrNoEntryPoint);
- result := 1;
+ Result := 1;
 end;
 
 function String2Language(LanguageString : string): TVSTHostLanguage;
@@ -688,15 +689,15 @@ function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 var
   VstDllHandle : THandle;
 begin
- result := False;
+ Result := False;
  if not FileExists(FileName) then exit; 
  DontRaiseExceptionsAndSetFPUcodeword;
  VstDllHandle := SafeLoadLibrary(PAnsiChar(FileName), 7);
  if VstDllHandle <> 0 then
   try
-   result := GetProcAddress(VstDllHandle, 'main') <> nil;
-   if result = False
-    then result := GetProcAddress(VstDllHandle, 'VSTPluginMain') <> nil;
+   Result := GetProcAddress(VstDllHandle, 'main') <> nil;
+   if Result = False
+    then Result := GetProcAddress(VstDllHandle, 'VSTPluginMain') <> nil;
   finally
    FreeLibrary(VstDllHandle);
   end;
@@ -711,7 +712,7 @@ var
   PlugNr  : Integer;
   {$ENDIF}
 begin
- result := 0;
+ Result := 0;
  try
   if assigned(Effect) then
    begin
@@ -766,9 +767,9 @@ begin
                                              if Assigned(thePlug) then
                                               if Assigned(thePlug.FOnAMAutomate)
                                                then thePlug.FOnAMAutomate(thePlug, Index, Value, opt);
-                                             result := 0;
+                                             Result := 0;
                                             end;
-   audioMasterVersion                     : result := FHostVersion;
+   audioMasterVersion                     : Result := FHostVersion;
    audioMasterIdle                        : if Assigned(thePlug) then
                                              begin
                                               {$IFDEF VstHostGUI}
@@ -785,7 +786,7 @@ begin
                                              end;
    audioMasterCurrentId                   : if thePlug <> nil
                                              then thePlug.Identify
-                                             else result := 0; // returns the unique id of a plug that's currently loading
+                                             else Result := 0; // returns the unique id of a plug that's currently loading
    audioMasterPinConnected                : if Assigned(thePlug) then
                                              if Assigned(thePlug.FOnAMPinConnected)
                                               then
@@ -794,8 +795,8 @@ begin
                                                  then Result := 0
                                                  else Result := 1;
                                                end
-                                              else result := 0
-                                             else result := 0;
+                                              else Result := 0
+                                             else Result := 0;
    audioMasterWantMidi                    : if Assigned(thePlug) then
                                              if Assigned(thePlug.FOnAMWantMidi)
                                               then thePlug.FOnAMWantMidi(thePlug);
@@ -805,17 +806,17 @@ begin
    audioMasterProcessEvents               : if Assigned(thePlug.FOnProcessEvents)
                                              then thePlug.FOnProcessEvents(thePlug, ptr);
    audioMasterSetTime                     : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterSetTime, VstTimenfo* in <ptr>, filter in <value>, not supported') {$ENDIF Debug};
-   audioMasterTempoAt                     : result := round(FHostTempo) * 10000;
+   audioMasterTempoAt                     : Result := round(FHostTempo) * 10000;
    audioMasterGetNumAutomatableParameters : if assigned(theHost)
-                                             then result := theHost.FnumAutomatable
-                                             else result := 0;
+                                             then Result := theHost.FnumAutomatable
+                                             else Result := 0;
    audioMasterGetParameterQuantization    : if assigned(theHost) then
                                              if Value = -1
-                                              then result := theHost.FParamQuan
+                                              then Result := theHost.FParamQuan
                                               else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug}
                                              // or 1 if full Single float precision is maintained
                                              // in automation. parameter index in <value> (-1: all, any)
-                                            else result := 0;
+                                            else Result := 0;
    audioMasterIOChanged                   : if Assigned(thePlug)
                                              then thePlug.IOChanged;
    audioMasterNeedIdle                    : if Assigned(thePlug) then
@@ -828,9 +829,9 @@ begin
                                              {$IFDEF VstHostGUI}
                                              if Assigned(thePlug) then
                                               if pos('DASH', uppercase(thePlug.VendorString)) > 0
-                                               then result := 0
+                                               then Result := 0
                                               else if pos('WUSIK', uppercase(thePlug.VendorString)) > 0
-                                               then result := 0 else
+                                               then Result := 0 else
                                               if assigned(thePlug.GUIControl) then
                                                begin
                                                 thePlug.GUIControl.ClientWidth := index;
@@ -839,22 +840,22 @@ begin
                                                end;
                                              {$ENDIF}
                                             end;
-   audioMasterGetSampleRate               : result := round(FSampleRate);
-   audioMasterGetBlockSize                : result := FBlockSize;
+   audioMasterGetSampleRate               : Result := round(FSampleRate);
+   audioMasterGetBlockSize                : Result := FBlockSize;
    audioMasterGetInputLatency             : if assigned(theHost)
-                                             then result := theHost.FInputLatency
-                                             else result := 0;
+                                             then Result := theHost.FInputLatency
+                                             else Result := 0;
    audioMasterGetOutputLatency            : if assigned(theHost)
-                                             then result := theHost.FOutputLatency
-                                             else result := 0;
+                                             then Result := theHost.FOutputLatency
+                                             else Result := 0;
    audioMasterGetPreviousPlug             : begin
 //                                              if PlugNr = 0 then Result := 0;
                                              {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
                                             end;
    audioMasterGetNextPlug                 : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
-   audioMasterWillReplaceOrAccumulate     : if thePlug <> nil then result := Integer(thePlug.FReplaceOrAccumulate) else result := 0;
-   audioMasterGetCurrentProcessLevel      : if thePlug <> nil then result := Integer(thePlug.FProcessLevel) else result := 0;
-   audioMasterGetAutomationState          : if thePlug <> nil then result := Integer(thePlug.FAutomationState) else result := 0;
+   audioMasterWillReplaceOrAccumulate     : if thePlug <> nil then Result := Integer(thePlug.FReplaceOrAccumulate) else Result := 0;
+   audioMasterGetCurrentProcessLevel      : if thePlug <> nil then Result := Integer(thePlug.FProcessLevel) else Result := 0;
+   audioMasterGetAutomationState          : if thePlug <> nil then Result := Integer(thePlug.FAutomationState) else Result := 0;
    audioMasterOfflineStart                : if Assigned(thePlug) then
                                              if Assigned(thePlug.FOnAMOfflineStart)
                                               then thePlug.FOnAMOfflineStart(thePlug); // audioMasterOfflineStart
@@ -881,30 +882,30 @@ begin
                                              if assigned(theHost)
                                               then StrCopy(PAnsiChar(ptr), PAnsiChar(theHost.VendorString))
                                               else StrCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
-                                             result := 1;
+                                             Result := 1;
                                             end;
    audioMasterGetProductString            : try
-                                             result := 1;
+                                             Result := 1;
                                              if assigned(theHost)
                                               then StrCopy(PAnsiChar(ptr), PAnsiChar(theHost.ProductString))
                                               else
                                                if assigned(ptr)
                                                 then StrCopy(PAnsiChar(ptr), 'Delphi VST Host')
-                                                else result := 0;
+                                                else Result := 0;
                                             except
-                                             result := 0;
+                                             Result := 0;
                                             end;
    audioMasterGetVendorVersion            : if assigned(theHost)
-                                             then result := theHost.FVendorVersion
-                                             else result := 0;
+                                             then Result := theHost.FVendorVersion
+                                             else Result := 0;
    audioMasterVendorSpecific              : if assigned(thePlug) then
                                              if assigned(thePlug.FOnVendorSpecific)
-                                              then result := thePlug.FOnVendorSpecific(TAudiomasterOpcode(opcode), index, value, ptr, opt)
-                                              else result := 0
-                                             else result := 0;
+                                              then Result := thePlug.FOnVendorSpecific(TAudiomasterOpcode(opcode), index, value, ptr, opt)
+                                              else Result := 0
+                                             else Result := 0;
    audioMasterSetIcon                     : {$IFDEF Debug} ShowMessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
    audioMasterCanDo                       : begin
-                                             if not assigned(ptr) then result := 0 else 
+                                             if not assigned(ptr) then Result := 0 else 
                                              if      ShortString(PAnsiChar(ptr)) = 'sendVstEvents' then Result := Integer(hcdSendVstEvents in FHostCanDos)
                                              else if ShortString(PAnsiChar(ptr)) = 'sendVstMidiEvent' then Result := Integer(hcdSendVstMidiEvent in FHostCanDos)
                                              else if ShortString(PAnsiChar(ptr)) = 'sendVstTimeInfo' then Result := Integer(hcdSendVstTimeInfo in FHostCanDos)
@@ -926,8 +927,8 @@ begin
                                              else Result := 0;
                                             end;
    audioMasterGetLanguage                 : if assigned(theHost)
-                                             then result := Integer(theHost.FLanguage)
-                                             else result := Integer(hlUnknown);
+                                             then Result := Integer(theHost.FLanguage)
+                                             else Result := Integer(hlUnknown);
    audioMasterOpenWindow                  : if assigned(ptr) then
                                              begin
                                              {$IFDEF VstHostGUI}
@@ -955,7 +956,7 @@ begin
                                              {$ENDIF Debug};
                                             end;
    audioMasterGetDirectory                : if assigned(theHost)
-                                             then result := LongInt(PAnsiChar(theHost.FPlugInDir));
+                                             then Result := LongInt(PAnsiChar(theHost.FPlugInDir));
    audioMasterUpdateDisplay               : if Assigned(thePlug) then
                                              if Assigned(thePlug.FOnAMUpdateDisplay)
                                               then thePlug.FOnAMUpdateDisplay(thePlug);
@@ -1066,11 +1067,11 @@ begin
                                          IntToStr(value) + ' - ' +
                                          FloatToStr(opt));
     except
-      result := 0;
+      Result := 0;
     end;
   end;
  except
-  result := 0;
+  Result := 0;
   {$IFDEF Debug}
   raise;
   {$ENDIF}
@@ -1087,11 +1088,11 @@ begin
  with FVstTimeInfo do
   begin
    SampleRate         :=  44100;
-   timeSigNumerator   := 4;
-   timeSigDenominator := 4;
-   smpteFrameRate     := 1;
-   samplePos          := 0;
-   ppqPos             := 0;
+   TimeSigNumerator   := 4;
+   TimeSigDenominator := 4;
+   SmpteFrameRate     := 1;
+   SamplePos          := 0;
+   PpqPos             := 0;
   end;
  Flags := [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid,
            vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid];
@@ -1116,7 +1117,7 @@ end;
 
 function TCustomVstTimeInformation.GetVTIflags: TVstTimeInfoFlags;
 begin
- result := FVstTimeInfo.Flags;
+ Result := FVstTimeInfo.Flags;
 end;
 
 function TCustomVstTimeInformation.GetVTIDouble(Index: Integer): Double;
@@ -1124,14 +1125,14 @@ begin
  Result := 0;
  with FVstTimeInfo do
   case Index of
-   0: Result := samplePos;
-   1: Result := sampleRate;
-   2: Result := nanoSeconds;
-   3: Result := ppqPos;
-   4: Result := tempo;
-   5: Result := barStartPos;
-   6: Result := cycleStartPos;
-   7: Result := cycleEndPos;
+   0: Result := SamplePos;
+   1: Result := SampleRate;
+   2: Result := NanoSeconds;
+   3: Result := PpqPos;
+   4: Result := Tempo;
+   5: Result := BarStartPos;
+   6: Result := CycleStartPos;
+   7: Result := CycleEndPos;
   end;
 end;
 
@@ -1140,11 +1141,11 @@ begin
  Result := 0;
  with FVstTimeInfo do
   case Index of
-   0: Result := timeSigNumerator;
-   1: Result := timeSigDenominator;
-   2: Result := smpteOffset;
-   3: Result := smpteFrameRate;
-   4: Result := samplesToNextClock;
+   0: Result := TimeSigNumerator;
+   1: Result := TimeSigDenominator;
+   2: Result := SmpteOffset;
+   3: Result := SmpteFrameRate;
+   4: Result := SamplesToNextClock;
   end;
 end;
 
@@ -1152,11 +1153,11 @@ procedure TCustomVstTimeInformation.SetVTI(Index, Value: Integer);
 begin
  with FVstTimeInfo do
   case Index of
-   0: if Value <> timeSigNumerator then begin timeSigNumerator := Value; Change; end;
-   1: if Value <> timeSigDenominator then begin timeSigDenominator := Value; Change; end;
-   2: if Value <> smpteOffset then begin smpteOffset := Value; Change; end;
-   3: if Value <> smpteFrameRate then begin smpteFrameRate := Value; Change; end;
-   4: if Value <> samplesToNextClock then begin samplesToNextClock := Value; Change; end;
+   0: if Value <> TimeSigNumerator then begin TimeSigNumerator := Value; Change; end;
+   1: if Value <> TimeSigDenominator then begin TimeSigDenominator := Value; Change; end;
+   2: if Value <> SmpteOffset then begin SmpteOffset := Value; Change; end;
+   3: if Value <> SmpteFrameRate then begin SmpteFrameRate := Value; Change; end;
+   4: if Value <> SamplesToNextClock then begin SamplesToNextClock := Value; Change; end;
   end;
 end;
 
@@ -1164,14 +1165,14 @@ procedure TCustomVstTimeInformation.SetVTIDouble(Index: Integer; Value: Double);
 begin
  with FVstTimeInfo do
   case Index of
-   0: if Value <> samplePos then begin SamplePos := Value; Change; end;
-   1: if Value <> sampleRate then begin sampleRate := Value; FsampleRate := Value; Change; end;
-   2: if Value <> nanoSeconds then begin nanoSeconds := Value; Change; end;
-   3: if Value <> ppqPos then begin ppqPos := Value; Change; end;
-   4: if Value <> tempo then begin tempo := Value; Change; end;
-   5: if Value <> barStartPos then begin barStartPos := Value; Change; end;
-   6: if Value <> cycleStartPos then begin cycleStartPos := Value; Change; end;
-   7: if Value <> cycleEndPos then begin cycleEndPos := Value; Change; end;
+   0: if Value <> SamplePos then begin SamplePos := Value; Change; end;
+   1: if Value <> SampleRate then begin SampleRate := Value; FsampleRate := Value; Change; end;
+   2: if Value <> NanoSeconds then begin NanoSeconds := Value; Change; end;
+   3: if Value <> PpqPos then begin PpqPos := Value; Change; end;
+   4: if Value <> Tempo then begin Tempo := Value; Change; end;
+   5: if Value <> BarStartPos then begin BarStartPos := Value; Change; end;
+   6: if Value <> CycleStartPos then begin CycleStartPos := Value; Change; end;
+   7: if Value <> CycleEndPos then begin CycleEndPos := Value; Change; end;
   end;
 end;
 
@@ -1286,7 +1287,7 @@ end;
 function TCustomVstHost.GetPluginCount: Integer;
 begin
  assert(assigned(FVstPlugIns));
- result := FVstPlugIns.Count;
+ Result := FVstPlugIns.Count;
 end;
 
 procedure TCustomVstHost.SetVstPlugIns(const Value: TVstPlugIns);
@@ -1300,11 +1301,11 @@ begin
  Result := FHostTempo;
 end;
 
-procedure TCustomVstHost.setHostTempo(tempo: Single);
+procedure TCustomVstHost.setHostTempo(Tempo: Single);
 begin
- FHostTempo := tempo;
+ FHostTempo := Tempo;
  if Assigned(VstTimeInfo)
-  then VstTimeInfo.tempo := Tempo;
+  then VstTimeInfo.Tempo := Tempo;
 end;
 
 function TCustomVstHost.getHostCanDos: THostCanDos;
@@ -1345,15 +1346,62 @@ end;
 
 procedure TCustomVstHost.UpdateVstTimeInfo(const Samples: Word = 1);
 var
-  p: Double;
+  Seconds           : Double;
+  SingleSampleClock : Double;
+  OffsetInSecond    : Double;
+  SmpteDiv          : Double;
 begin
  if Assigned(FVTI) then
   with FVTI.FVstTimeInfo do
    begin
-    samplePos := samplePos + samples;
-    p := sampleRate * 240 / tempo;
-    if samplePos >= p then samplePos := samplePos - p;
-    ppqPos := (samplePos / sampleRate) * (tempo / 60);
+    // SamplePos and PpqPos
+    SamplePos := SamplePos + Samples;
+    Seconds := SamplePos / SampleRate;
+    PpqPos := Seconds * (Tempo / 60);
+    Flags := Flags + [vtiPpqPosValid];
+
+    // BarStartPos
+    BarStartPos := TimeSigDenominator* (round(PpqPos) div TimeSigDenominator);
+    Flags := Flags + [vtiBarsValid];
+
+    //SamplesToNextClock
+    SingleSampleClock := (60 * SampleRate) / (Tempo*24.0);
+    SamplesToNextClock := round(SingleSampleClock
+         * (round(SamplePos) div round(SingleSampleclock) + 1));
+    Flags := Flags + [vtiClockValid];
+
+(*
+    // NanoSeconds
+    try
+     NanoSeconds := TimeGetTime * 1000000;
+     Flags := Flags + [vtiNanosValid];
+    except
+     Flags := Flags - [vtiNanosValid];
+    end;
+*)
+
+    // SmpteOffset
+    OffsetInSecond := Seconds - round(Seconds - CHalf32);
+    case SmpteFrameRate of
+        0 : SmpteDiv := 24;
+        1 : SmpteDiv := 25;
+        2 : SmpteDiv := 29.97;
+        3 : SmpteDiv := 30;
+        4 : SmpteDiv := 29.97;
+        5 : SmpteDiv := 30;
+     6..9 : SmpteDiv := 0;
+       10 : SmpteDiv := 23.976;
+       11 : SmpteDiv := 24.976;
+       12 : SmpteDiv := 59.94;
+       13 : SmpteDiv := 60;
+      else  raise Exception.Create(RCStrInvalidSMTPEFrameRate);
+    end;
+
+    SmpteOffset := Round(OffsetInSecond * SmpteDiv * 80);
+    Flags := Flags + [vtiSmpteValid];
+
+    // Transport Changed
+    Flags := Flags + [vtiTransportChanged];
    end;
 end;
 
@@ -1362,8 +1410,8 @@ begin
  if Assigned(FVTI) then
   with FVTI do
    begin
-    FVstTimeInfo.samplePos := 0;
-    FVstTimeInfo.ppqPos := 0;
+    FVstTimeInfo.SamplePos := 0;
+    FVstTimeInfo.PpqPos := 0;
    end;
 end;
 
@@ -1399,7 +1447,7 @@ end;
 
 function TVstPlugIns.GetVSTHost: TCustomVstHost;
 begin
- result := TCustomVstHost(FOwner);
+ Result := TCustomVstHost(FOwner);
 end;
 
 function TVstPlugIns.Insert(Index: Integer): TVstPlugIn;
@@ -1666,10 +1714,10 @@ begin
  try
   DontRaiseExceptionsAndSetFPUcodeword;
   if not assigned(FVstEffect)
-   then result := 0
-   else result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
+   then Result := 0
+   else Result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
  except
-  result := 0;
+  Result := 0;
  end;
 end;
 
@@ -1700,8 +1748,8 @@ end;
 function TCustomVstPlugIn.GetParameter(Index: Integer): Single;
 begin
  if FVstEffect = nil
-  then result := 0
-  else result := FVstEffect.GetParameter(FVstEffect, Index);
+  then Result := 0
+  else Result := FVstEffect.GetParameter(FVstEffect, Index);
 end;
 
 procedure TCustomVstPlugIn.SetCurrentProgram(const lValue: Integer);
@@ -1716,9 +1764,9 @@ end;
 function TCustomVstPlugIn.GetCurrentProgram: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetProgram)
-  else result := -1;
- FProgramNr := result;
+  then Result := VstDispatch(effGetProgram)
+  else Result := -1;
+ FProgramNr := Result;
 end;
 
 procedure TCustomVstPlugIn.SetProgramName(const NewName: string);
@@ -1733,7 +1781,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -1741,11 +1789,11 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetProgramName, 0, 0, Temp) = 0 // check is not part of the official specification
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if (TVSTPlugins(Collection).VSTHost.CheckStringLengths) and (Length(result) > 24)
+   if (TVSTPlugins(Collection).VSTHost.CheckStringLengths) and (Length(Result) > 24)
     then raise Exception.Create('String too short');
  finally
   // dispose memory
@@ -1759,7 +1807,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
 
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
@@ -1768,11 +1816,11 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetParamLabel, index, 0, Temp) = 0 // check is not part of the specification
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(result) > 8)
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
     then raise Exception.Create('String too short');
  finally
 
@@ -1787,7 +1835,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
 
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
@@ -1796,11 +1844,11 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetParamDisplay, index, 0, Temp) = 0 // check is not part of the specification
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(result) > 8)
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
     then raise Exception.Create('String too short');
  finally
 
@@ -1815,7 +1863,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
 
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
@@ -1824,11 +1872,11 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetParamName, Index, 0, Temp) = 0 // check is not part of the official specification
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
-   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(result) > 8)
+   if TVSTPlugins(Collection).VSTHost.CheckStringLengths and (Length(Result) > 8)
     then raise Exception.Create('String too short');
  finally
 
@@ -1864,15 +1912,15 @@ const
   Divisor : Double = 1 / 32767;
 begin
  if FActive
-  then result := VstDispatch(effGetVu) * Divisor
-  else result := -1;
+  then Result := VstDispatch(effGetVu) * Divisor
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetRealQualities: LongInt;
 begin
  if assigned(FVstEffect)
-  then result := FVstEffect^.RealQualities
-  else result := 0;
+  then Result := FVstEffect^.RealQualities
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetRect: TRect;
@@ -1886,7 +1934,7 @@ begin
  {$ELSE}
  theRect := Rect(0, 0, 0, 0);
  {$ENDIF}
- result := Classes.Rect(theRect.left, theRect.Top, theRect.right, theRect.Bottom);
+ Result := Classes.Rect(theRect.left, theRect.Top, theRect.right, theRect.Bottom);
 end;
 
 {$IFDEF VstHostGUI}
@@ -1899,7 +1947,7 @@ begin
   if FActive then VstDispatch(effEditGetRect, 0, 0, temp);
   if Assigned(temp) then
    if Assigned(temp^)
-    then result := temp^^;
+    then Result := temp^^;
  finally
   Dispose(temp);
  end;
@@ -1916,7 +1964,7 @@ begin
  finally
   if i > 0 then FEditOpen := True
   else FEditOpen := False;
-  result := i;
+  Result := i;
  end;
 end;
 
@@ -2109,7 +2157,7 @@ begin
           while str[i] = '0' do
            begin
             Delete(str, i, 1);
-            dec(i);
+            Dec(i);
            end;
          end;
         if GetParamLabel(Tag) <> ''
@@ -2230,8 +2278,8 @@ end;
 function TCustomVstPlugIn.EditIdle: Integer;
 begin
  if FEditOpen
-  then result := VstDispatch(effEditIdle)
-  else result := 0;
+  then Result := VstDispatch(effEditIdle)
+  else Result := 0;
 end;
 
 procedure TCustomVstPlugIn.EditActivate;
@@ -2247,42 +2295,42 @@ end;
 
 function TCustomVstPlugIn.Identify: Integer;
 begin
- result := VstDispatch(effIdentify);
+ Result := VstDispatch(effIdentify);
 end;
 
 function TCustomVstPlugIn.GetChunk(const Data: Pointer; const IsPreset: Boolean = False): Integer;
 begin
- result := VstDispatch(effGetChunk, Integer(isPreset), 0, Data);
+ Result := VstDispatch(effGetChunk, Integer(isPreset), 0, Data);
 end;
 
 function TCustomVstPlugIn.SetChunk(const Data: Pointer; const ByteSize: Integer; const IsPreset: Boolean = False): Integer;
 begin
- result := VstDispatch(effSetChunk, Integer(isPreset), ByteSize, Data);
+ Result := VstDispatch(effSetChunk, Integer(isPreset), ByteSize, Data);
 end;
 
 function TCustomVstPlugIn.SetInputSpeakerArrangement(const PluginInput: TVstSpeakerArrangement): Boolean;
 begin
- result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(@PluginInput), nil));
+ Result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(@PluginInput), nil));
 end;
 
 function TCustomVstPlugIn.SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
 begin
- result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, 0, @PluginOutput));
+ Result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, 0, @PluginOutput));
 end;
 
 function TCustomVstPlugIn.ProcessEvents(const VstEvents: TVstEvents): Integer;
 begin
- result := VstDispatch(effProcessEvents, 0, 0, @VstEvents);
+ Result := VstDispatch(effProcessEvents, 0, 0, @VstEvents);
 end;
 
 function TCustomVstPlugIn.CanBeAutomated(const Index: Integer): Integer;
 begin
- result := VstDispatch(effCanBeAutomated, Index);
+ Result := VstDispatch(effCanBeAutomated, Index);
 end;
 
 function TCustomVstPlugIn.CheckValidPlugin(const FileName: TFilename): Boolean;
 begin
- result := CheckValidVstPlugin(FileName);
+ Result := CheckValidVstPlugin(FileName);
 end;
 
 function TCustomVstPlugIn.String2Parameter(const Index: Integer; var ParameterName: string): Integer;
@@ -2291,7 +2339,7 @@ var
 const
   Lngth = 256;
 begin
- result := 0;
+ Result := 0;
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -2299,7 +2347,7 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    begin
-    result := VstDispatch(effString2Parameter, Index, 0, Temp);
+    Result := VstDispatch(effString2Parameter, Index, 0, Temp);
     ParameterName := StrPas(Temp);
    end;
  finally
@@ -2310,15 +2358,15 @@ end;
 function TCustomVstPlugIn.GetNumProgramCategories: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetNumProgramCategories)
-  else result := -1;
+  then Result := VstDispatch(effGetNumProgramCategories)
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetnumPrograms: Integer;
 begin
  if Assigned(FVstEffect)
-  then result := FVstEffect^.numPrograms
-  else result := 0;
+  then Result := FVstEffect^.numPrograms
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: string): Integer;
@@ -2336,11 +2384,11 @@ begin
   if FActive
    then
     begin
-     result := VstDispatch(effGetProgramNameIndexed, Index, Category, Temp);
-     if result > 0
+     Result := VstDispatch(effGetProgramNameIndexed, Index, Category, Temp);
+     if Result > 0
       then ProgramName := StrPas(Temp);
     end
-   else result := -1;
+   else Result := -1;
 
  finally
   // dispose memory
@@ -2351,106 +2399,106 @@ end;
 function TCustomVstPlugIn.CopyCurrentProgramTo(const Destination: Integer): Boolean;
 begin
  if FActive
-  then result := Boolean(VstDispatch(effCopyProgram, Destination))
-  else result := False;
+  then Result := Boolean(VstDispatch(effCopyProgram, Destination))
+  else Result := False;
 end;
 
 function TCustomVstPlugIn.ConnectInput(const InputNr: Integer; const State: Boolean): Integer;
 begin
  if FActive
-  then result := VstDispatch(effConnectInput, InputNr, Integer(State))
-  else result := -1;
+  then Result := VstDispatch(effConnectInput, InputNr, Integer(State))
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.ConnectOutput(const OutputNr: Integer; const State: Boolean): Integer;
 begin
  if FActive
-  then result := VstDispatch(effConnectOutput, OutputNr, Integer(State))
-  else result := -1;
+  then Result := VstDispatch(effConnectOutput, OutputNr, Integer(State))
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetInputProperties(const InputNr: Integer): TVstPinProperties;
 begin
- FillChar(result, SizeOf(TVstPinProperties), 0);
+ FillChar(Result, SizeOf(TVstPinProperties), 0);
  if FActive
-  then VstDispatch(effGetInputProperties, InputNr, 0, @result);
+  then VstDispatch(effGetInputProperties, InputNr, 0, @Result);
 end;
 
 function TCustomVstPlugIn.GetIORatio: Single;
 begin
  if assigned(FVstEffect)
-  then result := FVstEffect^.IORatio
-  else result := 1;
+  then Result := FVstEffect^.IORatio
+  else Result := 1;
 end;
 
 function TCustomVstPlugIn.GetOffQualities: LongInt;
 begin
  if assigned(FVstEffect)
-  then result := FVstEffect^.OffQualities
-  else result := 0;
+  then Result := FVstEffect^.OffQualities
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetOutputProperties(const OutputNr: Integer): TVstPinProperties;
 begin
- FillChar(result, SizeOf(TVstPinProperties), 0);
+ FillChar(Result, SizeOf(TVstPinProperties), 0);
  if FActive
-  then VstDispatch(effGetOutputProperties, OutputNr, 0, @result);
+  then VstDispatch(effGetOutputProperties, OutputNr, 0, @Result);
 end;
 
 function TCustomVstPlugIn.GetPlugCategory: TVstPluginCategory;
 begin
  if FActive
-  then result := TVstPluginCategory(VstDispatch(effGetPlugCategory))
-  else result := vpcUnknown;
+  then Result := TVstPluginCategory(VstDispatch(effGetPlugCategory))
+  else Result := vpcUnknown;
 end;
 
 function TCustomVstPlugIn.GetCurrentPosition: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetCurrentPosition)
-  else result := -1;
+  then Result := VstDispatch(effGetCurrentPosition)
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetDestinationBuffer: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetDestinationBuffer)
-  else result := -1;
+  then Result := VstDispatch(effGetDestinationBuffer)
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.OfflineNotify(const VstAudioFile: TVstAudioFile; const NumAudioFiles: Integer; const Start: Boolean): Integer;
 begin
- result := VstDispatch(effOfflineNotify, Integer(Start), NumAudioFiles, @VstAudioFile);
+ Result := VstDispatch(effOfflineNotify, Integer(Start), NumAudioFiles, @VstAudioFile);
 end;
 
 function TCustomVstPlugIn.OfflinePrepare(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
 begin
- result := VstDispatch(effOfflinePrepare, 0, Count, @VstOfflineTaskRecord);
+ Result := VstDispatch(effOfflinePrepare, 0, Count, @VstOfflineTaskRecord);
 end;
 
 function TCustomVstPlugIn.OfflineRun(const VstOfflineTaskRecord: TVstOfflineTaskRecord; const Count: Integer): Integer;
 begin
- result := VstDispatch(effOfflineRun, 0, Count, @VstOfflineTaskRecord);
+ Result := VstDispatch(effOfflineRun, 0, Count, @VstOfflineTaskRecord);
 end;
 
 function TCustomVstPlugIn.ProcessVarIo(const VarIo: TVstVariableIo): Integer;
 begin
- result := VstDispatch(effProcessVarIo, 0, 0, @VarIo);
+ Result := VstDispatch(effProcessVarIo, 0, 0, @VarIo);
 end;
 
 function TCustomVstPlugIn.SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
 begin
- result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(@PluginInput), @PluginOutput));
+ Result := Boolean(VstDispatch(effSetSpeakerArrangement, 0, Integer(@PluginInput), @PluginOutput));
 end;
 
 function TCustomVstPlugIn.SetBlockSizeAndSampleRate(const BlockSize: Integer; const SampleRate: Single): Integer;
 begin
- result := VstDispatch(effSetBlockSizeAndSampleRate, 0, BlockSize, nil, SampleRate);
+ Result := VstDispatch(effSetBlockSizeAndSampleRate, 0, BlockSize, nil, SampleRate);
 end;
 
 function TCustomVstPlugIn.SetBypass(const Value: Boolean): Integer;
 begin
- result := VstDispatch(effSetBypass, 0, Integer(Value));
+ Result := VstDispatch(effSetBypass, 0, Integer(Value));
 end;
 
 function TCustomVstPlugIn.GetEffectName: string;
@@ -2459,7 +2507,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -2467,12 +2515,12 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetEffectName, 0, 0, Temp) <> 0 // not sure about this
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 32);
+    then assert(Length(Result) <= 32);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2485,7 +2533,7 @@ var
 const
   Lngth = 512;
 begin
- result := '';
+ Result := '';
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -2493,12 +2541,12 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetErrorText, 0, 0, Temp) <> 0 // not sure here!
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 256);
+    then assert(Length(Result) <= 256);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2526,9 +2574,9 @@ begin
     v := i;
     j := Length(Variations[i]);
    end;
- result := Variations[v];
- if result = ''
-  then result := DisplayName;
+ Result := Variations[v];
+ if Result = ''
+  then Result := DisplayName;
 end;
 
 function TCustomVstPlugIn.GetVendorString: string;
@@ -2537,7 +2585,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -2545,12 +2593,12 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetVendorString, 0, 0, Temp) <> 0 // not sure here!
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 64);
+    then assert(Length(Result) <= 64);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2563,7 +2611,7 @@ var
 const
   Lngth = 256;
 begin
- result := '';
+ Result := '';
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -2571,12 +2619,12 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    if VstDispatch(effGetProductString, 0, 0, Temp) <> 0 // not sure here!
-    then result := StrPas(Temp);
+    then Result := StrPas(Temp);
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(result) <= 64);
+    then assert(Length(Result) <= 64);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2586,21 +2634,21 @@ end;
 function TCustomVstPlugIn.GetVendorVersion: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetVendorVersion)
-  else result := -1;
+  then Result := VstDispatch(effGetVendorVersion)
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetVersion: Integer;
 begin
  if assigned(FVstEffect)
-  then result := FVstEffect.Version
-  else result := 0;
+  then Result := FVstEffect.Version
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetVSTCanDos: TVstCanDos;
 begin
  if FVSTCanDosScannedComplete
-  then result := FVstCanDos
+  then Result := FVstCanDos
   else
    begin
     if VstCanDo('receiveVstEvents')      = 0 then FVstCanDos := FVstCanDos - [vcdReceiveVstEvents] else FVstCanDos := FVstCanDos + [vcdReceiveVstEvents];
@@ -2635,32 +2683,32 @@ end;
 
 function TCustomVstPlugIn.VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
 begin
- result := VstDispatch(effVendorSpecific, index, value, pntr, opt);
+ Result := VstDispatch(effVendorSpecific, index, value, pntr, opt);
 end;
 
 function TCustomVstPlugIn.VstCanDo(const CanDoString: string): Integer;
 begin
- result := VstDispatch(effCanDo, 0, 0, PAnsiChar(CanDoString));
+ Result := VstDispatch(effCanDo, 0, 0, PAnsiChar(CanDoString));
 end;
 
 function TCustomVstPlugIn.GetTailSize: Integer;
 begin
- if FActive then result := VstDispatch(effGetTailSize) else result := -1;
+ if FActive then Result := VstDispatch(effGetTailSize) else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetUniqueID: string;
 begin
  if assigned(FVstEffect) then
   with FVstEffect^
-   do result := uniqueID[3] + uniqueID[2] + uniqueID[1] + uniqueID[0]
-  else result := '';
+   do Result := uniqueID[3] + uniqueID[2] + uniqueID[1] + uniqueID[0]
+  else Result := '';
 end;
 
 function TCustomVstPlugIn.Idle: Integer;
 begin
  if FNeedIdle
-  then result := VstDispatch(effIdle)
-  else result := 0;
+  then Result := VstDispatch(effIdle)
+  else Result := 0;
 end;
 
 procedure TCustomVstPlugIn.IOchanged;
@@ -2672,8 +2720,8 @@ end;
 function TCustomVstPlugIn.GetIcon: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetIcon)
-  else result := -1;
+  then Result := VstDispatch(effGetIcon)
+  else Result := -1;
 end;
 
 procedure TCustomVstPlugIn.SetViewPosition(const x, y: Integer);
@@ -2685,22 +2733,22 @@ function TCustomVstPlugIn.GetParameterProperties(const Index: Integer;
   var ParameterProperties: TVstParameterPropertyRecord): Boolean;
 begin
  if FActive
-  then result := VstDispatch(effGetParameterProperties, Index, 0, @result) <> 0
-  else result := False;
+  then Result := VstDispatch(effGetParameterProperties, Index, 0, @Result) <> 0
+  else Result := False;
 end;
 
 function TCustomVstPlugIn.KeysRequired: Integer;
 begin
  if FActive
-  then result := VstDispatch(effKeysRequired)
-  else result := -1;
+  then Result := VstDispatch(effKeysRequired)
+  else Result := -1;
 end;
 
 function TCustomVstPlugIn.GetVstVersion: Integer;
 begin
  if FActive
-  then result := VstDispatch(effGetVstVersion)
-  else result := -1;
+  then Result := VstDispatch(effGetVstVersion)
+  else Result := -1;
 end;
 
 {$IFDEF VstHostGUI}
@@ -2751,22 +2799,22 @@ end;
 function TCustomVstPlugIn.GetNumInputs: Integer;
 begin
  if Assigned(FVstEffect)
-  then result := FVstEffect^.numInputs
-  else result := 0;
+  then Result := FVstEffect^.numInputs
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetNumOutputs: Integer;
 begin
  if Assigned(FVstEffect)
-  then result := FVstEffect^.numOutputs
-  else result := 0;
+  then Result := FVstEffect^.numOutputs
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetNumParams: Integer;
 begin
  if Assigned(FVstEffect)
-  then result := FVstEffect^.numParams
-  else result := 0;
+  then Result := FVstEffect^.numParams
+  else Result := 0;
 end;
 
 function TCustomVstPlugIn.GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName): Integer;
@@ -2840,7 +2888,7 @@ const
   Lngth = 256;
 begin
  PluginName := '';
- result := 0;
+ Result := 0;
 
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
@@ -2849,11 +2897,11 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    begin
-    result := VstDispatch(effShellGetNextPlugin, 0, 0, Temp);
-    if result <> 0 then PluginName := StrPas(temp);
+    Result := VstDispatch(effShellGetNextPlugin, 0, 0, Temp);
+    if Result <> 0 then PluginName := StrPas(temp);
    end;
 
-  // check whether the result string accords to the specs
+  // check whether the Result string accords to the specs
   if assigned(Collection) and assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
     then assert(Length(PluginName) <= 64);
@@ -3101,7 +3149,7 @@ var
   i   : Integer;
 begin
  SetCurrentProgram(ProgramNo);
- with result do
+ with Result do
   begin
    ChunkMagic := 'CcnK';
    FXMagic    := 'FxCk';
@@ -3120,7 +3168,7 @@ begin
      SwapLong(PDAVSingleFixedArray(params)^[i]);
     end;
    // set bytesize excl. ChunkMagic, ByteSize & Params (not part of the spec)
-   result.ByteSize := SizeOf(result) - SizeOf(LongInt) * 3 + numParams * SizeOf(Single);
+   Result.ByteSize := SizeOf(Result) - SizeOf(LongInt) * 3 + numParams * SizeOf(Single);
 
    // swap
    SwapLong(ByteSize);
@@ -3229,7 +3277,7 @@ begin
  // check stream size
  Stream.Read(ChunkDataSize, 4);
  SwapLong(ChunkDataSize);
- assert(ChunkDataSize + 8 <= Stream.Size);
+ assert(ChunkDataSize <= Stream.Size);
 
  // read fx magic
  Stream.Read(ChunkName, 4);
@@ -3527,8 +3575,8 @@ end;
 function TCustomVstPlugIn.GetInitialDelay: Integer;
 begin
  if assigned(FVstEffect)
-  then result := FVstEffect.initialDelay
-  else result := 0;
+  then Result := FVstEffect.initialDelay
+  else Result := 0;
 end;
 
 {$IFDEF VstHostGUI}
