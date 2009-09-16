@@ -49,6 +49,7 @@ type
   TCustomGuiAudioDataDisplay = class(TCustomControl)
   private
     FAntiAlias            : TGuiAntiAlias;
+    FAudioData            : TCustomAudioData;
     FAudioDataCollection  : TCustomAudioDataCollection;
     FBuffer               : TBitmap;
     FDisplayedChannel     : Integer;
@@ -65,12 +66,12 @@ type
 
     function  GetChannelCount: Integer;
     function  GetSampleFrames: Integer;
-    procedure AudioDataCollectionChanged;
     procedure AxisChangedHandler(Sender: TObject);
     procedure CursorChangedHandler(Sender: TObject);
     procedure DisplayChannelsChangedHandler(Sender: TObject);
     procedure DrawChannelData(Bitmap: TBitmap; Channel: Integer);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure SetAudioData(const Value: TCustomAudioData);
     procedure SetAudioDataCollection(const Value: TCustomAudioDataCollection);
     procedure SetCursor(const Value: TGuiAudioDataDisplayCursor);
     procedure SetDisplayChannels(const Value: TDisplayChannels);
@@ -94,6 +95,9 @@ type
     procedure Loaded; override;
     procedure RenderBuffer; virtual;
 
+    procedure AudioDataChanged; virtual;
+    procedure AudioDataCollectionChanged; virtual;
+
     property SampleFrames: Integer read GetSampleFrames;
     property ChannelCount: Integer read GetChannelCount;
   public
@@ -102,6 +106,7 @@ type
     procedure Paint; override;
 
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
+    property AudioData: TCustomAudioData read FAudioData write SetAudioData;
     property AudioDataCollection: TCustomAudioDataCollection read FAudioDataCollection write SetAudioDataCollection;
     property DisplayedChannel: Integer read FDisplayedChannel write SetDisplayedChannel default -1;
     property DisplayChannels: TDisplayChannels read FDisplayChannels write SetDisplayChannels;
@@ -123,6 +128,7 @@ type
     property Align;
     property Anchors;
     property AntiAlias;
+    property AudioData;
     property AudioDataCollection;
     property Color;
     property Constraints;
@@ -318,8 +324,10 @@ end;
 function TCustomGuiAudioDataDisplay.GetChannelCount: Integer;
 begin
  if assigned(FAudioDataCollection)
-  then result := FAudioDataCollection.Channels.Count
-  else result := 0;
+  then Result := FAudioDataCollection.Channels.Count else
+ if assigned(FAudioData)
+  then Result := 1
+  else Result := 0;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetAntiAlias(const Value: TGuiAntiAlias);
@@ -339,6 +347,15 @@ begin
   end;
 end;
 
+procedure TCustomGuiAudioDataDisplay.SetAudioData(const Value: TCustomAudioData);
+begin
+ if FAudioData <> Value then
+  begin
+   FAudioData := Value;
+   AudioDataChanged;
+  end;
+end;
+
 procedure TCustomGuiAudioDataDisplay.SetAudioDataCollection(const Value: TCustomAudioDataCollection);
 begin
  if FAudioDataCollection <> Value then
@@ -346,6 +363,15 @@ begin
    FAudioDataCollection := Value;
    AudioDataCollectionChanged;
   end;
+end;
+
+procedure TCustomGuiAudioDataDisplay.AudioDataChanged;
+begin
+ if assigned(FAudioData) then
+  begin
+   FXAxis.SetBounds(0, FAudioData.SampleCount - 1);
+  end;
+ Invalidate;
 end;
 
 procedure TCustomGuiAudioDataDisplay.AudioDataCollectionChanged;
@@ -581,6 +607,7 @@ begin
    HlfHght := FOSFactor * FHalfHeight;
    PixelPerSample := FOSFactor * Self.Width / (SampleFrames - 1);
    Pen.Width := FOSFactor * FLineWidth;
+
    if Channel < FDisplayChannels.Count
     then Pen.Color := TCustomDisplayChannel(FDisplayChannels[Channel]).Color
     else Pen.Color := FLineColor;

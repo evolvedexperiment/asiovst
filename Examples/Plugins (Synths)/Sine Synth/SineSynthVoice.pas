@@ -3,26 +3,26 @@ unit SineSynthVoice;
 interface
 
 uses
-  DAV_VSTModule, DAV_Complex;
+  DAV_VSTModule, DAV_Complex, DAV_DspSimpleOscillator;
 
 {$i Consts.inc}
 
 type
   TSineSynthVoice = class(TObject)
   private
-    FAmplitude, FFrequency : Single;
-    FSampleRate            : Single;
-    FSampleRateReciprocal  : Single;
-    FAngle, FPosition      : TComplexDouble;
-    FMidiKeyNr, FVelocity  : Integer;
-    FVSTModule             : TVSTModule;
+    FOscillator : TSimpleOscillator;
+    FMidiKeyNr  : Integer;
+    FVelocity   : Integer;
+    FVSTModule  : TVSTModule;
+    FSampleRate : Single;
+    FFrequency  : Single;
     procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Frequency: Single);
   protected
     procedure FrequencyChanged; virtual;
     procedure SampleRateChanged; virtual;
   public
-    constructor Create(theModule: TVSTModule);
+    constructor Create(VstModule: TVSTModule);
     destructor Destroy; override;
     procedure NoteOn(Frequency, Amplitude: Single);
     procedure NoteOff;
@@ -41,24 +41,28 @@ uses
 
 { TSineSynthVoice }
 
-constructor TSineSynthVoice.Create(theModule: TVSTModule);
+constructor TSineSynthVoice.Create(VstModule: TVSTModule);
 begin
- FVSTModule := theModule;
- if theModule.SampleRate = 0
+ FVSTModule := VstModule;
+ FOscillator := TSimpleOscillator.Create;
+ if VstModule.SampleRate = 0
   then SampleRate := 44100
-  else SampleRate := theModule.SampleRate;
- FPosition.Re := 0;
- FPosition.Im := -1;
+  else SampleRate := VstModule.SampleRate;
 end;
 
 destructor TSineSynthVoice.Destroy;
 begin
+ FreeAndNil(FOscillator);
  inherited;
 end;
 
-procedure TSineSynthVoice.FrequencyChanged;
+procedure TSineSynthVoice.SetFrequency(const Frequency: Single);
 begin
- GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
+ if FFrequency <> Frequency then
+  begin
+   FFrequency := Frequency;
+   FrequencyChanged;
+  end;
 end;
 
 procedure TSineSynthVoice.SetSampleRate(const Value: Single);
@@ -72,37 +76,32 @@ begin
   end;
 end;
 
-function TSineSynthVoice.Process: Single;
+procedure TSineSynthVoice.FrequencyChanged;
 begin
- result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
- FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
- FPosition.Re := result; result := result * FAmplitude;
+ FOscillator.Frequency := FFrequency;
 end;
 
 procedure TSineSynthVoice.SampleRateChanged;
 begin
- FSampleRateReciprocal := 1 / FSampleRate;
-end;
-
-procedure TSineSynthVoice.SetFrequency(const Frequency: Single);
-begin
- if FFrequency <> Frequency then
-  begin
-   FFrequency := Frequency;
-   FrequencyChanged;
-  end;
+ FOscillator.SampleRate := SampleRate;
 end;
 
 procedure TSineSynthVoice.NoteOn(Frequency, Amplitude: Single);
 begin
  FFrequency := Frequency;
- SetFrequency(Frequency);
- FAmplitude := Amplitude;
+ FOscillator.Frequency := FFrequency;
+ FOscillator.Amplitude := Amplitude;
 end;
 
 procedure TSineSynthVoice.NoteOff;
 begin
- FAmplitude := 0;
+ FOscillator.Amplitude := 0
+end;
+
+function TSineSynthVoice.Process: Single;
+begin
+ Result := FOscillator.Sine;
+ FOscillator.CalculateNextSample;
 end;
 
 end.

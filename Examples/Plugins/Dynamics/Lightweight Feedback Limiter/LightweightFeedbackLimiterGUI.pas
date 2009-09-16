@@ -3,9 +3,9 @@ unit LightweightFeedbackLimiterGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiLevelMeter, ExtCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Common,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
+  DAV_GuiLED, DAV_GuiLevelMeter;
 
 type
   TFmLightweightFeedbackLimiter = class(TForm)
@@ -64,7 +64,7 @@ type
 implementation
 
 uses
-  LightweightFeedbackLimiterDM, PngImage, DAV_VSTModuleWithPrograms;
+  PngImage, DAV_VSTModuleWithPrograms, LightweightFeedbackLimiterDM;
 
 {$R *.DFM}
 

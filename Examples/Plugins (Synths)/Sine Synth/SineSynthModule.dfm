@@ -35,6 +35,7 @@ object VSTSSModule: TVSTSSModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
     end>
+  ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen

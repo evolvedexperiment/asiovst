@@ -100,17 +100,19 @@ Section "Lightweight Series VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\LightweightLimiter.dll" "..\Bin\Lightweight Limiter.dll"'  
-  !system 'copy "..\Bin\LightweightGate.dll" "..\Bin\Lightweight Gate.dll"'  
   !system 'copy "..\Bin\LightweightCompressor.dll" "..\Bin\Lightweight Compressor.dll"'  
+  !system 'copy "..\Bin\LightweightGate.dll" "..\Bin\Lightweight Gate.dll"'  
+  !system 'copy "..\Bin\LightweightFeedbackLimiter.dll" "..\Bin\Lightweight Feedback Limiter.dll"'  
   !system 'copy "..\Bin\LightweightFeedbackCompressor.dll" "..\Bin\Lightweight Feedback Compressor.dll"'  
-  !system 'copy "..\Bin\LightweightMultibandCompressor.dll" "..\Bin\Lightweight Multiband Compressor.dll"'  
   !system 'copy "..\Bin\LightweightUpwardCompressor.dll" "..\Bin\Lightweight Upward Compressor.dll"'  
-
+  !system 'copy "..\Bin\LightweightMultibandCompressor.dll" "..\Bin\Lightweight Multiband Compressor.dll"'  
+  
   ;ADD YOUR OWN FILES HERE...
   File "..\Bin\Lightweight Limiter.dll"
-  File "..\Bin\Lightweight Gate.dll"
   File "..\Bin\Lightweight Compressor.dll"
+  File "..\Bin\Lightweight Gate.dll"
   File "..\Bin\Lightweight Feedback Compressor.dll"
+  File "..\Bin\Lightweight Feedback Limiter.dll"
   File "..\Bin\Lightweight Multiband Compressor.dll"
   File "..\Bin\Lightweight Upward Compressor.dll"
 
@@ -125,6 +127,8 @@ Section "Lightweight Series VST-Plugin" SecVSTPlugin
   StrCpy $0 "$INSTDIR\Lightweight Gate.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   StrCpy $0 "$INSTDIR\Lightweight Compressor.dll" 
+  System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
+  StrCpy $0 "$INSTDIR\Lightweight Feedback Limiter.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   StrCpy $0 "$INSTDIR\Lightweight Feedback Compressor.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
@@ -201,11 +205,12 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\LightweightLimiter.dll"
-  Delete "$INSTDIR\LightweightGate.dll"
-  Delete "$INSTDIR\LightweightCompressor.dll"
-  Delete "$INSTDIR\LightweightFeedbackCompressor.dll"
-  Delete "$INSTDIR\LightweightMultibandCompressor.dll"
+  Delete "$INSTDIR\Lightweight Limiter.dll"
+  Delete "$INSTDIR\Lightweight Gate.dll"
+  Delete "$INSTDIR\Lightweight Compressor.dll"
+  Delete "$INSTDIR\Lightweight Feedback Limiter.dll"
+  Delete "$INSTDIR\Lightweight Feedback Compressor.dll"
+  Delete "$INSTDIR\Lightweight Multiband Compressor.dll"
   Delete "$INSTDIR\Lightweight Limiter Manual.pdf"
   Delete "$INSTDIR\Lightweight Gate Manual.pdf"
   Delete "$INSTDIR\Lightweight Compressor Manual.pdf"

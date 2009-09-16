@@ -31,6 +31,8 @@ type
     procedure TearDown; override;
   published
     procedure TestScanning;
+    procedure TestCreationDummy;
+    procedure TestCreationEmpty;
     procedure TestBasicWriting;
     procedure TestAdvancedWriting;
     procedure TestRandomAccess;
@@ -95,6 +97,58 @@ begin
    // Must free up resources used by these successful finds
    FindClose(SR);
   end;
+end;
+
+procedure TestAudioFileWav.TestCreationEmpty;
+var
+  TempStream : TMemoryStream;
+begin
+ TempStream := TMemoryStream.Create;
+ try
+  // create an empty file on the temp stream
+  with TAudioFileWAV.Create(TempStream) do
+   try
+   finally
+    Free;
+   end;
+
+  // reset stream
+  TempStream.Position := 0;
+
+  // load file from temp stream
+  FAudioFileWav.LoadFromStream(TempStream);
+ finally
+  FreeAndNil(TempStream);
+ end;
+end;
+
+procedure TestAudioFileWav.TestCreationDummy;
+var
+  TempStream : TMemoryStream;
+begin
+ TempStream := TMemoryStream.Create;
+ try
+  // create an empty file on the temp stream
+  with TAudioFileWAV.Create(TempStream) do
+   try
+    SampleFrames := 1024;
+    OnEncode := EncodeSimpleHandler;
+
+    // write data in reversed order...
+    Encode(1024, 1024);
+    Encode(0, 1024);
+   finally
+    Free;
+   end;
+
+  // reset stream
+  TempStream.Position := 0;
+
+  // load file from temp stream
+  FAudioFileWav.LoadFromStream(TempStream);
+ finally
+  FreeAndNil(TempStream);
+ end;
 end;
 
 procedure TestAudioFileWav.TestBasicWriting;

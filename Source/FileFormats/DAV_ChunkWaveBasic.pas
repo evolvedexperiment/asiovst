@@ -922,7 +922,9 @@ end;
 
 procedure TFormatChunk.CalculateChunkSize;
 begin
- FChunkSize := SizeOf(TWavFormatRecord) + SizeOf(Word) + Length(FFormatSpecific);
+ FChunkSize := SizeOf(TWavFormatRecord);
+ if FWaveFormatRecord.FormatTag <> 1
+  then FChunkSize := FChunkSize + SizeOf(Word) + Length(FFormatSpecific);
 end;
 
 procedure TFormatChunk.LoadFromStream(Stream: TStream);
@@ -937,7 +939,7 @@ begin
    Read(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // check whether format specific data can be found:
-   if FChunkSize <= SizeOf(TWavFormatRecord) then exit;
+   if FChunkSize <= SizeOf(TWavFormatRecord) then Exit;
    Read(FormatSpecificBytes, SizeOf(Word));
 
    // read format specific bytes
@@ -981,10 +983,13 @@ begin
    Write(FWaveFormatRecord, SizeOf(TWavFormatRecord));
 
    // write format specific bytes
-   FormatSpecificBytes := Length(FFormatSpecific);
-   Write(FormatSpecificBytes, SizeOf(Word));
-   if FormatSpecificBytes > 0
-    then Write(FFormatSpecific[0], FormatSpecificBytes);
+   if FWaveFormatRecord.FormatTag <> 1 then
+    begin
+     FormatSpecificBytes := Length(FFormatSpecific);
+     Write(FormatSpecificBytes, SizeOf(Word));
+     if FormatSpecificBytes > 0
+      then Write(FFormatSpecific[0], FormatSpecificBytes);
+    end;
   end;
 end;
 

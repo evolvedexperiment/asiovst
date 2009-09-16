@@ -56,7 +56,7 @@ begin
 
  for j := 0 to SampleFrames - 1 do
   for i := 0 to Voices.Count - 1
-   do Outputs[0,j] := Outputs[0, j] + Voices[i].Process;
+   do Outputs[0, j] := Outputs[0, j] + Voices[i].Process;
 
  for i := 1 to numOutputs - 1
   do Move(Outputs[0, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));

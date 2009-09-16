@@ -37,6 +37,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbThreshold: TGuiLabel
     Left = 3
@@ -86,6 +87,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -135,6 +137,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRelease: TGuiLabel
     Left = 84
@@ -183,6 +186,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbKnee: TGuiLabel
     Left = 99
@@ -265,6 +269,7 @@ object FmLightweightFeedbackLimiter: TFmLightweightFeedbackLimiter
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbMakeUpGain: TGuiLabel
     Left = 193

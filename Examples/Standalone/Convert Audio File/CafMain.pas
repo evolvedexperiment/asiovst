@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ComCtrls, StdCtrls, DAV_Common, DAV_AudioFile, DAV_AudioFileWAV,
-  DAV_AudioFileAIFF, DAV_AudioFileAU, ExtCtrls, Spin;
+  Menus, ComCtrls, StdCtrls, Spin, ExtCtrls, DAV_Common, DAV_AudioFile,
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_ChannelDataCoder;
 
 type
   TFmConvertAudioFile = class(TForm)
@@ -37,15 +37,21 @@ type
     SaveDialog: TSaveDialog;
     SEBitsPerSample: TSpinEdit;
     SeSampleRate: TSpinEdit;
+    CbFloatBits: TComboBox;
     procedure MiExitClick(Sender: TObject);
     procedure MiOpenClick(Sender: TObject);
     procedure MiSaveAsClick(Sender: TObject);
+    procedure CbEncodingChange(Sender: TObject);
   private
-    FAudioFile  : TCustomAudioFile;
-    FFileName   : TFileName;
-    procedure SaveToFile(FileName: TFileName);
+    FAudioFile : TCustomAudioFile;
+    FFileName  : TFileName;
+    FTempData  : TDAVArrayOfSingleDynArray;
+  protected
+    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure EncodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
   public
     procedure LoadFromFile(FileName: TFileName);
+    procedure SaveToFile(FileName: TFileName);
   end;
 
 var
@@ -75,11 +81,50 @@ begin
   then SaveToFile(SaveDialog.FileName);
 end;
 
+procedure TFmConvertAudioFile.CbEncodingChange(Sender: TObject);
+begin
+ SEBitsPerSample.Visible := CbEncoding.ItemIndex = 0;
+ CbFloatBits.Visible := CbEncoding.ItemIndex = 1;
+end;
+
+procedure TFmConvertAudioFile.DecodeHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel : Integer;
+begin
+ if Coder is TCustomChannel32DataCoder then
+  begin
+   SetLength(FTempData, Coder.ChannelCount);
+   for Channel := 0 to Coder.ChannelCount - 1 do
+    begin
+     SetLength(FTempData[Channel], Coder.SampleFrames);
+     Move(TCustomChannel32DataCoder(Coder).ChannelPointer[Channel]^[0],
+       FTempData[Channel, 0], Coder.SampleFrames * SizeOf(Single));
+    end;
+  end;
+end;
+
+procedure TFmConvertAudioFile.EncodeHandler(Sender: TObject;
+  const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  Channel : Integer;
+begin
+ if Coder is TCustomChannel32DataCoder then
+  begin
+   assert(Length(FTempData) = Coder.ChannelCount);
+   for Channel := 0 to Coder.ChannelCount - 1 do
+    begin
+     assert(Length(FTempData[Channel]) = Coder.SampleFrames);
+     Move(FTempData[Channel, 0], TCustomChannel32DataCoder(Coder).ChannelPointer[Channel]^[0], Coder.SampleFrames * SizeOf(Single));
+    end;
+  end;
+end;
+
 procedure TFmConvertAudioFile.LoadFromFile(FileName: TFileName);
 var
   AudioFileClass : TAudioFileClass;
 begin
- AudioFileClass := FilenameToFileFormat(OpenDialog.FileName);
+ AudioFileClass := FileNameToFormat(OpenDialog.FileName);
  if AudioFileClass <> nil then
   begin
    // check if a previous file has been loaded
@@ -129,9 +174,71 @@ begin
 end;
 
 procedure TFmConvertAudioFile.SaveToFile(FileName: TFileName);
+var
+  NewAudioFile : TCustomAudioFile;
+  AudioFormat  : TAudioFileClass;
+  Sample       : Integer;
+const
+  CBlockSize = 2048;
 begin
  if FFileName = FileName
   then raise Exception.Create('not yet supported');
+
+ AudioFormat := FileNameToFormat(FileName);
+ if AudioFormat = nil
+  then raise Exception.Create('no valid file specified');
+
+ NewAudioFile := AudioFormat.Create(FileName);
+ try
+  if NewAudioFile is TAudioFileWAV then
+   with TAudioFileWAV(NewAudioFile) do
+    begin
+     SampleRate := SeSampleRate.Value;
+     case CbEncoding.ItemIndex of
+      0 : BitsPerSample := SEBitsPerSample.Value;
+      1 : case CbFloatBits.ItemIndex of
+           0 : BitsPerSample := 16;
+           1 : BitsPerSample := 32;
+           2 : BitsPerSample := 64;
+          end;
+     end;
+    end;
+
+  if NewAudioFile is TAudioFileAIFF then
+   with TAudioFileAIFF(NewAudioFile) do
+    begin
+     SampleRate := SeSampleRate.Value;
+     case CbEncoding.ItemIndex of
+      0 : BitsPerSample := SEBitsPerSample.Value;
+      1 : case CbFloatBits.ItemIndex of
+           0 : BitsPerSample := 16;
+           1 : BitsPerSample := 32;
+           2 : BitsPerSample := 64;
+          end;
+     end;
+    end;
+
+  FAudioFile.OnDecode := DecodeHandler;
+  NewAudioFile.OnEncode := EncodeHandler;
+  try
+   Sample := 0;
+   while Sample < FAudioFile.SampleFrames do
+    begin
+     FAudioFile.Decode(Sample, CBlockSize);
+     NewAudioFile.Encode(Sample, CBlockSize);
+     Inc(Sample, CBlockSize);
+    end;
+   if FAudioFile.SampleFrames - Sample > 0 then
+    begin
+     FAudioFile.Decode(Sample, FAudioFile.SampleFrames - Sample);
+     NewAudioFile.Encode(Sample, FAudioFile.SampleFrames - Sample);
+    end;
+  finally
+   FAudioFile.OnDecode := nil;
+  end;
+ finally
+  FreeAndNil(NewAudioFile);
+ end;
 
  FFileName := SaveDialog.FileName;
  MiSave.Enabled := FFileName <> '';

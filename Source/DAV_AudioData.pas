@@ -159,8 +159,11 @@ type
     property ChannelData[Sample: Int64]: Single read GetChannelData write SetChannelData;
     property ChannelDataPointer: PDAVSingleFixedArray read FChannelData;
 
-    property SampleRate;
     property SampleRateSource;
+
+  published
+    property SampleCount;
+    property SampleRate;
   end;
 
   TAudioData64 = class(TCustomAudioData)
@@ -192,8 +195,11 @@ type
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
     property ChannelDataPointer: PDAVDoubleFixedArray read FChannelData;
 
-    property SampleRate;
     property SampleRateSource;
+
+  published
+    property SampleCount;
+    property SampleRate;
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 

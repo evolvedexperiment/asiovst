@@ -32,6 +32,7 @@ type
     procedure ReallocateChannelMemory; virtual; abstract;
     procedure ChannelCountChanged; virtual; abstract;
     procedure SampleFramesChanged; virtual; abstract;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -55,6 +56,7 @@ type
     FChannelArray : array of PDAVSingleFixedArray;
     procedure ChannelCountChanged; override;
     procedure ReallocateChannelMemory; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     destructor Destroy; override;
     property ChannelPointer[Index: Integer]: PDAVSingleFixedArray read GetChannelPointer;
@@ -79,12 +81,13 @@ type
     FDitherType  : TDitherType;
     FBits        : Byte;
     FSampleSize  : Byte;
-    FScaleFactor : Array [0..1] of Double;
+    FScaleFactor : TDAV2DoubleArray;
     FByteAlign   : TByteAlign;
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
     procedure CalculateSampleFrames; virtual;
     procedure CalculateScaleFactors; virtual;
     procedure CalculateBlockSize; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
     procedure ChannelCountChanged; override;
@@ -241,6 +244,7 @@ type
     FChannelArray : array of PDAVDoubleFixedArray;
     procedure ChannelCountChanged; override;
     procedure ReallocateChannelMemory; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     property ChannelPointer[Index: Integer]: PDAVDoubleFixedArray read GetChannelPointer;
@@ -265,12 +269,13 @@ type
     FDitherType  : TDitherType;
     FBits        : Byte;
     FSampleSize  : Byte;
-    FScaleFactor : Array [0..1] of Double;
+    FScaleFactor : TDAV2DoubleArray;
     FByteAlign   : TByteAlign;
     function CorrectBlocksize(const Value: Cardinal): Cardinal; override;
     procedure CalculateSampleFrames; virtual;
     procedure CalculateScaleFactors; virtual;
     procedure CalculateBlockSize; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BlockSizeChanged; override;
     procedure SampleFramesChanged; override;
     procedure ChannelCountChanged; override;
@@ -357,6 +362,17 @@ begin
  FillChar(FBlockBuffer^, FBlockSize, 0);
 end;
 
+procedure TCustomChannelDataCoder.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomChannelDataCoder then
+  begin
+   TCustomChannelDataCoder(Dest).BlockSize := FBlockSize;
+   TCustomChannelDataCoder(Dest).SampleFrames := FSampleFrames;
+   TCustomChannelDataCoder(Dest).ChannelCount := FChannelCount;
+   Move(FBlockBuffer[0], TCustomChannelDataCoder(Dest).FBlockBuffer[0], FBlockSize);
+  end else inherited;
+end;
+
 procedure TCustomChannelDataCoder.BlockSizeChanged;
 begin
  AllocateBlockBuffer;
@@ -403,6 +419,31 @@ begin
 end;
 
 { TCustomChannel32DataCoder }
+
+procedure TCustomChannel32DataCoder.AssignTo(Dest: TPersistent);
+var
+  Channel : Integer;
+  Sample  : Integer;
+begin
+ inherited;
+ if Dest is TCustomChannel32DataCoder then
+  begin
+   assert(Length(FChannelArray) = Length(TCustomChannel32DataCoder(Dest).FChannelArray));
+   for Channel := 0 to Length(FChannelArray) - 1 do
+    begin
+     Move(FChannelArray[Channel, 0],
+       TCustomChannel32DataCoder(Dest).FChannelArray[Channel, 0],
+       FSampleFrames * SizeOf(Single));
+    end;
+  end else
+ if Dest is TCustomChannel64DataCoder then
+  begin
+   assert(Length(FChannelArray) = Length(TCustomChannel64DataCoder(Dest).FChannelArray));
+   for Channel := 0 to Length(FChannelArray) - 1 do
+    for Sample := 0 to FSampleFrames - 1
+     do TCustomChannel64DataCoder(Dest).FChannelArray[Channel, Sample] := FChannelArray[Channel, Sample];
+  end;
+end;
 
 procedure TCustomChannel32DataCoder.ChannelCountChanged;
 var
@@ -534,6 +575,29 @@ end;
 procedure TCustomChannel32DataCoderFixedPoint.CalculateBlockSize;
 begin
  BlockSize := FSampleFrames * ChannelCount * FSampleSize;
+end;
+
+procedure TCustomChannel32DataCoderFixedPoint.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomChannel32DataCoderFixedPoint then
+  with TCustomChannel32DataCoderFixedPoint(Dest) do
+   begin
+    FDitherType  := Self.FDitherType;
+    FBits        := Self.FBits;
+    FSampleSize  := Self.FSampleSize;
+    FScaleFactor := Self.FScaleFactor;
+    FByteAlign   := Self.FByteAlign;
+   end else
+ if Dest is TCustomChannel64DataCoderFixedPoint then
+  with TCustomChannel64DataCoderFixedPoint(Dest) do
+   begin
+    FDitherType  := Self.FDitherType;
+    FBits        := Self.FBits;
+    FSampleSize  := Self.FSampleSize;
+    FScaleFactor := Self.FScaleFactor;
+    FByteAlign   := Self.FByteAlign;
+   end;
 end;
 
 procedure TCustomChannel32DataCoderFixedPoint.BlockSizeChanged;
@@ -1537,6 +1601,31 @@ end;
 
 { TCustomChannel64DataCoder }
 
+procedure TCustomChannel64DataCoder.AssignTo(Dest: TPersistent);
+var
+  Channel : Integer;
+  Sample  : Integer;
+begin
+ inherited;
+ if Dest is TCustomChannel32DataCoder then
+  begin
+   assert(Length(FChannelArray) = Length(TCustomChannel32DataCoder(Dest).FChannelArray));
+   for Channel := 0 to Length(FChannelArray) - 1 do
+    for Sample := 0 to FSampleFrames - 1
+     do TCustomChannel32DataCoder(Dest).FChannelArray[Channel, Sample] := FChannelArray[Channel, Sample];
+  end else
+ if Dest is TCustomChannel64DataCoder then
+  begin
+   assert(Length(FChannelArray) = Length(TCustomChannel64DataCoder(Dest).FChannelArray));
+   for Channel := 0 to Length(FChannelArray) - 1 do
+    begin
+     Move(FChannelArray[Channel, 0],
+       TCustomChannel64DataCoder(Dest).FChannelArray[Channel, 0],
+       FSampleFrames * SizeOf(Double));
+    end;
+  end;
+end;
+
 procedure TCustomChannel64DataCoder.ChannelCountChanged;
 begin
  inherited;
@@ -1660,6 +1749,29 @@ end;
 procedure TCustomChannel64DataCoderFixedPoint.CalculateBlockSize;
 begin
  BlockSize := FSampleFrames * ChannelCount * FSampleSize;
+end;
+
+procedure TCustomChannel64DataCoderFixedPoint.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomChannel32DataCoderFixedPoint then
+  with TCustomChannel32DataCoderFixedPoint(Dest) do
+   begin
+    FDitherType  := Self.FDitherType;
+    FBits        := Self.FBits;
+    FSampleSize  := Self.FSampleSize;
+    FScaleFactor := Self.FScaleFactor;
+    FByteAlign   := Self.FByteAlign;
+   end else
+ if Dest is TCustomChannel64DataCoderFixedPoint then
+  with TCustomChannel64DataCoderFixedPoint(Dest) do
+   begin
+    FDitherType  := Self.FDitherType;
+    FBits        := Self.FBits;
+    FSampleSize  := Self.FSampleSize;
+    FScaleFactor := Self.FScaleFactor;
+    FByteAlign   := Self.FByteAlign;
+   end;
 end;
 
 procedure TCustomChannel64DataCoderFixedPoint.BlockSizeChanged;

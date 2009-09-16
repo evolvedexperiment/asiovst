@@ -112,10 +112,11 @@ function ExtensionToFileFormat(Extension: string): TAudioFileClass;
 var
   i : Integer;
 begin
- result := nil;
+ Result := nil;
+ Extension := LowerCase(Extension);
  for i := 0 to Length(GAudioFileFormats) - 1 do
   if GAudioFileFormats[i].DefaultExtension = Extension
-   then result := GAudioFileFormats[i];
+   then Result := GAudioFileFormats[i];
 end;
 
 function FileNameToFormat(FileName: TFileName): TAudioFileClass;

@@ -49,6 +49,8 @@ type
     function FastTanhMinError3Waveshaper(Input: Double): Double;
     function FastTanhMinError4Waveshaper(Input: Double): Double;
     function FastTanhMinError5Waveshaper(Input: Double): Double;
+    function FastTanhNollock3Waveshaper(Input: Double): Double;
+    function FastTanhMrToastWaveshaper(Input: Double): Double;
   public
     function TanhWaveshaperMath(Input: Double): Double;
   end;
@@ -221,6 +223,39 @@ begin
  Result := FastTanhContinousError5(FGain * Input);
 end;
 
+function FastPower2NollockError3(Value: Single): Single;
+var
+  IntCast : Integer absolute result;
+begin
+ IntCast := round(Value);
+ Value := Value - IntCast;
+ IntCast := ($7F + Intcast) shl 23;
+ Result := Result * (1 + Value * (0.69314718 + Value * (0.22741128 +
+   Value *  0.079441542)));
+end;
+
+function FastTanhNollockError3(Value: Double): Double;
+var
+  Temp : Double;
+begin
+ Temp := FastPower2NollockError3(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
+end;
+
+function TTanhWaveshaperModule.FastTanhNollock3Waveshaper(
+  Input: Double): Double;
+begin
+ Result := FastTanhNollockError3(FGain * Input);
+end;
+
+function TTanhWaveshaperModule.FastTanhMrToastWaveshaper(
+  Input: Double): Double;
+begin
+ Input := FGain * Input;
+ Result := Input / (1.1605589854 + 0.37011709966 * sqr(Input))
+   + 0.10710006710 * Input;
+end;
+
 procedure TTanhWaveshaperModule.ParameterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -244,6 +279,8 @@ begin
   16 : FTanhWaveShaper := TanhLike2Waveshaper;
   17 : FTanhWaveShaper := TanhLike3Waveshaper;
   18 : FTanhWaveShaper := TanhLike4Waveshaper;
+  19 : FTanhWaveShaper := FastTanhNollock3Waveshaper;
+  20 : FTanhWaveShaper := FastTanhMrToastWaveshaper;
  end;
 end;
 
@@ -270,6 +307,8 @@ begin
   16 : PreDefined := 'TanhLike2Waveshaper';
   17 : PreDefined := 'TanhLike3Waveshaper';
   18 : PreDefined := 'TanhLike4Waveshaper';
+  19 : PreDefined := 'Nollock';
+  20 : PreDefined := 'mistertoast';
  end;
 end;
 

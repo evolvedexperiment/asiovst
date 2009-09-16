@@ -5,11 +5,11 @@ library LightweightFeedbackLimiter;
 
 uses
   FastMM4,
+  FastMove,
   madExcept,
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  FastMove,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,

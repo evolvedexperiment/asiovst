@@ -346,11 +346,15 @@ end;
 constructor TCustomBufferedAudioPlayer.Create;
 begin
  inherited;
- FSampleRate := 44100;
- FAllowSuspend := False; 
+ FSampleRate   := 44100;
+ FPitchFactor  := 1;
+ FAllowSuspend := False;
  FBufferThread := TBufferThread.Create;
  FBufferThread.Priority := tpNormal;
  FBufferThread.AllowSuspend := FAllowSuspend;
+
+ CalculateSampleRateRatio;
+ InterpolationChanged;
 end;
 
 destructor TCustomBufferedAudioPlayer.Destroy;
@@ -363,6 +367,11 @@ begin
    WaitFor;
   end;
  FreeAndNil(FBufferThread);
+
+ if assigned(FInterpolationBuffer[0])
+  then Dispose(FInterpolationBuffer[0]);
+ if assigned(FInterpolationBuffer[1])
+  then Dispose(FInterpolationBuffer[1]);
  inherited;
 end;
 

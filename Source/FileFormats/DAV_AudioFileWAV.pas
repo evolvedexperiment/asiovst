@@ -80,6 +80,7 @@ type
     function GetEmptyData: Boolean;
     function GetSubChunk(Index: Integer): TCustomChunk;
     function GetSubChunkCount: Cardinal;
+    function GetTypicalAudioDataPosition: Cardinal;
   protected
     function GetBitsPerSample: Byte; virtual;
     function GetEncoding: TAudioEncoding; virtual;
@@ -98,6 +99,7 @@ type
     procedure CheckBextChunkEmpty; virtual;
     procedure CheckCreateBextChunk; virtual;
     procedure CheckCreateCartChunk; virtual;
+    procedure SampleFramesChanged; virtual;
     procedure CheckHeader(const Stream: TStream); override;
     procedure ParseStream(const Stream: TStream); override;
 
@@ -109,11 +111,14 @@ type
     procedure ReadCartChunk(const Stream: TStream);
     procedure ReadUnknownChunk(const Stream: TStream; const ChunkName: TChunkName);
 
+    procedure WriteBasicChunks(const Stream: TStream);
+    procedure WriteAdditionalChunks(const Stream: TStream);
     procedure WriteDataChunk(const Stream: TStream);
     procedure WriteFormatChunk(const Stream: TStream);
     procedure WriteTotalSampleFrames(const Stream: TStream);
 
     property EmptyData: Boolean read GetEmptyData;
+    property TypicalAudioDataPosition: Cardinal read GetTypicalAudioDataPosition; 
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -197,6 +202,9 @@ resourcestring
   RCFMTChunkDublicate  = 'More than one format chunk found!';
   RCFACTChunkDublicate = 'More than one fact chunk found!';
   RCDATAChunkDublicate = 'Only one data chunk supported!';
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrCantChangeTheFormat = 'Can''t change the format!';
+  RCStrNoDataChunkFound = 'No data chunk found!';
 
 { TCustomAudioFileWAV }
 
@@ -210,7 +218,22 @@ begin
 end;
 
 destructor TCustomAudioFileWAV.Destroy;
+var
+  ChunkName : TChunkName;
 begin
+ // make sure a data chunk is written and the file is valid
+ if assigned(FStream) then
+  begin
+   if EmptyData then
+    begin
+     FAudioDataPosition := TypicalAudioDataPosition;
+     FStream.Position := FAudioDataPosition;
+     WriteDataChunk(FStream);
+     WriteAdditionalChunks(FStream);
+    end;
+   WriteTotalSampleFrames(FStream);
+  end;
+
  if assigned(FFactChunk)
   then FreeAndNil(FFactChunk);
  if assigned(FBextChunk)
@@ -243,7 +266,7 @@ procedure TCustomAudioFileWAV.DeleteSubChunk(const Index: Integer);
 begin
  if (Index >= 0) and (Index < FChunkList.Count)
   then FChunkList.Delete(Index)
-  else raise EWavError.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise EWavError.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 class function TCustomAudioFileWAV.Description: string;
@@ -368,7 +391,7 @@ function TCustomAudioFileWAV.GetSubChunk(Index: Integer): TCustomChunk;
 begin
  if (Index >= 0) and (Index < FChunkList.Count)
   then Result := FChunkList[Index]
-  else raise EWavError.CreateFmt('Index out of bounds (%d)', [Index]);
+  else raise EWavError.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 function TCustomAudioFileWAV.GetSubChunkCount: Cardinal;
@@ -395,6 +418,13 @@ begin
  if assigned(FCartChunk)
   then result := FCartChunk.Title
   else result := '';
+end;
+
+function TCustomAudioFileWAV.GetTypicalAudioDataPosition: Cardinal;
+begin
+ Result := 12 + SizeOf(TChunkName) + SizeOf(Integer) + FFormatChunk.ChunkSize;
+ if assigned(FFactChunk)
+  then Result := Result + SizeOf(TChunkName) + SizeOf(Integer) + FFactChunk.ChunkSize;
 end;
 
 function TCustomAudioFileWAV.GetArtist: string;
@@ -533,7 +563,7 @@ procedure TCustomAudioFileWAV.SetBitsPerSample(const Value: Byte);
 begin
  // assert stream is empty
  if assigned(FStream) and not EmptyData
-  then raise Exception.Create('Can''t change the format!');
+  then raise Exception.Create(RCStrCantChangeTheFormat);
 
  with FFormatChunk do
   if BitsPerSample <> Value then
@@ -571,7 +601,7 @@ procedure TCustomAudioFileWAV.SetChannels(const Value: Cardinal);
 begin
  // assert stream is empty
  if assigned(FStream) and not EmptyData
-  then raise Exception.Create('Can''t change the format!');
+  then raise Exception.Create(RCStrCantChangeTheFormat);
 
  inherited;
 
@@ -665,7 +695,7 @@ procedure TCustomAudioFileWAV.SetEncoding(const Value: TAudioEncoding);
 begin
  // assert stream is empty
  if assigned(FStream) and not EmptyData
-  then raise Exception.Create('Can''t change the format!');
+  then raise Exception.Create(RCStrCantChangeTheFormat);
 
  case Value of
    aeInteger : FFormatChunk.FormatTag := etPCM;
@@ -826,18 +856,23 @@ begin
   begin
    inherited;
    FTotalSampleFrames := Value;
-   if assigned(FFactChunk)
-    then FFactChunk.SampleCount := FTotalSampleFrames;
-   if assigned(FStream)
-    then WriteTotalSampleFrames(FStream);
+   SampleFramesChanged;
   end;
+end;
+
+procedure TCustomAudioFileWAV.SampleFramesChanged;
+begin
+ if assigned(FFactChunk)
+  then FFactChunk.SampleCount := FTotalSampleFrames;
+ if assigned(FStream)
+  then WriteTotalSampleFrames(FStream);
 end;
 
 procedure TCustomAudioFileWAV.SetSampleRate(const Value: Double);
 begin
  // assert stream is empty
  if assigned(FStream) and not EmptyData
-  then raise Exception.Create('Can''t change the format!');
+  then raise Exception.Create(RCStrCantChangeTheFormat);
 
  inherited;
  with FFormatChunk do
@@ -1033,6 +1068,10 @@ begin
    if assigned(FBextChunk) then FreeAndNil(FBextChunk);
    FChunkList.Clear;
 
+   // reset current data positions
+   FAudioDataPosition := 0;
+
+   // reset FormatChunkFound
    FFormatChunkFound := False;
 
    // start parsing here
@@ -1052,6 +1091,11 @@ begin
      if ChunkName = 'data' then ReadDataChunk(Stream)
       else ReadUnknownChunk(Stream, ChunkName);
     end;
+
+   Assert(Position = ChunkEnd);
+
+   if (FAudioDataPosition = 0)
+    then raise EWavError.Create(RCStrNoDataChunkFound)
   end;
 end;
 
@@ -1100,8 +1144,13 @@ begin
    then raise EWavError.Create(rcDATAChunkDublicate)
    else
     begin
+     // store data chunk position
      FAudioDataPosition := Position;
+
+     // skip chunk name
      Position := Position + 4;
+
+     // read data size
      Read(DataSize, 4);
 
      // eventually set total number of samples
@@ -1210,7 +1259,6 @@ var
   ChunkName  : TChunkName;
   ChunkStart : Cardinal;
   ChunkSize  : Cardinal;
-  SubChunk   : Integer;
 begin
  inherited;
  with Stream do
@@ -1230,6 +1278,26 @@ begin
    ChunkName := 'WAVE';
    Write(ChunkName, 4);
 
+   // write basic chunks
+   WriteBasicChunks(Stream);
+
+   // write additional chunks
+   WriteAdditionalChunks(Stream);
+
+   // finally write filesize
+   ChunkSize := Position - (ChunkStart + 8);
+   Position  := ChunkStart + 4;
+   Write(ChunkSize, 4);
+
+   // Reset Position to end of Stream;
+   Position := ChunkStart + ChunkSize;
+  end;
+end;
+
+procedure TCustomAudioFileWAV.WriteBasicChunks(const Stream: TStream);
+begin
+ with Stream do
+  begin
    // write format chunk
    WriteFormatChunk(Stream);
 
@@ -1247,7 +1315,15 @@ begin
 
    // ToDo: write data here!
    WriteAudioDataToStream(Stream);
+  end;
+end;
 
+procedure TCustomAudioFileWAV.WriteAdditionalChunks(const Stream: TStream);
+var
+  SubChunk : Integer;
+begin
+ with Stream do
+  begin
    // write cart chunk if available
    if assigned(FCartChunk)
     then FCartChunk.SaveToStream(Stream);
@@ -1260,14 +1336,6 @@ begin
    if assigned(FChunkList) and (FChunkList.Count > 0) then
     for SubChunk := 0 to FChunkList.Count - 1
      do FChunkList[SubChunk].SaveToStream(Stream);
-
-   // finally write filesize
-   ChunkSize := Position - (ChunkStart + 8);
-   Position  := ChunkStart + 4;
-   Write(ChunkSize, 4);
-
-   // Reset Position to end of Stream;
-   Position := ChunkStart + ChunkSize;
   end;
 end;
 
@@ -1381,8 +1449,8 @@ begin
 
    if EmptyData then
     begin
-     FStream.Seek(0, soFromEnd);
-     FAudioDataPosition := FStream.Position;
+     FAudioDataPosition := TypicalAudioDataPosition;
+     FStream.Position := FAudioDataPosition;
      WriteDataChunk(FStream);
     end;
 
@@ -1465,8 +1533,8 @@ var
   DataEncoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
 begin
- // check for no samples to load
- if SampleFrames = 0 then Exit;
+ // check if samples are available
+ if SampleFrames <= 0 then Exit;
 
  with Stream do
   begin
@@ -1487,7 +1555,7 @@ begin
    with DataEncoder do
     try
      Samples := 0;
-     while Samples + SampleFrames < SampleFrames do
+     while Samples + SampleFrames < Self.SampleFrames do
       begin
        if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
        SaveToStream(Stream);

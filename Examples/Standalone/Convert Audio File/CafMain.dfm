@@ -184,6 +184,7 @@ object FmConvertAudioFile: TFmConvertAudioFile
       ItemIndex = 0
       TabOrder = 6
       Text = 'Integer'
+      OnChange = CbEncodingChange
       Items.Strings = (
         'Integer'
         'Float')
@@ -207,6 +208,22 @@ object FmConvertAudioFile: TFmConvertAudioFile
       MinValue = 1
       TabOrder = 8
       Value = 44100
+    end
+    object CbFloatBits: TComboBox
+      Left = 213
+      Top = 114
+      Width = 68
+      Height = 21
+      Style = csDropDownList
+      ItemHeight = 13
+      ItemIndex = 1
+      TabOrder = 9
+      Text = '32 bit'
+      Visible = False
+      Items.Strings = (
+        '16 bit'
+        '32 bit'
+        '64 bit')
     end
   end
   object MainMenu: TMainMenu
