@@ -50,7 +50,8 @@ type
     function FastTanhMinError4Waveshaper(Input: Double): Double;
     function FastTanhMinError5Waveshaper(Input: Double): Double;
     function FastTanhNollock3Waveshaper(Input: Double): Double;
-    function FastTanhMrToastWaveshaper(Input: Double): Double;
+    function FastTanhMrToast3TermWaveshaper(Input: Double): Double;
+    function FastTanhMrToast4TermWaveshaper(Input: Double): Double;
   public
     function TanhWaveshaperMath(Input: Double): Double;
   end;
@@ -248,12 +249,19 @@ begin
  Result := FastTanhNollockError3(FGain * Input);
 end;
 
-function TTanhWaveshaperModule.FastTanhMrToastWaveshaper(
+function TTanhWaveshaperModule.FastTanhMrToast3TermWaveshaper(
   Input: Double): Double;
 begin
  Input := FGain * Input;
  Result := Input / (1.1605589854 + 0.37011709966 * sqr(Input))
    + 0.10710006710 * Input;
+end;
+
+function TTanhWaveshaperModule.FastTanhMrToast4TermWaveshaper(
+  Input: Double): Double;
+begin
+ Input := FGain * CHalf32 * Input;
+ Result := Input / (3.8566590621 + 0.11306387017 * sqr(Input)) + Input / (0.59265249338 + 0.79772974129 * sqr(Input))
 end;
 
 procedure TTanhWaveshaperModule.ParameterTypeChange(
@@ -280,7 +288,8 @@ begin
   17 : FTanhWaveShaper := TanhLike3Waveshaper;
   18 : FTanhWaveShaper := TanhLike4Waveshaper;
   19 : FTanhWaveShaper := FastTanhNollock3Waveshaper;
-  20 : FTanhWaveShaper := FastTanhMrToastWaveshaper;
+  20 : FTanhWaveShaper := FastTanhMrToast3TermWaveshaper;
+  21 : FTanhWaveShaper := FastTanhMrToast4TermWaveshaper;
  end;
 end;
 
@@ -308,7 +317,8 @@ begin
   17 : PreDefined := 'TanhLike3Waveshaper';
   18 : PreDefined := 'TanhLike4Waveshaper';
   19 : PreDefined := 'Nollock';
-  20 : PreDefined := 'mistertoast';
+  20 : PreDefined := 'mistertoast 3-Term';
+  21 : PreDefined := 'mistertoast 4-Term';
  end;
 end;
 

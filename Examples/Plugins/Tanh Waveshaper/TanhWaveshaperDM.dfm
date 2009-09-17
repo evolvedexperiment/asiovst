@@ -74,8 +74,8 @@ object TanhWaveshaperModule: TTanhWaveshaperModule
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 20.000000000000000000
-      MaxInteger = 20
+      Max = 21.000000000000000000
+      MaxInteger = 21
       ReportVST2Properties = True
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
