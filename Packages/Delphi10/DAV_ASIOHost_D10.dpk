@@ -29,29 +29,25 @@ requires
   vcl,
   rtl,
   designide,
-  DAV_Common_D10,
-  xmlrtl,
-  vclactnband,
-  vclx,
-  DAV_VSTPlugin_D10;
-
+  DAV_Common_D10;
+                  
 contains
-  DAV_ASIO in '..\..\Source\ASIO\DAV_ASIO.pas',
-  DAV_AsioInterface in '..\..\Source\ASIO\DAV_AsioInterface.pas',
-  DAV_OpenASIO in '..\..\Source\ASIO\DAV_OpenASIO.pas',
-  DAV_ASIOHost in '..\..\Source\ASIO\DAV_ASIOHost.pas',
-  DAV_ASIOConvert in '..\..\Source\ASIO\DAV_ASIOConvert.pas',
-  DAV_ASIOGenerator in '..\..\Source\ASIO\DAV_ASIOGenerator.pas',
-  DAV_ASIOChannelStrip in '..\..\Source\ASIO\DAV_ASIOChannelStrip.pas',
-  DAV_ASIOMixer in '..\..\Source\ASIO\DAV_ASIOMixer.pas',
-  DAV_ASIORegister in '..\..\Source\ASIO\DAV_ASIORegister.pas',
-  DAV_AsioDriverWizardReg in '..\..\Source\ASIO\DAV_AsioDriverWizardReg.pas',
-  DAV_AsioDriverWizardFrm in '..\..\Source\ASIO\DAV_AsioDriverWizardFrm.pas',
-  DAV_AsioDriverWizard in '..\..\Source\ASIO\DAV_AsioDriverWizard.pas',
-  DAV_AsioDriverModuleCreator in '..\..\Source\ASIO\DAV_AsioDriverModuleCreator.pas',
-  DAV_AsioDriverProjectCreator in '..\..\Source\ASIO\DAV_AsioDriverProjectCreator.pas',
-  DAV_AsioDriverControlPanelCreator in '..\..\Source\ASIO\DAV_AsioDriverControlPanelCreator.pas',
-  DAV_AsioDriverConfig in '..\..\Source\ASIO\DAV_AsioDriverConfig.pas',
-  DAV_ASIODriver in '..\..\Source\ASIO\DAV_ASIODriver.pas';
+  DAV_Asio in '..\..\Source\Asio\DAV_Asio.pas',
+  DAV_AsioInterface in '..\..\Source\Asio\DAV_AsioInterface.pas',
+  DAV_OpenAsio in '..\..\Source\Asio\DAV_OpenAsio.pas',
+  DAV_AsioHost in '..\..\Source\Asio\DAV_AsioHost.pas',
+  DAV_AsioConvert in '..\..\Source\Asio\DAV_AsioConvert.pas',
+  DAV_AsioGenerator in '..\..\Source\Asio\DAV_AsioGenerator.pas',
+  DAV_AsioChannelStrip in '..\..\Source\Asio\DAV_AsioChannelStrip.pas',
+  DAV_AsioMixer in '..\..\Source\Asio\DAV_AsioMixer.pas',
+  DAV_AsioRegister in '..\..\Source\Asio\DAV_AsioRegister.pas',
+  DAV_AsioDriverWizardReg in '..\..\Source\Asio\DAV_AsioDriverWizardReg.pas',
+  DAV_AsioDriverWizardFrm in '..\..\Source\Asio\DAV_AsioDriverWizardFrm.pas',
+  DAV_AsioDriverWizard in '..\..\Source\Asio\DAV_AsioDriverWizard.pas',
+  DAV_AsioDriverModuleCreator in '..\..\Source\Asio\DAV_AsioDriverModuleCreator.pas',
+  DAV_AsioDriverProjectCreator in '..\..\Source\Asio\DAV_AsioDriverProjectCreator.pas',
+  DAV_AsioDriverControlPanelCreator in '..\..\Source\Asio\DAV_AsioDriverControlPanelCreator.pas',
+  DAV_AsioDriverConfig in '..\..\Source\Asio\DAV_AsioDriverConfig.pas',
+  DAV_AsioDriver in '..\..\Source\Asio\DAV_AsioDriver.pas';
 
 end.
