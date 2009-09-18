@@ -1,5 +1,35 @@
 unit DAV_DspFrequencyShifter;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,24 +38,20 @@ uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspLfo, DAV_DspPolyphaseHilbert;
 
 type
-  TCustomBodeFrequencyShifter = class(TDspObject)
+  TCustomBodeFrequencyShifter = class(TDspSampleRatePersistent)
   private
-    FSampleRate       : Single;
-    FFrequency        : Single;
-    FCoefficientCount : Integer;
-    FTransitionBandwidth: Single;
+    FFrequency           : Single;
+    FCoefficientCount    : Integer;
+    FTransitionBandwidth : Single;
     procedure SetFrequency(const Value: Single);
-    procedure SetSampleRate(const Value: Single);
     procedure SetCoefficientCount(const Value: Integer);
     procedure SetTransitionBandwidth(const Value: Single);
   protected
     procedure CoefficientCountChanged; virtual; abstract;
     procedure FrequencyChanged; virtual; abstract;
-    procedure SampleRateChanged; virtual; abstract;
     procedure TransitionBandwidthChanged; virtual; abstract;
   public
-    constructor Create; virtual;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
+    constructor Create; override;
     property Frequency: Single read FFrequency write SetFrequency;
     property CoefficientCount: Integer read FCoefficientCount write SetCoefficientCount;
     property TransitionBandwidth: Single read FTransitionBandwidth write SetTransitionBandwidth;
@@ -61,7 +87,7 @@ uses
 
 constructor TCustomBodeFrequencyShifter.Create;
 begin
- FSampleRate := 44100;
+ inherited;
  FFrequency := 1000;
 end;
 
@@ -83,15 +109,6 @@ begin
   end;
 end;
 
-procedure TCustomBodeFrequencyShifter.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomBodeFrequencyShifter.SetTransitionBandwidth(
   const Value: Single);
 begin
@@ -102,6 +119,7 @@ begin
   end;
 end;
 
+
 { TCustomBodeFrequencyShifter32 }
 
 constructor TCustomBodeFrequencyShifter32.Create;
@@ -110,7 +128,7 @@ begin
  FLfo := TLFOSine32.Create;
  with FLfo do
   begin
-   SampleRate := FSampleRate;
+   SampleRate := Self.SampleRate;
    Frequency := FFrequency;
   end;
  FHilbert := TPhaseHalfPi32.Create;

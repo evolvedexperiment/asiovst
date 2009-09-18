@@ -1,32 +1,61 @@
 unit DAV_DspExciter;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses 
-  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
   DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics,
   DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
-  TCustomExciter = class(TDspObject)
+  TCustomExciter = class(TDspSampleRatePersistent)
   private
     FFrequency   : Single;
-    FSampleRate  : Single;
     FGains       : array [0..3] of Single;
     FCrossover   : TButterworthSplitBandFilter;
     FHighpass    : TButterworthHighPassFilter;
     FUpsampler   : TPolyphaseUpsampler32;
     FDownsampler : TPolyphaseDownsampler32;
 
-    procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure FrequencyChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     function Process(Input: Single): Single; virtual;
 
@@ -35,7 +64,6 @@ type
     property HighFrequencyLevel: Single read FGains[2] write FGains[2];
     property HarmonicsLevel: Single read FGains[3] write FGains[3];
     property Frequency: Single read FFrequency write SetFrequency;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TExciter = class(TCustomExciter)
@@ -57,7 +85,7 @@ uses
 
 constructor TCustomExciter.Create;
 begin
- FSampleRate := 44100;
+ inherited;
  FFrequency := 80;
 
  FGains[0] := 1;
@@ -88,6 +116,23 @@ begin
  inherited;
 end;
 
+procedure TCustomExciter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomExciter then
+  with TCustomExciter(Dest) do
+   begin
+    inherited;
+    FFrequency   := Self.FFrequency;
+    FGains       := Self.FGains;
+
+    FCrossover.Assign(Self.FCrossover);
+    FHighpass.Assign(Self.FHighpass);
+    FUpsampler.Assign(Self.FUpsampler);
+    FDownsampler.Assign(Self.FDownsampler);
+   end
+ else inherited;
+end;
+
 procedure TCustomExciter.SetFrequency(const Value: Single);
 begin
  if FFrequency <> Value then
@@ -103,19 +148,10 @@ begin
  FHighpass.Frequency := 1.5 * FFrequency;
 end;
 
-procedure TCustomExciter.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomExciter.SampleRateChanged;
 begin
- FCrossover.SampleRate := FSampleRate;
- FHighpass.SampleRate := FSampleRate;
+ FCrossover.SampleRate := SampleRate;
+ FHighpass.SampleRate := SampleRate;
 end;
 
 function TCustomExciter.Process(Input: Single): Single;

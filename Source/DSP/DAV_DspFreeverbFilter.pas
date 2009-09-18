@@ -1,5 +1,35 @@
 unit DAV_DspFreeverbFilter;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -24,7 +54,7 @@ const
 
   // Allpass filter class declaration
 type
-  TFreeverbAllpass = class(TDspObject)
+  TFreeverbAllpass = class(TDspPersistent)
   private
     FFeedback    : Single;
     FBuffer      : PDAVSingleFixedArray;
@@ -33,6 +63,7 @@ type
     procedure SetBufferSize(const Value: Integer);
   protected
     procedure BuffersizeChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const Buffersize: Integer = 1); virtual;
     destructor Destroy; override;
@@ -43,7 +74,7 @@ type
   end;
 
   // Comb filter class declaration
-  TFreeverbCombFilter = class(TDspObject)
+  TFreeverbCombFilter = class(TDspPersistent)
   private
     FFeedback    : Single;
     FFilterStore : Single;
@@ -56,6 +87,7 @@ type
     procedure SetDamp(Value: Single);
     procedure SetBufferSize(const Value: Integer);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BuffersizeChanged; virtual;
     procedure DampChanged; virtual;
   public
@@ -94,6 +126,21 @@ begin
   end;
 end;
 
+procedure TFreeverbAllpass.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFreeverbAllpass then
+  with TFreeverbAllpass(Dest) do
+   begin
+    FFeedback    := Self.FFeedback;
+    FBufferSize  := Self.FBufferSize;
+    BuffersizeChanged;
+    FBufferPos   := Self.FBufferPos;
+
+    Move(Self.FBuffer^, FBuffer^, SizeOf(Single));
+   end
+ else inherited;
+end;
+
 procedure TFreeverbAllpass.BuffersizeChanged;
 begin
  ReallocMem(FBuffer, (FBufferSize + 1) * SizeOf(Single));
@@ -102,7 +149,7 @@ end;
 
 procedure TFreeverbAllpass.Mute;
 begin
- Fillchar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
+ FillChar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
 end;
 
 function TFreeverbAllpass.Process(const Input: Single): Single;
@@ -171,6 +218,27 @@ begin
    FBufferSize := Value;
    BuffersizeChanged;
   end;
+end;
+
+procedure TFreeverbCombFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFreeverbCombFilter then
+  with TFreeverbCombFilter(Dest) do
+   begin
+    FFeedback    := Self.FFeedback;
+    FFilterStore := Self.FFilterStore;
+    FDampA       := Self.FDampA;
+    FDampB       := Self.FDampB;
+    FBuffer      := Self.FBuffer;
+    FDamp        := Self.FDamp;
+
+    FBufferSize  := Self.FBufferSize;
+    BuffersizeChanged;
+    FBufferPos   := Self.FBufferPos;
+
+    Move(Self.FBuffer^, FBuffer^, SizeOf(Single));
+   end
+ else inherited;
 end;
 
 procedure TFreeverbCombFilter.BuffersizeChanged;

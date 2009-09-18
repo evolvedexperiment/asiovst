@@ -1,19 +1,55 @@
 unit DAV_DspDelayLines;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon;
+  Classes, DAV_Common, DAV_DspCommon;
+
+// TODO: - remove Samplerate from TCustomDelayLineTime and make it
+// TCustomFractionalDelayLine, build new class TCustomDelayLineTime in a
+// new unit that contains TCustomFractionalDelayLine!!
+// - complete assignto
 
 type
-  TCustomDelayLine = class(TDspObject)
+  TCustomDelayLine = class(TDspPersistent)
   private
     procedure SetBufferSize(const Value: Integer);
   protected
     FBufferPos  : Integer;
     FBufferSize : Integer;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BufferSizeChanged; virtual; abstract;
     property BufferSize: Integer read FBufferSize write SetBufferSize;
   public
@@ -27,6 +63,7 @@ type
   protected
     FBuffer : PDAVSingleFixedArray;
     procedure BufferSizeChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
@@ -41,6 +78,7 @@ type
   protected
     FBuffer : PDAVDoubleFixedArray;
     procedure BufferSizeChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
@@ -111,6 +149,17 @@ begin
  FBufferPos  := 0;
 end;
 
+procedure TCustomDelayLine.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDelayLine then
+  with TCustomDelayLine(Dest) do
+   begin
+    FBufferPos  := Self.FBufferPos;
+    BufferSize := Self.BufferSize;
+   end
+  else inherited;
+end;
+
 procedure TCustomDelayLine.Reset;
 begin
  FBufferPos := 0;
@@ -162,6 +211,28 @@ begin
   then FBufferPos := 0;
 end;
 
+procedure TCustomDelayLineSamples32.AssignTo(Dest: TPersistent);
+var
+  SampleNo : Integer;
+begin
+ if Dest is TCustomDelayLineSamples32 then
+  with TCustomDelayLineSamples32(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    Move(FBuffer^, Self.FBuffer^, Self.FBufferSize * SizeOf(Single));
+   end else
+ if Dest is TCustomDelayLineSamples64 then
+  with TCustomDelayLineSamples64(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    for SampleNo := 0 to FBufferSize - 1
+     do Self.FBuffer^[SampleNo] := FBuffer^[SampleNo];
+   end
+  else inherited;
+end;
+
 procedure TCustomDelayLineSamples32.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
@@ -200,6 +271,28 @@ begin
  if Pos < 0
   then Inc(Pos, FBufferSize);
  result := FBuffer^[Pos];
+end;
+
+procedure TCustomDelayLineSamples64.AssignTo(Dest: TPersistent);
+var
+  SampleNo : Integer;
+begin
+ if Dest is TCustomDelayLineSamples32 then
+  with TCustomDelayLineSamples32(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    for SampleNo := 0 to FBufferSize - 1
+     do Self.FBuffer^[SampleNo] := FBuffer^[SampleNo];
+   end else
+ if Dest is TCustomDelayLineSamples64 then
+  with TCustomDelayLineSamples64(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    Move(FBuffer^, Self.FBuffer^, Self.FBufferSize * SizeOf(Double));
+   end
+  else inherited;
 end;
 
 procedure TCustomDelayLineSamples64.BufferSizeChanged;

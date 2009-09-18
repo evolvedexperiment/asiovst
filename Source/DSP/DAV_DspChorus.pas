@@ -1,16 +1,45 @@
 unit DAV_DspChorus;
 
-{$I DAV_Compiler.inc}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
+
+{$I DAV_Compiler.inc}
 
 uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO;
 
 type
-  TCustomDspChorus = class(TDspObject)
+  TCustomDspChorus = class(TDspSampleRatePersistent)
   private
-    FSampleRate   : Double;
     FSpeed        : Double;
     FDepth        : Double;
     FMix          : Double;
@@ -26,25 +55,23 @@ type
     procedure SetMix(const Value: Double);
     procedure SetSpeed(const Value: Double);
     procedure SetStages(const Value: Byte);
-    procedure SetSampleRate(const Value: Double);
     procedure SetDrift(const Value: Double);
     function GetLFO(Index: Integer): TLFOSine;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateStageMix; virtual;
     procedure DepthChanged; virtual;
     procedure MixChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure SpeedChanged; virtual;
     procedure StagesChanged; virtual;
     procedure UpdateBuffer; virtual;
-    procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     procedure Reset; virtual;
     property LFO[Index: Integer]: TLFOSine read GetLFO; 
   published
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Speed: Double read FSpeed write SetSpeed;
     property Depth: Double read FDepth write SetDepth;
     property Drift: Double read FDrift write SetDrift;
@@ -57,6 +84,7 @@ type
     FBuffer32 : PDAVSingleFixedArray;
   protected
     procedure UpdateBuffer; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -76,6 +104,7 @@ type
     FBuffer64 : PDAVDoubleFixedArray;
   protected
     procedure UpdateBuffer; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -99,7 +128,8 @@ uses
 
 constructor TCustomDspChorus.Create;
 begin
- FSampleRate   := 44100;
+ inherited;
+ 
  FSpeed        := 2;
  FDepth        := 0.5;
  FMix          := 0.5;
@@ -135,18 +165,18 @@ end;
 
 procedure TCustomDspChorus.AssignTo(Dest: TPersistent);
 var
-  i : Integer;
+  Stage : Integer;
 begin
  if Dest is TCustomDspChorus then
   with TCustomDspChorus(Dest) do
    begin
-    SampleRate   := Self.FSampleRate;
-    Speed        := Self.Speed;
-    Depth        := Self.Depth;
-    Mix          := Self.Mix;
-    Stages       := Self.Stages;
-    Drift        := Self.Drift;
-    for i := 0 to Stages - 1
+    inherited;
+    Speed  := Self.Speed;
+    Depth  := Self.Depth;
+    Mix    := Self.Mix;
+    Stages := Self.Stages;
+    Drift  := Self.Drift;
+    for Stage := 0 to Stages - 1
      do Self.FLFOs[0].Assign(FLFOs[0]);
    end
  else inherited;
@@ -167,7 +197,7 @@ begin
  for i := OldStages to FStages - 1 do
   begin
    FLFOs[i]            := TLFOSine.Create;
-   FLFOs[i].SampleRate := FSampleRate;
+   FLFOs[i].SampleRate := SampleRate;
   end;
  SpeedChanged; 
  CalculateStageMix;
@@ -176,7 +206,7 @@ end;
 procedure TCustomDspChorus.UpdateBuffer;
 begin
  // determine buffer size
- FBufferSize  := round(sqr(Depth) * 0.25 * FSampleRate); // quarter second
+ FBufferSize  := round(sqr(Depth) * 0.25 * SampleRate); // quarter second
  FRealBufSize := FBufferSize + 8;
 
  // check and reset buffer position
@@ -224,7 +254,7 @@ var
   i : Integer;
 begin
  for i := 0 to Length(FLFOs) - 1
-  do FLFOs[i].SampleRate := FSampleRate;
+  do FLFOs[i].SampleRate := SampleRate;
  UpdateBuffer;
 end;
 
@@ -252,15 +282,6 @@ begin
   begin
    FMix := Value;
    MixChanged;
-  end;
-end;
-
-procedure TCustomDspChorus.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 
@@ -296,6 +317,28 @@ destructor TDspChorus32.Destroy;
 begin
  Dispose(FBuffer32);
  inherited;
+end;
+
+procedure TDspChorus32.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TDspChorus32 then
+  with TDspChorus32(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
+   end else
+ if Dest is TDspChorus64 then
+  with TDspChorus64(Dest) do
+   begin
+    inherited;
+    Assert(FRealBufSize = Self.FRealBufSize);
+    for Sample := 0 to FRealBufSize - 1
+     do Self.FBuffer32^[Sample] := FBuffer64^[Sample];
+   end
+ else inherited;
 end;
 
 procedure TDspChorus32.Reset;
@@ -375,6 +418,28 @@ destructor TDspChorus64.Destroy;
 begin
  Dispose(FBuffer64);
  inherited;
+end;
+
+procedure TDspChorus64.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TDspChorus32 then
+  with TDspChorus32(Dest) do
+   begin
+    inherited;
+    Assert(FRealBufSize = Self.FRealBufSize);
+    for Sample := 0 to FRealBufSize - 1
+     do Self.FBuffer64^[Sample] := FBuffer32^[Sample];
+   end else
+ if Dest is TDspChorus64 then
+  with TDspChorus64(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer64^, FBuffer64^, FRealBufSize * SizeOf(Double));
+   end
+ else inherited;
 end;
 
 procedure TDspChorus64.Reset;

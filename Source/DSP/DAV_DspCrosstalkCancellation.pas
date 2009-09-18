@@ -1,42 +1,70 @@
 unit DAV_DspCrosstalkCancellation;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspDelayLines, DAV_DspFilterBasics;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspDelayLines, DAV_DspFilterBasics;
 
 type
   TCrosstalkFilterType = (cftHighshelf);
 
-  TCustomCrosstalkCancellation = class(TDspSampleRateDependent)
+  TCustomCrosstalkCancellation = class(TDspSampleRatePersistent)
   private
-    FSpeakerDistance  : Single;
-    FListenerDistance : Single;
-    FAttenuation      : Single;
-    FHeadRadius       : Single;
-    FStageCount       : Integer;
-    FSampleRate       : Single;
-    FCrosstalkFilterType: TCrosstalkFilterType;
-    FCrosstalkFilterFrequency: Single;
-    FCrosstalkFilterGain: Single;
+    FSpeakerDistance          : Single;
+    FListenerDistance         : Single;
+    FAttenuation              : Single;
+    FHeadRadius               : Single;
+    FStageCount               : Integer;
+    FCrosstalkFilterType      : TCrosstalkFilterType;
+    FCrosstalkFilterFrequency : Single;
+    FCrosstalkFilterGain      : Single;
     procedure SetListenerDistance(const Value: Single);
     procedure SetSpeakerDistance(const Value: Single);
     procedure SetStageCount(const Value: Integer);
-    procedure SetSampleRate(const Value: Single);
     procedure SetCrosstalkFilterType(const Value: TCrosstalkFilterType);
     procedure SetCrosstalkFilterFrequency(const Value: Single);
     procedure SetCrosstalkFilterGain(const Value: Single);
   protected
-    procedure SampleRateChanged; virtual; abstract;
-    procedure StageCountChanged; virtual; abstract;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CrosstalkFilterFrequencyChanged; virtual; abstract;
     procedure CrosstalkFilterGainChanged; virtual; abstract;
     procedure ListenerDistanceChanged; virtual;
     procedure SpeakerDistanceChanged; virtual;
+    procedure StageCountChanged; virtual; abstract;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure ProcessStereo(var Left, Right: Single); overload; virtual; abstract;
 
     property Attenuation: Single read FAttenuation write FAttenuation;
@@ -45,7 +73,6 @@ type
     property CrosstalkFilterGain: Single read FCrosstalkFilterGain write SetCrosstalkFilterGain;
     property HeadRadius: Single read FHeadRadius;
     property ListenerDistance: Single read FListenerDistance write SetListenerDistance;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
     property SpeakerDistance: Single read FSpeakerDistance write SetSpeakerDistance;
     property StageCount: Integer read FStageCount write SetStageCount;
   end;
@@ -55,13 +82,14 @@ type
     FDelayLine       : array [0..1] of array of TDelayLineTime32;
     FCrosstalkFilter : array [0..1] of array of TBasicHighShelfFilter;
 
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateCoefficients; virtual;
     procedure CalculateCrosstalkFilter; virtual;
-    procedure SampleRateChanged; override;
-    procedure ListenerDistanceChanged; override;
-    procedure SpeakerDistanceChanged; override;
     procedure CrosstalkFilterFrequencyChanged; override;
     procedure CrosstalkFilterGainChanged; override;
+    procedure ListenerDistanceChanged; override;
+    procedure SampleRateChanged; override;
+    procedure SpeakerDistanceChanged; override;
     procedure StageCountChanged; override;
   public
     constructor Create; override;
@@ -80,14 +108,31 @@ uses
 constructor TCustomCrosstalkCancellation.Create;
 begin
  inherited;
- FHeadRadius               :=   8;
+ FHeadRadius               := 8;
  FSpeakerDistance          := 100;
  FListenerDistance         := 100;
- FSampleRate               := 44100;
  FAttenuation              := 0.5;
  FCrosstalkFilterFrequency := 1000;
  FCrosstalkFilterGain      := -10;
  SampleRateChanged;
+end;
+
+procedure TCustomCrosstalkCancellation.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomCrosstalkCancellation then
+  with TCustomCrosstalkCancellation(Dest) do
+   begin
+    inherited;
+    FSpeakerDistance          := Self.FSpeakerDistance;
+    FListenerDistance         := Self.FListenerDistance;
+    FAttenuation              := Self.FAttenuation;
+    FHeadRadius               := Self.FHeadRadius;
+    FStageCount               := Self.FStageCount;
+    FCrosstalkFilterType      := Self.FCrosstalkFilterType;
+    FCrosstalkFilterFrequency := Self.FCrosstalkFilterFrequency;
+    FCrosstalkFilterGain      := Self.FCrosstalkFilterGain;
+   end
+  else inherited;
 end;
 
 procedure TCustomCrosstalkCancellation.ListenerDistanceChanged;
@@ -131,15 +176,6 @@ begin
   begin
    FListenerDistance := Value;
    ListenerDistanceChanged;
-  end;
-end;
-
-procedure TCustomCrosstalkCancellation.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 
@@ -211,6 +247,29 @@ begin
      Gain      := FCrosstalkFilterGain;
      Bandwidth := 3.3;
     end;
+end;
+
+procedure TCrosstalkCancellation32.AssignTo(Dest: TPersistent);
+var
+  Stage : Integer;
+begin
+ if Dest is TCrosstalkCancellation32 then
+  with TCrosstalkCancellation32(Dest) do
+   begin
+    inherited;
+    // assign delay lines
+    for Stage := 0 to Length(FDelayLine[0]) - 1
+     do FDelayLine[0, Stage].Assign(Self.FDelayLine[0, Stage]);
+    for Stage := 0 to Length(FDelayLine[1]) - 1
+     do FDelayLine[1, Stage].Assign(Self.FDelayLine[1, Stage]);
+
+    // assign filters
+    for Stage := 0 to Length(FCrosstalkFilter[0]) - 1
+     do FCrosstalkFilter[0, Stage].Assign(Self.FCrosstalkFilter[0, Stage]);
+    for Stage := 0 to Length(FCrosstalkFilter[1]) - 1
+     do FCrosstalkFilter[1, Stage].Assign(Self.FCrosstalkFilter[1, Stage]);
+   end
+  else inherited;
 end;
 
 procedure TCrosstalkCancellation32.CalculateCoefficients;

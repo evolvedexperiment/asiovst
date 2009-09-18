@@ -1,5 +1,37 @@
 unit DAV_DspTransientProcessor;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The code is based on the mda VST plug-ins by Paul Kellett, which is       //
+//  located at http://sourceforge.net/projects/mda-vst/                       //
+//  It was reviewed and rewritten from scratch by Christian-W. Budde          //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,16 +40,14 @@ uses
   Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TCustomTransientProcessor = class(TDspObject)
+  TCustomTransientProcessor = class(TDspSampleRatePersistent)
   private
-    FSampleRate        : Single;
     FAttackHold        : Single;
     FOutputGain        : Single;
     FFilter            : Single;
     FReleaseHold       : Single;
     FRelease           : Single;
     FAttack            : Single;
-    procedure SetSampleRate(const Value: Single);
     procedure SetAttack(const Value: Single);
     procedure SetAttackHold(const Value: Single);
     procedure SetFilter(const Value: Single);
@@ -38,7 +68,7 @@ type
     FFilterIn          : Single;
     FFilterOut         : Single;
     FFilterState       : Single;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure AttackChanged; virtual; 
     procedure AttackHoldChanged; virtual; 
     procedure FilterChanged; virtual;
@@ -46,7 +76,7 @@ type
     procedure ReleaseChanged; virtual;
     procedure ReleaseHoldChanged; virtual;
   public
-    constructor Create; virtual;
+    constructor Create; override;
 
     property Attack: Single read FAttack write SetAttack;
     property AttackHold: Single read FAttackHold write SetAttackHold;
@@ -54,7 +84,6 @@ type
     property Output: Single read FOutputGain write SetOutput;
     property Release: Single read FRelease write SetRelease;
     property ReleaseHold: Single read FReleaseHold write SetReleaseHold;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TCustomMonoTransientProcessor = class(TCustomTransientProcessor)
@@ -108,7 +137,7 @@ const
 constructor TCustomTransientProcessor.Create;
 begin
  inherited;
- FSampleRate  := 44100;
+
  FAttack      := 0;     // Attack [%]
  FRelease     := 0;     // Release [%]
  FOutputGain  := 0;     // Output Gain [dB]
@@ -175,15 +204,6 @@ begin
   begin
    FReleaseHold := Value;
    ReleaseHoldChanged;
-  end;
-end;
-
-procedure TCustomTransientProcessor.SetSampleRate(const Value: Single);
-begin
- if Value <> FSampleRate then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 

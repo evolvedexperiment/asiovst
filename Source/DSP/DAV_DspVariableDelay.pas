@@ -1,5 +1,35 @@
 unit DAV_DspVariableDelay;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,25 +38,23 @@ uses
   DAV_Common, DAV_DspCommon, DAV_DspInterpolation, DAV_DspFilter;
 
 type
-  TCustomVariableDelay = class(TDspObject)
+  TCustomVariableDelay = class(TDspSampleRatePersistent)
   private
-    FSampleRate   : Single;
     FDelay        : Single;
     FClearBuffer  : Boolean;
-    procedure SetSampleRate(const Value: Single);
     procedure SetDelay(const Value: Single);
   protected
     FFractional    : Single;
     FBufferSize    : Integer;
     FBufferPos     : Integer;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure DelayChanged; virtual;
     procedure ChangeBuffer(const NewSize: Integer); virtual; abstract;
     procedure ResetBufferPosition; virtual;
     class function InterpolatorLength: Integer; virtual; abstract;
   public
-    constructor Create; virtual;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
+    constructor Create; override;
+    property SampleRate;
     property Delay: Single read FDelay write SetDelay;
     property ClearBufferOnChange: Boolean read FClearBuffer write FClearBuffer default true;
   end;
@@ -81,7 +109,6 @@ constructor TCustomVariableDelay.Create;
 begin
  inherited;
  FClearBuffer := True;
- FSampleRate := 44100;
  FDelay := 0;
  ResetBufferPosition;
 end;
@@ -104,15 +131,6 @@ begin
   end;
 end;
 
-procedure TCustomVariableDelay.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomVariableDelay.SampleRateChanged;
 begin
  DelayChanged;
@@ -122,8 +140,8 @@ procedure TCustomVariableDelay.DelayChanged;
 var
   NewSize : Integer;
 begin
- NewSize := round(FSampleRate * FDelay + 0.50000001);
- FFractional := NewSize - FSampleRate * FDelay;
+ NewSize := round(SampleRate * FDelay + 0.50000001);
+ FFractional := NewSize - SampleRate * FDelay;
  ChangeBuffer(NewSize + InterpolatorLength);
 end;
 

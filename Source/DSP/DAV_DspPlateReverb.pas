@@ -1,5 +1,35 @@
 unit DAV_DspPlateReverb;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -12,7 +42,7 @@ const
   CInternalSampleRate : Single = 29761;
 
 type
-  TDiffusor = class(TDspObject)
+  TDiffusor = class(TDspPersistent)
   private
     FAmount             : Single;
     FInternalBufferSize : Integer;
@@ -33,7 +63,7 @@ type
     property Sample[Index: Integer]: Single read GetSample;
   end;
 
-  TModulatedDiffusor = class(TDspObject)
+  TModulatedDiffusor = class(TDspPersistent)
   private
     FAmount             : Single;
     FExcursion          : Integer;
@@ -64,16 +94,9 @@ type
     property Sample[Index: Integer]: Single read GetSample;
   end;
 
-  TCustomPlateReverb = class(TDspObject)
-  private
-    procedure SetSampleRate(const Value: Single);
-  protected
-    FSampleRate : Single;
-    procedure SampleRateChanged; virtual;
+  TCustomPlateReverb = class(TDspSampleRatePersistent)
   public
-    constructor Create; virtual; abstract;
     function ProcessSample(const Input: Single): Single; virtual; abstract;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TPlateReverb = class(TCustomPlateReverb)
@@ -370,22 +393,6 @@ begin
 end;
 
 
-{ TCustomPlateReverb }
-
-procedure TCustomPlateReverb.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> abs(Value) then
-  begin
-   FSampleRate := abs(Value);
-   SampleRateChanged;
-  end;
-end;
-
-procedure TCustomPlateReverb.SampleRateChanged;
-begin
- // nothing in here yet...
-end;
-
 { TPlateReverb }
 
 constructor TPlateReverb.Create;
@@ -397,7 +404,6 @@ begin
  FDecay := 0.5;
  FResamplePos := 1;
  FPreDelay := 0.01;
- FSampleRate := 44100;
  SampleRateChanged;
  FLowpass[0] := TButterworthLowpassFilter.Create(1);
  FLowpass[0].Frequency := 13.400;

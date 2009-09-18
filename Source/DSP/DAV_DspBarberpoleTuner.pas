@@ -1,32 +1,60 @@
 unit DAV_DspBarberpoleTuner;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspLfo, DAV_DspTuner,
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspLfo, DAV_DspTuner,
   DAV_DspFilterButterworth;
 
 type
-  TCustomBarberpoleFilter = class(TDspObject)
+  TCustomBarberpoleFilter = class(TDspSampleRatePersistent)
   private
-    FLFO        : TLFOSine32;
-    FLowpass    : TButterworthLowPassFilter;
-    FSampleRate : Single;
+    FLFO     : TLFOSine32;
+    FLowpass : TButterworthLowPassFilter;
     function GetFrequency: Single;
     function GetOrder: Integer;
-    procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
     procedure SetOrder(const Value: Integer);
   protected
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     function Process(Input: Single): Single; virtual;
 
-    property SampleRate: Single read FSampleRate write SetSampleRate;
     property Frequency: Single read GetFrequency write SetFrequency;
     property Order: Integer read GetOrder write SetOrder;
   end;
@@ -50,6 +78,7 @@ type
   protected
     procedure SampleRateChanged; override;
     function GetCurrentFrequency: Single; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -76,10 +105,21 @@ resourcestring
 
 { TCustomBarberpoleFilter }
 
+procedure TCustomBarberpoleFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomBarberpoleFilter then
+  with TCustomBarberpoleFilter(Dest) do
+   begin
+    inherited;
+    FLFO.Assign(Self.FLFO);
+    FLowpass.Assign(Self.FLowpass);
+   end
+ else inherited;
+end;
+
 constructor TCustomBarberpoleFilter.Create;
 begin
  inherited;
- FSampleRate := 44100;
 
  FLFO := TLFOSine32.Create;
  with FLFO do
@@ -143,16 +183,20 @@ begin
   else raise Exception.Create(RCStrOrderMustBeLarger0);
 end;
 
-procedure TCustomBarberpoleFilter.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
 
 { TCustomBarberpoleTuner }
+
+procedure TCustomBarberpoleTuner.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomBarberpoleTuner then
+  with TCustomBarberpoleTuner(Dest) do
+   begin
+    inherited;
+    FBarberpoleFilter.Assign(Self.FBarberpoleFilter);
+    FZCTuner.Assign(Self.FZCTuner);
+   end
+ else inherited;
+end;
 
 constructor TCustomBarberpoleTuner.Create;
 begin

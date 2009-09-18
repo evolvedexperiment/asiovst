@@ -1,26 +1,50 @@
 unit DAV_DspTuner;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 {$DEFINE OnlineFreqCalc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DSPFilterButterworth,
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DSPFilterButterworth,
   DAV_DspCorrelation, DAV_DspCepstrum;
 
 type
-  TCustomTuner = class(TDspObject)
-  private
-    FSampleRate : Single;
-    procedure SetSampleRate(const Value: Single);
+  TCustomTuner = class(TDspSampleRatePersistent)
   protected
-    procedure SampleRateChanged; virtual;
     function GetCurrentFrequency: Single; virtual; abstract;
   public
-    constructor Create; virtual;
     procedure Process(Input: Single); virtual; abstract;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
     property CurrentFrequency: Single read GetCurrentFrequency;
   end;
 
@@ -45,6 +69,7 @@ type
     procedure CalculateDownsampleFactor; virtual;
     procedure MaximumFrequencyChanged; virtual;
     procedure MinimumFrequencyChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     procedure Process(Input: Single); override;
@@ -73,6 +98,7 @@ type
     procedure SmoothFactorChanged; virtual;
     procedure ProcessDownsampled(Downsampled: Single); override;
     function CalculateCurrentFrequency: Single; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     property SmoothFactor: Single read FSmoothFactor write SetSmoothFactor;
@@ -106,6 +132,7 @@ type
     procedure CalculateDownsampleFactor; override;
     function CalculateCurrentFrequency: Single; override;
     procedure ProcessDownsampled(Downsampled: Single); override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     property Attack: Single read FAttack write SetAttack;
@@ -132,6 +159,7 @@ type
     function CalculateCurrentFrequency: Single; virtual;
     procedure CalculateDownsampleFactor; override;
     procedure SampleRateChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -171,42 +199,23 @@ implementation
 uses
   SysUtils, Math, DAV_Approximations, DAV_DspWindowing;
 
-{ TCustomTuner }
-
-constructor TCustomTuner.Create;
-begin
- FSampleRate := 44100;
- SampleRateChanged;
-end;
-
-procedure TCustomTuner.SampleRateChanged;
-begin
- // nothing in here yet!
-end;
-
-procedure TCustomTuner.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 { TCustomDownsampledTuner }
 
 constructor TCustomDownsampledTuner.Create;
 begin
+ inherited;
+
  FLowpass  := TButterworthLowPassFilter.Create(4);
  FHighpass := TButterworthHighPassFilter.Create(2);
  FMaximumFrequency := 4000;
  FMinimumFrequency := 100;
  FDownsampleBW     := 0.7;
 
+ FDownSampleCounter := 1;
+
  MinimumFrequencyChanged;
  SetupMaximumFrequency;
- FDownSampleCounter := 1;
- inherited;
+ SampleRateChanged;
 end;
 
 procedure TCustomDownsampledTuner.SampleRateChanged;
@@ -215,6 +224,20 @@ begin
  CalculateDownsampleFactor;
  FLowpass.SampleRate := SampleRate;
  FHighpass.SampleRate := SampleRate / FDownSampleFactor;
+end;
+
+procedure TCustomDownsampledTuner.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDownsampledTuner then
+  with TCustomDownsampledTuner(Dest) do
+   begin
+    inherited;
+    FLowpass.Assign(Self.FLowpass);
+    FHighpass.Assign(Self.FHighpass);
+    FDownSampleFactor  := Self.FDownSampleFactor;
+    FDownSampleCounter := Self.FDownSampleCounter;
+   end
+ else inherited;
 end;
 
 procedure TCustomDownsampledTuner.CalculateDownsampleFactor;
@@ -347,9 +370,27 @@ begin
  else inc(FSamples);
 end;
 
+procedure TCustomZeroCrossingTuner.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomZeroCrossingTuner then
+  with TCustomZeroCrossingTuner(Dest) do
+   begin
+    inherited;
+    FIsAbove         := Self.FIsAbove;
+    FSamples         := Self.FSamples;
+    FAverageSamples  := Self.FAverageSamples;
+    FOneCrossingOnly := Self.FOneCrossingOnly;
+    FFrequencyFactor := Self.FFrequencyFactor;
+    {$IFDEF OnlineFreqCalc}
+    FCurrentFreq     := Self.FCurrentFreq;
+    {$ENDIF}
+   end
+ else inherited;
+end;
+
 function TCustomZeroCrossingTuner.CalculateCurrentFrequency: Single;
 begin
- result := FFrequencyFactor * FSampleRate / (FDownSampleFactor * FAverageSamples);
+ result := FFrequencyFactor * SampleRate / (FDownSampleFactor * FAverageSamples);
 end;
 
 procedure TCustomZeroCrossingTuner.SetOneCrossingOnly(const Value: Boolean);
@@ -472,6 +513,24 @@ begin
  FThreshold := Limit(Value, -1, 1);
 end;
 
+procedure TCustomAdvancedTuner.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomAdvancedTuner then
+  with TCustomAdvancedTuner(Dest) do
+   begin
+    inherited;
+    FCurrentNote   := Self.FCurrentNote;
+    FCurrentDetune := Self.FCurrentDetune;
+    FAttack        := Self.FAttack;
+    FAttackFactor  := Self.FAttackFactor;
+    FRelease       := Self.FRelease;
+    FReleaseFactor := Self.FReleaseFactor;
+    FLevel         := Self.FLevel;
+    FThreshold     := Self.FThreshold;
+   end
+ else inherited;
+end;
+
 procedure TCustomAdvancedTuner.AttackChanged;
 begin
  CalculateAttackFactor;
@@ -563,6 +622,24 @@ begin
  CalculateBufferLength;
 end;
 
+procedure TCustomCepstrumTuner.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomCepstrumTuner then
+  with TCustomCepstrumTuner(Dest) do
+   begin
+    inherited;
+    FBuffer              := Self.FBuffer;
+    FCepstrum            := Self.FCepstrum;
+    FCepstrumCalculation := Self.FCepstrumCalculation;
+    FBufferLength        := Self.FBufferLength;
+    FBufferPos           := Self.FBufferPos;
+    {$IFDEF OnlineFreqCalc}
+    FCurrentFreq         := Self.FCurrentFreq;
+    {$ENDIF}
+   end
+ else inherited;
+end;
+
 procedure TCustomCepstrumTuner.CalculateBufferLength;
 var
   NewBufferLength : Integer;
@@ -604,7 +681,7 @@ begin
     mps := i;
    end;
 
- result := FSampleRate / (FDownSampleFactor * mps);
+ Result := SampleRate / (FDownSampleFactor * mps);
 end;
 
 function TCustomCepstrumTuner.GetCurrentFrequency: Single;

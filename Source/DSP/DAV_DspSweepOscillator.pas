@@ -1,5 +1,37 @@
 unit DAV_DspSweepOscillator;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The code is based on the mda VST plug-ins by Paul Kellett, which is       //
+//  located at http://sourceforge.net/projects/mda-vst/                       //
+//  It was reviewed and rewritten from scratch by Christian-W. Budde          //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -19,7 +51,7 @@ type
     FPosition : TComplexDouble;
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateModulationFrequency; virtual;
-    procedure SetAmplitude(const Value: Single); override;
+    procedure SetAmplitude(const Value: Double); override;
     procedure ModulationFrequencyChanged; virtual;
   public
     constructor Create; override;
@@ -123,7 +155,7 @@ begin
  Phase := 0;
 end;
 
-procedure TCustomSweepOscillator64.SetAmplitude(const Value: Single);
+procedure TCustomSweepOscillator64.SetAmplitude(const Value: Double);
 begin
  if FAmplitude <> Value then
   begin
@@ -159,7 +191,7 @@ end;
 
 procedure TCustomSweepOscillator64.CalculateModulationFrequency;
 begin
- GetSinCos(2 * Pi * FModFreq / FSampleRate, FAngle[1].Im, FAngle[1].Re);
+ GetSinCos(2 * Pi * FModFreq / SampleRate, FAngle[1].Im, FAngle[1].Re);
 end;
 
 
@@ -203,7 +235,7 @@ end;
 
 procedure TCustomFullSweepOscillator64.CalculateInitialFrequency;
 begin
- GetSinCos(2 * Pi * FIniFreq / FSampleRate, FAngle[0].Im, FAngle[0].Re);
+ GetSinCos(2 * Pi * FIniFreq / SampleRate, FAngle[0].Im, FAngle[0].Re);
 end;
 
 procedure TCustomFullSweepOscillator64.CalculateNextSample;
@@ -287,7 +319,7 @@ end;
 
 procedure TCustomRangeSweepOscillator64.CalculateStartAngle;
 begin
- GetSinCos(2 * Pi * FStartFreq / FSampleRate, FAngle[0].Im, FAngle[0].Re);
+ GetSinCos(2 * Pi * FStartFreq / SampleRate, FAngle[0].Im, FAngle[0].Re);
 end;
 
 procedure TCustomRangeSweepOscillator64.CalculateSampleCount;

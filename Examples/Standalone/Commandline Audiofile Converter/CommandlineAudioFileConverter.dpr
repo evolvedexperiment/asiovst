@@ -37,7 +37,7 @@ begin
  inherited;
  FMaxLength    := 0;
  FOffset       := 0;
- FMakePowerOf2 := False;
+ FMakePowerOf2 := False; //True;
 end;
 
 procedure TAudioConverter.DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);

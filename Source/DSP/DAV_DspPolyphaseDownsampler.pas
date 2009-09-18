@@ -1,14 +1,43 @@
 unit DAV_DspPolyphaseDownsampler;
 
-// based on HIIR library by Laurent de Soras
-// see http://ldesoras.free.fr/prod.html for more information
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The code is based on the HIIR code by Laurent de Soras, which             //
+//  can be found at http://ldesoras.free.fr/prod.html#src_hiir                //
+//  It was reviewed and rewritten from scratch by Christian-W. Budde          //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspPolyphaseFilter;
+  Classes, DAV_Common, DAV_DspPolyphaseFilter;
 
 type
   TProcessSample32 = function(const Output: TDAV2SingleArray): Single of object;
@@ -37,7 +66,8 @@ type
     procedure ProcessSampleSplit4(out Low, High: Single; Input: TDAV2SingleArray);
     procedure ProcessSampleSplitLarge(out Low, High: Single; Input: TDAV2SingleArray);
   protected
-    procedure SetProcedures; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure ChooseProcedures; override;
     procedure NumberOfCoeffsChanged; override;
   public
     constructor Create; override;
@@ -72,7 +102,8 @@ type
     procedure ProcessSampleSplit4(out Low, High: Double; Input: TDAV2DoubleArray);
     procedure ProcessSampleSplitLarge(out Low, High: Double; Input: TDAV2DoubleArray);
   protected
-    procedure SetProcedures; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure ChooseProcedures; override;
     procedure NumberOfCoeffsChanged; override;
   public
     constructor Create; override;
@@ -119,11 +150,28 @@ begin
  ReallocMem(FX, FNumberOfCoeffs * SizeOf(Single));
  ReallocMem(FY, FNumberOfCoeffs * SizeOf(Single));
  ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Single));
- SetProcedures;
+ ChooseProcedures;
  ClearBuffers;
 end;
 
-procedure TPolyphaseDownsampler32.SetProcedures;
+procedure TPolyphaseDownsampler32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TPolyphaseDownsampler32 then
+  with TPolyphaseDownsampler32(Dest) do
+   begin
+    inherited;
+    FProcessSample32      := Self.FProcessSample32;
+    FProcessSampleSplit32 := Self.FProcessSampleSplit32;
+
+    Assert(FNumberOfCoeffs = Self.FNumberOfCoeffs);
+    Move(Self.FX^, FX^, FNumberOfCoeffs * SizeOf(Single));
+    Move(Self.FY^, FY^, FNumberOfCoeffs * SizeOf(Single));
+    Move(Self.FStateStack^, FStateStack^, 2 * FNumberOfCoeffs * SizeOf(Single));
+   end
+ else inherited;
+end;
+
+procedure TPolyphaseDownsampler32.ChooseProcedures;
 begin
   case FNumberOfCoeffs of
     1 :
@@ -665,7 +713,24 @@ Input parameters:
 Throws: Nothing
 =============================================================================}
 
-procedure TPolyphaseDownsampler64.SetProcedures;
+procedure TPolyphaseDownsampler64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TPolyphaseDownsampler64 then
+  with TPolyphaseDownsampler64(Dest) do
+   begin
+    inherited;
+    FProcessSample64      := Self.FProcessSample64;
+    FProcessSampleSplit64 := Self.FProcessSampleSplit64;
+
+    Assert(FNumberOfCoeffs = Self.FNumberOfCoeffs);
+    Move(Self.FX^, FX^, FNumberOfCoeffs * SizeOf(Double));
+    Move(Self.FY^, FY^, FNumberOfCoeffs * SizeOf(Double));
+    Move(Self.FStateStack^, FStateStack^, 2 * FNumberOfCoeffs * SizeOf(Double));
+   end
+ else inherited;
+end;
+
+procedure TPolyphaseDownsampler64.ChooseProcedures;
 begin
   case FNumberOfCoeffs of
     1 :
@@ -702,7 +767,7 @@ begin
  ReallocMem(FX, FNumberOfCoeffs * SizeOf(Double));
  ReallocMem(FY, FNumberOfCoeffs * SizeOf(Double));
  ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Double));
- SetProcedures;
+ ChooseProcedures;
  ClearBuffers;
 end;
 

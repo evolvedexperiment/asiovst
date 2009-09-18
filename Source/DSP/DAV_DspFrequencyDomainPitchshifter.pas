@@ -10,18 +10,15 @@ uses
   DAV_Common, DAV_DspCommon, DAV_DspFftReal2Complex;
 
 type
-  TCustomFrequencyDomainPitchShifter = class(TDspObject)
+  TCustomFrequencyDomainPitchShifter = class(TDspSampleRatePersistent)
   private
     procedure SetPitch(const Value: Single);
-    procedure SetSampleRate(const Value: Single);
   protected
     FPitch      : Single;
-    FSampleRate : Single;
     procedure PitchChanged;
-    procedure SampleRateChanged;
+    procedure SampleRateChanged; override;
   public
     property Pitch: Single read FPitch write SetPitch;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TFrequencyDomainPitchShifter32 = class(TCustomFrequencyDomainPitchShifter)
@@ -56,15 +53,6 @@ begin
   begin
    FPitch := Value;
    PitchChanged;
-  end;
-end;
-
-procedure TCustomFrequencyDomainPitchShifter.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 

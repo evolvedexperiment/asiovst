@@ -1,11 +1,44 @@
 unit DAV_DspDitherNoiseShaper;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  The code is based on coefficients posted by cshei[AT]indiana.edu For      //
+//  more information see  http://www.musicdsp.org/archive.php?classid=5#99    //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterBasics;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterBasics;
 
 const
   {$A4}
@@ -100,7 +133,7 @@ type
 
   TDitherType = (dtNone, dtEqual, dtTriangular, dtGauss, dtFastGauss);  
 
-  TCustomDitherNoiseShaper = class(TDspObject)
+  TCustomDitherNoiseShaper = class(TDspSampleRatePersistent)
   private
     FBitDepth   : Byte;
     FDitherType : TDitherType;
@@ -109,11 +142,12 @@ type
     procedure SetBitDepth(Value: Byte);
     procedure SetDitherType(const Value: TDitherType);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BitDepthChanged; virtual; abstract;
     procedure DitherTypeChanged; virtual;
     procedure Reset; virtual; abstract;
   public
-    constructor Create; virtual;
+    constructor Create; override;
 
     property BitDepth: Byte read FBitDepth write SetBitDepth default 16;
     property Limit: Boolean read FLimit write FLimit default True;
@@ -122,10 +156,11 @@ type
 
   TCustomDitherFIRNoiseShaper = class(TCustomDitherNoiseShaper)
   private
-    FOrder           : Integer;
-    FHistoryPos      : Integer;
+    FOrder      : Integer;
+    FHistoryPos : Integer;
     procedure SetOrder(const Value: Integer);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure OrderChanged; virtual; abstract;
     procedure Reset; override;
 
@@ -139,6 +174,7 @@ type
     FNoiseshaperType : TNoiseShaperType;
     procedure SetNoiseshaperType(Value: TNoiseShaperType);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure NoiseshaperTypeChanged; virtual;
   public
     constructor Create; override;
@@ -150,7 +186,9 @@ type
   private
     FFilter : TCustomFilter;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure Reset; override;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -164,8 +202,9 @@ type
   protected
     FCoefficients : PDAVSingleFixedArray; // Coefficients
     FHistory      : PDAVSingleFixedArray; // Error History
-    procedure NoiseshaperTypeChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BitDepthChanged; override;
+    procedure NoiseshaperTypeChanged; override;
     procedure OrderChanged; override;
   public
     constructor Create; override;
@@ -189,8 +228,9 @@ type
   protected
     FCoefficients : PDAVDoubleFixedArray; // Coefficients
     FHistory      : PDAVDoubleFixedArray; // Error History
-    procedure NoiseshaperTypeChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BitDepthChanged; override;
+    procedure NoiseshaperTypeChanged; override;
     procedure OrderChanged; override;
   public
     constructor Create; override;
@@ -210,15 +250,13 @@ type
   private
     FBitMul, FBitDiv : Single;
     FDitherAmplitude : Single;
-    FSampleRate      : Single;
     procedure ChooseNoiseshaper;
-    procedure SetSampleRate(const Value: Single);
-    procedure SamplerateChanged;
   protected
     FCoefficients : PDAVSingleFixedArray; // Coefficients
     FHistory      : PDAVSingleFixedArray; // Error History
     procedure BitDepthChanged; override;
     procedure OrderChanged; override;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
     function ProcessInteger(Input: Single): Integer;
@@ -229,7 +267,7 @@ type
     property DitherAmplitude: Single read FDitherAmplitude write FDitherAmplitude;
     property DitherType;
     property Limit;
-    property Samplerate: Single read FSampleRate write SetSampleRate;  
+    property Samplerate;  
   end;
 
   TDitherHighShelfNoiseShaper32 = class(TCustomDitherIIRNoiseShaper)
@@ -237,14 +275,12 @@ type
     FBitMul, FBitDiv : Single;
     FDitherAmplitude : Single;
     FLastSample      : Single;
-    FSampleRate: Single;
-    FFrequency: Single;
+    FFrequency       : Single;
     procedure SetFrequency(const Value: Single);
-    procedure SetSampleRate(const Value: Single);
   protected
     procedure BitDepthChanged; override;
     procedure FrequencyChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
 
@@ -253,7 +289,7 @@ type
   published
     property DitherAmplitude: Single read FDitherAmplitude write FDitherAmplitude;
     property Frequency: Single read FFrequency write SetFrequency;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property SampleRate;
     property BitDepth;
     property DitherType;
     property Limit;
@@ -265,6 +301,19 @@ uses
   Math, SysUtils, DAV_Approximations;
 
 { TCustomDitherNoiseShaper }
+
+procedure TCustomDitherNoiseShaper.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDitherNoiseShaper then
+  with TCustomDitherNoiseShaper(Dest) do
+   begin
+    FBitDepth   := Self.FBitDepth;
+    FDitherType := Self.FDitherType;
+    FLimit      := Self.FLimit;
+    FLimits     := Self.FLimits;
+   end
+  else inherited;
+end;
 
 constructor TCustomDitherNoiseShaper.Create;
 begin
@@ -301,7 +350,21 @@ begin
  Reset;
 end;
 
+
 { TCustomDitherFIRNoiseShaper }
+
+procedure TCustomDitherFIRNoiseShaper.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDitherFIRNoiseShaper then
+  with TCustomDitherFIRNoiseShaper(Dest) do
+   begin
+    inherited;
+    FOrder      := Self.FOrder;
+    OrderChanged;
+    FHistoryPos := Self.FHistoryPos;
+   end
+ else inherited;
+end;
 
 constructor TCustomDitherFIRNoiseShaper.Create;
 begin
@@ -323,6 +386,7 @@ begin
  FHistoryPos := 0;
 end;
 
+
 { TCustomDitherPredefinedNoiseShaper }
 
 constructor TCustomDitherPredefinedNoiseShaper.Create;
@@ -330,6 +394,17 @@ begin
  inherited;
  FNoiseshaperType := ns9Fc;
  NoiseshaperTypeChanged;
+end;
+
+procedure TCustomDitherPredefinedNoiseShaper.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDitherPredefinedNoiseShaper then
+  with TCustomDitherPredefinedNoiseShaper(Dest) do
+   begin
+    inherited;
+    FNoiseshaperType := Self.FNoiseshaperType;
+   end
+ else inherited;
 end;
 
 procedure TCustomDitherPredefinedNoiseShaper.SetNoiseshaperType(
@@ -352,7 +427,6 @@ end;
 constructor TCustomDitherIIRNoiseShaper.Create;
 begin
  inherited;
-
 end;
 
 destructor TCustomDitherIIRNoiseShaper.Destroy;
@@ -361,9 +435,27 @@ begin
  inherited;
 end;
 
+procedure TCustomDitherIIRNoiseShaper.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDitherIIRNoiseShaper then
+  with TCustomDitherIIRNoiseShaper(Dest) do
+   begin
+    inherited;
+    FFilter.Assign(Self.FFilter);
+   end
+ else inherited;
+end;
+
 procedure TCustomDitherIIRNoiseShaper.Reset;
 begin
  FFilter.ResetStates;
+end;
+
+procedure TCustomDitherIIRNoiseShaper.SampleRateChanged;
+begin
+ inherited;
+ if assigned(FFilter)
+  then FFilter.SampleRate := SampleRate;
 end;
 
 { TDitherNoiseShaper32 }
@@ -380,6 +472,40 @@ destructor TDitherNoiseShaper32.Destroy;
 begin
  Dispose(FHistory);
  inherited;
+end;
+
+procedure TDitherNoiseShaper32.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TDitherNoiseShaper32 then
+  with TDitherNoiseShaper32(Dest) do
+   begin
+    inherited;
+    FBitMul          := Self.FBitMul;
+    FBitDiv          := Self.FBitDiv;
+    FDitherAmplitude := Self.FDitherAmplitude;
+
+    assert(FOrder = Self.FOrder);
+    Move(Self.FCoefficients^, FCoefficients^, FOrder * SizeOf(Single));
+    Move(Self.FHistory^, FHistory^, FOrder * SizeOf(Single));
+   end else
+ if Dest is TDitherNoiseShaper32 then
+  with TDitherNoiseShaper32(Dest) do
+   begin
+    inherited;
+    FBitMul          := Self.FBitMul;
+    FBitDiv          := Self.FBitDiv;
+    FDitherAmplitude := Self.FDitherAmplitude;
+
+    assert(FOrder = Self.FOrder);
+    for Sample := 0 to FOrder - 1 do
+     begin
+      FCoefficients^[Sample] := Self.FCoefficients^[Sample];
+      FHistory^[Sample] := Self.FHistory^[Sample];
+     end;
+   end
+ else inherited;
 end;
 
 procedure TDitherNoiseShaper32.BitDepthChanged;
@@ -559,6 +685,40 @@ destructor TDitherNoiseShaper64.Destroy;
 begin
  Dispose(FHistory);
  inherited;
+end;
+
+procedure TDitherNoiseShaper64.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TDitherNoiseShaper32 then
+  with TDitherNoiseShaper32(Dest) do
+   begin
+    inherited;
+    FBitMul          := Self.FBitMul;
+    FBitDiv          := Self.FBitDiv;
+    FDitherAmplitude := Self.FDitherAmplitude;
+
+    assert(FOrder = Self.FOrder);
+    for Sample := 0 to FOrder - 1 do
+     begin
+      FCoefficients^[Sample] := Self.FCoefficients^[Sample];
+      FHistory^[Sample] := Self.FHistory^[Sample];
+     end;
+   end else
+ if Dest is TDitherNoiseShaper64 then
+  with TDitherNoiseShaper64(Dest) do
+   begin
+    inherited;
+    FBitMul          := Self.FBitMul;
+    FBitDiv          := Self.FBitDiv;
+    FDitherAmplitude := Self.FDitherAmplitude;
+
+    assert(FOrder = Self.FOrder);
+    Move(Self.FCoefficients^, FCoefficients^, FOrder * SizeOf(Single));
+    Move(Self.FHistory^, FHistory^, FOrder * SizeOf(Single));
+   end
+ else inherited;
 end;
 
 procedure TDitherNoiseShaper64.BitDepthChanged;
@@ -811,15 +971,6 @@ begin
  FillChar(FHistory^[0], FOrder * SizeOf(Single), 0);
 end;
 
-procedure TDitherSharpNoiseShaper32.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SamplerateChanged;
-  end;
-end;
-
 procedure TDitherSharpNoiseShaper32.SamplerateChanged;
 begin
  ChooseNoiseshaper;
@@ -831,7 +982,6 @@ constructor TDitherHighShelfNoiseShaper32.Create;
 begin
  inherited;
  FFrequency := 10000;
- FSampleRate := 44100;
 
  FFilter := TBasicLowShelfFilter.Create;
  with TBasicLowShelfFilter(FFilter) do
@@ -899,15 +1049,6 @@ begin
   begin
    FFrequency := Value;
    FrequencyChanged;
-  end;
-end;
-
-procedure TDitherHighShelfNoiseShaper32.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 

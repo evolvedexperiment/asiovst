@@ -1,5 +1,35 @@
 unit DAV_DspFilterLinearPhaseCrossover;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,29 +38,28 @@ uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspWindowing;
 
 type
-  TLinearPhaseCrossover = class(TDspSampleRateDependent)
+  TLinearPhaseCrossover = class(TDspSampleRatePersistent)
   private
     FFilterKernel : PDAVSingleFixedArray;
     FStates       : array [0..1] of PDAVSingleFixedArray;
 //    FBuffer       : TLinearPhaseLowpass;
-    FSampleRate   : Single;
     FFrequency    : Single;
     FFilterLength : Integer;
-    procedure SetSampleRate(const Value: Single);
+    procedure AllocateBuffers;
+    procedure CalculateFilterKernel;
     procedure SetFrequency(const Value: Single);
     procedure SetFilterLength(const Value: Integer);
-    procedure CalculateFilterKernel;
   protected
-    procedure SampleRateChanged; virtual;
-    procedure FrequencyChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure FilterLengthChanged; virtual;
+    procedure FrequencyChanged; virtual;
+    procedure SampleRateChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     procedure ProcessSample(const Input: Single; out Low, High: Single); overload;
     procedure ProcessSample(const Input: Double; out Low, High: Double); overload;
   published
-    property SampleRate: Single read FSampleRate write SetSampleRate;
     property Frequency: Single read FFrequency write SetFrequency;
     property FilterLength: Integer read FFilterLength write SetFilterLength;
   end;
@@ -45,15 +74,33 @@ uses
 constructor TLinearPhaseCrossover.Create;
 begin
  inherited;
- FSampleRate   := 44100;
  FFrequency    := 1000;
  FFilterKernel := nil;
 end;
 
 destructor TLinearPhaseCrossover.Destroy;
 begin
+ Dispose(FFilterKernel);
+ Dispose(FStates[0]);
+ Dispose(FStates[1]);
+ inherited;
+end;
 
-  inherited;
+procedure TLinearPhaseCrossover.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLinearPhaseCrossover then
+  with TLinearPhaseCrossover(Dest) do
+   begin
+    inherited;
+    FFrequency    := Self.FFrequency;
+    FFilterLength := Self.FFilterLength;
+    AllocateBuffers;
+
+    Move(Self.FFilterKernel^, FFilterKernel^, FFilterLength * SizeOf(Single));
+    Move(Self.FStates[0]^, FStates[0]^, FFilterLength * SizeOf(Single));
+    Move(Self.FStates[1]^, FStates[1]^, FFilterLength * SizeOf(Single));
+   end
+ else inherited;
 end;
 
 procedure TLinearPhaseCrossover.SetFrequency(const Value: Single);
@@ -62,15 +109,6 @@ begin
   begin
    FFrequency := Value;
    FrequencyChanged;
-  end;
-end;
-
-procedure TLinearPhaseCrossover.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 
@@ -85,13 +123,18 @@ end;
 
 procedure TLinearPhaseCrossover.FilterLengthChanged;
 begin
+ AllocateBuffers;
+ CalculateFilterKernel;
+end;
+
+procedure TLinearPhaseCrossover.AllocateBuffers;
+begin
  ReallocMem(FFilterKernel, FFilterLength * SizeOf(Single));
  FillChar(FFilterKernel^[0], FFilterLength * SizeOf(Single), 0);
  ReallocMem(FStates[0], FFilterLength * SizeOf(Single));
  FillChar(FStates[0]^[0], FFilterLength * SizeOf(Single), 0);
  ReallocMem(FStates[1], FFilterLength * SizeOf(Single));
  FillChar(FStates[1]^[0], FFilterLength * SizeOf(Single), 0);
- CalculateFilterKernel;
 end;
 
 procedure TLinearPhaseCrossover.FrequencyChanged;

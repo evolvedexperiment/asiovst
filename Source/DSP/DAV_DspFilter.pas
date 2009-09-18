@@ -1,5 +1,35 @@
 unit DAV_DspFilter;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2005-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -10,20 +40,17 @@ uses
 type
   TPNType = array[0..1] of TComplexSingle;
 
-  TCustomFilter = class(TDspObject)
-  private
-    procedure SetSampleRate(const Value: Double);
+  TCustomFilter = class(TDspSampleRatePersistent)
   protected
-    FSampleRate : Double;
-    FSRR        : Double; // reciprocal of FSampleRate
+    FSRR        : Double; // reciprocal of SampleRate
     FOnChange   : TNotifyEvent;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure CalculateReciprocalSamplerate; virtual;
     procedure Changed; virtual;
-
+    procedure AssignTo(Dest: TPersistent); override;
     property SampleRateReciprocal: Double read FSRR;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function ProcessSampleASM: Double; virtual;
     function ProcessSample(const Input: Double): Double; overload; virtual; abstract;
     function ProcessSample(const Input: Int64): Int64; overload; virtual; abstract;
@@ -42,7 +69,6 @@ type
     procedure GetIR(ImpulseResonse : TDAVSingleDynArray); overload;
     procedure GetIR(ImpulseResonse : TDAVDoubleDynArray); overload;
 
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -53,6 +79,7 @@ type
   protected
     FFilterArray : array of TCustomFilter;
     procedure SampleRateChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -100,10 +127,10 @@ type
     FGainFactorSquared : Double;
     FFrequency, FW0    : Double;
     FExpW0             : TComplexDouble;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateW0; virtual;
     procedure CalculateGainFactor; virtual;
     procedure CalculateCoefficients; virtual; abstract;
-    procedure AssignTo(Dest: TPersistent); override;
     procedure FrequencyChanged; virtual;
     procedure GainChanged; virtual;
     procedure SampleRateChanged; override;
@@ -122,8 +149,9 @@ type
   protected
     FOrder: Cardinal;
     class function GetMaxOrder: Cardinal; virtual; abstract;
-    procedure OrderChanged; virtual;
     function GetOrder: Cardinal; override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure OrderChanged; virtual;
     procedure SetOrder(const Value: Cardinal); override;
   public
     constructor Create(const Order: Integer = 0); reintroduce; virtual;
@@ -145,6 +173,8 @@ type
     // Order
     function GetOrder: Cardinal; override;
     procedure SetOrder(const Value: Cardinal); override;
+
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -169,6 +199,7 @@ type
     function GetOrder: Cardinal; override;
     procedure CalculateCoefficients; override;
     procedure SetOrder(const Value: Cardinal); override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     function ProcessSample(const Input: Double): Double; override;
@@ -212,6 +243,7 @@ type
     function GetZeros: TPNType;
     function GetOrder: Cardinal; override;
     procedure SetOrder(const Value: Cardinal); override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     procedure ResetStates; override;
@@ -238,26 +270,6 @@ type
     property Bandwidth;
   end;
 
-(*
-  TDspLowpassFilter = class(TDspBaseComponent)
-  private
-    FFrequency: Single;
-    fFilter : Array of TSimpleLowpassFilter;
-    procedure SetFrequency(const Value: Single);
-  protected
-    procedure SampleRateChanged; override;
-    procedure ChannelsChanged; override;
-  published
-  public
-    procedure Init; override;
-    procedure Reset; override;
-    procedure Process(var Data: Single; const channel: integer); overload;
-    procedure Process(var Data: Double; const channel: integer); overload;
-  published
-    property Frequency: Single read FFrequency write SetFrequency;  // 20..20000
-  end;
-*)
-
 implementation
 
 {$IFDEF FPC}
@@ -274,7 +286,7 @@ resourcestring
 
 constructor TCustomFilter.Create;
 begin
- FSampleRate := 44100;
+ inherited;
  CalculateReciprocalSamplerate;
 end;
 
@@ -285,22 +297,25 @@ end;
 
 procedure TCustomFilter.SampleRateChanged;
 begin
+ CalculateReciprocalSamplerate;
  Changed;
+end;
+
+procedure TCustomFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomFilter then
+  with TCustomFilter(Dest) do
+   begin
+    inherited;
+    FSRR      := Self.FSRR;
+    FOnChange := Self.FOnChange;
+   end
+  else inherited;
 end;
 
 procedure TCustomFilter.CalculateReciprocalSamplerate;
 begin
- FSRR := 1 / FSampleRate;
-end;
-
-procedure TCustomFilter.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   CalculateReciprocalSamplerate;
-   SampleRateChanged;
-  end;
+ FSRR := 1 / SampleRate;
 end;
 
 procedure TCustomFilter.Complex(const Frequency: Double; out Real,
@@ -517,6 +532,18 @@ begin
   do FFilterArray[i].ResetStatesInt64;
 end;
 
+procedure TCustomFilterCascade.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomFilterCascade then
+  with TCustomFilterCascade(Dest) do
+   begin
+    inherited;
+    FOwnFilters  := Self.FOwnFilters;
+    FFilterArray := Self.FFilterArray;
+   end
+  else inherited;
+end;
+
 procedure TCustomFilterCascade.Clear;
 var
   i : Integer;
@@ -570,15 +597,16 @@ end;
 procedure TCustomGainFrequencyFilter.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomGainFrequencyFilter then
-  begin
-   TCustomGainFrequencyFilter(Dest).FGain_dB    := FGain_dB;
-   TCustomGainFrequencyFilter(Dest).FGainFactor := FGainFactor;
-   TCustomGainFrequencyFilter(Dest).FSampleRate := FSampleRate;
-   TCustomGainFrequencyFilter(Dest).FSRR        := FSRR;
-   TCustomGainFrequencyFilter(Dest).FW0         := FW0;
-   TCustomGainFrequencyFilter(Dest).FExpW0      := FExpW0;
-  end
- else inherited;
+  with TCustomGainFrequencyFilter(Dest) do
+   begin
+    inherited;
+    FGain_dB    := Self.FGain_dB;
+    FGainFactor := Self.FGainFactor;
+    FSRR        := Self.FSRR;
+    FW0         := Self.FW0;
+    FExpW0      := Self.FExpW0;
+   end
+  else inherited;
 end;
 
 procedure TCustomGainFrequencyFilter.CalculateGainFactor;
@@ -638,6 +666,17 @@ end;
 
 { TCustomOrderFilter }
 
+procedure TCustomOrderFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomOrderFilter then
+  with TCustomOrderFilter(Dest) do
+   begin
+    inherited;
+    FOrder  := Self.FOrder;
+   end
+  else inherited;
+end;
+
 constructor TCustomOrderFilter.Create(const Order: Integer);
 begin
  FOrder := Order;
@@ -673,6 +712,23 @@ end;
 
 
 { TCustomFIRFilter }
+
+procedure TCustomFIRFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomFIRFilter then
+  with TCustomFIRFilter(Dest) do
+   begin
+    inherited;
+    FKernelSize := Self.FKernelSize;
+    FIR         := Self.FIR;
+    FHistory    := Self.FHistory;
+    FCircular   := Self.FCircular;
+    FSpeedTab   := Self.FSpeedTab;
+    FStateStack := Self.FStateStack;
+    FBufferPos  := Self.FBufferPos;
+   end
+  else inherited;
+end;
 
 constructor TCustomFIRFilter.Create;
 begin
@@ -810,6 +866,18 @@ begin
 end;
 
 { TFirstOrderAllpassFilter }
+
+procedure TFirstOrderAllpassFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFirstOrderAllpassFilter then
+  with TFirstOrderAllpassFilter(Dest) do
+   begin
+    inherited;
+    FState  := Self.FState;
+    FStates := Self.FStates;
+   end
+  else inherited;
+end;
 
 procedure TFirstOrderAllpassFilter.CalculateCoefficients;
 begin
@@ -1038,6 +1106,22 @@ begin
  raise Exception.Create('Order is fixed!');
 end;
 
+procedure TBiquadIIRFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TBiquadIIRFilter then
+  with TBiquadIIRFilter(Dest) do
+   begin
+    inherited;
+    FDenominator  := Self.FDenominator;
+    FNominator    := Self.FNominator;
+    FPoles        := Self.FPoles;
+    FZeros        := Self.FZeros;
+    FState        := Self.FState;
+    FStateStack   := Self.FStateStack;
+   end
+  else inherited;
+end;
+
 procedure TBiquadIIRFilter.CalcPolesZeros;
 var
   p, q : Double;
@@ -1047,12 +1131,12 @@ begin
  q := (FNominator[2] / FNominator[0]);
  FZeros[0].Re := p;
  FZeros[1].Re := p;
- e := q-(p*p);
+ e := q - (p * p);
  if e > 0
   then
    begin
     FZeros[0].Im := sqrt(e);
-    FZeros[1].Im := -sqrt(e);
+    FZeros[1].Im := -FZeros[0].Im;
    end
   else
    begin
@@ -1071,7 +1155,7 @@ begin
   then
    begin
     FPoles[0].Im := sqrt(e);
-    FPoles[1].Im := -sqrt(e);
+    FPoles[1].Im := -FPoles[0].Im;
    end
   else
    begin
@@ -1082,12 +1166,12 @@ begin
    end;
 end;
 
-function TBiquadIIRFilter.ProcessSample(const Input:Double):Double;
+function TBiquadIIRFilter.ProcessSample(const Input:Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result    := FNominator[0] * Input + FState[0];
- FState[0] := FNominator[1] * Input - FDenominator[1] * result + FState[1];
- FState[1] := FNominator[2] * Input - FDenominator[2] * result;
+ Result    := FNominator[0] * Input + FState[0];
+ FState[0] := FNominator[1] * Input - FDenominator[1] * Result + FState[1];
+ FState[1] := FNominator[2] * Input - FDenominator[2] * Result;
 end;
 {$ELSE}
 asm
@@ -1112,9 +1196,9 @@ end;
 
 function TBiquadIIRFilter.ProcessSample(const Input: Int64): Int64;
 begin
- result              := Round(FNominator[0]*Input) + PInt64(@FState[0])^;
- PInt64(@FState[0])^ := Round(FNominator[1]*Input) - Round(FDenominator[1]*result) + PInt64(@FState[1])^;
- PInt64(@FState[1])^ := Round(FNominator[2]*Input) - Round(FDenominator[2]*result);
+ Result              := Round(FNominator[0] * Input) + PInt64(@FState[0])^;
+ PInt64(@FState[0])^ := Round(FNominator[1] * Input) - Round(FDenominator[1] * Result) + PInt64(@FState[1])^;
+ PInt64(@FState[1])^ := Round(FNominator[2] * Input) - Round(FDenominator[2] * Result);
 end;
 
 function TBiquadIIRFilter.ProcessSampleASM: Double;
@@ -1130,26 +1214,26 @@ asm
  fld st(0)                           // r, r, r, s
  fmul [self.FDenominator].Double     // b0*r, r, r, s
  fld st(3)                           // s, b0*r, r, r, s
- fmul [self.FNominator+8].Double     // a1*s, b0*r, r, r, s
+ fmul [self.FNominator + 8].Double   // a1*s, b0*r, r, r, s
  fsubrp                              // a1*s + b0*r, r, r, s
- fadd [self.FState+8].Double         // d1+a1*s-b0*r, r, r, s
+ fadd [self.FState + 8].Double       // d1+a1*s-b0*r, r, r, s
 
  fstp [self.FState].Double           // d0 = a1*s + d1+b1*r, r, r, s
- fmul [self.FDenominator+8].Double   // b1*r, r, s
+ fmul [self.FDenominator + 8].Double // b1*r, r, s
  fxch st(2)                          // s, r, b1*r,
- fmul [self.FNominator+16].Double    // a2*s, r, b1*r,
+ fmul [self.FNominator + 16].Double  // a2*s, r, b1*r,
  fsubrp st(2), st(0)                 // b1*r + a2*s, r, !!!
  fxch
- fstp [self.FState+8].Double         // d1 = b1*r + a2*s, r, !!!
+ fstp [self.FState + 8].Double       // d1 = b1*r + a2*s, r, !!!
 end;
 {$ENDIF}
 
 procedure TBiquadIIRFilter.PushStates;
 begin
- SetLength(FStateStack,Length(FStateStack)+1);
+ SetLength(FStateStack, Length(FStateStack) + 1);
  if Length(FStateStack) > 1
-  then Move(FStateStack[0,0],FStateStack[1,0], (Length(FStateStack)-1)*Length(FStateStack[0])*SizeOf(Double));
- Move(FState[0],FStateStack[0,0],Length(FStateStack[0])*SizeOf(Double));
+  then Move(FStateStack[0, 0],FStateStack[1, 0], (Length(FStateStack) - 1) * Length(FStateStack[0]) * SizeOf(Double));
+ Move(FState[0], FStateStack[0, 0], Length(FStateStack[0]) * SizeOf(Double));
 end;
 
 procedure TBiquadIIRFilter.PopStates;
@@ -1165,89 +1249,31 @@ end;
 
 function TBiquadIIRFilter.GetOrder: Cardinal;
 begin
- result := 2;
+ Result := 2;
 end;
 
 function TBiquadIIRFilter.GetPoles: TPNType;
 var
- p, q : Double;
+  p, q : Double;
 begin
  p := FDenominator[1] / (2 * FDenominator[2]);
  q := (1 / FDenominator[2]);
  Result[0].Re := p;
  Result[1].Re := p;
- Result[0].Im := sqrt(q-(p*p));
- Result[1].Im := -sqrt(q-(p*p));
+ Result[0].Im :=  sqrt(q - (p * p));
+ Result[1].Im := -Result[0].Im;
 end;
 
 function TBiquadIIRFilter.GetZeros:TPNType;
-var p, q : Double;
+var
+  p, q : Double;
 begin
- p := FNominator[1]/(2*FNominator[2]);
- q := (FNominator[0]/FNominator[2]);
+ p := FNominator[1] / (2 * FNominator[2]);
+ q := (FNominator[0] / FNominator[2]);
  Result[0].Re := p;
  Result[1].Re := p;
- Result[0].Im := sqrt(q-(p*p));
- Result[1].Im := -sqrt(q-(p*p));
+ Result[0].Im :=  sqrt(q - (p * p));
+ Result[1].Im := -Result[0].Im;
 end;
-
-(*
-{ TDspLowpassFilter }
-
-procedure TDspLowpassFilter.ChannelsChanged;
-var
-  i : Integer;
-begin
- inherited;
- for i := fChannels to Length(fFilter) - 1
-  do fFilter[i].Free;
- SetLength(fFilter, fChannels);
- for i := 0 to fChannels - 1
-  do if not Assigned(fFilter[i])
-   then fFilter[i] := TSimpleLowpassFilter.Create;
-end;
-
-procedure TDspLowpassFilter.Init;
-begin
-  fStdProcessS  := Process;
-  fStdProcessD  := Process;
-  Reset;
-end;
-
-procedure TDspLowpassFilter.Process(var Data: Double; const channel: integer);
-begin
-  Data := fFilter[channel].ProcessSample(Data);
-end;
-
-procedure TDspLowpassFilter.Process(var Data: Single; const channel: integer);
-begin
-  Data := fFilter[channel].ProcessSample(Data);
-end;
-
-procedure TDspLowpassFilter.Reset;
-begin
-  ChannelsChanged;
-  SampleRateChanged;
-end;
-
-procedure TDspLowpassFilter.SampleRateChanged;
-var i : Integer;
-begin
- inherited;
- for i := 0 to Length(fFilter) - 1
-  do fFilter[i].SampleRate := FSampleRate;
-end;
-
-procedure TDspLowpassFilter.SetFrequency(const Value: Single);
-var i : Integer;
-begin
- if FFrequency <> Value then
-  begin
-   FFrequency := Value;
-   for i := 0 to Length(fFilter) - 1
-    do fFilter[i].Frequency := FFrequency;
-  end;
-end;
-*)
 
 end.

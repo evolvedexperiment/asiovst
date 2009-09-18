@@ -1,14 +1,44 @@
 unit DAV_DspMetronome;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon;
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TMetronome = class(TDspObject)
+  TMetronome = class(TDspSampleRatePersistent)
   private
     FAngle          : TComplexDouble;
     FPosition       : TComplexDouble;
@@ -18,18 +48,19 @@ type
     FSamplesPerBeat : Single;
     FSamplesCount   : Single;
     FMetroVolume    : Single;
-    FSampleRate     : Double;
     FBeatsPerMinute : Double;
-    procedure SetSampleRate(const Value: Double);
     procedure SetBeatsPerMinute(const Value: Double);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure SampleRateChanged; override;
   public
-    constructor Create;
-    procedure SetSamplesPerBeat;
+    constructor Create; override;
+    procedure CalculateSamplesPerBeat;
     function ProcessSample: Single;
     procedure Reset;
   published
     property BeatsPerMinute: Double read FBeatsPerMinute write SetBeatsPerMinute;
-    property Samplerate: Double read FSampleRate write SetSampleRate;
+    property Samplerate;
   end;
 
 implementation
@@ -38,12 +69,12 @@ implementation
 
 constructor TMetronome.Create;
 begin
-  FSampleRate := 44100;
+  inherited;
   FBeatsPerMinute := 120;
   FMetroVolume := 1;
   FDecayFactor := 0.995;
   FVolume := 1;
-  SetSamplesPerBeat;
+  CalculateSamplesPerBeat;
   Reset;
 end;
 
@@ -80,24 +111,39 @@ begin
   if FBeatsPerMinute <> Value then
    begin
     FBeatsPerMinute := Value;
-    SetSamplesPerBeat;
+    CalculateSamplesPerBeat;
    end;
 end;
 
-procedure TMetronome.SetSamplesPerBeat;
+procedure TMetronome.AssignTo(Dest: TPersistent);
 begin
-  FSamplesPerBeat := 60 / FBeatsPerMinute * FSampleRate;
-  GetSinCos(2000 * Pi / FSampleRate, FAngle.Im, FAngle.Re);
-end;
-
-procedure TMetronome.SetSampleRate(const Value: Double);
-begin
-  if FSampleRate <> Value then
+ if Dest is TMetronome then
+  with TMetronome(Dest) do
    begin
-    FSampleRate := Value;
-    FDecayFactor := 0.995; // need to be samplerate independent in the future!
-    SetSamplesPerBeat;
-   end;
+    inherited;
+    FAngle          := Self.FAngle;
+    FPosition       := Self.FPosition;
+    FDecayFactor    := Self.FDecayFactor;
+    FVolume         := Self.FVolume;
+    FBeatPos        := Self.FBeatPos;
+    FSamplesPerBeat := Self.FSamplesPerBeat;
+    FSamplesCount   := Self.FSamplesCount;
+    FMetroVolume    := Self.FMetroVolume;
+    FBeatsPerMinute := Self.FBeatsPerMinute;
+   end
+ else inherited;
+end;
+
+procedure TMetronome.CalculateSamplesPerBeat;
+begin
+  FSamplesPerBeat := 60 / FBeatsPerMinute * SampleRate;
+  GetSinCos(2000 * Pi / SampleRate, FAngle.Im, FAngle.Re);
+end;
+
+procedure TMetronome.SampleRateChanged;
+begin
+ FDecayFactor := 0.995; // need to be samplerate independent in the future!
+ CalculateSamplesPerBeat;
 end;
 
 end.

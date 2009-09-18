@@ -1,5 +1,35 @@
 unit DAV_DspVibrato;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,9 +38,8 @@ uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO;
 
 type
-  TCustomDspVibrato = class(TDspObject)
+  TCustomDspVibrato = class(TDspSampleRatePersistent)
   private
-    FSampleRate   : Double;
     FSpeed        : Double;
     FDepth        : Double;
     FRealBufSize  : Integer;
@@ -19,18 +48,17 @@ type
     FLFO          : TLFOSine;
     procedure SetDepth(const Value: Double);
     procedure SetSpeed(const Value: Double);
-    procedure SetSampleRate(const Value: Double);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure DepthChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure SpeedChanged; virtual;
     procedure UpdateBuffer; virtual;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     procedure Reset; virtual;
   published
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Speed: Double read FSpeed write SetSpeed;
     property Depth: Double read FDepth write SetDepth;
   end;
@@ -39,6 +67,7 @@ type
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure UpdateBuffer; override;
   public
     constructor Create; override;
@@ -58,6 +87,7 @@ type
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure UpdateBuffer; override;
   public
     constructor Create; override;
@@ -82,17 +112,33 @@ uses
 
 constructor TCustomDspVibrato.Create;
 begin
- FSampleRate   := 44100;
- FSpeed        := 2;
- FDepth        := 0.5;
- FBufferPos    := 0;
- FLFO          := TLFOSine.Create;
+ inherited;
+ FSpeed     := 2;
+ FDepth     := 0.5;
+ FBufferPos := 0;
+ FLFO       := TLFOSine.Create;
 end;
 
 destructor TCustomDspVibrato.Destroy;
 begin
  FreeAndNil(FLFO);
  inherited;
+end;
+
+procedure TCustomDspVibrato.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDspVibrato then
+  with TCustomDspVibrato(Dest) do
+   begin
+    inherited;
+    FSpeed       := Self.FSpeed;
+    FDepth       := Self.FDepth;
+    FRealBufSize := Self.FRealBufSize;
+    FBufferSize  := Self.FBufferSize;
+    FBufferPos   := Self.FBufferPos;
+    FLFO.Assign(Self.FLFO);
+   end
+ else inherited;
 end;
 
 procedure TCustomDspVibrato.Reset;
@@ -103,7 +149,7 @@ end;
 procedure TCustomDspVibrato.UpdateBuffer;
 begin
  // determine buffer size
- FBufferSize  := round(sqr(Depth) * 0.25 * FSampleRate); // quarter second
+ FBufferSize  := round(sqr(Depth) * 0.25 * SampleRate); // quarter second
  FRealBufSize := FBufferSize + 8;
 
  // check and reset buffer position
@@ -124,7 +170,7 @@ end;
 
 procedure TCustomDspVibrato.SampleRateChanged;
 begin
- FLFO.SampleRate := FSampleRate;
+ FLFO.SampleRate := SampleRate;
  UpdateBuffer;
 end;
 
@@ -134,15 +180,6 @@ begin
   begin
    FDepth := Value;
    DepthChanged;
-  end;
-end;
-
-procedure TCustomDspVibrato.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 
@@ -167,6 +204,18 @@ destructor TCustomDspVibrato32.Destroy;
 begin
  Dispose(FBuffer32);
  inherited;
+end;
+
+procedure TCustomDspVibrato32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDspVibrato32 then
+  with TCustomDspVibrato32(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
+   end
+ else inherited;
 end;
 
 procedure TCustomDspVibrato32.Reset;
@@ -224,6 +273,18 @@ destructor TCustomDspVibrato64.Destroy;
 begin
  Dispose(FBuffer64);
  inherited;
+end;
+
+procedure TCustomDspVibrato64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDspVibrato64 then
+  with TCustomDspVibrato64(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer64^, FBuffer64^, FRealBufSize * SizeOf(Double));
+   end
+ else inherited;
 end;
 
 procedure TCustomDspVibrato64.Reset;

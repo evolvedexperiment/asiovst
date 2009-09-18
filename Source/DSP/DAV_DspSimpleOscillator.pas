@@ -1,5 +1,35 @@
 unit DAV_DspSimpleOscillator;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -9,25 +39,24 @@ uses
   Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TCustomOscillator = class(TDspObject)
+  TCustomOscillator = class(TDspSampleRatePersistent)
   end;
 
   TCustomSimpleOscillator = class(TCustomOscillator)
   private
-    procedure SetSampleRate(const Value: Single);
+    procedure CalculateSampleRateReciprocal;
   protected
-    FAmplitude  : Single;
-    FSampleRate : Single;
+    FAmplitude     : Double;
+    FSampleRateInv : Double;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetAmplitude(const Value: Single); virtual; abstract;
-    procedure SampleRateChanged; virtual; abstract;
+    procedure SetAmplitude(const Value: Double); virtual; abstract;
+    procedure SampleRateChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure CalculateNextSample; virtual; abstract;
     procedure Reset; virtual; abstract;
 
-    property Amplitude: Single read FAmplitude write SetAmplitude; //  0..1
-    property SampleRate: Single read FSampleRate write SetSampleRate;
+    property Amplitude: Double read FAmplitude write SetAmplitude; //  0..1
   end;
 
   TCustomSimpleFrequencyOscillator = class(TCustomSimpleOscillator)
@@ -39,7 +68,7 @@ type
     procedure SampleRateChanged; override;
     procedure FrequencyChanged; virtual; abstract;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     property Frequency: Single read FFrequency write SetFrequency; //  0..Samplerate
   end;
 
@@ -52,7 +81,7 @@ type
     FPosition : TComplexSingle;
     procedure FrequencyChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetAmplitude(const Value: Single); override;
+    procedure SetAmplitude(const Value: Double); override;
   public
     procedure CalculateNextSample; override;
     procedure Reset; override;
@@ -71,7 +100,7 @@ type
     FPosition : TComplexDouble;
     procedure FrequencyChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetAmplitude(const Value: Single); override;
+    procedure SetAmplitude(const Value: Double); override;
   public
     procedure CalculateNextSample; override;
     procedure Reset; override;
@@ -108,9 +137,20 @@ uses
 
 constructor TCustomSimpleOscillator.Create;
 begin
-  FSampleRate  := 44100;
-  FAmplitude   := 1;
-  Reset;
+ inherited;
+ FAmplitude   := 1;
+ Reset;
+end;
+
+procedure TCustomSimpleOscillator.SampleRateChanged;
+begin
+ inherited;
+ CalculateSampleRateReciprocal;
+end;
+
+procedure TCustomSimpleOscillator.CalculateSampleRateReciprocal;
+begin
+ FSampleRateInv := 1 / SampleRate;
 end;
 
 procedure TCustomSimpleOscillator.AssignTo(Dest: TPersistent);
@@ -118,19 +158,10 @@ begin
  if Dest is TCustomSimpleOscillator then
   with TCustomSimpleOscillator(Dest) do
    begin
+    inherited;
     FAmplitude  := Self.FAmplitude;
-    FSampleRate := Self.FSampleRate;
    end
  else inherited;
-end;
-
-procedure TCustomSimpleOscillator.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
 end;
 
 
@@ -189,10 +220,10 @@ end;
 
 procedure TCustomSimpleOscillator32.FrequencyChanged;
 begin
- GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
+ GetSinCos(2 * Pi * FFrequency * FSampleRateInv, FAngle.Im, FAngle.Re);
 end;
 
-procedure TCustomSimpleOscillator32.SetAmplitude(const Value: Single);
+procedure TCustomSimpleOscillator32.SetAmplitude(const Value: Double);
 begin
  if FAmplitude <> Value then
   begin
@@ -275,7 +306,7 @@ begin
    end;
 end;
 
-procedure TCustomSimpleOscillator64.SetAmplitude(const Value: Single);
+procedure TCustomSimpleOscillator64.SetAmplitude(const Value: Double);
 begin
  if FAmplitude <> Value then
   begin
@@ -339,7 +370,7 @@ end;
 
 procedure TCustomSimpleOscillator64.FrequencyChanged;
 begin
- GetSinCos(2 * Pi * FFrequency / FSampleRate, FAngle.Im, FAngle.Re);
+ GetSinCos(2 * Pi * FFrequency * FSampleRateInv, FAngle.Im, FAngle.Re);
 end;
 
 end.

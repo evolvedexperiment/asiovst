@@ -19,9 +19,12 @@ uses
   TestFramework,
   GUITestRunner,
   TextTestRunner,
+  DAV_DspAmbience in '..\..\Source\DSP\DAV_DspAmbience.pas',
   DAV_DspBarberpole in '..\..\Source\DSP\DAV_DspBarberpole.pas',
+  DAV_DspBarberpoleTuner in '..\..\Source\DSP\DAV_DspBarberpoleTuner.pas',
   DAV_DspBesselFilter in '..\..\Source\DSP\DAV_DspBesselFilter.pas',
   DAV_DspChorus in '..\..\Source\DSP\DAV_DspChorus.pas',
+  DAV_DspCircularBuffer in '..\..\Source\DSP\DAV_DspCircularBuffer.pas',
   DAV_DspConvolution in '..\..\Source\DSP\DAV_DspConvolution.pas',
   DAV_DspCrosstalkCancellation in '..\..\Source\DSP\DAV_DspCrosstalkCancellation.pas',
   DAV_DspCrosstalkSimulator in '..\..\Source\DSP\DAV_DspCrosstalkSimulator.pas',
@@ -50,9 +53,8 @@ uses
   TestDAV_DspFilterLinearPhaseCrossover in 'TestDAV_DspFilterLinearPhaseCrossover.pas',
   TestDAV_DspFilterLinkwitzRiley in 'TestDAV_DspFilterLinkwitzRiley.pas',
   TestDAV_DspAmbience in 'TestDAV_DspAmbience.pas',
-  DAV_DspAmbience in '..\..\Source\DSP\DAV_DspAmbience.pas',
   TestDAV_DspBarberpoleTuner in 'TestDAV_DspBarberpoleTuner.pas',
-  DAV_DspBarberpoleTuner in '..\..\Source\DSP\DAV_DspBarberpoleTuner.pas';
+  TestDAV_DspCircularBuffer in 'TestDAV_DspCircularBuffer.pas';
 
 {$R *.RES}
 

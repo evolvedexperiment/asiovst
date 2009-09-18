@@ -1,5 +1,35 @@
 unit DAV_DspDynamics;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -44,7 +74,7 @@ type
   //                                                                          //
   //////////////////////////////////////////////////////////////////////////////
 
-  TCustomDynamicProcessor = class(TDspObject)
+  TCustomDynamicProcessor = class(TDspPersistent)
   private
     function GetKnee_dB: Double;
     procedure SetThreshold(const Value: Double);
@@ -780,14 +810,17 @@ implementation
 uses
   SysUtils, Math, DAV_Approximations;
 
-const
-  CDenorm32      : Single = 1E-24;
-  CDenorm64      : Double = 1E-34;
-  CHalf32        : Single = 0.5;
-  CHalf64        : Double = 0.5;
-  CQuarter32     : Single = 0.25;
-  CQuarter64     : Double = 0.25;
+var
+  CHalf64        : Double;
+  CQuarter64     : Double;
+  CHalf32        : Single;
+  CQuarter32     : Single;
+{$IFDEF HandleDenormals}
+  CDenorm64      : Double;
+  CDenorm32      : Single;
+{$ENDIF}
 
+const
   CSoftKnee : array [0..7] of Single = (-8.21343513178931783E-2,
     6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
     -1.51984215742349793, 5.48668824216034384E-2, 2.42162975514835621E-1,
@@ -816,7 +849,8 @@ end;
 
 function TCustomDynamicProcessor.CharacteristicCurve_dB(const InputLevel_dB: Double): Double;
 begin
- result := Amp_to_dB(cDenorm32 + CharacteristicCurve(dB_to_Amp(InputLevel_dB)));
+ Result := Amp_to_dB({$IFDEF HandleDenormals}CDenorm32 + {$ENDIF}
+   CharacteristicCurve(dB_to_Amp(InputLevel_dB)));
 end;
 
 function TCustomDynamicProcessor.GainSample(const Input: Double): Double;
@@ -2407,5 +2441,15 @@ begin
  CalculateReleaseFactor;
 end;
 *)
+
+initialization
+  CHalf32    := DAV_Common.CHalf32;
+  CHalf64    := DAV_Common.CHalf64;
+  CQuarter32 := DAV_Common.CQuarter32;
+  CQuarter64 := DAV_Common.CQuarter64;
+{$IFDEF HandleDenormals}
+  CDenorm32  := DAV_Common.CDenorm32;
+  CDenorm64  := DAV_Common.CDenorm64;
+{$ENDIF}
 
 end.

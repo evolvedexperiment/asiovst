@@ -1,19 +1,51 @@
 unit DAV_DspCrosstalkSimulatorHRTF;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspCrosstalkSimulator, DAV_DspConvolution,
-  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF} DAV_DspFftReal2Complex, 
-  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_DspHrtf;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspCrosstalkSimulator,
+  DAV_DspConvolution, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
+  DAV_DspFftReal2Complex, {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
+  DAV_DspHrtf;
 
 type
   TCustomHrtfCrosstalkSimulator = class(TCustomCrosstalkSimulator)
   private
     FHrtf : THrtfs;
   protected  
+    procedure AssignTo(Dest: TPersistent); override;
     procedure HrtfChanged(Sender: TObject); virtual; abstract;
     procedure ReloadImpulseResponses; virtual; abstract;
   public
@@ -27,9 +59,10 @@ type
   private
     FConvolution : array [0..1] of TConvolution32;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure HrtfChanged(Sender: TObject); override;
-    procedure SamplerateChanged; override;
     procedure ReloadImpulseResponses; override;
+    procedure SampleRateChanged; override;
   public
     procedure Process(var Left, Right: Single); overload; override;
     procedure Process(var Left, Right: Double); overload; override;
@@ -42,8 +75,9 @@ type
   private
     FConvolution : array [0..1, 0..1] of TConvolution32;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure HrtfChanged(Sender: TObject); override;
-    procedure SamplerateChanged; override;
+    procedure SampleRateChanged; override;
     procedure ReloadImpulseResponses; override;
   public
     procedure Process(var Left, Right: Single); overload; override;
@@ -71,6 +105,17 @@ destructor TCustomHrtfCrosstalkSimulator.Destroy;
 begin
  FreeAndNil(FHrtf);
  inherited;
+end;
+
+procedure TCustomHrtfCrosstalkSimulator.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomHrtfCrosstalkSimulator then
+  with TCustomHrtfCrosstalkSimulator(Dest) do
+   begin
+    inherited;
+    FHrtf.Assign(Self.FHrtf);
+   end
+ else inherited;
 end;
 
 procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
@@ -131,6 +176,18 @@ begin
  FreeAndNil(FConvolution[0]);
  FreeAndNil(FConvolution[1]);
  inherited;
+end;
+
+procedure TCustomSimpleHrtfCrosstalkSimulator.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomSimpleHrtfCrosstalkSimulator then
+  with TCustomSimpleHrtfCrosstalkSimulator(Dest) do
+   begin
+    inherited;
+    FConvolution[0].Assign(Self.FConvolution[0]);
+    FConvolution[1].Assign(Self.FConvolution[1]);
+   end
+ else inherited;
 end;
 
 procedure TCustomSimpleHrtfCrosstalkSimulator.HrtfChanged(Sender: TObject);
@@ -240,7 +297,7 @@ begin
  inherited;
  FConvolution[0, 0] := TConvolution32.Create;
  FConvolution[1, 0] := TConvolution32.Create;
- FConvolution[1, 0] := TConvolution32.Create;
+ FConvolution[0, 0] := TConvolution32.Create;
  FConvolution[1, 1] := TConvolution32.Create;
 end;
 
@@ -248,9 +305,23 @@ destructor TCustomCompleteHrtfCrosstalkSimulator.Destroy;
 begin
  FreeAndNil(FConvolution[0, 0]);
  FreeAndNil(FConvolution[1, 0]);
- FreeAndNil(FConvolution[1, 0]);
+ FreeAndNil(FConvolution[0, 0]);
  FreeAndNil(FConvolution[1, 1]);
  inherited;
+end;
+
+procedure TCustomCompleteHrtfCrosstalkSimulator.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomCompleteHrtfCrosstalkSimulator then
+  with TCustomCompleteHrtfCrosstalkSimulator(Dest) do
+   begin
+    inherited;
+    FConvolution[0, 0].Assign(Self.FConvolution[0, 0]);
+    FConvolution[0, 1].Assign(Self.FConvolution[0, 1]);
+    FConvolution[1, 0].Assign(Self.FConvolution[1, 0]);
+    FConvolution[1, 1].Assign(Self.FConvolution[1, 1]);
+   end
+ else inherited;
 end;
 
 procedure TCustomCompleteHrtfCrosstalkSimulator.HrtfChanged(Sender: TObject);

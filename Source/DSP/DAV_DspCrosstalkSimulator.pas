@@ -1,26 +1,47 @@
 unit DAV_DspCrosstalkSimulator;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterBasics;
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterBasics;
 
 type
-  TCustomCrosstalkSimulator = class(TDspObject)
-  private
-    FSampleRate : Single;
-    procedure SetSamplerate(const Value: Single);
-  protected
-    procedure SamplerateChanged; virtual; abstract;
+  TCustomCrosstalkSimulator = class(TDspSampleRatePersistent)
   public
-    constructor Create; virtual;
-
     procedure Process(var Left, Right: Single); overload; virtual; abstract;
     procedure Process(var Left, Right: Double); overload; virtual; abstract;
-
-    property SampleRate: Single read FSampleRate write SetSamplerate;
   end;
 
   TIIRCrosstalkSimulatorModel = (csmHandcrafted, csmIRCAM, csmHDPHX);
@@ -42,12 +63,13 @@ type
     procedure SetPolarity(const Value: Boolean);
     procedure CalculateBufferSize;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateMulFactor; virtual;
     procedure DiameterChanged; virtual;
     procedure MixChanged; virtual;
     procedure ModelChanged; virtual;
     procedure PolarityChanged; virtual;
-    procedure SamplerateChanged; override;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -73,22 +95,6 @@ implementation
 
 uses
   Math, SysUtils;
-
-{ TCustomCrosstalkSimulator }
-
-constructor TCustomCrosstalkSimulator.Create;
-begin
- FSampleRate := 44100;
-end;
-
-procedure TCustomCrosstalkSimulator.SetSamplerate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
 
 { TCustomIIRCrosstalkSimulator }
 
@@ -181,6 +187,33 @@ begin
  if FPolarity
   then FMulFactor[1] :=  5 * (1 - FMulFactor[0])
   else FMulFactor[1] := -5 * (1 - FMulFactor[0]);
+end;
+
+procedure TCustomIIRCrosstalkSimulator.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomIIRCrosstalkSimulator then
+  with TCustomIIRCrosstalkSimulator(Dest) do
+   begin
+    inherited;
+    FDiameter   := Self.FDiameter;
+    FModel      := Self.FModel;
+    FMix        := Self.FMix;
+    FPolarity   := Self.FPolarity;
+    FMulFactor  := Self.FMulFactor;
+    CalculateBufferSize;
+
+    FFilter[0, 0].Assign(Self.FFilter[0, 0]);
+    FFilter[0, 1].Assign(Self.FFilter[0, 1]);
+    FFilter[0, 2].Assign(Self.FFilter[0, 2]);
+    FFilter[1, 0].Assign(Self.FFilter[1, 0]);
+    FFilter[1, 1].Assign(Self.FFilter[1, 1]);
+    FFilter[1, 2].Assign(Self.FFilter[1, 2]);
+
+    assert(FBufSize = Self.FBufSize);
+    Move(Self.FBuffer[0], FBuffer[0], FBufSize * SizeOf(Single));
+    Move(Self.FBuffer[1], FBuffer[1], FBufSize * SizeOf(Single));
+   end
+  else inherited;
 end;
 
 procedure TCustomIIRCrosstalkSimulator.CalculateBufferSize;

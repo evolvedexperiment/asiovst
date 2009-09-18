@@ -1,5 +1,35 @@
 unit DAV_DspBufferedMp3Player;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I DAV_Compiler.inc}
@@ -50,9 +80,8 @@ type
 
   TBufferInterpolation = (biNone, biLinear, biHermite, biBSpline6Point5thOrder);
 
-  TCustomBufferedMP3Player = class(TDspObject)
+  TCustomBufferedMP3Player = class(TDspSampleRatePersistent)
   private
-    FSampleRate          : Single;
     FRatio               : Single;
     FAllowSuspend        : Boolean;
     FFractalPos          : Single;
@@ -66,7 +95,6 @@ type
     function GetMpegAudio: TMpegAudio;
     procedure SetBlockSize(const Value: Integer);
     procedure SetBufferSize(const Value: Integer);
-    procedure SetSampleRate(const Value: Single);
     procedure SetAllowSuspend(const Value: Boolean);
     procedure SetInterpolation(const Value: TBufferInterpolation);
     procedure SetPitch(const Value: Single);
@@ -74,11 +102,11 @@ type
     FBufferThread : TBufferThread;
     procedure CalculatePitchFactor; virtual;
     procedure CalculateSampleRateRatio; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure InterpolationChanged; virtual;
     procedure PitchChanged; virtual;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
 
     procedure GetSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
@@ -91,7 +119,6 @@ type
     property Interpolation: TBufferInterpolation read FInterpolation write SetInterpolation;
     property MpegAudio: TMpegAudio read GetMpegAudio;
     property Pitch: Single read FPitch write SetPitch;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TBufferedMP3FilePlayer = class(TCustomBufferedMP3Player)
@@ -297,7 +324,6 @@ end;
 constructor TCustomBufferedMP3Player.Create;
 begin
  inherited;
- FSampleRate := 44100;
  FAllowSuspend := False;
  FPitch := 0;
  FRatio := 1;
@@ -422,15 +448,6 @@ begin
  FBufferThread.BufferSize := Value;
 end;
 
-procedure TCustomBufferedMP3Player.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomBufferedMP3Player.SampleRateChanged;
 begin
  CalculateSampleRateRatio;
@@ -438,7 +455,7 @@ end;
 
 procedure TCustomBufferedMP3Player.CalculateSampleRateRatio;
 begin
- FRatio := FPitchFactor * FBufferThread.SampleRate / FSampleRate;
+ FRatio := FPitchFactor * FBufferThread.SampleRate / SampleRate;
 end;
 
 procedure TCustomBufferedMP3Player.GetSamples(Left, Right: PDAVSingleFixedArray;

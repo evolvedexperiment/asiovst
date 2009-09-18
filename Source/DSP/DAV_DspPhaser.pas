@@ -1,5 +1,35 @@
 unit DAV_DspPhaser;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,7 +38,7 @@ uses
   DAV_Common, DAV_DspCommon, DAV_DspLFO;
 
 type
-  TMasterAllPass = class(TDspObject)
+  TMasterAllPass = class(TDspPersistent)
   private
     FCoefficient : Single;
     FDelay       : Single;
@@ -26,7 +56,7 @@ type
     property SampleRate: Single read FSampleRate write FSampleRate;
   end;
 
-  TCustomPhaser = class(TDspObject)
+  TCustomPhaser = class(TDspSampleRatePersistent)
   private
     FZM1           : Single;
     FDepth         : Single;
@@ -38,10 +68,8 @@ type
     FMaximum       : Single;
     FMin           : Single;
     FMax           : Single;
-    FSampleRate    : Single;
     FInvSampleRate : Single;
     FMasterAllPass : TMasterAllPass;
-    procedure SetSampleRate(const Value: Single);
     procedure SetMinimum(const Value: Single);
     procedure SetMaximum(const Value: Single);
     procedure SetRate(const Value: Single);
@@ -49,13 +77,12 @@ type
     function GetStages: Integer;
   protected
     procedure RateChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure CalculateFilters; virtual;
   public
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
     function Process(const Input: Single): Single;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
     property Depth: Single read FDepth write FDepth; //0..1
     property Feedback: Single read FFeedBack write FFeedBack; // 0..<1
     property Minimum: Single read FMin write SetMinimum;
@@ -66,13 +93,13 @@ type
 
   TPhaser = class(TCustomPhaser)
   published
-    property SampleRate;
     property Depth; //0..1
     property Feedback; // 0..<1
     property Minimum;
     property Maximum;
-    property Stages;
     property Rate; // Hz
+    property SampleRate;
+    property Stages;
   end;
 
 implementation
@@ -224,7 +251,7 @@ begin
   FZM1           := 0;
   Rate           := 0;
   Stages         := 5;
-  SampleRate     := 44100;
+  SampleRateChanged;
   CalculateFilters;
 end;
 
@@ -290,21 +317,10 @@ end;
 
 procedure TCustomPhaser.SampleRateChanged;
 begin
- FMasterAllPass.SampleRate := FSampleRate;
- FInvSampleRate := 1 / FSampleRate;
+ FMasterAllPass.SampleRate := SampleRate;
+ FInvSampleRate := 1 / SampleRate;
  CalculateFilters;
  RateChanged;
-end;
-
-procedure TCustomPhaser.SetSampleRate(const Value: Single);
-begin
- if Value < 0
-  then raise Exception.Create(RCStrFrequencyPositive);
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
 end;
 
 procedure TCustomPhaser.SetStages(const Value: Integer);

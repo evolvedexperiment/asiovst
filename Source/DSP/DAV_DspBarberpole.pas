@@ -1,17 +1,46 @@
 unit DAV_DspBarberpole;
 
-{$I DAV_Compiler.inc}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
+
+{$I DAV_Compiler.inc}
 
 uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO;
 
 type
   TBarberpoleDirection = (sdUp, sdDown, sdUpInv, sdDownInv);
-  TCustomDspBarberpole = class(TDspObject)
+  TCustomDspBarberpole = class(TDspSampleRatePersistent)
   private
-    FSampleRate    : Double;
     FSampleRateInv : Double;
     FSpeed         : Double;
     FDepth         : Double;
@@ -28,25 +57,24 @@ type
     procedure SetMix(const Value: Double);
     procedure SetSpeed(const Value: Double);
     procedure SetStages(const Value: Byte);
-    procedure SetSampleRate(const Value: Double);
     procedure SetDirection(const Value: TBarberpoleDirection);
+    procedure CalculateReciprocalSampleRate;
   protected
     procedure CalculateStageMix; virtual;
     procedure DirectionChanged; virtual;
     procedure DepthChanged; virtual;
     procedure MixChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure SpeedChanged; virtual;
     procedure StagesChanged; virtual;
     procedure UpdateBuffer; virtual;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure Reset; virtual; abstract;
   published
     property Depth: Double read FDepth write SetDepth;
     property Direction: TBarberpoleDirection read FDirection write SetDirection;
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Speed: Double read FSpeed write SetSpeed;
     property Stages: Byte read FStages write SetStages default 0;
     property Mix: Double read FMix write SetMix;
@@ -97,6 +125,9 @@ uses
 
 constructor TCustomDspBarberpole.Create;
 begin
+ inherited;
+ CalculateReciprocalSampleRate;
+ 
  FSpeed         := 2;
  FDepth         := 0.5;
  FMix           := 0.5;
@@ -104,7 +135,6 @@ begin
  FStagePosition := nil;
  FDirection     := sdUp;
  Stages         := 2;
- SampleRate     := 44100;
 end;
 
 procedure TCustomDspBarberpole.AssignTo(Dest: TPersistent);
@@ -112,7 +142,7 @@ begin
  if Dest is TCustomDspBarberpole then
   with TCustomDspBarberpole(Dest) do
    begin
-    SampleRate   := Self.FSampleRate;
+    inherited;
     Speed        := Self.Speed;
     Depth        := Self.Depth;
     Mix          := Self.Mix;
@@ -147,7 +177,7 @@ end;
 procedure TCustomDspBarberpole.UpdateBuffer;
 begin
  // determine buffer size
- FBufferSize  := round(sqr(Depth) * 0.25 * FSampleRate); // quarter second
+ FBufferSize  := Round(sqr(Depth) * 0.25 * SampleRate); // quarter second
  FRealBufSize := FBufferSize + 4;
 
  // check and reset buffer position
@@ -172,8 +202,14 @@ end;
 
 procedure TCustomDspBarberpole.SampleRateChanged;
 begin
- FSampleRateInv := 1 / SampleRate;
+ inherited;
+ CalculateReciprocalSampleRate;
  UpdateBuffer;
+end;
+
+procedure TCustomDspBarberpole.CalculateReciprocalSampleRate;
+begin
+ FSampleRateInv := 1 / SampleRate;
 end;
 
 procedure TCustomDspBarberpole.DirectionChanged;
@@ -205,15 +241,6 @@ begin
   begin
    FMix := Value;
    MixChanged;
-  end;
-end;
-
-procedure TCustomDspBarberpole.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> abs(Value) then
-  begin
-   FSampleRate := abs(Value);
-   SampleRateChanged;
   end;
 end;
 
@@ -296,7 +323,7 @@ begin
      d := FBufferSize * FStagePosition^[i];
 
      // calculate absolute sample position
-     p := round(d - CHalf32);
+     p := Round(d - CHalf32);
      d := d - p;
 
      p := FBufferPos + p - 2;
@@ -315,7 +342,7 @@ begin
      d := FBufferSize * FStagePosition^[i];
 
      // calculate absolute sample position
-     p := round(d + CHalf32);
+     p := Round(d + CHalf32);
      d := p - d;
 
      p := FBufferPos - p - 2;
@@ -336,7 +363,7 @@ begin
      d := FBufferSize * FStagePosition^[i];
 
      // calculate absolute sample position
-     p := round(d - CHalf32);
+     p := Round(d - CHalf32);
      d := d - p;
 
      p := FBufferPos + p - 2;
@@ -355,7 +382,7 @@ begin
      d := FBufferSize * FStagePosition^[i];
 
      // calculate absolute sample position
-     p := round(d + CHalf32);
+     p := Round(d + CHalf32);
      d := p - d;
 
      p := FBufferPos - p - 2;
@@ -433,7 +460,7 @@ begin
       d := FBufferSize * FStagePosition^[i];
 
       // calculate absolute sample position
-      p := round(d + CHalf64);
+      p := Round(d + CHalf64);
       d := p - d;
 
       p := FBufferPos - p - 2;
@@ -454,7 +481,7 @@ begin
       d := FBufferSize * FStagePosition^[i];
 
       // calculate absolute sample position
-      p := round(d + CHalf64);
+      p := Round(d + CHalf64);
       d := p - d;
 
       p := FBufferPos - p - 2;

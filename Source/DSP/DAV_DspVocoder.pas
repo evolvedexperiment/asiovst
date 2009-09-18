@@ -20,28 +20,26 @@ const
     5300, 6400, 7700, 9500, 12000, 15500);
 
 type
-  TCustomVocoder = class(TDspSampleRateDependent)
+  TCustomVocoder = class(TDspSampleRatePersistent)
   private
     procedure SetInputLevel(const Value: Double);
     procedure SetSynthLevel(const Value: Double);
     procedure SetVocoderLevel(const Value: Double);
-    procedure SetSampleRate(const Value: Double);
     procedure SetAttack(const Value: Double);
     procedure SetRelease(const Value: Double);
   protected
-    FVolFactors        : array [0..2] of Double;
-    FAttack            : Double;
-    FAttackFactor      : Double;
-    FRelease           : Double;
-    FReleaseFactor     : Double;
-    FSampleRate        : Double;
-    procedure SampleRateChanged; virtual;
+    FVolFactors    : array [0..2] of Double;
+    FAttack        : Double;
+    FAttackFactor  : Double;
+    FRelease       : Double;
+    FReleaseFactor : Double;
+    procedure SampleRateChanged; override;
     procedure AttackChanged; virtual;
     procedure ReleaseChanged; virtual;
     procedure CalculateAttackFactor; virtual;
     procedure CalculateReleaseFactor; virtual;
   public
-    constructor Create; virtual;
+    constructor Create; override;
 
     function Process(Input, Carrier: Single): Single; virtual; abstract;
 
@@ -50,7 +48,7 @@ type
     property VocoderLevel: Double read FVolFactors[2] write SetVocoderLevel;
     property Attack: Double read FAttack write SetAttack;    // in ms
     property Release: Double read FRelease write SetRelease; // in ms
-    property SampleRate: Double read FSampleRate write SetSampleRate;
+    property SampleRate;
   end;
 
   TSimpleThirdOctaveVocoder = class(TCustomVocoder)
@@ -169,7 +167,6 @@ uses
 constructor TCustomVocoder.Create;
 begin
  inherited;
- FSampleRate := 44100;
  FAttack := 0.5;
  FRelease := 2;
  CalculateAttackFactor;
@@ -242,14 +239,6 @@ begin
   then FVolFactors[2] := Value;
 end;
 
-procedure TCustomVocoder.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
 
 { TSimpleThirdOctaveVocoder }
 

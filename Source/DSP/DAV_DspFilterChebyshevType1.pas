@@ -1,11 +1,41 @@
 unit DAV_DspFilterChebyshevType1;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspFilter, DAV_DspFilterChebyshev;
+  Classes, DAV_Common, DAV_Complex, DAV_DspFilter, DAV_DspFilterChebyshev;
 
 type
   TCustomChebyshev1Filter = class(TCustomChebyshevFilter)
@@ -17,6 +47,7 @@ type
     FCoeffs     : array [0..63] of Double;
     FState      : array [0..63] of Double;
     FStateStack : array of array [0..63] of Double;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure RippleChanged; virtual;
     procedure CalculateHypFactors; override;
     procedure CalculateRippleGain; virtual;
@@ -151,6 +182,21 @@ end;
 procedure TCustomChebyshev1Filter.ResetStates;
 begin
  FillChar(FState[0], FOrder * SizeOf(Double), 0);
+end;
+
+procedure TCustomChebyshev1Filter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomChebyshev1Filter then
+  with TCustomChebyshev1Filter(Dest) do
+   begin
+    inherited;
+    FRipple     := Self.FRipple;
+    FRippleGain := Self.FRippleGain;
+    FCoeffs     := Self.FCoeffs;
+    FState      := Self.FState;
+    FStateStack := Self.FStateStack;
+   end
+ else inherited;
 end;
 
 procedure TCustomChebyshev1Filter.CalculateHypFactors;

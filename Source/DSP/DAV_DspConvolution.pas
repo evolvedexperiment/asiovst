@@ -1,23 +1,56 @@
 unit DAV_DspConvolution;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.INC}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspFftReal2Complex
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspFftReal2Complex
   {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
+// TODO: check and implement all assignto functions!!!
+
 type
-  TCustomConvolution = class(TDspObject)
+  TCustomConvolution = class(TDspPersistent)
   private
     function GetFftOrder: Byte;
     procedure SetFftOrder(const Value: Byte);
   protected
-    FFFT                : TFftReal2Complex;
-    FFFTSize            : Integer;
-    FFFTSizeHalf        : Integer;
+    FFFT         : TFftReal2Complex;
+    FFFTSize     : Integer;
+    FFFTSizeHalf : Integer;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateFftSizeVariables; virtual;
     procedure ImpulseResponseChanged; virtual; abstract;
     procedure FFTOrderChanged; virtual;
@@ -54,6 +87,7 @@ type
     FFreqRespBlockCount : Integer;
     FIRSizePadded       : Integer;
 
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateFftSizeVariables; override;
     procedure ImpulseResponseChanged; override;
     procedure IRSizePaddedChanged; virtual;
@@ -103,6 +137,7 @@ type
     FFreqRespBlockCount : Integer;
     FIRSizePadded       : Integer;
 
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateFftSizeVariables; override;
     procedure ImpulseResponseChanged; override;
     procedure IRSizePaddedChanged; virtual;
@@ -128,10 +163,10 @@ type
     property FFTSize;
   end;
 
-  TCustomLowLatencyConvolution = class(TDspObject)
+  TCustomLowLatencyConvolution = class(TDspPersistent)
   end;
 
-  TLowLatencyConvolutionStage32 = class
+  TLowLatencyConvolutionStage32 = class(TPersistent)
   private
     function GetCount: Integer;
   protected
@@ -152,6 +187,7 @@ type
     FSignalFreq         : PDAVComplexSingleFixedArray;
     FConvolved          : PDAVComplexSingleFixedArray;
     FConvolvedTime      : PDAVSingleFixedArray;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
     destructor Destroy; override;
@@ -199,6 +235,7 @@ type
     FMinimumIRBlockOrder : Byte;
     FMaximumIRBlockOrder : Byte;
 
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BuildIRSpectrums; virtual;
     procedure MinimumIRBlockOrderChanged; virtual;
     procedure MaximumIRBlockOrderChanged; virtual;
@@ -226,6 +263,7 @@ type
   protected
     FInputBuffer2  : PDAVSingleFixedArray;
     FOutputBuffer2 : PDAVSingleFixedArray;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure PartitionizeIR; override;
     procedure PaddedIRSizeChanged; override;
   public
@@ -234,7 +272,7 @@ type
     procedure ProcessBlock(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Integer); reintroduce; virtual;
   end;
 
-  TLowLatencyConvolutionStage64 = class
+  TLowLatencyConvolutionStage64 = class(TPersistent)
   private
     function GetCount: Integer;
   protected
@@ -253,6 +291,7 @@ type
     FSignalFreq         : PDAVComplexDoubleFixedArray;
     FConvolved          : PDAVComplexDoubleFixedArray;
     FConvolvedTime      : PDAVDoubleFixedArray;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const IROrder: Byte; const StartPos, Latency, Count: Integer);
     destructor Destroy; override;
@@ -294,6 +333,7 @@ type
     FLatency             : Integer;
     FMinimumIRBlockOrder : Byte;
     FMaximumIRBlockOrder : Byte;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BuildIRSpectrums; virtual;
     procedure MinimumIRBlockOrderChanged; virtual;
     procedure MaximumIRBlockOrderChanged; virtual;
@@ -320,6 +360,7 @@ type
   protected
     FInputBuffer2  : PDAVDoubleFixedArray;
     FOutputBuffer2 : PDAVDoubleFixedArray;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure PartitionizeIR; override;
     procedure PaddedIRSizeChanged; override;
   public
@@ -348,6 +389,18 @@ destructor TCustomConvolution.Destroy;
 begin
  FreeAndNil(FFft);
  inherited;
+end;
+
+procedure TCustomConvolution.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomConvolution then
+  with TCustomConvolution(Dest) do
+   begin
+    FFFT.Assign(Self.FFFT);
+    FFFTSize     := Self.FFFTSize;
+    FFFTSizeHalf := Self.FFFTSizeHalf;
+   end
+  else inherited;
 end;
 
 procedure TCustomConvolution.CalculateFftSizeVariables;
@@ -412,6 +465,31 @@ begin
   do Dispose(FFilterFreqs[i]);
  FreeAndNil(FFft);
  inherited;
+end;
+
+procedure TConvolution32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TConvolution32 then
+  with TConvolution32(Dest) do
+   begin
+    inherited;
+    FIRSize             := Self.FIRSize;
+    FBlockPosition      := Self.FBlockPosition;
+    FFreqRespBlockCount := Self.FFreqRespBlockCount;
+    FIRSizePadded       := Self.FIRSizePadded;
+
+(*
+    FImpulseResponse    : PDAVSingleFixedArray;
+    FFilterFreqs        : array of PDAVComplexSingleFixedArray;
+    FSignalFreq         : PDAVComplexSingleFixedArray;
+    FConvolved          : PDAVComplexSingleFixedArray;
+    FConvolvedTime      : PDAVSingleFixedArray;
+    FInputBuffer        : PDAVSingleFixedArray;
+    FOutputBuffer       : PDAVSingleFixedArray;
+*)
+
+   end
+ else inherited;
 end;
 
 procedure TConvolution32.CalculateFftSizeVariables;
@@ -655,6 +733,31 @@ begin
  inherited;
 end;
 
+procedure TConvolution64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TConvolution64 then
+  with TConvolution64(Dest) do
+   begin
+    inherited;
+    FIRSize             := Self.FIRSize;
+    FBlockPosition      := Self.FBlockPosition;
+    FFreqRespBlockCount := Self.FFreqRespBlockCount;
+    FIRSizePadded       := Self.FIRSizePadded;
+
+(*
+    FImpulseResponse    : PDAVSingleFixedArray;
+    FFilterFreqs        : array of PDAVComplexSingleFixedArray;
+    FSignalFreq         : PDAVComplexSingleFixedArray;
+    FConvolved          : PDAVComplexSingleFixedArray;
+    FConvolvedTime      : PDAVSingleFixedArray;
+    FInputBuffer        : PDAVSingleFixedArray;
+    FOutputBuffer       : PDAVSingleFixedArray;
+*)
+
+   end
+ else inherited;
+end;
+
 procedure TConvolution64.CalculateFftSizeVariables;
 begin
  inherited;
@@ -879,6 +982,36 @@ end;
 function TLowLatencyConvolutionStage32.GetCount: Integer;
 begin
  result := Length(FIRSpectrums);
+end;
+
+procedure TLowLatencyConvolutionStage32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLowLatencyConvolutionStage32 then
+  with TLowLatencyConvolutionStage32(Dest) do
+   begin
+    inherited;
+    {$IFDEF Use_IPPS}
+    FFft.Assign(Self.FFft);
+    {$ELSE} {$IFDEF Use_CUDA}
+    FFft.Assign(Self.FFft);
+    {$ELSE}
+    FFft.Assign(Self.FFft);
+    {$ENDIF}{$ENDIF}
+    FFFTSize       := Self.FFFTSize;
+    FFFTSizeHalf   := Self.FFFTSizeHalf;
+    FOutputPos     := Self.FOutputPos;
+    FLatency       := Self.FLatency;
+    FMod           := Self.FMod;
+    FModAnd        := Self.FModAnd;
+
+(*
+    FIRSpectrums   := Self.FIRSpectrums;
+    FSignalFreq    := Self.FSignalFreq;
+    FConvolved     := Self.FConvolved;
+    FConvolvedTime := Self.FConvolvedTime;
+*)
+   end
+ else inherited;  
 end;
 
 procedure TLowLatencyConvolutionStage32.CalculateIRSpectrums(const IR: PDAVSingleFixedArray);
@@ -1108,6 +1241,31 @@ begin
  BuildIRSpectrums;
 end;
 
+procedure TLowLatencyConvolution32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLowLatencyConvolution32 then
+  with TLowLatencyConvolution32(Dest) do
+   begin
+    inherited;
+(*
+    FImpulseResponse     : PDAVSingleFixedArray;
+    FConvStages          : array of TLowLatencyConvolutionStage32;
+    FInputBuffer         : PDAVSingleFixedArray;
+    FOutputBuffer        : PDAVSingleFixedArray;
+*)
+    FInputBufferSize     := Self.FInputBufferSize;
+    FOutputHistorySize   := Self.FOutputHistorySize;
+    FInputHistorySize    := Self.FInputHistorySize;
+    FBlockPosition       := Self.FBlockPosition;
+    FIRSize              := Self.FIRSize;
+    FIRSizePadded        := Self.FIRSizePadded;
+    FLatency             := Self.FLatency;
+    FMinimumIRBlockOrder := Self.FMinimumIRBlockOrder;
+    FMaximumIRBlockOrder := Self.FMaximumIRBlockOrder;
+   end
+ else inherited;
+end;
+
 procedure TLowLatencyConvolution32.BuildIRSpectrums;
 var
   Stage : Integer;
@@ -1235,6 +1393,20 @@ begin
  inherited;
 end;
 
+procedure TLowLatencyConvolutionStereo32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLowLatencyConvolutionStereo32 then
+  with TLowLatencyConvolutionStereo32(Dest) do
+   begin
+    inherited;
+(*
+    FInputBuffer2  : PDAVSingleFixedArray;
+    FOutputBuffer2 : PDAVSingleFixedArray;
+*)
+   end
+ else inherited;
+end;
+
 procedure TLowLatencyConvolutionStereo32.PaddedIRSizeChanged;
 begin
  inherited;
@@ -1355,6 +1527,16 @@ end;
 function TLowLatencyConvolutionStage64.GetCount: Integer;
 begin
  result := Length(FIRSpectrums);
+end;
+
+procedure TLowLatencyConvolutionStage64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLowLatencyConvolutionStage64 then
+  with TLowLatencyConvolutionStage64(Dest) do
+   begin
+    inherited;
+   end
+ else inherited;
 end;
 
 procedure TLowLatencyConvolutionStage64.CalculateIRSpectrums(const IR: PDAVDoubleFixedArray);
@@ -1584,6 +1766,16 @@ begin
  BuildIRSpectrums;
 end;
 
+procedure TLowLatencyConvolution64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLowLatencyConvolution64 then
+  with TLowLatencyConvolution64(Dest) do
+   begin
+    inherited;
+   end
+ else inherited;
+end;
+
 procedure TLowLatencyConvolution64.BuildIRSpectrums;
 var
   Stage : Integer;
@@ -1704,6 +1896,16 @@ begin
  Dispose(FInputBuffer2);
  Dispose(FOutputBuffer2);
  inherited;
+end;
+
+procedure TLowLatencyConvolutionStereo64.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TLowLatencyConvolutionStereo64 then
+  with TLowLatencyConvolutionStereo64(Dest) do
+   begin
+    inherited;
+   end
+ else inherited;
 end;
 
 procedure TLowLatencyConvolutionStereo64.PaddedIRSizeChanged;

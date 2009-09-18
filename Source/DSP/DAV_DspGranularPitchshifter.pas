@@ -1,14 +1,44 @@
 unit DAV_DspGranularPitchShifter;
 
-{$I DAV_Compiler.inc}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
+
+{$I DAV_Compiler.inc}
 
 uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter;
 
 type
-  TFractionalDelayAllpass = class(TDspObject)
+  TFractionalDelayAllpass = class(TDspPersistent)
   protected
     FState      : Double;
     FFractional : Single;
@@ -19,7 +49,7 @@ type
     property Fractional: Single read FFractional write FFractional;
   end;
 
-  TGranularPitchShifterStage = class(TDspObject)
+  TGranularPitchShifterStage = class(TDspPersistent)
   private
     FAllpass        : TFractionalDelayAllpass;
     FBufferOffset   : Integer;
@@ -33,9 +63,8 @@ type
     property Fractional: Double read GetFractional write SetFractional;
   end;
 
-  TCustomDspGranularPitchShifter = class(TDspObject)
+  TCustomDspGranularPitchShifter = class(TDspSampleRatePersistent)
   private
-    FSampleRate        : Double;
     FSampleRateInv     : Double;
     FSampleOffset      : Double;
     FEnvelopeOffset    : Double;
@@ -47,24 +76,23 @@ type
     FSemitones         : Double;
     FGranularity       : Double;
     procedure SetStages(const Value: Byte);
-    procedure SetSampleRate(const Value: Double);
     procedure SetSemitones(const Value: Double);
     procedure SetGranularity(const Value: Double);
     procedure CalculateEnvelopeOffset;
+    procedure CalculateSampleRateReciprocal;
   protected
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure StagesChanged; virtual;
     procedure SemitonesChanged; virtual;
     procedure GranularityChanged; virtual;
     procedure UpdateBuffer; virtual;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure Reset; virtual; abstract;
   published
     property Semitones: Double read FSemitones write SetSemitones;
     property Granularity: Double read FGranularity write SetGranularity; // in s
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Stages: Byte read FStages write SetStages default 0;
   end;
 
@@ -73,6 +101,7 @@ type
     FBuffer32 : PDAVSingleFixedArray;
   protected
     procedure UpdateBuffer; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -88,6 +117,7 @@ type
     FBuffer64 : PDAVDoubleFixedArray;
   protected
     procedure UpdateBuffer; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -159,11 +189,11 @@ end;
 
 constructor TCustomDspGranularPitchShifter.Create;
 begin
+ inherited;
  FBufferPos     := 0;
  FSemitones     := 0;
  FGranularity   := 0.05;
  Stages         := 2;
- FSampleRate    := 44100;
  SampleRateChanged;
 end;
 
@@ -172,7 +202,6 @@ begin
  if Dest is TCustomDspGranularPitchShifter then
   with TCustomDspGranularPitchShifter(Dest) do
    begin
-    SampleRate   := Self.FSampleRate;
     Semitones    := Self.FSemitones;
     Stages       := Self.Stages;
    end
@@ -212,7 +241,7 @@ end;
 procedure TCustomDspGranularPitchShifter.UpdateBuffer;
 begin
  // determine buffer size
- FBufferSize  := round(FGranularity * FSampleRate) + 1; // quarter second
+ FBufferSize  := round(FGranularity * SampleRate) + 1; // quarter second
 
  // check and reset buffer position
  if FBufferPos >= FBufferSize
@@ -224,8 +253,13 @@ end;
 
 procedure TCustomDspGranularPitchShifter.SampleRateChanged;
 begin
- FSampleRateInv := 1 / SampleRate;
+ CalculateSampleRateReciprocal;
  UpdateBuffer;
+end;
+
+procedure TCustomDspGranularPitchShifter.CalculateSampleRateReciprocal;
+begin
+ FSampleRateInv := 1 / SampleRate;
 end;
 
 procedure TCustomDspGranularPitchShifter.SemitonesChanged;
@@ -251,15 +285,6 @@ end;
 procedure TCustomDspGranularPitchShifter.GranularityChanged;
 begin
  UpdateBuffer;
-end;
-
-procedure TCustomDspGranularPitchShifter.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> abs(Value) then
-  begin
-   FSampleRate := abs(Value);
-   SampleRateChanged;
-  end;
 end;
 
 procedure TCustomDspGranularPitchShifter.SetSemitones(const Value: Double);
@@ -307,6 +332,28 @@ destructor TDspGranularPitchShifter32.Destroy;
 begin
  Dispose(FBuffer32);
  inherited;
+end;
+
+procedure TDspGranularPitchShifter32.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TDspGranularPitchShifter32 then
+  with TDspGranularPitchShifter32(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    Move(Self.FBuffer32^, FBuffer32^, FBufferSize * SizeOf(Single));
+   end else
+ if Dest is TDspGranularPitchShifter64 then
+  with TDspGranularPitchShifter64(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    for Sample := 0 to FBufferSize - 1
+     do Self.FBuffer32^[Sample] := FBuffer64^[Sample];
+   end
+ else inherited;
 end;
 
 procedure TDspGranularPitchShifter32.Reset;
@@ -378,6 +425,28 @@ end;
 
 { TDspGranularPitchShifter64 }
 
+procedure TDspGranularPitchShifter64.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TDspGranularPitchShifter32 then
+  with TDspGranularPitchShifter32(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    for Sample := 0 to FBufferSize - 1
+     do Self.FBuffer64^[Sample] := FBuffer32^[Sample];
+   end else
+ if Dest is TDspGranularPitchShifter64 then
+  with TDspGranularPitchShifter64(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    Move(Self.FBuffer64^, FBuffer64^, FBufferSize * SizeOf(Single));
+   end
+ else inherited;
+end;
+
 constructor TDspGranularPitchShifter64.Create;
 begin
  inherited;
@@ -438,12 +507,12 @@ begin
     FAllpass.Fractional := FAllpass.Fractional + FSampleOffset;
     while FAllpass.Fractional > 1 do
      begin
-      inc(FBufferOffset);
+      Inc(FBufferOffset);
       FAllpass.Fractional := FAllpass.Fractional - 1
      end;
     while FAllpass.Fractional < 1 do
      begin
-      dec(FBufferOffset);
+      Dec(FBufferOffset);
       FAllpass.Fractional := FAllpass.Fractional + 1
      end;
 

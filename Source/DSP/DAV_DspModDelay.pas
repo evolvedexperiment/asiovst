@@ -1,5 +1,35 @@
 unit DAV_DspModDelay;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,9 +38,8 @@ uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspLFO, DAV_DspFilterButterworth;
 
 type
-  TCustomModDelay = class(TDspObject)
+  TCustomModDelay = class(TDspSampleRatePersistent)
   private
-    FSampleRate     : Double;
     FDelay          : Double;
     FDepth          : Double;
     FFeedback       : Double;
@@ -26,26 +55,25 @@ type
     FLowpassFilter  : TButterworthLowPassFilter;
     procedure SetDepth(const Value: Double);
     procedure SetRate(const Value: Double);
-    procedure SetSampleRate(const Value: Double);
     procedure SetDelay(const Value: Double);
     procedure SetFeedback(const Value: Double);
     procedure SetMix(const Value: Double);
     procedure SetLpfFreq(const Value: Double);
     procedure LowpassFrequencyChanged;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure DelayChanged; virtual;
     procedure DepthChanged; virtual;
     procedure FeedbackChanged; virtual;
     procedure MixChanged; virtual;
     procedure RateChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure UpdateBuffer; virtual;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     procedure Reset; virtual;
-  published
-    property SampleRate: Double read FSampleRate write SetSampleRate;
+
     property Mix: Double read FMix write SetMix;
     property Delay: Double read FDelay write SetDelay;
     property Feedback: Double read FFeedback write SetFeedback;
@@ -58,6 +86,7 @@ type
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure UpdateBuffer; override;
   public
     constructor Create; override;
@@ -81,6 +110,7 @@ type
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure UpdateBuffer; override;
   public
     constructor Create; override;
@@ -109,7 +139,7 @@ uses
 
 constructor TCustomModDelay.Create;
 begin
- FSampleRate    := 44100;
+ inherited;
  FRate          := 2;
  FDepth         := 0.5;
  FBufferPos     := 0;
@@ -130,6 +160,32 @@ begin
  inherited;
 end;
 
+procedure TCustomModDelay.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomModDelay then
+  with TCustomModDelay(Dest) do
+   begin
+    inherited;
+    FDelay          := Self.FDelay;
+    FDepth          := Self.FDepth;
+    FFeedback       := Self.FFeedback;
+    FFeedbackFactor := Self.FFeedbackFactor;
+    FMix            := Self.FMix;
+    FMixFactors     := Self.FMixFactors;
+    FRate           := Self.FRate;
+    FLpfFreq        := Self.FLpfFreq;
+    FRealBufSize    := Self.FRealBufSize;
+    FBufferSize     := Self.FBufferSize;
+    FBufferPos      := Self.FBufferPos;
+
+    UpdateBuffer;
+
+    FLFO.Assign(Self.FLFO);
+    FLowpassFilter.Assign(Self.FLowpassFilter);
+   end
+ else inherited;
+end;
+
 procedure TCustomModDelay.Reset;
 begin
  FLFO.Reset;
@@ -138,7 +194,7 @@ end;
 procedure TCustomModDelay.UpdateBuffer;
 begin
  // calculate buffer size in samples
- FBufferSize  := round(0.001 * FDelay * abs(FSampleRate));
+ FBufferSize  := round(0.001 * FDelay * abs(SampleRate));
  FRealBufSize := FBufferSize + 8;
 
  // check and reset buffer position
@@ -179,7 +235,7 @@ end;
 
 procedure TCustomModDelay.SampleRateChanged;
 begin
- FLFO.SampleRate := FSampleRate;
+ FLFO.SampleRate := SampleRate;
  FLowpassFilter.SampleRate := SampleRate;
  UpdateBuffer;
 end;
@@ -229,15 +285,6 @@ begin
   end;
 end;
 
-procedure TCustomModDelay.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomModDelay.SetRate(const Value: Double);
 begin
  if FRate <> Value then
@@ -247,7 +294,30 @@ begin
   end;
 end;
 
+
 { TCustomModDelay32 }
+
+procedure TCustomModDelay32.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TCustomModDelay32 then
+  with TCustomModDelay32(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
+   end else
+ if Dest is TCustomModDelay64 then
+  with TCustomModDelay64(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    for Sample := 0 to FRealBufSize - 1
+     do FBuffer64^[Sample] := Self.FBuffer32^[Sample];
+   end
+ else inherited;
+end;
 
 constructor TCustomModDelay32.Create;
 begin
@@ -312,6 +382,28 @@ begin
 end;
 
 { TCustomModDelay64 }
+
+procedure TCustomModDelay64.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TCustomModDelay32 then
+  with TCustomModDelay32(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    for Sample := 0 to FRealBufSize - 1
+     do FBuffer32^[Sample] := Self.FBuffer64^[Sample];
+   end else
+ if Dest is TCustomModDelay64 then
+  with TCustomModDelay64(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer64^, FBuffer64^, FRealBufSize * SizeOf(Double));
+   end
+ else inherited;
+end;
 
 constructor TCustomModDelay64.Create;
 begin

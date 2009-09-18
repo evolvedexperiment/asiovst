@@ -1,5 +1,35 @@
 unit DAV_DspAudioToMidiTrigger;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -13,15 +43,15 @@ type
 
   TTriggerNotifyEvent = procedure(Sender: TObject; const Level: Single) of object;
 
-  TCustomAudio2MidiTrigger = class(TDspObject)
+  TCustomAudio2MidiTrigger = class(TDspSampleRatePersistent)
   private
-    procedure SetSampleRate(const Value: Double);
+    function GetFilterCount: Integer;
+    function GetFilter(Index: Integer): TCustomFilter;
+    procedure CalculateReciprocalSamplerate;
+    procedure CalculateThresholdFactor;
     procedure SetFlags(const Value: TAudio2MidiTriggerFlags);
     procedure SetThreshold(const Value: Double);
     procedure SetInterval(const Value: Double);
-    procedure CalculateReciprocalSamplerate;
-    function GetFilterCount: Integer;
-    function GetFilter(Index: Integer): TCustomFilter;
   protected
     FInterval         : Double;
     FFilter           : array of TCustomFilter;
@@ -29,28 +59,27 @@ type
     FOnTrigger        : TTriggerNotifyEvent;
     FSampleCount      : Integer;
     FSampleInterval   : Integer;
-    FSampleRate, FSRR : Double;
+    FSRR              : Double;
     FThreshold        : Double;
     FThresholdFactor  : Double;
     procedure IntervalChanged; virtual;
     procedure FlagsChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure ThresholdChanged; virtual;
 
     property SampleRateReciprocal: Double read FSRR;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     function ProcessSample(const Input: Double): Double; virtual;
     procedure AddFilter(const Filter: TCustomFilter); virtual;
     procedure DeleteFilter(const Filter: TCustomFilter); overload; virtual;
     procedure DeleteFilter(const Index: Integer); overload; virtual;
 
-    property Flags: TAudio2MidiTriggerFlags read FFlags write SetFlags;
+    property Flags: TAudio2MidiTriggerFlags read FFlags write SetFlags default [];
     property FilterCount: Integer read GetFilterCount;
     property Filter[Index: Integer]: TCustomFilter read GetFilter;
     property Interval: Double read FInterval write SetInterval;
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Threshold: Double read FThreshold write SetThreshold;
     property OnTrigger: TTriggerNotifyEvent read FOnTrigger write FOnTrigger;
   end;
@@ -73,9 +102,15 @@ resourcestring
 
 { TCustomAudio2MidiTrigger }
 
+
 constructor TCustomAudio2MidiTrigger.Create;
 begin
-
+ inherited;
+ FInterval := 20;
+ FFlags    := [];
+ FThreshold := -20;
+ CalculateReciprocalSamplerate;
+ CalculateThresholdFactor;
 end;
 
 destructor TCustomAudio2MidiTrigger.Destroy;
@@ -132,7 +167,7 @@ end;
 
 procedure TCustomAudio2MidiTrigger.CalculateReciprocalSamplerate;
 begin
- FSRR := 1 / FSampleRate;
+ FSRR := 1 / SampleRate;
 end;
 
 procedure TCustomAudio2MidiTrigger.SetFlags(const Value: TAudio2MidiTriggerFlags);
@@ -150,15 +185,6 @@ begin
   begin
    FInterval := Value;
    IntervalChanged;
-  end;
-end;
-
-procedure TCustomAudio2MidiTrigger.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 
@@ -203,6 +229,11 @@ begin
 end;
 
 procedure TCustomAudio2MidiTrigger.ThresholdChanged;
+begin
+ CalculateThresholdFactor;
+end;
+
+procedure TCustomAudio2MidiTrigger.CalculateThresholdFactor;
 begin
  FThresholdFactor := dB_to_Amp(FThreshold);
 end;

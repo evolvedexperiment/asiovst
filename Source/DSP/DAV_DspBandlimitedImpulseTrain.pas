@@ -1,5 +1,35 @@
 unit DAV_DspBandlimitedImpulseTrain;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -8,25 +38,21 @@ uses
   DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterAllpasses;
 
 type
-  TCustomSimpleBandlimitedImpulseTrain = class(TDspObject)
+  TCustomSimpleBandlimitedImpulseTrain = class(TDspSampleRatePersistent)
   private
-    procedure SetSampleRate(const Value: Single);
     procedure SetFrequency(const Value: Single);
     procedure SetBufferSize(const Value: Integer);
   protected
     FBufferPos  : Integer;
     FBufferSize : Integer;
-    FSampleRate : Single;
     FFrequency  : Single;
-    procedure SampleRateChanged; virtual; abstract;
     procedure FrequencyChanged; virtual; abstract;
     procedure BufferSizeChanged; virtual; abstract;
     property BufferSize: Integer read FBufferSize write SetBufferSize;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure Reset; virtual;
 
-    property Samplerate: Single read FSampleRate write SetSampleRate;
     property Frequency: Single read FFrequency write SetFrequency;
   end;
 
@@ -73,19 +99,18 @@ type
     property Frequency;
   end;
 
-  TSynchronizedImpulseTrain32 = class(TDspObject)
+  TSynchronizedImpulseTrain32 = class(TDspSampleRatePersistent)
   private
-    FSampleRate: Single;
-    FFrequency: Single;
-    procedure SetSampleRate(const Value: Single);
+    FFrequency : Single;
     procedure SetFrequency(const Value: Single);
   protected
     FImpulseTrains : array [0..1] of TSimpleBandlimitedImpulseTrain32;
+    procedure SampleRateChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     function ProcessSample: Double; virtual;
-    property Samplerate: Single read FSampleRate write SetSampleRate;
+
     property Frequency: Single read FFrequency write SetFrequency;
   end;
 
@@ -100,7 +125,6 @@ constructor TCustomSimpleBandlimitedImpulseTrain.Create;
 begin
  inherited Create;
  FFrequency := 440;
- FSampleRate := 44100;
 end;
 
 procedure TCustomSimpleBandlimitedImpulseTrain.SetBufferSize(const Value: Integer);
@@ -109,15 +133,6 @@ begin
   begin
    FBufferSize := Value;
    BufferSizeChanged;
-  end;
-end;
-
-procedure TCustomSimpleBandlimitedImpulseTrain.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
   end;
 end;
 
@@ -170,7 +185,7 @@ procedure TCustomSimpleBandlimitedImpulseTrain32.CalculateBufferSize;
 var
   Samples : Double;
 begin
- Samples := FSampleRate / FFrequency;
+ Samples := SampleRate / FFrequency;
  BufferSize := Round(Samples - 0.5) - 2;
  Fractional := BufferSize + 3 - Samples;
 end;
@@ -252,7 +267,6 @@ constructor TSynchronizedImpulseTrain32.Create;
 begin
  inherited;
  FFrequency := 1000;
- FSampleRate := 44100;
  FImpulseTrains[0] := TSimpleBandlimitedImpulseTrain32.Create;
  FImpulseTrains[1] := TSimpleBandlimitedImpulseTrain32.Create;
 end;
@@ -280,14 +294,10 @@ begin
   end;
 end;
 
-procedure TSynchronizedImpulseTrain32.SetSampleRate(const Value: Single);
+procedure TSynchronizedImpulseTrain32.SampleRateChanged;
 begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   FImpulseTrains[0].SampleRate := FSampleRate;
-   FImpulseTrains[1].SampleRate := FSampleRate;
-  end;
+ FImpulseTrains[0].SampleRate := SampleRate;
+ FImpulseTrains[1].SampleRate := SampleRate;
 end;
 
 end.

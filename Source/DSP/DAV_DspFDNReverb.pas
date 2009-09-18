@@ -1,12 +1,43 @@
 unit DAV_DspFDNReverb;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath, DAV_DspFilter,
-  DAV_DspFeedbackDelayNetwork, DAV_DspFilterBasics, DAV_DspVibrato;
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath,
+  DAV_DspVibrato, DAV_DspFilter, DAV_DspFilterBasics,
+  DAV_DspFeedbackDelayNetwork;
 
 type
   TDampingFilter = class(TCustomGainFrequencyFilter)
@@ -15,6 +46,7 @@ type
     FState  : Double;
     function GetOrder: Cardinal; override;
     procedure SetOrder(const Value: Cardinal); override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
     function Imaginary(const Frequency: Double): Double; override;
@@ -38,7 +70,7 @@ type
     rgHallway, rgRoom1, rgRoom2, rgSparse1, rgSparse2, rgMinor, rgMajor,
     rgHarmonic, rgOctaves, rgFifth, rgDetuned);
 
-  TCustomDspFDNReverb = class(TDspObject)
+  TCustomDspFDNReverb = class(TDspSampleRatePersistent)
   private
     FDamping           : Double;
     FDryMix            : Double;
@@ -51,7 +83,6 @@ type
     FNonLinearGain     : Double;
     FOutputAngle       : Double;
     FWetMix            : Double;
-    FSampleRate        : Single;
     FHold              : Boolean;
     FModulationActive  : Boolean;
     FNonLinearActive   : Boolean;
@@ -72,10 +103,10 @@ type
     procedure SetNonLinearActive(const Value: Boolean);
     procedure SetNonLinearGain(const Value: Double);
     procedure SetOutputAngle(const Value: Double);
-    procedure SetSampleRate(const Value: Single);
     procedure SetWetMix(const Value: Double);
     procedure SetBaseDelay(const Value: Double);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure BaseDelayChanged; virtual; abstract;
     procedure DampingChanged; virtual; abstract;
     procedure DryMixChanged; virtual; abstract;
@@ -90,10 +121,9 @@ type
     procedure NonLinearActiveChanged; virtual; abstract;
     procedure NonLinearGainChanged; virtual; abstract;
     procedure OutputAngleChanged; virtual; abstract;
-    procedure SampleRateChanged; virtual; abstract;
     procedure WetMixChanged; virtual; abstract;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     property Geometry: TReverbGeometry read FGeometry write SetGeometry;
     property BaseDelay: Double read FBaseDelay write SetBaseDelay;
     property HalfLife: Double read FHalfLife write SetHalfLife;
@@ -111,7 +141,6 @@ type
     property DryMix: Double read FDryMix write SetDryMix;
     property WetMix: Double read FWetMix write SetWetMix;
     property Hold: Boolean read FHold write SetHold;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
   end;
 
   TDspFDNReverb32 = class(TCustomDspFDNReverb)
@@ -123,6 +152,7 @@ type
     procedure ReverbTimesChanged;
     procedure ProcessFeedbackPath(var FeedbackVector: TDAVVector32);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure DampingChanged; override;
     procedure HalfLifeChanged; override;
     procedure InputAngleChanged; override;
@@ -269,6 +299,18 @@ begin
  Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
+procedure TDampingFilter.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TDampingFilter then
+  with TDampingFilter(Dest) do
+   begin
+    inherited;
+    FCoeffs := Self.FCoeffs;
+    FState  := Self.FState;
+   end
+ else inherited;
+end;
+
 procedure TDampingFilter.CalculateCoefficients;
 var
   K, t : Double;
@@ -324,12 +366,38 @@ end;
 
 constructor TCustomDspFDNReverb.Create;
 begin
+ inherited;
  FHalfLife         := 1;
  FDamping          := 0.25;
  FNonLinearActive  := False;
  FModulationActive := False;
  FNonLinearGain    := 1;
- SampleRate        := 44100;
+end;
+
+procedure TCustomDspFDNReverb.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDspFDNReverb then
+  with TCustomDspFDNReverb(Dest) do
+   begin
+    inherited;
+    FDamping           := Self.FDamping;
+    FDryMix            := Self.FDryMix;
+    FFeedbackRotation  := Self.FFeedbackRotation;
+    FFeedbackInversion := Self.FFeedbackInversion;
+    FHalfLife          := Self.FHalfLife;
+    FInputAngle        := Self.FInputAngle;
+    FModulationDepth   := Self.FModulationDepth;
+    FModulationSpread  := Self.FModulationSpread;
+    FNonLinearGain     := Self.FNonLinearGain;
+    FOutputAngle       := Self.FOutputAngle;
+    FWetMix            := Self.FWetMix;
+    FHold              := Self.FHold;
+    FModulationActive  := Self.FModulationActive;
+    FNonLinearActive   := Self.FNonLinearActive;
+    FGeometry          := Self.FGeometry;
+    FBaseDelay         := Self.FBaseDelay;
+   end
+ else inherited;
 end;
 
 function TCustomDspFDNReverb.GetFeedbackRotation(Index: Integer): Double;
@@ -474,15 +542,6 @@ begin
   end;
 end;
 
-procedure TCustomDspFDNReverb.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomDspFDNReverb.SetWetMix(const Value: Double);
 begin
  if WetMix <> Value then
@@ -499,6 +558,7 @@ var
   n : Integer;
 begin
  inherited;
+ SampleRateChanged;
  FFeedbackDelayNetwork := TFeedbackZDelayNetwork32.Create;
  FFeedbackDelayNetwork.OnProcessFeedbackPath := ProcessFeedbackPath;
  FDamping := 0.25;
@@ -547,6 +607,26 @@ begin
   do FDampingFilter[n].Frequency := (0.01 + 0.99 * FDamping) * 5000 * (4 - n);
 end;
 
+procedure TDspFDNReverb32.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomDspFDNReverb then
+  with TCustomDspFDNReverb(Dest) do
+   begin
+    inherited;
+    FFeedbackDelayNetwork.Assign(Self.FFeedbackDelayNetwork);
+    FHalflifeVector := Self.FHalflifeVector;
+    FDampingFilter[0].Assign(Self.FDampingFilter[0]);
+    FDampingFilter[1].Assign(Self.FDampingFilter[1]);
+    FDampingFilter[2].Assign(Self.FDampingFilter[2]);
+    FDampingFilter[3].Assign(Self.FDampingFilter[3]);
+    FVibrato[0].Assign(Self.FVibrato[0]);
+    FVibrato[1].Assign(Self.FVibrato[1]);
+    FVibrato[2].Assign(Self.FVibrato[2]);
+    FVibrato[3].Assign(Self.FVibrato[3]);
+   end
+ else inherited;
+end;
+
 procedure TDspFDNReverb32.BaseDelayChanged;
 begin
  ReverbTimesChanged;
@@ -557,7 +637,7 @@ procedure TDspFDNReverb32.HalfLifeChanged;
 var
   HL : Double;
 begin
- HL := exp(-ln2 / (FHalfLife * (FBaseDelay * SampleRate)));
+ HL := Exp(-ln2 / (FHalfLife * (FBaseDelay * SampleRate)));
  FHalflifeVector[0] := HL;
  FHalflifeVector[1] := HL;
  FHalflifeVector[2] := HL;

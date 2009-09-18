@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Math, DAV_Common, DAV_DspCommon;
 
 type
-  TChebyshevWaveshaper = class(TDspObject)
+  TChebyshevWaveshaper = class(TDspPersistent)
   private
     function GetGain(Harmonic: Integer): Double;
     function GetInverted(Harmonic: Integer): Boolean;
@@ -19,8 +19,9 @@ type
     procedure SetOrder(Value: Integer);
     procedure SetInverted(Harmonic: Integer; const Value: Boolean);
   protected
-    FChebyshevCoeffs  : TDAVDoubleDynArray;
-    FGains            : TDAVDoubleDynArray;
+    FChebyshevCoeffs : TDAVDoubleDynArray;
+    FGains           : TDAVDoubleDynArray;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure RecalculateHarmonics; virtual;
     procedure OrderChanged; virtual;
   public
@@ -287,6 +288,17 @@ constructor TChebyshevWaveshaper.Create;
 begin
  Order := 1;
  Gain[0] := 1;
+end;
+
+procedure TChebyshevWaveshaper.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TChebyshevWaveshaper then
+  with TChebyshevWaveshaper(Dest) do
+   begin
+    FChebyshevCoeffs := Self.FChebyshevCoeffs;
+    FGains           := Self.FGains;
+   end
+ else inherited;
 end;
 
 function TChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;

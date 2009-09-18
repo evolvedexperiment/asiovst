@@ -1,23 +1,54 @@
 unit DAV_DspCorrelation;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.INC}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspFftReal2Complex
+  Classes, DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspFftReal2Complex
   {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
-  TCustomCorrelation = class(TDspObject)
+  TCustomCorrelation = class(TDspPersistent)
   private
     function GetFftOrder: Byte;
     procedure SetFftOrder(const Value: Byte);
   protected
-    FFFT                : TFftReal2Complex;
-    FFFTSize            : Integer;
-    FFFTSizeHalf        : Integer;
+    FFFT         : TFftReal2Complex;
+    FFFTSize     : Integer;
+    FFFTSizeHalf : Integer;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure ImpulseResponseChanged; virtual; abstract;
     procedure FFTOrderChanged; virtual;
   public
@@ -40,6 +71,7 @@ type
     FSignalFreq      : PDAVComplexSingleFixedArray;
     FCorrelationFreq : PDAVComplexSingleFixedArray;
 
+    procedure AssignTo(Dest: TPersistent); override;
     procedure FFTOrderChanged; override;
 
     {$IFDEF Use_IPPS}
@@ -315,6 +347,19 @@ end;
 
 { TCustomCorrelation }
 
+procedure TCustomCorrelation.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomCorrelation then
+  with TCustomCorrelation(Dest) do
+   begin
+    inherited;
+    FFFT.Assign(Self.FFFT);
+    FFFTSize     := Self.FFFTSize;
+    FFFTSizeHalf := Self.FFFTSizeHalf;
+   end
+ else inherited;
+end;
+
 constructor TCustomCorrelation.Create;
 begin
  inherited;
@@ -406,6 +451,12 @@ begin
  result := TFftReal2ComplexNativeFloat32(FFft);
 end;
 {$ENDIF}{$ENDIF}
+
+procedure TCorrelation32.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ // yet todo!!!
+end;
 
 procedure TCorrelation32.AutoCorrelation(
   const SignalCorrelation: PDAVSingleFixedArray);

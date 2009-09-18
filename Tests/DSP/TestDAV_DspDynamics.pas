@@ -875,9 +875,16 @@ var
   ReturnValue: Double;
   PeakLevel: Double;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FCompressor.TranslatePeakToGain(PeakLevel);
-  // TODO: Validate method results
+ with FCompressor do
+  begin
+   Threshold_dB := -20;
+   MakeUpGain_dB := 0;
+   Ratio := 1;
+
+   PeakLevel := dB_to_Amp(2 * Threshold_dB); 
+  end;
+ ReturnValue := FCompressor.TranslatePeakToGain(PeakLevel);
+ CheckEquals(PeakLevel, ReturnValue);
 end;
 
 initialization

@@ -1,5 +1,37 @@
 unit DAV_DspFftReal2Complex;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The code is based on the FFTReal code by Laurent de Soras, which is       //
+//  can be found at http://ldesoras.free.fr/prod.html#src_fftreal            //
+//  It was reviewed and rewritten from scratch by Christian-W. Budde          //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2006-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -14,7 +46,7 @@ type
 
   TFftDataOrder = (doPackedRealImaginary, doPackedComplex, doComplex);
 
-  TFftReal2Complex = class(TObject)
+  TFftReal2Complex = class(TPersistent)
   private
     procedure SetBinCount(const Value: Integer);
     procedure SetFFTOrder(const Value: Integer);
@@ -33,6 +65,7 @@ type
     procedure FFTOrderChanged; virtual;
     procedure AutoScaleTypeChanged; virtual;
     procedure DataOrderChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; overload; virtual;
     constructor Create(const Order: Byte); overload; virtual;
@@ -52,7 +85,9 @@ type
     property OnSizeChanged: TNotifyEvent read FOnSizeChanged write FOnSizeChanged;
   end;
 
-  TFFTLUTBitReversed = class
+  TFFTLUTBitReversed = class(TPersistent)
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     LUT: array of Integer;
     constructor Create(const BitCount: Integer);
@@ -60,10 +95,12 @@ type
     function GetPointer: PInteger;
   end;
 
-  TFFTLUTListObject = class
+  TFFTLUTListObject = class(TPersistent)
   private
     FBrLUT   : TFFTLUTBitReversed;
     FFftSize : Integer;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(const xFFTSize: Integer);
     destructor Destroy; override;
@@ -81,6 +118,7 @@ type
     procedure CalculateTrigoLUT; virtual; abstract;
     procedure FFTOrderChanged; override;
     procedure AutoScaleTypeChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; overload; override;
     constructor Create(const Order: Byte); overload; override;
@@ -99,6 +137,7 @@ type
     FPerformIFFTPackedReIm    : TPerform32PackedReIm;
     FPerformFFTPackedComplex  : TPerform32PackedComplex;
     FPerformIFFTPackedComplex : TPerform32PackedComplex;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateTrigoLUT; override;
     procedure PerformFFTZero32(const FreqDomain: PDAVComplexSingleFixedArray; const TimeDomain: PDAVSingleFixedArray); overload;
     procedure PerformFFTZero32(const FreqDomain, TimeDomain: PDAVSingleFixedArray); overload;
@@ -152,6 +191,7 @@ type
     FPerformIFFTPackedReIm    : TPerform64PackedReIm;
     FPerformFFTPackedComplex  : TPerform64PackedComplex;
     FPerformIFFTPackedComplex : TPerform64PackedComplex;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateTrigoLUT; override;
     procedure PerformFFTZero64(const FreqDomain: PDAVComplexDoubleFixedArray; const TimeDomain: PDAVDoubleFixedArray); overload;
     procedure PerformFFTZero64(const FreqDomain, TimeDomain: PDAVDoubleFixedArray); overload;
@@ -274,6 +314,22 @@ begin
    end;
 end;
 
+procedure TFftReal2Complex.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFftReal2Complex then
+  with TFftReal2Complex(Dest) do
+   begin
+    FBinCount      := Self.FBinCount;
+    FFftSize       := Self.FFftSize;
+    FFFTSizeInv    := Self.FFFTSizeInv;
+    FAutoScaleType := Self.FAutoScaleType;
+    FDataOrder     := Self.FDataOrder;
+    FOrder         := Self.FOrder;
+    FOnSizeChanged := Self.FOnSizeChanged;
+   end
+  else inherited;
+end;
+
 procedure TFftReal2Complex.AutoScaleTypeChanged;
 begin
  // Nothing in here yet!
@@ -324,48 +380,41 @@ end;
 
 constructor TFFTLUTBitReversed.Create(const BitCount: Integer);
 var
-  Lngth    : Integer;
-  cnt      : Integer;
-  br_index : Integer;
-  bit      : Integer;
+  Lngth   : Integer;
+  Cnt     : Integer;
+  BrIndex : Integer;
+  Bit     : Integer;
 begin
   inherited Create;
   Lngth := 1 shl BitCount;
   SetLength(LUT, Lngth);
 
-  br_index := 0;
+  BrIndex := 0;
   LUT[0] := 0;
-  for cnt := 1 to Lngth - 1 do
+  for Cnt := 1 to Lngth - 1 do
    begin
-    bit := Lngth shr 1;
-    br_index := br_index xor bit;
-    while br_index and bit = 0 do
+    Bit := Lngth shr 1;
+    BrIndex := BrIndex xor Bit;
+    while BrIndex and Bit = 0 do
      begin
-      bit := bit shr 1;
-      br_index := br_index xor bit;
+      Bit := Bit shr 1;
+      BrIndex := BrIndex xor Bit;
      end;
-    LUT[cnt] := br_index;
+    LUT[Cnt] := BrIndex;
    end;
-
- // 0, 4, 2, 6, 1, 5, 3, 7 // original
- // 0, 1, 4, 5, 2, 3, 6, 7
-
- // 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15
- // 0, 1, 8, 9, 4, 5, 12, 13, 2, 3, 10, 11, 6, 7, 14, 15           
-
-(*
-  for cnt := 1 to Lngth - 1 do
-   begin
-    temp[i    ] := FrequencyDomain[i].Re * fScaleFactor;
-    temp[i + h] := FrequencyDomain[i].Im * fScaleFactor;
-   end
-*)
 end;
 
 destructor TFFTLUTBitReversed.Destroy;
 begin
   SetLength(LUT, 0);
   inherited;
+end;
+
+procedure TFFTLUTBitReversed.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFFTLUTBitReversed
+  then TFFTLUTBitReversed(Dest).LUT := Self.LUT
+  else inherited;
 end;
 
 function TFFTLUTBitReversed.GetPointer: PInteger;
@@ -401,6 +450,18 @@ begin
   FreeAndNil(FBrLUT);
 end;
 
+procedure TFFTLUTListObject.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFFTLUTListObject then
+  with TFFTLUTListObject(Dest) do
+   begin
+    FBrLUT.Assign(Self.FBrLUT);
+    FFftSize := Self.FFftSize;
+   end
+  else inherited;
+end;
+
+
 procedure InitLUTList;
 var
   i: Integer;
@@ -421,6 +482,18 @@ begin
 end;
 
 { TFftReal2ComplexNative }
+
+procedure TFftReal2ComplexNative.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TFftReal2ComplexNative then
+  with TFftReal2ComplexNative(Dest) do
+   begin
+    inherited;
+    FBitRevLUT.Assign(Self.FBitRevLUT);
+    FScaleFactor := Self.FScaleFactor;
+   end
+  else inherited;
+end;
 
 procedure TFftReal2ComplexNative.AutoScaleTypeChanged;
 begin
@@ -586,6 +659,30 @@ begin
   doPackedComplex : FPerformIFFTPackedComplex(FrequencyDomain, TimeDomain);
   else raise Exception.Create('not supported yet');
  end;
+end;
+
+procedure TFftReal2ComplexNativeFloat32.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer;
+begin
+ if Dest is TFftReal2ComplexNativeFloat32 then
+  with TFftReal2ComplexNativeFloat32(Dest) do
+   begin
+    inherited;
+    assert(FFftSize = Self.FFftSize);
+    Move(FBuffer^, Self.FBuffer^, FftSize * SizeOf(Single));
+    SetFFTFunctionPointers;
+   end else
+ if Dest is TFftReal2ComplexNativeFloat64 then
+  with TFftReal2ComplexNativeFloat64(Dest) do
+   begin
+    inherited;
+    assert(FFftSize = Self.FFftSize);
+    for Sample := 0 to FftSize - 1
+     do FBuffer^[Sample] := Self.FBuffer^[Sample];
+    SetFFTFunctionPointers;
+   end
+  else inherited;
 end;
 
 procedure TFftReal2ComplexNativeFloat32.CalculateTrigoLUT;
@@ -2769,6 +2866,30 @@ var
 begin
  s :=  sqrt(1 / FFTSize);
  for i := 0 to FFTSize - 1 do Data^[i] := s * Data^[i];
+end;
+
+procedure TFftReal2ComplexNativeFloat64.AssignTo(Dest: TPersistent);
+var
+  Sample : Integer; 
+begin
+ if Dest is TFftReal2ComplexNativeFloat32 then
+  with TFftReal2ComplexNativeFloat32(Dest) do
+   begin
+    inherited;
+    assert(FFftSize = Self.FFftSize);
+    for Sample := 0 to FftSize - 1
+     do FBuffer^[Sample] := Self.FBuffer^[Sample];
+    SetFFTFunctionPointers;
+   end else
+ if Dest is TFftReal2ComplexNativeFloat64 then
+  with TFftReal2ComplexNativeFloat64(Dest) do
+   begin
+    inherited;
+    assert(FFftSize = Self.FFftSize);
+    Move(FBuffer^, Self.FBuffer^, FftSize * SizeOf(Single));
+    SetFFTFunctionPointers;
+   end
+  else inherited;
 end;
 
 procedure TFftReal2ComplexNativeFloat64.CalculateTrigoLUT;

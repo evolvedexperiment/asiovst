@@ -1,21 +1,52 @@
 unit DAV_DspAmbience;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The code is based on the mda VST plug-ins by Paul Kellett, which is       //
+//  located at http://sourceforge.net/projects/mda-vst/                       //
+//  It was reviewed and rewritten from scratch by Christian-W. Budde          //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
+  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DSPFilterButterworth,
   DAV_DspFilterBasics;
 
 type
-  TCustomAmbience = class(TDspObject)
+  TCustomAmbience = class(TDspSampleRatePersistent)
   private
     FDamping    : Single;
     FDry, FWet  : Single;
     FRoomsize   : Single;
     FOutputGain : Single;
-    FSampleRate : Single;
     function GetMix: Single;
     procedure SetDamping(const Value: Single);
     procedure SetDry(const Value: Single);
@@ -23,7 +54,6 @@ type
     procedure SetOutputGain(const Value: Single);
     procedure SetRoomSize(const Value: Single);
     procedure SetWet(const Value: Single);
-    procedure SetSampleRate(const Value: Single);
     procedure CalculateDryFactor;
     procedure CalculateWetFactor;
     procedure CalculateDampingFactor;
@@ -46,10 +76,11 @@ type
     procedure FlushBuffers; virtual;
     procedure OutputGainChanged; virtual;
     procedure RoomsizeChanged; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure WetChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
 
     function Process(Input: Single): Single; overload;
@@ -60,7 +91,6 @@ type
     property Mix: Single read GetMix write SetMix;
     property OutputGain: Single read FOutputGain write SetOutputGain;
     property RoomSize: Single read FRoomsize write SetRoomSize;
-    property SampleRate: Single read FSampleRate write SetSampleRate;
     property Wet: Single read FWet write SetWet;
   end;
 
@@ -71,6 +101,7 @@ type
     property Mix;
     property OutputGain;
     property RoomSize;
+    property SampleRate;
     property Wet;
   end;
 
@@ -92,7 +123,6 @@ begin
  AllocateBuffers;
 
  FHfDampState := 0.0;
- FSampleRate  := 44100;
  FFlushedBuffers := FPos = 0;
 
  // initialize
@@ -207,17 +237,9 @@ begin
   end;
 end;
 
-procedure TCustomAmbience.SetSampleRate(const Value: Single);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomAmbience.SampleRateChanged;
 begin
+ inherited;
  FHighShelf.SampleRate := SampleRate;
 end;
 
@@ -272,6 +294,26 @@ end;
 procedure TCustomAmbience.DampingChanged;
 begin
  CalculateDampingFactor; 
+end;
+
+procedure TCustomAmbience.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomAmbience then
+  with TCustomAmbience(Dest) do
+   begin
+    inherited;
+    FBuffers        := Self.FBuffers;
+    FPos            := Self.FPos;
+    FHfDampState    := Self.FHfDampState;
+    FDampFactor     := Self.FDampFactor;
+    FOutputFactor   := Self.FOutputFactor;
+    FRoomsizeFactor := Self.FRoomsizeFactor;
+    FDryFactor      := Self.FDryFactor;
+    FWetFactor      := Self.FWetFactor;
+    FFlushedBuffers := Self.FFlushedBuffers;
+    FHighShelf      := Self.FHighShelf;
+   end
+ else inherited;
 end;
 
 procedure TCustomAmbience.CalculateDampingFactor;
