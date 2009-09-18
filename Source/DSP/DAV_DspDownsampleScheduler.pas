@@ -38,22 +38,22 @@ uses
   Classes, DAV_Common, DAV_DspCommon;
 
 type
-  TDownsampleProcess = function(Sender: TObject; Stage: Integer; Input: Single): Single of object;
+  TDownsampleProcess32 = function(Sender: TObject; Stage: Integer; Input: Single): Single of object;
 
-  TCustomDownsampleScheduler = class(TDspPersistent)
+  TCustomDownsampleScheduler = class(TDspPersistent, IDspSink32)
   private
     FMaxDSStages          : Integer;
     FDownSampleCount      : Integer;
     FDownSampleMax        : Integer;
-    FOnProcessDownsampled : TDownsampleProcess;
+    FOnProcessDownsampled : TDownsampleProcess32;
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
-    procedure Process(Input: Single); virtual;
+    procedure ProcessSample32(Input: Single); virtual;
 
     property MaximumDownsampleStages: Integer read FMaxDSStages write FMaxDSStages;
-    property OnProcessDownsampled: TDownsampleProcess read FOnProcessDownsampled write FOnProcessDownsampled;
+    property OnProcessDownsampled: TDownsampleProcess32 read FOnProcessDownsampled write FOnProcessDownsampled;
   end;
 
   TDownsampleScheduler = class(TCustomDownsampleScheduler)
@@ -87,7 +87,7 @@ begin
  FDownSampleCount := 0;
 end;
 
-procedure TCustomDownsampleScheduler.Process(Input: Single);
+procedure TCustomDownsampleScheduler.ProcessSample32(Input: Single);
 var
   Stage: Integer;
 begin

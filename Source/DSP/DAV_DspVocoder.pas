@@ -41,7 +41,7 @@ type
   public
     constructor Create; override;
 
-    function Process(Input, Carrier: Single): Single; virtual; abstract;
+    function ProcessSample(Input, Carrier: Single): Single; virtual; abstract;
 
     property InputLevel: Double read FVolFactors[0] write SetInputLevel;
     property SynthLevel: Double read FVolFactors[1] write SetSynthLevel;
@@ -65,7 +65,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input, Carrier: Single): Single; override;
+    function ProcessSample(Input, Carrier: Single): Single; override;
 
     property SynthesisBandwidth: Double read FSynthesisBW write SetSynthesisBW;
   published
@@ -105,7 +105,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input, Carrier: Single): Single; override;
+    function ProcessSample(Input, Carrier: Single): Single; override;
 
     property SynthesisBandwidth: Double read FSynthesisBW write SetSynthesisBW;
     property AnalysisOrder: Integer read FAnalysisOrder write SetAnalysisOrder;
@@ -144,7 +144,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input, Carrier: Single): Single; override;
+    function ProcessSample(Input, Carrier: Single): Single; override;
 
     property SynthesisBandwidth: Double read FSynthesisBW write SetSynthesisBW;
     property AnalysisOrder: Integer read FAnalysisOrder write SetAnalysisOrder;
@@ -282,14 +282,14 @@ begin
  inherited;
 end;
 
-function TSimpleThirdOctaveVocoder.Process(Input, Carrier: Single): Single;
+function TSimpleThirdOctaveVocoder.ProcessSample(Input, Carrier: Single): Single;
 var
   Band       : Integer;
   BandSignal : Double;
 begin
  for Band := 0 to CNumFrequencies - 1 do
   begin
-   BandSignal := FAnalysisFilters[Band].ProcessSample(Input + 1E-32);
+   BandSignal := FAnalysisFilters[Band].ProcessSample64(Input + 1E-32);
 
    if abs(BandSignal) > FAnalysisPeak[Band]
     then FAnalysisPeak[Band] := FAnalysisPeak[Band] + (abs(BandSignal) - FAnalysisPeak[Band]) * FAttackFactor
@@ -297,11 +297,11 @@ begin
   end;
 
  // process vocoded signal
- result := 0;
+ Result := 0;
  for Band := 0 to CNumFrequencies - 1
-  do result := result + FSynthesisFilters[Band].ProcessSample(FAnalysisPeak[Band] * Carrier);
+  do Result := Result + FSynthesisFilters[Band].ProcessSample64(FAnalysisPeak[Band] * Carrier);
 
- result := FVolFactors[2] * result +
+ Result := FVolFactors[2] * Result +
            FVolFactors[1] * Carrier +
            FVolFactors[0] * Input;
 end;
@@ -427,7 +427,7 @@ begin
   FDownSampleMax := 1 shl DS;
 end;
 
-function TBarkScaleVocoder.Process(Input, Carrier: Single): Single;
+function TBarkScaleVocoder.ProcessSample(Input, Carrier: Single): Single;
 var
   Band       : Integer;
   Lowpassed  : Double;
@@ -440,13 +440,13 @@ begin
     if (FDownSampler mod DownsampleFactor) <> 0
      then Break;
 
-    BandSignal := AnalysisHighpass.ProcessSample(Lowpassed + 1E-32);
+    BandSignal := AnalysisHighpass.ProcessSample64(Lowpassed + 1E-32);
 
     if abs(BandSignal) > Peak
      then Peak := Peak + (abs(BandSignal) - Peak) * FAttackFactor
      else Peak := abs(BandSignal) + (Peak - abs(BandSignal)) * FReleaseFactor;
 
-    Lowpassed := AnalysisLowpass.ProcessSample(Lowpassed + 1E-32);
+    Lowpassed := AnalysisLowpass.ProcessSample64(Lowpassed + 1E-32);
    end;
 
  Inc(FDownSampler);
@@ -455,12 +455,12 @@ begin
 
 (*
  // process vocoded signal
- result := 0;
+ Result := 0;
  for i := 0 to CNumFrequencies - 1
-  do result := result + FSynthesisFilters[i].ProcessSample(FAnalysisPeak[i] * Carrier);
+  do Result := Result + FSynthesisFilters[i].ProcessSample64(FAnalysisPeak[i] * Carrier);
 *)
 
- result := FVolFactors[2] * result +
+ Result := FVolFactors[2] * Result +
            FVolFactors[1] * Carrier +
            FVolFactors[0] * Input;
 end;
@@ -601,7 +601,7 @@ begin
  FDownSampleMax := DS;
 end;
 
-function TVocoder.Process(Input, Carrier: Single): Single;
+function TVocoder.ProcessSample(Input, Carrier: Single): Single;
 var
   Band       : Integer;
   Lowpassed  : Double;
@@ -614,8 +614,8 @@ begin
     if (FDownSampler mod DownsampleFactor) <> 0
      then Break;
 
-    Lowpassed := AnalysisLowpass.ProcessSample(Lowpassed + 1E-32);
-    BandSignal := AnalysisHighpass.ProcessSample(Lowpassed + 1E-32);
+    Lowpassed := AnalysisLowpass.ProcessSample64(Lowpassed + 1E-32);
+    BandSignal := AnalysisHighpass.ProcessSample64(Lowpassed + 1E-32);
 
     if abs(BandSignal) > Peak
      then Peak := Peak + (abs(BandSignal) - Peak) * FAttackFactor
@@ -626,11 +626,11 @@ begin
   then FDownSampler := 0;
 
  // process vocoded signal
- result := 0;
+ Result := 0;
  for Band := 0 to CNumFrequencies - 1
-  do result := result + FSynthesisFilters[Band].ProcessSample(FVocoderBands[Band].Peak * Carrier);
+  do Result := Result + FSynthesisFilters[Band].ProcessSample64(FVocoderBands[Band].Peak * Carrier);
 
- result := FVolFactors[2] * result +
+ Result := FVolFactors[2] * Result +
            FVolFactors[1] * Carrier +
            FVolFactors[0] * Input;
 end;

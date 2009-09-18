@@ -74,7 +74,7 @@ type
   TBesselLowpassFilter = class(TCustomBesselFilter)
   public
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
   end;
@@ -83,7 +83,7 @@ type
   TBesselHighpassFilter = class(TCustomBesselFilter)
   public
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
   end;
   TBesselLowCut = TBesselHighpassFilter;
@@ -381,7 +381,7 @@ begin
 *)
 end;
 
-function TBesselLowpassFilter.ProcessSample(const Input: Double): Double;
+function TBesselLowpassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
@@ -480,7 +480,7 @@ begin
 *)
 end;
 
-function TBesselHighpassFilter.ProcessSample(const Input: Double): Double;
+function TBesselHighpassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin

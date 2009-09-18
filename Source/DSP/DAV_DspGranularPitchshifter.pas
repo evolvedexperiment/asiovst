@@ -38,13 +38,13 @@ uses
   Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter;
 
 type
-  TFractionalDelayAllpass = class(TDspPersistent)
+  TFractionalDelayAllpass = class(TDspPersistent, IDspProcessor32, IDspProcessor64)
   protected
     FState      : Double;
     FFractional : Single;
   public
-    function ProcessSample64(const Input: Double): Double; overload; virtual;
-    function ProcessSample32(const Input: Single): Single; overload; virtual;
+    function ProcessSample64(Input: Double): Double; virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
     constructor Create; virtual;
     property Fractional: Single read FFractional write FFractional;
   end;
@@ -96,7 +96,8 @@ type
     property Stages: Byte read FStages write SetStages default 0;
   end;
 
-  TDspGranularPitchShifter32 = class(TCustomDspGranularPitchShifter)
+  TDspGranularPitchShifter32 = class(TCustomDspGranularPitchShifter,
+    IDspProcessor32)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -105,14 +106,15 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure Reset; override;
   published
     property SampleRate;
     property Stages;
   end;
 
-  TDspGranularPitchShifter64 = class(TCustomDspGranularPitchShifter)
+  TDspGranularPitchShifter64 = class(TCustomDspGranularPitchShifter,
+    IDspProcessor64)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -121,7 +123,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     procedure Reset; override;
   published
     property SampleRate;
@@ -140,16 +142,16 @@ begin
  FState := 0;
 end;
 
-function TFractionalDelayAllpass.ProcessSample32(const Input: Single): Single;
+function TFractionalDelayAllpass.ProcessSample32(Input: Single): Single;
 begin
- result := FState + FFractional * Input;
- FState := Input - FFractional * result;
+ Result := FState + FFractional * Input;
+ FState := Input - FFractional * Result;
 end;
 
-function TFractionalDelayAllpass.ProcessSample64(const Input: Double): Double;
+function TFractionalDelayAllpass.ProcessSample64(Input: Double): Double;
 begin
- result := FState + FFractional * Input;
- FState := Input - FFractional * result;
+ Result := FState + FFractional * Input;
+ FState := Input - FFractional * Result;
 end;
 
 { TGranularPitchShifterStage }
@@ -163,7 +165,7 @@ end;
 
 function TGranularPitchShifterStage.GetFractional: Double;
 begin
- result := FAllpass.Fractional;
+ Result := FAllpass.Fractional;
 end;
 
 procedure TGranularPitchShifterStage.SetFractional(const Value: Double);
@@ -374,16 +376,15 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-function TDspGranularPitchShifter32.Process(const Input: Single): Single;
+function TDspGranularPitchShifter32.ProcessSample32(Input: Single): Single;
 var
   i, p : Integer;
-  d, m : Double;
   v    : Double;
 begin
  inherited;
 
  // dry signal
- result := 0;
+ Result := 0;
 
  // store new data
  FBuffer32[FBufferPos] := Input;
@@ -403,7 +404,7 @@ begin
     v := FStageMix * (1 - abs(2 * FEnvelopePos - 1));
     FEnvelopePos := FEnvelopePos + FEnvelopeOffset;
     if FEnvelopePos >= 1 then FEnvelopePos := FEnvelopePos - 1;
-    result := result + v * Allpass.ProcessSample32(FBuffer32[p]);
+    Result := Result + v * Allpass.ProcessSample32(FBuffer32[p]);
 
     FAllpass.FFractional := FAllpass.Fractional + FSampleOffset;
     if ((PInteger(@FAllpass.FFractional)^ and $FF800000) shr 23) > 126 then
@@ -477,7 +478,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-function TDspGranularPitchShifter64.Process(const Input: Double): Double;
+function TDspGranularPitchShifter64.ProcessSample64(Input: Double): Double;
 var
   i, p : Integer;
   d, m : Double;
@@ -486,7 +487,7 @@ begin
  inherited;
 
  // dry signal
- result := 0;
+ Result := 0;
 
  // store new data
  FBuffer64[FBufferPos] := Input;
@@ -497,27 +498,32 @@ begin
  for i := 0 to Stages - 1 do
   with FPitchShifterStage[i] do
    begin
-    d := FBufferPos + FBufferOffset;
+    p := FBufferPos + FBufferOffset;
 
+    // calculate absolute sample position
     while p >= FBufferSize do p := p - FBufferSize;
     while p < 0 do p := p + FBufferSize;
 
-    result := result + Allpass.ProcessSample64(FBuffer64[p]);
+    v := FStageMix * (1 - abs(2 * FEnvelopePos - 1));
+    FEnvelopePos := FEnvelopePos + FEnvelopeOffset;
+    if FEnvelopePos >= 1 then FEnvelopePos := FEnvelopePos - 1;
+    Result := Result + v * Allpass.ProcessSample64(FBuffer64[p]);
 
-    FAllpass.Fractional := FAllpass.Fractional + FSampleOffset;
-    while FAllpass.Fractional > 1 do
-     begin
-      Inc(FBufferOffset);
-      FAllpass.Fractional := FAllpass.Fractional - 1
-     end;
-    while FAllpass.Fractional < 1 do
-     begin
-      Dec(FBufferOffset);
-      FAllpass.Fractional := FAllpass.Fractional + 1
-     end;
+    FAllpass.FFractional := FAllpass.Fractional + FSampleOffset;
+    if ((PInteger(@FAllpass.FFractional)^ and $FF800000) shr 23) > 126 then
+     while FAllpass.Fractional > 1 do
+      begin
+       inc(FBufferOffset);
+       FAllpass.Fractional := FAllpass.Fractional - 1
+      end;
+     while FPitchShifterStage[i].FAllpass.Fractional < 0 do
+      begin
+       dec(FBufferOffset);
+       FAllpass.Fractional := FAllpass.Fractional + 1
+      end;
 
     if FBufferOffset >= FBufferSize then FBufferOffset := 0 else
-    if FBufferOffset < 0 then FBufferOffset := FBufferSize - 1;
+    if FBufferOffset < 0 then FBufferOffset := FBufferOffset + FBufferSize;
    end;
 end;
 

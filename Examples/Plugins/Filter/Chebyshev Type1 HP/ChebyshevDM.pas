@@ -2,8 +2,11 @@ unit ChebyshevDM;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_DspFilterChebyshev,
   DAV_DspFilterChebyshevType1, DAV_VstWindowSizer;
 
 type
@@ -33,15 +36,15 @@ uses
   
 procedure TChebyshevHPModule.VSTModuleOpen(Sender: TObject);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  assert(numInputs = numOutputs);
  assert(numInputs > 0);
  SetLength(FFilter, numInputs);
- for ch := 0 to Length(FFilter) - 1 do
+ for Channel := 0 to Length(FFilter) - 1 do
   begin
-   FFilter[ch] := TChebyshev1HighpassFilter.Create(4);
-   FFilter[ch].SetFilterValues(1000, 0, 1);
+   FFilter[Channel] := TChebyshev1HighpassFilter.Create(4);
+   FFilter[Channel].SetFilterValues(1000, 0, 1);
   end;
 (*
  FResizer := TVstWindowSizer.Create;
@@ -63,10 +66,10 @@ end;
 
 procedure TChebyshevHPModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1
-  do FreeAndNil(FFilter[ch]);
+ for Channel := 0 to Length(FFilter) - 1
+  do FreeAndNil(FFilter[Channel]);
 // FreeAndNil(FResizer);
 end;
 
@@ -79,10 +82,10 @@ end;
 procedure TChebyshevHPModule.ParamRippleChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[ch]) then FFilter[ch].Ripple := Value;
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel]) then FFilter[Channel].Ripple := Value;
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -92,11 +95,11 @@ end;
 procedure TChebyshevHPModule.ParamOrderChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[ch])
-   then FFilter[ch].Order := round(value); //max(2, 2 * round(0.5 * Value)); //
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel])
+   then FFilter[Channel].Order := round(value); //max(2, 2 * round(0.5 * Value)); //
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -106,11 +109,11 @@ end;
 procedure TChebyshevHPModule.ParamFrequencyChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[ch])
-   then FFilter[ch].Frequency := Value;
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel])
+   then FFilter[Channel].Frequency := Value;
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -120,11 +123,11 @@ end;
 procedure TChebyshevHPModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[ch])
-   then FFilter[ch].SampleRate := SampleRate;
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel])
+   then FFilter[Channel].SampleRate := SampleRate;
 end;
 
 procedure TChebyshevHPModule.VSTModuleProcess(const Inputs,
@@ -135,7 +138,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 procedure TChebyshevHPModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -146,7 +149,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 end.

@@ -100,14 +100,14 @@ end;
 procedure THMModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i  : Integer;
+  Sample  : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := Inputs[1, i];
-   Outputs[1, i] := Inputs[1, i];
+   Outputs[0, Sample] := Inputs[1, Sample];
+   Outputs[1, Sample] := Inputs[1, Sample];
 
-   FCTSimulator.Process(outputs[0, i], outputs[1, i]);
+   FCTSimulator.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
   end;
 end;
 

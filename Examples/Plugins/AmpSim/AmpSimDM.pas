@@ -408,8 +408,8 @@ begin
   begin
    for  Sample := 0 to SampleFrames - 1 do
     begin
-     InP[0] := FHighPass[0].ProcessSample(drv * (FRndAmt * random + Inputs[0, Sample] + bi));
-     InP[1] := FHighPass[1].ProcessSample(drv * (FRndAmt * random + Inputs[1, Sample] + bi));
+     InP[0] := FHighPass[0].ProcessSample64(drv * (FRndAmt * random + Inputs[0, Sample] + bi));
+     InP[1] := FHighPass[1].ProcessSample64(drv * (FRndAmt * random + Inputs[1, Sample] + bi));
 
      if FIsSoftClipping then
       begin
@@ -462,7 +462,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := FHighPass[0].ProcessSample(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample64(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        OutP[0] := InP[0] / (1 + abs(InP[0]));
 
@@ -490,7 +490,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := FHighPass[0].ProcessSample(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample64(drv * (FRndAmt * random + Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        if InP[0] > clp        then OutP[0] :=  clp
         else if InP[0] < -clp then OutP[0] := -clp
@@ -619,7 +619,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := FHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample64(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        OutP[0] := InP[0] / (1 + abs(InP[0]));
 
@@ -647,7 +647,7 @@ begin
     begin
      for Sample := 0 to SampleFrames - 1 do
       begin
-       InP[0] := FHighPass[0].ProcessSample(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
+       InP[0] := FHighPass[0].ProcessSample64(drv * (Inputs[0, Sample] + Inputs[1, Sample] + bi));
 
        if InP[0] > clp        then OutP[0] :=  clp
         else if InP[0] < -clp then OutP[0] := -clp

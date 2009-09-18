@@ -1,13 +1,13 @@
 unit ButterworthDM;
 
-{$I DAV_Compiler.inc}
-
 interface
+
+{$I DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilterButterworth, DAV_VstWindowSizer;
+  DAV_DspFilterButterworth, DAV_VstWindowSizer;
 
 type
   TButterworthLPModule = class(TVSTModule)
@@ -65,12 +65,12 @@ end;
 procedure TButterworthLPModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1 do
+ for Channel := 0 to Length(FFilter) - 1 do
   begin
-   if assigned(FFilter[ch])
-    then FFilter[ch].Order := round(Value);
+   if assigned(FFilter[Channel])
+    then FFilter[Channel].Order := round(Value);
   end;
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm)
@@ -80,11 +80,11 @@ end;
 procedure TButterworthLPModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[ch])
-   then FFilter[ch].Frequency := Value;
+ for Channel := 0 to Length(FFilter) - 1 do
+  if assigned(FFilter[Channel])
+   then FFilter[Channel].Frequency := Value;
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm)
    do UpdateFrequency;
@@ -92,10 +92,10 @@ end;
 
 procedure TButterworthLPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1
-  do FFilter[ch].SampleRate := SampleRate;
+ for Channel := 0 to Length(FFilter) - 1
+  do FFilter[Channel].SampleRate := SampleRate;
 end;
 
 procedure TButterworthLPModule.VSTModuleProcess(const Inputs,
@@ -106,7 +106,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 procedure TButterworthLPModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -117,7 +117,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 {$IFDEF FPC}

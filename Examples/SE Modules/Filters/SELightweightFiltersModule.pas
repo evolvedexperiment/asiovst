@@ -207,7 +207,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+  do Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
 end;
 
 procedure TCustomSELightweightFiltersModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -353,7 +353,7 @@ begin
      FFilter.Gain      := 10 * Gain[Sample];
      FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
     end;
-   Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+   Output^[Sample]   := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
   end;
 end;
 
@@ -842,7 +842,7 @@ begin
    FFilter.Gain      := 15 * Gain[Sample];
    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
    TShapeFilter(FFilter).Shape := Sym[Sample];
-   Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+   Output^[Sample]   := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
   end;
 end;
 

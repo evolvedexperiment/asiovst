@@ -601,16 +601,16 @@ begin
   for Sample := 0 to SampleFrames - 1 do
    begin
     // DC filter first
-    CurrentSample := FDCFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+    CurrentSample := FDCFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 
     // process EQ filters
     for Band := 0 to Length(FEqFilter) - 1
-     do CurrentSample := FEqFilter[Channel, Band].ProcessSample(CurrentSample);
+     do CurrentSample := FEqFilter[Channel, Band].ProcessSample64(CurrentSample);
 
-    CurrentSample := FGate[Channel].ProcessSample(CurrentSample);
+    CurrentSample := FGate[Channel].ProcessSample64(CurrentSample);
 
-    CurrentSample := FCompressor[Channel, 0].ProcessSample(CurrentSample);
-    CurrentSample := FCompressor[Channel, 1].ProcessSample(CurrentSample);
+    CurrentSample := FCompressor[Channel, 0].ProcessSample64(CurrentSample);
+    CurrentSample := FCompressor[Channel, 1].ProcessSample64(CurrentSample);
 
     Outputs[Channel, Sample] := CurrentSample;
    end;

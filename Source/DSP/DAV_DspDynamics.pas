@@ -74,7 +74,7 @@ type
   //                                                                          //
   //////////////////////////////////////////////////////////////////////////////
 
-  TCustomDynamicProcessor = class(TDspPersistent)
+  TCustomDynamicProcessor = class(TDspPersistent, IDspProcessor32, IDspProcessor64)
   private
     function GetKnee_dB: Double;
     procedure SetThreshold(const Value: Double);
@@ -89,9 +89,10 @@ type
     procedure ThresholdChanged; virtual;
   public
     constructor Create; virtual;
-    function ProcessSample(const Input : Double): Double; virtual; abstract;
-    function GainSample(const Input : Double): Double; virtual;
-    procedure InputSample(const Input : Double); virtual; abstract;
+    function ProcessSample32(Input: Single): Single; virtual;
+    function ProcessSample64(Input: Double): Double; virtual; abstract;
+    function GainSample(const Input: Double): Double; virtual;
+    procedure InputSample(const Input: Double); virtual; abstract;
     function TranslatePeakToGain(const PeakLevel: Double): Double; virtual; abstract;
     function CharacteristicCurve(const InputLevel: Double): Double; virtual;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; virtual;
@@ -116,7 +117,7 @@ type
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     procedure InputSample(const Input: Double); override;
-    function ProcessSample(const Input : Double):Double; override;
+    function ProcessSample64(Input : Double):Double; override;
   published
     property Threshold_dB;
   end;
@@ -142,7 +143,7 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
@@ -180,7 +181,7 @@ type
   public
     constructor Create; override;
 
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
     property AutoMakeUp : Boolean read FAutoMakeUp write SetAutoMakeUp;
@@ -199,7 +200,7 @@ type
 
   TBrickwallLimiter = class(TCustomBrickwallLimiter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
   published
@@ -227,7 +228,7 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
     property AutoMakeUp;
@@ -334,7 +335,7 @@ type
   public
     constructor Create; override;
 
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
     property AutoMakeUp : Boolean read FAutoMakeUp write SetAutoMakeUp;
@@ -353,7 +354,7 @@ type
 
   TLimiter = class(TCustomLimiter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
   published
@@ -367,7 +368,7 @@ type
     procedure ReleaseChanged; override;
     procedure AttackChanged; override;
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
   published
@@ -402,7 +403,7 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
     property AutoMakeUp;
@@ -431,7 +432,7 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property AutoMakeUp;
     property MakeUpGain_dB;
@@ -450,14 +451,14 @@ type
 
   TCustomClassicGate = class(TCustomTimeConstantDynamics)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   end;
 
   TClassicGate = class(TCustomClassicGate)
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     procedure InputSample(const Input : Double); override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property Attack;
     property Release;
@@ -613,7 +614,7 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input : Double):Double; override;
+    function ProcessSample64(Input : Double):Double; override;
     procedure InputSample(const Input: Double); override;
 
     property Hold: Double read FHold write SetHold;              // in s
@@ -686,7 +687,7 @@ type
     procedure MakeUpGainChanged; virtual;
   public
     constructor Create; override;
-    function ProcessSample(const Input : Double): Double; override;
+    function ProcessSample64(Input : Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
     property AutoMakeUp : Boolean read FAutoMakeUp write SetAutoMakeUp;
@@ -736,14 +737,14 @@ type
     procedure CalculateAttackFactor; override;
     procedure CalculateReleaseFactor; override;
   public
-    function ProcessSample(const Input : Double): Double; override;
+    function ProcessSample64(Input : Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
   end;
 
   TSoftKneeFeedbackCompressor = class(TSimpleFeedbackCompressor)
   public
-    function ProcessSample(const Input : Double): Double; override;
+    function ProcessSample64(Input : Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   end;
 
@@ -761,7 +762,7 @@ type
     procedure SampleRateChanged; override;
   public
     constructor Create; override;
-    function ProcessSample(const Input : Double):Double; override;
+    function ProcessSample64(Input : Double):Double; override;
     procedure InputSample(const Input: Double); override;
   published
     property RMSTime : Double read FRMSTime write SetRMSTime;  // in ms
@@ -780,7 +781,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure InputSample(const Input : Double); override;
-    function ProcessSample(const Input : Double):Double; override;
+    function ProcessSample64(Input : Double):Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
     property SideChainLowCut : Double read GetLowCut write SetLowCut;     // in Hz
@@ -799,7 +800,7 @@ type
     procedure CalculateReleaseFactor; override;
     procedure SampleRateChanged; override;
   public
-    function ProcessSample(const Input : Double):Double; override;
+    function ProcessSample64(Input : Double):Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     constructor Create; override;
   end;
@@ -868,6 +869,11 @@ begin
  raise Exception.Create('The knee property is not in use in this class');
 end;
 
+function TCustomDynamicProcessor.ProcessSample32(Input: Single): Single;
+begin
+ Result := ProcessSample64(Input);
+end;
+
 procedure TCustomDynamicProcessor.SetKnee_dB(Value: Double);
 begin
  if Value < 0 then Value := 0;
@@ -906,7 +912,7 @@ begin
  FGain := TranslatePeakToGain(abs(Input));
 end;
 
-function TSimpleDirectGate.ProcessSample(const Input: Double): Double;
+function TSimpleDirectGate.ProcessSample64(Input: Double): Double;
 begin
   if abs(Input) < FThreshold
    then Result := 0
@@ -966,7 +972,7 @@ begin
  result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
 end;
 
-function TSoftDirectGate.ProcessSample(const Input: Double): Double;
+function TSoftDirectGate.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := GainSample(Input);
@@ -1026,7 +1032,7 @@ begin
  FGain := TranslatePeakToGain(abs(Input));
 end;
 
-function TCustomBrickwallLimiter.ProcessSample(const Input: Double): Double;
+function TCustomBrickwallLimiter.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := GainSample(Input);
@@ -1034,7 +1040,7 @@ end;
 
 { TBrickwallLimiter }
 
-function TBrickwallLimiter.ProcessSample(const Input: Double): Double;
+function TBrickwallLimiter.ProcessSample64(Input: Double): Double;
 begin
  if Input > FThreshold
   then result := FThreshold else
@@ -1076,7 +1082,7 @@ begin
  CalculateSoftKnee;
 end;
 
-function TSoftBrickwallLimiter.ProcessSample(const Input: Double): Double;
+function TSoftBrickwallLimiter.ProcessSample64(Input: Double): Double;
 begin
  FGain := TranslatePeakToGain(abs(Input));
  result := Input * FGain;
@@ -1241,7 +1247,7 @@ begin
   then FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
 end;
 
-function TCustomLimiter.ProcessSample(const Input: Double): Double;
+function TCustomLimiter.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := GainSample(Input);
@@ -1285,7 +1291,7 @@ begin
  result := FMakeUpGain * result;
 end;
 
-function TLimiter.ProcessSample(const Input: Double): Double;
+function TLimiter.ProcessSample64(Input: Double): Double;
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -1326,7 +1332,7 @@ begin
  result := FMakeUpGain * result;
 end;
 
-function TRCLimiter.ProcessSample(const Input: Double): Double;
+function TRCLimiter.ProcessSample64(Input: Double): Double;
 begin
  FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor;
 
@@ -1370,7 +1376,7 @@ begin
  FSoftKnee[1] := 1 / FSoftKnee[0];
 end;
 
-function TSoftKneeLimiter.ProcessSample(const Input: Double): Double;
+function TSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -1414,7 +1420,7 @@ begin
  FSoftKnee[1] := 1 / FSoftKnee[0];
 end;
 
-function TSimpleSoftKneeLimiter.ProcessSample(const Input: Double): Double;
+function TSimpleSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 
  function Exp2(const X: Extended): Extended;
  asm
@@ -1481,7 +1487,7 @@ end;
 
 { TCustomClassicGate }
 
-function TCustomClassicGate.ProcessSample(const Input: Double): Double;
+function TCustomClassicGate.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := GainSample(Input);
@@ -1498,7 +1504,7 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
-function TClassicGate.ProcessSample(const Input: Double): Double;
+function TClassicGate.ProcessSample64(Input: Double): Double;
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -1684,7 +1690,7 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
-function TCustomGate.ProcessSample(const Input: Double): Double;
+function TCustomGate.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := GainSample(Input);
@@ -1747,7 +1753,7 @@ end;
 
 procedure TAdvancedGate.InputSample(const Input: Double);
 begin
- inherited InputSample(FHighCut.ProcessSample(FLowCut.ProcessSample(Input)));
+ inherited InputSample(FHighCut.ProcessSample64(FLowCut.ProcessSample64(Input)));
 end;
 
 procedure TAdvancedGate.KneeChanged;
@@ -1870,7 +1876,7 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
-function TCustomCompressor.ProcessSample(const Input: Double): Double;
+function TCustomCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := GainSample(Input);
@@ -1970,7 +1976,7 @@ begin
  CalculateReleaseFactor;
 end;
 
-function TSimpleFeedbackCompressor.ProcessSample(const Input: Double): Double;
+function TSimpleFeedbackCompressor.ProcessSample64(Input: Double): Double;
 begin
  if FPreviousAbsSample > FPeak
   then FPeak := FPeak + (FPreviousAbsSample - FPeak) * FAttackFactor
@@ -2040,7 +2046,7 @@ begin
 *)
 end;
 
-function TSoftKneeFeedbackCompressor.ProcessSample(const Input: Double): Double;
+function TSoftKneeFeedbackCompressor.ProcessSample64(Input: Double): Double;
 begin
  if FPreviousAbsSample > FPeak
   then FPeak := FPeak + (FPreviousAbsSample - FPeak) * FAttackFactor
@@ -2072,7 +2078,7 @@ begin
  inherited InputSample(Sqrt(FCurrentRMS * FRMSFactor));
 end;
 
-function TSimpleRMSCompressor.ProcessSample(const Input: Double): Double;
+function TSimpleRMSCompressor.ProcessSample64(Input: Double): Double;
 var
   Temp: Double;
 begin
@@ -2163,10 +2169,10 @@ end;
 
 procedure TCompressor.InputSample(const Input: Double);
 begin
- inherited InputSample(FHighCut.ProcessSample(FLowCut.ProcessSample(Input)));
+ inherited InputSample(FHighCut.ProcessSample64(FLowCut.ProcessSample64(Input)));
 end;
 
-function TCompressor.ProcessSample(const Input: Double): Double;
+function TCompressor.ProcessSample64(Input: Double): Double;
 var
   Temp: Double;
 begin
@@ -2208,7 +2214,7 @@ begin
   else result := FThresholdRatioFactor * Power(PeakLevel, FRatio - 1);
 end;
 
-function TBrickwallLimiter.ProcessSample(const Input: Double): Double;
+function TBrickwallLimiter.ProcessSample64(Input: Double): Double;
 {$IFNDEF PUREPASCAL}
 begin
  if abs(Input) > FPeak
@@ -2317,7 +2323,7 @@ begin
  result := Power(FThreshold, 1 - InternalRatio) * Power(PeakLevel, InternalRatio - 1);
 end;
 
-function TSoftKneeLimiter.ProcessSample(const Input: Double): Double;
+function TSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -2371,12 +2377,12 @@ begin
  result := 1;
 end;
 
-function TSoftKneeFeedbackLimiter.ProcessSample(const Input: Double): Double;
+function TSoftKneeFeedbackLimiter.ProcessSample64(Input: Double): Double;
 var
   InternalRatio    : Double;
   PeakdB           : Double;
 begin
- Input := FFilter.ProcessSample(const Input);
+ Input := FFilter.ProcessSample64(Input);
 {
 
 // threshold = -13.4 .. - 13

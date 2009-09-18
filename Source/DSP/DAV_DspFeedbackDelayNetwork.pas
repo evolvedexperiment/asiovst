@@ -71,7 +71,7 @@ type
 
   TFeedbackPathProcessEvent32 = procedure(var FeedbackVector: TDAVVector32) of object;
 
-  TFeedbackZDelayNetwork32 = class(TCustomFeedbackZDelayNetwork)
+  TFeedbackZDelayNetwork32 = class(TCustomFeedbackZDelayNetwork, IDspProcessor32)
   private
     FInputVector           : TDAVVector32;
     FOutputVector          : TDAVVector32;
@@ -93,12 +93,12 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
     property OnProcessFeedbackPath: TFeedbackPathProcessEvent32 read FOnProcessFeedbackPath write FOnProcessFeedbackPath;
   end;
 
-  TFeedbackDelayNetwork32 = class(TCustomFeedbackDelayNetwork)
+  TFeedbackDelayNetwork32 = class(TCustomFeedbackDelayNetwork, IDspProcessor32)
   private
     FInputVector           : TDAVVector32;
     FOutputVector          : TDAVVector32;
@@ -125,7 +125,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
     property OnProcessFeedbackPath: TFeedbackPathProcessEvent32 read FOnProcessFeedbackPath write FOnProcessFeedbackPath;
   end;
@@ -245,7 +245,7 @@ begin
   else raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
 end;
 
-function TFeedbackZDelayNetwork32.ProcessSample(const Input: Single): Single;
+function TFeedbackZDelayNetwork32.ProcessSample32(Input: Single): Single;
 var
   DelayedSignal : TDAV4SingleArray;
   FeedbackInput : TDAV4SingleArray;
@@ -490,7 +490,7 @@ begin
   else raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
 end;
 
-function TFeedbackDelayNetwork32.ProcessSample(const Input: Single): Single;
+function TFeedbackDelayNetwork32.ProcessSample32(Input: Single): Single;
 var
   DelayedSignal : TDAV4SingleArray;
   FeedbackInput : TDAV4SingleArray;

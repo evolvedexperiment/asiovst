@@ -339,14 +339,14 @@ begin
    // Accumulate comb filters in parallel
    for j := 0 to Length(FComb) - 1 do
     begin
-     OutL := OutL + FComb[j, 0].Process(inp);
-     OutR := OutR + FComb[j, 1].Process(inp);
+     OutL := OutL + FComb[j, 0].ProcessSample32(inp);
+     OutR := OutR + FComb[j, 1].ProcessSample32(inp);
     end;
    // Feed through allpasses in series
    for j := 0 to Length(FAllpass) - 1 do
     begin
-     outL := FAllpass[j, 0].Process(OutL);
-     outR := FAllpass[j, 1].Process(OutR);
+     outL := FAllpass[j, 0].ProcessSample32(OutL);
+     outR := FAllpass[j, 1].ProcessSample32(OutR);
     end;
    // Calculate output MIXING with anything already there
    Outputs[0,i]  := Outputs[0, i] + OutL * FWet1 + OutR * FWet2 + Inputs[0, i] * FDry;
@@ -367,14 +367,14 @@ begin
    // Accumulate comb filters in parallel
    for j := 0 to Length(FComb) - 1 do
     begin
-     OutL := OutL + FComb[j, 0].Process(inp);
-     OutR := OutR + FComb[j, 1].Process(inp);
+     OutL := OutL + FComb[j, 0].ProcessSample32(inp);
+     OutR := OutR + FComb[j, 1].ProcessSample32(inp);
     end;
    // Feed through allpasses in series
    for j := 0 to Length(FAllpass) - 1 do
     begin
-     outL := FAllpass[j, 0].Process(OutL);
-     outR := FAllpass[j, 1].Process(OutR);
+     outL := FAllpass[j, 0].ProcessSample32(OutL);
+     outR := FAllpass[j, 1].ProcessSample32(OutR);
     end;
    // Calculate output REPLACING anything already there
    Outputs[0,i] := OutL * FWet1 + OutR * FWet2 + Inputs[0, i] * FDry;

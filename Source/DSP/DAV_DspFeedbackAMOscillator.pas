@@ -62,10 +62,10 @@ type
     property Feedback: Single read FFeedback write SetFeedback;
   end;
 
-  TFeedbackAMOscillator = class(TCustomFeedbackAMOscillator)
+  TFeedbackAMOscillator = class(TCustomFeedbackAMOscillator, IDspGenerator32)
   public
     constructor Create; override;
-    function ProcessSample: Single;
+    function ProcessSample32: Single;
   published
     property Amplitude;
     property Frequency;
@@ -73,12 +73,12 @@ type
     property SampleRate;
   end;
 
-  TDelayedFeedbackAMOscillator = class(TCustomFeedbackAMOscillator)
+  TDelayedFeedbackAMOscillator = class(TCustomFeedbackAMOscillator, IDspGenerator32)
   private
     FDelayLine : TCustomDelayLineSamples32;
   public
     constructor Create; override;
-    function ProcessSample: Single;
+    function ProcessSample32: Single;
   published
     property Amplitude;
     property Frequency;
@@ -168,7 +168,7 @@ begin
  FState := 0;
 end;
 
-function TFeedbackAMOscillator.ProcessSample: Single;
+function TFeedbackAMOscillator.ProcessSample32: Single;
 begin
 (*
  Result := FState * FOscillator.Sine;
@@ -190,10 +190,10 @@ begin
  FDelayLine := TCustomDelayLineSamples32.Create(128);
 end;
 
-function TDelayedFeedbackAMOscillator.ProcessSample: Single;
+function TDelayedFeedbackAMOscillator.ProcessSample32: Single;
 begin
  Result := FOscillator.Sine * (1 + FFeedback * FState);
- FState := FDelayLine.ProcessSample(Result);
+ FState := FDelayLine.ProcessSample32(Result);
  FOscillator.CalculateNextSample;
  Result := FAmplitude * Result;
 end;

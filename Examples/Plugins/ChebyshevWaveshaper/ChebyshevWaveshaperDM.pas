@@ -138,22 +138,24 @@ end;
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  ch, i : Integer;
+  Channel : Integer;
+  Sample  : Integer;
 begin
- for ch := 0 to 1 do
-  for i := 0 to SampleFrames - 1
-   do Outputs[ch, i] := FVolume * FChebysheWaveshaper.ProcessSample(Inputs[ch, i]);
+ for Channel := 0 to 1 do
+  for Sample := 0 to SampleFrames - 1
+   do Outputs[Channel, Sample] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcessDouble(
   const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
   const SampleFrames: Integer);
 var
-  ch, i : Integer;
+  Channel : Integer;
+  Sample  : Integer;
 begin
- for ch := 0 to 1 do
-  for i := 0 to SampleFrames - 1
-   do Outputs[ch, i] := FVolume * FChebysheWaveshaper.ProcessSample(Inputs[ch, i]);
+ for Channel := 0 to 1 do
+  for Sample := 0 to SampleFrames - 1
+   do Outputs[Channel, Sample] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 end.

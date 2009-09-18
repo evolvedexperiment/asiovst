@@ -104,14 +104,14 @@ begin
   for Channel := 0 to 1 do
    begin
     Input  := cDenorm + Inputs[Channel, Sample];
-    Low    := FSourceLowpassFilter[Channel, 1].ProcessSample(
-              FSourceLowpassFilter[Channel, 0].ProcessSample(Input));
-    Source := FChebyshevWaveshaper.ProcessSample(FOverdriveGain * Low);
-    Source := FSourceHighpassFilter[Channel, 1].ProcessSample(
-              FSourceHighpassFilter[Channel, 0].ProcessSample(Source));
+    Low    := FSourceLowpassFilter[Channel, 1].ProcessSample64(
+              FSourceLowpassFilter[Channel, 0].ProcessSample64(Input));
+    Source := FChebyshevWaveshaper.ProcessSample64(FOverdriveGain * Low);
+    Source := FSourceHighpassFilter[Channel, 1].ProcessSample64(
+              FSourceHighpassFilter[Channel, 0].ProcessSample64(Source));
 
-    High  := FSplitterHighpassFilter[Channel, 1].ProcessSample(
-             FSplitterHighpassFilter[Channel, 0].ProcessSample(Input));
+    High  := FSplitterHighpassFilter[Channel, 1].ProcessSample64(
+             FSplitterHighpassFilter[Channel, 0].ProcessSample64(Input));
 
     Outputs[Channel, Sample] := Low + FMix[0] * High + FMix[1] * Source;
   end;
@@ -133,14 +133,14 @@ begin
   for Channel := 0 to 1 do
    begin
     Input  := cDenorm + Inputs[Channel, Sample];
-    Low    := FSourceLowpassFilter[Channel, 1].ProcessSample(
-              FSourceLowpassFilter[Channel, 0].ProcessSample(Input));
-    Source := FChebyshevWaveshaper.ProcessSample(FOverdriveGain * Low);
-    Source := FSourceHighpassFilter[Channel, 1].ProcessSample(
-              FSourceHighpassFilter[Channel, 0].ProcessSample(cDenorm + Source));
+    Low    := FSourceLowpassFilter[Channel, 1].ProcessSample64(
+              FSourceLowpassFilter[Channel, 0].ProcessSample64(Input));
+    Source := FChebyshevWaveshaper.ProcessSample64(FOverdriveGain * Low);
+    Source := FSourceHighpassFilter[Channel, 1].ProcessSample64(
+              FSourceHighpassFilter[Channel, 0].ProcessSample64(cDenorm + Source));
 
-    High  := FSplitterHighpassFilter[Channel, 1].ProcessSample(
-             FSplitterHighpassFilter[Channel, 0].ProcessSample(Input));
+    High  := FSplitterHighpassFilter[Channel, 1].ProcessSample64(
+             FSplitterHighpassFilter[Channel, 0].ProcessSample64(Input));
 
     Outputs[Channel, Sample] := Low + FMix[0] * High + FMix[1] * Source;
   end;

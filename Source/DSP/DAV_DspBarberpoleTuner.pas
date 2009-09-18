@@ -39,7 +39,7 @@ uses
   DAV_DspFilterButterworth;
 
 type
-  TCustomBarberpoleFilter = class(TDspSampleRatePersistent)
+  TCustomBarberpoleFilter = class(TDspSampleRatePersistent, IDspProcessor32)
   private
     FLFO     : TLFOSine32;
     FLowpass : TButterworthLowPassFilter;
@@ -53,7 +53,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(Input: Single): Single; virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
 
     property Frequency: Single read GetFrequency write SetFrequency;
     property Order: Integer read GetOrder write SetOrder;
@@ -82,7 +82,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure Process(Input: Single); override;
+    procedure ProcessSample32(Input: Single); override;
 
     property Frequency: Single read GetFrequency write SetFrequency;
     property FrequencyDifference: Single read GetFrequencyDifference;
@@ -153,11 +153,11 @@ begin
  result := FLowpass.Order;
 end;
 
-function TCustomBarberpoleFilter.Process(Input: Single): Single;
+function TCustomBarberpoleFilter.ProcessSample32(Input: Single): Single;
 begin
  inherited;
  FLFO.CalculateNextSample;
- result := FLowpass.ProcessSample(FLFO.Sine * Input);
+ result := FLowpass.ProcessSample64(FLFO.Sine * Input);
 end;
 
 procedure TCustomBarberpoleFilter.SampleRateChanged;
@@ -263,10 +263,10 @@ begin
  result := FBarberpoleFilter.Order;
 end;
 
-procedure TCustomBarberpoleTuner.Process(Input: Single);
+procedure TCustomBarberpoleTuner.ProcessSample32(Input: Single);
 begin
  inherited;
- FZCTuner.Process(FBarberpoleFilter.Process(Input));
+ FZCTuner.ProcessSample32(FBarberpoleFilter.ProcessSample32(Input));
 end;
 
 end.

@@ -107,7 +107,7 @@ begin
   for Sample := 0 to SampleFrames - 1 do
    for Channel := 0 to Length(FVariDelay) - 1
     do Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
-         FMix[1] * FVariDelay[Channel].ProcessSample(Inputs[Channel, Sample]);
+         FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Leave;
  end;
@@ -123,7 +123,7 @@ begin
   for Sample := 0 to SampleFrames - 1 do
    for Channel := 0 to Length(FVariDelay) - 1
     do Outputs[Channel, Sample] := FMix[0] * Inputs[Channel, Sample] +
-         FMix[1] * FVariDelay[Channel].ProcessSample(Inputs[Channel, Sample]);
+         FMix[1] * FVariDelay[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Leave;
  end;

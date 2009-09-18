@@ -114,10 +114,10 @@ begin
   for sample := 0 to SampleFrames - 1 do
    begin
     Outputs[ch, sample] := FFade[0] * FVolume *
-                           FLow[ch].ProcessSample(
-                           FMid[ch].ProcessSample(
-                           FPres[ch].ProcessSample(
-                           FHigh[ch].ProcessSample(Inputs[ch, sample])))) +
+                           FLow[ch].ProcessSample64(
+                           FMid[ch].ProcessSample64(
+                           FPres[ch].ProcessSample64(
+                           FHigh[ch].ProcessSample64(Inputs[ch, sample])))) +
                            FFade[1] * Inputs[ch, sample];
    end;
 end;

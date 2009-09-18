@@ -22,7 +22,7 @@ type
   public
     constructor Create; virtual;
     destructor Destroy; override;
-    function ProcessSample(Input: Double): Double;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function Real(const Frequency: Double): Double; override;
@@ -158,13 +158,13 @@ begin
    then FFilterArray[Band] := TBasicPeakFilter.Create;
 end;
 
-function TCustomParametricEQ.ProcessSample(Input: Double): Double;
+function TCustomParametricEQ.ProcessSample64(Input: Double): Double;
 var
   Band : Integer;
 begin
  Result := Input;
  for Band := 0 to Length(FFilterArray) - 1
-  do Result := FFilterArray[Band].ProcessSample(Result);
+  do Result := FFilterArray[Band].ProcessSample64(Result);
 end;
 
 function TCustomParametricEQ.Real(const Frequency: Double): Double;

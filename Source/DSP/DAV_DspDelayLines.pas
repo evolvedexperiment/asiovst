@@ -57,7 +57,7 @@ type
     procedure Reset; virtual;
   end;
 
-  TCustomDelayLineSamples32 = class(TCustomDelayLine)
+  TCustomDelayLineSamples32 = class(TCustomDelayLine, IDspProcessor32)
   private
     function GetSample(Index: Integer): Single;
   protected
@@ -68,11 +68,11 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ProcessSample(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     property Sample[Index: Integer]: Single read GetSample;
   end;
 
-  TCustomDelayLineSamples64 = class(TCustomDelayLine)
+  TCustomDelayLineSamples64 = class(TCustomDelayLine, IDspProcessor64)
   private
     function GetSample(Index: Integer): Double;
   protected
@@ -83,7 +83,7 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ProcessSample(const Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     property Sample[Index: Integer]: Double read GetSample;
   end;
 
@@ -127,7 +127,7 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ProcessSample(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
   published
     property Samplerate;
     property Time;
@@ -199,12 +199,12 @@ begin
  Pos := FBufferPos - Index;
  if Pos < 0
   then Inc(Pos, FBufferSize);
- result := FBuffer^[Pos];
+ Result := FBuffer^[Pos];
 end;
 
-function TCustomDelayLineSamples32.ProcessSample(const Input: Single): Single;
+function TCustomDelayLineSamples32.ProcessSample32(Input: Single): Single;
 begin
- result := FBuffer^[FBufferPos];
+ Result := FBuffer^[FBufferPos];
  FBuffer^[FBufferPos] := Input;
  inc(FBufferPos);
  if FBufferPos >= FBufferSize
@@ -270,7 +270,7 @@ begin
  Pos := FBufferPos - Index;
  if Pos < 0
   then Inc(Pos, FBufferSize);
- result := FBuffer^[Pos];
+ Result := FBuffer^[Pos];
 end;
 
 procedure TCustomDelayLineSamples64.AssignTo(Dest: TPersistent);
@@ -300,9 +300,9 @@ begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
 end;
 
-function TCustomDelayLineSamples64.ProcessSample(const Input: Double): Double;
+function TCustomDelayLineSamples64.ProcessSample64(Input: Double): Double;
 begin
- result := FBuffer^[FBufferPos];
+ Result := FBuffer^[FBufferPos];
  FBuffer^[FBufferPos] := Input;
  inc(FBufferPos);
  if FBufferPos >= FBufferSize
@@ -365,7 +365,7 @@ begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
 end;
 
-function TDelayLineTime32.ProcessSample(const Input: Single): Single;
+function TDelayLineTime32.ProcessSample32(Input: Single): Single;
 begin
  FBuffer^[FBufferPos] := Input;
 
@@ -375,7 +375,7 @@ begin
 
  Move(FIntBuffer[0], FIntBuffer[1], 3 * SizeOf(Single));
  FIntBuffer[0] := FBuffer^[FBufferPos];
- result := Hermite32_asm(FFractional, @FIntBuffer);
+ Result := Hermite32_asm(FFractional, @FIntBuffer);
 end;
 
 procedure TDelayLineTime32.Reset;

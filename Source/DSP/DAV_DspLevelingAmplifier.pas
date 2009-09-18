@@ -3,10 +3,12 @@ unit DAV_DSPLevelingAmplifier;
 interface
 
 uses
-  DAV_DSPDynamics;
+  DAV_DspCommon, DAV_DspDynamics;
 
 type
-  TCustomLevelingAmplifier = class
+  TCustomLevelingAmplifier = class(TDspSampleRatePersistent, IDspProcessor64)
+  private
+    FSampleRate: Double;
     function GetGainReductiondB: Double;
     function GetInput_dB: Double;
     function GetOutput_dB: Double;
@@ -15,7 +17,6 @@ type
     procedure SetInput_dB(const Value: Double);
     procedure SetOutput_dB(const Value: Double);
     procedure SetRelease_ms(const Value: Double);
-  private
     procedure SetThreshold(const Value: Double);
   protected
     FOldInput        : Double;
@@ -27,8 +28,7 @@ type
     FLevel           : Double;
     FRatio           : Double;
     FRatioReciprocal : Double;
-    FSampleRate      : Double;
-    FSampleRateRez   : Double;
+    FSampleRateInv   : Double;
     FRelease_ms      : Double;
     FAttack_ms       : Double;
     FReleaseFactor   : Double;
@@ -37,17 +37,17 @@ type
     FThresholdReci   : Double;
     FMakeUpGain      : array [0..2] of Double;
 //    fInternal        : array [0..3] of Double;
-    procedure SetSampleRate(const Value: Double); virtual;
     procedure SetRatio(const Value: Double); virtual;
     procedure CalculateAttackFactor; virtual;
     procedure CalculateReleaseFactor; virtual;
-    procedure SampleRateChanged; virtual;
+    procedure CalculateInverseSampleRate;
+    procedure SampleRateChanged; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; virtual;
     function CharacteristicCurve(const InputLevel: Double): Double; virtual;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; virtual;
-    function ProcessSample(const Input : Double): Double; virtual;
+    function ProcessSample64(Input : Double): Double; virtual;
     procedure Sidechain(const Input : Double); virtual;
 
     property GainReductionFactor : Double read FGain;            // in dB
@@ -57,7 +57,6 @@ type
     property Attack_ms: Double read FAttack_ms write SetAttack_ms;
     property Release_ms: Double read FRelease_ms write SetRelease_ms;
     property Ratio: Double read FRatio write SetRatio;
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Threshold: Double read FThreshold write SetThreshold;
     property Knee: Double read FKnee write SetKnee;
   end;
@@ -108,8 +107,7 @@ const
 
 constructor TCustomLevelingAmplifier.Create;
 begin
-  FSampleRate      := 44100;
-  FSampleRateRez   := 1 / fSampleRate;
+  inherited;
   FRatio           := 1;
   FAttack_ms       := 5;
   FRelease_ms      := 5;
@@ -119,8 +117,14 @@ begin
   FRatioReciprocal := 1;
   FThreshold       := 1;
   FThresholdReci   := 1;
+  CalculateInverseSampleRate;
   CalculateAttackFactor;
   CalculateReleaseFactor;
+end;
+
+procedure TCustomLevelingAmplifier.CalculateInverseSampleRate;
+begin
+ FSampleRateInv := 1 / SampleRate;
 end;
 
 procedure TCustomLevelingAmplifier.CalculateAttackFactor;
@@ -207,18 +211,9 @@ begin
   end;
 end;
 
-procedure TCustomLevelingAmplifier.SetSampleRate(const Value: Double);
-begin
- if fSampleRate <> Value then
-  begin
-   fSampleRate := Value;
-   fSampleRateRez := 1 / fSampleRate;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomLevelingAmplifier.SampleRateChanged;
 begin
+ CalculateInverseSampleRate;
  CalculateAttackFactor;
  CalculateReleaseFactor;
 end;
@@ -290,7 +285,7 @@ begin
  result := FastPower2MinError3(FastLog2ContinousError5(1 + d) * (FRatio - 1));
 end;
 
-function TCustomLevelingAmplifier.ProcessSample(const Input: Double): Double;
+function TCustomLevelingAmplifier.ProcessSample64(Input: Double): Double;
 begin
  result := FInputLevel * (Harms[0] + Input * (1 + Input *
            (Harms[1] + sqr(Input) * (Harms[2] + sqr(Input) * Harms[3]))));

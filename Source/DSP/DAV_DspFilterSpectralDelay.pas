@@ -20,7 +20,8 @@ type
     procedure FrequencyChanged; override;
   public
     constructor Create; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Reset; override;
@@ -75,13 +76,22 @@ begin
   do FFilters[Filter].PopStates;
 end;
 
-function TSpectralDelayFilter.ProcessSample(const Input: Double): Double;
+function TSpectralDelayFilter.ProcessSample32(Input: Single): Single;
 var
   Filter : Integer;
 begin
  Result := Input;
  for Filter := 0 to Length(FFilters) - 1
-  do Result := FFilters[Filter].ProcessSample(Result);
+  do Result := FFilters[Filter].ProcessSample64(Result);
+end;
+
+function TSpectralDelayFilter.ProcessSample64(Input: Double): Double;
+var
+  Filter : Integer;
+begin
+ Result := Input;
+ for Filter := 0 to Length(FFilters) - 1
+  do Result := FFilters[Filter].ProcessSample64(Result);
 end;
 
 procedure TSpectralDelayFilter.PushStates;

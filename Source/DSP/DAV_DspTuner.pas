@@ -40,11 +40,11 @@ uses
   DAV_DspCorrelation, DAV_DspCepstrum;
 
 type
-  TCustomTuner = class(TDspSampleRatePersistent)
+  TCustomTuner = class(TDspSampleRatePersistent, IDspSink32)
   protected
     function GetCurrentFrequency: Single; virtual; abstract;
   public
-    procedure Process(Input: Single); virtual; abstract;
+    procedure ProcessSample32(Input: Single); virtual; abstract;
     property CurrentFrequency: Single read GetCurrentFrequency;
   end;
 
@@ -72,7 +72,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
-    procedure Process(Input: Single); override;
+    procedure ProcessSample32(Input: Single); override;
 
     property DownSampleFilterOrder: Cardinal read GetDSFilterOrder write SetDSFilterOrder;
     property DownSampleBandwidth: Single read FDownsampleBW write SetDownsampleBW;
@@ -277,16 +277,16 @@ begin
  FHighpass.Frequency := FMinimumFrequency;
 end;
 
-procedure TCustomDownsampledTuner.Process(Input: Single);
+procedure TCustomDownsampledTuner.ProcessSample32(Input: Single);
 var
   LowpassedSignal : Double;
 begin
- LowpassedSignal := FLowpass.ProcessSample(Input);
+ LowpassedSignal := FLowpass.ProcessSample64(Input);
  Dec(FDownSampleCounter);
  if FDownSampleCounter = 0 then
   begin
    FDownSampleCounter := FDownSampleFactor;
-   ProcessDownsampled(FHighpass.ProcessSample(LowpassedSignal));
+   ProcessDownsampled(FHighpass.ProcessSample64(LowpassedSignal));
   end;
 end;
 

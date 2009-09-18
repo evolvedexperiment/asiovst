@@ -195,8 +195,8 @@ begin
   begin
    FCrossover[0].ProcessSample(Inputs[0, Sample], Low[0], High[0]);
    FCrossover[1].ProcessSample(Inputs[1, Sample], Low[1], High[1]);
-   FState[0] := FPitchShifter[0].Process(FAliasFilter[0].ProcessSample(FState[0] + High[0]));
-   FState[1] := FPitchShifter[1].Process(FAliasFilter[1].ProcessSample(FState[1] + High[1]));
+   FState[0] := FPitchShifter[0].ProcessSample32(FAliasFilter[0].ProcessSample64(FState[0] + High[0]));
+   FState[1] := FPitchShifter[1].ProcessSample32(FAliasFilter[1].ProcessSample64(FState[1] + High[1]));
 
    Outputs[0, Sample] := Low[0] + FMix[0] * High[0] + FMix[1] * FState[1];
    Outputs[1, Sample] := Low[1] + FMix[0] * High[1] + FMix[1] * FState[0];
@@ -204,8 +204,8 @@ begin
    // compress delayed signal
    FCompressor.InputSample(FMix[2] * (Inputs[0, Sample] + Outputs[1, Sample]) +
                            FMix[3] * (FState[1] + FState[0]));
-   FState[0] := FHighpass[0].ProcessSample(FCompressor.GainSample(FState[0]));
-   FState[1] := FHighpass[1].ProcessSample(FCompressor.GainSample(FState[1]));
+   FState[0] := FHighpass[0].ProcessSample64(FCompressor.GainSample(FState[0]));
+   FState[1] := FHighpass[1].ProcessSample64(FCompressor.GainSample(FState[1]));
   end;
 end;
 

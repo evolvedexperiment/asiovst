@@ -139,8 +139,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FPhaser[0].Process(Inputs[0, Sample]);
-   Outputs[1, Sample] := FPhaser[1].Process(Inputs[1, Sample]);
+   Outputs[0, Sample] := FPhaser[0].ProcessSample32(Inputs[0, Sample]);
+   Outputs[1, Sample] := FPhaser[1].ProcessSample32(Inputs[1, Sample]);
   end;
 end;
 
@@ -150,8 +150,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FPhaser[0].Process(Inputs[0, Sample]);
-   Outputs[1, Sample] := FPhaser[1].Process(Inputs[1, Sample]);
+   Outputs[0, Sample] := FPhaser[0].ProcessSample32(Inputs[0, Sample]);
+   Outputs[1, Sample] := FPhaser[1].ProcessSample32(Inputs[1, Sample]);
   end;
 end;
 

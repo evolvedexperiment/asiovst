@@ -8,7 +8,7 @@ uses
   DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspTuner;
 
 type
-  TCustomVoiceSynth = class(TCustomLinearZeroCrossingTuner)
+  TCustomVoiceSynth = class(TCustomLinearZeroCrossingTuner, IDspProcessor32)
   private
     procedure SetAttack(const Value: Single);
     procedure SetRelease(const Value: Single);
@@ -30,7 +30,7 @@ type
     procedure ReleaseChanged; virtual;
   public
     constructor Create; override;
-    function Process(Input: Single): Single; reintroduce; virtual;
+    function ProcessSample32(Input: Single): Single; reintroduce; virtual;
 
     property Attack: Single read FAttack write SetAttack;
     property Release: Single read FRelease write SetRelease;
@@ -68,49 +68,6 @@ begin
  FQuantizeToNotes := True;
  CalculateAttackFactor;
  CalculateReleaseFactor;
-end;
-
-function TCustomVoiceSynth.Process(Input: Single): Single;
-begin
- inherited Process(Input);
-
- if abs(Input) > FLevel
-  then FLevel := FLevel + (abs(Input) - FLevel) * FAttackFactor
-  else FLevel := abs(Input) + (FLevel - abs(Input)) * FReleaseFactor;
-
- ComplexMultiplyInplace(FCurrentPosition, FComplexAngle);
- result := FLevel * FCurrentPosition.Re;
-end;
-
-procedure TCustomVoiceSynth.ProcessDownsampled(DownSampled: Single);
-var
-  Offset : Single;
-begin
- if (Downsampled < FThreshold * FLevel) = FIsAbove then
-  begin
-   FIsAbove := not FIsAbove;
-
-   if FOneCrossingOnly and FIsAbove then
-    begin
-     inc(FSamples);
-     exit;
-    end;
-
-   Offset := (FLastSample / (FLastSample - Downsampled));
-
-   FAverageSamples := SmoothFactor * FAverageSamples +
-     (1 - SmoothFactor) * (FSamples - FLastOffset + Offset);
-   FSamples := 1;
-   FLastOffset := Offset;
-
-   FCurrentFreq := FFrequencyFactor * SampleRate / (DownSampleFilterOrder * FAverageSamples);
-   if FQuantizeToNotes
-    then FCurrentFreq := 440 * FastPower2ContinousError3(round(12 *
-           FastLog2ContinousError3(FCurrentFreq / 440)) * COneTwelfth32);
-
-   GetSinCos(2 * Pi * FCurrentFreq * FSampleRateReciprocal, FComplexAngle.Im, FComplexAngle.Re);
-  end
- else inc(FSamples);
 end;
 
 procedure TCustomVoiceSynth.SampleRateChanged;
@@ -162,6 +119,49 @@ procedure TCustomVoiceSynth.CalculateReleaseFactor;
 begin
   if FRelease = 0 then FReleaseFactor := 0
   else FReleaseFactor := exp( -ln2 / (FRelease * 0.001 * SampleRate));
+end;
+
+function TCustomVoiceSynth.ProcessSample32(Input: Single): Single;
+begin
+ inherited ProcessSample32(Input);
+
+ if abs(Input) > FLevel
+  then FLevel := FLevel + (abs(Input) - FLevel) * FAttackFactor
+  else FLevel := abs(Input) + (FLevel - abs(Input)) * FReleaseFactor;
+
+ ComplexMultiplyInplace(FCurrentPosition, FComplexAngle);
+ result := FLevel * FCurrentPosition.Re;
+end;
+
+procedure TCustomVoiceSynth.ProcessDownsampled(DownSampled: Single);
+var
+  Offset : Single;
+begin
+ if (Downsampled < FThreshold * FLevel) = FIsAbove then
+  begin
+   FIsAbove := not FIsAbove;
+
+   if FOneCrossingOnly and FIsAbove then
+    begin
+     inc(FSamples);
+     exit;
+    end;
+
+   Offset := (FLastSample / (FLastSample - Downsampled));
+
+   FAverageSamples := SmoothFactor * FAverageSamples +
+     (1 - SmoothFactor) * (FSamples - FLastOffset + Offset);
+   FSamples := 1;
+   FLastOffset := Offset;
+
+   FCurrentFreq := FFrequencyFactor * SampleRate / (DownSampleFilterOrder * FAverageSamples);
+   if FQuantizeToNotes
+    then FCurrentFreq := 440 * FastPower2ContinousError3(round(12 *
+           FastLog2ContinousError3(FCurrentFreq / 440)) * COneTwelfth32);
+
+   GetSinCos(2 * Pi * FCurrentFreq * FSampleRateReciprocal, FComplexAngle.Im, FComplexAngle.Re);
+  end
+ else inc(FSamples);
 end;
 
 end.

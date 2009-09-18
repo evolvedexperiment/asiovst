@@ -249,7 +249,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
    // do the actual processing (multiplying the two input samples together)
-   Output^[Sample] := FWaveShaper.ProcessSample(Input[Sample]);
+   Output^[Sample] := FWaveShaper.ProcessSample64(Input[Sample]);
   end;
 end;
 
@@ -356,7 +356,7 @@ begin
   begin
    for i := 0 to FWaveShaper.Order - 1
     do FWaveShaper.Gain[i] := FHarmonics[i, BufferOffset + Sample];
-   FOutputBuffer[BufferOffset + Sample] := FWaveShaper.ProcessSample(FInput1Buffer[BufferOffset + Sample]);
+   FOutputBuffer[BufferOffset + Sample] := FWaveShaper.ProcessSample64(FInput1Buffer[BufferOffset + Sample]);
   end;
 end;
 

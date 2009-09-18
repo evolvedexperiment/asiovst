@@ -230,7 +230,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FVibrato.Process(Inp^[Sample]);
+  do Outp^[Sample] := FVibrato.ProcessSample32(Inp^[Sample]);
 end;
 
 

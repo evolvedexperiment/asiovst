@@ -19,10 +19,10 @@ type
     procedure ParamHighDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSemaphore      : Integer;
-    FLinkwitzRiley  : array [0..1] of TLinkwitzRiley;
-    FLowMix         : array [0..1] of Single;
-    FHighMix        : array [0..1] of Single;
+    FSemaphore     : Integer;
+    FLinkwitzRiley : array [0..1] of TLinkwitzRiley;
+    FLowMix        : array [0..1] of Single;
+    FHighMix       : array [0..1] of Single;
   public
   end;
 

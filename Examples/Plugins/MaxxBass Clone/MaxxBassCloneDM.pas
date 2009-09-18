@@ -342,7 +342,7 @@ begin
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FHarmonicBass[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FHarmonicBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;
@@ -358,7 +358,7 @@ begin
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FHarmonicBass[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FHarmonicBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;

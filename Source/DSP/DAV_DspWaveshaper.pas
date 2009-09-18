@@ -8,7 +8,7 @@ uses
   Classes, SysUtils, Math, DAV_Common, DAV_DspCommon;
 
 type
-  TChebyshevWaveshaper = class(TDspPersistent)
+  TChebyshevWaveshaper = class(TDspPersistent, IDspProcessor64)
   private
     function GetGain(Harmonic: Integer): Double;
     function GetInverted(Harmonic: Integer): Boolean;
@@ -26,7 +26,7 @@ type
     procedure OrderChanged; virtual;
   public
     constructor Create;
-    function ProcessSample(Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     property Gain[Harmonic: Integer]: Double read GetGain write SetGain;
     property Level[Harmonic: Integer]: Double read GetLevel write SetLevel;
     property Inverted[Harmonic: Integer]: Boolean read GetInverted write SetInverted;
@@ -323,7 +323,7 @@ begin
  result := Length(FGains);
 end;
 
-function TChebyshevWaveshaper.ProcessSample(Input: Double): Double;
+function TChebyshevWaveshaper.ProcessSample64(Input: Double): Double;
 var
   i : Integer;
 begin

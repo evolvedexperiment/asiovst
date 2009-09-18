@@ -357,8 +357,8 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample(Outputs[0, Sample]);
-    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample(Outputs[1, Sample]);
+    Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample32(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample32(Outputs[0, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample32(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample32(Outputs[1, Sample]);
    end;
  finally
   FCriticalSection.Leave;
@@ -385,8 +385,8 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample(Outputs[0, Sample]);
-    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample(Outputs[1, Sample]);
+    Outputs[0, Sample] := Mix[0, 0] * FDelayLine[0, 0].ProcessSample32(Inputs[0, Sample]) + Mix[0, 1] * FDelayLine[0, 1].ProcessSample32(Outputs[0, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample32(Inputs[1, Sample]) + Mix[1, 1] * FDelayLine[1, 1].ProcessSample32(Outputs[1, Sample]);
    end;
  finally
   FCriticalSection.Leave;
@@ -405,8 +405,8 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
+    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
    end;
 
   for Channel := 0 to NumInputs - 1 do
@@ -419,8 +419,8 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
-    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
+    Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample32(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample32(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
     Outputs[0, Sample] := Temp;
    end;
  finally
@@ -440,8 +440,8 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
+    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
    end;
 
   for Channel := 0 to NumInputs - 1 do
@@ -454,8 +454,8 @@ begin
 
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
-    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
+    Temp := Mix[0, 0] * FDelayLine[0, 0].ProcessSample32(Inputs[0, Sample]) + Mix[0, 1] * (Outputs[0, Sample] + Outputs[1, Sample]);
+    Outputs[1, Sample] := Mix[1, 0] * FDelayLine[1, 0].ProcessSample32(Inputs[1, Sample]) + Mix[1, 1] * (Outputs[0, Sample] - Outputs[1, Sample]);
     Outputs[0, Sample] := Temp;
    end;
  finally

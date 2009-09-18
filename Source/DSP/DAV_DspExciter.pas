@@ -40,7 +40,8 @@ uses
   DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
-  TCustomExciter = class(TDspSampleRatePersistent)
+  TCustomExciter = class(TDspSampleRatePersistent, IDspProcessor32,
+    IDspProcessor64)
   private
     FFrequency   : Single;
     FGains       : array [0..3] of Single;
@@ -57,7 +58,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(Input: Single): Single; virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
+    function ProcessSample64(Input: Double): Double; virtual;
 
     property InputLevel: Single read FGains[0] write FGains[0];
     property LowFrequencyLevel: Single read FGains[1] write FGains[1];
@@ -154,7 +156,7 @@ begin
  FHighpass.SampleRate := SampleRate;
 end;
 
-function TCustomExciter.Process(Input: Single): Single;
+function TCustomExciter.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
   Data : TDAV2SingleArray;
@@ -162,9 +164,24 @@ begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
  FUpsampler.ProcessSample(Low, Data);
- Data[0] := 0.125 * FastTanhMinError2(8 * Low);
- Data[1] := 0.125 * FastTanhMinError2(8 * Low);
- Harmonic := FHighpass.ProcessSample(FDownsampler.ProcessSample(Data));
+ Data[0] := 0.125 * FastTanhMinError4(8 * Low);
+ Data[1] := 0.125 * FastTanhMinError4(8 * Low);
+ Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(Data));
+
+ result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
+end;
+
+function TCustomExciter.ProcessSample64(Input: Double): Double;
+var
+  Low, High, Harmonic : Single;
+  Data : TDAV2SingleArray;
+begin
+ FCrossover.ProcessSample(FGains[0] * Input, Low, High);
+
+ FUpsampler.ProcessSample(Low, Data);
+ Data[0] := 0.125 * DAV_Common.Tanh(8 * Low);
+ Data[1] := 0.125 * DAV_Common.Tanh(8 * Low);
+ Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(Data));
 
  result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
 end;

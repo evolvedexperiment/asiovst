@@ -572,7 +572,7 @@ begin
          FFeedback[Band] * FLastOutput[Band];
 
        if assigned(FFilter[Band])
-        then FLastOutput[Band] := FFilter[Band].ProcessSample(FLastOutput[Band]);
+        then FLastOutput[Band] := FFilter[Band].ProcessSample64(FLastOutput[Band]);
 
        // eventually shift frequency
        if assigned(FFreqShift[Band]) then
@@ -586,7 +586,7 @@ begin
        if FDrive[Band] > 0
         then FLastOutput[Band] := FastTanhContinousError4((1 + FDrive[Band]) * FLastOutput[Band]);
 
-       FLastOutput[Band] := FDelayLine[Band].ProcessSample(FLastOutput[Band]);
+       FLastOutput[Band] := FDelayLine[Band].ProcessSample32(FLastOutput[Band]);
       finally
        FCriticalSection.Leave;
       end;

@@ -153,7 +153,7 @@ var
   Sample : Integer;
 begin
  for Sample := 0 to SampleFrames - 1
-  do Outputs[0, Sample] := FModDelay.ProcessSample(FGain * Inputs[0, Sample]);
+  do Outputs[0, Sample] := FModDelay.ProcessSample32(FGain * Inputs[0, Sample]);
 end;
 
 end.

@@ -218,8 +218,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FLightweightGate[0].ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := FLightweightGate[1].ProcessSample(Inputs[1, Sample]);
+   Outputs[0, Sample] := FLightweightGate[0].ProcessSample64(Inputs[0, Sample]);
+   Outputs[1, Sample] := FLightweightGate[1].ProcessSample64(Inputs[1, Sample]);
   end;
 end;
 
@@ -232,7 +232,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   with FLightweightGate[0] do
    begin
-    ProcessSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    ProcessSample64(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
     Temp := GainReductionFactor;
     Outputs[0, Sample] := Temp * Inputs[0, Sample];
     Outputs[1, Sample] := Temp * Inputs[1, Sample];

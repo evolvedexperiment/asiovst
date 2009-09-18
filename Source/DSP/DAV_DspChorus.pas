@@ -79,7 +79,7 @@ type
     property Mix: Double read FMix write SetMix;
   end;
 
-  TDspChorus32 = class(TCustomDspChorus)
+  TDspChorus32 = class(TCustomDspChorus, IDspProcessor32)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -88,7 +88,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure Reset; override;
   published
     property Depth;
@@ -99,7 +99,7 @@ type
     property Stages;
   end;
 
-  TDspChorus64 = class(TCustomDspChorus)
+  TDspChorus64 = class(TCustomDspChorus, IDspProcessor64)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -108,7 +108,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     procedure Reset; override;
   published
     property Depth;
@@ -359,7 +359,7 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-function TDspChorus32.Process(const Input: Single): Single;
+function TDspChorus32.ProcessSample32(Input: Single): Single;
 var
   i, p : Integer;
   d, m : Double;
@@ -460,7 +460,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-function TDspChorus64.Process(const Input: Double): Double;
+function TDspChorus64.ProcessSample64(Input: Double): Double;
 var
   i, p : Integer;
   d, m : Double;

@@ -223,7 +223,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500010000000
+      CurveFactor = 99999.992187500000000000
       Category = 'Band 1'
       DisplayName = 'Shift Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -490,7 +490,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500010000000
+      CurveFactor = 99999.992187500000000000
       Category = 'Band 2'
       DisplayName = 'Shift Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -757,7 +757,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500010000000
+      CurveFactor = 99999.992187500000000000
       Category = 'Band 3'
       DisplayName = 'Shift Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -1024,7 +1024,7 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end
     item
       Curve = ctLogarithmic
-      CurveFactor = 99999.992187500010000000
+      CurveFactor = 99999.992187500000000000
       Category = 'Band 4'
       DisplayName = 'Shift Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

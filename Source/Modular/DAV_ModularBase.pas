@@ -8,7 +8,7 @@ uses
   Classes, DAV_Common, DAV_DspCommon, DAV_ModularPin;
 
 type
-  TCustomModularBase = class(TDspObject)
+  TCustomModularBase = class(TDspPersistent)
   private
     FOnNameChanged        : TNotifyEvent;
     FOnDescriptionChanged : TNotifyEvent;

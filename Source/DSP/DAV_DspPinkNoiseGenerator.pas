@@ -38,13 +38,14 @@ uses
   Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TPinkNoiseGenerator = class(TDspPersistent)
+  TPinkNoiseGenerator = class(TDspPersistent, IDspGenerator32, IDspGenerator64)
   protected
     FContribution : Array [0..4] of Double;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
-    function ProcessSample: Double; virtual;
+    function ProcessSample32: Single; virtual;
+    function ProcessSample64: Double; virtual;
   end;
 
 implementation
@@ -67,7 +68,25 @@ begin
  else inherited;
 end;
 
-function TPinkNoiseGenerator.ProcessSample: Double;
+function TPinkNoiseGenerator.ProcessSample32: Single;
+var
+  ur1      : Double;
+const
+  pA   : Array [0..4] of Single = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
+  pSUM : Array [0..4] of Single = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
+begin
+ ur1 := random;
+ if (ur1 <= pSUM[0]) then FContribution[0] := (2 * random - 1) * pA[0] else
+ if (ur1 <= pSUM[1]) then FContribution[1] := (2 * random - 1) * pA[1] else
+ if (ur1 <= pSUM[2]) then FContribution[2] := (2 * random - 1) * pA[2] else
+ if (ur1 <= pSUM[3]) then FContribution[3] := (2 * random - 1) * pA[3] else
+ if (ur1 <= pSUM[4]) then FContribution[4] := (2 * random - 1) * pA[4];
+ result := (FContribution[0] + FContribution[1] +
+            FContribution[2] + FContribution[3] +
+            FContribution[4]);
+end;
+
+function TPinkNoiseGenerator.ProcessSample64: Double;
 var
   ur1      : Double;
 const

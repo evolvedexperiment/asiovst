@@ -479,7 +479,7 @@ begin
  if ExciterActive then
   for Channel := 0 to Length(FExciter) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FExciter[Channel].Process(Outputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FExciter[Channel].ProcessSample64(Outputs[Channel, Sample]);
 
  // apply compression
  if CompressorActive then
@@ -493,13 +493,13 @@ begin
  // apply ambience
  if AmbienceActive then
   for Sample := 0 to SampleFrames - 1
-   do FAmbience.Process(Outputs[0, Sample], Outputs[1, Sample]);
+   do FAmbience.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
 
  // apply extra bass
  if ExtraBassActive then
   for Channel := 0 to Length(FBassEnhancer) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FBassEnhancer[Channel].Process(Outputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FBassEnhancer[Channel].ProcessSample32(Outputs[Channel, Sample]);
 
  // apply limiter
  for Sample := 0 to SampleFrames - 1 do
@@ -517,8 +517,8 @@ begin
      if (FDownSampleCount mod FFilterArray[Band].Downsampling) <> 0
       then Break;
 
-     d := FFilterArray[Band].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[Band].Highpass.ProcessSample(d + cDenorm);
+     d := FFilterArray[Band].Lowpass.ProcessSample64(d + cDenorm);
+     z := FFilterArray[Band].Highpass.ProcessSample64(d + cDenorm);
 
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(z));
@@ -544,13 +544,13 @@ begin
  // apply ambience
  if AmbienceActive then
   for Sample := 0 to SampleFrames - 1
-   do FAmbience.Process(Outputs[0, Sample], Outputs[1, Sample]);
+   do FAmbience.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
 
  // apply exciter
  if ExciterActive then
   for Channel := 0 to Length(FExciter) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FExciter[Channel].Process(Outputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FExciter[Channel].ProcessSample64(Outputs[Channel, Sample]);
 
  // apply compression
  if CompressorActive then
@@ -565,10 +565,10 @@ begin
  if ExtraBassActive then
   for Channel := 0 to Length(FBassEnhancer) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FBassEnhancer[Channel].Process(Outputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FBassEnhancer[Channel].ProcessSample32(Outputs[Channel, Sample]);
 
  for Sample := 0 to SampleFrames - 1
-  do FCrosstalkSimulator.Process(Outputs[0, Sample], Outputs[1, Sample]);
+  do FCrosstalkSimulator.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
 
  // apply limiter
  for Sample := 0 to SampleFrames - 1 do
@@ -586,8 +586,8 @@ begin
      if (FDownSampleCount mod FFilterArray[Band].Downsampling) <> 0
       then Break;
 
-     d := FFilterArray[Band].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[Band].Highpass.ProcessSample(d + cDenorm);
+     d := FFilterArray[Band].Lowpass.ProcessSample64(d + cDenorm);
+     z := FFilterArray[Band].Highpass.ProcessSample64(d + cDenorm);
 
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(z));

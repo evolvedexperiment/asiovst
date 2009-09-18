@@ -79,7 +79,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FBarberpole.Process(Inp^[Sample]);
+  do Outp^[Sample] := FBarberpole.ProcessSample32(Inp^[Sample]);
 end;
 
 procedure TSEBarberpoleModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);

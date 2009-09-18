@@ -214,7 +214,7 @@ begin
  try
   for Channel := 0 to Length(FRenaissanceBass) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FRenaissanceBass[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FRenaissanceBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;
@@ -230,7 +230,7 @@ begin
  try
   for Channel := 0 to Length(FRenaissanceBass) - 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FRenaissanceBass[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FRenaissanceBass[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Release;
  end;

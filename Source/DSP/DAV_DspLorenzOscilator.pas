@@ -49,7 +49,7 @@ interface
 
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common, DAV_DspCommon;
 
 const
   CLorenzScale: Single = 0.05107;
@@ -58,7 +58,7 @@ const
   CRosslerAltScale: Single = 0.06028;
 
 type
-  TCustomLorenzRosslerOsc = class
+  TCustomLorenzRosslerOsc = class(TDspPersistent, IDspGenerator32)
   protected
     FDX   : Single;
     FDY   : Single;
@@ -74,7 +74,7 @@ type
     FRate : Single;
   public
     constructor Create; virtual;
-    function Iterate: Single; virtual; abstract;
+    function ProcessSample32: Single; virtual; abstract;
   end;
 
 
@@ -88,12 +88,12 @@ type
 
   TLorenzOsc = class(TCustomLorenzRosslerOsc)
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure SetSampleRate(const SampleRate: Single);
     procedure SetFreq(const Frequency: Single);
     function GetCurrent: Single;
     function GetAlternate: Single;
-    function Iterate: Single; override;
+    function ProcessSample32: Single; override;
   end;
 
 
@@ -103,12 +103,12 @@ type
 
   TRosslerOsc = class(TCustomLorenzRosslerOsc)
   public
-    constructor Create; virtual;
+    constructor Create; override;
     procedure SetSampleRate(const SampleRate: Single);
     procedure SetFreq(const Frequency: Single);
     function GetCurrent: Single;
     function GetAlternate: Single;
-    function Iterate: Single; override;
+    function ProcessSample32: Single; override;
   end;
 
 implementation
@@ -168,7 +168,7 @@ begin
   Result:= FY * CLorenzAltScale;
 end;
 
-function TLorenzOsc.Iterate: Single;
+function TLorenzOsc.ProcessSample32: Single;
 begin
   FDX := FA * (FY-FX);
   FDY := FX * (FB-FZ) - FY;
@@ -218,7 +218,7 @@ begin
   Result:= FY * CRosslerAltScale;
 end;
 
-function TRosslerOsc.Iterate: Single;
+function TRosslerOsc.ProcessSample32: Single;
 begin
   FDX := -FY - FZ;
   FDY := FX + FA * FY;

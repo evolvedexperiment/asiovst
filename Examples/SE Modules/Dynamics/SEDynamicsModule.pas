@@ -919,7 +919,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSimpleDirectGateStaticSEModule }
@@ -989,7 +989,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSimpleDirectGateParamStaticSEModule }
@@ -1071,7 +1071,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -1087,7 +1087,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSoftDirectGateSEModule }
@@ -1125,7 +1125,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSoftDirectGateStaticSEModule }
@@ -1206,7 +1206,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSoftDirectGateParamStaticSEModule }
@@ -1300,7 +1300,7 @@ begin
   begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -1316,7 +1316,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomBrickwallLimiterSEModule }
@@ -1376,7 +1376,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSimpleBrickwallLimiterSEModule }
@@ -1455,7 +1455,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TBrickwallLimiterParamStaticSEModule }
@@ -1537,7 +1537,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -1553,7 +1553,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSoftBrickwallLimiterSEModule }
@@ -1643,7 +1643,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TBrickwallSoftLimiterParamStaticSEModule }
@@ -1737,7 +1737,7 @@ begin
   begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -1753,7 +1753,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSimpleSoftBrickwallLimiterSEModule }
@@ -1843,7 +1843,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TBrickwallSimpleSoftLimiterParamStaticSEModule }
@@ -1937,7 +1937,7 @@ begin
   begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -1953,7 +1953,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 
@@ -1990,7 +1990,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TRangeGateStaticSEModule }
@@ -2093,7 +2093,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TRangeGateParamStaticSEModule }
@@ -2214,7 +2214,7 @@ begin
    FDynamicProcesor.Range_dB := 10 * Range[Sample];
    FDynamicProcesor.Attack := 10 * Attack[Sample];
    FDynamicProcesor.Release := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -2230,7 +2230,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomClassicGateSEModule }
@@ -2268,7 +2268,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TClassicGateStaticSEModule }
@@ -2360,7 +2360,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TClassicGateParamStaticSEModule }
@@ -2468,7 +2468,7 @@ begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    FDynamicProcesor.Attack := 10 * Attack[Sample];
    FDynamicProcesor.Release := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -2484,7 +2484,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSoftClassicGateSEModule }
@@ -2520,7 +2520,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSoftClassicGateStaticSEModule }
@@ -2623,7 +2623,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSoftClassicGateParamStaticSEModule }
@@ -2744,7 +2744,7 @@ begin
    FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
    FDynamicProcesor.Attack := 10 * Attack[Sample];
    FDynamicProcesor.Release := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -2803,7 +2803,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSimpleLimiterSEModule }
@@ -2904,7 +2904,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TLimiterParamStaticSEModule }
@@ -3011,7 +3011,7 @@ begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    FDynamicProcesor.Attack := 10 * Attack[Sample];
    FDynamicProcesor.Release := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -3124,7 +3124,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSoftLimiterParamStaticSEModule }
@@ -3245,7 +3245,7 @@ begin
    FDynamicProcesor.Knee_dB := 10 * Knee[Sample];
    FDynamicProcesor.Attack := 10 * Attack[Sample];
    FDynamicProcesor.Release := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -3358,7 +3358,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSimpleSoftLimiterParamStaticSEModule }
@@ -3479,7 +3479,7 @@ begin
    FDynamicProcesor.Knee_dB      := 10 * Knee[Sample];
    FDynamicProcesor.Attack       := 10 * Attack[Sample];
    FDynamicProcesor.Release      := 10 * Release[Sample];
-   Output^[Sample]               := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample]               := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -3538,7 +3538,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TCustomSimpleCompressorSEModule }
@@ -3650,7 +3650,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSimpleCompressorParamStaticSEModule }
@@ -3767,7 +3767,7 @@ begin
    FDynamicProcesor.Threshold_dB := 10 * Thres[Sample];
    FDynamicProcesor.Attack       := 10 * Attack[Sample];
    FDynamicProcesor.Release      := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -3891,7 +3891,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TSoftKneeCompressorParamStaticSEModule }
@@ -4021,7 +4021,7 @@ begin
    FDynamicProcesor.Knee_dB      := 10 * Knee[Sample];
    FDynamicProcesor.Attack       := 10 * Attack[Sample];
    FDynamicProcesor.Release      := 10 * Release[Sample];
-   Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+   Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
   end;
 end;
 
@@ -4145,7 +4145,7 @@ begin
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+  do Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
 end;
 
 { TRMSCompressorParamStaticSEModule }
@@ -4283,7 +4283,7 @@ begin
     RMSTime := 10 * DRMSTime[Sample];
     Attack := 10 * DAttack[Sample];
     Release := 10 * DRelease[Sample];
-    Output^[Sample] := FDynamicProcesor.ProcessSample(Input[Sample])
+    Output^[Sample] := FDynamicProcesor.ProcessSample64(Input[Sample])
    end;
 end;
 

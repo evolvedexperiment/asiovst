@@ -42,12 +42,12 @@ uses
 type
   TCustomTransientProcessor = class(TDspSampleRatePersistent)
   private
-    FAttackHold        : Single;
-    FOutputGain        : Single;
-    FFilter            : Single;
-    FReleaseHold       : Single;
-    FRelease           : Single;
-    FAttack            : Single;
+    FAttackHold  : Single;
+    FOutputGain  : Single;
+    FFilter      : Single;
+    FReleaseHold : Single;
+    FRelease     : Single;
+    FAttack      : Single;
     procedure SetAttack(const Value: Single);
     procedure SetAttackHold(const Value: Single);
     procedure SetFilter(const Value: Single);
@@ -86,12 +86,12 @@ type
     property ReleaseHold: Single read FReleaseHold write SetReleaseHold;
   end;
 
-  TCustomMonoTransientProcessor = class(TCustomTransientProcessor)
+  TCustomMonoTransientProcessor = class(TCustomTransientProcessor, IDspProcessor32)
   protected
     FState : Single;
   public
     constructor Create; override;
-    function Process(Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
   end;
 
   TCustomStereoTransientProcessor = class(TCustomTransientProcessor)
@@ -99,7 +99,8 @@ type
     FState : Array [0..1] of Single;
   public
     constructor Create; override;
-    procedure Process(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
+    procedure ProcessSample(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
+    procedure ProcessStereo(var Left, Right: Single);
   end;
 
   TMonoTransientProcessor = class(TCustomMonoTransientProcessor)
@@ -303,7 +304,7 @@ begin
  FState := 0;
 end;
 
-function TCustomMonoTransientProcessor.Process(Input: Single): Single;
+function TCustomMonoTransientProcessor.ProcessSample32(Input: Single): Single;
 var
   Gain   : Single;
 begin
@@ -320,6 +321,7 @@ begin
  Result := FOutputLevelFactor * (Input + Result * Gain);
 end;
 
+
 { TCustomStereoTransientProcessor }
 
 constructor TCustomStereoTransientProcessor.Create;
@@ -329,7 +331,7 @@ begin
  FState[1] := 0;
 end;
 
-procedure TCustomStereoTransientProcessor.Process(const InLeft, InRight: Single;
+procedure TCustomStereoTransientProcessor.ProcessSample(const InLeft, InRight: Single;
   out OutLeft, OutRight: Single);
 var
   Gain, Mono  : Single;
@@ -348,6 +350,11 @@ begin
 
  OutLeft := FOutputLevelFactor * (InLeft + OutLeft * Gain);
  OutRight := FOutputLevelFactor * (InRight + OutRight * Gain);
+end;
+
+procedure TCustomStereoTransientProcessor.ProcessStereo(var Left, Right: Single);
+begin
+ ProcessSample(Left, Right, Left, Right);
 end;
 
 end.

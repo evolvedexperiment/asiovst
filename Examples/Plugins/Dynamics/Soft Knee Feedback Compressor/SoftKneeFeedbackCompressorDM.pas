@@ -120,8 +120,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := FSoftKneeFeedbackCompressors[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FSoftKneeFeedbackCompressors[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FSoftKneeFeedbackCompressors[0].ProcessSample64(Inputs[0, i]);
+   Outputs[1, i] := FSoftKneeFeedbackCompressors[1].ProcessSample64(Inputs[1, i]);
   end;
 end;
 

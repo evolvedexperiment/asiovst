@@ -347,7 +347,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FFreeverb.ProcessSample(Inp^[Sample]);
+  do Outp^[Sample] := FFreeverb.ProcessSample64(Inp^[Sample]);
 end;
 
 // describe the pins (plugs)

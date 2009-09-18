@@ -186,7 +186,7 @@ begin
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FGranularPitchShifter[Channel].Process(Inputs[Channel, Sample]);
+    do Outputs[Channel, Sample] := FGranularPitchShifter[Channel].ProcessSample32(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Leave;
  end;

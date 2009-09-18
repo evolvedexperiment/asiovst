@@ -426,11 +426,11 @@ begin
   for ch := 0 to 1 do
    begin
     L := cDenorm64 + Inputs[ch, Sample];
-    H := FHighpass[ch, 0].ProcessSample(cDenorm64 +
-         FHighpass[ch, 1].ProcessSample(FSign * L));
-    L := FLowpass[ch, 1].ProcessSample(L);
-    L := FLowpass[ch, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
-                                       FDivideMix[1] * L);
+    H := FHighpass[ch, 0].ProcessSample64(cDenorm64 +
+         FHighpass[ch, 1].ProcessSample64(FSign * L));
+    L := FLowpass[ch, 1].ProcessSample64(L);
+    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ch].ProcessSample32(L) + FDivideMix[1] * L);
     FCompressor[ch].InputSample(L);
     Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
@@ -447,11 +447,11 @@ begin
   for ch := 0 to 1 do
    begin
     L := cDenorm64 + Inputs[ch, Sample];
-    H := FHighpass[ch, 0].ProcessSample(cDenorm64 +
-         FHighpass[ch, 1].ProcessSample(FSign * L));
-    L := FLowpass[ch, 1].ProcessSample(L);
-    L := FLowpass[ch, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
-                                       FDivideMix[1] * L);
+    H := FHighpass[ch, 0].ProcessSample64(cDenorm64 +
+         FHighpass[ch, 1].ProcessSample64(FSign * L));
+    L := FLowpass[ch, 1].ProcessSample64(L);
+    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ch].ProcessSample64(L) + FDivideMix[1] * L);
     FCompressor[ch].InputSample(L);
     Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
@@ -467,21 +467,21 @@ begin
   begin
    // Mid
    L := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
-   H := FHighpass[0, 0].ProcessSample(cDenorm64 +
-        FHighpass[0, 1].ProcessSample(FSign * L));
-   L := FLowpass[0, 1].ProcessSample(L);
-   L := FLowpass[0, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
-                                      FDivideMix[1] * L);
+   H := FHighpass[0, 0].ProcessSample64(cDenorm64 +
+        FHighpass[0, 1].ProcessSample64(FSign * L));
+   L := FLowpass[0, 1].ProcessSample64(L);
+   L := FLowpass[0, 0].ProcessSample64(FDivideMix[0] *
+     FOctaveDivider[0].ProcessSample32(L) + FDivideMix[1] * L);
    FCompressor[0].InputSample(L);
    M := FBalance[0] * (FCompressorMix[0] * FCompressor[0].GainSample(L) +
                        FCompressorMix[1] * L) + FBalance[1] * H;
 
    // Side
    L := Inputs[0, Sample] - Inputs[1, Sample];
-   H := FHighpass[1, 0].ProcessSample(
-        FHighpass[1, 1].ProcessSample(FSign * L));
-   L := FLowpass[1, 0].ProcessSample(
-        FLowpass[1, 1].ProcessSample(L));
+   H := FHighpass[1, 0].ProcessSample64(
+        FHighpass[1, 1].ProcessSample64(FSign * L));
+   L := FLowpass[1, 0].ProcessSample32(
+        FLowpass[1, 1].ProcessSample32(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
    Outputs[0, Sample] := 0.5 * (M + S);
@@ -499,21 +499,21 @@ begin
   begin
    // Mid
    L := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
-   H := FHighpass[0, 0].ProcessSample(cDenorm64 + 
-        FHighpass[0, 1].ProcessSample(FSign * L));
-   L := FLowpass[0, 1].ProcessSample(L);
-   L := FLowpass[0, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
-                                      FDivideMix[1] * L);
+   H := FHighpass[0, 0].ProcessSample64(cDenorm64 +
+        FHighpass[0, 1].ProcessSample64(FSign * L));
+   L := FLowpass[0, 1].ProcessSample64(L);
+   L := FLowpass[0, 0].ProcessSample64(FDivideMix[0] *
+     FOctaveDivider[0].ProcessSample64(L) + FDivideMix[1] * L);
    FCompressor[0].InputSample(L);
    M := FBalance[0] * (FCompressorMix[0] * FCompressor[0].GainSample(L) +
                        FCompressorMix[1] * L) + FBalance[1] * H;
 
    // Side
    L := Inputs[0, Sample] - Inputs[1, Sample];
-   H := FHighpass[1, 0].ProcessSample(
-        FHighpass[1, 1].ProcessSample(FSign * L));
-   L := FLowpass[1, 0].ProcessSample(
-        FLowpass[1, 1].ProcessSample(L));
+   H := FHighpass[1, 0].ProcessSample64(
+        FHighpass[1, 1].ProcessSample64(FSign * L));
+   L := FLowpass[1, 0].ProcessSample64(
+        FLowpass[1, 1].ProcessSample64(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
    Outputs[0, Sample] := 0.5 * (M + S);
@@ -529,10 +529,10 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   for ch := 0 to 1 do
    begin
-    L := FLowpass[ch, 1].ProcessSample(cDenorm64 + Inputs[ch, Sample]);
-    H := FHighpass[ch, 1].ProcessSample(Inputs[ch, Sample] - L);
-    L := FLowpass[ch, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
-                                       FDivideMix[1] * L);
+    L := FLowpass[ch, 1].ProcessSample64(cDenorm64 + Inputs[ch, Sample]);
+    H := FHighpass[ch, 1].ProcessSample64(Inputs[ch, Sample] - L);
+    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ch].ProcessSample32(L) + FDivideMix[1] * L);
     FCompressor[ch].InputSample(L);
     Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
@@ -548,10 +548,10 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   for ch := 0 to 1 do
    begin
-    L := FLowpass[ch, 1].ProcessSample(cDenorm64 + Inputs[ch, Sample]);
-    H := FHighpass[ch, 1].ProcessSample(Inputs[ch, Sample] - L);
-    L := FLowpass[ch, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[ch].ProcessSample(L) +
-                                       FDivideMix[1] * L);
+    L := FLowpass[ch, 1].ProcessSample64(cDenorm64 + Inputs[ch, Sample]);
+    H := FHighpass[ch, 1].ProcessSample64(Inputs[ch, Sample] - L);
+    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ch].ProcessSample64(L) + FDivideMix[1] * L);
     FCompressor[ch].InputSample(L);
     Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
@@ -567,10 +567,10 @@ begin
   begin
    // Mid
    M := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
-   L := FLowpass[0, 1].ProcessSample(M);
-   H := FHighpass[0, 1].ProcessSample(M - L);
-   L := FLowpass[0, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
-                                     FDivideMix[1] * L);
+   L := FLowpass[0, 1].ProcessSample64(M);
+   H := FHighpass[0, 1].ProcessSample64(M - L);
+   L := FLowpass[0, 0].ProcessSample64(FDivideMix[0] *
+     FOctaveDivider[0].ProcessSample32(L) + FDivideMix[1] * L);
 
    FCompressor[0].InputSample(L);
    M := FBalance[0] * (FCompressorMix[0] * FCompressor[0].GainSample(L) +
@@ -578,10 +578,10 @@ begin
 
    // Side
    L := Inputs[0, Sample] - Inputs[1, Sample];
-   H := FHighpass[1, 0].ProcessSample(
-        FHighpass[1, 1].ProcessSample(FSign * L));
-   L := FLowpass[1, 0].ProcessSample(
-        FLowpass[1, 1].ProcessSample(L));
+   H := FHighpass[1, 0].ProcessSample64(
+        FHighpass[1, 1].ProcessSample64(FSign * L));
+   L := FLowpass[1, 0].ProcessSample64(
+        FLowpass[1, 1].ProcessSample64(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
    Outputs[0, Sample] := 0.5 * (M + S);
@@ -599,10 +599,10 @@ begin
   begin
    // Mid
    M := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
-   L := FLowpass[0, 1].ProcessSample(M);
-   H := FHighpass[0, 1].ProcessSample(M - L);
-   L := FLowpass[0, 0].ProcessSample(FDivideMix[0] * FOctaveDivider[0].ProcessSample(L) +
-                                     FDivideMix[1] * L);
+   L := FLowpass[0, 1].ProcessSample64(M);
+   H := FHighpass[0, 1].ProcessSample64(M - L);
+   L := FLowpass[0, 0].ProcessSample64(FDivideMix[0] *
+     FOctaveDivider[0].ProcessSample64(L) + FDivideMix[1] * L);
 
    FCompressor[0].InputSample(L);
    M := FBalance[0] * (FCompressorMix[0] * FCompressor[0].GainSample(L) +
@@ -610,10 +610,10 @@ begin
 
    // Side
    L := Inputs[0, Sample] - Inputs[1, Sample];
-   H := FHighpass[1, 0].ProcessSample(
-        FHighpass[1, 1].ProcessSample(FSign * L));
-   L := FLowpass[1, 0].ProcessSample(
-        FLowpass[1, 1].ProcessSample(L));
+   H := FHighpass[1, 0].ProcessSample64(
+        FHighpass[1, 1].ProcessSample64(FSign * L));
+   L := FLowpass[1, 0].ProcessSample64(
+        FLowpass[1, 1].ProcessSample64(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
    Outputs[0, Sample] := 0.5 * (M + S);

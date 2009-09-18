@@ -2,9 +2,12 @@ unit ButterworthDM;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilterButterworth, DAV_VstWindowSizer;
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  DAV_DspFilterButterworth, DAV_VstWindowSizer;
 
 type
   TButterworthHPModule = class(TVSTModule)
@@ -25,7 +28,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, ButterworthGUI;
+  Math, ButterworthGUI, DAV_DspFilter;
 
 procedure TButterworthHPModule.VSTModuleOpen(Sender: TObject);
 var
@@ -102,7 +105,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 procedure TButterworthHPModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -113,7 +116,7 @@ var
 begin
  for Channel := 0 to Length(FFilter) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
 end;
 
 end.

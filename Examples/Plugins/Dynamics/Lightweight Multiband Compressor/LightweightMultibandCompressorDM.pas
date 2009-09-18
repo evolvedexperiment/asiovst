@@ -528,10 +528,10 @@ begin
    FLinkwitzRiley[1, 2].ProcessSample(FD[1, 3] - CDenorm32, FD[1, 2], FD[1, 3]);
 
    // compress
-   FLightweightMultibandCompressor[0].ProcessSample(CHalf32 * (FD[0, 0] + FD[1, 0]));
-   FLightweightMultibandCompressor[1].ProcessSample(CHalf32 * (FD[0, 1] + FD[1, 1]));
-   FLightweightMultibandCompressor[2].ProcessSample(CHalf32 * (FD[0, 2] + FD[1, 2]));
-   FLightweightMultibandCompressor[3].ProcessSample(CHalf32 * (FD[0, 3] + FD[1, 3]));
+   FLightweightMultibandCompressor[0].ProcessSample64(CHalf32 * (FD[0, 0] + FD[1, 0]));
+   FLightweightMultibandCompressor[1].ProcessSample64(CHalf32 * (FD[0, 1] + FD[1, 1]));
+   FLightweightMultibandCompressor[2].ProcessSample64(CHalf32 * (FD[0, 2] + FD[1, 2]));
+   FLightweightMultibandCompressor[3].ProcessSample64(CHalf32 * (FD[0, 3] + FD[1, 3]));
 
    // copy gain reduction
    Temp[0] := FLightweightMultibandCompressor[0].GainReductionFactor;
@@ -540,8 +540,8 @@ begin
    Temp[3] := FLightweightMultibandCompressor[3].GainReductionFactor;
 
    // gain and combine
-   Outputs[0, Sample] := FastTanhOpt3Term(Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2] - Temp[3] * FD[0, 3]);
-   Outputs[1, Sample] := FastTanhOpt3Term(Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] - Temp[2] * FD[1, 2] - Temp[3] * FD[1, 3]);
+   Outputs[0, Sample] := FastTanhContinousError4(Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2] - Temp[3] * FD[0, 3]);
+   Outputs[1, Sample] := FastTanhContinousError4(Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] - Temp[2] * FD[1, 2] - Temp[3] * FD[1, 3]);
   end;
 end;
 

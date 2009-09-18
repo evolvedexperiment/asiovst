@@ -153,8 +153,8 @@ begin
     for Band := 0 to Length(FFilters[Channel]) - 1 do
      with FFilters[Channel, Band] do
       begin
-       Temp[0] := ProcessSample(Temp[0]);
-       Temp[1] := ProcessSample(Temp[1]);
+       Temp[0] := ProcessSample64(Temp[0]);
+       Temp[1] := ProcessSample64(Temp[1]);
       end;
     Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
     Temp[1] := FastTanhOpt5TermFPU(Temp[1]);
@@ -188,8 +188,8 @@ begin
     for Band := 0 to Length(FFilters[Channel]) - 1 do
      with FFilters[Channel, Band] do
       begin
-       Temp[0] := ProcessSample(Temp[0]);
-       Temp[1] := ProcessSample(Temp[1]);
+       Temp[0] := ProcessSample64(Temp[0]);
+       Temp[1] := ProcessSample64(Temp[1]);
       end;
     Temp[0] := FastTanhOpt5TermFPU(Temp[0]);
     Temp[1] := FastTanhOpt5TermFPU(Temp[1]);

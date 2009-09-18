@@ -41,7 +41,7 @@ uses
   DAV_DspFilterBasics;
 
 type
-  TCustomAmbience = class(TDspSampleRatePersistent)
+  TCustomAmbience = class(TDspSampleRatePersistent, IDspProcessor32)
   private
     FDamping    : Single;
     FDry, FWet  : Single;
@@ -83,8 +83,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input: Single): Single; overload;
-    procedure Process(var Left, Right: Single); overload;
+    function ProcessSample32(Input: Single): Single; overload;
+    procedure ProcessSample(var Left, Right: Single); overload;
 
     property Damping: Single read FDamping write SetDamping;
     property Dry: Single read FDry write SetDry;
@@ -321,12 +321,12 @@ begin
  FDampFactor := 0.05 + 0.01 * FDamping;
 end;
 
-function TCustomAmbience.Process(Input: Single): Single;
+function TCustomAmbience.ProcessSample32(Input: Single): Single;
 var
   r : Double;
   t : Double;
 begin
- Input := FHighShelf.ProcessSample(Input);
+ Input := FHighShelf.ProcessSample32(Input);
 
  // apply HF damping
  FHfDampState := FHfDampState + FDampFactor * (FWet * Input - FHfDampState);  // HF damping
@@ -374,13 +374,13 @@ begin
  FPos := (FPos + 1) and 1023;
 end;
 
-procedure TCustomAmbience.Process(var Left, Right: Single);
+procedure TCustomAmbience.ProcessSample(var Left, Right: Single);
 var
   r : Double;
   t : Double;
 begin
  // apply HF damping
- FHfDampState := FHfDampState + FDampFactor * (FWet * FHighShelf.ProcessSample(Left + Right) - FHfDampState);  // HF damping
+ FHfDampState := FHfDampState + FDampFactor * (FWet * FHighShelf.ProcessSample64(Left + Right) - FHfDampState);  // HF damping
  r := FHfDampState;
 
  if (abs(FHfDampState) > 1E-10) then

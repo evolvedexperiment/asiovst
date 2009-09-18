@@ -76,7 +76,7 @@ type
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
@@ -86,8 +86,8 @@ type
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
-    function ProcessSample(const Input: Single): Single; overload;
-    function ProcessSample(const Input: Double): Double; overload; override;
+    function ProcessSample64(Input: Single): Single; overload;
+    function ProcessSample64(Input: Double): Double; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real: Double; out Imaginary: Double); override;
@@ -101,8 +101,8 @@ type
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
-    procedure ProcessSample(const Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
-    procedure ProcessSample(const Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
+    procedure ProcessSample(Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
+    procedure ProcessSample(Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
@@ -417,7 +417,7 @@ begin
 end;
 
 
- function TCustomButterworthLowPassFilter.ProcessSample(const Input: Double): Double;
+ function TCustomButterworthLowPassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -618,7 +618,7 @@ begin
  Imaginary := R.Im;
 end;
 
-function TCustomButterworthHighPassFilter.ProcessSample(const Input: Single): Single;
+function TCustomButterworthHighPassFilter.ProcessSample64(Input: Single): Single;
 //{$DEFINE PUREPASCAL}
 {$IFDEF PUREPASCAL}
 var
@@ -701,7 +701,7 @@ asm
  {$ENDIF}
 end;
 
-function TCustomButterworthHighPassFilter.ProcessSample(const Input: Double): Double;
+function TCustomButterworthHighPassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -897,7 +897,7 @@ begin
   end;
 end;
 
-procedure TCustomButterworthSplitBandFilter.ProcessSample(const Input: Single; out Lowpass,
+procedure TCustomButterworthSplitBandFilter.ProcessSample(Input: Single; out Lowpass,
   Highpass: Single);
 {$IFDEF PUREPASCAL}
 var
@@ -1032,7 +1032,7 @@ asm
  {$ENDIF}
 end;
 
-procedure TCustomButterworthSplitBandFilter.ProcessSample(const Input: Double; out Lowpass,
+procedure TCustomButterworthSplitBandFilter.ProcessSample(Input: Double; out Lowpass,
   Highpass: Double);
 {$IFDEF PUREPASCAL}
 var

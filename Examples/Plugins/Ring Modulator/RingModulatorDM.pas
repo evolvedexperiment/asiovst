@@ -91,7 +91,7 @@ var
   Sample  : Integer;
 begin
  for Sample := 0 to SampleFrames - 1
-  do Outputs[0, Sample] := FRingMod[0].ProcessSample(Inputs[0, Sample]);
+  do Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
 end;
 
 procedure TRingModulatorDataModule.VSTModuleProcessStereo(const Inputs,
@@ -101,8 +101,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FRingMod[0].ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := FRingMod[1].ProcessSample(Inputs[1, Sample]);
+   Outputs[0, Sample] := FRingMod[0].ProcessSample32(Inputs[0, Sample]);
+   Outputs[1, Sample] := FRingMod[1].ProcessSample32(Inputs[1, Sample]);
   end;
 end;
 
@@ -114,7 +114,7 @@ var
 begin
  for Channel := 0 to Length(FRingMod) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FRingMod[Channel].ProcessSample(Inputs[Channel, Sample]);
+   do Outputs[Channel, Sample] := FRingMod[Channel].ProcessSample32(Inputs[Channel, Sample]);
 end;
 
 procedure TRingModulatorDataModule.VSTModuleSampleRateChange(Sender: TObject;

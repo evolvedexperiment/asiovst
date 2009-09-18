@@ -54,7 +54,7 @@ const
 
   // Allpass filter class declaration
 type
-  TFreeverbAllpass = class(TDspPersistent)
+  TFreeverbAllpass = class(TDspPersistent, IDspProcessor32)
   private
     FFeedback    : Single;
     FBuffer      : PDAVSingleFixedArray;
@@ -67,14 +67,14 @@ type
   public
     constructor Create(const Buffersize: Integer = 1); virtual;
     destructor Destroy; override;
-    function Process(const Input: Single): Single; register;
+    function ProcessSample32(Input: Single): Single; register;
     procedure Mute;
     property Feedback: Single read FFeedback write FFeedback;
     property BufferSize : Integer read FBufferSize write SetBufferSize;
   end;
 
   // Comb filter class declaration
-  TFreeverbCombFilter = class(TDspPersistent)
+  TFreeverbCombFilter = class(TDspPersistent, IDspProcessor32)
   private
     FFeedback    : Single;
     FFilterStore : Single;
@@ -93,7 +93,7 @@ type
   public
     constructor Create(const Buffersize: Integer); virtual;
     destructor Destroy; override;
-    function Process(const Input: Single): Single; register;
+    function ProcessSample32(Input: Single): Single; register;
     procedure Mute;
     property Damp: Single read FDamp write SetDamp;
     property Feedback: Single read FFeedback write FFeedback;
@@ -152,7 +152,7 @@ begin
  FillChar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
 end;
 
-function TFreeverbAllpass.Process(const Input: Single): Single;
+function TFreeverbAllpass.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  FBuffer^[FBufferPos] := ((FBuffer^[FBufferPos] - Input) * FFeedback) + Input;
@@ -270,7 +270,7 @@ end;
   but it beats Delphi's compiler generated code hands down,
   Thaddy}
 
-function TFreeverbCombFilter.Process(const input: Single): Single;
+function TFreeverbCombFilter.ProcessSample32(Input: Single): Single;
 asm
   mov   ecx, [eax].FBuffer                        // FBuffer start in ecx
   mov   edx, [eax].FBufferPos                   // FBuffer index in edx

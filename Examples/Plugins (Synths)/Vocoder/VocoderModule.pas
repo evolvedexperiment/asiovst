@@ -68,7 +68,6 @@ var
   SynthSignal : Double;
 begin
 
-
   for j := 0 to SampleFrames - 1 do
    begin
     // process synth input
@@ -76,7 +75,7 @@ begin
     for i := 0 to Voices.Count - 1
      do SynthSignal := SynthSignal + Voices[i].Process;
 
-    Outputs[0, j] := FastTanhOpt5Term(FVocoder.Process(Inputs[0, j], SynthSignal));
+    Outputs[0, j] := FastTanhOpt5Term(FVocoder.ProcessSample(Inputs[0, j], SynthSignal));
    end;
 
   for i := 1 to numOutputs - 1

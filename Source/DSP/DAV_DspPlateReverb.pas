@@ -42,7 +42,7 @@ const
   CInternalSampleRate : Single = 29761;
 
 type
-  TDiffusor = class(TDspPersistent)
+  TDiffusor = class(TDspPersistent, IDspProcessor32)
   private
     FAmount             : Single;
     FInternalBufferSize : Integer;
@@ -56,14 +56,14 @@ type
   public
     constructor Create(const Buffersize: Integer = 0; Amount: Single = 0.5); virtual;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single; register;
+    function ProcessSample32(Input: Single): Single; register;
     procedure Mute;
     property Amount: Single read FAmount write FAmount;
     property BufferSize : Integer read FBufferSize write SetBufferSize;
     property Sample[Index: Integer]: Single read GetSample;
   end;
 
-  TModulatedDiffusor = class(TDspPersistent)
+  TModulatedDiffusor = class(TDspPersistent, IDspProcessor32)
   private
     FAmount             : Single;
     FExcursion          : Integer;
@@ -84,7 +84,7 @@ type
   public
     constructor Create(const Buffersize: Integer = 0; Amount: Single = 0.5; Excursion: Integer = 16); virtual;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single; register;
+    function ProcessSample32(Input: Single): Single; register;
     procedure Mute;
     property Amount: Single read FAmount write FAmount;
     property Modulation: Single read FModulation write SetModulation;
@@ -94,9 +94,9 @@ type
     property Sample[Index: Integer]: Single read GetSample;
   end;
 
-  TCustomPlateReverb = class(TDspSampleRatePersistent)
+  TCustomPlateReverb = class(TDspSampleRatePersistent, IDspProcessor32)
   public
-    function ProcessSample(const Input: Single): Single; virtual; abstract;
+    function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
   TPlateReverb = class(TCustomPlateReverb)
@@ -138,7 +138,7 @@ type
  public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
 
     property Decay: Single read FDecay write SetDecay;
     property DecayDiffusion: Single read FDecayDiffusion write SetDecayDiffusion;
@@ -222,7 +222,7 @@ begin
  Fillchar(FBuffer^[0], FInternalBufferSize * SizeOf(Single), 0);
 end;
 
-function TDiffusor.ProcessSample(const Input: Single): Single;
+function TDiffusor.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
   WritePos: PSingle;
@@ -362,7 +362,7 @@ begin
  Fillchar(FBuffer^[0], FInternalBufferSize * SizeOf(Single), 0);
 end;
 
-function TModulatedDiffusor.ProcessSample(const Input: Single): Single;
+function TModulatedDiffusor.ProcessSample32(Input: Single): Single;
 var
   temp : Single;
   SPos : Single;
@@ -389,7 +389,7 @@ begin
  FLFO.CalculateNextSample;
 
  FBuffer^[Pos] := Input + FAmount * temp;
- result := FAllpass.ProcessSample(FBuffer^[Pos]) * FAmount + temp
+ result := FAllpass.ProcessSample64(FBuffer^[Pos]) * FAmount + temp
 end;
 
 
@@ -553,11 +553,11 @@ begin
  FModulatedDiffusors[1].Modulation := FModulation;
 end;
 
-function TPlateReverb.ProcessSample(const Input: Single): Single;
+function TPlateReverb.ProcessSample32(Input: Single): Single;
 var
   Temp : Single;
 begin
- Temp := FResampleFilter.ProcessSample(CDenorm32 + Input);
+ Temp := FResampleFilter.ProcessSample64(CDenorm32 + Input);
 
  FPreDelayBuffer[FPreDelayBufferPos] := Temp;
  inc(FPreDelayBufferPos);
@@ -577,29 +577,29 @@ begin
    FBuffer[0, 0] := FCurrentInput;
    FBuffer[1, 0] := FCurrentInput;
 
-   Temp := FDiffusors[0].ProcessSample(
-           FDiffusors[1].ProcessSample(
-           FDiffusors[2].ProcessSample(
-           FDiffusors[3].ProcessSample(FCurrentInput))));
+   Temp := FDiffusors[0].ProcessSample32(
+           FDiffusors[1].ProcessSample32(
+           FDiffusors[2].ProcessSample32(
+           FDiffusors[3].ProcessSample32(FCurrentInput))));
 
    FBuffer[0, 0]  := FLastOutput[1] + Temp;
    FBuffer[1, 0]  := FLastOutput[0] + Temp;
 
-   FLastOutput[1] := FHighpass[0].ProcessSample(
-                     FDelays[1].ProcessSample(
-                     FDiffusors[4].ProcessSample(
+   FLastOutput[1] := FHighpass[0].ProcessSample64(
+                     FDelays[1].ProcessSample32(
+                     FDiffusors[4].ProcessSample32(
                      FDecay *
-                     FLowpass[0].ProcessSample(
-                     FDelays[0].ProcessSample(
-                     FModulatedDiffusors[0].ProcessSample(
+                     FLowpass[0].ProcessSample64(
+                     FDelays[0].ProcessSample32(
+                     FModulatedDiffusors[0].ProcessSample32(
                      CDenorm32 + FBuffer[0, 0]))))));
-   FLastOutput[0] := FHighpass[1].ProcessSample(
-                     FDelays[3].ProcessSample(
-                     FDiffusors[5].ProcessSample(
+   FLastOutput[0] := FHighpass[1].ProcessSample64(
+                     FDelays[3].ProcessSample32(
+                     FDiffusors[5].ProcessSample32(
                      FDecay *
-                     FLowpass[1].ProcessSample(
-                     FDelays[2].ProcessSample(
-                     FModulatedDiffusors[1].ProcessSample(
+                     FLowpass[1].ProcessSample64(
+                     FDelays[2].ProcessSample32(
+                     FModulatedDiffusors[1].ProcessSample32(
                      CDenorm32 + FBuffer[1, 0]))))));
 
    FBuffer[0, 0] := 0.6 * (FDelays[2].Sample[266] +

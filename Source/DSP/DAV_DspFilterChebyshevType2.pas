@@ -75,7 +75,7 @@ type
   protected
     function CorrectFrequency(CurrentFrequenc: Double): Double; override;
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure CalculateCoefficients; override;
   end;
@@ -102,7 +102,7 @@ type
   protected
     function CorrectFrequency(CurrentFrequenc: Double): Double; override;
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure CalculateCoefficients; override;
   end;
@@ -339,7 +339,7 @@ begin
   end;
 end;
 
-function TCustomChebyshev2LowpassFilter.ProcessSample(const Input: Double): Double;
+function TCustomChebyshev2LowpassFilter.ProcessSample64(Input: Double): Double;
 {-$DEFINE PUREPASCAL}
 {$IFDEF PUREPASCAL}
 var
@@ -533,7 +533,7 @@ begin
   end;
 end;
 
-function TCustomChebyshev2HighpassFilter.ProcessSample(const Input: Double): Double;
+function TCustomChebyshev2HighpassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;

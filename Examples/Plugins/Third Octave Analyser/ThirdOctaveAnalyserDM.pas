@@ -249,8 +249,8 @@ begin
    d := Inputs[0, i];
    for j := 0 to CNumFrequencies - 1 do
     begin
-     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
+     d := FFilterArray[j].Lowpass.ProcessSample64(d + cDenorm);
+     z := FFilterArray[j].Highpass.ProcessSample64(d + cDenorm);
      FFilterArray[j].RMS := FSpeedConst[0] * FFilterArray[j].RMS + FSpeedConst[1] * Amp_to_dB(abs(z));
     end;
   end;
@@ -272,8 +272,8 @@ begin
      if (FDownSampleCount mod FFilterArray[j].Downsampling) <> 0
       then Break;
 
-     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
+     d := FFilterArray[j].Lowpass.ProcessSample64(d + cDenorm);
+     z := FFilterArray[j].Highpass.ProcessSample64(d + cDenorm);
 
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[j].Downsampling + 1);
      FFilterArray[j].RMS := s * FFilterArray[j].RMS + (1 - s) * Amp_to_dB(abs(z));

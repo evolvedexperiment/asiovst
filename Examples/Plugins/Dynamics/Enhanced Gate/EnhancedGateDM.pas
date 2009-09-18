@@ -270,7 +270,7 @@ begin
   for i := 0 to SampleFrames - 1 do
    begin
     FEnhancedGates[j].InputSample(Inputs[j,i]);
-    Outputs[j,i] := FEnhancedGates[j].ProcessSample(Inputs[j, i]);
+    Outputs[j,i] := FEnhancedGates[j].ProcessSample64(Inputs[j, i]);
     FLevels[j] := 0.99 * FLevels[j];
     if abs(Inputs[j, i]) > FLevels[j]
      then FLevels[j] := abs(Inputs[j, i]);

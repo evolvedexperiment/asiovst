@@ -99,7 +99,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   FTuner.Process(Inp^[Sample]);
+   FTuner.ProcessSample32(Inp^[Sample]);
    Freq^[Sample] := 0.1 * FTuner.CurrentFrequency;
   end;
 end;

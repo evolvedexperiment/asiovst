@@ -41,7 +41,7 @@ uses
 type
   THighpassSelect = (hpDC, hp1stOrder, hp2ndOrder);
 
-  TCustomPsychoAcousticBassEnhancer = class(TDspSampleRatePersistent)
+  TCustomPsychoAcousticBassEnhancer = class(TDspSampleRatePersistent, IDspProcessor32)
   private
     FFrequency : Single;
     procedure SetFrequency(const Value: Single);
@@ -49,7 +49,7 @@ type
     procedure FrequencyChanged; virtual; abstract;
   public
     constructor Create; override;
-    function Process(Input: Single): Single; virtual; abstract;
+    function ProcessSample32(Input: Single): Single; virtual; abstract;
 
     property Frequency: Single read FFrequency write SetFrequency;
   end;
@@ -82,7 +82,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
 
     property Ratio: Single read FRatio write SetRatio;
     property Response: Single read FResponse write SetResponse;
@@ -106,7 +106,7 @@ type
     procedure FrequencyChanged; override;
   public
     constructor Create; override;
-    function Process(Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
   end;
 
   TCustomLinkwitzBass = class(TCustomPsychoAcousticBassEnhancer)
@@ -135,7 +135,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
 
     property Drive: Single read FDrive write SetDrive;
     property Response: Single read FResponse write SetResponse;
@@ -170,7 +170,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function Process(Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
 
     property Intensity: Single read FIntensity write SetIntensity;
     property Gain: Single read FGain write SetGain;
@@ -382,12 +382,12 @@ begin
  end;
 end;
 
-function TCustomHarmonicBass.Process(Input: Single): Single;
+function TCustomHarmonicBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
 (*
- result := FUpwardComp.ProcessSample(Input);
+ result := FUpwardComp.ProcessSample64(Input);
  continue;
 *)
 
@@ -397,15 +397,15 @@ begin
 *)
 
 (*
- result := FLimiter.ProcessSample(2 * Input);
+ result := FLimiter.ProcessSample64(2 * Input);
  result := Limit(0.5 * result);
  continue;
 *)
 
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Harmonic := Limit(0.5 * FLimiter.ProcessSample(4 *
-             FHighpass.ProcessSample(
+ Harmonic := Limit(0.5 * FLimiter.ProcessSample64(4 *
+             FHighpass.ProcessSample64(
              FDecay + Low * (1 + Low * -2 * FDecay))));
 
  result := FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
@@ -446,7 +446,7 @@ begin
  FResamplingRatio := FHighpass.SampleRate / SampleRate;
 end;
 
-function TCustomDownsampledHarmonicBass.Process(Input: Single): Single;
+function TCustomDownsampledHarmonicBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
@@ -462,9 +462,9 @@ begin
 
    Harmonic := Hermite32_asm(FDownsamplePos, @FLastInputSamples[0]);
 
-   Harmonic := //0.5 * FUpwardComp.ProcessSample(
-            Limit(0.5 * FDrive* FLimiter.ProcessSample(4 *
-            FHighpass.ProcessSample(
+   Harmonic := //0.5 * FUpwardComp.ProcessSample64(
+            Limit(0.5 * FDrive* FLimiter.ProcessSample64(4 *
+            FHighpass.ProcessSample64(
             FDecay + Harmonic * (1 + Harmonic * -2 * FDecay))));
 
    Move(FLastOutputSamples[1], FLastOutputSamples[0], 3 * SizeOf(Single));
@@ -595,14 +595,14 @@ begin
  end;
 end;
 
-function TCustomLinkwitzBass.Process(Input: Single): Single;
+function TCustomLinkwitzBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
- Harmonic := Limit(0.5 * FDrive* FLimiter.ProcessSample(4 *
-         FHighpass.ProcessSample(
+ Harmonic := Limit(0.5 * FDrive* FLimiter.ProcessSample64(4 *
+         FHighpass.ProcessSample64(
          FDecay + Low * (1 + Low * -2 * FDecay))));
 
  result := FGains[2] * Low + FGains[3] * Harmonic + FGains[1] * High;
@@ -701,15 +701,15 @@ begin
  FGains[2] := FGain;
 end;
 
-function TCustomResurrectionBass.Process(Input: Single): Single;
+function TCustomResurrectionBass.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
 begin
  FCrossover.ProcessSample(Input, Low, High);
 
  Harmonic := FGains[0] * Low;
- Harmonic := FHighpass.ProcessSample(0.2 + Harmonic * (1 - 0.4 * Harmonic));
- Harmonic := 0.5 * FLimiter.ProcessSample(Harmonic);
+ Harmonic := FHighpass.ProcessSample64(0.2 + Harmonic * (1 - 0.4 * Harmonic));
+ Harmonic := 0.5 * FLimiter.ProcessSample32(Harmonic);
  Harmonic := Limit(Harmonic);
 
  result := FGains[2] * (FGains[1] * Low + Harmonic + High);

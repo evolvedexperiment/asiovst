@@ -231,7 +231,7 @@ begin
  try
   for i := 0 to SampleFrames - 1 do
    begin
-    FState := FPlateReverb.ProcessSample(FCrossover * FState + (1 - FCrossover) * (Inputs[0, i] + Inputs[1, i]) * CHalf32);
+    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, i] + Inputs[1, i]) * CHalf32);
 
     // Calculate output MIXING with anything already there
     Outputs[0, i] := Outputs[0, i] + FMix[0] * Inputs[0, i] + FMix[1] * FPlateReverb.OutputLeft;
@@ -250,7 +250,7 @@ begin
  try
   for i := 0 to SampleFrames - 1 do
    begin
-    FState := FPlateReverb.ProcessSample(FCrossover * FState + (1 - FCrossover) * (Inputs[0, i] + Inputs[1, i]) * CHalf32);
+    FState := FPlateReverb.ProcessSample32(FCrossover * FState + (1 - FCrossover) * (Inputs[0, i] + Inputs[1, i]) * CHalf32);
 
     // Calculate output REPLACING with anything already there
     Outputs[0, i] := FMix[0] * Inputs[0, i] + FMix[1] * FPlateReverb.OutputLeft;

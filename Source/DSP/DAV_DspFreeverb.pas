@@ -65,9 +65,8 @@ type
   TFreeverbAllpassArray = array [0..CAllpassCount - 1] of TFreeverbAllpass;
 
   // Reverb model class declaration
-  TFreeverb = class(TDspSampleRatePersistent)
+  TFreeverb = class(TDspSampleRatePersistent, IDspProcessor64)
   private
-    FSampleRate : Double;
     FGain       : Double;
     FRoomSize   : Double;
     FDamp       : Double;
@@ -89,7 +88,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure Reset;
-    function ProcessSample(const Input: Double): Double;
+    function ProcessSample32(Input: Single): Single;
+    function ProcessSample64(Input: Double): Double;
   published
     property Dry: Double read FDry write SetDry;
     property Wet: Double read FWet write SetWet;
@@ -136,21 +136,38 @@ begin
  inherited Destroy;
 end;
 
-function TFreeverb.ProcessSample(const Input: Double): Double;
+function TFreeverb.ProcessSample32(Input: Single): Single;
 var
-  i: Integer;
+  Band: Integer;
 begin
- result := FGain * Input;
+ Result := FGain * Input;
 
  // Accumulate comb filters in parallel
- for i := 0 to CCombFilterCount - 1
-  do result := result + FComb[i].Process(Input);
+ for Band := 0 to CCombFilterCount - 1
+  do Result := Result + FComb[Band].ProcessSample32(Input);
 
  // Feed through allpasses in series
- for i := 0 to CAllpassCount - 1
-  do result := FAllpass[i].Process(result);
+ for Band := 0 to CAllpassCount - 1
+  do Result := FAllpass[Band].ProcessSample32(Result);
 
- result := result * FWet + Input * FDry;
+ Result := Result * FWet + Input * FDry;
+end;
+
+function TFreeverb.ProcessSample64(Input: Double): Double;
+var
+  Band: Integer;
+begin
+ Result := FGain * Input;
+
+ // Accumulate comb filters in parallel
+ for Band := 0 to CCombFilterCount - 1
+  do Result := Result + FComb[Band].ProcessSample32(Input);
+
+ // Feed through allpasses in series
+ for Band := 0 to CAllpassCount - 1
+  do Result := FAllpass[Band].ProcessSample32(Result);
+
+ Result := Result * FWet + Input * FDry;
 end;
 
 procedure TFreeverb.Reset;

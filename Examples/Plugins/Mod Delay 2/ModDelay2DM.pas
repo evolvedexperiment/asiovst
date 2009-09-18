@@ -268,8 +268,8 @@ begin
  try
   for Sample := 0 to min(BlockSize, SampleFrames) - 1 do
    begin
-    Outputs[0, Sample] := FModDelay[0].ProcessSample(FGain[0] * Inputs[0, Sample]);
-    Outputs[1, Sample] := FModDelay[1].ProcessSample(FGain[1] * Inputs[1, Sample]);
+    Outputs[0, Sample] := FModDelay[0].ProcessSample32(FGain[0] * Inputs[0, Sample]);
+    Outputs[1, Sample] := FModDelay[1].ProcessSample32(FGain[1] * Inputs[1, Sample]);
    end;
  finally
   FCriticalSection.Leave;

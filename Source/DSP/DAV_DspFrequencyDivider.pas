@@ -1,4 +1,4 @@
-unit DAV_DSPFrequencyDivider;
+unit DAV_DspFrequencyDivider;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -38,7 +38,7 @@ uses
   Classes, DAV_Common, DAV_DspCommon;
 
 type
-  TOcatveDivider = class(TDspPersistent)
+  TOcatveDivider = class(TDspPersistent, IDspProcessor32, IDspProcessor64)
   private
     procedure SetShape(Value: Single);
   protected
@@ -48,8 +48,8 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
-    function ProcessSample(Input: Single): Single; overload;
-    function ProcessSample(Input: Double): Double; overload;
+    function ProcessSample32(Input: Single): Single; overload;
+    function ProcessSample64(Input: Double): Double; overload;
 
     property Phase: Single read FPhaseFactor;
   published
@@ -81,7 +81,7 @@ begin
  else inherited;
 end;
 
-function TOcatveDivider.ProcessSample(Input: Single): Single;
+function TOcatveDivider.ProcessSample32(Input: Single): Single;
 begin
  if Input * FPhaseSign < 0 then     // Octave Divider
   begin
@@ -91,7 +91,7 @@ begin
  result := FPhaseFactor * (FShape[0] + FShape[1] * Input);
 end;
 
-function TOcatveDivider.ProcessSample(Input: Double): Double;
+function TOcatveDivider.ProcessSample64(Input: Double): Double;
 begin
  if Input * FPhaseSign < 0 then
   begin

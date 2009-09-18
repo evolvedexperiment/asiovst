@@ -64,8 +64,8 @@ type
     procedure ReloadImpulseResponses; override;
     procedure SampleRateChanged; override;
   public
-    procedure Process(var Left, Right: Single); overload; override;
-    procedure Process(var Left, Right: Double); overload; override;
+    procedure ProcessSample(var Left, Right: Single); overload; override;
+    procedure ProcessSample(var Left, Right: Double); overload; override;
 
     constructor Create; override;
     destructor Destroy; override;
@@ -80,8 +80,8 @@ type
     procedure SampleRateChanged; override;
     procedure ReloadImpulseResponses; override;
   public
-    procedure Process(var Left, Right: Single); overload; override;
-    procedure Process(var Left, Right: Double); overload; override;
+    procedure ProcessSample(var Left, Right: Single); overload; override;
+    procedure ProcessSample(var Left, Right: Double); overload; override;
 
     constructor Create; override;
     destructor Destroy; override;
@@ -258,7 +258,7 @@ begin
  end;
 end;
 
-procedure TCustomSimpleHrtfCrosstalkSimulator.Process(var Left, Right: Single);
+procedure TCustomSimpleHrtfCrosstalkSimulator.ProcessSample(var Left, Right: Single);
 var
   Data : Array [0..3] of Single;
 begin
@@ -274,7 +274,7 @@ begin
  Right := Data[1] + Data[3];
 end;
 
-procedure TCustomSimpleHrtfCrosstalkSimulator.Process(var Left, Right: Double);
+procedure TCustomSimpleHrtfCrosstalkSimulator.ProcessSample(var Left, Right: Double);
 var
   Data : Array [0..3] of Single;
 begin
@@ -368,7 +368,7 @@ begin
  end;
 end;
 
-procedure TCustomCompleteHrtfCrosstalkSimulator.Process(var Left,
+procedure TCustomCompleteHrtfCrosstalkSimulator.ProcessSample(var Left,
   Right: Single);
 var
   Data : Array [0..3] of Single;
@@ -389,7 +389,7 @@ begin
  Right := Data[1] + Data[3];
 end;
 
-procedure TCustomCompleteHrtfCrosstalkSimulator.Process(var Left,
+procedure TCustomCompleteHrtfCrosstalkSimulator.ProcessSample(var Left,
   Right: Double);
 var
   Data : Array [0..3] of Single;

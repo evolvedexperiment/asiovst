@@ -40,10 +40,11 @@ uses
 type
   TPNType = array[0..1] of TComplexSingle;
 
-  TCustomFilter = class(TDspSampleRatePersistent)
+  TCustomFilter = class(TDspSampleRatePersistent, IDspProcessor32,
+    IDspProcessor64)
   protected
-    FSRR        : Double; // reciprocal of SampleRate
-    FOnChange   : TNotifyEvent;
+    FSRR      : Double; // reciprocal of SampleRate
+    FOnChange : TNotifyEvent;
     procedure SampleRateChanged; override;
     procedure CalculateReciprocalSamplerate; virtual;
     procedure Changed; virtual;
@@ -52,8 +53,9 @@ type
   public
     constructor Create; override;
     function ProcessSampleASM: Double; virtual;
-    function ProcessSample(const Input: Double): Double; overload; virtual; abstract;
-    function ProcessSample(const Input: Int64): Int64; overload; virtual; abstract;
+    function ProcessSample32(Input: Single): Single; overload; virtual;
+    function ProcessSample64(Input: Double): Double; overload; virtual; abstract;
+    function ProcessSample64(Input: Int64): Int64; overload; virtual; abstract;
     function MagnitudeSquared(const Frequency: Double): Double; virtual; abstract;
     function MagnitudeLog10(const Frequency: Double): Double; virtual; abstract;
     function Real(const Frequency: Double): Double; virtual; abstract;
@@ -83,8 +85,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Double): Double; overload; override;
-    function ProcessSample(const Input: Int64): Int64; overload; override;
+    function ProcessSample64(Input: Double): Double; overload; override;
+    function ProcessSample64(Input: Int64): Int64; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function Real(const Frequency: Double): Double; override;
@@ -179,8 +181,8 @@ type
     constructor Create; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
-//    function ProcessSample(const Input: Int64): Int64; override;
+    function ProcessSample64(Input: Double): Double; override;
+//    function ProcessSample64(Input: Int64): Int64; override;
 //    function ProcessSampleASM: Double; override;
     procedure PushStates; override;
     procedure PopStates; override;
@@ -202,7 +204,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Reset; override;
@@ -248,8 +250,8 @@ type
     constructor Create; override;
     procedure ResetStates; override;
     procedure ResetStatesInt64; override;
-    function ProcessSample(const Input: Double): Double; override;
-    function ProcessSample(const Input: Int64): Int64; override;
+    function ProcessSample64(Input: Double): Double; override;
+    function ProcessSample64(Input: Int64): Int64; override;
     function ProcessSampleASM: Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double):Double; override;
@@ -335,9 +337,9 @@ var
 begin
  if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
- ImpulseResonse[0] := ProcessSample(1.0);
+ ImpulseResonse[0] := ProcessSample64(1.0);
  for i := 1 to Length(ImpulseResonse) - 1
-  do ImpulseResonse[i] := ProcessSample(0.0);
+  do ImpulseResonse[i] := ProcessSample64(0.0);
  PopStates;
 end;
 
@@ -347,9 +349,9 @@ var
 begin
  if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
- ImpulseResonse[0] := ProcessSample(1.0);
+ ImpulseResonse[0] := ProcessSample64(1.0);
  for i := 1 to Length(ImpulseResonse) - 1
-  do ImpulseResonse[i] := ProcessSample(0.0);
+  do ImpulseResonse[i] := ProcessSample64(0.0);
  PopStates;
 end;
 
@@ -359,6 +361,11 @@ var
 begin
  Complex(Frequency, cmplx.Re, cmplx.Im);
  Result := ArcTan2(cmplx.Im, cmplx.Re);
+end;
+
+function TCustomFilter.ProcessSample32(Input: Single): Single;
+begin
+ Result := ProcessSample64(Input);
 end;
 
 function TCustomFilter.ProcessSampleASM: Double;
@@ -564,22 +571,22 @@ begin
   do FFilterArray[i].SampleRate := SampleRate;
 end;
 
-function TCustomFilterCascade.ProcessSample(const Input: Double): Double;
+function TCustomFilterCascade.ProcessSample64(Input: Double): Double;
 var
   i : Integer;
 begin
  result := Input;
  for i := 0 to Length(FFilterArray) - 1
-  do result := FFilterArray[i].ProcessSample(result);
+  do result := FFilterArray[i].ProcessSample64(result);
 end;
 
-function TCustomFilterCascade.ProcessSample(const Input: Int64): Int64;
+function TCustomFilterCascade.ProcessSample64(Input: Int64): Int64;
 var
   i : Integer;
 begin
  result := Input;
  for i := 0 to Length(FFilterArray) - 1
-  do result := FFilterArray[i].ProcessSample(result);
+  do result := FFilterArray[i].ProcessSample64(result);
 end;
 
 { TCustomGainFrequencyFilter }
@@ -832,7 +839,7 @@ asm
   ffree st(0)
 end;
 
-function TCustomFIRFilter.ProcessSample(const Input: Double): Double;
+function TCustomFIRFilter.ProcessSample64(Input: Double): Double;
 begin
  FHistory[FBufferPos] := Input;
  Result := (FCircular[FBufferPos] + FHistory[FBufferPos] * FIR[0]);
@@ -920,7 +927,7 @@ begin
  SetLength(FStates, Length(FStates) - 1);
 end;
 
-function TFirstOrderAllpassFilter.ProcessSample(const Input: Double): Double;
+function TFirstOrderAllpassFilter.ProcessSample64(Input: Double): Double;
 begin
  Result := FState + FFrequency * Input;
  FState := Input - FFrequency * Result;
@@ -1166,7 +1173,7 @@ begin
    end;
 end;
 
-function TBiquadIIRFilter.ProcessSample(const Input:Double): Double;
+function TBiquadIIRFilter.ProcessSample64(Input:Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result    := FNominator[0] * Input + FState[0];
@@ -1194,7 +1201,7 @@ asm
 end;
 {$ENDIF}
 
-function TBiquadIIRFilter.ProcessSample(const Input: Int64): Int64;
+function TBiquadIIRFilter.ProcessSample64(Input: Int64): Int64;
 begin
  Result              := Round(FNominator[0] * Input) + PInt64(@FState[0])^;
  PInt64(@FState[0])^ := Round(FNominator[1] * Input) - Round(FDenominator[1] * Result) + PInt64(@FState[1])^;

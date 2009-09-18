@@ -53,7 +53,7 @@ type
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function Real(const Frequency: Double): Double; override;
     procedure CalculateCoefficients; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
@@ -143,7 +143,7 @@ type
     property Hold: Boolean read FHold write SetHold;
   end;
 
-  TDspFDNReverb32 = class(TCustomDspFDNReverb)
+  TDspFDNReverb32 = class(TCustomDspFDNReverb, IDspProcessor32)
   private
     FFeedbackDelayNetwork : TFeedbackZDelayNetwork32;
     FHalflifeVector       : TDAVVector32;
@@ -172,7 +172,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
   end;
 
@@ -329,7 +329,7 @@ begin
  Result := Abs(1E-32 + sqr(FCoeffs[0]) * (cw + 2) / (1 + sqr(FCoeffs[1]) - cw * FCoeffs[1]));
 end;
 
-function TDampingFilter.ProcessSample(const Input: Double): Double;
+function TDampingFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -709,24 +709,24 @@ begin
  // Halflife
  ScaleVector(FeedbackVector, FHalflifeVector);
 
- FeedbackVector[0] := FDampingFilter[0].ProcessSample(FeedbackVector[0]);
- FeedbackVector[1] := FDampingFilter[1].ProcessSample(FeedbackVector[1]);
- FeedbackVector[2] := FDampingFilter[2].ProcessSample(FeedbackVector[2]);
- FeedbackVector[3] := FDampingFilter[3].ProcessSample(FeedbackVector[3]);
+ FeedbackVector[0] := FDampingFilter[0].ProcessSample64(FeedbackVector[0]);
+ FeedbackVector[1] := FDampingFilter[1].ProcessSample64(FeedbackVector[1]);
+ FeedbackVector[2] := FDampingFilter[2].ProcessSample64(FeedbackVector[2]);
+ FeedbackVector[3] := FDampingFilter[3].ProcessSample64(FeedbackVector[3]);
 
  if FModulationActive then
   begin
-   FeedbackVector[0] := FVibrato[0].Process(FeedbackVector[0]);
-   FeedbackVector[1] := FVibrato[0].Process(FeedbackVector[1]);
-   FeedbackVector[2] := FVibrato[0].Process(FeedbackVector[2]);
-   FeedbackVector[3] := FVibrato[0].Process(FeedbackVector[3]);
+   FeedbackVector[0] := FVibrato[0].ProcessSample32(FeedbackVector[0]);
+   FeedbackVector[1] := FVibrato[0].ProcessSample32(FeedbackVector[1]);
+   FeedbackVector[2] := FVibrato[0].ProcessSample32(FeedbackVector[2]);
+   FeedbackVector[3] := FVibrato[0].ProcessSample32(FeedbackVector[3]);
   end;
 end;
 
-function TDspFDNReverb32.ProcessSample(const Input: Single): Single;
+function TDspFDNReverb32.ProcessSample32(Input: Single): Single;
 begin
  result := FDryMix * Input +
-           FWetMix * FFeedbackDelayNetwork.ProcessSample(Input);
+           FWetMix * FFeedbackDelayNetwork.ProcessSample32(Input);
 end;
 
 procedure TDspFDNReverb32.ProcessStereo(const InLeft, InRight: Single;

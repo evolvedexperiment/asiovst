@@ -244,18 +244,18 @@ begin
      inc(FPos);
      if FPos >= ADC.SampleFrames then FPos := 0;
     end;
-   OutBuffer[0, Sample] := FEQs[0,  0].ProcessSample(FEQs[0, 1].ProcessSample(
-                           FEQs[0,  2].ProcessSample(FEQs[0, 3].ProcessSample(
-                           FEQs[0,  4].ProcessSample(FEQs[0, 5].ProcessSample(
-                           FEQs[0,  6].ProcessSample(FEQs[0, 7].ProcessSample(
-                           FEQs[0,  8].ProcessSample(FEQs[0, 9].ProcessSample(
-                           FEQs[0, 10].ProcessSample(OutBuffer[0, Sample])))))))))));
-   OutBuffer[1, Sample] := FEQs[1,  0].ProcessSample(FEQs[1, 1].ProcessSample(
-                           FEQs[1,  2].ProcessSample(FEQs[1, 3].ProcessSample(
-                           FEQs[1,  4].ProcessSample(FEQs[1, 5].ProcessSample(
-                           FEQs[1,  6].ProcessSample(FEQs[1, 7].ProcessSample(
-                           FEQs[1,  8].ProcessSample(FEQs[1, 9].ProcessSample(
-                           FEQs[1, 10].ProcessSample(OutBuffer[1, Sample])))))))))));
+   OutBuffer[0, Sample] := FEQs[0,  0].ProcessSample64(FEQs[0, 1].ProcessSample64(
+                           FEQs[0,  2].ProcessSample64(FEQs[0, 3].ProcessSample64(
+                           FEQs[0,  4].ProcessSample64(FEQs[0, 5].ProcessSample64(
+                           FEQs[0,  6].ProcessSample64(FEQs[0, 7].ProcessSample64(
+                           FEQs[0,  8].ProcessSample64(FEQs[0, 9].ProcessSample64(
+                           FEQs[0, 10].ProcessSample64(OutBuffer[0, Sample])))))))))));
+   OutBuffer[1, Sample] := FEQs[1,  0].ProcessSample64(FEQs[1, 1].ProcessSample64(
+                           FEQs[1,  2].ProcessSample64(FEQs[1, 3].ProcessSample64(
+                           FEQs[1,  4].ProcessSample64(FEQs[1, 5].ProcessSample64(
+                           FEQs[1,  6].ProcessSample64(FEQs[1, 7].ProcessSample64(
+                           FEQs[1,  8].ProcessSample64(FEQs[1, 9].ProcessSample64(
+                           FEQs[1, 10].ProcessSample64(OutBuffer[1, Sample])))))))))));
   end;
 end;
 
@@ -277,18 +277,18 @@ begin
      OutBuffer[1, Sample] := ADC[1 mod ADC.ChannelCount].ChannelDataPointer^[FPos];
      if FPos >= ADC.SampleFrames then FPos := 0;
     end;
-   OutBuffer[0, Sample] := FEQs[0,  0].ProcessSample(FEQs[0, 1].ProcessSample(
-                           FEQs[0,  2].ProcessSample(FEQs[0, 3].ProcessSample(
-                           FEQs[0,  4].ProcessSample(FEQs[0, 5].ProcessSample(
-                           FEQs[0,  6].ProcessSample(FEQs[0, 7].ProcessSample(
-                           FEQs[0,  8].ProcessSample(FEQs[0, 9].ProcessSample(
-                           FEQs[0, 10].ProcessSample(OutBuffer[0, Sample])))))))))));
-   OutBuffer[1, Sample] := FEQs[1,  0].ProcessSample(FEQs[1, 1].ProcessSample(
-                           FEQs[1,  2].ProcessSample(FEQs[1, 3].ProcessSample(
-                           FEQs[1,  4].ProcessSample(FEQs[1, 5].ProcessSample(
-                           FEQs[1,  6].ProcessSample(FEQs[1, 7].ProcessSample(
-                           FEQs[1,  8].ProcessSample(FEQs[1, 9].ProcessSample(
-                           FEQs[1, 10].ProcessSample(OutBuffer[1, Sample])))))))))));
+   OutBuffer[0, Sample] := FEQs[0,  0].ProcessSample64(FEQs[0, 1].ProcessSample64(
+                           FEQs[0,  2].ProcessSample64(FEQs[0, 3].ProcessSample64(
+                           FEQs[0,  4].ProcessSample64(FEQs[0, 5].ProcessSample64(
+                           FEQs[0,  6].ProcessSample64(FEQs[0, 7].ProcessSample64(
+                           FEQs[0,  8].ProcessSample64(FEQs[0, 9].ProcessSample64(
+                           FEQs[0, 10].ProcessSample64(OutBuffer[0, Sample])))))))))));
+   OutBuffer[1, Sample] := FEQs[1,  0].ProcessSample64(FEQs[1, 1].ProcessSample64(
+                           FEQs[1,  2].ProcessSample64(FEQs[1, 3].ProcessSample64(
+                           FEQs[1,  4].ProcessSample64(FEQs[1, 5].ProcessSample64(
+                           FEQs[1,  6].ProcessSample64(FEQs[1, 7].ProcessSample64(
+                           FEQs[1,  8].ProcessSample64(FEQs[1, 9].ProcessSample64(
+                           FEQs[1, 10].ProcessSample64(OutBuffer[1, Sample])))))))))));
   end;
 end;
 

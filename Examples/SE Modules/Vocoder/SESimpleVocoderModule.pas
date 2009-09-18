@@ -112,7 +112,7 @@ begin
  Carrier := PDAVSingleFixedArray(@FCarrierBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FVocoder.Process(Inp^[Sample], Carrier^[Sample]);
+  do Outp^[Sample] := FVocoder.ProcessSample(Inp^[Sample], Carrier^[Sample]);
 end;
 
 procedure TCustomSESimpleVocoderModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -378,7 +378,7 @@ begin
    begin
     Attack  := Att^[Sample];
     Release := Rel^[Sample];
-    Outp^[Sample] := Process(Inp^[Sample], Carrier^[Sample]);
+    Outp^[Sample] := ProcessSample(Inp^[Sample], Carrier^[Sample]);
    end;
 end;
 

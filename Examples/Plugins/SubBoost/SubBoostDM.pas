@@ -183,7 +183,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    // Input Filter
-   FilteredIn := FInputFilter.ProcessSample(Inputs[0, Sample] + Inputs[1, Sample]);
+   FilteredIn := FInputFilter.ProcessSample64(Inputs[0, Sample] + Inputs[1, Sample]);
 
 
    if FilteredIn * dv < 0 then     // Octave Divider
@@ -213,7 +213,7 @@ begin
    end;
 
    // Output Filter
-   SubBass := FOutputFilter.ProcessSample(SubBass);
+   SubBass := FOutputFilter.ProcessSample64(SubBass);
 
    // Output
    Outputs[0, Sample] := Inputs[0, Sample] * FDry + SubBass * FWet;

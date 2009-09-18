@@ -97,7 +97,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outp^[Sample] := FBassEnhancer.Process(Inp^[Sample]);
+   Outp^[Sample] := FBassEnhancer.ProcessSample32(Inp^[Sample]);
    if (Sample div 2) = 0 then
     begin
      FBassEnhancer.HarmonyBassLevel := MBLev^[Sample];

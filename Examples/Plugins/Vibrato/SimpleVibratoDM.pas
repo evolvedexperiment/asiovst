@@ -147,7 +147,7 @@ begin
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FVibrato[Channel].Process(Inputs[Channel, Sample])
+    do Outputs[Channel, Sample] := FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample])
  finally
   Dec(FSemaphore);
  end;
@@ -163,7 +163,7 @@ begin
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FastTanhOpt5Term(FVibrato[Channel].Process(Inputs[Channel, Sample]))
+    do Outputs[Channel, Sample] := FastTanhContinousError4(FVibrato[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally
   Dec(FSemaphore);
  end;

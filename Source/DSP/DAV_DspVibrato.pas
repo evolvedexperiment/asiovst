@@ -63,7 +63,7 @@ type
     property Depth: Double read FDepth write SetDepth;
   end;
 
-  TCustomDspVibrato32 = class(TCustomDspVibrato)
+  TCustomDspVibrato32 = class(TCustomDspVibrato, IDspProcessor32)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -72,7 +72,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure Reset; override;
   end;
 
@@ -83,7 +83,7 @@ type
     property Speed;
   end;
 
-  TCustomDspVibrato64 = class(TCustomDspVibrato)
+  TCustomDspVibrato64 = class(TCustomDspVibrato, IDspProcessor64)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -92,7 +92,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     procedure Reset; override;
   end;
 
@@ -231,7 +231,7 @@ begin
  ReallocMem(FBuffer32, FRealBufSize * SizeOf(Single));
 end;
 
-function TCustomDspVibrato32.Process(const Input: Single): Single;
+function TCustomDspVibrato32.ProcessSample32(Input: Single): Single;
 var
   p : Integer;
   d : Double;
@@ -300,7 +300,7 @@ begin
  ReallocMem(FBuffer64, FRealBufSize * SizeOf(Double));
 end;
 
-function TCustomDspVibrato64.Process(const Input: Double): Double;
+function TCustomDspVibrato64.ProcessSample64(Input: Double): Double;
 var
   p : Integer;
   d : Double;

@@ -67,7 +67,7 @@ type
 
   TSimpleClassicMoogFilter = class(TCustomSimpleClassicMoogFilter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property ThermalVoltage;
     property Resonance;
@@ -75,7 +75,7 @@ type
 
   TLightweightSimpleClassicMoogFilter = class(TCustomSimpleClassicMoogFilter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property ThermalVoltage;
     property Resonance;
@@ -83,7 +83,7 @@ type
 
   TImprovedClassicMoogFilter = class(TCustomSimpleClassicMoogFilter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property ThermalVoltage;
     property Resonance;
@@ -91,7 +91,7 @@ type
 
   TLightweightImprovedClassicMoogFilter = class(TCustomSimpleClassicMoogFilter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property ThermalVoltage;
     property Resonance;
@@ -242,7 +242,7 @@ end;
 
 { TSimpleClassicMoogFilter }
 
-function TSimpleClassicMoogFilter.ProcessSample(const Input: Double): Double;
+function TSimpleClassicMoogFilter.ProcessSample64(Input: Double): Double;
 var
   NewInput : Double;
 begin
@@ -270,7 +270,7 @@ end;
 
 { TLightweightSimpleClassicMoogFilter }
 
-function TLightweightSimpleClassicMoogFilter.ProcessSample(const Input: Double): Double;
+function TLightweightSimpleClassicMoogFilter.ProcessSample64(Input: Double): Double;
 var
   NewInput : Double;
 begin
@@ -278,20 +278,20 @@ begin
 
  // first stage
  FLastSample[0] := FLastSample[0] + FCoefficient *
-   (FastTanhContinousError3(0.5 * NewInput * FThermalVoltageInv) - FTanhLastSample[0]);
- FTanhLastSample[0] := FastTanhContinousError3(0.5 * FLastSample[0] * FThermalVoltageInv);
+   (FastTanhContinousError4(0.5 * NewInput * FThermalVoltageInv) - FTanhLastSample[0]);
+ FTanhLastSample[0] := FastTanhContinousError4(0.5 * FLastSample[0] * FThermalVoltageInv);
 
  // second stage
  FLastSample[1] := FLastSample[1] + FCoefficient * (FTanhLastSample[0] - FTanhLastSample[1]);
- FTanhLastSample[1] := FastTanhContinousError3(0.5 * FLastSample[1] * FThermalVoltageInv);
+ FTanhLastSample[1] := FastTanhContinousError4(0.5 * FLastSample[1] * FThermalVoltageInv);
 
  // third stage
  FLastSample[2] := FLastSample[2] + FCoefficient * (FTanhLastSample[1] - FTanhLastSample[2]);
- FTanhLastSample[2] := FastTanhContinousError3(0.5 * FLastSample[2] * FThermalVoltageInv);
+ FTanhLastSample[2] := FastTanhContinousError4(0.5 * FLastSample[2] * FThermalVoltageInv);
 
  // last stage
  FLastSample[3] := FLastSample[3] + FCoefficient *
-   (FTanhLastSample[2] - FastTanhContinousError3(0.5 * FLastSample[3] * FThermalVoltageInv));
+   (FTanhLastSample[2] - FastTanhContinousError4(0.5 * FLastSample[3] * FThermalVoltageInv));
 
  Result := FScaleFactor * FLastSample[3];
 end;
@@ -299,7 +299,7 @@ end;
 
 { TImprovedClassicMoogFilter }
 
-function TImprovedClassicMoogFilter.ProcessSample(const Input: Double): Double;
+function TImprovedClassicMoogFilter.ProcessSample64(Input: Double): Double;
 var
   NewInput : Double;
 begin
@@ -330,8 +330,7 @@ end;
 
 { TLightweightImprovedClassicMoogFilter }
 
-function TLightweightImprovedClassicMoogFilter.ProcessSample(
-  const Input: Double): Double;
+function TLightweightImprovedClassicMoogFilter.ProcessSample64(Input: Double): Double;
 var
   NewInput : Double;
 begin
@@ -339,22 +338,22 @@ begin
 
  // first stage
  FLastSample[0] := FLastSample[0] + 2 * FThermalVoltage * FCoefficient *
-   (FastTanhContinousError3(0.5 * NewInput * FThermalVoltageInv) - FTanhLastSample[0]);
- FTanhLastSample[0] := FastTanhContinousError3(0.5 * FLastSample[0] * FThermalVoltageInv);
+   (FastTanhContinousError4(0.5 * NewInput * FThermalVoltageInv) - FTanhLastSample[0]);
+ FTanhLastSample[0] := FastTanhContinousError4(0.5 * FLastSample[0] * FThermalVoltageInv);
 
  // second stage
  FLastSample[1] := FLastSample[1] + 2 * FThermalVoltage * FCoefficient *
    (FTanhLastSample[0] - FTanhLastSample[1]);
- FTanhLastSample[1] := FastTanhContinousError3(0.5 * FLastSample[1] * FThermalVoltageInv);
+ FTanhLastSample[1] := FastTanhContinousError4(0.5 * FLastSample[1] * FThermalVoltageInv);
 
  // third stage
  FLastSample[2] := FLastSample[2] + 2 * FThermalVoltage * FCoefficient *
    (FTanhLastSample[1] - FTanhLastSample[2]);
- FTanhLastSample[2] := FastTanhContinousError3(0.5 * FLastSample[2] * FThermalVoltageInv);
+ FTanhLastSample[2] := FastTanhContinousError4(0.5 * FLastSample[2] * FThermalVoltageInv);
 
  // last stage
  FLastSample[3] := FLastSample[3] + 2 * FThermalVoltage * FCoefficient *
-   (FTanhLastSample[2] - FastTanhContinousError3(0.5 * FLastSample[3] * FThermalVoltageInv));
+   (FTanhLastSample[2] - FastTanhContinousError4(0.5 * FLastSample[3] * FThermalVoltageInv));
 
  Result := FScaleFactor * FLastSample[3];
 end;

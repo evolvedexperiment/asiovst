@@ -32,7 +32,7 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
@@ -59,7 +59,7 @@ type
     procedure Reset; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
@@ -84,7 +84,7 @@ type
     procedure CalculateReleaseFactor; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
@@ -109,7 +109,7 @@ type
     procedure CalculateReleaseFactor; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
@@ -135,7 +135,7 @@ type
     procedure CalculateReleaseFactor; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
@@ -164,7 +164,7 @@ type
     procedure Reset; override;
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function GainSample(const Input: Double): Double; override;
@@ -374,7 +374,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeLimiter.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 {$IFDEF XPUREPASCAL}
 var
   Temp : Single;
@@ -777,7 +777,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeFeedbackLikeLimiter.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeFeedbackLikeLimiter.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
@@ -978,7 +978,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
@@ -1180,7 +1180,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeUpwardCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeUpwardCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
@@ -1401,7 +1401,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeFeedbackCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeFeedbackCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
@@ -1695,7 +1695,7 @@ asm
 end;
 {$ENDIF}
 
-function TLightweightSoftKneeFeedbackLikeCompressor.ProcessSample(const Input: Double): Double;
+function TLightweightSoftKneeFeedbackLikeCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;

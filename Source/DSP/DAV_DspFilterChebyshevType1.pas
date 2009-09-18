@@ -66,7 +66,7 @@ type
 
   TCustomChebyshev1LowpassFilter = class(TCustomChebyshev1Filter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
@@ -93,7 +93,7 @@ type
 
   TCustomChebyshev1HighpassFilter = class(TCustomChebyshev1Filter)
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample64(Input: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
@@ -307,7 +307,7 @@ begin
  Result := ArcTan2(Cmplx[1].Im, Cmplx[1].Re);
 end;
 
-function TCustomChebyshev1LowpassFilter.ProcessSample(const Input: Double): Double;
+function TCustomChebyshev1LowpassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;
@@ -636,7 +636,7 @@ begin
  Result := ArcTan2(Nom, Den);
 end;
 
-function TCustomChebyshev1HighpassFilter.ProcessSample(const Input: Double): Double;
+function TCustomChebyshev1HighpassFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 var
   x : Double;

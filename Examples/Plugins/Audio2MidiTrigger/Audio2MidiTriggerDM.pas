@@ -122,7 +122,7 @@ var
   Sample : Integer;
 begin
  for Sample := 0 to SampleFrames - 1
-  do Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample(Inputs[0, Sample]);
+  do Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample32(Inputs[0, Sample]);
  SendVstEventsToHost(FMidiEvent);
 end;
 

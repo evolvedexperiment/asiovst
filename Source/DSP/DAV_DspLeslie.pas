@@ -101,14 +101,14 @@ type
     procedure LowWidthChanged; virtual;
     procedure MomChanged; virtual;
     procedure OutputGainChanged; virtual;
-    procedure SamplerateChanged; override;
+    procedure SampleRateChanged; override;
     procedure SpeedChanged; virtual;
     procedure SpeedParametersChanged; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure Process(Input: Single; out Left, Right: Single);
+    procedure ProcessSample(Input: Single; out Left, Right: Single);
 
     property Crossover: Single read FCrossover write SetCrossover;
     property LeslieSpeed: TLeslieSpeed read FLeslieSpeed write SetLeslieSpeed default lsFast;
@@ -353,7 +353,7 @@ begin
  SpeedParametersChanged;
 end;
 
-procedure TLeslieRotator.Process(Input: Single; out Left, Right: Single);
+procedure TLeslieRotator.ProcessSample(Input: Single; out Left, Right: Single);
 var
   High, Low          : Single;
   hint               : Single;

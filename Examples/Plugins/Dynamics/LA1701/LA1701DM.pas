@@ -1,4 +1,4 @@
-unit LA1701DM;
+﻿unit LA1701DM;
 
 interface
 
@@ -330,10 +330,10 @@ begin
   begin
    d := Inputs[0, i] + Inputs[1, i];
    FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
-   FLA1701s.Sidechain(FHighpass.ProcessSample(d));
+   FLA1701s.Sidechain(FHighpass.ProcessSample64(d));
 
-   Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[0, i]) + FMix[1] * Inputs[0, i];
-   Outputs[1, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[1, i]) + FMix[1] * Inputs[1, i];
+   Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+   Outputs[1, i] := FMix[0] * FLA1701s.ProcessSample64(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
    d := Outputs[0, i] + Outputs[1, i];
    FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));
@@ -349,10 +349,10 @@ begin
   begin
    d := Inputs[0, i] + Inputs[1, i];
    FInLevel := FLevelFallOffFactor * (FInLevel + SimpleDiode(abs(d) - FInLevel));
-   FLA1701s.Sidechain(FHighpass.ProcessSample(d));
+   FLA1701s.Sidechain(FHighpass.ProcessSample64(d));
 
-   Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[0, i]) + FMix[1] * Inputs[0, i];
-   Outputs[1, i] := FMix[0] * FLA1701s.ProcessSample(Inputs[1, i]) + FMix[1] * Inputs[1, i];
+   Outputs[0, i] := FMix[0] * FLA1701s.ProcessSample64(Inputs[0, i]) + FMix[1] * Inputs[0, i];
+   Outputs[1, i] := FMix[0] * FLA1701s.ProcessSample64(Inputs[1, i]) + FMix[1] * Inputs[1, i];
 
    d := Outputs[0, i] + Outputs[1, i];
    FOutLevel := FLevelFallOffFactor * (FOutLevel + SimpleDiode(d - FOutLevel));

@@ -303,8 +303,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FLightweightFeedbackLikeCompressor[0].ProcessSample(Inputs[0, Sample]);
-   Outputs[1, Sample] := FLightweightFeedbackLikeCompressor[1].ProcessSample(Inputs[1, Sample]);
+   Outputs[0, Sample] := FLightweightFeedbackLikeCompressor[0].ProcessSample64(Inputs[0, Sample]);
+   Outputs[1, Sample] := FLightweightFeedbackLikeCompressor[1].ProcessSample64(Inputs[1, Sample]);
   end;
 end;
 
@@ -331,8 +331,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := FastTanhOpt3Term(FLightweightFeedbackLikeCompressor[0].ProcessSample(Inputs[0, Sample]));
-   Outputs[1, Sample] := FastTanhOpt3Term(FLightweightFeedbackLikeCompressor[1].ProcessSample(Inputs[1, Sample]));
+   Outputs[0, Sample] := FastTanhContinousError4(FLightweightFeedbackLikeCompressor[0].ProcessSample64(Inputs[0, Sample]));
+   Outputs[1, Sample] := FastTanhContinousError4(FLightweightFeedbackLikeCompressor[1].ProcessSample64(Inputs[1, Sample]));
   end;
 end;
 
@@ -347,8 +347,8 @@ begin
   begin
    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
    Temp := MakeUpGain * GainReductionFactor;
-   Outputs[0, Sample] := FastTanhOpt3Term(Temp * Inputs[0, Sample]);
-   Outputs[1, Sample] := FastTanhOpt3Term(Temp * Inputs[1, Sample]);
+   Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
+   Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
   end;
 end;
 

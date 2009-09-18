@@ -43,7 +43,8 @@ type
 
   TTriggerNotifyEvent = procedure(Sender: TObject; const Level: Single) of object;
 
-  TCustomAudio2MidiTrigger = class(TDspSampleRatePersistent)
+  TCustomAudio2MidiTrigger = class(TDspSampleRatePersistent, IDspProcessor32,
+    IDspProcessor64)
   private
     function GetFilterCount: Integer;
     function GetFilter(Index: Integer): TCustomFilter;
@@ -71,7 +72,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Double): Double; virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
+    function ProcessSample64(Input: Double): Double; virtual;
     procedure AddFilter(const Filter: TCustomFilter); virtual;
     procedure DeleteFilter(const Filter: TCustomFilter); overload; virtual;
     procedure DeleteFilter(const Index: Integer); overload; virtual;
@@ -238,7 +240,7 @@ begin
  FThresholdFactor := dB_to_Amp(FThreshold);
 end;
 
-function TCustomAudio2MidiTrigger.ProcessSample(const Input: Double): Double;
+function TCustomAudio2MidiTrigger.ProcessSample32(Input: Single): Single;
 var
   Band : Integer;
 begin
@@ -248,7 +250,7 @@ begin
  if not (amFilterBypass in FFlags) then
   for Band := 0 to Length(FFilter) - 1 do
    if assigned(FFilter[Band])
-    then Result := FFilter[Band].ProcessSample(Result);
+    then Result := FFilter[Band].ProcessSample64(Result);
 
  // check if interval is over
  if (FSampleCount >= 0) then
@@ -262,7 +264,36 @@ begin
    end else
   else Dec(FSampleCount);
 
- // eventually restore original signal 
+ // eventually restore original signal
+ if not (amFilterOutput in FFlags)
+  then Result := Input;
+end;
+
+function TCustomAudio2MidiTrigger.ProcessSample64(Input: Double): Double;
+var
+  Band : Integer;
+begin
+ Result := Input;
+
+ // eventually filter audio data
+ if not (amFilterBypass in FFlags) then
+  for Band := 0 to Length(FFilter) - 1 do
+   if assigned(FFilter[Band])
+    then Result := FFilter[Band].ProcessSample64(Result);
+
+ // check if interval is over
+ if (FSampleCount >= 0) then
+  if (abs(Result) > FThresholdFactor) then
+   begin
+    if assigned(FOnTrigger)
+     then FOnTrigger(Self, Amp_to_dB(abs(Result)));
+
+    // reset sample count
+    FSampleCount := FSampleInterval;
+   end else
+  else Dec(FSampleCount);
+
+ // eventually restore original signal
  if not (amFilterOutput in FFlags)
   then Result := Input;
 end;

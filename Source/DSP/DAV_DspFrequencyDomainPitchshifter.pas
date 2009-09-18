@@ -25,7 +25,7 @@ type
   protected
     FRealFFT : TFftReal2ComplexNativeFloat32;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     procedure ProcessSamples(const Inputs, Outputs: PDavSingleFixedArray; const SampleFrames: Cardinal);
   end;

@@ -111,7 +111,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FChorus.Process(Inp^[Sample]);
+  do Outp^[Sample] := FChorus.ProcessSample32(Inp^[Sample]);
 end;
 
 procedure TSEChorusModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);

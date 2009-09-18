@@ -293,7 +293,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do // sampleFrames = how many samples to process (can vary). repeat (loop) that many times
   begin
    // do the actual processing (multiplying the two input samples together)
-   Output^[Sample] := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+   Output^[Sample] := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
   end;
 end;
 
@@ -437,7 +437,7 @@ begin
   begin
    FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
    FFilter.Ripple    := 10 * Ripple[Sample];
-   Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+   Output^[Sample]   := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
   end;
 end;
 
@@ -452,7 +452,7 @@ begin
  Input  := PDAVSingleFixedArray(@FInput1Buffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  for Sample := 0 to SampleFrames - 1
-  do Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+  do Output^[Sample]   := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
 end;
 
 { TSEAutomatebleChebyshev1FilterLPModule }
@@ -511,7 +511,7 @@ begin
      FFilter.Frequency := 1E-5 + abs(10000 * Freq[Sample]);
      FFilter.Ripple    := 10 * Ripple[Sample];
     end;
-   Output^[Sample]   := FFilter.ProcessSample(Input[Sample] + cDenorm64);
+   Output^[Sample]   := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
   end;
 end;
 

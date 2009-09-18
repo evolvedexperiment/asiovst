@@ -35,16 +35,16 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, Classes;
+  Classes, DAV_Common;
 
 type
-  TDspPersistent = class(TPersistent);
+  TDspPersistent = class(TInterfacedPersistent);
 
   TDspSampleRatePersistent = class(TDspPersistent)
   private
     FSampleRate : Double;
     procedure SetSampleRate(const Value: Double);
-  protected  
+  protected
     procedure SampleRateChanged; virtual;
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -52,7 +52,35 @@ type
     property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
-  TDspComponent = class(TComponent);
+//  TDspComponent = class(TComponent);
+
+  // some interfaces
+
+  {$IFDEF DELPHI7_UP}
+  IDspSink32 = interface(IInterface)
+    procedure ProcessSample32(Input: Single);
+  end;
+
+  IDspSink64 = interface(IInterface)
+    procedure ProcessSample64(Input: Double);
+  end;
+
+  IDspProcessor32 = interface(IInterface)
+    function ProcessSample32(Input: Single): Single;
+  end;
+
+  IDspProcessor64 = interface(IInterface)
+    function ProcessSample64(Input: Double): Double;
+  end;
+
+  IDspGenerator32 = interface(IInterface)
+    function ProcessSample32: Single;
+  end;
+
+  IDspGenerator64 = interface(IInterface)
+    function ProcessSample64: Double;
+  end;
+  {$ENDIF}
 
 implementation
 

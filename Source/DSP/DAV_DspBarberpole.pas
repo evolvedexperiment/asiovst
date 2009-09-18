@@ -80,7 +80,7 @@ type
     property Mix: Double read FMix write SetMix;
   end;
 
-  TDspBarberpole32 = class(TCustomDspBarberpole)
+  TDspBarberpole32 = class(TCustomDspBarberpole, IDspProcessor32)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -88,7 +88,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure Reset; override;
   published
     property Depth;
@@ -98,7 +98,7 @@ type
     property Stages;
   end;
 
-  TDspBarberpole64 = class(TCustomDspBarberpole)
+  TDspBarberpole64 = class(TCustomDspBarberpole, IDspProcessor64)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -106,7 +106,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     procedure Reset; override;
   published
     property Depth;
@@ -304,7 +304,7 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-function TDspBarberpole32.Process(const Input: Single): Single;
+function TDspBarberpole32.ProcessSample32(Input: Single): Single;
 var
   i, p : Integer;
   d, m : Double;
@@ -440,7 +440,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-function TDspBarberpole64.Process(const Input: Double): Double;
+function TDspBarberpole64.ProcessSample64(Input: Double): Double;
 var
   i, p : Integer;
   d, m : Double;

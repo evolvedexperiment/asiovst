@@ -2,9 +2,12 @@ unit Chebyshev2DM;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_DSPFilterChebyshev, DAV_DSPFilterChebyshevType2, DAV_VstWindowSizer;
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
+  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_DspFilterChebyshev,
+  DAV_DSPFilterChebyshevType2, DAV_VstWindowSizer;
 
 type
   TChebyshev2HPModule = class(TVSTModule)
@@ -143,8 +146,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FFilter[0].ProcessSample64(Inputs[0, i]);
+   Outputs[1, i] := FFilter[1].ProcessSample64(Inputs[1, i]);
   end;
 end;
 
@@ -155,8 +158,8 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, i] := FFilter[0].ProcessSample(Inputs[0, i]);
-   Outputs[1, i] := FFilter[1].ProcessSample(Inputs[1, i]);
+   Outputs[0, i] := FFilter[0].ProcessSample64(Inputs[0, i]);
+   Outputs[1, i] := FFilter[1].ProcessSample64(Inputs[1, i]);
   end;
 end;
 

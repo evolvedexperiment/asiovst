@@ -48,7 +48,8 @@ type
   protected
     procedure CalculateCoefficients; override;
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     function ProcessSampleASM: Double; override;
   end;
 
@@ -149,7 +150,12 @@ begin
  FDenominator[2] := 0;
 end;
 
-function TAutomatableGainFilter.ProcessSample(const Input: Double): Double;
+function TAutomatableGainFilter.ProcessSample32(Input: Single): Single;
+begin
+ result := Input * FGainFactorSquared;
+end;
+
+function TAutomatableGainFilter.ProcessSample64(Input: Double): Double;
 begin
  result := Input * FGainFactorSquared;
 end;

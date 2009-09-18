@@ -40,8 +40,8 @@ uses
 type
   TCustomCrosstalkSimulator = class(TDspSampleRatePersistent)
   public
-    procedure Process(var Left, Right: Single); overload; virtual; abstract;
-    procedure Process(var Left, Right: Double); overload; virtual; abstract;
+    procedure ProcessSample(var Left, Right: Single); overload; virtual; abstract;
+    procedure ProcessSample(var Left, Right: Double); overload; virtual; abstract;
   end;
 
   TIIRCrosstalkSimulatorModel = (csmHandcrafted, csmIRCAM, csmHDPHX);
@@ -74,8 +74,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure Process(var Left, Right: Single); overload; override;
-    procedure Process(var Left, Right: Double); overload; override;
+    procedure ProcessSample(var Left, Right: Single); overload; override;
+    procedure ProcessSample(var Left, Right: Double); overload; override;
 
     property Model: TIIRCrosstalkSimulatorModel read FModel write SetModel;
     property Diameter: Single read FDiameter write SetDiameter;
@@ -319,7 +319,7 @@ begin
  end;
 end;
 
-procedure TCustomIIRCrosstalkSimulator.Process(var Left, Right: Single);
+procedure TCustomIIRCrosstalkSimulator.ProcessSample(var Left, Right: Single);
 var
   ip : Array [0..1] of Single;
 begin
@@ -329,11 +329,11 @@ begin
  if FBufPos >= FBufSize then FBufPos := 0;
  Left  := FMulFactor[0] * Left  + FBuffer[0, FBufPos];
  Right := FMulFactor[0] * Right + FBuffer[1, FBufPos];
- FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample(FFilter[0, 1].ProcessSample(FFilter[0, 0].ProcessSample(ip[1])));
- FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample(FFilter[1, 1].ProcessSample(FFilter[1, 0].ProcessSample(ip[0])));
+ FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample64(FFilter[0, 1].ProcessSample64(FFilter[0, 0].ProcessSample64(ip[1])));
+ FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample64(FFilter[1, 1].ProcessSample64(FFilter[1, 0].ProcessSample64(ip[0])));
 end;
 
-procedure TCustomIIRCrosstalkSimulator.Process(var Left, Right: Double);
+procedure TCustomIIRCrosstalkSimulator.ProcessSample(var Left, Right: Double);
 var
   ip : Array [0..1] of Double;
 begin
@@ -343,8 +343,8 @@ begin
  if FBufPos >= FBufSize then FBufPos := 0;
  Left  := FMulFactor[0] * Left  + FBuffer[0, FBufPos];
  Right := FMulFactor[0] * Right + FBuffer[1, FBufPos];
- FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample(FFilter[0, 1].ProcessSample(FFilter[0, 0].ProcessSample(ip[1])));
- FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample(FFilter[1, 1].ProcessSample(FFilter[1, 0].ProcessSample(ip[0])));
+ FBuffer[0, FBufPos] := FMulFactor[1] * FFilter[0, 2].ProcessSample64(FFilter[0, 1].ProcessSample64(FFilter[0, 0].ProcessSample64(ip[1])));
+ FBuffer[1, FBufPos] := FMulFactor[1] * FFilter[1, 2].ProcessSample64(FFilter[1, 1].ProcessSample64(FFilter[1, 0].ProcessSample64(ip[0])));
 end;
 
 end.

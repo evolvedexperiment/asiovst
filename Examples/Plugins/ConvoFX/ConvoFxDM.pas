@@ -234,7 +234,7 @@ begin
    IR[Sample] := FGain * IR[Sample];
    s := 0.1 * sqr(sqr((Length - Sample) * Scale));
    IR[Sample] := s * IR[Sample]  +
-                 (1 - s) * FDampingFilter.ProcessSample(IR[Sample]);
+                 (1 - s) * FDampingFilter.ProcessSample64(IR[Sample]);
   end;
 end;
 

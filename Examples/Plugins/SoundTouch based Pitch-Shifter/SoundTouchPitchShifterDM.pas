@@ -33,7 +33,7 @@ begin
  for Channel := 0 to NumInputs - 1 do
   begin
    FSoundTouch[Channel] := TSoundTouch.Create;
-   with FSoundTouch do
+   with FSoundTouch[Channel] do
     begin
      Samplerate := Self.Samplerate;
      Channels := 1;

@@ -59,21 +59,21 @@ type
     property ClearBufferOnChange: Boolean read FClearBuffer write FClearBuffer default true;
   end;
 
-  TCustomVariableDelay32 = class(TCustomVariableDelay)
+  TCustomVariableDelay32 = class(TCustomVariableDelay, IDspProcessor32)
   protected
     FBuffer : PDAVSingleFixedArray;
     procedure ChangeBuffer(const NewSize: Integer); override;
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single; virtual; abstract;
+    function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
   TVariableDelay32Linear = class(TCustomVariableDelay32)
   protected
     class function InterpolatorLength: Integer; override;
   public
-    function ProcessSample(const Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
   end;
 
   TVariableDelay32Hermite = class(TCustomVariableDelay32)
@@ -83,7 +83,7 @@ type
     procedure ResetBufferPosition; override;
   public
     constructor Create; override;
-    function ProcessSample(const Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
   end;
 
   TVariableDelay32Allpass = class(TCustomVariableDelay32)
@@ -95,7 +95,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single; override;
+    function ProcessSample32(Input: Single): Single; override;
   end;
 
 implementation
@@ -191,10 +191,10 @@ end;
 
 class function TVariableDelay32Linear.InterpolatorLength: Integer;
 begin
- result := 2;
+ Result := 2;
 end;
 
-function TVariableDelay32Linear.ProcessSample(const Input: Single): Single;
+function TVariableDelay32Linear.ProcessSample32(Input: Single): Single;
 begin
  FBuffer[FBufferPos] := Input;
  inc(FBufferPos);
@@ -203,9 +203,9 @@ begin
  if FBufferPos + 1 >= FBufferSize then
   begin
    FBuffer[0] := FBuffer[FBufferPos];
-   result := LinearInterpolation(FFractional, @FBuffer[0]);
+   Result := LinearInterpolation(FFractional, @FBuffer[0]);
   end
- else result := LinearInterpolation(FFractional, @FBuffer[FBufferPos]);
+ else Result := LinearInterpolation(FFractional, @FBuffer[FBufferPos]);
 end;
 
 { TVariableDelay32Hermite }
@@ -217,7 +217,7 @@ end;
 
 class function TVariableDelay32Hermite.InterpolatorLength: Integer;
 begin
- result := 4;
+ Result := 4;
 end;
 
 function ModifiedHermite32(const Fractional: Single; Pntr: PDAV4SingleArray): Single;
@@ -262,7 +262,7 @@ asm
 end;
 {$ENDIF}
 
-function TVariableDelay32Hermite.ProcessSample(const Input: Single): Single;
+function TVariableDelay32Hermite.ProcessSample32(Input: Single): Single;
 begin
  FBuffer[FBufferPos] := Input;
  inc(FBufferPos);
@@ -272,9 +272,9 @@ begin
   begin
    if FBufferPos + 2 = FBufferSize
     then move(FBuffer[FBufferPos], FBuffer[0], 2 * SizeOf(Single));
-   result := ModifiedHermite32(FFractional, @FBuffer[FBufferPos - FBufferSize + 2]);
+   Result := ModifiedHermite32(FFractional, @FBuffer[FBufferPos - FBufferSize + 2]);
   end
- else result := ModifiedHermite32(FFractional, @FBuffer[FBufferPos]);
+ else Result := ModifiedHermite32(FFractional, @FBuffer[FBufferPos]);
 end;
 
 procedure TVariableDelay32Hermite.ResetBufferPosition;
@@ -305,15 +305,15 @@ end;
 
 class function TVariableDelay32Allpass.InterpolatorLength: Integer;
 begin
- result := 0;
+ Result := 0;
 end;
 
-function TVariableDelay32Allpass.ProcessSample(const Input: Single): Single;
+function TVariableDelay32Allpass.ProcessSample32(Input: Single): Single;
 begin
  FBuffer[FBufferPos] := Input;
  inc(FBufferPos);
  if FBufferPos >= FBufferSize then FBufferPos := 0;
- result := FAllpassFilter.ProcessSample(FBuffer[FBufferPos]);
+ Result := FAllpassFilter.ProcessSample64(FBuffer[FBufferPos]);
 end;
 
 procedure TVariableDelay32Allpass.SampleRateChanged;

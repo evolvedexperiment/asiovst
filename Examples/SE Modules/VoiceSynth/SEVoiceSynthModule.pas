@@ -103,7 +103,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FVoiceSynth.Process(Inp^[Sample]);
+  do Outp^[Sample] := FVoiceSynth.ProcessSample32(Inp^[Sample]);
 end;
 
 procedure TCustomSEVoiceSynthModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);

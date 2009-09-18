@@ -112,8 +112,8 @@ begin
  c1 := 1;
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Signal := FLowpass.ProcessSample(Inputs[0, Sample]);
-   Signal := FBarberpoleFilter.Process(Signal + 2 * sqr(Signal) - 1);
+   Signal := FLowpass.ProcessSample64(Inputs[0, Sample]);
+   Signal := FBarberpoleFilter.ProcessSample32(Signal + 2 * sqr(Signal) - 1);
    if FDownSamplePos = 0 then
     begin
      Move(FLinearBuffer^[0], FLinearBuffer^[c1], 255 * SizeOf(Single));

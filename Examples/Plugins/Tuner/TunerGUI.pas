@@ -114,12 +114,12 @@ end;
 
 procedure TFmTuner.LbNoteClick(Sender: TObject);
 begin
- if Sender <> LbLowE then LbLowE.Font.Color := $4F4F4F else begin LbLowE.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 1; end;
- if Sender <> LbA then LbA.Font.Color := $4F4F4F else begin LbA.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 2; end;
- if Sender <> LbD then LbD.Font.Color := $4F4F4F else begin LbD.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 3; end;
- if Sender <> LbG then LbG.Font.Color := $4F4F4F else begin LbG.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 4; end;
- if Sender <> LbH then LbH.Font.Color := $4F4F4F else begin LbH.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 5; end;
- if Sender <> LbE then LbE.Font.Color := $4F4F4F else begin LbE.Font.Color := clBlack; TBarberpoleTunerDataModule(Owner).Parameter[0] := 6; end;
+ if Sender <> LbLowE then LbLowE.Font.Color := $4F4F4F else begin LbLowE.Font.Color := clBlack; TTunerDataModule(Owner).Parameter[0] := 1; end;
+ if Sender <> LbA then LbA.Font.Color := $4F4F4F else begin LbA.Font.Color := clBlack; TTunerDataModule(Owner).Parameter[0] := 2; end;
+ if Sender <> LbD then LbD.Font.Color := $4F4F4F else begin LbD.Font.Color := clBlack; TTunerDataModule(Owner).Parameter[0] := 3; end;
+ if Sender <> LbG then LbG.Font.Color := $4F4F4F else begin LbG.Font.Color := clBlack; TTunerDataModule(Owner).Parameter[0] := 4; end;
+ if Sender <> LbH then LbH.Font.Color := $4F4F4F else begin LbH.Font.Color := clBlack; TTunerDataModule(Owner).Parameter[0] := 5; end;
+ if Sender <> LbE then LbE.Font.Color := $4F4F4F else begin LbE.Font.Color := clBlack; TTunerDataModule(Owner).Parameter[0] := 6; end;
 end;
 
 procedure TFmTuner.PBDisplayPaint(Sender: TObject);

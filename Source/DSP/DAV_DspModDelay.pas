@@ -82,7 +82,7 @@ type
     property Depth: Double read FDepth write SetDepth;
   end;
 
-  TCustomModDelay32 = class(TCustomModDelay)
+  TCustomModDelay32 = class(TCustomModDelay, IDspProcessor32)
   private
     FBuffer32 : PDAVSingleFixedArray;
   protected
@@ -91,7 +91,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     procedure Reset; override;
   end;
 
@@ -106,7 +106,7 @@ type
     property SampleRate;
   end;
 
-  TCustomModDelay64 = class(TCustomModDelay)
+  TCustomModDelay64 = class(TCustomModDelay, IDspProcessor64)
   private
     FBuffer64 : PDAVDoubleFixedArray;
   protected
@@ -115,7 +115,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample(const Input: Double): Double;
+    function ProcessSample64(Input: Double): Double;
     procedure Reset; override;
   end;
 
@@ -344,7 +344,7 @@ begin
  ReallocMem(FBuffer32, FRealBufSize * SizeOf(Single));
 end;
 
-function TCustomModDelay32.ProcessSample(const Input: Single): Single;
+function TCustomModDelay32.ProcessSample32(Input: Single): Single;
 var
   p : Integer;
   d : Double;
@@ -364,7 +364,7 @@ begin
  if p < 4 then p := p + (FRealBufSize - 4);
 
  // calculate pure result
- result := FLowpassFilter.ProcessSample(Hermite32_asm(d, @FBuffer32[p - 4]));
+ result := FLowpassFilter.ProcessSample64(Hermite32_asm(d, @FBuffer32[p - 4]));
 
  // store new data
  FBuffer32[FBufferPos] := Input + FFeedbackFactor * result;
@@ -430,7 +430,7 @@ begin
  ReallocMem(FBuffer64, FRealBufSize * SizeOf(Double));
 end;
 
-function TCustomModDelay64.ProcessSample(const Input: Double): Double;
+function TCustomModDelay64.ProcessSample64(Input: Double): Double;
 var
   p : Integer;
   d : Double;
@@ -450,7 +450,7 @@ begin
  if p < 4 then p := p + (FRealBufSize - 4);
 
  // calculate pure result
- result := FLowpassFilter.ProcessSample(Hermite64_asm(d, @FBuffer64[p - 4]));
+ result := FLowpassFilter.ProcessSample64(Hermite64_asm(d, @FBuffer64[p - 4]));
 
  // store new data
  FBuffer64[FBufferPos] := Input + FFeedbackFactor * result;

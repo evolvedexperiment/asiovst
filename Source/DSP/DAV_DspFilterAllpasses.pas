@@ -61,7 +61,8 @@ type
   protected  
     procedure CalculateCoefficients; override;
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
   published                
     property Frequency;
     property PhaseDelay;
@@ -74,7 +75,8 @@ type
   protected
     procedure CalculateCoefficients; override;
   public
-    function ProcessSample(const Input: Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     procedure Reset; override;
     procedure ResetStates; override;
     procedure ResetStatesInt64; override;
@@ -135,8 +137,14 @@ begin
    sin((1 + FPhaseDelay) * NormalizedFrequency);
 end;
 
+function TThiranAllpass1stOrder.ProcessSample32(Input: Single): Single;
+begin
+ Result := FCoefficient * (Input - FLastOutput) + FLastInput;
+ FLastInput := Input;
+ FLastOutput := Result;
+end;
 
-function TThiranAllpass1stOrder.ProcessSample(const Input: Double): Double;
+function TThiranAllpass1stOrder.ProcessSample64(Input: Double): Double;
 begin
  Result := FCoefficient * (Input - FLastOutput) + FLastInput;
  FLastInput := Input;
@@ -153,7 +161,19 @@ begin
    ((FPhaseDelay + 1) * (FPhaseDelay + 2));
 end;
 
-function TThiranAllpass2ndOrder.ProcessSample(const Input: Double): Double;
+function TThiranAllpass2ndOrder.ProcessSample32(Input: Single): Single;
+begin
+ Result := FCoefficient[1] * Input + FCoefficient[0] * FState[0, 0] +
+   FState[0, 1] - FCoefficient[0] * FState[1, 0] -
+   FCoefficient[1] * FState[1, 1];
+
+ FState[0, 1] := FState[0, 0];
+ FState[0, 0] := Input;
+ FState[1, 1] := FState[1, 0];
+ FState[1, 0] := Result;
+end;
+
+function TThiranAllpass2ndOrder.ProcessSample64(Input: Double): Double;
 begin
  Result := FCoefficient[1] * Input + FCoefficient[0] * FState[0, 0] +
    FState[0, 1] - FCoefficient[0] * FState[1, 0] -

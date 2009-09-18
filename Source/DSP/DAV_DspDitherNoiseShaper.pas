@@ -512,8 +512,8 @@ procedure TDitherNoiseShaper32.BitDepthChanged;
 begin
  FBitMul := IntPower(2, FBitDepth - 1) - CHalf32;
  FBitDiv := 1 / FBitMul;
- FLimits[0] := round(-FBitMul - CHalf32);
- FLimits[1] := round( FBitMul - CHalf32);
+ FLimits[0] := Round(-FBitMul - CHalf32);
+ FLimits[1] := Round( FBitMul - CHalf32);
 end;
 
 procedure TDitherNoiseShaper32.NoiseshaperTypeChanged;
@@ -648,11 +648,11 @@ begin
 
  // add triangular distributed noise
  case FDitherType of
-        dtNone : Result := round(Input - CHalf32);
-       dtEqual : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandom);
-  dtTriangular : Result := round(Input - CHalf32 + FDitherAmplitude * (random - random));
-       dtGauss : Result := round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
-   dtFastGauss : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
+        dtNone : Result := Round(Input - CHalf32);
+       dtEqual : Result := Round(Input - CHalf32 + FDitherAmplitude * FastRandom);
+  dtTriangular : Result := Round(Input - CHalf32 + FDitherAmplitude * (random - random));
+       dtGauss : Result := Round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
+   dtFastGauss : Result := Round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
   else Result := 0;
  end;
 
@@ -725,8 +725,8 @@ procedure TDitherNoiseShaper64.BitDepthChanged;
 begin
  FBitMul := IntPower(2, FBitDepth - 1) - CHalf64;
  FBitDiv := 1 / FBitMul;
- FLimits[0] := round(-FBitMul - CHalf64);
- FLimits[1] := round( FBitMul - CHalf64);
+ FLimits[0] := Round(-FBitMul - CHalf64);
+ FLimits[1] := Round( FBitMul - CHalf64);
 end;
 
 procedure TDitherNoiseShaper64.NoiseshaperTypeChanged;
@@ -859,11 +859,11 @@ begin
 
  // add triangular distributed noise
  case FDitherType of
-        dtNone : Result := round(Input - CHalf64);
-       dtEqual : Result := round(Input - CHalf64 + FDitherAmplitude * (2 * random - 1));
-  dtTriangular : Result := round(Input - CHalf64 + FDitherAmplitude * (random - random));
-       dtGauss : Result := round(Input - CHalf64 + FDitherAmplitude * RandomGauss);
-   dtFastGauss : Result := round(Input - CHalf64 + FDitherAmplitude * FastRandomGauss);
+        dtNone : Result := Round(Input - CHalf64);
+       dtEqual : Result := Round(Input - CHalf64 + FDitherAmplitude * (2 * random - 1));
+  dtTriangular : Result := Round(Input - CHalf64 + FDitherAmplitude * (random - random));
+       dtGauss : Result := Round(Input - CHalf64 + FDitherAmplitude * RandomGauss);
+   dtFastGauss : Result := Round(Input - CHalf64 + FDitherAmplitude * FastRandomGauss);
   else Result := 0;
  end;
 
@@ -894,8 +894,8 @@ procedure TDitherSharpNoiseShaper32.BitDepthChanged;
 begin
  FBitMul := IntPower(2, FBitDepth - 1) - CHalf32;
  FBitDiv := 1 / FBitMul;
- FLimits[0] := round(-FBitMul - CHalf32);
- FLimits[1] := round( FBitMul - CHalf32);
+ FLimits[0] := Round(-FBitMul - CHalf32);
+ FLimits[1] := Round( FBitMul - CHalf32);
 end;
 
 procedure TDitherSharpNoiseShaper32.ChooseNoiseshaper;
@@ -949,11 +949,11 @@ begin
 
  // add triangular distributed noise
  case FDitherType of
-        dtNone : Result := round(Input - CHalf32);
-       dtEqual : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandom);
-  dtTriangular : Result := round(Input - CHalf32 + FDitherAmplitude * (random - random));
-       dtGauss : Result := round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
-   dtFastGauss : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
+        dtNone : Result := Round(Input - CHalf32);
+       dtEqual : Result := Round(Input - CHalf32 + FDitherAmplitude * FastRandom);
+  dtTriangular : Result := Round(Input - CHalf32 + FDitherAmplitude * (random - random));
+       dtGauss : Result := Round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
+   dtFastGauss : Result := Round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
   else Result := 0;
  end;
 
@@ -997,8 +997,8 @@ procedure TDitherHighShelfNoiseShaper32.BitDepthChanged;
 begin
  FBitMul := IntPower(2, FBitDepth - 1) - CHalf32;
  FBitDiv := 1 / FBitMul;
- FLimits[0] := round(-FBitMul - CHalf32);
- FLimits[1] := round( FBitMul - CHalf32);
+ FLimits[0] := Round(-FBitMul - CHalf32);
+ FLimits[1] := Round( FBitMul - CHalf32);
 end;
 
 function TDitherHighShelfNoiseShaper32.ProcessFloat(Input: Single): Single;
@@ -1023,15 +1023,15 @@ begin
  Input := FBitMul * Input;
 
  // Direct FIR filter implementation
- Input := Input - FFilter.ProcessSample(FLastSample);
+ Input := Input - FFilter.ProcessSample64(FLastSample);
 
  // add triangular distributed noise
  case FDitherType of
-        dtNone : Result := round(Input - CHalf32);
-       dtEqual : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandom);
-  dtTriangular : Result := round(Input - CHalf32 + FDitherAmplitude * (random - random));
-       dtGauss : Result := round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
-   dtFastGauss : Result := round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
+        dtNone : Result := Round(Input - CHalf32);
+       dtEqual : Result := Round(Input - CHalf32 + FDitherAmplitude * FastRandom);
+  dtTriangular : Result := Round(Input - CHalf32 + FDitherAmplitude * (random - random));
+       dtGauss : Result := Round(Input - CHalf32 + FDitherAmplitude * RandomGauss);
+   dtFastGauss : Result := Round(Input - CHalf32 + FDitherAmplitude * FastRandomGauss);
   else Result := 0;
  end;
 

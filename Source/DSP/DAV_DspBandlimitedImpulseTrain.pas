@@ -77,29 +77,32 @@ type
     procedure Reset; override;
   end;
 
-  TSimpleBandlimitedImpulseTrain32 = class(TCustomSimpleBandlimitedImpulseTrain32)
+  TSimpleBandlimitedImpulseTrain32 = class(TCustomSimpleBandlimitedImpulseTrain32,
+    IDspGenerator32)
   private
     FLastSample : Single;
   public
-    function ProcessSample: Single;
+    function ProcessSample32: Single;
     procedure Reset; override;
   published
     property Samplerate;
     property Frequency;
   end;
 
-  TSimpleBandlimitedBipolarImpulseTrain32 = class(TCustomSimpleBandlimitedImpulseTrain32)
+  TSimpleBandlimitedBipolarImpulseTrain32 = class(TCustomSimpleBandlimitedImpulseTrain32,
+    IDspGenerator32)
   private
     FLastSample : Single;
   public
-    function ProcessSample: Single; virtual;
+    function ProcessSample32: Single; virtual;
     procedure Reset; override;
   published
     property Samplerate;
     property Frequency;
   end;
 
-  TSynchronizedImpulseTrain32 = class(TDspSampleRatePersistent)
+  TSynchronizedImpulseTrain32 = class(TDspSampleRatePersistent,
+    IDspGenerator32)
   private
     FFrequency : Single;
     procedure SetFrequency(const Value: Single);
@@ -109,7 +112,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample: Double; virtual;
+    function ProcessSample32: Single; virtual;
 
     property Frequency: Single read FFrequency write SetFrequency;
   end;
@@ -227,7 +230,7 @@ begin
  FLastSample := 1;
 end;
 
-function TSimpleBandlimitedImpulseTrain32.ProcessSample: Single;
+function TSimpleBandlimitedImpulseTrain32.ProcessSample32: Single;
 begin
  FBuffer^[FBufferPos] := FLastSample;
 
@@ -236,13 +239,13 @@ begin
   then FBufferPos := BufferSize - 1
   else Dec(FBufferPos);
 
- FLastSample := FAllpass.ProcessSample(FBuffer^[FBufferPos]);
+ FLastSample := FAllpass.ProcessSample64(FBuffer^[FBufferPos]);
  Result := FLastSample;
 end;
 
 { TSimpleBandlimitedBipolarImpulseTrain32 }
 
-function TSimpleBandlimitedBipolarImpulseTrain32.ProcessSample: Single;
+function TSimpleBandlimitedBipolarImpulseTrain32.ProcessSample32: Single;
 begin
  FBuffer^[FBufferPos] := -FLastSample;
 
@@ -251,7 +254,7 @@ begin
   then FBufferPos := BufferSize - 1
   else Dec(FBufferPos);
 
- FLastSample := FAllpass.ProcessSample(FBuffer^[FBufferPos]);
+ FLastSample := FAllpass.ProcessSample64(FBuffer^[FBufferPos]);
  Result := FLastSample;
 end;
 
@@ -278,9 +281,9 @@ begin
  inherited;
 end;
 
-function TSynchronizedImpulseTrain32.ProcessSample: Double;
+function TSynchronizedImpulseTrain32.ProcessSample32: Single;
 begin
- Result := FImpulseTrains[0].ProcessSample;
+ Result := FImpulseTrains[0].ProcessSample32;
 // FImpulseTrains[1].ProcessSample;
 end;
 

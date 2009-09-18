@@ -38,7 +38,7 @@ uses
   DAV_Common, DAV_DspCommon, DAV_DspLFO;
 
 type
-  TMasterAllPass = class(TDspPersistent)
+  TMasterAllPass = class(TDspPersistent, IDspProcessor32)
   private
     FCoefficient : Single;
     FDelay       : Single;
@@ -50,13 +50,13 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    function Process(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     property Delay: Single read FDelay write SetDelay;
     property Stages: Integer read FStages write SetStages;
     property SampleRate: Single read FSampleRate write FSampleRate;
   end;
 
-  TCustomPhaser = class(TDspSampleRatePersistent)
+  TCustomPhaser = class(TDspSampleRatePersistent, IDspProcessor32)
   private
     FZM1           : Single;
     FDepth         : Single;
@@ -82,7 +82,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function Process(const Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
     property Depth: Single read FDepth write FDepth; //0..1
     property Feedback: Single read FFeedBack write FFeedBack; // 0..<1
     property Minimum: Single read FMin write SetMinimum;
@@ -129,7 +129,7 @@ end;
 
 {$DEFINE PUREPASCAL}
 
-function TMasterAllpass.Process(const Input: Single): Single;
+function TMasterAllpass.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
   a    : array[0..2] of Single;
@@ -308,10 +308,10 @@ begin
   end;
 end;
 
-function TCustomPhaser.Process(const Input: Single): Single;
+function TCustomPhaser.ProcessSample32(Input: Single): Single;
 begin
   FMasterAllPass.Delay := FMin + (FMax - FMin) * FLFO.Value;
-  FZM1 := FMasterAllPass.Process(CDenorm32 + Input + FZM1 * FFeedBack);
+  FZM1 := FMasterAllPass.ProcessSample32(CDenorm32 + Input + FZM1 * FFeedBack);
   Result := Input + FZM1 * FDepth;
 end;
 

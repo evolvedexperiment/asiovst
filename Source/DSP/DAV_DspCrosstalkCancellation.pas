@@ -383,8 +383,8 @@ begin
 
  for Stage := 0 to FStageCount - 1 do
   begin
-   Temp      := FDelayLine[0, Stage].ProcessSample(FAttenuation * FCrosstalkFilter[0, Stage].ProcessSample(-TempIn[1]));
-   TempIn[1] := FDelayLine[1, Stage].ProcessSample(FAttenuation * FCrosstalkFilter[1, Stage].ProcessSample(-TempIn[0]));
+   Temp      := FDelayLine[0, Stage].ProcessSample32(FAttenuation * FCrosstalkFilter[0, Stage].ProcessSample32(-TempIn[1]));
+   TempIn[1] := FDelayLine[1, Stage].ProcessSample32(FAttenuation * FCrosstalkFilter[1, Stage].ProcessSample32(-TempIn[0]));
    TempIn[0] := Temp;
 
    Left  := Left  + TempIn[0];

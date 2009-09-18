@@ -38,7 +38,7 @@ uses
   Classes, DAV_Common, DAV_Complex, DAV_DspCommon;
 
 type
-  TMetronome = class(TDspSampleRatePersistent)
+  TMetronome = class(TDspSampleRatePersistent, IDspGenerator32)
   private
     FAngle          : TComplexDouble;
     FPosition       : TComplexDouble;
@@ -56,7 +56,7 @@ type
   public
     constructor Create; override;
     procedure CalculateSamplesPerBeat;
-    function ProcessSample: Single;
+    function ProcessSample32: Single;
     procedure Reset;
   published
     property BeatsPerMinute: Double read FBeatsPerMinute write SetBeatsPerMinute;
@@ -85,7 +85,7 @@ begin
   FPosition.Im := 0;
 end;
 
-function TMetronome.ProcessSample: Single;
+function TMetronome.ProcessSample32: Single;
 begin
   Result := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;

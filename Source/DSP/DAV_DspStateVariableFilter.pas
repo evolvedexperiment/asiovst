@@ -25,7 +25,7 @@ type
     procedure QChanged; virtual;
   public
     constructor Create; override;
-    procedure Process(const Input: Single; var Low, Band, Notch, High: Single);
+    procedure ProcessSample(const Input: Single; var Low, Band, Notch, High: Single);
     procedure ProcessBlock(Input, Low, Band, Notch, High: PDAVSingleFixedArray; SampleFrames: Integer);
     property Frequency: Single read FF write SetFrequency;
     property SampleRate;
@@ -110,7 +110,7 @@ begin
  CalculateQ;
 end;
 
-procedure TSVF.Process(const Input: Single; var Low, Band, Notch, High: Single);
+procedure TSVF.ProcessSample(const Input: Single; var Low, Band, Notch, High: Single);
 begin
   Low := FDelay[1] + FF1 * FDelay[0];
   High := (Input + CDenorm32) - Low - FQ1 * FDelay[0];

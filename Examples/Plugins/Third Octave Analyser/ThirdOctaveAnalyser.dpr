@@ -8,7 +8,6 @@ uses
   madLinkDisAsm,
   madListProcesses,
   madListModules,
-  Forms,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
