@@ -533,8 +533,8 @@ end;
 
 function GetModuleFileNameA(hModule: HINST; lpFilename: PAnsiChar; nSize: DWORD): DWORD; stdcall;
 begin
- result := Windows.GetModuleFileNameA(hModule, lpFilename, nSize);
- if (result = 0) and (hModule <> 0) then
+ Result := Windows.GetModuleFileNameA(hModule, lpFilename, nSize);
+ if (Result = 0) and (hModule <> 0) then
   begin
    StrCopy(lpFilename, @ParamStr(0)[1]);
    result := Length(ParamStr(0));
