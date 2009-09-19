@@ -37,10 +37,7 @@ interface
 uses
   Classes, DAV_Common, DAV_DspCommon;
 
-// TODO: - remove Samplerate from TCustomDelayLineTime and make it
-// TCustomFractionalDelayLine, build new class TCustomDelayLineTime in a
-// new unit that contains TCustomFractionalDelayLine!!
-// - complete assignto
+// ToDo: complete assignto
 
 type
   TCustomDelayLine = class(TDspPersistent)
@@ -97,41 +94,81 @@ type
     property BufferSize;
   end;
 
-  TCustomDelayLineTime = class(TCustomDelayLine)
+  TCustomDelayLineFractional = class(TCustomDelayLine)
   private
-    procedure SetSampleRate(const Value: Single);
-    procedure SetTime(const Value: Single);
+    procedure SetFractional(const Value: Double);
+    function GetFractional: Double;
   protected
-    FSampleRate : Single;
-    FTime       : Single;
-    procedure SampleRateChanged; virtual; abstract;
-    procedure TimeChanged; virtual; abstract;
+    FFractional : Double;
+    procedure FractionalChanged; virtual;
   public
-    constructor Create(const BufferSize: Integer = 0); override;
-    property Samplerate: Single read FSampleRate write SetSampleRate;
-    property Time: Single read FTime write SetTime;
+    constructor Create(const FractionalBufferSize: Double = 0); reintroduce; virtual;
+    property FractionalBuffersize: Double read GetFractional write SetFractional;
   end;
 
-  TDelayLineTime32 = class(TCustomDelayLineTime)
-  private
-    procedure CalculateBufferSize;
+  TDelayLineFractional32 = class(TCustomDelayLineFractional, IDspProcessor32)
   protected
     FBuffer         : PDAVSingleFixedArray;
     FRealBufferSize : Integer;
-    FFractional     : Single;
     FIntBuffer      : TDAV4SingleArray;
     procedure BufferSizeChanged; override;
-    procedure SampleRateChanged; override;
-    procedure TimeChanged; override;
   public
-    constructor Create(const BufferSize: Integer = 0); override;
+    constructor Create(const FractionalBufferSize: Double = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
     function ProcessSample32(Input: Single): Single;
   published
-    property Samplerate;
-    property Time;
+    property FractionalBufferSize;
   end;
+
+  TDelayLineFractional64 = class(TCustomDelayLineFractional, IDspProcessor64)
+  protected
+    FBuffer         : PDAVDoubleFixedArray;
+    FRealBufferSize : Integer;
+    FIntBuffer      : TDAV4DoubleArray;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create(const FractionalBufferSize: Double = 0); override;
+    destructor Destroy; override;
+    procedure Reset; override;
+    function ProcessSample64(Input: Double): Double;
+  published
+    property FractionalBufferSize;
+  end;
+
+
+  TDelayLineTime32 = class(TDspSampleRatePersistent, IDspProcessor32)
+  private
+    FFractionalDelay : TDelayLineFractional32;
+    FTime: Double;
+    procedure SetTime(const Value: Double);
+    procedure TimeChanged;
+  public
+    constructor Create(const BufferSize: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
+    procedure Reset; virtual;
+    function ProcessSample32(Input: Single): Single;
+  published
+    property Samplerate;
+    property Time: Double read FTime write SetTime;
+  end;
+
+  TDelayLineTime64 = class(TDspSampleRatePersistent, IDspProcessor64)
+  private
+    FFractionalDelay : TDelayLineFractional64;
+    FTime            : Double;
+    procedure SetTime(const Value: Double);
+    procedure TimeChanged;
+  public
+    constructor Create(const BufferSize: Integer = 0); reintroduce; virtual;
+    destructor Destroy; override;
+    procedure Reset; virtual;
+    function ProcessSample64(Input: Double): Double;
+  published
+    property Samplerate;
+    property Time: Double read FTime write SetTime;
+  end;
+
 
 implementation
 
@@ -316,56 +353,58 @@ begin
 end;
 
 
-{ TCustomDelayLineTime }
+{ TCustomDelayLineFractional }
 
-constructor TCustomDelayLineTime.Create;
+constructor TCustomDelayLineFractional.Create(const FractionalBufferSize: Double = 0);
 begin
- inherited;
- FTime := 1;
- FSampleRate := 44100;
+ assert(FractionalBufferSize >= 0);
+ inherited Create(Trunc(FractionalBufferSize));
+ FFractional := FractionalBufferSize - FBufferSize;
 end;
 
-procedure TCustomDelayLineTime.SetSampleRate(const Value: Single);
+procedure TCustomDelayLineFractional.FractionalChanged;
 begin
- if FSampleRate <> Value then
+ assert(FFractional >= 0);
+end;
+
+function TCustomDelayLineFractional.GetFractional: Double;
+begin
+ Result := FBufferSize + FFractional;
+end;
+
+procedure TCustomDelayLineFractional.SetFractional(const Value: Double);
+begin
+ if FractionalBuffersize <> Value then
   begin
-   FSampleRate := Value;
-   SampleRateChanged;
+   BufferSize := Trunc(FractionalBufferSize);
+   FFractional := FractionalBufferSize - FBufferSize;
+   FractionalChanged;
   end;
 end;
 
-procedure TCustomDelayLineTime.SetTime(const Value: Single);
+
+{ TDelayLineFractional32 }
+
+constructor TDelayLineFractional32.Create(const FractionalBufferSize: Double = 0);
 begin
- if FTime <> Value then
-  begin
-   FTime := Value;
-   TimeChanged;
-  end;
-end;
-
-
-{ TDelayLineTime32 }
-
-constructor TDelayLineTime32.Create;
-begin
- inherited;
+ inherited Create(Trunc(FractionalBufferSize));
  FBuffer := nil;
  FIntBuffer[3] := 0;
 end;
 
-destructor TDelayLineTime32.Destroy;
+destructor TDelayLineFractional32.Destroy;
 begin
 // assert(FBuffer[BufferSize - 1] = 0);
  Dispose(FBuffer);
  inherited;
 end;
 
-procedure TDelayLineTime32.BufferSizeChanged;
+procedure TDelayLineFractional32.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
 end;
 
-function TDelayLineTime32.ProcessSample32(Input: Single): Single;
+function TDelayLineFractional32.ProcessSample32(Input: Single): Single;
 begin
  FBuffer^[FBufferPos] := Input;
 
@@ -378,31 +417,133 @@ begin
  Result := Hermite32_asm(FFractional, @FIntBuffer);
 end;
 
-procedure TDelayLineTime32.Reset;
+procedure TDelayLineFractional32.Reset;
 begin
  inherited;
  FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
-procedure TDelayLineTime32.CalculateBufferSize;
+
+{ TDelayLineFractional64 }
+
+constructor TDelayLineFractional64.Create(const FractionalBufferSize: Double = 0);
 begin
- BufferSize      := round(FTime * FSampleRate + 0.5) + 1;
- FFractional     := BufferSize - 1 - (FTime * FSampleRate);
- FBuffer[BufferSize - 1] := 0;
- assert(FFractional >= 0);
- assert(FFractional <= 1);
+ inherited Create(Trunc(FractionalBufferSize));
+ FBuffer := nil;
+ FIntBuffer[3] := 0;
 end;
 
-procedure TDelayLineTime32.SampleRateChanged;
+destructor TDelayLineFractional64.Destroy;
+begin
+// assert(FBuffer[BufferSize - 1] = 0);
+ Dispose(FBuffer);
+ inherited;
+end;
+
+procedure TDelayLineFractional64.BufferSizeChanged;
+begin
+ ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
+end;
+
+function TDelayLineFractional64.ProcessSample64(Input: Double): Double;
+begin
+ FBuffer^[FBufferPos] := Input;
+
+ inc(FBufferPos);
+ if FBufferPos >= BufferSize - 1
+  then FBufferPos := 0;
+
+ Move(FIntBuffer[0], FIntBuffer[1], 3 * SizeOf(Double));
+ FIntBuffer[0] := FBuffer^[FBufferPos];
+ Result := Hermite64_asm(FFractional, @FIntBuffer);
+end;
+
+procedure TDelayLineFractional64.Reset;
 begin
  inherited;
- CalculateBufferSize;
+ FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
+end;
+
+
+{ TDelayLineTime32 }
+
+constructor TDelayLineTime32.Create(const BufferSize: Integer);
+begin
+ inherited Create;
+ FFractionalDelay := TDelayLineFractional32.Create(BufferSize);
+ FTime := 0;
+end;
+
+destructor TDelayLineTime32.Destroy;
+begin
+ FreeAndNil(FFractionalDelay);
+ inherited;
+end;
+
+function TDelayLineTime32.ProcessSample32(Input: Single): Single;
+begin
+ Result := FFractionalDelay.ProcessSample32(Input);
+end;
+
+procedure TDelayLineTime32.Reset;
+begin
+ inherited;
+ FFractionalDelay.Reset;
+end;
+
+procedure TDelayLineTime32.SetTime(const Value: Double);
+begin
+ if FTime <> Value then
+  begin
+   FTime := Value;
+   TimeChanged;
+  end;
 end;
 
 procedure TDelayLineTime32.TimeChanged;
 begin
+ FFractionalDelay.FractionalBufferSize := FTime * SampleRate;
+end;
+
+
+{ TDelayLineTime64 }
+
+constructor TDelayLineTime64.Create(const BufferSize: Integer);
+begin
+ inherited Create;
+ FFractionalDelay := TDelayLineFractional64.Create(BufferSize);
+ FTime := 0;
+end;
+
+destructor TDelayLineTime64.Destroy;
+begin
+ FreeAndNil(FFractionalDelay);
  inherited;
- CalculateBufferSize;
+end;
+
+function TDelayLineTime64.ProcessSample64(Input: Double): Double;
+begin
+ Result := FFractionalDelay.ProcessSample64(Input);
+end;
+
+procedure TDelayLineTime64.Reset;
+begin
+ inherited;
+ FFractionalDelay.Reset;
+end;
+
+procedure TDelayLineTime64.SetTime(const Value: Double);
+begin
+ if FTime <> Value then
+  begin
+   FTime := Value;
+   TimeChanged;
+  end;
+end;
+
+procedure TDelayLineTime64.TimeChanged;
+begin
+ FFractionalDelay.FractionalBufferSize := FTime * SampleRate;
 end;
 
 end.

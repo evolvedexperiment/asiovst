@@ -1,11 +1,41 @@
 unit DAV_DspWaveshaper;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain Parameter copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2004-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, Math, DAV_Common, DAV_DspCommon;
+  Classes, DAV_Common, DAV_DspCommon;
 
 type
   TChebyshevWaveshaper = class(TDspPersistent, IDspProcessor64)
@@ -50,149 +80,152 @@ type
     property Shape: Double read FShape write SetShape;
   end;
 
-function Waveshaper1(x, t: Single): Single; overload;
-function Waveshaper1(x, t: Double): Double; overload;
-function Waveshaper2(x, t: Single): Single; overload;
-function Waveshaper2(x, t: Double): Double; overload;
-function Waveshaper3(x, a: Single): Single; overload;
-function Waveshaper3(x, a: Double): Double; overload;
-function Waveshaper4(x, a: Single): Single; overload;
-function Waveshaper4(x, a: Double): Double; overload;
-function Waveshaper5(x, a: Single): Single; overload;
-function Waveshaper5(x, a: Double): Double; overload;
-function Waveshaper6(x: Single): Single; overload;
-function Waveshaper6(x: Double): Double; overload;
-function Waveshaper7(x, a: Single): Single; overload;
-function Waveshaper7(x, a: Double): Double; overload;
-function Waveshaper8(x, a: Single): Single; overload;
-function Waveshaper8(x, a: Double): Double; overload;
-function Saturate(input, Limit: Single): Single; overload;
-function Saturate(input, Limit: Double): Double; overload;
-function Saturate2(input, Limit: Single): Single; overload;
-function Saturate2(input, Limit: Double): Double; overload;
-function SoftSat(x, a:Single): Single; overload;
-function SoftSat(x, a:Double): Double; overload;
+function Waveshaper1(Input, Parameter: Single): Single; overload;
+function Waveshaper1(Input, Parameter: Double): Double; overload;
+function Waveshaper2(Input, Parameter: Single): Single; overload;
+function Waveshaper2(Input, Parameter: Double): Double; overload;
+function Waveshaper3(Input, Parameter: Single): Single; overload;
+function Waveshaper3(Input, Parameter: Double): Double; overload;
+function Waveshaper4(Input, Parameter: Single): Single; overload;
+function Waveshaper4(Input, Parameter: Double): Double; overload;
+function Waveshaper5(Input, Parameter: Single): Single; overload;
+function Waveshaper5(Input, Parameter: Double): Double; overload;
+function Waveshaper6(Input: Single): Single; overload;
+function Waveshaper6(Input: Double): Double; overload;
+function Waveshaper7(Input, Parameter: Single): Single; overload;
+function Waveshaper7(Input, Parameter: Double): Double; overload;
+function Waveshaper8(Input, Parameter: Single): Single; overload;
+function Waveshaper8(Input, Parameter: Double): Double; overload;
+function Saturate(Input, Limit: Single): Single; overload;
+function Saturate(Input, Limit: Double): Double; overload;
+function Saturate2(Input, Limit: Single): Single; overload;
+function Saturate2(Input, Limit: Double): Double; overload;
+function SoftSat(Input, Parameter: Single): Single; overload;
+function SoftSat(Input, Parameter: Double): Double; overload;
 
 implementation
 
-function Waveshaper1(x, t :Single): Single;
+uses
+  SysUtils, Math;
+
+function Waveshaper1(Input, Parameter :Single): Single;
 begin
- if abs(x) < t
-  then Result := x
+ if abs(Input) < Parameter
+  then Result := Input
   else
    begin
-    if x > 0
-     then Result :=   t + (1 - t) * tanh(( x - t) / (1 - t))
-     else Result := -(t + (1 - t) * tanh((-x - t) / (1 - t)));
+    if Input > 0
+     then Result :=   Parameter + (1 - Parameter) * tanh(( Input - Parameter) / (1 - Parameter))
+     else Result := -(Parameter + (1 - Parameter) * tanh((-Input - Parameter) / (1 - Parameter)));
    end;
 end;
 
-function Waveshaper1(x, t :Double): Double;
+function Waveshaper1(Input, Parameter :Double): Double;
 begin
- if abs(x) < t
-  then Result := x
+ if abs(Input) < Parameter
+  then Result := Input
   else
    begin
-    if x > 0
-     then Result :=   t + (1 - t) * tanh(( x - t) / (1 - t))
-     else Result := -(t + (1 - t) * tanh((-x - t) / (1 - t)));
+    if Input > 0
+     then Result :=   Parameter + (1 - Parameter) * tanh(( Input - Parameter) / (1 - Parameter))
+     else Result := -(Parameter + (1 - Parameter) * tanh((-Input - Parameter) / (1 - Parameter)));
    end;
 end;
 
-function Waveshaper2(x, t: Single): Single;
+function Waveshaper2(Input, Parameter: Single): Single;
 begin
- if abs(x) < t
-  then Result := x
+ if abs(Input) < Parameter
+  then Result := Input
   else
    begin
-    if x > 0
-     then Result :=   t + (1 - t) * sigmoid( (x - t) / ((1 - t) * 1.5))
-     else Result := -(t + (1 - t) * sigmoid((-x - t) / ((1 - t) * 1.5)));
+    if Input > 0
+     then Result :=   Parameter + (1 - Parameter) * sigmoid( (Input - Parameter) / ((1 - Parameter) * 1.5))
+     else Result := -(Parameter + (1 - Parameter) * sigmoid((-Input - Parameter) / ((1 - Parameter) * 1.5)));
    end;
 end;
 
-function Waveshaper2(x, t: Double): Double;
+function Waveshaper2(Input, Parameter: Double): Double;
 begin
- if abs(x) < t
-  then Result := x
+ if abs(Input) < Parameter
+  then Result := Input
   else
    begin
-    if x > 0
-     then Result :=   t + (1 - t) * sigmoid( (x - t) / ((1 - t) * 1.5))
-     else Result := -(t + (1 - t) * sigmoid((-x - t) / ((1 - t) * 1.5)));
+    if Input > 0
+     then Result :=   Parameter + (1 - Parameter) * sigmoid( (Input - Parameter) / ((1 - Parameter) * 1.5))
+     else Result := -(Parameter + (1 - Parameter) * sigmoid((-Input - Parameter) / ((1 - Parameter) * 1.5)));
    end;
 end;
 
-function Waveshaper3(x, a: Single): Single;
+function Waveshaper3(Input, Parameter: Single): Single;
 begin
- Result := x * (Abs(x) + a) / (x * x + (a - 1) * Abs(x) + 1);
+ Result := Input * (Abs(Input) + Parameter) / (Input * Input + (Parameter - 1) * Abs(Input) + 1);
 end;
 
-function Waveshaper3(x, a: Double): Double;
+function Waveshaper3(Input, Parameter: Double): Double;
 begin
- Result := x * (Abs(x) + a) / (x * x + (a - 1) * Abs(x) + 1);
+ Result := Input * (Abs(Input) + Parameter) / (Input * Input + (Parameter - 1) * Abs(Input) + 1);
 end;
 
-function Waveshaper4(x, a: Single): Single;
+function Waveshaper4(Input, Parameter: Single): Single;
 begin
- Result := sign(x) * power(ArcTan(Power(Abs(x), a)), (1 / a));
+ Result := sign(Input) * power(ArcTan(Power(Abs(Input), Parameter)), (1 / Parameter));
 end;
 
-function Waveshaper4(x, a: Double): Double;
+function Waveshaper4(Input, Parameter: Double): Double;
 begin
- Result := sign(x) * power(arctan(power(Abs(x), a)), (1 / a));
+ Result := sign(Input) * power(arctan(power(Abs(Input), Parameter)), (1 / Parameter));
 end;
 
-function Waveshaper5(x, a: Single): Single;
+function Waveshaper5(Input, Parameter: Single): Single;
 begin
- a := 2 * a / (1 - a);
- Result := (1 + a) * x / (1 + a * Abs(x));
+ Parameter := 2 * Parameter / (1 - Parameter);
+ Result := (1 + Parameter) * Input / (1 + Parameter * Abs(Input));
 end;
 
-function Waveshaper5(x, a: Double): Double;
+function Waveshaper5(Input, Parameter: Double): Double;
 begin
- a := 2 * a / (1 - a);
- Result := (1 + a) * x / (1 + a * Abs(x));
+ Parameter := 2 * Parameter / (1 - Parameter);
+ Result := (1 + Parameter) * Input / (1 + Parameter * Abs(Input));
 end;
 
-function Waveshaper6(x: Single): Single;
+function Waveshaper6(Input: Single): Single;
 var
-  a, b : Single;
+  Parameter, b : Single;
 begin
- x := x * 0.686306;
- a := 1 + Exp(sqrt(Abs(x)) * -0.75);
- b := Exp(x);
- Result := (b - Exp(-x * a)) * b / (b * b + 1);
+ Input := Input * 0.686306;
+ Parameter := 1 + Exp(sqrt(Abs(Input)) * -0.75);
+ b := Exp(Input);
+ Result := (b - Exp(-Input * Parameter)) * b / (b * b + 1);
 end;
 
-function Waveshaper6(x: Double): Double;
+function Waveshaper6(Input: Double): Double;
 var
-  a, b : Double;
+  Parameter, b : Double;
 begin
- x := x * 0.686306;
- a := 1 + Exp(sqrt(Abs(x)) * -0.75);
- b := Exp(x);
- Result := (b - Exp(-x * a)) * b / (b * b + 1);
+ Input := Input * 0.686306;
+ Parameter := 1 + Exp(sqrt(Abs(Input)) * -0.75);
+ b := Exp(Input);
+ Result := (b - Exp(-Input * Parameter)) * b / (b * b + 1);
 end;
 
-function Waveshaper7(x, a: Single): Single;
+function Waveshaper7(Input, Parameter: Single): Single;
 begin
- Result := sign(x) * Exp(ln(Abs(x)) * a);
+ Result := sign(Input) * Exp(ln(Abs(Input)) * Parameter);
 end;
 
-function Waveshaper7(x, a: Double): Double;
+function Waveshaper7(Input, Parameter: Double): Double;
 begin
- Result := sign(x) * Exp(ln(Abs(x)) * a);
+ Result := sign(Input) * Exp(ln(Abs(Input)) * Parameter);
 end;
 
-function Waveshaper8(x, a: Single): Single;
+function Waveshaper8(Input, Parameter: Single): Single;
 begin
- Result := sign(x) * Exp(ln(a) * Abs(x));
+ Result := sign(Input) * Exp(ln(Parameter) * Abs(Input));
 end;
 
-function Waveshaper8(x, a: Double): Double;
+function Waveshaper8(Input, Parameter: Double): Double;
 begin
- Result := sign(x) * Exp(ln(a) * Abs(x));
+ Result := sign(Input) * Exp(ln(Parameter) * Abs(Input));
 end;
 
 function Saturate(Input, Limit: Single): Single;
@@ -208,11 +241,11 @@ asm
  fabs
  fsubp
  fmul CGrdDiv;
-// result := CGrdDiv * (Abs(Input + Limit) - Abs(Input - Limit));
+// Result := CGrdDiv * (Abs(Input + Limit) - Abs(Input - Limit));
 end;
 {$ELSE}
 begin
- result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
+ Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
 end;
 {$ENDIF}
 
@@ -232,53 +265,53 @@ asm
 end;
 {$ELSE}
 begin
- result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
+ Result := 0.5 * (Abs(Input + Limit) - Abs(Input - Limit));
 end;
 {$ENDIF}
 
 function Saturate2(Input, Limit: Single): Single;
 begin
  if Input > Limit
-  then result := Limit
+  then Result := Limit
   else
    if Input < -Limit
-    then result := -Limit
+    then Result := -Limit
     else Result := Input;
 end;
 
 function Saturate2(Input, Limit: Double): Double;
 begin
  if Input > Limit
-  then result := Limit
+  then Result := Limit
   else
    if Input < -Limit
-    then result := -Limit
+    then Result := -Limit
     else Result := Input;
 end; 
 
-function SoftSat(x, a: Single): Single;
+function SoftSat(Input, Parameter: Single): Single;
 var
   b, c : Single;
 begin
- b := Abs(x);
- if b < a then Result := x else
- if b > 1 then Result := sign(x) * (a + 1) * 0.5 else
+ b := Abs(Input);
+ if b < Parameter then Result := Input else
+ if b > 1 then Result := sign(Input) * (Parameter + 1) * 0.5 else
   begin
-   c := ((x - a) / (1 - a));
-   Result := a + (x - a) / (1 + c * c);
+   c := ((Input - Parameter) / (1 - Parameter));
+   Result := Parameter + (Input - Parameter) / (1 + c * c);
   end;
 end;
 
-function SoftSat(x, a: Double): Double;
+function SoftSat(Input, Parameter: Double): Double;
 var
   b, c : Double;
 begin
- b := Abs(x);
- if b < a then Result := x else
- if b > 1 then Result := sign(x) * (a + 1) * 0.5 else
+ b := Abs(Input);
+ if b < Parameter then Result := Input else
+ if b > 1 then Result := sign(Input) * (Parameter + 1) * 0.5 else
   begin
-   c := ((x - a) / (1 - a));
-   Result := a + (x - a) / (1 + c * c);
+   c := ((Input - Parameter) / (1 - Parameter));
+   Result := Parameter + (Input - Parameter) / (1 + c * c);
   end;
 end;
 
@@ -305,84 +338,84 @@ function TChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;
 begin
  if (Harmonic < 0) or (Harmonic >= Order)
   then raise Exception.Create('Index out of bounds')
-  else result := FGains[Harmonic];
+  else Result := FGains[Harmonic];
 end;
 
 function TChebyshevWaveshaper.GetInverted(Harmonic: Integer): Boolean;
 begin
- result := Gain[Harmonic] < 0;
+ Result := Gain[Harmonic] < 0;
 end;
 
 function TChebyshevWaveshaper.GetLevel(Harmonic: Integer): Double;
 begin
- result := Amp_to_dB(abs(FGains[Harmonic]));
+ Result := Amp_to_dB(abs(FGains[Harmonic]));
 end;
 
 function TChebyshevWaveshaper.GetOrder: Integer;
 begin
- result := Length(FGains);
+ Result := Length(FGains);
 end;
 
 function TChebyshevWaveshaper.ProcessSample64(Input: Double): Double;
 var
   i : Integer;
 begin
- result := FChebyshevCoeffs[Order];
+ Result := FChebyshevCoeffs[Order];
  for i := Order - 1 downto 0
-  do result := result * Input + FChebyshevCoeffs[i];
+  do Result := Result * Input + FChebyshevCoeffs[i];
 end;
 
 function ChebyPolynome(Order, Power: Integer): Integer;
 begin
- if (Power < 0) or (Order < Power) then result := 0 else
+ if (Power < 0) or (Order < Power) then Result := 0 else
   case Order of
-    0 : if (Power = 0) then result := 1 else result := 0;
-    1 : if (Power = 1) then result := 1 else result := 0;
+    0 : if (Power = 0) then Result := 1 else Result := 0;
+    1 : if (Power = 1) then Result := 1 else Result := 0;
     2 : case Power of
-         0 : result := -1;
-         2 : result :=  2;
-         else result := 0;
+         0 : Result := -1;
+         2 : Result :=  2;
+         else Result := 0;
         end;
     3 : case Power of
-         1 : result := -3;
-         3 : result :=  4;
-         else result := 0;
+         1 : Result := -3;
+         3 : Result :=  4;
+         else Result := 0;
         end;
     4 : case Power of
-         0 : result :=  1;
-         2 : result := -8;
-         4 : result :=  8;
-         else result := 0;
+         0 : Result :=  1;
+         2 : Result := -8;
+         4 : Result :=  8;
+         else Result := 0;
         end;
     5 : case Power of
-         1 : result :=   5;
-         3 : result := -20;
-         5 : result :=  16;
-         else result := 0;
+         1 : Result :=   5;
+         3 : Result := -20;
+         5 : Result :=  16;
+         else Result := 0;
         end;
     6 : case Power of
-         0 : result :=  -1;
-         2 : result :=  18;
-         4 : result := -48;
-         6 : result :=  32;
-         else result := 0;
+         0 : Result :=  -1;
+         2 : Result :=  18;
+         4 : Result := -48;
+         6 : Result :=  32;
+         else Result := 0;
         end;
     7 : case Power of
-         1 : result :=  -7;
-         3 : result :=  56;
-         5 : result := -112;
-         7 : result :=  64;
-         else result := 0;
+         1 : Result :=  -7;
+         3 : Result :=  56;
+         5 : Result := -112;
+         7 : Result :=  64;
+         else Result := 0;
         end;
     8 : case Power of
-         0 : result :=    1;
-         2 : result :=  -32;
-         4 : result :=  160;
-         6 : result := -256;
-         8 : result :=  128;
-         else result := 0;
+         0 : Result :=    1;
+         2 : Result :=  -32;
+         4 : Result :=  160;
+         6 : Result := -256;
+         8 : Result :=  128;
+         else Result := 0;
         end;
-   else result := 2 * ChebyPolynome(Order - 1, Power - 1) - ChebyPolynome(Order - 2, Power);
+   else Result := 2 * ChebyPolynome(Order - 1, Power - 1) - ChebyPolynome(Order - 2, Power);
   end;
 end;
 
@@ -394,14 +427,14 @@ end;
 
 procedure TChebyshevWaveshaper.RecalculateHarmonics;
 var
-  x, y  : Integer;
+  Input, y  : Integer;
 begin
  for y := 0 to Order do
   begin
    FChebyshevCoeffs[y] := FGains[0] * ChebyPolynome(1, y);
-   for x := 1 to Order - 1 do
-    if FGains[x] <> 0
-     then FChebyshevCoeffs[y] := FChebyshevCoeffs[y] + FGains[x] * ChebyPolynome(1 + x, y);
+   for Input := 1 to Order - 1 do
+    if FGains[Input] <> 0
+     then FChebyshevCoeffs[y] := FChebyshevCoeffs[y] + FGains[Input] * ChebyPolynome(1 + Input, y);
   end;
 end;
 
