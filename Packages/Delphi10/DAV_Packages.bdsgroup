@@ -8,7 +8,9 @@
 			<Option Name="GUID">{A09DB763-BC41-455A-803C-09B2F98535A4}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  <Projects>
+	<Default.Personality>  
+    
+    <Projects>
       <Projects Name="DAV_Common_D10.bpl">DAV_Common_D10.bdsproj</Projects>
       <Projects Name="DAV_DSP_D10.bpl">DAV_DSP_D10.bdsproj</Projects>
       <Projects Name="DAV_Modular_D10.bpl">DAV_Modular_D10.bdsproj</Projects>
@@ -18,8 +20,7 @@
       <Projects Name="DAV_SEHost_D10.bpl">DAV_SEHost_D10.bdsproj</Projects>
       <Projects Name="DAV_GUI_D10.bpl">DAV_GUI_D10.bdsproj</Projects>
       <Projects Name="DAV_VSTCloner_D10.bpl">DAV_VSTCloner_D10.bdsproj</Projects>
-      <Projects Name="DualButterworthFilters.dll">..\..\Examples\Plugins\Filter\Cascaded Butterworth Filters\DualButterworthFilters.bdsproj</Projects>
-      <Projects Name="Targets">DAV_Common_D10.bpl DAV_DSP_D10.bpl DAV_Modular_D10.bpl DAV_VSTPlugin_D10.bpl DAV_VSTHost_D10.bpl DAV_ASIOHost_D10.bpl DAV_SEHost_D10.bpl DAV_GUI_D10.bpl DAV_VSTCloner_D10.bpl DualButterworthFilters.dll</Projects>
+      <Projects Name="Targets">DAV_Common_D10.bpl DAV_DSP_D10.bpl DAV_Modular_D10.bpl DAV_VSTPlugin_D10.bpl DAV_VSTHost_D10.bpl DAV_ASIOHost_D10.bpl DAV_SEHost_D10.bpl DAV_GUI_D10.bpl DAV_VSTCloner_D10.bpl</Projects>
     </Projects>
     <Dependencies>
       <Dependency GUID="{EA6C899F-BFF7-4C22-A8D6-8ADA4A6D1102}">

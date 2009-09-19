@@ -23,9 +23,7 @@ unit DAV_DspLevinson;
 //                                                                            //
 //  The code is part of the Delphi ASIO & VST Project                         //
 //                                                                            //
-//  The code is based on the mda VST plug-ins by Paul Kellett, which is       //
-//  located at http://sourceforge.net/projects/mda-vst/                       //
-//  It was reviewed and rewritten from scratch by Christian-W. Budde          //
+//  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
 //  Portions created by Christian-W. Budde are Copyright (C) 2006             //
 //  by Christian-W. Budde. All Rights Reserved.                               //

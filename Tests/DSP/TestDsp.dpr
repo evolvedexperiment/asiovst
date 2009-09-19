@@ -54,7 +54,13 @@ uses
   TestDAV_DspFilterLinkwitzRiley in 'TestDAV_DspFilterLinkwitzRiley.pas',
   TestDAV_DspAmbience in 'TestDAV_DspAmbience.pas',
   TestDAV_DspBarberpoleTuner in 'TestDAV_DspBarberpoleTuner.pas',
-  TestDAV_DspCircularBuffer in 'TestDAV_DspCircularBuffer.pas';
+  TestDAV_DspCircularBuffer in 'TestDAV_DspCircularBuffer.pas',
+  TestDAV_DspAudioToMidiTrigger in 'TestDAV_DspAudioToMidiTrigger.pas',
+  DAV_DspAudioToMidiTrigger in '..\..\Source\DSP\DAV_DspAudioToMidiTrigger.pas',
+  TestDAV_DspExciter in 'TestDAV_DspExciter.pas',
+  DAV_DspExciter in '..\..\Source\DSP\DAV_DspExciter.pas',
+  TestDAV_DspWaveshaper in 'TestDAV_DspWaveshaper.pas',
+  DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas';
 
 {$R *.RES}
 

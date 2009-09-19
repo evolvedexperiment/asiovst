@@ -22,12 +22,12 @@
 // - Refer to ASIO2 documentation for usage of the interface functions
 //-----------------------------------------------------------------------------------------------------------
 
-unit DAV_OpenASIO;
+unit DAV_OpenAsio;
 
 interface
 
 uses
-  Windows, ActiveX, DAV_ASIO, Dialogs;
+  Windows, ActiveX, DAV_ASIO;
 
 type
   IOpenASIO = interface(IUnknown)
@@ -54,15 +54,16 @@ type
     function OutputReady: TASIOError; stdcall;
   end;
 
-function OpenAsioLoaded: boolean;
+function OpenAsioLoaded: Boolean;
 function OpenAsioCreate(const AsioCLSID: TClsId; var OpenASIODriver: IOpenASIO): boolean;
 
-var OpenAsioDll: HModule;
+var
+  OpenAsioDll: HModule;
 
 implementation
 
-var CreateOpenAsio: function(const AsioCLSID: TClsId;
-var OpenASIODriver: IOpenASIO): HResult; stdcall;
+var
+  CreateOpenAsio: function(const AsioCLSID: TClsId; var OpenASIODriver: IOpenASIO): HResult; stdcall;
 
 function OpenAsioLoaded: Boolean;
 begin
@@ -71,23 +72,19 @@ end;
 
 function OpenAsioCreate(const AsioCLSID: TClsId; var OpenASIODriver: IOpenASIO): boolean;
 begin
-  if OpenAsioLoaded then
-    Result := Succeeded(CreateOpenAsio(AsioCLSID, OpenASIODriver))
-  else Result := false;
+ if OpenAsioLoaded
+  then Result := Succeeded(CreateOpenAsio(AsioCLSID, OpenASIODriver))
+  else Result := False;
 end;
 
 initialization
-begin
-  OpenAsioDll := LoadLibrary('OpenAsio.dll');
+ OpenAsioDll := LoadLibrary('OpenAsio.dll');
  {$IFNDEF FPC}
-  if OpenAsioLoaded then
-    CreateOpenAsio := GetProcAddress(OpenAsioDll, 'CreateOpenAsio');
+ if OpenAsioLoaded
+  then CreateOpenAsio := GetProcAddress(OpenAsioDll, 'CreateOpenAsio');
  {$ENDIF}
-end;
 
 finalization
-begin
-  FreeLibrary(OpenAsioDll);
-end;
+ FreeLibrary(OpenAsioDll);
 
 end.
