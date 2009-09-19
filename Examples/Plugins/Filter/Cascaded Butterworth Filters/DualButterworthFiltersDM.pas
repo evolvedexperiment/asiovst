@@ -4,7 +4,7 @@ unit DualButterworthFiltersDM;
 
 interface
 
-uses 
+uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DSPFilterButterworth, DAV_DSPFilterLinkwitzRiley;
@@ -225,7 +225,7 @@ end;
 procedure TDualButterworthFiltersModule.ParameterLowpassFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel: Integer;
+  Channel : Integer;
 begin
  for Channel := 0 to numInputs - 1 do
   begin

@@ -110,7 +110,8 @@ implementation
 {$R *.dfm}
 
 uses
-  DAV_GuiCommon, PNGImage, DualButterworthFiltersDM, DAV_VSTModuleWithPrograms;
+  Math, PNGImage, DAV_GuiCommon, DualButterworthFiltersDM,
+  DAV_VSTModuleWithPrograms;
 
 resourcestring
   RCStrLinkwitzRiley = 'Linkwitz-Riley';
@@ -197,12 +198,26 @@ begin
   end;
 end;
 
+function RoundFrequency(Value: Single): Single;
+var
+  Base10  : Double;
+begin
+ Base10 := Log10(Value);
+ Result := RoundTo(Value, round(Base10 - 1.5));
+end;
+
 procedure TFmLinkwitzRiley.DialLowpassFrequencyChange(Sender: TObject);
+var
+  NewValue : Single;
 begin
  with Owner as TDualButterworthFiltersModule do
   begin
-   if Parameter[0] <> DialLowpassFrequency.Position
-    then Parameter[0] := DialLowpassFrequency.Position;
+   if ssAlt in KeyboardStateToShiftState
+    then NewValue := RoundFrequency(DialLowpassFrequency.Position)
+    else NewValue := DialLowpassFrequency.Position;
+
+   if Parameter[0] <> NewValue
+    then Parameter[0] := NewValue;
   end;
 end;
 
@@ -228,11 +243,17 @@ begin
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassFrequencyChange(Sender: TObject);
+var
+  NewValue : Single;
 begin
  with Owner as TDualButterworthFiltersModule do
   begin
-   if Parameter[2] <> DialHighpassFrequency.Position
-    then Parameter[2] := DialHighpassFrequency.Position;
+   if ssAlt in KeyboardStateToShiftState
+    then NewValue := RoundFrequency(DialHighpassFrequency.Position)
+    else NewValue := DialHighpassFrequency.Position;
+
+   if Parameter[2] <> NewValue
+    then Parameter[2] := NewValue;
   end;
 end;
 

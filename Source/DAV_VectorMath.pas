@@ -1,5 +1,35 @@
 unit DAV_VectorMath;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I DAV_Compiler.inc}
@@ -457,10 +487,10 @@ asm
     FSTP DWORD PTR [ECX + 12]
 {$ELSE}
 begin
-   result[0] := v1[0] - v2[0];
-   result[1] := v1[1] - v2[1];
-   result[2] := v1[2] - v2[2];
-   result[3] := v1[3] - v2[3];
+   Result[0] := v1[0] - v2[0];
+   Result[1] := v1[1] - v2[1];
+   Result[2] := v1[2] - v2[2];
+   Result[3] := v1[3] - v2[3];
 {$ENDIF}
 end;
 
@@ -875,7 +905,7 @@ end;
 
 function VectorLength(const Value: TDAVVector32): Single;
 // EAX contains address of Value
-// result is passed in ST(0)
+// Result is passed in ST(0)
 {$IFNDEF PUREPASCAL}
 asm
     FLD  DWORD PTR [EAX]
@@ -2224,7 +2254,7 @@ begin
  y[1] := A.Radius * sin(B.Azimuth) * cos(B.Polar);
  z[1] := A.Radius *                 -sin(B.Polar);
 
- result := arccos( (x[0] * x[1] + y[0] * y[1] + z[0] * z[1]) /
+ Result := arccos( (x[0] * x[1] + y[0] * y[1] + z[0] * z[1]) /
    (sqrt(sqr(x[0]) + sqr(y[0]) + sqr(z[0])) * sqrt(sqr(x[1]) + sqr(y[1]) + sqr(z[1]))));
 end;
 
@@ -2233,7 +2263,7 @@ var
   CosAzimuth : Double;
 begin
  CosAzimuth := cos(A.Azimuth - B.Azimuth);
- result := arccos(0.5 * (
+ Result := arccos(0.5 * (
    (cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
     cos(A.Polar + B.Polar) * (CosAzimuth - 1))));
 end;
@@ -2243,28 +2273,28 @@ var
   CosAzimuth : Double;
 begin
 (*
- result := arccos(
+ Result := arccos(
    (cos(A.Polar) * cos(B.Polar) * (cos(A.Azimuth - B.Azimuth)) +
     sin(A.Polar) * sin(B.Polar)));
 *)
 
  CosAzimuth := cos(A.Azimuth - B.Azimuth);
- result := arccos(0.5 * (
+ Result := arccos(0.5 * (
    (cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
     cos(A.Polar + B.Polar) * (CosAzimuth - 1))));
 end;
 
 function MakeSphereVector2D(const Azimuth, Polar: Single): TSphereVector2D;
 begin
- result.Azimuth := Azimuth;
- result.Polar   := Polar;
+ Result.Azimuth := Azimuth;
+ Result.Polar   := Polar;
 end;
 
 function MakeSphereVector3D(const Azimuth, Polar: Single): TSphereVector3D;
 begin
- result.Azimuth := Azimuth;
- result.Polar   := Polar;
- result.Radius  := 1;
+ Result.Azimuth := Azimuth;
+ Result.Polar   := Polar;
+ Result.Radius  := 1;
 end;
 
 initialization

@@ -92,7 +92,7 @@ type
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
   end;
 
-  TQuantizeValueEvent = procedure(Sender: TObject; var NewValue: Double);
+  TQuantizeValueEvent = procedure(Sender: TObject; var NewValue: Double) of object;
 
   TCustomGuiDial = class(TCustomGuiStitchedControl)
   private
@@ -235,6 +235,7 @@ type
     property OnMouseEnter;
     property OnMouseUp;
     property OnMouseDown;
+    property OnQuantizeValue;
     property ParentColor;
     property PointerAngles;
     property Position;
@@ -1335,8 +1336,8 @@ end;
 function TCustomGuiDial.GetNormalizedPosition: Single;
 begin
  if Max = Min
-  then result := Min
-  else result := (FPosition - Min) / (Max - Min);
+  then Result := Min
+  else Result := (FPosition - Min) / (Max - Min);
 end;
 
 function TCustomGuiDial.GetGlyphNr: Integer;
@@ -1352,8 +1353,8 @@ end;
 function TCustomGuiDial.UnmapValue(Value: Double): Double;
 begin
  if Value < 0
-  then result := -Power(abs(Value), 1 / FCurveMappingExp)
-  else result :=  Power(abs(Value), 1 / FCurveMappingExp)
+  then Result := -Power(abs(Value), 1 / FCurveMappingExp)
+  else Result :=  Power(abs(Value), 1 / FCurveMappingExp)
 end;
 
 procedure TCustomGuiDial.SetMax(const Value: Single);
@@ -1389,8 +1390,15 @@ begin
 end;
 
 procedure TCustomGuiDial.SetNormalizedPosition(const Value: Single);
+var
+  NewValue : Double;
 begin
- Position := Min + Value * (Max - Min);
+ NewValue := Min + Value * (Max - Min);
+
+ if assigned(FOnQuantizeValue)
+  then FOnQuantizeValue(Self, NewValue);
+
+ Position := NewValue;
 end;
 
 procedure TCustomGuiDial.SetPosition(Value: Single);
@@ -1481,9 +1489,6 @@ begin
  if ssShift in Shift
   then NewValue := MapValue(NormalizedPosition) + Difference * 0.1
   else NewValue := MapValue(NormalizedPosition) + Difference;
-
- if assigned(FOnQuantizeValue)
-  then FOnQuantizeValue(Self, NewValue);
 
  NormalizedPosition := UnMapValue(NewValue);
 
