@@ -108,14 +108,12 @@ object FmASIOMP3: TFmASIOMP3
     TabOrder = 5
     OnClick = BtSelectClick
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    ConvertOptimizations = [coSSE, co3DNow]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 130
@@ -124,7 +122,7 @@ object FmASIOMP3: TFmASIOMP3
   object OpenDialog: TOpenDialog
     DefaultExt = 'mp3'
     Filter = 'MP3 File (*.mp3)|*.mp3'
-    Left = 160
+    Left = 161
     Top = 24
   end
   object Timer: TTimer

@@ -1,4 +1,6 @@
-unit DAV_ASIOConvert;
+unit DAV_AsioConvert;
+
+interface
 
 {$I ..\DAV_Compiler.inc}
 
@@ -9,9 +11,8 @@ unit DAV_ASIOConvert;
 {$DEFINE PUREPASCAL}
 {$ENDIF}
 
-interface
-
-uses {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common;
+uses
+  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common;
 
 const
   MaxShort  : Single = $7F;

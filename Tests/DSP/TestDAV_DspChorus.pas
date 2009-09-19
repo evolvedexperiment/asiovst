@@ -101,7 +101,7 @@ begin
 
  // Call chorus function
  Input := 1;
- ReturnValue := FDspChorus32.Process(Input);
+ ReturnValue := FDspChorus32.ProcessSample32(Input);
 
  // Validate method results
  CheckTrue(ReturnValue = 0);
@@ -110,7 +110,7 @@ begin
  Input := 0;
  for Sample := 0 to CSampleFrames do
   begin
-   ReturnValue := FDspChorus32.Process(Input);
+   ReturnValue := FDspChorus32.ProcessSample32(Input);
    CheckTrue((ReturnValue > -1) and (ReturnValue < 1));
   end;
 end;
@@ -136,29 +136,29 @@ begin
 
  // Call chorus function
  Input := 1;
- FDspChorus32.Process(Input);
+ FDspChorus32.ProcessSample32(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspChorus32.Process(Input);
+  do FDspChorus32.ProcessSample32(Input);
 
  // store current value
- Value := FDspChorus32.Process(Input);
+ Value := FDspChorus32.ProcessSample32(Input);
 
  // reset quque
  FDspChorus32.Reset;
 
  // Call chorus function
  Input := 1;
- FDspChorus32.Process(Input);
+ FDspChorus32.ProcessSample32(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspChorus32.Process(Input);
+  do FDspChorus32.ProcessSample32(Input);
 
- CheckEquals(Value, FDspChorus32.Process(Input));
+ CheckEquals(Value, FDspChorus32.ProcessSample32(Input));
 end;
 
 procedure TestTDspChorus64.SetUp;
@@ -193,7 +193,7 @@ begin
 
  // Call chorus function
  Input := 1;
- ReturnValue := FDspChorus64.Process(Input);
+ ReturnValue := FDspChorus64.ProcessSample64(Input);
 
  // Validate method results
  CheckTrue(ReturnValue = 0);
@@ -202,7 +202,7 @@ begin
  Input := 0;
  for Sample := 0 to 1000 do
   begin
-   ReturnValue := FDspChorus64.Process(Input);
+   ReturnValue := FDspChorus64.ProcessSample64(Input);
    CheckTrue((ReturnValue > -1) and (ReturnValue < 1));
   end;
 end;
@@ -228,29 +228,29 @@ begin
 
  // Call chorus function
  Input := 1;
- FDspChorus64.Process(Input);
+ FDspChorus64.ProcessSample64(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspChorus64.Process(Input);
+  do FDspChorus64.ProcessSample64(Input);
 
  // store current value
- Value := FDspChorus64.Process(Input);
+ Value := FDspChorus64.ProcessSample64(Input);
 
  // reset quque
  FDspChorus64.Reset;
 
  // Call chorus function
  Input := 1;
- FDspChorus64.Process(Input);
+ FDspChorus64.ProcessSample64(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspChorus64.Process(Input);
+  do FDspChorus64.ProcessSample64(Input);
 
- CheckEquals(Value, FDspChorus64.Process(Input));
+ CheckEquals(Value, FDspChorus64.ProcessSample64(Input));
 end;
 
 initialization

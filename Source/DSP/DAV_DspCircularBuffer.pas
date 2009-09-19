@@ -40,24 +40,24 @@ uses
 type
   TCustomCircularBuffer = class(TDspPersistent)
   private
-    procedure SetBufferSize(const Value: Integer);
+    procedure SetBufferSize(const Value: Cardinal);
     procedure ResetBufferPositions;
   protected
-    FReadBufferPos   : Integer;
-    FWriteBufferPos  : Integer;
-    FSamplesInBuffer : Integer;
-    FBufferSize      : Integer;
-    function GetFreeSampleCount: Integer; virtual;
+    FReadBufferPos   : Cardinal;
+    FWriteBufferPos  : Cardinal;
+    FSamplesInBuffer : Cardinal;
+    FBufferSize      : Cardinal;
+    function GetFreeSampleCount: Cardinal; virtual;
     procedure AssignTo(Dest: TPersistent); override;
     procedure BufferSizeChanged; virtual; abstract;
 
-    property BufferSize: Integer read FBufferSize write SetBufferSize;
+    property BufferSize: Cardinal read FBufferSize write SetBufferSize;
   public
     constructor Create(const BufferSize: Integer = 0); virtual;
     procedure Reset; virtual;
 
-    property SamplesInBuffer: Integer read FSamplesInBuffer;
-    property FreeSampleCount: Integer read GetFreeSampleCount;
+    property SamplesInBuffer: Cardinal read FSamplesInBuffer;
+    property FreeSampleCount: Cardinal read GetFreeSampleCount;
   end;
 
   TCustomCircularBuffer32 = class(TCustomCircularBuffer)
@@ -69,8 +69,8 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ReadBuffer(const Data: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Data: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Data: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Data: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
   TCustomCircularBuffer64 = class(TCustomCircularBuffer)
@@ -82,8 +82,8 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ReadBuffer(const Data: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Data: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Data: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Data: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
   TCustomCircularStereoBuffer32 = class(TCustomCircularBuffer)
@@ -95,8 +95,8 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ReadBuffer(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Left, Right: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
   TCustomCircularStereoBuffer64 = class(TCustomCircularBuffer)
@@ -108,8 +108,8 @@ type
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
     procedure Reset; override;
-    function ReadBuffer(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
   TCustomCircularMultiBuffer = class(TCustomCircularBuffer)
@@ -141,8 +141,8 @@ type
 
     procedure Reset; override;
 
-    function ReadBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
   TCustomCircularMultiBuffer64 = class(TCustomCircularMultiBuffer)
@@ -159,8 +159,8 @@ type
 
     procedure Reset; override;
 
-    function ReadBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
 
@@ -169,7 +169,7 @@ type
     FLatency: Cardinal;
     procedure SetLatency(const Value: Cardinal);
   protected
-    function GetFreeSampleCount: Integer; override;
+    function GetFreeSampleCount: Cardinal; override;
     procedure AssignTo(Dest: TPersistent); override;
     procedure LatencyChanged; virtual;
   public
@@ -178,7 +178,7 @@ type
     property Latency: Cardinal read FLatency write SetLatency;
   end;
 
-  TCustomCircularReserveMultiBuffer32 = class(TCustomCircularMultiBuffer32)
+  TCustomCircularReserveMultiBuffer32 = class(TCustomCircularReserveMultiBuffer)
   private
     procedure AllocateChannelData(Channel: Integer);
   protected
@@ -192,13 +192,13 @@ type
 
     procedure Reset; override;
 
-    function ReadBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer;
-    function ReadReserveBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteReserveBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function ReadReserveBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteReserveBuffer(const Data: TDAVArrayOfSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
-  TCustomCircularReserveMultiBuffer64 = class(TCustomCircularMultiBuffer64)
+  TCustomCircularReserveMultiBuffer64 = class(TCustomCircularReserveMultiBuffer)
   private
     procedure AllocateChannelData(Channel: Integer);
   protected
@@ -212,10 +212,10 @@ type
 
     procedure Reset; override;
 
-    function ReadBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer;
-    function ReadReserveBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer;
-    function WriteReserveBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Integer): Integer;
+    function ReadBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function ReadReserveBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
+    function WriteReserveBuffer(const Data: TDAVArrayOfDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
   end;
 
 
@@ -303,7 +303,7 @@ begin
   else inherited;
 end;
 
-function TCustomCircularBuffer.GetFreeSampleCount: Integer;
+function TCustomCircularBuffer.GetFreeSampleCount: Cardinal;
 begin
  Result := FBufferSize - FSamplesInBuffer;
 end;
@@ -320,7 +320,7 @@ begin
  FSamplesInBuffer := 0;
 end;
 
-procedure TCustomCircularBuffer.SetBufferSize(const Value: Integer);
+procedure TCustomCircularBuffer.SetBufferSize(const Value: Cardinal);
 begin
  if FBufferSize <> Value then
   begin
@@ -378,9 +378,9 @@ begin
  FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
-function TCustomCircularBuffer32.ReadBuffer(const Data: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
+function TCustomCircularBuffer32.ReadBuffer(const Data: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < SamplesInBuffer
   then Result := SampleFrames
@@ -401,14 +401,14 @@ begin
    Move(FBuffer^[FReadBufferPos], Data^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularBuffer32.WriteBuffer(
-  const Data: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
+  const Data: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -485,9 +485,9 @@ begin
 end;
 
 function TCustomCircularBuffer64.ReadBuffer(
-  const Data: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
+  const Data: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < SamplesInBuffer
   then Result := SampleFrames
@@ -508,14 +508,14 @@ begin
    Move(FBuffer^[FReadBufferPos], Data^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularBuffer64.WriteBuffer(
-  const Data: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
+  const Data: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -620,9 +620,9 @@ begin
 end;
 
 function TCustomCircularStereoBuffer32.ReadBuffer(const Left,
-  Right: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
+  Right: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < SamplesInBuffer
   then Result := SampleFrames
@@ -646,14 +646,14 @@ begin
    Move(FBuffer[1]^[FReadBufferPos], Right^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularStereoBuffer32.WriteBuffer(const Left,
-  Right: PDAVSingleFixedArray; const SampleFrames: Integer): Integer;
+  Right: PDAVSingleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -761,9 +761,9 @@ begin
 end;
 
 function TCustomCircularStereoBuffer64.ReadBuffer(const Left,
-  Right: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
+  Right: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < SamplesInBuffer
   then Result := SampleFrames
@@ -787,14 +787,14 @@ begin
    Move(FBuffer[1]^[FReadBufferPos], Right^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularStereoBuffer64.WriteBuffer(const Left,
-  Right: PDAVDoubleFixedArray; const SampleFrames: Integer): Integer;
+  Right: PDAVDoubleFixedArray; const SampleFrames: Cardinal): Cardinal;
 var
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -984,10 +984,10 @@ end;
 
 function TCustomCircularMultiBuffer32.ReadBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  Assert(Length(Data) >= ChannelCount);
 
@@ -1015,16 +1015,16 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularMultiBuffer32.WriteBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames <= FreeSampleCount
   then Result := SampleFrames
@@ -1178,10 +1178,10 @@ end;
 
 function TCustomCircularMultiBuffer64.ReadBuffer(
   const Data: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  Assert(Length(Data) >= ChannelCount);
 
@@ -1209,16 +1209,16 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularMultiBuffer64.WriteBuffer(
   const Data: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -1265,7 +1265,7 @@ end;
 
 procedure TCustomCircularReserveMultiBuffer.SetLatency(const Value: Cardinal);
 begin
- if Value >= FBufferSize
+ if Value >= Cardinal(FBufferSize)
   then raise Exception.Create(RcStrLatencyTooHigh);
  
  if FLatency <> Value then
@@ -1275,19 +1275,20 @@ begin
   end;
 end;
 
-function TCustomCircularReserveMultiBuffer.GetFreeSampleCount: Integer;
+function TCustomCircularReserveMultiBuffer.GetFreeSampleCount: Cardinal;
 begin
- Result := inherited GetFreeSampleCount - FLatency;
- assert(Result >= 0);
+ Result := inherited GetFreeSampleCount;
+ assert(Result >= FLatency);
+ Result := Result - FLatency;
 end;
 
 procedure TCustomCircularReserveMultiBuffer.LatencyChanged;
 begin
  if FBufferSize - SamplesInBuffer < FLatency then
   begin
-   FWriteBufferPos := FReadBufferPos - FLatency;
-   if FWriteBufferPos < 0
-    then FWriteBufferPos := FWriteBufferPos + FBufferSize;
+   if FReadBufferPos < FLatency
+    then FWriteBufferPos := FWriteBufferPos + FBufferSize - FLatency
+    else FWriteBufferPos := FReadBufferPos - FLatency;
   end; 
 end;
 
@@ -1405,10 +1406,10 @@ end;
 
 function TCustomCircularReserveMultiBuffer32.ReadBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  Assert(Length(Data) >= ChannelCount);
 
@@ -1436,16 +1437,16 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularReserveMultiBuffer32.WriteBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -1478,14 +1479,46 @@ end;
 
 function TCustomCircularReserveMultiBuffer32.ReadReserveBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
+var
+  Channel        : Integer;
+  PartialSamples : Cardinal;
 begin
+ Assert(Length(Data) >= ChannelCount);
 
+ if SampleFrames < FLatency
+  then Result := SampleFrames
+  else Result := FLatency;
+
+(*
+ if FReadBufferPos + Result >= FBufferSize then
+  begin
+   PartialSamples := FBufferSize - FReadBufferPos;
+   for Channel := 0 to ChannelCount - 1 do
+    begin
+     Move(FBuffer[Channel]^[FReadBufferPos],  Data[Channel]^[0], PartialSamples * SizeOf(Single));
+     Move(FBuffer[Channel]^[0],  Data[Channel]^[PartialSamples], (Result - PartialSamples) * SizeOf(Single));
+    end;
+
+   FReadBufferPos := (Result - PartialSamples);
+
+   if FReadBufferPos >= FBufferSize
+    then FReadBufferPos := FReadBufferPos - FBufferSize;
+  end
+ else
+  begin
+   for Channel := 0 to ChannelCount - 1
+    do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
+   FReadBufferPos := FReadBufferPos + Result;
+  end;
+ FSamplesInBuffer := FSamplesInBuffer - Result;
+ assert(FSamplesInBuffer >= 0);
+*)
 end;
 
 function TCustomCircularReserveMultiBuffer32.WriteReserveBuffer(
   const Data: TDAVArrayOfSingleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 begin
 
 end;
@@ -1632,10 +1665,10 @@ end;
 
 function TCustomCircularReserveMultiBuffer64.ReadBuffer(
   const Data: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  Assert(Length(Data) >= ChannelCount);
 
@@ -1663,16 +1696,16 @@ begin
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Double));
    FReadBufferPos := FReadBufferPos + Result;
   end;
+ assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
- assert(FSamplesInBuffer >= 0);
 end;
 
 function TCustomCircularReserveMultiBuffer64.WriteBuffer(
   const Data: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 var
   Channel        : Integer;
-  PartialSamples : Integer;
+  PartialSamples : Cardinal;
 begin
  if SampleFrames < FreeSampleCount
   then Result := SampleFrames
@@ -1705,14 +1738,14 @@ end;
 
 function TCustomCircularReserveMultiBuffer64.ReadReserveBuffer(
   const Data: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 begin
 
 end;
 
 function TCustomCircularReserveMultiBuffer64.WriteReserveBuffer(
   const Data: TDAVArrayOfDoubleFixedArray;
-  const SampleFrames: Integer): Integer;
+  const SampleFrames: Cardinal): Cardinal;
 begin
 
 end;

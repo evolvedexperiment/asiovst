@@ -76,7 +76,7 @@ begin
   end;
 
  // Call chorus function
- ReturnValue := FDspBarberpole32.Process(1);
+ ReturnValue := FDspBarberpole32.ProcessSample32(1);
 
  // Validate method results
  CheckTrue(ReturnValue <> 0);
@@ -84,16 +84,16 @@ begin
  // Test barberpole flanger process series is stable
  for Sample := 0 to CSampleFrames do
   begin
-   ReturnValue := FDspBarberpole32.Process(0);
+   ReturnValue := FDspBarberpole32.ProcessSample32(0);
    CheckTrue((ReturnValue > -1) and (ReturnValue < 1));
   end;
 end;
 
 procedure TestTDspBarberpole32.TestReset;
 var
-  Input       : Single;
-  Sample      : Integer;
-  Value       : Single;
+  Input  : Single;
+  Sample : Integer;
+  Value  : Single;
 const
   CSampleFrames = 1000;
 begin
@@ -109,29 +109,29 @@ begin
 
  // Call chorus function
  Input := 1;
- FDspBarberpole32.Process(Input);
+ FDspBarberpole32.ProcessSample32(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspBarberpole32.Process(Input);
+  do FDspBarberpole32.ProcessSample32(Input);
 
  // store current value
- Value := FDspBarberpole32.Process(Input);
+ Value := FDspBarberpole32.ProcessSample32(Input);
 
  // reset quque
  FDspBarberpole32.Reset;
 
- // Call chorus function
+ // Call barberpole flanger function
  Input := 1;
- FDspBarberpole32.Process(Input);
+ FDspBarberpole32.ProcessSample32(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspBarberpole32.Process(Input);
+  do FDspBarberpole32.ProcessSample32(Input);
 
- CheckEquals(Value, FDspBarberpole32.Process(Input));
+ CheckEquals(Value, FDspBarberpole32.ProcessSample32(Input));
 end;
 
 
@@ -165,7 +165,7 @@ begin
   end;
 
  // Call chorus function
- ReturnValue := FDspBarberpole64.Process(1);
+ ReturnValue := FDspBarberpole64.ProcessSample64(1);
 
  // Validate method results
  CheckTrue(ReturnValue <> 0);
@@ -173,16 +173,16 @@ begin
  // Test chorus process series
  for Sample := 0 to CSampleFrames do
   begin
-   ReturnValue := FDspBarberpole64.Process(0);
+   ReturnValue := FDspBarberpole64.ProcessSample64(0);
    CheckTrue((ReturnValue > -1) and (ReturnValue < 1));
   end;
 end;
 
 procedure TestTDspBarberpole64.TestReset;
 var
-  Input       : Single;
-  Sample      : Integer;
-  Value       : Single;
+  Input  : Single;
+  Sample : Integer;
+  Value  : Single;
 const
   CSampleFrames = 1000;
 begin
@@ -198,29 +198,29 @@ begin
 
  // Call chorus function
  Input := 1;
- FDspBarberpole64.Process(Input);
+ FDspBarberpole64.ProcessSample64(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspBarberpole64.Process(Input);
+  do FDspBarberpole64.ProcessSample64(Input);
 
  // store current value
- Value := FDspBarberpole64.Process(Input);
+ Value := FDspBarberpole64.ProcessSample64(Input);
 
  // reset quque
  FDspBarberpole64.Reset;
 
- // Call chorus function
+ // Call barberpole flanger function
  Input := 1;
- FDspBarberpole64.Process(Input);
+ FDspBarberpole64.ProcessSample64(Input);
 
  // Test chorus process series
  Input := 0;
  for Sample := 0 to CSampleFrames
-  do FDspBarberpole64.Process(Input);
+  do FDspBarberpole64.ProcessSample64(Input);
 
- CheckEquals(Value, FDspBarberpole64.Process(Input));
+ CheckEquals(Value, FDspBarberpole64.ProcessSample64(Input));
 end;
 
 initialization

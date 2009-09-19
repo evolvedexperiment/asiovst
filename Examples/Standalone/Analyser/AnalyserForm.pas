@@ -45,7 +45,7 @@ type
     procedure SEFullscaleGainChange(Sender: TObject);
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-      OutBuffer: TDAVAsioBuffer32);
+      OutBuffer: TDAVArrayOfSingleFixedArray);
   private
     FFilterArray : Array [0..CNumFrequencies - 1] of TBasicBandpassFilter;
     FFilterRMS   : Array [0..CNumFrequencies - 1] of Single;
@@ -234,7 +234,7 @@ begin
 end;
 
 procedure TFmAnalyser.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVAsioBuffer32);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample, Band : Integer;
   Data         : Single;
@@ -243,7 +243,7 @@ begin
   begin
    Data := InBuffer[FChannelNr, Sample];
    for Band := 0 to CNumFrequencies - 1
-    do FFilterRMS[Band] := FSpeedConst[0] * FFilterRMS[Band] + FSpeedConst[1] * Amp_to_dB(abs(FFilterArray[Band].ProcessSample(Data + 1E-24)));
+    do FFilterRMS[Band] := FSpeedConst[0] * FFilterRMS[Band] + FSpeedConst[1] * Amp_to_dB(abs(FFilterArray[Band].ProcessSample64(Data + 1E-24)));
   end;
  UpdateBarGraph;
 end;

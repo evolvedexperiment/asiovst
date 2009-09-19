@@ -183,9 +183,9 @@ begin
  with FAutomatableGainFilter do
   begin
    Gain := Amp_to_dB(CHalf32);
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(abs(ProcessSample(CHalf32) - dB_to_Amp(Gain) * CHalf32) < 1E-7, 'ProcessSample(0.5)  <> 0.5');
-   CheckTrue(abs(ProcessSample(1.0) - dB_to_Amp(Gain)) < 1E-7, 'ProcessSample(1)  <> 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(abs(ProcessSample64(CHalf32) - dB_to_Amp(Gain) * CHalf32) < 1E-7, 'ProcessSample64(0.5)  <> 0.5');
+   CheckTrue(abs(ProcessSample64(1.0) - dB_to_Amp(Gain)) < 1E-7, 'ProcessSample64(1)  <> 1');
   end;
 end;
 
@@ -209,8 +209,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -234,8 +234,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -258,8 +258,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -283,8 +283,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -308,8 +308,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -333,8 +333,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -358,8 +358,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -383,8 +383,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -408,8 +408,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -433,8 +433,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -458,8 +458,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 
@@ -483,8 +483,8 @@ begin
    Gain := Amp_to_dB(CHalf32);
    Frequency := 1000;
    Bandwidth := 2;
-   CheckEquals(ProcessSample(0.0), 0, 'ProcessSample(0.0) <> 0');
-   CheckTrue(ProcessSample(1) > dB_to_Amp(Gain), 'ProcessSample(1) > 1');
+   CheckEquals(ProcessSample64(0.0), 0, 'ProcessSample64(0.0) <> 0');
+   CheckTrue(ProcessSample64(1) > dB_to_Amp(Gain), 'ProcessSample64(1) > 1');
   end;
 end;
 

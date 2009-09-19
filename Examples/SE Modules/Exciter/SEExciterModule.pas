@@ -294,7 +294,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FExciter.Process(Inp^[Sample]);
+  do Outp^[Sample] := FExciter.ProcessSample64(Inp^[Sample]);
 end;
 
 { TSEExciterAutomatedModule }
@@ -399,7 +399,7 @@ begin
 
  for Sample := 0 to SampleFrames - 1 do
   begin
-   Outp^[Sample] := FExciter.Process(Inp^[Sample]);
+   Outp^[Sample] := FExciter.ProcessSample64(Inp^[Sample]);
    FExciter.InputLevel := 10 * IL^[Sample];
    FExciter.LowFrequencyLevel := 10 * LFL^[Sample];
    FExciter.HighFrequencyLevel := 10 * HFL^[Sample];

@@ -92,6 +92,8 @@ type
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
   end;
 
+  TQuantizeValueEvent = procedure(Sender: TObject; var NewValue: Double);
+
   TCustomGuiDial = class(TCustomGuiStitchedControl)
   private
     FAutoColor        : Boolean;
@@ -108,6 +110,7 @@ type
     FRightMouseButton : TGuiDialRMBFunc;
     FScrollRange      : Single;
     FWheelStep        : Single;
+    FOnQuantizeValue  : TQuantizeValueEvent;
     function CircularMouseToPosition(X, Y: Integer): Single;
     function GetNormalizedPosition: Single;
     function PositionToAngle: Single;
@@ -134,8 +137,7 @@ type
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
     procedure ReadState(Reader: TReader); override;
-    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
-      MousePos: TPoint): Boolean; override;
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
 
     property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
     property MappedPosition: Single read GetMappedPosition;
@@ -153,8 +155,9 @@ type
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
     property Position: Single read FPosition write SetPosition;
     property RightMouseButton: TGuiDialRMBFunc read FRightMouseButton write FRightMouseButton default rmbfCircular;
-    property ScrollRange_Pixel: Single read fScrollRange write fScrollRange;
-    property WheelStep: single read FWheelStep write FWheelStep;
+    property ScrollRange_Pixel: Single read FScrollRange write FScrollRange;
+    property WheelStep: Single read FWheelStep write FWheelStep;
+    property OnQuantizeValue: TQuantizeValueEvent read FOnQuantizeValue write FOnQuantizeValue;
   end;
 
   TCustomGuiSwitch = class(TCustomGuiStitchedControl)
@@ -1451,38 +1454,46 @@ end;
 procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
-  if Enabled then
+ if Enabled then
   begin
-    if ssCtrl in Shift then Position := FDefaultPosition;
-    if (Button = mbRight) and
-       (FRightMouseButton = rmbfReset)
-     then Position := FDefaultPosition;
+   if ssCtrl in Shift then Position := FDefaultPosition;
+   if (Button = mbRight) and
+      (FRightMouseButton = rmbfReset)
+    then Position := FDefaultPosition;
   end;
 
-  inherited;
+ inherited;
 end;
 
 procedure TCustomGuiDial.DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer);
 var
   Difference : Double;
+  NewValue   : Double;   
+
 begin
-  Difference := (MouseState.LastEventY - Y) / fScrollRange;
+ Difference := (MouseState.LastEventY - Y) / FScrollRange;
 
-  // apply inertia function
-  if Difference < 0
-   then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
-   else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
+ // apply inertia function
+ if Difference < 0
+  then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
+  else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
 
-  if ssShift in Shift
-   then NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference * 0.1)
-   else NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference);
-  inherited;
+ if ssShift in Shift
+  then NewValue := MapValue(NormalizedPosition) + Difference * 0.1
+  else NewValue := MapValue(NormalizedPosition) + Difference;
+
+ if assigned(FOnQuantizeValue)
+  then FOnQuantizeValue(Self, NewValue);
+
+ NormalizedPosition := UnMapValue(NewValue);
+
+ inherited;
 end;
 
 procedure TCustomGuiDial.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
 begin
   if FRightMouseButton = rmbfCircular
-   then Position := CircularMouseToPosition(x,y);
+   then Position := CircularMouseToPosition(x, y);
   inherited;
 end;
 

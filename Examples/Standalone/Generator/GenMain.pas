@@ -779,8 +779,6 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FPinkNoise) - 1
-   do FPinkNoise[Channel].SampleRate := ASIOHost.SampleRate;
   for Channel := 0 to Length(FSineOsc) - 1 do
    for Band := 0 to FSineCount - 1
     do FSineOsc[Channel, Band].SampleRate := ASIOHost.SampleRate;
@@ -857,7 +855,7 @@ begin
    begin
     // calculate data
     for Channel := 0 to FChannelCount - 1
-     do Data[Channel] := FPinkNoise[Channel mod FChannelCount].ProcessSample;;
+     do Data[Channel] := FPinkNoise[Channel mod FChannelCount].ProcessSample64;
 
     Gain := CurrentGain;
 

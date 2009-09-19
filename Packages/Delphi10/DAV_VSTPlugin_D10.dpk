@@ -33,7 +33,6 @@ requires
   DAV_Common_D10;
 
 contains
-  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas',
   DAV_VSTPluginConfig in '..\..\Source\VST\DAV_VSTPluginConfig.pas',
   DAV_VSTEditorCreator in '..\..\Source\VST\DAV_VSTEditorCreator.pas',
   DAV_VSTModule in '..\..\Source\VST\DAV_VSTModule.pas',

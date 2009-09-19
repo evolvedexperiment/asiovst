@@ -979,13 +979,11 @@ object FmAbxMain: TFmAbxMain
       FFFFFFFFC7FDC03FFFFFFFFFFFFFFFFF00000000000000000000000000000000
       000000000000}
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    ConvertOptimizations = [coSSE, co3DNow]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     OnDriverChanged = CBDriversChange
     Left = 104
     Top = 40

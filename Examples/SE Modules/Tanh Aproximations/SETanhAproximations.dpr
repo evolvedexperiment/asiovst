@@ -13,12 +13,12 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of // !!TODO!! list your in / out plugs
   0: TSETanhAproximationsModule.GetModuleProperties(Properties);
   1: TSETanhAproxModule.GetModuleProperties(Properties);
   2: TSETanhModule.GetModuleProperties(Properties);
-  else result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -26,14 +26,14 @@ function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2Aud
 var
   SEModuleBase: TSEModuleBase;
 begin
- result := nil;
+ Result := nil;
  case Index of // !!TODO!! list your in / out plugs
   0: begin
       if (ProcessType = 1) then// Audio Processing Object
        begin
         SEModuleBase := TSETanhAproximationsModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
+         then Result := SEModuleBase.Effect;
        end;
      end;
   1: begin
@@ -41,7 +41,7 @@ begin
        begin
         SEModuleBase := TSETanhAproxModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
+         then Result := SEModuleBase.Effect;
        end;
      end;
   2: begin
@@ -49,7 +49,7 @@ begin
        begin
         SEModuleBase := TSETanhModule.Create(SEAudioMaster, Reserved);
         if assigned(SEModuleBase)
-         then result := SEModuleBase.Effect;
+         then Result := SEModuleBase.Effect;
        end;
      end;
  end;

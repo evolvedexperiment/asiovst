@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
-  ExtCtrls, Spin, Buttons, DAV_Common, DAV_Complex, DAV_ASIOHost;
+  ExtCtrls, Spin, Buttons, DAV_Common, DAV_Complex, DAV_AsioHost;
 
 type
   TFmASIO = class(TForm)

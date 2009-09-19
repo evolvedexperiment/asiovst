@@ -37,7 +37,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure Bt_AnalyseClick(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -231,7 +231,7 @@ begin
  CalculateComplexAngulars;
 end;
 
-procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   CurrentPosition : Integer;
 begin

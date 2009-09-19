@@ -26,11 +26,13 @@ type
     procedure BtSelectAudioFileClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    FIniFileName: TFileName;
+    FIniFileName   : TFileName;
+    FChannelOffset : Integer;
     procedure SelectMusic;
     procedure GenerateNoise;
   public
     property IniFileName: TFileName read FIniFileName;
+    property ChannelOffset: Integer read FChannelOffset write FChannelOffset;
   end;
 
 var
@@ -151,11 +153,11 @@ begin
     try
 
      // process some unused initial samples
-     for Sample := 0 to 1000 do ProcessSample;
+     for Sample := 0 to 1000 do ProcessSample64;
 
      for Channel := 0 to ChannelCount - 1 do
       for Sample := 0 to SampleFrames - 1
-       do Adc[Channel].ChannelData[Sample] := ProcessSample;
+       do Adc[Channel].ChannelData[Sample] := ProcessSample64;
     finally
      Free;
     end;

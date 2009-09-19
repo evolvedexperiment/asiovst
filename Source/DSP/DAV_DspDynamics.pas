@@ -1422,7 +1422,7 @@ end;
 
 function TSimpleSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 
- function Exp2(const X: Extended): Extended;
+ function Power2(const X: Extended): Extended;
  asm
   FLD     X
   FLD     ST(0)       { i := round(y);     }
@@ -1441,7 +1441,7 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- result := Input * Exp2(-FSoftKnee[0] * log2(1 + Exp2(FSoftKnee[1] * log2(FPeak * FThresholdReciprocal))));
+ result := Input * Power2(-FSoftKnee[0] * log2(1 + Power2(FSoftKnee[1] * log2(CDenorm32 + FPeak * FThresholdReciprocal))));
 end;
 
 function TSimpleSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;

@@ -3,6 +3,11 @@ program Generator;
 uses
   FastMM4,
   FastMove,
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
   Forms,
   GenMain in 'GenMain.pas' {FmGenerator};
 

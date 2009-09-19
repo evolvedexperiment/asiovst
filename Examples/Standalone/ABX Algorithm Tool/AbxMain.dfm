@@ -1,6 +1,6 @@
 object FmAbxAlgorithmTest: TFmAbxAlgorithmTest
-  Left = 218
-  Top = 81
+  Left = 273
+  Top = 97
   BorderStyle = bsDialog
   Caption = 'ABX Algorithm Test'
   ClientHeight = 206
@@ -97,13 +97,11 @@ object FmAbxAlgorithmTest: TFmAbxAlgorithmTest
     TabOrder = 4
     OnClick = BtSelectAudioFileClick
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
-    ConvertOptimizations = [coSSE, co3DNow]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     SampleRate = 44100.000000000000000000
-    SelectorSupport = [assEngineVersion, assResetRequest, assBufferSizeChange, assResyncRequest, assLatenciesChanged]
     Left = 8
     Top = 80
   end

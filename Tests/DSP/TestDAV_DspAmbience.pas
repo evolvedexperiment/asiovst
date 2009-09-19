@@ -51,10 +51,10 @@ var
 const
   CSampleFrames = 1000;
 begin
- FAmbience.Process(1);
+ FAmbience.ProcessSample32(1);
 
  for Sample := 0 to CSampleFrames - 1
-  do ReturnValue := FAmbience.Process(0);
+  do ReturnValue := FAmbience.ProcessSample32(0);
 
  CheckFalse(IsNan(ReturnValue), 'Return value is not a number');
 end;
@@ -69,12 +69,12 @@ const
 begin
  Left := 1;
  Right := 1;
- FAmbience.Process(Left, Right);
+ FAmbience.ProcessSample(Left, Right);
 
  Left := 0;
  Right := 0;
  for Sample := 0 to CSampleFrames - 1
-  do FAmbience.Process(Left, Right);
+  do FAmbience.ProcessSample(Left, Right);
 
  CheckFalse(IsNan(Left), 'Left channel result is not a number');
  CheckFalse(IsNan(Right), 'Right channel result is not a number');

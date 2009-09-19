@@ -77,8 +77,9 @@ end;
 
 procedure TestTDitherNoiseShaper32.TestProcessFloat;
 var
-  Input       : Double;
-  Sample      : Integer;
+  Input  : Double;
+  Sample : Integer;
+  Thres  : Double;
 const
   CSampleFrames = 1000;
 begin
@@ -92,7 +93,7 @@ begin
    Limit           := False;
 
    // test zero input
-   CheckTrue(ProcessFloat(0) = 0, 'No dither, no noiseshaper and no input (0) but still a result <> 0!');
+   CheckTrue(abs(ProcessFloat(0)) <= 2 * Power(2, -BitDepth), 'No dither, no noiseshaper and no input (0) but still a result <> 0!');
 
    DitherType      := dtTriangular;
    DitherAmplitude := 1;
@@ -140,7 +141,7 @@ begin
  FDitherNoiseShaper.Reset;
 
  // check whether process call of 0 results in anything else then 0
- CheckEquals(0, FDitherNoiseShaper.ProcessFloat(0), 'Reset was not successful!');
+ CheckEquals(0, FDitherNoiseShaper.ProcessInteger(0), 'Reset was not successful!');
 end;
 
 initialization

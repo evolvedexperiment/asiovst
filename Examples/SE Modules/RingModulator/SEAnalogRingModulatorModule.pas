@@ -182,7 +182,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FAnalogRingModulator.ProcessSample(Inp^[Sample]);
+  do Outp^[Sample] := FAnalogRingModulator.ProcessSample32(Inp^[Sample]);
 end;
 
 // describe the pins (plugs)

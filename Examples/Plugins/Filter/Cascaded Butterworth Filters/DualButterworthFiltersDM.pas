@@ -33,6 +33,10 @@ type
     FHighpass  : array of array [0..1] of TButterworthHighPassFilter;
     FSign      : Single;
   public
+    procedure LoadLow(Index: Integer);
+    procedure LoadHigh(Index: Integer);
+    procedure StoreLow(Index: Integer);
+    procedure StoreHigh(Index: Integer);
   end;
 
 implementation
@@ -42,7 +46,10 @@ implementation
 {$ENDIF}
 
 uses
-  DualButterworthFiltersGui;
+  Registry, DualButterworthFiltersGui;
+
+const
+  CRegistryKey = 'SOFTWARE\Delphi ASIO & VST Project\';
 
 procedure TDualButterworthFiltersModule.VSTModuleOpen(Sender: TObject);
 var
@@ -101,6 +108,68 @@ procedure TDualButterworthFiltersModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
  Gui := TFmLinkwitzRiley.Create(Self);
+end;
+
+procedure TDualButterworthFiltersModule.LoadLow(Index: Integer);
+begin
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if KeyExists(CRegistryKey + IntToStr(Index)) then
+    if OpenKey(CRegistryKey + IntToStr(Index), False) then
+     begin
+      if ValueExists('Frequency') then Parameter[0] := ReadFloat('Frequency');
+      if ValueExists('Order') then Parameter[1] := ReadFloat('Order');
+     end;
+  finally
+   Free;
+  end;
+end;
+
+procedure TDualButterworthFiltersModule.LoadHigh(Index: Integer);
+begin
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if KeyExists(CRegistryKey + IntToStr(Index)) then
+    if OpenKey(CRegistryKey + IntToStr(Index), False) then
+     begin
+      if ValueExists('Frequency') then Parameter[2] := ReadFloat('Frequency');
+      if ValueExists('Order') then Parameter[3] := ReadFloat('Order');
+     end;
+  finally
+   Free;
+  end;
+end;
+
+procedure TDualButterworthFiltersModule.StoreLow(Index: Integer);
+begin
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if OpenKey(CRegistryKey + IntToStr(Index), True) then
+    begin
+     WriteFloat('Frequency', Parameter[0]);
+     WriteFloat('Order', Parameter[1]);
+    end;
+  finally
+   Free;
+  end;
+end;
+
+procedure TDualButterworthFiltersModule.StoreHigh(Index: Integer);
+begin
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if OpenKey(CRegistryKey + IntToStr(Index), True) then
+    begin
+     WriteFloat('Frequency', Parameter[2]);
+     WriteFloat('Order', Parameter[3]);
+    end;
+  finally
+   Free;
+  end;
 end;
 
 procedure TDualButterworthFiltersModule.ParameterOrderDisplay(
@@ -261,8 +330,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FLowpass) - 1
-   do Outputs[Channel, Sample] := FLowpass[Channel][0].ProcessSample(
-        FLowpass[Channel][1].ProcessSample(Inputs[Channel, Sample]));
+   do Outputs[Channel, Sample] := FLowpass[Channel][0].ProcessSample64(
+        FLowpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
 end;
 
 procedure TDualButterworthFiltersModule.VSTModuleProcessHighpass(const Inputs,
@@ -272,8 +341,8 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FLowpass) - 1
-   do Outputs[Channel, Sample] := FSign * FHighpass[Channel][0].ProcessSample(
-        FHighpass[Channel][1].ProcessSample(Inputs[Channel, Sample]));
+   do Outputs[Channel, Sample] := FSign * FHighpass[Channel][0].ProcessSample64(
+        FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
 end;
 
 procedure TDualButterworthFiltersModule.VSTModuleProcessBandpass(const Inputs,
@@ -284,10 +353,10 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   for Channel := 0 to Length(FLowpass) - 1 do
    begin
-    Outputs[Channel, Sample] := FSign * FLowpass[Channel][0].ProcessSample(
-      FLowpass[Channel][1].ProcessSample(
-      FHighpass[Channel][0].ProcessSample(
-      FHighpass[Channel][1].ProcessSample(Inputs[Channel, Sample]))));
+    Outputs[Channel, Sample] := FSign * FLowpass[Channel][0].ProcessSample64(
+      FLowpass[Channel][1].ProcessSample64(
+      FHighpass[Channel][0].ProcessSample64(
+      FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]))));
    end;
 end;
 

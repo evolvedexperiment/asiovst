@@ -47,8 +47,8 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
-    procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure Bt_AnalyseClick(Sender: TObject);
     procedure Bt_CPClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
@@ -376,7 +376,7 @@ begin
  UpdateFilters;
 end;
 
-procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+procedure TFmAnalyser.BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i,j : Integer;
   d,z : Double;
@@ -388,8 +388,8 @@ begin
    d := InBuffer[FChannelNr,i];
    for j := 0 to CNumFrequencies - 1 do
     begin
-     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
+     d := FFilterArray[j].Lowpass.ProcessSample64(d + cDenorm);
+     z := FFilterArray[j].Highpass.ProcessSample64(d + cDenorm);
      FFilterArray[j].RMS := FSpeedConst[0] * FFilterArray[j].RMS + FSpeedConst[1] * Amp_to_dB(abs(z));
     end;
   end;
@@ -402,7 +402,7 @@ begin
 end;
 
 procedure TFmAnalyser.BSDownSampled(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   i, j, r : Integer;
   d, z, s : Double;
@@ -417,8 +417,8 @@ begin
      if (FDownSampleCount mod FFilterArray[j].Downsampling) <> 0
       then Break;
 
-     d := FFilterArray[j].Lowpass.ProcessSample(d + cDenorm);
-     z := FFilterArray[j].Highpass.ProcessSample(d + cDenorm);
+     d := FFilterArray[j].Lowpass.ProcessSample64(d + cDenorm);
+     z := FFilterArray[j].Highpass.ProcessSample64(d + cDenorm);
 
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[j].Downsampling + 1);
      FFilterArray[j].RMS := s * FFilterArray[j].RMS + (1 - s) * Amp_to_dB(abs(z));

@@ -313,7 +313,7 @@ begin
  inherited;
 
  // dry signal
- result := (1 - FMix) * Input;
+ Result := (1 - FMix) * Input;
 
  m := FStageMix;
  case FDirection of
@@ -449,53 +449,89 @@ begin
  inherited;
 
  // dry signal
- result := (1 - FMix) * Input;
+ Result := (1 - FMix) * Input;
 
  m := FStageMix;
-
  case FDirection of
   sdUp :
-    for i := 0 to Stages - 1 do
-     begin
-      d := FBufferSize * FStagePosition^[i];
+   for i := 0 to Stages - 1 do
+    begin
+     d := FBufferSize * FStagePosition^[i];
 
-      // calculate absolute sample position
-      p := Round(d + CHalf64);
-      d := p - d;
+     // calculate absolute sample position
+     p := Round(d - CHalf64);
+     d := d - p;
 
-      p := FBufferPos - p - 2;
+     p := FBufferPos + p - 2;
+     if p >= FBufferSize then p := p - FBufferSize;
+
+     v := sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+     result := result + v * m * Hermite64_asm(d, @FBuffer64[p]);
+
+     FStagePosition^[i] := FStagePosition^[i] + FOffset;
+     if FStagePosition^[i] >= 1
+      then FStagePosition^[i] := 0;
+    end;
+  sdDown :
+   for i := 0 to Stages - 1 do
+    begin
+     d := FBufferSize * FStagePosition^[i];
+
+     // calculate absolute sample position
+     p := Round(d + CHalf64);
+     d := p - d;
+
+     p := FBufferPos - p - 2;
 
      if p < 0 then p := p + FBufferSize else
      if p >= FBufferSize then p := p - FBufferSize;
 
-      v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
-      result := result + v * m * Hermite64_asm(d, @FBuffer64[p]);
+     v := sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+     result := result + v * m * Hermite64_asm(d, @FBuffer64[p]);
 
-      FStagePosition^[i] := FStagePosition^[i] + FOffset;
-      if FStagePosition^[i] >= 1
-       then FStagePosition^[i] := 0;
-     end;
-  sdDown :
-    for i := 0 to Stages - 1 do
-     begin
-      d := FBufferSize * FStagePosition^[i];
+     FStagePosition^[i] := FStagePosition^[i] + FOffset;
+     if FStagePosition^[i] >= 1
+      then FStagePosition^[i] := 0;
+    end;
+  sdUpInv :
+   for i := 0 to Stages - 1 do
+    begin
+     d := FBufferSize * FStagePosition^[i];
 
-      // calculate absolute sample position
-      p := Round(d + CHalf64);
-      d := p - d;
+     // calculate absolute sample position
+     p := Round(d - CHalf64);
+     d := d - p;
 
-      p := FBufferPos - p - 2;
+     p := FBufferPos + p - 2;
+     if p >= FBufferSize then p := p - FBufferSize;
 
-      if p < 0 then p := p + FBufferSize else
-      if p >= FBufferSize then p := p - FBufferSize;
+     v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+     result := result + v * m * Hermite64_asm(d, @FBuffer64[p]);
 
-      v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
-      result := result + v * m * Hermite64_asm(d, @FBuffer64[p]);
+     FStagePosition^[i] := FStagePosition^[i] + FOffset;
+     if FStagePosition^[i] >= 1
+      then FStagePosition^[i] := 0;
+    end;
+  sdDownInv :
+   for i := 0 to Stages - 1 do
+    begin
+     d := FBufferSize * FStagePosition^[i];
 
-      FStagePosition^[i] := FStagePosition^[i] + FOffset;
-      if FStagePosition^[i] >= 1
-       then FStagePosition^[i] := 0;
-     end;
+     // calculate absolute sample position
+     p := Round(d + CHalf64);
+     d := p - d;
+
+     p := FBufferPos - p - 2;
+
+     if p < 0 then p := p + FBufferSize;
+
+     v := (2 * (i mod 2) - 1) * sqr((1 - abs(1 - 2 * FStagePosition^[i])));
+     result := result + v * m * Hermite64_asm(d, @FBuffer64[p]);
+
+     FStagePosition^[i] := FStagePosition^[i] + FOffset;
+     if FStagePosition^[i] >= 1
+      then FStagePosition^[i] := 0;
+    end;
  end;
 
  // store new data
@@ -503,7 +539,7 @@ begin
  inc(FBufferPos);
  if FBufferPos >= FRealBufSize then
   begin
-   Move(FBuffer64[FRealBufSize - 4], FBuffer64[0], 4 * SizeOf(Single));
+   Move(FBuffer64[FRealBufSize - 4], FBuffer64[0], 4 * SizeOf(Double));
    FBufferPos := 4;
   end;
 end;

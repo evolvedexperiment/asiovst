@@ -56,14 +56,14 @@ begin
   begin
    Left := 1;
    Right := 0;
-   Process(Left, Right);
+   ProcessSample(Left, Right);
    Sum[0] := abs(Left);
    Sum[1] := abs(Right);
    for Sample := 1 to 1024 do
     begin
      Left := 0;
      Right := 0;
-     Process(Left, Right);
+     ProcessSample(Left, Right);
      Sum[0] := Sum[0] + abs(Left);
      Sum[1] := Sum[1] + abs(Right);
     end;
@@ -84,14 +84,14 @@ begin
   begin
    Left := 1;
    Right := 0;
-   Process(Left, Right);
+   ProcessSample(Left, Right);
    Sum[0] := abs(Left);
    Sum[1] := abs(Right);
    for Sample := 1 to 1024 do
     begin
      Left := 0;
      Right := 0;
-     Process(Left, Right);
+     ProcessSample(Left, Right);
      Sum[0] := Sum[0] + abs(Left);
      Sum[1] := Sum[1] + abs(Right);
     end;

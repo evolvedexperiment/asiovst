@@ -1,29 +1,32 @@
-unit DAV_ASIOList;
+unit DAV_AsioList;
 
 interface
 
-uses Classes,SysUtils,Registry,Windows;
+{$I ..\DAV_Compiler.inc}
+
+uses
+  Classes, SysUtils, Registry, Windows;
 
 type
   TDAVAsioDriverDesc = class
   private
-    fGuid: TGUID;
-    fName: string;
-    fFilename: string;
+    FGuid     : TGUID;
+    FName     : string;
+    FFilename : string;
   public
     constructor Create(nGuid: TGUID; nName: string; nFilename: string); overload;
     constructor Create(nGuid, nName, nFilename: string); overload;
-    property Guid: TGUID read fGuid;
-    property Name: string read fName;
-    property Filename: string read fFilename;
+    property Guid: TGUID read FGuid;
+    property Name: string read FName;
+    property Filename: string read FFilename;
   end;
 
   TDAVAsioDriverList = class
   private
-    fNameList: TStrings;
-    fIgnoreGuid: TGuid;
-    fHasIgnoreGuid: boolean;
-    fList: TList;
+    FNameList      : TStrings;
+    FIgnoreGuid    : TGuid;
+    FHasIgnoreGuid : boolean;
+    FList          : TList;
     procedure ClearList;
     procedure LoadList;
     function GetDriverFileName(DrvGuidStr: string): string;
@@ -35,177 +38,183 @@ type
     destructor Destroy; override;
 
     procedure UpdateList;
-    function DriverNumberByName(s: string): integer;
+    function DriverNumberByName(DriverName: string): Integer;
     property Items[Index: Integer]: TDAVAsioDriverDesc read GetItem;
     property Count: Integer read GetCount;
-    property DriverNames: TStrings read fNameList;
+    property DriverNames: TStrings read FNameList;
   end;
 
 implementation
 
 const
-  DAVASIOInprocServer = 'InprocServer32';
-  DAVASIOPath         = 'software\asio';
-  DAVASIOComClsId     = 'clsid';
-  DAVASIODescription  = 'description';
+  CAsioInprocServer = 'InprocServer32';
+  CAsioPath         = 'software\asio';
+  CAsioComClsId     = 'clsid';
+  CAsioDescription  = 'description';
 
 { TDAVIntAsioDriverDesc }
 
 constructor TDAVAsioDriverDesc.Create(nGuid: TGUID; nName: string; nFilename: string);
 begin
-  fGuid:=nGuid;
-  fName:=nName;
-  fFilename:=nFilename;
+ FGuid := nGuid;
+ FName := nName;
+ FFilename := nFilename;
 end;
 
 constructor TDAVAsioDriverDesc.Create(nGuid, nName, nFilename: string);
 begin
-  fGuid:=StringToGUID(nGuid);
-  fName:=nName;
-  fFilename:=nFilename;
+ FGuid := StringToGUID(nGuid);
+ FName := nName;
+ FFilename := nFilename;
 end;
+
 
 { TDAVIntAsioDriverList }
 
 constructor TDAVAsioDriverList.Create;
 begin
-  fHasIgnoreGuid := false;
-  fNameList:=TStringList.Create;
-  fList:=TList.Create;
+ inherited;
+ FHasIgnoreGuid := False;
+ FNameList := TStringList.Create;
+ FList := TList.Create;
 end;
 
 constructor TDAVAsioDriverList.Create(Ignore: TGuid);
 begin
-  Create;
-  fIgnoreGuid := Ignore;
-  fHasIgnoreGuid := true;
+ Create;
+ FIgnoreGuid := Ignore;
+ FHasIgnoreGuid := True;
 end;
 
 destructor TDAVAsioDriverList.Destroy;
 begin
   ClearList;
-  fList.Free;
-  fNameList.Free;
+  FreeAndNil(FList);
+  FreeAndNil(FNameList);
   inherited;
 end;
 
 procedure TDAVAsioDriverList.ClearList;
-var i:integer;
+var
+  DriverIndex : Integer;
 begin
-  for i := Count-1 downto 0 do Items[i].Free;
+  for DriverIndex := Count - 1 downto 0
+   do Items[DriverIndex].Free;
 
-  fNameList.clear;
-  fList.Clear;
+  FNameList.Clear;
+  FList.Clear;
 end;
 
 function TDAVAsioDriverList.GetCount: Integer;
 begin
-  Result := fList.Count;
+  Result := FList.Count;
 end;
 
 function TDAVAsioDriverList.GetDriverFileName(DrvGuidStr: string): string;
-var Filename: string;
-    DirStr : PChar;
+var
+  Filename : string;
+  DirStr   : PChar;
 begin
-  result := '';
-  if DrvGuidStr='' then exit;
+ Result := '';
+ if DrvGuidStr = '' then exit;
 
-  with TRegistry.Create do
+ with TRegistry.Create do
   try
-    RootKey := HKEY_CLASSES_ROOT;
-    if OpenKeyReadOnly(DAVASIOComClsId + '\' + Lowercase(DrvGuidStr) + '\' + DAVASIOInprocServer) then
+   RootKey := HKEY_CLASSES_ROOT;
+   if OpenKeyReadOnly(CAsioComClsId + '\' + Lowercase(DrvGuidStr) + '\' + CAsioInprocServer) then
     begin
-      result := ReadString('');
-      Filename := ExtractFileName(result);
-      DirStr := StrAlloc(MAX_PATH);
+     Result := ReadString('');
+     Filename := ExtractFileName(Result);
+     DirStr := StrAlloc(MAX_PATH);
 
-      if not FileExists(result) and (GetSystemDirectory(DirStr, MAX_PATH) <> 0) then
-        result := StrPas(DirStr) + '\' + Filename;
-      
-      if not FileExists(result) and (GetWindowsDirectory(DirStr, MAX_PATH) <> 0) then
-        result := StrPas(DirStr) + '\' + Filename;
+     if not FileExists(Result) and (GetSystemDirectory(DirStr, MAX_PATH) <> 0)
+      then Result := StrPas(DirStr) + '\' + Filename;
 
-      if not FileExists(result) then
-        Result := '';
+     if not FileExists(Result) and (GetWindowsDirectory(DirStr, MAX_PATH) <> 0)
+      then Result := StrPas(DirStr) + '\' + Filename;
 
-      StrDispose(DirStr);
-      CloseKey;
+     if not FileExists(Result) then Result := '';
+
+     StrDispose(DirStr);
+     CloseKey;
     end;
-  
-  finally
-    Free;
-  end;
+
+ finally
+  Free;
+ end;
 end;
 
 function TDAVAsioDriverList.GetItem(Index: Integer): TDAVAsioDriverDesc;
 begin
-  Result := TDAVAsioDriverDesc(fList.Items[Index]);
+ Result := TDAVAsioDriverDesc(FList.Items[Index]);
 end;
 
 procedure TDAVAsioDriverList.LoadList;
-var SubKeys: TStringList;
-    i: Integer;
-    DrvName: string;
-    DrvGuidStr: string;
-    DrvFile: string;
-    DrvGuid: TGuid;
-    newAsioDriverItem: TDAVAsioDriverDesc;
+var
+  SubKeys           : TStringList;
+  i                 : Integer;
+  DrvName           : string;
+  DrvGuidStr        : string;
+  DrvFile           : string;
+  DrvGuid           : TGuid;
+  newAsioDriverItem : TDAVAsioDriverDesc;
 begin
-  SubKeys := TStringList.Create;
-  with TRegistry.Create do
+ SubKeys := TStringList.Create;
+ with TRegistry.Create do
   try
-    RootKey:=HKEY_LOCAL_MACHINE;
-    if OpenKeyReadOnly(DAVASIOPath) then
+   RootKey := HKEY_LOCAL_MACHINE;
+   if OpenKeyReadOnly(CAsioPath) then
     begin
-      GetKeyNames(SubKeys);
-      CloseKey;
+     GetKeyNames(SubKeys);
+     CloseKey;
     end;
 
-    for i:=0 to SubKeys.Count-1 do
+   for i := 0 to SubKeys.Count-1 do
     begin
-      if OpenKeyReadOnly(DAVASIOPath + '\' + SubKeys[i]) then
+     if OpenKeyReadOnly(CAsioPath + '\' + SubKeys[i]) then
       begin
-        DrvGuidStr := ReadString(DAVASIOComClsId);
-        DrvGuid := StringToGUID(DrvGuidStr);
+       DrvGuidStr := ReadString(CAsioComClsId);
+       DrvGuid := StringToGUID(DrvGuidStr);
 
-        DrvFile:=GetDriverFileName(DrvGuidStr);
-        if (DrvFile<>'') and not ( fHasIgnoreGuid and IsEqualGUID(DrvGuid,fIgnoreGuid) ) then
+       DrvFile := GetDriverFileName(DrvGuidStr);
+       if (DrvFile <> '') and not (FHasIgnoreGuid and IsEqualGUID(DrvGuid, FIgnoreGuid)) then
         begin
-          DrvName := ReadString(DAVASIODescription);
-          if DrvName='' then DrvName:=SubKeys[i];
+         DrvName := ReadString(CAsioDescription);
+         if DrvName = '' then DrvName := SubKeys[i];
 
-          newAsioDriverItem:=TDAVAsioDriverDesc.Create(DrvGuidStr,DrvName,DrvFile);
+         newAsioDriverItem := TDAVAsioDriverDesc.Create(DrvGuidStr,DrvName,DrvFile);
 
-          fList.Add(newAsioDriverItem);
-          fNameList.Add(DrvName);
+         FList.Add(newAsioDriverItem);
+         FNameList.Add(DrvName);
         end;
 
-        CloseKey;
-      end;
-    end;
-  finally
-    Free;
-    SubKeys.Free;
-  end;
+       CloseKey;
+     end;
+   end;
+ finally
+  Free;
+  FreeAndNil(SubKeys);
+ end;
 end;
 
 procedure TDAVAsioDriverList.UpdateList;
 begin
-  ClearList;
-  LoadList;
+ ClearList;
+ LoadList;
 end;
 
-function TDAVAsioDriverList.DriverNumberByName(s: string): integer;
-var i:integer;
+function TDAVAsioDriverList.DriverNumberByName(DriverName: string): Integer;
+var
+  DriverIndex : Integer;
 begin
-  s:=LowerCase(s);
-  result := -1;
-  for i := 0 to Count-1 do
-    if lowercase(Items[i].name) = s then
-    begin
-      result:=i;
-      break;
-    end;
+ DriverName := LowerCase(DriverName);
+ Result := -1;
+ for DriverIndex := 0 to Count-1 do
+  if LowerCase(Items[DriverIndex].Name) = DriverName then
+   begin
+    Result := DriverIndex;
+    Break;
+   end;
 end;
 
 end.

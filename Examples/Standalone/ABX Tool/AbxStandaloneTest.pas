@@ -43,7 +43,7 @@ type
     kbmCSVStreamFormat: TkbmCSVStreamFormat;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure BtAudioPlayClick(Sender: TObject);
     procedure BtAudioStopClick(Sender: TObject);
     procedure BtXisAClick(Sender: TObject);
@@ -360,7 +360,7 @@ begin
 end;
 
 procedure TFmABXStandaloneTest.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   CurrentPosition : Integer;
   Channel         : Integer;

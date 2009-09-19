@@ -1,4 +1,4 @@
-unit DAV_ASIOGenerator;
+unit DAV_AsioGenerator;
 
 interface
 

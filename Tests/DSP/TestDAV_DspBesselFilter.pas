@@ -81,7 +81,7 @@ begin
 
   // Calculate filter
   Input := 1;
-  ReturnValue := FBesselLowpassFilter.ProcessSample(Input);
+  ReturnValue := FBesselLowpassFilter.ProcessSample64(Input);
 
   // Validate results
   CheckTrue((ReturnValue > -1) and (ReturnValue < 1));
@@ -157,7 +157,7 @@ begin
 
   // Calculate Filter
   with FBesselHighpassFilter
-   do ReturnValue := ProcessSample(Input);
+   do ReturnValue := ProcessSample64(Input);
 
  // Validate result
  CheckTrue(abs(ReturnValue - 0) < 1E-10);

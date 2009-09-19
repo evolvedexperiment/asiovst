@@ -101,7 +101,7 @@ type
 
 implementation
 
-uses DAV_DspDynamics;
+uses DAV_DspDynamics, DAV_DspFilter;
 
 (*
 uses
@@ -287,7 +287,7 @@ end;
 function TAbxTestPeakFilterGainSetup.ProcessedAudio(Channel: Integer;
   Data: Double): Double;
 begin
- result := FGainScale * FPeakFilter[Channel].ProcessSample(Data);
+ result := FGainScale * FPeakFilter[Channel].ProcessSample64(Data);
 end;
 
 function TAbxTestPeakFilterGainSetup.UnprocessedAudio(Channel: Integer;
@@ -346,13 +346,13 @@ end;
 function TCustomLimiterAbxTestSetup.UnprocessedAudio(Channel: Integer;
   Data: Double): Double;
 begin
- result := FLimiter[0, Channel].ProcessSample(Data);
+ result := FLimiter[0, Channel].ProcessSample64(Data);
 end;
 
 function TCustomLimiterAbxTestSetup.ProcessedAudio(Channel: Integer;
   Data: Double): Double;
 begin
- result := FLimiter[1, Channel].ProcessSample(Data);
+ result := FLimiter[1, Channel].ProcessSample64(Data);
 end;
 
 { TLimiterThresholdAbxTestSetup }

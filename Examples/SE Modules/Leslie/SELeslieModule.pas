@@ -212,7 +212,7 @@ begin
  OutR := PDAVSingleFixedArray(@FOutRightBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do FLeslie.Process(Inp^[Sample], OutL^[Sample], OutR^[Sample]);
+  do FLeslie.ProcessSample(Inp^[Sample], OutL^[Sample], OutR^[Sample]);
 end;
 
 // describe the pins (plugs)
@@ -411,7 +411,7 @@ begin
  for Sample := 0 to SampleFrames - 1 do
   begin
    FLeslie.Speed := 100 * (1 + Speed^[Sample]);
-   FLeslie.Process(Inp^[Sample], OutL^[Sample], OutR^[Sample]);
+   FLeslie.ProcessSample(Inp^[Sample], OutL^[Sample], OutR^[Sample]);
   end;
 end;
 

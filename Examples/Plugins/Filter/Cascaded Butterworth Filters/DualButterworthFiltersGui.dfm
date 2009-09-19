@@ -3,8 +3,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   Top = 138
   BorderStyle = bsNone
   Caption = 'Dual Linkwitz-Riley Filters'
-  ClientHeight = 170
-  ClientWidth = 232
+  ClientHeight = 176
+  ClientWidth = 236
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,9 +20,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   TextHeight = 13
   object GpDualLiknwitzRiley: TGuiGroup
     Left = 8
-    Top = 9
-    Width = 217
-    Height = 154
+    Top = 8
+    Width = 220
+    Height = 161
     AntiAlias = gaaLinear4x
     Caption = 'Dual Linkwitz-Riley Filters'
     Font.Charset = DEFAULT_CHARSET
@@ -38,7 +38,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     TabOrder = 0
     object DialLowpassFrequency: TGuiDial
       Left = 11
-      Top = 25
+      Top = 29
       Width = 48
       Height = 48
       PopupMenu = PuFrequency
@@ -63,7 +63,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object DialLowpassSlope: TGuiDial
       Left = 75
-      Top = 25
+      Top = 29
       Width = 48
       Height = 48
       CircleColor = 3226174
@@ -87,7 +87,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object LbFrequency: TGuiLabel
       Left = 11
-      Top = 79
+      Top = 83
       Width = 48
       Height = 13
       Alignment = taCenter
@@ -101,7 +101,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object LbSlope: TGuiLabel
       Left = 75
-      Top = 79
+      Top = 83
       Width = 48
       Height = 13
       Alignment = taCenter
@@ -115,7 +115,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object DialHighpassFrequency: TGuiDial
       Left = 11
-      Top = 98
+      Top = 102
       Width = 48
       Height = 48
       PopupMenu = PuFrequency
@@ -140,7 +140,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
     object DialHighpassSlope: TGuiDial
       Left = 75
-      Top = 98
+      Top = 102
       Width = 48
       Height = 48
       CircleColor = 3226174
@@ -163,8 +163,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
     end
     object LbLowpass: TGuiLabel
-      Left = 129
-      Top = 41
+      Left = 131
+      Top = 45
       Width = 59
       Height = 24
       Alignment = taCenter
@@ -175,10 +175,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      PopupMenu = PuPreset
+      OnMouseDown = LbMouseDown
     end
     object LbHighpass: TGuiLabel
-      Left = 129
-      Top = 112
+      Left = 131
+      Top = 116
       Width = 59
       Height = 21
       Alignment = taCenter
@@ -189,10 +191,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      PopupMenu = PuPreset
+      OnMouseDown = LbMouseDown
     end
     object LedHighCut: TGuiLED
-      Left = 189
-      Top = 44
+      Left = 191
+      Top = 47
       Width = 15
       Height = 15
       Brightness_Percent = 90.000000000000000000
@@ -205,8 +209,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       OnClick = LedHighCutClick
     end
     object LedLowCut: TGuiLED
-      Left = 189
-      Top = 115
+      Left = 191
+      Top = 118
       Width = 15
       Height = 15
       Brightness_Percent = 90.000000000000000000
@@ -219,8 +223,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       OnClick = LedLowCutClick
     end
     object PnDisplay: TGuiPanel
-      Left = 125
-      Top = 77
+      Left = 127
+      Top = 81
       Width = 83
       Height = 17
       AntiAlias = gaaLinear4x
@@ -256,8 +260,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   end
   object GbFrequencyResponse: TGuiGroup
     Left = 8
-    Top = 169
-    Width = 217
+    Top = 175
+    Width = 220
     Height = 105
     AntiAlias = gaaLinear4x
     Caption = 'Frequency Response'
@@ -274,9 +278,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     TabOrder = 1
     Visible = False
     object GuiEQGraph: TGuiEQGraph
-      Left = 7
+      Left = 3
       Top = 26
-      Width = 187
+      Width = 214
       Height = 72
       AutoColor = False
       GraphColorLight = 5991539
@@ -457,6 +461,74 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Tag = 20000
       Caption = '20 kHz'
       OnClick = MiFrequencyClick
+    end
+  end
+  object PuPreset: TPopupMenu
+    Left = 160
+    Top = 80
+    object MiLoadHigh: TMenuItem
+      Caption = '&Load'
+      object MiLoadA: TMenuItem
+        Caption = '&A'
+        OnClick = MiLoadClick
+      end
+      object MiLoadB: TMenuItem
+        Tag = 1
+        Caption = '&B'
+        OnClick = MiLoadClick
+      end
+      object MiLoadC: TMenuItem
+        Tag = 2
+        Caption = '&C'
+        OnClick = MiLoadClick
+      end
+      object MiLoadD: TMenuItem
+        Tag = 3
+        Caption = '&D'
+        OnClick = MiLoadClick
+      end
+      object MiLoadE: TMenuItem
+        Tag = 4
+        Caption = '&E'
+        OnClick = MiLoadClick
+      end
+      object MiLoadF: TMenuItem
+        Tag = 5
+        Caption = '&F'
+        OnClick = MiLoadClick
+      end
+    end
+    object MiStoreHigh: TMenuItem
+      Caption = 'Store'
+      object MiStoreA: TMenuItem
+        Caption = '&A'
+        OnClick = MiStoreClick
+      end
+      object MiStoreB: TMenuItem
+        Tag = 1
+        Caption = '&B'
+        OnClick = MiStoreClick
+      end
+      object MiStoreC: TMenuItem
+        Tag = 2
+        Caption = '&C'
+        OnClick = MiStoreClick
+      end
+      object MiStoreD: TMenuItem
+        Tag = 3
+        Caption = '&D'
+        OnClick = MiStoreClick
+      end
+      object MiStoreE: TMenuItem
+        Tag = 4
+        Caption = '&E'
+        OnClick = MiStoreClick
+      end
+      object MiStoreF: TMenuItem
+        Tag = 5
+        Caption = '&F'
+        OnClick = MiStoreClick
+      end
     end
   end
 end

@@ -20,7 +20,7 @@ type
     StatusBar: TStatusBar;
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BtXisBClick(Sender: TObject);
     procedure BtXisAClick(Sender: TObject);
@@ -209,7 +209,7 @@ begin
 end;
 
 procedure TFmAbxTest.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
-  OutBuffer: TDAVArrayOfSingleDynArray);
+  OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample, Channel : Integer;
   AudioData : array [0..1] of Double;

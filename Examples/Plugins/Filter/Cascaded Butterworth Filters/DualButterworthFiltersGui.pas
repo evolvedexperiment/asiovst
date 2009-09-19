@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiDial, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED, Menus;
+  Dialogs, ExtCtrls, StdCtrls, Menus, DAV_GuiPanel, DAV_GuiLabel,
+  DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGroup, DAV_GuiEQGraph, DAV_GuiLED;
 
 type
   TFmLinkwitzRiley = class(TForm)
@@ -57,27 +57,46 @@ type
     Mi12k5Hz: TMenuItem;
     Mi16kHz: TMenuItem;
     Mi20kHz: TMenuItem;
+    PuPreset: TPopupMenu;
+    MiLoadHigh: TMenuItem;
+    MiStoreHigh: TMenuItem;
+    MiLoadA: TMenuItem;
+    MiLoadB: TMenuItem;
+    MiLoadC: TMenuItem;
+    MiLoadD: TMenuItem;
+    MiLoadE: TMenuItem;
+    MiLoadF: TMenuItem;
+    MiStoreA: TMenuItem;
+    MiStoreB: TMenuItem;
+    MiStoreC: TMenuItem;
+    MiStoreD: TMenuItem;
+    MiStoreE: TMenuItem;
+    MiStoreF: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
-    procedure DialLowpassSlopeChange(Sender: TObject);
-    procedure DialLowpassFrequencyChange(Sender: TObject);
-    procedure DialHighpassSlopeChange(Sender: TObject);
     procedure DialHighpassFrequencyChange(Sender: TObject);
+    procedure DialHighpassFrequencyMouseEnter(Sender: TObject);
+    procedure DialHighpassSlopeChange(Sender: TObject);
+    procedure DialHighpassSlopeMouseEnter(Sender: TObject);
+    procedure DialLowpassFrequencyChange(Sender: TObject);
+    procedure DialLowpassFrequencyMouseEnter(Sender: TObject);
+    procedure DialLowpassSlopeChange(Sender: TObject);
+    procedure DialLowpassSlopeMouseEnter(Sender: TObject);
+    procedure LbMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure LedHighCutClick(Sender: TObject);
     procedure LedLowCutClick(Sender: TObject);
-    procedure DialLowpassFrequencyMouseEnter(Sender: TObject);
-    procedure DialLowpassSlopeMouseEnter(Sender: TObject);
-    procedure DialHighpassFrequencyMouseEnter(Sender: TObject);
-    procedure DialHighpassSlopeMouseEnter(Sender: TObject);
-    procedure MiFrequencyClick(Sender: TObject);
     procedure Mi31Hz5Click(Sender: TObject);
+    procedure MiFrequencyClick(Sender: TObject);
+    procedure MiLoadClick(Sender: TObject);
+    procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;
+    FIsLow           : Boolean;
   public
     procedure UpdateLowpassFrequency;
     procedure UpdateLowpassSlope;
@@ -92,6 +111,9 @@ implementation
 
 uses
   DAV_GuiCommon, PNGImage, DualButterworthFiltersDM, DAV_VSTModuleWithPrograms;
+
+resourcestring
+  RCStrLinkwitzRiley = 'Linkwitz-Riley';
 
 procedure TFmLinkwitzRiley.FormCreate(Sender: TObject);
 var
@@ -163,7 +185,7 @@ begin
  UpdateHighpassFrequency;
  UpdateHighpassSlope;
  UpdateType;
- LbDisplay.Caption := 'Linkwitz-Riley';
+ LbDisplay.Caption := RCStrLinkwitzRiley;
 end;
 
 function TFmLinkwitzRiley.GuiEQGraphGetFilterGain(Sender: TObject;
@@ -235,6 +257,15 @@ begin
  UpdateHighpassSlope;
 end;
 
+procedure TFmLinkwitzRiley.LbMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+ FIsLow := Sender = LbLowpass;
+
+ if Button = mbRight
+  then PuPreset.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+end;
+
 procedure TFmLinkwitzRiley.LedHighCutClick(Sender: TObject);
 var
   CurrentBit : Integer;
@@ -262,6 +293,18 @@ begin
  assert(Sender is TMenuItem);
  if assigned(FCurrentDial)
   then FCurrentDial.Position := TMenuItem(Sender).Tag;
+end;
+
+procedure TFmLinkwitzRiley.MiLoadClick(Sender: TObject);
+begin
+ with TDualButterworthFiltersModule(Owner), TComponent(Sender) do
+  if FIsLow then LoadLow(Tag) else LoadHigh(Tag) 
+end;
+
+procedure TFmLinkwitzRiley.MiStoreClick(Sender: TObject);
+begin
+ with TDualButterworthFiltersModule(Owner), TComponent(Sender) do
+  if FIsLow then StoreLow(Tag) else StoreHigh(Tag); 
 end;
 
 procedure TFmLinkwitzRiley.PuFrequencyPopup(Sender: TObject);

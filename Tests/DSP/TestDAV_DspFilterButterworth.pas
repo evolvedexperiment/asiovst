@@ -98,7 +98,7 @@ begin
 
   // Calculate filter
   Input := 1;
-  ReturnValue := FButterworthLowPassFilter.ProcessSample(Input);
+  ReturnValue := FButterworthLowPassFilter.ProcessSample64(Input);
 
   // Validate results
   CheckTrue((ReturnValue > 0) and (ReturnValue < 1));
@@ -203,7 +203,7 @@ begin
 
   // Calculate filter
   Input := 1;
-  ReturnValue := FButterworthHighPassFilter.ProcessSample(Input);
+  ReturnValue := FButterworthHighPassFilter.ProcessSample64(Input);
 
   // Validate results
   CheckTrue((ReturnValue > 0) and (ReturnValue < 1));

@@ -29,7 +29,8 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure BarberpolePaint(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+    procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
+      OutBuffer: TDAVArrayOfSingleFixedArray);
   private
     FBackgrounBitmap  : TBitmap;
     FLowpass          : TButterworthLowPassFilter;
@@ -259,7 +260,7 @@ begin
 end;
 
 procedure TFmBarberpoleTuner.ASIOHostBufferSwitch32(Sender: TObject;
-  const InBuffer, OutBuffer: TDAVArrayOfSingleDynArray);
+  const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample, c1 : Integer;
   Signal     : Single;
@@ -267,9 +268,9 @@ begin
  c1 := 1;
  for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   Signal := FLimiter[0].ProcessSample(FLowpass.ProcessSample(InBuffer[0, Sample]));
-   Signal := FBarberpoleFilter.Process(Signal + 2 * sqr(Signal) - 1);
-   Signal := FLimiter[1].ProcessSample(Signal);
+   Signal := FLimiter[0].ProcessSample64(FLowpass.ProcessSample64(InBuffer[0, Sample]));
+   Signal := FBarberpoleFilter.ProcessSample32(Signal + 2 * sqr(Signal) - 1);
+   Signal := FLimiter[1].ProcessSample64(Signal);
    if FDownSamplePos = 0 then
     begin
      Move(FLinearBuffer^[0], FLinearBuffer^[c1], 255 * SizeOf(Single));

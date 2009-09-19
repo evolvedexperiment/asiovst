@@ -2,9 +2,11 @@ unit ASIOMP3GUI;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DAV_Common, DAV_ASIOHost, DAV_MpegAudio;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, DAV_Common, DAV_AsioHost, DAV_MpegAudio;
 
 type
   TFmASIOMP3 = class(TForm)

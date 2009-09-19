@@ -183,7 +183,7 @@ begin
  if FFreq <> Value then
   begin
    FFreq := Value;
-   LbFreq.Caption := 'Frequency: ' + FloatTostrF(FFreq, ffGeneral, 5, 5) + ' Hz';
+   LbFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5, 5) + ' Hz';
    FSineLFO.Frequency := FFreq;
   end;
 end;
@@ -214,7 +214,7 @@ begin
     end;
   stPinkNoise :
     for Sample := 0 to ASIOHost.BufferSize - 1
-     do OutBuffer[0, Sample] := FPinkNoise.ProcessSample;
+     do OutBuffer[0, Sample] := FPinkNoise.ProcessSample64;
  end;
 
  // copy signal to all channels
@@ -248,7 +248,7 @@ begin
     end;
   stPinkNoise :
     for Sample := 0 to ASIOHost.BufferSize - 1
-     do OutBuffer[0, Sample] := FPinkNoise.ProcessSample;
+     do OutBuffer[0, Sample] := FPinkNoise.ProcessSample64;
  end;
 
  // copy signal to all channels
@@ -267,8 +267,8 @@ begin
  if FVol = 0
   then LbVolume.Caption := 'Volume: 0 equals -oo dB'
   else LbVolume.Caption := 'Volume: ' +
-                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
+                           FloatToStrF(FVol, ffFixed, 2, 2) + ' equals ' +
+                           FloatToStrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
 end;
 
 {$IFDEF FPC}

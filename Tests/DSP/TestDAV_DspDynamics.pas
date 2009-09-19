@@ -282,9 +282,9 @@ begin
  with FSimpleDirectGate do
   begin
    Threshold_dB := -6;
-   CheckEquals(ProcessSample(0), 0);
-   CheckEquals(ProcessSample(1), 1);
-   CheckEquals(ProcessSample(0.1), 0);
+   CheckEquals(ProcessSample64(0), 0);
+   CheckEquals(ProcessSample64(1), 1);
+   CheckEquals(ProcessSample64(0.1), 0);
   end;
 end;
 
@@ -306,9 +306,9 @@ begin
  with FSoftDirectGate do
   begin
    Threshold_dB := -6;
-   CheckEquals(ProcessSample(0), 0, 'Error: Processing silence <> 0');
-   CheckTrue(abs(ProcessSample(1) - 1) < 1E-1);
-   CheckTrue(abs(ProcessSample(0.01)) < 1E-3);
+   CheckEquals(ProcessSample64(0), 0, 'Error: Processing silence <> 0');
+   CheckTrue(abs(ProcessSample64(1) - 1) < 1E-1);
+   CheckTrue(abs(ProcessSample64(0.01)) < 1E-3);
   end;
 end;
 
@@ -322,7 +322,7 @@ begin
    InputSample(1);
    CheckTrue(abs(GainSample(1) - 1) < 1E-1);
    InputSample(0.1);
-   CheckTrue(abs(ProcessSample(0.01)) < 1E-3);
+   CheckTrue(abs(ProcessSample64(0.01)) < 1E-3);
   end;
 end;
 
@@ -357,9 +357,9 @@ begin
   begin
    Threshold_dB := -10;
    ThresholdFactor := dB_to_Amp(Threshold_dB);
-   CheckEquals(ProcessSample(0), 0, 'ProcessSample(0) <> 0');
-   CheckTrue(abs(ProcessSample(ThresholdFactor) - ThresholdFactor) < 1E-5);
-   CheckTrue(abs(ProcessSample(1) - ThresholdFactor) < 1E-5);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
   end;
 end;
 
@@ -398,12 +398,16 @@ end;
 
 procedure TestTSoftBrickwallLimiter.TestProcessSample;
 var
-  ReturnValue: Double;
-  Input: Double;
+  ThresholdFactor: Single;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FSoftBrickwallLimiter.ProcessSample(Input);
-  // TODO: Validate method results
+ with FSoftBrickwallLimiter do
+  begin
+   Threshold_dB := -10;
+   ThresholdFactor := dB_to_Amp(Threshold_dB);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+  end;
 end;
 
 procedure TestTSoftBrickwallLimiter.TestTranslatePeakToGain;
@@ -452,12 +456,16 @@ end;
 
 procedure TestTLimiter.TestProcessSample;
 var
-  ReturnValue: Double;
-  Input: Double;
+  ThresholdFactor: Single;
 begin
- // TODO: Setup method call parameters
- ReturnValue := FLimiter.ProcessSample(Input);
- // TODO: Validate method results
+ with FLimiter do
+  begin
+   Threshold_dB := -10;
+   ThresholdFactor := dB_to_Amp(Threshold_dB);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+  end;
 end;
 
 procedure TestTLimiter.TestTranslatePeakToGain;
@@ -465,19 +473,23 @@ var
   ReturnValue: Double;
   PeakLevel: Double;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FLimiter.TranslatePeakToGain(PeakLevel);
-  // TODO: Validate method results
+ with FLimiter do
+  begin
+   Threshold_dB := 0;
+   CheckTrue(abs(TranslatePeakToGain(0.01) - 1) < 1E-9);
+  end;
 end;
 
 procedure TestTLimiter.TestCharacteristicCurve;
 var
   ReturnValue: Double;
-  InputLevel: Double;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FLimiter.CharacteristicCurve(InputLevel);
-  // TODO: Validate method results
+ with FLimiter do
+  begin
+   Threshold_dB := -10;
+   ReturnValue := CharacteristicCurve(0);
+   CheckTrue(abs(ReturnValue) < 1E-9, 'CharacteristicCurve(0) <> 0!' );
+  end;
 end;
 
 
@@ -495,12 +507,16 @@ end;
 
 procedure TestTSoftKneeLimiter.TestProcessSample;
 var
-  ReturnValue: Double;
-  Input: Double;
+  ThresholdFactor: Single;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FSoftKneeLimiter.ProcessSample(Input);
-  // TODO: Validate method results
+ with FSoftKneeLimiter do
+  begin
+   Threshold_dB := -10;
+   ThresholdFactor := dB_to_Amp(Threshold_dB);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+  end;
 end;
 
 procedure TestTSoftKneeLimiter.TestTranslatePeakToGain;
@@ -538,12 +554,16 @@ end;
 
 procedure TestTSimpleSoftKneeLimiter.TestProcessSample;
 var
-  ReturnValue: Double;
-  Input: Double;
+  ThresholdFactor: Single;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FSimpleSoftKneeLimiter.ProcessSample(Input);
-  // TODO: Validate method results
+ with FSimpleSoftKneeLimiter do
+  begin
+   Threshold_dB := -10;
+   ThresholdFactor := dB_to_Amp(Threshold_dB);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+  end;
 end;
 
 
@@ -580,12 +600,16 @@ end;
 
 procedure TestTClassicGate.TestProcessSample;
 var
-  ReturnValue: Double;
-  Input: Double;
+  ThresholdFactor: Single;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FClassicGate.ProcessSample(Input);
-  // TODO: Validate method results
+ with FClassicGate do
+  begin
+   Threshold_dB := -10;
+   ThresholdFactor := dB_to_Amp(Threshold_dB);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+  end;
 end;
 
 
@@ -745,12 +769,16 @@ end;
 
 procedure TestTSimpleFeedbackCompressor.TestProcessSample;
 var
-  ReturnValue: Double;
-  Input: Double;
+  ThresholdFactor: Single;
 begin
-  // TODO: Setup method call parameters
-  ReturnValue := FSimpleFeedbackCompressor.ProcessSample(Input);
-  // TODO: Validate method results
+ with FSimpleFeedbackCompressor do
+  begin
+   Threshold_dB := -10;
+   ThresholdFactor := dB_to_Amp(Threshold_dB);
+   CheckEquals(ProcessSample64(0), 0, 'ProcessSample64(0) <> 0');
+   CheckTrue(abs(ProcessSample64(ThresholdFactor) - ThresholdFactor) < 1E-5);
+   CheckTrue(abs(ProcessSample64(1) - ThresholdFactor) < 1E-5);
+  end;
 end;
 
 procedure TestTSimpleFeedbackCompressor.TestTranslatePeakToGain;
@@ -792,7 +820,7 @@ var
   Input: Double;
 begin
   // TODO: Setup method call parameters
-  ReturnValue := FSoftKneeFeedbackCompressor.ProcessSample(Input);
+  ReturnValue := FSoftKneeFeedbackCompressor.ProcessSample64(Input);
   // TODO: Validate method results
 end;
 
@@ -825,7 +853,7 @@ var
   Input: Double;
 begin
   // TODO: Setup method call parameters
-  ReturnValue := FSimpleRMSCompressor.ProcessSample(Input);
+  ReturnValue := FSimpleRMSCompressor.ProcessSample64(Input);
   // TODO: Validate method results
 end;
 
@@ -866,7 +894,7 @@ var
   Input: Double;
 begin
   // TODO: Setup method call parameters
-  ReturnValue := FCompressor.ProcessSample(Input);
+  ReturnValue := FCompressor.ProcessSample64(Input);
   // TODO: Validate method results
 end;
 

@@ -83,12 +83,12 @@ begin
 
    // Test delay line
    for CurrentSample := 0 to CSampleFrames - 1
-    do ProcessSample(1);
+    do ProcessSample32(1);
 
    Reset;
 
    // Validate result
-   CheckTrue(ProcessSample(1) = 0);
+   CheckTrue(ProcessSample32(1) = 0);
   end;
 end;
 
@@ -104,12 +104,12 @@ begin
    BufferSize := CSampleFrames;
 
    // Test delay line
-   ProcessSample(1);
+   ProcessSample32(1);
    for CurrentSample := 1 to CSampleFrames - 1
-    do ProcessSample(0);
+    do ProcessSample32(0);
 
    // Validate result
-   CheckEquals(ProcessSample(1), 1);
+   CheckEquals(ProcessSample32(1), 1);
   end;
 end;
 
@@ -139,12 +139,12 @@ begin
 
    // Test delay line
    for CurrentSample := 0 to CSampleFrames - 1
-    do ProcessSample(1);
+    do ProcessSample64(1);
 
    Reset;
 
    // Validate result
-   CheckTrue(ProcessSample(1) = 0);
+   CheckTrue(ProcessSample64(1) = 0);
   end;
 end;
 
@@ -160,12 +160,12 @@ begin
    BufferSize := CSampleFrames;
 
    // Test delay line
-   ProcessSample(1);
+   ProcessSample64(1);
    for CurrentSample := 1 to CSampleFrames - 1
-    do ProcessSample(0);
+    do ProcessSample64(0);
 
    // Validate result
-   CheckEquals(ProcessSample(1), 1);
+   CheckEquals(ProcessSample64(1), 1);
   end;
 end;
 
@@ -195,12 +195,12 @@ begin
 
    // Test delay line
    for CurrentSample := 0 to CSampleFrames - 1
-    do ProcessSample(1);
+    do ProcessSample32(1);
 
    Reset;
 
    // Validate result
-   CheckTrue(ProcessSample(1) = 0);
+   CheckTrue(ProcessSample32(1) = 0);
   end;
 end;
 
@@ -216,12 +216,12 @@ begin
    Time := 1000 / Samplerate;
 
    // Test delay line
-   ProcessSample(1);
+   ProcessSample32(1);
    for CurrentSample := 1 to CSampleFrames - 1
-    do ProcessSample(0);
+    do ProcessSample32(0);
 
    // Validate result
-   CheckTrue(abs(ProcessSample(1) - 1) < 1E-10);
+   CheckTrue(abs(ProcessSample32(1) - 1) < 1E-10);
   end;
 end;
 

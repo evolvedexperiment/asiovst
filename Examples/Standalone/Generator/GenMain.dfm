@@ -649,7 +649,7 @@ object FmGenerator: TFmGenerator
       DisplayChannels = <>
       LineColor = clYellow
       LineWidth = 0
-      XAxis.SampleUpper = 4294967295
+      XAxis.SampleUpper = 255
       XAxis.FractionalLower = -0.500000000000000000
       XAxis.FractionalUpper = 0.500000000000000000
     end
@@ -682,10 +682,10 @@ object FmGenerator: TFmGenerator
       ParentFont = False
     end
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = BufferSwitchWhiteNoise32

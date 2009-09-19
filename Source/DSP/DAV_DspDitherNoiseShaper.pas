@@ -629,7 +629,7 @@ begin
  FHistoryPos := (FHistoryPos + 1) mod FOrder;
  FHistory[FHistoryPos] := Input;
  {$ELSE}
- result := (ProcessInteger(Input) + CHalf32) * FBitDiv;
+ Result := (ProcessInteger(Input) + CHalf32) * FBitDiv;
  {$ENDIF}
 end;
 

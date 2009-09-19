@@ -99,7 +99,7 @@ end;
 
 procedure TFmAudioSettings.CBChannelsChange(Sender: TObject);
 begin
- FmAbxAlgorithmTest.ASIOHost.OutputChannelOffset := 2 * CBChannels.ItemIndex;
+ FmAbxAlgorithmTest.ChannelOffset := 2 * CBChannels.ItemIndex;
 end;
 
 procedure TFmAudioSettings.CBDriversChange(Sender: TObject);

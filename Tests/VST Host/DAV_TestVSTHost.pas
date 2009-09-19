@@ -526,7 +526,6 @@ begin
  // Test Inactive ProcessReplacing
  with FVstHost[0] do
   begin
-   Active := True;
    SetLength(Input, numInputs);
    for Channel := 0 to numInputs - 1 do
     begin
@@ -542,19 +541,21 @@ begin
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
+   // call process replacing
+   StartProcess;
+   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+   StopProcess;
+
+   Active := True;
    SetSampleRate(44100);
    SetBlockSize(CBlockSize);
 
+   // start processing
    StartProcess;
    Active := False;
-   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
-   Active := True;
-   StopProcess;
 
-   Active := False;
-   StartProcess;
+   // call processing
    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
-   StopProcess;
   end;
 end;
 

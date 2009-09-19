@@ -188,7 +188,7 @@ begin
  Outp := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FModDelay.ProcessSample(Inp^[Sample]);
+  do Outp^[Sample] := FModDelay.ProcessSample32(Inp^[Sample]);
 end;
 
 // describe the pins (plugs)

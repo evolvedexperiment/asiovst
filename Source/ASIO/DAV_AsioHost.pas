@@ -1,13 +1,13 @@
-unit DAV_ASIOHost;
+unit DAV_AsioHost;
 // This unit allows you to open an ASIO audio driver and access
 // its inputs and outputs. The component was written by
 // Christian Budde and Tobias Fleischer, with an extension by
 // Benjamin Rosseaux. Please give credit if you use this component in your
 // programs. Thanks to Martin Fay (original Delphi ASIO interface)
 
-{$I ..\DAV_Compiler.inc}
-
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
@@ -15,8 +15,8 @@ uses
   {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_AsioInterface {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAVASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF}
-  SysUtils, Classes, Controls,
-  DAV_Asio, DAV_AsioList, DAV_AsioConvert, DAV_AsioGenerator, DAV_Common, DAV_AudioData;
+  SysUtils, Classes, Controls, DAV_Common, DAV_Asio, DAV_AsioList,
+  DAV_AsioConvert, DAV_AsioGenerator, DAV_AudioData;
 
 const
   {$IFDEF DELPHI10_UP} {$region 'Message constants'} {$ENDIF}

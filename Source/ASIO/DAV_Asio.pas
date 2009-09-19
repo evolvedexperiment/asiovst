@@ -1,38 +1,39 @@
-(*******************************************************************************
+unit DAV_Asio;
 
-  Steinberg Audio Stream I/O API
-  (c) 1997 - 1999, Steinberg Soft- und Hardware GmbH
-
-  ASIO Interface Specification v 2.0
-
-  basic concept is an i/o synchronous double-buffer scheme:
-
-  on bufferSwitch(index == 0), host will read/write:
-
-    after ASIOStart(), the
-  read  first input buffer A (index 0)
-  |   will be invalid (empty)
-  *   ------------------------
-  |------------------------|-----------------------|
-  |                        |                       |
-  |  Input Buffer A (0)    |   Input Buffer B (1)  |
-  |                        |                       |
-  |------------------------|-----------------------|
-  |                        |                       |
-  |  Output Buffer A (0)   |   Output Buffer B (1) |
-  |                        |                       |
-  |------------------------|-----------------------|
-  *                        -------------------------
-  |                        before calling ASIOStart(),
-  write                      host will have filled output
-                             buffer B (index 1) already
-
-  *please* take special care of proper statement of input
-  and output latencies (see ASIOGetLatencies()), these
-  control sequencer sync accuracy
-
-*******************************************************************************)
-unit DAV_ASIO;
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Steinberg Audio Stream I/O API                                            //
+//  (c) 1997 - 1999, Steinberg Soft- und Hardware GmbH                        //
+//                                                                            //
+//  ASIO Interface Specification v 2.0                                        //
+//                                                                            //
+//  basic concept is an i/o synchronous double-buffer scheme:                 //
+//                                                                            //
+//  on bufferSwitch(index == 0), host will read/write:                        //
+//                                                                            //
+//    after ASIOStart(), the                                                  //
+//  read  first input buffer A (index 0)                                      //
+//  |   will be invalid (empty)                                               //
+//  *   ------------------------                                              //
+//  |------------------------|-----------------------|                        //
+//  |                        |                       |                        //
+//  |  Input Buffer A (0)    |   Input Buffer B (1)  |                        //
+//  |                        |                       |                        //
+//  |------------------------|-----------------------|                        //
+//  |                        |                       |                        //
+//  |  Output Buffer A (0)   |   Output Buffer B (1) |                        //
+//  |                        |                       |                        //
+//  |------------------------|-----------------------|                        //
+//  *                        -------------------------                        //
+//  |                        before calling ASIOStart(),                      //
+//  write                      host will have filled output                   //
+//                             buffer B (index 1) already                     //
+//                                                                            //
+//  *please* take special care of proper statement of input and output        //
+//  latencies (see ASIOGetLatencies()), these control sequencer sync          //
+//  accuracy                                                                  //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
