@@ -128,7 +128,7 @@ begin
 
  // process samples
  for Sample := 0 to FPinsInput[0].Buffersize - 1
-  do Output[Sample] := FFilter.ProcessSample(Input[Sample]);
+  do Output[Sample] := FFilter.ProcessSample64(Input[Sample]);
 
 end;
 

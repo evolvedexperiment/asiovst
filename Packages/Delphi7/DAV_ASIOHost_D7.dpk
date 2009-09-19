@@ -1,5 +1,6 @@
 package DAV_ASIOHost_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,6 +28,7 @@ package DAV_ASIOHost_D7;
 requires
   vcl,
   rtl,
+  designide,
   DAV_Common_D7;
 
 contains
@@ -46,6 +48,7 @@ contains
   DAV_AsioDriverProjectCreator in '..\..\Source\Asio\DAV_AsioDriverProjectCreator.pas',
   DAV_AsioDriverControlPanelCreator in '..\..\Source\Asio\DAV_AsioDriverControlPanelCreator.pas',
   DAV_AsioDriverConfig in '..\..\Source\Asio\DAV_AsioDriverConfig.pas',
-  DAV_AsioDriver in '..\..\Source\Asio\DAV_AsioDriver.pas';
+  DAV_AsioDriver in '..\..\Source\Asio\DAV_AsioDriver.pas',
+  DAV_ASIOList in '..\..\Source\ASIO\DAV_AsioList.pas';
 
 end.

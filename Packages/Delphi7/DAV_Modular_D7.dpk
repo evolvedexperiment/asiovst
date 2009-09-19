@@ -1,5 +1,6 @@
 package DAV_Modular_D7;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -46,6 +47,7 @@ contains
   DAV_ModularBaseOsc in '..\..\Source\Modular\DAV_ModularBaseOsc.pas',
   DAV_ModularVoiceController in '..\..\Source\Modular\DAV_ModularVoiceController.pas',
   DAV_ModularVoiceList in '..\..\Source\Modular\DAV_ModularVoiceList.pas',
-  DAV_ModularEnvelope in '..\..\Source\Modular\DAV_ModularEnvelope.pas';
+  DAV_ModularEnvelope in '..\..\Source\Modular\DAV_ModularEnvelope.pas',
+  DAV_ModularManager in '..\..\Source\Modular\DAV_ModularManager.pas';
 
 end.

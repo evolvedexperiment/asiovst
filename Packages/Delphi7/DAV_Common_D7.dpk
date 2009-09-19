@@ -27,7 +27,8 @@ package DAV_Common_D7;
 
 requires
   vcl,
-  rtl;
+  rtl,
+  designide;
 
 contains
   DAV_Common in '..\..\Source\DAV_Common.pas',
@@ -60,10 +61,11 @@ contains
   DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
   DAV_MpegAudio in '..\..\Source\FileFormats\DAV_MpegAudio.pas',
   DAV_MpegAudioLayer3 in '..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas',
+  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas',
   DAV_ProcessingComponent in '..\..\Source\DAV_ProcessingComponent.pas',
   DAV_StereoBuffer in '..\..\Source\DAV_StereoBuffer.pas',
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
   DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
-  
+
 end.
