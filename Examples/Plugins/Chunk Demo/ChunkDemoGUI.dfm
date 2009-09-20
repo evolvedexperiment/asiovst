@@ -34,6 +34,7 @@ object FmChunkDemo: TFmChunkDemo
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbAlpha: TGuiLabel
     Left = 8
@@ -108,6 +109,7 @@ object FmChunkDemo: TFmChunkDemo
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGamma: TGuiDial
     Left = 150
@@ -126,6 +128,7 @@ object FmChunkDemo: TFmChunkDemo
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialDelta: TGuiDial
     Left = 221
@@ -144,6 +147,7 @@ object FmChunkDemo: TFmChunkDemo
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DIL: TGuiDialImageList
     DialImages = <>

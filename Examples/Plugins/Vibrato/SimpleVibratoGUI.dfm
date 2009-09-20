@@ -38,6 +38,7 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialDepth: TGuiDial
     Left = 80
@@ -58,6 +59,7 @@ object FmSimpleVibrato: TFmSimpleVibrato
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbSpeed: TGuiLabel
     Left = 8

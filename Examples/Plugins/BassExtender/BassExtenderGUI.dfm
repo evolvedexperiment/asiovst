@@ -39,7 +39,6 @@ object FmBassExtender: TFmBassExtender
       Height = 23
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 1450277
       Font.Height = -19
@@ -70,6 +69,7 @@ object FmBassExtender: TFmBassExtender
       Position = 80.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbFrequency: TGuiLabel
       Left = 12
@@ -79,7 +79,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -94,7 +93,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '100,34 Hz'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -109,7 +107,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '4'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -140,6 +137,7 @@ object FmBassExtender: TFmBassExtender
       Position = 2.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbOrder: TGuiLabel
       Left = 116
@@ -149,7 +147,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Order'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -164,7 +161,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '50%'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -193,6 +189,7 @@ object FmBassExtender: TFmBassExtender
       Position = 50.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbDivide: TGuiLabel
       Left = 220
@@ -202,7 +199,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Divide'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -217,7 +213,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '50%'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -246,6 +241,7 @@ object FmBassExtender: TFmBassExtender
       Position = 50.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbShape: TGuiLabel
       Left = 324
@@ -255,7 +251,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Shape'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -270,7 +265,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '0%'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -298,6 +292,7 @@ object FmBassExtender: TFmBassExtender
       PointerAngles.Resolution = 280.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbBalance: TGuiLabel
       Left = 428
@@ -307,7 +302,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Balance'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -334,6 +328,7 @@ object FmBassExtender: TFmBassExtender
       PointerAngles.Resolution = 280.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbThreshold: TGuiLabel
       Left = 12
@@ -343,7 +338,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Threshold'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -358,7 +352,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '-40dB'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -373,7 +366,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '1 : 6'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -404,6 +396,7 @@ object FmBassExtender: TFmBassExtender
       Position = 10.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRatio: TGuiLabel
       Left = 116
@@ -413,7 +406,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Ratio'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -428,7 +420,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '10ms'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -459,6 +450,7 @@ object FmBassExtender: TFmBassExtender
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbAttack: TGuiLabel
       Left = 220
@@ -468,7 +460,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Attack'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -483,7 +474,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '200ms'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -514,6 +504,7 @@ object FmBassExtender: TFmBassExtender
       Position = 200.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRelease: TGuiLabel
       Left = 324
@@ -523,7 +514,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Release'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19
@@ -538,7 +528,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = '50%'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -16
@@ -567,6 +556,7 @@ object FmBassExtender: TFmBassExtender
       Position = 50.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbCompression: TGuiLabel
       Left = 418
@@ -576,7 +566,6 @@ object FmBassExtender: TFmBassExtender
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Compression'
-      Color = 2372409
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 6857659
       Font.Height = -19

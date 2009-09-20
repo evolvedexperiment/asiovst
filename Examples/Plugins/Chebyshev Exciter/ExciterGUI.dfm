@@ -51,12 +51,14 @@ object FmExciter: TFmExciter
       Min = 1000.000000000000000000
       NumGlyphs = 65
       OnChange = DialTuneChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbFreq: TGuiLabel
       Left = 16
@@ -101,12 +103,14 @@ object FmExciter: TFmExciter
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialShapeChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbShape: TGuiLabel
       Left = 156
@@ -166,12 +170,14 @@ object FmExciter: TFmExciter
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialMixChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbMixValue: TGuiLabel
       Left = 226
@@ -203,12 +209,14 @@ object FmExciter: TFmExciter
       Min = 2.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 4.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbOrderValue: TGuiLabel
       Left = 86

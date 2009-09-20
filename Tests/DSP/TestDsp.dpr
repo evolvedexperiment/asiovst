@@ -60,7 +60,9 @@ uses
   TestDAV_DspExciter in 'TestDAV_DspExciter.pas',
   DAV_DspExciter in '..\..\Source\DSP\DAV_DspExciter.pas',
   TestDAV_DspWaveshaper in 'TestDAV_DspWaveshaper.pas',
-  DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas';
+  DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas',
+  TestDAV_DspLeslie in 'TestDAV_DspLeslie.pas',
+  DAV_DspLeslie in '..\..\Source\DSP\DAV_DspLeslie.pas';
 
 {$R *.RES}
 

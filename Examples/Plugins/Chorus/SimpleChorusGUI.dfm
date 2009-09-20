@@ -38,6 +38,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialStages: TGuiDial
     Left = 76
@@ -59,6 +60,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Position = 4.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialDepth: TGuiDial
     Left = 136
@@ -79,6 +81,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialMix: TGuiDial
     Left = 196
@@ -99,6 +102,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbSpeed: TGuiLabel
     Left = 8
@@ -228,6 +232,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbDrift: TGuiLabel
     Left = 246

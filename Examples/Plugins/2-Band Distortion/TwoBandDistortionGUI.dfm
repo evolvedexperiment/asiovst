@@ -56,6 +56,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Position = 100.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbFreq: TGuiLabel
       Left = 16
@@ -104,6 +105,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowDist: TGuiLabel
       Left = 156
@@ -167,6 +169,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighDistValue: TGuiLabel
       Left = 226
@@ -202,6 +205,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Position = 2.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbOrderValue: TGuiLabel
       Left = 86

@@ -36,7 +36,6 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
-    ExplicitTop = 152
   end
   object LbTitle: TGuiLabel
     Left = 7
@@ -52,7 +51,6 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
     Transparent = True
-    ExplicitTop = 150
   end
   object DialLFO: TGuiDial
     Left = 213
@@ -73,6 +71,7 @@ object FmSpinBugLite: TFmSpinBugLite
     Position = 4.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object SelectType: TGuiSelectBox
     Left = 45

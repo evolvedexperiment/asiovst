@@ -36,6 +36,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Position = 4.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbStages: TGuiLabel
     Left = 104
@@ -83,6 +84,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Position = 4.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbSemitones: TGuiLabel
     Left = 8
@@ -131,6 +133,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Position = 20.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbGranularity: TGuiLabel
     Left = 168

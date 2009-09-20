@@ -37,6 +37,7 @@ object FmConvoFX: TFmConvoFX
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialGain: TGuiDial
     Left = 86
@@ -56,6 +57,7 @@ object FmConvoFX: TFmConvoFX
     PointerAngles.Resolution = 280.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbIR: TGuiLabel
     Left = 27
@@ -135,6 +137,7 @@ object FmConvoFX: TFmConvoFX
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbDamp: TGuiLabel
     Left = 168

@@ -1,21 +1,42 @@
 unit TestDAV_DSPFilterButterworth;
-{
 
-  Delphi DUnit Testfall
-  ----------------------
-  Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der
-  getesteten Unit korrekt eingerichtet und aufgerufen werden.
-
-}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
 uses
   TestFramework, DAV_DSPFilterButterworth, DAV_DspFilter, DAV_Common;
+
 type
   // Test methods for class TButterworthFilter
-
   TestTButterworthLowPassFilter = class(TTestCase)
   strict private
     FButterworthLowPassFilter: TButterworthLowPassFilter;
@@ -29,8 +50,8 @@ type
     procedure TestPhase;
     procedure TestComplexDouble;
   end;
-  // Test methods for class TButterworthHighpassFilter
 
+  // Test methods for class TButterworthHighpassFilter
   TestTButterworthHighpassFilter = class(TTestCase)
   strict private
     FButterworthHighpassFilter: TButterworthHighpassFilter;
@@ -44,8 +65,8 @@ type
     procedure TestPhase;
     procedure TestComplexDouble;
   end;
-  // Test methods for class TButterworthSplitBandFilter
 
+  // Test methods for class TButterworthSplitBandFilter
   TestTButterworthSplitBandFilter = class(TTestCase)
   strict private
     FButterworthSplitBandFilter: TButterworthSplitBandFilter;
@@ -62,25 +83,24 @@ type
 implementation
 
 uses
-  Math;
+  Math, SysUtils;
 
 { TestTButterworthLowPassFilter }
 
 procedure TestTButterworthLowPassFilter.SetUp;
 begin
-  FButterworthLowPassFilter := TButterworthLowPassFilter.Create;
+ FButterworthLowPassFilter := TButterworthLowPassFilter.Create;
 end;
 
 procedure TestTButterworthLowPassFilter.TearDown;
 begin
-  FButterworthLowPassFilter.Free;
-  FButterworthLowPassFilter := nil;
+ FreeAndNil(FButterworthLowPassFilter);
 end;
 
 procedure TestTButterworthLowPassFilter.TestCalculateCoefficients;
 begin
-  FButterworthLowPassFilter.CalculateCoefficients;
-  // TODO: Validate method results
+ FButterworthLowPassFilter.CalculateCoefficients;
+ // TODO: Validate method results
 end;
 
 procedure TestTButterworthLowPassFilter.TestProcessSample;
@@ -174,19 +194,18 @@ end;
 
 procedure TestTButterworthHighpassFilter.SetUp;
 begin
-  FButterworthHighpassFilter := TButterworthHighpassFilter.Create;
+ FButterworthHighpassFilter := TButterworthHighpassFilter.Create;
 end;
 
 procedure TestTButterworthHighpassFilter.TearDown;
 begin
-  FButterworthHighpassFilter.Free;
-  FButterworthHighpassFilter := nil;
+ FreeAndNil(FButterworthHighpassFilter);
 end;
 
 procedure TestTButterworthHighpassFilter.TestCalculateCoefficients;
 begin
-  FButterworthHighpassFilter.CalculateCoefficients;
-  // TODO: Validate method results
+ FButterworthHighpassFilter.CalculateCoefficients;
+ // TODO: Validate method results
 end;
 
 procedure TestTButterworthHighpassFilter.TestProcessSample;
@@ -274,19 +293,18 @@ end;
 
 procedure TestTButterworthSplitBandFilter.SetUp;
 begin
-  FButterworthSplitBandFilter := TButterworthSplitBandFilter.Create;
+ FButterworthSplitBandFilter := TButterworthSplitBandFilter.Create;
 end;
 
 procedure TestTButterworthSplitBandFilter.TearDown;
 begin
-  FButterworthSplitBandFilter.Free;
-  FButterworthSplitBandFilter := nil;
+ FreeAndNil(FButterworthSplitBandFilter);
 end;
 
 procedure TestTButterworthSplitBandFilter.TestCalculateCoefficients;
 begin
-  FButterworthSplitBandFilter.CalculateCoefficients;
-  // TODO: Validate method results
+ FButterworthSplitBandFilter.CalculateCoefficients;
+ // TODO: Validate method results
 end;
 
 procedure TestTButterworthSplitBandFilter.TestProcessSampleDouble;
@@ -353,9 +371,8 @@ begin
 end;
 
 initialization
-  // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestTButterworthLowPassFilter.Suite);
   RegisterTest(TestTButterworthHighpassFilter.Suite);
   RegisterTest(TestTButterworthSplitBandFilter.Suite);
-end.
 
+end.

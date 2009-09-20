@@ -25,7 +25,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     CurveMapping = -1.799999952316284000
     DefaultPosition = 1.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.009999999776482582
@@ -37,6 +37,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Position = 1.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialStages: TGuiDial
     Left = 16
@@ -45,7 +46,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 36
     DefaultPosition = 4.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 8.000000000000000000
     Min = 1.000000000000000000
@@ -57,6 +58,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Position = 4.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialDepth: TGuiDial
     Left = 136
@@ -65,7 +67,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 36
     DefaultPosition = 10.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -76,6 +78,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object DialMix: TGuiDial
     Left = 196
@@ -84,7 +87,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 36
     DefaultPosition = 50.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -95,6 +98,7 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbSpeed: TGuiLabel
     Left = 68
@@ -224,7 +228,6 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
     Height = 23
     AntiAlias = gaaLinear4x
     ArrowColor = 14277598
-    ArrowWidth = 1
     ButtonColor = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 14277598
@@ -239,8 +242,9 @@ object FmBarberpoleFlanger: TFmBarberpoleFlanger
       'Down (Inv.)')
     LineColor = 14277598
     LineWidth = 2
-    SelectBoxColor = 2829619
+    ParentFont = False
     Radius = 4
+    SelectBoxColor = 2829619
     OnChange = SBAlgorithmChange
   end
 end

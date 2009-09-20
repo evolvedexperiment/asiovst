@@ -28,7 +28,6 @@ object FmSimpleSampleDelay: TFmSimpleSampleDelay
     Anchors = [akLeft, akTop, akRight]
     AutoSize = False
     Caption = 'Delay: 441 samples (= 10 ms)'
-    ExplicitWidth = 244
   end
   object LbFeedbackValue: TLabel
     Left = 8

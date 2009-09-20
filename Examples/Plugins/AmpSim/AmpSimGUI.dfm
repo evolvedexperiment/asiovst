@@ -167,6 +167,7 @@ object FmCombo: TFmCombo
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbDrive: TGuiLabel
       Left = 8
@@ -202,6 +203,7 @@ object FmCombo: TFmCombo
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbBias: TGuiLabel
       Left = 78
@@ -236,6 +238,7 @@ object FmCombo: TFmCombo
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialFrequency: TGuiDial
       Left = 218
@@ -258,6 +261,7 @@ object FmCombo: TFmCombo
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialResonance: TGuiDial
       Left = 288
@@ -276,6 +280,7 @@ object FmCombo: TFmCombo
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbOutput: TGuiLabel
       Left = 148

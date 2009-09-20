@@ -26,7 +26,6 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Alignment = taCenter
     AntiAlias = gaaLinear3x
     Caption = 'Barberpole Tuner'
-    Color = clBtnFace
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -16

@@ -112,11 +112,13 @@ object FmSubBoost: TFmSubBoost
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialLevelChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialTune: TGuiDial
       Left = 69
@@ -134,12 +136,14 @@ object FmSubBoost: TFmSubBoost
       Min = 10.000000000000000000
       NumGlyphs = 65
       OnChange = DialTuneChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 10.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialDryMix: TGuiDial
       Left = 131
@@ -154,11 +158,13 @@ object FmSubBoost: TFmSubBoost
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialDryMixChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialThreshold: TGuiDial
       Left = 193
@@ -174,11 +180,13 @@ object FmSubBoost: TFmSubBoost
       Min = -60.000000000000000000
       NumGlyphs = 65
       OnChange = DialThresholdChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLevel: TGuiLabel
       Left = 7
@@ -261,11 +269,13 @@ object FmSubBoost: TFmSubBoost
       Max = 100.000000000000000000
       NumGlyphs = 65
       OnChange = DialReleaseChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRelease: TGuiLabel
       Left = 247
@@ -313,12 +323,14 @@ object FmSubBoost: TFmSubBoost
       Max = 400.000000000000000000
       Min = 10.000000000000000000
       NumGlyphs = 65
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 10.000000000000000000
       ScrollRange_Pixel = 200.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialFilterOrder: TGuiDial
       Left = 69
@@ -336,12 +348,14 @@ object FmSubBoost: TFmSubBoost
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialFilterOrderChange
+      ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
       Position = 1.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object GuiLabel2: TGuiLabel
       Left = 7

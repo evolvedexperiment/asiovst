@@ -1,21 +1,44 @@
 unit TestDAV_DspChorus;
-{
 
-  Delphi DUnit Testfall
-  ----------------------
-  Diese Unit enthält ein Codegerüst einer Testfallklasse, das vom Testfall-Experten
-  erzeugt wurde. Ändern Sie den erzeugten Code, damit die Methoden aus der 
-  getesteten Unit korrekt eingerichtet und aufgerufen werden.
-
-}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   TestFramework, DAV_DspLFO, DAV_Common, Classes, DAV_DspChorus, DAV_DspCommon;
+
 type
   // Test methods for class TCustomDspChorus
-  
   TestTCustomDspChorus = class(TTestCase)
   strict private
     FCustomDspChorus: TCustomDspChorus;
@@ -25,8 +48,8 @@ type
   published
     procedure TestReset;
   end;
+
   // Test methods for class TDspChorus32
-  
   TestTDspChorus32 = class(TTestCase)
   strict private
     FDspChorus32: TDspChorus32;
@@ -37,8 +60,8 @@ type
     procedure TestProcess;
     procedure TestReset;
   end;
+
   // Test methods for class TDspChorus64
-  
   TestTDspChorus64 = class(TTestCase)
   strict private
     FDspChorus64: TDspChorus64;
@@ -54,20 +77,22 @@ implementation
 
 procedure TestTCustomDspChorus.SetUp;
 begin
-  FCustomDspChorus := TCustomDspChorus.Create;
+ FCustomDspChorus := TCustomDspChorus.Create;
 end;
 
 procedure TestTCustomDspChorus.TearDown;
 begin
-  FCustomDspChorus.Free;
-  FCustomDspChorus := nil;
+ FreeAndNil(FCustomDspChorus);
 end;
 
 procedure TestTCustomDspChorus.TestReset;
 begin
-  FCustomDspChorus.Reset;
-  // TODO: Validate method results
+ FCustomDspChorus.Reset;
+ // TODO: Validate method results
 end;
+
+
+{ TestTDspChorus32 }
 
 procedure TestTDspChorus32.SetUp;
 begin
@@ -160,6 +185,9 @@ begin
 
  CheckEquals(Value, FDspChorus32.ProcessSample32(Input));
 end;
+
+
+{ TestTDspChorus64 }
 
 procedure TestTDspChorus64.SetUp;
 begin
@@ -254,9 +282,8 @@ begin
 end;
 
 initialization
-  // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestTCustomDspChorus.Suite);
   RegisterTest(TestTDspChorus32.Suite);
   RegisterTest(TestTDspChorus64.Suite);
-end.
 
+end.

@@ -1,14 +1,46 @@
 unit ChebyshevWaveshaperDM;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
-uses 
+{$I DAV_Compiler.inc}
+
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
   DAV_DspWaveshaper;
 
 const
-  HarmCount : Integer = 24;
-  dBMin : Single = -140;
+  CHarmCount : Integer = 24;
+  CdBMin : Single = -140;
 
 type
   TChebyshevWaveshaperDataModule = class(TVSTModule)
@@ -40,7 +72,7 @@ var
   i : Integer;
 begin
  FVolume := 1;
- for i := HarmCount - 1 downto 0 do
+ for i := CHarmCount - 1 downto 0 do
   with ParameterProperties.Insert(0) do
    begin
     DisplayName       := 'Harmonic ' + IntToStr(i + 1);
@@ -69,13 +101,13 @@ var
   i : Integer;
 begin
  FChebysheWaveshaper := TChebyshevWaveshaper.Create;
- FChebysheWaveshaper.Order := HarmCount;
+ FChebysheWaveshaper.Order := CHarmCount;
 
  // initial parameters
  Parameter[0] := 1;
- for i := 1 to HarmCount - 1
+ for i := 1 to CHarmCount - 1
   do Parameter[i] := 0;
- Parameter[HarmCount] := 0;
+ Parameter[CHarmCount] := 0;
 
  // programs
  Programs[1].CopyParameters(0);
