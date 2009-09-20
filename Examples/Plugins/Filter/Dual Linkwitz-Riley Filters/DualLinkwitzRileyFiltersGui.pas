@@ -1,4 +1,4 @@
-unit DualButterworthFiltersGui;
+unit DualLinkwitzRileyFiltersGui;
 
 interface
 
@@ -93,6 +93,7 @@ type
     procedure MiLoadClick(Sender: TObject);
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
+    procedure PuPresetPopup(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;
@@ -110,7 +111,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, PNGImage, DAV_GuiCommon, DualButterworthFiltersDM,
+  Math, Registry, PNGImage, DAV_GuiCommon, DualLinkwitzRileyFiltersDM,
   DAV_VSTModuleWithPrograms;
 
 resourcestring
@@ -192,7 +193,7 @@ end;
 function TFmLinkwitzRiley.GuiEQGraphGetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    Result := -5;
   end;
@@ -210,7 +211,7 @@ procedure TFmLinkwitzRiley.DialLowpassFrequencyChange(Sender: TObject);
 var
   NewValue : Single;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if ssAlt in KeyboardStateToShiftState
     then NewValue := RoundFrequency(DialLowpassFrequency.Position)
@@ -230,7 +231,7 @@ end;
 
 procedure TFmLinkwitzRiley.DialLowpassSlopeChange(Sender: TObject);
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if Parameter[1] <> DialLowpassSlope.Position
     then Parameter[1] := DialLowpassSlope.Position;
@@ -246,7 +247,7 @@ procedure TFmLinkwitzRiley.DialHighpassFrequencyChange(Sender: TObject);
 var
   NewValue : Single;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if ssAlt in KeyboardStateToShiftState
     then NewValue := RoundFrequency(DialHighpassFrequency.Position)
@@ -266,7 +267,7 @@ end;
 
 procedure TFmLinkwitzRiley.DialHighpassSlopeChange(Sender: TObject);
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if Parameter[3] <> DialHighpassSlope.Position
     then Parameter[3] := DialHighpassSlope.Position;
@@ -291,7 +292,7 @@ procedure TFmLinkwitzRiley.LedHighCutClick(Sender: TObject);
 var
   CurrentBit : Integer;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    CurrentBit := round(Parameter[4]);
    Parameter[4] := (CurrentBit and $2) or ((not CurrentBit) and $1)
@@ -302,7 +303,7 @@ procedure TFmLinkwitzRiley.LedLowCutClick(Sender: TObject);
 var
   CurrentBit : Integer;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    CurrentBit := round(Parameter[4]);
    Parameter[4] := (CurrentBit and $1) or ((not CurrentBit) and $2)
@@ -318,13 +319,13 @@ end;
 
 procedure TFmLinkwitzRiley.MiLoadClick(Sender: TObject);
 begin
- with TDualButterworthFiltersModule(Owner), TComponent(Sender) do
+ with TDualLinkwitzRileyFiltersModule(Owner), TComponent(Sender) do
   if FIsLow then LoadLow(Tag) else LoadHigh(Tag) 
 end;
 
 procedure TFmLinkwitzRiley.MiStoreClick(Sender: TObject);
 begin
- with TDualButterworthFiltersModule(Owner), TComponent(Sender) do
+ with TDualLinkwitzRileyFiltersModule(Owner), TComponent(Sender) do
   if FIsLow then StoreLow(Tag) else StoreHigh(Tag); 
 end;
 
@@ -332,6 +333,44 @@ procedure TFmLinkwitzRiley.PuFrequencyPopup(Sender: TObject);
 begin
  if Sender is TGuiDial
   then FCurrentDial := TGuiDial(Sender)
+end;
+
+procedure TFmLinkwitzRiley.PuPresetPopup(Sender: TObject);
+var
+  Index   : Integer;
+  Caption : string;
+begin
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   for Index := 0 to 5 do
+    if KeyExists(CRegistryKey + IntToStr(Index)) then
+     try
+      if OpenKey(CRegistryKey + IntToStr(Index), False) then
+       try
+        Caption := '';
+        if ValueExists('Frequency')
+         then Caption := Caption + FloatToStrF(ReadFloat('Frequency'), ffGeneral, 5, 5) + ' Hz';
+        if ValueExists('Order')
+         then Caption := Caption + ', ' + IntToStr(12 * ReadInteger('Order')) + ' dB/Oct';
+        if Caption <> '' then
+         case Index of
+          0 : begin MiLoadA.Caption := '&A (' + Caption + ')'; MiStoreA.Caption := MiLoadA.Caption; end;
+          1 : begin MiLoadB.Caption := '&B (' + Caption + ')'; MiStoreB.Caption := MiLoadB.Caption; end;
+          2 : begin MiLoadC.Caption := '&C (' + Caption + ')'; MiStoreC.Caption := MiLoadC.Caption; end;
+          3 : begin MiLoadD.Caption := '&D (' + Caption + ')'; MiStoreD.Caption := MiLoadD.Caption; end;
+          4 : begin MiLoadE.Caption := '&E (' + Caption + ')'; MiStoreE.Caption := MiLoadE.Caption; end;
+          5 : begin MiLoadF.Caption := '&F (' + Caption + ')'; MiStoreF.Caption := MiLoadF.Caption; end;
+         end;
+       finally
+        CloseKey;
+       end;
+     except
+      DeleteKey(CRegistryKey + IntToStr(Index));
+     end;
+  finally
+   Free;
+  end;
 end;
 
 procedure TFmLinkwitzRiley.Mi31Hz5Click(Sender: TObject);
@@ -343,7 +382,7 @@ end;
 
 procedure TFmLinkwitzRiley.UpdateLowpassFrequency;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if DialLowpassFrequency.Position <> Parameter[0]
     then DialLowpassFrequency.Position := Parameter[0];
@@ -353,7 +392,7 @@ end;
 
 procedure TFmLinkwitzRiley.UpdateLowpassSlope;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if DialLowpassSlope.Position <> Parameter[1]
     then DialLowpassSlope.Position := Parameter[1];
@@ -363,7 +402,7 @@ end;
 
 procedure TFmLinkwitzRiley.UpdateHighpassFrequency;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if DialHighpassFrequency.Position <> Parameter[2]
     then DialHighpassFrequency.Position := Parameter[2];
@@ -373,7 +412,7 @@ end;
 
 procedure TFmLinkwitzRiley.UpdateHighpassSlope;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    if DialHighpassSlope.Position <> Parameter[3]
     then DialHighpassSlope.Position := Parameter[3];
@@ -385,7 +424,7 @@ procedure TFmLinkwitzRiley.UpdateType;
 var
   CurrentBit : Integer;
 begin
- with Owner as TDualButterworthFiltersModule do
+ with Owner as TDualLinkwitzRileyFiltersModule do
   begin
    CurrentBit := round(Parameter[4]);
    if (CurrentBit and $1) > 0

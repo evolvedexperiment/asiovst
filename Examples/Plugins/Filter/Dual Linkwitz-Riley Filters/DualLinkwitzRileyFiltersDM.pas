@@ -1,4 +1,4 @@
-unit DualButterworthFiltersDM;
+unit DualLinkwitzRileyFiltersDM;
 
 {$I DAV_Compiler.inc}
 
@@ -10,7 +10,7 @@ uses
   DAV_DSPFilterButterworth, DAV_DSPFilterLinkwitzRiley;
 
 type
-  TDualButterworthFiltersModule = class(TVSTModule)
+  TDualLinkwitzRileyFiltersModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -29,15 +29,18 @@ type
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FLowpass   : array of array [0..1] of TButterworthLowPassFilter;
-    FHighpass  : array of array [0..1] of TButterworthHighPassFilter;
-    FSign      : Single;
+    FLowpass  : array of array [0..1] of TButterworthLowPassFilter;
+    FHighpass : array of array [0..1] of TButterworthHighPassFilter;
+    FSign     : Single;
   public
     procedure LoadLow(Index: Integer);
     procedure LoadHigh(Index: Integer);
     procedure StoreLow(Index: Integer);
     procedure StoreHigh(Index: Integer);
   end;
+
+const
+  CRegistryKey = 'SOFTWARE\Delphi ASIO & VST Project\';
 
 implementation
 
@@ -46,12 +49,9 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DualButterworthFiltersGui;
+  Registry, DualLinkwitzRileyFiltersGui;
 
-const
-  CRegistryKey = 'SOFTWARE\Delphi ASIO & VST Project\';
-
-procedure TDualButterworthFiltersModule.VSTModuleOpen(Sender: TObject);
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleOpen(Sender: TObject);
 var
   Channel: Integer;
 begin
@@ -85,9 +85,27 @@ begin
  Parameter[2] := 100;
  Parameter[3] := 2;
  Parameter[4] := 0;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 10000;
+   Parameter[1] := 2;
+   Parameter[2] := 100;
+   Parameter[3] := 2;
+   Parameter[4] := 0;
+  end;
+
+ with Programs[1] do
+  begin
+   Parameter[0] := 20000;
+   Parameter[1] := 2;
+   Parameter[2] := 2;
+   Parameter[3] := 2;
+   Parameter[4] := 3;
+  end;
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleClose(Sender: TObject);
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
@@ -104,13 +122,13 @@ begin
   end;
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleEditOpen(Sender: TObject;
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
  Gui := TFmLinkwitzRiley.Create(Self);
 end;
 
-procedure TDualButterworthFiltersModule.LoadLow(Index: Integer);
+procedure TDualLinkwitzRileyFiltersModule.LoadLow(Index: Integer);
 begin
  with TRegistry.Create do
   try
@@ -119,14 +137,14 @@ begin
     if OpenKey(CRegistryKey + IntToStr(Index), False) then
      begin
       if ValueExists('Frequency') then Parameter[0] := ReadFloat('Frequency');
-      if ValueExists('Order') then Parameter[1] := ReadFloat('Order');
+      if ValueExists('Order') then Parameter[1] := ReadInteger('Order');
      end;
   finally
    Free;
   end;
 end;
 
-procedure TDualButterworthFiltersModule.LoadHigh(Index: Integer);
+procedure TDualLinkwitzRileyFiltersModule.LoadHigh(Index: Integer);
 begin
  with TRegistry.Create do
   try
@@ -135,14 +153,14 @@ begin
     if OpenKey(CRegistryKey + IntToStr(Index), False) then
      begin
       if ValueExists('Frequency') then Parameter[2] := ReadFloat('Frequency');
-      if ValueExists('Order') then Parameter[3] := ReadFloat('Order');
+      if ValueExists('Order') then Parameter[3] := ReadInteger('Order');
      end;
   finally
    Free;
   end;
 end;
 
-procedure TDualButterworthFiltersModule.StoreLow(Index: Integer);
+procedure TDualLinkwitzRileyFiltersModule.StoreLow(Index: Integer);
 begin
  with TRegistry.Create do
   try
@@ -150,14 +168,14 @@ begin
    if OpenKey(CRegistryKey + IntToStr(Index), True) then
     begin
      WriteFloat('Frequency', Parameter[0]);
-     WriteFloat('Order', Parameter[1]);
+     WriteInteger('Order', Round(Parameter[1]));
     end;
   finally
    Free;
   end;
 end;
 
-procedure TDualButterworthFiltersModule.StoreHigh(Index: Integer);
+procedure TDualLinkwitzRileyFiltersModule.StoreHigh(Index: Integer);
 begin
  with TRegistry.Create do
   try
@@ -165,20 +183,20 @@ begin
    if OpenKey(CRegistryKey + IntToStr(Index), True) then
     begin
      WriteFloat('Frequency', Parameter[2]);
-     WriteFloat('Order', Parameter[3]);
+     WriteInteger('Order', Round(Parameter[3]));
     end;
   finally
    Free;
   end;
 end;
 
-procedure TDualButterworthFiltersModule.ParameterOrderDisplay(
+procedure TDualLinkwitzRileyFiltersModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  Predefined := IntToStr(12 * round(Parameter[Index]));
 end;
 
-procedure TDualButterworthFiltersModule.ParameterFrequencyDisplay(
+procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
   Freq : Single;
@@ -188,14 +206,14 @@ begin
   then Predefined := FloatToStrF(1E-3 * Freq, ffGeneral, 3, 3);
 end;
 
-procedure TDualButterworthFiltersModule.ParameterFrequencyLabel(
+procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := 'kHz';
 end;
 
-procedure TDualButterworthFiltersModule.ParameterTypeChange(
+procedure TDualLinkwitzRileyFiltersModule.ParameterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  case round(Value) of
@@ -211,7 +229,7 @@ begin
   then TFmLinkwitzRiley(EditorForm).UpdateType;
 end;
 
-procedure TDualButterworthFiltersModule.ParameterTypeDisplay(
+procedure TDualLinkwitzRileyFiltersModule.ParameterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case round(Parameter[Index]) of
@@ -222,7 +240,7 @@ begin
  end;
 end;
 
-procedure TDualButterworthFiltersModule.ParameterLowpassFrequencyChange(
+procedure TDualLinkwitzRileyFiltersModule.ParameterLowpassFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel : Integer;
@@ -240,7 +258,7 @@ begin
   then TFmLinkwitzRiley(EditorForm).UpdateLowpassFrequency;
 end;
 
-procedure TDualButterworthFiltersModule.ParameterLowpassOrderChange(
+procedure TDualLinkwitzRileyFiltersModule.ParameterLowpassOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel: Integer;
@@ -258,7 +276,7 @@ begin
   then TFmLinkwitzRiley(EditorForm).UpdateLowpassSlope;
 end;
 
-procedure TDualButterworthFiltersModule.ParameterHighpassFrequencyChange(
+procedure TDualLinkwitzRileyFiltersModule.ParameterHighpassFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel: Integer;
@@ -276,7 +294,7 @@ begin
   then TFmLinkwitzRiley(EditorForm).UpdateHighpassFrequency;
 end;
 
-procedure TDualButterworthFiltersModule.ParameterHighpassOrderChange(
+procedure TDualLinkwitzRileyFiltersModule.ParameterHighpassOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel: Integer;
@@ -296,7 +314,7 @@ begin
   then TFmLinkwitzRiley(EditorForm).UpdateHighpassSlope;
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleSampleRateChange(Sender: TObject;
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
   Channel: Integer;
@@ -314,7 +332,7 @@ begin
   end;
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleProcessBypass(const Inputs,
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBypass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Channel : Integer;
@@ -323,7 +341,7 @@ begin
   do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleProcessLowpass(const Inputs,
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessLowpass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
@@ -334,7 +352,7 @@ begin
         FLowpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleProcessHighpass(const Inputs,
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessHighpass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
@@ -345,7 +363,7 @@ begin
         FHighpass[Channel][1].ProcessSample64(Inputs[Channel, Sample]));
 end;
 
-procedure TDualButterworthFiltersModule.VSTModuleProcessBandpass(const Inputs,
+procedure TDualLinkwitzRileyFiltersModule.VSTModuleProcessBandpass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample, Channel : Integer;
@@ -362,7 +380,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i DualButterworthFiltersDM.lrs}
+  {$i DualLinkwitzRileyFiltersDM.lrs}
 {$ENDIF}
 
 end.

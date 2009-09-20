@@ -1,8 +1,8 @@
-object DualButterworthFiltersModule: TDualButterworthFiltersModule
+object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
   OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
-  EffectName = 'DualButterworthFilters'
+  EffectName = 'DualLinkwitzRileyFilters'
   ProductName = 'DAV Filter Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
@@ -17,6 +17,10 @@ object DualButterworthFiltersModule: TDualButterworthFiltersModule
   Programs = <
     item
       DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Audio Range'
       VSTModule = Owner
     end>
   ParameterProperties = <
@@ -61,11 +65,16 @@ object DualButterworthFiltersModule: TDualButterworthFiltersModule
       OnCustomParameterDisplay = ParameterOrderDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 10000.000000000000000000
       DisplayName = 'Highpass Frequency'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
-      Max = 1.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 2.000000000000000000
+      MinInteger = 2
+      ReportVST2Properties = True
       ShortLabel = 'HP Freq'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -79,10 +88,15 @@ object DualButterworthFiltersModule: TDualButterworthFiltersModule
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Highpass Order'
-      LargeStepFloat = 2.000000000000000000
-      Max = 1.000000000000000000
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 16.000000000000000000
+      MaxInteger = 16
+      Min = 1.000000000000000000
+      MinInteger = 1
       ShortLabel = 'HP Ord.'
-      SmallStepFloat = 0.500000000000000000
+      SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB/Oct'
       VSTModule = Owner

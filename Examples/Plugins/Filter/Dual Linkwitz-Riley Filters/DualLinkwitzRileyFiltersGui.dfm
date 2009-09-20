@@ -176,6 +176,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Name = 'Times New Roman'
       Font.Style = []
       PopupMenu = PuPreset
+      OnClick = LedHighCutClick
       OnMouseDown = LbMouseDown
     end
     object LbHighpass: TGuiLabel
@@ -192,6 +193,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Name = 'Times New Roman'
       Font.Style = []
       PopupMenu = PuPreset
+      OnClick = LedLowCutClick
       OnMouseDown = LbMouseDown
     end
     object LedHighCut: TGuiLED
@@ -464,6 +466,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     end
   end
   object PuPreset: TPopupMenu
+    OnPopup = PuPresetPopup
     Left = 160
     Top = 80
     object MiLoadHigh: TMenuItem
