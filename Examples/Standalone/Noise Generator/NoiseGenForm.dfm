@@ -36,12 +36,10 @@ object FmASIO: TFmASIO
   object LbCopyright: TLabel
     Left = 87
     Top = 134
-    Width = 310
+    Width = 262
     Height = 13
     Anchors = [akLeft, akBottom]
-    Caption = 
-      '(C)opyright in 2004-2008 by  Christian Budde and Tobias Fleische' +
-      'r'
+    Caption = '(C)opyright in 2004-2009 by  Delphi ASIO && VST Project'
   end
   object LbVolume: TLabel
     Left = 8
@@ -103,10 +101,10 @@ object FmASIO: TFmASIO
     TabOrder = 3
     OnChange = SbPanChange
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = ASIOHostBufferSwitch32

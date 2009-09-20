@@ -8,16 +8,24 @@
 			<Option Name="GUID">{73F6E16D-42DE-4E57-B492-E0B6A0270535}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  
-    <Projects>
-      <Projects Name="Analyser.exe">Third Octave Analyser 3D\Analyser.bdsproj</Projects>
-      <Projects Name="ASIODemo.exe">ASIO-AudioData-Host Demo\ASIODemo.bdsproj</Projects>
+	<Default.Personality>  <Projects>
+      <Projects Name="AbxAlgorithmTest.exe">ABX Algorithm Tool\AbxAlgorithmTest.bdsproj</Projects>
+      <Projects Name="AbxStandalone.exe">ABX Tool\AbxStandalone.bdsproj</Projects>
+      <Projects Name="AbxTool.exe">ABX Tool\AbxTool.bdsproj</Projects>
+      <Projects Name="Analyser.exe">Third Octave Goertzel Analyser\Analyser.bdsproj</Projects>
+      <Projects Name="ASIODemo.exe">ASIO-Host Demo\ASIODemo.bdsproj</Projects>
+      <Projects Name="ASIOMP3.exe">Simple ASIO MP3 Player\ASIOMP3.bdsproj</Projects>
       <Projects Name="AudioEditor.exe">Audio Editor\AudioEditor.bdsproj</Projects>
+      <Projects Name="BarberpoleTuner.exe">Barberpole Tuner\BarberpoleTuner.bdsproj</Projects>
       <Projects Name="BMTestDouble.exe">Buffer Math Test\BMTestDouble.bdsproj</Projects>
       <Projects Name="BMTestSingle.exe">Buffer Math Test\BMTestSingle.bdsproj</Projects>
+      <Projects Name="CommandlineAudioFileConverter.exe">Commandline Audiofile Converter\CommandlineAudioFileConverter.bdsproj</Projects>
+      <Projects Name="ConvertAudioFile.exe">Convert Audio File\ConvertAudioFile.bdsproj</Projects>
       <Projects Name="EqualizedNoiseGenerator.exe">Equalized Noise Generator\EqualizedNoiseGenerator.bdsproj</Projects>
       <Projects Name="EqualizedSoundGenerator.exe">Equalized Sound Generator\EqualizedSoundGenerator.bdsproj</Projects>
+      <Projects Name="FilterExplorer.exe">FilterExplorer\FilterExplorer.bdsproj</Projects>
       <Projects Name="FunctionPlotter.exe">Function Plot\FunctionPlotter.bdsproj</Projects>
+      <Projects Name="Generator.exe">Generator\Generator.bdsproj</Projects>
       <Projects Name="HrtfAverager.exe">HRTF Averager\HrtfAverager.bdsproj</Projects>
       <Projects Name="HRTFEditor.exe">HRTF Editor\HRTFEditor.bdsproj</Projects>
       <Projects Name="KnobGrabber.exe">Knob Grabber\KnobGrabber.bdsproj</Projects>
@@ -26,13 +34,20 @@
       <Projects Name="MidiGui.exe">Midikeyboard Gui\MidiGui.bdsproj</Projects>
       <Projects Name="MiniHost.exe">MiniHost Core\MiniHost.bdsproj</Projects>
       <Projects Name="NoiseGen.exe">Noise Generator\NoiseGen.bdsproj</Projects>
+      <Projects Name="NoiseShaperFilterDesigner.exe">Noise Shaper Filter Designer\NoiseShaperFilterDesigner.bdsproj</Projects>
+      <Projects Name="NoiseshapingFilterDesigner.exe">Noiseshaping Filter Designer\NoiseshapingFilterDesigner.bdsproj</Projects>
       <Projects Name="PluginMerger.exe">Plugin Merger\PluginMerger.bdsproj</Projects>
       <Projects Name="PresetParser.exe">Preset Parser\PresetParser.bdsproj</Projects>
+      <Projects Name="PresetToExcel.exe">VST Plugin Preset Converter\PresetToExcel.bdsproj</Projects>
       <Projects Name="SemEmbedConvolutionIR.exe">SEM Embed Convolution IR\SemEmbedConvolutionIR.bdsproj</Projects>
       <Projects Name="SemExplorer.exe">SEM Explorer\SemExplorer.bdsproj</Projects>
       <Projects Name="SemMerger.exe">SEM Merger\SemMerger.bdsproj</Projects>
       <Projects Name="SemScreenshotTool.exe">SEM Screenshot Tool\SemScreenshotTool.bdsproj</Projects>
+      <Projects Name="SimpleAsioRecorder.exe">Simple ASIO Recorder\SimpleAsioRecorder.bdsproj</Projects>
       <Projects Name="SimpleHDRecorder.exe">Simple HD Recorder\SimpleHDRecorder.bdsproj</Projects>
+      <Projects Name="SimpleMp3Player.exe">Simple MP3 Player\SimpleMp3Player.bdsproj</Projects>
+      <Projects Name="SimpleSemEmbedAudiofile.exe">Simple SEM Embed Audiofile\SimpleSemEmbedAudiofile.bdsproj</Projects>
+      <Projects Name="SimpleSignalGenerator.exe">Simple Signal Generator\SimpleSignalGenerator.bdsproj</Projects>
       <Projects Name="SplitPluginCreator.exe">Split Plugin Creator\SplitPluginCreator.bdsproj</Projects>
       <Projects Name="StandaloneEmbedPlugin.exe">Standalone Embed Plugin\StandaloneEmbedPlugin.bdsproj</Projects>
       <Projects Name="VST2SEM.exe">VST to SEM converter\VST2SEM.bdsproj</Projects>
@@ -40,8 +55,10 @@
       <Projects Name="VSTEditor.exe">Standalone Editor\VSTEditor.bdsproj</Projects>
       <Projects Name="VSTPluginScanner.exe">VST Plugin Scanner\VSTPluginScanner.bdsproj</Projects>
       <Projects Name="VstPluginScreenshotTool.exe">VST Plugin Screenshot Tool\VstPluginScreenshotTool.bdsproj</Projects>
+      <Projects Name="VstPresetDesigner.exe">VST Preset Designer\VstPresetDesigner.bdsproj</Projects>
       <Projects Name="WinAmpEmbedPlugin.exe">WinAmp Embed Plugin\WinAmpEmbedPlugin.bdsproj</Projects>
-      <Projects Name="Targets">Analyser.exe Analyser.exe Analyser.exe ASIODemo.exe AudioEditor.exe BMTestDouble.exe BMTestSingle.exe EqualizedNoiseGenerator.exe EqualizedSoundGenerator.exe FunctionPlotter.exe HrtfAverager.exe HRTFEditor.exe KnobGrabber.exe LunchBox.exe Metronome.exe MidiGui.exe MiniHost.exe NoiseGen.exe PluginMerger.exe PresetParser.exe SemEmbedConvolutionIR.exe SemExplorer.exe SemMerger.exe SemScreenshotTool.exe SimpleHDRecorder.exe SplitPluginCreator.exe StandaloneEmbedPlugin.exe VST2SEM.exe VSTAnalyser.exe VSTEditor.exe VSTPluginScanner.exe VstPluginScreenshotTool.exe WinAmpEmbedPlugin.exe</Projects>
+      <Projects Name="WinEar.exe">WinEar\WinEar.bdsproj</Projects>
+      <Projects Name="Targets">AbxAlgorithmTest.exe AbxStandalone.exe AbxTool.exe Analyser.exe Analyser.exe Analyser.exe Analyser.exe ASIODemo.exe ASIODemo.exe ASIOMP3.exe ASIOMP3.exe AudioEditor.exe BarberpoleTuner.exe BMTestDouble.exe BMTestSingle.exe CommandlineAudioFileConverter.exe ConvertAudioFile.exe EqualizedNoiseGenerator.exe EqualizedSoundGenerator.exe FilterExplorer.exe FunctionPlotter.exe Generator.exe HrtfAverager.exe HRTFEditor.exe KnobGrabber.exe LunchBox.exe Metronome.exe MidiGui.exe MiniHost.exe NoiseGen.exe NoiseShaperFilterDesigner.exe NoiseshapingFilterDesigner.exe PluginMerger.exe PresetParser.exe PresetToExcel.exe SemEmbedConvolutionIR.exe SemExplorer.exe SemMerger.exe SemScreenshotTool.exe SimpleAsioRecorder.exe SimpleHDRecorder.exe SimpleMp3Player.exe SimpleSemEmbedAudiofile.exe SimpleSignalGenerator.exe SplitPluginCreator.exe StandaloneEmbedPlugin.exe VST2SEM.exe VSTAnalyser.exe VSTEditor.exe VSTPluginScanner.exe VstPluginScreenshotTool.exe VstPresetDesigner.exe WinAmpEmbedPlugin.exe WinEar.exe</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

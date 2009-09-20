@@ -78,8 +78,6 @@ object FmVSTSetup: TFmVSTSetup
     ReadOnly = True
     TabOrder = 0
     ViewStyle = vsReport
-    ExplicitTop = 56
-    ExplicitHeight = 255
   end
   object StatusBar: TStatusBar
     Left = 0
@@ -87,9 +85,6 @@ object FmVSTSetup: TFmVSTSetup
     Width = 800
     Height = 19
     Panels = <>
-    ExplicitLeft = -58
-    ExplicitTop = 565
-    ExplicitWidth = 831
   end
   object PnSelect: TPanel
     Left = 0
@@ -99,7 +94,6 @@ object FmVSTSetup: TFmVSTSetup
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 829
     DesignSize = (
       800
       21)
@@ -112,7 +106,6 @@ object FmVSTSetup: TFmVSTSetup
       Caption = 'Select...'
       TabOrder = 0
       OnClick = BtDirectorySelectClick
-      ExplicitLeft = 710
     end
     object BtScan: TButton
       Left = 756
@@ -133,7 +126,6 @@ object FmVSTSetup: TFmVSTSetup
       Anchors = [akLeft, akTop, akRight]
       TabOrder = 2
       OnChange = EdDirectoryChange
-      ExplicitWidth = 713
     end
   end
 end

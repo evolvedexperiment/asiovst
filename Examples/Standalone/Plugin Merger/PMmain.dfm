@@ -24,16 +24,8 @@ object FmPluginMerger: TFmPluginMerger
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 192
-    ExplicitWidth = 505
-    ExplicitHeight = 326
     object TSMergedPlugins: TTabSheet
       Caption = 'Merged Plugins'
-      ExplicitLeft = 7
-      ExplicitTop = 125
-      ExplicitWidth = 281
-      ExplicitHeight = 165
       DesignSize = (
         261
         149)
@@ -46,14 +38,11 @@ object FmPluginMerger: TFmPluginMerger
         ItemHeight = 13
         TabOrder = 0
         OnClick = LBPluginsClick
-        ExplicitWidth = 303
       end
     end
     object TabSheet1: TTabSheet
       Caption = 'GUI Elements'
       ImageIndex = 1
-      ExplicitWidth = 281
-      ExplicitHeight = 165
       DesignSize = (
         261
         149)
@@ -124,7 +113,6 @@ object FmPluginMerger: TFmPluginMerger
         TabOrder = 0
         OnChange = EdKnobChange
         OnClick = EdKnobClick
-        ExplicitWidth = 203
       end
       object SEKnobsPerRow: TSpinEdit
         Left = 87
@@ -152,13 +140,16 @@ object FmPluginMerger: TFmPluginMerger
           Top = 6
           Width = 48
           Height = 48
+          DialImageIndex = -1
           LineColor = clBtnShadow
+          LineWidth = 2
           Max = 100.000000000000000000
           PointerAngles.Start = 225
           PointerAngles.Range = 270
           PointerAngles.Resolution = 270.000000000000000000
           ScrollRange_Pixel = 400.000000000000000000
           StitchKind = skHorizontal
+          WheelStep = 1.000000000000000000
         end
         object LbTest: TGuiLabel
           Left = 6

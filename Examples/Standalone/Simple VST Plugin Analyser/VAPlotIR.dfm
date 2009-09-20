@@ -24,7 +24,6 @@ object FmPlotIR: TFmPlotIR
     MedianLineWidth = 3
     NormalizationType = ntOverallChannels
     PopupMenu = PUDisplay
-    ExplicitHeight = 147
   end
   object PUDisplay: TPopupMenu
     Left = 192

@@ -242,6 +242,7 @@ object FmHRTFEditor: TFmHRTFEditor
         Anchors = [akLeft, akTop, akRight]
         AudioDataCollection = ADHRIR
         DisplayedChannel = 0
+        DisplayChannels = <>
         LineWidth = 0
         XAxis.SampleUpper = 511
         XAxis.FractionalLower = -0.500000000000000000
@@ -255,6 +256,7 @@ object FmHRTFEditor: TFmHRTFEditor
         Anchors = [akLeft, akRight, akBottom]
         AudioDataCollection = ADHRIR
         DisplayedChannel = 1
+        DisplayChannels = <>
         LineWidth = 0
         XAxis.SampleUpper = 511
         XAxis.FractionalLower = -0.500000000000000000

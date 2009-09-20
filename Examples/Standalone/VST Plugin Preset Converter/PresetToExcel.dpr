@@ -152,7 +152,7 @@ begin
           // parameter values
           for Prgs := 0 to numPrograms - 1 do
            begin
-            ProgramNr := Prgs;
+            CurrentProgram := Prgs;
             Cells.Item[2, 3 + Prgs].Value := ProgramName;
             Cells.Item[2, 3 + Prgs].AutoFit(True);
 
@@ -253,7 +253,7 @@ begin
           // parameter values
           for Prgs := 0 to numPrograms - 1 do
            begin
-            ProgramNr := Prgs;
+            CurrentProgram := Prgs;
             Cells.Item[3 + Prgs, 2].Value := ProgramName;
             Cells.Item[3 + Prgs, 2].AutoFit(True);
 

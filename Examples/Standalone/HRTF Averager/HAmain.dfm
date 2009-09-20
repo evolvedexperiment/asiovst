@@ -68,7 +68,11 @@ object FmHrtfAverager: TFmHrtfAverager
     Anchors = [akLeft, akTop, akRight]
     AudioDataCollection = ADHRIR
     DisplayedChannel = 0
+    DisplayChannels = <>
     LineWidth = 0
+    XAxis.SampleUpper = 511
+    XAxis.FractionalLower = -0.500000000000000000
+    XAxis.FractionalUpper = 0.500000000000000000
   end
   object AudioDataDisplayRight: TGuiAudioDataDisplay
     Left = 3
@@ -78,7 +82,11 @@ object FmHrtfAverager: TFmHrtfAverager
     Anchors = [akLeft, akTop, akRight]
     AudioDataCollection = ADHRIR
     DisplayedChannel = 1
+    DisplayChannels = <>
     LineWidth = 0
+    XAxis.SampleUpper = 511
+    XAxis.FractionalLower = -0.500000000000000000
+    XAxis.FractionalUpper = 0.500000000000000000
   end
   object SEPolar: TSpinEdit
     Left = 296

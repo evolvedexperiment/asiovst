@@ -19,9 +19,6 @@ object FmFunctionPlot: TFmFunctionPlot
     Top = 0
     Width = 410
     Height = 342
-    Align = alClient
-    LineWidth = 2
-    LineColor = clGray
     FrameColor = clBlack
     SeriesCollection = <
       item
@@ -29,16 +26,17 @@ object FmFunctionPlot: TFmFunctionPlot
         SeriesClassName = 'TGuiGraphXYFunctionSeries'
       end>
     XAxis.Granularity = 1.000000000000000000
-    XAxis.Lower = -5.000000000000000000
-    XAxis.Upper = 5.000000000000000000
     XAxis.Minimum = -5.000000000000000000
     XAxis.Maximum = 5.000000000000000000
+    XAxis.Lower = -5.000000000000000000
+    XAxis.Upper = 5.000000000000000000
     YAxis.Granularity = 1.000000000000000000
-    YAxis.Lower = -5.000000000000000000
-    YAxis.Upper = 5.000000000000000000
     YAxis.Minimum = -5.000000000000000000
     YAxis.Maximum = 5.000000000000000000
-    ExplicitWidth = 402
-    ExplicitHeight = 333
+    YAxis.Lower = -5.000000000000000000
+    YAxis.Upper = 5.000000000000000000
+    Align = alClient
+    LineColor = clGray
+    LineWidth = 2
   end
 end
