@@ -245,13 +245,14 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterLowpassFrequencyChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  begin
-   if assigned(FLowpass[Channel][0])
-    then FLowpass[Channel][0].Frequency := Value;
-   if assigned(FLowpass[Channel][1])
-    then FLowpass[Channel][1].Frequency := Value;
-  end;
+ if Length(FLowpass) > 0 then
+  for Channel := 0 to Length(FLowpass) - 1 do
+   begin
+    if assigned(FLowpass[Channel][0])
+     then FLowpass[Channel][0].Frequency := Value;
+    if assigned(FLowpass[Channel][1])
+     then FLowpass[Channel][1].Frequency := Value;
+   end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -263,13 +264,14 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterLowpassOrderChange(
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  begin
-   if assigned(FLowpass[Channel][0])
-    then FLowpass[Channel][0].Order := round(Value);
-   if assigned(FLowpass[Channel][1])
-    then FLowpass[Channel][1].Order := round(Value);
-  end;
+ if Length(FLowpass) > 0 then
+  for Channel := 0 to Length(FLowpass) - 1 do
+   begin
+    if assigned(FLowpass[Channel][0])
+     then FLowpass[Channel][0].Order := round(Value);
+    if assigned(FLowpass[Channel][1])
+     then FLowpass[Channel][1].Order := round(Value);
+   end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -281,13 +283,14 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterHighpassFrequencyChange(
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  begin
-   if assigned(FHighpass[Channel][0])
-    then FHighpass[Channel][0].Frequency := Value;
-   if assigned(FHighpass[Channel][1])
-    then FHighpass[Channel][1].Frequency := Value;
-  end;
+ if Length(FHighpass) > 0 then
+  for Channel := 0 to Length(FHighpass) - 1 do
+   begin
+    if assigned(FHighpass[Channel][0])
+     then FHighpass[Channel][0].Frequency := Value;
+    if assigned(FHighpass[Channel][1])
+     then FHighpass[Channel][1].Frequency := Value;
+   end;
 
  // update GUI
  if EditorForm is TFmLinkwitzRiley
@@ -299,13 +302,14 @@ procedure TDualLinkwitzRileyFiltersModule.ParameterHighpassOrderChange(
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  begin
-   if assigned(FHighpass[Channel][0])
-    then FHighpass[Channel][0].Order := round(Value);
-   if assigned(FHighpass[Channel][1])
-    then FHighpass[Channel][1].Order := round(Value);
-  end;
+ if Length(FHighpass) > 0 then
+  for Channel := 0 to Length(FHighpass) - 1 do
+   begin
+    if assigned(FHighpass[Channel][0])
+     then FHighpass[Channel][0].Order := round(Value);
+    if assigned(FHighpass[Channel][1])
+     then FHighpass[Channel][1].Order := round(Value);
+   end;
 
  FSign := 1 - 2 * (round(Value) mod 2);
 
