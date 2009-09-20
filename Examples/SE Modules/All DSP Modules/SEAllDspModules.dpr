@@ -2,17 +2,17 @@ library SEAllDspModules;
 
 {$I DAV_Compiler.INC}
 
-
-
 uses
   SysUtils,
   Classes,
   DAV_SECommon,
   DAV_SEModule,
   SEApproximationsModule in '..\Approximations\SEApproximationsModule.pas',
+  SEAudioFileOscillatorModule in '..\Audio File Oscillator\SEAudioFileOscillatorModule.pas',
   SEAudioRGBModule in '..\AudioRGB\SEAudioRGBModule.pas',
   SEBarberpoleModule in '..\Barberpole\SEBarberpoleModule.pas',
   SEBassEnhancerModule in '..\Bass Enhancer\SEBassEnhancerModule.pas',
+  SEBufferedMp3PlayerModule in '..\MP3 Player\SEBufferedMp3PlayerModule.pas',
   SEButterworthModule in '..\Butterworth\SEButterworthModule.pas',
   SEButterworthSplitterModule in '..\Butterworth\SEButterworthSplitterModule.pas',
   SEChebyshev1FilterModule in '..\Chebyshev\SEChebyshev1FilterModule.pas',
@@ -20,14 +20,22 @@ uses
   SEChebyshevWaveshaperModule in '..\ChebyshevWaveshaper\SEChebyshevWaveshaperModule.pas',
   SEChorusModule in '..\Chorus\SEChorusModule.pas',
   SEConvolutionModule in '..\Convolution\SEConvolutionModule.pas',
+  SEDitherHighshelfNoiseshaperModule in '..\Dither & NoiseShaper\SEDitherHighshelfNoiseshaperModule.pas',
+  SEDitherNoiseshaperModule in '..\Dither & NoiseShaper\SEDitherNoiseshaperModule.pas',
+  SEDitherSharpNoiseshaperModule in '..\Dither & NoiseShaper\SEDitherSharpNoiseshaperModule.pas',
   SEDynamicsModule in '..\Dynamics\SEDynamicsModule.pas',
   SEEnvelopeModule in '..\Envelope\SEEnvelopeModule.pas',
+  SEExciterModule in '..\Exciter\SEExciterModule.pas',
   SEFiltersModule in '..\Filters\SEFiltersModule.pas',
+  SEFrequencyShifterModule in '..\Frequency Shifter\SEFrequencyShifterModule.pas',
   SEHarmonicBassModule in '..\Bass Enhancer\SEHarmonicBassModule.pas',
+  SELeslieModule in '..\Leslie\SELeslieModule.pas',
   SELightweightDynamicsModule in '..\Lightweight Dynamics\SELightweightDynamicsModule.pas',
   SELightweightFiltersModule in '..\Filters\SELightweightFiltersModule.pas',
   SELinkwitzRileyModule in '..\Linkwitz-Riley\SELinkwitzRileyModule.pas',
   SELowLatencyConvolutionModule in '..\Convolution\SELowLatencyConvolutionModule.pas',
+  SEModDelayModule in '..\ModDelay\SEModDelayModule.pas',
+  SEMp3PlayerModule in '..\MP3 Player\SEMp3PlayerModule.pas',
   SEPhaserModule in '..\Phaser\SEPhaserModule.pas',
   SEPitchShifterModule in '..\Pitch Shifter\SEPitchShifterModule.pas',
   SEPlateVerbModule in '..\Reverb\SEPlateVerbModule.pas',
@@ -35,9 +43,12 @@ uses
   SERealverbStereoModule in '..\Realverb\SERealverbStereoModule.pas',
   SEResurrectionBassModule in '..\Bass Enhancer\SEResurrectionBassModule.pas',
   SEReverbModule in '..\Reverb\SEReverbModule.pas',
+  SESimpleAudioFileOscillatorModule in '..\Audio File Oscillator\SESimpleAudioFileOscillatorModule.pas',
+  SESimpleMp3PlayerModule in '..\MP3 Player\SESimpleMp3PlayerModule.pas',
   SESimpleVocoderModule in '..\Vocoder\SESimpleVocoderModule.pas',
   SESineModule in '..\Sine\SESineModule.pas',
   SETanhAproximationsModule in '..\Tanh Aproximations\SETanhAproximationsModule.pas',
+  SETransientProcessorModule in '..\Transient Processor\SETransientProcessorModule.pas',
   SETunerModule in '..\Tuner\SETunerModule.pas',
   SEVibratoModule in '..\Vibrato\SEVibratoModule.pas',
   SEVocoderModule in '..\Vocoder\SEVocoderModule.pas',
@@ -50,7 +61,7 @@ type
   TSEModuleBaseClass = class of TSEModuleBase;
 
 const
-  CModuleClasses : array [0..175] of TSEModuleBaseClass = (
+  CModuleClasses : array [0..194] of TSEModuleBaseClass = (
     TSEBassEnhancerModule,
     TSEResurrectionBassModule,
     TSEHarmonicBassModule,
@@ -226,8 +237,26 @@ const
     TSESimpleVocoderControllableModule,
     TSESimpleVocoderAutomatableModule,
     TSEVoiceSynthStaticModule,
-    TSEVoiceSynthControllableModule
-  );
+    TSEVoiceSynthControllableModule,
+    TSEBufferedMp3PlayerModule,
+    TSETransientProcessorStaticModule,
+    TSETransientProcessorControllableModule,
+    TSEModDelayStaticModule,
+    TSELeslieStaticModule,
+    TSELeslieControllableModule,
+    TSELeslieAutomatedModule,
+    TSEFrequencyShifterStaticModule,
+    TSEFrequencyShifterControllableModule,
+    TSEExciterModule,
+    TSEExciterAutomatedModule,
+    TSEDitherHighshelfNoiseshaperStaticModule,
+    TSEDitherHighshelfNoiseshaperControllableModule,
+    TSEDitherSharpNoiseshaperStaticModule,
+    TSEDitherSharpNoiseshaperControllableModule,
+    TSEAudioFileOscillatorModule,
+    TSESimpleAudioFileOscillatorModule,
+    TSEMp3PlayerModule,
+    TSESimpleMp3PlayerModule);
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
