@@ -7,7 +7,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspFftReal2Complex;
+  DAV_Common, DAV_Classes, DAV_DspFftReal2Complex;
 
 type
   TCustomFrequencyDomainPitchShifter = class(TDspSampleRatePersistent)

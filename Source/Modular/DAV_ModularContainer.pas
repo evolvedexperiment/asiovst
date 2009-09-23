@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Controls, DAV_Common, DAV_DspCommon, DAV_ModularBase,
+  Classes, Controls, DAV_Common, DAV_Classes, DAV_ModularBase,
   DAV_ModularPin;
 
 type

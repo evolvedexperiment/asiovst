@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterBasics;
+  Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspFilterBasics;
 
 type
   TAudio2MidiTriggerFlag = (amFilterBypass, amFilterOutput);

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_DspCommon, DAV_VectorMath,
+  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_VectorMath,
   DAV_DspVibrato, DAV_DspFilter, DAV_DspFilterBasics,
   DAV_DspFeedbackDelayNetwork;
 

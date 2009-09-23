@@ -1,5 +1,5 @@
 ;NSIS Modern User Interface version 1.70
-;Dual Linkwitz Riley Installer
+;Dual Linkwitz-Riley Installer
 ;Written by Christian Budde
 
 SetCompressor lzma
@@ -13,7 +13,7 @@ SetCompressor lzma
 ;General
 
   ;Name and file
-  Name "Dual Linkwitz Riley Installer"
+  Name "Dual Linkwitz-Riley Installer"
   OutFile "Dual_Linkwitz_Riley_Install.exe"
 
   ;Default installation folder
@@ -35,7 +35,7 @@ SetCompressor lzma
 ;--------------------------------
 ;Interface Settings
 
-  !define PRODUCT_NAME "Dual Linkwitz Riley"
+  !define PRODUCT_NAME "Dual Linkwitz-Riley"
   !define PRODUCT_VERSION "1.0.0"
   !define PRODUCT_PUBLISHER "Christian Budde"
   !define PRODUCT_WEB_SITE "http://delphiasiovst.sourceforge.net/"
@@ -96,11 +96,11 @@ FunctionEnd
 
 ;Installer Sections
 
-Section "Dual Linkwitz Riley VST-Plugin" SecVstPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\Dual Linkwitz Riley Filters.dll"
+  File "..\Bin\Dual Linkwitz-Riley Filters.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -108,7 +108,7 @@ Section "Dual Linkwitz Riley VST-Plugin" SecVstPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Dual Linkwitz Riley Filters.dll" 
+  StrCpy $0 "$INSTDIR\Dual Linkwitz-Riley Filters.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
@@ -116,6 +116,19 @@ Section "Dual Linkwitz Riley VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_Dual_Linkwitz_Riley.exe"
+SectionEnd
+
+Section "Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Dual Linkwitz-Riley Filters.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -145,13 +158,15 @@ FunctionEnd
 
   ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Dual Linkwitz Riley VST Plugin"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Dual Linkwitz-Riley VST Plugin"
 
-  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Dual Linkwitz Riley VST Plugin"
+  LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Dual Linkwitz-Riley VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Dual Linkwitz-Riley Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -160,7 +175,8 @@ FunctionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\Dual Linkwitz Riley Filters.dll"
+  Delete "$INSTDIR\Dual Linkwitz-Riley Filters.dll"
+  Delete "$INSTDIR\Dual Linkwitz-Riley Filters.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspTuner;
+  DAV_Common, DAV_Complex, DAV_Classes, DAV_DspTuner;
 
 type
   TCustomVoiceSynth = class(TCustomLinearZeroCrossingTuner, IDspProcessor32)

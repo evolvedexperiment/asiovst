@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspLfo, DAV_DspTuner,
+  Classes, DAV_Common, DAV_Classes, DAV_DspLfo, DAV_DspTuner,
   DAV_DspFilterButterworth;
 
 type

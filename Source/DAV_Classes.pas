@@ -7,9 +7,77 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common;
+  Classes, DAV_Common, DAV_SampleRateSource;
 
 type
+  TDspPersistent = class(TInterfacedPersistent);
+
+  TDspSampleRatePersistent = class(TDspPersistent)
+  private
+    FSampleRate : Double;
+    procedure SetSampleRate(const Value: Double);
+  protected
+    procedure SampleRateChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create; virtual;
+    property SampleRate: Double read FSampleRate write SetSampleRate;
+  end;
+
+  // some interfaces
+
+  {$IFDEF DELPHI7_UP}
+  IDspSink32 = interface(IInterface)
+    procedure ProcessSample32(Input: Single);
+  end;
+
+  IDspSink64 = interface(IInterface)
+    procedure ProcessSample64(Input: Double);
+  end;
+
+  IDspProcessor32 = interface(IInterface)
+    function ProcessSample32(Input: Single): Single;
+  end;
+
+  IDspProcessor64 = interface(IInterface)
+    function ProcessSample64(Input: Double): Double;
+  end;
+
+  IDspGenerator32 = interface(IInterface)
+    function ProcessSample32: Single;
+  end;
+
+  IDspGenerator64 = interface(IInterface)
+    function ProcessSample64: Double;
+  end;
+  {$ENDIF}
+
+  {$IFDEF DELPHI10_UP} {$region 'AudioComponent classes'} {$ENDIF}
+  TCustomAudioComponent = class(TComponent)
+  private
+    FInternalSampleRateSource : TSampleRateSource;
+    function GetSampleRate: Double;
+    procedure SetSampleRate(const Value: Double);
+    procedure SetSampleRateSource(const Value: TSampleRateSource);
+  protected
+    FSampleRateSource : TSampleRateSource;
+    procedure AssignTo(Dest: TPersistent); override;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+                                                         
+    // properties:
+    property SampleRate: Double read GetSampleRate write SetSampleRate;
+    property SampleRateSource: TSampleRateSource read FSampleRateSource write SetSampleRateSource;
+  end;
+
+  TAudioComponent = class(TCustomAudioComponent)
+  published
+    property SampleRate;
+    property SampleRateSource;
+  end;
+  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
+
   TDAVUpdateAbleObject = class(TPersistent)
   private
     FOwner : TPersistent;
@@ -43,6 +111,128 @@ type
 
 
 implementation
+
+uses
+  SysUtils;
+
+resourcestring
+  RCStrInvalidSamplerate = 'Invalid Samplerate!';
+
+{ TDspSampleRateObject }
+
+procedure TDspSampleRatePersistent.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TDspSampleRatePersistent
+  then TDspSampleRatePersistent(Dest).FSampleRate := FSampleRate
+  else inherited;
+end;
+
+constructor TDspSampleRatePersistent.Create;
+begin
+ inherited;
+ FSampleRate := 44100;
+end;
+
+procedure TDspSampleRatePersistent.SetSampleRate(const Value: Double);
+begin
+ if Value = 0
+  then raise Exception.Create(RCStrInvalidSamplerate);
+
+ if FSampleRate <> abs(Value) then
+  begin
+   FSampleRate := abs(Value);
+   SampleRateChanged;
+  end;
+end;
+
+procedure TDspSampleRatePersistent.SampleRateChanged;
+begin
+ // nothing here yet
+end;
+
+
+{$IFDEF DELPHI10_UP} {$region 'AudioComponent implementation'} {$ENDIF}
+
+{ TCustomAudioComponent }
+
+procedure TCustomAudioComponent.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomAudioComponent then
+  begin
+   TCustomAudioComponent(Dest).FInternalSampleRateSource := FInternalSampleRateSource;
+   TCustomAudioComponent(Dest).FSampleRateSource         := FSampleRateSource;
+  end
+ else inherited;
+end;
+
+constructor TCustomAudioComponent.Create(AOwner: TComponent);
+begin
+ inherited;
+ FInternalSampleRateSource := TSampleRateSource.Create(Self);
+end;
+
+destructor TCustomAudioComponent.Destroy;
+begin
+ // in case the internal sample rate source is really internal, release it
+ if FSampleRateSource = nil
+  then FreeAndNil(FInternalSampleRateSource);
+ inherited;
+end;
+
+function TCustomAudioComponent.GetSampleRate: Double;
+begin
+ result := FInternalSampleRateSource.SampleRate;
+end;
+
+procedure TCustomAudioComponent.SetSampleRate(const Value: Double);
+begin
+ // only allow writing in case the samplerate source is internal
+ if FSampleRateSource = nil
+  then FInternalSampleRateSource.SampleRate := Value;
+end;
+
+procedure TCustomAudioComponent.SetSampleRateSource(const Value: TSampleRateSource);
+var
+  OldSampleRateSource    : TSampleRateSource;
+  OldIntSampleRateSource : TSampleRateSource;
+  NewIntSampleRateSource : TSampleRateSource;
+begin
+ if FSampleRateSource <> Value then
+  begin
+   // store old samplerate sources
+   OldSampleRateSource    := FSampleRateSource;
+   OldIntSampleRateSource := FInternalSampleRateSource;
+
+   // set actual sample rate source
+   FSampleRateSource      := Value;
+
+   // check whether previously the sample rate source was purely internal
+   if not assigned(OldSampleRateSource) then
+    begin
+     // set new internal sample rate source to the actual sample rate source
+     FInternalSampleRateSource := FSampleRateSource;
+
+     // release old purely internal sample rate source
+     FreeAndNil(OldIntSampleRateSource);
+    end else
+
+   // check whether no external sample rate source is linked
+   if not assigned(SampleRateSource) then
+    begin
+     // create purely internal sample rate source
+     NewIntSampleRateSource := TSampleRateSource.Create(Self);
+
+     // assign old sample source properties
+     assert(OldSampleRateSource <> nil);
+     NewIntSampleRateSource.Assign(OldSampleRateSource);
+
+     // now actually link the new internal sample rate source
+     FInternalSampleRateSource := NewIntSampleRateSource;
+    end;
+  end;
+end;
+{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
+
 
 { TDAVUpdateAbleObject }
 

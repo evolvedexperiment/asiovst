@@ -3,7 +3,7 @@ unit DAV_DiracInterface;
 interface
 
 uses
-  Windows, Classes, DAV_Common, DAV_DspCommon;
+  Windows, Classes, DAV_Common, DAV_Classes;
 
 type
   PDiracHandle = THandle;

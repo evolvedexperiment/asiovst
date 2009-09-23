@@ -80,7 +80,7 @@ interface
 
 
 uses
-  SysUtils, DAV_Common, DAV_DspCommon;
+  SysUtils, DAV_Common, DAV_Classes;
 
 const
   CLorenzScale: Single = 0.05107;
@@ -278,4 +278,4 @@ begin
 end;
 
 end.
-
+

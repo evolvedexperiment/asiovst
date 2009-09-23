@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, Variants, DAV_Common, DAV_DspCommon;
+  Classes, SysUtils, Variants, DAV_Common, DAV_Classes;
 
 type
   TModularPinDataType = (mdtInteger, mdtBoolean, mdtSingle, mdtDouble);

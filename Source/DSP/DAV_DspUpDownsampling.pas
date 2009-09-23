@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_DspCommon, DAV_DspFilter,
+  Classes, SysUtils, DAV_Common, DAV_Classes, DAV_DspFilter,
   DAV_DSPFilterButterworth, DAV_DSPFilterChebyshev, DAV_DSPFilterChebyshevType1,
   DAV_DSPFilterChebyshevType2, DAV_DSPBesselFilter;
 

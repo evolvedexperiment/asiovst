@@ -252,6 +252,7 @@ begin
    OutBuffer[L, Sample] := (1 - FPan) * Data;
    OutBuffer[R, Sample] := FPan * Data;
   end;
+ ASIOHost.Active := False; 
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,

@@ -53,15 +53,14 @@ const
   {$IFDEF DELPHI10_UP} {$region 'Message constants'} {$ENDIF}
   // private message
   PM_Asio = WM_User + 1652;        // unique we hope
+
   // Asio message(s), as wParam for PM_Asio
   AM_ResetRequest         = 0;
   AM_BufferSwitch         = 1;     // new buffer index in lParam
   AM_BufferSwitchTimeInfo = 2;     // new buffer index in lParam
-                                   // time passed in MainForm.BufferTime
   AM_LatencyChanged       = 3;
-  
-  PM_UpdateSamplePos      = PM_Asio + 1;  // sample pos in wParam (hi) and lParam (lo)
 
+  PM_UpdateSamplePos      = PM_Asio + 1;  // sample pos in wParam (hi) and lParam (lo)
   PM_BufferSwitch         = PM_Asio + 2;
   PM_BufferSwitchTimeInfo = PM_Asio + 3;
   PM_Reset                = PM_Asio + 4;

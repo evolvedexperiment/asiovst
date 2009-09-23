@@ -40,10 +40,10 @@ uses
 
 type
   TFmASIOVST = class(TForm)
-    Lb_ASIOOutput: TLabel;
     CB_ASIO: TComboBox;
-    Memo: TMemo;
     CBShortCircuit: TCheckBox;
+    Lb_ASIOOutput: TLabel;
+    Memo: TMemo;
     procedure CB_ASIOChange(Sender: TObject);
     procedure Lb_ASIOOutputClick(Sender: TObject);
     procedure CBShortCircuitClick(Sender: TObject);
@@ -85,12 +85,15 @@ begin
    Lines.Add('Driver: ' + DriverName);
    Lines.Add('Buffersize: ' + IntToStr(BufferSize));
    Lines.Add('Latency: ' + IntToStr(InputLatency + OutputLatency + Integer(BufferSize)));
-   Lines.Add('Channel 1: ' + OutputChannelInfos[0].name);
-   Lines.Add('Channel 2: ' + OutputChannelInfos[1].name);
-   Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
-   Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
-   Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
-   Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
+   if OutputChannelCount > 0 then
+    begin
+     Lines.Add('Channel 1: ' + OutputChannelInfos[0].name);
+     Lines.Add('Channel 2: ' + OutputChannelInfos[1].name);
+     Lines.Add('Format In 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
+     Lines.Add('Format In 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
+     Lines.Add('Format Out 1: ' + ChannelTypeToString(OutputChannelInfos[0].SampleType));
+     Lines.Add('Format Out 2: ' + ChannelTypeToString(OutputChannelInfos[1].SampleType));
+    end;
   end;
 end;
 

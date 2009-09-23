@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_DspCommon, DAV_DspSimpleOscillator;
+  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_DspSimpleOscillator;
 
 type
   TCustomSweepOscillator64 = class(TCustomSimpleOscillator)

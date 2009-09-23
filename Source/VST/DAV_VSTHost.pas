@@ -680,20 +680,20 @@ end;
 
 function PlugCategory2String(Category: TVstPluginCategory): string;
 begin
-  case Category of
-    vpcUnknown        : Result := RStrUnknown;
-    vpcEffect         : Result := RStrEffect;
-    vpcSynth          : Result := RStrSynth;
-    vpcAnalysis       : Result := RStrAnalysis;
-    vpcMastering      : Result := RStrMastering;
-    vpcSpacializer    : Result := RStrSpacializer;
-    vpcRoomFx         : Result := RStrRoomFx;
-    vpcSurroundFx     : Result := RStrSurroundFx;
-    vpcRestoration    : Result := RStrRestoration;
-    vpcOfflineProcess : Result := RStrOfflineProcess;
-    vpcShell          : Result := RStrShell;
-    vpcGenerator      : Result := RStrGenerator;
-  end;
+ case Category of
+  vpcUnknown        : Result := RStrUnknown;
+  vpcEffect         : Result := RStrEffect;
+  vpcSynth          : Result := RStrSynth;
+  vpcAnalysis       : Result := RStrAnalysis;
+  vpcMastering      : Result := RStrMastering;
+  vpcSpacializer    : Result := RStrSpacializer;
+  vpcRoomFx         : Result := RStrRoomFx;
+  vpcSurroundFx     : Result := RStrSurroundFx;
+  vpcRestoration    : Result := RStrRestoration;
+  vpcOfflineProcess : Result := RStrOfflineProcess;
+  vpcShell          : Result := RStrShell;
+  vpcGenerator      : Result := RStrGenerator;
+ end;
 end;
 
 function EffOptions2String(EffOpts: TEffFlags): string;
@@ -770,7 +770,7 @@ begin
       if PAnsiChar(Ptr) = 'OnStopButton' then else
       if PAnsiChar(Ptr) = 'IsInRealTimeAudio' then else
       if PAnsiChar(Ptr) = 'Audio_IsRunning' then else;
-      exit;
+      Exit;
      end;
 
     thePlug := nil;
@@ -2034,6 +2034,9 @@ end;
 
 procedure TCustomVstPlugIn.ShowEdit(Control: TWinControl);
 begin
+ if not Active
+  then raise Exception.Create('Plugin not active!');
+
  if Control = nil
   then raise Exception.Create('Control must exist!');
  if (effFlagsHasEditor in FVstEffect.EffectFlags) and (FGUIStyle = gsDefault) then

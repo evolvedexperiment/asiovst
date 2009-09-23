@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspFilter, DAV_DspFilterAllpasses;
+  DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspFilterAllpasses;
 
 type
   TCustomSimpleBandlimitedImpulseTrain = class(TDspSampleRatePersistent)

@@ -1417,7 +1417,8 @@ begin
  if assigned(Result) then
   with Result do
    begin
-    BlockSize := Self.FBlockSize;
+    if Self.FBlockSize > 0
+     then BlockSize := Self.FBlockSize;
     ChannelCount := FFormatChunk.Channels;
    end;
 end;
@@ -1436,6 +1437,8 @@ begin
   begin
    DataDecoder := CreateDataCoder;
    if not assigned(DataDecoder) then exit;
+   if FBlockSize <= 0
+    then DataDecoder.SampleFrames := SampleFrames;
 
    assert(FAudioDataPosition > 0);
    Position := FAudioDataPosition + 8 + DataDecoder.SampleToByte(SamplePosition);
@@ -1476,6 +1479,8 @@ begin
   begin
    DataEncoder := CreateDataCoder;
    if not assigned(DataEncoder) then exit;
+   if FBlockSize <= 0
+    then DataEncoder.SampleFrames := SampleFrames;
 
    if EmptyData then
     begin
@@ -1531,7 +1536,9 @@ begin
    Read(ChunkSize, 4);
 
    DataDecoder := CreateDataCoder;
-   if not assigned(DataDecoder) then exit;
+   if not assigned(DataDecoder) then Exit;
+   if FBlockSize <= 0
+    then DataDecoder.SampleFrames := SampleFrames;
 
    if assigned(FOnBeginRead)
     then FOnBeginRead(Self);
@@ -1578,6 +1585,8 @@ begin
 
    DataEncoder := CreateDataCoder;
    if not assigned(DataEncoder) then exit;
+   if FBlockSize <= 0
+    then DataEncoder.SampleFrames := SampleFrames;
 
    if assigned(FOnBeginWrite)
     then FOnBeginWrite(Self);

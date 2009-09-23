@@ -28,6 +28,8 @@ unit DAV_SECommon;
 //  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
+//  SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/      //
+//                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
 interface

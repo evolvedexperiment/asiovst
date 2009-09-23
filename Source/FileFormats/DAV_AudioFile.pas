@@ -169,7 +169,7 @@ function StreamToFormat(Stream: TStream): TAudioFileClass;
 var
   i : Integer;
 begin
- result := nil;
+ Result := nil;
  if not assigned(Stream) then Exit;
 
  for i := 0 to Length(GAudioFileFormats) - 1 do

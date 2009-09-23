@@ -96,11 +96,9 @@ FunctionEnd
 
 ;Installer Sections
 
-Section "VST interfaced ASIO-Host VST-Plugin" SecVstPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
-  !system 'copy "..\Bin\ASIOVST.dll" "..\Bin\VST interfaced ASIO-Host.dll"'  
-
   ;ADD YOUR OWN FILES HERE...
   File "..\Bin\VST interfaced ASIO-Host.dll"
 
@@ -118,6 +116,19 @@ Section "VST interfaced ASIO-Host VST-Plugin" SecVstPlugin
   IntCmp $1 0 SkipDLLCall
   DetailPrint  "Bug Report DLL Patch applied"
 SkipDLLCall:
+
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_VST_interfaced_ASIO-Host.exe"
+SectionEnd
+
+Section "Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\VST interfaced ASIO-Host.pdf"
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -147,6 +158,7 @@ FunctionEnd
 
   ;Language strings
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "VST interfaced ASIO-Host VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "VST interfaced ASIO-Host Manual"
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VST interfaced ASIO-Host VST Plugin"
@@ -154,6 +166,7 @@ FunctionEnd
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -163,6 +176,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\VST interfaced ASIO-Host.dll"
+  Delete "$INSTDIR\VST interfaced ASIO-Host.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

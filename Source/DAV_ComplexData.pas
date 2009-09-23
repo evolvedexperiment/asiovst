@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_AudioData;
+  Classes, DAV_Classes, DAV_Common, DAV_Complex, DAV_AudioData;
 
 type
   TCustomComplexData = class;
@@ -15,8 +15,8 @@ type
 
   TCustomComplexChannel = class(TCollectionItem)
   private
-    fChannelData  : TCustomComplexChannels;
-    fBinCount     : Cardinal;
+    FChannelData  : TCustomComplexChannels;
+    FBinCount     : Cardinal;
     function GetComplexData: TCustomComplexData;
   protected
     {$IFNDEF FPC}
@@ -33,14 +33,14 @@ type
     // some processing functions
     procedure Clear; virtual; abstract;
 
-    property BinCount: Cardinal read fBinCount;
+    property BinCount: Cardinal read FBinCount;
   published
     property DisplayName;
   end;
 
   TComplexChannel32 = class(TCustomComplexChannel)
   private
-    fChannelDataPtr  : PDAVComplexSingleFixedArray;
+    FChannelDataPtr  : PDAVComplexSingleFixedArray;
     function GetChannelDataImaginary(Bin: Int64): Single;
     function GetChannelDataMagnitude(Bin: Int64): Single;
     function GetChannelDataPhase(Bin: Int64): Single;
@@ -62,12 +62,12 @@ type
     property ChannelDataImaginary[Sample: Int64]: Single read GetChannelDataImaginary write SetChannelDataImaginary;
     property ChannelDataMagnitude[Sample: Int64]: Single read GetChannelDataMagnitude write SetChannelDataMagnitude;
     property ChannelDataPhase[Sample: Int64]: Single read GetChannelDataPhase write SetChannelDataPhase;
-    property ChannelDataPointer: PDAVComplexSingleFixedArray read fChannelDataPtr;
+    property ChannelDataPointer: PDAVComplexSingleFixedArray read FChannelDataPtr;
   end;
 
   TComplexChannel64 = class(TCustomComplexChannel)
   private
-    fChannelDataPtr : PDAVComplexDoubleFixedArray;
+    FChannelDataPtr : PDAVComplexDoubleFixedArray;
     function GetChannelDataImaginary(Bin: Int64): Double;
     function GetChannelDataMagnitude(Bin: Int64): Double;
     function GetChannelDataPhase(Bin: Int64): Double;
@@ -89,21 +89,21 @@ type
     property ChannelDataImaginary[Sample: Int64]: Double read GetChannelDataImaginary write SetChannelDataImaginary;
     property ChannelDataMagnitude[Sample: Int64]: Double read GetChannelDataMagnitude write SetChannelDataMagnitude;
     property ChannelDataPhase[Sample: Int64]: Double read GetChannelDataPhase write SetChannelDataPhase;
-    property ChannelDataPointer: PDAVComplexDoubleFixedArray read fChannelDataPtr;
+    property ChannelDataPointer: PDAVComplexDoubleFixedArray read FChannelDataPtr;
   end;
 
-  TCustomComplexData = class(TAudioObject)
+  TCustomComplexData = class(TAudioComponent)
   private
-    fBinCount : Cardinal;
+    FBinCount : Cardinal;
     procedure SetBinCount(const Value: Cardinal);
   protected
-    fChannels : TCustomComplexChannels;
+    FChannels : TCustomComplexChannels;
     procedure BinCountChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    property BinCount: Cardinal read fBinCount write SetBinCount;
-    property Channels: TCustomComplexChannels read fChannels write fChannels;
+    property BinCount: Cardinal read FBinCount write SetBinCount;
+    property Channels: TCustomComplexChannels read FChannels write FChannels;
   end;
 
   TComplexData32 = class(TCustomComplexData)
@@ -151,7 +151,7 @@ begin
    {$IFNDEF FPC}
    TCustomComplexChannel(Dest).fDisplayName := fDisplayName;
    {$ENDIF}
-   TCustomComplexChannel(Dest).fChannelData := fChannelData;
+   TCustomComplexChannel(Dest).FChannelData := FChannelData;
   end
  else inherited;
 end;
@@ -185,22 +185,22 @@ end;
 
 procedure TCustomComplexChannel.BinCountChanged;
 begin
- fBinCount := ComplexData.BinCount;
+ FBinCount := ComplexData.BinCount;
 end;
 
 { TComplexChannel32 }
 
 procedure TComplexChannel32.Clear;
 begin
- FillChar(fChannelDataPtr^, BinCount * SizeOf(TComplexSingle), 0);
+ FillChar(FChannelDataPtr^, BinCount * SizeOf(TComplexSingle), 0);
 end;
 
 destructor TComplexChannel32.Destroy;
 begin
- if assigned(fChannelDataPtr) then
+ if assigned(FChannelDataPtr) then
   begin
-   Dispose(fChannelDataPtr);
-   fChannelDataPtr := nil;
+   Dispose(FChannelDataPtr);
+   FChannelDataPtr := nil;
   end;
  inherited;
 end;
@@ -208,38 +208,38 @@ end;
 function TComplexChannel32.GetChannelDataReal(Bin: Int64): Single;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := fChannelDataPtr^[Bin].Re
+  then result := FChannelDataPtr^[Bin].Re
   else raise Exception.Create('Bin out of range');
 end;
 
 function TComplexChannel32.GetChannelDataImaginary(Bin: Int64): Single;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := fChannelDataPtr^[Bin].Im
+  then result := FChannelDataPtr^[Bin].Im
   else raise Exception.Create('Bin out of range');
 end;
 
 function TComplexChannel32.GetChannelDataMagnitude(Bin: Int64): Single;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := sqrt(sqr(fChannelDataPtr^[Bin].Re) + sqr(fChannelDataPtr^[Bin].Im))
+  then result := sqrt(sqr(FChannelDataPtr^[Bin].Re) + sqr(FChannelDataPtr^[Bin].Im))
   else raise Exception.Create('Bin out of range');
 end;
 
 function TComplexChannel32.GetChannelDataPhase(Bin: Int64): Single;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := arctan2(fChannelDataPtr^[Bin].Im, fChannelDataPtr^[Bin].Re)
+  then result := arctan2(FChannelDataPtr^[Bin].Im, FChannelDataPtr^[Bin].Re)
   else raise Exception.Create('Bin out of range');
 end;
 
 procedure TComplexChannel32.BinCountChanged;
 begin
- ReallocMem(fChannelDataPtr, ComplexData.BinCount * SizeOf(TComplexSingle));
+ ReallocMem(FChannelDataPtr, ComplexData.BinCount * SizeOf(TComplexSingle));
 
  // check if new length is longer than the old length and fill with zeroes if necessary
  if ComplexData.BinCount > BinCount
-  then FillChar(fChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplexSingle), 0);
+  then FillChar(FChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplexSingle), 0);
 
  inherited;
 end;
@@ -247,7 +247,7 @@ end;
 procedure TComplexChannel32.SetChannelDataReal(Bin: Int64; const Value: Single);
 begin
  if (Bin >= 0) and (Bin < ComplexData.BinCount)
-  then fChannelDataPtr^[Bin].Re := Value
+  then FChannelDataPtr^[Bin].Re := Value
   else raise Exception.Create('Bin out of range');
 end;
 
@@ -255,7 +255,7 @@ procedure TComplexChannel32.SetChannelDataImaginary(Bin: Int64;
   const Value: Single);
 begin
  if (Bin >= 0) and (Bin < ComplexData.BinCount)
-  then fChannelDataPtr^[Bin].Im := Value
+  then FChannelDataPtr^[Bin].Im := Value
   else raise Exception.Create('Bin out of range');
 end;
 
@@ -279,15 +279,15 @@ end;
 
 procedure TComplexChannel64.Clear;
 begin
- FillChar(fChannelDataPtr^, ComplexData.BinCount * SizeOf(TComplexDouble), 0);
+ FillChar(FChannelDataPtr^, ComplexData.BinCount * SizeOf(TComplexDouble), 0);
 end;
 
 destructor TComplexChannel64.Destroy;
 begin
- if assigned(fChannelDataPtr) then
+ if assigned(FChannelDataPtr) then
   begin
-   Dispose(fChannelDataPtr);
-   fChannelDataPtr := nil;
+   Dispose(FChannelDataPtr);
+   FChannelDataPtr := nil;
   end;
  inherited;
 end;
@@ -295,35 +295,35 @@ end;
 function TComplexChannel64.GetChannelDataReal(Bin: Int64): Double;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := fChannelDataPtr^[Bin].Re
+  then result := FChannelDataPtr^[Bin].Re
   else raise Exception.Create('Bin out of range');
 end;
 
 function TComplexChannel64.GetChannelDataImaginary(Bin: Int64): Double;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := fChannelDataPtr^[Bin].Im
+  then result := FChannelDataPtr^[Bin].Im
   else raise Exception.Create('Bin out of range');
 end;
 
 function TComplexChannel64.GetChannelDataMagnitude(Bin: Int64): Double;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := sqrt(sqr(fChannelDataPtr^[Bin].Re) + sqr(fChannelDataPtr^[Bin].Im))
+  then result := sqrt(sqr(FChannelDataPtr^[Bin].Re) + sqr(FChannelDataPtr^[Bin].Im))
   else raise Exception.Create('Bin out of range');
 end;
 
 function TComplexChannel64.GetChannelDataPhase(Bin: Int64): Double;
 begin
  if (Bin >= 0) and (Bin < BinCount)
-  then result := arctan2(fChannelDataPtr^[Bin].Im, fChannelDataPtr^[Bin].Re)
+  then result := arctan2(FChannelDataPtr^[Bin].Im, FChannelDataPtr^[Bin].Re)
   else raise Exception.Create('Bin out of range');
 end;
 
 procedure TComplexChannel64.SetChannelDataReal(Bin: Int64; const Value: Double);
 begin
  if (Bin >= 0) and (Bin < ComplexData.BinCount)
-  then fChannelDataPtr^[Bin].Re := Value
+  then FChannelDataPtr^[Bin].Re := Value
   else raise Exception.Create('Bin out of range');
 end;
 
@@ -331,7 +331,7 @@ procedure TComplexChannel64.SetChannelDataImaginary(Bin: Int64;
   const Value: Double);
 begin
  if (Bin >= 0) and (Bin < ComplexData.BinCount)
-  then fChannelDataPtr^[Bin].Im := Value
+  then FChannelDataPtr^[Bin].Im := Value
   else raise Exception.Create('Bin out of range');
 end;
 
@@ -353,11 +353,11 @@ end;
 
 procedure TComplexChannel64.BinCountChanged;
 begin
- ReallocMem(fChannelDataPtr, ComplexData.BinCount * SizeOf(TComplexDouble));
+ ReallocMem(FChannelDataPtr, ComplexData.BinCount * SizeOf(TComplexDouble));
 
  // check if new length is longer than the old length and fill with zeroes if necessary
  if ComplexData.BinCount > BinCount
-  then FillChar(fChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplexDouble), 0);
+  then FillChar(FChannelDataPtr^[BinCount], (ComplexData.BinCount - BinCount) * SizeOf(TComplexDouble), 0);
 
  inherited;
 end;
@@ -371,7 +371,7 @@ end;
 
 destructor TCustomComplexData.Destroy;
 begin
- if assigned(fChannels) then FreeAndNil(fChannels);
+ if assigned(FChannels) then FreeAndNil(FChannels);
  inherited;
 end;
 
@@ -379,19 +379,19 @@ procedure TCustomComplexData.BinCountChanged;
 var
   ch : Integer;
 begin
- for ch := 0 to fChannels.Count - 1 do
+ for ch := 0 to FChannels.Count - 1 do
   begin
-   assert(fChannels.Items[ch] is TCustomComplexChannel);
-   if TCustomComplexChannel(fChannels.Items[ch]).BinCount <> fBinCount
-    then TCustomComplexChannel(fChannels.Items[ch]).BinCountChanged;
+   assert(FChannels.Items[ch] is TCustomComplexChannel);
+   if TCustomComplexChannel(FChannels.Items[ch]).BinCount <> FBinCount
+    then TCustomComplexChannel(FChannels.Items[ch]).BinCountChanged;
   end;
 end;
 
 procedure TCustomComplexData.SetBinCount(const Value: Cardinal);
 begin
- if fBinCount <> Value then
+ if FBinCount <> Value then
   begin
-   fBinCount := Value;
+   FBinCount := Value;
    BinCountChanged;
   end;
 end;
@@ -401,14 +401,14 @@ end;
 constructor TComplexData32.Create(AOwner: TComponent);
 begin
  inherited;
- fChannels := TCustomComplexChannels.Create(Self, TComplexChannel32);
+ FChannels := TCustomComplexChannels.Create(Self, TComplexChannel32);
 end;
 
 function TComplexData32.GetComplexChannel(index: Integer): TComplexChannel32;
 begin
- if (Index < 0) or (Index >= fChannels.Count)
+ if (Index < 0) or (Index >= FChannels.Count)
   then raise Exception.Create('Index out of bounds')
-  else result := TComplexChannel32(fChannels.Items[index]);
+  else result := TComplexChannel32(FChannels.Items[index]);
 end;
 
 { TComplexData64 }
@@ -416,14 +416,14 @@ end;
 constructor TComplexData64.Create(AOwner: TComponent);
 begin
  inherited;
- fChannels := TCustomComplexChannels.Create(Self, TComplexChannel64);
+ FChannels := TCustomComplexChannels.Create(Self, TComplexChannel64);
 end;
 
 function TComplexData64.GetComplexChannel(index: Integer): TComplexChannel64;
 begin
- if (Index < 0) or (Index >= fChannels.Count)
+ if (Index < 0) or (Index >= FChannels.Count)
   then raise Exception.Create('Index out of bounds')
-  else result := TComplexChannel64(fChannels.Items[index]);
+  else result := TComplexChannel64(FChannels.Items[index]);
 end;
 
 end.

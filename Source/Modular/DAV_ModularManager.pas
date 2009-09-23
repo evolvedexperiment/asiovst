@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Contnrs, SysUtils, DAV_Common, DAV_Classes, DAV_DspCommon,
-  DAV_ModularBase, DAV_ModularContainer, DAV_ModularPin;
+  Classes, Contnrs, SysUtils, DAV_Common, DAV_Classes, DAV_ModularBase,
+  DAV_ModularContainer, DAV_ModularPin;
 
 type
   TCustomModularManager = class(TComponent)

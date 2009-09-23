@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_DspCommon, DAV_DspDynamics;
+  DAV_Classes, DAV_DspDynamics;
 
 type
   TCustomLevelingAmplifier = class(TDspSampleRatePersistent, IDspProcessor64)

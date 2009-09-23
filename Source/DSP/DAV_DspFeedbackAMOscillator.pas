@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DspCommon, DAV_DspLFO, DAV_DspFilter, DAV_DspDelayLines;
+  DAV_Common, DAV_Classes, DAV_DspLFO, DAV_DspFilter, DAV_DspDelayLines;
 
 type
   TCustomFeedbackAMOscillator = class(TDspSampleRatePersistent)

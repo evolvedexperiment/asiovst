@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspCommon, DAV_DspFilter;
+  Classes, DAV_Common, DAV_Classes, DAV_DspFilter;
 
 type
   TSpectralDelayFilter = class(TCustomIIRFilter)

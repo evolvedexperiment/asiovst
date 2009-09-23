@@ -51,7 +51,7 @@ interface
 
 uses
   Classes, Graphics, SysUtils, Contnrs, DAV_Common, DAV_ChunkClasses,
-  DAV_HalfFloat, DAV_DspCommon, DAV_VectorMath;
+  DAV_HalfFloat, DAV_Classes, DAV_VectorMath;
 
 type
   THrirEncoding = (heInteger, heFloat);
