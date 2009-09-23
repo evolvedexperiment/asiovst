@@ -876,9 +876,6 @@ begin
   FSampleRate      := 44100;
   FAsioTime        := TAsioTimeSub.Create;
 
-  FAsioDriverList := TDAVAsioDriverList.Create;
-  FAsioDriverList.UpdateList;
-
   FEngineVersion   := 2;
   FAsioSupports    := [assSupportsTimeInfo, assSupportsTimeCode];
 
@@ -897,6 +894,13 @@ begin
 
   // and make sure all controls are enabled or disabled
   FDriverIndex := -1;
+
+  FAsioDriverList := TDAVAsioDriverList.Create;
+  try
+   FAsioDriverList.UpdateList;
+  except
+  end;
+
   inherited;
 end;
 

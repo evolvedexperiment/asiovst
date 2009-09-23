@@ -151,13 +151,13 @@ end;
 
 procedure TDAVAsioDriverList.LoadList;
 var
-  SubKeys           : TStringList;
-  i                 : Integer;
-  DrvName           : string;
-  DrvGuidStr        : string;
-  DrvFile           : string;
-  DrvGuid           : TGuid;
-  newAsioDriverItem : TDAVAsioDriverDesc;
+  SubKeys     : TStringList;
+  KeyNo       : Integer;
+  DrvName     : string;
+  DrvGuidStr  : string;
+  DrvFile     : string;
+  DrvGuid     : TGuid;
+  DriverItem  : TDAVAsioDriverDesc;
 begin
  SubKeys := TStringList.Create;
  with TRegistry.Create do
@@ -169,28 +169,30 @@ begin
      CloseKey;
     end;
 
-   for i := 0 to SubKeys.Count-1 do
-    begin
-     if OpenKeyReadOnly(CAsioPath + '\' + SubKeys[i]) then
-      begin
-       DrvGuidStr := ReadString(CAsioComClsId);
-       DrvGuid := StringToGUID(DrvGuidStr);
+   for KeyNo := 0 to SubKeys.Count - 1 do
+    if OpenKeyReadOnly(CAsioPath + '\' + SubKeys[KeyNo]) then
+     try
+      DrvGuidStr := ReadString(CAsioComClsId);
+      if DrvGuidStr <> '' then
+       begin
+        DrvGuid := StringToGUID(DrvGuidStr);
 
-       DrvFile := GetDriverFileName(DrvGuidStr);
-       if (DrvFile <> '') and not (FHasIgnoreGuid and IsEqualGUID(DrvGuid, FIgnoreGuid)) then
-        begin
-         DrvName := ReadString(CAsioDescription);
-         if DrvName = '' then DrvName := SubKeys[i];
+        DrvFile := GetDriverFileName(DrvGuidStr);
+        if (DrvFile <> '') and not (FHasIgnoreGuid and IsEqualGUID(DrvGuid, FIgnoreGuid)) then
+         begin
+          DrvName := ReadString(CAsioDescription);
+          if DrvName = '' then DrvName := SubKeys[KeyNo];
 
-         newAsioDriverItem := TDAVAsioDriverDesc.Create(DrvGuidStr,DrvName,DrvFile);
+          DriverItem := TDAVAsioDriverDesc.Create(DrvGuidStr, DrvName, DrvFile);
 
-         FList.Add(newAsioDriverItem);
-         FNameList.Add(DrvName);
-        end;
-
-       CloseKey;
+          FList.Add(DriverItem);
+          FNameList.Add(DrvName);
+         end;
+       end
+      else raise Exception.Create('Error loading GUID from ' + SubKeys[KeyNo]);
+     finally
+      CloseKey;
      end;
-   end;
  finally
   Free;
   FreeAndNil(SubKeys);
