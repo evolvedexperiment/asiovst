@@ -96,7 +96,7 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Bugpass Lite VST-Plugin" SecVstPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\BugpassLite.dll" "..\Bin\Bugpass Lite.dll"'  
@@ -127,6 +127,19 @@ SkipDLLCall:
 
 SectionEnd
 
+Section "Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Bugpass Lite.pdf"
+
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_Bugpass_Lite.exe"
+SectionEnd
+
 ;--------------------------------
 ;Installer Functions
 
@@ -151,10 +164,12 @@ FunctionEnd
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
 
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Bugpass Lite VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -164,6 +179,7 @@ Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
   Delete "$INSTDIR\Bugpass Lite.dll"
+  Delete "$INSTDIR\Bugpass Lite.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

@@ -144,6 +144,8 @@ end;
 
 procedure TCustomBodeFrequencyShifter32.CoefficientCountChanged;
 begin
+ assert(FCoefficientCount >= 1);
+ assert(FCoefficientCount <= 32);
  FHilbert.NumberOfCoefficients := FCoefficientCount;
 end;
 

@@ -376,8 +376,8 @@ procedure TCustomDelayLineFractional.SetFractional(const Value: Double);
 begin
  if FractionalBuffersize <> Value then
   begin
-   BufferSize := Trunc(FractionalBufferSize);
-   FFractional := FractionalBufferSize - FBufferSize;
+   BufferSize := Trunc(Value);
+   FFractional := Value - FBufferSize;
    FractionalChanged;
   end;
 end;

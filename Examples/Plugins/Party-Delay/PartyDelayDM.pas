@@ -41,9 +41,12 @@ uses
 
 type
   TPartyDelayDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -64,9 +67,6 @@ type
     procedure ParameterOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterShiftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
@@ -105,6 +105,7 @@ uses
 procedure TPartyDelayDataModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
+ FParPrBand := 15;
 end;
 
 procedure TPartyDelayDataModule.VSTModuleDestroy(Sender: TObject);
@@ -118,7 +119,6 @@ var
 begin
  FDry := 0.707;
  FWet := 0.707;
- FParPrBand := 15;
  for Band := 0 to Length(FDelayLine) - 1 do
   begin
    FDelayLine[Band] := TDelayLineTime32.Create;
@@ -256,17 +256,29 @@ begin
   then TFmPartyDelay(EditorForm).UpdateShiftFrequency;
 end;
 
+// Limit a Value to be Lower <= Value <= Upper
+function LimitInt(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer;
+begin
+ if Value < Lower then Result := Lower else
+ if Value > Upper then Result := Upper else Result := Value;
+end;
+
 procedure TPartyDelayDataModule.ParameterShiftOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Band : Integer;
 begin
  Band := Index div ParametersPerBand;
- if FShiftOrder[Band] <> round(Value) then
+ if FShiftOrder[Band] <> LimitInt(Round(Value), 1, 32) then
   begin
-   FShiftOrder[Band] := round(Value);
-   if assigned(FFreqShift[Band])
-    then FFreqShift[Band].CoefficientCount := round(Value);
+   FCriticalSection.Enter;
+   try
+    FShiftOrder[Band] := LimitInt(Round(Value), 1, 32);
+    if assigned(FFreqShift[Band])
+     then FFreqShift[Band].CoefficientCount := FShiftOrder[Band];
+   finally
+    FCriticalSection.Leave;
+   end;
   end;
 end;
 
@@ -389,7 +401,7 @@ begin
  Band := Index div ParametersPerBand;
  if Value <> 0 then
   begin
-   if not assigned(FFreqShift[Index div ParametersPerBand]) then
+   if not assigned(FFreqShift[Band]) then
     begin
      FCriticalSection.Enter;
      try
@@ -483,8 +495,11 @@ begin
   if not (OldFilter is CFilterClasses[round(Value)]) then
    begin
     FFilter[Band] := CFilterClasses[round(Value)].Create;
-    FFilter[Band].Assign(OldFilter);
-    FreeAndNil(OldFilter);
+    if OldFilter <> nil then
+     begin
+      FFilter[Band].Assign(OldFilter);
+      FreeAndNil(OldFilter);
+     end;
    end;
  finally
   FCriticalSection.Leave;
@@ -496,11 +511,14 @@ end;
 
 procedure TPartyDelayDataModule.ParameterDelayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Band : Integer;
 begin
- if assigned(FDelayLine[Index div ParametersPerBand]) then
+ Band := Index div ParametersPerBand;
+ if assigned(FDelayLine[Band]) then
   begin
-   FDelayLine[Index div ParametersPerBand].Time := 0.001 * Value;
-   FDelayLine[Index div ParametersPerBand].Reset;
+   FDelayLine[Band].Time := 0.001 * Value;
+   FDelayLine[Band].Reset;
   end;
 
  if EditorForm is TFmPartyDelay
@@ -564,13 +582,20 @@ procedure TPartyDelayDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Band : Integer;
 begin
- for Band := 0 to Length(FDelayLine) - 1 do
-  if assigned(FDelayLine[Band])
-   then FDelayLine[Band].Samplerate := SampleRate;
+ if abs(SampleRate) > 0 then
+  begin
+   for Band := 0 to Length(FDelayLine) - 1 do
+    if assigned(FDelayLine[Band])
+     then FDelayLine[Band].Samplerate := SampleRate;
 
- for Band := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Band])
-   then FFilter[Band].Samplerate := SampleRate;
+   for Band := 0 to Length(FFilter) - 1 do
+    if assigned(FFilter[Band])
+     then FFilter[Band].Samplerate := SampleRate;
+
+   for Band := 0 to Length(FFreqShift) - 1 do
+    if assigned(FFreqShift[Band])
+     then FFreqShift[Band].Samplerate := SampleRate;
+  end;
 end;
 
 procedure TPartyDelayDataModule.VSTModuleParameterChange(Sender: TObject;
