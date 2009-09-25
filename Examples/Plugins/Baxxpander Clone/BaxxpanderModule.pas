@@ -55,7 +55,7 @@ type
     procedure ParameterShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FButterworthSplitter : array [0..1] of TButterworthSplitBandFilter;
+    FButterworthSplitter : array of TButterworthSplitBandFilter;
     FGains               : array [0..4] of Single;
     procedure CalculateGains;
   public
@@ -72,6 +72,9 @@ procedure TBaxxpanderModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
+ assert(NumInputs = NumOutputs);
+ SetLength(FButterworthSplitter,  numInputs);
+
  for Channel := 0 to Length(FButterworthSplitter) - 1 do
   begin
    FButterworthSplitter[Channel] := TButterworthSplitBandFilter.Create(1);
@@ -93,7 +96,7 @@ procedure TBaxxpanderModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FButterworthSplitter)
+ for Channel := 0 to Length(FButterworthSplitter) - 1
   do FreeAndNil(FButterworthSplitter[Channel]);
 end;
 

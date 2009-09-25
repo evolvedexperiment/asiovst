@@ -1,5 +1,35 @@
 unit DAV_VSTShellPlugins;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //                                      //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.INC}
@@ -21,7 +51,7 @@ type
     FUniqueID         : TChunkName;
     FVSTModule        : TBasicVSTModule;
     FOnInstanciate    : TUIDInstantiateEvent;
-    procedure SetUniqueID(fID: String);
+    procedure SetUniqueID(FID: String);
     function GetUniqueID: string;
   protected
     procedure AssignTo(Dest: TPersistent); override;
@@ -36,10 +66,10 @@ type
     destructor Destroy; override;
   published
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
-    property numInputs: Integer read FNumInputs write FNumInputs default -1;
-    property numOutputs: Integer read FNumOutputs write FNumOutputs default -1;
-    property numParams: Integer read FNumParams write FNumParams default -1;
-    property numPrograms: Integer read FNumPrograms write FNumPrograms default -1;
+    property NumInputs: Integer read FNumInputs write FNumInputs default -1;
+    property NumOutputs: Integer read FNumOutputs write FNumOutputs default -1;
+    property NumParams: Integer read FNumParams write FNumParams default -1;
+    property NumPrograms: Integer read FNumPrograms write FNumPrograms default -1;
     property PlugCategory: TVstPluginCategory read FPlugCategory write FPlugCategory;
     property UniqueID: string read GetUniqueID write SetUniqueID;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
@@ -99,16 +129,16 @@ begin
  Result := FUniqueID;
 end;
 
-procedure TCustomVstShellPlugin.SetUniqueID(fID: string);
+procedure TCustomVstShellPlugin.SetUniqueID(FID: string);
 begin
- if Length(fID) < 4
-  then move(fID[1], FUniqueID[0], Length(fID))
-  else move(fID[1], FUniqueID[0], 4);
+ if Length(FID) < 4
+  then Move(FID[1], FUniqueID[0], Length(FID))
+  else Move(FID[1], FUniqueID[0], 4);
 end;
 
 procedure TCustomVstShellPlugin.SetDisplayName(const AValue: string);
 begin
-  FDisplayName := Copy(AValue,0,50);
+  FDisplayName := Copy(AValue, 0, 50);
 end;
 
 function TCustomVstShellPlugin.GetDisplayName: string;
@@ -121,6 +151,7 @@ end;
 constructor TCustomVstShellPlugins.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner, TCustomVstShellPlugin);
+  assert(AOwner is TBasicVSTModule);
   FVSTModule := TBasicVSTModule(AOwner);
 end;
 

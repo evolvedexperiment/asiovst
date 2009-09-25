@@ -45,6 +45,7 @@ object FmPage: TFmPage
     VstPlugIns = <
       item
         DisplayName = 'TVstPlugIn'
+        VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000

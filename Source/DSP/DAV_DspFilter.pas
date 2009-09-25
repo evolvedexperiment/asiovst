@@ -47,6 +47,7 @@ type
     FOnChange : TNotifyEvent;
     procedure SampleRateChanged; override;
     procedure CalculateReciprocalSamplerate; virtual;
+    procedure CalculateSamplerateDependentVariables; virtual;
     procedure Changed; virtual;
     procedure AssignTo(Dest: TPersistent); override;
     property SampleRateReciprocal: Double read FSRR;
@@ -80,7 +81,7 @@ type
     function GetFilter(Index: Integer): TCustomFilter;
   protected
     FFilterArray : array of TCustomFilter;
-    procedure SampleRateChanged; override;
+    procedure CalculateSamplerateDependentVariables; override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
@@ -135,7 +136,7 @@ type
     procedure CalculateCoefficients; virtual; abstract;
     procedure FrequencyChanged; virtual;
     procedure GainChanged; virtual;
-    procedure SampleRateChanged; override;
+    procedure CalculateSamplerateDependentVariables; override;
 
     property GainFactor: Double read FGainFactor;
     property ExpW0: TComplexDouble read FExpW0;
@@ -299,8 +300,13 @@ end;
 
 procedure TCustomFilter.SampleRateChanged;
 begin
- CalculateReciprocalSamplerate;
+ CalculateSampleRateDependentVariables;
  Changed;
+end;
+
+procedure TCustomFilter.CalculateSamplerateDependentVariables;
+begin
+ CalculateReciprocalSamplerate;
 end;
 
 procedure TCustomFilter.AssignTo(Dest: TPersistent);
@@ -562,7 +568,7 @@ begin
  SetLength(FFilterArray, 0);
 end;
 
-procedure TCustomFilterCascade.SampleRateChanged;
+procedure TCustomFilterCascade.CalculateSamplerateDependentVariables;
 var
   i : Integer;
 begin
@@ -644,11 +650,11 @@ begin
  Changed;
 end;
 
-procedure TCustomGainFrequencyFilter.SampleRateChanged;
+procedure TCustomGainFrequencyFilter.CalculateSamplerateDependentVariables;
 begin
+ inherited;
  CalculateW0;
  CalculateCoefficients;
- inherited;
 end;
 
 procedure TCustomGainFrequencyFilter.SetFrequency(Value: Double);

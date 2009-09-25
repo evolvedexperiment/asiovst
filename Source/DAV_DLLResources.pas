@@ -2,6 +2,8 @@ unit DAV_DLLResources;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   Windows, Classes, SysUtils, ConTnrs, ImageHlp;
 

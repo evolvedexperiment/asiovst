@@ -1,8 +1,38 @@
 unit DAV_MiniFloat;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
   DAV_Common;
@@ -79,7 +109,7 @@ begin
 
  // The a-law byte bit arrangement is SEEEMMMM (Sign, Exponent, and Mantissa.)
  // Last is to flip every other bit, and the sign bit ($D5 = 1101 0101)
- result := ((SignInt or (Exponent shl 4) or (Mantissa and $0F))) xor $D5;
+ Result := ((SignInt or (Exponent shl 4) or (Mantissa and $0F))) xor $D5;
 end;
 
 
@@ -122,7 +152,7 @@ function FastMiniFloatToSingle(const Value: TMiniFloat): Single;
 const
   CScale: Single = 3.0518509475997192297128208258309e-5;
 begin
- result := CMiniFloatDecompressTable[Value] * CScale;
+ Result := CMiniFloatDecompressTable[Value] * CScale;
 end;
 
 function MiniFloatToSingle(const Value: TMiniFloat): Single;
@@ -145,7 +175,7 @@ begin
  Exponent := (Input and $70) shr 4;
 
  //Pull out the four bits of data and shift the data four bits to the left
- //Add 8 to put the result in the middle of the range (like adding a half)
+ //Add 8 to put the Result in the middle of the range (like adding a half)
  Data := ((Input and $0F) shl 4) + 8;
 
  //If the exponent is not 0, then we know the four bits followed a 1,
@@ -165,8 +195,8 @@ begin
  if (Exponent > 1)
   then Data := Data shl (Exponent - 1);
 
- result := Data * CScale;
- if sign <> 0 then result := -result;
+ Result := Data * CScale;
+ if sign <> 0 then Result := -Result;
 end;
 
 end.

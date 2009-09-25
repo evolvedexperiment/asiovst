@@ -162,7 +162,6 @@ begin
     'library ' + ProjectName + ';' + CRLF +
     CRLF +
     'uses ' + CRLF +
-    '  Forms,' + CRLF +
     '  DAV_WinAmp,' + CRLF +
     '  DAV_VSTEffect,' + CRLF +
     '  DAV_VSTBasicModule;' + CRLF +
@@ -209,4 +208,3 @@ end;
 {$ENDIF}
 
 end.
-

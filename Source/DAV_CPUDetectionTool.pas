@@ -1,5 +1,37 @@
 unit DAV_CPUDetectionTool;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this Project is Christian-W. Budde               //
+//                                                                            //
+//  The code in this unit was donated by Chris Holton (?)                     //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I DAV_Compiler.inc}
@@ -22,9 +54,9 @@ type
     FSignature        : Cardinal;
     FEffFamily        : Byte;
     FEffModel         : Byte;
-    FCodeL1CacheSize,
-    FDataL1CacheSize,
-    FL2CacheSize,
+    FCodeL1CacheSize  : Word;
+    FDataL1CacheSize  : Word;
+    FL2CacheSize      : Word;
     FL3CacheSize      : Word;
     FInstructions     : TCPUInstructions;
     procedure GetCPUInfo;
@@ -37,20 +69,21 @@ type
   public
     constructor Create;
   published
-    property Vendor: TCPUVendor read fVendor;
-    property Signature: Cardinal read fSignature;
-    property EffFamily: Byte read fEffFamily;
-    property EffModel: Byte read fEffModel;
-    property CodeL1CacheSize: Word read fCodeL1CacheSize;
-    property DataL1CacheSize: Word read fDataL1CacheSize;
-    property L2CacheSize: Word read fL2CacheSize;
+    property Vendor: TCPUVendor read FVendor;
+    property Signature: Cardinal read FSignature;
+    property EffFamily: Byte read FEffFamily;
+    property EffModel: Byte read FEffModel;
+    property CodeL1CacheSize: Word read FCodeL1CacheSize;
+    property DataL1CacheSize: Word read FDataL1CacheSize;
+    property L2CacheSize: Word read FL2CacheSize;
     property L3CacheSize: Word read fL3CacheSize;
-    property Instructions: TCPUInstructions read fInstructions;
+    property Instructions: TCPUInstructions read FInstructions;
   end;
 
-const VendorStr: array[Low(TCPUVendor)..High(TCPUVendor)] of ShortString =
-       ('Unknown', 'AMD', 'Centaur (VIA)', 'Cyrix', 'Intel', 'Transmeta',
-        'NexGen', 'Rise', 'UMC', 'National Semiconductor', 'SiS');
+const 
+  CVendorStr: array[Low(TCPUVendor)..High(TCPUVendor)] of ShortString =
+    ('Unknown', 'AMD', 'Centaur (VIA)', 'Cyrix', 'Intel', 'Transmeta',
+     'NexGen', 'Rise', 'UMC', 'National Semiconductor', 'SiS');
 
       InstructionSupportStr: array[Low(TCPUInstruction)..High(TCPUInstruction)] of ShortString =
        ('FPU', 'TSC', 'CX8', 'SEP', 'CMOV', 'MMX', 'FXSR', 'SSE', 'SSE2',
@@ -81,7 +114,7 @@ type
   TCpuExtendedFeatureSet = set of TCpuExtendedFeatures;
 
 const
-  VendorIDString: array[Low(TCPUVendor)..High(TCPUVendor)] of TVendorStr =
+  CVendorIDString: array[Low(TCPUVendor)..High(TCPUVendor)] of TVendorStr =
   ('', 'AuthenticAMD', 'CentaurHauls', 'CyrixInstead', 'GenuineIntel', 'GenuineTMx86',
    'NexGenDriven', 'RiseRiseRise', 'UMC UMC UMC ', 'Geode by NSC', 'SiS SiS SiS');
 
@@ -154,74 +187,80 @@ begin
 end;
 
 procedure TCPU.GetCPUVendor;
-var  VendorStr: TVendorStr;
-     Registers: TRegisters;
+var  
+  VendorStr: TVendorStr;
+  Registers: TRegisters;
 begin
  GetCPUID(0, Registers);
  SetLength(VendorStr, 12);
  Move(Registers.EBX, VendorStr[1], 4);
  Move(Registers.EDX, VendorStr[5], 4);
  Move(Registers.ECX, VendorStr[9], 4);
- fVendor := High(TCPUVendor);
- while (VendorStr <> VendorIDString[fVendor]) and (fVendor > Low(TCPUVendor))
-  do Dec(fVendor);
+ FVendor := High(TCPUVendor);
+ while (VendorStr <> CVendorIDString[FVendor]) and (FVendor > Low(TCPUVendor))
+  do Dec(FVendor);
 end;
 
 procedure TCPU.GetCPUFeatures;
-type _Int64 = packed record
-       Lo: Longword;
-       Hi: Longword;
-     end;
-var Registers: TRegisters;
-    CpuFeatures: TCpuFeatureSet;
+type 
+  _Int64 = packed record
+    Lo: Longword;
+    Hi: Longword;
+  end;
+var 
+  Registers: TRegisters;
+  CpuFeatures: TCpuFeatureSet;
 begin
  GetCPUID($00000001, Registers);
- fSignature := Registers.EAX;
- fEffFamily := fSignature and $00000F00 shr 8;
- fEffModel := fSignature and $000000F0 shr 4;
- if fEffFamily = $F then
+ FSignature := Registers.EAX;
+ FEffFamily := FSignature and $00000F00 shr 8;
+ FEffModel := FSignature and $000000F0 shr 4;
+ if FEffFamily = $F then
   begin
-   fEffFamily := fEffFamily + (fSignature and $0FF00000 shr 20);
-   fEffModel := fEffModel + (fSignature and $000F0000 shr 12);
+   FEffFamily := FEffFamily + (FSignature and $0FF00000 shr 20);
+   FEffModel := FEffModel + (FSignature and $000F0000 shr 12);
   end;
- Move(Registers.EDX, _Int64(CPUFeatures).Lo, 4);
+ Move(Registers.EDX, _Int64(CpuFeatures).Lo, 4);
  Move(Registers.ECX, _Int64(CpuFeatures).Hi, 4);
- if cfFPU in CpuFeatures then Include(fInstructions, isFPU);
- if cfTSC in CPUFeatures then Include(fInstructions, isTSC);
- if cfCX8 in CpuFeatures then Include(fInstructions, isCX8);
+ if cfFPU in CpuFeatures then Include(FInstructions, isFPU);
+ if cfTSC in CpuFeatures then Include(FInstructions, isTSC);
+ if cfCX8 in CpuFeatures then Include(FInstructions, isCX8);
  if cfSEP in CpuFeatures then
   begin
-   Include(fInstructions, isSEP);
-   if (fVendor = cvIntel) and (fSignature and $0FFF3FFF < IntelLowestSEPSupportSignature)
-    then Exclude(fInstructions, isSEP);
+   Include(FInstructions, isSEP);
+   if (FVendor = cvIntel) and (FSignature and $0FFF3FFF < IntelLowestSEPSupportSignature)
+    then Exclude(FInstructions, isSEP);
   end;
- if cfCMOV in CpuFeatures then Include(fInstructions, isCMOV);
- if cfFXSR in CpuFeatures then Include(fInstructions, isFXSR);
- if cfMMX in CpuFeatures then Include(fInstructions, isMMX);
- if cfSSE in CpuFeatures then Include(fInstructions, isSSE);
- if cfSSE2 in CpuFeatures then Include(fInstructions, isSSE2);
- if cfSSE3 in CpuFeatures then Include(fInstructions, isSSE3);
- if (fVendor = cvIntel) and (cfMON in CpuFeatures) then Include(fInstructions, isMONITOR);
- if cfCX16 in CpuFeatures then Include(fInstructions, isCX16);
+ if cfCMOV in CpuFeatures then Include(FInstructions, isCMOV);
+ if cfFXSR in CpuFeatures then Include(FInstructions, isFXSR);
+ if cfMMX in CpuFeatures then Include(FInstructions, isMMX);
+ if cfSSE in CpuFeatures then Include(FInstructions, isSSE);
+ if cfSSE2 in CpuFeatures then Include(FInstructions, isSSE2);
+ if cfSSE3 in CpuFeatures then Include(FInstructions, isSSE3);
+ if (FVendor = cvIntel) and (cfMON in CpuFeatures) then Include(FInstructions, isMONITOR);
+ if cfCX16 in CpuFeatures then Include(FInstructions, isCX16);
 end;
 
 procedure TCPU.GetCPUExtendedFeatures;
-var Registers     : TRegisters;
-    CpuExFeatures : TCpuExtendedFeatureSet;
+var
+  Registers     : TRegisters;
+  CpuExFeatures : TCpuExtendedFeatureSet;
 begin
  GetCPUID($80000001, Registers);
  CPUExFeatures := TCPUExtendedFeatureSet(Registers.EDX);
- if cefLM in CpuExFeatures then Include(fInstructions, isX64);
- if cefExMMX in CpuExFeatures then Include(fInstructions, isExMMX);
- if cefEx3DNow in CpuExFeatures then Include(fInstructions, isEx3DNow);
- if cef3DNow in CpuExFeatures then Include(fInstructions, is3DNow);
+ if cefLM in CpuExFeatures then Include(FInstructions, isX64);
+ if cefExMMX in CpuExFeatures then Include(FInstructions, isExMMX);
+ if cefEx3DNow in CpuExFeatures then Include(FInstructions, isEx3DNow);
+ if cef3DNow in CpuExFeatures then Include(FInstructions, is3DNow);
 end;
 
 procedure TCPU.GetProcessorCacheInfo;
-type TConfigDescriptor = packed array[0..15] of Byte;
-var Registers  : TRegisters;
-    i,j        : Integer;
-    QueryCount : Byte;
+type
+  TConfigDescriptor = packed array[0..15] of Byte;
+var
+  Registers  : TRegisters;
+  i,j        : Integer;
+  QueryCount : Byte;
 begin
  GetCPUID($00000002, Registers);
  QueryCount := Registers.EAX and $FF;
@@ -229,70 +268,71 @@ begin
   begin
    for j := 1 to 15 do
     case TConfigDescriptor(Registers)[j] of
-      $06: fCodeL1CacheSize := 8;
-      $08: fCodeL1CacheSize := 16;
-      $0A: fDataL1CacheSize := 8;
-      $0C: fDataL1CacheSize := 16;
+      $06: FCodeL1CacheSize := 8;
+      $08: FCodeL1CacheSize := 16;
+      $0A: FDataL1CacheSize := 8;
+      $0C: FDataL1CacheSize := 16;
       $22: fL3CacheSize := 512;
       $23: fL3CacheSize := 1024;
       $25: fL3CacheSize := 2048;
       $29: fL3CacheSize := 4096;
-      $2C: fDataL1CacheSize := 32;
-      $30: fCodeL1CacheSize := 32;
-      $39: fL2CacheSize := 128;
-      $3B: fL2CacheSize := 128;
-      $3C: fL2CacheSize := 256;
-      $40: if fL2CacheSize <> 0 then fL3CacheSize := 0;
-      $41: fL2CacheSize := 128;
-      $42: fL2CacheSize := 256;
-      $43: fL2CacheSize := 512;
-      $44: fL2CacheSize := 1024;
-      $45: fL2CacheSize := 2048;
-      $60: fDataL1CacheSize := 16;
-      $66: fDataL1CacheSize := 8;
-      $67: fDataL1CacheSize := 16;
-      $68: fDataL1CacheSize := 32;
-      $70: if not (fVendor in [cvCyrix, cvNSC]) then fCodeL1CacheSize := 12;
-      $71: fCodeL1CacheSize := 16;
-      $72: fCodeL1CacheSize := 32;
-      $78: fL2CacheSize := 1024;
-      $79: fL2CacheSize := 128;
-      $7A: fL2CacheSize := 256;
-      $7B: fL2CacheSize := 512;
-      $7C: fL2CacheSize := 1024;
-      $7D: fL2CacheSize := 2048;
-      $7F: fL2CacheSize := 512;
-      $80: if fVendor in [cvCyrix, cvNSC] then
+      $2C: FDataL1CacheSize := 32;
+      $30: FCodeL1CacheSize := 32;
+      $39: FL2CacheSize := 128;
+      $3B: FL2CacheSize := 128;
+      $3C: FL2CacheSize := 256;
+      $40: if FL2CacheSize <> 0 then fL3CacheSize := 0;
+      $41: FL2CacheSize := 128;
+      $42: FL2CacheSize := 256;
+      $43: FL2CacheSize := 512;
+      $44: FL2CacheSize := 1024;
+      $45: FL2CacheSize := 2048;
+      $60: FDataL1CacheSize := 16;
+      $66: FDataL1CacheSize := 8;
+      $67: FDataL1CacheSize := 16;
+      $68: FDataL1CacheSize := 32;
+      $70: if not (FVendor in [cvCyrix, cvNSC]) then FCodeL1CacheSize := 12;
+      $71: FCodeL1CacheSize := 16;
+      $72: FCodeL1CacheSize := 32;
+      $78: FL2CacheSize := 1024;
+      $79: FL2CacheSize := 128;
+      $7A: FL2CacheSize := 256;
+      $7B: FL2CacheSize := 512;
+      $7C: FL2CacheSize := 1024;
+      $7D: FL2CacheSize := 2048;
+      $7F: FL2CacheSize := 512;
+      $80: if FVendor in [cvCyrix, cvNSC] then
             begin
-             fCodeL1CacheSize := 8;
-             fDataL1CacheSize := 8;
+             FCodeL1CacheSize := 8;
+             FDataL1CacheSize := 8;
             end;
-      $82: fL2CacheSize := 256;
-      $83: fL2CacheSize := 512;
-      $84: fL2CacheSize := 1024;
-      $85: fL2CacheSize := 2048;
-      $86: fL2CacheSize := 512;
-      $87: fL2CacheSize := 1024;
+      $82: FL2CacheSize := 256;
+      $83: FL2CacheSize := 512;
+      $84: FL2CacheSize := 1024;
+      $85: FL2CacheSize := 2048;
+      $86: FL2CacheSize := 512;
+      $87: FL2CacheSize := 1024;
      end;
     if i < QueryCount then GetCPUID(2, Registers);
   end;
 end;
 
 procedure TCPU.GetExtendedProcessorCacheInfo;
-var Registers: TRegisters;
+var
+  Registers: TRegisters;
 begin
  GetCPUID($80000005, Registers);
- if not (fVendor in [cvIntel, cvCyrix]) then
+ if not (FVendor in [cvIntel, cvCyrix]) then
   begin
-   fCodeL1CacheSize := Registers.EDX shr 24;
-   fDataL1CacheSize := Registers.ECX shr 24;
+   FCodeL1CacheSize := Registers.EDX shr 24;
+   FDataL1CacheSize := Registers.ECX shr 24;
   end;
  GetCPUID($80000006, Registers);
- if (fVendor = cvAMD) and (fSignature and $FFF = K7DuronA0Signature)
-  then fL2CacheSize := 64
-  else if (fVendor = cvCentaur) and (fEffFamily = 6) and (fEffModel in [C3Samuel2EffModel, C3EzraEffModel])
-   then fL2CacheSize := Registers.ECX shr 24
-   else fL2CacheSize := Registers.ECX shr 16;
+ if (FVendor = cvAMD) and (FSignature and $FFF = K7DuronA0Signature)
+  then FL2CacheSize := 64
+  else if (FVendor = cvCentaur) and (FEffFamily = 6) and (FEffModel in [C3Samuel2EffModel, C3EzraEffModel])
+   then FL2CacheSize := Registers.ECX shr 24
+   else FL2CacheSize := Registers.ECX shr 16;
 end;
 
 procedure TCPU.VerifyOSSupportForXMMRegisters;
@@ -304,22 +344,23 @@ begin
  except
   on E: Exception do
    begin
-    Exclude(fInstructions, isSSE);
-    Exclude(fInstructions, isSSE2);
-    Exclude(fInstructions, isSSE3);
+    Exclude(FInstructions, isSSE);
+    Exclude(FInstructions, isSSE2);
+    Exclude(FInstructions, isSSE3);
    end;
  end;
 end;
 
 procedure TCPU.GetCPUInfo;
-var Registers : TRegisters;
-    MaxCPUID   : Cardinal;
-    MaxExCPUID : Cardinal;
+var
+  Registers  : TRegisters;
+  MaxCPUID   : Cardinal;
+  MaxExCPUID : Cardinal;
 begin
 //   FillChar(fCPU, SizeOf(fCPU), 0);
  try
   if not IsCPUID_Available then
-   if IsFPU_Available then Include(fInstructions, isFPU) else
+   if IsFPU_Available then Include(FInstructions, isFPU) else
   else
    begin
     GetCPUID($00000000, Registers);
@@ -330,7 +371,7 @@ begin
     GetCPUID($80000000, Registers);
     MaxExCPUID := Registers.EAX;
     if MaxExCPUID >= $80000001 then GetCPUExtendedFeatures;
-    if isSSE in fInstructions then VerifyOSSupportForXMMRegisters;
+    if isSSE in FInstructions then VerifyOSSupportForXMMRegisters;
     if MaxExCPUID >= $80000006 then GetExtendedProcessorCacheInfo;
     end;
   except
@@ -339,6 +380,6 @@ begin
 end;
 
 initialization
-  DetectedCPU := TCPU.create;
+  DetectedCPU := TCPU.Create;
 
 end.

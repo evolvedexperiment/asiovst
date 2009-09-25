@@ -125,7 +125,7 @@ end;
 
 procedure TStkADSR.SetAttackTime(const Value: Single);
 begin
-  FAttackRate := 1.0 / abs(Value * SampleRate);
+ FAttackRate := 1.0 / abs(Value * SampleRate);
 end;
 
 procedure TStkADSR.SetDecayTime(const Value: Single);
@@ -164,11 +164,11 @@ end;
 
 procedure TStkADSR.SetValue(Value: Single);
 begin
-  FState := asSustain;
-  FTarget := Value;
-  FCurrentValue := Value;
-  SetSustainLevel(Value);
-  FRate := 0.0;
+ FState := asSustain;
+ FTarget := Value;
+ FCurrentValue := Value;
+ SetSustainLevel(Value);
+ FRate := 0.0;
 end;
 
 function TStkADSR.GetState: TADSRStates;

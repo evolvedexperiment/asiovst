@@ -138,7 +138,8 @@ uses
 constructor TCustomSimpleOscillator.Create;
 begin
  inherited;
- FAmplitude   := 1;
+ FAmplitude := 1;
+ CalculateSampleRateReciprocal;
  Reset;
 end;
 
@@ -189,10 +190,10 @@ end;
 
 procedure TCustomSimpleFrequencyOscillator.SetFrequency(const Value: Single);
 begin
-  if FFrequency <> Value then
+ if FFrequency <> Value then
   begin
-    FFrequency := Value;
-    FrequencyChanged;
+   FFrequency := Value;
+   FrequencyChanged;
   end;
 end;
 

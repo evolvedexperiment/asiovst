@@ -127,6 +127,20 @@ SkipDLLCall:
 
 SectionEnd
 
+Section "Barberpole Flanger Manual" SecManual
+  SetOutPath "$INSTDIR"
+  
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Barberpole Flanger.pdf"
+
+  ;Store installation folder
+  WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
+  
+  ;Create uninstaller
+  WriteUninstaller "$INSTDIR\Uninstall_Barberpole_Flanger.exe"
+
+SectionEnd
+  
 ;--------------------- Install VST Plugin --------------------
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
@@ -152,10 +166,12 @@ FunctionEnd
 
   ;Language strings
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Barberpole Flanger VST Plugin"
+  LangString DESC_SecManual ${LANG_ENGLISH} "Barberpole Flanger Manual"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 ;--------------------------------
@@ -164,6 +180,7 @@ FunctionEnd
 Section "Uninstall"
 
   Delete "$INSTDIR\Barberpole Flanger.dll"
+  Delete "$INSTDIR\Barberpole Flanger.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
 SectionEnd

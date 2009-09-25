@@ -24,6 +24,15 @@ type
     property SampleRate: Double read FSampleRate write SetSampleRate;
   end;
 
+  TDspVoice = class(TDspSampleRatePersistent)
+  private
+    FTimeStamp: Double;
+    procedure SetTimeStamp(const Value: Double);
+  public
+    constructor Create(TimeStamp: Double); reintroduce; virtual; 
+    property TimeStamp: Double read FTimeStamp;
+  end;
+
   // some interfaces
 
   {$IFDEF DELPHI7_UP}
@@ -148,6 +157,19 @@ end;
 procedure TDspSampleRatePersistent.SampleRateChanged;
 begin
  // nothing here yet
+end;
+
+
+{ TDspVoice }
+
+constructor TDspVoice.Create(TimeStamp: Double);
+begin
+
+end;
+
+procedure TDspVoice.SetTimeStamp(const Value: Double);
+begin
+  FTimeStamp := Value;
 end;
 
 

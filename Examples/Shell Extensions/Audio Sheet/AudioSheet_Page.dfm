@@ -29,10 +29,6 @@ object FmPage: TFmPage
       Font.Name = 'Verdana'
       Font.Style = []
       ParentFont = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 340
-      ExplicitHeight = 405
       object LbSamplerate: TLabel
         Left = 22
         Top = 9
@@ -178,7 +174,11 @@ object FmPage: TFmPage
     Width = 324
     Height = 249
     AudioDataCollection = ADC
+    DisplayChannels = <>
     LineWidth = 0
+    XAxis.SampleUpper = 127
+    XAxis.FractionalLower = -0.500000000000000000
+    XAxis.FractionalUpper = 0.500000000000000000
   end
   object ADC: TAudioDataCollection32
     Channels = <
