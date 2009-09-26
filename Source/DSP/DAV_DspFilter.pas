@@ -54,9 +54,11 @@ type
   public
     constructor Create; override;
     function ProcessSampleASM: Double; virtual;
-    function ProcessSample32(Input: Single): Single; overload; virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; overload; virtual; abstract;
     function ProcessSample64(Input: Int64): Int64; overload; virtual; abstract;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual;
     function MagnitudeSquared(const Frequency: Double): Double; virtual; abstract;
     function MagnitudeLog10(const Frequency: Double): Double; virtual; abstract;
     function Real(const Frequency: Double): Double; virtual; abstract;
@@ -86,6 +88,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; overload; override;
     function ProcessSample64(Input: Int64): Int64; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -182,6 +185,7 @@ type
     constructor Create; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
 //    function ProcessSample64(Input: Int64): Int64; override;
 //    function ProcessSampleASM: Double; override;
@@ -205,6 +209,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -251,6 +256,7 @@ type
     constructor Create; override;
     procedure ResetStates; override;
     procedure ResetStatesInt64; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function ProcessSample64(Input: Int64): Int64; override;
     function ProcessSampleASM: Double; override;
@@ -369,6 +375,24 @@ begin
  Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
+procedure TCustomFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TCustomFilter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
+end;
+
 function TCustomFilter.ProcessSample32(Input: Single): Single;
 begin
  Result := ProcessSample64(Input);
@@ -377,6 +401,7 @@ end;
 function TCustomFilter.ProcessSampleASM: Double;
 {$IFDEF PUREPASCAL}
 begin
+ raise Exception.Create('not defined');
 end;
 {$ELSE}
 asm
@@ -392,6 +417,7 @@ asm
  pop eax
 end;
 {$ENDIF}
+
 
 { TCustomFilterCascade }
 
@@ -447,8 +473,8 @@ end;
 function TCustomFilterCascade.GetFilter(Index: Integer): TCustomFilter;
 begin
  if (Index >= 0) and (Index < Length(FFilterArray))
-  then result := FFilterArray[Index]
-  else result := nil;
+  then Result := FFilterArray[Index]
+  else Result := nil;
 end;
 
 procedure TCustomFilterCascade.Complex(const Frequency: Double; out Real,
@@ -493,15 +519,15 @@ var
 begin
  if Length(FFilterArray) = 0 then
   begin
-   result := 1;
+   Result := 1;
    exit;
   end;
  assert(assigned(FFilterArray[0]));
- result := FFilterArray[0].MagnitudeSquared(Frequency);
+ Result := FFilterArray[0].MagnitudeSquared(Frequency);
  for i := 1 to Length(FFilterArray) - 1 do
   begin
    assert(assigned(FFilterArray[i]));
-   result := result * FFilterArray[i].MagnitudeSquared(Frequency);
+   Result := Result * FFilterArray[i].MagnitudeSquared(Frequency);
   end;
 end;
 
@@ -577,22 +603,31 @@ begin
   do FFilterArray[i].SampleRate := SampleRate;
 end;
 
+function TCustomFilterCascade.ProcessSample32(Input: Single): Single;
+var
+  Band : Integer;
+begin
+ Result := Input;
+ for Band := 0 to Length(FFilterArray) - 1
+  do Result := FFilterArray[Band].ProcessSample32(Result);
+end;
+
 function TCustomFilterCascade.ProcessSample64(Input: Double): Double;
 var
-  i : Integer;
+  Band : Integer;
 begin
- result := Input;
- for i := 0 to Length(FFilterArray) - 1
-  do result := FFilterArray[i].ProcessSample64(result);
+ Result := Input;
+ for Band := 0 to Length(FFilterArray) - 1
+  do Result := FFilterArray[Band].ProcessSample64(Result);
 end;
 
 function TCustomFilterCascade.ProcessSample64(Input: Int64): Int64;
 var
   i : Integer;
 begin
- result := Input;
+ Result := Input;
  for i := 0 to Length(FFilterArray) - 1
-  do result := FFilterArray[i].ProcessSample64(result);
+  do Result := FFilterArray[i].ProcessSample64(Result);
 end;
 
 { TCustomGainFrequencyFilter }
@@ -700,7 +735,7 @@ end;
 
 function TCustomOrderFilter.GetOrder: Cardinal;
 begin
- result := FOrder;
+ Result := FOrder;
 end;
 
 procedure TCustomOrderFilter.OrderChanged;
@@ -750,7 +785,7 @@ end;
 
 function TCustomFIRFilter.GetOrder: Cardinal;
 begin
- result := FKernelSize;
+ Result := FKernelSize;
 end;
 
 function TCustomFIRFilter.MagnitudeLog10(const Frequency: Double): Double;
@@ -845,6 +880,20 @@ asm
   ffree st(0)
 end;
 
+function TCustomFIRFilter.ProcessSample32(Input: Single): Single;
+begin
+ FHistory[FBufferPos] := Input;
+ Result := (FCircular[FBufferPos] + FHistory[FBufferPos] * FIR[0]);
+ ConvolveIR_X87large(@FCircular[FBufferPos], @FIR[0], FKernelSize, FHistory[FBufferPos]);
+ Inc(FBufferPos);
+ if FBufferPos >= FKernelSize then
+  begin
+   FBufferPos := 0;
+   Move(FCircular[FKernelSize], FCircular[0], FKernelSize * SizeOf(Double));
+   FillChar(FCircular[FKernelSize], FKernelSize * SizeOf(Double), 0);
+  end;
+end;
+
 function TCustomFIRFilter.ProcessSample64(Input: Double): Double;
 begin
  FHistory[FBufferPos] := Input;
@@ -912,25 +961,31 @@ end;
 
 function TFirstOrderAllpassFilter.GetOrder: Cardinal;
 begin
- result := 1;
+ Result := 1;
 end;
 
 function TFirstOrderAllpassFilter.MagnitudeLog10(
   const Frequency: Double): Double;
 begin
- result := FGain_dB;
+ Result := FGain_dB;
 end;
 
 function TFirstOrderAllpassFilter.MagnitudeSquared(
   const Frequency: Double): Double;
 begin
- result := FGainFactor;
+ Result := FGainFactor;
 end;
 
 procedure TFirstOrderAllpassFilter.PopStates;
 begin
  FState := FStates[Length(FStates) - 1];
  SetLength(FStates, Length(FStates) - 1);
+end;
+
+function TFirstOrderAllpassFilter.ProcessSample32(Input: Single): Single;
+begin
+ Result := FState + FFrequency * Input;
+ FState := Input - FFrequency * Result;
 end;
 
 function TFirstOrderAllpassFilter.ProcessSample64(Input: Double): Double;
@@ -1204,6 +1259,34 @@ asm
  fmul [self.FNominator + 16].Double  // a2*Input, b1*r, r
  fsubrp st(1), st(0)                 // b1*r + a2*Input, r !!!
  fstp [self.FState + 8].Double       // d1 = b1*r + a2*Input, r !!!
+end;
+{$ENDIF}
+
+function TBiquadIIRFilter.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ Result    := FNominator[0] * Input + FState[0];
+ FState[0] := FNominator[1] * Input - FDenominator[1] * Result + FState[1];
+ FState[1] := FNominator[2] * Input - FDenominator[2] * Result;
+end;
+{$ELSE}
+asm
+ fld Input.Single                    // Input
+ fmul [self.FNominator].Double       // a0 * Input
+ fadd [self.FState].Double           // r = d0 + a0 * Input
+ fld st(0)                           // r, r
+ fld st(0)                           // r, r, r
+ fmul [self.FDenominator].Double     // b0 * r, r, r
+ fld Input.Single                    // Input, b0 * r, r, r
+ fmul [self.FNominator + 8].Double   // a1 * Input, b0 * r, r, r
+ fsubrp                              // a1 * Input + b0 * r, r, r
+ fadd [self.FState + 8].Double       // d1 + a1 * Input - b0 * r, r, r
+ fstp [self.FState].Double           // d0 = a1 * Input + d1 + b1 * r, r, r
+ fmul [self.FDenominator + 8].Double // b1 * r, r
+ fld Input.Double                    // Input, b1 * r, r
+ fmul [self.FNominator + 16].Double  // a2*Input, b1 * r, r
+ fsubrp st(1), st(0)                 // b1 * r + a2 * Input, r !!!
+ fstp [self.FState + 8].Double       // d1 = b1 * r + a2 * Input, r !!!
 end;
 {$ENDIF}
 

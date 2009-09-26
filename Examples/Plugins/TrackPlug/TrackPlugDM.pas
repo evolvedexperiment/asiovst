@@ -46,7 +46,7 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterDCFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDcFilterChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDcFilterChangeOrder(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterEqTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterEqFilterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -68,11 +68,11 @@ type
     procedure ParameterMakeUpGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterGateAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterGateReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterGateThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterGateRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterGateKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FDCFilter   : array [0..1] of TButterworthHighPassFilter;
     FEqFilter   : array [0..1, 0..8] of TCustomBandwidthIIRFilter;
@@ -80,8 +80,7 @@ type
     FCompressor : array [0..1, 0..1] of TCustomKneeCompressor;
     function GetFilter(Index: Integer): TCustomIIRFilter;
     function GetFilterClass(Index: Integer): TBandwidthIIRFilterClass;
-    procedure SetFilterClass(Index: Integer;
-      const Value: TBandwidthIIRFilterClass);
+    procedure SetFilterClass(Index: Integer; const Value: TBandwidthIIRFilterClass);
   public
     property FilterClass[Index: Integer]: TBandwidthIIRFilterClass read GetFilterClass write SetFilterClass;
     property Filter[Index: Integer]: TCustomIIRFilter read GetFilter;
@@ -121,6 +120,7 @@ begin
   begin
    FGate[Channel] := TLightweightSoftKneeCompressor.Create;
    FGate[Channel].SampleRate := SampleRate;
+   FGate[Channel].Threshold_dB := -90;
   end;
 
  // create compressors
@@ -129,6 +129,8 @@ begin
    begin
     FCompressor[Channel, Band] := TLightweightSoftKneeCompressor.Create;
     FCompressor[Channel, Band].SampleRate := SampleRate;
+    FCompressor[Channel, Band].Threshold_dB := -30;
+    FCompressor[Channel, Band].MakeUpGain_dB := 10;
    end;
 
  // DC filter
@@ -192,7 +194,7 @@ begin
  // gate
  Parameter[38] := 1.5;
  Parameter[39] := 7.5;
- Parameter[40] := -10;
+ Parameter[40] := -70;
  Parameter[41] := 0.2;
  Parameter[42] := 6;
 
@@ -471,7 +473,7 @@ begin
  Value := 100;
 end;
 
-procedure TTrackPlugModule.ParameterAttackChange(
+procedure TTrackPlugModule.ParameterGateAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FGate[0]) then
@@ -482,7 +484,7 @@ begin
   end;
 end;
 
-procedure TTrackPlugModule.ParameterReleaseChange(
+procedure TTrackPlugModule.ParameterGateReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FGate[0]) then
@@ -493,7 +495,7 @@ begin
   end;
 end;
 
-procedure TTrackPlugModule.ParameterThresholdChange(
+procedure TTrackPlugModule.ParameterGateThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FGate[0]) then
@@ -504,7 +506,7 @@ begin
   end;
 end;
 
-procedure TTrackPlugModule.ParameterRatioChange(
+procedure TTrackPlugModule.ParameterGateRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FGate[0]) then
@@ -515,7 +517,7 @@ begin
   end;
 end;
 
-procedure TTrackPlugModule.ParameterKneeChange(
+procedure TTrackPlugModule.ParameterGateKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  if assigned(FGate[0]) then

@@ -56,7 +56,10 @@ type
     procedure OrderChanged; virtual;
   public
     constructor Create;
+    
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
+
     property Gain[Harmonic: Integer]: Double read GetGain write SetGain;
     property Level[Harmonic: Integer]: Double read GetLevel write SetLevel;
     property Inverted[Harmonic: Integer]: Boolean read GetInverted write SetInverted;
@@ -356,13 +359,29 @@ begin
  Result := Length(FGains);
 end;
 
+procedure TChebyshevWaveshaper.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample : Integer;
+  Term   : Integer;
+  Temp   : Double;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   Temp := FChebyshevCoeffs[Order];
+   for Term := Order - 1 downto 0
+    do Temp := Temp * Data[Sample] + FChebyshevCoeffs[Term];
+   Data[Sample] := Temp;
+  end;
+end;
+
 function TChebyshevWaveshaper.ProcessSample64(Input: Double): Double;
 var
-  i : Integer;
+  Term : Integer;
 begin
  Result := FChebyshevCoeffs[Order];
- for i := Order - 1 downto 0
-  do Result := Result * Input + FChebyshevCoeffs[i];
+ for Term := Order - 1 downto 0
+  do Result := Result * Input + FChebyshevCoeffs[Term];
 end;
 
 function ChebyPolynome(Order, Power: Integer): Integer;

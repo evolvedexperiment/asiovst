@@ -75,6 +75,9 @@ type
 
 implementation
 
+uses
+  SysUtils;
+
 procedure TestTCustomDspChorus.SetUp;
 begin
  FCustomDspChorus := TCustomDspChorus.Create;

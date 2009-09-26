@@ -89,6 +89,8 @@ type
     procedure ThresholdChanged; virtual;
   public
     constructor Create; virtual;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual;
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual; abstract;
     function GainSample(const Input: Double): Double; virtual;
@@ -117,7 +119,8 @@ type
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     procedure InputSample(const Input: Double); override;
-    function ProcessSample64(Input : Double):Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
   published
     property Threshold_dB;
   end;
@@ -143,6 +146,7 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -181,6 +185,7 @@ type
   public
     constructor Create; override;
 
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
@@ -200,6 +205,7 @@ type
 
   TBrickwallLimiter = class(TCustomBrickwallLimiter)
   public
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
@@ -228,6 +234,7 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
@@ -335,6 +342,7 @@ type
   public
     constructor Create; override;
 
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
@@ -354,6 +362,7 @@ type
 
   TLimiter = class(TCustomLimiter)
   public
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
@@ -368,6 +377,7 @@ type
     procedure ReleaseChanged; override;
     procedure AttackChanged; override;
   public
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
@@ -403,6 +413,7 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
@@ -432,6 +443,7 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
   published
     property AutoMakeUp;
@@ -458,6 +470,7 @@ type
   public
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     procedure InputSample(const Input : Double); override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
   published
     property Attack;
@@ -614,7 +627,8 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    function ProcessSample64(Input : Double):Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
     property Hold: Double read FHold write SetHold;              // in s
@@ -643,10 +657,10 @@ type
     procedure SetHighCut(const Value: Double);
     procedure SetLowCut(const Value: Double);
   protected
-    FSideChain   : Double;
-    FDuck        : Boolean;
-    FLowCut      : TButterworthHighpassFilter;
-    FHighCut     : TButterworthLowpassFilter;
+    FSideChain : Double;
+    FDuck      : Boolean;
+    FLowCut    : TButterworthHighpassFilter;
+    FHighCut   : TButterworthLowpassFilter;
     procedure SampleRateChanged; override;
     procedure ThresholdChanged; override;
     procedure RangeChanged; override;
@@ -657,7 +671,7 @@ type
     procedure InputSample(const Input: Double); override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
-    property Duck : Boolean read FDuck write FDuck;       // not implemented yet
+    property Duck: Boolean read FDuck write FDuck;       // not implemented yet
     property SideChainLowCut : Double read GetLowCut write SetLowCut;     // in Hz
     property SideChainHighCut : Double read GetHighCut write SetHighCut;  // in Hz
   end;
@@ -687,6 +701,7 @@ type
     procedure MakeUpGainChanged; virtual;
   public
     constructor Create; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input : Double): Double; override;
     procedure InputSample(const Input: Double); override;
 
@@ -737,13 +752,15 @@ type
     procedure CalculateAttackFactor; override;
     procedure CalculateReleaseFactor; override;
   public
-    function ProcessSample64(Input : Double): Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function CharacteristicCurve(const InputLevel: Double): Double; override;
   end;
 
   TSoftKneeFeedbackCompressor = class(TSimpleFeedbackCompressor)
   public
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input : Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   end;
@@ -762,7 +779,8 @@ type
     procedure SampleRateChanged; override;
   public
     constructor Create; override;
-    function ProcessSample64(Input : Double):Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
   published
     property RMSTime : Double read FRMSTime write SetRMSTime;  // in ms
@@ -781,7 +799,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure InputSample(const Input : Double); override;
-    function ProcessSample64(Input : Double):Double; override;
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
     property SideChainLowCut : Double read GetLowCut write SetLowCut;     // in Hz
@@ -845,7 +864,7 @@ end;
 
 function TCustomDynamicProcessor.CharacteristicCurve(const InputLevel: Double): Double;
 begin
- result := TranslatePeakToGain(abs(InputLevel)) * InputLevel;
+ Result := TranslatePeakToGain(abs(InputLevel)) * InputLevel;
 end;
 
 function TCustomDynamicProcessor.CharacteristicCurve_dB(const InputLevel_dB: Double): Double;
@@ -856,17 +875,35 @@ end;
 
 function TCustomDynamicProcessor.GainSample(const Input: Double): Double;
 begin
- result := FGain * Input;
+ Result := FGain * Input;
 end;
 
 function TCustomDynamicProcessor.GetKnee_dB: Double;
 begin
- result := FKnee_dB;
+ Result := FKnee_dB;
 end;
 
 procedure TCustomDynamicProcessor.KneeChanged;
 begin
  raise Exception.Create('The knee property is not in use in this class');
+end;
+
+procedure TCustomDynamicProcessor.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TCustomDynamicProcessor.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TCustomDynamicProcessor.ProcessSample32(Input: Single): Single;
@@ -912,11 +949,18 @@ begin
  FGain := TranslatePeakToGain(abs(Input));
 end;
 
+function TSimpleDirectGate.ProcessSample32(Input: Single): Single;
+begin
+ if abs(Input) < FThreshold
+  then Result := 0
+  else Result := Input;
+end;
+
 function TSimpleDirectGate.ProcessSample64(Input: Double): Double;
 begin
-  if abs(Input) < FThreshold
-   then Result := 0
-   else Result := Input;
+ if abs(Input) < FThreshold
+  then Result := 0
+  else Result := Input;
 end;
 
 { TSoftDirectGate }
@@ -969,13 +1013,19 @@ end;
 
 function TSoftDirectGate.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
- result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
+ Result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
+end;
+
+function TSoftDirectGate.ProcessSample32(Input: Single): Single;
+begin
+ InputSample(Input);
+ Result := GainSample(Input);
 end;
 
 function TSoftDirectGate.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := GainSample(Input);
+ Result := GainSample(Input);
 end;
 
 { TCustomBrickwallLimiter }
@@ -1032,40 +1082,56 @@ begin
  FGain := TranslatePeakToGain(abs(Input));
 end;
 
+function TCustomBrickwallLimiter.ProcessSample32(Input: Single): Single;
+begin
+ InputSample(Input);
+ Result := GainSample(Input);
+end;
+
 function TCustomBrickwallLimiter.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := GainSample(Input);
+ Result := GainSample(Input);
 end;
 
 { TBrickwallLimiter }
 
+function TBrickwallLimiter.ProcessSample32(Input: Single): Single;
+begin
+ if Input > FThreshold
+  then Result := FThreshold else
+ if Input < -FThreshold
+  then Result := -FThreshold
+  else Result := Input;
+ Result := FMakeUpGain * Result;
+end;
+
 function TBrickwallLimiter.ProcessSample64(Input: Double): Double;
 begin
  if Input > FThreshold
-  then result := FThreshold else
+  then Result := FThreshold else
  if Input < -FThreshold
-  then result := -FThreshold
-  else result := Input;
- result := FMakeUpGain * result;
+  then Result := -FThreshold
+  else Result := Input;
+ Result := FMakeUpGain * Result;
 end;
 
 function TBrickwallLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel > FThreshold
-  then result := FThreshold / PeakLevel
-  else result := 1;
- result := FMakeUpGain * result;
+  then Result := FThreshold / PeakLevel
+  else Result := 1;
+ Result := FMakeUpGain * Result;
 end;
 
 function TBrickwallLimiter.CharacteristicCurve(const InputLevel: Double): Double;
 begin
  if InputLevel > FThreshold
-  then result := FThreshold else
+  then Result := FThreshold else
  if InputLevel < -FThreshold
-  then result := -FThreshold
-  else result := InputLevel;
- result := FMakeUpGain * result;
+  then Result := -FThreshold
+  else Result := InputLevel;
+ Result := FMakeUpGain * Result;
 end;
 
 { TSoftBrickwallLimiter }
@@ -1082,10 +1148,16 @@ begin
  CalculateSoftKnee;
 end;
 
+function TSoftBrickwallLimiter.ProcessSample32(Input: Single): Single;
+begin
+ FGain := TranslatePeakToGain(abs(Input));
+ Result := Input * FGain;
+end;
+
 function TSoftBrickwallLimiter.ProcessSample64(Input: Double): Double;
 begin
  FGain := TranslatePeakToGain(abs(Input));
- result := Input * FGain;
+ Result := Input * FGain;
 end;
 
 function TSoftBrickwallLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -1123,7 +1195,7 @@ end;
 
 function TSimpleSoftBrickwallLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
- result := Power(1 + Power(PeakLevel * FThresholdReciprocal, FSoftKnee[1]), -FSoftKnee[0]);
+ Result := Power(1 + Power(PeakLevel * FThresholdReciprocal, FSoftKnee[1]), -FSoftKnee[0]);
 end;
 
 procedure TSimpleSoftBrickwallLimiter.CalculateSoftKnee;
@@ -1161,7 +1233,7 @@ end;
 
 function TCustomTimeConstantDynamics.GetGainReductiondB: Double;
 begin
- result := Amp_to_dB(FGain);
+ Result := Amp_to_dB(FGain);
 end;
 
 procedure TCustomTimeConstantDynamics.ReleaseChanged;
@@ -1247,10 +1319,16 @@ begin
   then FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
 end;
 
+function TCustomLimiter.ProcessSample32(Input: Single): Single;
+begin
+ InputSample(Input);
+ Result := GainSample(Input);
+end;
+
 function TCustomLimiter.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := GainSample(Input);
+ Result := GainSample(Input);
 end;
 
 procedure TCustomLimiter.SetAutoMakeUp(const Value: Boolean);
@@ -1284,11 +1362,20 @@ end;
 function TLimiter.CharacteristicCurve(const InputLevel: Double): Double;
 begin
  if InputLevel > FThreshold
-  then result := FThreshold else
+  then Result := FThreshold else
  if InputLevel < -FThreshold
-  then result := -FThreshold
-  else result := InputLevel;
- result := FMakeUpGain * result;
+  then Result := -FThreshold
+  else Result := InputLevel;
+ Result := FMakeUpGain * Result;
+end;
+
+function TLimiter.ProcessSample32(Input: Single): Single;
+begin
+ if abs(Input) > FPeak
+  then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
+  else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
+
+ Result := Input * TranslatePeakToGain(FPeak);
 end;
 
 function TLimiter.ProcessSample64(Input: Double): Double;
@@ -1297,15 +1384,15 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- result := Input * TranslatePeakToGain(FPeak);
+ Result := Input * TranslatePeakToGain(FPeak);
 end;
 
 function TLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel > FThreshold
-  then result := FThreshold / PeakLevel
-  else result := 1;
- result := FMakeUpGain * result;
+  then Result := FThreshold / PeakLevel
+  else Result := 1;
+ Result := FMakeUpGain * Result;
 end;
 
 { TRCLimiter }
@@ -1325,11 +1412,20 @@ end;
 function TRCLimiter.CharacteristicCurve(const InputLevel: Double): Double;
 begin
  if InputLevel > FThreshold
-  then result := FThreshold else
+  then Result := FThreshold else
  if InputLevel < -FThreshold
-  then result := -FThreshold
-  else result := InputLevel;
- result := FMakeUpGain * result;
+  then Result := -FThreshold
+  else Result := InputLevel;
+ Result := FMakeUpGain * Result;
+end;
+
+function TRCLimiter.ProcessSample32(Input: Single): Single;
+begin
+ FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor;
+
+ if FPeak > FThreshold
+  then Result := Input * FMakeUpGain * FThreshold / FPeak
+  else Result := Input * FMakeUpGain;
 end;
 
 function TRCLimiter.ProcessSample64(Input: Double): Double;
@@ -1337,16 +1433,16 @@ begin
  FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor;
 
  if FPeak > FThreshold
-  then result := Input * FMakeUpGain * FThreshold / FPeak
-  else result := Input * FMakeUpGain;
+  then Result := Input * FMakeUpGain * FThreshold / FPeak
+  else Result := Input * FMakeUpGain;
 end;
 
 function TRCLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel > FThreshold
-  then result := FThreshold / PeakLevel
-  else result := 1;
- result := FMakeUpGain * result;
+  then Result := FThreshold / PeakLevel
+  else Result := 1;
+ Result := FMakeUpGain * Result;
 end;
 
 { TCustomKneeLimiter }
@@ -1376,13 +1472,22 @@ begin
  FSoftKnee[1] := 1 / FSoftKnee[0];
 end;
 
+function TSoftKneeLimiter.ProcessSample32(Input: Single): Single;
+begin
+ if abs(Input) > FPeak
+  then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
+  else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
+
+ Result := Input * TranslatePeakToGain(FPeak);
+end;
+
 function TSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- result := Input * TranslatePeakToGain(FPeak);
+ Result := Input * TranslatePeakToGain(FPeak);
 end;
 
 function TSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -1420,6 +1525,30 @@ begin
  FSoftKnee[1] := 1 / FSoftKnee[0];
 end;
 
+function TSimpleSoftKneeLimiter.ProcessSample32(Input: Single): Single;
+
+ function Power2(const X: Extended): Extended;
+ asm
+  FLD     X
+  FLD     ST(0)       { i := round(y);     }
+  FRNDINT
+  FSUB    ST(1), ST   { f := y - i;        }
+  FXCH    ST(1)       { z := 2**f          }
+  F2XM1
+  FLD1
+  FADD
+  FSCALE              { Result := z * 2**i }
+  FSTP    ST(1)
+ end;
+
+begin
+ if abs(Input) > FPeak
+  then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
+  else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
+
+ Result := Input * Power2(-FSoftKnee[0] * log2(1 + Power2(FSoftKnee[1] * log2(CDenorm32 + FPeak * FThresholdReciprocal))));
+end;
+
 function TSimpleSoftKneeLimiter.ProcessSample64(Input: Double): Double;
 
  function Power2(const X: Extended): Extended;
@@ -1432,7 +1561,7 @@ function TSimpleSoftKneeLimiter.ProcessSample64(Input: Double): Double;
   F2XM1
   FLD1
   FADD
-  FSCALE              { result := z * 2**i }
+  FSCALE              { Result := z * 2**i }
   FSTP    ST(1)
  end;
 
@@ -1441,12 +1570,12 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- result := Input * Power2(-FSoftKnee[0] * log2(1 + Power2(FSoftKnee[1] * log2(CDenorm32 + FPeak * FThresholdReciprocal))));
+ Result := Input * Power2(-FSoftKnee[0] * log2(1 + Power2(FSoftKnee[1] * log2(CDenorm32 + FPeak * FThresholdReciprocal))));
 end;
 
 function TSimpleSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
- result := Power(1 + Power(PeakLevel * FThresholdReciprocal, FSoftKnee[1]), -FSoftKnee[0]);
+ Result := Power(1 + Power(PeakLevel * FThresholdReciprocal, FSoftKnee[1]), -FSoftKnee[0]);
 end;
 
 
@@ -1490,7 +1619,7 @@ end;
 function TCustomClassicGate.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := GainSample(Input);
+ Result := GainSample(Input);
 end;
 
 { TClassicGate }
@@ -1504,13 +1633,22 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
+function TClassicGate.ProcessSample32(Input: Single): Single;
+begin
+ if abs(Input) > FPeak
+  then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
+  else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
+
+ Result := Input * TranslatePeakToGain(FPeak);
+end;
+
 function TClassicGate.ProcessSample64(Input: Double): Double;
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- result := Input * TranslatePeakToGain(FPeak);
+ Result := Input * TranslatePeakToGain(FPeak);
 end;
 
 function TClassicGate.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -1559,10 +1697,10 @@ function TClassicSoftRangeGate.TranslatePeakToGain(const PeakLevel: Double): Dou
 const
   cScale = 1 / 100;
 begin
- result := Power((Power(PeakLevel, 1 / cScale) + Power(FRange, 1 / cScale) * FThreshold) / (Power(PeakLevel, 1 / cScale) + FThreshold), cScale);
+ Result := Power((Power(PeakLevel, 1 / cScale) + Power(FRange, 1 / cScale) * FThreshold) / (Power(PeakLevel, 1 / cScale) + FThreshold), cScale);
 *)
 begin
- result := (PeakLevel + FRange * FThreshold) / (PeakLevel + FThreshold);
+ Result := (PeakLevel + FRange * FThreshold) / (PeakLevel + FThreshold);
 end;
 
 { TCustomSoftKneeGate }
@@ -1615,8 +1753,8 @@ end;
 
 function TClassicSoftKneeGate.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
-// result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
- result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
+// Result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
+ Result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
 end;
 
 { TCustomGate }
@@ -1690,10 +1828,16 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
+function TCustomGate.ProcessSample32(Input: Single): Single;
+begin
+ InputSample(Input);
+ Result := GainSample(Input);
+end;
+
 function TCustomGate.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := GainSample(Input);
+ Result := GainSample(Input);
 end;
 
 procedure TCustomGate.RangeChanged;
@@ -1704,11 +1848,11 @@ end;
 function TCustomGate.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel < FThreshold
-  then result := Power(FThreshold, 1 - FRatio) * Power(PeakLevel, FRatio - 1) * (1 - FRangeFactor) + FRangeFactor
+  then Result := Power(FThreshold, 1 - FRatio) * Power(PeakLevel, FRatio - 1) * (1 - FRangeFactor) + FRangeFactor
   else
    begin
     FHoldSmplCnt := 0; // start hold phase
-    result := FRangeFactor + (1 - FRangeFactor);
+    Result := FRangeFactor + (1 - FRangeFactor);
    end;
 end;
 
@@ -1743,12 +1887,12 @@ end;
 
 function TAdvancedGate.GetHighCut: Double;
 begin
- result := FHighCut.Frequency;
+ Result := FHighCut.Frequency;
 end;
 
 function TAdvancedGate.GetLowCut: Double;
 begin
- result := FLowCut.Frequency;
+ Result := FLowCut.Frequency;
 end;
 
 procedure TAdvancedGate.InputSample(const Input: Double);
@@ -1804,7 +1948,7 @@ var
   ScaledPeakLevel : Double;
 begin
  ScaledPeakLevel := Power(PeakLevel, FSoftKnee[1]);
- result := Power((ScaledPeakLevel + FRangeThresholdFactor) / (ScaledPeakLevel + FThresholdKneeFactor), FSoftKnee[0]);
+ Result := Power((ScaledPeakLevel + FRangeThresholdFactor) / (ScaledPeakLevel + FThresholdKneeFactor), FSoftKnee[0]);
  if PeakLevel > FThreshold
   then FHoldSmplCnt := 0; // start hold phase
 end;
@@ -1876,10 +2020,16 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
+function TCustomCompressor.ProcessSample32(Input: Single): Single;
+begin
+ InputSample(Input);
+ Result := GainSample(Input);
+end;
+
 function TCustomCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := GainSample(Input);
+ Result := GainSample(Input);
 end;
 
 { TSimpleCompressor }
@@ -1899,8 +2049,8 @@ end;
 function TSimpleCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel < FThreshold
-  then result := FMakeUpGain[0]
-  else result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
+  then Result := FMakeUpGain[0]
+  else Result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
 end;
 
 { TCustomKneeCompressor }
@@ -1933,8 +2083,8 @@ end;
 function TSoftKneeCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel < FThreshold
-  then result := FMakeUpGain[0]
-  else result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
+  then Result := FMakeUpGain[0]
+  else Result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
 end;
 
 
@@ -1942,7 +2092,7 @@ end;
 
 function TCustomFeedbackCompressor.GainSample(const Input: Double): Double;
 begin
- result := FMakeUpGain * FGain * Input;
+ Result := FMakeUpGain * FGain * Input;
 end;
 
 procedure TCustomFeedbackCompressor.InputSample(const Input: Double);
@@ -1976,6 +2126,18 @@ begin
  CalculateReleaseFactor;
 end;
 
+function TSimpleFeedbackCompressor.ProcessSample32(Input: Single): Single;
+begin
+ if FPreviousAbsSample > FPeak
+  then FPeak := FPeak + (FPreviousAbsSample - FPeak) * FAttackFactor
+  else FPeak := FPreviousAbsSample + (FPeak - FPreviousAbsSample) * FReleaseFactor;
+
+ FPreviousAbsSample := Input * TranslatePeakToGain(abs(FPeak));
+
+ Result := FMakeUpGains[0] * FPreviousAbsSample;
+ FPreviousAbsSample := abs(FPreviousAbsSample);
+end;
+
 function TSimpleFeedbackCompressor.ProcessSample64(Input: Double): Double;
 begin
  if FPreviousAbsSample > FPeak
@@ -1984,7 +2146,7 @@ begin
 
  FPreviousAbsSample := Input * TranslatePeakToGain(abs(FPeak));
 
- result := FMakeUpGains[0] * FPreviousAbsSample;
+ Result := FMakeUpGains[0] * FPreviousAbsSample;
  FPreviousAbsSample := abs(FPreviousAbsSample);
 end;
 
@@ -2002,13 +2164,13 @@ end;
 function TSimpleFeedbackCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel < FThreshold
-  then result := 1
-  else result := FMakeUpGains[1] * Power(PeakLevel, 1 - FRatioReciprocal);
+  then Result := 1
+  else Result := FMakeUpGains[1] * Power(PeakLevel, 1 - FRatioReciprocal);
 end;
 
 function TSimpleFeedbackCompressor.CharacteristicCurve(const InputLevel: Double): Double;
 begin
- result := FMakeUpGains[0] * Power(TranslatePeakToGain(abs(InputLevel)), FRatio) * InputLevel;
+ Result := FMakeUpGains[0] * Power(TranslatePeakToGain(abs(InputLevel)), FRatio) * InputLevel;
 end;
 
 { TSoftKneeFeedbackCompressor }
@@ -2021,29 +2183,41 @@ var
 begin
 (*
  a := PeakLevel/FThreshold;
- result := 1 + 0.5 * (1 + abs(a - 1) / (a - 1)) * (FMakeUpGain[1] * Power(PeakLevel, 1 - FRatioReciprocal) - 1);
+ Result := 1 + 0.5 * (1 + abs(a - 1) / (a - 1)) * (FMakeUpGain[1] * Power(PeakLevel, 1 - FRatioReciprocal) - 1);
 *)
 
 (*
  b := PeakLevel / FThreshold;
  a := 0.5 * (abs(b - 1) / (b - 1) + 1);
- result := 1 + a * (Power(b, 1 - FRatioReciprocal) - 1);
+ Result := 1 + a * (Power(b, 1 - FRatioReciprocal) - 1);
 *)
 
 (*
  b := PeakLevel / FThreshold;
  a := Power(b, 1 - FRatioReciprocal);
- result := 1 + 0.5 * (abs(a - 1) + (a - 1));
+ Result := 1 + 0.5 * (abs(a - 1) + (a - 1));
 *)
 
  if PeakLevel < FThreshold
-  then result := 1
-  else result := FMakeUpGains[1] * Power(PeakLevel, 1 - FRatioReciprocal);
+  then Result := 1
+  else Result := FMakeUpGains[1] * Power(PeakLevel, 1 - FRatioReciprocal);
 
 (*
  a := Power(FPeak, FRatioReciprocal);
- result := (1 - a / (a + 3)) * FThresholdReciprocal;
+ Result := (1 - a / (a + 3)) * FThresholdReciprocal;
 *)
+end;
+
+function TSoftKneeFeedbackCompressor.ProcessSample32(Input: Single): Single;
+begin
+ if FPreviousAbsSample > FPeak
+  then FPeak := FPeak + (FPreviousAbsSample - FPeak) * FAttackFactor
+  else FPeak := FPreviousAbsSample + (FPeak - FPreviousAbsSample) * FReleaseFactor;
+
+ FPreviousAbsSample := Input * TranslatePeakToGain(abs(FPeak));
+
+ Result := FMakeUpGains[0] * FPreviousAbsSample;
+ FPreviousAbsSample := abs(FPreviousAbsSample);
 end;
 
 function TSoftKneeFeedbackCompressor.ProcessSample64(Input: Double): Double;
@@ -2054,7 +2228,7 @@ begin
 
  FPreviousAbsSample := Input * TranslatePeakToGain(abs(FPeak));
 
- result := FMakeUpGains[0] * FPreviousAbsSample;
+ Result := FMakeUpGains[0] * FPreviousAbsSample;
  FPreviousAbsSample := abs(FPreviousAbsSample);
 end;
 
@@ -2076,6 +2250,26 @@ begin
  if FRMSPos < FRMSSize then inc(FRMSPos) else FRMSPos := 0;
 
  inherited InputSample(Sqrt(FCurrentRMS * FRMSFactor));
+end;
+
+function TSimpleRMSCompressor.ProcessSample32(Input: Single): Single;
+var
+  Temp: Single;
+begin
+ // calculate RMS stuff
+ FCurrentRMS := FCurrentRMS - FRMSBuffer[FRMSPos] + sqr(Input);
+ FRMSBuffer[FRMSPos] := sqr(Input);
+ if FRMSPos < FRMSSize then inc(FRMSPos) else FRMSPos := 0;
+
+ // time constants
+ Temp := Sqrt(FCurrentRMS * FRMSFactor);
+ if Temp > FPeak
+  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor
+  else FPeak := Temp + (FPeak - Temp) * FReleaseFactor;
+
+ FGain := TranslatePeakToGain(FPeak);
+
+ Result := FGain * Input;
 end;
 
 function TSimpleRMSCompressor.ProcessSample64(Input: Double): Double;
@@ -2144,12 +2338,12 @@ end;
 
 function TCompressor.GetHighCut: Double;
 begin
- result := FHighCut.Frequency;
+ Result := FHighCut.Frequency;
 end;
 
 function TCompressor.GetLowCut: Double;
 begin
- result := FLowCut.Frequency;
+ Result := FLowCut.Frequency;
 end;
 
 function TCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -2161,15 +2355,35 @@ begin
 // Soft := FThreshold / (PeakLevel + FThreshold);
 
  if PeakLevel < FThreshold
-  then result := FMakeUpGain[0]
-  else result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
+  then Result := FMakeUpGain[0]
+  else Result := FMakeUpGain[1] * Power(PeakLevel, FRatio - 1);
 
-// result := sqrt(Soft * result);
+// Result := sqrt(Soft * Result);
 end;
 
 procedure TCompressor.InputSample(const Input: Double);
 begin
  inherited InputSample(FHighCut.ProcessSample64(FLowCut.ProcessSample64(Input)));
+end;
+
+function TCompressor.ProcessSample32(Input: Single): Single;
+var
+  Temp: Single;
+begin
+ // calculate RMS stuff
+ FCurrentRMS := FCurrentRMS - FRMSBuffer[FRMSPos] + sqr(Input);
+ FRMSBuffer[FRMSPos] := sqr(Input);
+ if FRMSPos < FRMSSize then inc(FRMSPos) else FRMSPos := 0;
+
+ // time constants
+ Temp := Sqrt(FCurrentRMS * FRMSFactor);
+ if Temp > FPeak
+  then FPeak := FPeak + (Temp - FPeak) * FAttackFactor
+  else FPeak := Temp + (FPeak - Temp) * FReleaseFactor;
+
+ FGain := TranslatePeakToGain(FPeak);
+
+ Result := FGain * Input;
 end;
 
 function TCompressor.ProcessSample64(Input: Double): Double;
@@ -2210,8 +2424,8 @@ end;
 function TBrickwallLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  if PeakLevel < FThreshold
-  then result := 1
-  else result := FThresholdRatioFactor * Power(PeakLevel, FRatio - 1);
+  then Result := 1
+  else Result := FThresholdRatioFactor * Power(PeakLevel, FRatio - 1);
 end;
 
 function TBrickwallLimiter.ProcessSample64(Input: Double): Double;
@@ -2223,7 +2437,7 @@ begin
 
  FGain := CharacteristicCurve(FPeak);
 
- result := FGain * Input;
+ Result := FGain * Input;
 end;
 {$ELSE}
 asm
@@ -2320,7 +2534,7 @@ var
 begin
  Knee := 0.5 *(1 + Tanh2c(FSoftKnee * log10(PeakLevel / FThreshold)));
  InternalRatio := 1 + Knee * (FRatio - 1);
- result := Power(FThreshold, 1 - InternalRatio) * Power(PeakLevel, InternalRatio - 1);
+ Result := Power(FThreshold, 1 - InternalRatio) * Power(PeakLevel, InternalRatio - 1);
 end;
 
 function TSoftKneeLimiter.ProcessSample64(Input: Double): Double;
@@ -2329,7 +2543,7 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
  FGain := CharacteristicCurve(FPeak);
- result := FGain * Input;
+ Result := FGain * Input;
 end;
 
 procedure TSoftKneeLimiter.SetSoftKnee(const Value: Double);
@@ -2374,7 +2588,7 @@ end;
 function TSoftKneeFeedbackLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
 begin
  // yet to do
- result := 1;
+ Result := 1;
 end;
 
 function TSoftKneeFeedbackLimiter.ProcessSample64(Input: Double): Double;
@@ -2387,22 +2601,22 @@ begin
 
 // threshold = -13.4 .. - 13
 
- result := FGain * Input;
- if abs(result)>FPeak2
-  then FPeak2 := abs(result) + (FPeak2 - abs(result)) * FAttackFac2
-  else FPeak2 := abs(result) + (FPeak2 - abs(result)) * FReleaseFac2;
+ Result := FGain * Input;
+ if abs(Result)>FPeak2
+  then FPeak2 := abs(Result) + (FPeak2 - abs(Result)) * FAttackFac2
+  else FPeak2 := abs(Result) + (FPeak2 - abs(Result)) * FReleaseFac2;
 
- if abs(result)>FPeak
+ if abs(Result)>FPeak
   then
    begin
-    FPeak := abs(result) + (FPeak - abs(result)) * FAttackFactor;
+    FPeak := abs(Result) + (FPeak - abs(Result)) * FAttackFactor;
     PeakdB := Amp_to_dB(abs(0.3 * FPeak2 + 0.7 * FPeak + 1E-32));
     InternalRatio := - (3 + 3 * (PeakdB - FThreshold_dB - 0.5) / (abs(PeakdB - FThreshold_dB) + 1));
     FGain := dB_to_Amp(PeakdB * InternalRatio - FThreshold_dB * InternalRatio);
     for OversampleCount := 1 to FOversample - 1 do
      begin
-      result := FGain * Input;
-      FPeak := abs(result) + (FPeak - abs(result)) * FAttackFactor;
+      Result := FGain * Input;
+      FPeak := abs(Result) + (FPeak - abs(Result)) * FAttackFactor;
       PeakdB := Amp_to_dB(abs(0.3 * FPeak2 + 0.7 * FPeak + 1E-32));
       InternalRatio := - (3 + 3 * (PeakdB - FThreshold_dB - 0.5) / (abs(PeakdB - FThreshold_dB) + 1));
       FGain := dB_to_Amp(PeakdB * InternalRatio - FThreshold_dB * InternalRatio);
@@ -2410,7 +2624,7 @@ begin
    end
   else
    begin
-    FPeak := abs(result) + (FPeak - abs(result)) * FReleaseFactor;
+    FPeak := abs(Result) + (FPeak - abs(Result)) * FReleaseFactor;
     PeakdB := Amp_to_dB(abs(0.3 * FPeak2 + 0.7 * FPeak + 1E-32));
     InternalRatio := - (3 + 3 * (PeakdB - FThreshold_dB - 0.5) / (abs(PeakdB - FThreshold_dB) + 1));
     FGain := dB_to_Amp(PeakdB * InternalRatio - FThreshold_dB * InternalRatio);
@@ -2418,19 +2632,19 @@ begin
 
 }
 
- result := FGain * Input;
+ Result := FGain * Input;
 {
- if abs(result)>FPeak
-  then FPeak := abs(result) + (FPeak - abs(result)) * FAttackFactor
-  else FPeak := abs(result) + (FPeak - abs(result)) * FReleaseFactor;
+ if abs(Result)>FPeak
+  then FPeak := abs(Result) + (FPeak - abs(Result)) * FAttackFactor
+  else FPeak := abs(Result) + (FPeak - abs(Result)) * FReleaseFactor;
 }
  FPeak := FReleaseFactor * FPeak;
- if abs(result) > FPeak
-  then FPeak := abs(result) + (FPeak - abs(result)) * FAttackFactor;
+ if abs(Result) > FPeak
+  then FPeak := abs(Result) + (FPeak - abs(Result)) * FAttackFactor;
 
  FPeak2 := FReleaseFac2 * FPeak2;
- if abs(result) > FPeak2
-  then FPeak2 := abs(result) + (FPeak2 - abs(result)) * FAttackFac2;
+ if abs(Result) > FPeak2
+  then FPeak2 := abs(Result) + (FPeak2 - abs(Result)) * FAttackFac2;
 
  PeakdB := Amp_to_dB(abs(0.3 * FPeak + 0.7 * FPeak2 + 1E-32));
 // InternalRatio := - (3 + 3 * (PeakdB - FThreshold_dB - 0.5) / (abs(PeakdB - FThreshold_dB) + 1));

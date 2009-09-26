@@ -727,7 +727,7 @@ object TrackPlugModule: TTrackPlugModule
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
-      OnParameterChange = ParameterAttackChange
+      OnParameterChange = ParameterGateAttackChange
       OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
@@ -747,7 +747,7 @@ object TrackPlugModule: TTrackPlugModule
       StepFloat = 1.000000000000000000
       Units = 'ms'
       VSTModule = Owner
-      OnParameterChange = ParameterReleaseChange
+      OnParameterChange = ParameterGateReleaseChange
       OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
@@ -768,7 +768,7 @@ object TrackPlugModule: TTrackPlugModule
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnParameterChange = ParameterThresholdChange
+      OnParameterChange = ParameterGateThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
@@ -786,7 +786,7 @@ object TrackPlugModule: TTrackPlugModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterRatioChange
+      OnParameterChange = ParameterGateRatioChange
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
@@ -804,7 +804,7 @@ object TrackPlugModule: TTrackPlugModule
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnParameterChange = ParameterKneeChange
+      OnParameterChange = ParameterGateKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item

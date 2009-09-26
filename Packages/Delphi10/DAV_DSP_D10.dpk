@@ -34,7 +34,6 @@ contains
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
   DAV_DspAmbience in '..\..\Source\Dsp\DAV_DspAmbience.pas',
   DAV_DspAudioToMidiTrigger in '..\..\Source\Dsp\DAV_DspAudioToMidiTrigger.pas',
-  DAV_DspBandlimitedImpulseTrain in '..\..\Source\Dsp\DAV_DspBandlimitedImpulseTrain.pas',
   DAV_DspBarberpole in '..\..\Source\Dsp\DAV_DspBarberpole.pas',
   DAV_DspBarberpoleTuner in '..\..\Source\Dsp\DAV_DspBarberpoleTuner.pas',
   DAV_DspBesselFilter in '..\..\Source\Dsp\DAV_DspBesselFilter.pas',

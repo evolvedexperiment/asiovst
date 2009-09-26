@@ -54,8 +54,8 @@ type
     procedure CalculateAutoMakeUpGain;
     procedure CalculateLogScaledThresholdValue;
   protected
-    FThrshlddB   : Single;
-    FKneeFactor  : Single;
+    FThrshlddB  : Single;
+    FKneeFactor : Single;
     procedure KneeChanged; override;
     procedure ThresholdChanged; override;
     procedure AutoMakeUpChanged; override;
@@ -1011,7 +1011,7 @@ end;
 function TLightweightSoftKneeCompressor.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- result := FGain * FMakeUpGain * Input;
+ Result := FGain * FMakeUpGain * Input;
 end;
 
 

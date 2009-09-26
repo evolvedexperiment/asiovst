@@ -88,7 +88,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample32(Input: Single): Single;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
     procedure Reset; override;
   published
     property Depth;
@@ -106,7 +107,10 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    function ProcessSample64(Input: Double): Double;
+
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    function ProcessSample64(Input: Double): Double; virtual;
+
     procedure Reset; override;
   published
     property Depth;
@@ -304,6 +308,15 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
+procedure TDspBarberpole32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
 function TDspBarberpole32.ProcessSample32(Input: Single): Single;
 var
   i, p : Integer;
@@ -438,6 +451,15 @@ begin
  ReallocMem(FBuffer64, FRealBufSize * SizeOf(Double));
  if FRealBufSize > OldBufferSize
   then FillChar(FBuffer64^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
+end;
+
+procedure TDspBarberpole64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TDspBarberpole64.ProcessSample64(Input: Double): Double;

@@ -53,6 +53,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
 
     property Frequency: Single read GetFrequency write SetFrequency;
@@ -151,6 +153,15 @@ end;
 function TCustomBarberpoleFilter.GetOrder: Integer;
 begin
  result := FLowpass.Order;
+end;
+
+procedure TCustomBarberpoleFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TCustomBarberpoleFilter.ProcessSample32(Input: Single): Single;

@@ -76,6 +76,7 @@ type
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
@@ -86,6 +87,7 @@ type
   public
     constructor Create(const Order: Integer = 0); override;
     procedure CalculateCoefficients; override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Single): Single; overload;
     function ProcessSample64(Input: Double): Double; overload; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -416,27 +418,97 @@ begin
  Imaginary := R.Im;
 end;
 
-
- function TCustomButterworthLowPassFilter.ProcessSample64(Input: Double): Double;
+function TCustomButterworthLowPassFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
-  x : Double;
   i : Integer;
 begin
  Result := FFilterGain * Input;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   x := Result;
-   Result            :=     x + FState[2 * i];
-   FState[2 * i    ] := 2 * x + FCoeffs[2 * i] * Result + FState[2 * i + 1];
-   FState[2 * i + 1] :=     x + FCoeffs[2 * i + 1] * Result;
+   Input := Result;
+   Result            :=     Input + FState[2 * i];
+   FState[2 * i    ] := 2 * Input + FCoeffs[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=     Input + FCoeffs[2 * i + 1] * Result;
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   x             := Result;
-   Result        := x + FState[2 * i];
-   FState[2 * i] := x + FCoeffs[2 * i] * Result;
+   Input         := Result;
+   Result        := Input + FState[2 * i];
+   FState[2 * i] := Input + FCoeffs[2 * i] * Result;
+  end;
+{$ELSE}
+asm
+ fld Input.Single;
+ {$IFDEF HandleDenormals}
+ fadd CDenorm32
+ {$ENDIF}
+ fmul  [eax.FFilterGain].Double
+ mov   ecx, [eax.FOrder]
+ test  ecx, ecx
+ jz    @End
+ shr   ecx, 1
+ shl   ecx, 2
+ push  ecx
+ jz @SingleStage
+ @FilterLoop:
+  sub   ecx, 4
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
+  faddp
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
+  fxch
+  fxch  st(2)
+  faddp
+  fstp  [eax.FState + ecx * 4 + 8].Double
+ ja @FilterLoop
+
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [eax.FOrder]
+ jz @End
+  mov ecx, [eax.FOrder]
+  dec ecx
+  shl ecx, 1
+  fld st(0)
+  fadd [eax.FState + ecx * 4].Double
+  fld st(0)
+  fmul [eax.FCoeffs + ecx * 4].Double
+  faddp st(2), st(0)
+  fxch
+  fstp [eax.FState + ecx * 4].Double
+ @End:
+ {$ENDIF}
+end;
+
+function TCustomButterworthLowPassFilter.ProcessSample64(Input: Double): Double;
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ Result := FFilterGain * Input;
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   Input := Result;
+   Result            :=     Input + FState[2 * i];
+   FState[2 * i    ] := 2 * Input + FCoeffs[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=     Input + FCoeffs[2 * i + 1] * Result;
+  end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i := ((FOrder + 1) div 2) - 1;
+   Input         := Result;
+   Result        := Input + FState[2 * i];
+   FState[2 * i] := Input + FCoeffs[2 * i] * Result;
   end;
 {$ELSE}
 asm
@@ -662,6 +734,87 @@ asm
  shr   ecx, 1
  shl   ecx, 2
  push  ecx
+ jz @SingleStage
+ @FilterLoop:
+  sub  ecx, 4
+  fld  st(0)
+  fadd [eax.FState + ecx * 4].Double
+  fld  st(0)
+  fld  st(0)
+  fmul [eax.FCoeffs + ecx * 4].Double
+  fadd [eax.FState + ecx * 4 + 8].Double
+  fld  st(3)
+  fadd st(0), st(0)
+  fsubp
+  fstp [eax.FState + ecx * 4].Double
+  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fxch
+  fxch st(2)
+  faddp
+  fstp [eax.FState + ecx * 4 + 8].Double
+ ja @FilterLoop
+
+ @SingleStage:
+ pop ecx
+ shr ecx, 1
+ sub ecx, [eax.FOrder]
+ jz @End
+  mov ecx, [eax.FOrder]
+  dec ecx
+  shl ecx, 1
+  fld st(0)
+  fadd [eax.FState + ecx * 4].Double
+  fld st(0)
+  fmul [eax.FCoeffs + ecx * 4].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp [eax.FState + ecx * 4].Double
+ @End:
+ {$ENDIF}
+end;
+
+function TCustomButterworthHighPassFilter.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ Result := FFilterGain * Input;
+ for i := 0 to (FOrder div 2) - 1 do
+  begin
+   Input := Result;
+   Result            :=      Input + FState[2 * i];
+   FState[2 * i    ] := -2 * Input + FCoeffs[2 * i] * Result + FState[2 * i + 1];
+   FState[2 * i + 1] :=      Input + FCoeffs[2 * i + 1] * Result;
+  end;
+ if (FOrder mod 2) = 1 then
+  begin
+   i             := ((FOrder + 1) div 2) - 1;
+   Input         := Result;
+   Result        :=  Input + FState[2 * i];
+   FState[2 * i] := -Input + FCoeffs[2 * i] * Result;
+  end;
+{$ELSE}
+asm
+ fld  Input.Single
+
+ // eventually add denormal
+ {$IFDEF HandleDenormals}
+ mov  edx, DenormRandom
+ imul edx, DenormRandom, $08088405
+ inc  edx
+ shr  edx, 23
+ or   edx, $20000000
+ mov  DenormRandom, edx
+ fadd DenormRandom
+ {$ENDIF}
+
+ fmul [eax.FFilterGain].Double
+ mov  ecx, [eax.FOrder]
+ test ecx, ecx
+ jz @End
+ shr ecx, 1
+ shl ecx, 2
+ push ecx
  jz @SingleStage
  @FilterLoop:
   sub  ecx, 4

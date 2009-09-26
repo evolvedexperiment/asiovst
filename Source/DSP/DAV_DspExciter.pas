@@ -58,6 +58,9 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual;
 
@@ -156,6 +159,48 @@ begin
  FHighpass.SampleRate := SampleRate;
 end;
 
+procedure TCustomExciter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample    : Integer;
+  Low, High : Single;
+  Harmonic  : Single;
+  IntData   : TDAV2SingleArray;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   FCrossover.ProcessSample(FGains[0] * Data[Sample], Low, High);
+
+   FUpsampler.ProcessSample(Low, IntData);
+   IntData[0] := 0.125 * FastTanhMinError4(8 * IntData[0]);
+   IntData[1] := 0.125 * FastTanhMinError4(8 * IntData[1]);
+   Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(IntData));
+
+   Data[Sample] := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
+  end;
+end;
+
+procedure TCustomExciter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample    : Integer;
+  Low, High : Double;
+  Harmonic  : Double;
+  IntData   : TDAV2SingleArray;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   FCrossover.ProcessSample(FGains[0] * Data[Sample], Low, High);
+
+   FUpsampler.ProcessSample(Low, IntData);
+   IntData[0] := 0.125 * FastTanhMinError4(8 * IntData[0]);
+   IntData[1] := 0.125 * FastTanhMinError4(8 * IntData[1]);
+   Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(IntData));
+
+   Data[Sample] := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
+  end;
+end;
+
 function TCustomExciter.ProcessSample32(Input: Single): Single;
 var
   Low, High, Harmonic : Single;
@@ -164,11 +209,11 @@ begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
  FUpsampler.ProcessSample(Low, Data);
- Data[0] := 0.125 * FastTanhMinError4(8 * Low);
- Data[1] := 0.125 * FastTanhMinError4(8 * Low);
+ Data[0] := 0.125 * FastTanhMinError4(8 * Data[0]);
+ Data[1] := 0.125 * FastTanhMinError4(8 * Data[1]);
  Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(Data));
 
- result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
+ Result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
 end;
 
 function TCustomExciter.ProcessSample64(Input: Double): Double;
@@ -179,11 +224,11 @@ begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
  FUpsampler.ProcessSample(Low, Data);
- Data[0] := 0.125 * DAV_Common.Tanh(8 * Low);
- Data[1] := 0.125 * DAV_Common.Tanh(8 * Low);
+ Data[0] := 0.125 * DAV_Common.Tanh(8 * Data[0]);
+ Data[1] := 0.125 * DAV_Common.Tanh(8 * Data[1]);
  Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(Data));
 
- result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
+ Result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
 end;
 
 end.

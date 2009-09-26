@@ -72,8 +72,12 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual;
+
     procedure AddFilter(const Filter: TCustomFilter); virtual;
     procedure DeleteFilter(const Filter: TCustomFilter); overload; virtual;
     procedure DeleteFilter(const Index: Integer); overload; virtual;
@@ -238,6 +242,24 @@ end;
 procedure TCustomAudio2MidiTrigger.CalculateThresholdFactor;
 begin
  FThresholdFactor := dB_to_Amp(FThreshold);
+end;
+
+procedure TCustomAudio2MidiTrigger.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TCustomAudio2MidiTrigger.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TCustomAudio2MidiTrigger.ProcessSample32(Input: Single): Single;

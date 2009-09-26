@@ -41,7 +41,8 @@ uses
   DAV_DspFilterBasics;
 
 type
-  TCustomAmbience = class(TDspSampleRatePersistent, IDspProcessor32)
+  TCustomAmbience = class(TDspSampleRatePersistent, IDspProcessor32,
+    IDspProcessor64)
   private
     FDamping    : Single;
     FDry, FWet  : Single;
@@ -61,8 +62,8 @@ type
     procedure CalculateOutputFactor;
   protected
     FBuffers        : Array [0..3] of PDAVSingleFixedArray;
+    FHfDampState    : Double;
     FPos            : Integer;
-    FHfDampState    : Single;
     FDampFactor     : Single;
     FOutputFactor   : Single;
     FRoomsizeFactor : Double;
@@ -83,8 +84,11 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    function ProcessSample32(Input: Single): Single; overload;
-    procedure ProcessSample(var Left, Right: Single); overload;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    function ProcessSample32(Input: Single): Single; virtual;
+    function ProcessSample64(Input: Double): Double; virtual;
+    procedure ProcessSample(var Left, Right: Single); virtual;
 
     property Damping: Single read FDamping write SetDamping;
     property Dry: Single read FDry write SetDry;
@@ -122,7 +126,7 @@ begin
 
  AllocateBuffers;
 
- FHfDampState := 0.0;
+ FHfDampState := 0;
  FFlushedBuffers := FPos = 0;
 
  // initialize
@@ -168,8 +172,8 @@ end;
 function TCustomAmbience.GetMix: Single;
 begin
  if FWet + FDry <= 0
-  then result := 0.5
-  else result := FWet / (FWet + FDry);
+  then Result := 0.5
+  else Result := FWet / (FWet + FDry);
 end;
 
 procedure TCustomAmbience.SetDamping(const Value: Single);
@@ -368,10 +372,81 @@ begin
  r := r - CFeedback * t;
  FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
  r := r + t;
- result := CHalf32 * (result + (FDry * Input + r - FHfDampState)); // Right Output
+ Result := CHalf32 * (Result + (FDry * Input + r - FHfDampState)); // Right Output
 
  // advance position
  FPos := (FPos + 1) and 1023;
+end;
+
+function TCustomAmbience.ProcessSample64(Input: Double): Double;
+var
+  r : Double;
+  t : Double;
+begin
+ Input := FHighShelf.ProcessSample64(Input);
+
+ // apply HF damping
+ FHfDampState := FHfDampState + FDampFactor * (FWet * Input - FHfDampState);  // HF damping
+ r := FHfDampState;
+
+ if (abs(FHfDampState) > 1E-10) then
+  begin
+   // Catch Denormals
+   FFlushedBuffers := False;
+  end
+ else
+  begin
+   FHfDampState := 0;
+   if FFlushedBuffers = False then
+    begin
+     FFlushedBuffers := True;
+     FlushBuffers;
+    end;
+  end;
+
+ // decorrelation allpass delay filters
+ t := FBuffers[0]^[FPos];
+ r := r - CFeedback * t;
+ FBuffers[0]^[(FPos + round(107 * FRoomsize)) and 1023] := r; // Allpass
+ r := r + t;
+
+ t := FBuffers[1]^[FPos];
+ r := r - CFeedback * t;
+ FBuffers[1]^[(FPos + round(142 * FRoomsize)) and 1023] := r; // Allpass
+ r := r + t;
+
+ t := FBuffers[2]^[FPos];
+ r := r - CFeedback * t;
+ FBuffers[2]^[(FPos + round(277 * FRoomsize)) and 1023] := r; // Allpass
+ r := r + t;
+ Result := FDry * Input + r - FHfDampState; // Left Output
+
+ t := FBuffers[3]^[FPos];
+ r := r - CFeedback * t;
+ FBuffers[3]^[(FPos + round(379 * FRoomsize)) and 1023] := r; // Allpass
+ r := r + t;
+ Result := CHalf32 * (Result + (FDry * Input + r - FHfDampState)); // Right Output
+
+ // advance position
+ FPos := (FPos + 1) and 1023;
+end;
+
+procedure TCustomAmbience.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TCustomAmbience.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 procedure TCustomAmbience.ProcessSample(var Left, Right: Single);
