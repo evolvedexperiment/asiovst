@@ -93,8 +93,11 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
+
     property OnProcessFeedbackPath: TFeedbackPathProcessEvent32 read FOnProcessFeedbackPath write FOnProcessFeedbackPath;
   end;
 
@@ -125,8 +128,11 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
+
     property OnProcessFeedbackPath: TFeedbackPathProcessEvent32 read FOnProcessFeedbackPath write FOnProcessFeedbackPath;
   end;
 
@@ -243,6 +249,15 @@ begin
  if Index in [0..3]
   then FOutputVector[Index] := Value
   else raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+end;
+
+procedure TFeedbackZDelayNetwork32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TFeedbackZDelayNetwork32.ProcessSample32(Input: Single): Single;
@@ -488,6 +503,15 @@ begin
  if Index in [0..3]
   then FOutputVector[Index] := Value
   else raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
+end;
+
+procedure TFeedbackDelayNetwork32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TFeedbackDelayNetwork32.ProcessSample32(Input: Single): Single;

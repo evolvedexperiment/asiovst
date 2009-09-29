@@ -125,6 +125,8 @@ type
     property Stages;
   end;
 
+  TChorus = TDspChorus32;
+
 implementation
 
 uses

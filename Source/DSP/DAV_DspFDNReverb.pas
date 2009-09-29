@@ -172,6 +172,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
   end;
@@ -696,6 +698,15 @@ begin
  FFeedbackDelayNetwork.OutputVector[3] := -Cmplx.Im;
 end;
 
+procedure TDspFDNReverb32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
 procedure TDspFDNReverb32.ProcessFeedbackPath(var FeedbackVector: TDAVVector32);
 begin
  if FNonLinearActive then
@@ -725,7 +736,7 @@ end;
 
 function TDspFDNReverb32.ProcessSample32(Input: Single): Single;
 begin
- result := FDryMix * Input +
+ Result := FDryMix * Input +
            FWetMix * FFeedbackDelayNetwork.ProcessSample32(Input);
 end;
 

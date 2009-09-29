@@ -56,8 +56,12 @@ type
   public
     constructor Create(const Buffersize: Integer = 0; Amount: Single = 0.5); virtual;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
+
     procedure Mute;
+
     property Amount: Single read FAmount write FAmount;
     property BufferSize : Integer read FBufferSize write SetBufferSize;
     property Sample[Index: Integer]: Single read GetSample;
@@ -84,7 +88,10 @@ type
   public
     constructor Create(const Buffersize: Integer = 0; Amount: Single = 0.5; Excursion: Integer = 16); virtual;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
+
     procedure Mute;
     property Amount: Single read FAmount write FAmount;
     property Modulation: Single read FModulation write SetModulation;
@@ -96,6 +103,7 @@ type
 
   TCustomPlateReverb = class(TDspSampleRatePersistent, IDspProcessor32)
   public
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
@@ -138,6 +146,8 @@ type
  public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; override;
 
     property Decay: Single read FDecay write SetDecay;
@@ -220,6 +230,15 @@ end;
 procedure TDiffusor.Mute;
 begin
  Fillchar(FBuffer^[0], FInternalBufferSize * SizeOf(Single), 0);
+end;
+
+procedure TDiffusor.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TDiffusor.ProcessSample32(Input: Single): Single;
@@ -362,6 +381,15 @@ begin
  Fillchar(FBuffer^[0], FInternalBufferSize * SizeOf(Single), 0);
 end;
 
+procedure TModulatedDiffusor.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
 function TModulatedDiffusor.ProcessSample32(Input: Single): Single;
 var
   temp : Single;
@@ -390,6 +418,18 @@ begin
 
  FBuffer^[Pos] := Input + FAmount * temp;
  result := FAllpass.ProcessSample64(FBuffer^[Pos]) * FAmount + temp
+end;
+
+
+{ TCustomPlateReverb }
+
+procedure TCustomPlateReverb.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 
@@ -551,6 +591,15 @@ procedure TPlateReverb.ModulationChanged;
 begin
  FModulatedDiffusors[0].Modulation := FModulation;
  FModulatedDiffusors[1].Modulation := FModulation;
+end;
+
+procedure TPlateReverb.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TPlateReverb.ProcessSample32(Input: Single): Single;

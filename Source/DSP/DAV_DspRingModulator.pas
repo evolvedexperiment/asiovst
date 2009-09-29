@@ -95,6 +95,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
   end;
 
@@ -108,6 +110,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
@@ -121,6 +125,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual;
   end;
 
@@ -135,6 +140,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual; abstract;
   end;
 
@@ -295,6 +301,15 @@ begin
  FLfo.SampleRate := SampleRate;
 end;
 
+procedure TCustomAutoRingModulator32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
 function TCustomAutoRingModulator32.ProcessSample32(Input: Single): Single;
 begin
  Result := Input * FLfo.Sine;
@@ -328,6 +343,15 @@ begin
  FLfo.SampleRate := SampleRate;
 end;
 
+procedure TCustomAutoRingModulator64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
+end;
+
 function TCustomAutoRingModulator64.ProcessSample64(Input: Double): Double;
 begin
  Result := Input * FLfo.Sine;
@@ -355,6 +379,15 @@ begin
  FLfo.Frequency := Frequency;
 end;
 
+procedure TCustomAnalogAutoRingModulator32.ProcessBlock32(
+  Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
 procedure TCustomAnalogAutoRingModulator32.SampleRateChanged;
 begin
  FLfo.SampleRate := SampleRate;
@@ -380,6 +413,15 @@ end;
 procedure TCustomAnalogAutoRingModulator64.FrequencyChanged;
 begin
  FLfo.Frequency := Frequency;
+end;
+
+procedure TCustomAnalogAutoRingModulator64.ProcessBlock64(
+  Data: PDAVDoubleFixedArray; SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 procedure TCustomAnalogAutoRingModulator64.SampleRateChanged;

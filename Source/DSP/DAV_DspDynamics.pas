@@ -146,8 +146,12 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+
     procedure InputSample(const Input: Double); override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
   published
@@ -185,8 +189,11 @@ type
   public
     constructor Create; override;
 
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+
     procedure InputSample(const Input: Double); override;
 
     property AutoMakeUp : Boolean read FAutoMakeUp write SetAutoMakeUp;
@@ -205,6 +212,8 @@ type
 
   TBrickwallLimiter = class(TCustomBrickwallLimiter)
   public
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -234,6 +243,9 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -342,6 +354,8 @@ type
   public
     constructor Create; override;
 
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
@@ -362,6 +376,8 @@ type
 
   TLimiter = class(TCustomLimiter)
   public
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -377,6 +393,8 @@ type
     procedure ReleaseChanged; override;
     procedure AttackChanged; override;
   public
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -413,6 +431,8 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -443,6 +463,8 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
   published
@@ -463,6 +485,9 @@ type
 
   TCustomClassicGate = class(TCustomTimeConstantDynamics)
   public
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
   end;
 
@@ -627,6 +652,9 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
@@ -1016,6 +1044,30 @@ begin
  Result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
 end;
 
+procedure TSoftDirectGate.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := GainSample(Data[Sample]);
+  end;
+end;
+
+procedure TSoftDirectGate.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := GainSample(Data[Sample]);
+  end;
+end;
+
 function TSoftDirectGate.ProcessSample32(Input: Single): Single;
 begin
  InputSample(Input);
@@ -1082,6 +1134,30 @@ begin
  FGain := TranslatePeakToGain(abs(Input));
 end;
 
+procedure TCustomBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := GainSample(Data[Sample]);
+  end;
+end;
+
+procedure TCustomBrickwallLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := GainSample(Data[Sample]);
+  end;
+end;
+
 function TCustomBrickwallLimiter.ProcessSample32(Input: Single): Single;
 begin
  InputSample(Input);
@@ -1095,6 +1171,36 @@ begin
 end;
 
 { TBrickwallLimiter }
+
+procedure TBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   if Data[Sample] > FThreshold
+    then Data[Sample] := FThreshold else
+   if Data[Sample] < -FThreshold
+    then Data[Sample] := -FThreshold;
+   Data[Sample] := FMakeUpGain * Data[Sample];
+  end;
+end;
+
+procedure TBrickwallLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   if Data[Sample] > FThreshold
+    then Data[Sample] := FThreshold else
+   if Data[Sample] < -FThreshold
+    then Data[Sample] := -FThreshold;
+   Data[Sample] := FMakeUpGain * Data[Sample];
+  end;
+end;
 
 function TBrickwallLimiter.ProcessSample32(Input: Single): Single;
 begin
@@ -1146,6 +1252,30 @@ end;
 procedure TSoftBrickwallLimiter.KneeChanged;
 begin
  CalculateSoftKnee;
+end;
+
+procedure TSoftBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   FGain := TranslatePeakToGain(abs(Data[Sample]));
+   Data[Sample] := Data[Sample] * FGain;
+  end;
+end;
+
+procedure TSoftBrickwallLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   FGain := TranslatePeakToGain(abs(Data[Sample]));
+   Data[Sample] := Data[Sample] * FGain;
+  end;
 end;
 
 function TSoftBrickwallLimiter.ProcessSample32(Input: Single): Single;
@@ -1319,16 +1449,40 @@ begin
   then FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
 end;
 
+procedure TCustomLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TCustomLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
 function TCustomLimiter.ProcessSample32(Input: Single): Single;
 begin
  InputSample(Input);
- Result := GainSample(Input);
+ Result := FGain * Input;
 end;
 
 function TCustomLimiter.ProcessSample64(Input: Double): Double;
 begin
  InputSample(Input);
- Result := GainSample(Input);
+ Result := FGain * Input;
 end;
 
 procedure TCustomLimiter.SetAutoMakeUp(const Value: Boolean);
@@ -1369,6 +1523,30 @@ begin
  Result := FMakeUpGain * Result;
 end;
 
+procedure TLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
 function TLimiter.ProcessSample32(Input: Single): Single;
 begin
  if abs(Input) > FPeak
@@ -1395,6 +1573,7 @@ begin
  Result := FMakeUpGain * Result;
 end;
 
+
 { TRCLimiter }
 
 procedure TRCLimiter.AttackChanged;
@@ -1417,6 +1596,30 @@ begin
   then Result := -FThreshold
   else Result := InputLevel;
  Result := FMakeUpGain * Result;
+end;
+
+procedure TRCLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TRCLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
 end;
 
 function TRCLimiter.ProcessSample32(Input: Single): Single;
@@ -1445,6 +1648,7 @@ begin
  Result := FMakeUpGain * Result;
 end;
 
+
 { TCustomKneeLimiter }
 
 procedure TCustomKneeLimiter.KneeChanged;
@@ -1470,6 +1674,30 @@ procedure TSoftKneeLimiter.CalculateSoftKnee;
 begin
  FSoftKnee[0] := FKnee_dB * 0.4211083378;
  FSoftKnee[1] := 1 / FSoftKnee[0];
+end;
+
+procedure TSoftKneeLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TSoftKneeLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
 end;
 
 function TSoftKneeLimiter.ProcessSample32(Input: Single): Single;
@@ -1523,6 +1751,30 @@ const
 begin
  FSoftKnee[0] := FKnee_dB * CdBScale;
  FSoftKnee[1] := 1 / FSoftKnee[0];
+end;
+
+procedure TSimpleSoftKneeLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TSimpleSoftKneeLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
 end;
 
 function TSimpleSoftKneeLimiter.ProcessSample32(Input: Single): Single;
@@ -1615,6 +1867,36 @@ begin
 end;
 
 { TCustomClassicGate }
+
+procedure TCustomClassicGate.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TCustomClassicGate.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   InputSample(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+function TCustomClassicGate.ProcessSample32(Input: Single): Single;
+begin
+ InputSample(Input);
+ Result := GainSample(Input);
+end;
 
 function TCustomClassicGate.ProcessSample64(Input: Double): Double;
 begin
@@ -1826,6 +2108,30 @@ begin
   else inc(FHoldSmplCnt);
 
  FGain := TranslatePeakToGain(FPeak);
+end;
+
+procedure TCustomGate.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   FGain := TranslatePeakToGain(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
+end;
+
+procedure TCustomGate.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   FGain := TranslatePeakToGain(Data[Sample]);
+   Data[Sample] := FGain * Data[Sample];
+  end;
 end;
 
 function TCustomGate.ProcessSample32(Input: Single): Single;

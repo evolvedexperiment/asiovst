@@ -248,8 +248,6 @@ begin
 end;
 
 destructor TCustomAudioFileWAV.Destroy;
-var
-  ChunkName : TChunkName;
 begin
  // make sure a data chunk is written and the file is valid
  if assigned(FStream) then
@@ -644,7 +642,7 @@ begin
    end;
 
  // if empty stream is assigned update format chunk
- if assigned(FStream) and EmptyData then
+ if Assigned(FStream) and EmptyData then
   begin
    FStream.Position := 12;
    WriteFormatChunk(FStream);

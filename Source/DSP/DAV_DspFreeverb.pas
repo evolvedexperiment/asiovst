@@ -88,8 +88,10 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure Reset;
+
     function ProcessSample32(Input: Single): Single;
     function ProcessSample64(Input: Double): Double;
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
   published
     property Dry: Double read FDry write SetDry;
     property Wet: Double read FWet write SetWet;
@@ -134,6 +136,15 @@ begin
  for i := 0 to CCombFilterCount - 1 do FreeAndNil(FAllpass[i]);
  for i := 0 to CAllpassCount - 1 do FreeAndNil(FComb[i]);
  inherited Destroy;
+end;
+
+procedure TFreeverb.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TFreeverb.ProcessSample32(Input: Single): Single;

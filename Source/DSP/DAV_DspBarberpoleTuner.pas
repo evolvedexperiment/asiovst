@@ -55,7 +55,9 @@ type
     destructor Destroy; override;
 
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
+    function ProcessSample64(Input: Double): Double; virtual;
 
     property Frequency: Single read GetFrequency write SetFrequency;
     property Order: Integer read GetOrder write SetOrder;
@@ -147,12 +149,12 @@ end;
 
 function TCustomBarberpoleFilter.GetFrequency: Single;
 begin
- result := FLFO.Frequency;
+ Result := FLFO.Frequency;
 end;
 
 function TCustomBarberpoleFilter.GetOrder: Integer;
 begin
- result := FLowpass.Order;
+ Result := FLowpass.Order;
 end;
 
 procedure TCustomBarberpoleFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
@@ -164,11 +166,27 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
+procedure TCustomBarberpoleFilter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
+end;
+
 function TCustomBarberpoleFilter.ProcessSample32(Input: Single): Single;
 begin
  inherited;
  FLFO.CalculateNextSample;
- result := FLowpass.ProcessSample64(FLFO.Sine * Input);
+ Result := FLowpass.ProcessSample64(FLFO.Sine * Input);
+end;
+
+function TCustomBarberpoleFilter.ProcessSample64(Input: Double): Double;
+begin
+ inherited;
+ FLFO.CalculateNextSample;
+ Result := FLowpass.ProcessSample64(FLFO.Sine * Input);
 end;
 
 procedure TCustomBarberpoleFilter.SampleRateChanged;
@@ -256,22 +274,22 @@ end;
 
 function TCustomBarberpoleTuner.GetCurrentFrequency: Single;
 begin
- result := Frequency + FrequencyDifference;
+ Result := Frequency + FrequencyDifference;
 end;
 
 function TCustomBarberpoleTuner.GetFrequency: Single;
 begin
- result := FBarberpoleFilter.Frequency;
+ Result := FBarberpoleFilter.Frequency;
 end;
 
 function TCustomBarberpoleTuner.GetFrequencyDifference: Single;
 begin
- result := FZCTuner.CurrentFrequency;
+ Result := FZCTuner.CurrentFrequency;
 end;
 
 function TCustomBarberpoleTuner.GetOrder: Integer;
 begin
- result := FBarberpoleFilter.Order;
+ Result := FBarberpoleFilter.Order;
 end;
 
 procedure TCustomBarberpoleTuner.ProcessSample32(Input: Single);

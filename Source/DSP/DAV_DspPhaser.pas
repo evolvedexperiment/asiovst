@@ -50,6 +50,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     property Delay: Single read FDelay write SetDelay;
     property Stages: Integer read FStages write SetStages;
@@ -82,7 +83,10 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
+
     property Depth: Single read FDepth write FDepth; //0..1
     property Feedback: Single read FFeedBack write FFeedBack; // 0..<1
     property Minimum: Single read FMin write SetMinimum;
@@ -128,6 +132,15 @@ begin
 end;
 
 {$DEFINE PUREPASCAL}
+
+procedure TMasterAllPass.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
 
 function TMasterAllpass.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
@@ -306,6 +319,15 @@ begin
    FMaximum := Value;
    CalculateFilters;
   end;
+end;
+
+procedure TCustomPhaser.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TCustomPhaser.ProcessSample32(Input: Single): Single;

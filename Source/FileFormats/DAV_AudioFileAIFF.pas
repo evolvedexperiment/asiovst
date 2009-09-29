@@ -830,8 +830,8 @@ end;
 
 procedure TCustomAudioFileAIFF.Encode(SamplePosition, SampleFrames: Cardinal);
 var
-  DataEncoder  : TCustomChannelDataCoder;
-  Samples, Pos : Cardinal;
+  DataEncoder : TCustomChannelDataCoder;
+  Samples     : Cardinal;
 begin
  inherited;
 
@@ -857,14 +857,12 @@ begin
 
    try
     Samples := 0;
-    Pos := SamplePosition;
     while Samples + DataEncoder.SampleFrames < SampleFrames do
      begin
       if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
       DataEncoder.SaveToStream(FStream);
 
       Samples := Samples + DataEncoder.SampleFrames;
-      Pos := Pos + DataEncoder.SampleFrames;
      end;
 
      DataEncoder.SampleFrames := SampleFrames - Samples;

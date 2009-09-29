@@ -91,6 +91,8 @@ type
     property Mix;
   end;
 
+  TCrosstalkSimulator = TIIRCrosstalkSimulator;
+
 implementation
 
 uses

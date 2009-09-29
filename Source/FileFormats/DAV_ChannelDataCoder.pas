@@ -501,7 +501,7 @@ function TCustomChannel32DataCoder.GetChannelPointer(
   Index: Integer): PDAVSingleFixedArray;
 begin
  if Index in [0..Length(FChannelArray) - 1]
-  then result := FChannelArray[Index]
+  then Result := FChannelArray[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 

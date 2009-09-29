@@ -295,6 +295,8 @@ type
     property Limit;
   end;
 
+  TDitherNoiseshaper = TDitherNoiseshaper32;
+
 implementation
 
 uses

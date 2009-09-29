@@ -66,6 +66,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
@@ -158,6 +160,15 @@ destructor TCustomVariableDelay32.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
+end;
+
+procedure TCustomVariableDelay32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 procedure TCustomVariableDelay32.ChangeBuffer(const NewSize: Integer);

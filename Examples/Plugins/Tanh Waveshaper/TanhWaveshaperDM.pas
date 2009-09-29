@@ -54,6 +54,7 @@ type
     function FastTanhMrToast4TermWaveshaper(Input: Double): Double;
     function FastTanhToguAudioLineWaveshaper(Input: Double): Double;
     function FastTanhTALtoastWaveshaper(Input: Double): Double;
+    function FastTanhOhmforceWaveshaper(Input: Double): Double;
   public
     function TanhWaveshaperMath(Input: Double): Double;
   end;
@@ -251,6 +252,20 @@ begin
  Result := FastTanhNollockError3(FGain * Input);
 end;
 
+function TanhApprox(Input: Double): Double;
+begin
+ Result := abs(Input) + sqr(Input) * (1 + 1.41645 * sqr(Input));
+ Result := Result / (1 + Result);
+ if Input < 0
+  then Result := -Result;
+end;
+
+function TTanhWaveshaperModule.FastTanhOhmforceWaveshaper(
+  Input: Double): Double;
+begin
+ Result := TanhApprox(FGain * Input);
+end;
+
 function TTanhWaveshaperModule.FastTanhToguAudioLineWaveshaper(
   Input: Double): Double;
 begin
@@ -308,7 +323,7 @@ begin
   21 : FTanhWaveShaper := FastTanhMrToast4TermWaveshaper;
   22 : FTanhWaveShaper := FastTanhToguAudioLineWaveshaper;
   23 : FTanhWaveShaper := FastTanhTALtoastWaveshaper;
-
+  24 : FTanhWaveShaper := FastTanhOhmforceWaveshaper;
  end;
 end;
 
@@ -340,6 +355,7 @@ begin
   21 : PreDefined := 'mistertoast 4-Term';
   22 : PreDefined := 'ToguAudioLine';
   23 : PreDefined := 'TAL vs. Mr.Toast';
+  24 : PreDefined := 'Ohmforce';
  end;
 end;
 

@@ -98,6 +98,8 @@ type
     procedure ProcessStereo(var Left, Right: Single); overload; override;
   end;
 
+  TCrosstalkCancellation = TCrosstalkCancellation32;
+
 implementation
 
 uses

@@ -43,9 +43,13 @@ type
     FState      : Double;
     FFractional : Single;
   public
+    constructor Create; virtual;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual;
     function ProcessSample32(Input: Single): Single; virtual;
-    constructor Create; virtual;
+
     property Fractional: Single read FFractional write FFractional;
   end;
 
@@ -106,7 +110,10 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
+
     procedure Reset; override;
   published
     property SampleRate;
@@ -123,7 +130,10 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
+
     procedure Reset; override;
   published
     property SampleRate;
@@ -140,6 +150,24 @@ uses
 constructor TFractionalDelayAllpass.Create;
 begin
  FState := 0;
+end;
+
+procedure TFractionalDelayAllpass.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TFractionalDelayAllpass.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TFractionalDelayAllpass.ProcessSample32(Input: Single): Single;
@@ -376,6 +404,15 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
+procedure TDspGranularPitchShifter32.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
 function TDspGranularPitchShifter32.ProcessSample32(Input: Single): Single;
 var
   i, p : Integer;
@@ -476,6 +513,15 @@ begin
  ReallocMem(FBuffer64, FBufferSize * SizeOf(Double));
  if FBufferSize > OldBufferSize
   then FillChar(FBuffer64^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Double), 0);
+end;
+
+procedure TDspGranularPitchShifter64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TDspGranularPitchShifter64.ProcessSample64(Input: Double): Double;

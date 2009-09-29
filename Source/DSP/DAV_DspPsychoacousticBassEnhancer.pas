@@ -49,6 +49,8 @@ type
     procedure FrequencyChanged; virtual; abstract;
   public
     constructor Create; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
 
     property Frequency: Single read FFrequency write SetFrequency;
@@ -239,6 +241,15 @@ constructor TCustomPsychoAcousticBassEnhancer.Create;
 begin
  inherited;
  FFrequency := 80;
+end;
+
+procedure TCustomPsychoAcousticBassEnhancer.ProcessBlock32(
+  Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 procedure TCustomPsychoAcousticBassEnhancer.SetFrequency(const Value: Single);

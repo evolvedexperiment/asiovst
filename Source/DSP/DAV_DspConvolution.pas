@@ -106,6 +106,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer); virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
     procedure LoadImpulseResponse(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVSingleDynArray); overload; virtual;
   published
@@ -156,6 +157,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output : PDAVDoubleFixedArray; const SampleFrames: Integer); virtual;
+    function ProcessSample64(Input: Double): Double; virtual;
     procedure LoadImpulseResponse(const Data: PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVDoubleDynArray); overload; virtual;
   published
@@ -368,6 +370,8 @@ type
     destructor Destroy; override;
     procedure ProcessBlock(const Left, Right: PDAVDoubleFixedArray; const SampleFrames: Integer); reintroduce; virtual;
   end;
+
+  TConvolution = TConvolution32;
 
 implementation
 
@@ -670,6 +674,26 @@ begin
   until CurrentPosition >= SampleFrames;
 end;
 
+function TConvolution32.ProcessSample32(Input: Single): Single;
+begin
+ // copy to ring buffer only
+ FInputBuffer^[FFFTSizeHalf + FBlockPosition] := Input;
+ Result := FOutputBuffer^[FBlockPosition];
+
+ // increase block position and break
+ Inc(FBlockPosition, 1);
+ if FBlockPosition >= FFFTSizeHalf then
+  begin
+   PerformConvolution(FInputBuffer, FOutputBuffer);
+
+   // discard already used input buffer part to make space for new data
+   Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Single));
+
+   // increase current position and reset block position
+   FBlockPosition := 0;
+  end;
+end;
+
 procedure TConvolution32.SetIRSize(const Value: Integer);
 begin
  if FIRSize < Value then
@@ -920,6 +944,26 @@ begin
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
+end;
+
+function TConvolution64.ProcessSample64(Input: Double): Double;
+begin
+ // copy to ring buffer only
+ FInputBuffer^[FFFTSizeHalf + FBlockPosition] := Input;
+ Result := FOutputBuffer^[FBlockPosition];
+
+ // increase block position and break
+ Inc(FBlockPosition, 1);
+ if FBlockPosition >= FFFTSizeHalf then
+  begin
+   PerformConvolution(FInputBuffer, FOutputBuffer);
+
+   // discard already used input buffer part to make space for new data
+   Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Double));
+
+   // increase current position and reset block position
+   FBlockPosition := 0;
+  end;
 end;
 
 procedure TConvolution64.SetIRSizePadded(const Value: Integer);

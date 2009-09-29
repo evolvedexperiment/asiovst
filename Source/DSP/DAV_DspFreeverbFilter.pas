@@ -67,7 +67,10 @@ type
   public
     constructor Create(const Buffersize: Integer = 1); virtual;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
+
     procedure Mute;
     property Feedback: Single read FFeedback write FFeedback;
     property BufferSize : Integer read FBufferSize write SetBufferSize;
@@ -93,7 +96,10 @@ type
   public
     constructor Create(const Buffersize: Integer); virtual;
     destructor Destroy; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
+
     procedure Mute;
     property Damp: Single read FDamp write SetDamp;
     property Feedback: Single read FFeedback write FFeedback;
@@ -150,6 +156,15 @@ end;
 procedure TFreeverbAllpass.Mute;
 begin
  FillChar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
+end;
+
+procedure TFreeverbAllpass.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TFreeverbAllpass.ProcessSample32(Input: Single): Single;
@@ -269,6 +284,15 @@ end;
 { I really don't know if this is all as fast as can be,
   but it beats Delphi's compiler generated code hands down,
   Thaddy}
+
+procedure TFreeverbCombFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
 
 function TFreeverbCombFilter.ProcessSample32(Input: Single): Single;
 asm

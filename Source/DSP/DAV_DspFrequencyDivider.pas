@@ -48,8 +48,11 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
+
     function ProcessSample32(Input: Single): Single; overload;
     function ProcessSample64(Input: Double): Double; overload;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
 
     property Phase: Single read FPhaseFactor;
   published
@@ -79,6 +82,24 @@ begin
     FShape       := Self.FShape;
    end
  else inherited;
+end;
+
+procedure TOcatveDivider.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TOcatveDivider.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TOcatveDivider.ProcessSample32(Input: Single): Single;

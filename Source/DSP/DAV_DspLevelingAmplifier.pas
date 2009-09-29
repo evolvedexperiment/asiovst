@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Classes, DAV_DspDynamics;
+  DAV_Common, DAV_Classes, DAV_DspDynamics;
 
 type
   TCustomLevelingAmplifier = class(TDspSampleRatePersistent, IDspProcessor64)
@@ -79,6 +79,8 @@ type
     function TranslatePeakToGain(const PeakLevel: Double): Double; virtual;
     function CharacteristicCurve(const InputLevel: Double): Double; virtual;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; virtual;
+
+    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input : Double): Double; virtual;
     procedure Sidechain(const Input : Double); virtual;
 
@@ -129,7 +131,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations;
+  Math, DAV_Approximations;
 
 const 
   Harms : array [0..3] of Single = (1.4092750123e-07, -7.5166615806e-07,
@@ -315,6 +317,15 @@ begin
  d := d - sqr(Knee) * FastTanhOpt3Term(d);
 // result := Power(1 + d, (FRatio - 1));
  result := FastPower2MinError3(FastLog2ContinousError5(1 + d) * (FRatio - 1));
+end;
+
+procedure TCustomLevelingAmplifier.ProcessBlock64(Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
 end;
 
 function TCustomLevelingAmplifier.ProcessSample64(Input: Double): Double;

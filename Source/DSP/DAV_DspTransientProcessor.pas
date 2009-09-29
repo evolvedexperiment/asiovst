@@ -91,6 +91,8 @@ type
     FState : Single;
   public
     constructor Create; override;
+
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
   end;
 
@@ -302,6 +304,15 @@ constructor TCustomMonoTransientProcessor.Create;
 begin
  inherited;
  FState := 0;
+end;
+
+procedure TCustomMonoTransientProcessor.ProcessBlock32(
+  Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 function TCustomMonoTransientProcessor.ProcessSample32(Input: Single): Single;

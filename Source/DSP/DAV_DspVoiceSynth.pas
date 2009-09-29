@@ -60,6 +60,7 @@ type
     procedure ReleaseChanged; virtual;
   public
     constructor Create; override;
+    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; reintroduce; virtual;
 
     property Attack: Single read FAttack write SetAttack;
@@ -161,6 +162,15 @@ begin
 
  ComplexMultiplyInplace(FCurrentPosition, FComplexAngle);
  result := FLevel * FCurrentPosition.Re;
+end;
+
+procedure TCustomVoiceSynth.ProcessBlock32(Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
 procedure TCustomVoiceSynth.ProcessDownsampled(DownSampled: Single);
