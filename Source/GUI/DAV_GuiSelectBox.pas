@@ -22,7 +22,6 @@ type
     FRoundRadius      : Integer;
     FPopupMenu        : TPopupMenu;
     FSelectBoxColor   : TColor;
-    procedure ButtonWidthChanged;
     procedure RenderSelectBoxToBitmap(const Bitmap: TBitmap);
     procedure MenuItemClick(Sender: TObject);
     procedure SetAlignment(const Value: TAlignment);
@@ -35,7 +34,16 @@ type
     procedure SetRoundRadius(Value: Integer);
     procedure SetSelectBoxColor(const Value: TColor);
   protected
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
+    procedure AlignmentChanged; virtual;
+    procedure AlternateChanged; virtual;
+    procedure ArrowColorChanged; virtual;
+    procedure ArrowWidthChanged; virtual;
+    procedure ButtonColorChanged; virtual;
+    procedure ButtonWidthChanged; virtual;
+    procedure ItemIndexChanged; virtual;
+    procedure RoundRadiusChanged; virtual;
+    procedure SelectBoxColorChanged; virtual;
+    procedure UpdateBuffer; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X: Integer; Y: Integer); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -117,26 +125,26 @@ end;
 constructor TCustomGuiSelectBox.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle      := ControlStyle + [csFramed, csOpaque, csReplicatable,
-                                      csAcceptsControls];
- FRoundRadius      := 2;
- FLineColor        := clBtnHighlight;
- FSelectBoxColor   := clBtnHighlight;
- FArrowColor       := clBtnHighlight;
- FSelectBoxColor   := clBtnShadow;
- FButtonColor      := clBtnShadow;
- FArrowWidth       := 1;
- FAlternate        := False;
- FItemIndex        := -1;
- FAlignment        := taCenter;
- FItems            := TStringList.Create;
+ ControlStyle    := ControlStyle + [csFramed, csOpaque, csReplicatable,
+                                    csAcceptsControls];
+ FRoundRadius    := 2;
+ FLineColor      := clBtnHighlight;
+ FSelectBoxColor := clBtnHighlight;
+ FArrowColor     := clBtnHighlight;
+ FSelectBoxColor := clBtnShadow;
+ FButtonColor    := clBtnShadow;
+ FArrowWidth     := 1;
+ FAlternate      := False;
+ FItemIndex      := -1;
+ FAlignment      := taCenter;
+ FItems          := TStringList.Create;
  ButtonWidthChanged;
 end;
 
 destructor TCustomGuiSelectBox.Destroy;
 begin
  FreeAndNil(FItems);
- if assigned(FPopupMenu)
+ if Assigned(FPopupMenu)
   then FreeAndNil(FPopupMenu);
  inherited;
 end;
@@ -338,7 +346,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiSelectBox.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiSelectBox.UpdateBuffer;
 var
   Bmp : TBitmap;
 begin
@@ -349,7 +357,7 @@ begin
    Brush.Color := Self.Color;
    if AntiAlias = gaaNone then
     begin
-     {$IFNDEF FPC}if FTransparent then DrawParentImage(FBuffer.Canvas) else {$ENDIF}
+     {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else {$ENDIF}
      FillRect(ClipRect);
      RenderSelectBoxToBitmap(FBuffer);
     end
@@ -366,7 +374,8 @@ begin
        {$IFNDEF FPC}
        if FTransparent then
         begin
-         DrawParentImage(Bmp.Canvas);
+         CopyParentImage(Self, Bmp.Canvas);
+//         DrawParentImage(Bmp.Canvas);
          UpsampleBitmap(Bmp);
         end else
        {$ENDIF}
@@ -379,8 +388,6 @@ begin
       end;
     end;
   end;
-
- if doBufferFlip then Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetAlignment(const Value: TAlignment);
@@ -388,9 +395,14 @@ begin
  if FAlignment <> Value then
   begin
    FAlignment := Value;
-   ButtonWidthChanged;
-   RedrawBuffer(True);
+   AlignmentChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.AlignmentChanged;
+begin
+ ButtonWidthChanged;
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetAlternate(const Value: Boolean);
@@ -398,17 +410,23 @@ begin
  if Alternate <> Value then
   begin
    FAlternate := Value;
-   RedrawBuffer(True);
+   AlternateChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.AlternateChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.ButtonWidthChanged;
 begin
  case FAlignment of
-   taLeftJustify : FArrowButtonWidth := 12 + (FLineWidth div 2);
-        taCenter : FArrowButtonWidth := Max((FRoundRadius + 2), abs(Font.Height)) + FLineWidth div 2;
-  taRightJustify : FArrowButtonWidth := 12 + (FLineWidth div 2);
+   taLeftJustify : FArrowButtonWidth := 12 + (FLineWidth div 2) + FArrowWidth;
+        taCenter : FArrowButtonWidth := Max(Max(FArrowWidth, FRoundRadius div 2) + 4, abs(Font.Height)) + FLineWidth div 2;
+  taRightJustify : FArrowButtonWidth := 12 + (FLineWidth div 2) + FArrowWidth;
  end;
+ Inc(FArrowButtonWidth, FArrowWidth);
 end;
 
 procedure TCustomGuiSelectBox.SetArrowColor(const Value: TColor);
@@ -416,8 +434,13 @@ begin
  if FArrowColor <> Value then
   begin
    FArrowColor := Value;
-   RedrawBuffer(True);
+   ArrowColorChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.ArrowColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetArrowWidth(const Value: Integer);
@@ -425,8 +448,14 @@ begin
  if FArrowWidth <> Value then
   begin
    FArrowWidth := Value;
-   RedrawBuffer(True);
+   ArrowWidthChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.ArrowWidthChanged;
+begin
+ ButtonWidthChanged;
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetButtonColor(const Value: TColor);
@@ -434,8 +463,13 @@ begin
  if FButtonColor <> Value then
   begin
    FButtonColor := Value;
-   RedrawBuffer(True);
+   ButtonColorChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.ButtonColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetItemIndex(Value: Integer);
@@ -445,10 +479,15 @@ begin
  if FItemIndex <> Value then
   begin
    FItemIndex := Value;
-   if assigned(FOnChange)
-    then FOnChange(Self);
-   RedrawBuffer(True);
+   ItemIndexChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.ItemIndexChanged;
+begin
+ if assigned(FOnChange)
+  then FOnChange(Self);
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetItems(const Value: TStringList);
@@ -457,7 +496,7 @@ begin
   then FItems.Assign(Value)
   else FItems := Value;
  FItemIndex := - 1;
- RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetSelectBoxColor(const Value: TColor);
@@ -465,8 +504,13 @@ begin
  if FSelectBoxColor <> Value then
   begin
    FSelectBoxColor := Value;
-   RedrawBuffer(True);
+   SelectBoxColorChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.SelectBoxColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.SetRoundRadius(Value: Integer);
@@ -475,9 +519,14 @@ begin
  if FRoundRadius <> Value then
   begin
    FRoundRadius := Value;
-   ButtonWidthChanged;
-   RedrawBuffer(True);
+   RoundRadiusChanged;
   end;
+end;
+
+procedure TCustomGuiSelectBox.RoundRadiusChanged;
+begin
+ ButtonWidthChanged;
+ Invalidate;
 end;
 
 procedure TCustomGuiSelectBox.MouseDown(Button: TMouseButton;
@@ -500,6 +549,7 @@ begin
        if FItemIndex > 0 then ItemIndex := ItemIndex - 1 else
        if FItemIndex = 0 then ItemIndex := FItems.Count - 1;
       end;
+     inherited;
     end;
    taCenter :
     begin
@@ -513,6 +563,7 @@ begin
        if FItemIndex < FItems.Count - 1 then ItemIndex := ItemIndex + 1 else
        if FItemIndex >= FItems.Count - 1 then ItemIndex := 0;
       end;
+     inherited;
     end;
    taRightJustify :
     begin
@@ -526,11 +577,12 @@ begin
        if FItemIndex < FItems.Count - 1 then ItemIndex := ItemIndex + 1 else
        if FItemIndex >= FItems.Count - 1 then ItemIndex := 0;
       end;
+     inherited;
     end;
   end else
  if Button = mbRight then
   begin
-   if assigned(FPopupMenu)
+   if Assigned(FPopupMenu)
     then FPopupMenu.Items.Clear
     else FPopupMenu := TPopupMenu.Create(Self);
    for i := 0 to FItems.Count - 1 do
@@ -543,9 +595,9 @@ begin
      MI.Tag       := i;
      FPopupMenu.Items.Add(MI);
     end;
+   inherited;
    FPopupMenu.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
-  end;
- inherited;
+  end else inherited;
 end;
 
 procedure TCustomGuiSelectBox.MenuItemClick(Sender: TObject);

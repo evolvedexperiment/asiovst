@@ -19,15 +19,21 @@ type
     FTransparent   : Boolean;
     FShadow        : TGUIShadow;
     procedure SetTransparent(Value: Boolean); virtual;
+    procedure ShadowChangedHandler(Sender: TObject);
     {$ENDIF}
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
-    procedure ShadowChangedHandler(Sender: TObject);
-    procedure ShadowChanged;
   protected
     procedure RenderLabelToBitmap(const Bitmap: TBitmap); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
+    procedure UpdateBuffer; override;
+    procedure AlignmentChanged; virtual;
+    procedure AntiAliasChanged; virtual;
+    procedure CaptionChanged; virtual;
+    {$IFNDEF FPC}
+    procedure ShadowChanged; virtual;
+    procedure TransparentChanged; virtual; 
+    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
@@ -56,11 +62,11 @@ type
     property Enabled;
     property Font;
     property PopupMenu;
-//    property Shadow;
     property ShowHint;
     property Visible;
     {$IFNDEF FPC}
     property Transparent;
+//    property Shadow;
     property OnCanResize;
     {$ENDIF}
     property OnClick;
@@ -110,17 +116,19 @@ begin
  inherited;
 end;
 
+{$IFNDEF FPC}
 procedure TCustomGuiLabel.ShadowChanged;
 begin
- RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TCustomGuiLabel.ShadowChangedHandler(Sender: TObject);
 begin
  ShadowChanged;
 end;
+{$ENDIF}
 
-procedure TCustomGuiLabel.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiLabel.UpdateBuffer;
 var
   Bmp : TBitmap;
 begin
@@ -141,7 +149,7 @@ begin
     FBuffer.Canvas.FillRect(FBuffer.Canvas.ClipRect);
     RenderLabelToBitmap(FBuffer);
    end;
-  gaaLinear2x :
+  gaaLinear2x:
    begin
     Bmp := TBitmap.Create;
     with Bmp, Canvas do
@@ -156,7 +164,6 @@ begin
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
-//        DrawParentImage(Bmp.Canvas);
         Upsample2xBitmap(Bmp);
        end else
       {$ENDIF}
@@ -175,7 +182,7 @@ begin
        FreeAndNil(Bmp);
      end;
    end;
-  gaaLinear3x :
+  gaaLinear3x:
    begin
     Bmp := TBitmap.Create;
     with Bmp, Canvas do
@@ -190,16 +197,15 @@ begin
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
-//        DrawParentImage(Bmp.Canvas);
         Upsample3xBitmap(Bmp);
        end else
       {$ENDIF}
-      FillRect(ClipRect);
+      Canvas.FillRect(ClipRect);
       RenderLabelToBitmap(Bmp);
       Downsample3xBitmap(Bmp);
       FBuffer.Canvas.Draw(0, 0, Bmp);
      finally
-      FreeAndNil(Bmp);
+       FreeAndNil(Bmp);
      end;
    end;
   gaaLinear4x :
@@ -288,7 +294,7 @@ begin
      end;
    end;
  end;
- if doBufferFlip then Invalidate;
+
  inherited;
 end;
 
@@ -313,8 +319,13 @@ begin
  if FAlignment <> Value then
   begin
    FAlignment := Value;
-   RedrawBuffer(True);
+   AlignmentChanged;
   end;
+end;
+
+procedure TCustomGuiLabel.AlignmentChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLabel.SetAntiAlias(const Value: TGuiAntiAlias);
@@ -322,16 +333,21 @@ begin
  if FAntiAlias <> Value then
   begin
    FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSFactor :=  1;
-     gaaLinear2x : FOSFactor :=  2;
-     gaaLinear3x : FOSFactor :=  3;
-     gaaLinear4x : FOSFactor :=  4;
-     gaaLinear8x : FOSFactor :=  8;
-    gaaLinear16x : FOSFactor := 16;
-   end;
-   RedrawBuffer(True);
+   AntiAliasChanged;
   end;
+end;
+
+procedure TCustomGuiLabel.AntiAliasChanged;
+begin
+ case FAntiAlias of
+       gaaNone : FOSFactor :=  1;
+   gaaLinear2x : FOSFactor :=  2;
+   gaaLinear3x : FOSFactor :=  3;
+   gaaLinear4x : FOSFactor :=  4;
+   gaaLinear8x : FOSFactor :=  8;
+  gaaLinear16x : FOSFactor := 16;
+ end;
+ Invalidate;
 end;
 
 procedure TCustomGuiLabel.SetCaption(const Value: string);
@@ -339,8 +355,13 @@ begin
  if FCaption <> Value then
   begin
    FCaption := Value;
-   RedrawBuffer(True);
+   CaptionChanged;
   end;
+end;
+
+procedure TCustomGuiLabel.CaptionChanged;
+begin
+ Invalidate;
 end;
 
 {$IFNDEF FPC}
@@ -349,9 +370,15 @@ begin
  if FTransparent <> Value then
   begin
    FTransparent := Value;
-   RedrawBuffer(True);
+   TransparentChanged;
   end;
 end;
+
+procedure TCustomGuiLabel.TransparentChanged;
+begin
+ Invalidate;
+end;
+
 {$ENDIF}
 
 end.

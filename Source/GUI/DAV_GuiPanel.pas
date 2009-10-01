@@ -225,8 +225,13 @@ begin
    begin
     Canvas.Lock;
     try
-     Canvas.Brush.Style := bsSolid;
-     Canvas.Brush.Color := PanelColor;
+
+     with Canvas.Brush do
+      begin
+       Style := bsSolid;
+       Color := Self.Color;
+      end;
+      
      Width  := FOSFactor * Self.ClientRect.Right;
      Height := FOSFactor * Self.ClientRect.Bottom;
      case FAntiAlias of

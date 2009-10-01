@@ -630,37 +630,37 @@ function TAsioTimeSub.GetATFlags: TATFlags;
 begin
  Result := [];
  if (FBufferTime.TimeInfo.Flags and kSystemTimeValid) <> 0
-  then Result := Result + [atSystemTimeValid]
-  else Result := Result - [atSystemTimeValid];
+  then Include(Result, atSystemTimeValid)
+  else Exclude(Result, atSystemTimeValid);
  if (FBufferTime.TimeInfo.Flags and kSamplePositionValid) <> 0
-  then Result := Result + [atSamplePositionValid]
-  else Result := Result - [atSamplePositionValid];
+  then Include(Result, atSamplePositionValid)
+  else Exclude(Result, atSamplePositionValid);
  if (FBufferTime.TimeInfo.Flags and kSampleRateValid) <> 0
-  then Result := Result + [atSampleRateValid]
-  else Result := Result - [atSampleRateValid];
+  then Include(Result, atSampleRateValid)
+  else Exclude(Result, atSampleRateValid);
  if (FBufferTime.TimeInfo.Flags and kSpeedValid) <> 0
-  then Result := Result + [atSpeedValid]
-  else Result := Result - [atSpeedValid];
+  then Include(Result, atSpeedValid)
+  else Exclude(Result, atSpeedValid);
  if (FBufferTime.TimeInfo.Flags and kSampleRateChanged) <> 0
-  then Result := Result + [atSampleRateChanged]
-  else Result := Result - [atSampleRateChanged];
+  then Include(Result, atSampleRateChanged)
+  else Exclude(Result, atSampleRateChanged);
  if (FBufferTime.TimeInfo.Flags and kClockSourceChanged) <> 0
-  then Result := Result + [atClockSourceChanged]
-  else Result := Result - [atClockSourceChanged];
+  then Include(Result, atClockSourceChanged)
+  else Exclude(Result, atClockSourceChanged);
 end;
 
 procedure TAsioTimeSub.SetATFlags(Flags: TATFlags);
 var
-  temp: Integer;
+  Temp: Integer;
 begin
- temp := 0;
- if (atSystemTimeValid in Flags) then temp := temp + kSystemTimeValid;
- if (atSamplePositionValid in Flags) then temp := temp + kSamplePositionValid;
- if (atSampleRateValid in Flags) then temp := temp + kSampleRateValid;
- if (atSpeedValid in Flags) then temp := temp + kSpeedValid;
- if (atSampleRateChanged in Flags) then temp := temp + kSampleRateChanged;
- if (atClockSourceChanged in Flags) then temp := temp + kClockSourceChanged;
- FBufferTime.TimeInfo.Flags := temp;
+ Temp := 0;
+ if (atSystemTimeValid in Flags) then Temp := Temp + kSystemTimeValid;
+ if (atSamplePositionValid in Flags) then Temp := Temp + kSamplePositionValid;
+ if (atSampleRateValid in Flags) then Temp := Temp + kSampleRateValid;
+ if (atSpeedValid in Flags) then Temp := Temp + kSpeedValid;
+ if (atSampleRateChanged in Flags) then Temp := Temp + kSampleRateChanged;
+ if (atClockSourceChanged in Flags) then Temp := Temp + kClockSourceChanged;
+ FBufferTime.TimeInfo.Flags := Temp;
 end;
 
 function TAsioTimeSub.GetATdouble(Index :Integer): Double;

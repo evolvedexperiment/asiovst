@@ -14,6 +14,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 96
@@ -334,10 +335,11 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Top = 2
         Width = 15
         Height = 15
-        Brightness_Percent = 90.000000000000000000
         Color = 4938079
         LineWidth = 2
         LEDColor = 14870505
+        Brightness_Percent = 90.000000000000000000
+        Uniformity_Percent = 36.754447937011720000
         AntiAlias = gaaLinear4x
         LineColor = 3226174
         ParentColor = False

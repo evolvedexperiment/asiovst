@@ -1,0 +1,39 @@
+object FmGraphXY: TFmGraphXY
+  Left = 218
+  Top = 77
+  Caption = 'GraphXY Test'
+  ClientHeight = 282
+  ClientWidth = 272
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
+  OnResize = FormResize
+  PixelsPerInch = 96
+  TextHeight = 13
+  object GraphXY: TGuiGraphXY
+    Left = 8
+    Top = 8
+    Width = 256
+    Height = 256
+    SeriesCollection = <>
+    XAxis.Granularity = 2.000000000000000000
+    XAxis.Minimum = -5.000000000000000000
+    XAxis.Maximum = 5.000000000000000000
+    XAxis.Lower = -5.000000000000000000
+    XAxis.Upper = 5.000000000000000000
+    YAxis.Granularity = 2.000000000000000000
+    YAxis.Minimum = -5.000000000000000000
+    YAxis.Maximum = 5.000000000000000000
+    YAxis.Lower = -5.000000000000000000
+    YAxis.Upper = 5.000000000000000000
+    LineColor = clMaroon
+    LineWidth = 2
+  end
+end

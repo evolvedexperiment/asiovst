@@ -60,7 +60,25 @@ type
     procedure DrawSingleBarHI(BarRect: TRect; Peak, MaxPeak: Single); virtual;
     procedure DrawSingleBarV (BarRect: TRect; Peak, MaxPeak: Single); virtual;
     procedure DrawSingleBarVI(BarRect: TRect; Peak, MaxPeak: Single); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean); override;
+    procedure BarWidthPercentageChanged; virtual;
+    procedure ClippingFillColorChanged; virtual;
+    procedure ClippingFillStyleChanged; virtual;
+    procedure ClippingLineColorChanged; virtual;
+    procedure ClippingLineStyleChanged; virtual;
+    procedure ClippingLineWidthChanged; virtual;
+    procedure ClippingBoxSizeChanged; virtual;
+    procedure FillColorChanged; virtual;
+    procedure FillStyleChanged; virtual;
+    procedure LevelDirectionChanged; virtual;
+    procedure LineStyleChanged; virtual;
+    procedure MaxPeakLineColorChanged; virtual;
+    procedure MaxPeakLineStyleChanged; virtual;
+    procedure MaxPeakLineWidthChanged; virtual;
+    procedure PeakLevelChanged; virtual;
+    procedure ShowClippingChanged; virtual;
+    procedure ShowMaximumChanged; virtual;
+    procedure MaximumPeakLevelChanged; virtual;
+    procedure UpdateBuffer; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -118,22 +136,29 @@ type
 
   TCustomGuiColorLevelMeter = class(TGuiBaseControl)
   private
-    FLevelDirection   : TGuiLevelDirection;
-    FPeakLevel        : Single;
-    FLower            : Single;
-    FUpper            : Single;
-    FBorderColor      : TColor;
-    FContrastLuminanz : Single;
+    FLevelDirection    : TGuiLevelDirection;
+    FPeakLevel         : Single;
+    FLower             : Single;
+    FUpper             : Single;
+    FBorderColor       : TColor;
+    FContrastLuminance : Single;
 
     procedure SetLevelDirection(const Value: TGuiLevelDirection);
     procedure SetPeakLevel(const Value: Single);
     procedure SetLower(const Value: Single);
     procedure SetUpper(const Value: Single);
     procedure SetBorderColor(const Value: TColor);
-    procedure DrawVertical(ClipRect: TRect);
-    procedure SetContrastLuminanz(const Value: Single);
+    procedure SetContrastLuminance(const Value: Single);
   protected
-    procedure RedrawBuffer(doBufferFlip: Boolean); override;
+    procedure DrawVertical(ClipRect: TRect); virtual;
+    
+    procedure BorderColorChanged; virtual;
+    procedure ContrastLuminanceChanged; virtual;
+    procedure LevelDirectionChanged; virtual;
+    procedure LowerChanged; virtual;
+    procedure PeakLevelChanged; virtual;
+    procedure UpperChanged; virtual;
+    procedure UpdateBuffer; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -141,7 +166,7 @@ type
     property PeakLevel: Single read FPeakLevel write SetPeakLevel;
     property Lower: Single read FLower write SetLower;
     property Upper: Single read FUpper write SetUpper;
-    property ContrastLuminanz: Single read FContrastLuminanz write SetContrastLuminanz;
+    property ContrastLuminance: Single read FContrastLuminance write SetContrastLuminance;
     property LevelDirection: TGuiLevelDirection read FLevelDirection write SetLevelDirection default ldmVertical;
   end;
 
@@ -151,7 +176,7 @@ type
     property Anchors;
     property BorderColor;
     property Color;
-    property ContrastLuminanz;
+    property ContrastLuminance;
     property LevelDirection;
     property PeakLevel;
     property Lower;
@@ -359,7 +384,7 @@ begin
      (MaxPeak > 1) then DrawClipIndicator(ClipIndRect);
 end;
 
-procedure TCustomGuiLevelMeter.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiLevelMeter.UpdateBuffer;
 var
   DestBarRect : TRect;
   SplitSize   : Single;
@@ -393,8 +418,6 @@ begin
 
     UnLock;
    end;
-
-  if doBufferFlip then Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetBarWidthPercentage(const Value: Single);
@@ -402,17 +425,27 @@ begin
   if FBarWidthPercentage <> Value then
    begin
     FBarWidthPercentage := Value;
-    RedrawBuffer(True);
+    BarWidthPercentageChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.BarWidthPercentageChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetClippingFillColor(const Value: TColor);
 begin
-  if FClippingFillColor <> Value then
-   begin
-    FClippingFillColor := Value;
-    RedrawBuffer(True);
-   end;
+ if FClippingFillColor <> Value then
+  begin
+   FClippingFillColor := Value;
+   ClippingFillColorChanged;
+  end;
+end;
+
+procedure TCustomGuiLevelMeter.ClippingFillColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetClippingFillStyle(const Value: TBrushStyle);
@@ -420,8 +453,13 @@ begin
   if FClippingFillStyle <> Value then
    begin
     FClippingFillStyle := Value;
-    RedrawBuffer(True);
+    ClippingFillStyleChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.ClippingFillStyleChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetClippingLineColor(const Value: TColor);
@@ -429,17 +467,27 @@ begin
   if FClippingLineColor <> Value then
    begin
     FClippingLineColor := Value;
-    RedrawBuffer(True);
+    ClippingLineColorChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.ClippingLineColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetClippingLineStyle(const Value: TPenStyle);
 begin
-  if FClippingLineStyle <> Value then
-   begin
-    FClippingLineStyle := Value;
-    RedrawBuffer(True);
-   end;
+ if FClippingLineStyle <> Value then
+  begin
+   FClippingLineStyle := Value;
+   ClippingLineStyleChanged;
+  end;
+end;
+
+procedure TCustomGuiLevelMeter.ClippingLineStyleChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetClippingLineWidth(const Value: Integer);
@@ -447,26 +495,41 @@ begin
   if FClippingLineWidth <> Value then
    begin
     FClippingLineWidth := Value;
-    RedrawBuffer(True);
+    ClippingLineWidthChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.ClippingLineWidthChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetClippingBoxSize(const Value: Integer);
 begin
-  if FClippingBoxSize <> Value then
-   begin
-    FClippingBoxSize := Value;
-    RedrawBuffer(True);
-   end;
+ if FClippingBoxSize <> Value then
+  begin
+   FClippingBoxSize := Value;
+   ClippingBoxSizeChanged;
+  end;
+end;
+
+procedure TCustomGuiLevelMeter.ClippingBoxSizeChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetFillColor(const Value: TColor);
 begin
-  if FFillColor <> Value then
-   begin
-    FFillColor := Value;
-    RedrawBuffer(True);
-   end;
+ if FFillColor <> Value then
+  begin
+   FFillColor := Value;
+   FillColorChanged;
+  end;
+end;
+
+procedure TCustomGuiLevelMeter.FillColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetFillStyle(const Value: TBrushStyle);
@@ -474,8 +537,13 @@ begin
   if FFillStyle <> Value then
    begin
     FFillStyle := Value;
-    RedrawBuffer(True);
+    FillStyleChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.FillStyleChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetLevelDirection(const Value: TGuiLevelDirection);
@@ -483,8 +551,13 @@ begin
   if FLevelDirection <> Value then
    begin
     FLevelDirection := Value;
-    RedrawBuffer(True);
+    LevelDirectionChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.LevelDirectionChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetLineStyle(const Value: TPenStyle);
@@ -492,8 +565,13 @@ begin
   if FLineStyle <> Value then
    begin
     FLineStyle := Value;
-    RedrawBuffer(True);
+    LineStyleChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.LineStyleChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetMaxPeakLineColor(const Value: TColor);
@@ -501,8 +579,13 @@ begin
   if FMaxPeakLineColor <> Value then
    begin
     FMaxPeakLineColor := Value;
-    RedrawBuffer(True);
+    MaxPeakLineColorChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.MaxPeakLineColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetMaxPeakLineStyle(const Value: TPenStyle);
@@ -510,8 +593,13 @@ begin
   if FMaxPeakLineStyle <> Value then
    begin
     FMaxPeakLineStyle := Value;
-    RedrawBuffer(True);
+    MaxPeakLineStyleChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.MaxPeakLineStyleChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetMaxPeakLineWidth(const Value: Integer);
@@ -519,8 +607,13 @@ begin
   if FMaxPeakLineWidth <> Value then
    begin
     FMaxPeakLineWidth := Value;
-    RedrawBuffer(True);
+    MaxPeakLineWidthChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.MaxPeakLineWidthChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetPeakLevel(const Value: Single);
@@ -528,8 +621,13 @@ begin
  if PeakLevel <> Value then
   begin
    FPeakLevel := Value;
-   RedrawBuffer(True);
+   PeakLevelChanged;
   end;
+end;
+
+procedure TCustomGuiLevelMeter.PeakLevelChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetShowClipping(const Value: TGuiShowClipping);
@@ -537,8 +635,13 @@ begin
   if FShowClipping <> Value then
    begin
     FShowClipping := Value;
-    RedrawBuffer(True);
+    ShowClippingChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.ShowClippingChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetShowMaximum(const Value: Boolean);
@@ -546,8 +649,13 @@ begin
   if FShowMaximum <> Value then
    begin
     FShowMaximum := Value;
-    RedrawBuffer(True);
+    ShowMaximumChanged;
    end;
+end;
+
+procedure TCustomGuiLevelMeter.ShowMaximumChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiLevelMeter.SetMaximumPeakLevel(const Value: Single);
@@ -555,8 +663,13 @@ begin
  if MaximumPeakLevel <> Value then
   begin
    FMaximumPeakLevel := Value;
-   RedrawBuffer(True);
+   MaximumPeakLevelChanged;
   end;
+end;
+
+procedure TCustomGuiLevelMeter.MaximumPeakLevelChanged;
+begin
+ Invalidate;
 end;
 
 
@@ -569,7 +682,7 @@ begin
  FPeakLevel := 0;
  FLower := 0;
  FUpper := 1;
- FContrastLuminanz := 0.3;
+ FContrastLuminance := 0.3;
  FBorderColor := clWindowFrame;
 end;
 
@@ -578,17 +691,27 @@ begin
  if FBorderColor <> Value then
   begin
    FBorderColor := Value;
-   RedrawBuffer(True);
+   BorderColorChanged;
   end;
 end;
 
-procedure TCustomGuiColorLevelMeter.SetContrastLuminanz(const Value: Single);
+procedure TCustomGuiColorLevelMeter.BorderColorChanged;
 begin
- if FContrastLuminanz <> Value then
+ Invalidate;
+end;
+
+procedure TCustomGuiColorLevelMeter.SetContrastLuminance(const Value: Single);
+begin
+ if FContrastLuminance <> Value then
   begin
-   FContrastLuminanz := Value;
-   RedrawBuffer(True);
+   FContrastLuminance := Value;
+   ContrastLuminanceChanged;
   end;
+end;
+
+procedure TCustomGuiColorLevelMeter.ContrastLuminanceChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiColorLevelMeter.SetLevelDirection(
@@ -597,8 +720,13 @@ begin
  if LevelDirection <> Value then
   begin
    FLevelDirection := Value;
-   RedrawBuffer(True);
+   LevelDirectionChanged;
   end;
+end;
+
+procedure TCustomGuiColorLevelMeter.LevelDirectionChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiColorLevelMeter.SetLower(const Value: Single);
@@ -606,8 +734,13 @@ begin
  if Lower <> Value then
   begin
    FLower := Value;
-   RedrawBuffer(True);
+   LowerChanged;
   end;
+end;
+
+procedure TCustomGuiColorLevelMeter.LowerChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiColorLevelMeter.SetPeakLevel(const Value: Single);
@@ -615,9 +748,13 @@ begin
  if PeakLevel <> Value then
   begin
    FPeakLevel := Value;
-   RedrawBuffer(True);
-   Invalidate;
+   PeakLevelChanged;
   end;
+end;
+
+procedure TCustomGuiColorLevelMeter.PeakLevelChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiColorLevelMeter.SetUpper(const Value: Single);
@@ -625,14 +762,18 @@ begin
  if Upper <> Value then
   begin
    FUpper := Value;
-   RedrawBuffer(True);
-   Invalidate;
+   UpperChanged;
   end;
+end;
+
+procedure TCustomGuiColorLevelMeter.UpperChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiColorLevelMeter.DrawVertical(ClipRect: TRect);
 var
-  y    : Integer;
+  y       : Integer;
   H, S, L : Single;
   PeakRel : Single;
 begin
@@ -648,7 +789,7 @@ begin
       then S := 1
       else S := 0;
      H := 0.66 * (1 - sqr(1 - H));
-     L := FContrastLuminanz *(1 + (y div FLineWidth) mod 2);
+     L := FContrastLuminance *(1 + (y div FLineWidth) mod 2);
      Pen.Color := HLSToRGB(H, L, S);
      MoveTo(ClipRect.Left, y);
      LineTo(ClipRect.Right, y);
@@ -657,7 +798,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiColorLevelMeter.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiColorLevelMeter.UpdateBuffer;
 var
   R    : TRect;
 begin

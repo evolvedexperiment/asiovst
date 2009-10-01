@@ -11,12 +11,12 @@ uses
 type
   TCustomGuiVUMeter = class(TBufferedGraphicControl)
   private
-    FAutoSize         : Boolean;
-    FVUMeterBitmap    : TBitmap;
-    FNumGlyphs        : Integer;
-    FLastGlyph        : Integer;
-    FGlyphIndex       : Integer;
-    FStitchKind       : TGuiStitchKind;
+    FAutoSize      : Boolean;
+    FVUMeterBitmap : TBitmap;
+    FNumGlyphs     : Integer;
+    FLastGlyph     : Integer;
+    FGlyphIndex    : Integer;
+    FStitchKind    : TGuiStitchKind;
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetVUMeterBitmap(const Value: TBitmap);
@@ -25,7 +25,11 @@ type
     procedure SetStitchKind(const Value: TGuiStitchKind);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean); override;
+    procedure UpdateBuffer; override;
+    procedure AutoSizeChanged; virtual;
+    procedure NumGlyphsChanged; virtual;
+    procedure GlyphIndexChanged; virtual;
+    procedure StitchKindChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -59,12 +63,12 @@ implementation
 constructor TCustomGuiVUMeter.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FGlyphIndex                := 0;
-  FNumGlyphs                 := 1;
-  FLastGlyph                 := -1;
-  FStitchKind                := skHorizontal;
-  FVUMeterBitmap             := TBitmap.Create;
-  FVUMeterBitmap.OnChange    := SettingsChanged;
+  FGlyphIndex             := 0;
+  FNumGlyphs              := 1;
+  FLastGlyph              := -1;
+  FStitchKind             := skHorizontal;
+  FVUMeterBitmap          := TBitmap.Create;
+  FVUMeterBitmap.OnChange := SettingsChanged;
 end;
 
 destructor TCustomGuiVUMeter.Destroy;
@@ -89,7 +93,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiVUMeter.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiVUMeter.UpdateBuffer;
 var
   theRect : TRect;
   GlyphNr : Integer;
@@ -125,62 +129,80 @@ begin
     Unlock;
     FLastGlyph := GlyphNr;
    end;
-
- if doBufferFlip then Invalidate;
 end;
 
 procedure TCustomGuiVUMeter.SetAutoSize(const Value: Boolean);
 begin
-  if FAutoSize<>Value then
+ if FAutoSize <> Value then
   begin
-    FAutoSize := Value;
-    if Autosize then DoAutoSize;
+   FAutoSize := Value;
+   AutoSizeChanged;
   end;
+end;
+
+procedure TCustomGuiVUMeter.AutoSizeChanged;
+begin
+ if Autosize then DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SetVUMeterBitmap(const Value: TBitmap);
 begin
-  FVUMeterBitmap.Assign(Value);
-  DoAutoSize;
+ FVUMeterBitmap.Assign(Value);
+ DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SetNumGlyphs(const Value: Integer);
 begin
-  if FNumGlyphs <> Value then
+ if FNumGlyphs <> Value then
   begin
-    FNumGlyphs := Value;
-    FLastGlyph := -1;
-    DoAutoSize;
+   FNumGlyphs := Value;
+   NumGlyphsChanged;
   end;
+end;
+
+procedure TCustomGuiVUMeter.NumGlyphsChanged;
+begin
+ FLastGlyph := -1;
+ DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SetGlyphIndex(Value: Integer);
 begin
-  if Value < 0 then Value := 0 else
-  if Value > FNumGlyphs then Value := FNumGlyphs;
+ if Value < 0 then Value := 0 else
+ if Value > FNumGlyphs then Value := FNumGlyphs;
 
-  if FGlyphIndex <> Value then
+ if FGlyphIndex <> Value then
   begin
-    FGlyphIndex := Value;
-    RedrawBuffer(True);
+   FGlyphIndex := Value;
+   GlyphIndexChanged;
   end;
+end;
+
+procedure TCustomGuiVUMeter.GlyphIndexChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiVUMeter.SetStitchKind(const Value: TGuiStitchKind);
 begin
-  if FStitchKind <> Value then
+ if FStitchKind <> Value then
   begin
-    FStitchKind := Value;
-    FLastGlyph := -1;
-    DoAutoSize;
+   FStitchKind := Value;
+   StitchKindChanged;
   end;
+end;
+
+procedure TCustomGuiVUMeter.StitchKindChanged;
+begin
+ FLastGlyph := -1;
+ DoAutoSize;
 end;
 
 procedure TCustomGuiVUMeter.SettingsChanged(Sender: TObject);
 begin
-  FVUMeterBitmap.Canvas.Brush.Color := Self.Color;
-  RedrawBuffer(True);
-  FLastGlyph := -1;
+ FVUMeterBitmap.Canvas.Brush.Color := Self.Color;
+ Invalidate;
+ FLastGlyph := -1;
 end;
 
 end.

@@ -84,13 +84,13 @@ type
 
   TBufferedGraphicControl = class(TGraphicControl)
   protected
-    FBuffer   : TBitmap;
-    FOnPaint  : TNotifyEvent;
+    FBuffer       : TBitmap;
+    FOnPaint      : TNotifyEvent;
 
     {$IFNDEF FPC}
     {$IFNDEF COMPILER10_UP}
-    FOnMouseLeave: TNotifyEvent;
-    FOnMouseEnter: TNotifyEvent;
+    FOnMouseLeave : TNotifyEvent;
+    FOnMouseEnter : TNotifyEvent;
 
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
@@ -116,7 +116,7 @@ type
     procedure Upsample4xBitmap(var Bitmap: TBitmap);
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
+    procedure UpdateBuffer; dynamic; abstract;
 
     procedure Loaded; override;
   public
@@ -155,7 +155,7 @@ type
     procedure Upsample4xBitmap(var Bitmap: TBitmap);
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); dynamic; abstract;
+    procedure UpdateBuffer; dynamic; abstract;
 
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
@@ -177,10 +177,10 @@ type
 
   TCustomGuiBaseControl = class(TBufferedGraphicControl)
   protected
-    FLineColor              : TColor;
-    FLineWidth              : Integer;
+    FLineColor       : TColor;
+    FLineWidth       : Integer;
     {$IFNDEF FPC}
-    FTransparent            : Boolean;
+    FTransparent     : Boolean;
     procedure SetTransparent(Value: Boolean); virtual;
     {$ENDIF}
 
@@ -309,14 +309,17 @@ implementation
 uses
   SysUtils;
 
+resourcestring
+  RCStrNotSupported = 'not supported';
+
 procedure CopyParentImage(Control: TControl; Dest: TCanvas);
 var
-  I, Count,
-  SaveIndex  : Integer;
-  DC         : THandle;
-  Pnt        : TPoint;
-  R, SelfR,
-  CtlR       : TRect;
+  I, Count  : Integer;
+  SaveIndex : Integer;
+  DC        : THandle;
+  Pnt       : TPoint;
+  R, SelfR  : TRect;
+  CtlR      : TRect;
 begin
  {$IFNDEF FPC}
  if (Control = nil) or (Control.Parent = nil) then Exit;
@@ -491,7 +494,7 @@ begin
  case Bitmap.PixelFormat of
   pf24bit : Downsample2xBitmap24(Bitmap);
   pf32bit : Downsample2xBitmap32(Bitmap);
-  else raise Exception.Create('not supported');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -500,7 +503,7 @@ begin
  case Bitmap.PixelFormat of
   pf24bit : Downsample3xBitmap24(Bitmap);
   pf32bit : Downsample3xBitmap32(Bitmap);
-  else raise Exception.Create('not supported');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -509,7 +512,7 @@ begin
  case Bitmap.PixelFormat of
   pf24bit : Downsample4xBitmap24(Bitmap);
   pf32bit : Downsample4xBitmap32(Bitmap);
-  else raise Exception.Create('not supported');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -518,7 +521,7 @@ begin
  case Bitmap.PixelFormat of
   pf24bit : Upsample2xBitmap24(Bitmap);
   pf32bit : Upsample2xBitmap32(Bitmap);
-  else raise Exception.Create('not supported');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -527,7 +530,7 @@ begin
  case Bitmap.PixelFormat of
   pf24bit : Upsample3xBitmap24(Bitmap);
   pf32bit : Upsample3xBitmap32(Bitmap);
-  else raise Exception.Create('not supported');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -536,7 +539,7 @@ begin
  case Bitmap.PixelFormat of
   pf24bit : Upsample4xBitmap24(Bitmap);
   pf32bit : Upsample4xBitmap32(Bitmap);
-  else raise Exception.Create('not supported');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -548,12 +551,13 @@ end;
 
 procedure TBufferedGraphicControl.Paint;
 begin
-  with Canvas do
-   begin
-    CopyMode := cmSrcCopy;
-    Draw(0, 0, FBuffer);
-   end;
-  if Assigned(FOnPaint) then FOnPaint(Self);
+ with Canvas do
+  begin
+   UpdateBuffer;
+   CopyMode := cmSrcCopy;
+   Draw(0, 0, FBuffer);
+  end;
+ if Assigned(FOnPaint) then FOnPaint(Self);
 end;
 
 {$IFNDEF FPC}
@@ -583,12 +587,12 @@ end;
 
 procedure TBufferedGraphicControl.ResizeBuffer;
 begin
-  if (Width > 0) and (Height > 0) then
-   begin
-    FBuffer.Width := Width;
-    FBuffer.Height := Height;
-    RedrawBuffer(True);
-   end;
+ if (Width > 0) and (Height > 0) then
+  begin
+   FBuffer.Width := Width;
+   FBuffer.Height := Height;
+   Invalidate;
+  end;
 end;
 
 procedure TBufferedGraphicControl.Resize;
@@ -597,19 +601,19 @@ begin
   ResizeBuffer;
 end;
 
-procedure TBufferedGraphicControl.CMColorchanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
+procedure TBufferedGraphicControl.CMColorChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
-  RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TBufferedGraphicControl.CMEnabledChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
-  RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TBufferedGraphicControl.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
-  RedrawBuffer(True);
+ Invalidate;
 end;
 
 { TCustomGuiBaseControl }
@@ -626,19 +630,19 @@ end;
 
 procedure TCustomGuiBaseControl.SetLineColor(Value: TColor);
 begin
-  if FLineColor <> Value then
-   begin
-    FLineColor := Value;
-    RedrawBuffer(True);
-   end;
+ if FLineColor <> Value then
+  begin
+   FLineColor := Value;
+   Invalidate;
+  end;
 end;
 
 procedure TCustomGuiBaseControl.SetLinewidth(Value: Integer);
 begin
-  if (Value > 0) and (Value < 200) and (FLineWidth <> Value) then
+ if (Value > 0) and (Value < 200) and (FLineWidth <> Value) then
   begin
-    FLineWidth := Value;
-    RedrawBuffer(True);
+   FLineWidth := Value;
+   Invalidate;
   end;
 end;
 
@@ -648,7 +652,7 @@ begin
  if FTransparent <> Value then
   begin
    FTransparent := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 {$ENDIF}
@@ -837,10 +841,10 @@ end;
 
 procedure TCustomGuiBaseMouseControl.UpdateGuiTimer(Sender: TObject);
 begin
-  if not FTimerMustRedraw then exit;
+  if not FTimerMustRedraw then Exit;
 
   FRedrawTimer.Enabled := False;
-  RedrawBuffer(True);
+  Invalidate;
   FRedrawTimer.Enabled := True;
 
   FTimerMustRedraw := False;
@@ -971,7 +975,7 @@ begin
    gaaLinear8x : FOSValue :=  8;
   gaaLinear16x : FOSValue := 16;
  end;
- RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TCustomGuiBaseAntialiasedControl.UpsampleBitmap(Bitmap: TBitmap);

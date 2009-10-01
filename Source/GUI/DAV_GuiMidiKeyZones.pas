@@ -149,17 +149,17 @@ end;
 
 procedure TGuiKeyZoneItem.SetIndex(Value: Integer);
 begin
-  inherited SetIndex(Value);
+ inherited SetIndex(Value);
 end;
 
 function TGuiKeyZoneItem.GetDisplayName: string;
 begin
-  Result := FDisplayName;
+ Result := FDisplayName;
 end;
 
 procedure TGuiKeyZoneItem.SetDisplayName(const Value: string);
 begin
-  FDisplayName := Value;
+ FDisplayName := Value;
 end;
 
 
@@ -204,7 +204,7 @@ end;
 
 procedure TGuiKeyZoneItem.SetDefaultBorderStyle(const Value: TPenStyle);
 begin
- if FDefaultBorderStyle<>Value then
+ if FDefaultBorderStyle <> Value then
   begin
    FDefaultBorderStyle := Value;
    if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
@@ -312,16 +312,16 @@ end;
 
 procedure TGuiKeyZoneItem.SetVisible(const Value: Boolean);
 begin
-  if FVisible <> Value then
+ if FVisible <> Value then
   begin
-    FVisible := Value;
-    (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FVisible := Value;
+   (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
 procedure TGuiKeyZoneItem.SetLowestZoneKey(const Value: Byte);
 begin
-   if FLowestZoneKey <> Value then
+ if FLowestZoneKey <> Value then
   begin
     FLowestZoneKey := Value;
     if FHighestZoneKey < FLowestZoneKey then FHighestZoneKey := FLowestZoneKey;
@@ -343,44 +343,51 @@ procedure TGuiKeyZoneItem.SetMouseOver(MouseOverState, doUpdate: Boolean);
 var
   i: Integer;
 begin
-  if MouseOverState <> FIsMouseOver then
-   begin
-    if MouseOverState then
-     with (Collection as TGuiKeyZoneCollection) do
-      for i := Count - 1 downto 0 do Items[i].SetMouseOver(False, False);
-    FIsMouseOver := MouseOverState;
-    if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
-   end;
+ if MouseOverState <> FIsMouseOver then
+  begin
+   if MouseOverState then
+    with (Collection as TGuiKeyZoneCollection) do
+     for i := Count - 1 downto 0 do Items[i].SetMouseOver(False, False);
+   FIsMouseOver := MouseOverState;
+   if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+  end;
 end;
 
 
 procedure TGuiKeyZoneItem.Select(const doUpdate: Boolean = True);
 begin
-  if not FSelected then
+ if not FSelected then
   begin
-    (Collection as TGuiKeyZoneCollection).UnSelectAll(False);
-    FSelected := True;
-    if doUpdate
-     then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   (Collection as TGuiKeyZoneCollection).UnSelectAll(False);
+   FSelected := True;
+   if doUpdate
+    then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
 procedure TGuiKeyZoneItem.UnSelect(doUpdate: Boolean = True);
 begin
-  if FSelected then
+ if FSelected then
   begin
-    FSelected := False;
-    if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+   FSelected := False;
+   if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
   end;
 end;
 
 procedure TGuiKeyZoneItem.SetBorders(Key1, Key2: Byte; doUpdate: Boolean);
-var tmp: Byte;
+var
+  tmp: Byte;
 begin
-  if Key2<Key1 then begin tmp := Key1; Key1 := Key2; Key2 := tmp; end; // flip
-  FLowestZoneKey := Key1;
-  FHighestZoneKey := Key2;
-  if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+ if Key2 < Key1 then
+  begin
+   // flip
+   tmp := Key1;
+   Key1 := Key2;
+   Key2 := tmp;
+  end;
+ FLowestZoneKey := Key1;
+ FHighestZoneKey := Key2;
+ if doUpdate then (Collection as TGuiKeyZoneCollection).UpdateOwner;
 end;
 
 
@@ -402,20 +409,20 @@ end;
 
 procedure TGuiKeyZoneItem.MoveZone(MoveAmount: Integer);
 begin
-  if MoveAmount=0 then exit;
+ if MoveAmount = 0 then Exit;
 
-  MoveAmount := max(-FLowestZoneKey, MoveAmount);
-  MoveAmount := min(GUI_KB_HIGHESTKEY-FHighestZoneKey, MoveAmount);
+ MoveAmount := Max(-FLowestZoneKey, MoveAmount);
+ MoveAmount := Min(CKeyboardHighestKey - FHighestZoneKey, MoveAmount);
 
-  FLowestZoneKey  := FLowestZoneKey+MoveAmount;
-  FHighestZoneKey := FHighestZoneKey+MoveAmount;
+ FLowestZoneKey  := FLowestZoneKey + MoveAmount;
+ FHighestZoneKey := FHighestZoneKey + MoveAmount;
 
-  if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
+ if Visible then (Collection as TGuiKeyZoneCollection).UpdateOwner;
 end;
 
 function TGuiKeyZoneItem.KeyInZone(const KeyNr: Byte): Boolean;
 begin
-  result := (KeyNr >= FLowestZoneKey) and (KeyNr <= FHighestZoneKey);
+  Result := (KeyNr >= FLowestZoneKey) and (KeyNr <= FHighestZoneKey);
 end;
 
 
@@ -423,141 +430,148 @@ end;
 
 
 
-constructor TGuiKeyZoneCollection.create(AOwner: TPersistent);
+constructor TGuiKeyZoneCollection.Create(AOwner: TPersistent);
 begin
-  inherited Create(AOwner, TGuiKeyZoneItem);
-  FAllowUpdate := True;
+ inherited Create(AOwner, TGuiKeyZoneItem);
+ FAllowUpdate := True;
 end;
 
 procedure TGuiKeyZoneCollection.UpdateOwner;
 begin
-  if FAllowUpdate then (Owner as TGuiMidiKeys).RedrawBuffer(True);
+ if FAllowUpdate then (Owner as TGuiMidiKeys).Invalidate;
 end;
 
 procedure TGuiKeyZoneCollection.Notify(Item: TCollectionItem; Action: TCollectionNotification);
 begin
-  UpdateOwner;
+ UpdateOwner;
 end;
 
 procedure TGuiKeyZoneCollection.Update(Item: TCollectionItem);
 begin
-  UpdateOwner
+ UpdateOwner;
 end;
 
 function TGuiKeyZoneCollection.GetItem(Index: Integer): TGuiKeyZoneItem;
 begin
-  Result := TGuiKeyZoneItem(inherited GetItem(Index));
+ Result := TGuiKeyZoneItem(inherited GetItem(Index));
 end;
 
 procedure TGuiKeyZoneCollection.SetItem(Index: Integer; Value: TGuiKeyZoneItem);
 begin
-   inherited SetItem(Index, Value);
+ inherited SetItem(Index, Value);
 end;
 
 function TGuiKeyZoneCollection.Add: TGuiKeyZoneItem;
 begin
-  Result := TGuiKeyZoneItem(inherited Add);
+ Result := TGuiKeyZoneItem(inherited Add);
 end;
 
 function TGuiKeyZoneCollection.Insert(Index: Integer): TCollectionItem;
 begin
-  Result := TGuiKeyZoneItem(inherited Insert(Index));
+ Result := TGuiKeyZoneItem(inherited Insert(Index));
 end;
 
 function TGuiKeyZoneCollection.ZoneByKey(const KeyNr: Byte): TGuiKeyZoneItem;
 var
   i: Integer;
 begin
-  result := nil;
-  if Count = 0 then exit;
+ Result := nil;
+ if Count = 0 then Exit;
 
-  for i := Count - 1 downto 0 do
-    if items[i].KeyInZone(KeyNr) then
-    begin
-      result := items[i];
-      exit;
-    end;
+ for i := Count - 1 downto 0 do
+  if items[i].KeyInZone(KeyNr) then
+   begin
+    Result := items[i];
+    Exit;
+   end;
 end;
 
 procedure TGuiKeyZoneCollection.ClipZones;
 
-    procedure ClipZoneX(clipIndex, OverlayIndex: Integer);
-    var
-      mink, maxk: Byte;
+  procedure ClipZoneX(clipIndex, OverlayIndex: Integer);
+  var
+    mink, maxk: Byte;
+  begin
+   if not items[OverlayIndex].Visible then Exit;
+
+   mink := items[OverlayIndex].LowestZoneKey;
+   maxk := items[OverlayIndex].HighestZoneKey;
+   with items[clipIndex] do
     begin
-       if not items[OverlayIndex].Visible then Exit;
+     // check for no overlay
+     if (HighestZoneKey < mink) and (LowestZoneKey  < mink) then Exit;
+     if (LowestZoneKey  > maxk) and (HighestZoneKey > maxk) then Exit;
 
-       mink := items[OverlayIndex].LowestZoneKey;
-       maxk := items[OverlayIndex].HighestZoneKey;
-       with items[clipIndex] do
-       begin
-         // check for no overlay
-         if (HighestZoneKey<mink) and (LowestZoneKey<mink) then exit;
-         if (LowestZoneKey>maxk)  and (HighestZoneKey>maxk) then exit;
+     // check for complete overlay (underlaying layer is invisible)
+     if  (LowestZoneKey>=mink) and (HighestZoneKey<=maxk) then
+      begin
+       Visible := False;
+       LowestZoneKey  := 0;
+       HighestZoneKey := 0;
+       Exit;
+      end;
 
-         // check for complete overlay (underlaying layer is invisible)
-         if  (LowestZoneKey>=mink) and (HighestZoneKey<=maxk) then
-         begin          
-           Visible := False;
-           LowestZoneKey  := 0;
-           HighestZoneKey := 0;
-           exit;
-         end;
-
-         // check for partial overlay
-         if (HighestZoneKey>=mink) and (HighestZoneKey<=maxk) then begin
-           if LowestZoneKey>maxk then HighestZoneKey := maxk+1 else HighestZoneKey := mink-1;
-         end else if (LowestZoneKey>=mink) and (LowestZoneKey<=maxk) then begin
-           if HighestZoneKey>maxk then LowestZoneKey := maxk+1 else LowestZoneKey := mink-1;
-         end else begin
-           // complete overlay (underlaying Layer is visible)
-           HighestZoneKey := mink-1;
-         end;
-       end;
+     // check for partial overlay
+     if (HighestZoneKey >= mink) and (HighestZoneKey <= maxk) then
+      begin
+       if LowestZoneKey > maxk then HighestZoneKey := maxk + 1 else HighestZoneKey := mink - 1;
+      end else
+     if (LowestZoneKey >= mink) and (LowestZoneKey <= maxk) then
+      begin
+       if HighestZoneKey > maxk
+        then LowestZoneKey := maxk + 1
+        else LowestZoneKey := mink - 1;
+      end
+     else
+      begin
+       // complete overlay (underlaying Layer is visible)
+       HighestZoneKey := mink - 1;
+      end;
     end;
+  end;
 
 var
   i, j : Integer;
 begin
-  if Count < 2 then exit;
+ if Count < 2 then Exit;
 
-  FAllowUpdate := False;
+ FAllowUpdate := False;
 
-  for j := count - 1 downto 1 do
-   for i := j - 1 downto 0
-    do ClipZoneX(i,j);
+ for j := count - 1 downto 1 do
+  for i := j - 1 downto 0
+   do ClipZoneX(i, j);
 
-  FAllowUpdate := True;
-  UpdateOwner;
+ FAllowUpdate := True;
+ UpdateOwner;
 end;
 
 procedure TGuiKeyZoneCollection.UnSelectAll(doUpdate: Boolean = True);
 var
   i : Integer;
 begin
-  if Count < 1 then exit;
+ if Count < 1 then Exit;
 
-  for i := Count - 1 downto 0
-   do Items[i].UnSelect(False);
+ for i := Count - 1 downto 0
+  do Items[i].UnSelect(False);
 
-  if doUpdate then UpdateOwner;
+ if doUpdate then UpdateOwner;
 end;
 
 function TGuiKeyZoneCollection.Selected: TGuiKeyZoneItem;
 var
   i : Integer;
 begin
-  Result := nil;
-  if Count < 1 then exit;
+ Result := nil;
+ if Count < 1 then Exit;
 
-  for i := Count-1 downto 0 do
-   if Items[i].Selected
-    then Result := Items[i];
+ for i := Count-1 downto 0 do
+  if Items[i].Selected
+   then Result := Items[i];
 end;
 
 procedure TGuiKeyZoneCollection.DeleteSelected;
 begin
-  Delete(Selected.Index);
+ Delete(Selected.Index);
 end;
 
 end.

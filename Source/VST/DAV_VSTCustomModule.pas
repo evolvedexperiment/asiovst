@@ -649,11 +649,11 @@ begin
      4: ArrangementType := sat40Music;
     end;
     cpf := [vppIsActive];
-    if numInputs = 2 then cpf := cpf + [vppIsStereo];
+    if numInputs = 2 then Include(cpf, vppIsStereo);
 
     if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
-    if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
-    if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
+    if vppIsStereo in cpf then Include(Flags, vppIsStereo);
+    if vppUseSpeaker in cpf then Include(Flags, vppUseSpeaker);
 
     if Assigned(FOnGetInputProperties)
      then Result := Integer(FOnGetInputProperties(Self, Index, PVstPinProperties(ptr)^))
@@ -682,14 +682,14 @@ begin
      4: ArrangementType := sat40Music;
     end;
     cpf := [vppIsActive];
-    if numOutputs = 2 then cpf := cpf + [vppIsStereo];
+    if numOutputs = 2 then Include(cpf, vppIsStereo);
 
     if vppIsActive in cpf then Flags := [vppIsActive] else Flags := [];
-    if vppIsStereo in cpf then Flags := Flags + [vppIsStereo];
-    if vppUseSpeaker in cpf then Flags := Flags + [vppUseSpeaker];
+    if vppIsStereo in cpf then Include(Flags, vppIsStereo);
+    if vppUseSpeaker in cpf then Include(Flags, vppUseSpeaker);
 
     if Assigned(FOnGetOutputProperties)
-     then Result := Integer(FOnGetOutputProperties(Self, index, PVstPinProperties(ptr)^))
+     then Result := Integer(FOnGetOutputProperties(Self, Index, PVstPinProperties(ptr)^))
      else Result := 1;
    end;
 end;

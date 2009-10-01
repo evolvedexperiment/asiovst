@@ -61,6 +61,7 @@ type
     procedure SetDialImageIndex(Value: Integer);
     procedure SetDialImageList(const Value: TGuiDialImageList);
     procedure SetDialAlpha(const Value: TBitmap);
+    procedure StitchKindChanged;
   protected
     FAutoSize      : Boolean;
     FDialBitmap    : TBitmap;
@@ -75,7 +76,7 @@ type
     function GetGlyphNr: Integer; virtual; abstract;
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure NumGlyphsChanged; virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean); override;
+    procedure UpdateBuffer; override;
     procedure RenderBitmap(const Bitmap: TBitmap); virtual; abstract;
 
     property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
@@ -131,6 +132,10 @@ type
     function GetGlyphNr: Integer; override;
 
     procedure CalcColorCircle;
+    procedure CircleColorChanged; virtual;
+    procedure CurveMappingChanged; virtual;
+    procedure InertiaChanged; virtual;
+    procedure PositionChanged; virtual;
     procedure RenderBitmap(const Bitmap: TBitmap); override;
 
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -149,7 +154,7 @@ type
     property CircleColor : TColor read FCircleColor write SetCircleColor default clBlack;
     property CurveMapping: Single read FCurveMapping write SetCurveMapping;
     property DefaultPosition: Single read FDefaultPosition write SetDefaultPosition;
-    property Inertia: Single read fInertia write SetInertia;
+    property Inertia: Single read FInertia write SetInertia;
     property Max: Single read FMax write SetMax;
     property Min: Single read FMin write SetMin;
     property PointerAngles: TGuiDialPointerAngles read FPointerAngles write SetPointerAngles;
@@ -169,6 +174,7 @@ type
     procedure SetGlyphNr(Value: Integer);
     procedure SetDefaultGlyphNr(Value: Integer);
     procedure SetStringList(const Value: TStringList);
+    procedure GlyphNrChanged;
   protected
     function GetGlyphNr: Integer; override;
     procedure RenderBitmap(const Bitmap: TBitmap); override;
@@ -194,6 +200,7 @@ type
     FIndLineLength : Single;
     procedure SetIndLineLength(const Value: Single);
   protected
+    procedure IndLineLengthChanged;
     procedure RenderBitmap(const Bitmap: TBitmap); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -989,33 +996,33 @@ end;
 
 constructor TCustomGuiStitchedControl.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  FLineColor              := clRed;
-  FLineWidth              := 2;
-  FNumGlyphs              := 1;
-  FStitchKind             := skHorizontal;
-  FDialBitmap             := TBitmap.Create;
-  FDialBitmap.PixelFormat := pf24bit;
-  FDialBitmap.OnChange    := SettingsChanged;
-  FDialAlpha              := TBitmap.Create;
-  FDialAlpha.PixelFormat  := pf8bit;
-  FDialAlpha.OnChange     := SettingsChanged;
+ inherited Create(AOwner);
+ FLineColor              := clRed;
+ FLineWidth              := 2;
+ FNumGlyphs              := 1;
+ FStitchKind             := skHorizontal;
+ FDialBitmap             := TBitmap.Create;
+ FDialBitmap.PixelFormat := pf24bit;
+ FDialBitmap.OnChange    := SettingsChanged;
+ FDialAlpha              := TBitmap.Create;
+ FDialAlpha.PixelFormat  := pf8bit;
+ FDialAlpha.OnChange     := SettingsChanged;
 end;
 
 destructor TCustomGuiStitchedControl.Destroy;
 begin
-  FreeAndNil(FDialBitmap);
-  FreeAndNil(FDialAlpha);
-  inherited Destroy;
+ FreeAndNil(FDialBitmap);
+ FreeAndNil(FDialAlpha);
+ inherited Destroy;
 end;
 
 procedure TCustomGuiStitchedControl.SettingsChanged(Sender: TObject);
 begin
-  FDialBitmap.Canvas.Brush.Color := Self.Color;
-  RedrawBuffer(True);
+ FDialBitmap.Canvas.Brush.Color := Self.Color;
+ Invalidate;
 end;
 
-procedure TCustomGuiStitchedControl.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiStitchedControl.UpdateBuffer;
 var
   theRect   : TRect;
   GlyphNr   : Integer;
@@ -1108,8 +1115,6 @@ begin
     end;
    Unlock;
   end;
-
- if doBufferFlip then Invalidate;
 end;
 
 function TCustomGuiStitchedControl.GetDialImageIndex: Integer;
@@ -1191,7 +1196,7 @@ begin
     then FDialImageList[Value].LinkStitchedControl(Self)
     else FDialImageItem.UnLinkStitchedControl(Self);
    FDialImageItem := FDialImageList[Value];
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -1202,7 +1207,7 @@ begin
    FDialImageList := Value;
    if not assigned(FDialImageList)
     then FDialImageItem := nil;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -1217,18 +1222,25 @@ begin
      Height := FImageList.Height;
      FNumGlyphs := FImageList.Count;
     end;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
 procedure TCustomGuiStitchedControl.SetStitchKind(const Value: TGuiStitchKind);
 begin
-  if FStitchKind <> Value then
+ if FStitchKind <> Value then
   begin
-    FStitchKind := Value;
-    DoAutoSize;
+   FStitchKind := Value;
+   StitchKindChanged;
+
   end;
 end;
+
+procedure TCustomGuiStitchedControl.StitchKindChanged;
+begin
+ DoAutoSize;
+end;
+
 
 { TCustomGuiDial }
 
@@ -1369,7 +1381,7 @@ begin
    FMax := Value;
    if FPosition > Value then FPosition := Value;
    if FDefaultPosition > Value then FDefaultPosition := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -1385,7 +1397,7 @@ begin
    FMin := Value;
    if FPosition < Value then FPosition := Value;
    if FDefaultPosition < Value then FDefaultPosition := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -1409,9 +1421,14 @@ begin
   if FPosition <> Value then
    begin
     FPosition := Value;
-    if not (csLoading in ComponentState) and Assigned(FOnChange) then FOnChange(Self);
-    RedrawBuffer(True);
+    PositionChanged;
    end;
+end;
+
+procedure TCustomGuiDial.PositionChanged;
+begin
+ if not (csLoading in ComponentState) and Assigned(FOnChange) then FOnChange(Self);
+ Invalidate;
 end;
 
 procedure TCustomGuiDial.SetDefaultPosition(Value: Single);
@@ -1422,7 +1439,7 @@ begin
    if Value > FMax then Value := FMax;
   end;
 
-  FDefaultPosition := Value;
+ FDefaultPosition := Value;
 end;
 
 procedure TCustomGuiDial.SetInertia(Value: Single);
@@ -1430,11 +1447,16 @@ begin
  if Value < 0 then Value := 0;
  if FInertia <> Value then
   begin
-   FInertia      := Value;
-   FInertiaExp   := Power(2, -Value);
-   FInertiaScale := 0.01 * Power(0.01, -FInertiaExp);
-   RedrawBuffer(True);
+   FInertia := Value;
+   InertiaChanged;
   end;
+end;
+
+procedure TCustomGuiDial.InertiaChanged;
+begin
+ FInertiaExp := Power(2, -FInertia);
+ FInertiaScale := 0.01 * Power(0.01, -FInertiaExp);
+ Invalidate;
 end;
 
 function TCustomGuiDial.CircularMouseToPosition(X, Y: Integer): Single;
@@ -1497,37 +1519,42 @@ end;
 
 procedure TCustomGuiDial.DragMouseMoveRight(Shift: TShiftState; X, Y: Integer);
 begin
-  if FRightMouseButton = rmbfCircular
-   then Position := CircularMouseToPosition(x, y);
-  inherited;
+ if FRightMouseButton = rmbfCircular
+  then Position := CircularMouseToPosition(x, y);
+ inherited;
 end;
 
 procedure TCustomGuiDial.SetPointerAngles(const Value: TGuiDialPointerAngles);
 begin
-  FPointerAngles.Assign(Value);
+ FPointerAngles.Assign(Value);
 end;
 
 procedure TCustomGuiDial.CalcColorCircle;
 begin
-  if (Color and $000000FF) < $80
-   then if (((Color and $0000FF00) shr 8) <$80) or (((Color and $00FF0000) shr 16)<$80) then FCircleColor:=$FFFFFF
-   else if (((Color and $0000FF00) shr 8) <$80) and (((Color and $00FF0000) shr 16)<$80) then FCircleColor:=$FFFFFF;
+ if (Color and $000000FF) < $80
+  then if (((Color and $0000FF00) shr 8) <$80) or (((Color and $00FF0000) shr 16)<$80) then FCircleColor:=$FFFFFF
+  else if (((Color and $0000FF00) shr 8) <$80) and (((Color and $00FF0000) shr 16)<$80) then FCircleColor:=$FFFFFF;
 
-  RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TCustomGuiDial.SetAutoColor(const Value: Boolean);
 begin
-  CalcColorCircle;
+ CalcColorCircle;
 end;
 
 procedure TCustomGuiDial.SetCircleColor(const Value: TColor);
 begin
-  if not FAutoColor and (Value <> FCircleColor) then
+ if not FAutoColor and (Value <> FCircleColor) then
   begin
-    FCircleColor:=Value;
-    RedrawBuffer(True);
+   FCircleColor := Value;
+   CircleColorChanged;
   end;
+end;
+
+procedure TCustomGuiDial.CircleColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiDial.SetCurveMapping(const Value: Single);
@@ -1535,10 +1562,16 @@ begin
  if FCurveMapping <> Value then
   begin
    FCurveMapping := Value;
-   FCurveMappingExp := Power(2, Value);
-   RedrawBuffer(True);
+   CurveMappingChanged;
   end;
 end;
+
+procedure TCustomGuiDial.CurveMappingChanged;
+begin
+ FCurveMappingExp := Power(2, FCurveMapping);
+ Invalidate;
+end;
+
 
 { TCustomGuiSwitch }
 
@@ -1618,18 +1651,23 @@ begin
  if Value <> FGlyphNr then
   begin
    FGlyphNr := Value;
-   if assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = []) 
-    then FOnChange(Self);
-   RedrawBuffer(True);
+   GlyphNrChanged;
   end;
 end;
+
+procedure TCustomGuiSwitch.GlyphNrChanged;
+begin
+ if assigned(FOnChange) and ([csLoading, csDestroying] * ComponentState = [])
+  then FOnChange(Self);
+ Invalidate;
+end; 
 
 procedure TCustomGuiSwitch.SetStringList(const Value: TStringList);
 begin
  FStringList.Assign(Value);
  if FDialBitmap.Empty
-  then NumGlyphs := max(1, FStringList.Count);
- RedrawBuffer(True);
+  then NumGlyphs := Max(1, FStringList.Count);
+ Invalidate;
 end;
 
 { TCustomGuiDialMetal }
@@ -1702,7 +1740,7 @@ end;
 constructor TCustomGuiDialEx.Create(AOwner: TComponent);
 begin
  inherited;
- fIndLineLength := 100;
+ FIndLineLength := 100;
 end;
 
 procedure TCustomGuiDialEx.RenderBitmap(const Bitmap: TBitmap);
@@ -1754,12 +1792,18 @@ end;
 
 procedure TCustomGuiDialEx.SetIndLineLength(const Value: Single);
 begin
- if fIndLineLength <> Value then
+ if FIndLineLength <> Value then
   begin
-   fIndLineLength := Value;
-   RedrawBuffer(True);
+   FIndLineLength := Value;
+   IndLineLengthChanged;
   end;
 end;
+
+procedure TCustomGuiDialEx.IndLineLengthChanged;
+begin
+ Invalidate
+end;
+
 
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -1880,7 +1924,7 @@ begin
    begin
     NumGlyphs := Self.NumGlyphs;
     StitchKind := Self.StitchKind;
-    RedrawBuffer(True);
+    Invalidate;
    end;
 end;
 

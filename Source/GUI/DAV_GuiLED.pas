@@ -44,21 +44,25 @@ type
     FLEDColor   : TColor;
     FOnChange   : TNotifyEvent;
     FBrightness : Single;
+    FUniformity: Single;
     procedure SetLEDColor(const Value: TColor);
     procedure SetBrightness(const Value: Single);
+    procedure SetUniformity(const Value: Single);
+    function GetUniformity: Single;
   protected
+    procedure RenderLEDToBitmap24(const Bitmap: TBitmap); virtual;
+    procedure RenderLEDToBitmap32(const Bitmap: TBitmap); virtual;
     procedure SettingsChanged(Sender: TObject); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean); override;
-    procedure RenderLEDToBitmap(const Bitmap: TBitmap); virtual;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure UpdateBuffer; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
-    property Brightness_Percent: Single read FBrightness write SetBrightness;
     property Color;
     property LineWidth;
     property LEDColor: TColor read FLEDColor write SetLEDColor default clBlack;
+    property Brightness_Percent: Single read FBrightness write SetBrightness;
+    property Uniformity_Percent: Single read GetUniformity write SetUniformity;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
@@ -72,6 +76,7 @@ type
     property LineColor;
     property LineWidth;
     property ParentColor;
+    property Transparent;
     property Visible;
     property OnChange;
     property OnClick;
@@ -91,6 +96,9 @@ implementation
 
 uses
   ExtCtrls, Math, DAV_Common, DAV_Complex, DAV_GuiCommon;
+
+resourcestring
+  RCStrWrongPixelFormat = 'Wrong pixel format!';
 
 function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
 const
@@ -133,6 +141,8 @@ begin
   FLineColor   := clRed;
   FLineWidth   := 1;
   FBrightness  := 100;
+  FUniformity  := 0.4;
+  FBuffer.PixelFormat := pf32bit
 end;
 
 destructor TCustomGuiLED.Destroy;
@@ -140,12 +150,79 @@ begin
   inherited Destroy;
 end;
 
-procedure TCustomGuiLED.SettingsChanged(Sender: TObject);
+function TCustomGuiLED.GetUniformity: Single;
 begin
-  RedrawBuffer(True);
+ Result := 100 * (1 - sqrt(FUniformity));
 end;
 
-procedure TCustomGuiLED.RenderLEDToBitmap(const Bitmap: TBitmap);
+procedure TCustomGuiLED.SettingsChanged(Sender: TObject);
+begin
+ Invalidate;
+end;
+
+procedure TCustomGuiLED.SetUniformity(const Value: Single);
+begin
+ if FUniformity <> Value then
+  begin
+   FUniformity := sqr(1 - Limit(0.01 * Value, 0, 1));
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiLED.RenderLEDToBitmap24(const Bitmap: TBitmap);
+var
+  Steps, i : Integer;
+  Rad      : Single;
+  XStart   : Single;
+  BW       : Single;
+  Center   : TPointFloat;
+  Line     : PRGB24Array;
+  LEDColor : TRGB24;
+  Scale    : Single;
+  Bright   : Single;
+begin
+ with Bitmap, Canvas do
+  begin
+   Brush.Color := Self.Color;
+   Assert(Bitmap.PixelFormat = pf24bit); 
+
+   LEDColor.R := $FF and FLEDColor;
+   LEDColor.G := $FF and (FLEDColor shr 8);
+   LEDColor.B := $FF and (FLEDColor shr 16);
+   Bright := 0.3 + 0.007 * FBrightness;
+
+   // draw circle
+   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
+   if Rad <= 0 then Exit;
+   BW := 1 - FLineWidth * OversamplingFactor / Rad;
+
+   Center.x := 0.5 * Width;
+   Center.y := 0.5 * Height;
+   Pen.Color := FLineColor;
+   Brush.Color := FLEDColor;
+
+   {$IFNDEF FPC}
+   for I := 0 to round(2 * Rad) do
+    begin
+     XStart := Sqrt(abs(Sqr(rad) - Sqr(Rad - i)));
+     Line := Scanline[round(Center.y - (Rad - i))];
+     for Steps := Round(Center.x - XStart) to Round(Center.x + XStart) do
+      begin
+       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.x) + Sqr(Rad - i)) / Sqr(Rad)));
+
+       if Sqr(steps - Center.x) + Sqr(Rad - i) > Sqr(BW * Rad)
+        then Scale := 0.4 * Scale;
+       Line[Steps].B := Round(Scale * LEDColor.B);
+       Line[Steps].G := Round(Scale * LEDColor.G);
+       Line[Steps].R := Round(Scale * LEDColor.R);
+//       assert(Integer(@(Line[Steps])) and 1 <> 1);
+      end;
+    end;
+   {$ENDIF}
+  end;
+end;
+
+procedure TCustomGuiLED.RenderLEDToBitmap32(const Bitmap: TBitmap);
 var
   Steps, i : Integer;
   Rad      : Single;
@@ -168,10 +245,9 @@ begin
    Bright := 0.3 + 0.007 * FBrightness;
 
    // draw circle
-   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
-   if Rad = 0 then Exit;
+   Rad := 0.45 * Math.Min(Width, Height) - 0.5 * FLineWidth;
+   if Rad <= 0 then Exit;
    BW := 1 - FLineWidth * OversamplingFactor / Rad;
-   if Rad < 0 then exit;
 
    Center.x := 0.5 * Width;
    Center.y := 0.5 * Height;
@@ -179,15 +255,15 @@ begin
    Brush.Color := FLEDColor;
 
    {$IFNDEF FPC}
-   for i := 0 to round(2 * Rad) do
+   for i := 0 to Round(2 * Rad) do
     begin
-     XStart := sqrt(abs(sqr(rad) - sqr(Rad - i)));
+     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
      Line := Scanline[round(Center.y - (Rad - i))];
      for steps := round(Center.x - XStart) to round(Center.x + XStart) do
       begin
-       Scale := Bright * (1 - 0.8 * Math.Max(0, (sqr(steps - Center.x) + sqr(Rad - i)) / sqr(rad)) / OversamplingFactor);
+       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(Steps - Center.x) + Sqr(Rad - i)) / Sqr(rad)));
 
-       if sqr(steps - Center.x) + sqr(Rad - i) > sqr(BW * Rad)
+       if Sqr(steps - Center.x) + Sqr(Rad - i) > Sqr(BW * Rad)
         then Scale := 0.4 * Scale;
        Line[steps].B := round(Scale * LEDColor.B);
        Line[steps].G := round(Scale * LEDColor.G);
@@ -203,11 +279,11 @@ begin
  if FBrightness <> Value then
   begin
    FBrightness := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
-procedure TCustomGuiLED.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiLED.UpdateBuffer;
 var
   Bmp : TBitmap;
 begin
@@ -217,8 +293,11 @@ begin
    if AntiAlias = gaaNone then
     begin
      // draw background
+     assert(FBuffer.Width = Width);
+     assert(FBuffer.Height = Height);
+
      {$IFNDEF FPC}
-     if fTransparent
+     if FTransparent
       then DrawParentImage(FBuffer.Canvas)
       else
      {$ENDIF}
@@ -226,7 +305,14 @@ begin
        Brush.Color := Self.Color;
        FillRect(ClipRect);
       end;
-     RenderLEDToBitmap(FBuffer);
+
+     // render bitmap depending on bit depth
+     case FBuffer.PixelFormat of
+      pf24bit : RenderLEDToBitmap24(FBuffer);
+      pf32bit : RenderLEDToBitmap32(FBuffer);
+      else raise Exception.Create(RCStrWrongPixelFormat);
+     end;
+
     end
    else
     begin
@@ -237,7 +323,7 @@ begin
        Width       := OversamplingFactor * FBuffer.Width;
        Height      := OversamplingFactor * FBuffer.Height;
        {$IFNDEF FPC}
-       if fTransparent then
+       if FTransparent then
         begin
          DrawParentImage(Bmp.Canvas);
          UpsampleBitmap(Bmp);
@@ -250,7 +336,14 @@ begin
           FillRect(ClipRect);
          end;
        Bmp.Canvas.FillRect(ClipRect);
-       RenderLEDToBitmap(Bmp);
+
+       // render bitmap depending on bit depth
+       case FBuffer.PixelFormat of
+        pf24bit : RenderLEDToBitmap24(Bmp);
+        pf32bit : RenderLEDToBitmap32(Bmp);
+        else raise Exception.Create(RCStrWrongPixelFormat);
+       end;
+
        DownsampleBitmap(Bmp);
        FBuffer.Canvas.Draw(0, 0, Bmp);
       finally
@@ -259,14 +352,6 @@ begin
     end;
    Unlock;
   end;
-
- if doBufferFlip then Invalidate;
-end;
-
-procedure TCustomGuiLED.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
-  Y: Integer);
-begin
-  inherited;
 end;
 
 procedure TCustomGuiLED.SetLEDColor(const Value: TColor);
@@ -274,7 +359,7 @@ begin
  if (Value <> FLEDColor) then
   begin
    FLEDColor := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 

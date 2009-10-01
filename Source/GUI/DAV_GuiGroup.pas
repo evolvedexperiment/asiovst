@@ -37,6 +37,11 @@ type
   protected
     procedure Click; override;
     procedure Paint; override;
+    procedure AntiAliasChanged; virtual;
+    procedure CaptionChanged; virtual;
+    procedure LineColorChanged; virtual;
+    procedure LineWidthChanged; virtual;
+    procedure RoundRadiusChanged; virtual;
     procedure RenderGroupToBitmap(Bitmap: TBitmap); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
@@ -207,15 +212,21 @@ begin
  if FAntiAlias <> Value then
   begin
    FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSFactor :=  1;
-     gaaLinear2x : FOSFactor :=  2;
-     gaaLinear4x : FOSFactor :=  4;
-     gaaLinear8x : FOSFactor :=  8;
-    gaaLinear16x : FOSFactor := 16;
-   end;
-   Invalidate;
+   AntiAliasChanged;
   end;
+end;
+
+procedure TCustomGuiGroup.AntiAliasChanged;
+begin
+ case FAntiAlias of
+       gaaNone : FOSFactor :=  1;
+   gaaLinear2x : FOSFactor :=  2;
+   gaaLinear3x : FOSFactor :=  3;
+   gaaLinear4x : FOSFactor :=  4;
+   gaaLinear8x : FOSFactor :=  8;
+  gaaLinear16x : FOSFactor := 16;
+ end;
+ Invalidate;
 end;
 
 procedure TCustomGuiGroup.SetCaption(const Value: string);
@@ -223,8 +234,13 @@ begin
  if FCaption <> Value then
   begin
    FCaption := Value;
-   Invalidate;
+   CaptionChanged;
   end;
+end;
+
+procedure TCustomGuiGroup.CaptionChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiGroup.SetLineColor(const Value: TColor);
@@ -232,8 +248,13 @@ begin
  if FLineColor <> Value then
   begin
    FLineColor := Value;
-   Invalidate;
+   LineColorChanged;
   end;
+end;
+
+procedure TCustomGuiGroup.LineColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiGroup.SetLineWidth(const Value: Integer);
@@ -241,8 +262,13 @@ begin
  if FLineWidth <> Value then
   begin
    FLineWidth := Value;
-   Invalidate;
+   LineWidthChanged;
   end;
+end;
+
+procedure TCustomGuiGroup.LineWidthChanged;
+begin
+ Invalidate;
 end;
 
 procedure TCustomGuiGroup.SetRoundRadius(Value: Integer);
@@ -253,6 +279,11 @@ begin
    FRoundRadius := Value;
    Invalidate;
   end;
+end;
+
+procedure TCustomGuiGroup.RoundRadiusChanged;
+begin
+ Invalidate;
 end;
 
 
@@ -350,6 +381,19 @@ begin
        FillRect(ClipRect);
        RenderGroupToBitmap(Buffer);
        Downsample2xBitmap32(Buffer);
+      end;
+     gaaLinear3x :
+      begin
+       {$IFNDEF FPC}
+       if FTransparent then
+        begin
+         DrawParentImage(Canvas);
+         Upsample3xBitmap32(Buffer);
+        end else
+       {$ENDIF}
+       FillRect(ClipRect);
+       RenderGroupToBitmap(Buffer);
+       Downsample3xBitmap32(Buffer);
       end;
      gaaLinear4x :
       begin

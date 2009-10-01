@@ -70,6 +70,7 @@ type
     procedure DialOSFactor2Change(Sender: TObject);
     procedure DialOutputGainChange(Sender: TObject);
     procedure LbHardClipClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -142,6 +143,11 @@ begin
  finally
   FreeAndNil(PngBmp);
  end;
+end;
+
+procedure TFmAdvancedClipper.FormDestroy(Sender: TObject);
+begin
+ FreeAndNil(FBackgrounBitmap);
 end;
 
 procedure TFmAdvancedClipper.DialFilterOrder1Change(Sender: TObject);

@@ -224,7 +224,7 @@ type
     procedure SetFrameColor(const Value: TColor);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
-    procedure RedrawBuffer(doBufferFlip: Boolean); override;
+    procedure UpdateBuffer; override;
     procedure RenderGraphXYToBitmap(const Bitmap: TBitmap); virtual;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure Resize; override;
@@ -964,7 +964,7 @@ procedure TGuiGraphXYSeriesCollection.Notify(Item: TCollectionItem;
 begin
  inherited;
  assert(Owner is TCustomGuiGraphXY);
- TCustomGuiGraphXY(Owner).RedrawBuffer(True);
+ TCustomGuiGraphXY(Owner).UpdateBuffer;
 end;
 
 procedure TGuiGraphXYSeriesCollection.SetItem(Index: Integer;
@@ -1014,7 +1014,7 @@ end;
 
 procedure TCustomGuiGraphXY.SettingsChanged(Sender: TObject);
 begin
-  RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TCustomGuiGraphXY.RenderGraphXYToBitmap(const Bitmap: TBitmap);
@@ -1130,22 +1130,22 @@ begin
  inherited;
  FXAxis.PixelSize := Width;
  FYAxis.PixelSize := Height;
- RedrawBuffer(True);
+ Invalidate;
 end;
 
-procedure TCustomGuiGraphXY.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiGraphXY.UpdateBuffer;
 var
-  Bmp        : TBitmap;
+  Bmp : TBitmap;
 begin
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
+ if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
   begin
    Lock;
    if AntiAlias = gaaNone then
     begin
      // draw background
      {$IFNDEF FPC}
-     if fTransparent
-      then DrawParentImage(FBuffer.Canvas)
+     if FTransparent
+      then CopyParentImage(Self, FBuffer.Canvas)
       else
      {$ENDIF}
       begin
@@ -1163,9 +1163,9 @@ begin
        Width       := OversamplingFactor * FBuffer.Width;
        Height      := OversamplingFactor * FBuffer.Height;
        {$IFNDEF FPC}
-       if fTransparent then
+       if FTransparent then
         begin
-         DrawParentImage(Bmp.Canvas);
+         CopyParentImage(Self, Bmp.Canvas);
          UpsampleBitmap(Bmp);
         end
        else
@@ -1185,8 +1185,6 @@ begin
     end;
    Unlock;
   end;
-
- if doBufferFlip then Invalidate;
 end;
 
 procedure TCustomGuiGraphXY.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
@@ -1202,7 +1200,7 @@ end;
 
 procedure TCustomGuiGraphXY.UpdateGraph;
 begin
- RedrawBuffer(True);
+ Invalidate;
 end;
 
 procedure TCustomGuiGraphXY.SetFlags(const Value: TGraphXYFlags);
@@ -1224,7 +1222,7 @@ begin
  if FFrameColor <> Value then
   begin
    FFrameColor := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 

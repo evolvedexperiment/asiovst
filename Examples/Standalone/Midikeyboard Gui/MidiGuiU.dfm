@@ -31,7 +31,6 @@ object KbDemoForm: TKbDemoForm
     OnZoneSelectionChanged = MainKbZoneSelectionChanged
     OnStartZoneBarDragging = MainKbStartZoneBarDragging
     OnMoveZoneBarDragging = MainKbMoveZoneBarDragging
-    ExplicitTop = 192
   end
   object PnRemoteControl: TPanel
     Left = 8

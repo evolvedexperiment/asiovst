@@ -27,7 +27,8 @@ type
     procedure DownsampleBitmap(Bitmap: TBitmap);
     procedure UpsampleBitmap(Bitmap: TBitmap);
   protected
-    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
+    procedure UpdateBuffer; override;
+    procedure AntiAliasChanged; virtual;
   public
     constructor Create(AOwner: TComponent); override;
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
@@ -229,26 +230,26 @@ end;
 procedure TCustomGuiButton.DownsampleBitmap(Bitmap: TBitmap);
 begin
  case FAntiAlias of
-   gaaLinear2x: Downsample2xBitmap32(Bitmap);
-   gaaLinear3x: Downsample3xBitmap32(Bitmap);
-   gaaLinear4x: Downsample4xBitmap32(Bitmap);
-   gaaLinear8x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample2xBitmap32(Bitmap);
-                end;
-  gaaLinear16x: begin
-                 Downsample4xBitmap32(Bitmap);
-                 Downsample4xBitmap32(Bitmap);
-                end;
+   gaaLinear2x : Downsample2xBitmap32(Bitmap);
+   gaaLinear3x : Downsample3xBitmap32(Bitmap);
+   gaaLinear4x : Downsample4xBitmap32(Bitmap);
+   gaaLinear8x : begin
+                  Downsample4xBitmap32(Bitmap);
+                  Downsample2xBitmap32(Bitmap);
+                 end;
+  gaaLinear16x : begin
+                  Downsample4xBitmap32(Bitmap);
+                  Downsample4xBitmap32(Bitmap);
+                 end;
   else raise Exception.Create('not yet supported');
  end;
 end;
 
-procedure TCustomGuiButton.RedrawBuffer(doBufferFlip: Boolean);
+procedure TCustomGuiButton.UpdateBuffer;
 var
   Bmp : TBitmap;
 begin
- if (Width > 0) and (Height > 0) then with fBuffer.Canvas do
+ if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
   begin
    Lock;
    Brush.Style := bsSolid;
@@ -256,9 +257,9 @@ begin
    case FAntiAlias of
     gaaNone     :
      begin
-      {$IFNDEF FPC}if fTransparent then DrawParentImage(fBuffer.Canvas) else {$ENDIF}
+      {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
       FillRect(ClipRect);
-      RenderButtonToBitmap(fBuffer);
+      RenderButtonToBitmap(FBuffer);
      end;
     else
      begin
@@ -266,14 +267,14 @@ begin
       with Bmp do
        try
         PixelFormat := pf32bit;
-        Width  := FOSFactor * fBuffer.Width;
-        Height := FOSFactor * fBuffer.Height;
+        Width  := FOSFactor * FBuffer.Width;
+        Height := FOSFactor * FBuffer.Height;
         Canvas.Brush.Style := bsSolid;
         Canvas.Brush.Color := Self.Color;
         {$IFNDEF FPC}
-        if fTransparent then
+        if FTransparent then
          begin
-          DrawParentImage(Bmp.Canvas);
+          CopyParentImage(Self, Bmp.Canvas);
           UpsampleBitmap(Bmp);
          end else
         {$ENDIF}
@@ -288,8 +289,6 @@ begin
      end;
    end;
   end;
-
- if doBufferFlip then Invalidate;
 end;
 
 procedure TCustomGuiButton.SetAlignment(const Value: TAlignment);
@@ -297,7 +296,7 @@ begin
  if FAlignment <> Value then
   begin
    FAlignment := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -306,16 +305,21 @@ begin
  if FAntiAlias <> Value then
   begin
    FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSFactor :=  1;
-     gaaLinear2x : FOSFactor :=  2;
-     gaaLinear3x : FOSFactor :=  3;
-     gaaLinear4x : FOSFactor :=  4;
-     gaaLinear8x : FOSFactor :=  8;
-    gaaLinear16x : FOSFactor := 16;
-   end;
-   RedrawBuffer(True);
+   AntiAliasChanged;
   end;
+end;
+
+procedure TCustomGuiButton.AntiAliasChanged;
+begin
+ case FAntiAlias of
+       gaaNone : FOSFactor :=  1;
+   gaaLinear2x : FOSFactor :=  2;
+   gaaLinear3x : FOSFactor :=  3;
+   gaaLinear4x : FOSFactor :=  4;
+   gaaLinear8x : FOSFactor :=  8;
+  gaaLinear16x : FOSFactor := 16;
+ end;
+ Invalidate;
 end;
 
 procedure TCustomGuiButton.SetButtonColor(const Value: TColor);
@@ -323,7 +327,7 @@ begin
  if FButtonColor <> Value then
   begin
    FButtonColor := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -332,7 +336,7 @@ begin
  if FCaption <> Value then
   begin
    FCaption := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 
@@ -342,7 +346,7 @@ begin
  if FRoundRadius <> Value then
   begin
    FRoundRadius := Value;
-   RedrawBuffer(True);
+   Invalidate;
   end;
 end;
 

@@ -40,6 +40,7 @@ uses
   Graphics, Classes;
 
 type
+  {$A1}
   TRGB32 = packed record
     B, G, R, A: Byte;
   end;
