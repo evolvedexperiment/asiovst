@@ -114,6 +114,7 @@ contains
   DAV_DspVocoder in '..\..\Source\Dsp\DAV_DspVocoder.pas',
   DAV_DspVoiceSynth in '..\..\Source\Dsp\DAV_DspVoiceSynth.pas',
   DAV_DspWaveshaper in '..\..\Source\Dsp\DAV_DspWaveshaper.pas',
-  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas';
+  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas',
+  DAV_DspComponents in '..\..\Source\DSP\DAV_DspComponents.pas';
 
 end.

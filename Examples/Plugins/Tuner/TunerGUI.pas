@@ -56,7 +56,7 @@ type
     procedure PBDisplayPaint(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    FBackgrounBitmap   : TBitmap;
+    FBackgroundBitmap  : TBitmap;
     FNeedlePosition    : Single;
     FOldNeedlePosition : Integer;
   end;
@@ -79,8 +79,8 @@ var
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackgroundBitmap := TBitmap.Create;
+ with FBackgroundBitmap do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -130,7 +130,7 @@ end;
 
 procedure TFmTuner.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgroundBitmap);
 end;
 
 procedure TFmTuner.FormShow(Sender: TObject);

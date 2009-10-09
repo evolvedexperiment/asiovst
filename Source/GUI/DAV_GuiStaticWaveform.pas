@@ -42,11 +42,12 @@ type
     procedure WaveVPaddingChanged;
     procedure NormalizationTypeChanged;
     procedure WaveDrawModeChanged;
+    procedure RenderToBitmap(Bitmap: TBitmap);
   protected
     procedure DrawSamples(var OldMaxPos, OldMinPos: TPoint; NewMax, NewMin: TPoint);
     procedure ResizeBuffer; override;
     procedure DrawMedian(YOffset: Integer);
-    procedure DrawGraphs; virtual;
+    procedure DrawGraphs(Bitmap: TBitmap); virtual;
     procedure DrawSingleWave(YOffset, HalfHeight, Channel: Integer);
     function  GetMaxAmp(Channel: Integer): single;
     procedure MedianLineWidthChanged; virtual;
@@ -473,11 +474,11 @@ begin
  end;
 end;
 
-procedure TCustomGuiStaticWaveform.DrawGraphs;
+procedure TCustomGuiStaticWaveform.DrawGraphs(Bitmap: TBitmap);
 var
   YOffset, i : Integer;
 begin
- with FBuffer.Canvas do
+ with Bitmap.Canvas do
   for i := 0 to FDisplayChannels - 1 do
    begin
     YOffset := (FWaveVPadding + FWaveHalfHeight) * (i * 2 + 1);
@@ -490,10 +491,6 @@ begin
 end;
 
 procedure TCustomGuiStaticWaveform.UpdateBuffer;
-var
-  i      : Integer;
-  MaxAmp : Single;
-  Amp    : Single;
 begin
  if (Width > 0) and (Height > 0) then
   with FBuffer.Canvas do
@@ -504,41 +501,58 @@ begin
 
      {$IFNDEF FPC}
      if FTransparent
-      then DrawParentImage(FBuffer.Canvas)
+      then CopyParentImage(Self, FBuffer.Canvas)
       else {$ENDIF} FillRect(ClipRect);
 
-     MaxAmp := 0;
-     if FDisplayChannels < 1 then Exit;
-     for i := 0 to FDisplayChannels - 1 do
-       if i >= Length(FWaveData)
-        then FNormalizationFactors[i] := 0 else
-       if Length(FWaveData[i]) < 1 then FNormalizationFactors[i] := 0 else
-        begin
-         Amp := GetMaxAmp(i);
-         MaxAmp := Max(MaxAmp, Amp);
-         if Amp = 0
-          then FNormalizationFactors[i] := 0
-          else FNormalizationFactors[i] := 1 / Amp;
-       end;
-    
-     if FNormalizationType = ntNone then
-      begin
-       for i := 0 to FDisplayChannels - 1 do
-        if FNormalizationFactors[i] > 0
-         then FNormalizationFactors[i] := 1;
-      end
-     else if (FNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
-      begin
-       for i := 0 to FDisplayChannels - 1 do
-        if FNormalizationFactors[i] > 0
-         then FNormalizationFactors[i] := 1 / MaxAmp;
-      end;
-
-     DrawGraphs;
+     RenderToBitmap(FBuffer);
     finally
      UnLock;
     end;
    end;
+end;
+
+procedure TCustomGuiStaticWaveform.RenderToBitmap(Bitmap: TBitmap);
+var
+  i      : Integer;
+  MaxAmp : Single;
+  Amp    : Single;
+begin
+ with Bitmap.Canvas do
+  begin
+   Lock;
+   try
+    MaxAmp := 0;
+    if FDisplayChannels < 1 then Exit;
+    for i := 0 to FDisplayChannels - 1 do
+      if i >= Length(FWaveData)
+       then FNormalizationFactors[i] := 0 else
+      if Length(FWaveData[i]) < 1 then FNormalizationFactors[i] := 0 else
+       begin
+        Amp := GetMaxAmp(i);
+        MaxAmp := Max(MaxAmp, Amp);
+        if Amp = 0
+         then FNormalizationFactors[i] := 0
+         else FNormalizationFactors[i] := 1 / Amp;
+      end;
+    
+    if FNormalizationType = ntNone then
+     begin
+      for i := 0 to FDisplayChannels - 1 do
+       if FNormalizationFactors[i] > 0
+        then FNormalizationFactors[i] := 1;
+     end
+    else if (FNormalizationType = ntOverallChannels) and (MaxAmp > 0) then
+     begin
+      for i := 0 to FDisplayChannels - 1 do
+       if FNormalizationFactors[i] > 0
+        then FNormalizationFactors[i] := 1 / MaxAmp;
+     end;
+
+    DrawGraphs(Bitmap);
+   finally
+    UnLock;
+   end;
+  end;
 end;
 
 end.

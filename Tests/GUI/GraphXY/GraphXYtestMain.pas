@@ -8,7 +8,10 @@ uses
 
 type
   TFmGraphXY = class(TForm)
-    GraphXY: TGuiGraphXY;
+    GraphXYA: TGuiGraphXY;
+    GraphXYB: TGuiGraphXY;
+    GraphXYC: TGuiGraphXY;
+    GraphXYD: TGuiGraphXY;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -16,7 +19,7 @@ type
   private
     FBackgrounBitmap : TBitmap;
   public
-    { Public-Deklarationen }
+    function SimpleFunctionEvaluate(Sender: TObject; X: Double): Double;
   end;
 
 var
@@ -32,7 +35,10 @@ uses
 procedure TFmGraphXY.FormCreate(Sender: TObject);
 begin
  FBackgrounBitmap := TBitmap.Create;
- GraphXY.Transparent := True;
+ TGuiGraphXYFunctionSeries(GraphXYA[0].Series).OnEvaluate := SimpleFunctionEvaluate;
+ TGuiGraphXYFunctionSeries(GraphXYB[0].Series).OnEvaluate := SimpleFunctionEvaluate;
+ TGuiGraphXYFunctionSeries(GraphXYC[0].Series).OnEvaluate := SimpleFunctionEvaluate;
+ TGuiGraphXYFunctionSeries(GraphXYD[0].Series).OnEvaluate := SimpleFunctionEvaluate;
 end;
 
 procedure TFmGraphXY.FormDestroy(Sender: TObject);
@@ -75,6 +81,11 @@ begin
       end;
     end;
   end;
+end;
+
+function TFmGraphXY.SimpleFunctionEvaluate(Sender: TObject; X: Double): Double;
+begin
+ Result := X * sqr(X) * 0.1;
 end;
 
 end.

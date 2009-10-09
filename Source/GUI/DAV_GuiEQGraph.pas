@@ -74,6 +74,7 @@ type
     procedure SetMaxGain(const Value: Single);
     procedure SetBorderWidth(const Value: Integer);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure Paint; override;
     procedure Resize; override;
     procedure RepaintBuffer; virtual;
@@ -84,6 +85,7 @@ type
     {$ELSE}
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     {$ENDIF}
+
     property ChartBufferNeedsRepaint: Boolean read FChartBufferNeedsRepaint write FChartBufferNeedsRepaint;
     property BufferNeedsRepaint: Boolean read FBufferNeedsRepaint write FBufferNeedsRepaint;
   public
@@ -171,6 +173,31 @@ begin
  FreeAndNil(FBuffer);
  FreeAndNil(FChartBuffer);
  inherited Destroy;
+end;
+
+procedure TGuiEQGraph.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TGuiEQGraph then
+  with TGuiEQGraph(Dest) do
+   begin
+    FAutoColor               := Self.FAutoColor;
+    FChartColor              := Self.FChartColor;
+    FBorderRadius            := Self.FBorderRadius;
+    FBorderWidth             := Self.FBorderWidth;
+    FdBLabelStyle            := Self.FdBLabelStyle;
+    FFreqLabelStyle          := Self.FFreqLabelStyle;
+    FGraphColorDark          := Self.FGraphColorDark;
+    FGraphColorLight         := Self.FGraphColorLight;
+    FMaxGain                 := Self.FMaxGain;
+    FChartBufferNeedsRepaint := Self.FChartBufferNeedsRepaint;
+    FBufferNeedsRepaint      := Self.FBufferNeedsRepaint;
+    FOnPaint                 := Self.FOnPaint;
+    FOnGetFilterGain         := Self.FOnGetFilterGain;
+
+    FBuffer.Assign(Self.FBuffer);
+    FChartBuffer.Assign(Self.FChartBuffer);
+   end;
 end;
 
 {$IFNDEF FPC}

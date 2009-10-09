@@ -1,0 +1,73 @@
+object FmEqGraphTest: TFmEqGraphTest
+  Left = 218
+  Top = 77
+  Caption = 'EQ-Graph Test'
+  ClientHeight = 284
+  ClientWidth = 414
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object EqGraphA: TGuiEQGraph
+    Left = 8
+    Top = 8
+    Width = 196
+    Height = 128
+    AutoColor = False
+    GraphColorDark = clBlue
+    ColorChart = clBtnFace
+    MaxGain = 15.000000000000000000
+    dBLabelStyle = dlsNone
+    OnGetFilterGain = EqGraphGetFilterGain
+    Color = clBtnFace
+    ParentColor = False
+  end
+  object EqGraphB: TGuiEQGraph
+    Left = 8
+    Top = 142
+    Width = 196
+    Height = 128
+    AutoColor = False
+    GraphColorDark = clLime
+    ColorChart = clBtnFace
+    MaxGain = 15.000000000000000000
+    dBLabelStyle = dlsNone
+    OnGetFilterGain = EqGraphGetFilterGain
+    Color = clBtnFace
+    ParentColor = False
+  end
+  object EqGraphC: TGuiEQGraph
+    Left = 210
+    Top = 8
+    Width = 196
+    Height = 128
+    AutoColor = False
+    GraphColorDark = clYellow
+    ColorChart = clBtnFace
+    MaxGain = 15.000000000000000000
+    dBLabelStyle = dlsNone
+    OnGetFilterGain = EqGraphGetFilterGain
+    Color = clBtnFace
+    ParentColor = False
+  end
+  object EqGraphD: TGuiEQGraph
+    Left = 210
+    Top = 142
+    Width = 196
+    Height = 128
+    AutoColor = False
+    GraphColorDark = clRed
+    ColorChart = clBtnFace
+    MaxGain = 15.000000000000000000
+    dBLabelStyle = dlsNone
+    OnGetFilterGain = EqGraphGetFilterGain
+    Color = clBtnFace
+    ParentColor = False
+  end
+end

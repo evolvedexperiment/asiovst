@@ -52,6 +52,7 @@ type
   public
     constructor Create(const BufferSize: Integer = 0); virtual;
     procedure Reset; virtual;
+    procedure ClearBuffer; virtual; abstract;
   end;
 
   TCustomDelayLineSamples32 = class(TCustomDelayLine, IDspProcessor32)
@@ -59,13 +60,15 @@ type
     function GetSample(Index: Integer): Single;
   protected
     FBuffer : PDAVSingleFixedArray;
-    procedure BufferSizeChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure BufferSizeChanged; override;
   public
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
-    procedure Reset; override;
 
+    procedure ClearBuffer; override;
+    procedure Reset; override;
+    
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
@@ -77,11 +80,13 @@ type
     function GetSample(Index: Integer): Double;
   protected
     FBuffer : PDAVDoubleFixedArray;
-    procedure BufferSizeChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure BufferSizeChanged; override;
   public
     constructor Create(const BufferSize: Integer = 0); override;
     destructor Destroy; override;
+
+    procedure ClearBuffer; override;
     procedure Reset; override;
 
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
@@ -122,10 +127,12 @@ type
     constructor Create(const FractionalBufferSize: Double = 0); override;
     destructor Destroy; override;
 
+    procedure ClearBuffer; override;
+    procedure Reset; override;
+
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
-    procedure Reset; override;
   published
     property FractionalBufferSize;
   end;
@@ -140,10 +147,11 @@ type
     constructor Create(const FractionalBufferSize: Double = 0); override;
     destructor Destroy; override;
 
+    procedure ClearBuffer; override;
+    procedure Reset; override;
+
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
-
-    procedure Reset; override;
   published
     property FractionalBufferSize;
   end;
@@ -298,12 +306,17 @@ end;
 procedure TCustomDelayLineSamples32.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
- FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
+ // ClearBuffer;
 end;
 
 procedure TCustomDelayLineSamples32.Reset;
 begin
  inherited;
+ ClearBuffer;
+end;
+
+procedure TCustomDelayLineSamples32.ClearBuffer;
+begin
  FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
@@ -360,6 +373,7 @@ end;
 procedure TCustomDelayLineSamples64.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
+ // ClearBuffer;
 end;
 
 procedure TCustomDelayLineSamples64.ProcessBlock64(Data: PDAVDoubleFixedArray;
@@ -383,6 +397,11 @@ end;
 procedure TCustomDelayLineSamples64.Reset;
 begin
  inherited;
+ ClearBuffer;
+end;
+
+procedure TCustomDelayLineSamples64.ClearBuffer;
+begin
  FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
 end;
 
@@ -463,6 +482,11 @@ end;
 procedure TDelayLineFractional32.Reset;
 begin
  inherited;
+ ClearBuffer;
+end;
+
+procedure TDelayLineFractional32.ClearBuffer;
+begin
  FillChar(FBuffer^, FBufferSize * SizeOf(Single), 0);
 end;
 
@@ -513,6 +537,11 @@ end;
 procedure TDelayLineFractional64.Reset;
 begin
  inherited;
+ ClearBuffer;
+end;
+
+procedure TDelayLineFractional64.ClearBuffer;
+begin
  FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
 end;
 

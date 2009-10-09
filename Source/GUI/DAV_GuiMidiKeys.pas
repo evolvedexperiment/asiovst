@@ -83,8 +83,31 @@ type
   TGuiOnNoteOn                = procedure (Sender: TObject; KeyNr: Byte; Velocity: Single) of Object;
   TGuiOnNoteOff               = procedure (Sender: TObject; KeyNr: Byte) of Object;
 
-  TGuiMidiKeys = class(TGuiBaseControl)
+  TCustomGuiMidiKeys = class(TCustomGuiBaseAntialiasedControl)
   private
+    procedure SetBorderColor(Value: TColor);
+    procedure SetKeySeparatorColor(Value: TColor);
+    procedure SetZoneSeparatorColor(Value: TColor);
+    procedure SetZoneBarColor(Value: TColor);
+    procedure SetZoneBarHoverColor(Value: TColor);
+    procedure SetBlackKeyColor(Value: TColor);
+    procedure SetBlackKeyHoverColor(Value: TColor);
+    procedure SetBlackKeyPressedColor(Value: TColor);
+    procedure SetWhiteKeyColor(Value: TColor);
+    procedure SetWhiteKeyHoverColor(Value: TColor);
+    procedure SetWhiteKeyPressedColor(Value: TColor);
+
+    procedure SetKeyDownMode(Value: TGuiKeyDownMode);
+    procedure SetHeight3d(Value: Single);
+    procedure SetBlackKeyHeight(Value: Single);
+    procedure SetBaseOctave(Value: Byte);
+    procedure SetNumOctaves(Value: Byte);
+    procedure SetIncludeLastOctave(Value: Boolean);
+    procedure SetKeyZones(Value: TGuiKeyZoneCollection);
+    procedure SetShowKeyZones(Value: Boolean);
+    procedure SetKeyZoneHeight(Value: Integer);
+
+    function ZoneKeyArea(KeyNr: Byte): TRect;
   protected
     FRedrawEnabled           : Boolean;
     FKeys                    : TGuiKeyArray;
@@ -148,36 +171,16 @@ type
     FMidiZoneBarDragging     : TGuiZbMouseDragInfo;
     FMidiZoneBarMouseOver    : Boolean;
 
-    procedure SetBorderColor(Value: TColor);
-    procedure SetKeySeparatorColor(Value: TColor);
-    procedure SetZoneSeparatorColor(Value: TColor);
-    procedure SetZoneBarColor(Value: TColor);
-    procedure SetZoneBarHoverColor(Value: TColor);
-    procedure SetBlackKeyColor(Value: TColor);
-    procedure SetBlackKeyHoverColor(Value: TColor);
-    procedure SetBlackKeyPressedColor(Value: TColor);
-    procedure SetWhiteKeyColor(Value: TColor);
-    procedure SetWhiteKeyHoverColor(Value: TColor);
-    procedure SetWhiteKeyPressedColor(Value: TColor);
-
-    procedure SetKeyDownMode(Value: TGuiKeyDownMode);
-    procedure SetHeight3d(Value: Single);
-    procedure SetBlackKeyHeight(Value: Single);
-    procedure SetBaseOctave(Value: Byte);
-    procedure SetNumOctaves(Value: Byte);
-    procedure SetIncludeLastOctave(Value: Boolean);
-    procedure SetKeyZones(Value: TGuiKeyZoneCollection);
-    procedure SetShowKeyZones(Value: Boolean);
-    procedure SetKeyZoneHeight(Value: Integer);
-
-    function  ZoneKeyArea(KeyNr: Byte): TRect;
-
+    procedure AntialiasChanged; override;
     function CalculateLights(Color : TColor; DoubledHeight: boolean = False; KeyPressed: boolean = False): TGuiColorRect; virtual;
     procedure CalculateVisibleKeys; virtual;
     procedure InitKeys; virtual;
-    procedure DrawKeyZones; virtual;
-    procedure DrawSingleKey(CurKey: TGuiSingleKey); virtual;
-    procedure DrawKeys; virtual;
+
+    procedure DrawKeyZones(Bitmap: TBitmap); virtual;
+    procedure DrawSingleKey(Bitmap: TBitmap; CurKey: TGuiSingleKey); virtual;
+    procedure DrawKeys(Bitmap: TBitmap); virtual;
+    procedure RenderToBitmap(Bitmap: TBitmap); virtual;
+
     procedure MouseLeaveAllKeys(ExceptKey: Integer = -1); virtual;
     procedure MouseLeaveAllZones(ExceptZone: TGuiKeyZoneItem = nil); virtual;
     procedure UnSelectAllZones(ExceptZone: TGuiKeyZoneItem = nil); virtual;
@@ -251,9 +254,7 @@ type
     function GetZoneMouseOverType(X: Integer; KeyNr: Integer = -1; Zone: TGuiKeyZoneItem = nil): TGuiZoneMousePosType;
     function ScreenCoordOnKey(X, Y: Integer; KeyNr: Integer; CheckYPos: Boolean = True): Boolean; dynamic;
     property Keys: TGuiKeyArray read FKeys;
-  published
-    property ReleaseMouseBtnOnLeave;
-    
+
     property KeyDownMode: TGuiKeyDownMode read FKeyDownMode write SetKeyDownMode;
     property BorderColor: TColor read FBorderColor write SetBorderColor default clBlack;
     property KeySeparatorColor: TColor read FKeySeparatorColor write SetKeySeparatorColor default clBlack;
@@ -310,20 +311,108 @@ type
     property OnNoteOff: TGuiOnNoteOff read FOnNoteOff write FOnNoteOff;
   end;
 
+  TGuiMidiKeys = class(TCustomGuiMidiKeys)
+  published
+    property Align;
+    property AllowKeyDragging;
+    property Anchors;
+    property AntiAlias;
+    property BaseOctave;
+    property BlackKeyColor;
+    property BlackKeyHeight;
+    property BlackKeyHoverColor;
+    property BlackKeyPressedColor;
+    property BorderColor;
+    property Constraints;
+    property CursorKeys;
+    property CursorZone;
+    property CursorZoneBar;
+    property CursorZoneBorder;
+    property DragCursor;
+    property DragKind;
+    property DragMode;
+    property Enabled;
+    property Height3d;
+    property IncludeLastOctave;
+    property KeyDownMode;
+    property KeySeparatorColor;
+    property KeyZoneHeight;
+    property KeyZones;
+    property NumOctaves;
+    property PopupMenu;
+    property ReleaseMouseBtnOnLeave;
+    property ShowHint;
+    property ShowKeyZones;
+    property Visible;
+    property WhiteKeyColor;
+    property WhiteKeyHoverColor;
+    property WhiteKeyPressedColor;
+    property ZoneBarColor;
+    property ZoneBarHoverColor;
+    property ZoneSeparatorColor;
+
+    {$IFNDEF FPC}
+    property OnCanResize;
+    {$ENDIF}
+    property OnClick;
+    property OnConstrainedResize;
+    property OnContextPopup;
+    property OnDblClick;
+    property OnDragDrop;
+    property OnDragMouseMove;
+    property OnDragOver;
+    property OnEndDock;
+    property OnEndDrag;
+    property OnEndKeyDragging;
+    property OnEndZoneBarDragging;
+    property OnKeyMouseEnter;
+    property OnKeyMouseLeave;
+    property OnMouseDown;
+    property OnMouseDownKeyZoneBar;
+    property OnMouseDownOnMidiKey;
+    property OnMouseEnter;
+    property OnMouseLeave;
+    property OnMouseMove;
+    property OnMouseUp;
+    property OnMouseUpOnKeyZoneBar;
+    property OnMouseUpOnMidiKey;
+    property OnMoveKeyDragging;
+    property OnMoveZoneBarDragging;
+    property OnNoteOff;
+    property OnNoteOn;
+    property OnPaint;
+    property OnResize;
+    property OnStartDock;
+    property OnStartDrag;
+    property OnStartKeyDragging;
+    property OnStartZoneBarDragging;
+    property OnZoneBarMouseEnter;
+    property OnZoneBarMouseLeave;
+    property OnZoneMouseEnter;
+    property OnZoneMouseLeave;
+    property OnZoneMouseOverChanged;
+    property OnZoneSelectionChanged;
+    {$IFDEF Delphi6_Up}
+    property OnMouseWheel;
+    property OnMouseWheelDown;
+    property OnMouseWheelUp;
+    {$ENDIF}
+  end;
+
 implementation
 
 uses
   SysUtils, Math;
 
-constructor TGuiMidiKeys.Create(AOwner: TComponent);
+constructor TCustomGuiMidiKeys.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FKeyZones := TGuiKeyZoneCollection.Create(Self);
-   
+
   FShowKeyZones         := True;
   FKeyZoneHeight        := 10;
 
-  FAllowKeyDragging        := True;
+  FAllowKeyDragging     := True;
 
   FBorderColor          := clBlack;
   ZoneBarColor          := clWhite;
@@ -337,9 +426,8 @@ begin
   FWhiteKeyPressedColor := clSilver;
   FKeyDownMode          := kdmFlat;
   FZoneMouseOverType    := [];
-  FRedrawEnabled         := True;
+  FRedrawEnabled        := True;
 
-  
   FCursorKeys           := crHandPoint;
   FCursorZoneBar        := crDefault;
   FCursorZone           := crSize;
@@ -354,25 +442,25 @@ begin
   FMidiZoneBarDragging.Zone       := nil;
   FMidiZoneBarDragging.InZonePos  := [mptOutside];
   
-  FMidiZoneBarMouseOver    := False;
-  
-  FBaseOctave           := 3;
-  FNumOctaves           := 3;
-  FIncludeLastOctave    := False;
-  FHeight3d             := 0.2;
-  FBlackKeyHeight       := 0.63;
+  FMidiZoneBarMouseOver := False;
+
+  FBaseOctave        := 3;
+  FNumOctaves        := 3;
+  FIncludeLastOctave := False;
+  FHeight3d          := 0.2;
+  FBlackKeyHeight    := 0.63;
 
   InitKeys;
   RedrawInterval := 50;
 end;
 
-destructor TGuiMidiKeys.Destroy;
+destructor TCustomGuiMidiKeys.Destroy;
 begin
  FreeAndNil(FKeyZones);
  inherited;
 end;
 
-procedure TGuiMidiKeys.InitKeys;
+procedure TCustomGuiMidiKeys.InitKeys;
 var
   i: Byte;
 begin
@@ -391,13 +479,13 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.ResizeBuffer;
+procedure TCustomGuiMidiKeys.ResizeBuffer;
 begin
   CalculateVisibleKeys;
   inherited;
 end;
 
-procedure TGuiMidiKeys.CalculateVisibleKeys;
+procedure TCustomGuiMidiKeys.CalculateVisibleKeys;
 var
   i, cnt, KeyCount        : Integer;
   KeyWidth                : Single;
@@ -411,21 +499,23 @@ begin
  for i := 0 to CKeyboardHighestKey do with FKeys[i] do
   begin
    if i > LastKey
-    then Area := Rect(Width - 1, 0, Width - 1, 0)
+    then Area := Rect(OversamplingFactor * Width - 1, 0, OversamplingFactor * Width - 1, 0)
     else Area := Rect(0, 0, 0, 0);
    Exclude(Flags, kfVisible);
   end;
 
   if FShowKeyZones
-   then TopMargin := FKeyZoneHeight + 2
+   then TopMargin := OversamplingFactor * FKeyZoneHeight + 2
    else TopMargin := 1;
-  BottomMargin := Height - 1;
+  BottomMargin := OversamplingFactor * Height - 1;
   
 
   // set white keys  
   // -------------------------------------------
-  if FIncludeLastOctave then KeyCount := 1 else KeyCount := 0;
-  KeyWidth := (Width-1) / (KeyCount+FNumOctaves*7);
+  if FIncludeLastOctave
+   then KeyCount := 1
+   else KeyCount := 0;
+  KeyWidth := OversamplingFactor * (Width - 1) / (KeyCount + FNumOctaves * 7);
 
   cnt := 0;
   LastRightBorder := -1;
@@ -443,11 +533,11 @@ begin
   // set black keys
   // -------------------------------------------
   if not FIncludeLastOctave then KeyWidth := 0;
-  KeyWidth := (Width - 2 - KeyWidth) / (FNumOctaves * 12);
+  KeyWidth := (OversamplingFactor * Width - 2 - KeyWidth) / (FNumOctaves * 12);
 
-  BottomMargin := Round((Height-TopMargin) * FBlackKeyHeight + TopMargin);
+  BottomMargin := Round((OversamplingFactor * Height - TopMargin) * FBlackKeyHeight + TopMargin);
 
-  cnt := 0;
+  Cnt := 0;
   for i := FirstKey to LastKey do
    begin
     if (i mod 12) in [1,3,6,8,10] then
@@ -461,7 +551,7 @@ begin
   end;
 end;
 
-function TGuiMidiKeys.CalculateLights(Color : TColor; DoubledHeight, KeyPressed: boolean): TGuiColorRect;
+function TCustomGuiMidiKeys.CalculateLights(Color : TColor; DoubledHeight, KeyPressed: boolean): TGuiColorRect;
 var
   r1, g1, b1 : Integer;
   r2, g2, b2 : Integer;
@@ -494,7 +584,7 @@ begin
  Result.Top    := Result.Left;
 end;
 
-procedure TGuiMidiKeys.SetKeyDownMode(Value: TGuiKeyDownMode);
+procedure TCustomGuiMidiKeys.SetKeyDownMode(Value: TGuiKeyDownMode);
 begin
  if FKeyDownMode <> Value then
   begin
@@ -503,12 +593,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.KeyDownModeChanged;
+procedure TCustomGuiMidiKeys.KeyDownModeChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetBorderColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetBorderColor(Value: TColor);
 begin
  if FBorderColor <> Value then
   begin
@@ -517,12 +607,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.BorderColorChanged;
+procedure TCustomGuiMidiKeys.BorderColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetKeySeparatorColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetKeySeparatorColor(Value: TColor);
 begin
  if FKeySeparatorColor <> Value then
   begin
@@ -531,12 +621,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.KeySeparatorColorChanged;
+procedure TCustomGuiMidiKeys.KeySeparatorColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetZoneSeparatorColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetZoneSeparatorColor(Value: TColor);
 begin
   if FZoneSeparatorColor <> Value then
   begin
@@ -545,12 +635,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.ZoneSeparatorColorChanged;
+procedure TCustomGuiMidiKeys.ZoneSeparatorColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetZoneBarColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetZoneBarColor(Value: TColor);
 begin
   if FZoneBarColor <> Value then
   begin
@@ -559,12 +649,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.ZoneBarColorChanged;
+procedure TCustomGuiMidiKeys.ZoneBarColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetZoneBarHoverColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetZoneBarHoverColor(Value: TColor);
 begin
  if FZoneBarHoverColor <> Value then
   begin
@@ -573,13 +663,13 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.ZoneBarHoverColorChanged;
+procedure TCustomGuiMidiKeys.ZoneBarHoverColorChanged;
 begin
  if FMidiZoneBarMouseOver or (FMidiZoneBarDragging.isDragging)
   then Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetBlackKeyColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetBlackKeyColor(Value: TColor);
 begin
  if FBlackKeyColor <> Value then
   begin
@@ -588,12 +678,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.BlackKeyColorChanged;
+procedure TCustomGuiMidiKeys.BlackKeyColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetBlackKeyHoverColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetBlackKeyHoverColor(Value: TColor);
 begin
  if FBlackKeyHoverColor <> Value then
   begin
@@ -602,12 +692,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.BlackKeyHoverColorChanged;
+procedure TCustomGuiMidiKeys.BlackKeyHoverColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetBlackKeyPressedColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetBlackKeyPressedColor(Value: TColor);
 begin
  if FBlackKeyPressedColor <> Value then
   begin
@@ -616,12 +706,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.BlackKeyPressedColorChanged;
+procedure TCustomGuiMidiKeys.BlackKeyPressedColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetWhiteKeyColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetWhiteKeyColor(Value: TColor);
 begin
  if FWhiteKeyColor <> Value then
   begin
@@ -630,12 +720,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.WhiteKeyColorChanged;
+procedure TCustomGuiMidiKeys.WhiteKeyColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetWhiteKeyHoverColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetWhiteKeyHoverColor(Value: TColor);
 begin
  if FWhiteKeyHoverColor <> Value then
   begin
@@ -644,12 +734,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.WhiteKeyHoverColorChanged;
+procedure TCustomGuiMidiKeys.WhiteKeyHoverColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetWhiteKeyPressedColor(Value: TColor);
+procedure TCustomGuiMidiKeys.SetWhiteKeyPressedColor(Value: TColor);
 begin
   if FWhiteKeyPressedColor <> Value then
   begin
@@ -658,12 +748,12 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.WhiteKeyPressedColorChanged;
+procedure TCustomGuiMidiKeys.WhiteKeyPressedColorChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetShowKeyZones(Value: Boolean);
+procedure TCustomGuiMidiKeys.SetShowKeyZones(Value: Boolean);
 begin
  if FShowKeyZones <> Value then
   begin
@@ -672,7 +762,7 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.ShowKeyZonesChanged;
+procedure TCustomGuiMidiKeys.ShowKeyZonesChanged;
 begin
  if ShowKeyZones and (FKeyZoneHeight < 1) then KeyZoneHeight := 10 else
   begin
@@ -681,16 +771,16 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.SetKeyZoneHeight(Value: Integer);
+procedure TCustomGuiMidiKeys.SetKeyZoneHeight(Value: Integer);
 begin
   if FKeyZoneHeight <> Value then
-  begin
+   begin
     FKeyZoneHeight := Value;
     KeyZoneHeightChanged;
-  end;
+   end;
 end;
 
-procedure TGuiMidiKeys.KeyZoneHeightChanged;
+procedure TCustomGuiMidiKeys.KeyZoneHeightChanged;
 begin
  if not (csLoading in  ComponentState) and not ShowKeyZones and (FKeyZoneHeight > 0)
   then FShowKeyZones := True;
@@ -698,7 +788,7 @@ begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetHeight3D(Value: Single);
+procedure TCustomGuiMidiKeys.SetHeight3D(Value: Single);
 begin
  if FHeight3d <> Value then
   begin
@@ -707,56 +797,63 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.Height3DChanged;
+procedure TCustomGuiMidiKeys.Height3DChanged;
 begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetBlackKeyHeight(Value: Single);
+procedure TCustomGuiMidiKeys.SetBlackKeyHeight(Value: Single);
 begin
-  if FBlackKeyHeight <> Value then
+ if FBlackKeyHeight <> Value then
   begin
-    FBlackKeyHeight := Value;
+   FBlackKeyHeight := Value;
+   BlackKeyHeightChanged;
   end;
 end;
 
-procedure TGuiMidiKeys.BlackKeyHeightChanged;
+procedure TCustomGuiMidiKeys.BlackKeyHeightChanged;
 begin
  CalculateVisibleKeys;
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetBaseOctave(Value: Byte);
+procedure TCustomGuiMidiKeys.SetBaseOctave(Value: Byte);
 begin
-  if (Value+FNumOctaves < CKeyboardMaxOctaves) and (Value<>FBaseOctave) then
+ if (Value + FNumOctaves < CKeyboardMaxOctaves) and (Value <> FBaseOctave) then
   begin
-    FBaseOctave := Value;
-    BaseOctaveChanged;
+   FBaseOctave := Value;
+   BaseOctaveChanged;
   end;
 end;
 
-procedure TGuiMidiKeys.BaseOctaveChanged;
+procedure TCustomGuiMidiKeys.AntialiasChanged;
+begin
+ inherited;
+ CalculateVisibleKeys;
+end;
+
+procedure TCustomGuiMidiKeys.BaseOctaveChanged;
 begin
  CalculateVisibleKeys;
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetNumOctaves(Value: Byte);
+procedure TCustomGuiMidiKeys.SetNumOctaves(Value: Byte);
 begin
-  if (Value + FBaseOctave < CKeyboardMaxOctaves) and (Value <> FNumOctaves) then
+ if (Value + FBaseOctave < CKeyboardMaxOctaves) and (Value <> FNumOctaves) then
   begin
-    FNumOctaves := Value;
-    NumOctavesChanged;
+   FNumOctaves := Value;
+   NumOctavesChanged;
   end;
 end;
 
-procedure TGuiMidiKeys.NumOctavesChanged;
+procedure TCustomGuiMidiKeys.NumOctavesChanged;
 begin
  CalculateVisibleKeys;
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetIncludeLastOctave(Value: Boolean);
+procedure TCustomGuiMidiKeys.SetIncludeLastOctave(Value: Boolean);
 begin
  if FIncludeLastOctave <> Value then
   begin
@@ -765,13 +862,13 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.IncludeLastOctaveChanged;
+procedure TCustomGuiMidiKeys.IncludeLastOctaveChanged;
 begin
  CalculateVisibleKeys;
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.SetKeyVelocity(FromKey, ToKey: Byte; Amount: Single);
+procedure TCustomGuiMidiKeys.SetKeyVelocity(FromKey, ToKey: Byte; Amount: Single);
 var
   i, tmp: Byte;
 begin
@@ -786,7 +883,7 @@ begin
   do FKeys[i].Velocity := Amount;
 end;
 
-procedure TGuiMidiKeys.SetKeyColor(FromKey, ToKey: Byte;BaseColor, Over, Pressed: TColor);
+procedure TCustomGuiMidiKeys.SetKeyColor(FromKey, ToKey: Byte;BaseColor, Over, Pressed: TColor);
 var
   i, tmp: Byte;
 begin
@@ -808,12 +905,12 @@ begin
  Invalidate;
 end;
 
-procedure TGuiMidiKeys.RemoveKeyColor(FromKey, ToKey: Byte);
+procedure TCustomGuiMidiKeys.RemoveKeyColor(FromKey, ToKey: Byte);
 begin
  SetKeyColor(FromKey, ToKey);
 end;
 
-procedure TGuiMidiKeys.SetKeyPressed(KeyNr: Byte; KeyDown: Boolean);
+procedure TCustomGuiMidiKeys.SetKeyPressed(KeyNr: Byte; KeyDown: Boolean);
 begin
  if not KeyDown then ReleaseKey(KeyNr);
  if KeyNr < CKeyboardHighestKey then Include(FKeys[KeyNr].Flags, kfPressed);
@@ -823,7 +920,7 @@ begin
   else FTimerMustRedraw := True;
 end;
 
-procedure TGuiMidiKeys.ReleaseKey(KeyNr: Byte; ReleaseMouseTriggered: boolean);
+procedure TCustomGuiMidiKeys.ReleaseKey(KeyNr: Byte; ReleaseMouseTriggered: boolean);
 begin
  if KeyNr < CKeyboardHighestKey then
   if ReleaseMouseTriggered or not (kfByMouse in FKeys[KeyNr].Flags) then
@@ -838,7 +935,7 @@ begin
   else FTimerMustRedraw := True;
 end;
 
-procedure TGuiMidiKeys.ReleaseAllKeys(ReleaseMouseTriggered: boolean);
+procedure TCustomGuiMidiKeys.ReleaseAllKeys(ReleaseMouseTriggered: boolean);
 var
   i: Byte;
 begin
@@ -855,12 +952,12 @@ begin
   else FTimerMustRedraw := True;
 end;
 
-procedure TGuiMidiKeys.SetKeyZones(Value: TGuiKeyZoneCollection);
+procedure TCustomGuiMidiKeys.SetKeyZones(Value: TGuiKeyZoneCollection);
 begin
  FKeyZones.Assign(Value);
 end;
 
-function TGuiMidiKeys.ZoneKeyArea(KeyNr: Byte): TRect;
+function TCustomGuiMidiKeys.ZoneKeyArea(KeyNr: Byte): TRect;
 begin
  Result := FKeys[KeyNr].Area;
  if kfBlackKey in FKeys[KeyNr].Flags then exit;
@@ -868,19 +965,20 @@ begin
  if KeyNr < CKeyboardHighestKey then Result.Right := Min(Result.Right, FKeys[KeyNr + 1].Area.Left - 1);
 end;
 
-procedure TGuiMidiKeys.DrawKeyZones;
+procedure TCustomGuiMidiKeys.DrawKeyZones(Bitmap: TBitmap);
 var
   i         : Integer;
   LowBound  : Integer;
   HighBound : Integer;
 begin
- with FBuffer.Canvas do
+ with Bitmap.Canvas do
   begin
    Brush.Style := bsSolid;
    if FMidiZoneBarMouseOver or (FMidiZoneBarDragging.isDragging)
     then Brush.Color := FZoneBarHoverColor
     else Brush.Color := FZoneBarColor;
-   FillRect(Rect(1, 1, Width - 1, FKeyZoneHeight + 1));
+   FillRect(Rect(1, 1, OversamplingFactor * Width - 1,
+     OversamplingFactor * FKeyZoneHeight + 1));
 
    if FKeyZones.Count < 1 then Exit;
    for i := 0 to FKeyZones.Count - 1 do
@@ -889,7 +987,7 @@ begin
       begin
        LowBound := ZoneKeyArea(LowestZoneKey).Left;
        HighBound := ZoneKeyArea(HighestZoneKey).Right;
-        
+
        if HighBound <> LowBound then
         begin
          if Selected then
@@ -909,7 +1007,7 @@ begin
           end;
 
          Pen.Style := psClear;
-         Rectangle(LowBound,1,HighBound+2,FKeyZoneHeight+3);
+         Rectangle(OversamplingFactor * LowBound, 1, OversamplingFactor * HighBound + 2, OversamplingFactor * FKeyZoneHeight + 3);
 
          if Selected then
           begin
@@ -932,119 +1030,168 @@ begin
 
          Dec(LowBound);
          Inc(HighBound);
-         MoveTo(LowBound, 1);  LineTo(LowBound,FKeyZoneHeight + 1);
-         MoveTo(HighBound, 1); LineTo(HighBound,FKeyZoneHeight + 1);
+         MoveTo(OversamplingFactor * LowBound, 1);  LineTo(OversamplingFactor * LowBound,  OversamplingFactor * FKeyZoneHeight + 1);
+         MoveTo(OversamplingFactor * HighBound, 1); LineTo(OversamplingFactor * HighBound, OversamplingFactor * FKeyZoneHeight + 1);
        end;
      end;
   end;
 end;
 
-procedure TGuiMidiKeys.DrawSingleKey(CurKey: TGuiSingleKey);
+procedure TCustomGuiMidiKeys.DrawSingleKey(Bitmap: TBitmap; CurKey: TGuiSingleKey);
 var
-  kcolor         : TColor;
+  KeyColor         : TColor;
   LightAndShadow : TGuiColorRect;
 begin
-  if kfPressed in CurKey.Flags then kcolor := CurKey.PressedColor
-  else if kfMouseOver in CurKey.Flags then kcolor := CurKey.OverColor
-  else kcolor := CurKey.BaseColor;
+  if kfPressed in CurKey.Flags then KeyColor := CurKey.PressedColor else
+  if kfMouseOver in CurKey.Flags then KeyColor := CurKey.OverColor
+   else KeyColor := CurKey.BaseColor;
 
   if kfBlackKey in CurKey.Flags then
-  begin
-    if kcolor = clNone then
-    begin
-      if kfPressed in CurKey.Flags then kcolor := FBlackKeyPressedColor
-      else if kfMouseOver in CurKey.Flags then kcolor := FBlackKeyHoverColor
-      else kcolor := FBlackKeyColor;
-    end;
-  end else begin
-   if kcolor = clNone then
-    begin
-      if kfPressed in CurKey.Flags then kcolor := FWhiteKeyPressedColor
-      else if kfMouseOver in CurKey.Flags then kcolor := FWhiteKeyHoverColor
-      else kcolor := FWhiteKeyColor;
-    end;
-  end;  
+   begin
+    if KeyColor = clNone then
+     begin
+      if kfPressed in CurKey.Flags then KeyColor := FBlackKeyPressedColor else
+      if kfMouseOver in CurKey.Flags then KeyColor := FBlackKeyHoverColor
+       else KeyColor := FBlackKeyColor;
+     end;
+   end
+  else
+   begin
+    if KeyColor = clNone then
+     begin
+      if kfPressed in CurKey.Flags then KeyColor := FWhiteKeyPressedColor else
+      if kfMouseOver in CurKey.Flags then KeyColor := FWhiteKeyHoverColor
+       else KeyColor := FWhiteKeyColor;
+     end;
+   end;
 
-  if (FKeyDownMode=kdmFlat) and (kfPressed in CurKey.Flags) then
-  begin
-    LightAndShadow.Top := kcolor;
-    LightAndShadow.Left := kcolor;
-    LightAndShadow.Bottom := kcolor;
-    LightAndShadow.Right := kcolor;
-  end else
-    LightAndShadow := CalculateLights(kcolor, kfBlackKey in CurKey.Flags, (kfPressed in CurKey.Flags) and (FKeyDownMode=kdmDown));
+  if (FKeyDownMode = kdmFlat) and (kfPressed in CurKey.Flags) then
+   begin
+    LightAndShadow.Top := KeyColor;
+    LightAndShadow.Left := KeyColor;
+    LightAndShadow.Bottom := KeyColor;
+    LightAndShadow.Right := KeyColor;
+   end
+  else LightAndShadow := CalculateLights(KeyColor, kfBlackKey in CurKey.Flags,
+    (kfPressed in CurKey.Flags) and (FKeyDownMode = kdmDown));
 
-  with FBuffer.Canvas do
-  begin
-    brush.color := kcolor;
+  with Bitmap.Canvas do
+   begin
+    Brush.Color := KeyColor;
     FillRect(CurKey.Area);
     MoveTo(CurKey.Area.Left,CurKey.Area.Top);
     Pen.Color := LightAndShadow.Top;    LineTo(CurKey.Area.Right, CurKey.Area.Top);
     Pen.Color := LightAndShadow.Right;  LineTo(CurKey.Area.Right, CurKey.Area.Bottom);
     Pen.Color := LightAndShadow.Bottom; LineTo(CurKey.Area.Left, CurKey.Area.Bottom);
-    Pen.Color := LightAndShadow.Left;   LineTo(CurKey.Area.Left, CurKey.Area.Top); 
-  end;
+    Pen.Color := LightAndShadow.Left;   LineTo(CurKey.Area.Left, CurKey.Area.Top);
+   end;
 end;
 
-procedure TGuiMidiKeys.DrawKeys;
-var i: byte;
+procedure TCustomGuiMidiKeys.DrawKeys(Bitmap: TBitmap);
+var
+  i: Byte;
+const
+  CDrawFlags = [kfVisible, kfBlackKey];   
 begin
-  with FBuffer.Canvas do
+ with Bitmap.Canvas do
   begin
     Brush.Style := bsSolid;
     Pen.Width   := 1;
     Pen.Style   := psSolid;
 
     for i := 0 to CKeyboardHighestKey do
-    begin
-      if (kfVisible in FKeys[i].Flags) and not (kfBlackKey in FKeys[i].Flags) then
-      begin
-        DrawSingleKey(FKeys[i]);
-      end;
-      if (i > 0) and (kfVisible in FKeys[i - 1].Flags) and
-                     (kfBlackKey in FKeys[i-1].Flags)
-       then DrawSingleKey(FKeys[i-1]);
+     begin
+      if (kfVisible in FKeys[i].Flags) and not (kfBlackKey in FKeys[i].Flags)
+       then DrawSingleKey(Bitmap, FKeys[i]);
+      if (i > 0) and (FKeys[i - 1].Flags * CDrawFlags = CDrawFlags)
+       then DrawSingleKey(Bitmap, FKeys[i - 1]);
     end;
   end;
 end;
 
-procedure TGuiMidiKeys.UpdateBuffer;
+procedure TCustomGuiMidiKeys.RenderToBitmap(Bitmap: TBitmap);
 begin
- if not FRedrawEnabled then Exit;
- if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
+ with Bitmap.Canvas do
   begin
    Lock;
-   Brush.Color := FKeySeparatorColor;
-   FillRect(clientrect);
+   try
+    Brush.Color := FKeySeparatorColor;
+    if FShowKeyZones then
+     begin
+      DrawKeyZones(Bitmap);
 
-   if FShowKeyZones then
-    begin
-     DrawKeyZones;
+      Pen.Width := 1;
+      Pen.Style := psSolid;
+      Pen.Color := FZoneSeparatorColor;
 
-     pen.Width := 1;
-     pen.Style := psSolid;
-     pen.Color := FZoneSeparatorColor;
+      MoveTo(1,                               OversamplingFactor * FKeyZoneHeight + 1);
+      LineTo(OversamplingFactor * Width - 1 , OversamplingFactor * FKeyZoneHeight + 1);
+     end;
 
-     MoveTo(1,         FKeyZoneHeight + 1);
-     LineTo(Width - 1 ,FKeyZoneHeight + 1);
-    end;
-
-   DrawKeys;
-   pen.Width := 1;
-   pen.Style := psSolid;
-   pen.Color := FBorderColor;
-
-   MoveTo(0       ,0);
-   LineTo(Width-1 ,0);
-   LineTo(Width-1 ,Height-1);
-   LineTo(0       ,Height-1);
-   LineTo(0       ,0);
-
-   UnLock;
- end;
+    DrawKeys(Bitmap);
+   finally
+    UnLock;
+   end;
+  end;
 end;
 
-function TGuiMidiKeys.ScreenCoordOnKey(X, Y: Integer; KeyNr: Integer; CheckYPos: Boolean): Boolean;
+procedure TCustomGuiMidiKeys.UpdateBuffer;
+var
+  Bmp : TBitmap;
+begin
+ if not FRedrawEnabled then Exit;
+ if (Width > 0) and (Height > 0) then
+  with FBuffer.Canvas do
+   begin
+    Lock;
+    try
+     if AntiAlias = gaaNone then
+      begin
+       Assert(FBuffer.Width = Width);
+       Assert(FBuffer.Height = Height);
+
+       Brush.Color := FKeySeparatorColor;
+       FillRect(ClientRect);
+
+       RenderToBitmap(FBuffer);
+      end
+     else
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := OversamplingFactor * FBuffer.Width;
+         Height      := OversamplingFactor * FBuffer.Height;
+
+         Brush.Color := FKeySeparatorColor;
+         FillRect(ClientRect);
+
+         RenderToBitmap(Bmp);
+         DownsampleBitmap(Bmp);
+         FBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
+      end;
+
+     // draw border 
+     Pen.Width := 1;
+     Pen.Style := psSolid;
+     Pen.Color := FBorderColor;
+
+     MoveTo(0        , 0);
+     LineTo(Width - 1, 0);
+     LineTo(Width - 1, Height - 1);
+     LineTo(0        , Height - 1);
+     LineTo(0        , 0);
+    finally
+     UnLock;
+    end;
+   end;
+end;
+
+function TCustomGuiMidiKeys.ScreenCoordOnKey(X, Y: Integer; KeyNr: Integer; CheckYPos: Boolean): Boolean;
 begin
  Result := False;
  with FKeys[KeyNr] do
@@ -1071,7 +1218,7 @@ begin
 end;
 
 // returns -1 if it's not a visible key
-function TGuiMidiKeys.MousePosToKey(X, Y: Integer; CheckYPos: Boolean): Integer;
+function TCustomGuiMidiKeys.MousePosToKey(X, Y: Integer; CheckYPos: Boolean): Integer;
 var
   i: Byte;
 begin
@@ -1088,7 +1235,7 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.FireNoteOn(KeyNr: Byte; Flags: TGuiKeyFlags);
+procedure TCustomGuiMidiKeys.FireNoteOn(KeyNr: Byte; Flags: TGuiKeyFlags);
 begin
  if kfPressed in FKeys[KeyNr].Flags then
   begin
@@ -1102,7 +1249,7 @@ begin
   then FOnNoteOn(Self, KeyNr, FKeys[KeyNr].Velocity);
 end;
 
-procedure TGuiMidiKeys.FireNoteOff(KeyNr: Byte);
+procedure TCustomGuiMidiKeys.FireNoteOff(KeyNr: Byte);
 begin
  if not (kfPressed in FKeys[KeyNr].Flags) then Exit;
 
@@ -1113,7 +1260,7 @@ begin
  if Assigned(FOnNoteOff) then FOnNoteOff(Self, KeyNr);
 end;
 
-procedure TGuiMidiKeys.AllNotesOff(MouseTriggeredOnly: Boolean; ExceptKey: Integer);
+procedure TCustomGuiMidiKeys.AllNotesOff(MouseTriggeredOnly: Boolean; ExceptKey: Integer);
 var
   i: Integer;
 begin
@@ -1123,7 +1270,7 @@ begin
     then FireNoteOff(i);
 end;
 
-procedure TGuiMidiKeys.MouseLeaveAllKeys(ExceptKey: Integer);
+procedure TCustomGuiMidiKeys.MouseLeaveAllKeys(ExceptKey: Integer);
 var
   i: Integer;
 begin
@@ -1135,7 +1282,7 @@ begin
    end;
 end;
 
-procedure TGuiMidiKeys.MouseLeave;
+procedure TCustomGuiMidiKeys.MouseLeave;
 begin
  inherited;
  if FMidiZoneBarMouseOver
@@ -1143,7 +1290,7 @@ begin
   else MouseLeaveAllKeys;
 end;
 
-procedure TGuiMidiKeys.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   mkey: Integer;
 begin
@@ -1179,7 +1326,7 @@ begin
  inherited;
 end;
 
-procedure TGuiMidiKeys.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.MouseUp(Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 var
   mkey: Integer;
 begin
@@ -1215,7 +1362,7 @@ begin
  inherited;
 end;
 
-procedure TGuiMidiKeys.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   mkey: Integer;
 begin
@@ -1277,13 +1424,13 @@ end;
 
 { midi key mouse tracking
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.KeyMouseEnter(KeyNr: Byte; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.KeyMouseEnter(KeyNr: Byte; Shift: TShiftState; X, Y: Integer);
 begin
  Cursor := CursorKeys;
  if Assigned(FOnKeyMouseEnter) then FOnKeyMouseEnter(Self, KeyNr, Shift, X, Y);
 end;
 
-procedure TGuiMidiKeys.KeyMouseLeave(KeyNr: Byte);
+procedure TCustomGuiMidiKeys.KeyMouseLeave(KeyNr: Byte);
 begin
  if Assigned(FOnKeyMouseLeave) then FOnKeyMouseLeave(Self, KeyNr);
 end;
@@ -1291,12 +1438,12 @@ end;
 
 { midi key mouse up/down
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.MouseUpOnMidiKey(KeyNr: Byte; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.MouseUpOnMidiKey(KeyNr: Byte; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
  if Assigned(FOnMouseUpOnMidiKey) then FOnMouseUpOnMidiKey(Self,KeyNr, Button, Shift, X,Y);
 end;
 
-procedure TGuiMidiKeys.MouseDownOnMidiKey(KeyNr: Byte; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.MouseDownOnMidiKey(KeyNr: Byte; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
  if (Button = mbRight) then
   begin
@@ -1311,7 +1458,7 @@ end;
 
 { midi key mouse dragging
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.StartKeyDragging(KeyNr: Integer; DragButton: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.StartKeyDragging(KeyNr: Integer; DragButton: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
  MouseLeaveAllKeys;
 
@@ -1324,7 +1471,7 @@ begin
   then FOnStartKeyDragging(Self, KeyNr, FMidiKeyDragging, Shift, X, Y);
 end;
 
-procedure TGuiMidiKeys.MoveKeyDragging(KeyNr: Integer; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.MoveKeyDragging(KeyNr: Integer; Shift: TShiftState; X,Y: Integer);
 begin
  if (FMidiKeyDragging.Button <> mbRight) then
   begin
@@ -1337,7 +1484,7 @@ begin
   FMidiKeyDragging.LastKey := KeyNr;
 end;
 
-procedure TGuiMidiKeys.EndKeyDragging(Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.EndKeyDragging(Shift: TShiftState; X,Y: Integer);
 begin
   AllNotesOff;
   if Assigned(FOnEndKeyDragging)
@@ -1349,7 +1496,7 @@ end;
 
 { zone bar mouse tracking
 --------------------------------------------------------------------------------}
-function TGuiMidiKeys.GetZoneMouseOverType(X: Integer; KeyNr: Integer; Zone: TGuiKeyZoneItem): TGuiZoneMousePosType;
+function TCustomGuiMidiKeys.GetZoneMouseOverType(X: Integer; KeyNr: Integer; Zone: TGuiKeyZoneItem): TGuiZoneMousePosType;
 var
   ZKeyArea : TRect;
   temp     : Integer;
@@ -1380,7 +1527,7 @@ begin
   end;
 end;
 
-procedure TGuiMidiKeys.ZoneMouseActivity(Action: TGuiKbMouseAction; KeyNr: Integer; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.ZoneMouseActivity(Action: TGuiKbMouseAction; KeyNr: Integer; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
   Zone             : TGuiKeyZoneItem;
   tmpMouseOverType : TGuiZoneMousePosType;
@@ -1437,7 +1584,7 @@ end;
 
 { midi zone mouse selection
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.UnSelectAllZones(ExceptZone: TGuiKeyZoneItem);
+procedure TCustomGuiMidiKeys.UnSelectAllZones(ExceptZone: TGuiKeyZoneItem);
 var
   i : Integer;
 begin
@@ -1446,7 +1593,7 @@ begin
    then KeyZones.Items[i].Unselect(False);
 end;
 
-procedure TGuiMidiKeys.ZoneSelectionChanged(Zone: TGuiKeyZoneItem);
+procedure TCustomGuiMidiKeys.ZoneSelectionChanged(Zone: TGuiKeyZoneItem);
 begin
  if Zone <> nil then Zone.Select(False);
  UnSelectAllZones(Zone);
@@ -1456,7 +1603,7 @@ end;
 
 { zone bar mouse enter/leave
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.MouseLeaveAllZones(ExceptZone: TGuiKeyZoneItem);
+procedure TCustomGuiMidiKeys.MouseLeaveAllZones(ExceptZone: TGuiKeyZoneItem);
 var
   i : Integer;
 begin
@@ -1465,7 +1612,7 @@ begin
    then ZoneMouseLeave(KeyZones.Items[i]);
 end;
 
-procedure TGuiMidiKeys.ZoneMouseEnter(Zone: TGuiKeyZoneItem; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.ZoneMouseEnter(Zone: TGuiKeyZoneItem; Shift: TShiftState; X, Y: Integer);
 begin
  Cursor := CursorZone;
  Zone.SetMouseOver(True, False);
@@ -1473,7 +1620,7 @@ begin
   then FOnZoneMouseEnter(Self, Zone, Shift, X, Y);
 end;
 
-procedure TGuiMidiKeys.ZoneMouseLeave(Zone: TGuiKeyZoneItem);
+procedure TCustomGuiMidiKeys.ZoneMouseLeave(Zone: TGuiKeyZoneItem);
 begin
  FZoneMouseOverType := [];
  Cursor := CursorZoneBar;
@@ -1482,7 +1629,7 @@ begin
   then FOnZoneMouseLeave(Self, Zone);
 end;
 
-procedure TGuiMidiKeys.ZoneMouseOverChanged(KeyNr: Byte; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.ZoneMouseOverChanged(KeyNr: Byte; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; Shift: TShiftState; X, Y: Integer);
 begin
  FZoneMouseOverType := MouseOverType;
  if (mptOnLowestBorder in MouseOverType) or (mptOnHighestBorder in MouseOverType)
@@ -1496,7 +1643,7 @@ begin
 end;
 
 
-procedure TGuiMidiKeys.ZoneBarMouseEnter(KeyNr: Byte; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.ZoneBarMouseEnter(KeyNr: Byte; Shift: TShiftState; X, Y: Integer);
 begin
  Cursor := CursorZoneBar;
  FMidiZoneBarMouseOver := True;
@@ -1504,7 +1651,7 @@ begin
   then FOnZoneBarMouseEnter(Self, KeyNr, Shift, X, Y);
 end;
 
-procedure TGuiMidiKeys.ZoneBarMouseLeave;
+procedure TCustomGuiMidiKeys.ZoneBarMouseLeave;
 begin
  Cursor := CursorKeys;
  FMidiZoneBarMouseOver := False;
@@ -1514,13 +1661,13 @@ end;
 
 { zone bar mouse up/down
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.MouseUpOnKeyZoneBar(KeyNr: Byte; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.MouseUpOnKeyZoneBar(KeyNr: Byte; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
  if Assigned(FOnMouseUpOnKeyZoneBar)
   then FOnMouseUpOnKeyZoneBar(Self, KeyNr, Zone, MouseOverType, Button, Shift, X,Y);
 end;
 
-procedure TGuiMidiKeys.MouseDownOnKeyZoneBar(KeyNr: Byte; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.MouseDownOnKeyZoneBar(KeyNr: Byte; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; Button: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
  if Assigned(FOnMouseDownOnKeyZoneBar)
   then FOnMouseDownOnKeyZoneBar(Self, KeyNr, Zone, MouseOverType, Button, Shift, X,Y);
@@ -1528,7 +1675,7 @@ end;
 
 { zone bar dragging
 --------------------------------------------------------------------------------}
-procedure TGuiMidiKeys.StartZoneBarDragging(KeyNr: Integer; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; DragButton: TMouseButton; Shift: TShiftState; X,Y: Integer);
+procedure TCustomGuiMidiKeys.StartZoneBarDragging(KeyNr: Integer; Zone: TGuiKeyZoneItem; MouseOverType: TGuiZoneMousePosType; DragButton: TMouseButton; Shift: TShiftState; X,Y: Integer);
 begin
  with FMidiZoneBarDragging do
   begin
@@ -1549,14 +1696,14 @@ begin
   then FOnStartZoneBarDragging(Self, KeyNr, FMidiZoneBarDragging, Shift, X, Y);
 end;
 
-procedure TGuiMidiKeys.MoveZoneBarDragging(KeyNr: Integer; Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.MoveZoneBarDragging(KeyNr: Integer; Shift: TShiftState; X, Y: Integer);
 begin
  if Assigned(FOnMoveZoneBarDragging)
   then FOnMoveZoneBarDragging(Self, KeyNr, FMidiZoneBarDragging, Shift, X, Y);
  FMidiZoneBarDragging.LastKey := KeyNr;
 end;
 
-procedure TGuiMidiKeys.EndZoneBarDragging(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiMidiKeys.EndZoneBarDragging(Shift: TShiftState; X, Y: Integer);
 begin
  if Assigned(FOnEndZoneBarDragging)
   then FOnEndZoneBarDragging(Self, FMidiZoneBarDragging, Shift, X, Y);

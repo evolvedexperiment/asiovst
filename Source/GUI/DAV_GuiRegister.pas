@@ -28,7 +28,7 @@ uses
   DAV_GuiAudioDataDisplay, DAV_GuiDial, DAV_GuiLED, DAV_GuiPanel, DAV_GuiLabel,
   DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
-  DAV_GuiEQGraph, DAV_GuiModular;
+  DAV_GuiEQGraph, DAV_GuiModular, DAV_GuiBackgrounds;
 
 procedure Register;
 begin
@@ -38,7 +38,7 @@ begin
     TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroupA, TGuiGroupB, TGuiGroup,
     TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
     TGuiDialImageList, TGuiDialImageRenderer, TGuiSwitch, TGuiEQGraph,
-    TGuiModular]);
+    TGuiModular, TGuiBackground]);
 
   RegisterPropertyEditor(TypeInfo(string), TGuiDialLayerCollectionItem, 'PrimitiveClassName', nil);
   RegisterPropertyEditor(TypeInfo(TCustomGuiDialPrimitive), TGuiDialLayerCollectionItem, 'Primitive', TPrimitiveClassProperty);

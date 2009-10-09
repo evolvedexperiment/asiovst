@@ -1175,7 +1175,6 @@ begin
           Brush.Color := Self.Color;
           FillRect(ClipRect);
          end;
-       Bmp.Canvas.FillRect(ClipRect);
        RenderGraphXYToBitmap(Bmp);
        DownsampleBitmap(Bmp);
        FBuffer.Canvas.Draw(0, 0, Bmp);

@@ -164,7 +164,7 @@ procedure TCustomGuiLED.SetUniformity(const Value: Single);
 begin
  if FUniformity <> Value then
   begin
-   FUniformity := sqr(1 - Limit(0.01 * Value, 0, 1));
+   FUniformity := Sqr(1 - Limit(0.01 * Value, 0, 1));
    Invalidate;
   end;
 end;
@@ -287,71 +287,74 @@ procedure TCustomGuiLED.UpdateBuffer;
 var
   Bmp : TBitmap;
 begin
- if (Width > 0) and (Height > 0) then with FBuffer.Canvas do
-  begin
-   Lock;
-   if AntiAlias = gaaNone then
-    begin
-     // draw background
-     assert(FBuffer.Width = Width);
-     assert(FBuffer.Height = Height);
-
-     {$IFNDEF FPC}
-     if FTransparent
-      then DrawParentImage(FBuffer.Canvas)
-      else
-     {$ENDIF}
+ if (Width > 0) and (Height > 0) then
+  with FBuffer.Canvas do
+   begin
+    Lock;
+    try
+     if AntiAlias = gaaNone then
       begin
-       Brush.Color := Self.Color;
-       FillRect(ClipRect);
-      end;
+       Assert(FBuffer.Width = Width);
+       Assert(FBuffer.Height = Height);
 
-     // render bitmap depending on bit depth
-     case FBuffer.PixelFormat of
-      pf24bit : RenderLEDToBitmap24(FBuffer);
-      pf32bit : RenderLEDToBitmap32(FBuffer);
-      else raise Exception.Create(RCStrWrongPixelFormat);
-     end;
-
-    end
-   else
-    begin
-     Bmp := TBitmap.Create;
-     with Bmp do
-      try
-       PixelFormat := pf32bit;
-       Width       := OversamplingFactor * FBuffer.Width;
-       Height      := OversamplingFactor * FBuffer.Height;
+       // draw background
        {$IFNDEF FPC}
-       if FTransparent then
-        begin
-         DrawParentImage(Bmp.Canvas);
-         UpsampleBitmap(Bmp);
-        end
-       else
+       if FTransparent
+        then DrawParentImage(FBuffer.Canvas)
+        else
        {$ENDIF}
-        with Bmp.Canvas do
-         begin
-          Brush.Color := Self.Color;
-          FillRect(ClipRect);
-         end;
-       Bmp.Canvas.FillRect(ClipRect);
+        begin
+         Brush.Color := Self.Color;
+         FillRect(ClipRect);
+        end;
 
        // render bitmap depending on bit depth
        case FBuffer.PixelFormat of
-        pf24bit : RenderLEDToBitmap24(Bmp);
-        pf32bit : RenderLEDToBitmap32(Bmp);
+        pf24bit : RenderLEDToBitmap24(FBuffer);
+        pf32bit : RenderLEDToBitmap32(FBuffer);
         else raise Exception.Create(RCStrWrongPixelFormat);
        end;
 
-       DownsampleBitmap(Bmp);
-       FBuffer.Canvas.Draw(0, 0, Bmp);
-      finally
-       Free;
+      end
+     else
+      begin
+       Bmp := TBitmap.Create;
+       with Bmp do
+        try
+         PixelFormat := pf32bit;
+         Width       := OversamplingFactor * FBuffer.Width;
+         Height      := OversamplingFactor * FBuffer.Height;
+         {$IFNDEF FPC}
+         if FTransparent then
+          begin
+           DrawParentImage(Bmp.Canvas);
+           UpsampleBitmap(Bmp);
+          end
+         else
+         {$ENDIF}
+          with Bmp.Canvas do
+           begin
+            Brush.Color := Self.Color;
+            FillRect(ClipRect);
+           end;
+
+         // render bitmap depending on bit depth
+         case FBuffer.PixelFormat of
+          pf24bit : RenderLEDToBitmap24(Bmp);
+          pf32bit : RenderLEDToBitmap32(Bmp);
+          else raise Exception.Create(RCStrWrongPixelFormat);
+         end;
+
+         DownsampleBitmap(Bmp);
+         FBuffer.Canvas.Draw(0, 0, Bmp);
+        finally
+         Free;
+        end;
       end;
+    finally
+     Unlock;
     end;
-   Unlock;
-  end;
+   end;
 end;
 
 procedure TCustomGuiLED.SetLEDColor(const Value: TColor);

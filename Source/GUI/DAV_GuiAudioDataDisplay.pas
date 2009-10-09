@@ -7,9 +7,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages,
   {$ELSE} Windows, Messages, {$ENDIF}
-  Classes, Controls, Graphics, DAV_GuiCommon, DAV_GuiBaseControl,
-  DAV_Common, DAV_AudioData, DAV_GuiAudioDataDisplayCursor,
-  DAV_GuiAudioDataDisplayAxis;
+  Classes, Controls, Graphics, DAV_Common, DAV_GuiCommon, DAV_GuiBaseControl,
+  DAV_AudioData, DAV_GuiAudioDataDisplayCursor, DAV_GuiAudioDataDisplayAxis;
 
 type
   TGuiNormalizationType = (ntNone, ntPerChannel, ntOverallChannels);
@@ -552,7 +551,8 @@ begin
          {$IFNDEF FPC}
          if FTransparent then
           begin
-           DrawParentImage(Bmp.Canvas);
+           CopyParentImage(Self, Bmp.Canvas);
+//           DrawParentImage(Bmp.Canvas);
            UpsampleBitmap(Bmp);
           end
          else
@@ -562,7 +562,6 @@ begin
             Brush.Color := Self.Color;
             FillRect(ClipRect);
            end;
-         Bmp.Canvas.FillRect(ClipRect);
          RenderDisplayToBitmap(Bmp);
          DownsampleBitmap(Bmp);
          FBuffer.Canvas.Draw(0, 0, Bmp);
