@@ -26,7 +26,7 @@ type
 
   // some interfaces
 
-  {$IFDEF DELPHI7_UP}
+  {.$IFDEF DELPHI7_UP}
   IDspSink32 = interface(IInterface)
     procedure ProcessSample32(Input: Single);
   end;
@@ -52,7 +52,7 @@ type
   IDspGenerator64 = interface(IInterface)
     function ProcessSample64: Double;
   end;
-  {$ENDIF}
+  {.$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'AudioComponent classes'} {$ENDIF}
   TCustomAudioComponent = class(TComponent)

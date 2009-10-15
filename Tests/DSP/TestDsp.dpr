@@ -62,7 +62,11 @@ uses
   TestDAV_DspWaveshaper in 'TestDAV_DspWaveshaper.pas',
   DAV_DspWaveshaper in '..\..\Source\DSP\DAV_DspWaveshaper.pas',
   TestDAV_DspLeslie in 'TestDAV_DspLeslie.pas',
-  DAV_DspLeslie in '..\..\Source\DSP\DAV_DspLeslie.pas';
+  DAV_DspLeslie in '..\..\Source\DSP\DAV_DspLeslie.pas',
+  TestDAV_DspFilterSpectralDelay in 'TestDAV_DspFilterSpectralDelay.pas',
+  DAV_DspFilterSpectralDelay in '..\..\Source\DSP\DAV_DspFilterSpectralDelay.pas',
+  TestDAV_DspSoundTouch in 'TestDAV_DspSoundTouch.pas',
+  DAV_DspSoundTouch in '..\..\Source\DSP\DAV_DspSoundTouch.pas';
 
 {$R *.RES}
 

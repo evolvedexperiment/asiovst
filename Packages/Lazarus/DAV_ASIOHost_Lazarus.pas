@@ -8,8 +8,8 @@ unit DAV_ASIOHost_Lazarus;
 interface
 
 uses
-  DAV_ASIO, DAV_OpenASIO, DAV_ASIOConvert, DAV_ASIOGenerator, DAV_ASIOHost, 
-  DAV_ASIOMixer, DAV_ASIORegister, DAV_BeRoASIO, LazarusPackageIntf;
+    DAV_ASIO, DAV_OpenASIO, DAV_ASIOConvert, DAV_ASIOGenerator, DAV_ASIOHost, 
+  DAV_ASIOMixer, DAV_ASIORegister, DAV_AsioInterface, LazarusPackageIntf;
 
 implementation
 

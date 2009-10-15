@@ -51,16 +51,15 @@
         <UnitName Value="DAV_ASIORegister"/>
       </Item7>
       <Item8>
-        <Filename Value="..\..\Source\ASIO\DAV_BeRoASIO.pas"/>
-        <UnitName Value="DAV_BeRoASIO"/>
-      </Item8>
-      <Item9>
         <Filename Value="..\..\Resources\DAV_ASIOHostRegister.lrs"/>
         <Type Value="LRS"/>
-      </Item9>
-      <Item10>
+      </Item8>
+      <Item9>
         <Filename Value="..\..\Source\DAV_Compiler.inc"/>
         <Type Value="Include"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\..\Source\ASIO\DAV_AsioInterface.pas"/>
       </Item10>
     </Files>
     <Type Value="RunAndDesignTime"/>

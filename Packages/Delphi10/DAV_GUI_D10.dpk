@@ -60,6 +60,7 @@ contains
   DAV_GuiPanel in '..\..\Source\GUI\DAV_GuiPanel.pas',
   DAV_GuiSelectBox in '..\..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiStaticWaveform in '..\..\Source\GUI\DAV_GuiStaticWaveform.pas',
-  DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas';
+  DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
+  DAV_GuiBackgrounds in '..\..\Source\GUI\DAV_GuiBackgrounds.pas';
 
 end.

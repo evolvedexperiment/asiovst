@@ -40,7 +40,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, {$IFDEF FPC} LCLIntf; {$ELSE} Windows; {$ENDIF}
+  DAV_Common, {$IFDEF FPC} LCLIntf, LCLType; {$ELSE} Windows; {$ENDIF}
 
 const
   ASIOFalse = 0;

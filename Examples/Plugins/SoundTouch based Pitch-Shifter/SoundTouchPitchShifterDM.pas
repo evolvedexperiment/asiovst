@@ -36,7 +36,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
-  DAV_SoundTouchDLL; //DAV_SoundTouch;
+  DAV_DspSoundTouch;
 
 type
   TSoundTouchPitchShifterModule = class(TVSTModule)
@@ -47,7 +47,7 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPitchFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSoundTouch : array [0..1] of TSoundTouch;
+    FSoundTouch : array [0..1] of TDspSoundTouch;
   public
   end;
 
@@ -64,7 +64,7 @@ var
 begin
  for Channel := 0 to NumInputs - 1 do
   begin
-   FSoundTouch[Channel] := TSoundTouch.Create;
+   FSoundTouch[Channel] := TDspSoundTouch.Create;
    with FSoundTouch[Channel] do
     begin
      Samplerate := Self.Samplerate;
@@ -114,12 +114,12 @@ end;
 procedure TSoundTouchPitchShifterModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to NumInputs - 1 do
+ for Channel := 0 to NumInputs - 1 do
   begin
-   FSoundTouch[ch].PutSamples(@Inputs[ch, 0], SampleFrames);
-   FSoundTouch[ch].ReceiveSamples(@Outputs[ch, 0], SampleFrames);
+   FSoundTouch[Channel].WriteSamples(@Inputs[Channel, 0], SampleFrames);
+   FSoundTouch[Channel].ReadSamples(@Outputs[Channel, 0], SampleFrames);
   end;
 end;
 

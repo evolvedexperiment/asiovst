@@ -1,39 +1,65 @@
 unit DAV_SoundTouchDLL;
 
-//////////////////////////////////////////////////////////////////////////////
-//
-// SoundTouch DLL wrapper - wraps SoundTouch routines into a Dynamic Load 
-// Library interface.
-//
-//  Author        : Copyright (c) Olli Parviainen
-//  Author e-mail : oparviai 'at' iki.fi
-//  SoundTouch WWW: http://www.surina.net/soundtouch
-//
 ////////////////////////////////////////////////////////////////////////////////
-//
-// $Id: SoundTouchDLL.h 65 2009-02-23 08:33:13Z oparviai $
-//
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Olli Parviainen (see copyright      //
+//  information below. This wrapper has been and written by Christian-W.      //
+//  Budde.                                                                    //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-//
-// License :
-//
-//  SoundTouch audio processing library
-//  Copyright (c) Olli Parviainen
-//
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License, or (at your option) any later version.
-//
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
+//                                                                            //
+// SoundTouch DLL wrapper - wraps SoundTouch routines into a Dynamic Load     //
+// Library interface.                                                         //
+//                                                                            //
+//  Author        : Copyright (c) Olli Parviainen                             //
+//  Author e-mail : oparviai 'at' iki.fi                                      //
+//  SoundTouch WWW: http://www.surina.net/soundtouch                          //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+// License :                                                                  //
+//                                                                            //
+//  SoundTouch audio processing library                                       //
+//  Copyright (c) Olli Parviainen                                             //
+//                                                                            //
+//  This library is free software; you can redistribute it and/or             //
+//  modify it under the terms of the GNU Lesser General Public                //
+//  License as published by the Free Software Foundation; either              //
+//  version 2.1 of the License, or (at your option) any later version.        //
+//                                                                            //
+//  This library is distributed in the hope that it will be useful,           //
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of            //
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU         //
+//  Lesser General Public License for more details.                           //
+//                                                                            //
+//  You should have received a copy of the GNU Lesser General Public          //
+//  License along with this library; if not, write to the Free Software       //
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA   //
+//                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
 interface
@@ -188,7 +214,7 @@ type
     procedure Clear; virtual;
 
     procedure PutSamples(const Samples: PSingle; const NumSamples: Cardinal);
-    function ReceiveSamples(const outBuffer: PSingle; const maxSamples: Integer): Cardinal;
+    function ReceiveSamples(const OutBuffer: PSingle; const MaxSamples: Integer): Cardinal;
 
     function SetSetting(const SettingId: Integer; const Value: Integer): Boolean;
     function GetSetting(const SettingId: Integer): Integer;
@@ -349,10 +375,10 @@ begin
  SoundTouchSetRate(FHandle, FRate);
 end;
 
-function TSoundTouch.ReceiveSamples(const outBuffer: PSingle;
-  const maxSamples: Integer): Cardinal;
+function TSoundTouch.ReceiveSamples(const OutBuffer: PSingle;
+  const MaxSamples: Integer): Cardinal;
 begin
- result := SoundTouchReceiveSamples(FHandle, outBuffer, maxSamples);
+ Result := SoundTouchReceiveSamples(FHandle, OutBuffer, MaxSamples);
 end;
 
 procedure TSoundTouch.SetPitchChange(const Value: Single);
