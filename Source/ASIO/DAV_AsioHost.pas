@@ -32,7 +32,7 @@ unit DAV_AsioHost;
 //  Contributor(s):                                                           //
 //    Martin Fay (original Delphi ASIO interface, author of OpenAsio)         //
 //    Benjamin Rosseaux (author of the stdcall interface)                     //
-//    Maik Menz (various refacturings)                                        //
+//    Maik Menz (various refactorings)                                        //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 

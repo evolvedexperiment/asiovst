@@ -29,6 +29,14 @@
   The default is disabled.}
 {$DEFINE AllowMultipleAsioHosts}
 
+
+{ After uninstalling some ASIO driver, empty strings or false settings might
+  remain in the registry leading to non existing ASIO drivers. These non-
+  functional drivers can be ignored or an exception can be raised to warn the
+  user.
+  The default is enabled.}
+{$DEFINE IgnoreBrokenAsioList}
+
 ////////////////////////////////////
 //  VST Plugin Compiler Switches  //
 ////////////////////////////////////

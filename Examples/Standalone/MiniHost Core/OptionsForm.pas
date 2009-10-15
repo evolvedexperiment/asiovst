@@ -10,29 +10,29 @@ uses
 
 type
   TFmOptions = class(TForm)
+    BtInfo: TButton;
     GbASIO: TGroupBox;
     GbGlobalSetting: TGroupBox;
     LbASIODriver: TLabel;
-    LbOutputs: TLabel;
     LbBufferSize: TLabel;
-    LbSampleRate: TLabel;
-    LbOverallVolume: TLabel;
-    LbWavVolume: TLabel;
-    LbTempo: TLabel;
-    LbInputs: TLabel;
     LbFormat: TLabel;
+    LbInputs: TLabel;
     LbInputVolume: TLabel;
+    LbOutputs: TLabel;
+    LbOverallVolume: TLabel;
+    LbSampleRate: TLabel;
+    LbTempo: TLabel;
     LbVSTVolume: TLabel;
-    BtInfo: TButton;
+    LbWavVolume: TLabel;
     MemoInfo: TMemo;
-    SbTempo: TScrollBar;
-    SbWavVolume: TScrollBar;
     SbInputVolume: TScrollBar;
-    SbVSTVolume: TScrollBar;
     SbOverallVolume: TScrollBar;
+    SbTempo: TScrollBar;
+    SbVSTVolume: TScrollBar;
+    SbWavVolume: TScrollBar;
     procedure FormCreate(Sender: TObject);
-    procedure BtInfoClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure BtInfoClick(Sender: TObject);
     procedure SbTempoChange(Sender: TObject);
   public
     Host: TFmMiniHost;

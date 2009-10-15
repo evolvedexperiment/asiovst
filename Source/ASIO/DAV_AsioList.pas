@@ -189,7 +189,10 @@ begin
           FNameList.Add(DrvName);
          end;
        end
-      else raise Exception.Create('Error loading GUID from ' + SubKeys[KeyNo]);
+      else
+       {$IFNDEF IgnoreBrokenAsioList}
+       raise Exception.Create('Error loading GUID from ' + SubKeys[KeyNo]);
+       {$ENDIF}
      finally
       CloseKey;
      end;
