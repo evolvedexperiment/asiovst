@@ -164,16 +164,19 @@ end;
 procedure TDAVResampling.FactorChanged;
 begin
  UpdateFilter;
+ Changed;
 end;
 
 procedure TDAVResampling.OrderChanged;
 begin
  UpdateFilter;
+ Changed;
 end;
 
 procedure TDAVResampling.TransitionBandwidthChanged;
 begin
  UpdateFilter;
+ Changed;
 end;
 
 procedure TDAVResampling.SetTransitionBandwidth(const Value: Double);
@@ -197,6 +200,7 @@ end;
 procedure TDAVResampling.SampleRateChanged;
 begin
  UpdateFilter;
+ Changed;
 end;
 
 
@@ -296,6 +300,7 @@ begin
      end;
    FreeAndNil(oldFilter);
   end;
+ Changed;
 end;
 
 procedure TDAVUpDownsampling.OrderChanged;
@@ -353,6 +358,7 @@ begin
     Ripple := 0.1;
    end;
  FreeAndNil(oldFilter);
+ Changed;
 end;
 
 procedure TDAVUpSampling.OrderChanged;
@@ -433,6 +439,7 @@ begin
     Ripple := 0.1;
    end;
  FreeAndNil(OldFilter);
+ Changed;
 end;
 
 function TDAVDownSampling.Downsample32(Input: PDAVSingleFixedArray): Single;

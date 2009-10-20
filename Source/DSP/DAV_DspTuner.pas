@@ -270,11 +270,13 @@ begin
  SetupMaximumFrequency;
  CalculateDownsampleFactor;
  FHighpass.SampleRate := SampleRate / FDownSampleFactor;
+ Changed;
 end;
 
 procedure TCustomDownsampledTuner.MinimumFrequencyChanged;
 begin
  FHighpass.Frequency := FMinimumFrequency;
+ Changed;
 end;
 
 procedure TCustomDownsampledTuner.ProcessSample32(Input: Single);

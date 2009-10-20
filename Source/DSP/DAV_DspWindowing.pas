@@ -37,6 +37,7 @@ interface
 uses
   DAV_Common;
 
+procedure ApplyTriangleWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
 procedure ApplyHanningWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
 procedure ApplyHammingWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
 procedure ApplyBlackmanWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
@@ -44,6 +45,7 @@ procedure ApplyBlackmanHarrisWindow(const Data: PDAVSingleFixedArray; const Samp
 procedure ApplyGaussianWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload;
 procedure ApplyKaiserBesselWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer; const Alpha: Single); overload;
 
+procedure ApplyTriangleWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyHanningWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyHammingWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyBlackmanWindow(var Data: TDAVSingleDynArray); overload;
@@ -52,6 +54,24 @@ procedure ApplyGaussianWindow(var Data: TDAVSingleDynArray); overload;
 procedure ApplyKaiserBesselWindow(var Data: TDAVSingleDynArray; const Alpha: Single); overload;
 
 implementation
+
+// Generate window function (Triangle)
+procedure ApplyTriangleWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
+var
+  i, j : Integer;
+  k    : Double;
+begin
+ for i := 0 to (SampleFrames div 2) - 1
+  do Data^[i] := i / (SampleFrames div 2) * Data^[i];
+ for i := (SampleFrames div 2) to SampleFrames - 1
+  do Data^[i] := (SampleFrames - i) / (SampleFrames div 2) * Data^[i];
+end;
+
+procedure ApplyTriangleWindow(var Data: TDAVSingleDynArray);
+begin
+ ApplyHanningWindow(@Data[0], Length(Data));
+end;
+
 
 // Generate window function (Hanning)
 procedure ApplyHanningWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);

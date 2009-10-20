@@ -176,6 +176,7 @@ begin
   end;
  SpeedChanged;
  CalculateStageMix;
+ Changed; 
 end;
 
 procedure TCustomDspBarberpole.UpdateBuffer;
@@ -192,16 +193,19 @@ end;
 procedure TCustomDspBarberpole.SpeedChanged;
 begin
  FOffset := FSampleRateInv * Speed;
+ Changed; 
 end;
 
 procedure TCustomDspBarberpole.DepthChanged;
 begin
  UpdateBuffer;
+ Changed; 
 end;
 
 procedure TCustomDspBarberpole.MixChanged;
 begin
  CalculateStageMix;
+ Changed; 
 end;
 
 procedure TCustomDspBarberpole.SampleRateChanged;
@@ -218,7 +222,7 @@ end;
 
 procedure TCustomDspBarberpole.DirectionChanged;
 begin
- //
+ Changed; 
 end;
 
 procedure TCustomDspBarberpole.SetDepth(const Value: Double);

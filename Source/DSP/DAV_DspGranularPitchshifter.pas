@@ -285,6 +285,7 @@ procedure TCustomDspGranularPitchShifter.SampleRateChanged;
 begin
  CalculateSampleRateReciprocal;
  UpdateBuffer;
+ inherited;
 end;
 
 procedure TCustomDspGranularPitchShifter.CalculateSampleRateReciprocal;
@@ -296,6 +297,7 @@ procedure TCustomDspGranularPitchShifter.SemitonesChanged;
 begin
  FSampleOffset := Power(2, FSemitones / 12) - 1;
  CalculateEnvelopeOffset;
+ Changed;
 end;
 
 procedure TCustomDspGranularPitchShifter.SetGranularity(const Value: Double);
@@ -315,6 +317,7 @@ end;
 procedure TCustomDspGranularPitchShifter.GranularityChanged;
 begin
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomDspGranularPitchShifter.SetSemitones(const Value: Double);
@@ -349,6 +352,7 @@ begin
    StagesChanged;
   end;
 end;
+
 
 { TDspGranularPitchShifter32 }
 

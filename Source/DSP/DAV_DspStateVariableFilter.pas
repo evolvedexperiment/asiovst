@@ -113,6 +113,7 @@ begin
      CalculateQ;
     end;
   end;
+ Changed;
 end;
 
 procedure TSVF.CalculateQ;
@@ -138,6 +139,7 @@ end;
 procedure TSVF.QChanged;
 begin
  CalculateQ;
+ Changed;
 end;
 
 procedure TSVF.ProcessSample(const Input: Single; var Low, Band, Notch, High: Single);

@@ -52,6 +52,8 @@ type
     procedure SetBeatsPerMinute(const Value: Double);
   protected
     procedure AssignTo(Dest: TPersistent); override;
+
+    procedure BeatsPerMinuteChanged; virtual;
     procedure SampleRateChanged; override;
   public
     constructor Create; override;
@@ -111,8 +113,14 @@ begin
   if FBeatsPerMinute <> Value then
    begin
     FBeatsPerMinute := Value;
-    CalculateSamplesPerBeat;
+    BeatsPerMinuteChanged;
    end;
+end;
+
+procedure TMetronome.BeatsPerMinuteChanged;
+begin
+ CalculateSamplesPerBeat;
+ Changed;
 end;
 
 procedure TMetronome.AssignTo(Dest: TPersistent);
@@ -144,6 +152,7 @@ procedure TMetronome.SampleRateChanged;
 begin
  FDecayFactor := 0.995; // need to be samplerate independent in the future!
  CalculateSamplesPerBeat;
+ inherited;
 end;
 
 end.

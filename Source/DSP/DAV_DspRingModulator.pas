@@ -294,11 +294,13 @@ end;
 procedure TCustomAutoRingModulator32.FrequencyChanged;
 begin
  FLfo.Frequency := Frequency;
+ Changed;
 end;
 
 procedure TCustomAutoRingModulator32.SampleRateChanged;
 begin
  FLfo.SampleRate := SampleRate;
+ Changed;
 end;
 
 procedure TCustomAutoRingModulator32.ProcessBlock32(Data: PDAVSingleFixedArray;
@@ -336,11 +338,13 @@ end;
 procedure TCustomAutoRingModulator64.FrequencyChanged;
 begin
  FLfo.Frequency := Frequency;
+ Changed;
 end;
 
 procedure TCustomAutoRingModulator64.SampleRateChanged;
 begin
  FLfo.SampleRate := SampleRate;
+ Changed;
 end;
 
 procedure TCustomAutoRingModulator64.ProcessBlock64(Data: PDAVDoubleFixedArray;
@@ -377,6 +381,7 @@ end;
 procedure TCustomAnalogAutoRingModulator32.FrequencyChanged;
 begin
  FLfo.Frequency := Frequency;
+ Changed;
 end;
 
 procedure TCustomAnalogAutoRingModulator32.ProcessBlock32(
@@ -391,6 +396,7 @@ end;
 procedure TCustomAnalogAutoRingModulator32.SampleRateChanged;
 begin
  FLfo.SampleRate := SampleRate;
+ Changed;
 end;
 
 
@@ -413,6 +419,7 @@ end;
 procedure TCustomAnalogAutoRingModulator64.FrequencyChanged;
 begin
  FLfo.Frequency := Frequency;
+ Changed;
 end;
 
 procedure TCustomAnalogAutoRingModulator64.ProcessBlock64(
@@ -427,6 +434,7 @@ end;
 procedure TCustomAnalogAutoRingModulator64.SampleRateChanged;
 begin
  FLfo.SampleRate := SampleRate;
+ Changed;
 end;
 
 

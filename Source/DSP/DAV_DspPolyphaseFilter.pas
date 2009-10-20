@@ -129,11 +129,13 @@ procedure TCustomPolyphaseFilter.NumberOfCoeffsChanged;
 begin
  ReallocMem(FCoefficients, FNumberOfCoeffs * SizeOf(Double));
  SetCoefficients(FNumberOfCoeffs, FTransition);
+ Changed;
 end;
 
 procedure TCustomPolyphaseFilter.TransitionChanged;
 begin
  SetCoefficients(FNumberOfCoeffs, FTransition);
+ Changed;
 end;
 
 procedure TCustomPolyphaseFilter.SetNumberOfCoeffs(const Value: Integer);

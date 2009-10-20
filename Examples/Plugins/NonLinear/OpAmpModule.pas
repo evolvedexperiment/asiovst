@@ -82,7 +82,8 @@ begin
 {$IFNDEF FPC}
  GUI := TVSTGUI.Create(Self);
 {$ELSE}
- GUI := TVSTGUI.CreateParented(ParentWindow, Self);
+ GUI := TVSTGUI.Create(Self);
+// GUI := TVSTGUI.CreateParented(ParentWindow);
 {$ENDIF}
  with TVSTGUI(GUI) do
   begin

@@ -192,11 +192,13 @@ end;
 procedure TLorenzOsc.SampleRateChanged;
 begin
  CalculateSampleCycles;
+ Changed;
 end;
 
 procedure TLorenzOsc.FrequencyChanged;
 begin
  CalculateSampleCycles;
+ Changed;
 end;
 
 procedure TLorenzOsc.CalculateSampleCycles;
@@ -242,11 +244,13 @@ end;
 procedure TRosslerOsc.SampleRateChanged;
 begin
  CalculateSampleCycles;
+ Changed;
 end;
 
 procedure TRosslerOsc.FrequencyChanged;
 begin
  CalculateSampleCycles;
+ Changed;
 end;
 
 procedure TRosslerOsc.CalculateSampleCycles;

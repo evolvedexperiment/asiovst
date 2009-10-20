@@ -141,6 +141,7 @@ procedure TCustomCrosstalkCancellation.ListenerDistanceChanged;
 begin
  if FSpeakerDistance > 2 * FListenerDistance
   then SpeakerDistance := 2 * FListenerDistance;
+ Changed;
 end;
 
 procedure TCustomCrosstalkCancellation.SetCrosstalkFilterFrequency(
@@ -203,6 +204,7 @@ procedure TCustomCrosstalkCancellation.SpeakerDistanceChanged;
 begin
  if 2 * FListenerDistance < FSpeakerDistance
   then FListenerDistance := 0.5 * SpeakerDistance;
+ Changed;
 end;
 
 { TCrosstalkCancellation32 }
@@ -229,11 +231,13 @@ end;
 procedure TCrosstalkCancellation32.CrosstalkFilterFrequencyChanged;
 begin
  CalculateCrosstalkFilter;
+ Changed;
 end;
 
 procedure TCrosstalkCancellation32.CrosstalkFilterGainChanged;
 begin
  CalculateCrosstalkFilter;
+ Changed;
 end;
 
 procedure TCrosstalkCancellation32.CalculateCrosstalkFilter;
@@ -360,6 +364,7 @@ begin
     end;
   end;
  CalculateCoefficients;
+ Changed;
 end;
 
 procedure TCrosstalkCancellation32.ProcessStereo(var Left, Right: Single);

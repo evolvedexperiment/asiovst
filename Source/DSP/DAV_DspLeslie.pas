@@ -251,21 +251,25 @@ end;
 procedure TLeslieRotator.CrossoverChanged;
 begin
  FFilo := 1 - Power(10, FCrossover * (2.27 - 0.54 * FCrossover) - 1.92);
+ Changed;
 end;
 
 procedure TLeslieRotator.HighDepthChanged;
 begin
  FHDep := sqr(0.01 * FHighDepth) * SampleRate / 760;
+ Changed;
 end;
 
 procedure TLeslieRotator.HighThrobChanged;
 begin
  FHighLevel := FGainFactor * 0.9 * sqr(0.01 * FHighThrob);
+ Changed;
 end;
 
 procedure TLeslieRotator.HighWidthChanged;
 begin
  FHiWid := sqr(0.01 * FHighWidth);
+ Changed;
 end;
 
 procedure TLeslieRotator.SetInternalSpeedFactors;
@@ -301,6 +305,7 @@ begin
  FSpd := 4 * Pi * (0.01 * FSpeed) * FInvSampleRate;
  FHSet := FHiSet * FSpd;
  FLSet := FLoSet * FSpd;
+ Changed;
 end;
 
 procedure TLeslieRotator.MomChanged;
@@ -312,16 +317,19 @@ begin
 
  FHMom := Power(FHMom, COne32th);
  FLMom := Power(FLMom, COne32th);
+ Changed;
 end;
 
 procedure TLeslieRotator.LowThrobChanged;
 begin
  FLowLevel := FGainFactor * 0.9 * Sqr(0.01 * FLowThrob);
+ Changed;
 end;
 
 procedure TLeslieRotator.LowWidthChanged;
 begin
  FLoWid := Sqr(0.01 * FLowWidth);
+ Changed;
 end;
 
 procedure TLeslieRotator.OutputGainChanged;
@@ -334,6 +342,7 @@ procedure TLeslieRotator.GainChanged;
 begin
  FLowLevel := FGainFactor * 0.9 * sqr(0.01 * FLowThrob);
  FHighLevel := FGainFactor * 0.9 * sqr(0.01 * FHighThrob);
+ Changed;
 end;
 
 procedure TLeslieRotator.CalculateInvSamplerate;

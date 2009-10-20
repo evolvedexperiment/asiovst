@@ -252,6 +252,7 @@ type
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure ProcessBlock(const Inplace : PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
+    function ProcessSample32(Input: Single): Single; virtual;
     procedure LoadImpulseResponse(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVSingleDynArray); overload; virtual;
   published
@@ -415,7 +416,7 @@ end;
 
 function TCustomConvolution.GetFftOrder: Byte;
 begin
- result := FFft.Order;
+ Result := FFft.Order;
 end;
 
 procedure TCustomConvolution.FFTOrderChanged;
@@ -557,21 +558,21 @@ end;
 {$IFDEF Use_IPPS}
 function TConvolution32.GetFft : TFftReal2ComplexIPPSFloat32;
 begin
- result := TFftReal2ComplexIPPSFloat32(FFft);
+ Result := TFftReal2ComplexIPPSFloat32(FFft);
 end;
 
 {$ELSE} {$IFDEF Use_CUDA}
 
 function TConvolution32.GetFft : TFftReal2ComplexCUDA32;
 begin
- result := TFftReal2ComplexCUDA32(FFft);
+ Result := TFftReal2ComplexCUDA32(FFft);
 end;
 
 {$ELSE}
 
 function TConvolution32.GetFft : TFftReal2ComplexNativeFloat32;
 begin
- result := TFftReal2ComplexNativeFloat32(FFft);
+ Result := TFftReal2ComplexNativeFloat32(FFft);
 end;
 {$ENDIF}{$ENDIF}
 
@@ -646,17 +647,17 @@ begin
   if FBlockPosition + (SampleFrames - CurrentPosition) < FFFTSizeHalf then
    begin
     // copy to ring buffer only
-    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
+    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
 
-    // increase block position and break
-    inc(FBlockPosition, SampleFrames - CurrentPosition);
-    break;
+    // increase block position and Break
+    Inc(FBlockPosition, SampleFrames - CurrentPosition);
+    Break;
    end
   else
    begin
-    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (FFFTSizeHalf - FBlockPosition) * Sizeof(Single));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FFFTSizeHalf - FBlockPosition) * Sizeof(Single));
+    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (FFFTSizeHalf - FBlockPosition) * SizeOf(Single));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FFFTSizeHalf - FBlockPosition) * SizeOf(Single));
 
     // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FFFTSizeHalf], FOutputBuffer^[0], (FIRSizePadded - FFFTSizeHalf) * SizeOf(Single));
@@ -665,7 +666,7 @@ begin
     PerformConvolution(FInputBuffer, FOutputBuffer);
 
     // discard already used input buffer part to make space for new data
-    Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Single));
+    Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * SizeOf(Single));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FFFTSizeHalf - FBlockPosition));
@@ -680,14 +681,18 @@ begin
  FInputBuffer^[FFFTSizeHalf + FBlockPosition] := Input;
  Result := FOutputBuffer^[FBlockPosition];
 
- // increase block position and break
+ // increase block position and Break
  Inc(FBlockPosition, 1);
  if FBlockPosition >= FFFTSizeHalf then
   begin
+   // discard already used output buffer part and make space for new data
+   Move(FOutputBuffer^[FFFTSizeHalf], FOutputBuffer^[0], (FIRSizePadded - FFFTSizeHalf) * SizeOf(Single));
+   FillChar(FOutputBuffer^[(FIRSizePadded - FFFTSizeHalf)], FFFTSizeHalf * SizeOf(Single), 0);
+
    PerformConvolution(FInputBuffer, FOutputBuffer);
 
    // discard already used input buffer part to make space for new data
-   Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Single));
+   Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * SizeOf(Single));
 
    // increase current position and reset block position
    FBlockPosition := 0;
@@ -836,14 +841,14 @@ end;
 {$IFDEF Use_IPPS}
 function TConvolution64.GetFft : TFftReal2ComplexIPPSFloat64;
 begin
- result := TFftReal2ComplexIPPSFloat64(FFft);
+ Result := TFftReal2ComplexIPPSFloat64(FFft);
 end;
 
 {$ELSE}
 
 function TConvolution64.GetFft : TFftReal2ComplexNativeFloat64;
 begin
- result := TFftReal2ComplexNativeFloat64(FFft);
+ Result := TFftReal2ComplexNativeFloat64(FFft);
 end;
 {$ENDIF}
 
@@ -918,17 +923,17 @@ begin
   if FBlockPosition + (SampleFrames - CurrentPosition) < FFFTSizeHalf then
    begin
     // copy to ring buffer only
-    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
 
-    // increase block position and break
-    inc(FBlockPosition, SampleFrames - CurrentPosition);
-    break;
+    // increase block position and Break
+    Inc(FBlockPosition, SampleFrames - CurrentPosition);
+    Break;
    end
   else
    begin
-    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (FFFTSizeHalf - FBlockPosition) * Sizeof(Double));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FFFTSizeHalf - FBlockPosition) * Sizeof(Double));
+    Move(Input^[CurrentPosition], FInputBuffer^[FFFTSizeHalf + FBlockPosition], (FFFTSizeHalf - FBlockPosition) * SizeOf(Double));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FFFTSizeHalf - FBlockPosition) * SizeOf(Double));
 
     // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FFFTSizeHalf], FOutputBuffer^[0], (FIRSizePadded - FFFTSizeHalf) * SizeOf(Double));
@@ -937,7 +942,7 @@ begin
     PerformConvolution(FInputBuffer, FOutputBuffer);
 
     // discard already used input buffer part to make space for new data
-    Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Double));
+    Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * SizeOf(Double));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FFFTSizeHalf - FBlockPosition));
@@ -952,14 +957,14 @@ begin
  FInputBuffer^[FFFTSizeHalf + FBlockPosition] := Input;
  Result := FOutputBuffer^[FBlockPosition];
 
- // increase block position and break
+ // increase block position and Break
  Inc(FBlockPosition, 1);
  if FBlockPosition >= FFFTSizeHalf then
   begin
    PerformConvolution(FInputBuffer, FOutputBuffer);
 
    // discard already used input buffer part to make space for new data
-   Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * Sizeof(Double));
+   Move(FInputBuffer[FFFTSizeHalf], FInputBuffer[0], FFFTSizeHalf * SizeOf(Double));
 
    // increase current position and reset block position
    FBlockPosition := 0;
@@ -1025,7 +1030,7 @@ end;
 
 function TLowLatencyConvolutionStage32.GetCount: Integer;
 begin
- result := Length(FIRSpectrums);
+ Result := Length(FIRSpectrums);
 end;
 
 procedure TLowLatencyConvolutionStage32.AssignTo(Dest: TPersistent);
@@ -1167,7 +1172,7 @@ end;
 
 function TLowLatencyConvolution32.GetMaximumIRBlockSize: Integer;
 begin
- result := 1 shl FMaximumIRBlockOrder;
+ Result := 1 shl FMaximumIRBlockOrder;
 end;
 
 procedure TLowLatencyConvolution32.SetMaximumIRBlockOrder(const Value: Byte);
@@ -1253,7 +1258,7 @@ end;
 
 function TLowLatencyConvolution32.CalculatePaddedIRSize: Integer;
 begin
- result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+ Result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
 end;
 
 procedure TLowLatencyConvolution32.CalculateLatency;
@@ -1320,7 +1325,7 @@ end;
 
 function BitCountToBits(const BitCount: Byte): Integer;
 begin
- result := (2 shl BitCount) - 1;
+ Result := (2 shl BitCount) - 1;
 end;
 
 procedure TLowLatencyConvolution32.PartitionizeIR;
@@ -1391,17 +1396,17 @@ begin
   if FBlockPosition + (SampleFrames - CurrentPosition) < FLatency then
    begin
     // copy to ring buffer only
-    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
+    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
 
-    // increase block position and break
-    inc(FBlockPosition, SampleFrames - CurrentPosition);
-    break;
+    // increase block position and Break
+    Inc(FBlockPosition, SampleFrames - CurrentPosition);
+    Break;
    end
   else
    begin
-    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Single));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Single));
+    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Single));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Single));
 
     // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FLatency], FOutputBuffer^[0], FOutputHistorySize * SizeOf(Single));
@@ -1412,7 +1417,7 @@ begin
      do FConvStages[Part].PerformConvolution(@FInputBuffer[FInputBufferSize], FOutputBuffer);
 
     // discard already used input buffer part to make space for new data
-    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * Sizeof(Single));
+    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * SizeOf(Single));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FLatency - FBlockPosition));
@@ -1420,6 +1425,36 @@ begin
    end;
   until CurrentPosition >= SampleFrames;
 end;
+
+function TLowLatencyConvolution32.ProcessSample32(Input: Single): Single;
+var
+  CurrentPosition : Integer;
+  Part            : Integer;
+begin
+ // copy to ring buffer only
+ FInputBuffer^[FInputHistorySize + FBlockPosition] := Input;
+ Result := FOutputBuffer^[FBlockPosition];
+
+ // increase block position and Break
+ Inc(FBlockPosition, 1);
+ if FBlockPosition >= FLatency then
+  begin
+   // discard already used output buffer part and make space for new data
+   Move(FOutputBuffer^[FLatency], FOutputBuffer^[0], FOutputHistorySize * SizeOf(Single));
+   FillChar(FOutputBuffer^[FOutputHistorySize], FLatency * SizeOf(Single), 0);
+
+   // actually perform partitioned convolution
+   for Part := 0 to Length(FConvStages) - 1
+    do FConvStages[Part].PerformConvolution(@FInputBuffer[FInputBufferSize], FOutputBuffer);
+
+   // discard already used input buffer part to make space for new data
+   Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * SizeOf(Single));
+
+   // reset block position
+   FBlockPosition := 0;
+  end;
+end;
+
 
 { TLowLatencyConvolutionStereo32 }
 
@@ -1477,21 +1512,21 @@ begin
   if FBlockPosition + (SampleFrames - CurrentPosition) < FLatency then
    begin
     // copy to ring buffer only
-    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
+    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
 
-    // increase block position and break
-    inc(FBlockPosition, SampleFrames - CurrentPosition);
-    break;
+    // increase block position and Break
+    Inc(FBlockPosition, SampleFrames - CurrentPosition);
+    Break;
    end
   else
    begin
-    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Single));
-    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Single));
-    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Single));
-    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Single));
+    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Single));
+    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Single));
+    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Single));
+    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Single));
 
     // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FLatency], FOutputBuffer^[0], FOutputHistorySize * SizeOf(Single));
@@ -1509,8 +1544,8 @@ begin
       end;
 
     // discard already used input buffer part to make space for new data
-    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * Sizeof(Single));
-    Move(FInputBuffer2[FLatency], FInputBuffer2[0], FInputHistorySize * Sizeof(Single));
+    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * SizeOf(Single));
+    Move(FInputBuffer2[FLatency], FInputBuffer2[0], FInputHistorySize * SizeOf(Single));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FLatency - FBlockPosition));
@@ -1570,7 +1605,7 @@ end;
 
 function TLowLatencyConvolutionStage64.GetCount: Integer;
 begin
- result := Length(FIRSpectrums);
+ Result := Length(FIRSpectrums);
 end;
 
 procedure TLowLatencyConvolutionStage64.AssignTo(Dest: TPersistent);
@@ -1692,7 +1727,7 @@ end;
 
 function TLowLatencyConvolution64.GetMaximumIRBlockSize: Integer;
 begin
- result := 1 shl FMaximumIRBlockOrder;
+ Result := 1 shl FMaximumIRBlockOrder;
 end;
 
 procedure TLowLatencyConvolution64.SetMaximumIRBlockOrder(const Value: Byte);
@@ -1778,7 +1813,7 @@ end;
 
 function TLowLatencyConvolution64.CalculatePaddedIRSize: Integer;
 begin
- result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
+ Result := MinimumIRBlockSize * ((IRSize + MinimumIRBlockSize - 1) div MinimumIRBlockSize);
 end;
 
 procedure TLowLatencyConvolution64.CalculateLatency;
@@ -1896,17 +1931,17 @@ begin
   if FBlockPosition + (SampleFrames - CurrentPosition) < FLatency then
    begin
     // copy to ring buffer only
-    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
 
-    // increase block position and break
-    inc(FBlockPosition, SampleFrames - CurrentPosition);
-    break;
+    // increase block position and Break
+    Inc(FBlockPosition, SampleFrames - CurrentPosition);
+    Break;
    end
   else
    begin
-    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Double));
-    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Double));
+    Move(Input^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Double));
+    Move(FOutputBuffer^[FBlockPosition], Output^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Double));
 
     // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FLatency], FOutputBuffer^[0], FOutputHistorySize * SizeOf(Double));
@@ -1917,7 +1952,7 @@ begin
      do FConvStages[Part].PerformConvolution(@FInputBuffer[FInputBufferSize], FOutputBuffer);
 
     // discard already used input buffer part to make space for new data
-    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * Sizeof(Double));
+    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * SizeOf(Double));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FLatency - FBlockPosition));
@@ -1978,21 +2013,21 @@ begin
   if FBlockPosition + (SampleFrames - CurrentPosition) < FLatency then
    begin
     // copy to ring buffer only
-    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
+    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
 
-    // increase block position and break
-    inc(FBlockPosition, SampleFrames - CurrentPosition);
-    break;
+    // increase block position and Break
+    Inc(FBlockPosition, SampleFrames - CurrentPosition);
+    Break;
    end
   else
    begin
-    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Double));
-    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * Sizeof(Double));
-    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Double));
-    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (FLatency - FBlockPosition) * Sizeof(Double));
+    Move(Left^[CurrentPosition], FInputBuffer2^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Double));
+    Move(Right^[CurrentPosition], FInputBuffer^[FInputHistorySize + FBlockPosition], (FLatency - FBlockPosition) * SizeOf(Double));
+    Move(FOutputBuffer2^[FBlockPosition], Left^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Double));
+    Move(FOutputBuffer^[FBlockPosition], Right^[CurrentPosition], (FLatency - FBlockPosition) * SizeOf(Double));
 
     // discard already used output buffer part and make space for new data
     Move(FOutputBuffer^[FLatency], FOutputBuffer^[0], FOutputHistorySize * SizeOf(Double));
@@ -2010,8 +2045,8 @@ begin
       end;
 
     // discard already used input buffer part to make space for new data
-    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * Sizeof(Double));
-    Move(FInputBuffer2[FLatency], FInputBuffer2[0], FInputHistorySize * Sizeof(Double));
+    Move(FInputBuffer[FLatency], FInputBuffer[0], FInputHistorySize * SizeOf(Double));
+    Move(FInputBuffer2[FLatency], FInputBuffer2[0], FInputHistorySize * SizeOf(Double));
 
     // increase current position and reset block position
     Inc(CurrentPosition, (FLatency - FBlockPosition));

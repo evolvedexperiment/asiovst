@@ -136,6 +136,7 @@ end;
 procedure TCustomVariableDelay.SampleRateChanged;
 begin
  DelayChanged;
+ Changed;
 end;
 
 procedure TCustomVariableDelay.DelayChanged;
@@ -145,6 +146,7 @@ begin
  NewSize := round(SampleRate * FDelay + 0.50000001);
  FFractional := NewSize - SampleRate * FDelay;
  ChangeBuffer(NewSize + InterpolatorLength);
+ Changed;
 end;
 
 { TCustomVariableDelay32 }

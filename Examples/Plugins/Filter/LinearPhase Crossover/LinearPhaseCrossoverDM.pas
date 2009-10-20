@@ -200,7 +200,7 @@ begin
    {$ENDIF}{$ENDIF}
   end;
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 
@@ -300,7 +300,7 @@ procedure TLinearPhaseCrossoverModule.ParameterOrderChange(
 begin
  Value := 10;
 // if assigned(FLinearPhaseCrossover)
-//  then FLinearPhaseCrossover.Order := round(Value);
+//  then FLinearPhaseCrossover.Order := Round(Value);
 end;
 
 procedure TLinearPhaseCrossoverModule.VSTModuleSampleRateChange(Sender: TObject;

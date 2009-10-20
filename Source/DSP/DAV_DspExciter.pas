@@ -151,12 +151,14 @@ procedure TCustomExciter.FrequencyChanged;
 begin
  FCrossover.Frequency := FFrequency;
  FHighpass.Frequency := 1.5 * FFrequency;
+ Changed;
 end;
 
 procedure TCustomExciter.SampleRateChanged;
 begin
  FCrossover.SampleRate := SampleRate;
  FHighpass.SampleRate := SampleRate;
+ Changed;
 end;
 
 procedure TCustomExciter.ProcessBlock32(Data: PDAVSingleFixedArray;

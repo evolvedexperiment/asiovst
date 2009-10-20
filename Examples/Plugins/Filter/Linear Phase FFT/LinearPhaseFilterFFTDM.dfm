@@ -1,20 +1,21 @@
-object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
+object LinearPhaseFilterFFTDataModule: TLinearPhaseFilterFFTDataModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Version = '1.0'
-  EffectName = 'LinearPhaseCrossover'
-  ProductName = 'DAV Filter Examples'
+  EffectName = 'LinearPhaseFilterFFT'
+  ProductName = 'DAV Effect Examples'
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
+  BlockSize = 8192
   numInputs = 1
   CurrentProgram = 0
   CurrentProgramName = 'Default'
-  ProcessingMode = pmBlockSave
-  BlockModeOverlap = 512
+  BlockModeSize = 8192
   InitialDelay = 1024
   IORatio = 1.000000000000000000
-  UniqueID = 'LiRi'
+  UniqueID = 'Conv'
   ShellPlugins = <>
   Programs = <
     item
@@ -24,51 +25,46 @@ object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
   ParameterProperties = <
     item
       Curve = ctLogarithmic
-      CurveFactor = 10000.000000000000000000
+      CurveFactor = 1000.000000000000000000
       DisplayName = 'Frequency'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
       Max = 20000.000000000000000000
       MaxInteger = 20000
-      Min = 2.000000000000000000
-      MinInteger = 2
-      ReportVST2Properties = True
-      ShortLabel = 'Freq'
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ShortLabel = 'Frequen'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
-      OnCustomParameterLabel = ParameterFrequencyLabel
-      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
-      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 16.000000000000000000
       MaxInteger = 16
       Min = 6.000000000000000000
       MinInteger = 6
-      ReportVST2Properties = True
-      ShortLabel = 'FFT Ord'
+      ShortLabel = 'Order'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterOrderChange
-      OnCustomParameterDisplay = ParameterOrderDisplay
+      OnParameterChange = ParameterFftOrderChange
+      OnCustomParameterDisplay = ParameterfftOrderDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
+  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
-  OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 77
+  Left = 191
+  Top = 76
   Height = 150
   Width = 215
 end

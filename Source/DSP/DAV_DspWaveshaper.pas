@@ -440,8 +440,8 @@ end;
 
 procedure TChebyshevWaveshaper.OrderChanged;
 begin
-
  RecalculateHarmonics;
+ Changed;
 end;
 
 procedure TChebyshevWaveshaper.RecalculateHarmonics;

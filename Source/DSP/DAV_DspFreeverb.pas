@@ -207,6 +207,7 @@ begin
    FComb[i].Feedback := FRoomSize;
    FComb[i].Damp     := FDamp;
   end;
+ Changed;
 end;
 
 procedure TFreeverb.SetRoomSize(const Value: Double);
@@ -224,11 +225,12 @@ var
 begin
  for i := 0 to CCombFilterCount - 1
   do FComb[i].Feedback := FRoomSize;
+ Changed;
 end;
 
 procedure TFreeverb.SampleRateChanged;
 begin
- // nothing in here yet
+ inherited;
 end;
 
 procedure TFreeverb.SetWet(const Value: Double);
@@ -242,7 +244,7 @@ end;
 
 procedure TFreeverb.WetChanged;
 begin
- // nothing in here yet
+ Changed;
 end;
 
 procedure TFreeverb.SetDry(const Value: Double);
@@ -255,7 +257,7 @@ end;
 
 procedure TFreeverb.DryChanged;
 begin
- // nothing in here yet
+ Changed;
 end;
 
 end.

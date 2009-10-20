@@ -147,6 +147,7 @@ procedure TCustomSimpleOscillator.SampleRateChanged;
 begin
  inherited;
  CalculateSampleRateReciprocal;
+ Changed;
 end;
 
 procedure TCustomSimpleOscillator.CalculateSampleRateReciprocal;
@@ -186,6 +187,7 @@ end;
 procedure TCustomSimpleFrequencyOscillator.SampleRateChanged;
 begin
  FrequencyChanged;
+ Changed;
 end;
 
 procedure TCustomSimpleFrequencyOscillator.SetFrequency(const Value: Single);
@@ -222,6 +224,7 @@ end;
 procedure TCustomSimpleOscillator32.FrequencyChanged;
 begin
  GetSinCos(2 * Pi * FFrequency * FSampleRateInv, FAngle.Im, FAngle.Re);
+ Changed;
 end;
 
 procedure TCustomSimpleOscillator32.SetAmplitude(const Value: Double);
@@ -372,6 +375,7 @@ end;
 procedure TCustomSimpleOscillator64.FrequencyChanged;
 begin
  GetSinCos(2 * Pi * FFrequency * FSampleRateInv, FAngle.Im, FAngle.Re);
+ Changed;
 end;
 
 end.

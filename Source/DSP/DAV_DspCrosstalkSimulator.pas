@@ -171,16 +171,19 @@ end;
 procedure TCustomIIRCrosstalkSimulator.DiameterChanged;
 begin
  CalculateBufferSize;
+ Changed;
 end;
 
 procedure TCustomIIRCrosstalkSimulator.MixChanged;
 begin
  CalculateMulFactor;
+ Changed;
 end;
 
 procedure TCustomIIRCrosstalkSimulator.PolarityChanged;
 begin
  CalculateMulFactor;
+ Changed;
 end;
 
 procedure TCustomIIRCrosstalkSimulator.CalculateMulFactor;
@@ -319,6 +322,7 @@ begin
        end;
      end;
  end;
+ Changed;
 end;
 
 procedure TCustomIIRCrosstalkSimulator.ProcessSample(var Left, Right: Single);

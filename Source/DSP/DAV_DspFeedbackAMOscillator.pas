@@ -141,22 +141,24 @@ end;
 
 procedure TCustomFeedbackAMOscillator.AmplitudeChanged;
 begin
-// nothing here yet!
+ Changed;
 end;
 
 procedure TCustomFeedbackAMOscillator.FeedbackChanged;
 begin
-// nothing here yet!
+ Changed;
 end;
 
 procedure TCustomFeedbackAMOscillator.FrequencyChanged;
 begin
  FOscillator.Frequency := Frequency;
+ Changed;
 end;
 
 procedure TCustomFeedbackAMOscillator.SampleRateChanged;
 begin
  FOscillator.SampleRate := SampleRate;
+ inherited;
 end;
 
 

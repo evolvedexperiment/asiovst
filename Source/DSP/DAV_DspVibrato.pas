@@ -167,17 +167,20 @@ procedure TCustomDspVibrato.SpeedChanged;
 begin
  FLFO.Frequency := Speed;
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomDspVibrato.DepthChanged;
 begin
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomDspVibrato.SampleRateChanged;
 begin
  FLFO.SampleRate := SampleRate;
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomDspVibrato.SetDepth(const Value: Double);

@@ -225,6 +225,7 @@ begin
  CalculateOutputFactor;
  CalculateDryFactor;
  CalculateWetFactor;
+ Changed; 
 end;
 
 procedure TCustomAmbience.CalculateOutputFactor;
@@ -243,14 +244,15 @@ end;
 
 procedure TCustomAmbience.SampleRateChanged;
 begin
- inherited;
  FHighShelf.SampleRate := SampleRate;
+ inherited;
 end;
 
 procedure TCustomAmbience.RoomsizeChanged;
 begin
  CalculateRoomsizeFactor;
  FlushBuffers;
+ Changed; 
 end;
 
 procedure TCustomAmbience.CalculateRoomsizeFactor;
@@ -278,6 +280,7 @@ end;
 procedure TCustomAmbience.DryChanged;
 begin
  CalculateDryFactor;
+ Changed; 
 end;
 
 procedure TCustomAmbience.CalculateDryFactor;
@@ -288,6 +291,7 @@ end;
 procedure TCustomAmbience.WetChanged;
 begin
  CalculateWetFactor;
+ Changed; 
 end;
 
 procedure TCustomAmbience.CalculateWetFactor;
@@ -297,7 +301,8 @@ end;
 
 procedure TCustomAmbience.DampingChanged;
 begin
- CalculateDampingFactor; 
+ CalculateDampingFactor;
+ Changed; 
 end;
 
 procedure TCustomAmbience.AssignTo(Dest: TPersistent);

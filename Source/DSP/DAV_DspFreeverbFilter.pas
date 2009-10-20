@@ -260,6 +260,7 @@ procedure TFreeverbCombFilter.BuffersizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
  FBufferPos := 0;
+ Changed;
 end;
 
 procedure TFreeverbCombFilter.SetDamp(Value: Single);
@@ -274,6 +275,7 @@ end;
 procedure TFreeverbCombFilter.DampChanged;
 begin
  FDampB := 1 - FDampA;
+ Changed;
 end;
 
 procedure TFreeverbCombFilter.Mute;

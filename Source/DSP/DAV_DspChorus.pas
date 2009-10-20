@@ -207,8 +207,9 @@ begin
    FLFOs[i]            := TLFOSine.Create;
    FLFOs[i].SampleRate := SampleRate;
   end;
- SpeedChanged; 
+ SpeedChanged;
  CalculateStageMix;
+ Changed;
 end;
 
 procedure TCustomDspChorus.UpdateBuffer;
@@ -245,16 +246,19 @@ begin
    FLFOs[i].Phase := BasePhase + (i + FDrift * random) * d;
   end;
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomDspChorus.DepthChanged;
 begin
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomDspChorus.MixChanged;
 begin
  CalculateStageMix;
+ Changed;
 end;
 
 procedure TCustomDspChorus.SampleRateChanged;
@@ -264,6 +268,7 @@ begin
  for i := 0 to Length(FLFOs) - 1
   do FLFOs[i].SampleRate := SampleRate;
  UpdateBuffer;
+ inherited;
 end;
 
 procedure TCustomDspChorus.SetDepth(const Value: Double);

@@ -211,32 +211,38 @@ end;
 procedure TCustomModDelay.DelayChanged;
 begin
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomModDelay.DepthChanged;
 begin
  FLFO.Amplitude := 0.01 * FDepth;
+ Changed;
 end;
 
 procedure TCustomModDelay.FeedbackChanged;
 begin
  FFeedbackFactor := 0.01 * FFeedback;
+ Changed;
 end;
 
 procedure TCustomModDelay.LowpassFrequencyChanged;
 begin
  FLowpassFilter.Frequency := FLpfFreq;
+ Changed;
 end;
 
 procedure TCustomModDelay.MixChanged;
 begin
  FMixFactors[1] := 0.01 * FMix;
  FMixFactors[0] := 1 - FMixFactors[1];
+ Changed;
 end;
 
 procedure TCustomModDelay.RateChanged;
 begin
  FLFO.Frequency := Rate;
+ Changed;
 end;
 
 procedure TCustomModDelay.SampleRateChanged;
@@ -244,6 +250,7 @@ begin
  FLFO.SampleRate := SampleRate;
  FLowpassFilter.SampleRate := SampleRate;
  UpdateBuffer;
+ Changed;
 end;
 
 procedure TCustomModDelay.SetDelay(const Value: Double);

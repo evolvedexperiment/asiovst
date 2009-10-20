@@ -60,8 +60,8 @@ object LightweightGateDataModule: TLightweightGateDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -80,8 +80,8 @@ object LightweightGateDataModule: TLightweightGateDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

@@ -129,6 +129,7 @@ begin
   begin
    FShape[0] := Value;
    FShape[1] := 1 - Value;
+   Changed;
   end;
 end;
 

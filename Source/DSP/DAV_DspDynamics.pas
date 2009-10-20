@@ -961,6 +961,7 @@ end;
 procedure TCustomDynamicProcessor.ThresholdChanged;
 begin
  CalculateThreshold;
+ Changed;
 end;
 
 { TSimpleDirectGate }
@@ -1003,6 +1004,7 @@ end;
 procedure TSoftDirectGate.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 procedure TSoftDirectGate.CalculateSoftKnee;
@@ -1027,6 +1029,7 @@ procedure TSoftDirectGate.ThresholdChanged;
 begin
  inherited;
  CalculateKneedThreshold;
+ Changed;
 end;
 
 procedure TSoftDirectGate.CalculateKneedThreshold;
@@ -1095,12 +1098,14 @@ begin
  if FAutoMakeUp
   then FMakeUpGain := FThreshold
   else FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
+ Changed;
 end;
 
 procedure TCustomBrickwallLimiter.MakeUpGainChanged;
 begin
  if not FAutoMakeUp
   then FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
+ Changed;
 end;
 
 procedure TCustomBrickwallLimiter.SetAutoMakeUp(const Value: Boolean);
@@ -1126,7 +1131,8 @@ begin
  inherited;
  FThresholdReciprocal := 1 / FThreshold;
  if FAutoMakeUp
-  then FMakeUpGain := FThresholdReciprocal
+  then FMakeUpGain := FThresholdReciprocal;
+ Changed;
 end;
 
 procedure TCustomBrickwallLimiter.InputSample(const Input: Double);
@@ -1252,6 +1258,7 @@ end;
 procedure TSoftBrickwallLimiter.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 procedure TSoftBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
@@ -1321,6 +1328,7 @@ end;
 procedure TSimpleSoftBrickwallLimiter.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 function TSimpleSoftBrickwallLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -1369,6 +1377,7 @@ end;
 procedure TCustomTimeConstantDynamics.ReleaseChanged;
 begin
  CalculateReleaseFactor;
+ Changed;
 end;
 
 procedure TCustomTimeConstantDynamics.Reset;
@@ -1379,12 +1388,14 @@ end;
 procedure TCustomTimeConstantDynamics.AttackChanged;
 begin
  CalculateAttackFactor;
+ Changed;
 end;
 
 procedure TCustomTimeConstantDynamics.SampleRateChanged;
 begin
  CalculateAttackFactor;
  CalculateReleaseFactor;
+ Changed;
 end;
 
 procedure TCustomTimeConstantDynamics.SetAttack(const Value: Double);
@@ -1432,6 +1443,7 @@ begin
  if FAutoMakeUp
   then FMakeUpGain := FThreshold
   else FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
+ Changed;
 end;
 
 procedure TCustomLimiter.InputSample(const Input: Double);
@@ -1447,6 +1459,7 @@ procedure TCustomLimiter.MakeUpGainChanged;
 begin
  if not FAutoMakeUp
   then FMakeUpGain := dB_to_Amp(FMakeUpGain_dB);
+ Changed;
 end;
 
 procedure TCustomLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
@@ -1508,7 +1521,8 @@ begin
  inherited;
  FThresholdReciprocal := 1 / FThreshold;
  if FAutoMakeUp
-  then FMakeUpGain := FThresholdReciprocal
+  then FMakeUpGain := FThresholdReciprocal;
+ Changed;
 end;
 
 { TLimiter }
@@ -1580,12 +1594,14 @@ procedure TRCLimiter.AttackChanged;
 begin
  inherited;
  Release := FAttack;
+ Changed;
 end;
 
 procedure TRCLimiter.ReleaseChanged;
 begin
  inherited;
  Attack := FRelease;
+ Changed;
 end;
 
 function TRCLimiter.CharacteristicCurve(const InputLevel: Double): Double;
@@ -1653,7 +1669,7 @@ end;
 
 procedure TCustomKneeLimiter.KneeChanged;
 begin
- // nothing here
+ Changed;
 end;
 
 { TSoftKneeLimiter }
@@ -1668,6 +1684,7 @@ end;
 procedure TSoftKneeLimiter.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 procedure TSoftKneeLimiter.CalculateSoftKnee;
@@ -1743,6 +1760,7 @@ end;
 procedure TSimpleSoftKneeLimiter.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 procedure TSimpleSoftKneeLimiter.CalculateSoftKnee;
@@ -1843,6 +1861,7 @@ end;
 procedure TCustomTimeConstantRatioDynamics.RatioChanged;
 begin
  CalculateInverseRatio;
+ Changed;
 end;
 
 procedure TCustomTimeConstantRatioDynamics.CalculateInverseRatio;
@@ -1864,6 +1883,7 @@ procedure TCustomTimeConstantRatioDynamics.ThresholdChanged;
 begin
  inherited;
  FThresholdReciprocal := 1 / FThreshold;
+ Changed;
 end;
 
 { TCustomClassicGate }
@@ -1997,6 +2017,7 @@ end;
 procedure TCustomSoftKneeGate.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 procedure TCustomSoftKneeGate.CalculateSoftKnee;
@@ -2020,6 +2041,7 @@ procedure TClassicSoftKneeGate.ThresholdChanged;
 begin
  inherited;
  CalculateKneedThreshold;
+ Changed;
 end;
 
 procedure TClassicSoftKneeGate.CalculateSoftKnee;
@@ -2072,6 +2094,7 @@ end;
 procedure TCustomGate.KneeChanged;
 begin
  CalculateSoftKnee;
+ Changed;
 end;
 
 procedure TCustomGate.SampleRateChanged;
@@ -2149,6 +2172,7 @@ end;
 procedure TCustomGate.RangeChanged;
 begin
  CalculateRangeFactor;
+ Changed;
 end;
 
 function TCustomGate.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -2291,12 +2315,14 @@ procedure TCustomCompressor.AutoMakeUpChanged;
 begin
  if FAutoMakeUp
   then CalculateMakeUpGain;
+ Changed;
 end;
 
 procedure TCustomCompressor.MakeUpGainChanged;
 begin
  if not FAutoMakeUp
   then CalculateMakeUpGain;
+ Changed;
 end;
 
 procedure TCustomCompressor.SetAutoMakeUp(const Value: Boolean);
@@ -2363,7 +2389,7 @@ end;
 
 procedure TCustomKneeCompressor.KneeChanged;
 begin
- // nothing here yet!
+ Changed;
 end;
 
 { TSoftKneeCompressor }
@@ -2384,6 +2410,7 @@ procedure TSoftKneeCompressor.ThresholdChanged;
 begin
  inherited;
  FThresholdReciprocal := 1 / FThreshold;
+ Changed;
 end;
 
 function TSoftKneeCompressor.TranslatePeakToGain(const PeakLevel: Double): Double;

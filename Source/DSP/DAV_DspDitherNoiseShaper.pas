@@ -350,6 +350,7 @@ end;
 procedure TCustomDitherNoiseShaper.DitherTypeChanged;
 begin
  Reset;
+ Changed;
 end;
 
 
@@ -422,6 +423,7 @@ end;
 procedure TCustomDitherPredefinedNoiseShaper.NoiseshaperTypeChanged;
 begin
  Reset;
+ Changed;
 end;
 
 { TCustomDitherIIRNoiseShaper }
@@ -516,6 +518,7 @@ begin
  FBitDiv := 1 / FBitMul;
  FLimits[0] := Round(-FBitMul - CHalf32);
  FLimits[1] := Round( FBitMul - CHalf32);
+ Changed;
 end;
 
 procedure TDitherNoiseShaper32.NoiseshaperTypeChanged;
@@ -528,6 +531,7 @@ procedure TDitherNoiseShaper32.OrderChanged;
 begin
  ReallocMem(FCoefficients, FOrder * SizeOf(Single));
  ReallocMem(FHistory, FOrder * SizeOf(Single));
+ Changed;
 end;
 
 procedure TDitherNoiseShaper32.ChooseNoiseshaper;
@@ -729,6 +733,7 @@ begin
  FBitDiv := 1 / FBitMul;
  FLimits[0] := Round(-FBitMul - CHalf64);
  FLimits[1] := Round( FBitMul - CHalf64);
+ Changed;
 end;
 
 procedure TDitherNoiseShaper64.NoiseshaperTypeChanged;
@@ -839,6 +844,7 @@ procedure TDitherNoiseShaper64.OrderChanged;
 begin
  ReallocMem(FCoefficients, FOrder * SizeOf(Double));
  ReallocMem(FHistory, FOrder * SizeOf(Double));
+ Changed;
 end;
 
 function TDitherNoiseShaper64.ProcessFloat(Input: Double): Double;
@@ -898,6 +904,7 @@ begin
  FBitDiv := 1 / FBitMul;
  FLimits[0] := Round(-FBitMul - CHalf32);
  FLimits[1] := Round( FBitMul - CHalf32);
+ Changed;
 end;
 
 procedure TDitherSharpNoiseShaper32.ChooseNoiseshaper;
@@ -917,6 +924,7 @@ procedure TDitherSharpNoiseShaper32.OrderChanged;
 begin
  ReallocMem(FCoefficients, FOrder * SizeOf(Single));
  ReallocMem(FHistory, FOrder * SizeOf(Single));
+ Changed;
 end;
 
 function TDitherSharpNoiseShaper32.ProcessFloat(Input: Single): Single;
@@ -976,6 +984,7 @@ end;
 procedure TDitherSharpNoiseShaper32.SamplerateChanged;
 begin
  ChooseNoiseshaper;
+ inherited;
 end;
 
 { TDitherHighShelfNoiseShaper32 }
@@ -1001,6 +1010,7 @@ begin
  FBitDiv := 1 / FBitMul;
  FLimits[0] := Round(-FBitMul - CHalf32);
  FLimits[1] := Round( FBitMul - CHalf32);
+ Changed;
 end;
 
 function TDitherHighShelfNoiseShaper32.ProcessFloat(Input: Single): Single;
@@ -1057,11 +1067,13 @@ end;
 procedure TDitherHighShelfNoiseShaper32.FrequencyChanged;
 begin
  TBasicLowShelfFilter(FFilter).Frequency := Frequency;
+ Changed;
 end;
 
 procedure TDitherHighShelfNoiseShaper32.SampleRateChanged;
 begin
  FFilter.SampleRate := SampleRate;
+ Changed;
 end;
 
 end.

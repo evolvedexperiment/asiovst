@@ -44,11 +44,9 @@ type
     IDspProcessor64)
   protected
     FSRR      : Double; // reciprocal of SampleRate
-    FOnChange : TNotifyEvent;
     procedure SampleRateChanged; override;
     procedure CalculateReciprocalSamplerate; virtual;
     procedure CalculateSamplerateDependentVariables; virtual;
-    procedure Changed; virtual;
     procedure AssignTo(Dest: TPersistent); override;
     property SampleRateReciprocal: Double read FSRR;
   public
@@ -73,8 +71,6 @@ type
     procedure Reset; virtual; abstract;
     procedure GetIR(ImpulseResonse : TDAVSingleDynArray); overload;
     procedure GetIR(ImpulseResonse : TDAVDoubleDynArray); overload;
-
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TCustomFilterCascade = class(TCustomFilter)
@@ -299,11 +295,6 @@ begin
  CalculateReciprocalSamplerate;
 end;
 
-procedure TCustomFilter.Changed;
-begin
- if assigned(FOnChange) then FOnChange(Self);
-end;
-
 procedure TCustomFilter.SampleRateChanged;
 begin
  CalculateSampleRateDependentVariables;
@@ -321,8 +312,7 @@ begin
   with TCustomFilter(Dest) do
    begin
     inherited;
-    FSRR      := Self.FSRR;
-    FOnChange := Self.FOnChange;
+    FSRR := Self.FSRR;
    end
   else inherited;
 end;

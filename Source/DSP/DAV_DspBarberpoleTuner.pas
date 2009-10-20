@@ -48,8 +48,9 @@ type
     procedure SetFrequency(const Value: Single);
     procedure SetOrder(const Value: Integer);
   protected
-    procedure SampleRateChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure FrequencyChanged; virtual;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -201,8 +202,14 @@ begin
  if FLFO.Frequency <> Value then
   begin
    FLFO.Frequency := Value;
-   FLowpass.Frequency := Value * FastPower2MinError4(2 * COneTwelfth32) - Value;
+   FrequencyChanged;
   end;
+end;
+
+procedure TCustomBarberpoleFilter.FrequencyChanged;
+begin
+ FLowpass.Frequency := FLFO.Frequency * FastPower2MinError4(2 * COneTwelfth32) - FLFO.Frequency;
+ Changed;
 end;
 
 procedure TCustomBarberpoleFilter.SetOrder(const Value: Integer);

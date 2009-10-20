@@ -347,7 +347,7 @@ end;
 
 procedure TCustomHarmonicBass.DecayChanged;
 begin
-
+ Changed;
 end;
 
 procedure TCustomHarmonicBass.ResponseChanged;
@@ -356,12 +356,14 @@ begin
  FLimiter.Release := FResponse;
  FUpwardComp.Attack := FResponse;
  FUpwardComp.Release := FResponse;
+ Changed;
 end;
 
 procedure TCustomHarmonicBass.RatioChanged;
 begin
  FDrive := FRatio;
  FUpwardComp.Ratio := FRatio;
+ Changed;
 end;
 
 procedure TCustomHarmonicBass.FrequencyChanged;
@@ -370,6 +372,7 @@ begin
   then FHighpass.Frequency := 0.5 * FFrequency;
 
  FCrossover.Frequency := FFrequency;
+ Changed;
 end;
 
 procedure TCustomHarmonicBass.HighpassSelectChanged;
@@ -391,6 +394,7 @@ begin
     FHighpass.Frequency := FFrequency;
    end;
  end;
+ Changed;
 end;
 
 function TCustomHarmonicBass.ProcessSample32(Input: Single): Single;
@@ -443,6 +447,7 @@ procedure TCustomDownsampledHarmonicBass.FrequencyChanged;
 begin
  inherited;
  CalculateResamplingRatio;
+ Changed;
 end;
 
 procedure TCustomDownsampledHarmonicBass.SampleRateChanged;
@@ -563,18 +568,19 @@ end;
 
 procedure TCustomLinkwitzBass.DecayChanged;
 begin
- // yet empty
+ Changed;
 end;
 
 procedure TCustomLinkwitzBass.DriveChanged;
 begin
- // yet empty
+ Changed;
 end;
 
 procedure TCustomLinkwitzBass.ResponseChanged;
 begin
  FLimiter.Attack := FResponse;
  FLimiter.Release := FResponse;
+ Changed;
 end;
 
 procedure TCustomLinkwitzBass.FrequencyChanged;
@@ -583,6 +589,7 @@ begin
   then FHighpass.Frequency := 0.5 * FFrequency;
 
  FCrossover.Frequency := FFrequency;
+ Changed;
 end;
 
 procedure TCustomLinkwitzBass.HighpassSelectChanged;
@@ -604,6 +611,7 @@ begin
     FHighpass.Frequency := FFrequency;
    end;
  end;
+ Changed;
 end;
 
 function TCustomLinkwitzBass.ProcessSample32(Input: Single): Single;
@@ -624,6 +632,7 @@ begin
  FCrossover.SampleRate := SampleRate;
  FHighpass.SampleRate := SampleRate;
  FLimiter.SampleRate := SampleRate;
+ Changed;
 end;
 
 { TCustomResurrectionBass }
@@ -661,6 +670,7 @@ end;
 procedure TCustomResurrectionBass.FrequencyChanged;
 begin
  FCrossover.Frequency := FFrequency;
+ Changed;
 end;
 
 procedure TCustomResurrectionBass.SampleRateChanged;
@@ -668,6 +678,7 @@ begin
  FCrossover.SampleRate := SampleRate;
  FLimiter.SampleRate := SampleRate;
  FHighpass.SampleRate := SampleRate;
+ Changed;
 end;
 
 procedure TCustomResurrectionBass.SetAddOriginalBass(const Value: Boolean);
@@ -700,16 +711,19 @@ end;
 procedure TCustomResurrectionBass.IntensityChanged;
 begin
  FGains[0] := dB_to_Amp(FIntensity);
+ Changed;
 end;
 
 procedure TCustomResurrectionBass.AddOriginalBassChanged;
 begin
  FGains[1] := Integer(FAddOriginalBass);
+ Changed;
 end;
 
 procedure TCustomResurrectionBass.GainChanged;
 begin
  FGains[2] := FGain;
+ Changed;
 end;
 
 function TCustomResurrectionBass.ProcessSample32(Input: Single): Single;

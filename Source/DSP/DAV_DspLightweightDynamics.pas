@@ -229,6 +229,7 @@ procedure TLightweightSoftKneeLimiter.AutoMakeUpChanged;
 begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain;
+ Changed;
 end;
 
 procedure TLightweightSoftKneeLimiter.CalculateAutoMakeUpGain;
@@ -572,6 +573,7 @@ begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain
   else //CalculateMakeUpGain;
+ Changed;
 end;
 
 procedure TLightweightSoftKneeFeedbackLikeLimiter.CalculateAutoMakeUpGain;
@@ -844,6 +846,7 @@ begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain
   else CalculateMakeUpGain;
+ Changed;
 end;
 
 procedure TLightweightSoftKneeCompressor.CalculateAutoMakeUpGain;
@@ -1251,6 +1254,7 @@ begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain
   else CalculateMakeUpGain;
+ Changed;
 end;
 
 procedure TLightweightSoftKneeFeedbackCompressor.CalculateAutoMakeUpGain;
@@ -1491,6 +1495,7 @@ begin
  if AutoMakeUp
   then CalculateAutoMakeUpGain
   else CalculateMakeUpGain;
+ Changed;
 end;
 
 procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateAutoMakeUpGain;

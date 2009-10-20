@@ -139,10 +139,14 @@ type
     FDampingFrequency   : Single;
     FResampleFactor     : Single;
     FResamplePos        : Single;
+    procedure DampingFrequencyChanged; virtual;
+    procedure DecayDiffusionChanged; virtual;
+    procedure DecayChanged; virtual;
+    procedure InputDiffusionChanged; virtual;
     procedure ModulationChanged; virtual;
-    procedure SampleRateChanged; override;
     procedure PreDelayChanged; virtual;
     procedure ResizePreDelayBuffer; virtual;
+    procedure SampleRateChanged; override;
  public
     constructor Create; override;
     destructor Destroy; override;
@@ -509,9 +513,15 @@ begin
  if FDampingFrequency <> Value then
   begin
    FDampingFrequency := Value;
-   FLowpass[0].Frequency := FDampingFrequency;
-   FLowpass[1].Frequency := FDampingFrequency;
+   DampingFrequencyChanged;
   end;
+end;
+
+procedure TPlateReverb.DampingFrequencyChanged;
+begin
+ FLowpass[0].Frequency := FDampingFrequency;
+ FLowpass[1].Frequency := FDampingFrequency;
+ Changed;
 end;
 
 procedure TPlateReverb.SetDecay(const Value: Single);
@@ -521,9 +531,15 @@ begin
  if FDecay <> Value then
   begin
    FDecay := Value;
-   FModulatedDiffusors[0].Amount := Limit(0.15 + FDecay, 0.25, 0.5);
-   FModulatedDiffusors[1].Amount := FModulatedDiffusors[0].Amount;
+   DecayChanged;
   end;
+end;
+
+procedure TPlateReverb.DecayChanged;
+begin
+ FModulatedDiffusors[0].Amount := Limit(0.15 + FDecay, 0.25, 0.5);
+ FModulatedDiffusors[1].Amount := FModulatedDiffusors[0].Amount;
+ Changed;
 end;
 
 procedure TPlateReverb.SetDecayDiffusion(const Value: Single);
@@ -533,9 +549,15 @@ begin
  if FDecayDiffusion <> Value then
   begin
    FDecayDiffusion := Value;
-   FDiffusors[4].FAmount := FDecayDiffusion;
-   FDiffusors[5].FAmount := FDecayDiffusion;
+   DecayDiffusionChanged;
   end;
+end;
+
+procedure TPlateReverb.DecayDiffusionChanged;
+begin
+ FDiffusors[4].FAmount := FDecayDiffusion;
+ FDiffusors[5].FAmount := FDecayDiffusion;
+ Changed;
 end;
 
 procedure TPlateReverb.SetInputDiffusion(const Value: Single);
@@ -545,11 +567,17 @@ begin
  if FInputDiffusion <> Value then
   begin
    FInputDiffusion := Value;
-   FDiffusors[0].FAmount := FInputDiffusion;
-   FDiffusors[1].FAmount := FInputDiffusion;
-   FDiffusors[2].FAmount := FInputDiffusion / 1.2;
-   FDiffusors[3].FAmount := FInputDiffusion / 1.2;
+   InputDiffusionChanged;
   end;
+end;
+
+procedure TPlateReverb.InputDiffusionChanged;
+begin
+ FDiffusors[0].FAmount := FInputDiffusion;
+ FDiffusors[1].FAmount := FInputDiffusion;
+ FDiffusors[2].FAmount := FInputDiffusion / 1.2;
+ FDiffusors[3].FAmount := FInputDiffusion / 1.2;
+ Changed;
 end;
 
 procedure TPlateReverb.SetModulation(const Value: Single);
@@ -575,6 +603,7 @@ end;
 procedure TPlateReverb.PreDelayChanged;
 begin
  ResizePreDelayBuffer;
+ Changed;
 end;
 
 procedure TPlateReverb.ResizePreDelayBuffer;
@@ -591,6 +620,7 @@ procedure TPlateReverb.ModulationChanged;
 begin
  FModulatedDiffusors[0].Modulation := FModulation;
  FModulatedDiffusors[1].Modulation := FModulation;
+ Changed;
 end;
 
 procedure TPlateReverb.ProcessBlock32(Data: PDAVSingleFixedArray;

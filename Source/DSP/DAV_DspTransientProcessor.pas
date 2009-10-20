@@ -70,7 +70,7 @@ type
     FFilterState       : Single;
     procedure SampleRateChanged; override;
     procedure AttackChanged; virtual; 
-    procedure AttackHoldChanged; virtual; 
+    procedure AttackHoldChanged; virtual;
     procedure FilterChanged; virtual;
     procedure OutputChanged; virtual;
     procedure ReleaseChanged; virtual;
@@ -216,11 +216,13 @@ begin
  CalculateAttackHoldFactor;
  CalculateReleaseFactors;
  CalculateReleaseHoldFactor;
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.AttackChanged;
 begin
  CalculateAttackFactors;
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.CalculateAttackFactors;
@@ -240,6 +242,7 @@ end;
 procedure TCustomTransientProcessor.AttackHoldChanged;
 begin
  CalculateAttackHoldFactor;
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.CalculateAttackHoldFactor;
@@ -261,16 +264,19 @@ begin
    FFilterOut := 1 - FFilterIn;
    FFilterState := 0;
   end;
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.OutputChanged;
 begin
  FOutputLevelFactor := dB_to_Amp(FOutputGain);
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.ReleaseChanged;
 begin
  CalculateReleaseHoldFactor;
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.CalculateReleaseFactors;
@@ -290,6 +296,7 @@ end;
 procedure TCustomTransientProcessor.ReleaseHoldChanged;
 begin
  CalculateReleaseHoldFactor;
+ Changed;
 end;
 
 procedure TCustomTransientProcessor.CalculateReleaseHoldFactor;

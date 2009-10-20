@@ -206,11 +206,13 @@ end;
 procedure TCustomVocoder.AttackChanged;
 begin
  CalculateAttackFactor;
+ Changed;
 end;
 
 procedure TCustomVocoder.ReleaseChanged;
 begin
  CalculateReleaseFactor;
+ Changed;
 end;
 
 procedure TCustomVocoder.CalculateAttackFactor;
@@ -231,6 +233,7 @@ procedure TCustomVocoder.SampleRateChanged;
 begin
  CalculateAttackFactor;
  CalculateReleaseFactor;
+ Changed;
 end;
 
 procedure TCustomVocoder.SetAttack(const Value: Double);
@@ -366,6 +369,7 @@ begin
   begin
    FSynthesisFilters[Band].Bandwidth := FSynthesisBW;
   end;
+ Changed;
 end;
 
 { TBarkScaleVocoder }
@@ -523,6 +527,7 @@ begin
     AnalysisLowpass.Order  := FAnalysisOrder shr 1;
     AnalysisHighpass.Order := FAnalysisOrder shr 1;
    end;
+ Changed;
 end;
 
 procedure TBarkScaleVocoder.SetSynthesisBW(const Value: Double);
@@ -544,6 +549,7 @@ begin
    // ToDo
   end;
 *)
+ Changed;
 end;
 
 { TVocoder }
@@ -694,6 +700,7 @@ begin
     AnalysisLowpass.Order := FAnalysisOrder shr 1;
     AnalysisHighpass.Order := FAnalysisOrder shr 1;
    end;
+ Changed;
 end;
 
 procedure TVocoder.SetSynthesisBW(const Value: Double);
@@ -713,6 +720,7 @@ begin
   begin
    FSynthesisFilters[Band].Bandwidth := FSynthesisBW;
   end;
+ Changed;
 end;
 
 end.

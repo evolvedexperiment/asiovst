@@ -49,6 +49,7 @@ type
     FSampleRate  : Double;
     FFilterArray : array of TBiquadIIRFilter;
     procedure SampleRateChanged; virtual;
+    procedure OnChangeEventHandler(Sender: TObject);
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -148,6 +149,11 @@ begin
   end;
 end;
 
+procedure TCustomParametricEQ.OnChangeEventHandler(Sender: TObject);
+begin
+ Changed;
+end;
+
 procedure TCustomParametricEQ.SetBands(const Value: Integer);
 begin
  if FBandCount <> Value then
@@ -184,8 +190,11 @@ begin
  SetLength(FFilterArray, FBandCount);
 
  for Band := 0 to Length(FFilterArray) - 1 do
-  if not assigned(FFilterArray[Band])
-   then FFilterArray[Band] := TBasicPeakFilter.Create;
+  if not assigned(FFilterArray[Band]) then
+   begin
+    FFilterArray[Band] := TBasicPeakFilter.Create;
+    FFilterArray[Band].OnChange := OnChangeEventHandler;
+   end;
 end;
 
 function TCustomParametricEQ.ProcessSample64(Input: Double): Double;

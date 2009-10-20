@@ -10,7 +10,23 @@ uses
   Classes, DAV_Common, DAV_SampleRateSource;
 
 type
-  TDspPersistent = class(TInterfacedPersistent);
+  // TNotifiablePersistent
+  TNotifiablePersistent = class(TInterfacedPersistent)
+  private
+    FUpdateCount : Integer;
+    FOnChange    : TNotifyEvent;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+
+    property UpdateCount: Integer read FUpdateCount;
+  public
+    procedure Changed; virtual;
+    procedure BeginUpdate; virtual;
+    procedure EndUpdate; virtual;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+  end;
+
+  TDspPersistent = class(TNotifiablePersistent);
 
   TDspSampleRatePersistent = class(TDspPersistent)
   private
@@ -120,19 +136,53 @@ uses
 resourcestring
   RCStrInvalidSamplerate = 'Invalid Samplerate!';
 
-{ TDspSampleRateObject }
+{ TNotifiablePersistent }
 
-procedure TDspSampleRatePersistent.AssignTo(Dest: TPersistent);
+procedure TNotifiablePersistent.AssignTo(Dest: TPersistent);
 begin
- if Dest is TDspSampleRatePersistent
-  then TDspSampleRatePersistent(Dest).FSampleRate := FSampleRate
+ if Dest is TNotifiablePersistent then
+  with TNotifiablePersistent(Dest) do
+   begin
+    inherited;
+    FUpdateCount := Self.FUpdateCount;
+    FOnChange    := Self.FOnChange;
+   end
   else inherited;
 end;
+
+procedure TNotifiablePersistent.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TNotifiablePersistent.Changed;
+begin
+  if (FUpdateCount = 0) and Assigned(FOnChange) then FOnChange(Self);
+end;
+
+procedure TNotifiablePersistent.EndUpdate;
+begin
+  Assert(FUpdateCount > 0, 'Unpaired TThreadPersistent.EndUpdate');
+  Dec(FUpdateCount);
+end;
+
+
+{ TDspSampleRateObject }
 
 constructor TDspSampleRatePersistent.Create;
 begin
  inherited;
  FSampleRate := 44100;
+end;
+
+procedure TDspSampleRatePersistent.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TDspSampleRatePersistent then
+  with TDspSampleRatePersistent(Dest) do
+   begin
+    FSampleRate := Self.FSampleRate;
+    inherited;
+   end else inherited;
 end;
 
 procedure TDspSampleRatePersistent.SetSampleRate(const Value: Double);
@@ -149,7 +199,7 @@ end;
 
 procedure TDspSampleRatePersistent.SampleRateChanged;
 begin
- // nothing here yet
+ Changed; 
 end;
 
 

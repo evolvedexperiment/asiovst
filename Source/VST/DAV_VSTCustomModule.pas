@@ -553,9 +553,9 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
+      Parent := TWinControl.CreateParented(HWnd(ptr));
 //      Handle := HWnd(ptr);
 //      SetParent(Handle, HWnd(ptr));
-//      Parent := TWinControl.CreateParented(HWnd(ptr));
 //      Parent := TWinControl.CreateParented(HWnd(ptr));
       {$ENDIF}
       Visible := True;

@@ -41,8 +41,7 @@ type
 implementation
 
 uses
-  Math, SysUtils,
-  DAV_OpenToolsUtils;
+  Math, SysUtils, Registry, DAV_OpenToolsUtils;
 
 const
   CDefaultUseEditor      = True;

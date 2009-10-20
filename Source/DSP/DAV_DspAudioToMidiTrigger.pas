@@ -206,6 +206,7 @@ end;
 procedure TCustomAudio2MidiTrigger.FlagsChanged;
 begin
  // eventually change function pointer here!
+ Changed; 
 end;
 
 function TCustomAudio2MidiTrigger.GetFilter(Index: Integer): TCustomFilter;
@@ -223,6 +224,7 @@ end;
 procedure TCustomAudio2MidiTrigger.IntervalChanged;
 begin
  FSampleInterval := round(Interval * SampleRate);
+ Changed; 
 end;
 
 procedure TCustomAudio2MidiTrigger.SampleRateChanged;
@@ -232,11 +234,13 @@ begin
  CalculateReciprocalSamplerate;
  for Band := 0 to Length(FFilter) - 1 do
   if assigned(FFilter[Band]) then FFilter[Band].SampleRate := SampleRate;
+ inherited;
 end;
 
 procedure TCustomAudio2MidiTrigger.ThresholdChanged;
 begin
  CalculateThresholdFactor;
+ Changed;
 end;
 
 procedure TCustomAudio2MidiTrigger.CalculateThresholdFactor;

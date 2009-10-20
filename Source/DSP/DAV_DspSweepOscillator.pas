@@ -148,6 +148,7 @@ end;
 procedure TCustomSweepOscillator64.ModulationFrequencyChanged;
 begin
  CalculateModulationFrequency;
+ Changed;
 end;
 
 procedure TCustomSweepOscillator64.Reset;
@@ -231,6 +232,7 @@ end;
 procedure TCustomFullSweepOscillator64.InitialFrequencyChanged;
 begin
  CalculateInitialFrequency;
+ Changed;
 end;
 
 procedure TCustomFullSweepOscillator64.CalculateInitialFrequency;
@@ -310,11 +312,13 @@ procedure TCustomRangeSweepOscillator64.StartFrequencyChanged;
 begin
  CalculateStartAngle;
  CalculateSampleCount;
+ Changed;
 end;
 
 procedure TCustomRangeSweepOscillator64.StopFrequencyChanged;
 begin
  CalculateSampleCount;
+ Changed;
 end;
 
 procedure TCustomRangeSweepOscillator64.CalculateStartAngle;

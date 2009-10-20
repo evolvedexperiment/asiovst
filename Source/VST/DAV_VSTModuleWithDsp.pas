@@ -208,64 +208,64 @@ end;
 
 procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i : integer;
+  Channel : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoProcessCopy'); {$ENDIF}
- for i := 0 to min(FEffect.numInputs, FEffect.numOutputs) - 1
-  do move(Inputs[i, 0], PSingle(@Outputs[i, 0])^, SampleFrames * SizeOf(Single));
+ for Channel := 0 to min(FEffect.numInputs, FEffect.numOutputs) - 1
+  do Move(Inputs[Channel, 0], PSingle(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single));
 end;
 
 procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  i : integer;
+  Channel : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoProcessCopy'); {$ENDIF}
- for i := 0 to min(FEffect.numInputs, FEffect.numOutputs) - 1
-  do move(Inputs[i, 0], PDouble(@Outputs[i, 0])^, SampleFrames * SizeOf(Double));
+ for Channel := 0 to min(FEffect.numInputs, FEffect.numOutputs) - 1
+  do Move(Inputs[Channel, 0], PDouble(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Double));
 end;
 
 procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i : integer;
+  Channel : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoProcessMute'); {$ENDIF}
- for i := 0 to FEffect.numOutputs - 1
-  do FillChar(PSingle(@Outputs[i, 0])^, SampleFrames * SizeOf(Single), 0);
+ for Channel := 0 to FEffect.numOutputs - 1
+  do FillChar(PSingle(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
 
 procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  i : integer;
+  Channel : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoProcessMute'); {$ENDIF}
- for i := 0 to FEffect.numOutputs - 1
-  do FillChar(PDouble(@Outputs[i, 0])^, SampleFrames * SizeOf(Single), 0);
+ for Channel := 0 to FEffect.numOutputs - 1
+  do FillChar(PDouble(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
 
 procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
-  i               : Integer;
+  Channel         : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoBlockSaveProcess'); {$ENDIF}
  CurrentPosition := 0;
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
    begin
-    for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], FBlockInBuffer32[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Single));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Single));
+    for Channel := 0 to numInputs  - 1 do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer32[Channel, FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer32[Channel, FBlockPosition], PSingle(@Outputs[Channel, CurrentPosition])^, (SampleFrames - CurrentPosition) * SizeOf(Single));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], FBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+    for Channel := 0 to numInputs - 1  do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer32[Channel, FBlockPosition], (FBlockModeSize - FBlockPosition) * SizeOf(Single));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer32[Channel, FBlockPosition], PSingle(@Outputs[Channel, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * SizeOf(Single));
 
     FOnProcess(FBlockInBuffer32, FBlockOutBuffer32, FBlockModeSize);
 
-    for i := 0 to numInputs - 1  do move(FBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer32[i,0], FBlockModeOverlap * Sizeof(Single));
+    for Channel := 0 to numInputs - 1  do Move(FBlockInBuffer32[Channel, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer32[Channel, 0], FBlockModeOverlap * SizeOf(Single));
 
     CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
     FBlockPosition := FBlockModeOverlap;
@@ -276,7 +276,7 @@ end;
 procedure TDspVSTModule.DoBlockSaveProcess(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
-  i               : Integer;
+  Channel         : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoBlockSaveProcess'); {$ENDIF}
  CurrentPosition := 0;
@@ -284,20 +284,20 @@ begin
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
    begin
-    for i := 0 to numInputs - 1  do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition], (SampleFrames-CurrentPosition) * Sizeof(Double));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (SampleFrames-CurrentPosition) * Sizeof(Double));
+    for Channel := 0 to numInputs - 1  do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer64[Channel, FBlockPosition], (SampleFrames-CurrentPosition) * SizeOf(Double));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer64[Channel, FBlockPosition], PDouble(@Outputs[Channel, CurrentPosition])^, (SampleFrames-CurrentPosition) * SizeOf(Double));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    for i := 0 to numInputs-1  do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition],(FBlockModeSize-FBlockPosition) * Sizeof(Double));
-    for i := 0 to numOutputs-1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize-FBlockPosition) * Sizeof(Double));
+    for Channel := 0 to numInputs-1  do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer64[Channel, FBlockPosition],(FBlockModeSize-FBlockPosition) * SizeOf(Double));
+    for Channel := 0 to numOutputs-1 do Move(FBlockOutBuffer64[Channel, FBlockPosition], PDouble(@Outputs[Channel, CurrentPosition])^, (FBlockModeSize-FBlockPosition) * SizeOf(Double));
 
     FOnProcessDoubles(FBlockInBuffer64, FBlockOutBuffer64, FBlockModeSize);
 
-    for i := 0 to numInputs - 1  do move(FBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer64[i,0], FBlockModeOverlap * Sizeof(Double));
+    for Channel := 0 to numInputs - 1  do Move(FBlockInBuffer64[Channel, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer64[Channel, 0], FBlockModeOverlap * SizeOf(Double));
 
     CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
     FBlockPosition := FBlockModeOverlap;
@@ -308,7 +308,7 @@ end;
 procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
-  i               : Integer;
+  Channel         : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoBlockSaveProcessReplacing'); {$ENDIF}
  CurrentPosition := 0;
@@ -316,21 +316,21 @@ begin
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
    begin
-    for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], FBlockInBuffer32[i, FBlockPosition],(SampleFrames-CurrentPosition)*Sizeof(Single));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i, FBlockPosition], PSingle(@Outputs[i, CurrentPosition])^,(SampleFrames-CurrentPosition)*Sizeof(Single));
+    for Channel := 0 to numInputs  - 1 do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer32[Channel, FBlockPosition],(SampleFrames-CurrentPosition)*SizeOf(Single));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer32[Channel, FBlockPosition], PSingle(@Outputs[Channel, CurrentPosition])^,(SampleFrames-CurrentPosition)*SizeOf(Single));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    for i := 0 to numInputs  - 1 do move(Inputs[i,CurrentPosition], FBlockInBuffer32[i,FBlockPosition], (FBlockModeSize - FBlockPosition) * Sizeof(Single));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer32[i,FBlockPosition], PSingle(@Outputs[i,CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Single));
+    for Channel := 0 to numInputs  - 1 do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer32[Channel, FBlockPosition], (FBlockModeSize - FBlockPosition) * SizeOf(Single));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer32[Channel, FBlockPosition], PSingle(@Outputs[Channel, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * SizeOf(Single));
 
     FOnProcessReplacing(FBlockInBuffer32, FBlockOutBuffer32, FBlockModeSize);
 
-    for i := 0 to numInputs - 1
-     do move(FBlockInBuffer32[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer32[i, 0], FBlockModeOverlap * Sizeof(Single));
+    for Channel := 0 to numInputs - 1
+     do Move(FBlockInBuffer32[Channel, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer32[Channel, 0], FBlockModeOverlap * SizeOf(Single));
 
     CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
     FBlockPosition := FBlockModeOverlap;
@@ -341,58 +341,58 @@ end;
 procedure TDspVSTModule.DoBlockSaveProcessReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   CurrentPosition : Integer;
-  i               : Integer;
+  Channel         : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoBlockSaveProcessReplacing'); {$ENDIF}
  CurrentPosition := 0;
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
    begin
-    for i := 0 to numInputs  - 1  do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition], (SampleFrames - CurrentPosition) * Sizeof(Double));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (SampleFrames - CurrentPosition) * Sizeof(Double));
+    for Channel := 0 to numInputs  - 1  do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer64[Channel, FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer64[Channel, FBlockPosition], PDouble(@Outputs[Channel, CurrentPosition])^, (SampleFrames - CurrentPosition) * SizeOf(Double));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    for i := 0 to numInputs  - 1 do move(Inputs[i, CurrentPosition], FBlockInBuffer64[i, FBlockPosition],(FBlockModeSize - FBlockPosition) * Sizeof(Double));
-    for i := 0 to numOutputs - 1 do move(FBlockOutBuffer64[i, FBlockPosition], PDouble(@Outputs[i, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * Sizeof(Double));
+    for Channel := 0 to numInputs  - 1 do Move(Inputs[Channel, CurrentPosition], FBlockInBuffer64[Channel, FBlockPosition],(FBlockModeSize - FBlockPosition) * SizeOf(Double));
+    for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer64[Channel, FBlockPosition], PDouble(@Outputs[Channel, CurrentPosition])^, (FBlockModeSize - FBlockPosition) * SizeOf(Double));
 
     FOnProcessDoubles(FBlockInBuffer64, FBlockOutBuffer64, FBlockModeSize);
 
-    for i := 0 to numInputs  - 1 do move(FBlockInBuffer64[i, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer64[i, 0], FBlockModeOverlap * Sizeof(Double));
+    for Channel := 0 to numInputs - 1 do Move(FBlockInBuffer64[Channel, (FBlockModeSize - FBlockModeOverlap)], FBlockInBuffer64[Channel, 0], FBlockModeOverlap * SizeOf(Double));
 
     CurrentPosition := CurrentPosition + (FBlockModeSize - FBlockPosition);
     FBlockPosition := FBlockModeOverlap;
    end;
- until CurrentPosition>=SampleFrames;
+ until CurrentPosition >= SampleFrames;
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   ProcessBuffer : TDAVArrayOfSingleDynArray;
-  i: Integer;
+  Channel       : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
- for i := 0 to numInputs - 1 do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Single));
+ for Channel := 0 to numInputs - 1 do Move(Inputs[Channel, 0], ProcessBuffer[Channel, 0], SampleFrames * SizeOf(Single));
   if assigned(FDspDirectProcessItem) then
    FDspDirectProcessItem.ProcessQueueSAA(ProcessBuffer, SampleFrames);
- for i := 0 to numOutputs - 1 do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Single));
+ for Channel := 0 to numOutputs - 1 do Move(ProcessBuffer[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TDspVSTModule.DoProcessDspQueue(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
   ProcessBuffer : TDAVArrayOfDoubleDynArray;
-  i: Integer;
+  Channel       : Integer;
 begin
  {$IFDEF Debug} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
- for i := 0 to numInputs - 1 do Move(Inputs[i, 0], ProcessBuffer[i, 0], SampleFrames * SizeOf(Double));
+ for Channel := 0 to numInputs - 1 do Move(Inputs[Channel, 0], ProcessBuffer[Channel, 0], SampleFrames * SizeOf(Double));
  if assigned(FDspDirectProcessItem) then
    FDspDirectProcessItem.ProcessQueueDAA(ProcessBuffer, SampleFrames);
- for i := 0 to numOutputs - 1 do Move(ProcessBuffer[i, 0], Outputs[i, 0], SampleFrames * SizeOf(Double));
+ for Channel := 0 to numOutputs - 1 do Move(ProcessBuffer[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Double));
 end;
 
 procedure TDspVSTModule.PrepareBlockProcessing;
