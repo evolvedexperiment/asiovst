@@ -1,0 +1,352 @@
+unit DAV_DspBuildingBlocks;
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+interface
+
+{$I ..\DAV_Compiler.INC}
+
+uses
+  DAV_Classes, DAV_Common;
+
+type
+  TCustomBuildingBlocks = class(TDspPersistent)
+  private
+    procedure SetBlockSize(const Value: Integer);
+    procedure SetOverlapSize(Value: Integer);
+  protected
+    FBlockSize     : Integer;
+    FOverlapSize   : Integer;
+    FBlockPosition : Integer;
+    procedure AllocateBuffer; virtual; abstract;
+    procedure BlockSizeChanged; virtual;
+    procedure OverlapSizeChanged; virtual;
+  public
+    constructor Create; virtual;
+
+    property BlockSize: Integer read FBlockSize write SetBlockSize;
+    property OverlapSize: Integer read FOverlapSize write SetOverlapSize;
+  end;
+
+  TProcessBlock32 = procedure(Sender: TObject; const Input: PDAVSingleFixedArray) of object;
+  TProcessBlock64 = procedure(Sender: TObject; const Input: PDAVDoubleFixedArray) of object;
+
+  TCustomBuildingBlocks32 = class(TCustomBuildingBlocks)
+  protected
+    FBuffer32  : PDAVSingleFixedArray;
+    FOnProcess : TProcessBlock32;
+    procedure AllocateBuffer; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property OnProcess : TProcessBlock32 read FOnProcess write FOnProcess;
+  end;
+
+  TBuildingBlocks32 = class(TCustomBuildingBlocks32, IDspSink32)
+  public
+    procedure ProcessSample32(Input: Single); overload;
+    procedure ProcessBlock32(const Input: PDAVSingleFixedArray; SampleFrames: Integer); overload;
+  published
+    property BlockSize;
+    property OverlapSize;
+
+    property OnProcess;
+  end;
+
+  TBuildingBlocksCircular32 = class(TCustomBuildingBlocks32, IDspSink32)
+  private
+    procedure CalculateSampleAdvance;
+    procedure BuildBlock;
+  protected
+    FBlock32        : PDAVSingleFixedArray;
+    FSamplesInBlock : Integer;
+    FSampleAdvance  : Integer;
+    procedure AllocateBuffer; override;
+    procedure OverlapSizeChanged; override;
+    procedure BlockSizeChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure ProcessSample32(Input: Single); overload;
+    procedure ProcessBlock32(const Input: PDAVSingleFixedArray; SampleFrames: Integer); overload;
+  published
+    property BlockSize;
+    property OverlapSize;
+
+    property OnProcess;
+  end;
+
+implementation
+
+{ TCustomBuildingBlocks }
+
+constructor TCustomBuildingBlocks.Create;
+begin
+ inherited;
+ FBlockSize := 1 shl 8;
+ FOverlapSize := FBlockSize shr 1;
+end;
+
+procedure TCustomBuildingBlocks.SetBlockSize(const Value: Integer);
+begin
+ if FBlockSize <> Value then
+  begin
+   FBlockSize := Value;
+   BlockSizeChanged;
+  end;
+end;
+
+procedure TCustomBuildingBlocks.SetOverlapSize(Value: Integer);
+begin
+ if Value >= FBlockSize
+  then Value := FBlockSize - 1;
+ 
+ if FOverlapSize <> Value then
+  begin
+   FOverlapSize := Value;
+   OverlapSizeChanged;
+  end;
+end;
+
+procedure TCustomBuildingBlocks.BlockSizeChanged;
+begin
+ if FOverlapSize >= FBlockSize then
+  begin
+   FOverlapSize := FBlockSize div 2;
+  end;
+ AllocateBuffer;
+ Changed;
+end;
+
+procedure TCustomBuildingBlocks.OverlapSizeChanged;
+begin
+ Changed;
+end;
+
+{ TCustomBuildingBlocks32 }
+
+constructor TCustomBuildingBlocks32.Create;
+begin
+ FBuffer32 := nil;
+ inherited;
+ AllocateBuffer;
+end;
+
+destructor TCustomBuildingBlocks32.Destroy;
+begin
+ Dispose(FBuffer32);
+ inherited;
+end;
+
+procedure TCustomBuildingBlocks32.AllocateBuffer;
+begin
+ ReallocMem(FBuffer32, FBlockSize * SizeOf(Single));
+ FillChar(FBuffer32^, FBlockSize * SizeOf(Single), 0);
+end;
+
+
+{ TBuildingBlocks32 }
+
+procedure TBuildingBlocks32.ProcessBlock32(const Input: PDAVSingleFixedArray; SampleFrames: Integer);
+var
+  CurrentPosition : Integer;
+begin
+ CurrentPosition := 0;
+ repeat
+  if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockSize then
+   begin
+    Move(Input[CurrentPosition], FBuffer32[FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+
+    FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
+    CurrentPosition := SampleFrames;
+   end
+  else
+   begin
+    Move(Input[CurrentPosition], FBuffer32[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Single));
+
+    if Assigned(FOnProcess)
+     then FOnProcess(Self, FBuffer32);
+
+    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FBlockPosition * SizeOf(Single));
+
+    CurrentPosition := CurrentPosition + (FBlockSize - FBlockPosition);
+    FBlockPosition := FOverlapSize;
+   end;
+  until CurrentPosition >= SampleFrames;
+end;
+
+procedure TBuildingBlocks32.ProcessSample32(Input: Single);
+begin
+ FBuffer32[FBlockPosition] := Input;
+ Inc(FBlockPosition);
+
+  if FBlockPosition >= FBlockSize then
+   begin
+    if Assigned(FOnProcess)
+     then FOnProcess(Self, FBuffer32);
+
+    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FBlockPosition * SizeOf(Single));
+    FBlockPosition := FOverlapSize;
+   end;
+end;
+
+
+{ TBuildingBlocksCircular32 }
+
+constructor TBuildingBlocksCircular32.Create;
+begin
+ inherited;
+ FBlock32 := nil;
+end;
+
+destructor TBuildingBlocksCircular32.Destroy;
+begin
+ Dispose(FBlock32);
+ inherited;
+end;
+
+procedure TBuildingBlocksCircular32.OverlapSizeChanged;
+begin
+ inherited;
+ CalculateSampleAdvance;
+end;
+
+procedure TBuildingBlocksCircular32.BlockSizeChanged;
+begin
+ inherited;
+ CalculateSampleAdvance;
+end;
+
+procedure TBuildingBlocksCircular32.CalculateSampleAdvance;
+begin
+ FSampleAdvance := FBlockSize - FOverlapSize;
+end;
+
+procedure TBuildingBlocksCircular32.AllocateBuffer;
+begin
+ inherited;
+ ReallocMem(FBlock32, FBlockSize * SizeOf(Single));
+ FillChar(FBlock32^, FBlockSize * SizeOf(Single), 0);
+end;
+
+procedure TBuildingBlocksCircular32.BuildBlock;
+begin
+ Move(FBuffer32^[FBlockPosition], FBlock32^[0], (FBlockSize - FBlockPosition) * SizeOf(Single));
+ Move(FBuffer32^[0], FBlock32^[(FBlockSize - FBlockPosition)], FBlockPosition * SizeOf(Single));
+ if Assigned(FOnProcess)
+  then FOnProcess(Self, FBlock32);
+ FSamplesInBlock := 0;
+end;
+
+procedure TBuildingBlocksCircular32.ProcessBlock32(
+  const Input: PDAVSingleFixedArray; SampleFrames: Integer);
+var
+  SamplesWritten : Integer;
+begin
+ SamplesWritten := 0;
+ repeat
+  if FSamplesInBlock + SampleFrames < FSampleAdvance then
+   begin
+    // all samples can be written!
+    Inc(FSamplesInBlock, SampleFrames);
+
+    // check whether a wrap around occurs
+    if FBlockPosition + SampleFrames < FBlockSize then
+     begin
+      Move(Input[SamplesWritten], FBuffer32[FBlockPosition], SampleFrames * SizeOf(Single));
+
+      // advance block position
+      FBlockPosition := FBlockPosition + SampleFrames;
+     end
+    else
+     begin
+      Move(Input[SamplesWritten], FBuffer32[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Single));
+
+      // advance
+      Dec(SampleFrames, FBlockSize - FBlockPosition);
+      Inc(SamplesWritten, FBlockSize - FBlockPosition);
+      FBlockPosition := SampleFrames;
+
+      // move missing samples
+      Move(Input[SamplesWritten], FBuffer32[0], SampleFrames * SizeOf(Single));
+     end;
+
+    // all samples written -> exit immediatly!
+    Exit;
+   end
+  else
+   begin
+    if FBlockPosition + FSampleAdvance - FSamplesInBlock < FBlockSize then
+     begin
+      Move(Input[SamplesWritten], FBuffer32[FBlockPosition], (FSampleAdvance - FSamplesInBlock) * SizeOf(Single));
+
+      // advance
+      Dec(SampleFrames, FSampleAdvance - FSamplesInBlock);
+      Inc(SamplesWritten, FSampleAdvance - FSamplesInBlock);
+      Inc(FBlockPosition, FSampleAdvance - FSamplesInBlock);
+
+      BuildBlock;
+     end
+    else
+     begin
+      Move(Input[SamplesWritten], FBuffer32[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Single));
+
+      // advance
+      Dec(SampleFrames, FBlockSize - FBlockPosition);
+      Inc(SamplesWritten, FBlockSize - FBlockPosition);
+      Inc(FSamplesInBlock, FBlockSize - FBlockPosition);
+
+      // move missing samples
+      Move(Input[SamplesWritten], FBuffer32[0], (FSampleAdvance - FSamplesInBlock) * SizeOf(Single));
+      FBlockPosition := (FSampleAdvance - FSamplesInBlock);
+
+      BuildBlock;
+     end;
+   end;
+  until SampleFrames = 0;
+end;
+
+procedure TBuildingBlocksCircular32.ProcessSample32(Input: Single);
+begin
+ FBuffer32[FBlockPosition] := Input;
+ Inc(FBlockPosition);
+ if FBlockPosition >= FBlockSize
+  then FBlockPosition := 0;
+
+ Inc(FSamplesInBlock);
+
+ if FSamplesInBlock = FSampleAdvance
+  then BuildBlock;
+end;
+
+end.

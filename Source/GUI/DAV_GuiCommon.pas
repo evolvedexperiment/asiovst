@@ -562,10 +562,9 @@ begin
   end
   else
   begin
-    if L <= 0.5 then
-      M2 := L * (1 + S)
-    else
-      M2 := L + S - L * S;
+    if L <= 0.5
+     then M2 := L * (1 + S)
+     else M2 := L + S - L * S;
     M1 := 2 * L - M2;
     R := HueToColorValue(H + 1 / 3);
     G := HueToColorValue(H);

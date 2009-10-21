@@ -57,8 +57,8 @@ type
 
     procedure ProcessSample(const Input: Single; out Low, High: Single); overload;
     procedure ProcessSample(const Input: Double; out Low, High: Double); overload;
-    procedure ProcessBlock(const Input: PDAVSingleFixedArray; out Low, High: PDAVSingleFixedArray); overload;
-    procedure ProcessBlock(const Input: PDAVDoubleFixedArray; out Low, High: PDAVDoubleFixedArray); overload;
+    procedure ProcessBlock(const Input: PDAVSingleFixedArray; out Low, High: PDAVSingleFixedArray; SampleFrames: Integer); overload;
+    procedure ProcessBlock(const Input: PDAVDoubleFixedArray; out Low, High: PDAVDoubleFixedArray; SampleFrames: Integer); overload;
 
     property FFTOrder: Integer read FFFTOrder write SetFFTOrder;
     property Latency: Integer read FLatency;
@@ -131,6 +131,7 @@ begin
     FConvolution.Assign(Self.FConvolution);
     FDelay.Assign(Self.FDelay);
 
+    FKernelSize := Self.FKernelSize;
     FFFTOrder   := Self.FFFTOrder;
    end
  else inherited;
@@ -173,15 +174,21 @@ begin
 end;
 
 procedure TCustomLinearPhaseBandSplitter.ProcessBlock(const Input: PDAVSingleFixedArray; out Low,
-  High: PDAVSingleFixedArray);
+  High: PDAVSingleFixedArray; SampleFrames: Integer);
 begin
- //
+ FConvolution.ProcessBlock(Input, Low, SampleFrames);
 end;
 
 procedure TCustomLinearPhaseBandSplitter.ProcessBlock(const Input: PDAVDoubleFixedArray; out Low,
-  High: PDAVDoubleFixedArray);
+  High: PDAVDoubleFixedArray; SampleFrames: Integer);
+var
+  Sample : Integer;
 begin
- //
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   Low^[Sample]  := FConvolution.ProcessSample32(Input^[Sample]);
+   High^[Sample] := FDelay.ProcessSample32(Input^[Sample]) - Low^[Sample];
+  end;
 end;
 
 

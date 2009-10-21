@@ -55,11 +55,13 @@ procedure ApplyKaiserBesselWindow(var Data: TDAVSingleDynArray; const Alpha: Sin
 
 implementation
 
+uses
+  DAV_Complex;
+
 // Generate window function (Triangle)
 procedure ApplyTriangleWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  i, j : Integer;
-  k    : Double;
+  i : Integer;
 begin
  for i := 0 to (SampleFrames div 2) - 1
   do Data^[i] := i / (SampleFrames div 2) * Data^[i];
@@ -125,21 +127,23 @@ begin
 end;
 
 
-// Generate window function (Blackman
+// Generate window function (Blackman)
 procedure ApplyBlackmanWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);
 var
-  l, i  : Integer;
-  f, fm : Double;
+  Sample : Integer;
+  Phase  : TComplexDouble;
+  Value  : TComplexDouble;
 const
   CBlackman : array [0..2] of Double = (0.34, -0.5, 0.16);
 begin
- l  := SampleFrames - 1;
- fm := 1 / l;
- for i := 0 to l do
+ Value.Re := 1;
+ Value.Im := 0;
+ GetSinCos(2 * PI / (SampleFrames - 1), Phase.Im, Phase.Re);
+ for Sample := 0 to SampleFrames - 1 do
   begin
    // using the chebyshev polynom identity to get rid of the cos(2*x)
-   f := cos((2 * PI * i) * fm);
-   Data^[i] := Data^[i] * (CBlackman[0] + f * (CBlackman[1] + CBlackman[2] * f));
+   Data^[Sample] := Data^[Sample] * (CBlackman[0] + Value.Re * (CBlackman[1] + CBlackman[2] * Value.Re));
+   ComplexMultiplyInplace(Value, Phase);
   end;
 end;
 

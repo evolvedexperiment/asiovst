@@ -530,13 +530,13 @@ type
 
 function FastCosPart3Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
 end;
 
 function FastCosPart3Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
 end;
 
@@ -642,13 +642,13 @@ end;
 
 function FastCosPart4Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
 function FastCosPart4Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
@@ -768,13 +768,13 @@ end;
 
 function FastCosPart5Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
 function FastCosPart5Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
@@ -890,7 +890,7 @@ end;
 
 function FastCosPart6Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos6Term[0] + Result *
           (CCos6Term[1] + Result *
           (CCos6Term[2] + Result *
@@ -900,7 +900,7 @@ end;
 
 function FastCosPart6Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos6Term[0] + Result *
           (CCos6Term[1] + Result *
           (CCos6Term[2] + Result *
@@ -1027,7 +1027,7 @@ end;
 
 function FastCosPart7Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos7Term[0] + Result *
           (CCos7Term[1] + Result *
           (CCos7Term[2] + Result *
@@ -1038,7 +1038,7 @@ end;
 
 function FastCosPart7Term(const Value: Double): Double; 
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := CCos7Term[0] + Result *
           (CCos7Term[1] + Result *
           (CCos7Term[2] + Result *
@@ -1106,25 +1106,25 @@ end;
 
 function FastTanPart2Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * CTan2Term[0] / (CTan2Term[1] + Result);
 end;
 
 function FastTanPart2Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * CTan2Term[0] / (CTan2Term[1] + Result);
 end;
 
 function FastTanPInv2Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
 end;
 
 function FastTanPInv2Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
 end;
 
@@ -1198,25 +1198,25 @@ end;
 
 function FastTanPart3Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CTan3Term[0] + CTan3Term[1] * Result) / (CTan3Term[2] + Result);
 end;
 
 function FastTanPart3Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CTan3Term[0] + CTan3Term[1] * Result) / (CTan3Term[2] + Result);
 end;
 
 function FastTanPInv3Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
 end;
 
 function FastTanPInv3Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
 end;
 
@@ -1293,28 +1293,28 @@ end;
 
 function FastTanPart4Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CTan4Term[0] + CTan4Term[1] * Result) /
            (CTan4Term[2] + Result * (CTan4Term[3] + Result));
 end;
 
 function FastTanPart4Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CTan4Term[0] + CTan4Term[1] * Result) /
            (CTan4Term[2] + Result * (CTan4Term[3] + Result));
 end;
 
 function FastTanPInv4Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan4Term[2] + Result * (CTan4Term[3] + Result)) /
            (Value * (CTan4Term[0] + CTan4Term[1] * Result));
 end;
 
 function FastTanPInv4Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan4Term[2] + Result * (CTan4Term[3] + Result)) /
            (Value * (CTan4Term[0] + CTan4Term[1] * Result));
 end;
@@ -1389,28 +1389,28 @@ end;
 
 function FastTanPart6Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])) /
    (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result)));
 end;
 
 function FastTanPart6Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])) /
    (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result)));
 end;
 
 function FastTanPInv6Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result))) /
    (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
 end;
 
 function FastTanPInv6Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result))) /
    (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
 end;
@@ -1485,13 +1485,13 @@ end;
 
 function FastArcTanPart3Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CArcTan3Term[0] + CArcTan3Term[1] * Result) / (CArcTan3Term[2] + Result);
 end;
 
 function FastArcTanPart3Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CArcTan3Term[0] + CArcTan3Term[1] * Result) / (CArcTan3Term[2] + Result);
 end;
 
@@ -1580,14 +1580,14 @@ end;
 
 function FastArcTanPart6Term(const Value: Single): Single;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CArcTan6Term[0] + Result * (CArcTan6Term[1] + Result * CArcTan6Term[2])) /
    (CArcTan6Term[3] + Result * (CArcTan6Term[4] + Result * (CArcTan6Term[5] + Result)));
 end;
 
 function FastArcTanPart6Term(const Value: Double): Double;
 begin
- Result := sqr(Value);
+ Result := Sqr(Value);
  Result := Value * (CArcTan6Term[0] + Result * (CArcTan6Term[1] + Result * CArcTan6Term[2])) /
    (CArcTan6Term[3] + Result * (CArcTan6Term[4] + Result * (CArcTan6Term[5] + Result)));
 end;
@@ -1675,24 +1675,24 @@ end;
 // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
 function FastArcCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
- Result := FastArcTan3Term(Value * FastInvSqrt(1 - sqr(Value)));
+ Result := FastArcTan3Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
 function FastArcCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
- Result := FastArcTan3Term(Value * FastInvSqrt(1 - sqr(Value)));
+ Result := FastArcTan3Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
 
 // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
 function FastArcCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
- Result := FastArcTan6Term(Value * FastInvSqrt(1 - sqr(Value)));
+ Result := FastArcTan6Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
 function FastArcCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
- Result := FastArcTan6Term(Value * FastInvSqrt(1 - sqr(Value)));
+ Result := FastArcTan6Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
 
@@ -1703,7 +1703,7 @@ const
 {$IFDEF PUREPASCAL}
 var Asqr : Double;
 begin
- Asqr   := sqr(Value);
+ Asqr   := Sqr(Value);
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
@@ -1728,7 +1728,7 @@ const
 var
   Asqr : Double;
 begin
- Asqr   := sqr(Value);
+ Asqr   := Sqr(Value);
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
@@ -1753,7 +1753,7 @@ const
 var
   Asqr : Single;
 begin
- Asqr   := sqr(Value);
+ Asqr   := Sqr(Value);
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
@@ -1778,7 +1778,7 @@ const
 var
   Asqr : Double;
 begin
- Asqr   := sqr(Value);
+ Asqr   := Sqr(Value);
  Result := (((Asqr * C1) * Asqr + C2 * Asqr) + 1) * Value;
 {$ELSE}
 asm
@@ -1799,7 +1799,7 @@ function FastArctanLike(const Value: Single): Single; overload;
 var
   VSqr : Single;
 begin
- VSqr   := sqr(Value);
+ VSqr   := Sqr(Value);
  Result := ((((CArcTanLike[0]  * VSqr +
                CArcTanLike[1]) * VSqr +
                CArcTanLike[2]) * VSqr +
@@ -1811,7 +1811,7 @@ function FastArctanLike(const Value: Double): Double; overload;
 var
   VSqr : Single;
 begin
- VSqr   := sqr(Value);
+ VSqr   := Sqr(Value);
  Result := ((((CArcTanLike[0]  * VSqr +
                CArcTanLike[1]) * VSqr +
                CArcTanLike[2]) * VSqr +
@@ -1865,36 +1865,36 @@ end;
 
 function FastPower2MinError2(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- Result := result * (1 +
+ Result := Result * (1 +
             Value * (CP2MinError2[0] +
             Value * (CP2MinError2[1])));
 end;
 
 function FastPower2ContinousError2(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- Result := result * (1 +
+ Result := Result * (1 +
             Value * (CP2ContError2[0] +
             Value * (CP2ContError2[1])));
 end;
 
 function FastPower2MinError3(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- Result := result * (1.0 +
+ Result := Result * (1.0 +
             Value * (CP2MinError3[0] +
             Value * (CP2MinError3[1] +
             Value *  CP2MinError3[2])));
@@ -1902,12 +1902,12 @@ end;
 
 function FastPower2ContinousError3(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- Result := result * (1 +
+ Result := Result * (1 +
             Value * (CP2ContError3[0] +
             Value * (CP2ContError3[1] +
             Value *  CP2ContError3[2])));
@@ -1915,12 +1915,12 @@ end;
 
 function FastPower2MinError4(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- result :=  result * (1 +
+ Result :=  Result * (1 +
              Value * (CP2MinError4[0] +
              Value * (CP2MinError4[1] +
              Value * (CP2MinError4[2] +
@@ -1929,12 +1929,12 @@ end;
 
 function FastPower2ContinousError4(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- result :=  result * (1 +
+ Result :=  Result * (1 +
              Value * (CP2ContError4[0] + Value *
                      (CP2ContError4[1] + Value *
                      (CP2ContError4[2] + Value *
@@ -1943,12 +1943,12 @@ end;
 
 function FastPower2MinError5(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- result :=  result * (1 +
+ Result :=  Result * (1 +
              Value * (CP2MinError5[0] +
              Value * (CP2MinError5[1] +
              Value * (CP2MinError5[2] +
@@ -1958,12 +1958,12 @@ end;
 
 function FastPower2ContinousError5(Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := round(Value);
  Value := Value - IntCast;
  IntCast := ($7F + Intcast) shl 23;
- result :=  result * (1 +
+ Result :=  Result * (1 +
              Value * (CP2ContError5[0] + Value *
                      (CP2ContError5[1] + Value *
                      (CP2ContError5[2] + Value *
@@ -2134,83 +2134,83 @@ end;
 
 function FastExpMinError2(Value: Single): Single;
 begin
- result := FastPower10MinError2(CExp32 * Value)
+ Result := FastPower10MinError2(CExp32 * Value)
 end;
 
 function FastExpContinousError2(Value: Single): Single;
 begin
- result := FastPower10ContinousError2(CExp32 * Value)
+ Result := FastPower10ContinousError2(CExp32 * Value)
 end;
 
 function FastExpMinError3(Value: Single): Single;
 begin
- result := FastPower10MinError2(CExp32 * Value)
+ Result := FastPower10MinError2(CExp32 * Value)
 end;
 
 function FastExpContinousError3(Value: Single): Single;
 begin
- result := FastPower10ContinousError3(CExp32 * Value)
+ Result := FastPower10ContinousError3(CExp32 * Value)
 end;
 
 function FastExpMinError4(Value: Single): Single;
 begin
- result := FastPower10MinError4(CExp32 * Value)
+ Result := FastPower10MinError4(CExp32 * Value)
 end;
 
 function FastExpContinousError4(Value: Single): Single;
 begin
- result := FastPower10ContinousError4(CExp32 * Value)
+ Result := FastPower10ContinousError4(CExp32 * Value)
 end;
 
 function FastExpMinError5(Value: Single): Single;
 begin
- result := FastPower10MinError5(CExp32 * Value)
+ Result := FastPower10MinError5(CExp32 * Value)
 end;
 
 function FastExpContinousError5(Value: Single): Single;
 begin
- result := FastPower10ContinousError5(CExp32 * Value)
+ Result := FastPower10ContinousError5(CExp32 * Value)
 end;
 
 
 function FastPower10MinError2(Value: Single): Single;
 begin
- result := FastPower2MinError2(C1032 * Value)
+ Result := FastPower2MinError2(C1032 * Value)
 end;
 
 function FastPower10ContinousError2(Value: Single): Single;
 begin
- result := FastPower2ContinousError2(C1032 * Value)
+ Result := FastPower2ContinousError2(C1032 * Value)
 end;
 
 function FastPower10MinError3(Value: Single): Single;
 begin
- result := FastPower2MinError2(C1032 * Value)
+ Result := FastPower2MinError2(C1032 * Value)
 end;
 
 function FastPower10ContinousError3(Value: Single): Single;
 begin
- result := FastPower2ContinousError3(C1032 * Value)
+ Result := FastPower2ContinousError3(C1032 * Value)
 end;
 
 function FastPower10MinError4(Value: Single): Single;
 begin
- result := FastPower2MinError4(C1032 * Value)
+ Result := FastPower2MinError4(C1032 * Value)
 end;
 
 function FastPower10ContinousError4(Value: Single): Single;
 begin
- result := FastPower2ContinousError4(C1032 * Value)
+ Result := FastPower2ContinousError4(C1032 * Value)
 end;
 
 function FastPower10MinError5(Value: Single): Single;
 begin
- result := FastPower2MinError5(C1032 * Value)
+ Result := FastPower2MinError5(C1032 * Value)
 end;
 
 function FastPower10ContinousError5(Value: Single): Single;
 begin
- result := FastPower2ContinousError5(C1032 * Value)
+ Result := FastPower2ContinousError5(C1032 * Value)
 end;
 
 
@@ -2363,7 +2363,7 @@ begin
 
 // Result := Value + Result;
 // Res := (Val and (not ($FF shl 23))) or ($7F shl 23);
-// result := Apr;
+// Result := Apr;
 // Res := {(((((Val shr 23) and $FF) - $80) div 2) shl 23 + $80)} (((((Val shr 23) and $FF) + $7F) shr 1 - $7F) shl 23) or (Val and (not ($FF shl 23)));
 
 end;
@@ -2504,122 +2504,122 @@ end;
 
 function FastAmptodBMinError2(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2MinError2(Value);
+ Result := CFactor2IndB32 * FastLog2MinError2(Value);
 end;
 
 function FastAmptodBMinError2(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2MinError2(Value);
+ Result := CFactor2IndB64 * FastLog2MinError2(Value);
 end;
 
 function FastAmptodBContinousError2(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2ContinousError2(Value);
+ Result := CFactor2IndB32 * FastLog2ContinousError2(Value);
 end;
 
 function FastAmptodBContinousError2(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2ContinousError2(Value);
+ Result := CFactor2IndB64 * FastLog2ContinousError2(Value);
 end;
 
 function FastAmptodBLaurent2(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2Laurent2(Value);
+ Result := CFactor2IndB32 * FastLog2Laurent2(Value);
 end;
 
 function FastAmptodBLaurent2(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2Laurent2(Value);
+ Result := CFactor2IndB64 * FastLog2Laurent2(Value);
 end;
 
 function FastAmptodBMinError3(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2MinError3(Value);
+ Result := CFactor2IndB32 * FastLog2MinError3(Value);
 end;
 
 function FastAmptodBMinError3(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2MinError3(Value);
+ Result := CFactor2IndB64 * FastLog2MinError3(Value);
 end;
 
 function FastAmptodBContinousError3(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2ContinousError3(Value);
+ Result := CFactor2IndB32 * FastLog2ContinousError3(Value);
 end;
 
 function FastAmptodBContinousError3(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2ContinousError3(Value);
+ Result := CFactor2IndB64 * FastLog2ContinousError3(Value);
 end;
 
 function FastAmptodBLaurent3(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2Laurent3(Value);
+ Result := CFactor2IndB32 * FastLog2Laurent3(Value);
 end;
 
 function FastAmptodBLaurent3(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2Laurent3(Value);
+ Result := CFactor2IndB64 * FastLog2Laurent3(Value);
 end;
 
 function FastAmptodBMinError4(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2MinError4(Value);
+ Result := CFactor2IndB32 * FastLog2MinError4(Value);
 end;
 
 function FastAmptodBMinError4(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2MinError4(Value);
+ Result := CFactor2IndB64 * FastLog2MinError4(Value);
 end;
 
 function FastAmptodBContinousError4(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2ContinousError4(Value);
+ Result := CFactor2IndB32 * FastLog2ContinousError4(Value);
 end;
 
 function FastAmptodBContinousError4(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2ContinousError4(Value);
+ Result := CFactor2IndB64 * FastLog2ContinousError4(Value);
 end;
 
 function FastAmptodBLaurent4(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2Laurent4(Value);
+ Result := CFactor2IndB32 * FastLog2Laurent4(Value);
 end;
 
 function FastAmptodBLaurent4(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2Laurent4(Value);
+ Result := CFactor2IndB64 * FastLog2Laurent4(Value);
 end;
 
 function FastAmptodBMinError5(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2MinError5(Value);
+ Result := CFactor2IndB32 * FastLog2MinError5(Value);
 end;
 
 function FastAmptodBMinError5(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2MinError5(Value);
+ Result := CFactor2IndB64 * FastLog2MinError5(Value);
 end;
 
 function FastAmptodBContinousError5(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2ContinousError5(Value);
+ Result := CFactor2IndB32 * FastLog2ContinousError5(Value);
 end;
 
 function FastAmptodBContinousError5(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2ContinousError5(Value);
+ Result := CFactor2IndB64 * FastLog2ContinousError5(Value);
 end;
 
 function FastAmptodBLaurent5(const Value: Single): Single;
 begin
- result := CFactor2IndB32 * FastLog2Laurent5(Value);
+ Result := CFactor2IndB32 * FastLog2Laurent5(Value);
 end;
 
 function FastAmptodBLaurent5(const Value: Double): Double;
 begin
- result := CFactor2IndB64 * FastLog2Laurent5(Value);
+ Result := CFactor2IndB64 * FastLog2Laurent5(Value);
 end;
 
 function FastIntPower(i: Single; n: Integer): Single;
@@ -2701,14 +2701,14 @@ end;
 
 function FastPower2(const Value: Single): Single;
 var
-  IntCast : Integer absolute result;
+  IntCast : Integer absolute Result;
 begin
  IntCast := ((($7F + round(Value)) shl 23) and $FF800000);
 end;
 
 function FastExp(const Value: Single): Single;
 begin
- result := FastPower2(CExp32 * Value);
+ Result := FastPower2(CExp32 * Value);
 end;
 
 function FastRoot(i: Single; n: Integer): Single;
@@ -2720,54 +2720,54 @@ end;
 
 function FastInvSqrt(const Value: Single): Single; overload;
 var
-  IntCst : Cardinal absolute result;
+  IntCst : Cardinal absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := ($BE6EB50C - IntCst) shr 1;
- result := CHalf32 * result * (3 - Value * sqr(result));
+ Result := CHalf32 * Result * (3 - Value * Sqr(Result));
 end;
 
 function FastSqrt(const Value: Single): Single; overload;
 begin
- result := Value * FastInvSqrt(Value);
+ Result := Value * FastInvSqrt(Value);
 end;
 
 function FastInvSqrt(const Value: Double): Double; overload;
 var
-  IntCst : Int64 absolute result;
+  IntCst : Int64 absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := ($BFCDD90BCFBC61B4 - IntCst) shr 1;
- result := CHalf64 * result * (3 - Value * sqr(result));
+ Result := CHalf64 * Result * (3 - Value * Sqr(Result));
 end;
 
 function FastSqrt(const Value: Double): Double; overload;
 begin
- result := Value * FastInvSqrt(Value);
+ Result := Value * FastInvSqrt(Value);
 end;
 
 function FastSqrtBab0(const Value: Single): Single; overload;
 var
-  IntCst : Integer absolute result;
+  IntCst : Integer absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
 end;
 
 function FastSqrtBab1(const Value: Single): Single; overload;
 var
-  IntCst : Integer absolute result;
+  IntCst : Integer absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
  Result := CHalf32 * (Result + Value / Result);
 end;
 
 function FastSqrtBab2(const Value: Single): Single; overload;
 var
-  IntCst : Integer absolute result;
+  IntCst : Integer absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
  Result := Result + Value / Result;
  Result := CQuarter32 * Result + Value / Result;
@@ -2775,26 +2775,26 @@ end;
 
 function FastSqrtBab0(const Value: Double): Double; overload;
 var
-  IntCst : Int64 absolute result;
+  IntCst : Int64 absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
 end;
 
 function FastSqrtBab1(const Value: Double): Double; overload;
 var
-  IntCst : Int64 absolute result;
+  IntCst : Int64 absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
  Result := CHalf32 * (Result + Value / Result);
 end;
 
 function FastSqrtBab2(const Value: Double): Double; overload;
 var
-  IntCst : Int64 absolute result;
+  IntCst : Int64 absolute Result;
 begin
- result := Value;
+ Result := Value;
  IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
  Result := Result + Value / Result;
  Result := CQuarter64 * Result + Value / Result;
@@ -3281,66 +3281,66 @@ end;
 
 function FastTanhMinError2(Value: Single): Single; 
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2MinError2(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2MinError2(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhContinousError2(Value: Single): Single; 
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2ContinousError2(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2ContinousError2(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhMinError3(Value: Single): Single; 
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2MinError3(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2MinError3(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhContinousError3(Value: Single): Single; 
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2ContinousError3(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2ContinousError3(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhMinError4(Value: Single): Single; 
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2MinError4(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2MinError4(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhContinousError4(Value: Single): Single; 
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2ContinousError4(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2ContinousError4(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhMinError5(Value: Single): Single;
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2MinError5(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2MinError5(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 function FastTanhContinousError5(Value: Single): Single;
 var
-  temp : Single;
+  Temp : Single;
 begin
- temp := FastPower2ContinousError5(C2Exp32 * Value);
- Result := (temp - 1) / (temp + 1);
+ Temp := FastPower2ContinousError5(C2Exp32 * Value);
+ Result := (Temp - 1) / (Temp + 1);
 end;
 
 procedure InitConstants;
