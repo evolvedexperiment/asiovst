@@ -77,7 +77,7 @@ implementation
 {$R *.dfm}
 
 uses
-  DAV_Common, Math;
+  DAV_Types, Math;
 
 procedure TFmPage.PostProcessing;
 var

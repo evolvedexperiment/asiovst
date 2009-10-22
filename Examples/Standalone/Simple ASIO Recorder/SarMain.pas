@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, DAV_Common, DAV_DspBufferedAudioFileRecorder,
+  Dialogs, ExtCtrls, StdCtrls, DAV_Types, DAV_DspBufferedAudioFileRecorder,
   DAV_ASIOHost, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF,
   DAV_AudioFileAU;
 

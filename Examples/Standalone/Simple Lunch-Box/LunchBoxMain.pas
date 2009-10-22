@@ -8,7 +8,7 @@ uses
   {$IFDEF FPC}LCLIntf, LMessages, LResources, Buttons,
   {$ELSE} Windows, Messages, XPMan,{$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, Dialogs, ComCtrls, ToolWin,
-  ExtCtrls, StdCtrls, Menus, Types, Spin, DAV_Common, DAV_Complex, DAV_VSTHost,
+  ExtCtrls, StdCtrls, Menus, Types, Spin, DAV_Types, DAV_Complex, DAV_VSTHost,
   DAV_ASIOHost, DAV_AudioData, LunchBoxEvent, LunchBoxEventList,
   LunchBoxInputFilter;
 
@@ -166,8 +166,9 @@ implementation
 {$ENDIF}
 
 uses
-  Math, IniFiles, DAV_Approximations, DAV_AudioFileWAV, DAV_AudioFileAIFF,
-  DAV_AudioFileAU, WaveIOX, LunchBoxSetup, LunchBoxAbout, LunchBoxVST;
+  Math, IniFiles, DAV_Common, DAV_Approximations, DAV_AudioFileWAV,
+  DAV_AudioFileAIFF, DAV_AudioFileAU, WaveIOX, LunchBoxSetup, LunchBoxAbout,
+  LunchBoxVST;
 
 procedure TFmLunchBox.FormActivate(Sender: TObject);
 begin

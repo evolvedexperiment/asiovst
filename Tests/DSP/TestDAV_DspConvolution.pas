@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  TestFramework, DAV_Complex, DAV_DspFftReal2Complex, DAV_Common, DAV_DspCommon,
-  DAV_DspConvolution;
+  TestFramework, Classes, DAV_Types, DAV_Classes, DAV_Complex,
+  DAV_DspFftReal2Complex, DAV_DspConvolution;
 
 type
   // Test methods for class TConvolution32

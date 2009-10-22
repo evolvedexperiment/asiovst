@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Dialogs, StdCtrls,
-  DAV_Common, DAV_VSTModule, BaseClasses, GLScene, GLObjects, GLMisc,
+  DAV_Types, DAV_VSTModule, BaseClasses, GLScene, GLObjects, GLMisc,
   GLTexture, GLFile3DS, GLWin32Viewer, GLVectorFileObjects, GLCoordinates,
   GLCrossPlatform;
 

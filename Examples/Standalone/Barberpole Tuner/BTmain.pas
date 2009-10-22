@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
-  Dialogs, DAV_Common, DAV_DspLightweightDynamics, DAV_DspBarberpoleTuner,
+  Dialogs, DAV_Types, DAV_DspLightweightDynamics, DAV_DspBarberpoleTuner,
   DAV_DspFilterButterworth, DAV_ASIOHost, DAV_GuiBaseControl, DAV_GuiLabel;
 
 type
@@ -86,7 +86,7 @@ var
 implementation
 
 uses
-  DAV_GuiCommon, DAV_DspDynamics;
+  DAV_Common, DAV_GuiCommon, DAV_DspDynamics;
 
 const
   SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled

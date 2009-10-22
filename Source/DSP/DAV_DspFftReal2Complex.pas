@@ -38,7 +38,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
-  DAV_Common, DAV_Complex;
+  DAV_Types, DAV_Complex;
 
 type
   TFftAutoScaleType = (astDivideFwdByN = 1, astDivideInvByN = 2,

@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, Buttons, {$ELSE}Windows, Messages, XPMan,
   {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms, ComCtrls, ExtCtrls,
-  StdCtrls, Menus, Dialogs, DAV_Common, DAV_VSTHost;
+  StdCtrls, Menus, Dialogs, DAV_Types, DAV_VSTHost;
 
 type
   TFmVSTAnalyser = class(TForm)
@@ -125,7 +125,7 @@ begin
     FillChar(VSTInBuffer[0, 1], (VstHost.BlockSize - 1) * SizeOf(Single), 0);
     ProcessReplacing(@VSTInBuffer[0], @VSTOutBuffer[0], VstHost.BlockSize);
 
-    FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, True, True);
+    FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, True);
    end;
  FmPlotIR.ShowModal;
 end;

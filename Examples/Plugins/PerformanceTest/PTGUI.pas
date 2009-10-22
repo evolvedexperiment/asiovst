@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  DAV_Common, DAV_VSTModule;
+  DAV_Types, DAV_VSTModule;
 
 type
   TFmPerformanceTest = class(TForm)

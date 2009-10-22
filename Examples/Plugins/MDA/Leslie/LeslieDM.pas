@@ -3,7 +3,7 @@ unit LeslieDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, DAV_Types, DAV_VSTModule,
   DAV_DspLeslie;
 
 type
@@ -186,7 +186,8 @@ begin
  MomChanged;
  SpeedParametersChanged;
  {$ENDIF}
-end;
+
+end;
 
 procedure TLeslieDataModule.ParameterLowWidthChange(
   Sender: TObject; const Index: Integer; var Value: Single);

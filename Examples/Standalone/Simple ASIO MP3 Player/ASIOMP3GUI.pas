@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, DAV_Common, DAV_AsioHost, DAV_MpegAudio;
+  StdCtrls, DAV_Types, DAV_AsioHost, DAV_MpegAudio;
 
 type
   TFmASIOMP3 = class(TForm)

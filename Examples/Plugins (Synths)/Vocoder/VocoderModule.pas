@@ -3,7 +3,7 @@ unit VocoderModule;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
+  Windows, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule,
   VocoderVoice, VoiceList, DAV_DspVocoder, DAV_DspDownsampleScheduler;
 
 type
@@ -32,7 +32,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, VocoderGUI;
+  Math, DAV_Common, DAV_Approximations, VocoderGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin

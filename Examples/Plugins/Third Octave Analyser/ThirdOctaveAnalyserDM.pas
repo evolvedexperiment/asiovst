@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspFilterChebyshevType1;
 
 const
@@ -94,7 +94,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_VSTCustomModule, ThirdOctaveAnalyserGUI;
+  Math, DAV_Common, DAV_VSTCustomModule, ThirdOctaveAnalyserGUI;
 
 procedure TThirdOctaveAnalyserModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -222,7 +222,7 @@ begin
   begin
    // Lowpass
    DesiredFreq := CThirdOctaveFrequencies[CNumFrequencies - Band - 1] * HalfThirdMulFak;
-   if DesiredFreq > 0.499 * SampleRate then DesiredFreq := 0.499 * SampleRate;   
+   if DesiredFreq > 0.499 * SampleRate then DesiredFreq := 0.499 * SampleRate;
 
    if UseDownsampling then
     while ((2 * DesiredFreq / Self.SampleRate) * (1 shl Downsampling)) < FBandReserve
@@ -271,8 +271,8 @@ end;
 procedure TThirdOctaveAnalyserModule.VSTModuleProcessNormal(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i,j : Integer;
-  d,z : Double;
+  i, j : Integer;
+  d, z : Double;
 const
   cDenorm = 1E-32;
 begin

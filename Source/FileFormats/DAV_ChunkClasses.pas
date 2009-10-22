@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Contnrs, SysUtils, DAV_Common;
+  Classes, Contnrs, SysUtils, DAV_Types;
 
 type
   TChunkFlag = (cfSizeFirst, cfReversedByteOrder, cfPadSize,
@@ -240,6 +240,9 @@ const
   CZeroPad: Integer = 0;
 
 implementation
+
+uses
+  DAV_Common;
 
 { TCustomChunk }
 

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  DAV_Common, DAV_Complex;
+  DAV_Types, DAV_Complex;
 
 procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle; SampleFrames: Integer); overload;
 procedure MixBuffers_FPU(InBuffer: PDouble; MixBuffer: PDouble; SampleFrames: Integer); overload;
@@ -53,8 +53,11 @@ procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TDAVMinMa
 procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TDAVMinMaxDouble); overload;
 procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
 procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
-procedure ConvertSingleToDouble(Singles : PDAVSingleFixedArray; Doubles : PDAVDoubleFixedArray; SampleFrames:Integer);
-procedure ConvertDoubleToSingle(Doubles : PDAVDoubleFixedArray; Singles : PDAVSingleFixedArray; SampleFrames:Integer);
+procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleFrames: Integer);
+procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleFrames: Integer);
+
+procedure FillWithZeroes(StartAdr: PDAVSingleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
+procedure FillWithZeroes(StartAdr: PDAVDoubleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
 
 implementation
 
@@ -359,7 +362,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ConvertSingleToDouble(Singles : PDAVSingleFixedArray; Doubles : PDAVDoubleFixedArray; SampleFrames: Integer);
+procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
@@ -380,7 +383,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ConvertDoubleToSingle(Doubles : PDAVDoubleFixedArray; Singles : PDAVSingleFixedArray; SampleFrames: Integer);
+procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
 var i : Integer;
 begin
@@ -536,6 +539,30 @@ begin
    if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
    inc(InBuffer);
   end;
+end;
+
+procedure FillWithZeroes(StartAdr: PDAVDoubleFixedArray; StartPos, EndPos, SampleCount: Integer);
+begin
+ // Set rest to zero
+ if StartPos < EndPos
+  then
+   begin
+    FillChar(StartAdr[0], StartPos * SizeOf(StartAdr[0]), 0);
+    FillChar(StartAdr[EndPos + 1], (SampleCount - EndPos - 1) * SizeOf(StartAdr[0]), 0);
+   end
+  else FillChar(StartAdr[EndPos + 1], (StartPos - EndPos - 1) * SizeOf(StartAdr[0]), 0);
+end;
+
+procedure FillWithZeroes(StartAdr: PDAVSingleFixedArray; StartPos, EndPos, SampleCount: Integer);
+begin
+ // Set rest to zero
+ if StartPos < EndPos
+  then
+   begin
+    FillChar(StartAdr[0], StartPos * SizeOf(StartAdr[0]), 0);
+    FillChar(StartAdr[EndPos + 1], (SampleCount - EndPos - 1) * SizeOf(StartAdr[0]), 0);
+   end
+  else FillChar(StartAdr[EndPos + 1], (StartPos - EndPos - 1) * SizeOf(StartAdr[0]), 0);
 end;
 
 end.

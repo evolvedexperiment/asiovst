@@ -68,7 +68,7 @@ interface
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
 uses
-  Windows, Classes, SysUtils, DAV_Classes, DAV_Common, DAV_AudioFile,
+  Windows, Classes, SysUtils, DAV_Classes, DAV_Types, DAV_AudioFile,
   DAV_ChannelDataCoder, DAV_SampleRateSource;
 
 type

@@ -6,7 +6,7 @@ interface
 {$DEFINE SEEK_STOP}
 
 uses
-  SysUtils, Classes, DAV_Common, DAV_CRC, DAV_SynthFilter, DAV_BitReserve,
+  SysUtils, Classes, DAV_Types, DAV_CRC, DAV_SynthFilter, DAV_BitReserve,
   DAV_StereoBuffer, DAV_MpegAudioLayer3;
 
 type

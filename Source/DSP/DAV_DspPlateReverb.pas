@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DspDelayLines, DAV_DspFilter,
+  DAV_Types, DAV_Classes, DAV_DspDelayLines, DAV_DspFilter,
   DAV_DspLFO, DAV_DSPFilterButterworth;
 
 const
@@ -169,7 +169,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Approximations, DAV_DspInterpolation;
+  Math, SysUtils, DAV_Common, DAV_Approximations, DAV_DspInterpolation;
 
 resourcestring
   RCStrBuffersizePositive = 'Buffersize must be larger or equal than zero!';

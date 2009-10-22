@@ -3,7 +3,7 @@ unit SimpleSamplerModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect,
   DAV_VSTModule, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
   DAV_AudioData, SimpleSamplerVoice, SimpleSamplerGUI, VoiceList;
 

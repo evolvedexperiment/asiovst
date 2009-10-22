@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, SyncObjs, DAV_Common, DAV_SECommon, DAV_SEModule,
+  Classes, SysUtils, SyncObjs, DAV_Types, DAV_SECommon, DAV_SEModule,
   DAV_DspBufferedMP3Player;
 
 type

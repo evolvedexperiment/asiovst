@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspFilterBasics;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspFilterBasics;
 
 type
   TAudio2MidiTriggerFlag = (amFilterBypass, amFilterOutput);
@@ -101,7 +101,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds [%d]';

@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Common,
+  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Types,
   DAV_AudioData, DAV_ASIOHost;
 
 type

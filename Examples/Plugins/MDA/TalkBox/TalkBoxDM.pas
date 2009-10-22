@@ -3,7 +3,7 @@ unit TalkBoxDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Types, DAV_VSTModule;
 
 const
   CMaxBufferSize = 1600;

@@ -7,7 +7,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Forms, Sysutils, DAV_Common, DAV_VSTEffect, DAV_WinAmp;
+  Classes, Forms, Sysutils, DAV_Types, DAV_VSTEffect, DAV_WinAmp;
 
 type
   TBasicVSTModuleClass = class of TBasicVSTModule;
@@ -259,7 +259,7 @@ function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
 implementation
 
 uses
-  Math, Contnrs;
+  DAV_Common, Math, Contnrs;
 
 var
   GVstInstanceList : TObjectList;

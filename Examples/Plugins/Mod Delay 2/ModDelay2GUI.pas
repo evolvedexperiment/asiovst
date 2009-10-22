@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel;
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel;
 
 type
   TFmModDelay2 = class(TForm)

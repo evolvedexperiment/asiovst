@@ -3,7 +3,7 @@ unit ChebyshevWaveshaperGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
 
 type

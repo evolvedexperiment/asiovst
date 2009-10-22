@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspBarberpoleTuner, DAV_DspFilterButterworth;
 
 type
@@ -62,7 +62,7 @@ implementation
 {$R *.DFM}
 
 uses
-  BarberpoleTunerGUI;
+  DAV_Common, BarberpoleTunerGUI;
 
 procedure TBarberpoleTunerDataModule.VSTModuleOpen(Sender: TObject);
 begin

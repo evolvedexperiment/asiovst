@@ -7,7 +7,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms,
   {$IFDEF UseCriticalSection} SyncObjs, {$ENDIF} 
-  DAV_Common, DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VstHost,
+  DAV_Types, DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VstHost,
   DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, DAV_DspUpDownsampling,
   DAV_VstOfflineTask, ExtCtrls;
 

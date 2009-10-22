@@ -33,7 +33,7 @@ unit SonogramDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
   DAV_Classes, DAV_Sonogram, DAV_VSTModule;
 
 type
@@ -45,12 +45,9 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterIntegerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterOverlapFactorChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterWindowChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterOverlapFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterWindowDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FSonogram : TSonogram;
   public

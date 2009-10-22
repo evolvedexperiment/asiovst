@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Common, DAV_ASIOHost,
+  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Types, DAV_ASIOHost,
   DAV_DspPinkNoiseGenerator, DAV_DspLfo;
 
 type
@@ -93,7 +93,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, DAV_Approximations;
+  SysUtils, Inifiles, DAV_Common, DAV_Approximations;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin

@@ -33,7 +33,7 @@ unit DitherNoiseshaperDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_VSTModule, DAV_DspDitherNoiseshaper;
 
 type

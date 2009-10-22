@@ -3,7 +3,7 @@ unit LightweightFeedbackLimiterGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
   DAV_GuiLED, DAV_GuiLevelMeter;
 

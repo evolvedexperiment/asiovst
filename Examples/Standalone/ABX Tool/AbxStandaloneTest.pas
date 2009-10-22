@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ComCtrls, StdCtrls, DAV_Common, DAV_ASIOHost, DAV_AudioData, DAV_AudioFile,
+  ComCtrls, StdCtrls, DAV_Types, DAV_ASIOHost, DAV_AudioData, DAV_AudioFile,
   DAV_AudioFileWav, AbxChunks, kbmMemCSVStreamFormat, kbmMemTable,
   kbmMemBinaryStreamFormat, DB;
 

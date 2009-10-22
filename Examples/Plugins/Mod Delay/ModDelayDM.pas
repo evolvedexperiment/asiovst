@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspModDelay;
 
 type
@@ -66,7 +66,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, ModDelayGUI;
+  Math, DAV_Common, ModDelayGUI;
 
 procedure TModDelayModule.VSTModuleOpen(Sender: TObject);
 begin

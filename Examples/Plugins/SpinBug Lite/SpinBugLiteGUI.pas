@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} SysUtils,
-  Classes, Forms, Controls, ExtCtrls, StdCtrls, Graphics, DAV_Common,
+  Classes, Forms, Controls, ExtCtrls, StdCtrls, Graphics, DAV_Types,
   DAV_VSTModule, DAV_GuiSelectBox, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
 
 type

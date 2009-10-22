@@ -3,7 +3,7 @@ unit SELabelModule;
 interface
 
 uses
-  Graphics, DAV_Common, DAV_SECommon, DAV_SEModule;
+  Graphics, DAV_Types, DAV_SECommon, DAV_SEModule;
 
 const
   CFontList : array [0..10] of TFontName = ('Arial', 'Comic Sans MS',

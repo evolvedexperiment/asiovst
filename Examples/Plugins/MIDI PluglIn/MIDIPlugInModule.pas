@@ -3,7 +3,7 @@ unit MIDIPlugInModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect,
   DAV_VSTModule;
 
 type

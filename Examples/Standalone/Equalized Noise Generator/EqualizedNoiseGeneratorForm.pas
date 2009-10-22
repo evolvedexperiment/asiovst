@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, ExtCtrls, DAV_Common, DAV_ASIOHost,
+  Forms, Classes, Controls, StdCtrls, ExtCtrls, DAV_Types, DAV_ASIOHost,
   DAV_DspFilter, DAV_DspFilterBasics;
 
 type

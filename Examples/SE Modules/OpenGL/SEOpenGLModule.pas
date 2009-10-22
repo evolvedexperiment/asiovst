@@ -3,7 +3,7 @@ unit SEOpenGLModule;
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule;
+  DAV_Types, DAV_SECommon, DAV_SEModule;
 
 type
   TSEOpenGLModule = class(TSEModuleBase)

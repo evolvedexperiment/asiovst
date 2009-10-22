@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Approximations;
+  SysUtils, DAV_Types, DAV_Approximations;
 
 constructor TSEFilterPlotGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin

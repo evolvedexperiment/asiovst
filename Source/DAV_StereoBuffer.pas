@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common;
+  DAV_Types;
 
 type
   TStereoBuffer = class

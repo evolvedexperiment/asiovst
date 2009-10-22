@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Types, Controls, ExtCtrls, GR32,
-  GR32_Image, Graphics, GraphicEx, DAV_Common, DAV_VSTModule;
+  GR32_Image, Graphics, GraphicEx, DAV_Types, DAV_VSTModule;
 
 const
   cSweepRange = 10;

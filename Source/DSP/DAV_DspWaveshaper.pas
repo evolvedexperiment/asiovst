@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes;
+  Classes, DAV_Types, DAV_Classes;
 
 type
   TChebyshevWaveshaper = class(TDspPersistent, IDspProcessor64)
@@ -109,7 +109,7 @@ function SoftSat(Input, Parameter: Double): Double; overload;
 implementation
 
 uses
-  SysUtils, Math;
+  SysUtils, Math, DAV_Common;
 
 function Waveshaper1(Input, Parameter :Single): Single;
 begin
@@ -142,8 +142,8 @@ begin
   else
    begin
     if Input > 0
-     then Result :=   Parameter + (1 - Parameter) * sigmoid( (Input - Parameter) / ((1 - Parameter) * 1.5))
-     else Result := -(Parameter + (1 - Parameter) * sigmoid((-Input - Parameter) / ((1 - Parameter) * 1.5)));
+     then Result :=   Parameter + (1 - Parameter) * Sigmoid( (Input - Parameter) / ((1 - Parameter) * 1.5))
+     else Result := -(Parameter + (1 - Parameter) * Sigmoid((-Input - Parameter) / ((1 - Parameter) * 1.5)));
    end;
 end;
 
@@ -154,8 +154,8 @@ begin
   else
    begin
     if Input > 0
-     then Result :=   Parameter + (1 - Parameter) * sigmoid( (Input - Parameter) / ((1 - Parameter) * 1.5))
-     else Result := -(Parameter + (1 - Parameter) * sigmoid((-Input - Parameter) / ((1 - Parameter) * 1.5)));
+     then Result :=   Parameter + (1 - Parameter) * Sigmoid( (Input - Parameter) / ((1 - Parameter) * 1.5))
+     else Result := -(Parameter + (1 - Parameter) * Sigmoid((-Input - Parameter) / ((1 - Parameter) * 1.5)));
    end;
 end;
 

@@ -6,7 +6,7 @@ interface
 
 uses
   Windows, Classes, Forms, SysUtils,
-  {$IFDEF UseCriticalSection}SyncObjs, {$ENDIF} DAV_Common, DAV_VstHost,
+  {$IFDEF UseCriticalSection}SyncObjs, {$ENDIF} DAV_Types, DAV_VstHost,
   DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler, WinAmpDspVstGui;
 
 type
@@ -143,7 +143,7 @@ procedure Quit(const This_Mod: PWinAmpDSPModule); cdecl;
 implementation
 
 uses
-  DAV_VSTEffect, Dialogs, Registry, Math;
+  Dialogs, Registry, Math, DAV_VSTEffect, DAV_Common;
 
 var
   WADSPHeader      : TWinAmpDSPheader =

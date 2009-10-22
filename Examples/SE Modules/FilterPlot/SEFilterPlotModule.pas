@@ -3,7 +3,7 @@ unit SEFilterPlotModule;
 interface
 
 uses
-  Windows, Graphics, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspFilter;
+  Windows, Graphics, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspFilter;
 
 type
   TSEBlob = record

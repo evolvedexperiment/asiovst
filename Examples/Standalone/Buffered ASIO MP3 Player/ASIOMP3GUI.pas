@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, DAV_Common, DAV_DspBufferedMp3Player, DAV_ASIOHost;
+  StdCtrls, ExtCtrls, DAV_Types, DAV_DspBufferedMp3Player, DAV_ASIOHost;
 
 type
   TFmASIOMP3 = class(TForm)

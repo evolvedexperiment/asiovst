@@ -12,7 +12,7 @@ well, I did my best... but ASM is not my world...
 interface
 
 uses
-  DAV_Common;
+  DAV_Types;
 
 
 {-------------------------------------------------------------------------------------------

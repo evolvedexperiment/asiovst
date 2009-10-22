@@ -39,7 +39,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, VocoderModule;
+  SysUtils, DAV_Common, DAV_Types, VocoderModule;
 
 { TVocoderVoice }
 

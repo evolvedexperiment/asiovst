@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, DAV_Common, DAV_DspNoiseShapingFilterDesigner, Menus, StdCtrls;
+  Dialogs, DAV_Types, DAV_DspNoiseShapingFilterDesigner, Menus, StdCtrls;
 
 type
   TFmNoiseshapingFilterDesigner = class(TForm)

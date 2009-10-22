@@ -36,7 +36,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_Common, DAV_Complex;
+  DAV_Types, DAV_Complex;
 
 procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray); overload;
 procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVDoubleDynArray); overload;
@@ -59,6 +59,9 @@ function Goertzel(TimeSignal: PDAVSingleFixedArray; const Length: Integer; const
 function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const Angular: TComplexDouble): TComplexDouble; overload;
 
 implementation
+
+uses
+  DAV_Common;
 
 procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray);
 var

@@ -5,7 +5,7 @@ unit FilterModule;
 interface
 
 uses
-  DAV_Common, DAV_VSTModule;
+  DAV_Types, DAV_VSTModule;
 
 type
   TVSTFilter = class(TVSTModule)

@@ -3,6 +3,7 @@ program CommandlineAudioFileConverter;
 {$APPTYPE CONSOLE}
 
 uses
+  DAV_Types,
   DAV_Common,
   DAV_AudioFile,
   DAV_AudioFileWav,

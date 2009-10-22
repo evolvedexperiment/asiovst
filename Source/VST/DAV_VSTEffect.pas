@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Types;
 
 const
   CEffectMagic = 'VstP';

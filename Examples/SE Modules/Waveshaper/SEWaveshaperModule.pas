@@ -3,7 +3,7 @@ unit SEWaveshaperModule;
 interface
 
 uses
-  Windows, DAV_Common, DAV_SECommon, DAV_SEModule;
+  Windows, DAV_Types, DAV_SECommon, DAV_SEModule;
 
 const
   CTableSize   = 512;

@@ -46,7 +46,7 @@ uses
   {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_AsioInterface {$ENDIF},
   {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAVASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF}
-  SysUtils, Classes, Controls, DAV_Common, DAV_Asio, DAV_AsioList,
+  SysUtils, Classes, Controls, DAV_Types, DAV_Asio, DAV_AsioList,
   DAV_AsioConvert, DAV_AsioGenerator, DAV_AudioData;
 
 const
@@ -545,7 +545,7 @@ function ChannelTypeToString(vType: TAsioSampleType): string;
 implementation
 
 uses
-  Registry, ComObj, Math {$IFDEF AsioMixer}, DAVAsioChannelStrip {$ENDIF};
+  Registry, ComObj, Math, DAV_Common {$IFDEF AsioMixer}, DAV_AsioChannelStrip {$ENDIF};
 
 resourcestring
   RStrAsioDriverFailed        = 'Asio driver failed!';

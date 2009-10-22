@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_DspFilter;
+  Classes, DAV_Types, DAV_Complex, DAV_DspFilter;
 
 type
   TCustomChebyshevFilterClass = class of TCustomChebyshevFilter;
@@ -65,7 +65,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math;
+  Math, DAV_Common;
 
 { TCustomChebyshevFilter }
 

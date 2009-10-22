@@ -3,7 +3,7 @@ unit SEBrushedMetalModule;
 interface
 
 uses
-  Windows, Graphics, DAV_Common, DAV_SECommon, DAV_SEModule;
+  Windows, Graphics, DAV_Types, DAV_SECommon, DAV_SEModule;
 
 type
   TSEBlob = record

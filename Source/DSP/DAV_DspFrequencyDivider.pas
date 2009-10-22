@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes;
+  Classes, DAV_Types, DAV_Classes;
 
 type
   TOcatveDivider = class(TDspPersistent, IDspProcessor32, IDspProcessor64)
@@ -60,6 +60,9 @@ type
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 { TOcatveDivider }
 

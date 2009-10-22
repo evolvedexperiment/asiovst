@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspCrosstalkCancellation;
 
 type
@@ -78,7 +78,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, CTCGui;
+  Math, DAV_Common, CTCGui;
 
 procedure TCTCDataModule.VSTModuleCreate(Sender: TObject);
 begin

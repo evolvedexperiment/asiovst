@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common;
+  DAV_Types;
 
 procedure AutoCorrelate(x, R: TDAVSingleDynArray; P: Integer; lambda: Single; l: Integer = -1);
 procedure LevinsonRecursion(P: Integer; R, A, K: TDAVSingleDynArray);

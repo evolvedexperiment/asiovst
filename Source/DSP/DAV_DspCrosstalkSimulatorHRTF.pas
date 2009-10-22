@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspCrosstalkSimulator,
+  Classes, DAV_Types, DAV_Classes, DAV_DspCrosstalkSimulator,
   DAV_DspConvolution, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   DAV_DspFftReal2Complex, {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
   DAV_DspHrtf;
@@ -90,7 +90,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Complex;
+  SysUtils, DAV_Common, DAV_Complex;
 
 { TCustomHrtfCrosstalkSimulator }
 

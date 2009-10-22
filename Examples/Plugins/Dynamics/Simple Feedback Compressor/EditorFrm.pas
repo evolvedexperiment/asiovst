@@ -4,7 +4,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
-  DAV_Common, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiBaseControl,
+  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiPanel, DAV_GuiBaseControl,
   DAV_GuiDial;
 
 type

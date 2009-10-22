@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex;
+  DAV_Types, DAV_Complex;
 
 function DoubleFactorial(n: Integer): Integer;
 function LegendreDenominator(n: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -124,7 +124,7 @@ function CompleteEllipticIntegral1stKindX(x: Double): Double;
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_Common;
 
 const
   {$IFDEF UNK}

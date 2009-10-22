@@ -3,7 +3,7 @@ unit WavedisplayModule;
 interface
 
 uses 
-  Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
+  Windows, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
 
 type
   TWavedisplayModule = class(TVSTModule)

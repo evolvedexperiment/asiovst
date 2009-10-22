@@ -3,7 +3,7 @@ unit DynamicsDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
 
 type
   TDynamicsDataModule = class(TVSTModule)

@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_ProcessingComponent;
+  Classes, DAV_Types, DAV_ProcessingComponent;
 
 type
   TDspVoice = class;
@@ -27,44 +27,44 @@ type
   TDspVoiceTrailingType = (vttAutomatic, vttManually);
   TDspVoice = class(TDataModule)
   protected
-    fEnabled:         Boolean;
-    fSampleRate:      Single;
-    fChannels:        Integer;
+    FEnabled:         Boolean;
+    FSampleRate:      Single;
+    FChannels:        Integer;
 
-    fIsVoiceNoteOn:   Boolean;
-    fTrailingSamples: Integer;
-    fTrailingType:    TDspVoiceTrailingType;
+    FIsVoiceNoteOn:   Boolean;
+    FTrailingSamples: Integer;
+    FTrailingType:    TDspVoiceTrailingType;
 
-    fOffTrailingCounter: array of Integer;
+    FOffTrailingCounter: array of Integer;
 
-    fVoiceInfo:       TDspVoiceInfo;
+    FVoiceInfo:       TDspVoiceInfo;
     FDspQueueList:    TDAVProcessingComponentList;
     FDspDirectProcessItem: TDAVProcessingComponent;
 
-    fProcessS:   TDspBaseProcessFuncS;
-    fProcessD:   TDspBaseProcessFuncD;
-    fProcessSA:  TDspBaseProcessFuncSA;
-    fProcessDA:  TDspBaseProcessFuncDA;
-    fProcessSAA: TDspBaseProcessFuncSAA;
-    fProcessDAA: TDspBaseProcessFuncDAA;
+    FProcessS:   TDspBaseProcessFuncS;
+    FProcessD:   TDspBaseProcessFuncD;
+    FProcessSA:  TDspBaseProcessFuncSA;
+    FProcessDA:  TDspBaseProcessFuncDA;
+    FProcessSAA: TDspBaseProcessFuncSAA;
+    FProcessDAA: TDspBaseProcessFuncDAA;
 
-    fDefaultProcessS:   TDspBaseProcessFuncS;
-    fDefaultProcessD:   TDspBaseProcessFuncD;
-    fDefaultProcessSA:  TDspBaseProcessFuncSA;
-    fDefaultProcessDA:  TDspBaseProcessFuncDA;
-    fDefaultProcessSAA: TDspBaseProcessFuncSAA;
-    fDefaultProcessDAA: TDspBaseProcessFuncDAA;
+    FDefaultProcessS:   TDspBaseProcessFuncS;
+    FDefaultProcessD:   TDspBaseProcessFuncD;
+    FDefaultProcessSA:  TDspBaseProcessFuncSA;
+    FDefaultProcessDA:  TDspBaseProcessFuncDA;
+    FDefaultProcessSAA: TDspBaseProcessFuncSAA;
+    FDefaultProcessDAA: TDspBaseProcessFuncDAA;
 
-    fUserProcessS:   TDspBaseProcessFuncS;
-    fUserProcessD:   TDspBaseProcessFuncD;
-    fUserProcessSA:  TDspBaseProcessFuncSA;
-    fUserProcessDA:  TDspBaseProcessFuncDA;
-    fUserProcessSAA: TDspBaseProcessFuncSAA;
-    fUserProcessDAA: TDspBaseProcessFuncDAA;
+    FUserProcessS:   TDspBaseProcessFuncS;
+    FUserProcessD:   TDspBaseProcessFuncD;
+    FUserProcessSA:  TDspBaseProcessFuncSA;
+    FUserProcessDA:  TDspBaseProcessFuncDA;
+    FUserProcessSAA: TDspBaseProcessFuncSAA;
+    FUserProcessDAA: TDspBaseProcessFuncDAA;
 
     FVoiceProcessingMode: TDspVoiceProcessingMode;
 
-    fOnVoiceNoteOff: TDspOnVoiceNoteOff;
+    FOnVoiceNoteOff: TDspOnVoiceNoteOff;
 
     procedure UpdateProcessingFunctions; virtual;
     procedure InitializeTrailing; virtual;
@@ -130,37 +130,37 @@ type
     procedure UpdateTrailingSamples; virtual;
 
     property IsAlive:        Boolean read GetIsAlive;
-    property IsVoiceNoteOn:  Boolean read fIsVoiceNoteOn;
+    property IsVoiceNoteOn:  Boolean read FIsVoiceNoteOn;
 
-    property ProcessS:   TDspBaseProcessFuncS   read fProcessS;
-    property ProcessD:   TDspBaseProcessFuncD   read fProcessD;
-    property ProcessSA:  TDspBaseProcessFuncSA  read fProcessSA;
-    property ProcessDA:  TDspBaseProcessFuncDA  read fProcessDA;
-    property ProcessSAA: TDspBaseProcessFuncSAA read fProcessSAA;
-    property ProcessDAA: TDspBaseProcessFuncDAA read fProcessDAA;
+    property ProcessS:   TDspBaseProcessFuncS   read FProcessS;
+    property ProcessD:   TDspBaseProcessFuncD   read FProcessD;
+    property ProcessSA:  TDspBaseProcessFuncSA  read FProcessSA;
+    property ProcessDA:  TDspBaseProcessFuncDA  read FProcessDA;
+    property ProcessSAA: TDspBaseProcessFuncSAA read FProcessSAA;
+    property ProcessDAA: TDspBaseProcessFuncDAA read FProcessDAA;
 
-    property VoiceInfo: TDspVoiceInfo read fVoiceInfo;
+    property VoiceInfo: TDspVoiceInfo read FVoiceInfo;
 
-    property Channels:   Integer read fChannels   write SetChannels   default 2;
-    property SampleRate: Single  read fSampleRate write SetSampleRate;
+    property Channels:   Integer read FChannels   write SetChannels   default 2;
+    property SampleRate: Single  read FSampleRate write SetSampleRate;
   published
-    property Enabled: Boolean read fEnabled write SetEnabled default true;
+    property Enabled: Boolean read FEnabled write SetEnabled default true;
 
     property DspDirectProcessItem: TDAVProcessingComponent read fDspDirectProcessItem write SetDspDirectProcessItem default nil;
 
     property VoiceProcessingMode: TDspVoiceProcessingMode read FVoiceProcessingMode write SetVoiceProcessingMode;
 
-    property OnProcessS:   TDspBaseProcessFuncS   read fUserProcessS   write SetUserProcessS;
-    property OnProcessD:   TDspBaseProcessFuncD   read fUserProcessD   write SetUserProcessD;
-    property OnProcessSA:  TDspBaseProcessFuncSA  read fUserProcessSA  write SetUserProcessSA;
-    property OnProcessDA:  TDspBaseProcessFuncDA  read fUserProcessDA  write SetUserProcessDA;
-    property OnProcessSAA: TDspBaseProcessFuncSAA read fUserProcessSAA write SetUserProcessSAA;
-    property OnProcessDAA: TDspBaseProcessFuncDAA read fUserProcessDAA write SetUserProcessDAA;
+    property OnProcessS:   TDspBaseProcessFuncS   read FUserProcessS   write SetUserProcessS;
+    property OnProcessD:   TDspBaseProcessFuncD   read FUserProcessD   write SetUserProcessD;
+    property OnProcessSA:  TDspBaseProcessFuncSA  read FUserProcessSA  write SetUserProcessSA;
+    property OnProcessDA:  TDspBaseProcessFuncDA  read FUserProcessDA  write SetUserProcessDA;
+    property OnProcessSAA: TDspBaseProcessFuncSAA read FUserProcessSAA write SetUserProcessSAA;
+    property OnProcessDAA: TDspBaseProcessFuncDAA read FUserProcessDAA write SetUserProcessDAA;
 
-    property OnVoiceNoteOff: TDspOnVoiceNoteOff read fOnVoiceNoteOff write fOnVoiceNoteOff;
+    property OnVoiceNoteOff: TDspOnVoiceNoteOff read FOnVoiceNoteOff write FOnVoiceNoteOff;
 
-    property TrailingType: TDspVoiceTrailingType read fTrailingType write SetTrailingType;
-    property TrailingSamples: Integer read fTrailingSamples write SetTrailingSamples;
+    property TrailingType: TDspVoiceTrailingType read FTrailingType write SetTrailingType;
+    property TrailingSamples: Integer read FTrailingSamples write SetTrailingSamples;
   end;
 
 implementation
@@ -170,8 +170,8 @@ implementation
 {$ENDIF}
 
 uses
-  Forms, SysUtils
-  {$IFDEF PUREPASCAL},DAV_BufferMathPascal{$ELSE},DAV_BufferMathAsm{$ENDIF};
+  Forms, SysUtils, DAV_Common
+  {$IFDEF PUREPASCAL}, DAV_BufferMathPascal{$ELSE}, DAV_BufferMathAsm{$ENDIF};
 
 constructor TDspVoiceInfo.Create(MidiEvent: TDAVMidiEvent);
 begin
@@ -189,27 +189,27 @@ end;
 
 constructor TDspVoice.Create(AOwner: TComponent);
 begin
-  fDefaultProcessS   := ProcessSilence;
-  fDefaultProcessD   := ProcessBasic;
-  fDefaultProcessSA  := ProcessBasic;
-  fDefaultProcessDA  := ProcessBasic;
-  fDefaultProcessSAA := ProcessBasic;
-  fDefaultProcessDAA := ProcessBasic;
+  FDefaultProcessS   := ProcessSilence;
+  FDefaultProcessD   := ProcessBasic;
+  FDefaultProcessSA  := ProcessBasic;
+  FDefaultProcessDA  := ProcessBasic;
+  FDefaultProcessSAA := ProcessBasic;
+  FDefaultProcessDAA := ProcessBasic;
 
-  fUserProcessS   := nil;
-  fUserProcessD   := nil;
-  fUserProcessSA  := nil;
-  fUserProcessDA  := nil;
-  fUserProcessSAA := nil;
-  fUserProcessDAA := nil;
+  FUserProcessS   := nil;
+  FUserProcessD   := nil;
+  FUserProcessSA  := nil;
+  FUserProcessDA  := nil;
+  FUserProcessSAA := nil;
+  FUserProcessDAA := nil;
 
   FDspQueueList   := TDAVProcessingComponentList.Create;
-  fVoiceInfo      := nil;
-  fEnabled        := true;
-  fIsVoiceNoteOn  := true;
+  FVoiceInfo      := nil;
+  FEnabled        := true;
+  FIsVoiceNoteOn  := true;
 
   FDspDirectProcessItem:=nil;
-  fTrailingType := vttAutomatic;
+  FTrailingType := vttAutomatic;
   
   inherited Create(AOwner);
 
@@ -221,13 +221,13 @@ end;
 constructor TDspVoice.Create(AOwner: TComponent; VoiceInfo: TDspVoiceInfo);
 begin
   Create(AOwner);
-  fVoiceInfo:=VoiceInfo;
+  FVoiceInfo:=VoiceInfo;
 end;
 
 destructor TDspVoice.Destroy;
 begin
   FDspQueueList.Free;
-  if assigned(fVoiceInfo) then fVoiceInfo.free;
+  if assigned(FVoiceInfo) then FVoiceInfo.free;
   inherited;
 end;
 
@@ -256,7 +256,7 @@ begin
       end;
     end;  
     Item.SampleRate:=FSampleRate;
-    Item.Channels:=fChannels;  
+    Item.Channels:=FChannels;  
   end;
 end;
 
@@ -276,74 +276,74 @@ end;
 
 procedure TDspVoice.SetEnabled(const Value: Boolean);
 begin
-  if fEnabled<>value then
+  if FEnabled<>value then
   begin
-    fEnabled := value;
+    FEnabled := value;
     UpdateProcessingFunctions;
   end;
 end;
 
 procedure TDspVoice.SetChannels(const Value: Integer);
 begin
-  if fChannels<>Value then
+  if FChannels<>Value then
   begin
-    fChannels := Value;
-    FDspQueueList.SetChannels(fChannels);
+    FChannels := Value;
+    FDspQueueList.SetChannels(FChannels);
     InitializeTrailing;
   end;
 end;
 
 procedure TDspVoice.SetSampleRate(const Value: Single);
 begin
-  if fSampleRate<>Value then
+  if FSampleRate<>Value then
   begin
-    fSampleRate := Value;
-    FDspQueueList.SetSampleRate(fSampleRate);
+    FSampleRate := Value;
+    FDspQueueList.SetSampleRate(FSampleRate);
   end;
 end;
 
 procedure TDspVoice.InitializeTrailing;
 var i: integer;
 begin
-  setlength(fOffTrailingCounter, fChannels);
-  for i:=fChannels-1 downto 0 do
-    fOffTrailingCounter[i] := fTrailingSamples;
+  setlength(FOffTrailingCounter, FChannels);
+  for i:=FChannels-1 downto 0 do
+    FOffTrailingCounter[i] := FTrailingSamples;
 end;
 
 procedure TDspVoice.UpdateProcessingFunctions;
 begin
-  if fEnabled then
+  if FEnabled then
   begin
     if FVoiceProcessingMode = pmUser then
     begin
-      if assigned(fUserProcessS)   then fProcessS   := fUserProcessS   else fProcessS   := fDefaultProcessS;
-      if assigned(fUserProcessD)   then fProcessD   := fUserProcessD   else fProcessD   := fDefaultProcessD;
-      if assigned(fUserProcessSA)  then fProcessSA  := fUserProcessSA  else fProcessSA  := fDefaultProcessSA;
-      if assigned(fUserProcessDA)  then fProcessDA  := fUserProcessDA  else fProcessDA  := fDefaultProcessDA;
-      if assigned(fUserProcessSAA) then fProcessSAA := fUserProcessSAA else fProcessSAA := fDefaultProcessSAA;
-      if assigned(fUserProcessDAA) then fProcessDAA := fUserProcessDAA else fProcessDAA := fDefaultProcessDAA;
+      if assigned(FUserProcessS)   then FProcessS   := FUserProcessS   else FProcessS   := FDefaultProcessS;
+      if assigned(FUserProcessD)   then FProcessD   := FUserProcessD   else FProcessD   := FDefaultProcessD;
+      if assigned(FUserProcessSA)  then FProcessSA  := FUserProcessSA  else FProcessSA  := FDefaultProcessSA;
+      if assigned(FUserProcessDA)  then FProcessDA  := FUserProcessDA  else FProcessDA  := FDefaultProcessDA;
+      if assigned(FUserProcessSAA) then FProcessSAA := FUserProcessSAA else FProcessSAA := FDefaultProcessSAA;
+      if assigned(FUserProcessDAA) then FProcessDAA := FUserProcessDAA else FProcessDAA := FDefaultProcessDAA;
     end else if assigned(FDspDirectProcessItem) then begin
-      fProcessS   := ProcessDspItem;
-      fProcessD   := ProcessDspItem;
-      fProcessSA  := ProcessDspItem;
-      fProcessDA  := ProcessDspItem;
-      fProcessSAA := ProcessDspItem;
-      fProcessDAA := ProcessDspItem;
+      FProcessS   := ProcessDspItem;
+      FProcessD   := ProcessDspItem;
+      FProcessSA  := ProcessDspItem;
+      FProcessDA  := ProcessDspItem;
+      FProcessSAA := ProcessDspItem;
+      FProcessDAA := ProcessDspItem;
     end else begin
-      fProcessS   := ProcessSilence;
-      fProcessD   := ProcessSilence;
-      fProcessSA  := ProcessSilence;
-      fProcessDA  := ProcessSilence;
-      fProcessSAA := ProcessSilence;
-      fProcessDAA := ProcessSilence;
+      FProcessS   := ProcessSilence;
+      FProcessD   := ProcessSilence;
+      FProcessSA  := ProcessSilence;
+      FProcessDA  := ProcessSilence;
+      FProcessSAA := ProcessSilence;
+      FProcessDAA := ProcessSilence;
     end;
   end else begin
-    fProcessS   := ProcessSilence;
-    fProcessD   := ProcessSilence;
-    fProcessSA  := ProcessSilence;
-    fProcessDA  := ProcessSilence;
-    fProcessSAA := ProcessSilence;
-    fProcessDAA := ProcessSilence;
+    FProcessS   := ProcessSilence;
+    FProcessD   := ProcessSilence;
+    FProcessSA  := ProcessSilence;
+    FProcessDA  := ProcessSilence;
+    FProcessSAA := ProcessSilence;
+    FProcessDAA := ProcessSilence;
   end;
 end;
 
@@ -430,18 +430,18 @@ end;
 
 procedure TDspVoice.SetTrailingSamples(const Value: Integer);
 begin
-  if fTrailingSamples<>Value then
+  if FTrailingSamples<>Value then
   begin
-    fTrailingSamples := Value;
-    fTrailingType := vttManually;
+    FTrailingSamples := Value;
+    FTrailingType := vttManually;
   end;
 end;
 
 procedure TDspVoice.SetTrailingType(const Value: TDspVoiceTrailingType);
 begin
-  if fTrailingType<>Value then
+  if FTrailingType<>Value then
   begin
-    fTrailingType := Value;
+    FTrailingType := Value;
     UpdateTrailingSamples;
   end;
 end;
@@ -470,12 +470,12 @@ end;
 
 procedure TDspVoice.ProcessSilence(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 begin
-  ClearArrays(ProcessBuffer, fChannels, SampleFrames);
+  ClearArrays(ProcessBuffer, FChannels, SampleFrames);
 end;
 
 procedure TDspVoice.ProcessSilence(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 begin
-  ClearArrays(ProcessBuffer, fChannels, SampleFrames);
+  ClearArrays(ProcessBuffer, FChannels, SampleFrames);
 end;
 
 
@@ -485,7 +485,7 @@ procedure TDspVoice.ProcessBasic(var Data: Double; const channel: integer);
 var tmp: single;
 begin
   tmp := Data;
-  fProcessS(tmp, channel);
+  FProcessS(tmp, channel);
   Data := tmp;
 end;
 
@@ -493,28 +493,28 @@ procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVSingleDynArray; const ch
 var i: integer;
 begin
  for i := 0 to SampleFrames - 1
-  do fProcessS(ProcessBuffer[i], channel);
+  do FProcessS(ProcessBuffer[i], channel);
 end;
 
 procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVDoubleDynArray; const channel, SampleFrames: integer);
 var i: integer;
 begin
  for i := 0 to SampleFrames - 1
-  do fProcessD(ProcessBuffer[i], channel);
+  do FProcessD(ProcessBuffer[i], channel);
 end;
 
 procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVArrayOfSingleDynArray; const SampleFrames: integer);
 var i: integer;
 begin
- for i := 0 to fChannels - 1
-  do fProcessSA(ProcessBuffer[i], i, SampleFrames);
+ for i := 0 to FChannels - 1
+  do FProcessSA(ProcessBuffer[i], i, SampleFrames);
 end;
 
 procedure TDspVoice.ProcessBasic(var ProcessBuffer: TDAVArrayOfDoubleDynArray; const SampleFrames: integer);
 var i: integer;
 begin
- for i := 0 to fChannels - 1
-  do fProcessDA(ProcessBuffer[i], i, SampleFrames);
+ for i := 0 to FChannels - 1
+  do FProcessDA(ProcessBuffer[i], i, SampleFrames);
 end;
 
 
@@ -555,9 +555,9 @@ end;
 
 procedure TDspVoice.UpdateTrailingSamples;
 begin
-  if fTrailingType = vttManually then exit;
+  if FTrailingType = vttManually then exit;
 
-  fTrailingSamples := FDspQueueList.TrailingSamplesQueue;
+  FTrailingSamples := FDspQueueList.TrailingSamplesQueue;
 end;
 
 procedure TDspVoice.ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean);
@@ -569,33 +569,33 @@ procedure TDspVoice.VoiceNoteOff;
 var CanGoOff: Boolean;
 begin
   CanGoOff := true;
-  if Assigned(fOnVoiceNoteOff) then fOnVoiceNoteOff(self, CanGoOff);
+  if Assigned(FOnVoiceNoteOff) then FOnVoiceNoteOff(self, CanGoOff);
   if CanGoOff then
   begin
     FDspQueueList.NoteOffQueue;
     InitializeTrailing;
-    fIsVoiceNoteOn:=false;
+    FIsVoiceNoteOn:=false;
   end;
 end;
 
 procedure TDspVoice.DecrementTrailing(DecrementTrailing: Integer = 0; Channel: integer = -1);
 var i: Integer;
 begin
-  if not fIsVoiceNoteOn and (DecrementTrailing>0) then
+  if not FIsVoiceNoteOn and (DecrementTrailing>0) then
     if Channel>=0 then
-      fOffTrailingCounter[Channel] := fOffTrailingCounter[Channel] - DecrementTrailing
-    else for i:=fChannels-1 downto 0 do
-      fOffTrailingCounter[i] := fOffTrailingCounter[i] - DecrementTrailing;
+      FOffTrailingCounter[Channel] := FOffTrailingCounter[Channel] - DecrementTrailing
+    else for i:=FChannels-1 downto 0 do
+      FOffTrailingCounter[i] := FOffTrailingCounter[i] - DecrementTrailing;
 end;
 
 function TDspVoice.GetIsAlive: Boolean;
 var i: integer;
 begin
   Result:=true;
-  if fIsVoiceNoteOn then exit;
+  if FIsVoiceNoteOn then exit;
 
-  for i:=fChannels-1 downto 0 do
-    if fOffTrailingCounter[i]>0 then exit;
+  for i:=FChannels-1 downto 0 do
+    if FOffTrailingCounter[i]>0 then exit;
 
   Result:=false;
 end;

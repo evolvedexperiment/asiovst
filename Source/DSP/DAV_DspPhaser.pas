@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DspLFO;
+  DAV_Types, DAV_Classes, DAV_DspLFO;
 
 type
   TMasterAllPass = class(TDspPersistent, IDspProcessor32)
@@ -109,7 +109,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 resourcestring
   RCStrStagesLargeZero = 'Stages must be larger than 0!';

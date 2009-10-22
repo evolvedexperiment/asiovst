@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DSPDynamics, DAV_DSPFrequencyDivider, DAV_DSPFilterButterworth;
 
 type
@@ -88,7 +88,7 @@ implementation
 {$R *.DFM}
 
 uses
-  BassExtenderGUI, DAV_VSTModuleWithPrograms, DAV_VSTCustomModule;
+  DAV_Common, DAV_VSTModuleWithPrograms, DAV_VSTCustomModule, BassExtenderGUI;
 
 procedure TBassExtenderModule.VSTModuleOpen(Sender: TObject);
 var

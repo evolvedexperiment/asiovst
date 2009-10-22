@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes;
+  DAV_Classes, DAV_Types;
 
 type
   TLeslieSpeed = (lsStop, lsSlow, lsFast);
@@ -124,7 +124,7 @@ type
 implementation
 
 uses
-  Math;
+  Math, DAV_Common;
 
 { TLeslieRotator }
 
@@ -256,19 +256,19 @@ end;
 
 procedure TLeslieRotator.HighDepthChanged;
 begin
- FHDep := sqr(0.01 * FHighDepth) * SampleRate / 760;
+ FHDep := Sqr(0.01 * FHighDepth) * SampleRate / 760;
  Changed;
 end;
 
 procedure TLeslieRotator.HighThrobChanged;
 begin
- FHighLevel := FGainFactor * 0.9 * sqr(0.01 * FHighThrob);
+ FHighLevel := FGainFactor * 0.9 * Sqr(0.01 * FHighThrob);
  Changed;
 end;
 
 procedure TLeslieRotator.HighWidthChanged;
 begin
- FHiWid := sqr(0.01 * FHighWidth);
+ FHiWid := Sqr(0.01 * FHighWidth);
  Changed;
 end;
 
@@ -340,8 +340,8 @@ end;
 
 procedure TLeslieRotator.GainChanged;
 begin
- FLowLevel := FGainFactor * 0.9 * sqr(0.01 * FLowThrob);
- FHighLevel := FGainFactor * 0.9 * sqr(0.01 * FHighThrob);
+ FLowLevel := FGainFactor * 0.9 * Sqr(0.01 * FLowThrob);
+ FHighLevel := FGainFactor * 0.9 * Sqr(0.01 * FHighThrob);
  Changed;
 end;
 
@@ -372,7 +372,7 @@ begin
  // set LFO values
  GetSinCos(FHiPhi, shp, chp);
  GetSinCos(FLoPhi, slp, clp);
- chp := sqr(chp) * chp;
+ chp := Sqr(chp) * chp;
 
  // calculate current speed
  FLoSpd := (FLMom * FLoSpd) + FLSet * (1 - FLMom); // tend to required speed

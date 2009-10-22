@@ -3,7 +3,7 @@ unit SEWhiteNoiseModule;
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer

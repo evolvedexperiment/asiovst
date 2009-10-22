@@ -50,7 +50,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  Classes, Graphics, SysUtils, Contnrs, DAV_Common, DAV_ChunkClasses,
+  Classes, Graphics, SysUtils, Contnrs, DAV_Types, DAV_ChunkClasses,
   DAV_HalfFloat, DAV_Classes, DAV_VectorMath;
 
 type
@@ -484,7 +484,7 @@ type
 implementation
 
 uses
-  Math, DAV_Complex, DAV_Approximations;
+  Math, DAV_Common, DAV_Complex, DAV_Approximations;
 
 resourcestring
   RCStrPositiveValueOnly = 'Value must be larger than 0!';

@@ -29,7 +29,7 @@ type
 implementation
 
 uses
-  DAV_Common, SysUtils, Graphics, DAV_GuiBaseControl;
+  DAV_Types, SysUtils, Graphics, DAV_GuiBaseControl;
 
 constructor TSECorrelationMeterGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin

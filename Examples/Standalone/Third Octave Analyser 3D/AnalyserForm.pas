@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   ComCtrls, ExtCtrls, Spin, Math, TeEngine, Series, TeeProcs, Chart,
-  DAV_ASIOHost, DAV_Common, DAV_DspFilterChebyshevType1, GLScene, GLObjects,
+  DAV_ASIOHost, DAV_Types, DAV_DspFilterChebyshevType1, GLScene, GLObjects,
   GLMisc, GLWin32Viewer, GLCoordinates, GLCrossPlatform, BaseClasses;
 
 const

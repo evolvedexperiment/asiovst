@@ -37,7 +37,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Spin, DAV_Common, DAV_Complex, DAV_DifferentialEvolution,
+  StdCtrls, Spin, DAV_Types, DAV_Complex, DAV_DifferentialEvolution,
   DAV_DspDitherNoiseshaper, DAV_DspFftReal2Complex
   {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
@@ -80,7 +80,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Math;
+  Math, DAV_Common;
 
 procedure TFmNoiseshapingFilterDesigner.FormCreate(Sender: TObject);
 begin

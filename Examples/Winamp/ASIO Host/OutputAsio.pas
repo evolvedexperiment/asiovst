@@ -3,7 +3,7 @@ unit OutputAsio;
 interface
 
 uses
-  Windows, Messages, Classes, Controls, Forms, Dialogs, StdCtrls, DAV_Common,
+  Windows, Messages, Classes, Controls, Forms, Dialogs, StdCtrls, DAV_Types,
   DAV_ASIOHost;
 
 type
@@ -130,7 +130,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, SysUtils, Registry;
+  Math, SysUtils, Registry, DAV_Common;
 
 { WinAmp Interface }
 

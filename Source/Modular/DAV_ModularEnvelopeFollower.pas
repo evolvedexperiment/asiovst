@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_ModularBaseComponent, DAV_Common;
+  DAV_ModularBaseComponent, DAV_Types;
 
 type
   TDspEnvelopeFollower = class(TDspBaseComponent)
@@ -16,8 +16,8 @@ type
     FInternalRelease  : Single;
     FAttack           : Single;
     FRelease          : Single;
-    procedure SetAttack(const Value: single);
-    procedure SetRelease(const Value: single);
+    procedure SetAttack(const Value: Single);
+    procedure SetRelease(const Value: Single);
     procedure BeforeDestroy; override;
   protected
     procedure SampleRateChanged; override;
@@ -28,18 +28,19 @@ type
     procedure Init; override;
     procedure Reset; override;
   published
-    property Attack:  single read FAttack write SetAttack;   // 0..1
-    property Release: single read FRelease write SetRelease; // 0..1
+    property Attack:  Single read FAttack write SetAttack;   // 0..1
+    property Release: Single read FRelease write SetRelease; // 0..1
   end;
 
 implementation
 
-uses Math;
+uses
+  Math, DAV_Common;
 
 procedure TDspEnvelopeFollower.Init;
 begin
-  fStdProcessS  := Process;
-  fStdProcessD  := Process;
+  FStdProcessS  := Process;
+  FStdProcessD  := Process;
 
   FAttack:=0;
   FRelease:=0;
@@ -74,7 +75,7 @@ begin
 end;
 
 
-procedure TDspEnvelopeFollower.SetAttack(const Value: single);
+procedure TDspEnvelopeFollower.SetAttack(const Value: Single);
 begin
   if FAttack <> Value then
   begin
@@ -83,7 +84,7 @@ begin
   end;
 end;
 
-procedure TDspEnvelopeFollower.SetRelease(const Value: single);
+procedure TDspEnvelopeFollower.SetRelease(const Value: Single);
 begin
   if FRelease <> Value then
   begin

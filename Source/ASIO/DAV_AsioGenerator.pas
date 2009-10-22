@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common;
+  Classes, DAV_Types;
 
 type
   TNoiseColor = (ncWhite, ncPink, ncBrown);

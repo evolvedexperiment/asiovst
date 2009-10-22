@@ -1,9 +1,9 @@
-﻿unit SmoothMultibandCompressorDM;
+unit SmoothMultibandCompressorDM;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspFilterLinkwitzRiley,
   DAV_DSPFilterButterworth, DAV_DspFilterLinearPhaseCrossover;
 

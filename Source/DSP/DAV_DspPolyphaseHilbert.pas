@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  DAV_Common, DAV_DspPolyphaseFilter;
+  DAV_Types, DAV_DspPolyphaseFilter;
 
 type
   TPhaseMem32 = array [0..1] of
@@ -118,6 +118,9 @@ type
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 {$IFDEF HandleDenormals}
 var

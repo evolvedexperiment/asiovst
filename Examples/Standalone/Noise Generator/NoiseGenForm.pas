@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DAV_Common, DAV_ASIOHost;
+  Forms, Classes, Controls, StdCtrls, DAV_Types, DAV_ASIOHost;
 
 type
   TFmASIO = class(TForm)
@@ -72,7 +72,7 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles;
+  SysUtils, Inifiles, DAV_Common;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
@@ -174,8 +174,8 @@ begin
  if FVol=0
   then LbVolume.Caption := 'Volume: 0 equals -oo dB'
   else LbVolume.Caption := 'Volume: ' +
-                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
+                           FloatToStrF(FVol, ffFixed, 2, 2) + ' equals ' +
+                           FloatToStrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
 end;
 
 procedure TFmASIO.SbPanChange(Sender: TObject);
@@ -183,7 +183,7 @@ begin
  FPan := SbPan.Position * 0.01;
  if FPan = 0.5
   then LbPanorama.Caption := 'Panorama: C'
-  else LbPanorama.Caption := 'Panorama: ' + Inttostr(round(100 * (FPan * 2 - 1)));
+  else LbPanorama.Caption := 'Panorama: ' + IntToStr(round(100 * (FPan * 2 - 1)));
 end;
 
 {$IFDEF FPC}

@@ -3,7 +3,7 @@ unit SEVstWrapper;
 interface
 
 uses
-  Windows, Classes, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_VSTHost;
+  Windows, Classes, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_VSTHost;
 
 type
   TCustomVST2SEModule = class(TSEModuleBase)

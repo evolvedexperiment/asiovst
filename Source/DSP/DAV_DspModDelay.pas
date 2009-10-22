@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspLFO, DAV_DspFilterButterworth;
+  Classes, DAV_Types, DAV_Classes, DAV_DspLFO, DAV_DspFilterButterworth;
 
 type
   TCustomModDelay = class(TDspSampleRatePersistent)
@@ -59,12 +59,12 @@ type
     procedure SetFeedback(const Value: Double);
     procedure SetMix(const Value: Double);
     procedure SetLpfFreq(const Value: Double);
-    procedure LowpassFrequencyChanged;
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure DelayChanged; virtual;
     procedure DepthChanged; virtual;
     procedure FeedbackChanged; virtual;
+    procedure LowpassFrequencyChanged; virtual;
     procedure MixChanged; virtual;
     procedure RateChanged; virtual;
     procedure SampleRateChanged; override;

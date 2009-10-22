@@ -3,7 +3,7 @@ unit DeessDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, DAV_Common, DAV_VSTModule;
+  Windows, Messages, SysUtils, DAV_Types, DAV_VSTModule;
 
 type
   TDeessDataModule = class(TVSTModule)

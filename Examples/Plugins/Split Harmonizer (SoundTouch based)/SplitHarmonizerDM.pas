@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_VSTModule, DAV_SoundTouchDLLResource, DAV_DspDelayLines; //DAV_SoundTouch;
 
 const
@@ -85,7 +85,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Dialogs, SplitHarmonizerGUI, DAV_VSTCustomModule, DAV_VSTPrograms;
+  Math, Dialogs, DAV_Common, DAV_VSTCustomModule, DAV_VSTPrograms,
+  SplitHarmonizerGUI;
 
 procedure TSplitHarmonizerModule.VSTModuleCreate(Sender: TObject);
 begin

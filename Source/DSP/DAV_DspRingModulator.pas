@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DspLfo;
+  DAV_Types, DAV_Classes, DAV_DspLfo;
 
 type
   TCustomRingModulator = class(TDspPersistent)
@@ -192,7 +192,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Approximations;
+  SysUtils, DAV_Common, DAV_Approximations;
 
 
 { TRingModulator }

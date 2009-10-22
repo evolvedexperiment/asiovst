@@ -7,7 +7,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon;
+  DAV_Types, DAV_StkCommon;
 
 type
   TStkReverb = class(TStk)

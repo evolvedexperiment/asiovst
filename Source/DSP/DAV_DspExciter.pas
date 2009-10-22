@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses 
-  Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DSPFilterButterworth,
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DSPFilterButterworth,
   DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics,
   DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
@@ -84,7 +84,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Approximations;
+  SysUtils, DAV_Common, DAV_Approximations;
 
 { TCustomExciter }
 

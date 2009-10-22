@@ -5,7 +5,7 @@ interface
 {$I DAV_CompilerSwitches.INC}
 
 uses
-  Classes, DAV_Common;
+  Classes, DAV_Types;
 
 type
   TDspBaseProcessFuncS   = procedure(var Data: Single; const channel: integer) of object;

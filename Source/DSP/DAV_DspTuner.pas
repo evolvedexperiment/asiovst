@@ -36,7 +36,7 @@ interface
 {$DEFINE OnlineFreqCalc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_DSPFilterButterworth,
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DSPFilterButterworth,
   DAV_DspCorrelation, DAV_DspCepstrum;
 
 type
@@ -197,7 +197,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Approximations, DAV_DspWindowing;
+  SysUtils, Math, DAV_Common, DAV_Approximations, DAV_DspWindowing;
 
 { TCustomDownsampledTuner }
 

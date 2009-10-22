@@ -3,7 +3,7 @@ unit SEPascalScriptModule;
 interface
 
 uses
-  Classes, DAV_Common, DAV_SECommon, DAV_SEModule, uPSCompiler, uPSRuntime,
+  Classes, DAV_Types, DAV_SECommon, DAV_SEModule, uPSCompiler, uPSRuntime,
   uPSUtils;
 
 type

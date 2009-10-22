@@ -3,7 +3,7 @@ unit SELightweightAnalogRingModulatorModule;
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspRingModulator;
+  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspRingModulator;
 
 type
   // define some constants to make referencing in/outs clearer

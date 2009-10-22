@@ -7,7 +7,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, DAV_StkDelayl, DAV_StkLfo;
+  DAV_Types, DAV_StkCommon, DAV_StkDelayl, DAV_StkLfo;
 
 type
   TStkChorus = class(TStk)
@@ -45,7 +45,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 constructor TStkChorus.Create(const SampleRate, BaseDelay: Single);
 begin

@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DSPFilter, DAV_DSPFilterBasics, DAV_SECommon, DAV_SEModule,
+  DAV_Types, DAV_DSPFilter, DAV_DSPFilterBasics, DAV_SECommon, DAV_SEModule,
   DAV_DspFilterBasicsAutomatable;
 
 type
@@ -176,7 +176,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_Common;
 
 constructor TCustomSELightweightFiltersModule.Create(
   SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);

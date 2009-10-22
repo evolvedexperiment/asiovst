@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, Gauges, 
-  StdCtrls, Graphics, DAV_Common, DAV_VSTModule;
+  StdCtrls, Graphics, DAV_Types, DAV_VSTModule;
 
 type
   TMouseContext = (mcNone, mcSHRate, mcBits, mcCut, mcRes, mcMix, mcVol);
@@ -84,7 +84,8 @@ implementation
 
 {$R *.DFM}
 
-uses DecimatorModule;
+uses
+  DAV_Common, DecimatorModule;
 
 procedure TVSTGUI.FormCreate(Sender: TObject);
 begin

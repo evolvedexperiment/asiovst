@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_DspFilterSpectralDelay, DAV_VSTModule;
 
 type

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses 
-  DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DSPFilterButterworth,
+  DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DSPFilterButterworth,
   DAV_DspFilterLinkwitzRiley, DAV_DspDynamics, DAV_DspLightweightDynamics;
 
 type
@@ -233,7 +233,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_DspInterpolation;
+  SysUtils, DAV_Common, DAV_DspInterpolation;
 
 { TCustomPsychoAcousticBassEnhancer }
 

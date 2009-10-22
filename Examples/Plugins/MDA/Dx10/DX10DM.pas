@@ -3,7 +3,7 @@ unit DX10DM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTEffect, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, DAV_Types, DAV_VSTEffect, DAV_VSTModule,
   DAV_VSTCustomModule;
 
 type

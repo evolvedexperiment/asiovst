@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  Math, Graphics, DAV_Common, DAV_GuiBaseControl;
+  Math, Graphics, DAV_Types, DAV_GuiBaseControl;
 
 constructor TSEOpenGLGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspAudioToMidiTrigger;
 
 type
@@ -49,8 +49,7 @@ type
     procedure ParameterMidiNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMidiNoteChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterIntervalChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterVelocityShiftChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterVelocityShiftChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FAudio2MidiTrigger : TAudio2MidiTrigger;
     FMidiNote          : Byte;
@@ -63,7 +62,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Audio2MidiTriggerGui, DAV_VSTBasicModule;
+  Audio2MidiTriggerGui, DAV_Common, DAV_VSTBasicModule;
 
 procedure TAudio2MidiTriggerModule.VSTModuleOpen(Sender: TObject);
 begin

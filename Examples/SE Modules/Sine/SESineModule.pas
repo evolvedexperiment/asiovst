@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPLFO;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPLFO;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -126,7 +126,7 @@ procedure SESine2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; Sampl
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 constructor TSESineModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin

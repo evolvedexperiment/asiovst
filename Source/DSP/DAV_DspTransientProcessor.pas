@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Complex, DAV_Classes;
 
 type
   TCustomTransientProcessor = class(TDspSampleRatePersistent)
@@ -130,7 +130,7 @@ type
 implementation
 
 uses
-  Math;
+  Math, DAV_Common;
 
 const
   CSampleRateScaling : Single = 2.2675736961451247165532879818594E-5;

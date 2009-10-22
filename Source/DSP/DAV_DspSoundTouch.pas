@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_SoundTouchDLL; //DAV_SoundTouch;
+  DAV_Types, DAV_Classes, DAV_SoundTouchDLL; //DAV_SoundTouch;
 
 type
   TDspSoundTouch = class(TDspSampleRatePersistent)

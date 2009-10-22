@@ -3,7 +3,7 @@ unit XSynthGUI;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiADSRGraph, DAV_GuiBaseControl, DAV_GuiMidiKeys;
 
 type
@@ -59,7 +59,8 @@ implementation
 
 {$R *.DFM}
 
-uses XSynthModule, XSynthVoice, VoiceList;  
+uses
+  DAV_Common, XSynthModule, XSynthVoice, VoiceList;  
 
 procedure TVSTGUI.MidiKeysNoteOn(Sender: TObject; KeyNr: Byte;
   Velocity: Single);

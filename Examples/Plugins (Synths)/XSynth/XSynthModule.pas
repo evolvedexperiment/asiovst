@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTEffect,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTEffect,
   DAV_VSTModule, XSynthVoice, VoiceList;
 
 type
@@ -50,7 +50,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, XSynthGUI;
+  Math, DAV_Common, DAV_Approximations, XSynthGUI;
 
 procedure TVSTSSModule.VSTModuleOpen(Sender: TObject);
 begin

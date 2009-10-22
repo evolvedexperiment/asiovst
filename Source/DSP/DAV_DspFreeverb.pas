@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspFreeverbFilter;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFreeverbFilter;
 
 const
   CCombFilterCount = 8;

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_VSTModule, DAV_DspCrosstalkSimulator;
+  DAV_Types, DAV_VSTModule, DAV_DspCrosstalkSimulator;
 
 type
   THMModule = class(TVSTModule)

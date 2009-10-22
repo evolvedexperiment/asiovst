@@ -36,11 +36,11 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Spin, ComCtrls, ExtCtrls, Buttons, SyncObjs, DAV_Common,
+  StdCtrls, Spin, ComCtrls, ExtCtrls, Buttons, SyncObjs, DAV_Types,
   DAV_GuiBaseControl, DAV_GuiAudioDataDisplay, DAV_GuiLED, DAV_ASIOHost,
   DAV_DspPinkNoiseGenerator, DAV_DspSimpleOscillator, DAV_DspSweepOscillator,
   DAV_AudioData, DAV_AudioFile, DAV_AudioFileWav, DAV_AudioFileAiff,
-  DAV_AudioFileAu, DAV_DspBufferedAudioFilePlayer;
+  DAV_AudioFileAu, DAV_DspBufferedAudioFilePlayer, DAV_Classes;
 
 type
   TFadeDirection = (fdNone, fdUp, fdDown);
@@ -186,7 +186,7 @@ var
 implementation
 
 uses
-  Math, IniFiles;
+  Math, IniFiles, DAV_Common;
 
 {$R *.dfm}
 

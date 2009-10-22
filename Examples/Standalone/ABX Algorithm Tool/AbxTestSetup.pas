@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_DspFilterBasics, DAV_DspLightweightDynamics;
+  Classes, SysUtils, DAV_Types, DAV_DspFilterBasics, DAV_DspLightweightDynamics;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);
@@ -133,7 +133,8 @@ type
 
 implementation
 
-uses DAV_DspDynamics, DAV_DspFilter;
+uses
+  DAV_Common, DAV_DspDynamics, DAV_DspFilter;
 
 (*
 uses

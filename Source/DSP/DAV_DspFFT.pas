@@ -38,7 +38,7 @@ interface
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Types, DAV_Common;
 
 procedure FFT(Buffer: PDAVSingleFixedArray; FFTSize: Integer);
 (*

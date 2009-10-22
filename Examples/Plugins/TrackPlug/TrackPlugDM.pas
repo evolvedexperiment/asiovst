@@ -1,4 +1,4 @@
-﻿unit TrackPlugDM;
+unit TrackPlugDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_DspFilter,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_DspFilter,
   DAV_DSPFilterButterworth, DAV_DspFilterBasics, DAV_DspDynamics,
   DAV_DspLightweightDynamics, Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
 

@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Graphics,
-  Dialogs, DAV_Common, DAV_VSTModule, DAV_GuiStaticWaveform,
+  Dialogs, DAV_Types, DAV_VSTModule, DAV_GuiStaticWaveform,
   DAV_GuiBaseControl, DAV_GuiMidiKeys;
 
 type
@@ -75,7 +75,7 @@ begin
   begin
    TVSTSSModule(Owner).LoadFromFile(EditSample.Text);
    with TVSTSSModule(Owner)
-    do Waveform.SetWaveForm(Sample, SampleLength, True, True);
+    do Waveform.SetWaveForm(Sample, SampleLength, True);
   end;
 end;
 

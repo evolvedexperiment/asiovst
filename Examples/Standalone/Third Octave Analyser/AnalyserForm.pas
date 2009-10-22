@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   ComCtrls, ExtCtrls, Spin, Math, TeEngine, Series, TeeProcs, Chart,
-  DAV_ASIOHost, DAV_Common, DAV_DspFilterChebyshevType1;
+  DAV_ASIOHost, DAV_Types, DAV_DspFilterChebyshevType1;
 
 const
   CNumFrequencies = 32;

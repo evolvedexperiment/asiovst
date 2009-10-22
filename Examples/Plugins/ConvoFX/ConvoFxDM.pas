@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspConvolution, DAV_DSPFilterButterworth;
 
 const
@@ -73,7 +73,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_HalfFloat, DAV_DspInterpolation, ConvoFxGUI, DAV_VSTCustomModule;
+  Math, DAV_Common, DAV_HalfFloat, DAV_DspInterpolation, DAV_VSTCustomModule,
+  ConvoFxGUI;
 
 procedure TConvoFxDataModule.VSTModuleCreate(Sender: TObject);
 begin

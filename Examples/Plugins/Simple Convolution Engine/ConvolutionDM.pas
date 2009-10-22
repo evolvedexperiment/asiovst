@@ -6,7 +6,7 @@ interface
 {-$DEFINE Use_IPPS}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
   DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_VSTModule,
   DAV_AudioData;
@@ -46,7 +46,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_DspWindowing, ConvolutionGUI;
+  Math, DAV_Common, DAV_DspWindowing, ConvolutionGUI;
 
 procedure TConvolutionDataModule.VSTModuleOpen(Sender: TObject);
 begin

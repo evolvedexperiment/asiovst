@@ -48,7 +48,7 @@ implementation
 {$R *.dfm}
 
 uses
-  DAV_Common, DAV_BufferMathAsm, DAV_BufferMathPascal, DAV_VSTEffect;
+  DAV_Types, DAV_BufferMathAsm, DAV_BufferMathPascal, DAV_VSTEffect;
 
 resourcestring
   RCDone = 'DONE';

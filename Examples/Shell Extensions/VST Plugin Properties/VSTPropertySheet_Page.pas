@@ -100,7 +100,7 @@ begin
       Add('Programs: ' + IntToStr(numPrograms));
       Add('Initial Delay: ' + IntToStr(InitialDelay) + ', Tail Size: ' + IntToStr(GetTailSize));
 
-      if (effFlagsHasEditor in PVstEffect.EffectFlags) then
+      if (effFlagsHasEditor in VstEffectPointer.EffectFlags) then
        begin
         fm := TForm.Create(nil);
         with fm do

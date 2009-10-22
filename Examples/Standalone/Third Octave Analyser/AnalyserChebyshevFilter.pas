@@ -85,7 +85,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, SysUtils;
+  Math, DAV_Types, SysUtils;
 
 constructor TAnalyseFilter.Create;
 begin

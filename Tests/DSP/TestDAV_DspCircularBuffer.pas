@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  TestFramework, DAV_Complex, Classes, DAV_Common, DAV_DspCommon, 
+  TestFramework, Classes, DAV_Types, DAV_Classes, DAV_Complex,
   DAV_DspCircularBuffer;
 
 type

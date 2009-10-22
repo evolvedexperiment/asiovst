@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_VSTModule,
-  DAV_Common;
+  DAV_Types;
 
 type
   TFmSimpleSampleDelay = class(TForm)

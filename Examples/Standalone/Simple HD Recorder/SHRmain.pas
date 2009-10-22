@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
-  Graphics, DAV_Common, DAV_GuiLabel, DAV_GuiButton, DAV_GuiBaseControl,
+  Graphics, DAV_Types, DAV_GuiLabel, DAV_GuiButton, DAV_GuiBaseControl,
   DAV_GuiLED, DAV_ASIOHost;
 
 type

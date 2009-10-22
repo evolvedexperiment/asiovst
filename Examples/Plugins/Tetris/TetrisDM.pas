@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_VSTEffect;
+  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule, DAV_VSTEffect;
 
 type
   TTetrisModule = class(TVSTModule)

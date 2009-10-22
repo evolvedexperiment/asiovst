@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspExciter, DAV_DspAmbience, DAV_DspCrosstalkSimulator,
   DAV_DspLightweightDynamics, DAV_DspPsychoacousticBassEnhancer,
   DAV_DspFilterChebyshevType1;
@@ -127,7 +127,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_DspDynamics, DAV_Approximations, AudioAmeliorationGUI;
+  Math, DAV_Common, DAV_DspDynamics, DAV_Approximations, AudioAmeliorationGUI;
 
 procedure TAudioAmeliorationModule.VSTModuleOpen(Sender: TObject);
 var

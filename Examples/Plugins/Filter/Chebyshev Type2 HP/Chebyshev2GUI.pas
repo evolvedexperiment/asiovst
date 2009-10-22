@@ -3,7 +3,7 @@ unit Chebyshev2GUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Types,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
 
 type

@@ -35,9 +35,9 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_Classes, DAV_DspFilter,
-  DAV_DSPFilterButterworth, DAV_DSPFilterChebyshev, DAV_DSPFilterChebyshevType1,
-  DAV_DSPFilterChebyshevType2, DAV_DSPBesselFilter;
+  Classes, SysUtils, DAV_Types, DAV_Classes, DAV_DspFilter,
+  DAV_DspFilterButterworth, DAV_DspBesselFilter, DAV_DspFilterChebyshev,
+  DAV_DspFilterChebyshevType1, DAV_DspFilterChebyshevType2;
 
 type
   TDAVResampling = class(TDspSampleRatePersistent)
@@ -119,6 +119,9 @@ type
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 { TDAVResampling }
 

@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, Contnrs, DAV_ProcessingComponent;
+  Classes, DAV_Types, Contnrs, DAV_ProcessingComponent;
 
 type
   TDspQueueList = TComponentList;
@@ -100,8 +100,8 @@ type
     function  GetPreviousItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
     function  GetQueueItems(var items: TDspQueueList): boolean; virtual; // Returns false on loopback
 
-    
-    
+
+
     procedure ProcessMidiEvent(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); override;
     procedure ProcessMidiEventQueue(MidiEvent: TDAVMidiEvent; var FilterEvent: Boolean); override;
 
@@ -121,7 +121,7 @@ implementation
 {$ENDIF}
 
 uses
-  Sysutils, Math, DAV_VSTModuleWithDsp, DAV_ModularVoice
+  Sysutils, Math, DAV_Common, DAV_VSTModuleWithDsp, DAV_ModularVoice
   {$IFDEF PUREPASCAL}, DAV_BufferMathPascal{$ELSE}, DAV_BufferMathAsm{$ENDIF};
 
 constructor TDspBaseComponent.Create(AOwner: TComponent);

@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_VSTEffect, DAV_VSTModuleWithMidi, DAV_VSTParameters,
+  Classes, DAV_Types, DAV_VSTEffect, DAV_VSTModuleWithMidi, DAV_VSTParameters,
   DAV_VSTPrograms;
 
 type

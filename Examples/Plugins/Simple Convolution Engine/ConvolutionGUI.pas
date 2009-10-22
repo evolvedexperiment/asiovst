@@ -3,7 +3,7 @@ unit ConvolutionGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
   DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, StdCtrls;
 
 type

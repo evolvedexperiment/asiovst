@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_Classes, DAV_DspCircularBuffer,
+  Classes, SysUtils, DAV_Types, DAV_Classes, DAV_DspCircularBuffer,
   DAV_MpegAudio;
 
 type

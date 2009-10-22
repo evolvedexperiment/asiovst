@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Math, DAV_Common;
+  Windows, Math, DAV_Types;
 
 type
   TDAVVector32 = TDAV4SingleArray;
@@ -213,7 +213,7 @@ var
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 const
 {$IFNDEF PUREPASCAL}

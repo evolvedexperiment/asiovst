@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Menus, ToolWin, ComCtrls, ExtCtrls, StdCtrls, Buttons, DAV_Common,
+  Menus, ToolWin, ComCtrls, ExtCtrls, StdCtrls, Buttons, DAV_Types,
   DAV_GuiStaticWaveform, DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_AudioFile,
   DAV_AudioData, DAV_AudioFileWav, DAV_AudioFileAIFF, DAV_AudioFileAU,
   DAV_ASIOHost, DAV_VSTHost, DAV_GuiAudioDataDisplay;

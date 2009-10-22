@@ -36,7 +36,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  DAV_Common;
+  DAV_Types;
 
 function Hermite1(const Fractional: Single; const Data: TDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function Hermite1(const Fractional: Double; const Data: TDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}

@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  Classes, SysUtils, Windows, Forms, DAV_Common, DAV_VSTEffect,
+  Classes, SysUtils, Windows, Forms, DAV_Types, DAV_VSTEffect,
   DAV_VSTBasicModule;
 
 type
@@ -173,7 +173,7 @@ type
 implementation
 
 uses
-  Math, DAV_VSTModuleWithPrograms, DAV_VSTPrograms;
+  Math, DAV_Common, DAV_VSTModuleWithPrograms, DAV_VSTPrograms;
 
 { TCustomVstParameterCategory }
 
@@ -208,7 +208,7 @@ end;
 
 function TCustomVstParameterCategory.GetDisplayName: string;
 begin
- result := FDisplayName;
+ Result := FDisplayName;
 end;
 
 procedure TCustomVstParameterCategory.SetDisplayName(const AValue: string);

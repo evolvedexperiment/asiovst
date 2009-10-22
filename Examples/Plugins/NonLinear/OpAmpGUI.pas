@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Messages,
-  Forms, Controls, StdCtrls, DAV_Common, DAV_VSTModule;
+  Forms, Controls, StdCtrls, DAV_Types, DAV_VSTModule;
 
 type
   TVSTGUI = class(TForm)

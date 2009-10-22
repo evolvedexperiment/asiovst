@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SyncObjs, SysUtils, Classes, Forms, DAV_Common,
+  Windows, Messages, SyncObjs, SysUtils, Classes, Forms, DAV_Types,
   DAV_VSTModule, DAV_DspDelayLines, DAV_DspFilter, DAV_DspFilterBasics,
   DAV_DspFrequencyShifter;
 
@@ -100,7 +100,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Complex, DAV_Approximations, PartyDelayGui, DAV_VSTModuleWithPrograms;
+  DAV_Common, DAV_Complex, DAV_Approximations, PartyDelayGui, DAV_VSTModuleWithPrograms;
 
 procedure TPartyDelayDataModule.VSTModuleCreate(Sender: TObject);
 begin

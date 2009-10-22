@@ -1,9 +1,9 @@
-﻿unit LA1701DM;
+unit LA1701DM;
 
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DSPDynamics, DAV_DSPLevelingAmplifier, DAV_DSPFilterButterworth;
 
 type

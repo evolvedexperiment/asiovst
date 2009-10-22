@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, Mask,
-  DAV_Common, DAV_VSTModule, ComCtrls;
+  DAV_Types, DAV_VSTModule, ComCtrls;
 
 type
   TFmOversampledTanh = class(TForm)

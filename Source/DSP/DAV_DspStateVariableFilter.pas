@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes;
+  Classes, DAV_Types, DAV_Classes;
 
 type
   TFrequencyTuningMethod = (ftmSimple, ftmIdeal);
@@ -66,7 +66,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 constructor TSVF.Create;
 begin

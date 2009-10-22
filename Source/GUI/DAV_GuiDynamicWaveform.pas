@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_GuiStaticWaveform, DAV_Common, Classes, Controls;
+  Classes, Controls, DAV_Types, DAV_GuiStaticWaveform;
 
 type
   TGuiWaveProcessMode = (wpmScroll, wpmReplace, wpmStretch);

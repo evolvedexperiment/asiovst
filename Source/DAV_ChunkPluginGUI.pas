@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, Graphics, DAV_Common, DAV_ChunkClasses, DAV_GuiBaseControl;
+  Classes, Graphics, DAV_Types, DAV_ChunkClasses, DAV_GuiBaseControl;
 
 type
   TDAVPluginGuiChunkRecord = packed record

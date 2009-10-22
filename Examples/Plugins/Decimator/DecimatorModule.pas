@@ -3,7 +3,7 @@ unit DecimatorModule;
 interface
 
 uses
-  Windows, DAV_Common, Forms, DAV_VSTEffect, DAV_VSTModule;
+  Windows, DAV_Types, Forms, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TDecimatorFilterType = (dftLowpass, dftHighpass);
@@ -48,7 +48,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DecimatorGUI;
+  Math, DAV_Common, DecimatorGUI;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Open / Close

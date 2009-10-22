@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Types, Messages,
   Forms, SysUtils, Classes, Graphics, Controls, StdCtrls, ExtCtrls, ComCtrls,
-  Menus, SyncObjs, DAV_Common, DAV_VstEffect, DAV_MidiFile, DAV_MidiIO,
+  Menus, SyncObjs, DAV_Types, DAV_VstEffect, DAV_MidiFile, DAV_MidiIO,
   DAV_ASIOHost, DAV_VSTHost, WaveIOX, AboutForm;
 
 type
@@ -293,8 +293,8 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Inifiles, Dialogs, ShellAPI, DAV_AudioData, DAV_AudioFileWAV,
-  DAV_AudioFileAIFF, DAV_AudioFileAU, OptionsForm, PlayerForm;
+  Math, Inifiles, Dialogs, ShellAPI, DAV_Common, DAV_AudioData,
+  DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU, OptionsForm, PlayerForm;
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin

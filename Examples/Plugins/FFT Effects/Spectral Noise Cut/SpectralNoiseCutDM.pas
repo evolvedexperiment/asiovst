@@ -33,7 +33,7 @@ unit SpectralNoiseCutDM;
 interface
 
 uses
-  Windows, Messages, Classes, Forms, SyncObjs, DAV_Common, DAV_Complex,
+  Windows, Messages, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
   DAV_DspSpectralNoiseReduction, DAV_VSTModule;
 
 type

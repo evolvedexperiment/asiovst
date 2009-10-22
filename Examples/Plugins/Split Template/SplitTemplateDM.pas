@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Forms, Themes, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Graphics, Forms, Themes, DAV_Types,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
   DAV_VSTCustomModule, DAV_DSPFilterButterworth, DAV_DspUpDownsampling,
   DAV_VstHost, DAV_DSPLFO;

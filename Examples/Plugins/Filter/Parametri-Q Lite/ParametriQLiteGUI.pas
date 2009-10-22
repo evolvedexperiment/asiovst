@@ -3,7 +3,7 @@ unit ParametriQLiteGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   Controls, Graphics, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, ExtCtrls,
   DAV_GuiVUMeter, Menus;
 

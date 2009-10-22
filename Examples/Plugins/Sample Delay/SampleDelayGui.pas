@@ -34,7 +34,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls,
-  DAV_Common, DAV_VSTModule, DAV_GuiBackgrounds;
+  DAV_Types, DAV_VSTModule, DAV_GuiBackgrounds;
 
 type
   TFmSampleDelay = class(TForm)

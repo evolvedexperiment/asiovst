@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Graphics, Controls, Forms, StdCtrls, ComCtrls,
-  ExtCtrls, Spin, Buttons, DAV_Common, DAV_Complex, DAV_AsioHost;
+  ExtCtrls, Spin, Buttons, DAV_Types, DAV_Complex, DAV_AsioHost;
 
 type
   TFmASIO = class(TForm)
@@ -83,7 +83,7 @@ implementation
 {$ENDIF}
 
 uses
-  Inifiles;
+  Inifiles, DAV_Common;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin

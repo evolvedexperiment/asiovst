@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  DAV_Classes, DAV_Common;
+  DAV_Classes, DAV_Types;
 
 type
   TCustomBuildingBlocks = class(TDspPersistent)

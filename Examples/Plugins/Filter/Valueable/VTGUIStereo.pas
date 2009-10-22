@@ -3,7 +3,7 @@ unit VTGUIStereo;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   Controls, ExtCtrls, StdCtrls, DAV_GuiPanel, DAV_GuiBaseControl, DAV_GuiDial,
   DAV_GuiLabel;
 

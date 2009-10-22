@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_ChunkClasses;
+  Classes, SysUtils, DAV_Types, DAV_Common, DAV_ChunkClasses;
 
 const
   AIFCVersion1 = $A2805140;

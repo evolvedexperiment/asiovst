@@ -38,7 +38,7 @@ interface
 
 uses
   {$IFDEF UseEmbedding}Classes, {$ENDIF} Windows, SysUtils, SyncObjs,
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspBufferedMP3Player;
+  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspBufferedMP3Player;
 
 type
   // define some constants to make referencing in/outs clearer

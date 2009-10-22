@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_WaveFileTypes,
+  Classes, Contnrs, SysUtils, DAV_Types, DAV_AudioFile, DAV_WaveFileTypes,
   DAV_ChunkClasses, DAV_ChunkWaveBasic, DAV_ChunkWaveCustom,
   DAV_ChannelDataCoder;
 

@@ -11,7 +11,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_DspWindowing, DAV_Common;
+  DAV_Types, DAV_DspWindowing;
 
 procedure RealCepstrum(Signal, RealCepstrum: TDAVSingleDynArray);
 procedure MinimumPhase(RealCepstrum, MinimumPhase: TDAVSingleDynArray);
@@ -20,7 +20,7 @@ function GenerateMinBLEP(ZeroCrossings, OverSampling: Integer): TDAVSingleDynArr
 implementation
 
 uses
-  Math, DAV_Complex, DAV_DspDFT;
+  Math, DAV_Common, DAV_Complex, DAV_DspDFT;
 
 // Complex Exponential
 procedure ComplexExponential(Re, Im: Double; var zx, zy: Single);

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Contnrs, SysUtils, DAV_Common, DAV_AudioFile, DAV_ChunkClasses,
+  Classes, Contnrs, SysUtils, DAV_Types, DAV_AudioFile, DAV_ChunkClasses,
   DAV_ChunkAiffBasic, DAV_ChannelDataCoder;
 
 type
@@ -153,6 +153,9 @@ type
   EAIFFError = class(Exception);
 
 implementation
+
+uses
+  DAV_Common;
 
 resourcestring
   RCStrFORMChunkNotFound      = 'This is not a AIFF file!';

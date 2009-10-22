@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DSPFilterButterworth,
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DSPFilterButterworth,
   DAV_DspFilterBasics;
 
 type
@@ -112,7 +112,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 const
   CBufferSize = 1024;

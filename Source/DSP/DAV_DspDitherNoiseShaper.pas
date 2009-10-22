@@ -38,7 +38,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspFilterBasics;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspFilterBasics;
 
 const
   {$A4}
@@ -300,7 +300,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Approximations;
+  Math, SysUtils, DAV_Common, DAV_Approximations;
 
 { TCustomDitherNoiseShaper }
 

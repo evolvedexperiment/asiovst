@@ -36,255 +36,162 @@ interface
 {$I DAV_Compiler.inc}
 
 {$IFDEF FPC}
-uses LCLIntf; {$DEFINE PUREPASCAL}
+uses LCLIntf, DAV_Types; {$DEFINE PUREPASCAL}
 {$ELSE}
-uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
+uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF}, DAV_Types;
 {$ENDIF}
 
-type
-  {$IFNDEF DELPHI7_UP}
-    TDAVSingleDynArray = Array of Single;
-    TDAVDoubleDynArray = Array of Double;
-  {$ELSE}
-    {$IFDEF UseNativeTypes}
-      TDAVSingleDynArray = Types.TSingleDynArray;
-      TDAVDoubleDynArray = Types.TDoubleDynArray;
-    {$ELSE}
-      TDAVSingleDynArray = Array of Single;
-      TDAVDoubleDynArray = Array of Double;
-    {$ENDIF}
-  {$ENDIF}
+{ Byte Ordering }
 
-  PDAVSingleDynArray = ^TDAVSingleDynArray;
-  PDAVDoubleDynArray = ^TDAVDoubleDynArray;
+function SWAP_16(value: SmallInt): SmallInt;
+function SWAP_32(value: LongInt): LongInt;
+function SWAP_64(value: Int64): Int64;
 
-  TDAVSingleFixedArray = Array [0..0] of Single;
-  PDAVSingleFixedArray = ^TDAVSingleFixedArray;
-  TDAVDoubleFixedArray = Array [0..0] of Double;
-  PDAVDoubleFixedArray = ^TDAVDoubleFixedArray;
-
-  TDAVArrayOfSingleDynArray = array of TDAVSingleDynArray;
-  PDAVArrayOfSingleDynArray = ^TDAVArrayOfSingleDynArray;
-  TDAVArrayOfDoubleDynArray = array of TDAVDoubleDynArray;
-  PDAVArrayOfDoubleDynArray = ^TDAVArrayOfDoubleDynArray;
-
-  TDAVArrayOfSingleFixedArray = array of PDAVSingleFixedArray;
-  PDAVArrayOfSingleFixedArray = ^TDAVArrayOfSingleFixedArray;
-  TDAVArrayOfDoubleFixedArray = array of PDAVDoubleFixedArray;
-  PDAVArrayOfDoubleFixedArray = ^TDAVArrayOfDoubleFixedArray;
-
-  TDAVSingleDynMatrix = TDAVArrayOfSingleDynArray;
-  PDAVSingleDynMatrix = ^TDAVSingleDynMatrix;
-  TDAVDoubleDynMatrix = TDAVArrayOfDoubleDynArray;
-  PDAVDoubleDynMatrix = ^TDAVDoubleDynMatrix;
-
-  TDAV2SingleArray = Array [0..1] of Single;
-  PDAV2SingleArray = ^TDAV2SingleArray;
-  TDAV2DoubleArray = Array [0..1] of Double;
-  PDAV2DoubleArray = ^TDAV2DoubleArray;
-
-  TDAV4SingleArray = Array [0..3] of Single;
-  PDAV4SingleArray = ^TDAV4SingleArray;
-  TDAV4DoubleArray = Array [0..3] of Double;
-  PDAV4DoubleArray = ^TDAV4DoubleArray;
-
-  TDAV6SingleArray = Array [0..5] of Single;
-  PDAV6SingleArray = ^TDAV6SingleArray;
-  TDAV6DoubleArray = Array [0..5] of Double;
-  PDAV6DoubleArray = ^TDAV6DoubleArray;
-
-  TDAV8SingleArray = Array [0..7] of Single;
-  PDAV8SingleArray = ^TDAV8SingleArray;
-  TDAV8DoubleArray = Array [0..7] of Double;
-  PDAV8DoubleArray = ^TDAV8SingleArray;
-
-  PDAV512SingleArray = ^TDAV1024SingleArray;
-  TDAV512SingleArray = array[0..512] of Single;
-  PDAV512DoubleArray = ^TDAV1024DoubleArray;
-  TDAV512DoubleArray = array[0..512] of Double;
-
-  PDAV1024SingleArray = ^TDAV1024SingleArray;
-  TDAV1024SingleArray = array[0..1024] of Single;
-  PDAV1024DoubleArray = ^TDAV1024DoubleArray;
-  TDAV1024DoubleArray = array[0..1024] of Double;
-
-  TDAVMinMaxSingle = record
-    min : Single;
-    max : Single;
-  end;
-  TDAVMinMaxDouble = record
-    min : Double;
-    max : Double;
-  end;
-
-  TStrArray = array of string;
-
-  TChunkName = array [0..3] of AnsiChar;
-
-  {$IFDEF Delphi5}
-  PCardinal = ^Cardinal;
-//  TValueSign = set of (-1, 0, 1);
-  PSingle = ^Single;
-  PDouble = ^Double;
-  {$ENDIF}
-
-  TDAVMidiEvent = record
-    MidiData        : array[0..3] of Byte;  // 1 thru 3 midi Bytes; midiData[3] is reserved (zero)
-    DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
-    NoteOffset      : LongInt;              // offset into note from note start if available, else 0
-    NoteLength      : LongInt;              // (in sample frames) of entire note, if available, else 0
-    Detune          : Byte;                 // -64 to +63 cents; for scales other than 'well-tempered' ('microtuning')
-    NoteOffVelocity : Byte;
-  end;
+function SwapLong(var Value): LongInt;
+procedure FlipWord(var Value); overload;
+procedure FlipLong(var Value); overload;
+procedure FlipExtended(var Value : Extended); overload;
 
 
-  { Byte Ordering }
+{ Compatibility }
 
-  function SWAP_16(value: SmallInt): SmallInt;
-  function SWAP_32(value: LongInt): LongInt;
-  function SWAP_64(value: Int64): Int64;
-
-  function SwapLong(var Value): LongInt;
-  procedure FlipWord(var Value); overload;
-  procedure FlipLong(var Value); overload;
-  procedure FlipExtended(var Value : Extended); overload;
+{$IFDEF DELPHI5}
+function Sign(const AValue: Single): Single; overload;
+function Sign(const AValue: Double): Double; overload;
+{$ENDIF}
 
 
-  { Compatibility }
+{ Convert }
 
-  {$IFDEF DELPHI5}
-  function Sign(const AValue: Single): Single; overload;
-  function Sign(const AValue: Double): Double; overload;
-  {$ENDIF}
+function ms2Samples(const ms, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+function FrequencyToBark(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function FrequencyToBark(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Frequency2CriticalBandwidth(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Frequency2CriticalBandwidth(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  { Convert }
+function GermaniumDiode(Voltage: Double): Double;
+function SiliconDiode(Voltage: Double): Double;
 
-  function ms2Samples(const ms, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Samples2ms(const Samples, SampleRate: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Sync2Samples(const SyncFactor, BPM, SampleRate: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function GetSyncFactor(const BaseFactor: Single; const Dotted, Triads: Boolean): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Compare4(S1, S2 : PAnsiChar): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+// dB stuff
+function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function SqrAmp2dB(const Value: Single): Single; overload;
+function SqrAmp2dB(const Value: Double): Double; overload;
+function Amp_to_dB(const Value: Single): Single; overload;
+function Amp_to_dB(const Value: Double): Double; overload;
+{$IFNDEF FPC}
+procedure Amp_to_dB(var v: TDAV4SingleArray); overload; // TODO: move to VectorMath!
+{$ENDIF}
 
-  function FrequencyToBark(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FrequencyToBark(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Frequency2CriticalBandwidth(Frequency: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Frequency2CriticalBandwidth(Frequency: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+// scale logarithmically from 20 Hz to 20 kHz
+function FreqLinearToLog(const Value: Single): Single; overload;
+function FreqLinearToLog(const Value: Double): Double; overload;
+function FreqLogToLinear(const Value: Single): Single; overload;
+function FreqLogToLinear(const Value: Double): Double; overload;
 
-  function GermaniumDiode(Voltage: Double): Double;
-  function SiliconDiode(Voltage: Double): Double;
-
-  // dB stuff
-  function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function dB_to_Amp(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function SqrAmp2dB(const Value: Single): Single; overload;
-  function SqrAmp2dB(const Value: Double): Double; overload;
-  function Amp_to_dB(const Value: Single): Single; overload;
-  function Amp_to_dB(const Value: Double): Double; overload;
-  {$IFNDEF FPC}
-  procedure Amp_to_dB(var v: TDAV4SingleArray); overload; // TODO: move to VectorMath!
-  {$ENDIF}
-
-  // scale logarithmically from 20 Hz to 20 kHz
-  function FreqLinearToLog(const Value: Single): Single; overload;
-  function FreqLinearToLog(const Value: Double): Double; overload;
-  function FreqLogToLinear(const Value: Single): Single; overload;
-  function FreqLogToLinear(const Value: Double): Double; overload;
-
-  function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single; overload;
-  function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
-  function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
-  function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
+function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single; overload;
+function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
+function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
+function ScaleLogToLinear(const Value: Double; const Min, Max: Double): Double; overload;
 
 
-  { Limit & Clip, Min & Max }
+{ Limit & Clip, Min & Max }
 
-  function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Limit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function IntLimit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function BranchlessClip(const Value, Lower, Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function BranchlessClip(const Value, Lower, Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function BranchlessClipLower(Value: Single; const Lower: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Smallest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Smallest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Largest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Largest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function LimitAngle(const Angle: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function LimitAngle(const Angle: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Limit(const Value: Single; Lower: Single = -1; Upper: Single = 1): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Limit(const Value: Double; Lower: Double = -1; Upper: Double = 1): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Limit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function IntLimit(const Value: Integer; Lower: Integer = 0; Upper: Integer = 1): Integer; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClip(const Value, Lower, Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClip(const Value, Lower, Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipLower(Value: Single; const Lower: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Smallest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Smallest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Largest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Largest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function LimitAngle(const Angle: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function LimitAngle(const Angle: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  function RandomGauss: Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function RandomGauss: Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function Factorial(const Order: Integer): Int64; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastFractional(const Value: Single): Single; overload;
-  function FastFractional(const Value: Double): Double; overload;
-  function FastRandom: Single;
-  procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  procedure FastAbs(var Value: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  procedure FastAbs(var Value: TDAV4SingleArray); overload;
-  procedure FastNegative(var Value: Single); overload;
-  function FastSgn(const Value: Single): Integer;
-  function FastMin(const A, B: Single) : Single;
-  function FastMax(const A, B: Single) : Single;
-  function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Factorial(const Order: Integer): Int64; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function FastFractional(const Value: Single): Single; overload;
+function FastFractional(const Value: Double): Double; overload;
+function FastRandom: Single;
+procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure FastAbs(var Value: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure FastAbs(var Value: TDAV4SingleArray); overload;
+procedure FastNegative(var Value: Single); overload;
+function FastSgn(const Value: Single): Integer;
+function FastMin(const A, B: Single) : Single;
+function FastMax(const A, B: Single) : Single;
+function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  {$IFNDEF FPC}
-  function FastInt(Sample: Single): Single; overload;
-  function FastInt(Sample: Double): Double; overload;
-  function FastTrunc(const Value: Single): Integer; overload;
-  function FastTrunc(const Value: Double): Integer; overload;
-  procedure FastTrunc(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
-  function FastRound(Sample: Single): Integer; overload;
-  function FastRound(Sample: Double): Integer; overload;
-  {$ENDIF}
+{$IFNDEF FPC}
+function FastInt(Sample: Single): Single; overload;
+function FastInt(Sample: Double): Double; overload;
+function FastTrunc(const Value: Single): Integer; overload;
+function FastTrunc(const Value: Double): Integer; overload;
+procedure FastTrunc(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
+function FastRound(Sample: Single): Integer; overload;
+function FastRound(Sample: Double): Integer; overload;
+{$ENDIF}
 
-  function Tanh(const X: Extended): Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function Tanh(const X: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function Tanh(const X: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ModZeroBesselI0(Value: Double): Double;
+function ModZeroBessel(Value: Double): Double;
+function ChebyshevPolynomial(Order, Value : Double): Double;
 
-  procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double); overload;
-  procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
-  procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
+function Tanh(const X: Extended): Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function Tanh(const X: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function Tanh(const X: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-  function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function NextPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
-  function PrevPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
-  function RoundToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function TruncToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function ExtendToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function TruncLog2(Value : Extended): Integer; overload;
-  function TruncLog2(Value : Integer): Integer; overload;
-  function CeilLog2(Value : Extended): Integer; overload;
-  function CeilLog2(Value : Integer): Integer; overload;
-  function OnOff(const Value: Single): Boolean;
-  function unDenormalize(const Value: Single): Single;
+procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double); overload;
+procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
+procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
 
-  function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function Sinc(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function NextPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
+function PrevPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
+function RoundToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function TruncToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function ExtendToPowerOf2(const Value: Integer): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function TruncLog2(Value : Extended): Integer; overload;
+function TruncLog2(Value : Integer): Integer; overload;
+function CeilLog2(Value : Extended): Integer; overload;
+function CeilLog2(Value : Integer): Integer; overload;
+function OnOff(const Value: Single): Boolean;
+function unDenormalize(const Value: Single): Single;
 
-  { String Stuff & Messages }
+function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function Sinc(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-  {$IFNDEF FPC}
-  function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+{ String Stuff & Messages }
 
-  procedure Msg(b: Boolean); overload;
-  procedure Msg(m: string; m2: string = ''); overload;
-  procedure Msg(i: Integer); overload;
-  procedure Msg(s: Single); overload;
-  procedure Msg(m: string; i: Integer); overload;
+{$IFNDEF FPC}
+function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  function FloatWithUnit(const Value: Double):string;
-  function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
-  function MakeGoodFileName(s: string): string;
-  {$ENDIF}
+procedure Msg(b: Boolean); overload;
+procedure Msg(m: string; m2: string = ''); overload;
+procedure Msg(i: Integer); overload;
+procedure Msg(s: Single); overload;
+procedure Msg(m: string; i: Integer); overload;
+
+function FloatWithUnit(const Value: Double):string;
+function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
+function MakeGoodFileName(s: string): string;
+{$ENDIF}
 
 var
   ln10, ln2, ln22, ln2Rez : Double;
@@ -1132,6 +1039,49 @@ var
   IntCast : Integer absolute Value;
 begin
  Result := 1 - ((Intcast shr 31) shl 1);
+end;
+
+function ModZeroBesselI0(Value: Double): Double;
+const
+  P : Array [0..6] of Double = (1.0, 3.5156229, 3.0899424, 1.2067429,
+                                0.2659732, 0.360768e-1, 0.45813e-2);
+  Q : Array [0..8] of Double = (0.39894228, 0.1328592e-1, 0.225319e-2,
+                               -0.157565e-2, 0.916281e-2,  -0.2057706e-1,
+                                0.2635537e-1, -0.1647633e-1, 0.392377e-2);
+var
+  Y, AX, BX: Double;
+begin
+ if Abs(Value) < 3.75 then
+  begin
+   Y := Sqr(Value / 3.75);
+   Result := P[0] + Y * (P[1] + Y * (P[2] + Y * (P[3] + Y * (P[4] + Y * (P[5] + Y * P[6])))))
+  end
+ else
+  begin
+   AX := Abs(Value);
+   Y := 3.75 / AX;
+   BX := Exp(AX) / Sqrt(AX);
+   AX := Q[0] + Y * (Q[1] + Y * (Q[2] + Y * (Q[3] + Y * (Q[4] + Y * (Q[5] + Y * (Q[6] + Y * (Q[7] + Y * Q[8])))))));
+   Result := AX * BX
+  end
+end;
+
+function ModZeroBessel(Value: Double): Double;
+var
+  h : Double;
+  i : LongInt;
+begin
+ Result := 0;
+ h := Value * 0.5;
+ for i := 0 to 31
+  do Result := Result + Power(2, IntPower(h, i));
+end;
+
+function ChebyshevPolynomial(Order, Value : Double): Double;
+begin
+ if Abs(Value) <= 1
+  then Result := Cos(Order * ArcCos(Value))
+  else Result := Cosh(Order * ArcCosh(Value));
 end;
 
 function Tanh(const X: Extended): Extended;

@@ -39,7 +39,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, SysUtils, Classes;
+  DAV_Types, SysUtils, Classes;
 
 type
   TDifferentialEvolutionPopulation = TDAVDoubleDynArray;

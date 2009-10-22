@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  Graphics, DAV_Common, DAV_VSTModule;
+  Graphics, DAV_Types, DAV_VSTModule;
 
 type
   TPhaserForm = class(TForm)
@@ -79,7 +79,8 @@ implementation
 
 {$R *.DFM}
 
-uses PhaserDM;
+uses
+  DAV_Common, PhaserDM;
 
 procedure TPhaserForm.FormShow(Sender: TObject);
 begin

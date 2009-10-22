@@ -7,7 +7,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls,
   {$ELSE} Windows, Messages, {$ENDIF} Classes, Forms,
-  DAV_Common, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTBasicModule,
+  DAV_Types, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTBasicModule,
   DAV_VSTShellPlugins, DAV_VSTOfflineTask;
 
 type

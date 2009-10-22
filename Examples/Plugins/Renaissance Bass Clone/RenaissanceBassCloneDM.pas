@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_VSTModule, DAV_DspPsychoacousticBassEnhancer;
 
 type
@@ -63,7 +63,7 @@ type
 implementation
 
 uses
-  Math, DAV_Approximations, RenaissanceBassCloneGUI;
+  Math, DAV_Common, DAV_Approximations, RenaissanceBassCloneGUI;
 
 {$R *.DFM}
 

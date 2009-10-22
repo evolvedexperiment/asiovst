@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspPolyphaseIirDesigner;
+  Classes, DAV_Types, DAV_Classes, DAV_DspPolyphaseIirDesigner;
 
 type
   TCustomPolyphaseFilter = class(TDspPersistent)

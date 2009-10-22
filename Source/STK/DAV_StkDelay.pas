@@ -20,7 +20,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, DAV_StkFilter;
+  DAV_Types, DAV_StkCommon, DAV_StkFilter;
 
 type
   TStkDelay = class(TStkFilter)

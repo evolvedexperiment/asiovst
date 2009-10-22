@@ -161,7 +161,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common;
+  SysUtils, Math, DAV_Types;
 
 (*
 var

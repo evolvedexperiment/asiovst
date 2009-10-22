@@ -217,7 +217,7 @@ begin
     CRLF +
     'uses ' + CRLF +
     '  Windows, Messages, SysUtils, Classes, Forms, ' + CRLF +
-    '  DAV_Common, DAV_VSTModule;' + CRLF +
+    '  DAV_Types, DAV_VSTModule;' + CRLF +
     CRLF +
     'type' + CRLF +
     '  T' + FormIdent + ' = class(T' + AncestorIdent + ')' + CRLF;

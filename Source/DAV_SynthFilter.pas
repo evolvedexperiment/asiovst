@@ -6,7 +6,7 @@ interface
 {$DEFINE FastCalculation}
 
 uses
-  DAV_Common, DAV_Complex;
+  DAV_Types, DAV_Complex;
 
 type
   TNewPCMSample = procedure(Sender: TObject; Sample: Single) of object;
@@ -33,6 +33,9 @@ type
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 const
   // Note: These values are not in the same order

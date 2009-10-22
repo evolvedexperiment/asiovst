@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_ModularVoice;
+  Classes, DAV_Types, DAV_ModularVoice;
 
 type
   TDspVoiceList = class(TList)

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Complex, DAV_Classes;
 
 type
   TPNType = array[0..1] of TComplexSingle;
@@ -282,7 +282,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, SysUtils, DAV_DspDFT;
+  Math, SysUtils, DAV_Common, DAV_DspDFT;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -474,11 +474,11 @@ var
   Tmp : TComplexDouble;
 begin
  if Length(FFilterArray) = 0 then exit;
- assert(assigned(FFilterArray[0]));
+ Assert(Assigned(FFilterArray[0]));
  FFilterArray[0].Complex(Frequency, Real, Imaginary);
  for i := 1 to Length(FFilterArray) - 1 do
   begin
-   assert(assigned(FFilterArray[i]));
+   Assert(Assigned(FFilterArray[i]));
    FFilterArray[i].Complex(Frequency, Tmp.Re, Tmp.Im);
    ComplexMultiply(Real, Imaginary, Tmp.Re, Tmp.Im);
   end;
@@ -512,11 +512,11 @@ begin
    Result := 1;
    exit;
   end;
- assert(assigned(FFilterArray[0]));
+ Assert(Assigned(FFilterArray[0]));
  Result := FFilterArray[0].MagnitudeSquared(Frequency);
  for i := 1 to Length(FFilterArray) - 1 do
   begin
-   assert(assigned(FFilterArray[i]));
+   Assert(Assigned(FFilterArray[i]));
    Result := Result * FFilterArray[i].MagnitudeSquared(Frequency);
   end;
 end;
@@ -579,7 +579,7 @@ var
 begin
  if OwnFilters then
   for i := 0 to Length(FFilterArray) - 1 do
-   if assigned(FFilterArray[i])
+   if Assigned(FFilterArray[i])
     then FreeAndNil(FFilterArray[i]);
  SetLength(FFilterArray, 0);
 end;

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspWindowing;
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspWindowing;
 
 type
   TLinearPhaseCrossover = class(TDspSampleRatePersistent)

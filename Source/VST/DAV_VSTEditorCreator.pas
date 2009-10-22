@@ -148,7 +148,7 @@ begin
     'interface' + CRLF +
     CRLF +
     'uses ' + CRLF +
-    '  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule;' + CRLF +
+    '  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;' + CRLF +
     CRLF +
     'type' + CRLF +
     '  T' + FormIdent + ' = class(T' + AncestorIdent + ')' + CRLF +

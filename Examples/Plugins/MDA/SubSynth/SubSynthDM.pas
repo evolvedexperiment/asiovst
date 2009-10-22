@@ -3,7 +3,7 @@ unit SubSynthDM;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, DAV_Types, DAV_VSTModule;
 
 type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);

@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
 
 type

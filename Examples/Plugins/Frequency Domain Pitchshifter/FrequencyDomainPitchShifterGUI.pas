@@ -3,7 +3,7 @@ unit FrequencyDomainPitchShifterGUI;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, DAV_Types,
   DAV_VSTModule, DAV_GuiCommon, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
 
 type

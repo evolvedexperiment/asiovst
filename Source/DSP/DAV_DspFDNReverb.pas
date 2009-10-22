@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_VectorMath,
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_VectorMath,
   DAV_DspVibrato, DAV_DspFilter, DAV_DspFilterBasics,
   DAV_DspFeedbackDelayNetwork;
 
@@ -181,7 +181,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Approximations, DAV_DspInterpolation;
+  Math, SysUtils, DAV_Common, DAV_Approximations, DAV_DspInterpolation;
 
 { TDampingFilter }
 

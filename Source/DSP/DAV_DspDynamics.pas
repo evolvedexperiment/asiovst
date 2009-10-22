@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DSPFilterButterworth;
+  DAV_Types, DAV_Classes, DAV_DSPFilterButterworth;
 
 type
   {$IFDEF DELPHI7_UP}
@@ -856,7 +856,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Approximations;
+  SysUtils, Math, DAV_Common, DAV_Approximations;
 
 var
   CHalf64        : Double;

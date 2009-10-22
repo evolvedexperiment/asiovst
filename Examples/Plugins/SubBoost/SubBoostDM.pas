@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Forms, Messages, SysUtils, Classes, DAV_Common, DAV_VSTModule,
+  Windows, Forms, Messages, SysUtils, Classes, DAV_Types, DAV_VSTModule,
   DAV_DSPFilterButterworth;
 
 type
@@ -82,7 +82,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, SubBoostGUI, DAV_VSTCustomModule;
+  Math, DAV_Common, DAV_VSTCustomModule, SubBoostGUI;
 
 procedure TSubBoostDataModule.VSTModuleOpen(Sender: TObject);
 begin

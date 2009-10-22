@@ -8,7 +8,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
-  SysUtils, Classes, Forms, DAV_Common, DAV_Complex, DAV_DspFftReal2Complex,
+  SysUtils, Classes, Forms, DAV_Types, DAV_Complex, DAV_DspFftReal2Complex,
   {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 

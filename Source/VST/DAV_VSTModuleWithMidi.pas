@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_VSTCustomModule, DAV_VSTEffect, DAV_Common;
+  Classes, DAV_Types, DAV_VSTCustomModule, DAV_VSTEffect;
 
 type
   TProcessEvents = procedure(Sender: TObject; const Events: TVstEvents) of object;

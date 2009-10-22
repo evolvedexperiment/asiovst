@@ -12,7 +12,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, DAV_StkDelayl;
+  DAV_Types, DAV_StkCommon, DAV_StkDelayl;
 
 type
   TStkPitchShifter = class(TStk)
@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 constructor TStkPitchShifter.Create;
 begin

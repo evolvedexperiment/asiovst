@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_VSTModule, DAV_DspPolyphaseDownsampler, DAV_DspPolyphaseUpSampler;
 
 type
@@ -62,7 +62,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Approximations, DAV_VSTModuleWithDsp, OversampledTanhGUI;
+  DAV_Common, DAV_Approximations, DAV_VSTModuleWithDsp, OversampledTanhGUI;
 
 procedure TOversampledTanhModule.VSTModuleCreate(Sender: TObject);
 begin

@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspPolyphaseFilter;
+  Classes, DAV_Types, DAV_DspPolyphaseFilter;
 
 type
   TProcessSample32 = procedure (const Input : Single; out Output : TDAV2SingleArray) of object;

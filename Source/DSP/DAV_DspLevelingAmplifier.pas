@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DspDynamics;
+  DAV_Types, DAV_Classes, DAV_DspDynamics;
 
 type
   TCustomLevelingAmplifier = class(TDspSampleRatePersistent, IDspProcessor64)
@@ -131,7 +131,7 @@ type
 implementation
 
 uses
-  Math, DAV_Approximations;
+  Math, DAV_Common, DAV_Approximations;
 
 const 
   Harms : array [0..3] of Single = (1.4092750123e-07, -7.5166615806e-07,

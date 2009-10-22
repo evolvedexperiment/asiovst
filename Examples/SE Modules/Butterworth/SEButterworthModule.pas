@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_DSPFilterButterworth, DAV_SECommon, DAV_SEModule;
+  DAV_Types, DAV_DSPFilterButterworth, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer
@@ -136,7 +136,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_DspFilter;
+  SysUtils, DAV_DspFilter, DAV_Common;
 
 constructor TSEButterworthModule.Create(SEAudioMaster: TSE2audioMasterCallback;
   Reserved: Pointer);

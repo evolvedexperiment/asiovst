@@ -30,7 +30,7 @@ type
 implementation
 
 uses
-  DAV_Common, SysUtils;
+  DAV_Types, SysUtils;
 
 constructor TSEScopeGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 var

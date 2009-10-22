@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  SysUtils, DAV_Common, DAV_SECommon, DAV_SEModule, DAV_Complex,
+  SysUtils, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Complex,
   DAV_HalfFloat, DAV_DspConvolution;
 
 type

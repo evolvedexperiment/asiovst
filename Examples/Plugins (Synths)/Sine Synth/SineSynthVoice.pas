@@ -37,7 +37,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, SineSynthModule;
+  SysUtils, DAV_Types, SineSynthModule;
 
 { TSineSynthVoice }
 

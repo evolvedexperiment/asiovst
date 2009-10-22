@@ -7,7 +7,7 @@ unit DAV_DspNoiseShapingFilterDesigner;
 {$I ..\DAV_Compiler.inc}
 
 interface
-uses  Classes, DAV_Common, DAV_Complex,  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}  DAV_DspFftReal2Complex;type  TCoefficientUpdate = procedure(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double) of object;     TCustomNoiseShapingFilterDesigner = class(TObject)  private    FSampleRate          : Single;
+uses  Classes, DAV_Types, DAV_Complex,  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}  DAV_DspFftReal2Complex;type  TCoefficientUpdate = procedure(Sender: TObject; Coefficients: PDAVDoubleFixedArray; Best: Double) of object;     TCustomNoiseShapingFilterDesigner = class(TObject)  private    FSampleRate          : Single;
     FLoopCount           : Integer;
     FLoopCountReciprocal : Single;
     FSampleFrames        : Integer;

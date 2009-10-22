@@ -6,7 +6,7 @@ interface
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
-  SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspFilterButterworth, DAV_VstWindowSizer;
 
 type

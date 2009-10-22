@@ -3,7 +3,7 @@ unit SEStringToolsModule;
 interface
 
 uses
-  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPSineLFO;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPSineLFO;
 
 type
   TSEStringToolsModule = class(TSEModuleBase)

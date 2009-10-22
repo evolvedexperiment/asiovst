@@ -4,7 +4,7 @@ interface
 
 uses
   {$IFDEF UseEmbedding}Windows, Classes, {$ENDIF} SysUtils, SyncObjs,
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspBufferedAudioFilePlayer,
+  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspBufferedAudioFilePlayer,
   DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 type

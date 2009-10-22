@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ToolWin, ComCtrls, ExtCtrls, DAV_Common, DAV_VSTHost,
+  Dialogs, Menus, ToolWin, ComCtrls, ExtCtrls, DAV_Types, DAV_VSTHost,
   DAV_MidiFile;
 
 type
@@ -101,7 +101,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Inifiles; //, VpdModifier;
+  Inifiles, DAV_Common; //, VpdModifier;
 
 procedure TFmVstPresetDesigner.FormCreate(Sender: TObject);
 var

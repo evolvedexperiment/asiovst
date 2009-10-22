@@ -36,7 +36,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Types;
 
 constructor TSEBrushedMetalGui.Create(SEGuiCallback: TSEGuiCallback; AHostPtr: Pointer);
 begin

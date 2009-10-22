@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspLfo, DAV_DspTuner,
+  Classes, DAV_Types, DAV_Classes, DAV_DspLfo, DAV_DspTuner,
   DAV_DspFilterButterworth;
 
 type
@@ -103,7 +103,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Approximations;
+  SysUtils, DAV_Common, DAV_Approximations;
 
 resourcestring
   RCStrOrderMustBeLarger0 = 'Order must be larger than 0!';

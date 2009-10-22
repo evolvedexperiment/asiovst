@@ -3,7 +3,7 @@ unit HRTF3DModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_Complex,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
   DAV_VSTModule, DAV_DspConvolution, DAV_DspHRTF;
 
 type

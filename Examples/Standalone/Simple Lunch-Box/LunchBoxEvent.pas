@@ -48,7 +48,7 @@ type
 implementation
 
 uses
-  DAV_Common, LunchBoxMain, DAV_DspInterpolation;
+  DAV_Types, LunchBoxMain, DAV_DspInterpolation;
 
 { TLunchBoxSample }
 

@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
+  DAV_Types, DAV_Complex, DAV_ModularBaseComponent, DAV_ModularBaseOsc;
 
 type
   TDspOscAbsSine = class(TDspBaseOsc)
@@ -16,6 +16,8 @@ type
 
 implementation
 
+uses
+  DAV_Common;
 
 procedure TDspOscAbsSine.Process(var Data: Single; const Channel: integer);
 begin

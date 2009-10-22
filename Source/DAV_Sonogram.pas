@@ -36,8 +36,8 @@ interface
 {$DEFINE Use_IPPS}
 
 uses
-  Classes, Graphics, DAV_Common, DAV_Classes, DAV_Complex, DAV_GuiCommon,
-  DAV_DspBuildingBlocks, DAV_DspFftReal2Complex
+  Classes, Graphics, DAV_Types, DAV_Classes, DAV_Complex, DAV_GuiCommon,
+  DAV_DspBuildingBlocks, DAV_DspWindowFunctions, DAV_DspFftReal2Complex
   {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS {$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
@@ -124,7 +124,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Approximations, DAV_DspWindowing;
+  SysUtils, DAV_Common, DAV_Approximations, DAV_DspWindowing;
 
 constructor TSonogram.Create;
 begin

@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Types;
 
 { TCustomSELabelGui }
 

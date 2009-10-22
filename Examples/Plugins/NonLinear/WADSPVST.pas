@@ -71,7 +71,7 @@ procedure Quit(This_Mod : PWinAmpDSPModule); cdecl;
 
 implementation
 
-uses Math, SyncObjs, DAV_Common, DAV_VSTEffect;
+uses Math, SyncObjs, DAV_Types, DAV_VSTEffect;
 
 var WADSPHeader  : TWinAmpDSPheader =
                    (Version : $20;

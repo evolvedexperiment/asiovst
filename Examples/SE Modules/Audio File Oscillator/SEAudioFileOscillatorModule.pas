@@ -38,7 +38,7 @@ interface
 
 uses
   {$IFDEF UseEmbedding}Windows, Classes, {$ENDIF} SysUtils, SyncObjs,
-  DAV_Common, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_AudioData,
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_AudioData,
   DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
 
 type
@@ -95,7 +95,7 @@ type
 implementation
 
 uses
-  DAV_DspInterpolation;
+  DAV_Common, DAV_DspInterpolation;
 
 {$IFDEF UseEmbedding}
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;

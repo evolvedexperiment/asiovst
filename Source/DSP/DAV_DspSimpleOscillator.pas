@@ -36,7 +36,7 @@ interface
 {$IFDEF FPC}{$DEFINE PUREPASCAL}{$ENDIF}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Complex, DAV_Classes;
 
 type
   TCustomOscillator = class(TDspSampleRatePersistent)
@@ -131,7 +131,7 @@ type
 implementation
 
 uses
-  Math;
+  Math, DAV_Common;
 
 { TCustomSimpleOscillator }
 

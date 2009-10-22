@@ -129,7 +129,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, XSynthModule;
+  Math, SysUtils, DAV_Common, DAV_Types, XSynthModule;
 
 { TOscilator }
 

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  Classes, DAV_Common, DAV_VSTEffect, DAV_VSTBasicModule;
+  Classes, DAV_Types, DAV_VSTEffect, DAV_VSTBasicModule;
 
 type
   TUIDInstantiateEvent = procedure(Sender: TObject; UID: string) of object;

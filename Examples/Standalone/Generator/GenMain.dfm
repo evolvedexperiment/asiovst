@@ -71,8 +71,9 @@ object FmGenerator: TFmGenerator
     Top = 38
     Width = 12
     Height = 12
-    Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -81,8 +82,9 @@ object FmGenerator: TFmGenerator
     Top = 56
     Width = 12
     Height = 12
-    Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -91,8 +93,9 @@ object FmGenerator: TFmGenerator
     Top = 74
     Width = 12
     Height = 12
-    Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -101,8 +104,9 @@ object FmGenerator: TFmGenerator
     Top = 92
     Width = 12
     Height = 12
-    Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -111,8 +115,9 @@ object FmGenerator: TFmGenerator
     Top = 110
     Width = 12
     Height = 12
-    Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -121,8 +126,9 @@ object FmGenerator: TFmGenerator
     Top = 128
     Width = 12
     Height = 12
-    Brightness_Percent = 10.000000000000000000
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end

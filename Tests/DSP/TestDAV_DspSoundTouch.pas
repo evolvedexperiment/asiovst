@@ -12,7 +12,7 @@ unit TestDAV_DspSoundTouch;
 interface
 
 uses
-  TestFramework, DAV_DspSoundTouch, DAV_SoundTouchDLL, DAV_Common, DAV_Classes;
+  TestFramework, DAV_Types, DAV_Classes, DAV_DspSoundTouch, DAV_SoundTouchDLL;
 
 type
   // Test methods for class TDspSoundTouch

@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  ComCtrls, StdCtrls, DAV_Common, DAV_ASIOHost, DAV_AudioData, AbxTestSetup;
+  ComCtrls, StdCtrls, DAV_Types, DAV_ASIOHost, DAV_AudioData, AbxTestSetup;
 
 type
   TFmAbxTest = class(TForm)

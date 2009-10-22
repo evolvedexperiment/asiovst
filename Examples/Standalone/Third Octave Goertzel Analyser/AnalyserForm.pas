@@ -37,7 +37,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
   ComCtrls, ExtCtrls, Spin, Math, TeeProcs, TeEngine, Chart, Series,
-  DAV_Common, DAV_Complex, DAV_ASIOHost;
+  DAV_Types, DAV_Complex, DAV_ASIOHost;
 
 const
   CNumFrequencies = 32;
@@ -103,7 +103,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry, DAV_ASIOConvert, DAV_DspDft;
+  Inifiles, Registry, DAV_Common, DAV_ASIOConvert, DAV_DspDft;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var

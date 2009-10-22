@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Complex, DAV_Classes, DAV_DspLfo, DAV_DspPolyphaseHilbert;
+  DAV_Types, DAV_Complex, DAV_Classes, DAV_DspLfo, DAV_DspPolyphaseHilbert;
 
 type
   TCustomBodeFrequencyShifter = class(TDspSampleRatePersistent)

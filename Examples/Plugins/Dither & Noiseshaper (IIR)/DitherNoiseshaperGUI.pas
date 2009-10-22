@@ -33,7 +33,7 @@ unit DitherNoiseshaperGUI;
 interface
 
 uses
-  Windows, Messages, Classes, Forms, Controls, StdCtrls, Spin, DAV_Common,
+  Windows, Messages, Classes, Forms, Controls, StdCtrls, Spin, DAV_Types,
   DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
 
 type

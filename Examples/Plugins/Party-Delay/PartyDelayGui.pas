@@ -36,7 +36,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Graphics, Controls, StdCtrls,
-  ComCtrls, DAV_Common, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
+  ComCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial;
 
 type
   TFmPartyDelay = class(TForm)
@@ -112,7 +112,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PartyDelayDM;
+  Math, DAV_Common, PartyDelayDM;
 
 procedure TFmPartyDelay.FormShow(Sender: TObject);
 begin

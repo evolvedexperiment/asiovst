@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule, DAV_DspPhaser;
+  Windows, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule, DAV_DspPhaser;
 
 type
   TPhaserModule = class(TVSTModule)
@@ -60,7 +60,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PhaserFrm;
+  DAV_Common, PhaserFrm;
 
 procedure TPhaserModule.VSTModuleOpen(Sender: TObject);
 begin

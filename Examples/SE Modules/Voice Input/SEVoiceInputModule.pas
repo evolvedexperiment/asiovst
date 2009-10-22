@@ -3,7 +3,7 @@ unit SEVoiceInputModule;
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspVoiceInput;
+  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspVoiceInput;
 
 type
   // define some constants to make referencing in/outs clearer

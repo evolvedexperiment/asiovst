@@ -45,7 +45,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, SimpleSamplerModule, DAV_DspInterpolation;
+  SysUtils, DAV_Common, DAV_Types, SimpleSamplerModule, DAV_DspInterpolation;
 
 { TSimpleSamplerVoice }
 

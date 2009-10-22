@@ -3,7 +3,7 @@ unit PlateReverbModule;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
   DAV_DspPlateReverb;
 
 type
@@ -40,7 +40,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PlateReverbGUI, DAV_VSTCustomModule;
+  Math, DAV_Common, DAV_VSTCustomModule, PlateReverbGUI;
 
 procedure TPlateReverbVST.VSTModuleCreate(Sender: TObject);
 begin

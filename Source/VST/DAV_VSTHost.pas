@@ -61,7 +61,7 @@ uses
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
   {$IFDEF VstHostGUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,
   {$IFDEF FlatSrcollBar}TFlatScrollbarUnit, {$ENDIF}{$ENDIF}
-  DAV_Common, DAV_AudioData, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
+  DAV_Types, DAV_AudioData, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
   DAV_DLLLoader{$ENDIF};
 
 type
@@ -607,6 +607,9 @@ function EffOptions2String(EffOpts: TEffFlags):string;
 function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 
 implementation
+
+uses
+  DAV_Common;
 
 {$IFDEF DELPHI10_UP} {$region 'Resource Strings'} {$ENDIF}
 resourcestring

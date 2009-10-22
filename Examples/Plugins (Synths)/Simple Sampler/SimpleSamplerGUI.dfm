@@ -25,14 +25,14 @@ object VSTGUI: TVSTGUI
     Width = 365
     Height = 73
     Align = alBottom
-    KeyDownMode = kdmFlat
-    Height3d = 0.200000002980232200
-    BlackKeyHeight = 0.629999995231628400
     BaseOctave = 4
+    BlackKeyHeight = 0.629999995231628400
+    Height3d = 0.200000002980232200
+    KeyDownMode = kdmFlat
     KeyZones = <>
     ShowKeyZones = False
-    OnNoteOn = MidiKeysNoteOn
     OnNoteOff = MidiKeysNoteOff
+    OnNoteOn = MidiKeysNoteOn
   end
   object LbSample: TLabel
     Left = 8

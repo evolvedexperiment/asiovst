@@ -5,7 +5,7 @@ unit PTDM;
 interface
 
 uses
-  FastMove, Windows, Messages, SysUtils, Classes, Forms, DAV_Common,
+  FastMove, Windows, Messages, SysUtils, Classes, Forms, DAV_Types,
   DAV_VSTEffect, DAV_VSTModule;
 
 type

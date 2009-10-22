@@ -3,7 +3,7 @@ unit TanhWaveshaperDM;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspUpDownsampling;
 
 type
@@ -62,7 +62,7 @@ type
 implementation
 
 uses
-  Math, DAV_Approximations;
+  Math, DAV_Common, DAV_Approximations;
 
 {$R *.DFM}
 
@@ -332,7 +332,7 @@ procedure TTanhWaveshaperModule.ParameterTypeDisplay(
 begin
  case Round(Parameter[Index]) of
    0 : PreDefined := 'Tanh (Math)';
-   1 : PreDefined := 'Tanh (DAV_Common)';
+   1 : PreDefined := 'Tanh (DAV_Types)';
    2 : PreDefined := 'FastTanhOpt3Term';
    3 : PreDefined := 'FastTanhOpt4Term';
    4 : PreDefined := 'FastTanhOpt5Term';

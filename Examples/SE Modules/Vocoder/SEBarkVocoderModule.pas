@@ -3,7 +3,7 @@ unit SEBarkVocoderModule;
 interface
 
 uses
-  DAV_Common, DAV_SECommon, DAV_SEModule, DAV_DspVocoder;
+  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspVocoder;
 
 type
   // define some constants to make referencing in/outs clearer

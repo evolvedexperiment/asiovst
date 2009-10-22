@@ -36,7 +36,7 @@ interface
 {$DEFINE UseGUI}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DSPFilter, DAV_DSPFilterBasics;
 
 type
@@ -93,7 +93,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Controls, DAV_VSTEffect, AmpSimGUI;
+  Math, Controls, DAV_VSTEffect, DAV_Common, AmpSimGUI;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin

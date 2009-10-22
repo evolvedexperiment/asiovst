@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFftReal2Complex
   {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
@@ -377,7 +377,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_BlockRoutines;
+  Math, SysUtils, DAV_Common, DAV_BlockRoutines;
 
 resourcestring
   RCStrIRBlockOrderError = 'Maximum IR block order must be larger or equal ' +

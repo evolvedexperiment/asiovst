@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Common, DAV_VSTModule,
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspWaveshaper;
 
 const
@@ -65,7 +65,7 @@ implementation
 {$R *.DFM}
 
 uses
-  ChebyshevWaveshaperGUI, DAV_VSTParameters;
+  ChebyshevWaveshaperGUI, DAV_Common, DAV_VSTParameters;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var

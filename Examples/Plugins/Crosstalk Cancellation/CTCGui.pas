@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  Graphics, DAV_Common, DAV_VSTModule, PngImage, DAV_GuiBaseControl,
+  Graphics, DAV_Types, DAV_VSTModule, PngImage, DAV_GuiBaseControl,
   DAV_GuiLabel;
 
 type
@@ -102,7 +102,7 @@ implementation
 {$R *.DFM}
 
 uses
-  CTCDM, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+  CTCDM, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
 procedure TFmCTC.FormCreate(Sender: TObject);
 var
