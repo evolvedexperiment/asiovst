@@ -370,8 +370,8 @@ begin
  for i := 0 to SampleFrames - 1 do
   begin
    Doubles^ := Singles^;
-   inc(Singles);
-   inc(Doubles);
+   Inc(Singles);
+   Inc(Doubles);
   end;
 end;
 {$ELSE}
@@ -385,13 +385,14 @@ end;
 
 procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleFrames: Integer);
 {$IFDEF PUREPASCAL}
-var i : Integer;
+var
+  i : Integer;
 begin
- for i:=0 to SampleFrames-1 do
+ for i := 0 to SampleFrames - 1 do
   begin
-   Singles^:=Doubles^;
-   inc(Singles);
-   inc(Doubles);
+   Singles^ := Doubles^;
+   Inc(Singles);
+   Inc(Doubles);
   end;
 end;
 {$ELSE}
@@ -418,7 +419,7 @@ begin
      Result := i;
      d := abs(InBuffer^);
     end;
-   inc(InBuffer);
+   Inc(InBuffer);
   end;
 end;
 {$ELSE}
@@ -473,7 +474,7 @@ begin
      Result := i;
      d := abs(InBuffer^);
     end;
-   inc(InBuffer);
+   Inc(InBuffer);
   end;
 end;
 {$ELSE}
@@ -522,7 +523,7 @@ begin
   begin
    if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
    if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
-   inc(InBuffer);
+   Inc(InBuffer);
   end;
 end;
 
@@ -537,7 +538,7 @@ begin
   begin
    if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
    if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
-   inc(InBuffer);
+   Inc(InBuffer);
   end;
 end;
 

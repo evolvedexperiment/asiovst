@@ -4,15 +4,24 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Graphics,
-  DAV_Types, DAV_VSTModule;
+  DAV_Types, DAV_VSTModule, StdCtrls, Menus;
 
 type
   TFmSonogram = class(TForm)
     Timer: TTimer;
+    LbFftOrder: TLabel;
+    PuFftOrder: TPopupMenu;
+    MiOrder6: TMenuItem;
+    MiOrder7: TMenuItem;
+    MiOrder8: TMenuItem;
+    MiOrder9: TMenuItem;
+    MiOrder10: TMenuItem;
+    MiOrder11: TMenuItem;
     procedure TimerTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure MiOrderClick(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   end;
@@ -83,6 +92,11 @@ begin
    RoundRect(7, 7, 265, 265, 2, 2);
   end;
  Canvas.Draw(0, 0, FBackgrounBitmap);
+end;
+
+procedure TFmSonogram.MiOrderClick(Sender: TObject);
+begin
+ TSonogramDataModule(Owner).Parameter[0] := TComponent(Sender).Tag;
 end;
 
 end.

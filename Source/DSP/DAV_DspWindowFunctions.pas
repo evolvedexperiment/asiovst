@@ -1,8 +1,38 @@
 unit DAV_DspWindowFunctions;
 
-{$I ..\DAV_Compiler.inc}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspWindowing;
@@ -24,7 +54,6 @@ type
     procedure SetTukey(Value: Single);
     procedure SetBartlett(const Value: Boolean);
   protected
-    FActive        : Boolean;               // apply window?
     FBandwidth     : Double;                // Bandwidth (in Bins)
     FBartlett      : Boolean;               // Bartlett
     FEffLength     : Double;                // including Slope, Tukey
@@ -59,7 +88,6 @@ type
 
     class function GetWindowFunctionName: string; virtual; abstract;
   published
-    property Active: Boolean read FActive write FActive default True;     // Window Active
     property Start: Integer read FStart write SetWinStart default 0;      // Window Start
     property Length: Integer read FLength write SetWinLength;             // Window Length
     property ZeroDC: Boolean read FZeroDC write FZeroDC default False;    // Colva DC removal after windowing
@@ -121,9 +149,9 @@ type
 
   TWindowFunctionWithParameter = class(TWindowFunctionCustomFactor)
   private
-    FAlpha: Single;
     procedure SetAlpha(const Value: Single);
   protected
+    FAlpha: Single;
     procedure AlphaChanged; virtual;
   published
     property Alpha : Single read FAlpha write SetAlpha;
@@ -159,8 +187,8 @@ type
     FCosFwdLoop64 : TCosForwardLoop64;
     FCosSymLoop32 : TCosSymmetricLoop32;
     FCosSymLoop64 : TCosSymmetricLoop64;
-    FCoefPointer  : PDAVDoubleFixedArray;
   protected
+    FCoefPointer  : PDAVDoubleFixedArray;
     function GetWindowFactor(Pos: Double): Double; override;
     procedure SetCosineTerms(Value: Integer); virtual;
     procedure AssignTo(Dest: TPersistent); override;
@@ -186,84 +214,6 @@ type
     class function GetWindowFunctionName: string; override;
   end;
 
-  TWindowFunctionExactBlackman = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionBlackmanHarris3T = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionBlackmanHarris4T = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionBlackmanNutall = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionLawrey5T = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionLawrey6T = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionBurgessOpt59 = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionBurgessOpt71 = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionNutallCTD = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionNutallCFD = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionFlatTop = class(TWindowFunctionCosineTerm)
-  public
-    constructor Create; override;
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionAlbrecht = class(TWindowFunctionCosineTerm)
-  protected
-    procedure SetCosineTerms(Value: Integer); override;
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-
-    class function GetWindowFunctionName: string; override;
-  published
-    property CosineTerms;
-  end;
-
   TWindowFunctionWelch = class(TCustomWindowFunction)
   protected
     function GetWindowFactor(Pos: Double): Double; override;
@@ -276,48 +226,24 @@ type
     class function GetWindowFunctionName: string; override;
   end;
 
-  TWindowFunctionPacman = class(TWindowFunctionWithParameter)
-  protected
-    function GetWindowFactor(Pos: Double): Double; override;
-  public
-    constructor Create; override;
+var
+  GWindowFunctions: array of TWindowFunctionClass;
 
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionGauss = class(TWindowFunctionWithParameter)
-  protected
-    function GetWindowFactor(Pos: Double): Double; override;
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    constructor Create; override;
-
-    class function GetWindowFunctionName: string; override;
-  end;
-
-  TWindowFunctionKaiserBessel = class(TWindowFunctionWithParameter)
-  private
-    FAlphaBesselReciprocal : Double;
-  protected
-    function GetWindowFactor(Pos: Double): Double; override;
-    procedure AssignTo(Dest: TPersistent); override;
-    procedure AlphaChanged; override;
-  public
-    constructor Create; override;
-
-    class function GetWindowFunctionName: string; override;
-  end;
+procedure RegisterWindowFunction(AClass: TWindowFunctionClass);
+procedure RegisterWindowFunctions(AClasses: array of TWindowFunctionClass);
 
 implementation
 
 uses
-  Math, DAV_Common, DAV_BlockRoutines;
+  Math, SysUtils, DAV_Common, DAV_BlockRoutines;
+
+resourcestring
+  RCStrWindowDuplicate = 'Window function registered twice!';
 
 { TCustomWindowFunction }
 
 constructor TCustomWindowFunction.Create;
 begin
- FActive       := True;
  FStart        := 0;
  FLength       := 0;
  FInvert       := False;
@@ -340,7 +266,6 @@ procedure TCustomWindowFunction.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomWindowFunction then
   begin
-   TCustomWindowFunction(Dest).FActive         := FActive;
    TCustomWindowFunction(Dest).FBandwidth      := FBandwidth;
    TCustomWindowFunction(Dest).FBartlett       := FBartlett;
    TCustomWindowFunction(Dest).FEffLength      := FEffLength;
@@ -558,28 +483,29 @@ begin
 end;
 
 function TCustomWindowFunction.GetSpkCorFakSq: Double;
-var i           : Integer;
-    CurWinVal   : Double;
+var
+  i         : Integer;
+  CurWinVal : Double;
 begin
- if FSpkCorFakSq<0 then
+ if FSpkCorFakSq < 0 then
   begin
    FSpkCorFak   := 0;
    FSpkCorFakSq := 0;
    CurWinVal    := 0;
-   for i := 0 to FEffLengthRnd- 1 do
+   for i := 0 to FEffLengthRnd - 1 do
     begin
-     CurWinVal := GetWindowFactor(i*FEffLengthReci);
+     CurWinVal := GetWindowFactor(i * FEffLengthReci);
      FSpkCorFak := FSpkCorFak + CurWinVal;
      FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
     end;
-   if FWinSlope=wsSymmetric then // apply left & right
+   if FWinSlope = wsSymmetric then // apply left & right
     begin
-     FSpkCorFak := 2*FSpkCorFak;
-     FSpkCorFakSq := 2*FSpkCorFakSq;
-     if (round(2*FEffLength-0.5) mod 2)>0 then // remove sample in the middle if necessary
+     FSpkCorFak := 2 * FSpkCorFak;
+     FSpkCorFakSq := 2 * FSpkCorFakSq;
+     if (Round(2 * FEffLength - 0.5) mod 2) > 0 then // remove sample in the middle if necessary
       begin
-       FSpkCorFak := FSpkCorFak-CurWinVal;
-       FSpkCorFakSq := FSpkCorFakSq-CurWinVal * CurWinVal;
+       FSpkCorFak := FSpkCorFak - CurWinVal;
+       FSpkCorFakSq := FSpkCorFakSq - CurWinVal * CurWinVal;
       end;
     end;
   end;
@@ -628,29 +554,30 @@ end;
 
 procedure TWindowFunctionCustomFactor.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
-  i,p1,p2     : Integer;
-  Counter,
-  StartPos,
-  EndPos      : Integer;
-  CurWinVal   : Double;
+  i, p1, p2 : Integer;
+  Counter   : Integer;
+  StartPos  : Integer;
+  EndPos    : Integer;
+  CurWinVal : Double;
 begin
- if (not FActive) or (SampleCount <= 0) then exit;
+ if (SampleCount <= 0) then Exit;
  if FLength > 2 * SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
-  then StartPos := (FStart + Length)-FEffLengthRnd
+  then StartPos := FStart + Length - FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd - 1
   else EndPos := (FStart + Length - 1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  FSpkCorFak := 0;
  FSpkCorFakSq := 0;
@@ -662,11 +589,11 @@ begin
       if StartPos + FEffLengthRnd <= SampleCount then
        for i := StartPos to StartPos + FEffLengthRnd - 1 do
         begin
-         CurWinVal := GetWindowFactor(Counter*FEffLengthReci);
+         CurWinVal := GetWindowFactor(Counter * FEffLengthReci);
          FSpkCorFak := FSpkCorFak + CurWinVal;
          FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
          Data[i] := Data[i] * CurWinVal;
-         inc(Counter);
+         Inc(Counter);
         end
        else // Wrap arround
         begin
@@ -676,7 +603,7 @@ begin
            FSpkCorFak := FSpkCorFak + CurWinVal;
            FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
            Data[i] := Data[i] * CurWinVal;
-           inc(Counter);
+           Inc(Counter);
           end;
          for i := 0 to FEffLengthRnd - (SampleCount - StartPos) - 1 do
           begin
@@ -684,7 +611,7 @@ begin
            FSpkCorFak := FSpkCorFak + CurWinVal;
            FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
            Data[i] := Data[i] * CurWinVal;
-           inc(Counter);
+           Inc(Counter);
           end
         end;
       FSpkCorFak := FSpkCorFak + FLength - FEffLengthRnd;
@@ -698,12 +625,13 @@ begin
         p2 := EndPos;
         for i :=  0 to FEffLengthRnd - 1 do
          begin
-          CurWinVal := GetWindowFactor(i*FEffLengthReci);
+          CurWinVal := GetWindowFactor(i * FEffLengthReci);
           FSpkCorFak := FSpkCorFak + CurWinVal + CurWinVal;
           FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
           Data[p1] := Data[p1] * CurWinVal;
           Data[p2] := Data[p2] * CurWinVal;
-          inc(p1); dec(p2);
+          Inc(p1);
+          Dec(p2);
          end;
        end
        else // Wrap around
@@ -760,12 +688,12 @@ begin
              Data[p1] := Data[p1] * CurWinVal;
              Data[p2] := Data[p2] * CurWinVal;
              inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2<0 then p2 := SampleCount;
+             dec(p2); if p2 < 0 then p2 := SampleCount;
             end;
           end;
         end;
-      FSpkCorFak := FSpkCorFak + FLength-2*FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-2*FEffLengthRnd;
+      FSpkCorFak := FSpkCorFak + FLength - 2 * FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength - 2 * FEffLengthRnd;
      end;
    wsRight:
      begin
@@ -783,23 +711,23 @@ begin
         begin
          for i := EndPos downto 0 do
           begin
-           CurWinVal := GetWindowFactor(Counter*FEffLengthReci);
+           CurWinVal := GetWindowFactor(Counter * FEffLengthReci);
            FSpkCorFak := FSpkCorFak + CurWinVal;
            FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
            Data[i] := Data[i] * CurWinVal;
            inc(Counter);
           end;
-         for i := SampleCount downto SampleCount-(FEffLengthRnd-EndPos) do
+         for i := SampleCount downto SampleCount-(FEffLengthRnd - EndPos) do
           begin
-           CurWinVal := GetWindowFactor(Counter*FEffLengthReci);
+           CurWinVal := GetWindowFactor(Counter * FEffLengthReci);
            FSpkCorFak := FSpkCorFak + CurWinVal;
            FSpkCorFakSq := FSpkCorFakSq + CurWinVal * CurWinVal;
            Data[i] := Data[i] * CurWinVal;
            inc(Counter);
           end
         end;
-      FSpkCorFak := FSpkCorFak + FLength-FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-FEffLengthRnd;
+      FSpkCorFak := FSpkCorFak + FLength - FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
      end;
  end;
 
@@ -809,13 +737,13 @@ end;
 
 procedure TWindowFunctionCustomFactor.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
-  CurWinVal   : Double;
-  i, p1, p2   : Integer;
-  Counter,
-  StartPos,
-  EndPos      : Integer;
+  CurWinVal : Double;
+  i, p1, p2 : Integer;
+  Counter   : Integer;
+  StartPos  : Integer;
+  EndPos    : Integer;
 begin
- if (not FActive) or (SampleCount<=0) then exit;
+ if (SampleCount <= 0) then exit;
  if FLength > 2 * SampleCount then
   begin
    FLength := SampleCount;
@@ -824,14 +752,14 @@ begin
  if FInvert
   then StartPos := (FStart + Length) - FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos <     0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd - 1
   else EndPos := FStart + Length - 1;
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos <     0 do EndPos := EndPos + SampleCount;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  FSpkCorFak := 0;
  FSpkCorFakSq := 0;
@@ -891,7 +819,7 @@ begin
         begin
          if (EndPos - FEffLengthRnd >= 0) then
           begin // Only left wrap around!
-           P1 := SampleCount-StartPos;
+           P1 := SampleCount - StartPos;
            for i := 0 to P1 - 1 do
             begin
              CurWinVal := GetWindowFactor(i*FEffLengthReci);
@@ -954,7 +882,7 @@ begin
       if EndPos - FEffLengthRnd >= 0 then
        for i := EndPos downto EndPos - FEffLengthRnd do
         begin
-         CurWinVal    := GetWindowFactor(Counter*FEffLengthReci);
+         CurWinVal    := GetWindowFactor(Counter * FEffLengthReci);
          FSpkCorFak   := FSpkCorFak + CurWinVal;
          FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
          Data[i]  := Data[i] * CurWinVal;
@@ -964,7 +892,7 @@ begin
         begin
          for i := EndPos downto 0 do
           begin
-           CurWinVal    := GetWindowFactor(Counter*FEffLengthReci);
+           CurWinVal    := GetWindowFactor(Counter * FEffLengthReci);
            FSpkCorFak   := FSpkCorFak + CurWinVal;
            FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
            Data[i]  := Data[i] * CurWinVal;
@@ -987,6 +915,7 @@ begin
  FSpkCorFakSq := sqrt(FEffLength / FSpkCorFakSq);
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 end;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////// TWindowFunctionRectangle /////////////////////////////
@@ -1012,277 +941,65 @@ end;
 
 procedure TWindowFunctionRectangle.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
-  i,p1,p2     : Integer;
-  StartPos,
-  EndPos      : Integer;
+  i, p1, p2 : Integer;
+  StartPos  : Integer;
+  EndPos    : Integer;
 begin
- if (not FActive) or (SampleCount <= 0) then exit;
+ if (SampleCount <= 0) then exit;
+
  if FLength > 2 * SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
-  then StartPos := (FStart + Length)-FEffLengthRnd
+  then StartPos := (FStart + Length) - FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd - 1
   else EndPos := (FStart + Length - 1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
 
- FSpkCorFak := 0;
- FSpkCorFakSq := 0;
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
- case FWinSlope of
-   wsLeft:
-     begin
-      if StartPos + FEffLengthRnd <= SampleCount then
-       for i := StartPos to StartPos + FEffLengthRnd - 1 do
-        begin
-         FSpkCorFak := FSpkCorFak + 1;
-         FSpkCorFakSq := FSpkCorFakSq + 1;
-        end
-       else // Wrap arround
-        begin
-         for i := StartPos to SampleCount - 1 do
-          begin
-           FSpkCorFak := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFakSq + 1;
-          end;
-         for i := 0 to FEffLengthRnd-(SampleCount-StartPos) - 1 do
-          begin
-           FSpkCorFak := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFakSq + 1;
-          end
-        end;
-      FSpkCorFak := FSpkCorFak + FLength-FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-FEffLengthRnd;
-     end;
-   wsSymmetric:
-     begin
-      if (StartPos + FEffLengthRnd<SampleCount) and (EndPos - FEffLengthRnd >= 0) then
-       begin // No wrap arround!
-        for i :=  0 to FEffLengthRnd - 1 do
-         begin
-          FSpkCorFak := FSpkCorFak + 2;
-          FSpkCorFakSq := FSpkCorFakSq + 1;
-         end;
-       end
-       else // Wrap around
-        begin
-         if (StartPos + FEffLengthRnd<=SampleCount) then
-          begin // Only right wrap around!
-           P1 := EndPos + 1;
-           for i := 0 to P1 - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-           for i := P1 to FEffLengthRnd - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-          end else
-         if (EndPos - FEffLengthRnd >= 0) then
-          begin // Only left wrap around!
-           P1 := SampleCount-StartPos;
-           for i := 0 to P1 - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-           for i := P1 to FEffLengthRnd - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-          end
-         else
-          begin
-           p1 := StartPos;
-           p2 := EndPos;
-           for i :=  0 to FEffLengthRnd - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-             inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2<0 then p2 := SampleCount;
-            end;
-          end;
-        end;
-      FSpkCorFak   := FSpkCorFak   + FLength - 2 * FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength - 2 * FEffLengthRnd;
-     end;
-   wsRight:
-     begin
-      if EndPos - FEffLengthRnd >= 0 then
-       for i := EndPos downto EndPos - FEffLengthRnd do
-        begin
-         FSpkCorFak := FSpkCorFak + 1;
-         FSpkCorFakSq := FSpkCorFakSq + 1;
-        end
-       else // Wrap arround
-        begin
-         for i := EndPos downto 0 do
-          begin
-           FSpkCorFak := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFakSq + 1;
-          end;
-         for i := SampleCount downto SampleCount - FEffLengthRnd + EndPos do
-          begin
-           FSpkCorFak := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFakSq + 1;
-          end
-        end;
-      FSpkCorFak   := FSpkCorFak   + FLength - FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
-     end;
- end;
-
- FSpkCorFakSq := sqrt(FEffLength / FSpkCorFakSq);
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
+
+ FSpkCorFak   := FLength;
+ FSpkCorFakSq := Sqrt(FEffLength / FLength);
 end;
 
 procedure TWindowFunctionRectangle.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
-  i, p1, p2   : Integer;
-  StartPos,
-  EndPos      : Integer;
+  i, p1, p2 : Integer;
+  StartPos  : Integer;
+  EndPos    : Integer;
 begin
- if (not FActive) or (SampleCount<=0) then exit;
+ if (SampleCount <= 0) then exit;
+
  if FLength > 2 * SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
   then StartPos := (FStart + Length) - FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos <     0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd - 1
   else EndPos := FStart + Length - 1;
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos <     0 do EndPos := EndPos + SampleCount;
 
- FSpkCorFak := 0;
- FSpkCorFakSq := 0;
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
- case FWinSlope of
-   wsLeft:
-     begin
-      if StartPos + FEffLengthRnd <= SampleCount then
-       for i := StartPos to StartPos + FEffLengthRnd - 1 do
-        begin
-         FSpkCorFak   := FSpkCorFak + 1;
-         FSpkCorFakSq := FSpkCorFakSq + 1;
-        end
-       else // Wrap arround
-        begin
-         for i := StartPos to SampleCount - 1 do
-          begin
-           FSpkCorFak   := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFakSq + 1;
-          end;
-         for i := 0 to FEffLengthRnd - (SampleCount - StartPos) - 1 do
-          begin
-           FSpkCorFak   := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFakSq + 1;
-          end
-        end;
-      FSpkCorFak   := FSpkCorFak   + FLength - FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
-     end;
-   wsSymmetric:
-     begin
-      if (StartPos + FEffLengthRnd < SampleCount) and (EndPos - FEffLengthRnd >= 0) then
-       begin // No wrap arround!
-        for i :=  0 to FEffLengthRnd - 1 do
-         begin
-          FSpkCorFak   := FSpkCorFak + 2;
-          FSpkCorFakSq := FSpkCorFakSq + 1;
-         end;
-       end
-       else // Wrap around
-        begin
-         if (EndPos - FEffLengthRnd >= 0) then
-          begin // Only left wrap around!
-           P1 := SampleCount-StartPos;
-           for i := 0 to P1 - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-           for i := P1 to FEffLengthRnd - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-          end else
-         if (StartPos + FEffLengthRnd <= SampleCount) then
-          begin // Only right wrap around!
-           P1 := EndPos + 1;
-           for i := 0 to P1 - 1 do
-            begin
-             FSpkCorFak := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-           for i := P1 to FEffLengthRnd - 1 do
-            begin
-             FSpkCorFak   := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq + 1;
-            end;
-          end
-         else
-          begin
-           p1 := StartPos;
-           p2 := EndPos;
-           for i :=  0 to FEffLengthRnd - 1 do
-            begin
-             FSpkCorFak   := FSpkCorFak + 2;
-             FSpkCorFakSq := FSpkCorFakSq  + 1;
-             inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2 <     0 then p2 := SampleCount;
-            end;
-          end;
-        end;
-      FSpkCorFak   := FSpkCorFak   + FLength - 2 * FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength - 2 * FEffLengthRnd;
-     end;
-   wsRight:
-     begin
-      if EndPos - FEffLengthRnd >= 0 then
-       for i := EndPos downto EndPos - FEffLengthRnd do
-        begin
-         FSpkCorFak   := FSpkCorFak + 1;
-         FSpkCorFakSq := FSpkCorFak + 1;
-        end
-       else // Wrap arround
-        begin
-         for i := EndPos downto 0 do
-          begin
-           FSpkCorFak   := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFak + 1;
-          end;
-         for i := SampleCount downto SampleCount - (FEffLengthRnd - EndPos) do
-          begin
-           FSpkCorFak   := FSpkCorFak + 1;
-           FSpkCorFakSq := FSpkCorFak + 1;
-          end
-        end;
-      FSpkCorFak   := FSpkCorFak   + FLength - FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
-     end;
- end;
+ FSpkCorFak   := FLength;
+ FSpkCorFakSq := Sqrt(FEffLength / FLength);
 
- FSpkCorFakSq := sqrt(FEffLength / FSpkCorFakSq);
  FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 end;
 
@@ -1293,18 +1010,10 @@ end;
 constructor TWindowFunctionTriangle.Create;
 begin
  inherited;
- FBandwidth     := 1.276;
+ FBandwidth    := 1.276;
  FFirstMinimum := 4;
  FSidelobe     := -26.53;
 end;
-
-(*
-Spec. Cor. Factor: 512,0000
-Coherent Gain: 1,7320
-Bandwidth: 1,2760
-Sidelobe: -26,53
-First Minimum: 4,0020
-*)
 
 class function TWindowFunctionTriangle.GetWindowFunctionName: string;
 begin
@@ -1348,23 +1057,24 @@ var
   EndPos,i  : Integer;
   ParamRec  : TParameterRecord;
 begin
- if (not FActive) or (SampleCount <= 0) then exit;
+ if (SampleCount <= 0) then exit;
  if FLength > 2 * SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
   then StartPos := FStart + Length - FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos <     0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd - 1
   else EndPos := FStart + Length - 1;
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos <     0 do EndPos := EndPos + SampleCount;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  ParamRec.SpectrumCorrectionFactor   := 0;
  ParamRec.SpuaredCorrectionFactor := 0;
@@ -1377,7 +1087,7 @@ begin
  else
   begin
    if FBartlett
-    then ParamRec.ComplexPosition.Re := 0.5*FEffLengthReci
+    then ParamRec.ComplexPosition.Re := 0.5 * FEffLengthReci
     else ParamRec.ComplexPosition.Re := 0;
    ParamRec.ComplexAngle.Re := FEffLengthReci;
    if (FWinSlope=wsSymmetric) and FInvert then
@@ -1406,47 +1116,47 @@ begin
   wsRight:
    begin
     if EndPos + 1 - FEffLengthRnd >= 0
-     then DoWinLoopTriangle32Forward(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
+     then DoWinLoopTriangle32Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
      else // Wrap arround
       begin
-       DoWinLoopTriangle32Forward(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)],ParamRec,FEffLengthRnd-(EndPos + 1));
-       DoWinLoopTriangle32Forward(@Data[0],ParamRec,EndPos + 1);
+       DoWinLoopTriangle32Forward(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+       DoWinLoopTriangle32Forward(@Data[0], ParamRec, EndPos + 1);
       end;
-    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
-    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-FEffLengthRnd;
+    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - FEffLengthRnd;
    end;
  wsSymmetric:
    begin
     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos - FEffLengthRnd >= 0)
-     then DoWinLoopTriangle32Symmetric(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
+     then DoWinLoopTriangle32Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
      else // Wrap around
       begin
        if (EndPos - FEffLengthRnd >= 0) then
         begin // Only left wrap around!
-         i := SampleCount-StartPos;
-         DoWinLoopTriangle32Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-         DoWinLoopTriangle32Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos - i]);
+         i := SampleCount - StartPos;
+         DoWinLoopTriangle32Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+         DoWinLoopTriangle32Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos - i]);
         end else
        if (StartPos + FEffLengthRnd<=SampleCount) then
         begin // Only right wrap around!
-         DoWinLoopTriangle32Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-         DoWinLoopTriangle32Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos - 1,@Data[SampleCount-1]);
+         DoWinLoopTriangle32Symmetric(@Data[StartPos], ParamRec, EndPos + 1, @Data[EndPos]);
+         DoWinLoopTriangle32Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos - 1, @Data[SampleCount-1]);
         end
        else
         begin
          exit;
-         i := SampleCount-StartPos;
+         i := SampleCount - StartPos;
          if EndPos<i then
           begin
-           DoWinLoopTriangle32Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-           DoWinLoopTriangle32Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-           DoWinLoopTriangle32Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
+           DoWinLoopTriangle32Symmetric(@Data[StartPos], ParamRec, EndPos, @Data[EndPos]);
+           DoWinLoopTriangle32Symmetric(@Data[StartPos + EndPos], ParamRec, i-EndPos, @Data[SampleCount-1]);
+           DoWinLoopTriangle32Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount-(i-EndPos)]);
           end
          else
           begin
-           DoWinLoopTriangle32Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-           DoWinLoopTriangle32Symmetric(@Data[0],ParamRec,EndPos - i,@Data[EndPos - i]);
-           DoWinLoopTriangle32Symmetric(@Data[EndPos - i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
+           DoWinLoopTriangle32Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+           DoWinLoopTriangle32Symmetric(@Data[0], ParamRec, EndPos - i, @Data[EndPos - i]);
+           DoWinLoopTriangle32Symmetric(@Data[EndPos - i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
           end;
         end;
       end;
@@ -1455,7 +1165,7 @@ begin
    end;
  end;
 
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
+ ParamRec.SpuaredCorrectionFactor := Sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
  FillWithZeroes(Data,StartPos,EndPos,SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
@@ -1468,23 +1178,24 @@ var
   EndPos,i    : Integer;
   ParamRec    : TParameterRecord;
 begin
- if (not FActive) or (SampleCount <= 0) then exit;
+ if (SampleCount <= 0) then exit;
  if FLength > 2 * SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
   then StartPos := (FStart + Length)-FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd-1
   else EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  ParamRec.SpectrumCorrectionFactor := 0;
  ParamRec.SpuaredCorrectionFactor := 0;
@@ -1513,23 +1224,23 @@ begin
   wsLeft:
    begin
     if StartPos + FEffLengthRnd<=SampleCount
-     then DoWinLoopTriangle64Forward(@Data[StartPos],ParamRec,FEffLengthRnd)
+     then DoWinLoopTriangle64Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
      else // Wrap arround
       begin
-       DoWinLoopTriangle64Forward(@Data[StartPos],ParamRec,SampleCount-StartPos);
-       DoWinLoopTriangle64Forward(@Data[0],ParamRec,FEffLengthRnd-(SampleCount-StartPos));
+       DoWinLoopTriangle64Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
+       DoWinLoopTriangle64Forward(@Data[0], ParamRec, FEffLengthRnd - (SampleCount - StartPos));
       end;
-    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
-    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-FEffLengthRnd;
+    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - FEffLengthRnd;
    end;
   wsRight:
    begin
-    if EndPos + 1-FEffLengthRnd >= 0
-     then DoWinLoopTriangle64Forward(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
+    if EndPos + 1 - FEffLengthRnd >= 0
+     then DoWinLoopTriangle64Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
      else // Wrap arround
       begin
-       DoWinLoopTriangle64Forward(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd-(EndPos + 1));
-       DoWinLoopTriangle64Forward(@Data[0],ParamRec,EndPos + 1);
+       DoWinLoopTriangle64Forward(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+       DoWinLoopTriangle64Forward(@Data[0], ParamRec, EndPos + 1);
       end;
     ParamRec.SpectrumCorrectionFactor   := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - FEffLengthRnd;
@@ -1542,30 +1253,30 @@ begin
       begin
        if (EndPos - FEffLengthRnd >= 0) then
         begin // Only left wrap around!
-         i := SampleCount-StartPos;
-         DoWinLoopTriangle64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-         DoWinLoopTriangle64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos - i]);
+         i := SampleCount - StartPos;
+         DoWinLoopTriangle64Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+         DoWinLoopTriangle64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos - i]);
         end else
        if (StartPos + FEffLengthRnd<=SampleCount) then
         begin // Only right wrap around!
-         DoWinLoopTriangle64Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-         DoWinLoopTriangle64Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos - 1,@Data[SampleCount-1]);
+         DoWinLoopTriangle64Symmetric(@Data[StartPos], ParamRec, EndPos + 1, @Data[EndPos]);
+         DoWinLoopTriangle64Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos - 1, @Data[SampleCount-1]);
         end
        else
         begin
          exit;
-         i := SampleCount-StartPos;
+         i := SampleCount - StartPos;
          if EndPos<i then
           begin
-           DoWinLoopTriangle64Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-           DoWinLoopTriangle64Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-           DoWinLoopTriangle64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
+           DoWinLoopTriangle64Symmetric(@Data[StartPos], ParamRec, EndPos, @Data[EndPos]);
+           DoWinLoopTriangle64Symmetric(@Data[StartPos + EndPos], ParamRec, i-EndPos, @Data[SampleCount-1]);
+           DoWinLoopTriangle64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount-(i-EndPos)]);
           end
          else
           begin
-           DoWinLoopTriangle64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-           DoWinLoopTriangle64Symmetric(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-           DoWinLoopTriangle64Symmetric(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
+           DoWinLoopTriangle64Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+           DoWinLoopTriangle64Symmetric(@Data[0], ParamRec, EndPos -i, @Data[EndPos -i]);
+           DoWinLoopTriangle64Symmetric(@Data[EndPos -i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
           end;
         end;
       end;
@@ -1592,14 +1303,6 @@ begin
  FSidelobe := -23;
 end;
 
-(*
-Spec. Cor. Factor: 651,9000
-Coherent Gain: 1,4140
-Bandwidth: 1,1890
-Sidelobe: -23,0000
-First Minimum: 3,0110
-*)
-
 function TWindowFunctionCosine.GetWindowFactor(Pos: Double): Double; // inline;
 begin
  Result := Sin(0.5 * PI * Pos);
@@ -1612,45 +1315,46 @@ end;
 
 procedure TWindowFunctionCosine.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
-  StartPos,
-  EndPos,i    : Integer;
-  ParamRec    : TParameterRecord;
+  StartPos  : Integer;
+  EndPos, i : Integer;
+  ParamRec  : TParameterRecord;
 begin
- if (not FActive) or (SampleCount<=0) then exit;
- if FLength>SampleCount then
+ if (SampleCount <= 0) then Exit;
+ if FLength > SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
- if FInvert
-  then StartPos := (FStart + Length-1)-FEffLengthRnd
-  else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
-  then EndPos := FStart + FEffLengthRnd-1
-  else EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
+  then StartPos := (FStart + Length - 1) - FEffLengthRnd
+  else StartPos := FStart;
+
+ if FInvert
+  then EndPos := FStart + FEffLengthRnd - 1
+  else EndPos := (FStart + Length - 1);
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  with ParamRec do
   begin
    SpectrumCorrectionFactor := 0;
    SpuaredCorrectionFactor := 0;
-   GetSinCos(0.5*PI*FEffLengthReci,ComplexAngle.Im,ComplexAngle.Re);
+   GetSinCos(0.5 * PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
    if FBartlett then
     case FWinSlope of
      wsLeft  : begin ComplexPosition.Im := -ComplexAngle.Re; ComplexPosition.Re := ComplexAngle.Im; end;
      wsRight : begin ComplexPosition.Im := 0;  ComplexPosition.Re := 1; end;
      wsSymmetric :
       begin
-       ComplexPosition.Im := -Sqrt(0.5*(1 + ComplexAngle.Re));
-       ComplexPosition.Re := Sqrt(0.5*(1-ComplexAngle.Re));
+       ComplexPosition.Im := -Sqrt(0.5 * (1 + ComplexAngle.Re));
+       ComplexPosition.Re :=  Sqrt(0.5 * (1 - ComplexAngle.Re));
       end;
     end
    else
-    if FWinSlope=wsRight
+    if FWinSlope = wsRight
      then begin ComplexPosition.Im :=  0; ComplexPosition.Re :=  1; end
      else begin ComplexPosition.Im := -1; ComplexPosition.Re :=  0; end;
   end;
@@ -1658,66 +1362,67 @@ begin
  case FWinSlope of
   wsLeft:
     begin
-     if StartPos + FEffLengthRnd<=SampleCount
-      then DoWinLoopCosine32Forward(@Data[StartPos],ParamRec,FEffLengthRnd)
+     if StartPos + FEffLengthRnd <= SampleCount
+      then DoWinLoopCosine32Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        DoWinLoopCosine32Forward(@Data[StartPos],ParamRec,SampleCount-StartPos);
-        DoWinLoopCosine32Forward(@Data[0],ParamRec,FEffLengthRnd-(SampleCount-StartPos));
+        DoWinLoopCosine32Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
+        DoWinLoopCosine32Forward(@Data[0], ParamRec, FEffLengthRnd - (SampleCount - StartPos));
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
     end;
   wsRight:
     begin
-     if EndPos + 1-FEffLengthRnd >= 0
-      then DoWinLoopCosine32Forward(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
+     if EndPos + 1 - FEffLengthRnd >= 0
+      then DoWinLoopCosine32Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        DoWinLoopCosine32Forward(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)],ParamRec,FEffLengthRnd-(EndPos + 1));
-        DoWinLoopCosine32Forward(@Data[0],ParamRec,EndPos + 1);
+        DoWinLoopCosine32Forward(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+        DoWinLoopCosine32Forward(@Data[0], ParamRec, EndPos + 1);
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
     end;
   wsSymmetric:
     begin
-     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
-      then DoWinLoopCosine32Symmetric(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
+     if (StartPos + FEffLengthRnd < SampleCount) and (EndPos - FEffLengthRnd >= 0)
+      then DoWinLoopCosine32Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
       else // Wrap around
        begin
         if (EndPos -FEffLengthRnd >= 0) then
          begin // Only left wrap around!
-          i := SampleCount-StartPos;
-          DoWinLoopCosine32Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-          DoWinLoopCosine32Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos -i]);
+          i := SampleCount - StartPos;
+          DoWinLoopCosine32Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+          DoWinLoopCosine32Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos - i]);
          end else
         if (StartPos + FEffLengthRnd<=SampleCount) then
          begin // Only right wrap around!
-          DoWinLoopCosine32Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-          DoWinLoopCosine32Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos -1,@Data[SampleCount-1]);
+          DoWinLoopCosine32Symmetric(@Data[StartPos], ParamRec, EndPos + 1, @Data[EndPos]);
+          DoWinLoopCosine32Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos - 1, @Data[SampleCount - 1]);
          end
         else
          begin
-          i := SampleCount-StartPos;
+          i := SampleCount - StartPos;
           if EndPos<i then
            begin
-            DoWinLoopCosine32Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-            DoWinLoopCosine32Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-            DoWinLoopCosine32Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
+            DoWinLoopCosine32Symmetric(@Data[StartPos], ParamRec, EndPos, @Data[EndPos]);
+            DoWinLoopCosine32Symmetric(@Data[StartPos + EndPos], ParamRec, i - EndPos, @Data[SampleCount - 1]);
+            DoWinLoopCosine32Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount - (i - EndPos)]);
            end
           else
            begin
-            DoWinLoopCosine32Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-            DoWinLoopCosine32Symmetric(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-            DoWinLoopCosine32Symmetric(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
+            DoWinLoopCosine32Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+            DoWinLoopCosine32Symmetric(@Data[0], ParamRec,EndPos - i, @Data[EndPos - i]);
+            DoWinLoopCosine32Symmetric(@Data[EndPos - i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
            end;
          end;
        end;
-    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
-    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-2*FEffLengthRnd;
+    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - 2 * FEffLengthRnd;
+    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - 2 * FEffLengthRnd;
    end;
  end;
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
- FillWithZeroes(Data,StartPos,EndPos,SampleCount);
+
+ ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+ FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
  FSpkCorFakSq := ParamRec.SpuaredCorrectionFactor;
@@ -1725,45 +1430,46 @@ end;
 
 procedure TWindowFunctionCosine.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
-  StartPos,
-  EndPos,i    : Integer;
-  ParamRec    : TParameterRecord;
+  StartPos  : Integer;
+  EndPos, i : Integer;
+  ParamRec  : TParameterRecord;
 begin
- if (not FActive) or (SampleCount<=0) then exit;
- if FLength>SampleCount then
+ if (SampleCount <= 0) then Exit;
+ if FLength > SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
- if FInvert
-  then StartPos := (FStart + Length-1)-FEffLengthRnd
-  else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
-  then EndPos := FStart + FEffLengthRnd-1
-  else EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
+  then StartPos := (FStart + Length - 1) - FEffLengthRnd
+  else StartPos := FStart;
+
+ if FInvert
+  then EndPos := FStart + FEffLengthRnd - 1
+  else EndPos := (FStart + Length - 1);
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  with ParamRec do
   begin
    SpectrumCorrectionFactor := 0;
    SpuaredCorrectionFactor := 0;
-   GetSinCos(0.5*PI*FEffLengthReci,ComplexAngle.Im,ComplexAngle.Re);
+   GetSinCos(0.5 * PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
    if FBartlett then
     case FWinSlope of
      wsLeft  : begin ComplexPosition.Im := -ComplexAngle.Re; ComplexPosition.Re := ComplexAngle.Im; end;
      wsRight : begin ComplexPosition.Im := 0;  ComplexPosition.Re := 1; end;
      wsSymmetric :
       begin
-       ComplexPosition.Im := -Sqrt(0.5*(1 + ComplexAngle.Re));
-       ComplexPosition.Re := Sqrt(0.5*(1-ComplexAngle.Re));
+       ComplexPosition.Im := -Sqrt(0.5 * (1 + ComplexAngle.Re));
+       ComplexPosition.Re :=  Sqrt(0.5 * (1 - ComplexAngle.Re));
       end;
     end
    else
-    if FWinSlope=wsRight
+    if FWinSlope = wsRight
      then begin ComplexPosition.Im :=  0; ComplexPosition.Re :=  1; end
      else begin ComplexPosition.Im := -1; ComplexPosition.Re :=  0; end;
   end;
@@ -1771,68 +1477,68 @@ begin
  case FWinSlope of
   wsLeft:
     begin
-     if StartPos + FEffLengthRnd<=SampleCount
-      then DoWinLoopCosine64Forward(@Data[StartPos],ParamRec,FEffLengthRnd)
+     if StartPos + FEffLengthRnd <= SampleCount
+      then DoWinLoopCosine64Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        DoWinLoopCosine64Forward(@Data[StartPos],ParamRec,SampleCount-StartPos);
-        DoWinLoopCosine64Forward(@Data[0],ParamRec,FEffLengthRnd-(SampleCount-StartPos));
+        DoWinLoopCosine64Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
+        DoWinLoopCosine64Forward(@Data[0], ParamRec, FEffLengthRnd - (SampleCount - StartPos));
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
     end;
   wsRight:
     begin
-     if EndPos + 1-FEffLengthRnd >= 0
-      then DoWinLoopCosine64Forward(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
+     if EndPos + 1 - FEffLengthRnd >= 0
+      then DoWinLoopCosine64Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        DoWinLoopCosine64Forward(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)],ParamRec,FEffLengthRnd-(EndPos + 1));
-        DoWinLoopCosine64Forward(@Data[0],ParamRec,EndPos + 1);
+        DoWinLoopCosine64Forward(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+        DoWinLoopCosine64Forward(@Data[0], ParamRec, EndPos + 1);
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
     end;
   wsSymmetric:
     begin
-     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
-      then DoWinLoopCosine64Symmetric(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
+     if (StartPos + FEffLengthRnd < SampleCount) and (EndPos - FEffLengthRnd >= 0)
+      then DoWinLoopCosine64Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
       else // Wrap around
        begin
         if (EndPos -FEffLengthRnd >= 0) then
          begin // Only left wrap around!
-          i := SampleCount-StartPos;
-          DoWinLoopCosine64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-          DoWinLoopCosine64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos -i]);
+          i := SampleCount - StartPos;
+          DoWinLoopCosine64Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+          DoWinLoopCosine64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos - i]);
          end else
         if (StartPos + FEffLengthRnd<=SampleCount) then
          begin // Only right wrap around!
-          DoWinLoopCosine64Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-          DoWinLoopCosine64Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos -1,@Data[SampleCount-1]);
+          DoWinLoopCosine64Symmetric(@Data[StartPos], ParamRec, EndPos + 1, @Data[EndPos]);
+          DoWinLoopCosine64Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos - 1, @Data[SampleCount - 1]);
          end
         else
          begin
           exit;
-          i := SampleCount-StartPos;
+          i := SampleCount - StartPos;
           if EndPos<i then
            begin
-            DoWinLoopCosine64Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-            DoWinLoopCosine64Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-            DoWinLoopCosine64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
+            DoWinLoopCosine64Symmetric(@Data[StartPos], ParamRec, EndPos, @Data[EndPos]);
+            DoWinLoopCosine64Symmetric(@Data[StartPos + EndPos], ParamRec, i - EndPos, @Data[SampleCount - 1]);
+            DoWinLoopCosine64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount - (i - EndPos)]);
            end
           else
            begin
-            DoWinLoopCosine64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-            DoWinLoopCosine64Symmetric(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-            DoWinLoopCosine64Symmetric(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
+            DoWinLoopCosine64Symmetric(@Data[StartPos], ParamRec, i, @Data[EndPos]);
+            DoWinLoopCosine64Symmetric(@Data[0], ParamRec,EndPos - i, @Data[EndPos - i]);
+            DoWinLoopCosine64Symmetric(@Data[EndPos - i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
            end;
          end;
        end;
-    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
-    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-2*FEffLengthRnd;
+    ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - 2 * FEffLengthRnd;
+    ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - 2 * FEffLengthRnd;
    end;
  end;
 
- ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength/(ParamRec.SpuaredCorrectionFactor));
- FillWithZeroes(Data,StartPos,EndPos,SampleCount);
+ ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+ FillWithZeroes(Data, StartPos, EndPos, SampleCount);
 
  FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
  FSpkCorFakSq := ParamRec.SpuaredCorrectionFactor;
@@ -1874,29 +1580,12 @@ begin
  FAlpha        := 1;
 end;
 
-(*
-Spec. Cor. Factor: 386,8000
-Coherent Gain: 1,9100
-Bandwidth: 1,8280
-Sidelobe: -54,7200
-First Minimum: 6,3460
-*)
-
 procedure TWindowFunctionLanczos.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TWindowFunctionLanczos then
   begin
    TWindowFunctionLanczos(Dest).FAlpha := FAlpha;
-  end else
- if Dest is TWindowFunctionGauss then
-  begin
-   TWindowFunctionGauss(Dest).FAlpha := FAlpha;
-  end else
- if Dest is TWindowFunctionKaiserBessel then
-  begin
-   TWindowFunctionKaiserBessel(Dest).FAlpha := FAlpha;
-   TWindowFunctionKaiserBessel(Dest).fAlphaBesselReciprocal := 1 / ModZeroBesselI0(PI * FAlpha);
   end;
 end;
 
@@ -1920,23 +1609,24 @@ var
   EndPos,i    : Integer;
   ParamRec    : TParameterRecord;
 begin
- if (not FActive) or (SampleCount<=0) then exit;
+ if (SampleCount <= 0) then Exit;
  if FLength>SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
   then StartPos := (FStart + Length-1)-FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd-1
   else EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  with ParamRec do
   begin
@@ -1971,57 +1661,57 @@ begin
     wsLeft:
       begin
        if StartPos + FEffLengthRnd<=SampleCount
-        then DoWinLoopLanczos64Forward(@Data[StartPos],ParamRec,FEffLengthRnd)
+        then DoWinLoopLanczos64Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
         else // Wrap arround
          begin
-          DoWinLoopLanczos64Forward(@Data[StartPos],ParamRec,SampleCount-StartPos);
-          DoWinLoopLanczos64Forward(@Data[0],ParamRec,FEffLengthRnd-(SampleCount-StartPos));
+          DoWinLoopLanczos64Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
+          DoWinLoopLanczos64Forward(@Data[0], ParamRec, FEffLengthRnd - (SampleCount - StartPos));
          end;
-       ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
+       ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
       end;
     wsRight:
       begin
-       if EndPos + 1-FEffLengthRnd >= 0
-        then DoWinLoopLanczos64Forward(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
+       if EndPos + 1 - FEffLengthRnd >= 0
+        then DoWinLoopLanczos64Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
         else // Wrap arround
          begin
-          DoWinLoopLanczos64Forward(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)],ParamRec,FEffLengthRnd-(EndPos + 1));
-          DoWinLoopLanczos64Forward(@Data[0],ParamRec,EndPos + 1);
+          DoWinLoopLanczos64Forward(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+          DoWinLoopLanczos64Forward(@Data[0], ParamRec,EndPos + 1);
          end;
-       ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
+       ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
       end;
     wsSymmetric:
       begin
        if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
-        then DoWinLoopLanczos64Symmetric(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
+        then DoWinLoopLanczos64Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
         else // Wrap around
          begin
           if (EndPos -FEffLengthRnd >= 0) then
            begin // Only left wrap around!
-            i := SampleCount-StartPos;
-            DoWinLoopLanczos64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-            DoWinLoopLanczos64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos -i]);
+            i := SampleCount - StartPos;
+            DoWinLoopLanczos64Symmetric(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+            DoWinLoopLanczos64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos -i]);
            end else
           if (StartPos + FEffLengthRnd<=SampleCount) then
            begin // Only right wrap around!
-            DoWinLoopLanczos64Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-            DoWinLoopLanczos64Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos -1,@Data[SampleCount-1]);
+            DoWinLoopLanczos64Symmetric(@Data[StartPos], ParamRec,EndPos + 1, @Data[EndPos]);
+            DoWinLoopLanczos64Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos -1, @Data[SampleCount-1]);
            end
           else
            begin
             exit;
-            i := SampleCount-StartPos;
+            i := SampleCount - StartPos;
             if EndPos<i then
              begin
-              DoWinLoopLanczos64Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-              DoWinLoopLanczos64Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-              DoWinLoopLanczos64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
+              DoWinLoopLanczos64Symmetric(@Data[StartPos], ParamRec,EndPos, @Data[EndPos]);
+              DoWinLoopLanczos64Symmetric(@Data[StartPos + EndPos], ParamRec,i-EndPos, @Data[SampleCount-1]);
+              DoWinLoopLanczos64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount-(i-EndPos)]);
              end
             else
              begin
-              DoWinLoopLanczos64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-              DoWinLoopLanczos64Symmetric(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-              DoWinLoopLanczos64Symmetric(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
+              DoWinLoopLanczos64Symmetric(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+              DoWinLoopLanczos64Symmetric(@Data[0], ParamRec,EndPos -i, @Data[EndPos -i]);
+              DoWinLoopLanczos64Symmetric(@Data[EndPos -i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
              end;
            end;
          end;
@@ -2037,1065 +1727,6 @@ begin
  FSpkCorFakSq := ParamRec.SpuaredCorrectionFactor;
 end;
 *)
-
-{ TWindowFunctionHanning }
-
-constructor TWindowFunctionHanning.Create;
-begin
- inherited;
- FBandwidth    := 1.4410;
- FSidelobe     := -31.48;
- FFirstMinimum := 4;
-end;
-
-(*
-Spec. Cor. Factor: 512,0000
-Coherent Gain: 1,6330
-Bandwidth: 1,4410
-Sidelobe: -31,4800
-First Minimum: 4,0020
-*)
-
-function TWindowFunctionHanning.GetWindowFactor(Pos: Double): Double; //inline;
-begin
- Result := CHalf64 * (1 - cos(Pi * Pos));
-end;
-
-class function TWindowFunctionHanning.GetWindowFunctionName: string;
-begin
- Result := 'Hanning';
-end;
-
-procedure TWindowFunctionHanning.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-var
-  StartPos,
-  EndPos,i    : Integer;
-  ParamRec    : TParameterRecord;
-begin
- if (not FActive) or (SampleCount<=0) then exit;
- if FLength>SampleCount then
-  begin
-   FLength := SampleCount;
-   CalcEffectiveLength;
-  end;
- if FInvert
-  then StartPos := FStart + Length - 1 - FEffLengthRnd
-  else StartPos := FStart;
- while StartPos  >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos <    0 do StartPos := StartPos + SampleCount;
-
- if FInvert
-  then EndPos := FStart + FEffLengthRnd - 1
-  else EndPos := FStart + Length - 1;
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos <     0 do EndPos := EndPos + SampleCount;
-
- with ParamRec do
-  begin
-   SpectrumCorrectionFactor   := 0;
-   SpuaredCorrectionFactor := 0;
-   GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
-   CoefficientPointer := @cHanning;
-   if FBartlett then
-    case FWinSlope of
-     wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
-     wsRight : begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end;
-     wsSymmetric :
-      begin
-       ComplexPosition.Im :=  Sqrt(0.5 * (1 + ComplexAngle.Re));
-       ComplexPosition.Re := -Sqrt(0.5 * (1 - ComplexAngle.Re));
-      end;
-    end
-   else
-    begin
-     if FWinSlope=wsRight
-      then begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end
-      else begin ComplexPosition.Im :=  1; ComplexPosition.Re := 0; end;
-    end;
-  end;
-
- case FWinSlope of
-  wsLeft:
-    begin
-     if StartPos + FEffLengthRnd <= SampleCount
-      then DoWinLoopHanning32Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
-      else // Wrap arround
-       begin
-        DoWinLoopHanning32Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
-        DoWinLoopHanning32Forward(@Data[0], ParamRec, FEffLengthRnd - SampleCount + StartPos);
-       end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
-    end;
-  wsRight:
-    begin
-     if EndPos + 1 - FEffLengthRnd >= 0
-      then DoWinLoopHanning32Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
-      else // Wrap arround
-       begin
-        DoWinLoopHanning32Forward(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)],ParamRec,FEffLengthRnd-(EndPos + 1));
-        DoWinLoopHanning32Forward(@Data[0],ParamRec,EndPos + 1);
-       end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
-    end;
-  wsSymmetric:
-    begin
-     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
-      then DoWinLoopHanning32Symmetric(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
-      else // Wrap around
-       begin
-        if (EndPos - FEffLengthRnd >= 0) then
-         begin // Only left wrap around!
-          i := SampleCount-StartPos;
-          DoWinLoopHanning32Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-          DoWinLoopHanning32Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos -i]);
-         end else
-        if (StartPos + FEffLengthRnd<=SampleCount) then
-         begin // Only right wrap around!
-          DoWinLoopHanning32Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-          DoWinLoopHanning32Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos -1,@Data[SampleCount-1]);
-         end
-        else
-         begin
-          exit;
-          i := SampleCount-StartPos;
-          if EndPos<i then
-           begin
-            DoWinLoopHanning32Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-            DoWinLoopHanning32Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-            DoWinLoopHanning32Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
-           end
-          else
-           begin
-            DoWinLoopHanning32Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-            DoWinLoopHanning32Symmetric(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-            DoWinLoopHanning32Symmetric(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
-           end;
-         end;
-       end;
-      ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
-    end;
- end;
- FillWithZeroes(Data, StartPos, EndPos, SampleCount);
-
- FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
- FSpkCorFakSq := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
-end;
-
-procedure TWindowFunctionHanning.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
-var
-  StartPos,
-  EndPos,i    : Integer;
-  ParamRec    : TParameterRecord;
-begin
- if (not FActive) or (SampleCount <= 0) then exit;
- if FLength>SampleCount then
-  begin
-   FLength := SampleCount;
-   CalcEffectiveLength;
-  end;
- if FInvert
-  then StartPos := (FStart + Length-1)-FEffLengthRnd
-  else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
-
- if FInvert
-  then EndPos := FStart + FEffLengthRnd-1
-  else EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
-
- with ParamRec do
-  begin
-   SpectrumCorrectionFactor := 0;
-   SpuaredCorrectionFactor := 0;
-   GetSinCos(PI*FEffLengthReci,ComplexAngle.Im,ComplexAngle.Re);
-   CoefficientPointer := @cHanning;
-   if FBartlett then
-    case FWinSlope of
-     wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
-     wsRight : begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end;
-     wsSymmetric :
-      begin
-       ComplexPosition.Im :=  Sqrt(0.5*(1 + ComplexAngle.Re));
-       ComplexPosition.Re := -Sqrt(0.5*(1-ComplexAngle.Re));
-      end;
-    end
-   else
-    begin
-     if FWinSlope=wsRight
-      then begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end
-      else begin ComplexPosition.Im :=  1; ComplexPosition.Re := 0; end;
-    end;
-  end;
-
- case FWinSlope of
-  wsLeft:
-    begin
-     if StartPos + FEffLengthRnd<=SampleCount
-      then DoWinLoopHanning64Forward(@Data[StartPos],ParamRec,FEffLengthRnd)
-      else // Wrap arround
-       begin
-        DoWinLoopHanning64Forward(@Data[StartPos],ParamRec,SampleCount-StartPos);
-        DoWinLoopHanning64Forward(@Data[0],ParamRec,FEffLengthRnd-(SampleCount-StartPos));
-       end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
-    end;
-  wsRight:
-    begin
-     if EndPos + 1-FEffLengthRnd >= 0
-      then DoWinLoopHanning64Forward(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
-      else // Wrap arround
-       begin
-        DoWinLoopHanning64Forward(@Data[EndPos + 1 - FEffLengthRnd + SampleCount], ParamRec, FEffLengthRnd - EndPos - 1);
-        DoWinLoopHanning64Forward(@Data[0],ParamRec,EndPos + 1);
-       end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
-    end;
-  wsSymmetric:
-    begin
-     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
-      then DoWinLoopHanning64Symmetric(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
-      else // Wrap around
-       begin
-        if (EndPos -FEffLengthRnd >= 0) then
-         begin // Only left wrap around!
-          i := SampleCount-StartPos;
-          DoWinLoopHanning64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-          DoWinLoopHanning64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos -i]);
-         end else
-        if (StartPos + FEffLengthRnd<=SampleCount) then
-         begin // Only right wrap around!
-          DoWinLoopHanning64Symmetric(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-          DoWinLoopHanning64Symmetric(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos -1,@Data[SampleCount-1]);
-         end
-        else
-         begin
-          exit;
-          i := SampleCount - StartPos;
-          if EndPos < i then
-           begin
-            DoWinLoopHanning64Symmetric(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-            DoWinLoopHanning64Symmetric(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-            DoWinLoopHanning64Symmetric(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
-           end
-          else
-           begin
-            DoWinLoopHanning64Symmetric(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-            DoWinLoopHanning64Symmetric(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-            DoWinLoopHanning64Symmetric(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
-           end;
-         end;
-       end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
-    end;
- end;
- FillWithZeroes(Data,StartPos,EndPos,SampleCount);
-
- FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
- FSpkCorFakSq := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// TWindowFunctionHamming //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionHamming.Create;
-begin
- inherited;
- FBandwidth := 1.303;
- FSidelobe := -42.68;
- FFirstMinimum := 4;
- FCoefPointer := @cHamming[0];
- CosineTerms := 2;
-end;
-
-class function TWindowFunctionHamming.GetWindowFunctionName: string;
-begin
- Result := 'Hanning';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////// TWindowFunctionBlackman /////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionBlackman.Create;
-begin
- inherited;
- FCoefPointer  := @cBlackman[0];
- FBandwidth    := 1.644;
- FSidelobe     := -58.11;
- FFirstMinimum := 6;
- CosineTerms   := 3;
-end;
-
-class function TWindowFunctionBlackman.GetWindowFunctionName: string;
-begin
- Result := 'Blackman';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////// TWindowFunctionExactBlackman ///////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionExactBlackman.Create;
-begin
- inherited;
- FCoefPointer := @cExactBlackman[0];
- FSidelobe     := -68.23;
- FBandwidth    := 1.609;
- FFirstMinimum := 6;
- CosineTerms := 3;
-end;
-
-class function TWindowFunctionExactBlackman.GetWindowFunctionName: string;
-begin
- Result := 'Exact Blackman';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////// TWindowFunctionBlackmanHarris //////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionBlackmanHarris3T.Create;
-begin
- inherited;
- FCoefPointer  := @cBlackmanHarris3T[0];
- FSidelobe     := -70.89;
- FBandwidth    := 1.623;
- FFirstMinimum := 6;
- CosineTerms   := 3;
-end;
-
-class function TWindowFunctionBlackmanHarris3T.GetWindowFunctionName: string;
-begin
- Result := 'Blackman Harris 3 Term';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////// TWindowFunctionBlackmanHarris //////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionBlackmanHarris4T.Create;
-begin
- inherited;
- FCoefPointer  := @cBlackmanHarris4T[0];
- FSidelobe     := -92.03;
- FBandwidth    := 1.899;
- FFirstMinimum := 8;
- CosineTerms   := 4;
-end;
-
-class function TWindowFunctionBlackmanHarris4T.GetWindowFunctionName: string;
-begin
- Result := 'Blackman Harris 4 Term';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////// TWindowFunctionBlackmanNutall //////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionBlackmanNutall.Create;
-begin
- inherited;
- FCoefPointer  := @cBlackmanNutall[0];
- FSidelobe     := -98.17;
- FBandwidth    := 1.872;
- FFirstMinimum := 8;
- CosineTerms   := 4;
-end;
-
-class function TWindowFunctionBlackmanNutall.GetWindowFunctionName: string;
-begin
- Result := 'Blackman-Nutall';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////// TWindowFunctionLawrey5T /////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionLawrey5T.Create;
-begin
- inherited;
- FCoefPointer  := @cLawrey5T[0];
- FSidelobe     := -110.1;
- FBandwidth    := 2.045;
- FFirstMinimum := 9.257;
- CosineTerms   := 5;
-end;
-
-class function TWindowFunctionLawrey5T.GetWindowFunctionName: string;
-begin
- Result := 'Lawrey 5 Term';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////// TWindowFunctionLawrey6T /////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionLawrey6T.Create;
-begin
- inherited;
- FCoefPointer := @cLawrey6T[0];
- FSidelobe     := -138.4;
- FBandwidth    := 2.291;
- FFirstMinimum := 11.57;
- CosineTerms  := 6;
-end;
-
-class function TWindowFunctionLawrey6T.GetWindowFunctionName: string;
-begin
- Result := 'Lawrey 6 Term';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////// TWindowFunctionBurgessOpt59 ///////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionBurgessOpt59.Create;
-begin
- inherited;
- FCoefPointer  := @cBurgessOpt59[0];
- FSidelobe     := -59.70;
- FBandwidth    := 1.498;
- FFirstMinimum := 5.165;
- CosineTerms   := 3;
-end;
-
-class function TWindowFunctionBurgessOpt59.GetWindowFunctionName: string;
-begin
- Result := 'Burgess Optimal 59dB 3T';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-//////////////////////// TWindowFunctionBurgessOpt71 ///////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionBurgessOpt71.Create;
-begin
- inherited;
- FCoefPointer  := @cBurgessOpt71[0];
- FSidelobe     := -71.48;
- FBandwidth    := 1.6190;
- FFirstMinimum := 6;
- CosineTerms   := 3;
-end;
-
-class function TWindowFunctionBurgessOpt71.GetWindowFunctionName: string;
-begin
- Result := 'Burgess Optimal 71dB 3T';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////// TWindowFunctionNutallCFD ////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionNutallCFD.Create;
-begin
- inherited;
- FCoefPointer  := @cNutallCFD[0];
- FSidelobe     := -93.33;
- FBandwidth    := 1.915;
- FFirstMinimum := 8;
- CosineTerms   := 4;
-end;
-
-class function TWindowFunctionNutallCFD.GetWindowFunctionName: string;
-begin
- Result := 'Nuttall window, continuous first derivative';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////// TWindowFunctionNutallCTD ////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionNutallCTD.Create;
-begin
- inherited;
- FCoefPointer  := @cNutallCTD[0];
- FSidelobe     := -82.61;
- FBandwidth    := 2.016;
- FFirstMinimum := 8;
- CosineTerms   := 4;
-end;
-
-class function TWindowFunctionNutallCTD.GetWindowFunctionName: string;
-begin
- Result := 'Nuttall window, continuous third derivative';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// TWindowFunctionFlatTop /////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionFlatTop.Create;
-begin
- inherited;
- FCoefPointer  := @cFlatTop[0];
- FSidelobe     := -68.9;
- FBandwidth    := 3.732;
- FFirstMinimum := 10;
- CosineTerms   := 5;
-end;
-
-class function TWindowFunctionFlatTop.GetWindowFunctionName: string;
-begin
- Result := 'FlatTop';
-end;
-
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////// TWindowFunctionPacman //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-constructor TWindowFunctionPacman.Create;
-begin
- inherited;
- FSidelobe     := -17.58;
- FBandwidth    := 1.03;
- FFirstMinimum := 2.443;
- FAlpha        := 1;
-end;
-
-class function TWindowFunctionPacman.GetWindowFunctionName: string;
-begin
- Result := 'Pacman';
-end;
-
-function TWindowFunctionPacman.GetWindowFactor(Pos: Double): Double; //inline;
-begin
- if 1 - sqr(Pos) > 0
-  then Result := Power(sqrt(2 * Pos - sqr(Pos)), sqr(FAlpha))
-  else Result := 0;
-end;
-
-
-{ TWindowFunctionWelch }
-
-constructor TWindowFunctionWelch.Create;
-begin
- inherited;
- FSidelobe     := -21.28;
- FBandwidth    := 1.154;
- FFirstMinimum := 2.859;
-end;
-
-class function TWindowFunctionWelch.GetWindowFunctionName: string;
-begin
- Result := 'Welch';
-end;
-
-function TWindowFunctionWelch.GetWindowFactor(Pos: Double): Double; //inline;
-begin
- Result := 2 * Pos - Sqr(Pos);
-end;
-
-procedure TWindowFunctionWelch.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-var
-  i, p1, p2   : Integer;
-  StartPos,
-  EndPos      : Integer;
-  CurWinVal   : Double;
-  Counter     : Integer;
-
-  procedure DoWinLoopForward(Strt,Stp : Integer);
-  var r : Integer;
-  begin
-   for r := Strt to Stp - 1 do
-    begin
-     CurWinVal := Counter*FEffLengthReci*(2-Counter*FEffLengthReci);
-     inc(Counter);
-
-     FSpkCorFak := FSpkCorFak + CurWinVal;
-     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
-     Data[r] := Data[r] * CurWinVal;
-    end
-  end;
-
-  procedure DoWinLoopBackward(Strt,Stp : Integer);
-  var r : Integer;
-  begin
-   for r := Strt downto Stp - 1 do
-    begin
-     CurWinVal := Counter * FEffLengthReci * (2 - Counter * FEffLengthReci);
-     inc(Counter);
-
-     FSpkCorFak   := FSpkCorFak + CurWinVal;
-     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
-     Data[r]  := Data[r] * CurWinVal;
-    end
-  end;
-
-  procedure DoWinLoopSymmetric(Strt,Stp : Integer);
-  var r : Integer;
-  begin
-   for r :=  Strt to Stp - 1 do
-    begin
-     CurWinVal := Counter * FEffLengthReci * (2 - Counter * FEffLengthReci);
-     inc(Counter);
-
-     FSpkCorFak   := FSpkCorFak + 2 * CurWinVal;
-     FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
-     Data[p1] := Data[p1] * CurWinVal;
-     Data[p2] := Data[p2] * CurWinVal;
-     inc(p1); dec(p2);
-    end;
-  end;
-
-begin
- if (not FActive) or (SampleCount <= 0) then exit;
- if FLength > SampleCount then
-  begin
-   FLength := SampleCount;
-   CalcEffectiveLength;
-  end;
- StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos <     0 do StartPos := StartPos + SampleCount;
-
- EndPos := (FStart + Length - 1);
- while EndPos  >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos <    0 do EndPos := EndPos + SampleCount;
-
- FSpkCorFak   := 0;
- FSpkCorFakSq := 0;
- if FBartlett
-  then Counter := 1
-  else Counter := 0;
-
- case FWinSlope of
-   wsLeft:
-     begin
-      if StartPos + FEffLengthRnd<=SampleCount
-       then DoWinLoopForward(StartPos, StartPos + FEffLengthRnd)
-       else // Wrap arround
-        begin
-         DoWinLoopForward(StartPos,SampleCount);
-         DoWinLoopForward(0,FEffLengthRnd-(SampleCount-StartPos));
-        end;
-      FSpkCorFak := FSpkCorFak + FLength-FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-FEffLengthRnd;
-     end;
-   wsSymmetric:
-     begin
-      if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0) then
-       begin // No wrap arround!
-        p1 := StartPos;
-        p2 := EndPos;
-        DoWinLoopSymmetric(0,FEffLengthRnd);
-       end
-       else // Wrap around
-        begin
-         if (StartPos + FEffLengthRnd<=SampleCount) then
-          begin // Only right wrap around!
-           P1 := StartPos;
-           P2 := EndPos;
-           DoWinLoopSymmetric(0,EndPos + 1);     // Endpos + 1 ???
-           P2 := SampleCount;
-           DoWinLoopSymmetric(EndPos + 1,FEffLengthRnd);
-          end else
-         if (EndPos -FEffLengthRnd >= 0) then
-          begin // Only left wrap around!
-           P1 := StartPos;
-           P2 := EndPos;
-           DoWinLoopSymmetric(0,SampleCount-StartPos);
-           P1 := 0;
-           DoWinLoopSymmetric(SampleCount-StartPos,FEffLengthRnd);
-          end
-         else
-          begin
-           p1 := StartPos;
-           p2 := EndPos;
-           for i :=  0 to FEffLengthRnd - 1 do
-            begin
-             CurWinVal := Counter*FEffLengthReci*(2-Counter*FEffLengthReci);
-             inc(Counter);
-
-             FSpkCorFak := FSpkCorFak + 2 * CurWinVal;
-             FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
-             Data[p1] := Data[p1] * CurWinVal;
-             Data[p2] := Data[p2] * CurWinVal;
-             inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2<0 then p2 := SampleCount;
-            end;
-          end;
-        end;
-      FSpkCorFak := FSpkCorFak + FLength-2*FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-2*FEffLengthRnd;
-     end;
-   wsRight:
-     begin
-      if EndPos -FEffLengthRnd >= 0
-       then DoWinLoopBackward(EndPos,EndPos -FEffLengthRnd)
-       else // Wrap arround
-        begin
-         DoWinLoopBackward(EndPos,0);
-         DoWinLoopBackward(SampleCount,SampleCount-(FEffLengthRnd-EndPos));
-        end;
-      FSpkCorFak := FSpkCorFak + FLength-FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-FEffLengthRnd;
-     end;
- end;
- FSpkCorFakSq := sqrt(FEffLength/FSpkCorFakSq);
- FillWithZeroes(Data,StartPos,EndPos,SampleCount);
-end;
-
-procedure TWindowFunctionWelch.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
-var
-  i, p1, p2 : Integer;
-  StartPos  : Integer;
-  EndPos    : Integer;
-  CurWinVal : Double;
-  Counter   : Integer;
-
-  procedure DoWinLoopForward(Strt,Stp : Integer);
-  var r : Integer;
-  begin
-   for r := Strt to Stp - 1 do
-    begin
-     CurWinVal := Counter*FEffLengthReci*(2-Counter*FEffLengthReci);
-     Inc(Counter);
-
-     FSpkCorFak := FSpkCorFak + CurWinVal;
-     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
-     Data[r] := Data[r] * CurWinVal;
-    end
-  end;
-
-  procedure DoWinLoopBackward(Strt,Stp : Integer);
-  var r : Integer;
-  begin
-   for r := Strt downto Stp - 1 do
-    begin
-     CurWinVal := Counter*FEffLengthReci*(2-Counter*FEffLengthReci);
-     Inc(Counter);
-
-     FSpkCorFak := FSpkCorFak + CurWinVal;
-     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
-     Data[r] := Data[r] * CurWinVal;
-    end
-  end;
-
-  procedure DoWinLoopSymmetric(Strt,Stp : Integer);
-  var r : Integer;
-  begin
-   for r :=  Strt to Stp - 1 do
-    begin
-     CurWinVal := Counter*FEffLengthReci*(2-Counter*FEffLengthReci);
-     Inc(Counter);
-
-     FSpkCorFak := FSpkCorFak + 2 * CurWinVal;
-     FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
-     Data[p1] := Data[p1] * CurWinVal;
-     Data[p2] := Data[p2] * CurWinVal;
-     inc(p1); dec(p2);
-    end;
-  end;
-
-begin
- if (not FActive) or (SampleCount<=0) then exit;
- if FLength>SampleCount then
-  begin
-   FLength := SampleCount;
-   CalcEffectiveLength;
-  end;
- StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
-
- EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
-
- FSpkCorFak := 0;
- FSpkCorFakSq := 0;
- if FBartlett
-  then Counter := 1
-  else Counter := 0;
-
- case FWinSlope of
-   wsLeft:
-     begin
-      if StartPos + FEffLengthRnd<=SampleCount
-       then DoWinLoopForward(StartPos,StartPos + FEffLengthRnd)
-       else // Wrap arround
-        begin
-         DoWinLoopForward(StartPos,SampleCount);
-         DoWinLoopForward(0,FEffLengthRnd-(SampleCount-StartPos));
-        end;
-       FSpkCorFak := FSpkCorFak + FLength-FEffLengthRnd;
-       FSpkCorFakSq := FSpkCorFakSq + FLength-FEffLengthRnd;
-     end;
-   wsSymmetric:
-     begin
-      if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0) then
-       begin // No wrap arround!
-        p1 := StartPos;
-        p2 := EndPos;
-        DoWinLoopSymmetric(0,FEffLengthRnd);
-       end
-       else // Wrap around
-        begin
-         if (StartPos + FEffLengthRnd<=SampleCount) then
-          begin // Only right wrap around!
-           P1 := StartPos;
-           P2 := EndPos;
-           DoWinLoopSymmetric(0,EndPos + 1);     // Endpos + 1 ???
-           P2 := SampleCount;
-           DoWinLoopSymmetric(EndPos + 1,FEffLengthRnd);
-          end else
-         if (EndPos -FEffLengthRnd >= 0) then
-          begin // Only left wrap around!
-           P1 := StartPos;
-           P2 := EndPos;
-           DoWinLoopSymmetric(0,SampleCount-StartPos);
-           P1 := 0;
-           DoWinLoopSymmetric(SampleCount-StartPos,FEffLengthRnd);
-          end
-         else
-          begin
-           p1 := StartPos;
-           p2 := EndPos;
-           for i :=  0 to FEffLengthRnd - 1 do
-            begin
-             CurWinVal := Counter*FEffLengthReci*(2-Counter*FEffLengthReci);
-             Counter := Counter + 1;
-
-             FSpkCorFak := FSpkCorFak + 2 * CurWinVal;
-             FSpkCorFakSq := FSpkCorFakSq + 2 * CurWinVal * CurWinVal;
-             Data[p1] := Data[p1] * CurWinVal;
-             Data[p2] := Data[p2] * CurWinVal;
-             inc(p1); if p1 >= SampleCount then p1 := 0;
-             dec(p2); if p2<0 then p2 := SampleCount;
-            end;
-          end;
-        end;
-      FSpkCorFak   := FSpkCorFak   + FLength - 2 * FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength - 2 * FEffLengthRnd;
-     end;
-   wsRight:
-     begin
-      if EndPos - FEffLengthRnd >= 0
-       then DoWinLoopBackward(EndPos,EndPos -FEffLengthRnd)
-       else // Wrap arround
-        begin
-         DoWinLoopBackward(EndPos,0);
-         DoWinLoopBackward(SampleCount,SampleCount-(FEffLengthRnd-EndPos));
-        end;
-      FSpkCorFak := FSpkCorFak + FLength-FEffLengthRnd;
-      FSpkCorFakSq := FSpkCorFakSq + FLength-FEffLengthRnd;
-     end;
- end;
- FSpkCorFakSq := sqrt(FEffLength/FSpkCorFakSq);
- FillWithZeroes(Data,StartPos,EndPos,SampleCount);
-end;
-
-
-{ TWindowFunctionAlbrecht }
-
-constructor TWindowFunctionAlbrecht.Create;
-begin
- inherited;
- FSidelobe     := -98.17;
- FBandwidth    := 1.86875;
- FFirstMinimum := 8;
- CosineTerms   := 4;
-end;
-
-destructor TWindowFunctionAlbrecht.Destroy;
-begin
- if Assigned(FCoefPointer)
-  then Dispose(FCoefPointer);
- inherited;
-end;
-
-class function TWindowFunctionAlbrecht.GetWindowFunctionName: string;
-begin
- Result := 'Albrecht';
-end;
-
-procedure TWindowFunctionAlbrecht.SetCosineTerms(Value: Integer);
-begin
- inherited;
- if (Value < 2) then Value := 2;
- if (Value >11) then Value := 11;
- if Assigned(FCoefPointer) then Dispose(FCoefPointer);
- GetMem(FCoefPointer, Value * SizeOf(Double));
- case Value of
-    2 : Move(cAlbrecht2[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    3 : Move(cAlbrecht3[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    4 : Move(cAlbrecht4[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    5 : Move(cAlbrecht5[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    6 : Move(cAlbrecht6[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    7 : Move(cAlbrecht7[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    8 : Move(cAlbrecht8[ 0], FCoefPointer[0], Value * SizeOf(Double));
-    9 : Move(cAlbrecht9[ 0], FCoefPointer[0], Value * SizeOf(Double));
-   10 : Move(cAlbrecht10[0], FCoefPointer[0], Value * SizeOf(Double));
-   11 : Move(cAlbrecht11[0], FCoefPointer[0], Value * SizeOf(Double));
- end;
-
- case Value of
-    2 : begin
-         FBandwidth    :=   1.308;
-         FSidelobe     := -43.19;
-         FFirstMinimum :=   4;
-        end;
-    3 : begin
-         FBandwidth    :=   1.619;
-         FSidelobe     := -71.48;
-         FFirstMinimum :=   6;
-        end;
-    4 : begin
-         FBandwidth    :=   1.872;
-         FSidelobe     := -98.17;
-         FFirstMinimum :=   8;
-        end;
-    5 : begin
-         FBandwidth    :=    2.095;
-         FSidelobe     := -125.4;
-         FFirstMinimum :=   10;
-        end;
-    6 : begin
-         FBandwidth    :=    2.301;
-         FSidelobe     := -152.8;
-         FFirstMinimum :=   12;
-        end;
-    7 : begin
-         FBandwidth    :=    2.485;
-         FSidelobe     := -178.6;
-         FFirstMinimum :=   14;
-        end;
-    8 : begin
-         FBandwidth    :=    2.656;
-         FSidelobe     := -205.76;
-         FFirstMinimum :=   16;
-        end;
-    9 : begin
-         FBandwidth    :=    2.818;
-         FSidelobe     := -231.8;
-         FFirstMinimum :=   18;
-        end;
-   10 : begin
-         FBandwidth    :=    2.973;
-         FSidelobe     := -260.6;
-         FFirstMinimum :=   20;
-        end;
-   11 : begin
-         FBandwidth    :=    3.117;
-         FSidelobe     := -285.48;
-         FFirstMinimum :=   22;
-        end;
- end;
-end;
-
-{ TWindowFunctionGauss }
-
-constructor TWindowFunctionGauss.Create;
-begin
- inherited;
- FAlpha := 1;
-end;
-
-class function TWindowFunctionGauss.GetWindowFunctionName: string;
-begin
- Result := 'Gauss';
-end;
-
-procedure TWindowFunctionGauss.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TWindowFunctionGauss then
-  begin
-   TWindowFunctionGauss(Dest).FAlpha := FAlpha;
-  end else
- if Dest is TWindowFunctionKaiserBessel then
-  begin
-   TWindowFunctionKaiserBessel(Dest).FAlpha := FAlpha;
-   TWindowFunctionKaiserBessel(Dest).fAlphaBesselReciprocal := 1 / ModZeroBesselI0(PI * FAlpha);
-  end else
- if Dest is TWindowFunctionLanczos then
-  begin
-   TWindowFunctionLanczos(Dest).FAlpha := FAlpha;
-  end;
-end;
-
-function TWindowFunctionGauss.GetWindowFactor(Pos: Double): Double; //inline;
-{$IFNDEF PUREPASCAL}
-asm
- fld1
- fsubr Pos.Double
- fmul [self.FAlpha].Single
- fmul st(0),st(0)
- fchs
- fld st(0)
- frndint
- fsub st(1), st(0)
- fxch st(1)
- f2xm1
- fld1
- fadd
- fscale
- fstp st(1)
-end;
-{$ELSE}
-begin
- Result := Exp(-ln2 * sqr((Pos - 1) * FAlpha));
-end;
-{$ENDIF}
-
-{ TWindowFunctionKaiserBessel }
-
-constructor TWindowFunctionKaiserBessel.Create;
-begin
- inherited;
- FAlpha := 1;
-end;
-
-class function TWindowFunctionKaiserBessel.GetWindowFunctionName: string;
-begin
- Result := 'Kaiser Bessel';
-end;
-
-procedure TWindowFunctionKaiserBessel.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TWindowFunctionKaiserBessel then
-  begin
-   TWindowFunctionKaiserBessel(Dest).FAlpha := FAlpha;
-   TWindowFunctionKaiserBessel(Dest).fAlphaBesselReciprocal := fAlphaBesselReciprocal;
-  end else
- if Dest is TWindowFunctionGauss then
-  begin
-   TWindowFunctionGauss(Dest).FAlpha := FAlpha;
-  end else
- if Dest is TWindowFunctionLanczos then
-  begin
-   TWindowFunctionLanczos(Dest).FAlpha := FAlpha;
-  end;
-end;
-
-function TWindowFunctionKaiserBessel.GetWindowFactor(Pos: Double): Double; //inline;
-begin
- Result := ModZeroBesselI0(PI * FAlpha * sqrt(1 - sqr(1 - Pos))) * FAlphaBesselReciprocal;
-end;
-
-procedure TWindowFunctionKaiserBessel.AlphaChanged;
-begin
- inherited;
- FAlphaBesselReciprocal := 1 / ModZeroBesselI0(PI * FAlpha);
-end;
 
 { TWindowFunctionCosineTerm }
 
@@ -3131,114 +1762,115 @@ end;
 
 procedure TWindowFunctionCosineTerm.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
-  StartPos,
-  EndPos,i    : Integer;
-  ParamRec    : TParameterRecord;
+  StartPos  : Integer;
+  EndPos, i : Integer;
+  ParamRec  : TParameterRecord;
 begin
- if (not FActive) or (SampleCount<=0) then exit;
- if FLength>SampleCount then
+ if (SampleCount <= 0) then Exit;
+ if FLength > SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
- if FInvert
-  then StartPos := (FStart + Length)-FEffLengthRnd
-  else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos< 0 do StartPos := StartPos + SampleCount;
 
  if FInvert
-  then EndPos := FStart + FEffLengthRnd-1
-  else EndPos := (FStart + Length-1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos< 0 do EndPos := EndPos + SampleCount;
+  then StartPos := (FStart + Length) - FEffLengthRnd
+  else StartPos := FStart;
+
+ if FInvert
+  then EndPos := FStart + FEffLengthRnd - 1
+  else EndPos := FStart + Length - 1;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  with ParamRec do
   begin
    SpectrumCorrectionFactor := 0;
-   SpuaredCorrectionFactor := 0;
-   GetSinCos(PI*FEffLengthReci,ComplexAngle.Im,ComplexAngle.Re);
+   SpuaredCorrectionFactor  := 0;
+   GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
    CoefficientPointer := FCoefPointer;
    if FBartlett then
     case FWinSlope of
-     wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
+     wsLeft  : begin ComplexPosition.Im := ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
      wsRight : begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end;
      wsSymmetric :
       begin
-       ComplexPosition.Im :=  Sqrt(0.5*(1 + ComplexAngle.Re));
-       ComplexPosition.Re := -Sqrt(0.5*(1-ComplexAngle.Re));
+       ComplexPosition.Im :=  Sqrt(0.5 * (1 + ComplexAngle.Re));
+       ComplexPosition.Re := -Sqrt(0.5 * (1 - ComplexAngle.Re));
       end;
     end
    else
     begin
-     if FWinSlope=wsRight
+     if FWinSlope = wsRight
       then begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end
-      else begin ComplexPosition.Im := 1; ComplexPosition.Re :=  0; end;
+      else begin ComplexPosition.Im :=  1; ComplexPosition.Re := 0; end;
     end;
   end;
 
  case FWinSlope of
   wsLeft:
     begin
-     if StartPos + FEffLengthRnd<=SampleCount
+     if StartPos + FEffLengthRnd <= SampleCount
       then FCosFwdLoop32(@Data[StartPos], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        FCosFwdLoop32(@Data[StartPos],ParamRec,SampleCount-StartPos);
-        FCosFwdLoop32(@Data[0],ParamRec,FEffLengthRnd-(SampleCount-StartPos));
+        FCosFwdLoop32(@Data[StartPos], ParamRec, SampleCount - StartPos);
+        FCosFwdLoop32(@Data[0], ParamRec, FEffLengthRnd - (SampleCount - StartPos));
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
-     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - FEffLengthRnd;
     end;
   wsRight:
     begin
-     if EndPos + 1-FEffLengthRnd >= 0
-      then FCosFwdLoop32(@Data[EndPos + 1-FEffLengthRnd],ParamRec,FEffLengthRnd)
+     if EndPos + 1 - FEffLengthRnd >= 0
+      then FCosFwdLoop32(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        FCosFwdLoop32(@Data[(EndPos + 1-FEffLengthRnd + SampleCount)],ParamRec,FEffLengthRnd-(EndPos + 1));
-        FCosFwdLoop32(@Data[0],ParamRec,EndPos + 1);
+        FCosFwdLoop32(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+        FCosFwdLoop32(@Data[0], ParamRec,EndPos + 1);
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-FEffLengthRnd;
-     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - FEffLengthRnd;
     end;
   wsSymmetric:
     begin
-     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
-      then FCosSymLoop32(@Data[StartPos],ParamRec,FEffLengthRnd,@Data[EndPos]) // No wrap arround!
+     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos - FEffLengthRnd >= 0)
+      then FCosSymLoop32(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
       else // Wrap around
        begin
-        if (EndPos -FEffLengthRnd >= 0) then
+        if (EndPos - FEffLengthRnd >= 0) then
          begin // Only left wrap around!
-          i := SampleCount-StartPos;
-          FCosSymLoop32(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-          FCosSymLoop32(@Data[0],ParamRec,FEffLengthRnd-i,@Data[EndPos -i]);
+          i := SampleCount - StartPos;
+          FCosSymLoop32(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+          FCosSymLoop32(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos - i]);
          end else
         if (StartPos + FEffLengthRnd<=SampleCount) then
          begin // Only right wrap around!
-          FCosSymLoop32(@Data[StartPos],ParamRec,EndPos + 1,@Data[EndPos]);
-          FCosSymLoop32(@Data[StartPos + EndPos + 1],ParamRec,FEffLengthRnd-EndPos -1,@Data[SampleCount-1]);
+          FCosSymLoop32(@Data[StartPos], ParamRec,EndPos + 1, @Data[EndPos]);
+          FCosSymLoop32(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos -1, @Data[SampleCount-1]);
          end
         else
          begin
           exit;
-          i := SampleCount-StartPos;
+          i := SampleCount - StartPos;
           if EndPos<i then
            begin
-            FCosSymLoop32(@Data[StartPos],ParamRec,EndPos,@Data[EndPos]);
-            FCosSymLoop32(@Data[StartPos + EndPos],ParamRec,i-EndPos,@Data[SampleCount-1]);
-            FCosSymLoop32(@Data[0],ParamRec,FEffLengthRnd-i,@Data[SampleCount-(i-EndPos)]);
+            FCosSymLoop32(@Data[StartPos], ParamRec,EndPos, @Data[EndPos]);
+            FCosSymLoop32(@Data[StartPos + EndPos], ParamRec, i - EndPos, @Data[SampleCount - 1]);
+            FCosSymLoop32(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount-(i-EndPos)]);
            end
           else
            begin
-            FCosSymLoop32(@Data[StartPos],ParamRec,i,@Data[EndPos]);
-            FCosSymLoop32(@Data[0],ParamRec,EndPos -i,@Data[EndPos -i]);
-            FCosSymLoop32(@Data[EndPos -i],ParamRec,FEffLengthRnd-EndPos,@Data[0]);
+            FCosSymLoop32(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+            FCosSymLoop32(@Data[0], ParamRec,EndPos - i, @Data[EndPos - i]);
+            FCosSymLoop32(@Data[EndPos -i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
            end;
          end;
        end;
-     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
-     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength-2*FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength -2 * FEffLengthRnd;
+     ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - 2 * FEffLengthRnd;
     end;
  end;
  ParamRec.SpuaredCorrectionFactor := sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
@@ -3250,32 +1882,33 @@ end;
 
 procedure TWindowFunctionCosineTerm.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
-  StartPos,
-  EndPos,i    : Integer;
-  ParamRec    : TParameterRecord;
+  StartPos  : Integer;
+  EndPos, i : Integer;
+  ParamRec  : TParameterRecord;
 begin
- if (not FActive) or (SampleCount <= 0) then exit;
+ if (SampleCount <= 0) then Exit;
  if FLength > SampleCount then
   begin
    FLength := SampleCount;
    CalcEffectiveLength;
   end;
+
  if FInvert
-  then StartPos := (FStart + Length)-FEffLengthRnd
+  then StartPos := (FStart + Length) - FEffLengthRnd
   else StartPos := FStart;
- while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
- while StartPos < 0     do StartPos := StartPos + SampleCount;
 
  if FInvert
   then EndPos := FStart + FEffLengthRnd - 1
-  else EndPos := (FStart + Length - 1);
- while EndPos >= SampleCount do EndPos := EndPos - SampleCount;
- while EndPos <  0    do EndPos := EndPos + SampleCount;
+  else EndPos := FStart + Length - 1;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
 
  with ParamRec do
   begin
-   SpectrumCorrectionFactor   := 0;
-   SpuaredCorrectionFactor := 0;
+   SpectrumCorrectionFactor := 0;
+   SpuaredCorrectionFactor  := 0;
    GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
    CoefficientPointer := FCoefPointer;
    if FBartlett then
@@ -3315,7 +1948,7 @@ begin
       then FCosFwdLoop64(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
       else // Wrap arround
        begin
-        FCosFwdLoop64(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd-(EndPos + 1));
+        FCosFwdLoop64(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
         FCosFwdLoop64(@Data[0], ParamRec, EndPos + 1);
        end;
      ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
@@ -3329,7 +1962,7 @@ begin
        begin
         if (EndPos -FEffLengthRnd >= 0) then
          begin // Only left wrap around!
-          i := SampleCount-StartPos;
+          i := SampleCount - StartPos;
           FCosSymLoop64(@Data[StartPos], ParamRec, i, @Data[EndPos]);
           FCosSymLoop64(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos - i]);
          end else
@@ -3341,7 +1974,7 @@ begin
         else
          begin
           exit;
-          i := SampleCount-StartPos;
+          i := SampleCount - StartPos;
           if EndPos<i then
            begin
             FCosSymLoop64(@Data[StartPos], ParamRec, EndPos, @Data[EndPos]);
@@ -3351,12 +1984,12 @@ begin
           else
            begin
             FCosSymLoop64(@Data[StartPos], ParamRec, i, @Data[EndPos]);
-            FCosSymLoop64(@Data[0],ParamRec, EndPos - i, @Data[EndPos -i]);
+            FCosSymLoop64(@Data[0], ParamRec, EndPos - i, @Data[EndPos -i]);
             FCosSymLoop64(@Data[EndPos -i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
            end;
          end;
        end;
-     ParamRec.SpectrumCorrectionFactor   := ParamRec.SpectrumCorrectionFactor   + FLength - 2 * FEffLengthRnd;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor   + FLength - 2 * FEffLengthRnd;
      ParamRec.SpuaredCorrectionFactor := ParamRec.SpuaredCorrectionFactor + FLength - 2 * FEffLengthRnd;
     end;
  end;
@@ -3440,5 +2073,648 @@ begin
    end;
   end;
 end;
+
+
+{ TWindowFunctionHanning }
+
+constructor TWindowFunctionHanning.Create;
+begin
+ inherited;
+ FBandwidth    := 1.4410;
+ FSidelobe     := -31.48;
+ FFirstMinimum := 4;
+end;
+
+function TWindowFunctionHanning.GetWindowFactor(Pos: Double): Double; //inline;
+begin
+ Result := CHalf64 * (1 - Cos(Pi * Pos));
+end;
+
+class function TWindowFunctionHanning.GetWindowFunctionName: string;
+begin
+ Result := 'Hanning';
+end;
+
+procedure TWindowFunctionHanning.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  StartPos  : Integer;
+  EndPos, i : Integer;
+  ParamRec  : TParameterRecord;
+begin
+ if (SampleCount <= 0) then Exit;
+ if FLength > SampleCount then
+  begin
+   FLength := SampleCount;
+   CalcEffectiveLength;
+  end;
+
+ if FInvert
+  then StartPos := FStart + Length - 1 - FEffLengthRnd
+  else StartPos := FStart;
+
+ if FInvert
+  then EndPos := FStart + FEffLengthRnd - 1
+  else EndPos := FStart + Length - 1;
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
+
+ with ParamRec do
+  begin
+   SpectrumCorrectionFactor := 0;
+   SpuaredCorrectionFactor  := 0;
+   GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
+   CoefficientPointer := @cHanning;
+   if FBartlett then
+    case FWinSlope of
+     wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
+     wsRight : begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end;
+     wsSymmetric :
+      begin
+       ComplexPosition.Im :=  Sqrt(0.5 * (1 + ComplexAngle.Re));
+       ComplexPosition.Re := -Sqrt(0.5 * (1 - ComplexAngle.Re));
+      end;
+    end
+   else
+    begin
+     if FWinSlope = wsRight
+      then begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end
+      else begin ComplexPosition.Im :=  1; ComplexPosition.Re := 0; end;
+    end;
+  end;
+
+ case FWinSlope of
+  wsLeft:
+    begin
+     if StartPos + FEffLengthRnd <= SampleCount
+      then DoWinLoopHanning32Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
+      else // Wrap arround
+       begin
+        DoWinLoopHanning32Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
+        DoWinLoopHanning32Forward(@Data[0], ParamRec, FEffLengthRnd - SampleCount + StartPos);
+       end;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+    end;
+  wsRight:
+    begin
+     if EndPos + 1 - FEffLengthRnd >= 0
+      then DoWinLoopHanning32Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
+      else // Wrap arround
+       begin
+        DoWinLoopHanning32Forward(@Data[(EndPos + 1 - FEffLengthRnd + SampleCount)], ParamRec, FEffLengthRnd - (EndPos + 1));
+        DoWinLoopHanning32Forward(@Data[0], ParamRec,EndPos + 1);
+       end;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+    end;
+  wsSymmetric:
+    begin
+     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos - FEffLengthRnd >= 0)
+      then DoWinLoopHanning32Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
+      else // Wrap around
+       begin
+        if (EndPos - FEffLengthRnd >= 0) then
+         begin // Only left wrap around!
+          i := SampleCount - StartPos;
+          DoWinLoopHanning32Symmetric(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+          DoWinLoopHanning32Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos -i]);
+         end else
+        if (StartPos + FEffLengthRnd<=SampleCount) then
+         begin // Only right wrap around!
+          DoWinLoopHanning32Symmetric(@Data[StartPos], ParamRec,EndPos + 1, @Data[EndPos]);
+          DoWinLoopHanning32Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos -1, @Data[SampleCount-1]);
+         end
+        else
+         begin
+          exit;
+          i := SampleCount - StartPos;
+          if EndPos<i then
+           begin
+            DoWinLoopHanning32Symmetric(@Data[StartPos], ParamRec,EndPos, @Data[EndPos]);
+            DoWinLoopHanning32Symmetric(@Data[StartPos + EndPos], ParamRec,i-EndPos, @Data[SampleCount-1]);
+            DoWinLoopHanning32Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount-(i-EndPos)]);
+           end
+          else
+           begin
+            DoWinLoopHanning32Symmetric(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+            DoWinLoopHanning32Symmetric(@Data[0], ParamRec,EndPos -i, @Data[EndPos -i]);
+            DoWinLoopHanning32Symmetric(@Data[EndPos -i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
+           end;
+         end;
+       end;
+      ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
+    end;
+ end;
+ FillWithZeroes(Data, StartPos, EndPos, SampleCount);
+
+ FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
+ FSpkCorFakSq := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+end;
+
+procedure TWindowFunctionHanning.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+var
+  StartPos  : Integer;
+  EndPos, i : Integer;
+  ParamRec  : TParameterRecord;
+begin
+ if (SampleCount <= 0) then Exit;
+ if FLength > SampleCount then
+  begin
+   FLength := SampleCount;
+   CalcEffectiveLength;
+  end;
+
+ if FInvert
+  then StartPos := (FStart + Length - 1) - FEffLengthRnd
+  else StartPos := FStart;
+
+ if FInvert
+  then EndPos := FStart + FEffLengthRnd - 1
+  else EndPos := (FStart + Length - 1);
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
+
+ with ParamRec do
+  begin
+   SpectrumCorrectionFactor := 0;
+   SpuaredCorrectionFactor := 0;
+   GetSinCos(PI * FEffLengthReci, ComplexAngle.Im, ComplexAngle.Re);
+   CoefficientPointer := @cHanning;
+   if FBartlett then
+    case FWinSlope of
+     wsLeft  : begin ComplexPosition.Im :=  ComplexAngle.Re; ComplexPosition.Re := -ComplexAngle.Im; end;
+     wsRight : begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end;
+     wsSymmetric :
+      begin
+       ComplexPosition.Im :=  Sqrt(0.5*(1 + ComplexAngle.Re));
+       ComplexPosition.Re := -Sqrt(0.5*(1-ComplexAngle.Re));
+      end;
+    end
+   else
+    begin
+     if FWinSlope=wsRight
+      then begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end
+      else begin ComplexPosition.Im :=  1; ComplexPosition.Re := 0; end;
+    end;
+  end;
+
+ case FWinSlope of
+  wsLeft:
+    begin
+     if StartPos + FEffLengthRnd <= SampleCount
+      then DoWinLoopHanning64Forward(@Data[StartPos], ParamRec, FEffLengthRnd)
+      else // Wrap arround
+       begin
+        DoWinLoopHanning64Forward(@Data[StartPos], ParamRec, SampleCount - StartPos);
+        DoWinLoopHanning64Forward(@Data[0], ParamRec, FEffLengthRnd - (SampleCount - StartPos));
+       end;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+    end;
+  wsRight:
+    begin
+     if EndPos + 1 - FEffLengthRnd >= 0
+      then DoWinLoopHanning64Forward(@Data[EndPos + 1 - FEffLengthRnd], ParamRec, FEffLengthRnd)
+      else // Wrap arround
+       begin
+        DoWinLoopHanning64Forward(@Data[EndPos + 1 - FEffLengthRnd + SampleCount], ParamRec, FEffLengthRnd - EndPos - 1);
+        DoWinLoopHanning64Forward(@Data[0], ParamRec,EndPos + 1);
+       end;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength - FEffLengthRnd;
+    end;
+  wsSymmetric:
+    begin
+     if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0)
+      then DoWinLoopHanning64Symmetric(@Data[StartPos], ParamRec, FEffLengthRnd, @Data[EndPos]) // No wrap arround!
+      else // Wrap around
+       begin
+        if (EndPos -FEffLengthRnd >= 0) then
+         begin // Only left wrap around!
+          i := SampleCount - StartPos;
+          DoWinLoopHanning64Symmetric(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+          DoWinLoopHanning64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[EndPos -i]);
+         end else
+        if (StartPos + FEffLengthRnd<=SampleCount) then
+         begin // Only right wrap around!
+          DoWinLoopHanning64Symmetric(@Data[StartPos], ParamRec,EndPos + 1, @Data[EndPos]);
+          DoWinLoopHanning64Symmetric(@Data[StartPos + EndPos + 1], ParamRec, FEffLengthRnd - EndPos -1, @Data[SampleCount-1]);
+         end
+        else
+         begin
+          Exit;
+          i := SampleCount - StartPos;
+          if EndPos < i then
+           begin
+            DoWinLoopHanning64Symmetric(@Data[StartPos], ParamRec,EndPos, @Data[EndPos]);
+            DoWinLoopHanning64Symmetric(@Data[StartPos + EndPos], ParamRec,i-EndPos, @Data[SampleCount-1]);
+            DoWinLoopHanning64Symmetric(@Data[0], ParamRec, FEffLengthRnd - i, @Data[SampleCount-(i-EndPos)]);
+           end
+          else
+           begin
+            DoWinLoopHanning64Symmetric(@Data[StartPos], ParamRec,i, @Data[EndPos]);
+            DoWinLoopHanning64Symmetric(@Data[0], ParamRec,EndPos -i, @Data[EndPos -i]);
+            DoWinLoopHanning64Symmetric(@Data[EndPos -i], ParamRec, FEffLengthRnd - EndPos, @Data[0]);
+           end;
+         end;
+       end;
+     ParamRec.SpectrumCorrectionFactor := ParamRec.SpectrumCorrectionFactor + FLength-2*FEffLengthRnd;
+    end;
+ end;
+ FillWithZeroes(Data,StartPos,EndPos,SampleCount);
+
+ FSpkCorFak   := ParamRec.SpectrumCorrectionFactor;
+ FSpkCorFakSq := Sqrt(FEffLength / (ParamRec.SpuaredCorrectionFactor));
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////// TWindowFunctionHamming //////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+constructor TWindowFunctionHamming.Create;
+begin
+ inherited;
+ FBandwidth := 1.303;
+ FSidelobe := -42.68;
+ FFirstMinimum := 4;
+ FCoefPointer := @cHamming[0];
+ CosineTerms := 2;
+end;
+
+class function TWindowFunctionHamming.GetWindowFunctionName: string;
+begin
+ Result := 'Hanning';
+end;
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////// TWindowFunctionBlackman /////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+constructor TWindowFunctionBlackman.Create;
+begin
+ inherited;
+ FCoefPointer  := @cBlackman[0];
+ FBandwidth    := 1.644;
+ FSidelobe     := -58.11;
+ FFirstMinimum := 6;
+ CosineTerms   := 3;
+end;
+
+class function TWindowFunctionBlackman.GetWindowFunctionName: string;
+begin
+ Result := 'Blackman';
+end;
+
+
+{ TWindowFunctionWelch }
+
+constructor TWindowFunctionWelch.Create;
+begin
+ inherited;
+ FSidelobe     := -21.28;
+ FBandwidth    := 1.154;
+ FFirstMinimum := 2.859;
+end;
+
+class function TWindowFunctionWelch.GetWindowFunctionName: string;
+begin
+ Result := 'Welch';
+end;
+
+function TWindowFunctionWelch.GetWindowFactor(Pos: Double): Double; //inline;
+begin
+ Result := 2 * Pos - Sqr(Pos);
+end;
+
+procedure TWindowFunctionWelch.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  i, p1, p2   : Integer;
+  StartPos,
+  EndPos      : Integer;
+  CurWinVal   : Double;
+  Counter     : Integer;
+
+  procedure DoWinLoopForward(Strt,Stp : Integer);
+  var r : Integer;
+  begin
+   for r := Strt to Stp - 1 do
+    begin
+     CurWinVal := Counter * FEffLengthReci*(2 - Counter * FEffLengthReci);
+     inc(Counter);
+
+     FSpkCorFak := FSpkCorFak + CurWinVal;
+     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
+     Data[r] := Data[r] * CurWinVal;
+    end
+  end;
+
+  procedure DoWinLoopBackward(Strt,Stp : Integer);
+  var r : Integer;
+  begin
+   for r := Strt downto Stp - 1 do
+    begin
+     CurWinVal := Counter * FEffLengthReci * (2 - Counter * FEffLengthReci);
+     inc(Counter);
+
+     FSpkCorFak   := FSpkCorFak + CurWinVal;
+     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
+     Data[r]  := Data[r] * CurWinVal;
+    end
+  end;
+
+  procedure DoWinLoopSymmetric(Strt,Stp : Integer);
+  var r : Integer;
+  begin
+   for r :=  Strt to Stp - 1 do
+    begin
+     CurWinVal := Counter * FEffLengthReci * (2 - Counter * FEffLengthReci);
+     inc(Counter);
+
+     FSpkCorFak   := FSpkCorFak + 2 * CurWinVal;
+     FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
+     Data[p1] := Data[p1] * CurWinVal;
+     Data[p2] := Data[p2] * CurWinVal;
+     inc(p1); dec(p2);
+    end;
+  end;
+
+begin
+ if (SampleCount <= 0) then Exit;
+ if FLength > SampleCount then
+  begin
+   FLength := SampleCount;
+   CalcEffectiveLength;
+  end;
+ StartPos := FStart;
+ while StartPos >= SampleCount do StartPos := StartPos - SampleCount;
+ while StartPos <     0 do StartPos := StartPos + SampleCount;
+
+ EndPos := (FStart + Length - 1);
+ while EndPos  >= SampleCount do EndPos := EndPos - SampleCount;
+ while EndPos <    0 do EndPos := EndPos + SampleCount;
+
+ FSpkCorFak   := 0;
+ FSpkCorFakSq := 0;
+ if FBartlett
+  then Counter := 1
+  else Counter := 0;
+
+ case FWinSlope of
+   wsLeft:
+     begin
+      if StartPos + FEffLengthRnd<=SampleCount
+       then DoWinLoopForward(StartPos, StartPos + FEffLengthRnd)
+       else // Wrap arround
+        begin
+         DoWinLoopForward(StartPos,SampleCount);
+         DoWinLoopForward(0, FEffLengthRnd - (SampleCount - StartPos));
+        end;
+      FSpkCorFak := FSpkCorFak + FLength - FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
+     end;
+   wsSymmetric:
+     begin
+      if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0) then
+       begin // No wrap arround!
+        p1 := StartPos;
+        p2 := EndPos;
+        DoWinLoopSymmetric(0, FEffLengthRnd);
+       end
+       else // Wrap around
+        begin
+         if (StartPos + FEffLengthRnd<=SampleCount) then
+          begin // Only right wrap around!
+           P1 := StartPos;
+           P2 := EndPos;
+           DoWinLoopSymmetric(0,EndPos + 1);     // Endpos + 1 ???
+           P2 := SampleCount;
+           DoWinLoopSymmetric(EndPos + 1, FEffLengthRnd);
+          end else
+         if (EndPos -FEffLengthRnd >= 0) then
+          begin // Only left wrap around!
+           P1 := StartPos;
+           P2 := EndPos;
+           DoWinLoopSymmetric(0, SampleCount - StartPos);
+           P1 := 0;
+           DoWinLoopSymmetric(SampleCount - StartPos, FEffLengthRnd);
+          end
+         else
+          begin
+           p1 := StartPos;
+           p2 := EndPos;
+           for i :=  0 to FEffLengthRnd - 1 do
+            begin
+             CurWinVal := Counter * FEffLengthReci*(2 - Counter * FEffLengthReci);
+             inc(Counter);
+
+             FSpkCorFak := FSpkCorFak + 2 * CurWinVal;
+             FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
+             Data[p1] := Data[p1] * CurWinVal;
+             Data[p2] := Data[p2] * CurWinVal;
+             inc(p1); if p1 >= SampleCount then p1 := 0;
+             dec(p2); if p2<0 then p2 := SampleCount;
+            end;
+          end;
+        end;
+      FSpkCorFak := FSpkCorFak + FLength-2*FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength-2*FEffLengthRnd;
+     end;
+   wsRight:
+     begin
+      if EndPos -FEffLengthRnd >= 0
+       then DoWinLoopBackward(EndPos,EndPos -FEffLengthRnd)
+       else // Wrap arround
+        begin
+         DoWinLoopBackward(EndPos,0);
+         DoWinLoopBackward(SampleCount,SampleCount-(FEffLengthRnd - EndPos));
+        end;
+      FSpkCorFak := FSpkCorFak + FLength - FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
+     end;
+ end;
+ FSpkCorFakSq := sqrt(FEffLength/FSpkCorFakSq);
+ FillWithZeroes(Data,StartPos,EndPos,SampleCount);
+end;
+
+procedure TWindowFunctionWelch.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+var
+  i, p1, p2 : Integer;
+  StartPos  : Integer;
+  EndPos    : Integer;
+  CurWinVal : Double;
+  Counter   : Integer;
+
+  procedure DoWinLoopForward(Strt,Stp : Integer);
+  var r : Integer;
+  begin
+   for r := Strt to Stp - 1 do
+    begin
+     CurWinVal := Counter * FEffLengthReci*(2 - Counter * FEffLengthReci);
+     Inc(Counter);
+
+     FSpkCorFak := FSpkCorFak + CurWinVal;
+     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
+     Data[r] := Data[r] * CurWinVal;
+    end
+  end;
+
+  procedure DoWinLoopBackward(Strt,Stp : Integer);
+  var r : Integer;
+  begin
+   for r := Strt downto Stp - 1 do
+    begin
+     CurWinVal := Counter * FEffLengthReci*(2 - Counter * FEffLengthReci);
+     Inc(Counter);
+
+     FSpkCorFak := FSpkCorFak + CurWinVal;
+     FSpkCorFakSq := FSpkCorFak + CurWinVal * CurWinVal;
+     Data[r] := Data[r] * CurWinVal;
+    end
+  end;
+
+  procedure DoWinLoopSymmetric(Strt,Stp : Integer);
+  var r : Integer;
+  begin
+   for r :=  Strt to Stp - 1 do
+    begin
+     CurWinVal := Counter * FEffLengthReci*(2 - Counter * FEffLengthReci);
+     Inc(Counter);
+
+     FSpkCorFak := FSpkCorFak + 2 * CurWinVal;
+     FSpkCorFakSq := FSpkCorFak + 2 * CurWinVal * CurWinVal;
+     Data[p1] := Data[p1] * CurWinVal;
+     Data[p2] := Data[p2] * CurWinVal;
+     inc(p1); dec(p2);
+    end;
+  end;
+
+begin
+ if (SampleCount <= 0) then Exit;
+
+ if FLength > SampleCount then
+  begin
+   FLength := SampleCount;
+   CalcEffectiveLength;
+  end;
+
+ StartPos := FStart;
+ EndPos := (FStart + Length - 1);
+
+ // wrap positions
+ WrapInt(StartPos, SampleCount);
+ WrapInt(EndPos, SampleCount);
+
+ FSpkCorFak := 0;
+ FSpkCorFakSq := 0;
+ if FBartlett
+  then Counter := 1
+  else Counter := 0;
+
+ case FWinSlope of
+   wsLeft:
+     begin
+      if StartPos + FEffLengthRnd<=SampleCount
+       then DoWinLoopForward(StartPos,StartPos + FEffLengthRnd)
+       else // Wrap arround
+        begin
+         DoWinLoopForward(StartPos,SampleCount);
+         DoWinLoopForward(0, FEffLengthRnd - (SampleCount - StartPos));
+        end;
+       FSpkCorFak := FSpkCorFak + FLength - FEffLengthRnd;
+       FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
+     end;
+   wsSymmetric:
+     begin
+      if (StartPos + FEffLengthRnd<SampleCount) and (EndPos -FEffLengthRnd >= 0) then
+       begin // No wrap arround!
+        p1 := StartPos;
+        p2 := EndPos;
+        DoWinLoopSymmetric(0, FEffLengthRnd);
+       end
+       else // Wrap around
+        begin
+         if (StartPos + FEffLengthRnd<=SampleCount) then
+          begin // Only right wrap around!
+           P1 := StartPos;
+           P2 := EndPos;
+           DoWinLoopSymmetric(0,EndPos + 1);     // Endpos + 1 ???
+           P2 := SampleCount;
+           DoWinLoopSymmetric(EndPos + 1, FEffLengthRnd);
+          end else
+         if (EndPos -FEffLengthRnd >= 0) then
+          begin // Only left wrap around!
+           P1 := StartPos;
+           P2 := EndPos;
+           DoWinLoopSymmetric(0, SampleCount - StartPos);
+           P1 := 0;
+           DoWinLoopSymmetric(SampleCount - StartPos, FEffLengthRnd);
+          end
+         else
+          begin
+           p1 := StartPos;
+           p2 := EndPos;
+           for i :=  0 to FEffLengthRnd - 1 do
+            begin
+             CurWinVal := Counter * FEffLengthReci*(2 - Counter * FEffLengthReci);
+             Counter := Counter + 1;
+
+             FSpkCorFak := FSpkCorFak + 2 * CurWinVal;
+             FSpkCorFakSq := FSpkCorFakSq + 2 * CurWinVal * CurWinVal;
+             Data[p1] := Data[p1] * CurWinVal;
+             Data[p2] := Data[p2] * CurWinVal;
+             inc(p1); if p1 >= SampleCount then p1 := 0;
+             dec(p2); if p2<0 then p2 := SampleCount;
+            end;
+          end;
+        end;
+      FSpkCorFak   := FSpkCorFak   + FLength - 2 * FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength - 2 * FEffLengthRnd;
+     end;
+   wsRight:
+     begin
+      if EndPos - FEffLengthRnd >= 0
+       then DoWinLoopBackward(EndPos,EndPos -FEffLengthRnd)
+       else // Wrap arround
+        begin
+         DoWinLoopBackward(EndPos,0);
+         DoWinLoopBackward(SampleCount, SampleCount - (FEffLengthRnd - EndPos));
+        end;
+      FSpkCorFak := FSpkCorFak + FLength - FEffLengthRnd;
+      FSpkCorFakSq := FSpkCorFakSq + FLength - FEffLengthRnd;
+     end;
+ end;
+ FSpkCorFakSq := sqrt(FEffLength/FSpkCorFakSq);
+ FillWithZeroes(Data,StartPos,EndPos,SampleCount);
+end;
+
+
+procedure RegisterWindowFunction(AClass: TWindowFunctionClass);
+var
+  i : Integer;
+begin
+ // check if file format is already registered
+ for i := 0 to Length(GWindowFunctions) - 1 do
+  if GWindowFunctions[i] = AClass
+   then raise Exception.Create(RCStrWindowDuplicate);
+
+ // add file format to list
+ SetLength(GWindowFunctions, Length(GWindowFunctions) + 1);
+ GWindowFunctions[Length(GWindowFunctions) - 1] := AClass;
+end;
+
+procedure RegisterWindowFunctions(AClasses: array of TWindowFunctionClass);
+var
+  i : Integer;
+begin
+ for i := 0 to Length(AClasses) - 1
+  do RegisterWindowFunction(AClasses[i]);
+end;
+
+
+initialization
+  RegisterWindowFunctions([TWindowFunctionRectangle, TWindowFunctionTriangle,
+    TWindowFunctionHanning, TWindowFunctionHamming, TWindowFunctionBlackman,
+    TWindowFunctionWelch]);
 
 end.

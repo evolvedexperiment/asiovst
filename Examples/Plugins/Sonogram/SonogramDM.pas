@@ -34,7 +34,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
-  DAV_Classes, DAV_Sonogram, DAV_VSTModule;
+  DAV_Classes, DAV_Sonogram, DAV_VSTModule, DAV_DspWindowFunctions,
+  DAV_DspWindowFunctionsAdvanced;
 
 type
   TSonogramDataModule = class(TVSTModule)
@@ -49,9 +50,9 @@ type
     procedure ParameterWindowDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterWindowChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FSonogram : TSonogram;
+    FSonogram : TSonogram32;
   public
-    property Sonogram: TSonogram read FSonogram;
+    property Sonogram: TSonogram32 read FSonogram;
   end;
 
 implementation
@@ -59,7 +60,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Approximations, DAV_DspWindowing, SonogramGui;
+ DAV_Approximations, SonogramGui, DAV_VSTParameters;
 
 procedure TSonogramDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -68,14 +69,20 @@ end;
 
 procedure TSonogramDataModule.VSTModuleOpen(Sender: TObject);
 begin
- FSonogram := TSonogram.Create;
+ FSonogram := TSonogram32.Create;
  with FSonogram do
   begin
-   SampleRate := Self.SampleRate;
-   WindowType := wtBlackman;
-   Logarithmic := True;
+   SampleRate   := Self.SampleRate;
+   WindowClass  := TWindowFunctionBlackman;
+   Logarithmic  := True;
    MaximumLevel := 6;
    MinimumLevel := -96;
+  end;
+
+ with ParameterProperties[2] do
+  begin
+   Max := Length(GWindowFunctions) - 1;
+   MaxInteger := Length(GWindowFunctions) - 1;
   end;
 
  Parameter[0] := 10;
@@ -114,19 +121,13 @@ end;
 procedure TSonogramDataModule.ParameterWindowDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case Round(Parameter[Index]) of
-  0 : PreDefined := 'Rectangle';
-  1 : PreDefined := 'Triangle';
-  2 : PreDefined := 'Hanning';
-  3 : PreDefined := 'Hamming';
-  4 : PreDefined := 'Blackman';
- end;
+ PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
 
 procedure TSonogramDataModule.ParameterWindowChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FSonogram.WindowType := TWindowType(Round(Parameter[Index]));
+ FSonogram.WindowClass := GWindowFunctions[Round(Parameter[Index])];
 end;
 
 procedure TSonogramDataModule.VSTModuleProcess(const Inputs,

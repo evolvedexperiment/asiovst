@@ -42,18 +42,16 @@ uses
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
-  TWindowType = (wtRectangle, wtTriangle, wtHanning, wtHamming, wtBlackman);
-  TSonogram = class(TDspSampleRatePersistent)
+  TCustomSonogram = class(TDspSampleRatePersistent)
   private
     FBitmap         : TBitmap;
-    FBlockBuilder   : TBuildingBlocksCircular32;
-    FBuffer         : PDAVComplexSingleFixedArray;
+    FBlockBuilder   : TCustomBuildingBlocks;
     FColorScheme    : array [0..255] of TRGB24;
     FCurrentSlice   : Integer;
-    FFFTOrder       : Integer;
+    FFftOrder       : Integer;
+    FFft            : TFftReal2Complex;
     FLogarithmic    : Boolean;
-    FMagnitude      : PDAVSingleFixedArray;
-    FWindowType     : TWindowType;
+    FWindowClass    : TWindowFunctionClass;
     FMaximumLevel   : Single;
     FMinimumLevel   : Single;
     FLevelRange     : Single;
@@ -66,23 +64,16 @@ type
     FLowerBin       : Integer;
     FUpperBin       : Integer;
     FBinRange       : Integer;
-    {$IFDEF Use_IPPS}
-    FFft           : TFftReal2ComplexIPPSFloat32;
-    {$ELSE} {$IFDEF Use_CUDA}
-    FFft           : TFftReal2ComplexCUDA32;
-    {$ELSE}
-    FFft           : TFftReal2ComplexNativeFloat32;
-    {$ENDIF}{$ENDIF}
+    FWindowFunction : TCustomWindowFunction;
     procedure BitmapChangeHandler(Sender: TObject);
-    procedure ProcessBlock(Sender: TObject; const Input: PDAVSingleFixedArray);
     procedure SetFFTOrder(const Value: Integer);
     procedure SetLogarithmic(const Value: Boolean);
-    function Touch(Input: Single): Single;
     procedure SetMaximumLevel(const Value: Single);
     procedure SetMinimumLevel(const Value: Single);
     procedure SetOverlapFactor(const Value: Integer);
     procedure SetLowerFrequency(const Value: Single);
     procedure SetUpperFrequency(const Value: Single);
+    procedure SetWindowClass(const Value: TWindowFunctionClass);
 
     procedure CalculateMaximumAmp;
     procedure CalculateMinimumAmp;
@@ -93,7 +84,7 @@ type
     procedure CalculateUpperBin;
   protected
     procedure BuildDefaultColorScheme; virtual;
-    procedure DrawMagnitudeSlice; virtual;
+    procedure DrawMagnitudeSlice; virtual; abstract;
     procedure FFTOrderChanged; virtual;
     procedure LowerFrequencyChanged; virtual;
     procedure LogarithmicChanged; virtual;
@@ -102,15 +93,12 @@ type
     procedure OverlapFactorChanged; virtual;
     procedure UpperFrequencyChanged; virtual;
     procedure SampleRateChanged; override;
+    procedure WindowClassChanged; virtual;
   public
     constructor Create; override;
-    destructor Destroy; override;
 
-    procedure ProcessSample32(const Input: Single); virtual;
-    procedure ProcessBlock32(const Input: PDAVSingleFixedArray; SampleFrames: Integer); overload;
-
-    property FFTOrder: Integer read FFFTOrder write SetFFTOrder;
-    property WindowType: TWindowType read FWindowType write FWindowType;
+    property FFTOrder: Integer read FFftOrder write SetFFTOrder;
+    property WindowClass: TWindowFunctionClass read FWindowClass write SetWindowClass;
     property Logarithmic: Boolean read FLogarithmic write SetLogarithmic;
     property MinimumLevel: Single read FMinimumLevel write SetMinimumLevel;
     property MaximumLevel: Single read FMaximumLevel write SetMaximumLevel;
@@ -121,25 +109,76 @@ type
     property Bitmap: TBitmap read FBitmap;
   end;
 
+  TCustomSonogram32 = class(TCustomSonogram)
+  private
+    FBuffer    : PDAVComplexSingleFixedArray;
+    FMagnitude : PDAVSingleFixedArray;
+    procedure ProcessBlock(Sender: TObject; const Input: PDAVSingleFixedArray);
+  protected
+    procedure DrawMagnitudeSlice; override;
+    procedure FFTOrderChanged; override;
+
+    function Touch(Input: Single): Single;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure ProcessSample32(const Input: Single); virtual;
+    procedure ProcessBlock32(const Input: PDAVSingleFixedArray; SampleFrames: Integer); overload;
+  end;
+
+  TCustomSonogram64 = class(TCustomSonogram)
+  private
+    FBuffer    : PDAVComplexDoubleFixedArray;
+    FMagnitude : PDAVDoubleFixedArray;
+    procedure ProcessBlock(Sender: TObject; const Input: PDAVDoubleFixedArray);
+  protected
+    procedure DrawMagnitudeSlice; override;
+    procedure FFTOrderChanged; override;
+
+    function Touch(Input: Double): Double;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure ProcessSample64(const Input: Double); virtual;
+    procedure ProcessBlock64(const Input: PDAVDoubleFixedArray; SampleFrames: Integer); overload;
+  end;
+
+  TSonogram32 = class(TCustomSonogram32)
+  published
+    property FFTOrder;
+    property WindowClass;
+    property Logarithmic;
+    property MinimumLevel;
+    property MaximumLevel;
+    property LowerFrequency;
+    property UpperFrequency;
+    property OverlapFactor;
+    property Bitmap;
+  end;
+
+  TSonogram64 = class(TCustomSonogram64)
+  published
+    property FFTOrder;
+    property WindowClass;
+    property Logarithmic;
+    property MinimumLevel;
+    property MaximumLevel;
+    property LowerFrequency;
+    property UpperFrequency;
+    property OverlapFactor;
+    property Bitmap;
+  end;
+
 implementation
 
 uses
   SysUtils, DAV_Common, DAV_Approximations, DAV_DspWindowing;
 
-constructor TSonogram.Create;
+constructor TCustomSonogram.Create;
 begin
  inherited;
- FBlockBuilder := TBuildingBlocksCircular32.Create;
- FBlockBuilder.OnProcess := ProcessBlock;
-
- {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(10);
- {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(10);
- {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(10);
- FFft.DataOrder := doPackedComplex;
- {$ENDIF}{$ENDIF}
 
  FOverlapFactor  :=     8;
  FLogarithmic    :=  True;
@@ -147,10 +186,16 @@ begin
  FMinimumLevel   :=   -96;
  FLowerFrequency :=    20;
  FUpperFrequency := 20000;
+ FWindowClass    := TWindowFunctionHamming;
 
- FFft.AutoScaleType := astDivideBySqrtN;
- FFFTOrder := 10;
- FFTOrderChanged;
+ FWindowFunction := TWindowFunctionHamming.Create;
+ with FWindowFunction do
+  begin
+   Length := 1 shl FFftOrder;
+   Start  := 0;
+   Tukey  := 0;
+   Slope  := wsSymmetric;
+  end;
 
  CalculateLowerBin;
  CalculateUpperBin;
@@ -180,86 +225,7 @@ begin
  BuildDefaultColorScheme;
 end;
 
-destructor TSonogram.Destroy;
-begin
- FreeAndNil(FBlockBuilder);
- FreeAndNil(FFft);
-end;
-
-procedure TSonogram.SampleRateChanged;
-begin
- CalculateLowerBin;
- CalculateUpperBin;
- CalculateBinRange;
- inherited;
-end;
-
-procedure TSonogram.SetFFTOrder(const Value: Integer);
-begin
- if FFFTOrder <> Value then
-  begin
-   FFFTOrder := Value;
-   FFTOrderChanged;
-  end;
-end;
-
-procedure TSonogram.SetLogarithmic(const Value: Boolean);
-begin
-  FLogarithmic := Value;
-end;
-
-procedure TSonogram.SetLowerFrequency(const Value: Single);
-begin
- if FLowerFrequency <> Value then
-  begin
-   FLowerFrequency := Value;
-   LowerFrequencyChanged;
-  end;
-end;
-
-procedure TSonogram.SetMaximumLevel(const Value: Single);
-begin
- if Value <= FMinimumLevel
-  then Exit;
-
- if FMaximumLevel <> Value then
-  begin
-   FMaximumLevel := Value;
-   MaximumLevelChanged;
-  end;
-end;
-
-procedure TSonogram.SetMinimumLevel(const Value: Single);
-begin
- if Value >= FMaximumLevel
-  then Exit;
-
- if FMinimumLevel <> Value then
-  begin
-   FMinimumLevel := Value;
-   MinimumLevelChanged;
-  end;
-end;
-
-procedure TSonogram.SetOverlapFactor(const Value: Integer);
-begin
- if FOverlapFactor <> Value then
-  begin
-   FOverlapFactor := Value;
-   OverlapFactorChanged;
-  end;
-end;
-
-procedure TSonogram.SetUpperFrequency(const Value: Single);
-begin
- if FUpperFrequency <> Value then
-  begin
-   FUpperFrequency := Value;
-   UpperFrequencyChanged;
-  end;
-end;
-
-procedure TSonogram.BuildDefaultColorScheme;
+procedure TCustomSonogram.BuildDefaultColorScheme;
 var
   Index    : Integer;
   Scale, S : Single;
@@ -276,134 +242,262 @@ begin
   end;
 end;
 
-procedure TSonogram.OverlapFactorChanged;
+procedure TCustomSonogram.SetFFTOrder(const Value: Integer);
+begin
+ if FFftOrder <> Value then
+  begin
+   FFftOrder := Value;
+   FFTOrderChanged;
+  end;
+end;
+
+procedure TCustomSonogram.SetLogarithmic(const Value: Boolean);
+begin
+  FLogarithmic := Value;
+end;
+
+procedure TCustomSonogram.SetLowerFrequency(const Value: Single);
+begin
+ if FLowerFrequency <> Value then
+  begin
+   FLowerFrequency := Value;
+   LowerFrequencyChanged;
+  end;
+end;
+
+procedure TCustomSonogram.SetMaximumLevel(const Value: Single);
+begin
+ if Value <= FMinimumLevel
+  then Exit;
+
+ if FMaximumLevel <> Value then
+  begin
+   FMaximumLevel := Value;
+   MaximumLevelChanged;
+  end;
+end;
+
+procedure TCustomSonogram.SetMinimumLevel(const Value: Single);
+begin
+ if Value >= FMaximumLevel
+  then Exit;
+
+ if FMinimumLevel <> Value then
+  begin
+   FMinimumLevel := Value;
+   MinimumLevelChanged;
+  end;
+end;
+
+procedure TCustomSonogram.SetOverlapFactor(const Value: Integer);
+begin
+ if FOverlapFactor <> Value then
+  begin
+   FOverlapFactor := Value;
+   OverlapFactorChanged;
+  end;
+end;
+
+procedure TCustomSonogram.SetUpperFrequency(const Value: Single);
+begin
+ if FUpperFrequency <> Value then
+  begin
+   FUpperFrequency := Value;
+   UpperFrequencyChanged;
+  end;
+end;
+
+procedure TCustomSonogram.SetWindowClass(const Value: TWindowFunctionClass);
+begin
+ if FWindowClass <> Value then
+  begin
+   FWindowClass := Value;
+   WindowClassChanged;
+  end;
+end;
+
+procedure TCustomSonogram.WindowClassChanged;
+var
+  OldWindow : TCustomWindowFunction;
+begin
+ OldWindow := FWindowFunction;
+ FWindowFunction := FWindowClass.Create;
+
+ with FWindowFunction do
+  begin
+//   Assign(OldWindow);
+   Length := 1 shl FFftOrder;
+   Start  := 0;
+   Tukey  := 0;
+   Slope  := wsSymmetric;
+  end;
+ FreeAndNil(OldWindow);
+end;
+
+procedure TCustomSonogram.SampleRateChanged;
+begin
+ CalculateLowerBin;
+ CalculateUpperBin;
+ CalculateBinRange;
+ inherited;
+end;
+
+procedure TCustomSonogram.OverlapFactorChanged;
 begin
  CalculateOverlap;
 end;
 
-procedure TSonogram.LogarithmicChanged;
+procedure TCustomSonogram.LogarithmicChanged;
 begin
  Changed;
 end;
 
-procedure TSonogram.LowerFrequencyChanged;
+procedure TCustomSonogram.LowerFrequencyChanged;
 begin
  CalculateLowerBin;
  CalculateBinRange;
  Changed;
 end;
 
-procedure TSonogram.UpperFrequencyChanged;
+procedure TCustomSonogram.UpperFrequencyChanged;
 begin
  CalculateUpperBin;
  CalculateBinRange;
  Changed;
 end;
 
-procedure TSonogram.MaximumLevelChanged;
+procedure TCustomSonogram.MaximumLevelChanged;
 begin
  CalculateMaximumAmp;
  CalculateLevelRange;
  Changed;
 end;
 
-procedure TSonogram.MinimumLevelChanged;
+procedure TCustomSonogram.MinimumLevelChanged;
 begin
  CalculateMinimumAmp;
  CalculateLevelRange;
  Changed;
 end;
 
-procedure TSonogram.CalculateBinRange;
+procedure TCustomSonogram.CalculateBinRange;
 begin
  FBinRange := FUpperBin - FLowerBin;
 end;
 
-procedure TSonogram.CalculateLevelRange;
+procedure TCustomSonogram.CalculateLevelRange;
 begin
  FLevelRange := FMaximumLevel - FMinimumLevel;
  FLevelRangeInv := 1 / FLevelRange;
 end;
 
-procedure TSonogram.CalculateLowerBin;
+procedure TCustomSonogram.CalculateLowerBin;
 begin
- FLowerBin := Round(FFft.FFTSize * FLowerFrequency / SampleRate)
+ FLowerBin := Round((1 shl FFftOrder) * FLowerFrequency / SampleRate)
 end;
 
-procedure TSonogram.CalculateOverlap;
+procedure TCustomSonogram.CalculateOverlap;
 begin
  with FBlockBuilder
   do OverlapSize := BlockSize - (BlockSize div FOverlapFactor);
  Changed;
 end;
 
-procedure TSonogram.CalculateUpperBin;
+procedure TCustomSonogram.CalculateUpperBin;
 begin
- FUpperBin := Round(FFft.FFTSize * FUpperFrequency / SampleRate)
+ FUpperBin := Round((1 shl  FFftOrder) * FUpperFrequency / SampleRate)
 end;
 
-procedure TSonogram.CalculateMaximumAmp;
+procedure TCustomSonogram.CalculateMaximumAmp;
 begin
  FMaximumAmp := dB_to_Amp(FMaximumLevel);
 end;
 
-procedure TSonogram.CalculateMinimumAmp;
+procedure TCustomSonogram.CalculateMinimumAmp;
 begin
  FMinimumAmp := dB_to_Amp(FMinimumLevel);
 end;
 
-procedure TSonogram.BitmapChangeHandler(Sender: TObject);
+procedure TCustomSonogram.BitmapChangeHandler(Sender: TObject);
 begin
  if FCurrentSlice >= FBitmap.Height
   then FCurrentSlice := 0;
 end;
 
-procedure TSonogram.FFTOrderChanged;
+procedure TCustomSonogram.FFTOrderChanged;
 begin
- FFft.Order := FFFTOrder;
+ CalculateBinRange;
+ Changed;
+end;
+
+{ TCustomSonogram32 }
+
+constructor TCustomSonogram32.Create;
+begin
+ FBlockBuilder := TBuildingBlocksCircular32.Create;
+ with TBuildingBlocksCircular32(FBlockBuilder)
+  do OnProcess := ProcessBlock;
+
+ {$IFDEF Use_IPPS}
+ FFft := TFftReal2ComplexIPPSFloat32.Create(10);
+ {$ELSE} {$IFDEF Use_CUDA}
+ FFft := TFftReal2ComplexCUDA32.Create(10);
+ {$ELSE}
+ FFft := TFftReal2ComplexNativeFloat32.Create(10);
+ FFft.DataOrder := doPackedComplex;
+ {$ENDIF}{$ENDIF}
+ FFft.AutoScaleType := astDivideBySqrtN;
+ FFftOrder := 10;
+
+ inherited;
+
+ FFTOrderChanged;
+end;
+
+destructor TCustomSonogram32.Destroy;
+begin
+ FreeAndNil(FBlockBuilder);
+ FreeAndNil(FFft);
+ inherited;
+end;
+
+procedure TCustomSonogram32.DrawMagnitudeSlice;
+var
+  Pixel, Bin : Integer;
+  Scale      : Single;
+  ScnLine    : PRGB24Array;
+begin
+ ScnLine := FBitmap.ScanLine[FCurrentSlice];
+ Scale := FBinRange / FBitmap.Width;
+ for Pixel := 0 to FBitmap.Width - 1 do
+  begin
+   Bin := FLowerBin + Round(Pixel * Scale);
+   ScnLine^[Pixel] := FColorScheme[IntLimit(Round(255 * FMagnitude^[Bin]), 0, 255)];
+  end;
+end;
+
+procedure TCustomSonogram32.FFTOrderChanged;
+begin
+ inherited;
+ FFft.Order := FFftOrder;
 
  ReallocMem(FBuffer, FFft.BinCount * SizeOf(TComplexSingle));
  FillChar(FBuffer^, FFft.BinCount * SizeOf(TComplexSingle), 0);
 
  FBlockBuilder.BlockSize := FFft.FFTSize;
+ FWindowFunction.Length := FFft.FFTSize;
  CalculateOverlap;
 
  ReallocMem(FMagnitude, FFft.BinCount * SizeOf(Single));
  FillChar(FMagnitude^, FFft.BinCount * SizeOf(Single), 0);
-
- Changed;
 end;
 
-procedure TSonogram.ProcessBlock32(const Input: PDAVSingleFixedArray;
-  SampleFrames: Integer);
-begin
- FBlockBuilder.ProcessBlock32(@Input[0], SampleFrames);
-end;
-
-procedure TSonogram.ProcessSample32(const Input: Single);
-begin
- FBlockBuilder.ProcessSample32(Input);
-end;
-
-function TSonogram.Touch(Input: Single): Single;
-begin
- if FLogarithmic
-  then Result := ((0.5 * FastAmptodBMinError3(Input)) - FMinimumLevel) * FLevelRangeInv
-  else Result := Sqrt(Input);
-end;
-
-procedure TSonogram.ProcessBlock(Sender: TObject;
+procedure TCustomSonogram32.ProcessBlock(Sender: TObject;
   const Input: PDAVSingleFixedArray);
 var
-  Bin     : Integer;
+  Bin : Integer;
 begin
- case FWindowType of
-  wtTriangle : ApplyTriangleWindow(Input, FFft.FFTSize);
-  wtHanning  : ApplyHanningWindow(Input, FFft.FFTSize);
-  wtHamming  : ApplyHammingWindow(Input, FFft.FFTSize);
-  wtBlackman : ApplyBlackmanWindow(Input, FFft.FFTSize);
- end;
-
+ FWindowFunction.ProcessBlock32(Input, FFft.FFTSize);
  FFft.PerformFFT(FBuffer, Input);
 
  // calculated log magnitude
@@ -419,10 +513,60 @@ begin
   then FCurrentSlice := 0;
 end;
 
-procedure TSonogram.DrawMagnitudeSlice;
+procedure TCustomSonogram32.ProcessBlock32(const Input: PDAVSingleFixedArray;
+  SampleFrames: Integer);
+begin
+ TBuildingBlocksCircular32(FBlockBuilder).ProcessBlock32(@Input[0], SampleFrames);
+end;
+
+procedure TCustomSonogram32.ProcessSample32(const Input: Single);
+begin
+ TBuildingBlocksCircular32(FBlockBuilder).ProcessSample32(Input);
+end;
+
+function TCustomSonogram32.Touch(Input: Single): Single;
+begin
+ if FLogarithmic
+  then Result := ((0.5 * FastAmptodBMinError3(Input)) - FMinimumLevel) * FLevelRangeInv
+  else Result := Sqrt(Input);
+end;
+
+
+{ TCustomSonogram64 }
+
+constructor TCustomSonogram64.Create;
+begin
+ FBlockBuilder := TBuildingBlocksCircular64.Create;
+ with TBuildingBlocksCircular64(FBlockBuilder)
+  do OnProcess := ProcessBlock;
+
+ {$IFDEF Use_IPPS}
+ FFft := TFftReal2ComplexIPPSFloat64.Create(10);
+ {$ELSE} {$IFDEF Use_CUDA}
+ FFft := TFftReal2ComplexCUDA64.Create(10);
+ {$ELSE}
+ FFft := TFftReal2ComplexNativeFloat64.Create(10);
+ FFft.DataOrder := doPackedComplex;
+ {$ENDIF}{$ENDIF}
+ FFft.AutoScaleType := astDivideBySqrtN;
+ FFftOrder := 10;
+
+ inherited;
+
+ FFTOrderChanged;
+end;
+
+destructor TCustomSonogram64.Destroy;
+begin
+ FreeAndNil(FBlockBuilder);
+ FreeAndNil(FFft);
+ inherited;
+end;
+
+procedure TCustomSonogram64.DrawMagnitudeSlice;
 var
   Pixel, Bin : Integer;
-  Scale      : Single;
+  Scale      : Double;
   ScnLine    : PRGB24Array;
 begin
  ScnLine := FBitmap.ScanLine[FCurrentSlice];
@@ -432,6 +576,60 @@ begin
    Bin := FLowerBin + Round(Pixel * Scale);
    ScnLine^[Pixel] := FColorScheme[IntLimit(Round(255 * FMagnitude^[Bin]), 0, 255)];
   end;
+end;
+
+procedure TCustomSonogram64.FFTOrderChanged;
+begin
+ inherited;
+ FFft.Order := FFftOrder;
+
+ ReallocMem(FBuffer, FFft.BinCount * SizeOf(TComplexDouble));
+ FillChar(FBuffer^, FFft.BinCount * SizeOf(TComplexDouble), 0);
+
+ FBlockBuilder.BlockSize := FFft.FFTSize;
+ FWindowFunction.Length := FFft.FFTSize;
+ CalculateOverlap;
+
+ ReallocMem(FMagnitude, FFft.BinCount * SizeOf(Double));
+ FillChar(FMagnitude^, FFft.BinCount * SizeOf(Double), 0);
+end;
+
+procedure TCustomSonogram64.ProcessBlock(Sender: TObject;
+  const Input: PDAVDoubleFixedArray);
+var
+  Bin     : Integer;
+begin
+ FFft.PerformFFT(FBuffer, Input);
+
+ // calculated log magnitude
+ FMagnitude^[0] := Touch(Sqr(FBuffer[0].Re));
+ for Bin := 0 to FFft.BinCount - 2
+  do FMagnitude^[Bin] := Touch(Sqr(FBuffer[Bin].Re) + Sqr(FBuffer[Bin].Im));
+ FMagnitude^[FFft.BinCount - 1] := Touch(Sqr(FBuffer[FFft.BinCount - 1].Re));
+
+ DrawMagnitudeSlice;
+
+ Inc(FCurrentSlice);
+ if FCurrentSlice >= FBitmap.Height
+  then FCurrentSlice := 0;
+end;
+
+procedure TCustomSonogram64.ProcessBlock64(const Input: PDAVDoubleFixedArray;
+  SampleFrames: Integer);
+begin
+ TBuildingBlocksCircular64(FBlockBuilder).ProcessBlock64(@Input[0], SampleFrames);
+end;
+
+procedure TCustomSonogram64.ProcessSample64(const Input: Double);
+begin
+ TBuildingBlocksCircular64(FBlockBuilder).ProcessSample64(Input);
+end;
+
+function TCustomSonogram64.Touch(Input: Double): Double;
+begin
+ if FLogarithmic
+  then Result := ((0.5 * FastAmptodBMinError3(Input)) - FMinimumLevel) * FLevelRangeInv
+  else Result := Sqrt(Input);
 end;
 
 end.

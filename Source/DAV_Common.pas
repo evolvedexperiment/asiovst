@@ -112,6 +112,7 @@ function BranchlessClipLower(Value: Single; const Lower: Single): Single; overlo
 function BranchlessClipLower(Value: Double; const Lower: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function BranchlessClipUpper(Value: Single; const Upper: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function BranchlessClipUpper(Value: Double; const Upper: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+procedure WrapInt(var Value: Integer; Upper: Integer; Lower: Integer = 0);
 function Smallest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function Smallest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function Largest(const A, B: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -739,6 +740,12 @@ function BranchlessClipUpper(Value: Double; const Upper: Double): Double;
 begin
  Value := Upper - Value;
  Result := Upper -(Value + abs(Value)) * 0.5;
+end;
+
+procedure WrapInt(var Value: Integer; Upper: Integer; Lower: Integer = 0);
+begin
+ while Value >= Upper do Value := Value - Upper;
+ while Value <  Lower do Value := Value + Upper;
 end;
 
 function Smallest(const A, B: Single): Single;
