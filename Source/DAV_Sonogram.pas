@@ -44,7 +44,6 @@ uses
 type
   TCustomSonogram = class(TDspSampleRatePersistent)
   private
-    FBitmap         : TBitmap;
     FBlockBuilder   : TCustomBuildingBlocks;
     FColorScheme    : array [0..255] of TRGB24;
     FCurrentSlice   : Integer;
@@ -64,8 +63,8 @@ type
     FLowerBin       : Integer;
     FUpperBin       : Integer;
     FBinRange       : Integer;
+    FMoving         : Boolean;
     FWindowFunction : TCustomWindowFunction;
-    procedure BitmapChangeHandler(Sender: TObject);
     procedure SetFFTOrder(const Value: Integer);
     procedure SetLogarithmic(const Value: Boolean);
     procedure SetMaximumLevel(const Value: Single);
@@ -97,19 +96,28 @@ type
   public
     constructor Create; override;
 
-    property FFTOrder: Integer read FFftOrder write SetFFTOrder;
+    property FFTOrder: Integer read FFftOrder write SetFFTOrder default 10;
     property WindowClass: TWindowFunctionClass read FWindowClass write SetWindowClass;
-    property Logarithmic: Boolean read FLogarithmic write SetLogarithmic;
+    property Logarithmic: Boolean read FLogarithmic write SetLogarithmic default True;
     property MinimumLevel: Single read FMinimumLevel write SetMinimumLevel;
     property MaximumLevel: Single read FMaximumLevel write SetMaximumLevel;
+    property Moving: Boolean read FMoving write FMoving default False;
     property LowerFrequency: Single read FLowerFrequency write SetLowerFrequency;
     property UpperFrequency: Single read FUpperFrequency write SetUpperFrequency;
     property OverlapFactor: Integer read FOverlapFactor write SetOverlapFactor default 4;
+  end;
+
+  TCustomBitmapSonogram = class(TCustomSonogram)
+  private
+    FBitmap : TBitmap;
+    procedure BitmapChangeHandler(Sender: TObject);
+  public
+    constructor Create; override;
 
     property Bitmap: TBitmap read FBitmap;
   end;
 
-  TCustomSonogram32 = class(TCustomSonogram)
+  TCustomBitmapSonogram32 = class(TCustomBitmapSonogram, IDspSink32)
   private
     FBuffer    : PDAVComplexSingleFixedArray;
     FMagnitude : PDAVSingleFixedArray;
@@ -123,11 +131,11 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessSample32(const Input: Single); virtual;
+    procedure ProcessSample32(Input: Single); virtual;
     procedure ProcessBlock32(const Input: PDAVSingleFixedArray; SampleFrames: Integer); overload;
   end;
 
-  TCustomSonogram64 = class(TCustomSonogram)
+  TCustomBitmapSonogram64 = class(TCustomBitmapSonogram, IDspSink64)
   private
     FBuffer    : PDAVComplexDoubleFixedArray;
     FMagnitude : PDAVDoubleFixedArray;
@@ -141,11 +149,11 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessSample64(const Input: Double); virtual;
+    procedure ProcessSample64(Input: Double); virtual;
     procedure ProcessBlock64(const Input: PDAVDoubleFixedArray; SampleFrames: Integer); overload;
   end;
 
-  TSonogram32 = class(TCustomSonogram32)
+  TBitmapSonogram32 = class(TCustomBitmapSonogram32)
   published
     property FFTOrder;
     property WindowClass;
@@ -158,7 +166,7 @@ type
     property Bitmap;
   end;
 
-  TSonogram64 = class(TCustomSonogram64)
+  TBitmapSonogram64 = class(TCustomBitmapSonogram64)
   published
     property FFTOrder;
     property WindowClass;
@@ -184,6 +192,7 @@ begin
  FLogarithmic    :=  True;
  FMaximumLevel   :=     0;
  FMinimumLevel   :=   -96;
+ FMoving         := False;
  FLowerFrequency :=    20;
  FUpperFrequency := 20000;
  FWindowClass    := TWindowFunctionHamming;
@@ -204,24 +213,6 @@ begin
  CalculateMinimumAmp;
  CalculateLevelRange;
 
- FBitmap := TBitmap.Create;
- with FBitmap do
-  begin
-   BeginUpdate;
-   try
-    Width := 256;
-    Height := 256;
-    PixelFormat := pf24bit;
-    with Canvas do
-     begin
-      Brush.Color := clBlack;
-      FillRect(ClipRect);
-     end;
-   finally
-    EndUpdate;
-   end;
-   OnChange := BitmapChangeHandler;
-  end;
  BuildDefaultColorScheme;
 end;
 
@@ -418,21 +409,50 @@ begin
  FMinimumAmp := dB_to_Amp(FMinimumLevel);
 end;
 
-procedure TCustomSonogram.BitmapChangeHandler(Sender: TObject);
+procedure TCustomSonogram.FFTOrderChanged;
+begin
+ CalculateUpperBin;
+ CalculateLowerBin;
+ CalculateBinRange;
+ Changed;
+end;
+
+
+{ TCustomBitmapSonogram }
+
+constructor TCustomBitmapSonogram.Create;
+begin
+ inherited;
+ FBitmap := TBitmap.Create;
+ with FBitmap do
+  begin
+   BeginUpdate;
+   try
+    Width := 256;
+    Height := 256;
+    PixelFormat := pf24bit;
+    with Canvas do
+     begin
+      Brush.Color := clBlack;
+      FillRect(ClipRect);
+     end;
+   finally
+    EndUpdate;
+   end;
+   OnChange := BitmapChangeHandler;
+  end;
+end;
+
+procedure TCustomBitmapSonogram.BitmapChangeHandler(Sender: TObject);
 begin
  if FCurrentSlice >= FBitmap.Height
   then FCurrentSlice := 0;
 end;
 
-procedure TCustomSonogram.FFTOrderChanged;
-begin
- CalculateBinRange;
- Changed;
-end;
 
-{ TCustomSonogram32 }
+{ TCustomBitmapSonogram32 }
 
-constructor TCustomSonogram32.Create;
+constructor TCustomBitmapSonogram32.Create;
 begin
  FBlockBuilder := TBuildingBlocksCircular32.Create;
  with TBuildingBlocksCircular32(FBlockBuilder)
@@ -446,7 +466,7 @@ begin
  FFft := TFftReal2ComplexNativeFloat32.Create(10);
  FFft.DataOrder := doPackedComplex;
  {$ENDIF}{$ENDIF}
- FFft.AutoScaleType := astDivideBySqrtN;
+ FFft.AutoScaleType := astDivideBySqrtN; //FwdByN;
  FFftOrder := 10;
 
  inherited;
@@ -454,29 +474,43 @@ begin
  FFTOrderChanged;
 end;
 
-destructor TCustomSonogram32.Destroy;
+destructor TCustomBitmapSonogram32.Destroy;
 begin
  FreeAndNil(FBlockBuilder);
  FreeAndNil(FFft);
  inherited;
 end;
 
-procedure TCustomSonogram32.DrawMagnitudeSlice;
+procedure TCustomBitmapSonogram32.DrawMagnitudeSlice;
 var
   Pixel, Bin : Integer;
   Scale      : Single;
-  ScnLine    : PRGB24Array;
+  ScnLine    : array [0..1] of PRGB24Array;
 begin
- ScnLine := FBitmap.ScanLine[FCurrentSlice];
+ if FMoving then
+  begin
+   ScnLine[0] := FBitmap.ScanLine[FBitmap.Height - 1];
+   for Pixel := FBitmap.Height - 1 downto 1 do
+    begin
+     ScnLine[1] := FBitmap.ScanLine[Pixel - 1];
+     Move(ScnLine[1]^, ScnLine[0]^, 3 * FBitmap.Width);
+     ScnLine[0] := ScnLine[1];
+    end;
+
+//   FBitmap.Canvas.Draw(0, 1, FBitmap);
+   ScnLine[0] := FBitmap.ScanLine[0];
+  end
+ else ScnLine[0] := FBitmap.ScanLine[FCurrentSlice];
+
  Scale := FBinRange / FBitmap.Width;
  for Pixel := 0 to FBitmap.Width - 1 do
   begin
    Bin := FLowerBin + Round(Pixel * Scale);
-   ScnLine^[Pixel] := FColorScheme[IntLimit(Round(255 * FMagnitude^[Bin]), 0, 255)];
+   ScnLine[0]^[Pixel] := FColorScheme[IntLimit(Round(255 * FMagnitude^[Bin]), 0, 255)];
   end;
 end;
 
-procedure TCustomSonogram32.FFTOrderChanged;
+procedure TCustomBitmapSonogram32.FFTOrderChanged;
 begin
  inherited;
  FFft.Order := FFftOrder;
@@ -492,7 +526,7 @@ begin
  FillChar(FMagnitude^, FFft.BinCount * SizeOf(Single), 0);
 end;
 
-procedure TCustomSonogram32.ProcessBlock(Sender: TObject;
+procedure TCustomBitmapSonogram32.ProcessBlock(Sender: TObject;
   const Input: PDAVSingleFixedArray);
 var
   Bin : Integer;
@@ -513,18 +547,18 @@ begin
   then FCurrentSlice := 0;
 end;
 
-procedure TCustomSonogram32.ProcessBlock32(const Input: PDAVSingleFixedArray;
+procedure TCustomBitmapSonogram32.ProcessBlock32(const Input: PDAVSingleFixedArray;
   SampleFrames: Integer);
 begin
  TBuildingBlocksCircular32(FBlockBuilder).ProcessBlock32(@Input[0], SampleFrames);
 end;
 
-procedure TCustomSonogram32.ProcessSample32(const Input: Single);
+procedure TCustomBitmapSonogram32.ProcessSample32(Input: Single);
 begin
  TBuildingBlocksCircular32(FBlockBuilder).ProcessSample32(Input);
 end;
 
-function TCustomSonogram32.Touch(Input: Single): Single;
+function TCustomBitmapSonogram32.Touch(Input: Single): Single;
 begin
  if FLogarithmic
   then Result := ((0.5 * FastAmptodBMinError3(Input)) - FMinimumLevel) * FLevelRangeInv
@@ -532,9 +566,9 @@ begin
 end;
 
 
-{ TCustomSonogram64 }
+{ TCustomBitmapSonogram64 }
 
-constructor TCustomSonogram64.Create;
+constructor TCustomBitmapSonogram64.Create;
 begin
  FBlockBuilder := TBuildingBlocksCircular64.Create;
  with TBuildingBlocksCircular64(FBlockBuilder)
@@ -556,29 +590,40 @@ begin
  FFTOrderChanged;
 end;
 
-destructor TCustomSonogram64.Destroy;
+destructor TCustomBitmapSonogram64.Destroy;
 begin
  FreeAndNil(FBlockBuilder);
  FreeAndNil(FFft);
  inherited;
 end;
 
-procedure TCustomSonogram64.DrawMagnitudeSlice;
+procedure TCustomBitmapSonogram64.DrawMagnitudeSlice;
 var
   Pixel, Bin : Integer;
   Scale      : Double;
-  ScnLine    : PRGB24Array;
+  ScnLine    : array [0..1] of PRGB24Array;
 begin
- ScnLine := FBitmap.ScanLine[FCurrentSlice];
+ if FMoving then
+  begin
+   ScnLine[0] := FBitmap.ScanLine[FBitmap.Height - 1];
+   for Pixel := FBitmap.Height - 1 downto 1 do
+    begin
+     ScnLine[1] := FBitmap.ScanLine[Pixel - 1];
+     Move(ScnLine[1]^, ScnLine[0]^, 3 * FBitmap.Width);
+     ScnLine[0] := ScnLine[1];
+    end;
+  end
+ else ScnLine[0] := FBitmap.ScanLine[FCurrentSlice];
+
  Scale := FBinRange / FBitmap.Width;
  for Pixel := 0 to FBitmap.Width - 1 do
   begin
    Bin := FLowerBin + Round(Pixel * Scale);
-   ScnLine^[Pixel] := FColorScheme[IntLimit(Round(255 * FMagnitude^[Bin]), 0, 255)];
+   ScnLine[0]^[Pixel] := FColorScheme[IntLimit(Round(255 * FMagnitude^[Bin]), 0, 255)];
   end;
 end;
 
-procedure TCustomSonogram64.FFTOrderChanged;
+procedure TCustomBitmapSonogram64.FFTOrderChanged;
 begin
  inherited;
  FFft.Order := FFftOrder;
@@ -594,7 +639,7 @@ begin
  FillChar(FMagnitude^, FFft.BinCount * SizeOf(Double), 0);
 end;
 
-procedure TCustomSonogram64.ProcessBlock(Sender: TObject;
+procedure TCustomBitmapSonogram64.ProcessBlock(Sender: TObject;
   const Input: PDAVDoubleFixedArray);
 var
   Bin     : Integer;
@@ -614,18 +659,18 @@ begin
   then FCurrentSlice := 0;
 end;
 
-procedure TCustomSonogram64.ProcessBlock64(const Input: PDAVDoubleFixedArray;
+procedure TCustomBitmapSonogram64.ProcessBlock64(const Input: PDAVDoubleFixedArray;
   SampleFrames: Integer);
 begin
  TBuildingBlocksCircular64(FBlockBuilder).ProcessBlock64(@Input[0], SampleFrames);
 end;
 
-procedure TCustomSonogram64.ProcessSample64(const Input: Double);
+procedure TCustomBitmapSonogram64.ProcessSample64(Input: Double);
 begin
  TBuildingBlocksCircular64(FBlockBuilder).ProcessSample64(Input);
 end;
 
-function TCustomSonogram64.Touch(Input: Double): Double;
+function TCustomBitmapSonogram64.Touch(Input: Double): Double;
 begin
  if FLogarithmic
   then Result := ((0.5 * FastAmptodBMinError3(Input)) - FMinimumLevel) * FLevelRangeInv
