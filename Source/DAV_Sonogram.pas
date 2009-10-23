@@ -44,27 +44,28 @@ uses
 type
   TCustomSonogram = class(TDspSampleRatePersistent)
   private
-    FBlockBuilder   : TCustomBuildingBlocks;
-    FColorScheme    : array [0..255] of TRGB24;
-    FCurrentSlice   : Integer;
-    FFftOrder       : Integer;
-    FFft            : TFftReal2Complex;
-    FLogarithmic    : Boolean;
-    FWindowClass    : TWindowFunctionClass;
-    FMaximumLevel   : Single;
-    FMinimumLevel   : Single;
-    FLevelRange     : Single;
-    FLevelRangeInv  : Single;
-    FMaximumAmp     : Single;
-    FMinimumAmp     : Single;
-    FOverlapFactor  : Integer;
-    FUpperFrequency : Single;
-    FLowerFrequency : Single;
-    FLowerBin       : Integer;
-    FUpperBin       : Integer;
-    FBinRange       : Integer;
-    FMoving         : Boolean;
-    FWindowFunction : TCustomWindowFunction;
+    FBlockBuilder     : TCustomBuildingBlocks;
+    FColorScheme      : array [0..255] of TRGB24;
+    FCurrentSlice     : Integer;
+    FFftOrder         : Integer;
+    FFft              : TFftReal2Complex;
+    FLogarithmic      : Boolean;
+    FWindowClass      : TWindowFunctionClass;
+    FMaximumLevel     : Single;
+    FMinimumLevel     : Single;
+    FLevelRange       : Single;
+    FLevelRangeInv    : Single;
+    FMaximumAmp       : Single;
+    FMinimumAmp       : Single;
+    FOverlapFactor    : Integer;
+    FUpperFrequency   : Single;
+    FLowerFrequency   : Single;
+    FLowerBin         : Integer;
+    FUpperBin         : Integer;
+    FBinRange         : Integer;
+    FMoving           : Boolean;
+    FWindowFunction   : TCustomWindowFunction;
+    FOnBlockProcessed : TNotifyEvent;
     procedure SetFFTOrder(const Value: Integer);
     procedure SetLogarithmic(const Value: Boolean);
     procedure SetMaximumLevel(const Value: Single);
@@ -95,26 +96,35 @@ type
     procedure WindowClassChanged; virtual;
   public
     constructor Create; override;
+    destructor Destroy; override;
+    procedure Reset; virtual;
 
+    property CurrentSlice: Integer read FCurrentSlice;
     property FFTOrder: Integer read FFftOrder write SetFFTOrder default 10;
-    property WindowClass: TWindowFunctionClass read FWindowClass write SetWindowClass;
     property Logarithmic: Boolean read FLogarithmic write SetLogarithmic default True;
-    property MinimumLevel: Single read FMinimumLevel write SetMinimumLevel;
-    property MaximumLevel: Single read FMaximumLevel write SetMaximumLevel;
-    property Moving: Boolean read FMoving write FMoving default False;
     property LowerFrequency: Single read FLowerFrequency write SetLowerFrequency;
-    property UpperFrequency: Single read FUpperFrequency write SetUpperFrequency;
+    property MaximumLevel: Single read FMaximumLevel write SetMaximumLevel;
+    property MinimumLevel: Single read FMinimumLevel write SetMinimumLevel;
+    property Moving: Boolean read FMoving write FMoving default False;
+    property OnBlockProcessed: TNotifyEvent read FOnBlockProcessed write FOnBlockProcessed;
     property OverlapFactor: Integer read FOverlapFactor write SetOverlapFactor default 4;
+    property UpperFrequency: Single read FUpperFrequency write SetUpperFrequency;
+    property WindowClass: TWindowFunctionClass read FWindowClass write SetWindowClass;
+    property WindowFunction: TCustomWindowFunction read FWindowFunction;
   end;
 
+  TSonogramDirection = (sdUpDown, sdDownUp);
   TCustomBitmapSonogram = class(TCustomSonogram)
   private
-    FBitmap : TBitmap;
+    FBitmap    : TBitmap;
+    FDirection : TSonogramDirection;
     procedure BitmapChangeHandler(Sender: TObject);
   public
     constructor Create; override;
+    destructor Destroy; override;
 
     property Bitmap: TBitmap read FBitmap;
+    property Direction: TSonogramDirection read FDirection write FDirection;
   end;
 
   TCustomBitmapSonogram32 = class(TCustomBitmapSonogram, IDspSink32)
@@ -214,6 +224,12 @@ begin
  CalculateLevelRange;
 
  BuildDefaultColorScheme;
+end;
+
+destructor TCustomSonogram.Destroy;
+begin
+ FreeAndNil(FWindowFunction);
+ inherited;
 end;
 
 procedure TCustomSonogram.BuildDefaultColorScheme;
@@ -338,6 +354,11 @@ begin
  CalculateOverlap;
 end;
 
+procedure TCustomSonogram.Reset;
+begin
+ FBlockBuilder.Reset;
+end;
+
 procedure TCustomSonogram.LogarithmicChanged;
 begin
  Changed;
@@ -443,6 +464,12 @@ begin
   end;
 end;
 
+destructor TCustomBitmapSonogram.Destroy;
+begin
+ FreeAndNil(FBitmap);
+ inherited;
+end;
+
 procedure TCustomBitmapSonogram.BitmapChangeHandler(Sender: TObject);
 begin
  if FCurrentSlice >= FBitmap.Height
@@ -476,6 +503,8 @@ end;
 
 destructor TCustomBitmapSonogram32.Destroy;
 begin
+ Dispose(FBuffer);
+ Dispose(FMagnitude);
  FreeAndNil(FBlockBuilder);
  FreeAndNil(FFft);
  inherited;
@@ -500,7 +529,10 @@ begin
 //   FBitmap.Canvas.Draw(0, 1, FBitmap);
    ScnLine[0] := FBitmap.ScanLine[0];
   end
- else ScnLine[0] := FBitmap.ScanLine[FCurrentSlice];
+ else
+  if FDirection = sdUpDown
+   then ScnLine[0] := FBitmap.ScanLine[FCurrentSlice]
+   else ScnLine[0] := FBitmap.ScanLine[FBitmap.Height - FCurrentSlice - 1];
 
  Scale := FBinRange / FBitmap.Width;
  for Pixel := 0 to FBitmap.Width - 1 do
@@ -545,6 +577,9 @@ begin
  Inc(FCurrentSlice);
  if FCurrentSlice >= FBitmap.Height
   then FCurrentSlice := 0;
+
+ if Assigned(FOnBlockProcessed)
+  then FOnBlockProcessed(Self);
 end;
 
 procedure TCustomBitmapSonogram32.ProcessBlock32(const Input: PDAVSingleFixedArray;
@@ -592,6 +627,8 @@ end;
 
 destructor TCustomBitmapSonogram64.Destroy;
 begin
+ Dispose(FBuffer);
+ Dispose(FMagnitude);
  FreeAndNil(FBlockBuilder);
  FreeAndNil(FFft);
  inherited;

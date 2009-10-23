@@ -194,6 +194,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
+    destructor Destroy; override;
 
     procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
     procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
@@ -1735,6 +1736,11 @@ begin
  inherited;
 end;
 
+destructor TWindowFunctionCosineTerm.Destroy;
+begin
+ inherited;
+end;
+
 procedure TWindowFunctionCosineTerm.AssignTo(Dest: TPersistent);
 begin
  inherited;
@@ -1746,8 +1752,9 @@ begin
 end;
 
 function TWindowFunctionCosineTerm.GetWindowFactor(Pos: Double): Double;
-var cs : Double;
-    i  : Integer;
+var
+  cs : Double;
+  i  : Integer;
 begin
  cs     := cos(Pi * Pos);
  i      := FCosineTerms - 1;
@@ -1923,7 +1930,7 @@ begin
     end
    else
     begin
-     if FWinSlope=wsRight
+     if FWinSlope = wsRight
       then begin ComplexPosition.Im := -1; ComplexPosition.Re := 0; end
       else begin ComplexPosition.Im := 1; ComplexPosition.Re :=  0; end;
     end;

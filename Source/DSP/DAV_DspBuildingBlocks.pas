@@ -52,6 +52,8 @@ type
   public
     constructor Create; virtual;
 
+    procedure Reset; virtual;
+
     property BlockSize: Integer read FBlockSize write SetBlockSize;
     property OverlapSize: Integer read FOverlapSize write SetOverlapSize;
   end;
@@ -64,9 +66,12 @@ type
     FBuffer32  : PDAVSingleFixedArray;
     FOnProcess : TProcessBlock32;
     procedure AllocateBuffer; override;
+    procedure ClearBuffer; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure Reset; override;
 
     property OnProcess: TProcessBlock32 read FOnProcess write FOnProcess;
   end;
@@ -76,9 +81,12 @@ type
     FBuffer64  : PDAVDoubleFixedArray;
     FOnProcess : TProcessBlock64;
     procedure AllocateBuffer; override;
+    procedure ClearBuffer; virtual;
   public
     constructor Create; override;
     destructor Destroy; override;
+
+    procedure Reset; override;
 
     property OnProcess: TProcessBlock64 read FOnProcess write FOnProcess;
   end;
@@ -200,6 +208,11 @@ begin
  Changed;
 end;
 
+procedure TCustomBuildingBlocks.Reset;
+begin
+ FBlockPosition := 0;
+end;
+
 { TCustomBuildingBlocks32 }
 
 constructor TCustomBuildingBlocks32.Create;
@@ -215,9 +228,20 @@ begin
  inherited;
 end;
 
+procedure TCustomBuildingBlocks32.Reset;
+begin
+ inherited;
+ ClearBuffer;
+end;
+
 procedure TCustomBuildingBlocks32.AllocateBuffer;
 begin
  ReallocMem(FBuffer32, FBlockSize * SizeOf(Single));
+ ClearBuffer;
+end;
+
+procedure TCustomBuildingBlocks32.ClearBuffer;
+begin
  FillChar(FBuffer32^, FBlockSize * SizeOf(Single), 0);
 end;
 
@@ -237,12 +261,21 @@ begin
  inherited;
 end;
 
+procedure TCustomBuildingBlocks64.Reset;
+begin
+ inherited;
+ ClearBuffer;
+end;
+
 procedure TCustomBuildingBlocks64.AllocateBuffer;
 begin
  ReallocMem(FBuffer64, FBlockSize * SizeOf(Double));
- FillChar(FBuffer64^, FBlockSize * SizeOf(Double), 0);
 end;
 
+procedure TCustomBuildingBlocks64.ClearBuffer;
+begin
+ FillChar(FBuffer64^, FBlockSize * SizeOf(Double), 0);
+end;
 
 { TBuildingBlocks32 }
 

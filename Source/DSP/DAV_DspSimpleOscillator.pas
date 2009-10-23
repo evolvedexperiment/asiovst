@@ -63,7 +63,7 @@ type
   private
     procedure SetFrequency(const Value: Single);
   protected
-    FFrequency  : Single;
+    FFrequency : Single;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SampleRateChanged; override;
     procedure FrequencyChanged; virtual; abstract;
