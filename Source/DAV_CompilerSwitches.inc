@@ -18,6 +18,10 @@
   The default is enabled. }
 {$DEFINE UseNativeTypes}
 
+{ Disable this option if you want to use range/overflow checks of the compiler
+  The default is enabled. }
+{$DEFINE ZeroArray}
+
 //////////////////////////////
 //  ASIO Compiler Switches  //
 //////////////////////////////

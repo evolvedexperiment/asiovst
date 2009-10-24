@@ -80,7 +80,7 @@ type
     function CharacteristicCurve(const InputLevel: Double): Double; virtual;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; virtual;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input : Double): Double; virtual;
     procedure Sidechain(const Input : Double); virtual;
 
@@ -319,7 +319,7 @@ begin
  result := FastPower2MinError3(FastLog2ContinousError5(1 + d) * (FRatio - 1));
 end;
 
-procedure TCustomLevelingAmplifier.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomLevelingAmplifier.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

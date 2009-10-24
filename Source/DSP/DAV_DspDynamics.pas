@@ -89,8 +89,8 @@ type
     procedure ThresholdChanged; virtual;
   public
     constructor Create; virtual;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual;
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual; abstract;
     function GainSample(const Input: Double): Double; virtual;
@@ -147,8 +147,8 @@ type
   public
     constructor Create; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
 
@@ -189,8 +189,8 @@ type
   public
     constructor Create; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
 
@@ -212,8 +212,8 @@ type
 
   TBrickwallLimiter = class(TCustomBrickwallLimiter)
   public
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -244,8 +244,8 @@ type
   public
     constructor Create; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -354,8 +354,8 @@ type
   public
     constructor Create; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
@@ -376,8 +376,8 @@ type
 
   TLimiter = class(TCustomLimiter)
   public
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -393,8 +393,8 @@ type
     procedure ReleaseChanged; override;
     procedure AttackChanged; override;
   public
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -431,8 +431,8 @@ type
     procedure KneeChanged; override;
   public
     constructor Create; override;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
@@ -463,8 +463,8 @@ type
   public
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
   published
@@ -485,8 +485,8 @@ type
 
   TCustomClassicGate = class(TCustomTimeConstantDynamics)
   public
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
   end;
@@ -653,8 +653,8 @@ type
     constructor Create; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); override;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); override;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); override;
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     procedure InputSample(const Input: Double); override;
@@ -916,7 +916,7 @@ begin
  raise Exception.Create('The knee property is not in use in this class');
 end;
 
-procedure TCustomDynamicProcessor.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomDynamicProcessor.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -925,7 +925,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TCustomDynamicProcessor.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomDynamicProcessor.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1047,7 +1047,7 @@ begin
  Result := Power((PeakLevel * Power(Power(PeakLevel, FSoftKnee[1]) + FKneedThreshold, -FSoftKnee[0])), 1 / ((abs(PeakLevel - FThreshold) + (FSoftKnee[0] + PeakLevel - FThreshold))));
 end;
 
-procedure TSoftDirectGate.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TSoftDirectGate.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1059,7 +1059,7 @@ begin
   end;
 end;
 
-procedure TSoftDirectGate.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TSoftDirectGate.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1140,7 +1140,7 @@ begin
  FGain := TranslatePeakToGain(abs(Input));
 end;
 
-procedure TCustomBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomBrickwallLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1152,7 +1152,7 @@ begin
   end;
 end;
 
-procedure TCustomBrickwallLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomBrickwallLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1178,7 +1178,7 @@ end;
 
 { TBrickwallLimiter }
 
-procedure TBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TBrickwallLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1193,7 +1193,7 @@ begin
   end;
 end;
 
-procedure TBrickwallLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TBrickwallLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1261,7 +1261,7 @@ begin
  Changed;
 end;
 
-procedure TSoftBrickwallLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TSoftBrickwallLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1273,7 +1273,7 @@ begin
   end;
 end;
 
-procedure TSoftBrickwallLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TSoftBrickwallLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1462,7 +1462,7 @@ begin
  Changed;
 end;
 
-procedure TCustomLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1474,7 +1474,7 @@ begin
   end;
 end;
 
-procedure TCustomLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1537,7 +1537,7 @@ begin
  Result := FMakeUpGain * Result;
 end;
 
-procedure TLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1549,7 +1549,7 @@ begin
   end;
 end;
 
-procedure TLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1614,7 +1614,7 @@ begin
  Result := FMakeUpGain * Result;
 end;
 
-procedure TRCLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TRCLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1626,7 +1626,7 @@ begin
   end;
 end;
 
-procedure TRCLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TRCLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1693,7 +1693,7 @@ begin
  FSoftKnee[1] := 1 / FSoftKnee[0];
 end;
 
-procedure TSoftKneeLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TSoftKneeLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1705,7 +1705,7 @@ begin
   end;
 end;
 
-procedure TSoftKneeLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TSoftKneeLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1771,7 +1771,7 @@ begin
  FSoftKnee[1] := 1 / FSoftKnee[0];
 end;
 
-procedure TSimpleSoftKneeLimiter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TSimpleSoftKneeLimiter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1783,7 +1783,7 @@ begin
   end;
 end;
 
-procedure TSimpleSoftKneeLimiter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TSimpleSoftKneeLimiter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1888,7 +1888,7 @@ end;
 
 { TCustomClassicGate }
 
-procedure TCustomClassicGate.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomClassicGate.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -1900,7 +1900,7 @@ begin
   end;
 end;
 
-procedure TCustomClassicGate.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomClassicGate.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -2133,7 +2133,7 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
-procedure TCustomGate.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomGate.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -2145,7 +2145,7 @@ begin
   end;
 end;
 
-procedure TCustomGate.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomGate.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

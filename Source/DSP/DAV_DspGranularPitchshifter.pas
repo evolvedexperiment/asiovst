@@ -45,8 +45,8 @@ type
   public
     constructor Create; virtual;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual;
     function ProcessSample32(Input: Single): Single; virtual;
 
@@ -111,7 +111,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
     procedure Reset; override;
@@ -131,7 +131,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
 
     procedure Reset; override;
@@ -152,7 +152,7 @@ begin
  FState := 0;
 end;
 
-procedure TFractionalDelayAllpass.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TFractionalDelayAllpass.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -161,7 +161,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TFractionalDelayAllpass.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TFractionalDelayAllpass.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -408,7 +408,7 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-procedure TDspGranularPitchShifter32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDspGranularPitchShifter32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -519,7 +519,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FBufferSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-procedure TDspGranularPitchShifter64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TDspGranularPitchShifter64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

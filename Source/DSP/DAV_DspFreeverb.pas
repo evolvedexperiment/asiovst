@@ -91,7 +91,7 @@ type
 
     function ProcessSample32(Input: Single): Single;
     function ProcessSample64(Input: Double): Double;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
   published
     property Dry: Double read FDry write SetDry;
     property Wet: Double read FWet write SetWet;
@@ -138,7 +138,7 @@ begin
  inherited Destroy;
 end;
 
-procedure TFreeverb.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TFreeverb.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

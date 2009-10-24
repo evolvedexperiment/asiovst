@@ -57,7 +57,7 @@ type
   public
     constructor Create;
     
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
 
     property Gain[Harmonic: Integer]: Double read GetGain write SetGain;
@@ -359,7 +359,7 @@ begin
  Result := Length(FGains);
 end;
 
-procedure TChebyshevWaveshaper.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TChebyshevWaveshaper.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample : Integer;

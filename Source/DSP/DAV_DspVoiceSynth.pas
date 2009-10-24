@@ -60,7 +60,7 @@ type
     procedure ReleaseChanged; virtual;
   public
     constructor Create; override;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; reintroduce; virtual;
 
     property Attack: Single read FAttack write SetAttack;
@@ -164,7 +164,7 @@ begin
  result := FLevel * FCurrentPosition.Re;
 end;
 
-procedure TCustomVoiceSynth.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomVoiceSynth.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

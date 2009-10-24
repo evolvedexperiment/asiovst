@@ -51,8 +51,8 @@ type
 
     function ProcessSample32(Input: Single): Single; overload;
     function ProcessSample64(Input: Double): Double; overload;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
 
     property Phase: Single read FPhaseFactor;
   published
@@ -87,7 +87,7 @@ begin
  else inherited;
 end;
 
-procedure TOcatveDivider.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TOcatveDivider.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -96,7 +96,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TOcatveDivider.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TOcatveDivider.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

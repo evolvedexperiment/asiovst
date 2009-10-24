@@ -84,8 +84,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual;
     procedure ProcessSample(var Left, Right: Single); virtual;
@@ -436,7 +436,7 @@ begin
  FPos := (FPos + 1) and 1023;
 end;
 
-procedure TCustomAmbience.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomAmbience.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -445,7 +445,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TCustomAmbience.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomAmbience.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

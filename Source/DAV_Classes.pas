@@ -52,20 +52,22 @@ type
   end;
 
   IDspProcessor32 = interface(IInterface)
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
   end;
 
   IDspProcessor64 = interface(IInterface)
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
   end;
 
   IDspGenerator32 = interface(IInterface)
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32: Single;
   end;
 
   IDspGenerator64 = interface(IInterface)
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64: Double;
   end;
   {.$ENDIF}

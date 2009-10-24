@@ -59,8 +59,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual;
 
@@ -161,7 +161,7 @@ begin
  Changed;
 end;
 
-procedure TCustomExciter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomExciter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample    : Integer;
@@ -182,7 +182,7 @@ begin
   end;
 end;
 
-procedure TCustomExciter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomExciter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample    : Integer;

@@ -94,7 +94,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
 
@@ -129,7 +129,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
 
@@ -251,7 +251,7 @@ begin
   else raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
 end;
 
-procedure TFeedbackZDelayNetwork32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TFeedbackZDelayNetwork32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -505,7 +505,7 @@ begin
   else raise Exception.CreateFmt(RCIndexOutOfBounds, [Index]);
 end;
 
-procedure TFeedbackDelayNetwork32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TFeedbackDelayNetwork32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

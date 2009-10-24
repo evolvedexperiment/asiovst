@@ -96,7 +96,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
   end;
 
@@ -111,7 +111,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
@@ -125,7 +125,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual;
   end;
 
@@ -140,7 +140,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual; abstract;
   end;
 
@@ -303,7 +303,7 @@ begin
  Changed;
 end;
 
-procedure TCustomAutoRingModulator32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomAutoRingModulator32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -347,7 +347,7 @@ begin
  Changed;
 end;
 
-procedure TCustomAutoRingModulator64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomAutoRingModulator64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -385,7 +385,7 @@ begin
 end;
 
 procedure TCustomAnalogAutoRingModulator32.ProcessBlock32(
-  Data: PDAVSingleFixedArray; SampleCount: Integer);
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
   Sample: Integer;
 begin
@@ -423,7 +423,7 @@ begin
 end;
 
 procedure TCustomAnalogAutoRingModulator64.ProcessBlock64(
-  Data: PDAVDoubleFixedArray; SampleCount: Integer);
+  const Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
   Sample: Integer;
 begin

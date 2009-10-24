@@ -92,7 +92,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
     procedure Reset; override;
@@ -119,7 +119,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
 
     procedure Reset; override;
@@ -357,7 +357,7 @@ begin
  ReallocMem(FBuffer32, FRealBufSize * SizeOf(Single));
 end;
 
-procedure TCustomModDelay32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomModDelay32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -452,7 +452,7 @@ begin
  ReallocMem(FBuffer64, FRealBufSize * SizeOf(Double));
 end;
 
-procedure TCustomModDelay64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomModDelay64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

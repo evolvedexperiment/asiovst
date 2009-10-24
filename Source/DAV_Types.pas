@@ -57,9 +57,9 @@ type
   PDAVSingleDynArray = ^TDAVSingleDynArray;
   PDAVDoubleDynArray = ^TDAVDoubleDynArray;
 
-  TDAVSingleFixedArray = Array [0..0] of Single;
+  TDAVSingleFixedArray = Array [0..{$IFDEF ZeroArray}0{$ELSE}MaxInt{$ENDIF}] of Single;
   PDAVSingleFixedArray = ^TDAVSingleFixedArray;
-  TDAVDoubleFixedArray = Array [0..0] of Double;
+  TDAVDoubleFixedArray = Array [0..{$IFDEF ZeroArray}0{$ELSE}MaxInt{$ENDIF}] of Double;
   PDAVDoubleFixedArray = ^TDAVDoubleFixedArray;
 
   TDAVArrayOfSingleDynArray = array of TDAVSingleDynArray;
@@ -117,6 +117,8 @@ type
   end;
 
   TChunkName = array [0..3] of AnsiChar;
+
+  TPrecision = (pcHalf, pcSingle, pcDouble); 
 
   {$IFDEF Delphi5}
   PCardinal = ^Cardinal;

@@ -156,10 +156,10 @@ end;
 
 function TCustomLFOSineLike.GetValue: Single;
 begin
-  Result := Abs(FPos * FPosMul) - FHalfScale;
-  Result := Result * (FHalfScale * 2 - Abs(Result)) * 2;
-  Result := Result + (FMin + FMax) * 0.5;
-  FPos := FPos + FIntSpeed;
+ Result := Abs(FPos * FPosMul) - FHalfScale;
+ Result := Result * (FHalfScale * 2 - Abs(Result)) * 2;
+ Result := Result + (FMin + FMax) * 0.5;
+ FPos := FPos + FIntSpeed;
 end;
 
 

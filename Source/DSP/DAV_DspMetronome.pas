@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Complex, DAV_Classes;
 
 type
   TMetronome = class(TDspSampleRatePersistent, IDspGenerator32)
@@ -58,14 +58,20 @@ type
   public
     constructor Create; override;
     procedure CalculateSamplesPerBeat;
-    function ProcessSample32: Single;
+
     procedure Reset;
+
+    function ProcessSample32: Single;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
   published
     property BeatsPerMinute: Double read FBeatsPerMinute write SetBeatsPerMinute;
     property Samplerate;
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 { TMetronome }
 
@@ -85,6 +91,15 @@ begin
   FSamplesCount := 0;
   FPosition.Re := 1;
   FPosition.Im := 0;
+end;
+
+procedure TMetronome.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
 end;
 
 function TMetronome.ProcessSample32: Single;

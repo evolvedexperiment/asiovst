@@ -67,7 +67,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
@@ -164,7 +164,7 @@ begin
  inherited;
 end;
 
-procedure TCustomVariableDelay32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomVariableDelay32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

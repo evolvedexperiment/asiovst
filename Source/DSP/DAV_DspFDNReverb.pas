@@ -173,7 +173,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
     procedure ProcessStereo(const InLeft, InRight: Single; out OutLeft, OutRight: Single);
   end;
@@ -698,7 +698,7 @@ begin
  FFeedbackDelayNetwork.OutputVector[3] := -Cmplx.Im;
 end;
 
-procedure TDspFDNReverb32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDspFDNReverb32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

@@ -57,7 +57,7 @@ type
     constructor Create(const Buffersize: Integer = 0; Amount: Single = 0.5); virtual;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
 
     procedure Mute;
@@ -89,7 +89,7 @@ type
     constructor Create(const Buffersize: Integer = 0; Amount: Single = 0.5; Excursion: Integer = 16); virtual;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
 
     procedure Mute;
@@ -103,7 +103,7 @@ type
 
   TCustomPlateReverb = class(TDspSampleRatePersistent, IDspProcessor32)
   public
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
   end;
 
@@ -151,7 +151,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; override;
 
     property Decay: Single read FDecay write SetDecay;
@@ -236,7 +236,7 @@ begin
  Fillchar(FBuffer^[0], FInternalBufferSize * SizeOf(Single), 0);
 end;
 
-procedure TDiffusor.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDiffusor.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -385,7 +385,7 @@ begin
  Fillchar(FBuffer^[0], FInternalBufferSize * SizeOf(Single), 0);
 end;
 
-procedure TModulatedDiffusor.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TModulatedDiffusor.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -427,7 +427,7 @@ end;
 
 { TCustomPlateReverb }
 
-procedure TCustomPlateReverb.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomPlateReverb.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -623,7 +623,7 @@ begin
  Changed;
 end;
 
-procedure TPlateReverb.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TPlateReverb.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

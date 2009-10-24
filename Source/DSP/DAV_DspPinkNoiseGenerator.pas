@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Complex, DAV_Classes;
 
 type
   TPinkNoiseGenerator = class(TDspPersistent, IDspGenerator32, IDspGenerator64)
@@ -44,8 +44,12 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
+
     function ProcessSample32: Single; virtual;
     function ProcessSample64: Double; virtual;
+
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
   end;
 
 implementation
@@ -66,6 +70,24 @@ begin
     FContribution := Self.FContribution;
    end
  else inherited;
+end;
+
+procedure TPinkNoiseGenerator.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
+end;
+
+procedure TPinkNoiseGenerator.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64;
 end;
 
 function TPinkNoiseGenerator.ProcessSample32: Single;

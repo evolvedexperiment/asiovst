@@ -55,8 +55,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual;
 
@@ -158,7 +158,7 @@ begin
  Result := FLowpass.Order;
 end;
 
-procedure TCustomBarberpoleFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomBarberpoleFilter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -167,7 +167,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TCustomBarberpoleFilter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomBarberpoleFilter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

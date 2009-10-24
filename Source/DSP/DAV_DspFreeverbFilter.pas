@@ -68,7 +68,7 @@ type
     constructor Create(const Buffersize: Integer = 1); virtual;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
 
     procedure Mute;
@@ -97,7 +97,7 @@ type
     constructor Create(const Buffersize: Integer); virtual;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; register;
 
     procedure Mute;
@@ -158,7 +158,7 @@ begin
  FillChar(FBuffer^[0], (FBufferSize + 1) * SizeOf(Single), 0);
 end;
 
-procedure TFreeverbAllpass.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TFreeverbAllpass.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -287,7 +287,7 @@ end;
   but it beats Delphi's compiler generated code hands down,
   Thaddy}
 
-procedure TFreeverbCombFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TFreeverbCombFilter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

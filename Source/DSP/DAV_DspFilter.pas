@@ -55,8 +55,8 @@ type
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; overload; virtual; abstract;
     function ProcessSample64(Input: Int64): Int64; overload; virtual; abstract;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer); virtual;
     function MagnitudeSquared(const Frequency: Double): Double; virtual; abstract;
     function MagnitudeLog10(const Frequency: Double): Double; virtual; abstract;
     function Real(const Frequency: Double): Double; virtual; abstract;
@@ -365,7 +365,7 @@ begin
  Result := ArcTan2(cmplx.Im, cmplx.Re);
 end;
 
-procedure TCustomFilter.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomFilter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -374,7 +374,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TCustomFilter.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomFilter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

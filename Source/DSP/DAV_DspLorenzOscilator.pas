@@ -80,7 +80,7 @@ interface
 
 
 uses
-  SysUtils, DAV_Common, DAV_Classes;
+  SysUtils, DAV_Types, DAV_Classes;
 
 const
   CLorenzScale: Single = 0.05107;
@@ -102,6 +102,8 @@ type
   public
     constructor Create; override;
     function ProcessSample32: Single; virtual; abstract;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray;
+      SampleCount: Integer);
     property Frequency: Single read FFrequency write SetFrequency;
   end;
 
@@ -167,6 +169,15 @@ begin
   FX := 1;
   FY := 1;
   FZ := 1;
+end;
+
+procedure TCustomLorenzRosslerOsc.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
 end;
 
 procedure TCustomLorenzRosslerOsc.SetFrequency(const Frequency: Single);

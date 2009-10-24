@@ -69,7 +69,7 @@ type
     procedure ClearBuffer; override;
     procedure Reset; override;
     
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
     property Sample[Index: Integer]: Single read GetSample;
@@ -89,7 +89,7 @@ type
     procedure ClearBuffer; override;
     procedure Reset; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
 
     property Sample[Index: Integer]: Double read GetSample;
@@ -130,7 +130,7 @@ type
     procedure ClearBuffer; override;
     procedure Reset; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
   published
@@ -150,7 +150,7 @@ type
     procedure ClearBuffer; override;
     procedure Reset; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
   published
     property FractionalBufferSize;
@@ -168,7 +168,7 @@ type
     destructor Destroy; override;
     procedure Reset; virtual;
     function ProcessSample32(Input: Single): Single;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
   published
     property Samplerate;
     property Time: Double read FTime write SetTime;
@@ -184,7 +184,7 @@ type
     constructor Create(const BufferSize: Integer = 0); reintroduce; virtual;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
 
     procedure Reset; virtual;
@@ -263,7 +263,7 @@ begin
  Result := FBuffer^[Pos];
 end;
 
-procedure TCustomDelayLineSamples32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomDelayLineSamples32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -376,7 +376,7 @@ begin
  // ClearBuffer;
 end;
 
-procedure TCustomDelayLineSamples64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomDelayLineSamples64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -457,7 +457,7 @@ begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
 end;
 
-procedure TDelayLineFractional32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDelayLineFractional32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -512,7 +512,7 @@ begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
 end;
 
-procedure TDelayLineFractional64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TDelayLineFractional64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -561,7 +561,7 @@ begin
  inherited;
 end;
 
-procedure TDelayLineTime32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDelayLineTime32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 begin
 
@@ -608,7 +608,7 @@ begin
  inherited;
 end;
 
-procedure TDelayLineTime64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TDelayLineTime64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

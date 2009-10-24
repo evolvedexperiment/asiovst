@@ -89,7 +89,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
     procedure Reset; override;
@@ -112,11 +112,41 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
 
     procedure Reset; override;
   published
+    property Depth;
+    property Drift;
+    property Mix;
+    property SampleRate;
+    property Speed;
+    property Stages;
+  end;
+
+  TDspChorus = class(TCustomDspChorus, IDspProcessor32, IDspProcessor64)
+  private
+    FBuffer          : Pointer;
+    FBufferPrecision : TPrecision;
+    procedure SetBufferPrecision(const Value: TPrecision);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure BufferPrecisionChanged; virtual;
+    procedure UpdateBuffer; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    function ProcessSample32(Input: Single): Single;
+    function ProcessSample64(Input: Double): Double;
+
+    procedure Reset; override;
+  published
+    property BufferPrecision: TPrecision read FBufferPrecision write SetBufferPrecision;
+
     property Depth;
     property Drift;
     property Mix;
@@ -130,7 +160,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_DspInterpolation;
+  SysUtils, Math, DAV_HalfFloat, DAV_DspInterpolation;
 
 { TCustomDspChorus }
 
@@ -159,7 +189,7 @@ end;
 function TCustomDspChorus.GetLFO(Index: Integer): TLFOSine;
 begin
  if (Index >= 0) and (Index < Length(FLFOs))
-  then result := FLFOs[Index]
+  then Result := FLFOs[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
@@ -372,7 +402,7 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-procedure TDspChorus32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDspChorus32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -392,7 +422,7 @@ begin
  assert(FBuffer32 <> nil);
 
  // get delayed dry output
- result := (1 - FMix) * FBuffer32[FBufferOutPos];
+ Result := (1 - FMix) * FBuffer32[FBufferOutPos];
 
  // increase delayed output buffer position
  inc(FBufferOutPos);
@@ -413,7 +443,7 @@ begin
    if p >= FRealBufSize
     then p := p - (FRealBufSize - 4) else
    if p < 4 then p := p + (FRealBufSize - 4);
-   result := result + m * Hermite32_asm(d, @FBuffer32[p - 4]);
+   Result := Result + m * Hermite32_asm(d, @FBuffer32[p - 4]);
   end;
 
  // store new data
@@ -482,7 +512,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-procedure TDspChorus64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TDspChorus64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -502,7 +532,7 @@ begin
  assert(FBuffer64 <> nil);
 
  // get delayed dry output
- result := (1 - FMix) * FBuffer64[FBufferOutPos];
+ Result := (1 - FMix) * FBuffer64[FBufferOutPos];
 
  // increase delayed output buffer position
  inc(FBufferOutPos);
@@ -523,7 +553,7 @@ begin
    if p >= FRealBufSize
     then p := p - (FRealBufSize - 4) else
    if p < 4 then p := p + (FRealBufSize - 4);
-   result := result + m * Hermite64_asm(d, @FBuffer64[p - 4]);
+   Result := Result + m * Hermite64_asm(d, @FBuffer64[p - 4]);
   end;
 
  // store new data
@@ -534,6 +564,257 @@ begin
    Move(FBuffer64[FRealBufSize - 4], FBuffer64[0], 4 * SizeOf(Double));
    FBufferInPos := 4;
   end;
+end;
+
+
+{ TDspChorus }
+
+constructor TDspChorus.Create;
+begin
+ inherited;
+ FBuffer := nil;
+ FRealBufSize := 8;
+ UpdateBuffer;
+end;
+
+destructor TDspChorus.Destroy;
+begin
+ Dispose(FBuffer);
+ inherited;
+end;
+
+procedure TDspChorus.AssignTo(Dest: TPersistent);
+begin
+(*
+var
+  Sample : Integer;
+
+ if Dest is TDspChorus32 then
+  with TDspChorus32(Dest) do
+   begin
+    inherited;
+    assert(FRealBufSize = Self.FRealBufSize);
+    Move(Self.FBuffer32^, FBuffer32^, FRealBufSize * SizeOf(Single));
+   end else
+ if Dest is TDspChorus64 then
+  with TDspChorus64(Dest) do
+   begin
+    inherited;
+    Assert(FRealBufSize = Self.FRealBufSize);
+    for Sample := 0 to FRealBufSize - 1
+     do Self.FBuffer32^[Sample] := FBuffer64^[Sample];
+   end
+ else inherited;
+*)
+ // yet todo!!!
+end;
+
+procedure TDspChorus.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TDspChorus.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
+end;
+
+function TDspChorus.ProcessSample32(Input: Single): Single;
+var
+  i, p : Integer;
+  d, m : Double;
+begin
+ inherited;
+
+ // make sure the buffer has been allocated (e.g. not nil)
+ Assert(FBuffer <> nil);
+
+ // get delayed dry output
+ case FBufferPrecision of
+    pcHalf : Result := (1 - FMix) * PDAVHalfFloatFixedArray(FBuffer)^[FBufferOutPos];
+  pcSingle : Result := (1 - FMix) * PDAVSingleFixedArray(FBuffer)^[FBufferOutPos];
+  pcDouble : Result := (1 - FMix) * PDAVDoubleFixedArray(FBuffer)^[FBufferOutPos];
+  else Result := 0;
+ end;
+
+ // increase delayed output buffer position
+ inc(FBufferOutPos);
+ if FBufferOutPos >= FRealBufSize
+  then FBufferOutPos := 4;
+
+ m := FStageMix;
+ for i := 0 to Stages - 1 do
+  begin
+   // calculate next LFO position
+   FLFOs[i].CalculateNextSample;
+   d := 4 + FBufferSize * 0.5 * (1 - FLFOs[i].Sine);
+
+   // calculate absolute sample position
+   p := round(d - 0.5);
+   d := d - p;
+   p := FBufferInPos + p;
+   if p >= FRealBufSize
+    then p := p - (FRealBufSize - 4) else
+   if p < 4 then p := p + (FRealBufSize - 4);
+
+   case FBufferPrecision of
+      pcHalf : raise Exception.Create('yet to implement!');
+    pcSingle : Result := Result + m * Hermite32_asm(d, @PDAVSingleFixedArray(FBuffer)^[p - 4]);
+    pcDouble : Result := Result + m * Hermite64_asm(d, @PDAVDoubleFixedArray(FBuffer)^[p - 4]);
+   end;
+
+  end;
+
+ // store new data
+ case FBufferPrecision of
+    pcHalf : PDAVHalfFloatFixedArray(FBuffer)^[FBufferInPos] := FastSingleToHalfFloat(Input);
+  pcSingle : PDAVSingleFixedArray(FBuffer)^[FBufferInPos] := Input;
+  pcDouble : PDAVDoubleFixedArray(FBuffer)^[FBufferInPos] := Input;
+ end;
+
+ inc(FBufferInPos);
+ if FBufferInPos >= FRealBufSize then
+  begin
+   case FBufferPrecision of
+      pcHalf : Move(PDAVHalfFloatFixedArray(FBuffer)[FRealBufSize - 4], FBuffer^, 4 * SizeOf(THalfFloat));
+    pcSingle : Move(PDAVSingleFixedArray(FBuffer)[FRealBufSize - 4], FBuffer^, 4 * SizeOf(Single));
+    pcDouble : Move(PDAVDoubleFixedArray(FBuffer)[FRealBufSize - 4], FBuffer^, 4 * SizeOf(Double));
+   end;
+
+   FBufferInPos := 4;
+  end;
+end;
+
+function TDspChorus.ProcessSample64(Input: Double): Double;
+var
+  i, p : Integer;
+  d, m : Double;
+begin
+ inherited;
+
+ // make sure the buffer has been allocated (e.g. not nil)
+ Assert(FBuffer <> nil);
+
+ // get delayed dry output
+ case FBufferPrecision of
+    pcHalf : Result := (1 - FMix) * PDAVHalfFloatFixedArray(FBuffer)^[FBufferOutPos];
+  pcSingle : Result := (1 - FMix) * PDAVSingleFixedArray(FBuffer)^[FBufferOutPos];
+  pcDouble : Result := (1 - FMix) * PDAVDoubleFixedArray(FBuffer)^[FBufferOutPos];
+  else Result := 0;
+ end;
+
+ // increase delayed output buffer position
+ inc(FBufferOutPos);
+ if FBufferOutPos >= FRealBufSize
+  then FBufferOutPos := 4;
+
+ m := FStageMix;
+ for i := 0 to Stages - 1 do
+  begin
+   // calculate next LFO position
+   FLFOs[i].CalculateNextSample;
+   d := 4 + FBufferSize * 0.5 * (1 - FLFOs[i].Sine);
+
+   // calculate absolute sample position
+   p := round(d - 0.5);
+   d := d - p;
+   p := FBufferInPos + p;
+   if p >= FRealBufSize
+    then p := p - (FRealBufSize - 4) else
+   if p < 4 then p := p + (FRealBufSize - 4);
+
+   case FBufferPrecision of
+      pcHalf : raise Exception.Create('yet to implement!');
+    pcSingle : Result := Result + m * Hermite32_asm(d, @PDAVSingleFixedArray(FBuffer)^[p - 4]);
+    pcDouble : Result := Result + m * Hermite64_asm(d, @PDAVDoubleFixedArray(FBuffer)^[p - 4]);
+   end;
+
+  end;
+
+ // store new data
+ case FBufferPrecision of
+    pcHalf : PDAVHalfFloatFixedArray(FBuffer)^[FBufferInPos] := FastSingleToHalfFloat(Input);
+  pcSingle : PDAVSingleFixedArray(FBuffer)^[FBufferInPos] := Input;
+  pcDouble : PDAVDoubleFixedArray(FBuffer)^[FBufferInPos] := Input;
+ end;
+
+ inc(FBufferInPos);
+ if FBufferInPos >= FRealBufSize then
+  begin
+   case FBufferPrecision of
+      pcHalf : Move(PDAVHalfFloatFixedArray(FBuffer)[FRealBufSize - 4], FBuffer^, 4 * SizeOf(THalfFloat));
+    pcSingle : Move(PDAVSingleFixedArray(FBuffer)[FRealBufSize - 4], FBuffer^, 4 * SizeOf(Single));
+    pcDouble : Move(PDAVDoubleFixedArray(FBuffer)[FRealBufSize - 4], FBuffer^, 4 * SizeOf(Double));
+   end;
+
+   FBufferInPos := 4;
+  end;
+end;
+
+procedure TDspChorus.Reset;
+begin
+ case FBufferPrecision of
+    pcHalf : FillChar(FBuffer^, FRealBufSize * 2, 0);
+  pcSingle : FillChar(FBuffer^, FRealBufSize * SizeOf(Single), 0);
+  pcDouble : FillChar(FBuffer^, FRealBufSize * SizeOf(Double), 0);
+ end;
+end;
+
+procedure TDspChorus.SetBufferPrecision(const Value: TPrecision);
+begin
+ if FBufferPrecision <> Value then
+  begin
+   FBufferPrecision := Value;
+   BufferPrecisionChanged;
+  end;
+end;
+
+procedure TDspChorus.BufferPrecisionChanged;
+begin
+ UpdateBuffer;
+end;
+
+procedure TDspChorus.UpdateBuffer;
+var
+  OldBufferSize : Integer;
+begin
+ OldBufferSize := FRealBufSize;
+ inherited;
+
+ case FBufferPrecision of
+  pcHalf :
+    begin
+     // allocate memory
+     ReallocMem(FBuffer, FRealBufSize * 2);
+     if FRealBufSize > OldBufferSize
+      then FillChar(PDAVHalfFloatFixedArray(FBuffer)^[OldBufferSize],
+        (FRealBufSize - OldBufferSize) * 2, 0);
+    end;
+  pcSingle :
+    begin
+     // allocate memory
+     ReallocMem(FBuffer, FRealBufSize * SizeOf(Single));
+     if FRealBufSize > OldBufferSize
+      then FillChar(PDAVSingleFixedArray(FBuffer)^[OldBufferSize],
+        (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
+    end;
+  pcDouble :
+    begin
+     // allocate memory
+     ReallocMem(FBuffer, FRealBufSize * SizeOf(Double));
+     if FRealBufSize > OldBufferSize
+      then FillChar(PDAVDoubleFixedArray(FBuffer)^[OldBufferSize],
+        (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
+    end;
+ end;
 end;
 
 end.

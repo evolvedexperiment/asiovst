@@ -50,7 +50,7 @@ type
   public
     constructor Create; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual; abstract;
 
     property Frequency: Single read FFrequency write SetFrequency;
@@ -244,7 +244,7 @@ begin
 end;
 
 procedure TCustomPsychoAcousticBassEnhancer.ProcessBlock32(
-  Data: PDAVSingleFixedArray; SampleCount: Integer);
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
   Sample: Integer;
 begin

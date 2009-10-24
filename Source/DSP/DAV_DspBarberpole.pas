@@ -88,7 +88,7 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer); virtual;
     function ProcessSample32(Input: Single): Single; virtual;
     procedure Reset; override;
   published
@@ -108,7 +108,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual;
 
     procedure Reset; override;
@@ -312,7 +312,7 @@ begin
   then FillChar(FBuffer32^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Single), 0);
 end;
 
-procedure TDspBarberpole32.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TDspBarberpole32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -457,7 +457,7 @@ begin
   then FillChar(FBuffer64^[OldBufferSize], (FRealBufSize - OldBufferSize) * SizeOf(Double), 0);
 end;
 
-procedure TDspBarberpole64.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TDspBarberpole64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

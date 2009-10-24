@@ -73,8 +73,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
-    procedure ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; virtual;
 
@@ -248,7 +248,7 @@ begin
  FThresholdFactor := dB_to_Amp(FThreshold);
 end;
 
-procedure TCustomAudio2MidiTrigger.ProcessBlock32(Data: PDAVSingleFixedArray;
+procedure TCustomAudio2MidiTrigger.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -257,7 +257,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-procedure TCustomAudio2MidiTrigger.ProcessBlock64(Data: PDAVDoubleFixedArray;
+procedure TCustomAudio2MidiTrigger.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;

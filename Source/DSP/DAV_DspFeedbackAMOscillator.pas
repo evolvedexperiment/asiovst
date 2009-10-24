@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DspLFO, DAV_DspFilter, DAV_DspDelayLines;
+  DAV_Types, DAV_Classes, DAV_DspLFO, DAV_DspFilter, DAV_DspDelayLines;
 
 type
   TCustomFeedbackAMOscillator = class(TDspSampleRatePersistent)
@@ -66,6 +66,8 @@ type
   public
     constructor Create; override;
     function ProcessSample32: Single;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray;
+      SampleCount: Integer);
   published
     property Amplitude;
     property Frequency;
@@ -79,6 +81,8 @@ type
   public
     constructor Create; override;
     function ProcessSample32: Single;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray;
+      SampleCount: Integer);
   published
     property Amplitude;
     property Frequency;
@@ -170,6 +174,15 @@ begin
  FState := 0;
 end;
 
+procedure TFeedbackAMOscillator.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
+end;
+
 function TFeedbackAMOscillator.ProcessSample32: Single;
 begin
 (*
@@ -190,6 +203,15 @@ constructor TDelayedFeedbackAMOscillator.Create;
 begin
  inherited;
  FDelayLine := TCustomDelayLineSamples32.Create(128);
+end;
+
+procedure TDelayedFeedbackAMOscillator.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
 end;
 
 function TDelayedFeedbackAMOscillator.ProcessSample32: Single;
