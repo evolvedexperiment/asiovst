@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_Complex, DAV_DspSpectralEffects,
+  Classes, DAV_Types, DAV_Classes, DAV_Complex, DAV_DspSpectralEffects,
   DAV_DspDynamics;
 
 // TODO: check and implement all assignto functions!!!
@@ -129,7 +129,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, DAV_Common;
 
 { TSpectralNoiseCut32 }
 

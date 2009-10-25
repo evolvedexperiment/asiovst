@@ -1439,7 +1439,11 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcess
+  {$IFDEF UseDelpi}
   call dword ptr [ebx + $00000230] // [TBasicVSTModule(ebx).HostCallProcess]
+  {$ELSE}
+  call dword ptr [ebx + $00000224] // [TBasicVSTModule(ebx).HostCallProcess]
+  {$ENDIF}
 
  @end:
   pop ebx
@@ -1500,7 +1504,11 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcessReplacing (damn hack!!!)
+  {$IFDEF UseDelpi}
   call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+  {$ELSE}
+  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+  {$ENDIF}
 
  @end:
   pop ebx
@@ -1562,7 +1570,11 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcessDoubleReplacing (damn hack!!!)
+  {$IFDEF UseDelpi}
   call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+  {$ELSE}
+  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+  {$ENDIF}
 
  @end:
   pop ebx

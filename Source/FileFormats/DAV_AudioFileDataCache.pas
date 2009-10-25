@@ -73,7 +73,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, SyncObjs, DAV_Common, DAV_Classes, DAV_AudioData,
+  Classes, SysUtils, SyncObjs, DAV_Types, DAV_Classes, DAV_AudioData,
   DAV_AudioFile, DAV_ChannelDataCoder;
 
 type

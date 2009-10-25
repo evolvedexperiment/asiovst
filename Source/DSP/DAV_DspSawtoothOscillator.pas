@@ -128,10 +128,24 @@ type
     property Frequency;
   end;
 
+  TTriangleOscillator = class(TCustomSawtoothOscillator)
+  public
+    function ProcessSample32: Single;
+  published
+    property Frequency;
+  end;
+
+  TRectangleOscillator = class(TCustomSawtoothOscillator)
+  public
+    function ProcessSample32: Single;
+  published
+    property Frequency;
+  end;
+
 implementation
 
 uses
-  SysUtils;
+  SysUtils, Math, DAV_Common;
 
 resourcestring
   RCStrPositiveValueOnly = 'Value must be larger than 0!';
@@ -377,6 +391,21 @@ end;
 procedure TChebyshevOversampledSawtoothOscillator.RippleChanged;
 begin
  TChebyshev1LowpassFilter(FFilter).Ripple := FRipple;
+end;
+
+{ TTriangleOscillator }
+
+function TTriangleOscillator.ProcessSample32: Single;
+begin
+ Result := 2 * abs(inherited ProcessSample32) - 1;
+end;
+
+
+{ TRectangleOscillator }
+
+function TRectangleOscillator.ProcessSample32: Single;
+begin
+ Result := Sign(inherited ProcessSample32);
 end;
 
 end.
