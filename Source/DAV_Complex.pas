@@ -226,7 +226,7 @@ function ComplexArcTanh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPOR
 implementation
 
 uses
-  Math {$IFDEF Delphi5}, DAV_Common{$ENDIF};
+  Math, DAV_Common;
 
 function Complex(const Re, Im: Double): TComplexDouble;
 begin
@@ -1092,31 +1092,30 @@ end;
 
 function ComplexTan(const Re, Im: Single): TComplexSingle;
 var
-  Value : array [0..1] of TComplexSingle;
+ ExpIm   : Single;
+ ExpRe   : TComplexSingle;
+ Divisor : Single;
 begin
- Value[0] := ComplexExp( Im, -Re);
- Value[1] := ComplexExp(-Im,  Re);
- Value[0] := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
+ ExpIm := Exp(Im);
+ GetSinCos(Re, ExpRe.Im, ExpRe.Re);
 
- Result.Re := -Value[0].Im;
- Result.Im :=  Value[0].Re;
+ Divisor := 1 / (Sqr(ExpRe.Re * (Sqr(ExpIm) + 1)) + Sqr(ExpRe.Im * (Sqr(ExpIm) - 1)));
+ Result.Re := ExpRe.Im * ExpRe.Re * 4 * Sqr(ExpIm) * Divisor;
+ Result.Im := (Sqr(ExpRe.Re) * (Sqr(Sqr(ExpIm)) - 1) + Sqr(ExpRe.Im) * (Sqr(Sqr(ExpIm)) - 1)) * Divisor;
 end;
 
 function ComplexTan(const Re, Im: Double): TComplexDouble;
 var
-  Value : array [0..1] of TComplexDouble;
+ ExpIm   : Double;
+ ExpRe   : TComplexDouble;
+ Divisor : Double;
 begin
- // yet todo!
-(*
- Value[0] := ComplexExp( Im, -Re);
- Value[1] := ComplexExp(-Im,  Re);
- Value[0] := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
+ ExpIm := Exp(Im);
+ GetSinCos(Re, ExpRe.Im, ExpRe.Re);
 
- Result.Re := -Value[0].Im;
- Result.Im :=  Value[0].Re;
-*)
+ Divisor := 1 / (Sqr(ExpRe.Re * (Sqr(ExpIm) + 1)) + Sqr(ExpRe.Im * (Sqr(ExpIm) - 1)));
+ Result.Re := ExpRe.Im * ExpRe.Re * 4 * Sqr(ExpIm) * Divisor;
+ Result.Im := (Sqr(ExpRe.Re) * (Sqr(Sqr(ExpIm)) - 1) + Sqr(ExpRe.Im) * (Sqr(Sqr(ExpIm)) - 1)) * Divisor;
 end;
 
 function ComplexTan(const Z: TComplexSingle): TComplexSingle;
@@ -1134,18 +1133,16 @@ end;
 
 function ComplexTan(const Z: TComplexDouble): TComplexDouble;
 var
-  Value : array [0..1] of TComplexDouble;
+ ExpIm   : Double;
+ ExpRe   : TComplexDouble;
+ Divisor : Double;
 begin
- // yet todo!
-(*
- Value[0] := ComplexExp( Z.Im, -Z.Re);
- Value[1] := ComplexExp(-Z.Im,  Z.Re);
- Value[0] := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
+ ExpIm := Exp(Z.Im);
+ GetSinCos(Z.Re, ExpRe.Im, ExpRe.Re);
 
- Result.Re := -Value[0].Im;
- Result.Im :=  Value[0].Re;
-*)
+ Divisor := 1 / (Sqr(ExpRe.Re * (Sqr(ExpIm) + 1)) + Sqr(ExpRe.Im * (Sqr(ExpIm) - 1)));
+ Result.Re := ExpRe.Im * ExpRe.Re * 4 * Sqr(ExpIm) * Divisor;
+ Result.Im := (Sqr(ExpRe.Re) * (Sqr(Sqr(ExpIm)) - 1) + Sqr(ExpRe.Im) * (Sqr(Sqr(ExpIm)) - 1)) * Divisor;
 end;
 
 
