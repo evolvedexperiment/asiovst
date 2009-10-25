@@ -46,6 +46,10 @@ type
     procedure TestComplexArcSin64;
     procedure TestComplexArcCos32;
     procedure TestComplexArcCos64;
+    procedure TestComplexArcTan32;
+    procedure TestComplexArcTan64;
+    procedure TestComplexArcTanh32;
+    procedure TestComplexArcTanh64;
   end;
 
 implementation
@@ -651,11 +655,11 @@ begin
  Value.Im := 0;
 
  Result := ComplexCos(Value);
- CheckTrue(abs(Result.Re - cos(1)) < CEpsilon32);
+ CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon32);
  CheckTrue(Result.Im = 0);
 
  Result := ComplexCos(Value);
- CheckTrue(abs(Result.Re - cos(1)) < CEpsilon32);
+ CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon32);
  CheckTrue(Result.Im = 0);
 
 (*
@@ -683,11 +687,11 @@ begin
  Value.Im := 0;
 
  Result := ComplexCos(Value);
- CheckTrue(abs(Result.Re - cos(1)) < CEpsilon64);
+ CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon64);
  CheckTrue(Result.Im = 0);
 
  Result := ComplexCos(Value);
- CheckTrue(abs(Result.Re - cos(1)) < CEpsilon64);
+ CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon64);
  CheckTrue(Result.Im = 0);
 
 (*
@@ -779,11 +783,11 @@ begin
  Value.Im := 0;
 
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon32);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
  CheckTrue(Result.Im = 0);
 
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon32);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
  CheckTrue(Result.Im = 0);
 
 (*
@@ -811,11 +815,11 @@ begin
  Value.Im := 0;
 
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon64);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon64);
  CheckTrue(Result.Im = 0);
 
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon64);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon64);
  CheckTrue(Result.Im = 0);
 
 (*
@@ -842,7 +846,7 @@ begin
  Value.Re := 1;
  Value.Im := 0;
 
- Result := ComplexTanh(Value);
+ Result := ComplexArcCos(Value);
  CheckTrue(abs(Result.Re - ArcCos(1)) < CEpsilon32);
  CheckTrue(Result.Im = 0);
 end;
@@ -856,7 +860,7 @@ begin
  Value.Re := 1;
  Value.Im := 0;
 
- Result := ComplexTanh(Value);
+ Result := ComplexArcCos(Value);
  CheckTrue(abs(Result.Re - ArcCos(1)) < CEpsilon64);
  CheckTrue(Result.Im = 0);
 end;
@@ -870,8 +874,8 @@ begin
  Value.Re := 1;
  Value.Im := 0;
 
- Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - ArcSin(1)) < CEpsilon32);
+ Result := ComplexArcSin(Value);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
  CheckTrue(Result.Im = 0);
 end;
 
@@ -884,8 +888,64 @@ begin
  Value.Re := 1;
  Value.Im := 0;
 
+ Result := ComplexArcSin(Value);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon64);
+ CheckTrue(Result.Im = 0);
+end;
+
+procedure TestComplexFunctions.TestComplexArcTan32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexArcTan(Value);
+ CheckTrue(abs(Result.Re - ArcTan(1)) < CEpsilon32);
+ CheckTrue(Result.Im = 0);
+end;
+
+procedure TestComplexFunctions.TestComplexArcTan64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexTan(Value);
+ CheckTrue(abs(Result.Re - ArcTan(1)) < CEpsilon64);
+ CheckTrue(Result.Im = 0);
+end;
+
+procedure TestComplexFunctions.TestComplexArcTanh32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - ArcSin(1)) < CEpsilon64);
+ CheckTrue(abs(Result.Re - ArcTanh(1)) < CEpsilon32);
+ CheckTrue(Result.Im = 0);
+end;
+
+procedure TestComplexFunctions.TestComplexArcTanh64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexTanh(Value);
+ CheckTrue(abs(Result.Re - ArcTanh(1)) < CEpsilon64);
  CheckTrue(Result.Im = 0);
 end;
 
