@@ -79,6 +79,8 @@ type
     procedure PopStates;
     procedure ResetStates;
 
+    function ProcessSample32(const Output: TDAV2SingleArray): Single;
+
     property ProcessSample: TProcessSample32 read FProcessSample32;
     property ProcessSampleSplit: TProcessSampleSplit32 read FProcessSampleSplit32;
   end;
@@ -114,6 +116,8 @@ type
     procedure PushStates;
     procedure PopStates;
     procedure ResetStates;
+
+    function ProcessSample64(const Output: TDAV2DoubleArray): Double;
 
     property ProcessSample: TProcessSample64 read FProcessSample64;
     property ProcessSampleSplit: TProcessSampleSplit64 read FProcessSampleSplit64;
@@ -679,6 +683,11 @@ begin
    do Output[pos] := FProcessSample32(PDAV2SingleArray(@Input[pos * 2])^);
 end;
 
+function TPolyphaseDownsampler32.ProcessSample32(
+  const Output: TDAV2SingleArray): Single;
+begin
+ Result := FProcessSample32(Output);
+end;
 
 
 /////////////////////////////// Constructor //////////////////////////////////
@@ -1272,5 +1281,10 @@ begin
   until (Pos >= SampleFrames);
 end;
 
-end.
+function TPolyphaseDownsampler64.ProcessSample64(
+  const Output: TDAV2DoubleArray): Double;
+begin
+ Result := FProcessSample64(Output);
+end;
 
+end.

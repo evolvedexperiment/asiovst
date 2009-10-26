@@ -190,7 +190,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Complex;
+  Math, DAV_Math, DAV_Complex;
 
 { TCustomGuiGroup }
 

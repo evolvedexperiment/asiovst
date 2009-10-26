@@ -84,7 +84,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Approximations;
+  SysUtils, DAV_Math, DAV_Approximations;
 
 { TCustomExciter }
 
@@ -226,8 +226,8 @@ begin
  FCrossover.ProcessSample(FGains[0] * Input, Low, High);
 
  FUpsampler.ProcessSample(Low, Data);
- Data[0] := 0.125 * DAV_Common.Tanh(8 * Data[0]);
- Data[1] := 0.125 * DAV_Common.Tanh(8 * Data[1]);
+ Data[0] := 0.125 * DAV_Math.Tanh(8 * Data[0]);
+ Data[1] := 0.125 * DAV_Math.Tanh(8 * Data[1]);
  Harmonic := FHighpass.ProcessSample64(FDownsampler.ProcessSample(Data));
 
  Result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;

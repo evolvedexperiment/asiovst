@@ -46,7 +46,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LightweightLimiterGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  LightweightLimiterGUI;
 
 procedure TLightweightLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var

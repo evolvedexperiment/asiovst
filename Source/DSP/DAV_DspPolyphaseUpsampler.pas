@@ -69,6 +69,8 @@ type
     procedure PopStates;
     procedure ResetStates;
 
+    procedure ProcessSample32(Input: Single; out Output : TDAV2SingleArray);
+
     property ProcessSample: TProcessSample32 read FProcessSample32;
   end;
 
@@ -94,6 +96,7 @@ type
     procedure PushStates;
     procedure PopStates;
     procedure ResetStates;
+    procedure ProcessSample64(Input: Double; out Output : TDAV2DoubleArray);
 
     property ProcessSample: TProcessSample64 read FProcessSample64;
   end;
@@ -368,6 +371,12 @@ asm
 
  pop edi
 end;
+procedure TPolyphaseUpsampler32.ProcessSample32(Input: Single;
+  out Output: TDAV2SingleArray);
+begin
+ FProcessSample32(Input, Output);
+end;
+
 {$ENDIF}
 
 procedure TPolyphaseUpsampler32.ProcessSample4(const Input : Single; out Output : TDAV2SingleArray);
@@ -898,6 +907,12 @@ asm
 
  popad
 end;
+procedure TPolyphaseUpsampler64.ProcessSample64(Input: Double;
+  out Output: TDAV2DoubleArray);
+begin
+ FProcessSample64(Input, Output);
+end;
+
 {$ENDIF}
 
 procedure TPolyphaseUpsampler64.ProcessSampleLarge(const Input : Double; out Output : TDAV2DoubleArray);

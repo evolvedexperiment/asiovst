@@ -282,7 +282,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, SysUtils, DAV_Common, DAV_DspDFT;
+  Math, SysUtils, DAV_Common, DAV_Math, DAV_DspDFT;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -1224,7 +1224,7 @@ begin
    end;
 end;
 
-function TBiquadIIRFilter.ProcessSample64(Input:Double): Double;
+function TBiquadIIRFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result    := FNominator[0] * Input + FState[0];

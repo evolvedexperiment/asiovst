@@ -50,7 +50,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, AdhesiveGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms, AdhesiveGUI;
 
 procedure TAdhesiveDataModule.VSTModuleOpen(Sender: TObject);
 var

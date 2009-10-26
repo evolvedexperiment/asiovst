@@ -131,7 +131,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_MAth;
 
 { TCustomSimpleOscillator }
 

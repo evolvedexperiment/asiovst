@@ -1,4 +1,4 @@
-unit LA1701DM;
+﻿unit LA1701DM;
 
 interface
 
@@ -64,7 +64,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Dialogs, Math, EditorFrm, DAV_DspFilter;
+  Dialogs, Math, EditorFrm, DAV_Common, DAV_Math, DAV_DspFilter;
 
 procedure TLA1701DataModule.VSTModuleOpen(Sender: TObject);
 begin

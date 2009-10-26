@@ -120,7 +120,7 @@ type
 implementation
 
 uses
-  Types, StdCtrls, SysUtils, Math, DAV_Common, DAV_Complex, DAV_GuiCommon;
+  Types, StdCtrls, SysUtils, Math, DAV_Math, DAV_Complex, DAV_GuiCommon;
 
 { TCustomGuiPanel }
 

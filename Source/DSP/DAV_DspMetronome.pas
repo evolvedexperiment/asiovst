@@ -71,7 +71,7 @@ type
 implementation
 
 uses
-  DAV_Common;
+  DAV_Math;
 
 { TMetronome }
 

@@ -39,7 +39,7 @@ implementation
 {$R *.DFM}
 
 uses
-  UniQuEGUI, DAV_VSTCustomModule;
+  DAV_Common, DAV_VSTCustomModule, UniQuEGUI;
 
 procedure TUniQuEDataModule.VSTModuleOpen(Sender: TObject);
 var

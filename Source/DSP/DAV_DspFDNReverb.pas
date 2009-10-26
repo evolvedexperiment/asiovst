@@ -181,7 +181,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Approximations, DAV_DspInterpolation;
+  Math, SysUtils, DAV_Math, DAV_Approximations, DAV_DspInterpolation;
 
 { TDampingFilter }
 

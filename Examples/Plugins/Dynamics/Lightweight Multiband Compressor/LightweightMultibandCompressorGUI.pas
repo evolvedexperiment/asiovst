@@ -189,7 +189,8 @@ type
 implementation
 
 uses
-  LightweightMultibandCompressorDM, PngImage, DAV_VSTModuleWithPrograms;
+  PngImage, DAV_Common, DAV_VSTModuleWithPrograms,
+  LightweightMultibandCompressorDM;
 
 {$R *.DFM}
 

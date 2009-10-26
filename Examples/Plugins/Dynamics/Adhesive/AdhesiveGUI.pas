@@ -106,7 +106,7 @@ type
 implementation
 
 uses
-  AdhesiveDM, PngImage, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+  AdhesiveDM, PngImage, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}
 
@@ -328,7 +328,7 @@ end;
 procedure TFmAdhesive.TimerTimer(Sender: TObject);
 begin
  with TAdhesiveDataModule(Owner).FastCompressor, VUMeter
-  do GlyphIndex := round(NumGlyphs * limit(-GainReductiondB, 0, 40) / 40);
+  do GlyphIndex := round(NumGlyphs * Limit(-GainReductiondB, 0, 40) / 40);
 end;
 
 procedure TFmAdhesive.UpdateThreshold;

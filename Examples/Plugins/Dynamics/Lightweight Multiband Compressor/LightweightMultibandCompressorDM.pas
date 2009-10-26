@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 interface
 
@@ -56,7 +56,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LightweightMultibandCompressorGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  LightweightMultibandCompressorGUI;
 
 procedure TLightweightMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var

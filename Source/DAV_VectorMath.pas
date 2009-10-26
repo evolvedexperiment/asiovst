@@ -213,7 +213,7 @@ var
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Math;
 
 const
 {$IFNDEF PUREPASCAL}

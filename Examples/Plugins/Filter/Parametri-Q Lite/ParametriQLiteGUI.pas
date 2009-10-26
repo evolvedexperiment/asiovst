@@ -202,7 +202,7 @@ type
 implementation
 
 uses
-  PngImage, ParametriQLiteDM, DAV_GuiCommon, DAV_Approximations,
+  PngImage, ParametriQLiteDM, DAV_Common, DAV_GuiCommon, DAV_Approximations,
   DAV_VSTModuleWithPrograms;
 
 {$R *.DFM}

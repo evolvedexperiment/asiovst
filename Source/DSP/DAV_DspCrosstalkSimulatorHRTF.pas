@@ -90,7 +90,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Complex;
+  SysUtils, DAV_Math, DAV_Complex;
 
 { TCustomHrtfCrosstalkSimulator }
 

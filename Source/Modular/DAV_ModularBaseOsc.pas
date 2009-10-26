@@ -38,6 +38,9 @@ type
 
 implementation
 
+uses
+  DAV_Math;
+
 { TDspBaseOsc }
 
 procedure TDspBaseOsc.Init;

@@ -40,7 +40,7 @@ implementation
 {$R *.DFM}
 
 uses
-  BugpassLiteDM, DAV_VSTModuleWithPrograms;
+  BugpassLiteDM, DAV_Common, DAV_VSTModuleWithPrograms;
 
 procedure TFmBugpassLite.FormCreate(Sender: TObject);
 var

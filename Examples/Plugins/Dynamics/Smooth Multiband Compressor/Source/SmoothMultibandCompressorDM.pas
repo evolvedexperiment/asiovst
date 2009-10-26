@@ -1,4 +1,4 @@
-unit SmoothMultibandCompressorDM;
+﻿unit SmoothMultibandCompressorDM;
 
 interface
 
@@ -66,8 +66,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, Graphics, DAV_Approximations, SmoothMultibandCompressorGUI,
-  DAV_VSTModuleWithPrograms;
+  Math, Graphics, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  SmoothMultibandCompressorGUI;
 
 procedure TSmoothMultibandCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var

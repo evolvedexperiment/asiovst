@@ -65,7 +65,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Math;
 
 { TCustomChebyshevFilter }
 

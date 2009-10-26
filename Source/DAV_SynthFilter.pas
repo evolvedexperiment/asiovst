@@ -35,7 +35,7 @@ type
 implementation
 
 uses
-  DAV_Common;
+  DAV_Math;
 
 const
   // Note: These values are not in the same order

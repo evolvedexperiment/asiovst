@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_DspFilter, DAV_DspFilterChebyshev;
+  Classes, DAV_Complex, DAV_DspFilter, DAV_DspFilterChebyshev;
 
 type
   TCustomChebyshev2Filter = class(TCustomChebyshevFilter)
@@ -128,7 +128,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Approximations;
+  Math, SysUtils, DAV_Math, DAV_Approximations;
 
 const
   CHalf32 : Single = 0.5;

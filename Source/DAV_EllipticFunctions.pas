@@ -124,7 +124,7 @@ function CompleteEllipticIntegral1stKindX(x: Double): Double;
 implementation
 
 uses
-  Math, SysUtils, DAV_Common;
+  Math, SysUtils, DAV_Math;
 
 const
   {$IFDEF UNK}

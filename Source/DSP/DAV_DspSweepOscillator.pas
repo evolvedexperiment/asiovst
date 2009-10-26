@@ -118,7 +118,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations;
+  Math, DAV_Math, DAV_Approximations;
 
 { TCustomSweepOscillator64 }
 

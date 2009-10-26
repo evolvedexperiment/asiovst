@@ -165,7 +165,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, MBCDM;
+  Math, DAV_Common, MBCDM;
 
 procedure TFmMBC.FormCreate(Sender: TObject);
 var

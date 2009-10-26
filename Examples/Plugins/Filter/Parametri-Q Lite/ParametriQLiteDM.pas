@@ -49,7 +49,7 @@ implementation
 {$R *.DFM}
 
 uses
-  ParametriQLiteGUI, DAV_Approximations, DAV_VSTModuleWithPrograms;
+  ParametriQLiteGUI, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';

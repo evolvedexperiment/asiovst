@@ -208,6 +208,10 @@ implementation
 uses
   SysUtils, DAV_Approximations;
 
+resourcestring
+  RCStrAttackTimeInvalid = 'Attack time must be larger than zero!';
+  RCStrReleaseTimeInvalid = 'Release time must be larger than zero!';
+
 const
   CSoftKnee : array [0..7] of Single = (-8.21343513178931783E-2,
     6.49732456739820052E-1, -2.13417801862571777, 4.08642207062728868,
@@ -1447,7 +1451,7 @@ end;
 procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateAttackFactor;
 begin
  if FAttack <= 0
-  then raise Exception.Create('Attack time must be larger than zero!')
+  then raise Exception.Create(RCStrAttackTimeInvalid)
   else
    begin
     FAttackSampleCycle := -1 / (FAttack * 0.001 * SampleRate);
@@ -1458,7 +1462,7 @@ end;
 procedure TLightweightSoftKneeFeedbackLikeCompressor.CalculateReleaseFactor;
 begin
  if FRelease <= 0
-  then raise Exception.Create('Release time must be larger than zero!')
+  then raise Exception.Create(RCStrReleaseTimeInvalid)
   else
    begin
     FReleaseSampleCycle := -1 / (FRelease * 0.001 * SampleRate);

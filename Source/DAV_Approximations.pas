@@ -518,7 +518,7 @@ const
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_Math;
 
 { Trigonomic Approximations }
 

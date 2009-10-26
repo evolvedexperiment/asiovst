@@ -124,7 +124,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Math;
 
 { TLeslieRotator }
 

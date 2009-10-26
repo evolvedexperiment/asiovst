@@ -108,7 +108,8 @@ var
 implementation
 
 uses
-  Math, GR32_Backends, SmoothMultibandCompressorDM, DAV_VSTModuleWithPrograms;
+  Math, GR32_Backends, DAV_Common, DAV_VSTModuleWithPrograms,
+  SmoothMultibandCompressorDM;
 
 procedure TFmSmoothMultibandCompressor.FormCreate(Sender: TObject);
 var

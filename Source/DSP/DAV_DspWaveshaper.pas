@@ -109,7 +109,7 @@ function SoftSat(Input, Parameter: Double): Double; overload;
 implementation
 
 uses
-  SysUtils, Math, DAV_Common;
+  SysUtils, Math, DAV_Common, DAV_Math;
 
 function Waveshaper1(Input, Parameter :Single): Single;
 begin

@@ -236,7 +236,7 @@ function ComplexArcTanh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPOR
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Math;
 
 function Complex(const Re, Im: Double): TComplexDouble;
 begin

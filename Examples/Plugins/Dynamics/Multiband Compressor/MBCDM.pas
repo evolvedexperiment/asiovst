@@ -83,7 +83,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, MBCGUI;
+  Math, DAV_Common, DAV_Approximations, MBCGUI;
 
 procedure TMBCDataModule.VSTModuleOpen(Sender: TObject);
 var

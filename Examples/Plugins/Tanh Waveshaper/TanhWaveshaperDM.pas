@@ -62,7 +62,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_Approximations;
+  Math, DAV_Common, DAV_Math, DAV_Approximations;
 
 {$R *.DFM}
 
@@ -120,7 +120,7 @@ end;
 
 function TTanhWaveshaperModule.TanhWaveshaper(Input: Double): Double;
 begin
- Result := DAV_Common.Tanh(FGain * Input);
+ Result := DAV_Math.Tanh(FGain * Input);
 end;
 
 function TTanhWaveshaperModule.TanhWaveshaperMath(Input: Double): Double;

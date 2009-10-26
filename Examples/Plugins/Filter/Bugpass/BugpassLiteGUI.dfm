@@ -82,7 +82,6 @@ object FmBugpassLite: TFmBugpassLite
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     Transparent = True
-    ExplicitTop = 155
   end
   object FrequencyBar: TPaintBox
     Left = 8
@@ -125,7 +124,6 @@ object FmBugpassLite: TFmBugpassLite
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
     Transparent = True
-    ExplicitTop = 155
   end
   object GuiLabel1: TGuiLabel
     Left = 8

@@ -100,7 +100,8 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Common, DAV_Complex, DAV_Approximations, PartyDelayGui, DAV_VSTModuleWithPrograms;
+  DAV_Common, DAV_Math, DAV_Complex, DAV_Approximations,
+  DAV_VSTModuleWithPrograms, PartyDelayGui;
 
 procedure TPartyDelayDataModule.VSTModuleCreate(Sender: TObject);
 begin

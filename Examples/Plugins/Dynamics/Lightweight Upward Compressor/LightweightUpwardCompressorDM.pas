@@ -47,7 +47,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LightweightUpwardCompressorGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  LightweightUpwardCompressorGUI;
 
 procedure TLightweightUpwardCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var

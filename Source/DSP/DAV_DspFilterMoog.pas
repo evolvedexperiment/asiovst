@@ -132,7 +132,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Approximations;
+  SysUtils, DAV_Math, DAV_Approximations;
 
 { TCustomMoogFilter }
 

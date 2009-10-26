@@ -20,7 +20,7 @@ function GenerateMinBLEP(ZeroCrossings, OverSampling: Integer): TDAVSingleDynArr
 implementation
 
 uses
-  Math, DAV_Common, DAV_Complex, DAV_DspDFT;
+  Math, DAV_Math, DAV_Complex, DAV_DspDFT;
 
 // Complex Exponential
 procedure ComplexExponential(Re, Im: Double; var zx, zy: Single);

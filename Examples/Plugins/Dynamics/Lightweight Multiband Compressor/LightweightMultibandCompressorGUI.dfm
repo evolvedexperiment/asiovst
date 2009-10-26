@@ -25,8 +25,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Top = 29
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDSoftClipClick
@@ -118,6 +119,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Position = 300.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbLowFreqValue: TGuiLabel
     Left = 65
@@ -154,6 +156,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Position = 800.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbMidFreqValue: TGuiLabel
     Left = 205
@@ -190,6 +193,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Position = 4000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbHighFreqValue: TGuiLabel
     Left = 343
@@ -419,6 +423,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowThreshold: TGuiLabel
       Left = 161
@@ -469,6 +474,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowAttack: TGuiLabel
       Left = 16
@@ -519,6 +525,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowRelease: TGuiLabel
       Left = 90
@@ -569,6 +576,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowRatio: TGuiLabel
       Left = 257
@@ -618,6 +626,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowKnee: TGuiLabel
       Left = 321
@@ -701,6 +710,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMakeUpGain: TGuiLabel
       Left = 408
@@ -735,8 +745,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 70
       Width = 15
       Height = 15
-      Brightness_Percent = 10.000000000000000000
       LEDColor = 14277598
+      Brightness_Percent = 10.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
       OnClick = LEDLowAutoGainClick
@@ -792,6 +803,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMidThreshold: TGuiLabel
       Tag = 1
@@ -845,6 +857,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMidAttack: TGuiLabel
       Tag = 1
@@ -898,6 +911,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMidRelease: TGuiLabel
       Tag = 1
@@ -951,6 +965,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMidRatio: TGuiLabel
       Tag = 1
@@ -1003,6 +1018,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMidKnee: TGuiLabel
       Tag = 1
@@ -1090,6 +1106,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbLowMidMakeUpGain: TGuiLabel
       Tag = 1
@@ -1127,8 +1144,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 70
       Width = 15
       Height = 15
-      Brightness_Percent = 10.000000000000000000
       LEDColor = 14277598
+      Brightness_Percent = 10.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
       OnClick = LEDLowMidAutoGainClick
@@ -1185,6 +1203,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMidThreshold: TGuiLabel
       Tag = 2
@@ -1238,6 +1257,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMidAttack: TGuiLabel
       Tag = 2
@@ -1291,6 +1311,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMidRelease: TGuiLabel
       Tag = 2
@@ -1344,6 +1365,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMidRatio: TGuiLabel
       Tag = 2
@@ -1396,6 +1418,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMidKnee: TGuiLabel
       Tag = 2
@@ -1483,6 +1506,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMidMakeUpGain: TGuiLabel
       Tag = 2
@@ -1520,8 +1544,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 70
       Width = 15
       Height = 15
-      Brightness_Percent = 10.000000000000000000
       LEDColor = 14277598
+      Brightness_Percent = 10.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
       OnClick = LEDHighMidAutoGainClick
@@ -1578,6 +1603,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       PointerAngles.Resolution = 270.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighThreshold: TGuiLabel
       Tag = 3
@@ -1631,6 +1657,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighAttack: TGuiLabel
       Tag = 3
@@ -1684,6 +1711,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 50.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighRelease: TGuiLabel
       Tag = 3
@@ -1737,6 +1765,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 10.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighRatio: TGuiLabel
       Tag = 3
@@ -1789,6 +1818,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighKnee: TGuiLabel
       Tag = 3
@@ -1876,6 +1906,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Position = 3.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbHighMakeUpGain: TGuiLabel
       Tag = 3
@@ -1913,8 +1944,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 70
       Width = 15
       Height = 15
-      Brightness_Percent = 10.000000000000000000
       LEDColor = 14277598
+      Brightness_Percent = 10.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
       OnClick = LEDHighAutoGainClick

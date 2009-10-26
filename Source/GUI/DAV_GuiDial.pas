@@ -880,7 +880,7 @@ var
 implementation
 
 uses
-  Dialogs, ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Common,
+  Dialogs, ExtCtrls, Math, {$IFNDEF FPC}Consts, {$ENDIF} DAV_Math,
   DAV_Complex, ImgList;
 
 resourcestring

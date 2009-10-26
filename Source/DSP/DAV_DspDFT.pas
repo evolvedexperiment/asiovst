@@ -61,7 +61,7 @@ function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const
 implementation
 
 uses
-  DAV_Common;
+  DAV_Math;
 
 procedure DFT(realTime, imagTime, realFreq, imagFreq : TDAVSingleDynArray);
 var

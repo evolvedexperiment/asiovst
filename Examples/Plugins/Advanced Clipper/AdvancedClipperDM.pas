@@ -73,7 +73,7 @@ implementation
 {$R *.DFM}
 
 uses
-  AdvancedClipperGUI, DAV_Types, DAV_VSTModuleWithPrograms;
+  AdvancedClipperGUI, DAV_Common, DAV_VSTModuleWithPrograms;
 
 procedure TAdvancedClipperDataModule.VSTModuleCreate(Sender: TObject);
 begin

@@ -56,7 +56,8 @@ implementation
 {$R *.DFM}
 
 uses
-  VTGUI, Dialogs, DAV_DspDFT, DAV_VSTCustomModule, DAV_VSTModuleWithPrograms;
+  Dialogs, DAV_Common, DAV_DspDFT, DAV_VSTCustomModule,
+  DAV_VSTModuleWithPrograms, VTGUI;
 
 const
   CKernelSizes: array [1..4, 0..1] of Integer =

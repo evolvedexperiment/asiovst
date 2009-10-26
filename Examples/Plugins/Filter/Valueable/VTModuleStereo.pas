@@ -68,7 +68,8 @@ implementation
 {$R *.DFM}
 
 uses
-  VTGUIStereo, Dialogs, DAV_DspDFT, DAV_VSTCustomModule, DAV_VSTModuleWithPrograms;
+  Dialogs, DAV_Common, DAV_DspDFT, DAV_VSTCustomModule,
+  DAV_VSTModuleWithPrograms, VTGUIStereo;
 
 const
   CKernelSizes: array [1..4, 0..1] of Integer =

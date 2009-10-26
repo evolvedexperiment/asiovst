@@ -95,7 +95,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, Dialogs, SysUtils, DAV_Complex;
+  Math, Dialogs, SysUtils, DAV_Complex, DAV_Math;
 
 constructor TCustomBesselFilter.Create(const Order: Integer = 0);
 begin

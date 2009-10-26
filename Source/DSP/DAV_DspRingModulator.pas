@@ -192,7 +192,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_Approximations;
+  SysUtils, DAV_Common, DAV_Math, DAV_Approximations;
 
 
 { TRingModulator }

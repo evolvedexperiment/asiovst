@@ -1,4 +1,4 @@
-unit LA4029DM;
+﻿unit LA4029DM;
 
 interface
 
@@ -64,7 +64,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Dialogs, Math, EditorFrm, DAV_DspFilter;
+  Dialogs, Math, EditorFrm, DAV_Common, DAV_Math, DAV_DspFilter;
 
 procedure TLA4029DataModule.VSTModuleOpen(Sender: TObject);
 begin

@@ -197,7 +197,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common, DAV_Approximations, DAV_DspWindowing;
+  SysUtils, Math, DAV_Math, DAV_Common, DAV_Approximations, DAV_DspWindowing;
 
 { TCustomDownsampledTuner }
 

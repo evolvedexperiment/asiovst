@@ -127,7 +127,7 @@ procedure DoWinLoopHanning64Symmetric(StartAdr: PDAVDoubleFixedArray; var Parame
 implementation
 
 uses
-  DAV_Common;
+  DAV_Math;
 
 // Generate window function (Triangle)
 procedure ApplyTriangleWindow(const Data: PDAVSingleFixedArray; const SampleFrames: Integer);

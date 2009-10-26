@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_DspFilter;
+  Classes, DAV_Complex, DAV_DspFilter;
 
 type
   TCustomButterworthFilterClass = class of TCustomButterworthFilter;
@@ -166,7 +166,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Approximations;
+  Math, SysUtils, DAV_Common, DAV_Math, DAV_Approximations;
 
 {$IFDEF HandleDenormals}
 var

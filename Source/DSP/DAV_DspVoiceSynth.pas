@@ -82,7 +82,7 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_Approximations, DAV_DspDynamics;
+  DAV_Common, DAV_Math, DAV_Approximations, DAV_DspDynamics;
 
 { TCustomVoiceSynth }
 

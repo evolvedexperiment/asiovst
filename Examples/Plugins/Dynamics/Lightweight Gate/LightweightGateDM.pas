@@ -38,7 +38,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LightweightGateGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Approximations, DAV_VSTModuleWithPrograms,
+  LightweightGateGUI;
 
 procedure TLightweightGateDataModule.VSTModuleOpen(Sender: TObject);
 var

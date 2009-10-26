@@ -300,7 +300,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Approximations;
+  Math, SysUtils, DAV_Common, DAV_Math, DAV_Approximations;
 
 { TCustomDitherNoiseShaper }
 

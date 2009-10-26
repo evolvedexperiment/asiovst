@@ -112,7 +112,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Complex;
+  Math, SysUtils, DAV_Math, DAV_Complex;
 
 { TCustomGuiSelectBox }
 
