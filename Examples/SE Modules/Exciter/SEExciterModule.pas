@@ -178,7 +178,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEExciterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEExciterPins(index) of
   pinInput:
    with Properties^ do
@@ -198,7 +198,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -246,8 +246,8 @@ end;
 function TSEExciterModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
- if result = False then
+ Result := inherited GetPinProperties(Index, Properties);
+ if Result = False then
   case TSEExciterPins(index) of
    pinInputLevel:
     with Properties^ do
@@ -257,7 +257,7 @@ begin
       Direction       := drIn;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinLowFrequencyLevel:
     with Properties^ do
@@ -267,7 +267,7 @@ begin
       Direction       := drIn;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinHighFrequencyLevel:
     with Properties^ do
@@ -277,7 +277,7 @@ begin
       Direction       := drIn;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinHarmonicsLevel:
     with Properties^ do
@@ -287,7 +287,7 @@ begin
       Direction       := drIn;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinFrequency:
     with Properties^ do
@@ -297,7 +297,7 @@ begin
       Direction       := drIn;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
   end;
 end;
@@ -353,8 +353,8 @@ end;
 function TSEExciterAutomatedModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
- if result = False then
+ Result := inherited GetPinProperties(Index, Properties);
+ if Result = False then
   case TSEExciterPins(index) of
    pinInputLevel:
     with Properties^ do
@@ -364,7 +364,7 @@ begin
       Direction       := drIn;
       Datatype        := dtFSample;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinLowFrequencyLevel:
     with Properties^ do
@@ -374,7 +374,7 @@ begin
       Direction       := drIn;
       Datatype        := dtFSample;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinHighFrequencyLevel:
     with Properties^ do
@@ -384,7 +384,7 @@ begin
       Direction       := drIn;
       Datatype        := dtFSample;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinHarmonicsLevel:
     with Properties^ do
@@ -394,7 +394,7 @@ begin
       Direction       := drIn;
       Datatype        := dtFSample;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinFrequency:
     with Properties^ do
@@ -404,7 +404,7 @@ begin
       Direction       := drIn;
       Datatype        := dtFSample;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
   end;
 end;

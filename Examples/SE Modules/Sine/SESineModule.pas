@@ -126,7 +126,7 @@ procedure SESine2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; Sampl
 implementation
 
 uses
-  SysUtils, DAV_Common;
+  SysUtils, DAV_Common, DAV_Math;
 
 constructor TSESineModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin

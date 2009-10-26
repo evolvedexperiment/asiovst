@@ -52,7 +52,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_StkFilter;
+  SysUtils, DAV_Common, DAV_Math, DAV_StkFilter;
 
 constructor TStkNReverb.Create(const SampleRate, T60: Single);
 begin
