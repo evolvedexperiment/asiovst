@@ -18,18 +18,44 @@ type
 
   TestComplexFunctions = class(TTestCase)
   published
+    procedure TestComplexPolar32;
+    procedure TestComplexPolar64;
+    procedure TestComplexSign32;
+    procedure TestComplexSign64;
+    procedure TestComplexConjugate32;
+    procedure TestComplexConjugate64;
+    procedure TestComplexInvert32;
+    procedure TestComplexInvert64;
+    procedure TestComplexMagnitude32;
+    procedure TestComplexMagnitude64;
+    procedure TestComplexArgument32;
+    procedure TestComplexArgument64;
     procedure TestComplexAdd32;
     procedure TestComplexAdd64;
+    procedure TestComplexAddInplace32;
+    procedure TestComplexAddInplace64;
     procedure TestComplexSubtract32;
     procedure TestComplexSubtract64;
+    procedure TestComplexSubtractInplace32;
+    procedure TestComplexSubtractInplace64;
     procedure TestComplexMultiply32;
     procedure TestComplexMultiply64;
+    procedure TestComplexMultiplyInplace32;
+    procedure TestComplexMultiplyInplace64;
     procedure TestComplexDivide32;
     procedure TestComplexDivide64;
+    procedure TestComplexDivideInplace32;
+    procedure TestComplexDivideInplace64;
+    procedure TestComplexReciprocal32;
+    procedure TestComplexReciprocal64;
+    procedure TestComplexReciprocalInplace32;
+    procedure TestComplexReciprocalInplace64;
     procedure TestComplexSqr32;
     procedure TestComplexSqr64;
     procedure TestComplexSqrt32;
     procedure TestComplexSqrt64;
+    procedure TestComplexLog1032;
+    procedure TestComplexLog1064;
     procedure TestComplexExp32;
     procedure TestComplexExp64;
     procedure TestComplexLn32;
@@ -40,6 +66,10 @@ type
     procedure TestComplexCos64;
     procedure TestComplexTan32;
     procedure TestComplexTan64;
+    procedure TestComplexSinh32;
+    procedure TestComplexSinh64;
+    procedure TestComplexCosh32;
+    procedure TestComplexCosh64;
     procedure TestComplexTanh32;
     procedure TestComplexTanh64;
     procedure TestComplexArcSin32;
@@ -61,6 +91,285 @@ const
   CEpsilon32 = 1E-5;
   CEpsilon64 = 1E-9;
 
+var
+  Cos1Single : Single;
+
+procedure TestComplexFunctions.TestComplexPolar32;
+var
+  Result : TComplexSingle;
+begin
+ // real case
+ Result := ComplexPolar(1, 0);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+end;
+
+procedure TestComplexFunctions.TestComplexPolar64;
+var
+  Mag    : Double;
+  Result : TComplexDouble;
+begin
+ // real case
+ Mag := 1;
+ Result := ComplexPolar(Mag, 0);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+end;
+
+procedure TestComplexFunctions.TestComplexSign32;
+var
+  Input  : TComplexSingle;
+  Result : Single;
+begin
+ // real cases
+ Input.Re := 1;
+ Input.Im := 0;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := -1;
+ Input.Im := 0;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+
+ // imaginary cases
+ Input.Re := 0;
+ Input.Im := 1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := 0;
+ Input.Im := -1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+
+ // complex cases
+ Input.Re := 1;
+ Input.Im := 1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := -1;
+ Input.Im := 1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+
+ Input.Re := 1;
+ Input.Im := -1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := -1;
+ Input.Im := -1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+end;
+
+procedure TestComplexFunctions.TestComplexSign64;
+var
+  Input  : TComplexDouble;
+  Result : Double;
+begin
+ // real cases
+ Input.Re := 1;
+ Input.Im := 0;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := -1;
+ Input.Im := 0;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+
+ // imaginary cases
+ Input.Re := 0;
+ Input.Im := 1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := 0;
+ Input.Im := -1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+
+ // complex cases
+ Input.Re := 1;
+ Input.Im := 1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := -1;
+ Input.Im := 1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+
+ Input.Re := 1;
+ Input.Im := -1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, 1);
+
+ Input.Re := -1;
+ Input.Im := -1;
+ Result := ComplexSign(Input);
+ CheckEquals(Result, -1);
+end;
+
+procedure TestComplexFunctions.TestComplexConjugate32;
+var
+  Result : TComplexSingle;
+begin
+ Result.Re := 1;
+ Result.Im := 2;
+ Result := ComplexConjugate(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  1);
+ CheckEquals(Result.Im, -2);
+
+ Result := ComplexConjugate(Result);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 2);
+end;
+
+procedure TestComplexFunctions.TestComplexConjugate64;
+var
+  Result : TComplexDouble;
+begin
+ Result.Re := 1;
+ Result.Im := 2;
+ Result := ComplexConjugate(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  1);
+ CheckEquals(Result.Im, -2);
+
+ Result := ComplexConjugate(Result);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 2);
+end;
+
+procedure TestComplexFunctions.TestComplexInvert32;
+var
+  Result : TComplexSingle;
+begin
+ Result.Re := 1;
+ Result.Im := 2;
+ Result := ComplexInvert(Result.Re, Result.Im);
+ CheckEquals(Result.Re, -1);
+ CheckEquals(Result.Im, -2);
+
+ Result := ComplexInvert(Result);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 2);
+end;
+
+procedure TestComplexFunctions.TestComplexInvert64;
+var
+  Result : TComplexDouble;
+begin
+ Result.Re := 1;
+ Result.Im := 2;
+ Result := ComplexInvert(Result.Re, Result.Im);
+ CheckEquals(Result.Re, -1);
+ CheckEquals(Result.Im, -2);
+
+ Result := ComplexInvert(Result);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 2);
+end;
+
+procedure TestComplexFunctions.TestComplexMagnitude32;
+var
+  Value  : TComplexSingle;
+  Result : Single;
+begin
+ // real case
+ Value.Re := -2;
+ Value.Im :=  0;
+ Result := ComplexMagnitude(Value);
+ CheckEquals(Result, 2);
+
+ Result := ComplexMagnitude(Value.Re, Value.Im);
+ CheckEquals(Result, 2);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -2;
+ Result := ComplexMagnitude(Value);
+ CheckEquals(Result, 2);
+
+ Result := ComplexMagnitude(Value.Re, Value.Im);
+ CheckEquals(Result, 2);
+end;
+
+procedure TestComplexFunctions.TestComplexMagnitude64;
+var
+  Value  : TComplexDouble;
+  Result : Double;
+begin
+ // real case
+ Value.Re := -2;
+ Value.Im :=  0;
+ Result := ComplexMagnitude(Value);
+ CheckEquals(Result, 2);
+
+ Result := ComplexMagnitude(Value.Re, Value.Im);
+ CheckEquals(Result, 2);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -2;
+ Result := ComplexMagnitude(Value);
+ CheckEquals(Result, 2);
+
+ Result := ComplexMagnitude(Value.Re, Value.Im);
+ CheckEquals(Result, 2);
+end;
+
+procedure TestComplexFunctions.TestComplexArgument32;
+var
+  Value  : TComplexSingle;
+  Result : Single;
+begin
+ // real case
+ Value.Re := -2;
+ Value.Im :=  0;
+ Result := ComplexArgument(Value);
+ CheckTrue(abs(Result - Pi) < CEpsilon32);
+
+ Result := ComplexArgument(Value.Re, Value.Im);
+ CheckTrue(abs(Result - Pi) < CEpsilon32);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -2;
+ Result := ComplexArgument(Value);
+ CheckTrue(abs(Result + 0.5 * Pi) < CEpsilon32);
+
+ Result := ComplexArgument(Value.Re, Value.Im);
+ CheckTrue(abs(Result + 0.5 * Pi) < CEpsilon32);
+end;
+
+procedure TestComplexFunctions.TestComplexArgument64;
+var
+  Value  : TComplexDouble;
+  Result : Double;
+begin
+ // real case
+ Value.Re := -2;
+ Value.Im :=  0;
+ Result := ComplexArgument(Value);
+ CheckTrue(abs(Result - Pi) < CEpsilon64);
+
+ Result := ComplexArgument(Value.Re, Value.Im);
+ CheckTrue(abs(Result - Pi) < CEpsilon64);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -2;
+ Result := ComplexArgument(Value);
+ CheckTrue(abs(Result + 0.5 * Pi) < CEpsilon64);
+
+ Result := ComplexArgument(Value.Re, Value.Im);
+ CheckTrue(abs(Result + 0.5 * Pi) < CEpsilon64);
+end;
+
 procedure TestComplexFunctions.TestComplexAdd32;
 var
   A, B   : TComplexSingle;
@@ -72,12 +381,12 @@ begin
  B.Im := 2;
 
  Result := ComplexAdd(A, B);
- CheckTrue(Result.Re = 3);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 3);
+ CheckEquals(Result.Im, 3);
 
  Result := ComplexAdd(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 3);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 3);
+ CheckEquals(Result.Im, 3);
 end;
 
 procedure TestComplexFunctions.TestComplexAdd64;
@@ -91,12 +400,50 @@ begin
  B.Im := 2;
 
  Result := ComplexAdd(A, B);
- CheckTrue(Result.Re = 3);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 3);
+ CheckEquals(Result.Im, 3);
 
  Result := ComplexAdd(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 3);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 3);
+ CheckEquals(Result.Im, 3);
+end;
+
+procedure TestComplexFunctions.TestComplexAddInplace32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ Result.Re := 1;
+ Result.Im := 1;
+ Value.Re := 2;
+ Value.Im := 2;
+
+ ComplexAddInplace(Result, Value);
+ CheckEquals(Result.Re, 3);
+ CheckEquals(Result.Im, 3);
+
+ ComplexAddInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, 5);
+ CheckEquals(Result.Im, 5);
+end;
+
+procedure TestComplexFunctions.TestComplexAddInplace64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ Result.Re := 1;
+ Result.Im := 1;
+ Value.Re := 2;
+ Value.Im := 2;
+
+ ComplexAddInplace(Result, Value);
+ CheckEquals(Result.Re, 3);
+ CheckEquals(Result.Im, 3);
+
+ ComplexAddInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, 5);
+ CheckEquals(Result.Im, 5);
 end;
 
 procedure TestComplexFunctions.TestComplexSubtract32;
@@ -110,12 +457,12 @@ begin
  B.Im := 2;
 
  Result := ComplexSubtract(A, B);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 1);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 1);
 
  Result := ComplexSubtract(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 1);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 1);
 end;
 
 procedure TestComplexFunctions.TestComplexSubtract64;
@@ -129,12 +476,50 @@ begin
  B.Im := 2;
 
  Result := ComplexSubtract(A, B);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 1);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 1);
 
  Result := ComplexSubtract(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 1);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 1);
+end;
+
+procedure TestComplexFunctions.TestComplexSubtractInplace32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ Result.Re := 2;
+ Result.Im := 3;
+ Value.Re := 1;
+ Value.Im := 2;
+
+ ComplexSubtractInplace(Result, Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 1);
+
+ ComplexSubtractInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, 0);
+ CheckEquals(Result.Im, -1);
+end;
+
+procedure TestComplexFunctions.TestComplexSubtractInplace64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ Result.Re := 2;
+ Result.Im := 3;
+ Value.Re := 1;
+ Value.Im := 2;
+
+ ComplexSubtractInplace(Result, Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 1);
+
+ ComplexSubtractInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, 0);
+ CheckEquals(Result.Im, -1);
 end;
 
 procedure TestComplexFunctions.TestComplexMultiply32;
@@ -149,12 +534,12 @@ begin
  B.Im :=  0;
 
  Result := ComplexMultiply(A, B);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexMultiply(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  // imaginary case
  A.Re :=  0;
@@ -163,12 +548,12 @@ begin
  B.Im :=  2;
 
  Result := ComplexMultiply(A, B);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexMultiply(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  // complex case
  A.Re := 1;
@@ -177,12 +562,12 @@ begin
  B.Im := 1;
 
  Result := ComplexMultiply(A, B);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 3);
 
  Result := ComplexMultiply(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 3);
 end;
 
 procedure TestComplexFunctions.TestComplexMultiply64;
@@ -197,12 +582,12 @@ begin
  B.Im :=  0;
 
  Result := ComplexMultiply(A, B);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexMultiply(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  // imaginary case
  A.Re :=  0;
@@ -211,12 +596,12 @@ begin
  B.Im :=  2;
 
  Result := ComplexMultiply(A, B);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexMultiply(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  // complex case
  A.Re := 1;
@@ -225,12 +610,108 @@ begin
  B.Im := 1;
 
  Result := ComplexMultiply(A, B);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 3);
 
  Result := ComplexMultiply(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 3);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 3);
+end;
+
+procedure TestComplexFunctions.TestComplexMultiplyInplace32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := -1;
+ Value.Im :=  0;
+ Result.Re := -2;
+ Result.Im :=  0;
+
+ ComplexMultiplyInplace(Result, Value);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
+
+ ComplexMultiplyInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im, 0);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -1;
+ Result.Re :=  0;
+ Result.Im :=  2;
+
+ ComplexMultiplyInplace(Result, Value);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
+
+ ComplexMultiplyInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re,  0);
+ CheckEquals(Result.Im, -2);
+
+ // complex case
+ Value.Re := 1;
+ Value.Im := 1;
+ Result.Re := 2;
+ Result.Im := 1;
+
+ ComplexMultiplyInplace(Result, Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 3);
+
+ ComplexMultiplyInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im,  4);
+end;
+
+procedure TestComplexFunctions.TestComplexMultiplyInplace64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := -1;
+ Value.Im :=  0;
+ Result.Re := -2;
+ Result.Im :=  0;
+
+ ComplexMultiplyInplace(Result, Value);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
+
+ ComplexMultiplyInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im, 0);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -1;
+ Result.Re :=  0;
+ Result.Im :=  2;
+
+ ComplexMultiplyInplace(Result, Value);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
+
+ ComplexMultiplyInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re,  0);
+ CheckEquals(Result.Im, -2);
+
+ // complex case
+ Value.Re := 1;
+ Value.Im := 1;
+ Result.Re := 2;
+ Result.Im := 1;
+
+ ComplexMultiplyInplace(Result, Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 3);
+
+ ComplexMultiplyInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im,  4);
 end;
 
 procedure TestComplexFunctions.TestComplexDivide32;
@@ -245,12 +726,12 @@ begin
  B.Im :=  0;
 
  Result := ComplexDivide(A, B);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexDivide(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  // imaginary case
  A.Re :=  0;
@@ -259,12 +740,12 @@ begin
  B.Im := -2;
 
  Result := ComplexDivide(A, B);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexDivide(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  // complex case
  A.Re := 1;
@@ -273,12 +754,12 @@ begin
  B.Im := 2;
 
  Result := ComplexDivide(A, B);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexDivide(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexDivide64;
@@ -293,12 +774,12 @@ begin
  B.Im :=  0;
 
  Result := ComplexDivide(A, B);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexDivide(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  // imaginary case
  A.Re :=  0;
@@ -307,12 +788,12 @@ begin
  B.Im := -2;
 
  Result := ComplexDivide(A, B);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexDivide(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  // complex case
  A.Re := 1;
@@ -321,200 +802,272 @@ begin
  B.Im := 2;
 
  Result := ComplexDivide(A, B);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexDivide(A.Re, A.Im, B.Re, B.Im);
- CheckTrue(Result.Re = 0.5);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 end;
 
-procedure TestComplexFunctions.TestComplexExp32;
+procedure TestComplexFunctions.TestComplexDivideInplace32;
 var
   Value  : TComplexSingle;
   Result : TComplexSingle;
 begin
  // real case
- Value.Re := 1;
- Value.Im := 0;
+ Value.Re := -2;
+ Value.Im :=  0;
+ Result.Re := -1;
+ Result.Im :=  0;
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re - exp(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ ComplexDivideInplace(Result, Value);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re - exp(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ ComplexDivideInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, -0.25);
+ CheckEquals(Result.Im, 0);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -2;
+ Result.Re :=  0;
+ Result.Im := -1;
+
+ ComplexDivideInplace(Result, Value);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
+
+ ComplexDivideInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, 0);
+ CheckEquals(Result.Im, 0.25);
 
  // complex case
- Value.Re := 1;
- Value.Im := Pi;
+ Value.Re := 2;
+ Value.Im := 2;
+ Result.Re := 1;
+ Result.Im := 1;
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon32);
- CheckTrue(Result.Im < CEpsilon32);
+ ComplexDivideInplace(Result, Value);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon32);
- CheckTrue(Result.Im < CEpsilon32);
+ ComplexDivideInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re,  0.125);
+ CheckEquals(Result.Im, -0.125);
 end;
 
-procedure TestComplexFunctions.TestComplexExp64;
+procedure TestComplexFunctions.TestComplexDivideInplace64;
 var
   Value  : TComplexDouble;
   Result : TComplexDouble;
 begin
  // real case
- Value.Re := 1;
- Value.Im := 0;
+ Value.Re := -2;
+ Value.Im :=  0;
+ Result.Re := -1;
+ Result.Im :=  0;
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re - exp(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ ComplexDivideInplace(Result, Value);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re - exp(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ ComplexDivideInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, -0.25);
+ CheckEquals(Result.Im, 0);
+
+ // imaginary case
+ Value.Re :=  0;
+ Value.Im := -2;
+ Result.Re :=  0;
+ Result.Im := -1;
+
+ ComplexDivideInplace(Result, Value);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
+
+ ComplexDivideInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re, 0);
+ CheckEquals(Result.Im, 0.25);
 
  // complex case
- Value.Re := 1;
- Value.Im := Pi;
+ Value.Re := 2;
+ Value.Im := 2;
+ Result.Re := 1;
+ Result.Im := 1;
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
+ ComplexDivideInplace(Result, Value);
+ CheckEquals(Result.Re, 0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexExp(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
+ ComplexDivideInplace(Result.Re, Result.Im, Value.Re, Value.Im);
+ CheckEquals(Result.Re,  0.125);
+ CheckEquals(Result.Im, -0.125);
 end;
 
-procedure TestComplexFunctions.TestComplexLn32;
+procedure TestComplexFunctions.TestComplexReciprocal32;
 var
-  Value  : TComplexSingle;
   Result : TComplexSingle;
 begin
  // real case
- Value.Re := exp(1);
- Value.Im := 0;
+ Result.Re := -2;
+ Result.Im :=  0;
 
- Result := ComplexLn(Value);
- CheckTrue(abs(Result.Re - 1) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ Result := ComplexReciprocal(Result);
+ CheckEquals(Result.Re, -0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexLn(Value);
- CheckTrue(abs(Result.Re - 1) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ Result := ComplexReciprocal(Result.Re, Result.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im, 0);
 
-(*
+ // imaginary case
+ Result.Re :=  0;
+ Result.Im := -2;
+
+ Result := ComplexReciprocal(Result);
+ CheckEquals(Result.Re,  0  );
+ CheckEquals(Result.Im, -0.5);
+
+ Result := ComplexReciprocal(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  0);
+ CheckEquals(Result.Im, -2);
+
  // complex case
- Value.Re := -exp(1);
- Value.Im :=  Pi;
+ Result.Re :=  2;
+ Result.Im := -2;
 
- Result := ComplexLn(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
+ Result := ComplexReciprocal(Result);
+ CheckEquals(Result.Re,  0.25);
+ CheckEquals(Result.Im, -0.25);
 
- Result := ComplexLn(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
-*)
+ Result := ComplexReciprocal(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  2);
+ CheckEquals(Result.Im, -2);
 end;
 
-procedure TestComplexFunctions.TestComplexLn64;
+procedure TestComplexFunctions.TestComplexReciprocal64;
 var
-  Value  : TComplexDouble;
   Result : TComplexDouble;
 begin
  // real case
- Value.Re := exp(1);
- Value.Im := 0;
+ Result.Re := -2;
+ Result.Im :=  0;
 
- Result := ComplexLn(Value);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 0);
+ Result := ComplexReciprocal(Result);
+ CheckEquals(Result.Re, -0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexLn(Value);
- CheckTrue(Result.Re = 1);
- CheckTrue(Result.Im = 0);
+ Result := ComplexReciprocal(Result.Re, Result.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im, 0);
 
-(*
+ // imaginary case
+ Result.Re :=  0;
+ Result.Im := -2;
+
+ Result := ComplexReciprocal(Result);
+ CheckEquals(Result.Re,  0  );
+ CheckEquals(Result.Im, -0.5);
+
+ Result := ComplexReciprocal(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  0);
+ CheckEquals(Result.Im, -2);
+
  // complex case
- Value.Re := -exp(1);
- Value.Im :=  Pi;
+ Result.Re :=  2;
+ Result.Im := -2;
 
- Result := ComplexLn(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
+ Result := ComplexReciprocal(Result);
+ CheckEquals(Result.Re,  0.25);
+ CheckEquals(Result.Im, -0.25);
 
- Result := ComplexLn(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
-*)
+ Result := ComplexReciprocal(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  2);
+ CheckEquals(Result.Im, -2);
 end;
 
-procedure TestComplexFunctions.TestComplexSin32;
+procedure TestComplexFunctions.TestComplexReciprocalInplace32;
 var
-  Value  : TComplexSingle;
   Result : TComplexSingle;
 begin
  // real case
- Value.Re := 1;
- Value.Im := 0;
+ Result.Re := -2;
+ Result.Im :=  0;
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re - sin(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ ComplexReciprocalInplace(Result);
+ CheckEquals(Result.Re, -0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re - sin(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ ComplexReciprocalInplace(Result.Re, Result.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im, 0);
 
-(*
+ // imaginary case
+ Result.Re :=  0;
+ Result.Im := -2;
+
+ ComplexReciprocalInplace(Result);
+ CheckEquals(Result.Re,  0  );
+ CheckEquals(Result.Im, -0.5);
+
+ ComplexReciprocalInplace(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  0);
+ CheckEquals(Result.Im, -2);
+
  // complex case
- Value.Re := -exp(1);
- Value.Im :=  Pi;
+ Result.Re :=  2;
+ Result.Im := -2;
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
+ ComplexReciprocalInplace(Result);
+ CheckEquals(Result.Re,  0.25);
+ CheckEquals(Result.Im, -0.25);
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
-*)
+ ComplexReciprocalInplace(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  2);
+ CheckEquals(Result.Im, -2);
 end;
 
-procedure TestComplexFunctions.TestComplexSin64;
+procedure TestComplexFunctions.TestComplexReciprocalInplace64;
 var
-  Value  : TComplexDouble;
   Result : TComplexDouble;
 begin
  // real case
- Value.Re := 1;
- Value.Im := 0;
+ Result.Re := -2;
+ Result.Im :=  0;
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re - sin(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ ComplexReciprocalInplace(Result);
+ CheckEquals(Result.Re, -0.5);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re - sin(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ ComplexReciprocalInplace(Result.Re, Result.Im);
+ CheckEquals(Result.Re, -2);
+ CheckEquals(Result.Im, 0);
 
-(*
+ // imaginary case
+ Result.Re :=  0;
+ Result.Im := -2;
+
+ ComplexReciprocalInplace(Result);
+ CheckEquals(Result.Re,  0  );
+ CheckEquals(Result.Im, -0.5);
+
+ ComplexReciprocalInplace(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  0);
+ CheckEquals(Result.Im, -2);
+
  // complex case
- Value.Re := -exp(1);
- Value.Im :=  Pi;
+ Result.Re :=  2;
+ Result.Im := -2;
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
+ ComplexReciprocalInplace(Result);
+ CheckEquals(Result.Re,  0.25);
+ CheckEquals(Result.Im, -0.25);
 
- Result := ComplexSin(Value);
- CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
- CheckTrue(Result.Im < CEpsilon32);
-*)
+ ComplexReciprocalInplace(Result.Re, Result.Im);
+ CheckEquals(Result.Re,  2);
+ CheckEquals(Result.Im, -2);
 end;
 
 procedure TestComplexFunctions.TestComplexSqr32;
@@ -528,11 +1081,11 @@ begin
 
  Result := ComplexSqr(Value);
  CheckTrue(abs(Result.Re - 4) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexSqr(Value);
  CheckTrue(abs(Result.Re - 4) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -560,11 +1113,11 @@ begin
 
  Result := ComplexSqr(Value);
  CheckTrue(abs(Result.Re - 4) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexSqr(Value);
  CheckTrue(abs(Result.Re - 4) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -591,12 +1144,12 @@ begin
  Value.Im := 0;
 
  Result := ComplexSqrt(Value);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexSqrt(Value);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -623,12 +1176,12 @@ begin
  Value.Im := 0;
 
  Result := ComplexSqrt(Value);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexSqrt(Value);
- CheckTrue(Result.Re = 2);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, 2);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -645,6 +1198,280 @@ begin
 *)
 end;
 
+procedure TestComplexFunctions.TestComplexLog1032;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 10;
+ Value.Im := 0;
+
+ Result := ComplexLog10(Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexLog10(Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+
+(*
+ // complex case
+ Value.Re := -exp(1);
+ Value.Im :=  Pi;
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+*)
+end;
+
+procedure TestComplexFunctions.TestComplexLog1064;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 10;
+ Value.Im := 0;
+
+ Result := ComplexLog10(Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexLog10(Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+end;
+
+procedure TestComplexFunctions.TestComplexExp32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re - exp(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re - exp(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+ // complex case
+ Value.Re := 1;
+ Value.Im := Pi;
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon32);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon32);
+ CheckTrue(Result.Im < CEpsilon32);
+end;
+
+procedure TestComplexFunctions.TestComplexExp64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re - exp(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re - exp(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+
+ // complex case
+ Value.Re := 1;
+ Value.Im := Pi;
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexExp(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+end;
+
+procedure TestComplexFunctions.TestComplexLn32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := exp(1);
+ Value.Im := 0;
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re - 1) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re - 1) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+(*
+ // complex case
+ Value.Re := -exp(1);
+ Value.Im :=  Pi;
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+*)
+end;
+
+procedure TestComplexFunctions.TestComplexLn64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := exp(1);
+ Value.Im := 0;
+
+ Result := ComplexLn(Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexLn(Value);
+ CheckEquals(Result.Re, 1);
+ CheckEquals(Result.Im, 0);
+
+(*
+ // complex case
+ Value.Re := -exp(1);
+ Value.Im :=  Pi;
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexLn(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+*)
+end;
+
+procedure TestComplexFunctions.TestComplexSin32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re - sin(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re - sin(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+(*
+ // complex case
+ Value.Re := -exp(1);
+ Value.Im :=  Pi;
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+*)
+end;
+
+procedure TestComplexFunctions.TestComplexSin64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re - sin(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re - sin(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+
+(*
+ // complex case
+ Value.Re := -exp(1);
+ Value.Im :=  Pi;
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+
+ Result := ComplexSin(Value);
+ CheckTrue(abs(Result.Re + exp(1)) < CEpsilon64);
+ CheckTrue(Result.Im < CEpsilon32);
+*)
+end;
+
+procedure TestComplexFunctions.TestComplexSinh32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexSinh(Value);
+ CheckTrue(abs(Result.Re - sinh(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexSinh(Value);
+ CheckTrue(abs(Result.Re - sinh(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+end;
+
+procedure TestComplexFunctions.TestComplexSinh64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexSinh(Value);
+ CheckTrue(abs(Result.Re - sinh(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexSinh(Value);
+ CheckTrue(abs(Result.Re - sinh(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+end;
+
 procedure TestComplexFunctions.TestComplexCos32;
 var
   Value  : TComplexSingle;
@@ -655,12 +1482,12 @@ begin
  Value.Im := 0;
 
  Result := ComplexCos(Value);
- CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, Cos1Single);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexCos(Value);
- CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Re, Cos1Single);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -688,11 +1515,11 @@ begin
 
  Result := ComplexCos(Value);
  CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexCos(Value);
  CheckTrue(abs(Result.Re - Cos(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -709,6 +1536,42 @@ begin
 *)
 end;
 
+procedure TestComplexFunctions.TestComplexCosh32;
+var
+  Value  : TComplexSingle;
+  Result : TComplexSingle;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexCosh(Value);
+ CheckTrue(abs(Result.Re - Cosh(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexCosh(Value);
+ CheckTrue(abs(Result.Re - Cosh(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
+end;
+
+procedure TestComplexFunctions.TestComplexCosh64;
+var
+  Value  : TComplexDouble;
+  Result : TComplexDouble;
+begin
+ // real case
+ Value.Re := 1;
+ Value.Im := 0;
+
+ Result := ComplexCosh(Value);
+ CheckTrue(abs(Result.Re - Cosh(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+
+ Result := ComplexCosh(Value);
+ CheckTrue(abs(Result.Re - Cosh(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
+end;
+
 procedure TestComplexFunctions.TestComplexTan32;
 var
   Value  : TComplexSingle;
@@ -720,11 +1583,11 @@ begin
 
  Result := ComplexTan(Value);
  CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexTan(Value);
  CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -752,11 +1615,11 @@ begin
 
  Result := ComplexTan(Value);
  CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexTan(Value);
  CheckTrue(abs(Result.Re - Tan(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -784,11 +1647,11 @@ begin
 
  Result := ComplexTanh(Value);
  CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
- Result := ComplexTanh(Value);
+ Result := ComplexTanh(Value.Re, Value.Im);
  CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -815,12 +1678,12 @@ begin
  Value.Im := 0;
 
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
 
  Result := ComplexTanh(Value);
- CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
 
 (*
  // complex case
@@ -848,7 +1711,7 @@ begin
 
  Result := ComplexArcCos(Value);
  CheckTrue(abs(Result.Re - ArcCos(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcCos64;
@@ -862,7 +1725,7 @@ begin
 
  Result := ComplexArcCos(Value);
  CheckTrue(abs(Result.Re - ArcCos(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcSin32;
@@ -875,8 +1738,8 @@ begin
  Value.Im := 0;
 
  Result := ComplexArcSin(Value);
- CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckTrue(abs(Result.Re - ArcSin(1)) < CEpsilon32);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcSin64;
@@ -889,8 +1752,8 @@ begin
  Value.Im := 0;
 
  Result := ComplexArcSin(Value);
- CheckTrue(abs(Result.Re - Tanh(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckTrue(abs(Result.Re - ArcSin(1)) < CEpsilon64);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcTan32;
@@ -904,7 +1767,7 @@ begin
 
  Result := ComplexArcTan(Value);
  CheckTrue(abs(Result.Re - ArcTan(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcTan64;
@@ -918,7 +1781,7 @@ begin
 
  Result := ComplexTan(Value);
  CheckTrue(abs(Result.Re - ArcTan(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcTanh32;
@@ -932,7 +1795,7 @@ begin
 
  Result := ComplexTanh(Value);
  CheckTrue(abs(Result.Re - ArcTanh(1)) < CEpsilon32);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 end;
 
 procedure TestComplexFunctions.TestComplexArcTanh64;
@@ -946,10 +1809,11 @@ begin
 
  Result := ComplexTanh(Value);
  CheckTrue(abs(Result.Re - ArcTanh(1)) < CEpsilon64);
- CheckTrue(Result.Im = 0);
+ CheckEquals(Result.Im, 0);
 end;
 
 initialization
+  Cos1Single := Cos(1);
   RegisterTest(TestComplexFunctions.Suite);
 
 end.

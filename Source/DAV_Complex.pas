@@ -198,6 +198,16 @@ function ComplexTan(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLI
 function ComplexTan(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexTan(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
+function ComplexSinh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
+function ComplexCosh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
 function ComplexTanh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexTanh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function ComplexTanh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -244,13 +254,13 @@ end;
 function ComplexPolar(const Magnitude, Angle: Single): TComplexSingle;
 begin
   Result.Re := Magnitude * Cos(Angle);
-  Result.Im := Magnitude * sin(Angle);
+  Result.Im := Magnitude * Sin(Angle);
 end;
 
 function ComplexPolar(const Magnitude, Angle: Double): TComplexDouble;
 begin
   Result.Re := Magnitude * Cos(Angle);
-  Result.Im := Magnitude * sin(Angle);
+  Result.Im := Magnitude * Sin(Angle);
 end;
 
 function ComplexSign(const Z: TComplexSingle): Single;
@@ -259,7 +269,7 @@ begin
   then Result := 1 else
  if (Z.Re <= 0) and (Z.Im < 0)
   then Result := -1
-  else Result := sign(Z.Re);
+  else Result := Sign(Z.Re);
 end;
 
 function ComplexSign(const Z: TComplexDouble): Double;
@@ -763,8 +773,8 @@ var
   Divisor: Double;
 begin
   Divisor := 1 / (Sqr(Z.Re) + Sqr(Z.Im));
-  Result.Re := Result.Re * Divisor;
-  Result.Im := Result.Im * Divisor;
+  Result.Re := Z.Re * Divisor;
+  Result.Im := Z.Im * Divisor;
 end;
 
 function ComplexReciprocal(const Z: TComplexDouble): TComplexDouble;
@@ -772,8 +782,8 @@ var
   Divisor: Double;
 begin
   Divisor := 1 / (Sqr(Z.Re) + Sqr(Z.Im));
-  Result.Re := Result.Re * Divisor;
-  Result.Im := Result.Im * Divisor;
+  Result.Re := Z.Re * Divisor;
+  Result.Im := Z.Im * Divisor;
 end;
 
 function ComplexReciprocal(const Re, Im: Single): TComplexSingle;
@@ -781,8 +791,8 @@ var
   Divisor: Double;
 begin
   Divisor := 1 / (Sqr(Re) + Sqr(Im));
-  Result.Re := Result.Re * Divisor;
-  Result.Im := Result.Im * Divisor;
+  Result.Re := Re * Divisor;
+  Result.Im := Im * Divisor;
 end;
 
 function ComplexReciprocal(const Re, Im: Double): TComplexDouble;
@@ -790,8 +800,8 @@ var
   Divisor: Double;
 begin
   Divisor := 1 / (Sqr(Re) + Sqr(Im));
-  Result.Re := Result.Re * Divisor;
-  Result.Im := Result.Im * Divisor;
+  Result.Re := Re * Divisor;
+  Result.Im := Im * Divisor;
 end;
 
 
@@ -945,25 +955,25 @@ end;
 
 function ComplexLog10(const Re, Im: Single): TComplexSingle;
 begin
-  Result.Re := Log10((Sqr(Re) + Sqr(Im)));
+  Result.Re := 0.5 * Log10((Sqr(Re) + Sqr(Im)));
   Result.Im := ArcTan2(Im, Re);
 end;
 
 function ComplexLog10(const Re, Im: Double): TComplexDouble;
 begin
-  Result.Re := Log10((Sqr(Re) + Sqr(Im)));
+  Result.Re := 0.5 * Log10((Sqr(Re) + Sqr(Im)));
   Result.Im := ArcTan2(Im, Re);
 end;
 
 function ComplexLog10(const Complex: TComplexSingle): TComplexSingle;
 begin
-  Result.Re := Log10((Sqr(Complex.Re) + Sqr(Complex.Im)));
+  Result.Re := 0.5 * Log10((Sqr(Complex.Re) + Sqr(Complex.Im)));
   Result.Im := ArcTan2(Complex.Im, Complex.Re);
 end;
 
 function ComplexLog10(const Complex: TComplexDouble): TComplexDouble;
 begin
-  Result.Re := Log10((Sqr(Complex.Re) + Sqr(Complex.Im)));
+  Result.Re := 0.5 * Log10((Sqr(Complex.Re) + Sqr(Complex.Im)));
   Result.Im := ArcTan2(Complex.Im, Complex.Re);
 end;
 
@@ -1061,30 +1071,30 @@ end;
 
 function ComplexCos(const Re, Im: Single): TComplexSingle;
 begin
- Result.Im := Exp(Re);
- Result.Re := 0.5 * Cos(Im) * (Result.Im + 1 / Result.Im);
- Result.Im := 0.5 * Sin(Im) * (Result.Im - 1 / Result.Im);
+ Result.Im := Exp(Im);
+ Result.Re := 0.5 * Cos(Re) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Re) * (1 / Result.Im - Result.Im);
 end;
 
 function ComplexCos(const Re, Im: Double): TComplexDouble;
 begin
- Result.Im := Exp(Re);
- Result.Re := 0.5 * Cos(Im) * (Result.Im + 1 / Result.Im);
- Result.Im := 0.5 * Sin(Im) * (Result.Im - 1 / Result.Im);
+ Result.Im := Exp(Im);
+ Result.Re := 0.5 * Cos(Re) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Re) * (1 / Result.Im - Result.Im);
 end;
 
 function ComplexCos(const Z: TComplexSingle): TComplexSingle;
 begin
- Result.Im := Exp(Z.Re);
- Result.Re := 0.5 * Cos(Z.Im) * (Result.Im + 1 / Result.Im);
- Result.Im := 0.5 * Sin(Z.Im) * (Result.Im - 1 / Result.Im);
+ Result.Im := Exp(Z.Im);
+ Result.Re := 0.5 * Cos(Z.Re) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Z.Re) * (1 / Result.Im - Result.Im);
 end;
 
 function ComplexCos(const Z: TComplexDouble): TComplexDouble;
 begin
- Result.Im := Exp(Z.Re);
- Result.Re := 0.5 * Cos(Z.Im) * (Result.Im + 1 / Result.Im);
- Result.Im := 0.5 * Sin(Z.Im) * (Result.Im - 1 / Result.Im);
+ Result.Im := Exp(Z.Im);
+ Result.Re := 0.5 * Cos(Z.Re) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Z.Re) * (1 / Result.Im - Result.Im);
 end;
 
 
@@ -1146,52 +1156,140 @@ begin
 end;
 
 
+{ ComplexSinh }
+
+function ComplexSinh(const Re, Im: Single): TComplexSingle;
+begin
+ Result.Im := Exp(Re);
+ Result.Re := 0.5 * Cos(Im) * (1 / Result.Im - Result.Im);
+ Result.Im := 0.5 * Sin(Im) * (1 / Result.Im + Result.Im);
+end;
+
+function ComplexSinh(const Re, Im: Double): TComplexDouble;
+begin
+ Result.Im := Exp(Re);
+ Result.Re := 0.5 * Cos(Im) * (1 / Result.Im - Result.Im);
+ Result.Im := 0.5 * Sin(Im) * (1 / Result.Im + Result.Im);
+end;
+
+function ComplexSinh(const Z: TComplexSingle): TComplexSingle;
+begin
+ Result.Im := Exp(Z.Re);
+ Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im - Result.Im);
+ Result.Im := 0.5 * Sin(Z.Im) * (1 / Result.Im + Result.Im);
+end;
+
+function ComplexSinh(const Z: TComplexDouble): TComplexDouble;
+begin
+ Result.Im := Exp(Z.Re);
+ Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im - Result.Im);
+ Result.Im := 0.5 * Sin(Z.Im) * (1 / Result.Im + Result.Im);
+end;
+
+
+{ ComplexCosh }
+
+function ComplexCosh(const Re, Im: Single): TComplexSingle;
+begin
+ Result.Im := Exp(Re);
+ Result.Re := 0.5 * Cos(Im) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Im) * (1 / Result.Im - Result.Im);
+end;
+
+function ComplexCosh(const Re, Im: Double): TComplexDouble;
+begin
+ Result.Im := Exp(Re);
+ Result.Re := 0.5 * Cos(Im) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Im) * (1 / Result.Im - Result.Im);
+end;
+
+function ComplexCosh(const Z: TComplexSingle): TComplexSingle;
+begin
+ Result.Im := Exp(Z.Re);
+ Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Z.Im) * (1 / Result.Im - Result.Im);
+end;
+
+function ComplexCosh(const Z: TComplexDouble): TComplexDouble;
+begin
+ Result.Im := Exp(Z.Re);
+ Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im + Result.Im);
+ Result.Im := 0.5 * Sin(Z.Im) * (1 / Result.Im - Result.Im);
+end;
+
+
 { ComplexTanh }
 
 function ComplexTanh(const Re, Im: Single): TComplexSingle;
 var
-  Value : array [0..1] of TComplexSingle;
+  ExpRe : Single;
+  ExpIm : TComplexSingle;
+  Temp  : TComplexSingle;
 begin
- Value[0] := ComplexExp( Re,  Im);
- Value[1] := ComplexExp(-Re, -Im);
- Result := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
+ ExpRe := Exp(Re);
+ GetSinCos(Im, ExpIm.Im, ExpIm.Re);
+
+ Temp.Re := ExpIm.Re * (ExpRe - 1 / ExpRe);
+ Temp.Im := ExpIm.Im * (ExpRe + 1 / ExpRe);
+
+ Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
+ Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
+
+ Result := ComplexDivide(Temp, Result);
 end;
 
 function ComplexTanh(const Re, Im: Double): TComplexDouble;
 var
-  Value : array [0..1] of TComplexDouble;
+  ExpRe : Double;
+  ExpIm : TComplexDouble;
+  Temp  : TComplexDouble;
 begin
- // yet todo!
-(*
- Value[0] := ComplexExp( Re,  Im);
- Value[1] := ComplexExp(-Re, -Im);
- Result := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
-*)
+ ExpRe := Exp(Re);
+ GetSinCos(Im, ExpIm.Im, ExpIm.Re);
+
+ Temp.Re := ExpIm.Re * (ExpRe - 1 / ExpRe);
+ Temp.Im := ExpIm.Im * (ExpRe + 1 / ExpRe);
+
+ Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
+ Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
+
+ Result := ComplexDivide(Temp, Result);
 end;
 
 function ComplexTanh(const Z: TComplexSingle): TComplexSingle;
 var
-  Value : array [0..1] of TComplexSingle;
+  ExpRe : Single;
+  ExpIm : TComplexSingle;
+  Temp  : TComplexSingle;
 begin
- Value[0] := ComplexExp( Z.Re,  Z.Im);
- Value[1] := ComplexExp(-Z.Re, -Z.Im);
- Result := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
+ ExpRe := Exp(Z.Re);
+ GetSinCos(Z.Im, ExpIm.Im, ExpIm.Re);
+
+ Temp.Re := ExpIm.Re * (ExpRe - 1 / ExpRe);
+ Temp.Im := ExpIm.Im * (ExpRe + 1 / ExpRe);
+
+ Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
+ Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
+
+ Result := ComplexDivide(Temp, Result);
 end;
 
 function ComplexTanh(const Z: TComplexDouble): TComplexDouble;
 var
-  Value : array [0..1] of TComplexDouble;
+  ExpRe : Double;
+  ExpIm : TComplexDouble;
+  Temp  : TComplexDouble;
 begin
- // yet todo!
-(*
- Value[0] := ComplexExp( Z.Re,  Z.Im);
- Value[1] := ComplexExp(-Z.Re, -Z.Im);
- Result := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
-*)
+ ExpRe := Exp(Z.Re);
+ GetSinCos(Z.Im, ExpIm.Im, ExpIm.Re);
+
+ Temp.Re := ExpIm.Re * (ExpRe - 1 / ExpRe);
+ Temp.Im := ExpIm.Im * (ExpRe + 1 / ExpRe);
+
+ Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
+ Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
+
+ Result := ComplexDivide(Temp, Result);
 end;
 
 
