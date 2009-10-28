@@ -427,8 +427,6 @@ begin
 end;
 
 procedure RegisterDspProcessor64(AClass: TDspPersistentClass);
-var
-  i : Integer;
 begin
  Assert(CheckDspProcessor64Class(AClass));
 

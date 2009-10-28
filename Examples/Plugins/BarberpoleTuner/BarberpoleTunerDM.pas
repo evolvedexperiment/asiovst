@@ -99,9 +99,9 @@ end;
 procedure TBarberpoleTunerDataModule.ParameterGuitarStringChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  CenterFrequency : Single;
+  CenterFrequency : Double;
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : CenterFrequency := 329.62755691286992973584176104656;
   2 : CenterFrequency := 440;
   3 : CenterFrequency := 587.32953583481512052556602772116;
@@ -118,7 +118,7 @@ end;
 procedure TBarberpoleTunerDataModule.ParameterNoteDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : PreDefined := 'E';
   2 : PreDefined := 'A';
   3 : PreDefined := 'D';
