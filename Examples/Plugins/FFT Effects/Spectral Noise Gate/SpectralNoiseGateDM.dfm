@@ -12,7 +12,7 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
   CurrentProgram = -1
   BlockModeSize = 512
   BlockModeOverlap = 256
-  InitialDelay = 256
+  InitialDelay = 384
   IORatio = 1.000000000000000000
   UniqueID = 'Fsng'
   ShellPlugins = <>
@@ -34,6 +34,40 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'FFT Order'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 14.000000000000000000
+      MaxInteger = 14
+      Min = 6.000000000000000000
+      MinInteger = 6
+      ReportVST2Properties = True
+      ShortLabel = 'Order'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterFftOrderChange
+      OnCustomParameterDisplay = ParameterFftOrderDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Window Function'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Window'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterWindowFunctionChange
+      OnCustomParameterDisplay = ParameterWindowFunctionDisplay
     end
     item
       Curve = ctLogarithmic

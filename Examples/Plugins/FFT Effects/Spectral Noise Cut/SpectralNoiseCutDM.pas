@@ -100,10 +100,8 @@ procedure TSpectralNoiseCutModule.ParameterThresholdChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FSpectralNoiseCut) - 1 do
-  begin
-   FSpectralNoiseCut[Channel].Threshold := Value;
-  end;
+ for Channel := 0 to Length(FSpectralNoiseCut) - 1
+  do FSpectralNoiseCut[Channel].Threshold := Value;
 end;
 
 procedure TSpectralNoiseCutModule.VSTModuleProcess(const Inputs,

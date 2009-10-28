@@ -42,20 +42,37 @@ uses
 // TODO: check and implement all assignto functions!!!
 
 type
-  TSpectralNoiseCut32 = class(TCustomSpectralEffect32)
+  TCustomNoiseReduction32 = class(TCustomSpectralEffect32)
+  private
+    procedure SetWindowClass(const Value: TWindowFunctionClass);
+  protected
+    FFilterIR       : PDAVSingleFixedArray;
+    FAddTimeBuffer  : PDAVSingleFixedArray;
+    FAddSpecBuffer  : PDAVComplexSingleFixedArray;
+    FFilter         : PDAVComplexSingleFixedArray;
+    FWindowFunction : TCustomWindowFunction;
+    FWindowClass    : TWindowFunctionClass;
+    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray); virtual; abstract;
+    procedure FFTOrderChanged; override;
+    procedure WindowFunctionClassChanged; virtual;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property WindowFunctionClass : TWindowFunctionClass read FWindowClass write SetWindowClass;
+  end;
+
+  TSpectralNoiseCut32 = class(TCustomNoiseReduction32, IDspProcessor32)
   private
     FThresholdFactor : Single;
     FThreshold       : Double;
-    FAddTimeBuffer   : PDAVSingleFixedArray;
-    FAddSpecBuffer   : PDAVComplexSingleFixedArray;
-    FFilter          : PDAVComplexSingleFixedArray;
     procedure SetThreshold(const Value: Double);
-    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray);
   protected
+    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray); override;
     procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVSingleFixedArray); overload; override;
     procedure PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray); overload; override;
+
     procedure ThresholdChanged; virtual;
-    procedure FFTOrderChanged; override;
   public
     constructor Create; override;
   published
@@ -63,51 +80,28 @@ type
 
     property FFTOrder;
     property FFTSize;
+    property WindowFunctionClass;
   end;
 
-  TSpectralNoiseCut64 = class(TCustomSpectralEffect64)
-  private
-    FThresholdFactor : Double;
-    FThreshold       : Double;
-    FAddTimeBuffer   : PDAVDoubleFixedArray;
-    procedure SetThreshold(const Value: Double);
-  protected
-    procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVDoubleFixedArray); overload; override;
-    procedure PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray); overload; override;
-    procedure ThresholdChanged; virtual;
-    procedure FFTOrderChanged; override;
-  public
-    constructor Create; override;
-  published
-    property Threshold: Double read FThreshold write SetThreshold;
-
-    property FFTOrder;
-    property FFTSize;
-  end;
-
-  TSpectralNoiseGate32 = class(TCustomSpectralEffect32)
+  TSpectralNoiseGate32 = class(TCustomNoiseReduction32, IDspProcessor32)
   private
     FGates         : array of TLightweightSoftKneeCompressor;
     FThreshold     : Double;
-    FFilterIR      : PDAVSingleFixedArray;
-    FAddTimeBuffer : PDAVSingleFixedArray;
-    FAddSpecBuffer : PDAVComplexSingleFixedArray;
-    FFilter        : PDAVComplexSingleFixedArray;
     FRelease       : Double;
     FAttack        : Double;
-    FWinFunc       : TCustomWindowFunction;
     FRatio         : Double;
     FKnee          : Double;
     procedure SetThreshold(const Value: Double);
     procedure SetAttack(const Value: Double);
     procedure SetRelease(const Value: Double);
     procedure SetRatio(const Value: Double);
-
-    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray);
     procedure SetKnee(const Value: Double);
+
+    procedure UpdateGates;
   protected
     procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVSingleFixedArray); overload; override;
     procedure PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray); overload; override;
+    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray); override;
 
     procedure AttackChanged; virtual;
     procedure FFTOrderChanged; override;
@@ -117,7 +111,6 @@ type
     procedure ThresholdChanged; virtual;
   public
     constructor Create; override;
-    destructor Destroy; override;
   published
     property Attack: Double read FAttack write SetAttack;
     property Release: Double read FRelease write SetRelease;
@@ -127,12 +120,170 @@ type
 
     property FFTOrder;
     property FFTSize;
+    property WindowFunctionClass;
   end;
+
+  TCustomNoiseReduction64 = class(TCustomSpectralEffect64)
+  private
+    procedure SetWindowClass(const Value: TWindowFunctionClass);
+  protected
+    FFilterIR       : PDAVDoubleFixedArray;
+    FAddTimeBuffer  : PDAVDoubleFixedArray;
+    FAddSpecBuffer  : PDAVComplexDoubleFixedArray;
+    FFilter         : PDAVComplexDoubleFixedArray;
+    FWindowFunction : TCustomWindowFunction;
+    FWindowClass    : TWindowFunctionClass;
+    procedure BuildFilter(Spectrum: PDAVComplexDoubleFixedArray); virtual; abstract;
+    procedure FFTOrderChanged; override;
+    procedure WindowFunctionClassChanged; virtual;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property WindowFunctionClass : TWindowFunctionClass read FWindowClass write SetWindowClass;
+  end;
+
+  TSpectralNoiseCut64 = class(TCustomNoiseReduction64, IDspProcessor64)
+  private
+    FThresholdFactor : Double;
+    FThreshold       : Double;
+    procedure SetThreshold(const Value: Double);
+  protected
+    procedure BuildFilter(Spectrum: PDAVComplexDoubleFixedArray); override;
+    procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVDoubleFixedArray); overload; override;
+    procedure PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray); overload; override;
+
+    procedure ThresholdChanged; virtual;
+  public
+    constructor Create; override;
+  published
+    property Threshold: Double read FThreshold write SetThreshold;
+
+    property FFTOrder;
+    property FFTSize;
+    property WindowFunctionClass;
+  end;
+
+  TSpectralNoiseGate64 = class(TCustomNoiseReduction64, IDspProcessor64)
+  private
+    FGates         : array of TLightweightSoftKneeCompressor;
+    FThreshold     : Double;
+    FRelease       : Double;
+    FAttack        : Double;
+    FRatio         : Double;
+    FKnee          : Double;
+    procedure SetThreshold(const Value: Double);
+    procedure SetAttack(const Value: Double);
+    procedure SetRelease(const Value: Double);
+    procedure SetRatio(const Value: Double);
+    procedure SetKnee(const Value: Double);
+
+    procedure UpdateGates;
+  protected
+    procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVDoubleFixedArray); overload; override;
+    procedure PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray); overload; override;
+    procedure BuildFilter(Spectrum: PDAVComplexDoubleFixedArray); override;
+
+    procedure AttackChanged; virtual;
+    procedure FFTOrderChanged; override;
+    procedure KneeChanged; virtual;
+    procedure RatioChanged; virtual;
+    procedure ReleaseChanged; virtual;
+    procedure ThresholdChanged; virtual;
+  public
+    constructor Create; override;
+  published
+    property Attack: Double read FAttack write SetAttack;
+    property Release: Double read FRelease write SetRelease;
+    property Ratio: Double read FRatio write SetRatio;
+    property Knee: Double read FKnee write SetKnee;
+    property Threshold: Double read FThreshold write SetThreshold;
+
+    property FFTOrder;
+    property FFTSize;
+    property WindowFunctionClass;
+  end;
+
 
 implementation
 
 uses
   SysUtils, DAV_Common, DAV_BlockRoutines, DAV_Approximations;
+
+{ TCustomNoiseReduction32 }
+
+constructor TCustomNoiseReduction32.Create;
+begin
+ FFilterIR      := nil;
+ FAddTimeBuffer := nil;
+ FAddSpecBuffer := nil;
+ FFilter        := nil;
+
+ FWindowClass   := TWindowFunctionBlackman;
+ WindowFunctionClassChanged;
+
+ inherited;
+end;
+
+destructor TCustomNoiseReduction32.Destroy;
+begin
+ Dispose(FFilterIR);
+ Dispose(FAddTimeBuffer);
+ Dispose(FAddSpecBuffer);
+ Dispose(FFilter);
+
+ FreeAndNil(FWindowFunction);
+
+ inherited;
+end;
+
+procedure TCustomNoiseReduction32.FFTOrderChanged;
+begin
+ inherited;
+ ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Single));
+ ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplexSingle));
+ ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplexSingle));
+ ReallocMem(FFilterIR, FFFTSize * SizeOf(Single));
+ FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Single), 0);
+ FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle), 0);
+ FillChar(FFilter^, Fft.BinCount * SizeOf(TComplexSingle), 0);
+ FillChar(FFilterIR^, FFFTSize * SizeOf(Single), 0);
+
+ if Assigned(FWindowFunction)
+  then FWindowFunction.Length := FFTSize;
+end;
+
+procedure TCustomNoiseReduction32.SetWindowClass(
+  const Value: TWindowFunctionClass);
+begin
+ if FWindowClass <> Value then
+  begin
+   FWindowClass := Value;
+   WindowFunctionClassChanged;
+  end;
+end;
+
+procedure TCustomNoiseReduction32.WindowFunctionClassChanged;
+var
+  OldWindow : TCustomWindowFunction;
+begin
+ OldWindow := FWindowFunction;
+
+ FWindowFunction := FWindowClass.Create;
+
+ with FWindowFunction do
+  begin
+   Start := 0;
+   Slope := wsSymmetric;
+  end;
+
+ if assigned(OldWindow) then
+  begin
+   FWindowFunction.Length := OldWindow.Length;
+   FreeAndNil(OldWindow);
+  end;
+end;
+
 
 { TSpectralNoiseCut32 }
 
@@ -142,17 +293,6 @@ begin
  FThresholdFactor := 1E-3;
 end;
 
-procedure TSpectralNoiseCut32.FFTOrderChanged;
-begin
- inherited;
- ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Single));
- ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplexSingle));
- ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplexSingle));
- FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Single), 0);
- FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle), 0);
- FillChar(FFilter^, Fft.BinCount * SizeOf(TComplexSingle), 0);
-end;
-
 procedure TSpectralNoiseCut32.PerformSpectralEffect(SignalIn,
   SignalOut: PDAVSingleFixedArray);
 var
@@ -160,56 +300,65 @@ var
   Reci   : Double;
   Scale  : Double;
 begin
- // transform to frequency domain
  FFft.PerformFFT(FSignalFreq, SignalIn);
 
- Move(FSignalFreq^[0], FAddSpecBuffer^[0], FFFT.BinCount * SizeOf(TComplexSingle));
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle));
  PerformSpectralEffect(FAddSpecBuffer);
  BuildFilter(FSignalFreq);
  PerformSpectralEffect(FSignalFreq);
-
  FFft.PerformIFFT(FSignalFreq, SignalOut);
  FFft.PerformIFFT(FAddSpecBuffer, FAddTimeBuffer);
 
  Reci := 1 / FFFTSizeHalf;
  for Sample := 0 to FFFTSizeHalf - 1 do
   begin
-   Scale := sqr(Sample * Reci);
-   SignalOut^[FFFTSizeHalf + Sample] := Scale * SignalOut^[FFFTSizeHalf + Sample] +
+   Scale := Sample * Reci;
+   SignalOut^[Sample] := Scale * SignalOut^[FFFTSizeHalf + Sample] +
      (1 - Scale) * FAddTimeBuffer^[FFFTSizeHalf + Sample];
   end;
-
- Move(SignalOut^[FFFTSizeHalf], SignalOut^[0], FFFTSizeHalf * SizeOf(Single));
 end;
 
 procedure TSpectralNoiseCut32.BuildFilter(Spectrum: PDAVComplexSingleFixedArray);
 var
   Bin  : Integer;
   Half : Integer;
+const
+  COffset : Single = 1E-10;
 begin
  Half := FFFTSizeHalf;
 
- // DC & Nyquist
- if Abs(Spectrum^[0].Re) < FThresholdFactor
-  then FFilter^[0].Re := CHalf32 * FFilter^[0].Re
-  else FFilter^[0].Re := CHalf32 * (1 + FFilter^[0].Re);
-
- if Abs(Spectrum^[Half].Re) < FThresholdFactor
-  then FFilter^[Half].Re := CHalf32 * FFilter^[Half].Re
-  else FFilter^[Half].Re := CHalf32 * (1 + FFilter^[Half].Re);
+ // DC bin
+ if Spectrum^[0].Re > FThreshold
+  then FFilter^[0].Re := CHalf32 * (1 + FFilter^[0].Re)
+  else FFilter^[0].Re := CHalf32 * FFilter^[0].Re;
+ FFilter^[0].Im := 0;
 
  // other bins
  for Bin := 1 to Half - 1 do
-  if (Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im)) < Sqr(FThresholdFactor) then
-   begin
-    FFilter^[Bin].Re := CHalf32 * FFilter^[Bin].Re;
-    FFilter^[Bin].Im := CHalf32 * FFilter^[Bin].Im;
-   end
-  else
-   begin
-    FFilter^[Bin].Re := CHalf32 * (1 + FFilter^[Bin].Re);
-    FFilter^[Bin].Im := CHalf32 * (1 + FFilter^[Bin].Im);
-   end;
+  begin
+   if FastSqrtBab2(Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im)) > FThreshold
+    then FFilter^[Bin].Re := CHalf32 * (1 + FFilter^[Bin].Re)
+    else FFilter^[Bin].Re := CHalf32 * FFilter^[Bin].Re;
+   FFilter^[Bin].Im := 0;
+  end;
+
+ // Nyquist bin
+ if Spectrum^[Half].Re > FThreshold
+  then FFilter^[Half].Re := CHalf32 * (1 + FFilter^[Half].Re)
+  else FFilter^[Half].Re := CHalf32 * FFilter^[Half].Re;
+ FFilter^[Half].Im := 0;
+
+ // transform filter to time domain
+ FFft.PerformIFFT(FFilter, FFilterIR);
+
+ // shift filter impulse response and apply window function
+ Move(FFilterIR^[0], FFilterIR^[FFFTSizeHalf div 2], FFFTSizeHalf div 2 * SizeOf(Single));
+ Move(FFilterIR^[FFFTSize - FFFTSizeHalf div 2], FFilterIR^[0], FFFTSizeHalf div 2 * SizeOf(Single));
+ FWindowFunction.ProcessBlock32(@FFilterIR^[0], FFFTSizeHalf);
+ FillChar(FFilterIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Single), 0);
+
+ // transform impulse response back to frequency domain
+ FFft.PerformFFT(FFilter, FFilterIR);
 end;
 
 procedure TSpectralNoiseCut32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
@@ -232,85 +381,12 @@ begin
 end;
 
 
-{ TSpectralNoiseCut64 }
-
-constructor TSpectralNoiseCut64.Create;
-begin
- inherited;
- FThresholdFactor := 1E-3;
-end;
-
-procedure TSpectralNoiseCut64.FFTOrderChanged;
-begin
- inherited;
- ReallocMem(FAddTimeBuffer, FFFTSizeHalf * SizeOf(Double));
-end;
-
-procedure TSpectralNoiseCut64.PerformSpectralEffect(SignalIn,
-  SignalOut: PDAVDoubleFixedArray);
-var
-  Sample : Integer;
-  Scale  : Double;
-begin
- FFft.PerformFFT(FSignalFreq, SignalIn);
- PerformSpectralEffect(FSignalFreq);
- FFft.PerformIFFT(FSignalFreq, SignalOut);
-
-(*
- Scale := 1 / FFFTSizeHalf;
- for Sample := 0 to FFFTSizeHalf - 1 do
-  begin
-   SignalOut^[Sample] := (Sample * Scale) * SignalOut^[Sample] +
-     (1 - (Sample * Scale)) * FAddTimeBuffer^[Sample];
-  end;
-*)
-// Move(SignalOut^[FFFTSizeHalf], FAddTimeBuffer^, FFFTSizeHalf * SizeOf(Double));
-end;
-
-procedure TSpectralNoiseCut64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
-var
-  Bin  : Integer;
-  Half : Integer;
-begin
- Half := FFTSize div 2;
-
- // DC & Nyquist
- if Abs(Spectrum^[0].Re) < FThresholdFactor
-  then Spectrum^[0].Re := 0;
-
- if Abs(Spectrum^[Half].Re) < FThresholdFactor
-  then Spectrum^[Half].Re := 0;
-
- // other bins
- for Bin := 1 to Half - 1 do
-  if (Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im)) < Sqr(FThresholdFactor) then
-   begin
-    Spectrum^[Bin].Re := 0;
-    Spectrum^[Bin].Im := 0;
-   end;
-end;
-
-procedure TSpectralNoiseCut64.SetThreshold(const Value: Double);
-begin
- if FThreshold <> Value then
-  begin
-   FThreshold := Value;
-   ThresholdChanged;
-  end;
-end;
-
-procedure TSpectralNoiseCut64.ThresholdChanged;
-begin
- FThresholdFactor := dB_to_Amp(FThreshold);
-end;
-
-
 { TSpectralNoiseGate32 }
 
 constructor TSpectralNoiseGate32.Create;
 begin
- FWinFunc := TWindowFunctionBlackman.Create;
  inherited;
+
  with FFFT do
   begin
    AutoScaleType := astDivideInvByN;
@@ -318,34 +394,16 @@ begin
   end;
 end;
 
-destructor TSpectralNoiseGate32.Destroy;
+procedure TSpectralNoiseGate32.FFTOrderChanged;
 begin
- FreeAndNil(FWinFunc);
  inherited;
+ UpdateGates;
 end;
 
-procedure TSpectralNoiseGate32.FFTOrderChanged;
+procedure TSpectralNoiseGate32.UpdateGates;
 var
   Bin : Integer;
 begin
- inherited;
- ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Single));
- ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplexSingle));
- ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplexSingle));
- ReallocMem(FFilterIR, FFFTSize * SizeOf(Single));
- FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Single), 0);
- FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle), 0);
- FillChar(FFilter^, Fft.BinCount * SizeOf(TComplexSingle), 0);
- FillChar(FFilterIR^, FFFTSize * SizeOf(Single), 0);
-
- if Assigned(FWinFunc) then
-  with FWinFunc do
-   begin
-    Length := FFTSize;
-    Start := 0;
-    Slope := wsSymmetric;
-   end;
-
  // dispose unused Gates
  for Bin := Fft.BinCount to Length(FGates) - 1 do
   if assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
@@ -427,11 +485,9 @@ begin
 
  FFft.PerformIFFT(FFilter, FFilterIR);
 
- FWinFunc.Length := FFTSize;
- FWinFunc.Start := 0;
  Move(FFilterIR^[0], FFilterIR^[FFFTSizeHalf div 2], FFFTSizeHalf div 2 * SizeOf(Single));
  Move(FFilterIR^[FFFTSize - FFFTSizeHalf div 2], FFilterIR^[0], FFFTSizeHalf div 2 * SizeOf(Single));
- FWinFunc.ProcessBlock32(@FFilterIR^[0], FFFTSizeHalf div 8);
+ FWindowFunction.ProcessBlock32(@FFilterIR^[0], FFFTSizeHalf);
  FillChar(FFilterIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Single), 0);
  FFft.PerformFFT(FFilter, FFilterIR);
 end;
@@ -525,5 +581,382 @@ begin
  for Bin := 0 to Length(FGates) - 1
   do FGates[Bin].Release := FRelease;
 end;
+
+
+{ TCustomNoiseReduction64 }
+
+constructor TCustomNoiseReduction64.Create;
+begin
+ FFilterIR      := nil;
+ FAddTimeBuffer := nil;
+ FAddSpecBuffer := nil;
+ FFilter        := nil;
+
+ FWindowClass   := TWindowFunctionBlackman;
+ WindowFunctionClassChanged;
+
+ inherited;
+end;
+
+destructor TCustomNoiseReduction64.Destroy;
+begin
+ Dispose(FFilterIR);
+ Dispose(FAddTimeBuffer);
+ Dispose(FAddSpecBuffer);
+ Dispose(FFilter);
+
+ FreeAndNil(FWindowFunction);
+
+ inherited;
+end;
+
+procedure TCustomNoiseReduction64.FFTOrderChanged;
+begin
+ inherited;
+ ReallocMem(FAddTimeBuffer, FFFTSize * SizeOf(Double));
+ ReallocMem(FAddSpecBuffer, Fft.BinCount * SizeOf(TComplexDouble));
+ ReallocMem(FFilter, Fft.BinCount * SizeOf(TComplexDouble));
+ ReallocMem(FFilterIR, FFFTSize * SizeOf(Double));
+ FillChar(FAddTimeBuffer^, FFFTSize * SizeOf(Double), 0);
+ FillChar(FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexDouble), 0);
+ FillChar(FFilter^, Fft.BinCount * SizeOf(TComplexDouble), 0);
+ FillChar(FFilterIR^, FFFTSize * SizeOf(Double), 0);
+
+ if Assigned(FWindowFunction)
+  then FWindowFunction.Length := FFTSize;
+end;
+
+procedure TCustomNoiseReduction64.SetWindowClass(
+  const Value: TWindowFunctionClass);
+begin
+ if FWindowClass <> Value then
+  begin
+   FWindowClass := Value;
+   WindowFunctionClassChanged;
+  end;
+end;
+
+procedure TCustomNoiseReduction64.WindowFunctionClassChanged;
+var
+  OldWindow : TCustomWindowFunction;
+begin
+ OldWindow := FWindowFunction;
+
+ FWindowFunction := FWindowClass.Create;
+
+ with FWindowFunction do
+  begin
+   Start := 0;
+   Slope := wsSymmetric;
+  end;
+
+ if assigned(OldWindow) then
+  begin
+   FWindowFunction.Length := OldWindow.Length;
+   FreeAndNil(OldWindow);
+  end;
+end;
+
+
+{ TSpectralNoiseCut64 }
+
+constructor TSpectralNoiseCut64.Create;
+begin
+ inherited;
+ FThresholdFactor := 1E-3;
+end;
+
+procedure TSpectralNoiseCut64.PerformSpectralEffect(SignalIn,
+  SignalOut: PDAVDoubleFixedArray);
+var
+  Sample : Integer;
+  Reci   : Double;
+  Scale  : Double;
+begin
+ FFft.PerformFFT(FSignalFreq, SignalIn);
+
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexDouble));
+ PerformSpectralEffect(FAddSpecBuffer);
+ BuildFilter(FSignalFreq);
+ PerformSpectralEffect(FSignalFreq);
+ FFft.PerformIFFT(FSignalFreq, SignalOut);
+ FFft.PerformIFFT(FAddSpecBuffer, FAddTimeBuffer);
+
+ Reci := 1 / FFFTSizeHalf;
+ for Sample := 0 to FFFTSizeHalf - 1 do
+  begin
+   Scale := Sample * Reci;
+   SignalOut^[Sample] := Scale * SignalOut^[FFFTSizeHalf + Sample] +
+     (1 - Scale) * FAddTimeBuffer^[FFFTSizeHalf + Sample];
+  end;
+end;
+
+procedure TSpectralNoiseCut64.BuildFilter(Spectrum: PDAVComplexDoubleFixedArray);
+var
+  Bin  : Integer;
+  Half : Integer;
+const
+  COffset : Double = 1E-10;
+begin
+ Half := FFFTSizeHalf;
+
+ // DC bin
+ if Spectrum^[0].Re > FThreshold
+  then FFilter^[0].Re := CHalf64 * (1 + FFilter^[0].Re)
+  else FFilter^[0].Re := CHalf64 * FFilter^[0].Re;
+ FFilter^[0].Im := 0;
+
+ // other bins
+ for Bin := 1 to Half - 1 do
+  begin
+   if FastSqrtBab2(Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im)) > FThreshold
+    then FFilter^[Bin].Re := CHalf64 * (1 + FFilter^[Bin].Re)
+    else FFilter^[Bin].Re := CHalf64 * FFilter^[Bin].Re;
+   FFilter^[Bin].Im := 0;
+  end;
+
+ // Nyquist bin
+ if Spectrum^[Half].Re > FThreshold
+  then FFilter^[Half].Re := CHalf64 * (1 + FFilter^[Half].Re)
+  else FFilter^[Half].Re := CHalf64 * FFilter^[Half].Re;
+ FFilter^[Half].Im := 0;
+
+ // transform filter to time domain
+ FFft.PerformIFFT(FFilter, FFilterIR);
+
+ // shift filter impulse response and apply window function
+ Move(FFilterIR^[0], FFilterIR^[FFFTSizeHalf div 2], FFFTSizeHalf div 2 * SizeOf(Double));
+ Move(FFilterIR^[FFFTSize - FFFTSizeHalf div 2], FFilterIR^[0], FFFTSizeHalf div 2 * SizeOf(Double));
+ FWindowFunction.ProcessBlock64(@FFilterIR^[0], FFFTSizeHalf);
+ FillChar(FFilterIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Double), 0);
+
+ // transform impulse response back to frequency domain
+ FFft.PerformFFT(FFilter, FFilterIR);
+end;
+
+procedure TSpectralNoiseCut64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
+begin
+ ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+end;
+
+procedure TSpectralNoiseCut64.SetThreshold(const Value: Double);
+begin
+ if FThreshold <> Value then
+  begin
+   FThreshold := Value;
+   ThresholdChanged;
+  end;
+end;
+
+procedure TSpectralNoiseCut64.ThresholdChanged;
+begin
+ FThresholdFactor := dB_to_Amp(FThreshold);
+end;
+
+
+{ TSpectralNoiseGate64 }
+
+constructor TSpectralNoiseGate64.Create;
+begin
+ inherited;
+
+ with FFFT do
+  begin
+   AutoScaleType := astDivideInvByN;
+   DataOrder := doComplex;
+  end;
+end;
+
+procedure TSpectralNoiseGate64.FFTOrderChanged;
+begin
+ inherited;
+ UpdateGates;
+end;
+
+procedure TSpectralNoiseGate64.UpdateGates;
+var
+  Bin : Integer;
+begin
+ // dispose unused Gates
+ for Bin := Fft.BinCount to Length(FGates) - 1 do
+  if assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
+
+ SetLength(FGates, Fft.BinCount);
+
+ for Bin := 0 to Length(FGates) - 1 do
+  if not Assigned(FGates[Bin]) then
+   begin
+    FGates[Bin] := TLightweightSoftKneeCompressor.Create;
+    with FGates[Bin] do
+     begin
+      SampleRate := Self.SampleRate * 2 / FFft.FFTSize;
+      Ratio := 0.1;
+      Knee_dB := 2;
+      Attack := 1;
+      Release := 100;
+     end;
+   end;
+end;
+
+procedure TSpectralNoiseGate64.PerformSpectralEffect(SignalIn,
+  SignalOut: PDAVDoubleFixedArray);
+var
+  Sample : Integer;
+  Reci   : Double;
+  Scale  : Double;
+begin
+ FFft.PerformFFT(FSignalFreq, SignalIn);
+
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexDouble));
+ PerformSpectralEffect(FAddSpecBuffer);
+ BuildFilter(FSignalFreq);
+ PerformSpectralEffect(FSignalFreq);
+ FFft.PerformIFFT(FSignalFreq, SignalOut);
+ FFft.PerformIFFT(FAddSpecBuffer, FAddTimeBuffer);
+
+ Reci := 1 / FFFTSizeHalf;
+ for Sample := 0 to FFFTSizeHalf - 1 do
+  begin
+   Scale := Sample * Reci;
+   SignalOut^[Sample] := Scale * SignalOut^[FFFTSizeHalf + Sample] +
+     (1 - Scale) * FAddTimeBuffer^[FFFTSizeHalf + Sample];
+  end;
+
+// Move(SignalOut^[FFFTSizeHalf], SignalOut^[0], FFFTSizeHalf * SizeOf(Double));
+end;
+
+procedure TSpectralNoiseGate64.BuildFilter(
+  Spectrum: PDAVComplexDoubleFixedArray);
+var
+  Bin  : Integer;
+  Half : Integer;
+const
+  COffset : Double = 1E-10;
+begin
+ Half := FFFTSizeHalf;
+
+ // DC bin
+ FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
+ FFilter^[0].Re := FGates[0].GainSample(1);
+ if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ FFilter^[0].Im := 0;
+
+ // other bins
+ for Bin := 1 to Half - 1 do
+  begin
+   FGates[Bin].InputSample(COffset + Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im));
+   FFilter^[Bin].Re := FGates[Bin].GainSample(1);
+   if abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
+   FFilter^[Bin].Im := 0;
+  end;
+
+ // Nyquist bin
+ FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
+ FFilter^[0].Re := FGates[Half].GainSample(1);
+ if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ FFilter^[Half].Im := 0;
+
+ FFft.PerformIFFT(FFilter, FFilterIR);
+
+ Move(FFilterIR^[0], FFilterIR^[FFFTSizeHalf div 2], FFFTSizeHalf div 2 * SizeOf(Double));
+ Move(FFilterIR^[FFFTSize - FFFTSizeHalf div 2], FFilterIR^[0], FFFTSizeHalf div 2 * SizeOf(Double));
+ FWindowFunction.ProcessBlock64(@FFilterIR^[0], FFFTSizeHalf);
+ FillChar(FFilterIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Double), 0);
+ FFft.PerformFFT(FFilter, FFilterIR);
+end;
+
+procedure TSpectralNoiseGate64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
+begin
+ ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+end;
+
+procedure TSpectralNoiseGate64.SetAttack(const Value: Double);
+begin
+ if FAttack <> Value then
+  begin
+   FAttack := Value;
+   AttackChanged;
+  end;
+end;
+
+procedure TSpectralNoiseGate64.SetKnee(const Value: Double);
+begin
+ if FKnee <> Value then
+  begin
+   FKnee := Value;
+   KneeChanged;
+  end;
+end;
+
+procedure TSpectralNoiseGate64.SetRatio(const Value: Double);
+begin
+ if FRatio <> Value then
+  begin
+   FRatio := Value;
+   RatioChanged;
+  end;
+end;
+
+procedure TSpectralNoiseGate64.SetRelease(const Value: Double);
+begin
+ if FRelease <> Value then
+  begin
+   FRelease := Value;
+   ReleaseChanged;
+  end;
+end;
+
+procedure TSpectralNoiseGate64.SetThreshold(const Value: Double);
+begin
+ if FThreshold <> Value then
+  begin
+   FThreshold := Value;
+   ThresholdChanged;
+  end;
+end;
+
+procedure TSpectralNoiseGate64.RatioChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Ratio := Ratio;
+end;
+
+procedure TSpectralNoiseGate64.ThresholdChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Threshold_dB := 2 * FThreshold;
+end;
+
+procedure TSpectralNoiseGate64.KneeChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Knee_dB := FKnee;
+end;
+
+procedure TSpectralNoiseGate64.AttackChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Attack := FAttack;
+end;
+
+procedure TSpectralNoiseGate64.ReleaseChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Release := FRelease;
+end;
+
+initialization
+  RegisterDspProcessors32([TSpectralNoiseCut32, TSpectralNoiseGate32]);
+  RegisterDspProcessors64([TSpectralNoiseCut64, TSpectralNoiseGate64]);
 
 end.

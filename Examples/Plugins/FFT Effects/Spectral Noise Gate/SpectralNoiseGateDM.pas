@@ -36,7 +36,8 @@ interface
 
 uses
   Windows, Messages, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
-  DAV_VSTModule, DAV_DspSpectralNoiseReduction;
+  DAV_DspDelayLines, DAV_DspSpectralNoiseReduction, DAV_DspWindowFunctions,
+  DAV_VSTModule {$IFDEF Use_IPPS}, DAV_DspWindowFunctionsAdvanced{$ENDIF};
 
 type
   TSpectralNoiseGateModule = class(TVSTModule)
@@ -46,16 +47,19 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterKneeChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterRatioChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterKneeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterWindowFunctionChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterWindowFunctionDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFftOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFftOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection   : TCriticalSection;
+    FAdditionalDelay   : array of TDelayLineSamples32;
     FSpectralNoiseGate : array of TSpectralNoiseGate32;
   public
   end;
@@ -83,22 +87,30 @@ var
 begin
  Assert(numInputs = numOutputs);
 
+ InitialDelay := 1 shl ParameterProperties[1].MaxInteger +
+   1 shl (ParameterProperties[1].MaxInteger - 1);
+
  SetLength(FSpectralNoiseGate, numInputs);
- for Channel := 0 to Length(FSpectralNoiseGate) - 1 do
+ for Channel := 0 to Length(FSpectralNoiseGate) - 1
+  do FSpectralNoiseGate[Channel] := TSpectralNoiseGate32.Create;
+
+ SetLength(FAdditionalDelay, numInputs);
+ for Channel := 0 to Length(FAdditionalDelay) - 1
+  do FAdditionalDelay[Channel] := TDelayLineSamples32.Create(512);
+
+ with ParameterProperties[2] do
   begin
-   FSpectralNoiseGate[Channel] := TSpectralNoiseGate32.Create;
-   with FSpectralNoiseGate[Channel] do
-    begin
-     FftOrder := Round(Log2(BlockModeSize));
-     Assert(FftSize = BlockModeSize);
-    end;
+   Max := Length(GWindowFunctions) - 1;
+   MaxInteger := Length(GWindowFunctions) - 1;
   end;
 
  Parameter[0] := -30;
- Parameter[1] := 0.5;
- Parameter[2] := 100;
- Parameter[3] := 10;
- Parameter[4] := 1;
+ Parameter[1] := 9;
+ Parameter[2] := 4;
+ Parameter[3] := 0.5;
+ Parameter[4] := 100;
+ Parameter[5] := 10;
+ Parameter[6] := 1;
 end;
 
 procedure TSpectralNoiseGateModule.VSTModuleClose(Sender: TObject);
@@ -107,6 +119,9 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FreeAndNil(FSpectralNoiseGate[Channel]);
+
+ for Channel := 0 to Length(FAdditionalDelay) - 1
+  do FreeAndNil(FAdditionalDelay[Channel]);
 end;
 
 procedure TSpectralNoiseGateModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -121,6 +136,47 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FSpectralNoiseGate[Channel].Threshold := Value;
+end;
+
+procedure TSpectralNoiseGateModule.ParameterWindowFunctionChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FSpectralNoiseGate) - 1
+   do FSpectralNoiseGate[Channel].WindowFunctionClass := GWindowFunctions[Round(Parameter[Index])];
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TSpectralNoiseGateModule.ParameterWindowFunctionDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
+end;
+
+procedure TSpectralNoiseGateModule.ParameterFftOrderChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel : Integer;
+  Delay   : Integer;
+begin
+ for Channel := 0 to Length(FSpectralNoiseGate) - 1
+  do FSpectralNoiseGate[Channel].FFTOrder := Round(Value);
+
+ Delay := InitialDelay - 1 shl Round(Value) + 1 shl (Round(Value) - 1);
+
+ for Channel := 0 to Length(FAdditionalDelay) - 1
+  do FAdditionalDelay[Channel].BufferSize := Delay;
+end;
+
+procedure TSpectralNoiseGateModule.ParameterFftOrderDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TSpectralNoiseGateModule.ParameterRatioChange(
@@ -179,6 +235,8 @@ begin
    begin
     FSpectralNoiseGate[Channel].ProcessBlock(@Inputs[Channel, 0],
       @Outputs[Channel, 0], SampleFrames);
+    FAdditionalDelay[Channel].ProcessBlock32(@Outputs[Channel, 0],
+      SampleFrames);
    end;
  finally
   FCriticalSection.Leave;

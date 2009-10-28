@@ -59,14 +59,35 @@ implementation
 {$R *.DFM}
 
 uses
-  RingModulatorGUI;
+  Registry, RingModulatorGUI, DAV_VSTParameters;
+
+const
+  CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Ring Modulator';
 
 procedure TRingModulatorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel   : Integer;
+  UpperFreq : Single;
 begin
  assert(numInputs = numOutputs);
  assert(numInputs > 0);
+
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if OpenKey(CRegKeyRoot, False) then
+    begin
+     if ValueExists('Upper Frequency') then
+      begin
+       UpperFreq := StrToFloat(ReadString('Upper Frequency'));
+       if UpperFreq > ParameterProperties[0].Min
+        then ParameterProperties[0].Max := UpperFreq;
+      end;
+    end
+  finally
+   Free;
+  end;
+
  SetLength(FRingMod, numInputs);
 
  ChooseProcess;

@@ -33,14 +33,63 @@ unit SpectralNoiseGateGui;
 interface
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  DAV_GuiDial, DAV_GuiLabel, Controls, DAV_GuiBaseControl;
 
 type
   TFmSpectralNoiseGate = class(TForm)
+    DialSpeed: TGuiDial;
+    DialStages: TGuiDial;
+    DialDepth: TGuiDial;
+    DialMix: TGuiDial;
+    LbSpeed: TGuiLabel;
+    LbStages: TGuiLabel;
+    LbDepth: TGuiLabel;
+    LbMix: TGuiLabel;
+    LbSpeedValue: TGuiLabel;
+    LbStagesValue: TGuiLabel;
+    LbDepthValue: TGuiLabel;
+    LbMixValue: TGuiLabel;
+    DialDrift: TGuiDial;
+    LbDrift: TGuiLabel;
+    LbDriftValue: TGuiLabel;
+    DIL: TGuiDialImageList;
+    procedure FormCreate(Sender: TObject);
   end;
 
 implementation
 
 {$R *.DFM}
+
+uses
+  Math, PngImage, DAV_VSTModuleWithPrograms, SpectralNoiseGateDM;
+
+procedure TFmSpectralNoiseGate.FormCreate(Sender: TObject);
+var
+  RS     : TResourceStream;
+  PngBmp : TPngObject;
+begin
+ PngBmp := TPngObject.Create;
+ try
+  RS := TResourceStream.Create(hInstance, 'ChorusKnob', 'PNG');
+  try
+   with DIL.DialImages.Add do
+    begin
+     NumGlyphs := 65;
+     PngBmp.LoadFromStream(RS);
+     DialBitmap.Assign(PngBmp);
+    end;
+   DialSpeed.DialImageIndex  := 0;
+   DialDepth.DialImageIndex  := 0;
+   DialStages.DialImageIndex := 0;
+   DialMix.DialImageIndex    := 0;
+   DialDrift.DialImageIndex  := 0;
+  finally
+   RS.Free;
+  end;
+ finally
+  FreeAndNil(PngBmp);
+ end;
+end;
 
 end.

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_Classes, DAV_DspFilter, DAV_DspFilterAllpasses;
+  DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspFilterAllpasses;
 
 type
   TCustomSimpleBandlimitedImpulseTrain = class(TDspSampleRatePersistent)
@@ -82,6 +82,7 @@ type
   private
     FLastSample : Single;
   public
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32: Single;
     procedure Reset; override;
   published
@@ -94,6 +95,7 @@ type
   private
     FLastSample : Single;
   public
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32: Single; virtual;
     procedure Reset; override;
   published
@@ -230,6 +232,15 @@ begin
  FLastSample := 1;
 end;
 
+procedure TSimpleBandlimitedImpulseTrain32.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
+end;
+
 function TSimpleBandlimitedImpulseTrain32.ProcessSample32: Single;
 begin
  FBuffer^[FBufferPos] := FLastSample;
@@ -244,6 +255,15 @@ begin
 end;
 
 { TSimpleBandlimitedBipolarImpulseTrain32 }
+
+procedure TSimpleBandlimitedBipolarImpulseTrain32.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32;
+end;
 
 function TSimpleBandlimitedBipolarImpulseTrain32.ProcessSample32: Single;
 begin

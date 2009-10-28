@@ -1,11 +1,11 @@
 object FmSpectralNoiseGate: TFmSpectralNoiseGate
-  Left = 286
-  Top = 77
+  Left = 238
+  Top = 133
   BorderStyle = bsNone
   Caption = 'Spectral Noise Gate'
-  ClientHeight = 210
-  ClientWidth = 376
-  Color = clBtnFace
+  ClientHeight = 95
+  ClientWidth = 335
+  Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -13,6 +13,251 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object DialSpeed: TGuiDial
+    Left = 16
+    Top = 32
+    Width = 36
+    Height = 36
+    CurveMapping = -1.799999952316284000
+    DefaultPosition = 1.000000000000000000
+    DialImageList = DIL
+    DialImageIndex = -1
+    LineColor = 12632777
+    LineWidth = 2
+    Max = 10.000000000000000000
+    Min = 0.009999999776482582
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 1.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
+  end
+  object DialStages: TGuiDial
+    Left = 84
+    Top = 32
+    Width = 36
+    Height = 36
+    DefaultPosition = 4.000000000000000000
+    DialImageList = DIL
+    DialImageIndex = -1
+    LineColor = 12632777
+    LineWidth = 2
+    Max = 8.000000000000000000
+    Min = 1.000000000000000000
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 4.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
+  end
+  object DialDepth: TGuiDial
+    Left = 152
+    Top = 32
+    Width = 36
+    Height = 36
+    DefaultPosition = 10.000000000000000000
+    DialImageList = DIL
+    DialImageIndex = -1
+    LineColor = 12632777
+    LineWidth = 2
+    Max = 100.000000000000000000
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 10.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
+  end
+  object DialMix: TGuiDial
+    Left = 220
+    Top = 32
+    Width = 36
+    Height = 36
+    DefaultPosition = 50.000000000000000000
+    DialImageList = DIL
+    DialImageIndex = -1
+    LineColor = 12632777
+    LineWidth = 2
+    Max = 100.000000000000000000
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 50.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
+  end
+  object LbSpeed: TGuiLabel
+    Left = 8
+    Top = 8
+    Width = 50
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Speed'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbStages: TGuiLabel
+    Left = 73
+    Top = 8
+    Width = 56
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Stages'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbDepth: TGuiLabel
+    Left = 144
+    Top = 8
+    Width = 50
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Depth'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbMix: TGuiLabel
+    Left = 212
+    Top = 8
+    Width = 50
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Mix'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbSpeedValue: TGuiLabel
+    Left = 3
+    Top = 66
+    Width = 60
+    Height = 20
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbStagesValue: TGuiLabel
+    Left = 71
+    Top = 66
+    Width = 60
+    Height = 20
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbDepthValue: TGuiLabel
+    Left = 139
+    Top = 66
+    Width = 60
+    Height = 20
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbMixValue: TGuiLabel
+    Left = 207
+    Top = 66
+    Width = 60
+    Height = 20
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object DialDrift: TGuiDial
+    Left = 286
+    Top = 32
+    Width = 36
+    Height = 36
+    CurveMapping = -1.000000000000000000
+    DefaultPosition = 10.000000000000000000
+    DialImageList = DIL
+    DialImageIndex = -1
+    LineColor = 12632777
+    LineWidth = 2
+    Max = 100.000000000000000000
+    NumGlyphs = 65
+    PointerAngles.Start = 225
+    PointerAngles.Range = 270
+    PointerAngles.Resolution = 270.000000000000000000
+    Position = 10.000000000000000000
+    ScrollRange_Pixel = 400.000000000000000000
+    StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
+  end
+  object LbDrift: TGuiLabel
+    Left = 278
+    Top = 8
+    Width = 50
+    Height = 25
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Drift'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -19
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object LbDriftValue: TGuiLabel
+    Left = 273
+    Top = 66
+    Width = 60
+    Height = 20
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -16
+    Font.Name = 'Tahoma'
+    Font.Style = []
+  end
+  object DIL: TGuiDialImageList
+    DialImages = <>
+    Left = 16
+    Top = 16
+  end
 end

@@ -91,7 +91,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer); virtual;
+    procedure ProcessBlock(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer); virtual;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleFrames: Integer); virtual;
     function ProcessSample32(Input: Single): Single; virtual;
   end;
 
@@ -120,7 +121,8 @@ type
   public
     constructor Create; override;
     destructor Destroy; override;
-    procedure ProcessBlock(const Input, Output : PDAVDoubleFixedArray; const SampleFrames: Integer); virtual;
+    procedure ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer); virtual;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleFrames: Integer); virtual;
     function ProcessSample64(Input: Double): Double; virtual;
   end;
 
@@ -302,6 +304,12 @@ begin
   until CurrentPosition >= SampleFrames;
 end;
 
+procedure TCustomSpectralEffect32.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleFrames: Integer);
+begin
+ ProcessBlock(Data, Data, SampleFrames);
+end;
+
 function TCustomSpectralEffect32.ProcessSample32(Input: Single): Single;
 begin
  // copy to ring buffer only
@@ -432,6 +440,12 @@ begin
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
+end;
+
+procedure TCustomSpectralEffect64.ProcessBlock64(
+  const Data: PDAVDoubleFixedArray; SampleFrames: Integer);
+begin
+ ProcessBlock(Data, Data, SampleFrames);
 end;
 
 function TCustomSpectralEffect64.ProcessSample64(Input: Double): Double;

@@ -199,6 +199,9 @@ implementation
 uses
   SysUtils, DAV_DspInterpolation;
 
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+
 { TCustomDelayLine }
 
 constructor TCustomDelayLine.Create(const BufferSize: Integer = 0);
@@ -255,7 +258,7 @@ var
   Pos: Integer;
 begin
  if (Index < 0) or (Index >= FBufferSize)
-  then raise Exception.CreateFmt('Index out of bounds(%d)', [Index]);
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 
  Pos := FBufferPos - Index;
  if Pos < 0
@@ -266,10 +269,18 @@ end;
 procedure TCustomDelayLineSamples32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
-  Sample: Integer;
+  Sample : Integer;
+  Temp   : Single;
 begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample32(Data[Sample]);
+ for Sample := 0 to SampleCount - 1 do
+  begin
+   Temp := FBuffer^[FBufferPos];
+   FBuffer^[FBufferPos] := Data[Sample];
+   Data[Sample] := Temp;
+   Inc(FBufferPos);
+   if FBufferPos >= FBufferSize
+    then FBufferPos := 0;
+  end;
 end;
 
 function TCustomDelayLineSamples32.ProcessSample32(Input: Single): Single;
