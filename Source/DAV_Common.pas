@@ -112,9 +112,6 @@ function Largest(const A, B: Double): Double; overload; {$IFDEF SUPPORTS_INLINE}
 function LimitAngle(const Angle: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function LimitAngle(const Angle: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-function Factorial(const Order: Integer): Int64; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function FastFractional(const Value: Single): Single; overload;
 function FastFractional(const Value: Double): Double; overload;
 procedure FastAbs(var Value: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -268,7 +265,7 @@ begin
  T := Swap(X(Value)[1]);
  X(Value)[1] := Swap(X(Value)[0]);
  X(Value)[0] := T;
- result := t;
+ Result := t;
 end;
 
 procedure FlipLong(var Value); overload;
@@ -431,7 +428,7 @@ end;                                                             // e^(x) = 2^(l
 function SqrAmp2dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result := 10 * Log10(Value);
+ Result := 10 * Log10(Value);
 end;
 {$ELSE}
 asm
@@ -445,7 +442,7 @@ end;
 function SqrAmp2dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result := 10 * Log10(Value);
+ Result := 10 * Log10(Value);
 end;
 {$ELSE}
 asm
@@ -459,7 +456,7 @@ end;
 function Amp_to_dB(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result := CTwenty32 * Log10(Value);
+ Result := CTwenty32 * Log10(Value);
 end;
 {$ELSE}
 asm
@@ -473,7 +470,7 @@ end;
 function Amp_to_dB(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result := CTwenty64 * Log10(Value);
+ Result := CTwenty64 * Log10(Value);
 end;
 {$ELSE}
 asm
@@ -614,12 +611,12 @@ end;
 
 function ScaleLinearToLog(const Value: Single; const Min, Max: Single): Single;
 begin
- result := Min * Exp(Value * ln(Max / Min));
+ Result := Min * Exp(Value * ln(Max / Min));
 end;
 
 function ScaleLinearToLog(const Value: Double; const Min, Max: Double): Single; overload;
 begin
- result := Min * Exp(Value * ln(Max / Min));
+ Result := Min * Exp(Value * ln(Max / Min));
 end;
 
 function ScaleLogToLinear(const Value: Single; const Min, Max: Single): Single; overload;
@@ -749,37 +746,10 @@ end;
 
 { Math }
 
-function Factorial(const Order : Integer): Int64;
-var
-  i : Integer;
-begin
- Result := 1;
- for i := 2 to Order
-  do Result := Result * i;
-end;
-
-function Factorial(const Order : Single): Single;
-var
-  i : Integer;
-begin
- Result := 1;
- for i := 2 to Round(Order)
-  do Result := Result * i;
-end;
-
-function Factorial(const Order : Double): Double;
-var
-  i : Integer;
-begin
- Result := 1;
- for i := 2 to round(Order)
-  do Result := Result * i;
-end;
-
 function FastFractional(const Value: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- result := Value - Round(Value - 0.5);
+ Result := Value - Round(Value - 0.5);
 end;
 {$ELSE}
 var i : Integer;
@@ -795,7 +765,7 @@ end;
 function FastFractional(const Value: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- result := Value - Round(Value - 0.5);
+ Result := Value - Round(Value - 0.5);
 end;
 {$ELSE}
 var i : Integer;
@@ -866,13 +836,13 @@ var
   Norm : Single;
 begin
  Norm := Arg1 / Arg2;
- result := (Norm - round(Norm - 0.5)) * Arg2
+ Result := (Norm - round(Norm - 0.5)) * Arg2
 end;
 
 function FastTrunc(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Value - CHalf64);
+ Result := Round(Value - CHalf64);
 end;
 {$ELSE}
 asm
@@ -885,7 +855,7 @@ end;
 function FastTrunc(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Value - CHalf64);
+ Result := Round(Value - CHalf64);
 end;
 {$ELSE}
 asm
@@ -922,7 +892,7 @@ end;
 function FastInt(Sample: Single): Single; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample - 0.5);
+ Result := Round(Sample - 0.5);
 end;
 {$ELSE}
 asm
@@ -935,7 +905,7 @@ end;
 function FastInt(Sample: Double): Double; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample - 0.5);
+ Result := Round(Sample - 0.5);
 end;
 {$ELSE}
 asm
@@ -948,7 +918,7 @@ end;
 function FastRound(Sample: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample);
+ Result := Round(Sample);
 end;
 {$ELSE}
 asm
@@ -961,7 +931,7 @@ end;
 function FastRound(Sample: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- result := Round(Sample);
+ Result := Round(Sample);
 end;
 {$ELSE}
 asm
@@ -1023,11 +993,11 @@ begin MessageBox(0, PAnsiChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
 
 function FloatWithUnit(const Value: Double): string;
 begin
- if Value > 1    then result := FloatToStrF(Value, ffFixed, 6, 3)+ 's' else
- if Value > 1E-3 then result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms' else
+ if Value > 1    then Result := FloatToStrF(Value, ffFixed, 6, 3)+ 's' else
+ if Value > 1E-3 then Result := FloatToStrF(1E3 * Value, ffFixed, 6, 3)+ 'ms' else
  if Value > 1E-6
-  then result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
-  else result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
+  then Result := FloatToStrF(1E6 * Value, ffFixed, 6, 3)+ 'µs'
+  else Result := FloatToStrF(1E9 * Value, ffFixed, 6, 3)+ 'ns'
 end;
 
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
@@ -1061,8 +1031,8 @@ function FastMin(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
  if A > B
-  then result := B
-  else result := A
+  then Result := B
+  else Result := A
 end;
 {$ELSE}
 asm
@@ -1078,8 +1048,8 @@ function FastMax(const A, B: Single) : Single;
 {$IFDEF PUREPASCAL}
 begin
  if A < B
-  then result := B
-  else result := A
+  then Result := B
+  else Result := A
 end;
 {$ELSE}
 asm

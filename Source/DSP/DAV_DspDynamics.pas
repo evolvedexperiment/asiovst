@@ -3005,4 +3005,18 @@ initialization
   CDenorm64  := DAV_Common.CDenorm64;
 {$ENDIF}
 
+  RegisterDspProcessors32([TSimpleDirectGate, TSoftDirectGate,
+    TBrickwallLimiter, TSoftBrickwallLimiter, TLimiter, TRCLimiter,
+    TSoftKneeLimiter, TSimpleSoftKneeLimiter, TClassicGate,
+    TClassicSoftRangeGate, TClassicSoftKneeGate, TAdvancedGate,
+    TSimpleCompressor, TSoftKneeCompressor, TSimpleFeedbackCompressor,
+    TSoftKneeFeedbackCompressor, TSimpleRMSCompressor, TCompressor]);
+
+  RegisterDspProcessors64([TSimpleDirectGate, TSoftDirectGate,
+    TBrickwallLimiter, TSoftBrickwallLimiter, TLimiter, TRCLimiter,
+    TSoftKneeLimiter, TSimpleSoftKneeLimiter, TClassicGate,
+    TClassicSoftRangeGate, TClassicSoftKneeGate, TAdvancedGate,
+    TSimpleCompressor, TSoftKneeCompressor, TSimpleFeedbackCompressor,
+    TSoftKneeFeedbackCompressor, TSimpleRMSCompressor, TCompressor]);
+
 end.

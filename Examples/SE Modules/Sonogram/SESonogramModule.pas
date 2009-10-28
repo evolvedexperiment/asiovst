@@ -36,7 +36,7 @@ interface
 
 uses
   SyncObjs, DAV_Types, DAV_SECommon, DAV_SEModule, DAV_Sonogram,
-  DAV_DspWindowFunctions;
+  DAV_DspWindowFunctions; // DAV_DspWindowFunctionsAdvanced;
 
 type
   TSESonogramModule = class(TSEModuleBase)
@@ -204,7 +204,7 @@ begin
          VariableAddress := @FWindowFunctionIndex;
          Direction       := drIn;
          Datatype        := dtEnum;
-         DatatypeExtra   := 'Rectangle, Triangle, Hanning, Hamming, Blackman, Welch';
+         DatatypeExtra   := 'Rectangle, Triangle, Hanning, Hamming, Blackman, Lanczos, Welch';
          DefaultValue    := 'Blackman';
         end;
    6 : with Properties^ do

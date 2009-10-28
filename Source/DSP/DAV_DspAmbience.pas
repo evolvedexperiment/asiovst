@@ -505,4 +505,8 @@ begin
  FPos := (FPos + 1) and 1023;
 end;
 
+initialization
+  RegisterDspProcessor32(TAmbience);
+  RegisterDspProcessor64(TAmbience);
+
 end.

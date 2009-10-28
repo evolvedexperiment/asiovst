@@ -206,7 +206,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Approximations;
+  Math, SysUtils, DAV_Approximations;
 
 resourcestring
   RCStrAttackTimeInvalid = 'Attack time must be larger than zero!';
@@ -895,7 +895,7 @@ end;
 
 function TLightweightSoftKneeCompressor.GainSample(const Input: Double): Double;
 begin
- result := FGain * FMakeUpGain * Input;
+ Result := FGain * FMakeUpGain * Input;
 end;
 
 procedure TLightweightSoftKneeCompressor.InputSample(const Input: Double);
@@ -911,6 +911,7 @@ begin
 
  Temp  := FRatioFactor * (FastLog2ContinousError5(FPeak) - FThrshlddB);
  FGain := FastPower2MinError3(Temp - FastSqrtBab2(sqr(Temp) + FKneeFactor));
+ assert(not IsNan(FGain));
 end;
 {$ELSE}
 var
@@ -1739,5 +1740,17 @@ begin
  InputSample(Input);
  result := FGain * FMakeUpGain * Input;
 end;
+
+initialization
+  RegisterDspProcessors32([TLightweightSoftKneeLimiter,
+    TLightweightSoftKneeFeedbackLikeLimiter, TLightweightSoftKneeCompressor,
+    TLightweightSoftKneeUpwardCompressor,
+    TLightweightSoftKneeFeedbackCompressor,
+    TLightweightSoftKneeFeedbackLikeCompressor]);
+  RegisterDspProcessors64([TLightweightSoftKneeLimiter,
+    TLightweightSoftKneeFeedbackLikeLimiter, TLightweightSoftKneeCompressor,
+    TLightweightSoftKneeUpwardCompressor,
+    TLightweightSoftKneeFeedbackCompressor,
+    TLightweightSoftKneeFeedbackLikeCompressor]);
 
 end.

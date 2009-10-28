@@ -64,7 +64,7 @@ type
     property Order: Integer read GetOrder write SetOrder;
   end;
 
-  TBarberpoleFilter = class(TCustomBarberpoleFilter)
+  TBarberpoleFilter = class(TCustomBarberpoleFilter, IDspProcessor32)
   published
     property Frequency;
     property Order;
@@ -304,5 +304,8 @@ begin
  inherited;
  FZCTuner.ProcessSample32(FBarberpoleFilter.ProcessSample32(Input));
 end;
+
+initialization
+  RegisterDspProcessor32(TBarberpoleFilter);
 
 end.

@@ -37,14 +37,20 @@ interface
 uses
   DAV_Types, DAV_Complex;
 
-procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle; SampleFrames: Integer); overload;
-procedure MixBuffers_FPU(InBuffer: PDouble; MixBuffer: PDouble; SampleFrames: Integer); overload;
-procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
-procedure ComplexMultiply(const InBuffer, Filter: PDAVComplexSingleFixedArray;
-  const SampleFrames: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
-procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexDoubleFixedArray;
-  const SampleFrames: Integer); overload;
-procedure ComplexMultiply(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
+procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle;
+  SampleFrames: Integer); overload;
+procedure MixBuffers_FPU(InBuffer: PDouble; MixBuffer: PDouble;
+  SampleFrames: Integer); overload;
+
+procedure ComplexMultiplyBlock(const InplaceBuffer,
+  Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ComplexMultiplyBlock(const InBuffer,
+  Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer;
+  const OutBuffer: PDAVComplexSingleFixedArray); overload;
+procedure ComplexMultiplyBlock(const InplaceBuffer,
+  Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer); overload;
+procedure ComplexMultiplyBlock(const InBuffer,
+  Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
   const OutBuffer: PDAVComplexDoubleFixedArray); overload;
 
 function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
@@ -79,7 +85,7 @@ asm
   loop @Start
 end;
 
-procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ComplexMultiplyBlock(const InplaceBuffer, Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
 asm
  // DC
  fld   [eax].Single
@@ -123,7 +129,7 @@ asm
  fstp  [eax].Single
 end;
 
-procedure ComplexMultiply(const InBuffer, Filter: PDAVComplexSingleFixedArray;
+procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexSingleFixedArray;
   const SampleFrames: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
 asm
  push ebx
@@ -176,7 +182,7 @@ asm
  pop ebx
 end;
 
-procedure ComplexMultiply(const InplaceBuffer, Filter: PDAVComplexDoubleFixedArray;
+procedure ComplexMultiplyBlock(const InplaceBuffer, Filter: PDAVComplexDoubleFixedArray;
   const SampleFrames: Integer); overload;
 asm
  // DC
@@ -221,7 +227,7 @@ asm
  fstp  [eax].Double
 end;
 
-procedure ComplexMultiply(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
+procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
   const OutBuffer: PDAVComplexDoubleFixedArray); overload;
 asm
  push ebx

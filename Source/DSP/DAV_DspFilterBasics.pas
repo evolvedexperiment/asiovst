@@ -35,10 +35,11 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Complex, DAV_Classes, DAV_DspFilter;
+  Classes, DAV_Classes, DAV_Common, DAV_Complex, DAV_DspFilter;
 
 type
-  TBasicGainFilter = class(TBiquadIIRFilter)
+  TBasicGainFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   public
@@ -46,47 +47,56 @@ type
     function ProcessSampleASM: Double; override;
   end;
 
-  TBasicPeakFilter = class(TBiquadIIRFilter)
+  TBasicPeakFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicAllpassFilter = class(TBiquadIIRFilter)
+  TBasicAllpassFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicLowShelfFilter = class(TBiquadIIRFilter)
+  TBasicLowShelfFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicLowShelfAFilter = class(TBiquadIIRFilter)
+  TBasicLowShelfAFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicLowShelfBFilter = class(TBiquadIIRFilter)
+  TBasicLowShelfBFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicHighShelfFilter = class(TBiquadIIRFilter)
+  TBasicHighShelfFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicHighShelfAFilter = class(TBiquadIIRFilter)
+  TBasicHighShelfAFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicHighShelfBFilter = class(TBiquadIIRFilter)
+  TBasicHighShelfBFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicHighcutFilter = class(TBiquadIIRFilter)
+  TBasicHighcutFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   private
   protected
     procedure CalculateCoefficients; override;
@@ -96,7 +106,8 @@ type
       out Imaginary: Double); override;
   end;
 
-  TBasicLowcutFilter = class(TBiquadIIRFilter)
+  TBasicLowcutFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   public
@@ -107,12 +118,14 @@ type
   TBasicLowpassFilter = class(TBasicHighcutFilter);
   TBasicHighpassFilter = class(TBasicLowcutFilter);
 
-  TBasicBandpassFilter = class(TBiquadIIRFilter)
+  TBasicBandpassFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
 
-  TBasicNotchFilter = class(TBiquadIIRFilter)
+  TBasicNotchFilter = class(TBiquadIIRFilter, IDspProcessor32,
+    IDspProcessor64)
   protected
     procedure CalculateCoefficients; override;
   end;
@@ -395,5 +408,17 @@ begin
   FNominator[1] := FDenominator[1] * a;
   FNominator[2] := FNominator[0];
 end;
+
+initialization
+  RegisterDspProcessors32([TBasicGainFilter, TBasicPeakFilter,
+    TBasicAllpassFilter, TBasicLowShelfFilter, TBasicLowShelfAFilter,
+    TBasicLowShelfBFilter, TBasicHighShelfAFilter, TBasicHighShelfBFilter,
+    TBasicHighcutFilter, TBasicLowcutFilter, TBasicBandpassFilter,
+    TBasicNotchFilter]);
+  RegisterDspProcessors64([TBasicGainFilter, TBasicPeakFilter,
+    TBasicAllpassFilter, TBasicLowShelfFilter, TBasicLowShelfAFilter,
+    TBasicLowShelfBFilter, TBasicHighShelfAFilter, TBasicHighShelfBFilter,
+    TBasicHighcutFilter, TBasicLowcutFilter, TBasicBandpassFilter,
+    TBasicNotchFilter]);
 
 end.

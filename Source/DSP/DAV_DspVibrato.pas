@@ -357,4 +357,8 @@ begin
   end;
 end;
 
+initialization
+  RegisterDspProcessor32(TDspVibrato32);
+  RegisterDspProcessor64(TDspVibrato64);
+
 end.

@@ -340,4 +340,7 @@ asm
                                                  // hence duplicate
 end;
 
+initialization
+  RegisterDspProcessors32([TFreeverbAllpass, TFreeverbCombFilter]);
+
 end.

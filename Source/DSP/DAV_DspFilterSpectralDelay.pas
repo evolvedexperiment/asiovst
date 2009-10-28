@@ -216,4 +216,8 @@ begin
   do FFilters[Filter].Frequency := Frequency;
 end;
 
+initialization
+  RegisterDspProcessor32(TSpectralDelayFilter);
+  RegisterDspProcessor64(TSpectralDelayFilter);
+
 end.

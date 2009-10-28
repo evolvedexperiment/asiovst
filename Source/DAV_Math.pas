@@ -79,6 +79,8 @@ function Sinc(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$E
 
 function EvaluatePolynomial(Coefficients: array of Single; Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function EvaluatePolynomial(Coefficients: array of Double; Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
 const
   CTwoMulTwo2Neg32   : Single = ((2.0/$10000) / $10000);  // 2^-32
@@ -482,6 +484,16 @@ begin
     Result := Result * Input + Coefficients[i];
     inc(i);
   end;
+end;
+
+function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ Result := EvaluatePolynomial(Nominator, Input) / EvaluatePolynomial(Denominator, Input);
+end;
+
+function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+begin
+ Result := EvaluatePolynomial(Nominator, Input) / EvaluatePolynomial(Denominator, Input);
 end;
 
 procedure InitConstants;

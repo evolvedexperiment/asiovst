@@ -481,4 +481,10 @@ begin
  FLfo.CalculateNextSample;
 end;
 
+initialization
+  RegisterDspProcessors32([TAutoRingModulator32, TAnalogAutoRingModulator32,
+    TLightweightAnalogAutoRingModulator32]);
+  RegisterDspProcessors64([TAutoRingModulator64, TAnalogAutoRingModulator64,
+    TLightweightAnalogAutoRingModulator64]);
+
 end.

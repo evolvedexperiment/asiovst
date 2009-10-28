@@ -61,7 +61,7 @@ type
     property FFTSize: Integer read FFFTSize;
   end;
 
-  TConvolution32 = class(TCustomConvolution)
+  TConvolution32 = class(TCustomConvolution, IDspProcessor32)
   private
     {$IFDEF Use_IPPS}
     function GetFft : TFftReal2ComplexIPPSFloat32;
@@ -106,6 +106,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output : PDAVSingleFixedArray; const SampleFrames: Integer); virtual;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single; virtual;
     procedure LoadImpulseResponse(const Data: PDAVSingleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVSingleDynArray); overload; virtual;
@@ -115,7 +116,7 @@ type
     property IRSize: Integer read FIRSize write SetIRSize;
   end;
 
-  TConvolution64 = class(TCustomConvolution)
+  TConvolution64 = class(TCustomConvolution, IDspProcessor64)
   private
     {$IFDEF Use_IPPS}
     function GetFft : TFftReal2ComplexIPPSFloat64;
@@ -157,6 +158,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output : PDAVDoubleFixedArray; const SampleFrames: Integer); virtual;
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double; virtual;
     procedure LoadImpulseResponse(const Data: PDAVDoubleFixedArray; const SampleFrames: Integer); overload; virtual;
     procedure LoadImpulseResponse(const Data: TDAVDoubleDynArray); overload; virtual;
@@ -526,10 +528,10 @@ begin
    if sz < FFFTSizeHalf then
     begin
      // build temporary IR part
-     move(FImpulseResponse^[Blocks * FFFTSizeHalf], TempIR^[FFFTSizeHalf], sz * SizeOf(Single));
+     Move(FImpulseResponse^[Blocks * FFFTSizeHalf], TempIR^[FFFTSizeHalf], sz * SizeOf(Single));
      FillChar(TempIR^[FFFTSizeHalf + sz], (FFFTSizeHalf - sz) * SizeOf(Single), 0);
     end
-   else move(FImpulseResponse^[Blocks * FFFTSizeHalf], TempIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Single));
+   else Move(FImpulseResponse^[Blocks * FFFTSizeHalf], TempIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Single));
 
    sz := sz - FFFTSizeHalf;
 
@@ -624,10 +626,10 @@ begin
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
-   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+   Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
 
-   ComplexMultiply(PDAVComplexSingleFixedArray(@FConvolved^[0]),
-                   PDAVComplexSingleFixedArray(@FFilterFreqs[Block]^[0]), Half);
+   ComplexMultiplyBlock(PDAVComplexSingleFixedArray(@FConvolved^[0]),
+     PDAVComplexSingleFixedArray(@FFilterFreqs[Block]^[0]), Half);
 
    FFft.PerformIFFT(PDAVComplexSingleFixedArray(@FConvolved^[0]), FConvolvedTime);
 
@@ -673,6 +675,12 @@ begin
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
+end;
+
+procedure TConvolution32.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+begin
+ ProcessBlock(Data, Data, SampleCount);
 end;
 
 function TConvolution32.ProcessSample32(Input: Single): Single;
@@ -815,7 +823,7 @@ begin
    if sz > FFFTSizeHalf then sz := FFFTSizeHalf;
 
    // build temporary IR part
-   move(FImpulseResponse^[Blocks * FFFTSizeHalf], TempIR^[0], sz * SizeOf(Double));
+   Move(FImpulseResponse^[Blocks * FFFTSizeHalf], TempIR^[0], sz * SizeOf(Double));
    FillChar(TempIR^[sz], (FFFTSize - sz) * SizeOf(Double), 0);
 
    // perform FFT
@@ -900,10 +908,10 @@ begin
  for Block := 0 to FFreqRespBlockCount - 1 do
   begin
    // make a copy of the frequency respose
-   move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+   Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
 
-   ComplexMultiply(PDAVComplexDoubleFixedArray(@FConvolved^[0]),
-                   PDAVComplexDoubleFixedArray(@FFilterFreqs[Block]^[0]), Half);
+   ComplexMultiplyBlock(PDAVComplexDoubleFixedArray(@FConvolved^[0]),
+     PDAVComplexDoubleFixedArray(@FFilterFreqs[Block]^[0]), Half);
 
    FFft.PerformIFFT(PDAVComplexDoubleFixedArray(FConvolved), FConvolvedTime);
 
@@ -949,6 +957,12 @@ begin
     FBlockPosition := 0;
    end;
   until CurrentPosition >= SampleFrames;
+end;
+
+procedure TConvolution64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+begin
+ ProcessBlock(Data, Data, SampleCount);
 end;
 
 function TConvolution64.ProcessSample64(Input: Double): Double;
@@ -1106,16 +1120,15 @@ begin
    if Length(FIRSpectrums) = 1 then Dest := FSignalFreq
     else
      begin
-      move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+      Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
       Dest := FConvolved;
      end;
 
    for Block := 0 to Length(FIRSpectrums) - 1 do
     begin
      // complex multiply with frequency response
-     ComplexMultiply(PDAVComplexSingleFixedArray(@FSignalFreq^[0]),
-                     PDAVComplexSingleFixedArray(@FIRSpectrums[Block]^[0]),
-                     Half, Dest);
+     ComplexMultiplyBlock(PDAVComplexSingleFixedArray(@FSignalFreq^[0]),
+       PDAVComplexSingleFixedArray(@FIRSpectrums[Block]^[0]), Half, Dest);
 
      // transfer to frequency domain
      FFft.PerformIFFT(Dest, FConvolvedTime);
@@ -1661,16 +1674,15 @@ begin
    if Length(FIRSpectrums) = 1 then Dest := FSignalFreq
     else
      begin
-      move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+      Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
       Dest := FConvolved;
      end;
 
    for Block := 0 to Length(FIRSpectrums) - 1 do
     begin
      // complex multiply with frequency response
-     ComplexMultiply(PDAVComplexDoubleFixedArray(@FSignalFreq^[0]),
-                     PDAVComplexDoubleFixedArray(@FIRSpectrums[Block]^[0]),
-                     Half, Dest);
+     ComplexMultiplyBlock(PDAVComplexDoubleFixedArray(@FSignalFreq^[0]),
+       PDAVComplexDoubleFixedArray(@FIRSpectrums[Block]^[0]), Half, Dest);
 
      // transfer to frequency domain
      FFft.PerformIFFT(Dest, FConvolvedTime);
@@ -2054,5 +2066,9 @@ begin
    end;
   until CurrentPosition >= SampleFrames;
 end;
+
+initialization
+  RegisterDspProcessor32(TConvolution32);
+  RegisterDspProcessor64(TConvolution64);
 
 end.

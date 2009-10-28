@@ -233,4 +233,8 @@ begin
  Result := FGains[1] * Low + FGains[2] * High - FGains[3] * Harmonic;
 end;
 
+initialization
+  RegisterDspProcessor32(TExciter);
+  RegisterDspProcessor64(TExciter);
+
 end.

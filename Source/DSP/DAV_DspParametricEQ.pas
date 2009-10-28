@@ -41,17 +41,15 @@ type
   TCustomParametricEQ = class(TCustomFilter)
   private
     FBandCount : Integer;
-    procedure SetSampleRate(const Value: Double);
     procedure SetBands(const Value: Integer);
     function GetFilter(Index: Integer): TBiquadIIRFilter;
     procedure BandCountChanged;
   protected
-    FSampleRate  : Double;
     FFilterArray : array of TBiquadIIRFilter;
-    procedure SampleRateChanged; virtual;
+    procedure SampleRateChanged; override;
     procedure OnChangeEventHandler(Sender: TObject);
   public
-    constructor Create; virtual;
+    constructor Create; override;
     destructor Destroy; override;
     function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
@@ -64,8 +62,13 @@ type
     procedure Reset; override;
 
     property Bands: Integer read FBandCount write SetBands;
-    property SampleRate: Double read FSampleRate write SetSampleRate;
     property Filter[Index: Integer]: TBiquadIIRFilter read GetFilter;
+  end;
+
+  TParametricEQ = class(TCustomParametricEQ)
+  published
+    property Bands;
+    property SampleRate;
   end;
 
 implementation
@@ -80,7 +83,7 @@ resourcestring
 
 constructor TCustomParametricEQ.Create;
 begin
- FSampleRate := 44100;
+ inherited;
  FBandCount := 3;
  BandCountChanged;
 end;
@@ -163,15 +166,6 @@ begin
   end;
 end;
 
-procedure TCustomParametricEQ.SetSampleRate(const Value: Double);
-begin
- if FSampleRate <> Value then
-  begin
-   FSampleRate := Value;
-   SampleRateChanged;
-  end;
-end;
-
 procedure TCustomParametricEQ.SampleRateChanged;
 var
   Band : Integer;
@@ -236,5 +230,9 @@ begin
  for i := 0 to Length(FFilterArray) - 1
   do FFilterArray[i].ResetStatesInt64;
 end;
+
+initialization
+  RegisterDspProcessor32(TParametricEQ);
+  RegisterDspProcessor64(TParametricEQ);
 
 end.

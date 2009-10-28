@@ -40,6 +40,21 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Window Function'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1.000000000000000000
+      ReportVST2Properties = True
+      ShortLabel = 'Window'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterWindowFunctionsChange
+      OnCustomParameterDisplay = ParameterWindowFunctionsDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

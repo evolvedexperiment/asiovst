@@ -132,7 +132,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Math, DAV_Approximations;
+  SysUtils, DAV_Classes, DAV_Math, DAV_Approximations;
 
 { TCustomMoogFilter }
 
@@ -389,5 +389,13 @@ begin
 
  Result := FScaleFactor * FLastSample[3];
 end;
+
+initialization
+  RegisterDspProcessors32([TSimpleClassicMoogFilter,
+    TLightweightSimpleClassicMoogFilter, TImprovedClassicMoogFilter,
+    TLightweightImprovedClassicMoogFilter]);
+  RegisterDspProcessors64([TSimpleClassicMoogFilter,
+    TLightweightSimpleClassicMoogFilter, TImprovedClassicMoogFilter,
+    TLightweightImprovedClassicMoogFilter]);
 
 end.

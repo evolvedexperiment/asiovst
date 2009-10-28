@@ -377,4 +377,16 @@ begin
   FNominator[2] := FNominator[0];
 end;
 
+initialization
+  RegisterDspProcessors32([TAutomatableGainFilter, TAutomatablePeakFilter,
+    TAutomatableAllpassFilter, TAutomatableLowShelfFilter, TAutomatableLowShelfAFilter,
+    TAutomatableLowShelfBFilter, TAutomatableHighShelfAFilter, TAutomatableHighShelfBFilter,
+    TAutomatableHighcutFilter, TAutomatableLowcutFilter, TAutomatableBandpassFilter,
+    TAutomatableNotchFilter]);
+  RegisterDspProcessors64([TAutomatableGainFilter, TAutomatablePeakFilter,
+    TAutomatableAllpassFilter, TAutomatableLowShelfFilter, TAutomatableLowShelfAFilter,
+    TAutomatableLowShelfBFilter, TAutomatableHighShelfAFilter, TAutomatableHighShelfBFilter,
+    TAutomatableHighcutFilter, TAutomatableLowcutFilter, TAutomatableBandpassFilter,
+    TAutomatableNotchFilter]);
+
 end.

@@ -570,4 +570,8 @@ begin
   end;
 end;
 
+initialization
+  RegisterDspProcessor32(TDspBarberpole32);
+  RegisterDspProcessor64(TDspBarberpole64);
+
 end.

@@ -9,6 +9,14 @@ interface
 uses
   Classes, DAV_Types, DAV_SampleRateSource;
 
+const
+  CGUIDDspSink32 : TGUID = '{BF61746A-29F6-445C-A051-1FC0F75F9F3F}';
+  CGUIDDspSink64 : TGUID = '{A636DBE8-FDFD-4B2C-ADC7-AC7A0F1F5975}';
+  CGUIDDspProcessor32 : TGUID = '{7D9E5AC0-5AFA-4C18-9015-84F5C9338C0C}';
+  CGUIDDspProcessor64 : TGUID = '{A331B34E-EFEB-42D5-8DBE-4120C7902E9E}';
+  CGUIDDspGenerator32 : TGUID = '{46C2D222-361E-40E6-A21B-C05F6FFD4327}';
+  CGUIDDspGenerator64 : TGUID = '{4701B987-CE0F-4E7A-BE9D-BA3899114EC0}';
+
 type
   // TNotifiablePersistent
   TNotifiablePersistent = class(TInterfacedPersistent)
@@ -26,6 +34,7 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
+  TDspPersistentClass = class of TDspPersistent;
   TDspPersistent = class(TNotifiablePersistent);
 
   TDspSampleRatePersistent = class(TDspPersistent)
@@ -44,29 +53,35 @@ type
 
   {.$IFDEF DELPHI7_UP}
   IDspSink32 = interface(IInterface)
+    ['{BF61746A-29F6-445C-A051-1FC0F75F9F3F}']
     procedure ProcessSample32(Input: Single);
   end;
 
   IDspSink64 = interface(IInterface)
+    ['{A636DBE8-FDFD-4B2C-ADC7-AC7A0F1F5975}'] // unique GUID
     procedure ProcessSample64(Input: Double);
   end;
 
   IDspProcessor32 = interface(IInterface)
+    ['{7D9E5AC0-5AFA-4C18-9015-84F5C9338C0C}'] // unique GUID
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
   end;
 
   IDspProcessor64 = interface(IInterface)
+    ['{A331B34E-EFEB-42D5-8DBE-4120C7902E9E}'] // unique GUID
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
   end;
 
   IDspGenerator32 = interface(IInterface)
+    ['{46C2D222-361E-40E6-A21B-C05F6FFD4327}'] // unique GUID
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32: Single;
   end;
 
   IDspGenerator64 = interface(IInterface)
+    ['{4701B987-CE0F-4E7A-BE9D-BA3899114EC0}'] // unique GUID
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64: Double;
   end;
@@ -129,6 +144,14 @@ type
     procedure NotifyChange(Sender : TObject); virtual;
   end;
 
+procedure RegisterDspProcessor32(AClass: TDspPersistentClass);
+procedure RegisterDspProcessor64(AClass: TDspPersistentClass);
+procedure RegisterDspProcessors32(AClasses: array of TDspPersistentClass);
+procedure RegisterDspProcessors64(AClasses: array of TDspPersistentClass);
+
+var
+  GDspProcessors32 : array of TDspPersistentClass;
+  GDspProcessors64 : array of TDspPersistentClass;
 
 implementation
 
@@ -137,6 +160,9 @@ uses
 
 resourcestring
   RCStrInvalidSamplerate = 'Invalid Samplerate!';
+  RCStrDspProcessorDuplicate = 'DSP Processor registered twice! (%s)';
+  RCStrNoIDspProcessor32 = 'Class %s does not support IDspProcessor32';
+  RCStrNoIDspProcessor64 = 'Class %s does not support IDspProcessor64';
 
 { TNotifiablePersistent }
 
@@ -345,6 +371,86 @@ begin
  if Assigned(Owner) then
  if (Owner is TDAVUpdateAbleComponent) then
     (Owner as TDAVUpdateAbleComponent).NotifyChange(Self);
+end;
+
+function CheckDspProcessor32Class(AClass: TDspPersistentClass): Boolean;
+var
+  i : Integer;
+begin
+ try
+  Result := True;
+
+  // check if file format is already registered
+  for i := 0 to Length(GDspProcessors32) - 1 do
+   if GDspProcessors32[i] = AClass
+    then raise Exception.CreateFmt(RCStrDspProcessorDuplicate, [AClass.ClassName]);
+
+(*
+  // check if the class supports the IDspProcessor32 interface
+  if not Supports(AClass, CGUIDDspProcessor32)
+   then raise Exception.CreateFmt(RCStrNoIDspProcessor32, [AClass.ClassName]);
+*)
+ except
+  Result := False;
+ end;
+end;
+
+function CheckDspProcessor64Class(AClass: TDspPersistentClass): Boolean;
+var
+  i : Integer;
+begin
+ try
+  Result := True;
+
+  // check if file format is already registered
+  for i := 0 to Length(GDspProcessors64) - 1 do
+   if GDspProcessors64[i] = AClass
+    then raise Exception.CreateFmt(RCStrDspProcessorDuplicate, [AClass.ClassName]);
+
+(*
+  // check if the class supports the IDspProcessor64 interface
+  if not Supports(AClass, CGUIDDspProcessor64)
+   then raise Exception.CreateFmt(RCStrNoIDspProcessor64, [AClass.ClassName]);
+*)
+ except
+  Result := False;
+ end;
+end;
+
+procedure RegisterDspProcessor32(AClass: TDspPersistentClass);
+begin
+ Assert(CheckDspProcessor32Class(AClass));
+
+ // add file format to list
+ SetLength(GDspProcessors32, Length(GDspProcessors32) + 1);
+ GDspProcessors32[Length(GDspProcessors32) - 1] := AClass;
+end;
+
+procedure RegisterDspProcessor64(AClass: TDspPersistentClass);
+var
+  i : Integer;
+begin
+ Assert(CheckDspProcessor64Class(AClass));
+
+ // add file format to list
+ SetLength(GDspProcessors64, Length(GDspProcessors64) + 1);
+ GDspProcessors64[Length(GDspProcessors64) - 1] := AClass;
+end;
+
+procedure RegisterDspProcessors32(AClasses: array of TDspPersistentClass);
+var
+  i : Integer;
+begin
+ for i := 0 to Length(AClasses) - 1
+  do RegisterDspProcessor32(AClasses[i]);
+end;
+
+procedure RegisterDspProcessors64(AClasses: array of TDspPersistentClass);
+var
+  i : Integer;
+begin
+ for i := 0 to Length(AClasses) - 1
+  do RegisterDspProcessor64(AClasses[i]);
 end;
 
 end.

@@ -214,7 +214,7 @@ var
   Half    : Integer;
 begin
  while FSemaphore > 0 do;
- inc(FSemaphore);
+ Inc(FSemaphore);
  try
   Half := BlockModeSize div 2;
   for Channel := 0 to numOutputs - 1 do
@@ -253,7 +253,7 @@ begin
        Bin := 0;
        PDAVSingleFixedArray(FSignalFreq)^[Bin] :=
          PDAVSingleFixedArray(FFilterFreq)^[Bin] * PDAVSingleFixedArray(FSignalFreq)^[Bin];
-       inc(Bin);
+       Inc(Bin);
 
        // inbetween...
        while Bin < Half do
@@ -263,7 +263,7 @@ begin
            PDAVSingleFixedArray(FSignalFreq)^[Bin + Half],
            PDAVSingleFixedArray(FFilterFreq)^[Bin],
            PDAVSingleFixedArray(FFilterFreq)^[Bin + Half]);
-         inc(Bin);
+         Inc(Bin);
         end;
 
        // Nyquist
@@ -290,7 +290,7 @@ begin
     {$ENDIF}{$ENDIF}
    end;
  finally
-  dec(FSemaphore);
+  Dec(FSemaphore);
  end;
 end;
 

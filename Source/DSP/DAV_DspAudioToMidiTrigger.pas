@@ -90,7 +90,8 @@ type
     property OnTrigger: TTriggerNotifyEvent read FOnTrigger write FOnTrigger;
   end;
 
-  TAudio2MidiTrigger = class(TCustomAudio2MidiTrigger)
+  TAudio2MidiTrigger = class(TCustomAudio2MidiTrigger, IDspProcessor32,
+    IDspProcessor64)
   published
     property Flags;       
     property Interval;    // [s]
@@ -323,5 +324,9 @@ begin
  if not (amFilterOutput in FFlags)
   then Result := Input;
 end;
+
+initialization
+  RegisterDspProcessor32(TAudio2MidiTrigger);
+  RegisterDspProcessor64(TAudio2MidiTrigger);
 
 end.

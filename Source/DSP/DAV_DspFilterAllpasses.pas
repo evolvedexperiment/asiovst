@@ -241,4 +241,8 @@ begin
  FState[1, 1] := 0;
 end;
 
+initialization
+  RegisterDspProcessors32([TThiranAllpass1stOrder, TThiranAllpass2ndOrder]);
+  RegisterDspProcessors64([TThiranAllpass1stOrder, TThiranAllpass2ndOrder]);
+
 end.

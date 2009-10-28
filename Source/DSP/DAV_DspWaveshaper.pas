@@ -536,4 +536,7 @@ begin
   end;
 end;
 
+initialization
+  RegisterDspProcessor64(TChebyshevWaveshaper);
+
 end.

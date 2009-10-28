@@ -577,4 +577,8 @@ begin
    end;
 end;
 
+initialization
+  RegisterDspProcessors32([TFractionalDelayAllpass, TDspGranularPitchShifter32]);
+  RegisterDspProcessors64([TFractionalDelayAllpass, TDspGranularPitchShifter64]);
+
 end.

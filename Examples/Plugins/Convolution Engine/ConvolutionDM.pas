@@ -61,7 +61,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, ConvolutionGUI;
+  Math, DAV_Common, DAV_Math, ConvolutionGUI;
 
 procedure TConvolutionDataModule.VSTModuleCreate(Sender: TObject);
 begin

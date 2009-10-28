@@ -741,4 +741,8 @@ begin
 // result := Harmonic;
 end;
 
+initialization
+  RegisterDspProcessors32([TDownsampledHarmonicBass, TLinkwitzBass,
+    TResurrectionBass]);
+
 end.

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspWindowing;
+  Classes, DAV_Classes, DAV_Types, DAV_Complex, DAV_DspWindowing;
 
 type
   TWindowSlope  = (wsLeft, wsSymmetric, wsRight);
@@ -47,7 +47,7 @@ type
   TCosSymmetricLoop32 = procedure (Data: PDAVSingleFixedArray; var ParamRec: TParameterRecord; SampleCount : Integer; EndAdr : PDAVSingleFixedArray);
   TCosSymmetricLoop64 = procedure (Data: PDAVDoubleFixedArray; var ParamRec: TParameterRecord; SampleCount : Integer; EndAdr : PDAVDoubleFixedArray);
 
-  TCustomWindowFunction = class(TPersistent)
+  TCustomWindowFunction = class(TNotifiablePersistent)
   private
     procedure SetWinLength(Value: Integer);
     procedure SetWinStart(Value: Integer);
@@ -2722,6 +2722,6 @@ end;
 initialization
   RegisterWindowFunctions([TWindowFunctionRectangle, TWindowFunctionTriangle,
     TWindowFunctionHanning, TWindowFunctionHamming, TWindowFunctionBlackman,
-    TWindowFunctionWelch]);
+    TWindowFunctionLanczos, TWindowFunctionWelch]);
 
 end.

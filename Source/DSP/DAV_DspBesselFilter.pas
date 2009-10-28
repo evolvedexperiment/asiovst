@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_DspFilter;
+  Classes, DAV_Classes, DAV_Common, DAV_DspFilter;
 
 type
   TCustomBesselFilter = class(TCustomOrderFilter)
@@ -517,5 +517,9 @@ asm
  fstp [self.FState + ecx * 8 - 8].Double
 end;
 {$ENDIF}
+
+initialization
+  RegisterDspProcessors32([TBesselLowpassFilter, TBesselHighpassFilter]);
+  RegisterDspProcessors64([TBesselLowpassFilter, TBesselHighpassFilter]);
 
 end.

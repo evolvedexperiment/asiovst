@@ -498,4 +498,8 @@ begin
   end;
 end;
 
+initialization
+  RegisterDspProcessor32(TModDelay32);
+  RegisterDspProcessor64(TModDelay64);
+
 end.

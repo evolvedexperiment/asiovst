@@ -375,4 +375,7 @@ begin
  ProcessSample(Left, Right, Left, Right);
 end;
 
+initialization
+  RegisterDspProcessor32(TMonoTransientProcessor);
+
 end.

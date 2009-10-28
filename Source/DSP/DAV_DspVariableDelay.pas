@@ -335,4 +335,8 @@ begin
  FAllpassFilter.SampleRate := SampleRate;
 end;
 
+initialization
+  RegisterDspProcessors32([TVariableDelay32Linear, TVariableDelay32Hermite,
+    TVariableDelay32Allpass]);
+
 end.

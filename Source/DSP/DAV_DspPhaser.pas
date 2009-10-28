@@ -355,4 +355,7 @@ begin
  Result := FMasterAllPass.FStages;
 end;
 
+initialization
+  RegisterDspProcessors32([TMasterAllPass, TPhaser]);
+
 end.

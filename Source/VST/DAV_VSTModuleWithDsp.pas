@@ -256,7 +256,7 @@ begin
     for Channel := 0 to numOutputs - 1 do Move(FBlockOutBuffer32[Channel, FBlockPosition], PSingle(@Outputs[Channel, CurrentPosition])^, (SampleFrames - CurrentPosition) * SizeOf(Single));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
-    CurrentPosition := SampleFrames;
+    Exit;
    end
   else
    begin

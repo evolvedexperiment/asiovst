@@ -136,4 +136,8 @@ begin
   end;
 end;
 
+initialization
+  RegisterDspProcessor32(TOcatveDivider);
+  RegisterDspProcessor64(TOcatveDivider);
+
 end.

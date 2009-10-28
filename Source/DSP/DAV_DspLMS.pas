@@ -35,11 +35,11 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes;
+  Classes, DAV_Types, DAV_Classes;
 
 type
-  TLMS = class(TDspPersistent)
-  protected
+  TLMS = class(TDspPersistent, IDspProcessor32)
+  private
     FCoeffs   : array[0..7] of Double;
     FHistory  : array[0..15] of Single;
     FMu       : Double;
@@ -50,7 +50,8 @@ type
     procedure SetMu(const Value: Double);
   public
     constructor Create;
-    function Process(const Input: Single): Single;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    function ProcessSample32(Input: Single): Single;
   published
     property Mu: Double read FMu write SetMu;
     property DeltaFactor: Single read FDeltaMul write FDeltaMul;
@@ -82,7 +83,7 @@ begin
   end;
 end;
 
-function TLMS.Process(const Input: Single): Single;
+function TLMS.ProcessSample32(Input: Single): Single;
 var
   theta: Double;
 begin
@@ -120,5 +121,17 @@ begin
   FHistory[FHistPos] := Input;
   Result := FDeltaMul * FDelta + FXVol * Result;
 end;
+
+procedure TLMS.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+initialization
+  RegisterDspProcessor32(TLMS);
 
 end.

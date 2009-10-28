@@ -793,4 +793,8 @@ begin
  // nothing here yet
 end;
 
+initialization
+  RegisterDspProcessor32(TDspFDNReverb32);
+//  RegisterDspProcessor64(TDspFDNReverb64);
+
 end.

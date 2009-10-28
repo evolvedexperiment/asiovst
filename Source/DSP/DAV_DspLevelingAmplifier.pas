@@ -383,4 +383,7 @@ begin
  FGain := TranslatePeakToGain(FPeak);
 end;
 
+initialization
+  RegisterDspProcessors64([TLevelingAmplifier, TLevelingAmplifierProgramDependentRelease]);
+
 end.

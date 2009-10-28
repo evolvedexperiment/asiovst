@@ -35,11 +35,12 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Complex, DAV_DspFilter;
+  Classes, DAV_Classes, DAV_Complex, DAV_DspFilter;
 
 type
   TCustomButterworthFilterClass = class of TCustomButterworthFilter;
-  TCustomButterworthFilter = class(TCustomOrderFilter)
+  TCustomButterworthFilter = class(TCustomOrderFilter, IDspProcessor32,
+    IDspProcessor64)
   private
     procedure SetDownsamplePower(Value: Integer);
   protected
@@ -1390,5 +1391,14 @@ begin
 
  Result := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
 end;
+
+initialization
+  RegisterDspProcessors32([TButterworthHighPassFilter,
+    TButterworthLowPassFilter, TButterworthLowPassFilterAutomatable,
+    TButterworthHighPassFilterAutomatable]);
+
+  RegisterDspProcessors64([TButterworthHighPassFilter,
+    TButterworthLowPassFilter, TButterworthLowPassFilterAutomatable,
+    TButterworthHighPassFilterAutomatable]);
 
 end.

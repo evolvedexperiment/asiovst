@@ -120,7 +120,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Common, DAV_Math, DAV_Approximations;
+  Math, SysUtils, DAV_Classes, DAV_Common, DAV_Math, DAV_Approximations;
 
 const
   CHalf32 : Single = 0.5;
@@ -1092,5 +1092,13 @@ begin
    CalculateCoefficients;
   end else FOrderInv := 1;
 end;
+
+initialization
+  RegisterDspProcessors32([TChebyshev1LowpassFilter,
+    TChebyshev1HighpassFilter, TChebyshev1LowpassFilterAutomatable,
+    TChebyshev1HighpassFilterAutomatable]);
+  RegisterDspProcessors64([TChebyshev1LowpassFilter,
+    TChebyshev1HighpassFilter, TChebyshev1LowpassFilterAutomatable,
+    TChebyshev1HighpassFilterAutomatable]);
 
 end.

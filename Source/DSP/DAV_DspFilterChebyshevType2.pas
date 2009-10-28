@@ -128,7 +128,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Math, DAV_Approximations;
+  Math, SysUtils, DAV_Classes, DAV_Math, DAV_Approximations;
 
 const
   CHalf32 : Single = 0.5;
@@ -881,5 +881,13 @@ begin
   end else FOrderInv := 1;
  Changed;
 end;
+
+initialization
+  RegisterDspProcessors32([TChebyshev2LowpassFilter,
+    TChebyshev2HighpassFilter, TChebyshev2LowpassFilterAutomatable,
+    TChebyshev2HighpassFilterAutomatable]);
+  RegisterDspProcessors64([TChebyshev2LowpassFilter,
+    TChebyshev2HighpassFilter, TChebyshev2LowpassFilterAutomatable,
+    TChebyshev2HighpassFilterAutomatable]);
 
 end.

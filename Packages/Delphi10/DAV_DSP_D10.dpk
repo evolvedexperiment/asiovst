@@ -28,7 +28,11 @@ package DAV_DSP_D10;
 requires
   vcl,
   rtl,
-  DAV_Common_D10;
+  DAV_Common_D10,
+  designide,
+  xmlrtl,
+  vclactnband,
+  vclx;
 
 contains
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
@@ -108,13 +112,14 @@ contains
   DAV_DspSweepOscillator in '..\..\Source\Dsp\DAV_DspSweepOscillator.pas',
   DAV_DspTransientProcessor in '..\..\Source\Dsp\DAV_DspTransientProcessor.pas',
   DAV_DspTuner in '..\..\Source\Dsp\DAV_DspTuner.pas',
-  DAV_DspUpDownSampling in '..\..\Source\Dsp\DAV_DspUpDownSampling.pas',
+  DAV_DspUpDownsampling in '..\..\Source\Dsp\DAV_DspUpDownsampling.pas',
   DAV_DspVariableDelay in '..\..\Source\Dsp\DAV_DspVariableDelay.pas',
   DAV_DspVibrato in '..\..\Source\Dsp\DAV_DspVibrato.pas',
   DAV_DspVocoder in '..\..\Source\Dsp\DAV_DspVocoder.pas',
   DAV_DspVoiceSynth in '..\..\Source\Dsp\DAV_DspVoiceSynth.pas',
   DAV_DspWaveshaper in '..\..\Source\Dsp\DAV_DspWaveshaper.pas',
   DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas',
-  DAV_DspComponents in '..\..\Source\DSP\DAV_DspComponents.pas';
+  DAV_DspComponents in '..\..\Source\DSP\DAV_DspComponents.pas',
+  DAV_DspWindowFunctions in '..\..\Source\DSP\DAV_DspWindowFunctions.pas';
 
 end.

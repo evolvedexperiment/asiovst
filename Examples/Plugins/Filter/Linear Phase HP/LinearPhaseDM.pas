@@ -1,15 +1,44 @@
 unit LinearPhaseDM;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I DAV_Compiler.INC}
-{.$DEFINE Use_IPPS}
-{.$DEFINE Use_CUDA}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
-  DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
-  {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms,
+  DAV_Types, DAV_Complex, DAV_DspWindowFunctions, DAV_DspFftReal2Complex,
+  {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, DAV_DspWindowFunctionsAdvanced,
+  {$ENDIF} {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
 type
   TLinearPhaseDataModule = class(TVSTModule)
@@ -20,18 +49,23 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionsChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FFilterKernel : PDAVSingleFixedArray;
-    FSignalPadded : PDAVSingleFixedArray;
-    FFilterFreq   : PDAVComplexSingleFixedArray;
-    FSignalFreq   : PDAVComplexSingleFixedArray;
-    FSemaphore    : Integer;
+    FFilterKernel   : PDAVSingleFixedArray;
+    FSignalPadded   : PDAVSingleFixedArray;
+    FFilterFreq     : PDAVComplexSingleFixedArray;
+    FSignalFreq     : PDAVComplexSingleFixedArray;
+    FSemaphore      : Integer;
+    FWindowFunction : TCustomWindowFunction;
+    FWinFuncIndex   : Integer;
+
     {$IFDEF Use_IPPS}
-    FFft          : TFftReal2ComplexIPPSFloat32;
+    FFft            : TFftReal2ComplexIPPSFloat32;
     {$ELSE} {$IFDEF Use_CUDA}
-    FFft          : TFftReal2ComplexCUDA32;
+    FFft            : TFftReal2ComplexCUDA32;
     {$ELSE}
-    FFft          : TFftReal2ComplexNativeFloat32;
+    FFft            : TFftReal2ComplexNativeFloat32;
     {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   public
@@ -42,7 +76,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_DspWindowing, LinearPhaseGUI;
+  Math, LinearPhaseGUI, DAV_VSTParameters;
 
 procedure TLinearPhaseDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -51,7 +85,16 @@ begin
  FSignalPadded    := nil;
  FFilterFreq      := nil;
  FSignalFreq      := nil;
+ FWinFuncIndex    := -1;
  BlockModeOverlap := BlockModeSize div 2;
+
+ with ParameterProperties[1] do
+  begin
+   Min := 0;
+   MinInteger := 0;
+   Max := Length(GWindowFunctions) - 1;
+   MaxInteger := Length(GWindowFunctions) - 1;
+  end;
 end;
 
 procedure TLinearPhaseDataModule.VSTModuleOpen(Sender: TObject);
@@ -86,7 +129,10 @@ begin
 
  FFft.AutoScaleType := astDivideInvByN;
  FFft.DataOrder := doPackedComplex;
+
  Parameter[0] := 20;
+ Parameter[1] := 4;
+
  CalculateFilterKernel;
 end;
 
@@ -96,7 +142,34 @@ begin
  Dispose(FSignalPadded);
  Dispose(FFilterFreq);
  Dispose(FSignalFreq);
+
+ FreeAndNil(FWindowFunction);
  FreeAndNil(FFft);
+end;
+
+procedure TLinearPhaseDataModule.ParameterWindowFunctionsDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
+end;
+
+procedure TLinearPhaseDataModule.ParameterWindowFunctionsChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  OldFunction : TCustomWindowFunction;
+begin
+ if FWinFuncIndex <> Round(Value) then
+  begin
+   FWinFuncIndex := Round(Value);
+   OldFunction := FWindowFunction;
+   FWindowFunction := GWindowFunctions[FWinFuncIndex].Create;
+   FWindowFunction.Length := FFft.FFTSize div 2;
+
+   if Assigned(OldFunction)
+    then FreeAndNil(OldFunction);
+
+   CalculateFilterKernel;
+  end;
 end;
 
 procedure TLinearPhaseDataModule.ParamFrequencyChange(
@@ -117,7 +190,7 @@ begin
  if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
   begin
    while FSemaphore > 0 do;
-   inc(FSemaphore);
+   Inc(FSemaphore);
    try
     CutOff := Parameter[0] / SampleRate;
     h := BlockModeSize div 2;
@@ -132,7 +205,9 @@ begin
         n := PI * (i - q);
         FFilterKernel^[i] := -sin(2.0 * Cutoff * n) / n;
        end;
-    ApplyBlackmanWindow(FFilterKernel, h);
+
+    if assigned(FWindowFunction)
+     then FWindowFunction.ProcessBlock32(FFilterKernel, h);
     FillChar(FFilterKernel^[h], h * SizeOf(Single), 0);
 
     // calculate frequency

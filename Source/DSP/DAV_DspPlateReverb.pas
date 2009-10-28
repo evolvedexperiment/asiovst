@@ -704,4 +704,7 @@ begin
  result := CHalf32 * (FCurrentOutput[0] + FCurrentOutput[1]);
 end;
 
+initialization
+  RegisterDspProcessors32([TDiffusor, TModulatedDiffusor, TPlateReverb]);
+
 end.

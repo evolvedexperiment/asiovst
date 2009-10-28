@@ -642,4 +642,8 @@ begin
  FFractionalDelay.FractionalBufferSize := FTime * SampleRate;
 end;
 
+initialization
+  RegisterDspProcessors32([TDelayLineSamples32, TDelayLineFractional32]);
+  RegisterDspProcessors64([TDelayLineSamples64, TDelayLineFractional64]);
+
 end.

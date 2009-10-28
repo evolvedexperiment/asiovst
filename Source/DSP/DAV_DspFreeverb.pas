@@ -260,4 +260,7 @@ begin
  Changed;
 end;
 
+initialization
+  RegisterDspProcessor64(TFreeverb);
+
 end.

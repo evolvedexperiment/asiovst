@@ -204,4 +204,7 @@ begin
  else inc(FSamples);
 end;
 
+initialization
+  RegisterDspProcessor32(TVoiceSynth);
+
 end.
