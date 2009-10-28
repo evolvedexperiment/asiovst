@@ -41,6 +41,8 @@ object RingModulatorDataModule: TRingModulatorDataModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

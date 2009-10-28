@@ -61,7 +61,8 @@ implementation
 {$R *.DFM}
 
 uses
-  PngImage, DAV_GuiCommon, RingModulatorDM, DAV_VSTModuleWithPrograms;
+  PngImage, DAV_GuiCommon, RingModulatorDM, DAV_VSTModuleWithPrograms,
+  DAV_VSTParameters;
 
 procedure TFmRingModulator.FormCreate(Sender: TObject);
 var
@@ -89,6 +90,8 @@ end;
 
 procedure TFmRingModulator.FormShow(Sender: TObject);
 begin
+ with TRingModulatorDataModule(Owner)
+  do DialFrequency.Max := ParameterProperties[0].Max;
  UpdateFrequency;
 end;
 
@@ -144,7 +147,7 @@ begin
   begin
    if DialFrequency.Position <> Parameter[0]
     then DialFrequency.Position := Parameter[0];
-   LbDisplay.Caption := ParameterDisplay[0] + 'Hz';
+   LbDisplay.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
 

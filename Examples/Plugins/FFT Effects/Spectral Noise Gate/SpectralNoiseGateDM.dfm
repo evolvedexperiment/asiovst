@@ -2,6 +2,7 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
+  Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Spectral Noise Gate'
   ProductName = 'DAV FFT Effect Examples'
@@ -71,6 +72,38 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
     end
     item
       Curve = ctLogarithmic
+      CurveFactor = 100.000000000000000000
+      DisplayName = 'Ratio'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 100.000000000000000000
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Ratio'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterRatioChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Knee'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10.000000000000000000
+      MaxInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Knee'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterKneeChange
+    end
+    item
+      Curve = ctLogarithmic
       CurveFactor = 10000.000000000000000000
       DisplayName = 'Attack'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -103,38 +136,6 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
-    end
-    item
-      Curve = ctLogarithmic
-      CurveFactor = 100.000000000000000000
-      DisplayName = 'Ratio'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 2.000000000000000000
-      Max = 100.000000000000000000
-      Min = 1.000000000000000000
-      MinInteger = 1
-      ReportVST2Properties = True
-      ShortLabel = 'Ratio'
-      SmallStepFloat = 0.500000000000000000
-      StepFloat = 1.000000000000000000
-      VSTModule = Owner
-      OnParameterChange = ParameterRatioChange
-    end
-    item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
-      DisplayName = 'Knee'
-      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
-      LargeStepFloat = 2.000000000000000000
-      Max = 10.000000000000000000
-      MaxInteger = 10
-      ReportVST2Properties = True
-      ShortLabel = 'Knee'
-      SmallStepFloat = 0.500000000000000000
-      StepFloat = 1.000000000000000000
-      Units = 'dB'
-      VSTModule = Owner
-      OnParameterChange = ParameterKneeChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

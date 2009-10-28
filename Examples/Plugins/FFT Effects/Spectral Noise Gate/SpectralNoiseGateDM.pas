@@ -69,7 +69,8 @@ implementation
 {$R *.DFM}
 
 uses
-  SysUtils, Math, SpectralNoiseGateGui, DAV_VSTModuleWithPrograms;
+  SysUtils, Math, SpectralNoiseGateGui, DAV_VSTModuleWithPrograms,
+  DAV_VSTCustomModule;
 
 procedure TSpectralNoiseGateModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -107,10 +108,10 @@ begin
  Parameter[0] := -30;
  Parameter[1] := 9;
  Parameter[2] := 4;
- Parameter[3] := 0.5;
- Parameter[4] := 100;
- Parameter[5] := 10;
- Parameter[6] := 1;
+ Parameter[3] := 10;
+ Parameter[4] := 1;
+ Parameter[5] := 0.5;
+ Parameter[6] := 50;
 end;
 
 procedure TSpectralNoiseGateModule.VSTModuleClose(Sender: TObject);
@@ -136,6 +137,10 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FSpectralNoiseGate[Channel].Threshold := Value;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateThreshold;
 end;
 
 procedure TSpectralNoiseGateModule.ParameterWindowFunctionChange(
@@ -150,6 +155,10 @@ begin
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateWindowFunction;
 end;
 
 procedure TSpectralNoiseGateModule.ParameterWindowFunctionDisplay(
@@ -164,13 +173,22 @@ var
   Channel : Integer;
   Delay   : Integer;
 begin
- for Channel := 0 to Length(FSpectralNoiseGate) - 1
-  do FSpectralNoiseGate[Channel].FFTOrder := Round(Value);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FSpectralNoiseGate) - 1
+   do FSpectralNoiseGate[Channel].FFTOrder := Round(Value);
 
- Delay := InitialDelay - 1 shl Round(Value) + 1 shl (Round(Value) - 1);
+  Delay := InitialDelay - 1 shl Round(Value) + 1 shl (Round(Value) - 1);
 
- for Channel := 0 to Length(FAdditionalDelay) - 1
-  do FAdditionalDelay[Channel].BufferSize := Delay;
+  for Channel := 0 to Length(FAdditionalDelay) - 1
+   do FAdditionalDelay[Channel].BufferSize := Delay;
+ finally
+  FCriticalSection.Leave;
+ end;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateFftOrder;
 end;
 
 procedure TSpectralNoiseGateModule.ParameterFftOrderDisplay(
@@ -186,6 +204,10 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FSpectralNoiseGate[Channel].Ratio := 1 / Value;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateRatio;
 end;
 
 procedure TSpectralNoiseGateModule.ParameterKneeChange(
@@ -195,6 +217,10 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FSpectralNoiseGate[Channel].Knee := Value;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateKnee;
 end;
 
 procedure TSpectralNoiseGateModule.ParameterAttackChange(
@@ -204,6 +230,10 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FSpectralNoiseGate[Channel].Attack := Value;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateAttack;
 end;
 
 procedure TSpectralNoiseGateModule.ParameterReleaseChange(
@@ -213,6 +243,10 @@ var
 begin
  for Channel := 0 to Length(FSpectralNoiseGate) - 1
   do FSpectralNoiseGate[Channel].Release := Value;
+
+ // update GUI
+ if EditorForm is TFmSpectralNoiseGate
+  then TFmSpectralNoiseGate(EditorForm).UpdateRelease;
 end;
 
 procedure TSpectralNoiseGateModule.VSTModuleSampleRateChange(Sender: TObject;

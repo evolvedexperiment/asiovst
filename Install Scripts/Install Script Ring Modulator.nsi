@@ -14,7 +14,7 @@ SetCompressor lzma
 
   ;Name and file
   Name "RingModulator Installer"
-  OutFile "RingModulator_Install.exe"
+  OutFile "Ring_Modulator_Install.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\VSTPlugIns"
@@ -100,7 +100,7 @@ Section "RingModulator VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\RingModulator.dll"
+  File "..\Bin\Ring Modulator.dll"
 
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
@@ -124,7 +124,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_RingModulator.exe"
 SectionEnd
 
-Section "RingModulator VST-Plugin" SecVstWrapper
+Section "RingModulator Wrapper" SecVstWrapper
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\RingModulatorMono.dll "..\Bin\RingModulator (mono).dll"'  
