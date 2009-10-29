@@ -1,4 +1,4 @@
-object SpectralNoiseGateModule: TSpectralNoiseGateModule
+object NoiseReductionModule: TNoiseReductionModule
   OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
@@ -22,19 +22,21 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Threshold'
+      DisplayName = 'Threshold Offset'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
-      Max = 6.000000000000000000
-      MaxInteger = 6
-      Min = -90.000000000000000000
-      MinInteger = -90
-      ShortLabel = 'Thresh.'
+      Max = 15.000000000000000000
+      MaxInteger = 15
+      Min = -15.000000000000000000
+      MinInteger = -15
+      ReportVST2Properties = True
+      ShortLabel = 'Offset'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
       VSTModule = Owner
-      OnParameterChange = ParameterThresholdChange
+      OnParameterChange = ParameterThresholdOffsetChange
+      OnCustomParameterDisplay = Parameter2DigitDisplay
     end
     item
       Curve = ctLinear
@@ -121,7 +123,8 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterAttackChange
-      OnCustomParameterDisplay = Parameter2DigitDisplay
+      OnCustomParameterLabel = ParameterTimeLabel
+      OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
       Curve = ctLogarithmic
@@ -140,7 +143,24 @@ object SpectralNoiseGateModule: TSpectralNoiseGateModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
-      OnCustomParameterDisplay = Parameter2DigitDisplay
+      OnCustomParameterLabel = ParameterTimeLabel
+      OnCustomParameterDisplay = ParameterTimeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Match Threshold'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Match'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterThresholdChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
