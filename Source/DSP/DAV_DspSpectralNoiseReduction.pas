@@ -123,6 +123,53 @@ type
     property WindowFunctionClass;
   end;
 
+  TNoiseReduction32 = class(TCustomNoiseReduction32, IDspProcessor32)
+  private
+    FGates      : array of TLightweightSoftKneeCompressor;
+    FRelease    : Double;
+    FAttack     : Double;
+    FRatio      : Double;
+    FKnee       : Double;
+    FAvrgCount  : Integer;
+    FMatch      : Boolean;
+    FOffset     : Double;
+    FThresholds : PDAVSingleFixedArray;
+    procedure SetAttack(const Value: Double);
+    procedure SetRelease(const Value: Double);
+    procedure SetRatio(const Value: Double);
+    procedure SetKnee(const Value: Double);
+    procedure SetMatch(const Value: Boolean);
+    procedure SetOffset(const Value: Double);
+  protected
+    procedure PerformSpectralEffect(SignalIn, SignalOut: PDAVSingleFixedArray); overload; override;
+    procedure PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray); overload; override;
+    procedure BuildFilter(Spectrum: PDAVComplexSingleFixedArray); override;
+    procedure MatchThreshold(Spectrum: PDAVComplexSingleFixedArray); virtual;
+
+    procedure AttackChanged; virtual;
+    procedure FFTOrderChanged; override;
+    procedure KneeChanged; virtual;
+    procedure MatchChanged; virtual;
+    procedure RatioChanged; virtual;
+    procedure ReleaseChanged; virtual;
+    procedure ThresholdOffsetChanged; virtual;
+    procedure UpdateThresholds; virtual;
+  public
+    constructor Create; override;
+  published
+    property Attack: Double read FAttack write SetAttack;
+    property Release: Double read FRelease write SetRelease;
+    property Ratio: Double read FRatio write SetRatio;
+    property Knee: Double read FKnee write SetKnee;
+    property Match: Boolean read FMatch write SetMatch;
+    property ThresholdOffset: Double read FOffset write SetOffset; 
+
+    property FFTOrder;
+    property FFTSize;
+    property WindowFunctionClass;
+  end;
+
+
   TCustomNoiseReduction64 = class(TCustomSpectralEffect64)
   private
     procedure SetWindowClass(const Value: TWindowFunctionClass);
@@ -583,6 +630,264 @@ begin
 end;
 
 
+{ TNoiseReduction32 }
+
+constructor TNoiseReduction32.Create;
+begin
+ inherited;
+ FOffset := 8;
+
+ with FFFT do
+  begin
+   AutoScaleType := astDivideInvByN;
+   DataOrder := doComplex;
+  end;
+end;
+
+procedure TNoiseReduction32.FFTOrderChanged;
+var
+  Bin : Integer;
+begin
+ inherited;
+
+ ReallocMem(FThresholds, Fft.BinCount * SizeOf(Single));
+ FillChar(FThresholds^, Fft.BinCount * SizeOf(Single), 0);
+
+  // dispose unused Gates
+ for Bin := Fft.BinCount to Length(FGates) - 1 do
+  if assigned(FGates[Bin]) then FreeAndNil(FGates[Bin]);
+
+ SetLength(FGates, Fft.BinCount);
+
+ for Bin := 0 to Length(FGates) - 1 do
+  if not Assigned(FGates[Bin]) then
+   begin
+    FGates[Bin] := TLightweightSoftKneeCompressor.Create;
+    with FGates[Bin] do
+     begin
+      SampleRate := Self.SampleRate * 2 / FFft.FFTSize;
+      Ratio := 0.1;
+      Knee_dB := 2;
+      Attack := 1;
+      Release := 100;
+      Threshold_dB := -400;
+     end;
+  end;
+end;
+
+procedure TNoiseReduction32.PerformSpectralEffect(SignalIn,
+  SignalOut: PDAVSingleFixedArray);
+var
+  Sample : Integer;
+  Reci   : Double;
+  Scale  : Double;
+begin
+ FFft.PerformFFT(FSignalFreq, SignalIn);
+
+ // filter with the currest filter coefficients
+ Move(FSignalFreq^, FAddSpecBuffer^, Fft.BinCount * SizeOf(TComplexSingle));
+ PerformSpectralEffect(FAddSpecBuffer);
+
+ // eventually match threshold
+ if FMatch then MatchThreshold(FSignalFreq);
+
+ // build new filter and filter spectrum
+ BuildFilter(FSignalFreq);
+ PerformSpectralEffect(FSignalFreq);
+
+ // transform back to time domain
+ FFft.PerformIFFT(FSignalFreq, SignalOut);
+ FFft.PerformIFFT(FAddSpecBuffer, FAddTimeBuffer);
+
+ // crossfade time domain
+ Reci := 1 / FFFTSizeHalf;
+ for Sample := 0 to FFFTSizeHalf - 1 do
+  begin
+   Scale := Sample * Reci;
+   SignalOut^[Sample] := Scale * SignalOut^[FFFTSizeHalf + Sample] +
+     (1 - Scale) * FAddTimeBuffer^[FFFTSizeHalf + Sample];
+  end;
+end;
+
+procedure TNoiseReduction32.BuildFilter(Spectrum: PDAVComplexSingleFixedArray);
+var
+  Bin  : Integer;
+  Half : Integer;
+const
+  COffset : Single = 1E-10;
+begin
+ Half := FFFTSizeHalf;
+
+ // DC bin
+ FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
+ FFilter^[0].Re := FGates[0].GainSample(1);
+ if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ FFilter^[0].Im := 0;
+
+ // other bins
+ for Bin := 1 to Half - 1 do
+  begin
+   FGates[Bin].InputSample(COffset + Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im));
+   FFilter^[Bin].Re := FGates[Bin].GainSample(1);
+   if abs(FFilter^[Bin].Re) > 1 then FFilter^[Bin].Re := 0;
+   FFilter^[Bin].Im := 0;
+  end;
+
+ // Nyquist bin
+ FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
+ FFilter^[0].Re := FGates[Half].GainSample(1);
+ if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
+ FFilter^[Half].Im := 0;
+
+ FFft.PerformIFFT(FFilter, FFilterIR);
+
+ Move(FFilterIR^[0], FFilterIR^[FFFTSizeHalf div 2], FFFTSizeHalf div 2 * SizeOf(Single));
+ Move(FFilterIR^[FFFTSize - FFFTSizeHalf div 2], FFilterIR^[0], FFFTSizeHalf div 2 * SizeOf(Single));
+ FWindowFunction.ProcessBlock32(@FFilterIR^[0], FFFTSizeHalf);
+ FillChar(FFilterIR^[FFFTSizeHalf], FFFTSizeHalf * SizeOf(Single), 0);
+ FFft.PerformFFT(FFilter, FFilterIR);
+end;
+
+procedure TNoiseReduction32.MatchThreshold(Spectrum: PDAVComplexSingleFixedArray);
+var
+  Bin    : Integer;
+  Half   : Integer;
+  Weight : array [0..1] of Single;
+const
+  COffset : Single = 1E-10;
+begin
+ Half := FFFTSizeHalf;
+
+ Inc(FAvrgCount);
+ Weight[1] := 1 / FAvrgCount;
+ Weight[0] := 1 - Weight[1];
+
+ // DC bin
+ FThresholds[0] := Weight[0] * FThresholds[0] + Weight[1] * Sqr(FFilter^[0].Re);
+
+ // other bins
+ for Bin := 1 to Half - 1
+  do FThresholds[Bin] := Weight[0] * FThresholds[Bin] +
+    Weight[1] * (Sqr(Spectrum^[Bin].Re) + Sqr(Spectrum^[Bin].Im));
+
+ // Nyquist bin
+ FThresholds[Half] := Weight[0] * FThresholds[Half] +
+   Weight[1] * Sqr(Spectrum^[Half].Re);
+
+ UpdateThresholds;
+end;
+
+procedure TNoiseReduction32.UpdateThresholds;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Threshold_dB := Amp_to_dB(CDenorm32 + FThresholds[Bin]) + FOffset;
+end;
+
+procedure TNoiseReduction32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
+begin
+ ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+end;
+
+procedure TNoiseReduction32.SetAttack(const Value: Double);
+begin
+ if FAttack <> Value then
+  begin
+   FAttack := Value;
+   AttackChanged;
+  end;
+end;
+
+procedure TNoiseReduction32.SetKnee(const Value: Double);
+begin
+ if FKnee <> Value then
+  begin
+   FKnee := Value;
+   KneeChanged;
+  end;
+end;
+
+procedure TNoiseReduction32.SetMatch(const Value: Boolean);
+begin
+ if FMatch <> Value then
+  begin
+   FMatch := Value;
+   MatchChanged;
+  end;
+end;
+
+procedure TNoiseReduction32.SetOffset(const Value: Double);
+begin
+ if FOffset <> Value then
+  begin
+   FOffset := Value;
+   ThresholdOffsetChanged;
+  end;
+end;
+
+procedure TNoiseReduction32.SetRatio(const Value: Double);
+begin
+ if FRatio <> Value then
+  begin
+   FRatio := Value;
+   RatioChanged;
+  end;
+end;
+
+procedure TNoiseReduction32.SetRelease(const Value: Double);
+begin
+ if FRelease <> Value then
+  begin
+   FRelease := Value;
+   ReleaseChanged;
+  end;
+end;
+
+procedure TNoiseReduction32.RatioChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Ratio := Ratio;
+end;
+
+procedure TNoiseReduction32.MatchChanged;
+begin
+ if FMatch
+  then FAvrgCount := 0;
+end;
+
+procedure TNoiseReduction32.KneeChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Knee_dB := FKnee;
+end;
+
+procedure TNoiseReduction32.AttackChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Attack := FAttack;
+end;
+
+procedure TNoiseReduction32.ReleaseChanged;
+var
+  Bin : Integer;
+begin
+ for Bin := 0 to Length(FGates) - 1
+  do FGates[Bin].Release := FRelease;
+end;
+
+procedure TNoiseReduction32.ThresholdOffsetChanged;
+begin
+ UpdateThresholds;
+end;
+
+
 { TCustomNoiseReduction64 }
 
 constructor TCustomNoiseReduction64.Create;
@@ -956,7 +1261,8 @@ begin
 end;
 
 initialization
-  RegisterDspProcessors32([TSpectralNoiseCut32, TSpectralNoiseGate32]);
+  RegisterDspProcessors32([TSpectralNoiseCut32, TSpectralNoiseGate32,
+    TNoiseReduction32]);
   RegisterDspProcessors64([TSpectralNoiseCut64, TSpectralNoiseGate64]);
 
 end.

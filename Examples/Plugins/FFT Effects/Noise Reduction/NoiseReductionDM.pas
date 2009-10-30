@@ -119,8 +119,53 @@ begin
  Parameter[3] := 10;
  Parameter[4] := 1;
  Parameter[5] := 0.5;
- Parameter[6] := 50;
+ Parameter[6] := 25;
  Parameter[7] := 0;
+
+ with Programs[0] do
+  begin
+   Parameter[0] := 8;
+   Parameter[1] := 9;
+   Parameter[2] := 4;
+   Parameter[3] := 10;
+   Parameter[4] := 1;
+   Parameter[5] := 0.5;
+   Parameter[6] := 25;
+   Parameter[7] := 0;
+  end;
+ with Programs[1] do
+  begin
+   Parameter[0] := 10;
+   Parameter[1] := 9;
+   Parameter[2] := 8;
+   Parameter[3] := 50;
+   Parameter[4] := 2;
+   Parameter[5] := 0.1;
+   Parameter[6] := 10;
+   Parameter[7] := 0;
+  end;
+ with Programs[2] do
+  begin
+   Parameter[0] := 12;
+   Parameter[1] := 9;
+   Parameter[2] := 1;
+   Parameter[3] := 80;
+   Parameter[4] := 0.5;
+   Parameter[5] := 0.02;
+   Parameter[6] := 1;
+   Parameter[7] := 0;
+  end;
+ with Programs[3] do
+  begin
+   Parameter[0] := 13;
+   Parameter[1] := 9;
+   Parameter[2] := 11;
+   Parameter[3] := 100;
+   Parameter[4] := 0;
+   Parameter[5] := 0.01;
+   Parameter[6] := 0.5;
+   Parameter[7] := 0;
+  end;
 end;
 
 procedure TNoiseReductionModule.VSTModuleClose(Sender: TObject);
@@ -310,8 +355,9 @@ procedure TNoiseReductionModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FNoiseReduction) - 1
-  do FNoiseReduction[Channel].SampleRate := SampleRate;
+ if abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FNoiseReduction) - 1
+   do FNoiseReduction[Channel].SampleRate := abs(SampleRate);
 end;
 
 procedure TNoiseReductionModule.VSTModuleProcess(const Inputs,

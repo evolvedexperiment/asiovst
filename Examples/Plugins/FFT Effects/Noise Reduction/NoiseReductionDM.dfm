@@ -10,14 +10,31 @@ object NoiseReductionModule: TNoiseReductionModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 512
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   BlockModeSize = 512
   BlockModeOverlap = 256
   InitialDelay = 384
   IORatio = 1.000000000000000000
   UniqueID = 'Fsng'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'More Attenuation'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'And Even More'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Spectral Subtraction'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear

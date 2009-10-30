@@ -37,6 +37,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbThreshold: TGuiLabel
     Left = 3
@@ -86,6 +87,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -135,6 +137,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRelease: TGuiLabel
     Left = 92
@@ -184,6 +187,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRatio: TGuiLabel
     Left = 99
@@ -232,6 +236,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbKnee: TGuiLabel
     Left = 163
@@ -314,6 +319,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbMakeUpGain: TGuiLabel
     Left = 250
@@ -347,10 +353,11 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Top = 9
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
-    LineColor = clRed
+    LineColor = 14277598
     OnClick = LEDStereoClick
   end
   object LbStereo: TGuiLabel
@@ -372,10 +379,11 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Top = 30
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
-    LineColor = clRed
+    LineColor = 14277598
     OnClick = LEDLimitClick
   end
   object GuiLabel2: TGuiLabel
@@ -397,10 +405,11 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Top = 69
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
-    LineColor = clRed
+    LineColor = 14277598
     OnClick = LEDAutoGainClick
   end
   object GuiLabel3: TGuiLabel
@@ -422,10 +431,11 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Top = 51
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
-    LineColor = clRed
+    LineColor = 14277598
     Visible = False
     OnClick = LEDAutoGainClick
   end

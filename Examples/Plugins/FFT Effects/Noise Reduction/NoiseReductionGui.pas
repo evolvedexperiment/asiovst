@@ -210,8 +210,8 @@ procedure TFmNoiseReduction.UpdateThresholdOffset;
 begin
  with TNoiseReductionModule(Owner) do
   begin
-   if Parameter[0] <> DialThresholdOffset.Position
-    then Parameter[0] := DialThresholdOffset.Position;
+   if DialThresholdOffset.Position <> Parameter[0] 
+    then DialThresholdOffset.Position := Parameter[0];
 
    LbThresholdOffsetValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
