@@ -113,6 +113,7 @@ type
     procedure AllocateBuffer; override;
     procedure OverlapSizeChanged; override;
     procedure BlockSizeChanged; override;
+    procedure ClearBuffer; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -146,6 +147,7 @@ type
     FSamplesInBlock : Integer;
     FSampleAdvance  : Integer;
     procedure AllocateBuffer; override;
+    procedure ClearBuffer; override;
     procedure OverlapSizeChanged; override;
     procedure BlockSizeChanged; override;
   public
@@ -195,10 +197,8 @@ end;
 
 procedure TCustomBuildingBlocks.BlockSizeChanged;
 begin
- if FOverlapSize >= FBlockSize then
-  begin
-   FOverlapSize := FBlockSize div 2;
-  end;
+ if FOverlapSize >= FBlockSize
+  then FOverlapSize := FBlockSize div 2;
  AllocateBuffer;
  Changed;
 end;
@@ -213,6 +213,7 @@ begin
  FBlockPosition := 0;
 end;
 
+
 { TCustomBuildingBlocks32 }
 
 constructor TCustomBuildingBlocks32.Create;
@@ -220,6 +221,7 @@ begin
  FBuffer32 := nil;
  inherited;
  AllocateBuffer;
+ Reset;
 end;
 
 destructor TCustomBuildingBlocks32.Destroy;
@@ -231,13 +233,13 @@ end;
 procedure TCustomBuildingBlocks32.Reset;
 begin
  inherited;
+ FBlockPosition := FOverlapSize;
  ClearBuffer;
 end;
 
 procedure TCustomBuildingBlocks32.AllocateBuffer;
 begin
  ReallocMem(FBuffer32, FBlockSize * SizeOf(Single));
- ClearBuffer;
 end;
 
 procedure TCustomBuildingBlocks32.ClearBuffer;
@@ -253,6 +255,7 @@ begin
  FBuffer64 := nil;
  inherited;
  AllocateBuffer;
+ Reset;
 end;
 
 destructor TCustomBuildingBlocks64.Destroy;
@@ -264,6 +267,7 @@ end;
 procedure TCustomBuildingBlocks64.Reset;
 begin
  inherited;
+ FBlockPosition := FOverlapSize;
  ClearBuffer;
 end;
 
@@ -276,6 +280,7 @@ procedure TCustomBuildingBlocks64.ClearBuffer;
 begin
  FillChar(FBuffer64^, FBlockSize * SizeOf(Double), 0);
 end;
+
 
 { TBuildingBlocks32 }
 
@@ -299,7 +304,7 @@ begin
     if Assigned(FOnProcess)
      then FOnProcess(Self, FBuffer32);
 
-    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FBlockPosition * SizeOf(Single));
+    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FOverlapSize * SizeOf(Single));
 
     CurrentPosition := CurrentPosition + (FBlockSize - FBlockPosition);
     FBlockPosition := FOverlapSize;
@@ -317,7 +322,7 @@ begin
     if Assigned(FOnProcess)
      then FOnProcess(Self, FBuffer32);
 
-    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FBlockPosition * SizeOf(Single));
+    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FOverlapSize * SizeOf(Single));
     FBlockPosition := FOverlapSize;
    end;
 end;
@@ -327,8 +332,9 @@ end;
 
 constructor TBuildingBlocksCircular32.Create;
 begin
- inherited;
  FBlock32 := nil;
+ inherited;
+ CalculateSampleAdvance;
 end;
 
 destructor TBuildingBlocksCircular32.Destroy;
@@ -358,6 +364,11 @@ procedure TBuildingBlocksCircular32.AllocateBuffer;
 begin
  inherited;
  ReallocMem(FBlock32, FBlockSize * SizeOf(Single));
+end;
+
+procedure TBuildingBlocksCircular32.ClearBuffer;
+begin
+ inherited;
  FillChar(FBlock32^, FBlockSize * SizeOf(Single), 0);
 end;
 
@@ -474,7 +485,7 @@ begin
     if Assigned(FOnProcess)
      then FOnProcess(Self, FBuffer64);
 
-    Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FBlockPosition * SizeOf(Double));
+    Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FOverlapSize * SizeOf(Double));
 
     CurrentPosition := CurrentPosition + (FBlockSize - FBlockPosition);
     FBlockPosition := FOverlapSize;
@@ -492,7 +503,7 @@ begin
     if Assigned(FOnProcess)
      then FOnProcess(Self, FBuffer64);
 
-    Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FBlockPosition * SizeOf(Double));
+    Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FOverlapSize * SizeOf(Double));
     FBlockPosition := FOverlapSize;
    end;
 end;
@@ -502,8 +513,10 @@ end;
 
 constructor TBuildingBlocksCircular64.Create;
 begin
- inherited;
  FBlock64 := nil;
+ inherited;
+ CalculateSampleAdvance;
+ ClearBuffer;
 end;
 
 destructor TBuildingBlocksCircular64.Destroy;
@@ -533,6 +546,11 @@ procedure TBuildingBlocksCircular64.AllocateBuffer;
 begin
  inherited;
  ReallocMem(FBlock64, FBlockSize * SizeOf(Double));
+end;
+
+procedure TBuildingBlocksCircular64.ClearBuffer;
+begin
+ inherited;
  FillChar(FBlock64^, FBlockSize * SizeOf(Double), 0);
 end;
 

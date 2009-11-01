@@ -66,7 +66,9 @@ uses
   TestDAV_DspFilterSpectralDelay in 'TestDAV_DspFilterSpectralDelay.pas',
   DAV_DspFilterSpectralDelay in '..\..\Source\DSP\DAV_DspFilterSpectralDelay.pas',
   TestDAV_DspSoundTouch in 'TestDAV_DspSoundTouch.pas',
-  DAV_DspSoundTouch in '..\..\Source\DSP\DAV_DspSoundTouch.pas';
+  DAV_DspSoundTouch in '..\..\Source\DSP\DAV_DspSoundTouch.pas',
+  TestDAV_DspBuildingBlocks in 'TestDAV_DspBuildingBlocks.pas',
+  DAV_DspBuildingBlocks in '..\..\Source\DSP\DAV_DspBuildingBlocks.pas';
 
 {$R *.RES}
 

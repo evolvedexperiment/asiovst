@@ -64,6 +64,9 @@ procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSing
 
 procedure FillWithZeroes(StartAdr: PDAVSingleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
 procedure FillWithZeroes(StartAdr: PDAVDoubleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
+procedure QuickSort32(SortData: PDAVSingleFixedArray; StartSample, EndSample: Integer);
+procedure QuickSort64(SortData: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
+
 
 implementation
 
@@ -570,6 +573,58 @@ begin
     FillChar(StartAdr[EndPos + 1], (SampleCount - EndPos - 1) * SizeOf(StartAdr[0]), 0);
    end
   else FillChar(StartAdr[EndPos + 1], (StartPos - EndPos - 1) * SizeOf(StartAdr[0]), 0);
+end;
+
+procedure QuickSort32(SortData: PDAVSingleFixedArray; StartSample, EndSample: Integer);
+var
+  I, J: Integer;
+  P, T: Single;
+begin
+ repeat
+  I := StartSample;
+  J := EndSample;
+  P := SortData[(StartSample + EndSample) shr 1];
+  repeat
+    while SortData[I] < P do Inc(I);
+    while SortData[J] > P do Dec(J);
+     if I <= J then
+      begin
+       T := SortData[I];
+       SortData[I] := SortData[J];
+       SortData[J] := T;
+       Inc(I);
+       Dec(J);
+      end;
+    until I > J;
+   if StartSample < J then QuickSort32(SortData, StartSample, J);
+   StartSample := I;
+  until I >= EndSample;
+end;
+
+procedure QuickSort64(SortData: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
+var
+  I, J: Integer;
+  P, T: Double;
+begin
+ repeat
+  I := StartSample;
+  J := EndSample;
+  P := SortData[(StartSample + EndSample) shr 1];
+  repeat
+    while SortData[I] < P do Inc(I);
+    while SortData[J] > P do Dec(J);
+     if I <= J then
+      begin
+       T := SortData[I];
+       SortData[I] := SortData[J];
+       SortData[J] := T;
+       Inc(I);
+       Dec(J);
+      end;
+    until I > J;
+   if StartSample < J then QuickSort64(SortData, StartSample, J);
+   StartSample := I;
+  until I >= EndSample;
 end;
 
 end.
