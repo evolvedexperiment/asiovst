@@ -37,40 +37,38 @@ interface
 uses
   DAV_Types, DAV_Complex;
 
-procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle;
-  SampleFrames: Integer); overload;
-procedure MixBuffers_FPU(InBuffer: PDouble; MixBuffer: PDouble;
-  SampleFrames: Integer); overload;
+procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
+procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
 
-procedure ComplexMultiplyBlock(const InplaceBuffer,
-  Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
-procedure ComplexMultiplyBlock(const InBuffer,
-  Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer;
-  const OutBuffer: PDAVComplexSingleFixedArray); overload;
-procedure ComplexMultiplyBlock(const InplaceBuffer,
-  Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer); overload;
-procedure ComplexMultiplyBlock(const InBuffer,
-  Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
-  const OutBuffer: PDAVComplexDoubleFixedArray); overload;
+procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
+procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
+procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer); overload;
+procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexDoubleFixedArray); overload;
 
-function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer; overload;
-function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer; overload;
-procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax : TDAVMinMaxSingle); overload;
-procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax : TDAVMinMaxDouble); overload;
-procedure DCSubstract(InBuffer: PSingle; Samples: Integer); overload;
-procedure DCSubstract(InBuffer: PDouble; Samples: Integer); overload;
-procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleFrames: Integer);
-procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleFrames: Integer);
+function FindMaximum(Data: PSingle; SampleCount: Integer): Integer; overload;
+function FindMaximum(Data: PDouble; SampleCount: Integer): Integer; overload;
+procedure CalcMinMax(Data: PSingle; SampleCount: Integer; var MinMax : TDAVMinMaxSingle); overload;
+procedure CalcMinMax(Data: PDouble; SampleCount: Integer; var MinMax : TDAVMinMaxDouble); overload;
+procedure DCSubstract(Data: PSingle; SampleCount: Integer); overload;
+procedure DCSubstract(Data: PDouble; SampleCount: Integer); overload;
+procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleCount: Integer);
+procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleCount: Integer);
 
 procedure FillWithZeroes(StartAdr: PDAVSingleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
 procedure FillWithZeroes(StartAdr: PDAVDoubleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
-procedure QuickSort32(SortData: PDAVSingleFixedArray; StartSample, EndSample: Integer);
-procedure QuickSort64(SortData: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
+procedure InvertBuffer(Data: PDAVSingleFixedArray; SampleCount: Integer); overload;
+procedure InvertBuffer(Data: PDAVDoubleFixedArray; SampleCount: Integer); overload;
 
+procedure QuickSort32(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer);
+procedure QuickSort64(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
+procedure QuickSortWithPosition(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
+procedure QuickSortWithPosition(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
+procedure ReorderPositions(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
+procedure ReorderPositions(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
 
 implementation
 
-procedure MixBuffers_FPU(InBuffer: PSingle; MixBuffer: PSingle; SampleFrames: Integer); overload;
+procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
 asm
 @Start:
   fld   [eax + 4 * ecx - 4].Single
@@ -79,7 +77,7 @@ asm
   loop @Start
 end;
 
-procedure MixBuffers_FPU(InBuffer: PDouble; MixBuffer: PDouble; SampleFrames: Integer); overload;
+procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
 asm
 @Start:
   fld   [eax + 8 * ecx - 8].Double
@@ -88,7 +86,7 @@ asm
   loop @Start
 end;
 
-procedure ComplexMultiplyBlock(const InplaceBuffer, Filter: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
 asm
  // DC
  fld   [eax].Single
@@ -133,7 +131,7 @@ asm
 end;
 
 procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexSingleFixedArray;
-  const SampleFrames: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
+  const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
 asm
  push ebx
  mov ebx, OutBuffer
@@ -185,8 +183,8 @@ asm
  pop ebx
 end;
 
-procedure ComplexMultiplyBlock(const InplaceBuffer, Filter: PDAVComplexDoubleFixedArray;
-  const SampleFrames: Integer); overload;
+procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexDoubleFixedArray;
+  const SampleCount: Integer); overload;
 asm
  // DC
  fld   [eax].Double
@@ -230,7 +228,7 @@ asm
  fstp  [eax].Double
 end;
 
-procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
+procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer;
   const OutBuffer: PDAVComplexDoubleFixedArray); overload;
 asm
  push ebx
@@ -283,19 +281,19 @@ asm
  pop ebx
 end;
 
-procedure DCSubstract(InBuffer: PSingle; Samples: Integer);
+procedure DCSubstract(Data: PSingle; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
-  InBuf : array [0..0] of Double absolute InBuffer;
+  InBuf : array [0..0] of Double absolute Data;
   d : Double;
   i : Integer;
 begin
- if Samples = 0 then Exit;
+ if SampleCount = 0 then Exit;
  d := InBuf[0];
- for i := 1 to Samples - 1
+ for i := 1 to SampleCount - 1
   do d := d + InBuf[i];
- d := d / Samples;
- for i := 0 to Samples - 1
+ d := d / SampleCount;
+ for i := 0 to SampleCount - 1
   do InBuf[i] := InBuf[i] - d;
 end;
 {$ELSE}
@@ -327,19 +325,19 @@ asm
 end;
 {$ENDIF}
 
-procedure DCSubstract(InBuffer: PDouble; Samples: Integer);
+procedure DCSubstract(Data: PDouble; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
-  InBuf : array [0..0] of Double absolute InBuffer;
+  InBuf : array [0..0] of Double absolute Data;
   d : Double;
   i : Integer;
 begin
- if Samples = 0 then Exit;
+ if SampleCount = 0 then Exit;
  d := InBuf[0];
- for i := 1 to Samples - 1
+ for i := 1 to SampleCount - 1
   do d := d + InBuf[i];
- d := d / Samples;
- for i := 0 to Samples - 1
+ d := d / SampleCount;
+ for i := 0 to SampleCount - 1
   do InBuf[i] := InBuf[i] - d;
 end;
 {$ELSE}
@@ -371,12 +369,12 @@ asm
 end;
 {$ENDIF}
 
-procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleFrames: Integer);
+procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for i := 0 to SampleCount - 1 do
   begin
    Doubles^ := Singles^;
    Inc(Singles);
@@ -392,12 +390,12 @@ asm
 end;
 {$ENDIF}
 
-procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleFrames: Integer);
+procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for i := 0 to SampleCount - 1 do
   begin
    Singles^ := Doubles^;
    Inc(Singles);
@@ -413,22 +411,22 @@ asm
 end;
 {$ENDIF}
 
-function FindMaximum(InBuffer: PSingle; Samples: Integer): Integer;
+function FindMaximum(Data: PSingle; SampleCount: Integer): Integer;
 {$IFDEF PUREPASCAL}
 var i : Integer;
     d : Double;
 begin
  result := 0;
- assert(Samples > 0);
- d := abs(InBuffer^);
- for i:=1 to Samples-1 do
+ assert(SampleCount > 0);
+ d := abs(Data^);
+ for i:=1 to SampleCount-1 do
   begin
-   if abs(InBuffer^) > d then
+   if abs(Data^) > d then
     begin
      Result := i;
-     d := abs(InBuffer^);
+     d := abs(Data^);
     end;
-   Inc(InBuffer);
+   Inc(Data);
   end;
 end;
 {$ELSE}
@@ -466,7 +464,7 @@ asm
 end;
 {$ENDIF}
 
-function FindMaximum(InBuffer: PDouble; Samples: Integer): Integer;
+function FindMaximum(Data: PDouble; SampleCount: Integer): Integer;
 {$DEFINE PUREPASCAL}
 {$IFDEF PUREPASCAL}
 var
@@ -474,16 +472,16 @@ var
   d : Double;
 begin
  result := 0;
- assert(Samples > 0);
- d := abs(InBuffer^);
- for i := 1 to Samples - 1 do
+ assert(SampleCount > 0);
+ d := abs(Data^);
+ for i := 1 to SampleCount - 1 do
   begin
-   if abs(InBuffer^) > d then
+   if abs(Data^) > d then
     begin
      Result := i;
-     d := abs(InBuffer^);
+     d := abs(Data^);
     end;
-   Inc(InBuffer);
+   Inc(Data);
   end;
 end;
 {$ELSE}
@@ -521,33 +519,33 @@ asm
 end;
 {$ENDIF}
 
-procedure CalcMinMax(InBuffer: PSingle; Samples: Integer; var MinMax: TDAVMinMaxSingle);
+procedure CalcMinMax(Data: PSingle; SampleCount: Integer; var MinMax: TDAVMinMaxSingle);
 var
   i : Integer;
 begin
- assert(Samples > 0);
- MinMax.min := InBuffer^;
- MinMax.max := InBuffer^;
- for i := 1 to Samples - 1 do
+ assert(SampleCount > 0);
+ MinMax.min := Data^;
+ MinMax.max := Data^;
+ for i := 1 to SampleCount - 1 do
   begin
-   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
-   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
-   Inc(InBuffer);
+   if Data^ > MinMax.max then MinMax.max := Data^ else
+   if Data^ < MinMax.min then MinMax.min := Data^;
+   Inc(Data);
   end;
 end;
 
-procedure CalcMinMax(InBuffer: PDouble; Samples: Integer; var MinMax: TDAVMinMaxDouble);
+procedure CalcMinMax(Data: PDouble; SampleCount: Integer; var MinMax: TDAVMinMaxDouble);
 var
   i : Integer;
 begin
- assert(Samples > 0);
- MinMax.min := InBuffer^;
- MinMax.max := InBuffer^;
- for i := 1 to Samples - 1 do
+ assert(SampleCount > 0);
+ MinMax.min := Data^;
+ MinMax.max := Data^;
+ for i := 1 to SampleCount - 1 do
   begin
-   if InBuffer^ > MinMax.max then MinMax.max := InBuffer^ else
-   if InBuffer^ < MinMax.min then MinMax.min := InBuffer^;
-   Inc(InBuffer);
+   if Data^ > MinMax.max then MinMax.max := Data^ else
+   if Data^ < MinMax.min then MinMax.min := Data^;
+   Inc(Data);
   end;
 end;
 
@@ -575,7 +573,23 @@ begin
   else FillChar(StartAdr[EndPos + 1], (StartPos - EndPos - 1) * SizeOf(StartAdr[0]), 0);
 end;
 
-procedure QuickSort32(SortData: PDAVSingleFixedArray; StartSample, EndSample: Integer);
+procedure InvertBuffer(Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := -Data[Sample];
+end;
+
+procedure InvertBuffer(Data: PDAVDoubleFixedArray; SampleCount: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := -Data[Sample];
+end;
+
+procedure QuickSort32(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer);
 var
   I, J: Integer;
   P, T: Single;
@@ -583,25 +597,25 @@ begin
  repeat
   I := StartSample;
   J := EndSample;
-  P := SortData[(StartSample + EndSample) shr 1];
+  P := Data[(StartSample + EndSample) shr 1];
   repeat
-    while SortData[I] < P do Inc(I);
-    while SortData[J] > P do Dec(J);
+    while Data[I] < P do Inc(I);
+    while Data[J] > P do Dec(J);
      if I <= J then
       begin
-       T := SortData[I];
-       SortData[I] := SortData[J];
-       SortData[J] := T;
+       T := Data[I];
+       Data[I] := Data[J];
+       Data[J] := T;
        Inc(I);
        Dec(J);
       end;
     until I > J;
-   if StartSample < J then QuickSort32(SortData, StartSample, J);
+   if StartSample < J then QuickSort32(Data, StartSample, J);
    StartSample := I;
   until I >= EndSample;
 end;
 
-procedure QuickSort64(SortData: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
+procedure QuickSort64(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer);
 var
   I, J: Integer;
   P, T: Double;
@@ -609,20 +623,138 @@ begin
  repeat
   I := StartSample;
   J := EndSample;
-  P := SortData[(StartSample + EndSample) shr 1];
+  P := Data[(StartSample + EndSample) shr 1];
   repeat
-    while SortData[I] < P do Inc(I);
-    while SortData[J] > P do Dec(J);
+    while Data[I] < P do Inc(I);
+    while Data[J] > P do Dec(J);
      if I <= J then
       begin
-       T := SortData[I];
-       SortData[I] := SortData[J];
-       SortData[J] := T;
+       T := Data[I];
+       Data[I] := Data[J];
+       Data[J] := T;
        Inc(I);
        Dec(J);
       end;
     until I > J;
-   if StartSample < J then QuickSort64(SortData, StartSample, J);
+   if StartSample < J then QuickSort64(Data, StartSample, J);
+   StartSample := I;
+  until I >= EndSample;
+end;
+
+procedure QuickSortWithPosition(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray);
+var
+  I, J, K : Integer;
+  P, T    : Single;
+begin
+ repeat
+  I := StartSample;
+  J := EndSample;
+  P := Data[(StartSample + EndSample) shr 1];
+  repeat
+   while Data[I] < P do Inc(I);
+   while Data[J] > P do Dec(J);
+    if I <= J then
+     begin
+      T := Data[I];
+      Data[I] := Data[J];
+      Data[J] := T;
+      K := Positions[I];
+      Positions[I] := Positions[J];
+      Positions[J] := K;
+      Inc(I);
+      Dec(J);
+     end;
+   until I > J;
+
+   if StartSample < J then QuickSortWithPosition(Data, StartSample, J, Positions);
+   StartSample := I;
+  until I >= EndSample;
+end;
+
+procedure ReorderPositions(Data: PDAVSingleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray);
+var
+  I, J, K, P : Integer;
+  T          : Single;
+begin
+ repeat
+  I := StartSample;
+  J := EndSample;
+  P := Positions[(StartSample + EndSample) shr 1];
+  repeat
+    while Positions[I] < P do Inc(I);
+    while Positions[J] > P do Dec(J);
+     if I <= J then
+      begin
+       T := Data[I];
+       Data[I] := Data[J];
+       Data[J] := T;
+       K := Positions[I];
+       Positions[I] := Positions[J];
+       Positions[J] := K;
+       Inc(I);
+       Dec(J);
+      end;
+    until I > J;
+   if StartSample < J then ReorderPositions(Data, StartSample, J, Positions);
+   StartSample := I;
+  until I >= EndSample;
+end;
+
+procedure QuickSortWithPosition(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray);
+var
+  I, J, K : Integer;
+  P, T    : Double;
+begin
+ repeat
+  I := StartSample;
+  J := EndSample;
+  P := Data[(StartSample + EndSample) shr 1];
+  repeat
+   while Data[I] < P do Inc(I);
+   while Data[J] > P do Dec(J);
+    if I <= J then
+     begin
+      T := Data[I];
+      Data[I] := Data[J];
+      Data[J] := T;
+      K := Positions[I];
+      Positions[I] := Positions[J];
+      Positions[J] := K;
+      Inc(I);
+      Dec(J);
+     end;
+   until I > J;
+
+   if StartSample < J then QuickSortWithPosition(Data, StartSample, J, Positions);
+   StartSample := I;
+  until I >= EndSample;
+end;
+
+procedure ReorderPositions(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray);
+var
+  I, J, K, P : Integer;
+  T          : Double;
+begin
+ repeat
+  I := StartSample;
+  J := EndSample;
+  P := Positions[(StartSample + EndSample) shr 1];
+  repeat
+    while Positions[I] < P do Inc(I);
+    while Positions[J] > P do Dec(J);
+     if I <= J then
+      begin
+       T := Data[I];
+       Data[I] := Data[J];
+       Data[J] := T;
+       K := Positions[I];
+       Positions[I] := Positions[J];
+       Positions[J] := K;
+       Inc(I);
+       Dec(J);
+      end;
+    until I > J;
+   if StartSample < J then ReorderPositions(Data, StartSample, J, Positions);
    StartSample := I;
   until I >= EndSample;
 end;

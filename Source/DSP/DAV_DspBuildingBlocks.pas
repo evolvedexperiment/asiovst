@@ -49,13 +49,13 @@ type
     procedure AllocateBuffer; virtual; abstract;
     procedure BlockSizeChanged; virtual;
     procedure OverlapSizeChanged; virtual;
+
+    property BlockSize: Integer read FBlockSize write SetBlockSize;
+    property OverlapSize: Integer read FOverlapSize write SetOverlapSize;
   public
     constructor Create; virtual;
 
     procedure Reset; virtual;
-
-    property BlockSize: Integer read FBlockSize write SetBlockSize;
-    property OverlapSize: Integer read FOverlapSize write SetOverlapSize;
   end;
 
   TProcessBlock32 = procedure(Sender: TObject; const Input: PDAVSingleFixedArray) of object;
@@ -199,6 +199,10 @@ procedure TCustomBuildingBlocks.BlockSizeChanged;
 begin
  if FOverlapSize >= FBlockSize
   then FOverlapSize := FBlockSize div 2;
+
+ if FBlockPosition >= FBlockSize
+  then FBlockPosition := 0;
+ 
  AllocateBuffer;
  Changed;
 end;
@@ -317,14 +321,14 @@ begin
  FBuffer32[FBlockPosition] := Input;
  Inc(FBlockPosition);
 
-  if FBlockPosition >= FBlockSize then
-   begin
-    if Assigned(FOnProcess)
-     then FOnProcess(Self, FBuffer32);
+ if FBlockPosition >= FBlockSize then
+  begin
+   if Assigned(FOnProcess)
+    then FOnProcess(Self, FBuffer32);
 
-    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FOverlapSize * SizeOf(Single));
-    FBlockPosition := FOverlapSize;
-   end;
+   Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FOverlapSize * SizeOf(Single));
+   FBlockPosition := FOverlapSize;
+  end;
 end;
 
 
