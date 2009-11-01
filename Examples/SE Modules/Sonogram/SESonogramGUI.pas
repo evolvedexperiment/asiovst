@@ -71,9 +71,10 @@ begin
  FTimer.Enabled  := True;
 
  CallHost(seGuiHostSetWindowSize, 64, 64);
- CallHost(seGuiHostSetWindowType, 1); // 0 = Draw on SE's window (default), 1 = HWND based
+ CallHost(seGuiHostSetWindowType, 0); // 0 = Draw on SE's window (default), 1 = HWND based
 
- CallHost(seGuiHostSetWindowFlags, Integer(hwfResizable));
+ CallHost(seGuiHostSetWindowFlags, Integer(hwfResizable) +
+   Integer(hwfNoCustomGfxOnStructure));
 end;
 
 destructor TSESonogramGui.Destroy;
@@ -89,7 +90,7 @@ begin
   with FSonogram do
    begin
     if not Assigned(Bitmap) then Exit;
-    
+
     CriticalSection.Enter;
     try
      if Assigned(wi) then
@@ -98,13 +99,21 @@ begin
        if Bitmap.Height <> wi.Height then Bitmap.Height := wi.Height;
       end;
 
+     BitBlt(hDC, 0, 0 + (Bitmap.Height - CurrentSlice), Bitmap.Width,
+       CurrentSlice, Bitmap.Canvas.Handle, 0, 0, SRCCOPY);
+     BitBlt(hDC, 0, 0, Bitmap.Width, (Bitmap.Height - CurrentSlice),
+       Bitmap.Canvas.Handle, 0, CurrentSlice, SRCCOPY);
+
+(*
      with TCanvas.Create do
       try
        Handle := hDC;
+
        Draw(0, 0, Bitmap);
       finally
        Free;
       end;
+*)
     finally
      CriticalSection.Leave;
     end;

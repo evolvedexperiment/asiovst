@@ -214,8 +214,8 @@ type
     Future     : array[0..15] of Char; // pls zero
   end;
 
-  TSEHostWindowFlags = (hwfResizable = 1, hwfNoCustomGfxOnStructure = 2);
-//  TSEHostWindowFlags = set of TSEHostWindowFlag;
+  TSEHostWindowFlag = (hwfResizable = 1, hwfNoCustomGfxOnStructure = 2);
+  TSEHostWindowFlags = set of TSEHostWindowFlag;
 
   // painting info
   TSEpoint = TPoint;

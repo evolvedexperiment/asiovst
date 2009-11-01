@@ -50,12 +50,13 @@ type
     procedure BlockSizeChanged; virtual;
     procedure OverlapSizeChanged; virtual;
 
-    property BlockSize: Integer read FBlockSize write SetBlockSize;
-    property OverlapSize: Integer read FOverlapSize write SetOverlapSize;
   public
     constructor Create; virtual;
 
     procedure Reset; virtual;
+
+    property BlockSize: Integer read FBlockSize write SetBlockSize;
+    property OverlapSize: Integer read FOverlapSize write SetOverlapSize;
   end;
 
   TProcessBlock32 = procedure(Sender: TObject; const Input: PDAVSingleFixedArray) of object;
