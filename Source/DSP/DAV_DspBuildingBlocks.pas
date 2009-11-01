@@ -296,19 +296,19 @@ begin
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockSize then
    begin
-    Move(Input[CurrentPosition], FBuffer32[FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
+    Move(Input^[CurrentPosition], FBuffer32^[FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Single));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    Move(Input[CurrentPosition], FBuffer32[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Single));
+    Move(Input^[CurrentPosition], FBuffer32^[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Single));
 
     if Assigned(FOnProcess)
      then FOnProcess(Self, FBuffer32);
 
-    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FOverlapSize * SizeOf(Single));
+    Move(FBuffer32^[(FBlockSize - FOverlapSize)], FBuffer32^[0], FOverlapSize * SizeOf(Single));
 
     CurrentPosition := CurrentPosition + (FBlockSize - FBlockPosition);
     FBlockPosition := FOverlapSize;
@@ -477,19 +477,19 @@ begin
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockSize then
    begin
-    Move(Input[CurrentPosition], FBuffer64[FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
+    Move(Input^[CurrentPosition], FBuffer64^[FBlockPosition], (SampleFrames - CurrentPosition) * SizeOf(Double));
 
     FBlockPosition := FBlockPosition + (SampleFrames - CurrentPosition);
     CurrentPosition := SampleFrames;
    end
   else
    begin
-    Move(Input[CurrentPosition], FBuffer64[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Double));
+    Move(Input^[CurrentPosition], FBuffer64^[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Double));
 
     if Assigned(FOnProcess)
      then FOnProcess(Self, FBuffer64);
 
-    Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FOverlapSize * SizeOf(Double));
+    Move(FBuffer64^[(FBlockSize - FOverlapSize)], FBuffer64^[0], FOverlapSize * SizeOf(Double));
 
     CurrentPosition := CurrentPosition + (FBlockSize - FBlockPosition);
     FBlockPosition := FOverlapSize;
@@ -502,14 +502,14 @@ begin
  FBuffer64[FBlockPosition] := Input;
  Inc(FBlockPosition);
 
-  if FBlockPosition >= FBlockSize then
-   begin
-    if Assigned(FOnProcess)
-     then FOnProcess(Self, FBuffer64);
+ if FBlockPosition >= FBlockSize then
+  begin
+   if Assigned(FOnProcess)
+    then FOnProcess(Self, FBuffer64);
 
-    Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FOverlapSize * SizeOf(Double));
-    FBlockPosition := FOverlapSize;
-   end;
+   Move(FBuffer64[(FBlockSize - FOverlapSize)], FBuffer64[0], FOverlapSize * SizeOf(Double));
+   FBlockPosition := FOverlapSize;
+  end;
 end;
 
 

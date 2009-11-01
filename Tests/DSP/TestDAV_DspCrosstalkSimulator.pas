@@ -126,5 +126,5 @@ end;
 initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestTIIRCrosstalkSimulator.Suite);
-end.
 
+end.

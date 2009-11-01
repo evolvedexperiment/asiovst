@@ -242,6 +242,9 @@ implementation
 uses
   Math, SysUtils;
 
+resourcestring
+  RCStrNotSupported = 'not supported yet';
+
 var
   CSQRT2Div2 : Double;
   LUTList    : TList;
@@ -647,7 +650,7 @@ begin
  case DataOrder of
   doPackedRealImaginary : FPerformFFTPackedReIm(FrequencyDomain, TimeDomain);
   doPackedComplex : FPerformFFTPackedComplex(FrequencyDomain, TimeDomain);
-  else raise Exception.Create('not supported yet');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -657,7 +660,7 @@ begin
  case DataOrder of
   doPackedRealImaginary : FPerformIFFTPackedReIm(FrequencyDomain, TimeDomain);
   doPackedComplex : FPerformIFFTPackedComplex(FrequencyDomain, TimeDomain);
-  else raise Exception.Create('not supported yet');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -2902,7 +2905,7 @@ begin
  case DataOrder of
   doPackedRealImaginary : FPerformFFTPackedReIm(FrequencyDomain, TimeDomain);
   doPackedComplex : FPerformFFTPackedComplex(FrequencyDomain, TimeDomain);
-  else raise Exception.Create('not supported yet');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 
@@ -2911,7 +2914,7 @@ begin
  case DataOrder of
   doPackedRealImaginary : FPerformFFTPackedReIm(FrequencyDomain, TimeDomain);
   doPackedComplex : FPerformFFTPackedComplex(FrequencyDomain, TimeDomain);
-  else raise Exception.Create('not supported yet');
+  else raise Exception.Create(RCStrNotSupported);
  end;
 end;
 

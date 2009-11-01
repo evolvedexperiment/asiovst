@@ -82,4 +82,3 @@ initialization
   RegisterTest(TestTExciter.Suite);
   
 end.
-

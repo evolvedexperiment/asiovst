@@ -936,24 +936,33 @@ begin
  CheckEquals(PeakLevel, ReturnValue);
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Dynamics Tests');
+ TS.AddSuite(TestTSimpleDirectGate.Suite);
+ TS.AddSuite(TestTSoftDirectGate.Suite);
+ TS.AddSuite(TestTBrickwallLimiter.Suite);
+ TS.AddSuite(TestTSoftBrickwallLimiter.Suite);
+ TS.AddSuite(TestTSimpleSoftBrickwallLimiter.Suite);
+ TS.AddSuite(TestTLimiter.Suite);
+ TS.AddSuite(TestTSoftKneeLimiter.Suite);
+ TS.AddSuite(TestTSimpleSoftKneeLimiter.Suite);
+ TS.AddSuite(TestTClassicGate.Suite);
+ TS.AddSuite(TestTClassicSoftRangeGate.Suite);
+ TS.AddSuite(TestTClassicSoftKneeGate.Suite);
+ TS.AddSuite(TestTAdvancedGate.Suite);
+ TS.AddSuite(TestTSimpleCompressor.Suite);
+ TS.AddSuite(TestTSoftKneeCompressor.Suite);
+ TS.AddSuite(TestTSimpleFeedbackCompressor.Suite);
+ TS.AddSuite(TestTSoftKneeFeedbackCompressor.Suite);
+ TS.AddSuite(TestTSimpleRMSCompressor.Suite);
+ TS.AddSuite(TestTCompressor.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  // Alle Testfälle beim Test-Runner registrieren
-  RegisterTest(TestTSimpleDirectGate.Suite);
-  RegisterTest(TestTSoftDirectGate.Suite);
-  RegisterTest(TestTBrickwallLimiter.Suite);
-  RegisterTest(TestTSoftBrickwallLimiter.Suite);
-  RegisterTest(TestTSimpleSoftBrickwallLimiter.Suite);
-  RegisterTest(TestTLimiter.Suite);
-  RegisterTest(TestTSoftKneeLimiter.Suite);
-  RegisterTest(TestTSimpleSoftKneeLimiter.Suite);
-  RegisterTest(TestTClassicGate.Suite);
-  RegisterTest(TestTClassicSoftRangeGate.Suite);
-  RegisterTest(TestTClassicSoftKneeGate.Suite);
-  RegisterTest(TestTAdvancedGate.Suite);
-  RegisterTest(TestTSimpleCompressor.Suite);
-  RegisterTest(TestTSoftKneeCompressor.Suite);
-  RegisterTest(TestTSimpleFeedbackCompressor.Suite);
-  RegisterTest(TestTSoftKneeFeedbackCompressor.Suite);
-  RegisterTest(TestTSimpleRMSCompressor.Suite);
-  RegisterTest(TestTCompressor.Suite);
+  RegisterTestSuite;
+
 end.

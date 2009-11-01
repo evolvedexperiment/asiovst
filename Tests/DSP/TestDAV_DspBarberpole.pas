@@ -244,8 +244,17 @@ begin
  CheckEquals(Value, FDspBarberpole64.ProcessSample64(Input));
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Barberpole Flangers');
+ TS.AddSuite(TestTDspBarberpole32.Suite);
+ TS.AddSuite(TestTDspBarberpole64.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  RegisterTest(TestTDspBarberpole32.Suite);
-  RegisterTest(TestTDspBarberpole64.Suite);
+  RegisterTestSuite;
 
 end.

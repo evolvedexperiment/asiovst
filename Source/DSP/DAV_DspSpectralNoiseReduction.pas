@@ -434,11 +434,7 @@ constructor TSpectralNoiseGate32.Create;
 begin
  inherited;
 
- with FFFT do
-  begin
-   AutoScaleType := astDivideInvByN;
-   DataOrder := doComplex;
-  end;
+ FFFT.AutoScaleType := astDivideInvByN;
 end;
 
 procedure TSpectralNoiseGate32.FFTOrderChanged;
@@ -637,11 +633,7 @@ begin
  inherited;
  FOffset := 8;
 
- with FFFT do
-  begin
-   AutoScaleType := astDivideInvByN;
-   DataOrder := doComplex;
-  end;
+ FFFT.AutoScaleType := astDivideInvByN;
 end;
 
 procedure TNoiseReduction32.FFTOrderChanged;
@@ -1065,11 +1057,7 @@ constructor TSpectralNoiseGate64.Create;
 begin
  inherited;
 
- with FFFT do
-  begin
-   AutoScaleType := astDivideInvByN;
-   DataOrder := doComplex;
-  end;
+ FFFT.AutoScaleType := astDivideInvByN;
 end;
 
 procedure TSpectralNoiseGate64.FFTOrderChanged;

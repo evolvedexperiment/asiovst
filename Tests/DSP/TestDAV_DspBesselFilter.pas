@@ -204,8 +204,17 @@ begin
  CheckTrue(abs(ReturnValue - 1) < 1E-10);
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Bessel Filters');
+ TS.AddSuite(TestTBesselLowpassFilter.Suite);
+ TS.AddSuite(TestTBesselHighpassFilter.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  RegisterTest(TestTBesselLowpassFilter.Suite);
-  RegisterTest(TestTBesselHighpassFilter.Suite);
+  RegisterTestSuite;
 
 end.

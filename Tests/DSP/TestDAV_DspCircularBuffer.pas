@@ -634,14 +634,23 @@ begin
  // TODO: Validate method results
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Circular Buffer Tests');
+ TS.AddSuite(TestTCircularBuffer32.Suite);
+ TS.AddSuite(TestTCircularBuffer64.Suite);
+ TS.AddSuite(TestTCircularStereoBuffer32.Suite);
+ TS.AddSuite(TestTCircularStereoBuffer64.Suite);
+ TS.AddSuite(TestTCircularMultiBuffer32.Suite);
+ TS.AddSuite(TestTCircularMultiBuffer64.Suite);
+ TS.AddSuite(TestTCircularReserveMultiBuffer32.Suite);
+ TS.AddSuite(TestTCircularReserveMultiBuffer64.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  // Alle Testfälle beim Test-Runner registrieren
-  RegisterTest(TestTCircularBuffer32.Suite);
-  RegisterTest(TestTCircularBuffer64.Suite);
-  RegisterTest(TestTCircularStereoBuffer32.Suite);
-  RegisterTest(TestTCircularStereoBuffer64.Suite);
-  RegisterTest(TestTCircularMultiBuffer32.Suite);
-  RegisterTest(TestTCircularMultiBuffer64.Suite);
-  RegisterTest(TestTCircularReserveMultiBuffer32.Suite);
-  RegisterTest(TestTCircularReserveMultiBuffer64.Suite);
+  RegisterTestSuite;
+
 end.

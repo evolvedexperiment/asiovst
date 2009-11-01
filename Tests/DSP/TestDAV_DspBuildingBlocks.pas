@@ -26,8 +26,11 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestBasicProcesssing;
-    procedure TestPowerOf2Blocksizes;
+    procedure TestBasicSampleProcesssing;
+    procedure TestBasicBlockProcesssing;
+    procedure TestPowerOf2BlocksizesSampleProcesssing;
+    procedure TestPowerOf2BlocksizesBlockProcesssing;
+    procedure TestOverlapSampleProcesssing;
   end;
 
   // Test methods for class TBuildingBlocksCircular32
@@ -41,8 +44,10 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestBasicProcesssing;
-    procedure TestPowerOf2Blocksizes;
+    procedure TestBasicSampleProcesssing;
+    procedure TestBasicBlockProcesssing;
+    procedure TestPowerOf2BlocksizesSampleProcessing;
+    procedure TestPowerOf2BlocksizesBlockProcessing;
   end;
 
   // Test methods for class TBuildingBlocks64
@@ -56,8 +61,10 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestBasicProcesssing;
-    procedure TestPowerOf2Blocksizes;
+    procedure TestBasicSampleProcesssing;
+    procedure TestBasicBlockProcesssing;
+    procedure TestPowerOf2BlocksizesSampleProcessing;
+    procedure TestPowerOf2BlocksizesBlockProcessing;
   end;
 
   // Test methods for class TBuildingBlocksCircular64
@@ -71,8 +78,10 @@ type
     procedure SetUp; override;
     procedure TearDown; override;
   published
-    procedure TestBasicProcesssing;
-    procedure TestPowerOf2Blocksizes;
+    procedure TestBasicSampleProcesssing;
+    procedure TestBasicBlockProcesssing;
+    procedure TestPowerOf2BlocksizesSampleProcessing;
+    procedure TestPowerOf2BlocksizesBlockProcessing;
   end;
 
 implementation
@@ -101,7 +110,7 @@ begin
  FreeAndNil(FBuildingBlocks32);
 end;
 
-procedure TestTBuildingBlocks32.TestBasicProcesssing;
+procedure TestTBuildingBlocks32.TestBasicSampleProcesssing;
 var
   Sample : Integer;
 begin
@@ -113,7 +122,34 @@ begin
   end;
 end;
 
-procedure TestTBuildingBlocks32.TestPowerOf2Blocksizes;
+procedure TestTBuildingBlocks32.TestBasicBlockProcesssing;
+var
+  Sample : Integer;
+  Data   : PDAVSingleFixedArray;
+begin
+ with FBuildingBlocks32 do
+  begin
+   // process block
+   GetMem(Data, BlockSize * SizeOf(Single));
+   try
+    FOnProcessCount := 0;
+
+    // prefill data
+    for Sample := 0 to (BlockSize div 2) - 1
+     do Data[Sample] := 0;
+    for Sample := (BlockSize div 2) to BlockSize - 1
+     do Data[Sample] := 1;
+
+    ProcessBlock32(Data, BlockSize);
+
+    CheckEquals(FOnProcessCount, 2);
+   finally
+    Dispose(Data);
+   end;
+  end;
+end;
+
+procedure TestTBuildingBlocks32.TestPowerOf2BlocksizesSampleProcesssing;
 var
   Order  : Integer;
   Sample : Integer;
@@ -130,6 +166,61 @@ begin
     for Sample := 0 to BlockSize - 1 do ProcessSample32(FOnProcessCount);
     CheckEquals(FOnProcessCount, 2);
    end;
+end;
+
+procedure TestTBuildingBlocks32.TestPowerOf2BlocksizesBlockProcesssing;
+var
+  Order  : Integer;
+  Sample : Integer;
+  Data   : PDAVSingleFixedArray;
+begin
+ with FBuildingBlocks32 do
+  for Order := 4 to CmaxOrder do
+   begin
+    // setup test
+    BlockSize := 1 shl Order;
+    OverlapSize := BlockSize shr 1;
+    FOnProcessCount := 0;
+    Reset;
+
+    // process block
+    GetMem(Data, BlockSize * SizeOf(Single));
+    try
+     // prefill data
+     for Sample := 0 to (BlockSize div 2) - 1
+      do Data[Sample] := 0;
+     for Sample := (BlockSize div 2) to BlockSize - 1
+      do Data[Sample] := 1;
+
+     ProcessBlock32(Data, BlockSize);
+    finally
+     Dispose(Data);
+    end;
+
+    CheckEquals(FOnProcessCount, 2);
+   end;
+end;
+
+procedure TestTBuildingBlocks32.TestOverlapSampleProcesssing;
+var
+  Divider : Integer;
+  Sample : Integer;
+begin
+ with FBuildingBlocks32 do
+  begin
+   BlockSize := 1 shl 13;
+
+   for Divider := 0 to 7 do
+    begin
+     // setup test
+     OverlapSize := BlockSize - (BlockSize shr Divider);
+     FOnProcessCount := 0;
+     Reset;
+
+     for Sample := 0 to BlockSize - 1 do ProcessSample32(FOnProcessCount);
+     CheckEquals(FOnProcessCount, 1 shl Divider);
+    end;
+  end;
 end;
 
 procedure TestTBuildingBlocks32.OnProcessHandler(Sender: TObject;
@@ -162,7 +253,7 @@ begin
  FreeAndNil(FBuildingBlocksCircular32);
 end;
 
-procedure TestTBuildingBlocksCircular32.TestBasicProcesssing;
+procedure TestTBuildingBlocksCircular32.TestBasicSampleProcesssing;
 var
   Sample : Integer;
 begin
@@ -174,7 +265,34 @@ begin
   end;
 end;
 
-procedure TestTBuildingBlocksCircular32.TestPowerOf2Blocksizes;
+procedure TestTBuildingBlocksCircular32.TestBasicBlockProcesssing;
+var
+  Sample : Integer;
+  Data   : PDAVSingleFixedArray;
+begin
+ with FBuildingBlocksCircular32 do
+  begin
+   // process block
+   GetMem(Data, BlockSize * SizeOf(Single));
+   try
+    FOnProcessCount := 0;
+
+    // prefill data
+    for Sample := 0 to (BlockSize div 2) - 1
+     do Data[Sample] := 0;
+    for Sample := (BlockSize div 2) to BlockSize - 1
+     do Data[Sample] := 1;
+
+    ProcessBlock32(Data, BlockSize);
+
+    CheckEquals(FOnProcessCount, 2);
+   finally
+    Dispose(Data);
+   end;
+  end;
+end;
+
+procedure TestTBuildingBlocksCircular32.TestPowerOf2BlocksizesSampleProcessing;
 var
   Order  : Integer;
   Sample : Integer;
@@ -189,6 +307,39 @@ begin
     Reset;
 
     for Sample := 0 to BlockSize - 1 do ProcessSample32(FOnProcessCount);
+    CheckEquals(FOnProcessCount, 2);
+   end;
+end;
+
+procedure TestTBuildingBlocksCircular32.TestPowerOf2BlocksizesBlockProcessing;
+var
+  Order  : Integer;
+  Sample : Integer;
+  Data   : PDAVSingleFixedArray;
+begin
+ with FBuildingBlocksCircular32 do
+  for Order := 4 to CmaxOrder do
+   begin
+    // setup test
+    BlockSize := 1 shl Order;
+    OverlapSize := BlockSize shr 1;
+    FOnProcessCount := 0;
+    Reset;
+
+    // process block
+    GetMem(Data, BlockSize * SizeOf(Single));
+    try
+     // prefill data
+     for Sample := 0 to (BlockSize div 2) - 1
+      do Data[Sample] := 0;
+     for Sample := (BlockSize div 2) to BlockSize - 1
+      do Data[Sample] := 1;
+
+     ProcessBlock32(Data, BlockSize);
+    finally
+     Dispose(Data);
+    end;
+
     CheckEquals(FOnProcessCount, 2);
    end;
 end;
@@ -224,7 +375,7 @@ begin
  FreeAndNil(FBuildingBlocks64);
 end;
 
-procedure TestTBuildingBlocks64.TestBasicProcesssing;
+procedure TestTBuildingBlocks64.TestBasicSampleProcesssing;
 var
   Sample : Integer;
 begin
@@ -236,7 +387,34 @@ begin
   end;
 end;
 
-procedure TestTBuildingBlocks64.TestPowerOf2Blocksizes;
+procedure TestTBuildingBlocks64.TestBasicBlockProcesssing;
+var
+  Sample : Integer;
+  Data   : PDAVDoubleFixedArray;
+begin
+ with FBuildingBlocks64 do
+  begin
+   // process block
+   GetMem(Data, 3 * (BlockSize div 2) * SizeOf(Double));
+   try
+    FOnProcessCount := 0;
+
+    // prefill data
+    for Sample := 0 to (BlockSize div 2) - 1
+     do Data[Sample] := 0;
+    for Sample := (BlockSize div 2) to BlockSize - 1
+     do Data[Sample] := 1;
+
+    ProcessBlock64(Data, BlockSize);
+
+    CheckEquals(FOnProcessCount, 2);
+   finally
+    Dispose(Data);
+   end;
+  end;
+end;
+
+procedure TestTBuildingBlocks64.TestPowerOf2BlocksizesSampleProcessing;
 var
   Order  : Integer;
   Sample : Integer;
@@ -251,6 +429,39 @@ begin
     Reset;
 
     for Sample := 0 to BlockSize - 1 do ProcessSample64(FOnProcessCount);
+    CheckEquals(FOnProcessCount, 2);
+   end;
+end;
+
+procedure TestTBuildingBlocks64.TestPowerOf2BlocksizesBlockProcessing;
+var
+  Order  : Integer;
+  Sample : Integer;
+  Data   : PDAVDoubleFixedArray;
+begin
+ with FBuildingBlocks64 do
+  for Order := 4 to CmaxOrder do
+   begin
+    // setup test
+    BlockSize := 1 shl Order;
+    OverlapSize := BlockSize shr 1;
+    FOnProcessCount := 0;
+    Reset;
+
+    // process block
+    GetMem(Data, BlockSize * SizeOf(Double));
+    try
+     // prefill data
+     for Sample := 0 to (BlockSize div 2) - 1
+      do Data[Sample] := 0;
+     for Sample := (BlockSize div 2) to BlockSize - 1
+      do Data[Sample] := 1;
+
+     ProcessBlock64(Data, BlockSize);
+    finally
+     Dispose(Data);
+    end;
+
     CheckEquals(FOnProcessCount, 2);
    end;
 end;
@@ -286,7 +497,7 @@ begin
  FreeAndNil(FBuildingBlocksCircular64);
 end;
 
-procedure TestTBuildingBlocksCircular64.TestBasicProcesssing;
+procedure TestTBuildingBlocksCircular64.TestBasicSampleProcesssing;
 var
   Sample : Integer;
 begin
@@ -298,7 +509,34 @@ begin
   end;
 end;
 
-procedure TestTBuildingBlocksCircular64.TestPowerOf2Blocksizes;
+procedure TestTBuildingBlocksCircular64.TestBasicBlockProcesssing;
+var
+  Sample : Integer;
+  Data   : PDAVDoubleFixedArray;
+begin
+ with FBuildingBlocksCircular64 do
+  begin
+   // process block
+   GetMem(Data, BlockSize * SizeOf(Double));
+   try
+    FOnProcessCount := 0;
+
+    // prefill data
+    for Sample := 0 to (BlockSize div 2) - 1
+     do Data[Sample] := 0;
+    for Sample := (BlockSize div 2) to BlockSize - 1
+     do Data[Sample] := 1;
+
+    ProcessBlock64(Data, BlockSize);
+
+    CheckEquals(FOnProcessCount, 2);
+   finally
+    Dispose(Data);
+   end;
+  end;
+end;
+
+procedure TestTBuildingBlocksCircular64.TestPowerOf2BlocksizesSampleProcessing;
 var
   Order  : Integer;
   Sample : Integer;
@@ -317,6 +555,39 @@ begin
    end;
 end;
 
+procedure TestTBuildingBlocksCircular64.TestPowerOf2BlocksizesBlockProcessing;
+var
+  Order  : Integer;
+  Sample : Integer;
+  Data   : PDAVDoubleFixedArray;
+begin
+ with FBuildingBlocksCircular64 do
+  for Order := 4 to CmaxOrder do
+   begin
+    // setup test
+    BlockSize := 1 shl Order;
+    OverlapSize := BlockSize shr 1;
+    FOnProcessCount := 0;
+    Reset;
+
+    // process block
+    GetMem(Data, BlockSize * SizeOf(Double));
+    try
+     // prefill data
+     for Sample := 0 to (BlockSize div 2) - 1
+      do Data[Sample] := 0;
+     for Sample := (BlockSize div 2) to BlockSize - 1
+      do Data[Sample] := 1;
+
+     ProcessBlock64(Data, BlockSize);
+    finally
+     Dispose(Data);
+    end;
+
+    CheckEquals(FOnProcessCount, 2);
+   end;
+end;
+
 procedure TestTBuildingBlocksCircular64.OnProcessHandler(Sender: TObject;
   const Input: PDAVDoubleFixedArray);
 var
@@ -328,11 +599,19 @@ begin
  Inc(FOnProcessCount);
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Building Blocks');
+ TS.AddSuite(TestTBuildingBlocks32.Suite);
+ TS.AddSuite(TestTBuildingBlocksCircular32.Suite);
+ TS.AddSuite(TestTBuildingBlocks64.Suite);
+ TS.AddSuite(TestTBuildingBlocksCircular64.Suite);
+ RegisterTest(TS);
+end;
 
 initialization
-  // Alle Testfälle beim Test-Runner registrieren
-  RegisterTests([TestTBuildingBlocks32.Suite,
-    TestTBuildingBlocksCircular32.Suite, TestTBuildingBlocks64.Suite,
-    TestTBuildingBlocksCircular64.Suite]);
-end.
+  RegisterTestSuite;
 
+end.

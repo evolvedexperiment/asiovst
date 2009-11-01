@@ -2,12 +2,16 @@
 library SortedDisorder;
 
 uses
+  FastMM4,  // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
+  madExcept, // either download madExcept or remove mad* if there is an error here
+  madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   SortedDisorderDM in 'SortedDisorderDM.pas' {SortedDisorderModule: TVSTModule},
   SortedDisorderGui in 'SortedDisorderGui.pas' {FmSortedDisorder},
-  DAV_DspBlockDistribution in '..\..\..\Source\DAV_DspBlockDistribution.pas';
+  DAV_DspBlockDistribution in '..\..\..\Source\Dsp\DAV_DspBlockDistribution.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

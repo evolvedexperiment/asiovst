@@ -1,4 +1,4 @@
-library SEPhaser;
+library SENoiseReduction;
 
 uses
   FastMove, // either download the library or comment if there is an error here
@@ -6,7 +6,7 @@ uses
   Classes,
   DAV_SECommon,
   DAV_SEModule,
-  SEPhaserModule in 'SEPhaserModule.pas';
+  SENoiseReductionModule in 'SENoiseReductionModule.pas';
 
 {$E sem}
 {$R *.res}
@@ -15,8 +15,8 @@ function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): B
 begin
  Result := True;
  case Index of // !!TODO!! list your in / out plugs
-  0: TSEPhaserStaticModule.GetModuleProperties(Properties);
-  1: TSEPhaserControllableModule.GetModuleProperties(Properties);
+  0: TSENoiseReductionStaticModule.GetModuleProperties(Properties);
+  1: TSENoiseReductionControllableModule.GetModuleProperties(Properties);
   else Result := False; // host will ask for module 0,1,2,3 etc. return false to signal when done
  end;;
 end;
@@ -26,8 +26,8 @@ begin
  Result := nil;
  if (ProcessType = 1) then
   case Index of
-   0: Result := TSEPhaserStaticModule.Create(SEAudioMaster, Reserved).Effect;
-   1: Result := TSEPhaserControllableModule.Create(SEAudioMaster, Reserved).Effect;
+   0: Result := TSENoiseReductionStaticModule.Create(SEAudioMaster, Reserved).Effect;
+   1: Result := TSENoiseReductionControllableModule.Create(SEAudioMaster, Reserved).Effect;
   end;
 end;
 

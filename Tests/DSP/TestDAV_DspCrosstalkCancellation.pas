@@ -98,5 +98,5 @@ end;
 initialization
   // Alle Testfälle beim Test-Runner registrieren
   RegisterTest(TestTCrosstalkCancellation32.Suite);
-end.
 
+end.

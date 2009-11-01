@@ -284,9 +284,18 @@ begin
  CheckEquals(Value, FDspChorus64.ProcessSample64(Input));
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Chorus Tests');
+ TS.AddSuite(TestTCustomDspChorus.Suite);
+ TS.AddSuite(TestTDspChorus32.Suite);
+ TS.AddSuite(TestTDspChorus64.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  RegisterTest(TestTCustomDspChorus.Suite);
-  RegisterTest(TestTDspChorus32.Suite);
-  RegisterTest(TestTDspChorus64.Suite);
+  RegisterTestSuite;
 
 end.

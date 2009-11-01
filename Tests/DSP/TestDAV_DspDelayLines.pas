@@ -246,10 +246,18 @@ begin
   end;
 end;
 
-initialization
-  // Alle Testfälle beim Test-Runner registrieren
-  RegisterTest(TestTDelayLineSamples32.Suite);
-  RegisterTest(TestTDelayLineSamples64.Suite);
-  RegisterTest(TestTDelayLineTime32.Suite);
-end.
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Delay Line Tests');
+ TS.AddSuite(TestTDelayLineSamples32.Suite);
+ TS.AddSuite(TestTDelayLineSamples64.Suite);
+ TS.AddSuite(TestTDelayLineTime32.Suite);
+ RegisterTest(TS);
+end;
 
+initialization
+  RegisterTestSuite;
+
+end.

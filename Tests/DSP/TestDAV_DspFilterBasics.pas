@@ -510,21 +510,28 @@ begin
   end;
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Basic Filter Tests');
+ TS.AddSuite(TestTBasicGainFilter.Suite);
+ TS.AddSuite(TestTBasicPeakFilter.Suite);
+ TS.AddSuite(TestTBasicAllpassFilter.Suite);
+ TS.AddSuite(TestTBasicLowShelfFilter.Suite);
+ TS.AddSuite(TestTBasicLowShelfAFilter.Suite);
+ TS.AddSuite(TestTBasicLowShelfBFilter.Suite);
+ TS.AddSuite(TestTBasicHighShelfFilter.Suite);
+ TS.AddSuite(TestTBasicHighShelfAFilter.Suite);
+ TS.AddSuite(TestTBasicHighShelfBFilter.Suite);
+ TS.AddSuite(TestTBasicHighcutFilter.Suite);
+ TS.AddSuite(TestTBasicLowcutFilter.Suite);
+ TS.AddSuite(TestTBasicBandpassFilter.Suite);
+ TS.AddSuite(TestTBasicNotchFilter.Suite);
+ RegisterTest(TS);
+end;
 
 initialization
-  // Alle Testfälle beim Test-Runner registrieren
-  RegisterTest(TestTBasicGainFilter.Suite);
-  RegisterTest(TestTBasicPeakFilter.Suite);
-  RegisterTest(TestTBasicAllpassFilter.Suite);
-  RegisterTest(TestTBasicLowShelfFilter.Suite);
-  RegisterTest(TestTBasicLowShelfAFilter.Suite);
-  RegisterTest(TestTBasicLowShelfBFilter.Suite);
-  RegisterTest(TestTBasicHighShelfFilter.Suite);
-  RegisterTest(TestTBasicHighShelfAFilter.Suite);
-  RegisterTest(TestTBasicHighShelfBFilter.Suite);
-  RegisterTest(TestTBasicHighcutFilter.Suite);
-  RegisterTest(TestTBasicLowcutFilter.Suite);
-  RegisterTest(TestTBasicBandpassFilter.Suite);
-  RegisterTest(TestTBasicNotchFilter.Suite);
-end.
+  RegisterTestSuite;
 
+end.

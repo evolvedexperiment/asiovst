@@ -239,11 +239,19 @@ begin
   CheckTrue(abs(ReturnValue - 1) < 1E-2);
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Chebyshev Filter Tests');
+ TS.AddSuite(TestTChebyshev1LowpassFilter.Suite);
+ TS.AddSuite(TestTChebyshev1LowpassFilterAutomatable.Suite);
+ TS.AddSuite(TestTChebyshev1HighpassFilter.Suite);
+ TS.AddSuite(TestTChebyshev1HighpassFilterAutomatable.Suite);
+ RegisterTest(TS);
+end;
 
 initialization
-  RegisterTest(TestTChebyshev1LowpassFilter.Suite);
-  RegisterTest(TestTChebyshev1LowpassFilterAutomatable.Suite);
-  RegisterTest(TestTChebyshev1HighpassFilter.Suite);
-  RegisterTest(TestTChebyshev1HighpassFilterAutomatable.Suite);
+  RegisterTestSuite;
 
 end.

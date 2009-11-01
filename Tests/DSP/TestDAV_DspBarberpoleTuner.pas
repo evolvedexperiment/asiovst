@@ -105,8 +105,17 @@ begin
  FBarberpoleTuner.ProcessSample32(Random);
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Barberpole Tuners');
+ TS.AddSuite(TestTBarberpoleFilter.Suite);
+ TS.AddSuite(TestTBarberpoleTuner.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  RegisterTest(TestTBarberpoleFilter.Suite);
-  RegisterTest(TestTBarberpoleTuner.Suite);
+  RegisterTestSuite;
 
 end.

@@ -170,4 +170,3 @@ initialization
   RegisterTest(TestTDitherNoiseShaper32.Suite);
   
 end.
-

@@ -310,13 +310,21 @@ begin
  FLowLatencyConvolutionStereo64.ProcessBlock(nil, nil, 0);
 end;
 
-initialization
-  // Alle Testfälle beim Test-Runner registrieren
-  RegisterTest(TestTConvolution32.Suite);
-  RegisterTest(TestTConvolution64.Suite);
-  RegisterTest(TestTLowLatencyConvolution32.Suite);
-  RegisterTest(TestTLowLatencyConvolutionStereo32.Suite);
-  RegisterTest(TestTLowLatencyConvolution64.Suite);
-  RegisterTest(TestTLowLatencyConvolutionStereo64.Suite);
-end.
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Convolution Tests');
+ TS.AddSuite(TestTConvolution32.Suite);
+ TS.AddSuite(TestTConvolution64.Suite);
+ TS.AddSuite(TestTLowLatencyConvolution32.Suite);
+ TS.AddSuite(TestTLowLatencyConvolutionStereo32.Suite);
+ TS.AddSuite(TestTLowLatencyConvolution64.Suite);
+ TS.AddSuite(TestTLowLatencyConvolutionStereo64.Suite);
+ RegisterTest(TS);
+end;
 
+initialization
+  RegisterTestSuite;
+
+end.

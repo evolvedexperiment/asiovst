@@ -370,9 +370,18 @@ begin
   CheckTrue(abs(0.5 - ReturnValue) < 1E-15);
 end;
 
+procedure RegisterTestSuite;
+var
+  TS : TTestSuite;
+begin
+ TS := TTestSuite.Create('Butterworth Filter Tests');
+ TS.AddSuite(TestTButterworthLowPassFilter.Suite);
+ TS.AddSuite(TestTButterworthHighpassFilter.Suite);
+ TS.AddSuite(TestTButterworthSplitBandFilter.Suite);
+ RegisterTest(TS);
+end;
+
 initialization
-  RegisterTest(TestTButterworthLowPassFilter.Suite);
-  RegisterTest(TestTButterworthHighpassFilter.Suite);
-  RegisterTest(TestTButterworthSplitBandFilter.Suite);
+  RegisterTestSuite;
 
 end.
