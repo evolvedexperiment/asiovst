@@ -295,7 +295,7 @@ begin
   with PMidiInputDeviceRecord(aInstance)^ do
    case aMsg of
     MIM_DATA: begin
-     if assigned(MidiInput.OnMidiData)
+     if Assigned(MidiInput.OnMidiData)
       then MidiInput.OnMidiData(DeviceNumber, aMidiData and $000000FF,
              (aMidiData and $0000FF00) shr 8, (aMidiData and $00FF0000) shr 16);
     end;
@@ -305,27 +305,7 @@ begin
    end;
 end;
 
-procedure TMidiInput.Close(const ADeviceIndex: Integer);
-var
-  DeviceHandle : THandle;
-begin
- DeviceHandle := GetHandle(ADeviceIndex);
- if DeviceHandle = 0 then Exit else
-  begin
-   MidiResult := midiInStop(DeviceHandle);
-   MidiResult := midiInReset(DeviceHandle);
-   MidiResult := midiInUnprepareHeader(DeviceHandle, @TSysExData(FSysExData[ADeviceIndex]).SysExHeader, SizeOf(TMidiHdr));
-   MidiResult := midiInClose(DeviceHandle);
-   FDevices.Objects[ADeviceIndex] := nil;
-  end;
-end;
-
-procedure TMidiDevices.CloseAll;
-var
-  i: Integer;
-begin
- for i := 0 to FDevices.Count - 1 do Close(i);
-end;
+{ TMidiInput }
 
 constructor TMidiInput.Create;
 var
@@ -352,10 +332,37 @@ begin
   end;
 end;
 
+destructor TMidiInput.Destroy;
+begin
+ FreeAndNil(FSysExData);
+ inherited;
+end;
+
+procedure TMidiInput.Close(const ADeviceIndex: Integer);
+var
+  DeviceHandle : THandle;
+begin
+ DeviceHandle := GetHandle(ADeviceIndex);
+ if DeviceHandle = 0 then Exit else
+  begin
+   MidiResult := midiInStop(DeviceHandle);
+   MidiResult := midiInReset(DeviceHandle);
+   MidiResult := midiInUnprepareHeader(DeviceHandle, @TSysExData(FSysExData[ADeviceIndex]).SysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiInClose(DeviceHandle);
+   FDevices.Objects[ADeviceIndex] := nil;
+  end;
+end;
+
+procedure TMidiDevices.CloseAll;
+var
+  Device : Integer;
+begin
+ for Device := 0 to FDevices.Count - 1 do Close(Device);
+end;
+
 procedure TMidiInput.Open(const ADeviceIndex: Integer);
 var
   lHandle: THandle;
-  lSysExData: TSysExData;
   lMidiInputDevice: PMidiInputDeviceRecord;
 begin
  if GetHandle(ADeviceIndex) <> 0 then Exit;
@@ -365,45 +372,37 @@ begin
  MidiResult := midiInOpen(@lHandle, ADeviceIndex, Cardinal(@midiInCallback),
    Integer(lMidiInputDevice), CALLBACK_FUNCTION);
  FDevices.Objects[ADeviceIndex] := TObject(lHandle);
- lSysExData := TSysExData(FSysExData[ADeviceIndex]);
- lSysExData.SysExHeader.dwFlags := 0;
- MidiResult := midiInPrepareHeader(lHandle, @lSysExData.SysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiInAddBuffer(lHandle, @lSysExData.SysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiInStart(lHandle);
+
+ with TSysExData(FSysExData[ADeviceIndex]) do
+  begin
+   SysExHeader.dwFlags := 0;
+
+   MidiResult := midiInPrepareHeader(lHandle, @SysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiInAddBuffer(lHandle, @SysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiInStart(lHandle);
+  end;
 end;
 
 procedure TMidiInput.DoSysExData(const ADeviceIndex: Integer);
-var
-  lSysExData: TSysExData;
 begin
- lSysExData := TSysExData(FSysExData[ADeviceIndex]);
- if lSysExData.SysExHeader.dwBytesRecorded = 0 then Exit;
- lSysExData.SysExStream.Write(lSysExData.SysExData, lSysExData.SysExHeader.dwBytesRecorded);
- if lSysExData.SysExHeader.dwFlags and MHDR_DONE = MHDR_DONE then
+ with TSysExData(FSysExData[ADeviceIndex]) do
   begin
-   lSysExData.SysExStream.Position := 0;
-   if assigned(FOnSysExData) then FOnSysExData(ADeviceIndex, lSysExData.SysExStream);
-   lSysExData.SysExStream.Clear;
+   if SysExHeader.dwBytesRecorded = 0 then Exit;
+   SysExStream.Write(SysExData, SysExHeader.dwBytesRecorded);
+   if SysExHeader.dwFlags and MHDR_DONE = MHDR_DONE then
+    begin
+     SysExStream.Position := 0;
+     if Assigned(FOnSysExData) then FOnSysExData(ADeviceIndex, SysExStream);
+     SysExStream.Clear;
+    end;
+   SysExHeader.dwBytesRecorded := 0;
+   MidiResult := midiInPrepareHeader(GetHandle(ADeviceIndex), @SysExHeader, SizeOf(TMidiHdr));
+   MidiResult := midiInAddBuffer(GetHandle(ADeviceIndex), @SysExHeader, SizeOf(TMidiHdr));
   end;
- lSysExData.SysExHeader.dwBytesRecorded := 0;
- MidiResult := midiInPrepareHeader(GetHandle(ADeviceIndex), @lSysExData.SysExHeader, SizeOf(TMidiHdr));
- MidiResult := midiInAddBuffer(GetHandle(ADeviceIndex), @lSysExData.SysExHeader, SizeOf(TMidiHdr));
 end;
 
-destructor TMidiInput.Destroy;
-begin
- FreeAndNil(FSysExData);
- inherited;
-end;
 
 { TMidiOutput }
-
-procedure TMidiOutput.Close(const ADeviceIndex: Integer);
-begin
- if GetHandle(ADeviceIndex) = 0 then Exit;
- MidiResult := midiOutClose(GetHandle(ADeviceIndex));
- FDevices.Objects[ ADeviceIndex ] := nil;
-end;
 
 constructor TMidiOutput.Create;
 var
@@ -433,19 +432,26 @@ begin
  FDevices.Objects[ADeviceIndex] := TObject(lHandle);
 end;
 
+procedure TMidiOutput.Close(const ADeviceIndex: Integer);
+begin
+ if GetHandle(ADeviceIndex) = 0 then Exit;
+ MidiResult := midiOutClose(GetHandle(ADeviceIndex));
+ FDevices.Objects[ADeviceIndex] := nil;
+end;
+
 procedure TMidiOutput.Send(const ADeviceIndex: Integer; const AStatus,
   AData1, AData2: Byte);
 var
   lMsg: cardinal;
 begin
  // open the device is not open
- if not assigned(FDevices.Objects[ ADeviceIndex ]) then Open(ADeviceIndex);
+ if not Assigned(FDevices.Objects[ ADeviceIndex ]) then Open(ADeviceIndex);
  lMsg := AStatus + (AData1 * $100) + (AData2 * $10000);
  MidiResult := midiOutShortMsg(GetHandle(ADeviceIndex), lMSG);
 end;
 
 procedure TMidiDevices.SetMidiResult(const Value: MMResult);
-var 
+var
   lError: array[0..MAXERRORLENGTH] of char;
 begin
  FMidiResult := Value;
@@ -500,6 +506,7 @@ begin
    MidiResult := midiOutUnprepareHeader(GetHandle(ADeviceIndex), @lSysExHeader, SizeOf(TMidiHdr));
   end;
 end;
+
 
 { TSysExData }
 

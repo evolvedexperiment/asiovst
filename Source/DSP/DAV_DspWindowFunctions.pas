@@ -47,7 +47,7 @@ type
   TCosSymmetricLoop32 = procedure (Data: PDAVSingleFixedArray; var ParamRec: TParameterRecord; SampleCount : Integer; EndAdr : PDAVSingleFixedArray);
   TCosSymmetricLoop64 = procedure (Data: PDAVDoubleFixedArray; var ParamRec: TParameterRecord; SampleCount : Integer; EndAdr : PDAVDoubleFixedArray);
 
-  TCustomWindowFunction = class(TNotifiablePersistent)
+  TCustomWindowFunction = class(TDspPersistent)
   private
     procedure SetWinLength(Value: Integer);
     procedure SetWinStart(Value: Integer);
@@ -942,7 +942,6 @@ end;
 
 procedure TWindowFunctionRectangle.ProcessBlock32(Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
-  i, p1, p2 : Integer;
   StartPos  : Integer;
   EndPos    : Integer;
 begin
@@ -974,7 +973,6 @@ end;
 
 procedure TWindowFunctionRectangle.ProcessBlock64(Data: PDAVDoubleFixedArray; SampleCount: Integer);
 var
-  i, p1, p2 : Integer;
   StartPos  : Integer;
   EndPos    : Integer;
 begin

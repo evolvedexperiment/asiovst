@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Classes, DAV_Types, DAV_Classes, DAV_Complex,
+  Classes, DAV_Types, DAV_Classes, DAV_ClassesFft, DAV_Complex,
   {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF}
   DAV_DspFftReal2Complex;
@@ -43,23 +43,12 @@ uses
 // TODO: check and implement all assignto functions!!!
 
 type
-  TCustomSpectralEffect = class(TDspSampleRatePersistent)
-  private
-    function GetFftOrder: Byte;
-    procedure SetFftOrder(const Value: Byte);
+  TCustomSpectralEffect = class(TDspSampleRateFftPersistent)
   protected
-    FFFT           : TFftReal2Complex;
-    FFFTSize       : Integer;
-    FFFTSizeHalf   : Integer;
     FBlockPosition : Integer;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure CalculateFftSizeVariables; virtual;
-    procedure FFTOrderChanged; virtual;
   public
     constructor Create; override;
-    destructor Destroy; override;
-    property FFTOrder: Byte read GetFftOrder write SetFftOrder;
-    property FFTSize: Integer read FFFTSize;
   end;
 
   TCustomSpectralEffect32 = class(TCustomSpectralEffect)
@@ -143,48 +132,15 @@ begin
  FBlockPosition := 0;
 end;
 
-destructor TCustomSpectralEffect.Destroy;
-begin
- FreeAndNil(FFft);
- inherited;
-end;
-
 procedure TCustomSpectralEffect.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomSpectralEffect then
   with TCustomSpectralEffect(Dest) do
    begin
-    FFFT.Assign(Self.FFFT);
-    FFFTSize     := Self.FFFTSize;
-    FFFTSizeHalf := Self.FFFTSizeHalf;
+    inherited;
+    FBlockPosition := Self.FBlockPosition;
    end
   else inherited;
-end;
-
-procedure TCustomSpectralEffect.CalculateFftSizeVariables;
-begin
- FFFTSize     := FFft.FFTSize;
- FFFTSizeHalf := FFFTSize shr 1;
-end;
-
-function TCustomSpectralEffect.GetFftOrder: Byte;
-begin
- Result := FFft.Order;
-end;
-
-procedure TCustomSpectralEffect.FFTOrderChanged;
-begin
- CalculateFftSizeVariables;
- FFft.AutoScaleType := astDivideBySqrtN;
-end;
-
-procedure TCustomSpectralEffect.SetFftOrder(const Value: Byte);
-begin
- if FFft.Order <> Value then
-  begin
-   FFft.Order := Value;
-   FFTOrderChanged;
-  end;
 end;
 
 
@@ -193,7 +149,7 @@ end;
 constructor TCustomSpectralEffect32.Create;
 begin
  inherited;
- 
+
  FSignalFreq := nil;
 
  {$IFDEF Use_IPPS}

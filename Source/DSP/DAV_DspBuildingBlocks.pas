@@ -49,7 +49,7 @@ type
     procedure AllocateBuffer; virtual; abstract;
     procedure BlockSizeChanged; virtual;
     procedure OverlapSizeChanged; virtual;
-
+    procedure BlockComplete; virtual; abstract;
   public
     constructor Create; virtual;
 
@@ -68,6 +68,7 @@ type
     FOnProcess : TProcessBlock32;
     procedure AllocateBuffer; override;
     procedure ClearBuffer; virtual;
+    procedure BlockComplete; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -83,6 +84,7 @@ type
     FOnProcess : TProcessBlock64;
     procedure AllocateBuffer; override;
     procedure ClearBuffer; virtual;
+    procedure BlockComplete; override;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -106,7 +108,6 @@ type
   TBuildingBlocksCircular32 = class(TCustomBuildingBlocks32, IDspSink32)
   private
     procedure CalculateSampleAdvance;
-    procedure BuildBlock;
   protected
     FBlock32        : PDAVSingleFixedArray;
     FSamplesInBlock : Integer;
@@ -114,6 +115,7 @@ type
     procedure AllocateBuffer; override;
     procedure OverlapSizeChanged; override;
     procedure BlockSizeChanged; override;
+    procedure BlockComplete; override;
     procedure ClearBuffer; override;
   public
     constructor Create; override;
@@ -142,7 +144,6 @@ type
   TBuildingBlocksCircular64 = class(TCustomBuildingBlocks64, IDspSink64)
   private
     procedure CalculateSampleAdvance;
-    procedure BuildBlock;
   protected
     FBlock64        : PDAVDoubleFixedArray;
     FSamplesInBlock : Integer;
@@ -150,6 +151,7 @@ type
     procedure AllocateBuffer; override;
     procedure ClearBuffer; override;
     procedure OverlapSizeChanged; override;
+    procedure BlockComplete; override;
     procedure BlockSizeChanged; override;
   public
     constructor Create; override;
@@ -247,6 +249,12 @@ begin
  ReallocMem(FBuffer32, FBlockSize * SizeOf(Single));
 end;
 
+procedure TCustomBuildingBlocks32.BlockComplete;
+begin
+ if Assigned(FOnProcess)
+  then FOnProcess(Self, FBuffer32);
+end;
+
 procedure TCustomBuildingBlocks32.ClearBuffer;
 begin
  FillChar(FBuffer32^, FBlockSize * SizeOf(Single), 0);
@@ -281,6 +289,12 @@ begin
  ReallocMem(FBuffer64, FBlockSize * SizeOf(Double));
 end;
 
+procedure TCustomBuildingBlocks64.BlockComplete;
+begin
+ if Assigned(FOnProcess)
+  then FOnProcess(Self, FBuffer32);
+end;
+
 procedure TCustomBuildingBlocks64.ClearBuffer;
 begin
  FillChar(FBuffer64^, FBlockSize * SizeOf(Double), 0);
@@ -306,8 +320,7 @@ begin
    begin
     Move(Input^[CurrentPosition], FBuffer32^[FBlockPosition], (FBlockSize - FBlockPosition) * SizeOf(Single));
 
-    if Assigned(FOnProcess)
-     then FOnProcess(Self, FBuffer32);
+    BlockComplete;
 
     Move(FBuffer32^[(FBlockSize - FOverlapSize)], FBuffer32^[0], FOverlapSize * SizeOf(Single));
 
@@ -324,8 +337,7 @@ begin
 
  if FBlockPosition >= FBlockSize then
   begin
-   if Assigned(FOnProcess)
-    then FOnProcess(Self, FBuffer32);
+   BlockComplete;
 
    Move(FBuffer32[(FBlockSize - FOverlapSize)], FBuffer32[0], FOverlapSize * SizeOf(Single));
    FBlockPosition := FOverlapSize;
@@ -377,12 +389,11 @@ begin
  FillChar(FBlock32^, FBlockSize * SizeOf(Single), 0);
 end;
 
-procedure TBuildingBlocksCircular32.BuildBlock;
+procedure TBuildingBlocksCircular32.BlockComplete;
 begin
  Move(FBuffer32^[FBlockPosition], FBlock32^[0], (FBlockSize - FBlockPosition) * SizeOf(Single));
  Move(FBuffer32^[0], FBlock32^[(FBlockSize - FBlockPosition)], FBlockPosition * SizeOf(Single));
- if Assigned(FOnProcess)
-  then FOnProcess(Self, FBlock32);
+ inherited;
  FSamplesInBlock := 0;
 end;
 
@@ -433,7 +444,7 @@ begin
       Inc(SamplesWritten, FSampleAdvance - FSamplesInBlock);
       Inc(FBlockPosition, FSampleAdvance - FSamplesInBlock);
 
-      BuildBlock;
+      BlockComplete;
      end
     else
      begin
@@ -448,7 +459,7 @@ begin
       Move(Input[SamplesWritten], FBuffer32[0], (FSampleAdvance - FSamplesInBlock) * SizeOf(Single));
       FBlockPosition := (FSampleAdvance - FSamplesInBlock);
 
-      BuildBlock;
+      BlockComplete;
      end;
    end;
   until SampleFrames = 0;
@@ -464,7 +475,7 @@ begin
  Inc(FSamplesInBlock);
 
  if FSamplesInBlock = FSampleAdvance
-  then BuildBlock;
+  then BlockComplete;
 end;
 
 
@@ -559,12 +570,13 @@ begin
  FillChar(FBlock64^, FBlockSize * SizeOf(Double), 0);
 end;
 
-procedure TBuildingBlocksCircular64.BuildBlock;
+procedure TBuildingBlocksCircular64.BlockComplete;
 begin
  Move(FBuffer64^[FBlockPosition], FBlock64^[0], (FBlockSize - FBlockPosition) * SizeOf(Double));
  Move(FBuffer64^[0], FBlock64^[(FBlockSize - FBlockPosition)], FBlockPosition * SizeOf(Double));
- if Assigned(FOnProcess)
-  then FOnProcess(Self, FBlock64);
+
+ inherited;
+
  FSamplesInBlock := 0;
 end;
 
@@ -615,7 +627,7 @@ begin
       Inc(SamplesWritten, FSampleAdvance - FSamplesInBlock);
       Inc(FBlockPosition, FSampleAdvance - FSamplesInBlock);
 
-      BuildBlock;
+      BlockComplete;
      end
     else
      begin
@@ -630,7 +642,7 @@ begin
       Move(Input[SamplesWritten], FBuffer64[0], (FSampleAdvance - FSamplesInBlock) * SizeOf(Double));
       FBlockPosition := (FSampleAdvance - FSamplesInBlock);
 
-      BuildBlock;
+      BlockComplete;
      end;
    end;
   until SampleFrames = 0;
@@ -646,7 +658,7 @@ begin
  Inc(FSamplesInBlock);
 
  if FSamplesInBlock = FSampleAdvance
-  then BuildBlock;
+  then BlockComplete;
 end;
 
 end.

@@ -375,7 +375,7 @@ begin
  Half := FFFTSizeHalf;
 
  // DC bin
- if Spectrum^[0].Re > FThreshold
+ if Abs(Spectrum^[0].Re) > FThreshold
   then FFilter^[0].Re := CHalf32 * (1 + FFilter^[0].Re)
   else FFilter^[0].Re := CHalf32 * FFilter^[0].Re;
  FFilter^[0].Im := 0;
@@ -390,7 +390,7 @@ begin
   end;
 
  // Nyquist bin
- if Spectrum^[Half].Re > FThreshold
+ if Abs(Spectrum^[Half].Re) > FThreshold
   then FFilter^[Half].Re := CHalf32 * (1 + FFilter^[Half].Re)
   else FFilter^[Half].Re := CHalf32 * FFilter^[Half].Re;
  FFilter^[Half].Im := 0;
@@ -634,6 +634,7 @@ begin
  FOffset := 8;
 
  FFFT.AutoScaleType := astDivideInvByN;
+ FFFT.DataOrder := doPackedComplex;
 end;
 
 procedure TNoiseReduction32.FFTOrderChanged;
@@ -710,11 +711,12 @@ const
 begin
  Half := FFFTSizeHalf;
 
+ Assert(FFFT.DataOrder = doPackedComplex);
+
  // DC bin
  FGates[0].InputSample(COffset + Sqr(Spectrum^[0].Re));
  FFilter^[0].Re := FGates[0].GainSample(1);
  if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
- FFilter^[0].Im := 0;
 
  // other bins
  for Bin := 1 to Half - 1 do
@@ -727,9 +729,8 @@ begin
 
  // Nyquist bin
  FGates[Half].InputSample(COffset + Sqr(Spectrum^[Half].Re));
- FFilter^[0].Re := FGates[Half].GainSample(1);
- if abs(FFilter^[0].Re) > 1 then FFilter^[0].Re := 0;
- FFilter^[Half].Im := 0;
+ FFilter^[Half].Im := FGates[Half].GainSample(1);
+ if abs(FFilter^[Half].Im) > 1 then FFilter^[Half].Im := 0;
 
  FFft.PerformIFFT(FFilter, FFilterIR);
 
@@ -998,7 +999,7 @@ begin
  Half := FFFTSizeHalf;
 
  // DC bin
- if Spectrum^[0].Re > FThreshold
+ if Abs(Spectrum^[0].Re) > FThreshold
   then FFilter^[0].Re := CHalf64 * (1 + FFilter^[0].Re)
   else FFilter^[0].Re := CHalf64 * FFilter^[0].Re;
  FFilter^[0].Im := 0;
@@ -1013,7 +1014,7 @@ begin
   end;
 
  // Nyquist bin
- if Spectrum^[Half].Re > FThreshold
+ if Abs(Spectrum^[Half].Re) > FThreshold
   then FFilter^[Half].Re := CHalf64 * (1 + FFilter^[Half].Re)
   else FFilter^[Half].Re := CHalf64 * FFilter^[Half].Re;
  FFilter^[Half].Im := 0;
