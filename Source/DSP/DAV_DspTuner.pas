@@ -37,7 +37,7 @@ interface
 
 uses
   Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DSPFilterButterworth,
-  DAV_DspCorrelation, DAV_DspCepstrum;
+  DAV_DspCorrelation, DAV_DspCepstrum, DAV_DspBuildingBlocks;
 
 type
   TCustomTuner = class(TDspSampleRatePersistent, IDspSink32)
@@ -165,6 +165,35 @@ type
     destructor Destroy; override;
   end;
 
+  TCustomYinTuner = class(TCustomDownsampledTuner)
+  private
+    procedure CalculateBufferLength;
+    procedure BlockProcessingHandler(Sender: TObject;
+      const Input: PDAVSingleFixedArray);
+    procedure SetThreshold(const Value: Single);
+  protected
+    FBlockBuilder : TBuildingBlocksCircular32;
+    FYinBuffer    : PDAVSingleFixedArray;
+    FThreshold    : Single;
+    FPeriod       : Single;
+    FBlockSize    : Integer;
+    {$IFDEF OnlineFreqCalc}
+    FCurrentFreq : Single;
+    {$ENDIF}
+    procedure AssignTo(Dest: TPersistent); override;
+    function GetCurrentFrequency: Single; override;
+    function CalculateCurrentFrequency: Single; virtual;
+    procedure ProcessDownsampled(Downsampled: Single); override;
+    procedure CalculateDownsampleFactor; override;
+    procedure SampleRateChanged; override;
+    procedure ThresholdChanged; virtual;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    property Threshold: Single read FThreshold write SetThreshold;
+  end;
+
   TZeroCrossingTuner = class(TCustomZeroCrossingTuner)
   published
     property SampleRate;
@@ -191,6 +220,8 @@ type
   end;
 
   TCepstrumTuner = class(TCustomCepstrumTuner);
+
+  TYinTuner = class(TCustomYinTuner);
 
   TTuner = class(TLinearZeroCrossingTuner);
 
@@ -257,7 +288,7 @@ end;
 
 function TCustomDownsampledTuner.GetDSFilterOrder: Cardinal;
 begin
- result := FLowpass.Order;
+ Result := FLowpass.Order;
 end;
 
 procedure TCustomDownsampledTuner.SetupMaximumFrequency;
@@ -343,9 +374,9 @@ end;
 function TCustomZeroCrossingTuner.GetCurrentFrequency: Single;
 begin
  {$IFDEF OnlineFreqCalc}
- result := FCurrentFreq;
+ Result := FCurrentFreq;
  {$ELSE}
- result := CalculateCurrentFrequency;
+ Result := CalculateCurrentFrequency;
  {$ENDIF}
 end;
 
@@ -392,7 +423,7 @@ end;
 
 function TCustomZeroCrossingTuner.CalculateCurrentFrequency: Single;
 begin
- result := FFrequencyFactor * SampleRate / (FDownSampleFactor * FAverageSamples);
+ Result := FFrequencyFactor * SampleRate / (FDownSampleFactor * FAverageSamples);
 end;
 
 procedure TCustomZeroCrossingTuner.SetOneCrossingOnly(const Value: Boolean);
@@ -459,13 +490,13 @@ function TCustomAdvancedTuner.CalculateCurrentFrequency: Single;
 var
   CurrentNote : Single;
 begin
- result := inherited CalculateCurrentFrequency;
+ Result := inherited CalculateCurrentFrequency;
 
  CurrentNote := 12 * FastLog2ContinousError4(FCurrentFreq / 440);
  while CurrentNote < -6 do CurrentNote := CurrentNote + 12;
  while CurrentNote >  6 do CurrentNote := CurrentNote - 12;
 
- case round(CurrentNote) of
+ case Round(CurrentNote) of
   -6, 6 : FCurrentNote := 'Eb';
   -5    : FCurrentNote := 'E';
   -4    : FCurrentNote := 'F';
@@ -689,22 +720,216 @@ end;
 function TCustomCepstrumTuner.GetCurrentFrequency: Single;
 begin
  {$IFDEF OnlineFreqCalc}
- result := FCurrentFreq;
+ Result := FCurrentFreq;
  {$ELSE}
- result := CalculateCurrentFrequency;
+ Result := CalculateCurrentFrequency;
  {$ENDIF}
 end;
 
 procedure TCustomCepstrumTuner.ProcessDownsampled(Downsampled: Single);
 begin
  FBuffer[FBufferPos] := DownSampled;
- inc(FBufferPos);
+ Inc(FBufferPos);
  if FBufferPos = FBufferLength then
   begin
    FBufferPos := 0;
    ApplyHammingWindow(FBuffer, FBufferLength);
    FCepstrumCalculation.CalculateCepstrum(FBuffer, FCepstrum);
   end;
+end;
+
+{ TCustomYinTuner }
+
+constructor TCustomYinTuner.Create;
+begin
+ FYinBuffer := nil;
+ FBlockBuilder := TBuildingBlocksCircular32.Create;
+ FBlockBuilder.OnProcess := BlockProcessingHandler;
+ inherited;
+ FThreshold := 0.15;
+end;
+
+destructor TCustomYinTuner.Destroy;
+begin
+ FreeAndNil(FBlockBuilder);
+ Dispose(FYinBuffer);
+ inherited;
+end;
+
+procedure TCustomYinTuner.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomYinTuner then
+  with TCustomYinTuner(Dest) do
+   begin
+    inherited;
+    FBlockBuilder.Assign(Self.FBlockBuilder);
+    {$IFDEF OnlineFreqCalc}
+    FCurrentFreq := Self.FCurrentFreq;
+    {$ENDIF}
+   end
+ else inherited;
+end;
+
+procedure TCustomYinTuner.CalculateBufferLength;
+var
+  NewBufferLength : Integer;
+begin
+ FBlockSize := Round(min(0.025, 1 / FMinimumFrequency) *
+   (SampleRate / FDownSampleFactor)) * 2;
+ with FBlockBuilder do
+  begin
+   BlockSize := Self.FBlockSize;
+   OverlapSize := BlockSize - (BlockSize div 4);
+  end;
+ ReallocMem(FYinBuffer, FBlockBuilder.BlockSize div 2);
+end;
+
+function TCustomYinTuner.CalculateCurrentFrequency: Single;
+begin
+ Result := SampleRate / (FDownSampleFactor * FPeriod);
+end;
+
+function QuadFrac(s0, s1, s2, pf: Single): Single;
+begin
+ Result := s0 + (pf * 0.5) * (pf * (s0 - 2 * s1 + s2 ) - 3 * s0 + 4 * s1 - s2);
+end;
+
+function ParabolicMinimum(Input: PDAVSingleFixedArray; SampleCount, Position,
+  Span: Cardinal): Single;
+var
+  Step       : Single;
+  Res, Frac  : Single;
+  s0, s1, s2 : Single;
+  Resold     : Single;
+const
+  CStepSize : Single = 1 / 256;
+begin
+
+ // init resold to - something (in case x[Position+-span]<0))
+ Result := Position;
+ Resold := 100000;
+
+ if (Position > Span) and (Position < SampleCount - Span) then
+  begin
+   s0 := Input^[Position - Span];
+   s1 := Input^[Position       ];
+   s2 := Input^[Position + Span];
+
+   Frac := 0;
+   // increase Frac
+   repeat
+    Res := QuadFrac(s0, s1, s2, Frac);
+    if (Res < Resold)
+     then Resold := Res
+     else
+      begin
+       Result := Result + (Frac - CStepSize) * Span - Span * 0.5;
+       Break;
+      end;
+    Frac := Frac + CStepSize;
+   until Frac >= 2;
+  end;
+end;
+
+function FindMinimum(Input: PDAVSingleFixedArray; SampleCount: Cardinal): Cardinal;
+var
+  Sample    : Cardinal;
+  Temp : Single;
+begin
+ Result := 0;
+ Temp := Input^[0];
+ for Sample := 1 to SampleCount - 1 do
+  if Input^[Sample] < Temp then
+   begin
+    Temp := Input^[Sample];
+    Result := Sample;
+   end;
+end;
+
+procedure TCustomYinTuner.BlockProcessingHandler(Sender: TObject;
+  const Input: PDAVSingleFixedArray);
+var
+  c, j, tau   : Cardinal;
+  period      : Integer;
+  temp        : array [0..1] of Single;
+  SampleCount : Cardinal;
+begin
+ c   := 0;
+ tau := 0;
+ temp[0] := 0;
+ temp[1] := 0;
+ FYinBuffer^[0] := 1;
+ SampleCount := (FBlockSize div 2);
+ for Tau := 1 to SampleCount - 1 do
+  begin
+   FYinBuffer^[tau] := 0;
+   for j := 0 to SampleCount - 1 do
+    begin
+     temp[0] := Input^[j] - Input^[j + tau];
+     FYinBuffer^[tau] := FYinBuffer^[tau] + Sqr(temp[0]);
+    end;
+   temp[1] := temp[1] + FYinBuffer^[tau];
+   FYinBuffer^[tau] := FYinBuffer^[tau] * tau / temp[1];
+   Period := Tau - 3;
+   if (tau > 4) and (FYinBuffer^[period] < Threshold) and
+      (FYinBuffer^[Period] < FYinBuffer^[Period + 1])
+    then
+     begin
+      FPeriod := ParabolicMinimum(FYinBuffer, (FBlockSize div 2), Period, 1);
+      {$IFDEF OnlineFreqCalc}
+      FCurrentFreq := CalculateCurrentFrequency;
+      if FCurrentFreq < 0.55 * FCurrentFreq
+       then FCurrentFreq := 0.5 * FCurrentFreq;
+      {$ENDIF}
+      Exit;
+     end;
+  end;
+
+ FPeriod := ParabolicMinimum(FYinBuffer, (FBlockSize div 2), FindMinimum(FYinBuffer, (FBlockSize div 2)), 1);
+
+ {$IFDEF OnlineFreqCalc}
+ FCurrentFreq := CalculateCurrentFrequency;
+ {$ENDIF}
+end;
+
+procedure TCustomYinTuner.CalculateDownsampleFactor;
+begin
+ inherited;
+ CalculateBufferLength;
+end;
+
+function TCustomYinTuner.GetCurrentFrequency: Single;
+begin
+ {$IFDEF OnlineFreqCalc}
+ Result := FCurrentFreq;
+ {$ELSE}
+ Result := CalculateCurrentFrequency;
+ {$ENDIF}
+end;
+
+procedure TCustomYinTuner.ProcessDownsampled(Downsampled: Single);
+begin
+ FBlockBuilder.ProcessSample32(Downsampled);
+end;
+
+procedure TCustomYinTuner.SampleRateChanged;
+begin
+ inherited;
+ CalculateBufferLength;
+end;
+
+procedure TCustomYinTuner.SetThreshold(const Value: Single);
+begin
+ if FThreshold <> Abs(Value) then
+  begin
+   FThreshold := Abs(Value);
+   ThresholdChanged;
+  end;
+end;
+
+procedure TCustomYinTuner.ThresholdChanged;
+begin
+ Changed;
 end;
 
 end.

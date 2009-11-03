@@ -292,7 +292,7 @@ end;
 procedure TCustomBuildingBlocks64.BlockComplete;
 begin
  if Assigned(FOnProcess)
-  then FOnProcess(Self, FBuffer32);
+  then FOnProcess(Self, FBuffer64);
 end;
 
 procedure TCustomBuildingBlocks64.ClearBuffer;

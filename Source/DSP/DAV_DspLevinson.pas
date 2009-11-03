@@ -37,59 +37,62 @@ interface
 uses
   DAV_Types;
 
-procedure AutoCorrelate(x, R: TDAVSingleDynArray; P: Integer; lambda: Single; l: Integer = -1);
-procedure LevinsonRecursion(P: Integer; R, A, K: TDAVSingleDynArray);
-  
+procedure AutoCorrelate(Input, AutoCorrelation: PDAVSingleFixedArray;
+  Order: Integer; Lambda: Single; SampleCount: Integer);
+procedure LevinsonRecursion(P: Integer;
+  AutoCorrelation, A, K: PDAVSingleFixedArray);
+
 implementation
 
-//find the P-order autocorrelation array, R, for the sequence x of length L and warping of lambda
-procedure AutoCorrelate(x, R: TDAVSingleDynArray; P: Integer; lambda: Single; l: Integer = -1);
+// find the autocorrelation array for the sequence Input of length SampleCount
+// and warping of Lambda
+procedure AutoCorrelate(Input, AutoCorrelation: PDAVSingleFixedArray;
+  Order: Integer; Lambda: Single; SampleCount: Integer);
 var
-  dl, Rt      : TDAVDoubleDynArray;
+  Temp        : PDAVSingleFixedArray;
   r1, r2, r1t : Double;
   k, i        : Integer;
 begin
  // Initialization
-  if l = -1 then l := Length(x);
-  SetLength(dl, l);
-  SetLength(Rt, l);
-  R[0] := 0;
-  Rt[0] := 0;
+ GetMem(Temp, SampleCount * SizeOf(Single));
+ try
+  AutoCorrelation[0] := 0;
   r1 := 0;
   r2 := 0;
   r1t := 0;
 
-  for k := 0 to l - 1 do
+  for k := 0 to SampleCount - 1 do
    begin
-    Rt[0] := Rt[0] + x[k] * x[k];
-    dl[k] := r1 - lambda * (x[k] - r2);
-    r1 := x[k];
-    r2 := dl[k];
+    AutoCorrelation[0] := AutoCorrelation[0] + Sqr(Input[k]);
+    Temp[k] := r1 - Lambda * (Input[k] - r2);
+    r1 := Input[k];
+    r2 := Temp[k];
    end;
 
-  for i := 1 to P do
+  for i := 1 to Order do
    begin
-    Rt[i] := 0;
+    AutoCorrelation[i] := 0;
     r1 := 0;
     r2 := 0;
-    for k := 0 to L - 1 do
+    for k := 0 to SampleCount - 1 do
      begin
-      Rt[i] := Rt[i] + dl[k] * x[k];
-      r1t := dl[k];
-      dl[k] := r1 - lambda * (r1t - r2);
+      AutoCorrelation[i] := AutoCorrelation[i] + Temp[k] * Input[k];
+      r1t := Temp[k];
+      Temp[k] := r1 - Lambda * (r1t - r2);
       r1 := r1t;
-      r2 := dl[k];
+      r2 := Temp[k];
      end;
    end;
 
-  for i := 1 to P do R[i] := Rt[i];
-  SetLength(Rt, 0);
-  SetLength(dl, 0);
+ finally
+  Dispose(Temp);
+ end;
 end;
 
 // Calculate the Levinson-Durbin recursion for the autocorrelation sequence
-// R of length P+1 and return the autocorrelation coefficients a and reflection coefficients K
-procedure LevinsonRecursion(P: Integer; R, A, K: TDAVSingleDynArray);
+// AutoCorrelation of length P + 1 and return the autocorrelation coefficients
+// A and reflection coefficients K
+procedure LevinsonRecursion(P: Integer; AutoCorrelation, A, K: PDAVSingleFixedArray);
 var
   Am1         : TDAVDoubleDynArray;
   i, j, s, m  : Integer;
@@ -97,12 +100,12 @@ var
   err         : Double;
 begin
  SetLength(Am1, 62);
- if (R[0] = 0.0) then
-   for i := 1 to P do
-    begin
-     K[i] := 0.0;
-     A[i] := 0.0;
-    end
+ if (AutoCorrelation[0] = 0.0) then
+  for i := 1 to P do
+   begin
+    K[i] := 0;
+    A[i] := 0;
+   end
  else
   begin
    for j := 0 to P do
@@ -113,12 +116,12 @@ begin
    A[0] := 1;
    Am1[0] := 1;
    km := 0;
-   Em1 := R[0];
+   Em1 := AutoCorrelation[0];
    for m := 1 to P do
     begin
      err := 0.0;
-     for j := 1 to m - 1 do err := err + Am1[j] * R[m - j];
-     km := (R[m] - err) / Em1;
+     for j := 1 to m - 1 do err := err + Am1[j] * AutoCorrelation[m - j];
+     km := (AutoCorrelation[m] - err) / Em1;
      K[m - 1] := -km;
      A[m] := km;
      for j := 1 to m - 1 do A[j] := Am1[j] - km * Am1[m - j];

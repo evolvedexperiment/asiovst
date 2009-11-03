@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspConvolution, DAV_DspDelayLines;
+  Classes, DAV_Types, DAV_Classes, DAV_DspConvolution, DAV_DspDelayLines;
 
 type
   TCustomLinearPhaseBandSplitter = class(TDspSampleRatePersistent)
@@ -92,7 +92,7 @@ type
 implementation
 
 uses
-  Math, SysUtils;
+  Math, SysUtils, DAV_DspWindowing;
 
 { TCustomLinearPhaseBandSplitter }
 
@@ -258,21 +258,20 @@ end;
 procedure THalfbandLinearPhaseBandSplitter.CalculateFilterKernel;
 var
   i            : Integer;
-  Temp, SinTmp : Double;
+  Temp, Scale  : Double;
   FilterKernel : PDAVSingleFixedArray;
 begin
  GetMem(FilterKernel, FKernelSize * SizeOf(Single));
  try
-  FilterKernel^[FKernelSize div 2] := 0.5;
+  Scale := (FFilterLength - 1) * 0.5;
+  // Generate sinc delayed by (N-1)/2
   for i := 0 to (FKernelSize div 2) - 1 do
-   if (i mod 2) = 0 then FilterKernel^[i] := 0 else
-    begin
-     Temp := PI * (i - FKernelSize * 0.5);
-//     Temp := Temp * 0.5 * FKernelSize / i;
-     FilterKernel^[i] := (1 - ((i shr 1) mod 2) * 2) / Temp;
-     FilterKernel^[FKernelSize - i] := FilterKernel^[i];
-    end;
-//  ApplyHanningWindow(FilterKernel, FKernelSize);
+   begin
+    Temp := PI * (i - Scale);
+    FilterKernel^[i] := sin(2.0 * Cutoff * Temp) / Temp;
+    FilterKernel^[FKernelSize - i] := -FilterKernel^[i];
+   end;
+  ApplyHanningWindow(FilterKernel, FKernelSize);
 
   FConvolution.LoadImpulseResponse(FilterKernel, FKernelSize);
  finally

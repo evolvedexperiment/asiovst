@@ -38,100 +38,133 @@ uses
   Classes, DAV_Types, DAV_Classes;
 
 type
-  TLMS = class(TDspPersistent, IDspProcessor32)
+  TLMS = class(TDspPersistent)
   private
-    FCoeffs   : array[0..7] of Double;
-    FHistory  : array[0..15] of Single;
-    FMu       : Double;
-    FDelta    : Double;
-    FHistPos  : Integer;
-    FDeltaMul : Single;
-    FXVol     : Single;
-    procedure SetMu(const Value: Double);
+    FCoefficients : PDAVDoubleFixedArray;
+    FHistory      : PDAVDoubleFixedArray;
+    FStepSize     : Double;
+    FOrder        : Integer;
+    FBufferPos    : Integer;
+    procedure SetStepSize(const Value: Double);
+    procedure SetOrder(const Value: Integer);
+  protected
+    procedure Clear; virtual;
+    procedure AllocateBuffers; virtual;
+    procedure StepSizeChanged; virtual;
+    procedure OrderChanged; virtual;
   public
-    constructor Create;
-    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
-    function ProcessSample32(Input: Single): Single;
+    constructor Create; virtual;
+    destructor Destroy; override;
+
+    function ProcessSample(Input, Signal : Double): Double;
   published
-    property Mu: Double read FMu write SetMu;
-    property DeltaFactor: Single read FDeltaMul write FDeltaMul;
-    property XVol: Single read FXVol write FXVol;
+    property StepSize: Double read FStepSize write SetStepSize;
+    property Order: Integer read FOrder write SetOrder;
   end;
 
 implementation
 
+uses
+  SysUtils;
+
+{ TLMS }
+
 constructor TLMS.Create;
 begin
-  inherited Create;
-  FMu := 0;
-  FHistPos := 8;
-  FCoeffs[0] := 1;
-  FCoeffs[1] := 0;
-  FCoeffs[2] := 0;
-  FCoeffs[3] := 0;
-  FCoeffs[4] := 0;
-  FCoeffs[5] := 0;
-  FCoeffs[6] := 0;
-  FCoeffs[7] := 0;
+ inherited;
+ FOrder := 8;
+ FStepSize := 0;
+ FStepSize := 1;
+ FCoefficients := nil;
+ FHistory := nil;
+
+ AllocateBuffers;
+ Clear;
 end;
 
-procedure TLMS.SetMu(const Value: Double);
+destructor TLMS.Destroy;
 begin
- if FMu <> Value then
+ Dispose(FCoefficients);
+ Dispose(FHistory);
+
+ inherited;
+end;
+
+procedure TLMS.AllocateBuffers;
+begin
+ ReallocMem(FCoefficients, FOrder * SizeOf(Double));
+ ReallocMem(FHistory, FOrder * SizeOf(Double));
+end;
+
+procedure TLMS.Clear;
+begin
+ FillChar(FCoefficients^, FOrder * SizeOf(Double), 0);
+ FillChar(FHistory^, 2 * FOrder * SizeOf(Double), 0);
+end;
+
+procedure TLMS.SetOrder(const Value: Integer);
+begin
+ if FOrder <> Value then
   begin
-   FMu := Value;
+   FOrder := Value;
+   OrderChanged;
   end;
 end;
 
-function TLMS.ProcessSample32(Input: Single): Single;
-var
-  theta: Double;
+procedure TLMS.SetStepSize(const Value: Double);
 begin
-  Result := FHistory[FHistPos] * FCoeffs[0] +
-    FHistory[FHistPos + 1] * FCoeffs[1] +
-    FHistory[FHistPos + 2] * FCoeffs[2] +
-    FHistory[FHistPos + 3] * FCoeffs[3] +
-    FHistory[FHistPos + 4] * FCoeffs[4] +
-    FHistory[FHistPos + 5] * FCoeffs[5] +
-    FHistory[FHistPos + 6] * FCoeffs[6] +
-    FHistory[FHistPos + 7] * FCoeffs[7];
-  FDelta := Input - Result;
+ if FStepSize <> Value then
+  begin
+   FStepSize := Value;
+   StepSizeChanged;
+  end;
+end;
 
-  theta := sqr(FHistory[FHistPos    ]) + sqr(FHistory[FHistPos + 1]) +
-           sqr(FHistory[FHistPos + 2]) + sqr(FHistory[FHistPos + 3]) +
-           sqr(FHistory[FHistPos + 4]) + sqr(FHistory[FHistPos + 5]) +
-           sqr(FHistory[FHistPos + 6]) + sqr(FHistory[FHistPos + 7]);
-  theta := 0.9 / theta;
-  if FMu < theta then theta := FMu;
-  FCoeffs[0] := FCoeffs[0] + 2 * theta * FDelta * FHistory[FHistPos    ];
-  FCoeffs[1] := FCoeffs[1] + 2 * theta * FDelta * FHistory[FHistPos + 1];
-  FCoeffs[2] := FCoeffs[2] + 2 * theta * FDelta * FHistory[FHistPos + 2];
-  FCoeffs[3] := FCoeffs[3] + 2 * theta * FDelta * FHistory[FHistPos + 3];
-  FCoeffs[4] := FCoeffs[4] + 2 * theta * FDelta * FHistory[FHistPos + 4];
-  FCoeffs[5] := FCoeffs[5] + 2 * theta * FDelta * FHistory[FHistPos + 5];
-  FCoeffs[6] := FCoeffs[6] + 2 * theta * FDelta * FHistory[FHistPos + 6];
-  FCoeffs[7] := FCoeffs[7] + 2 * theta * FDelta * FHistory[FHistPos + 7];
+procedure TLMS.OrderChanged;
+begin
+ AllocateBuffers;
+ Clear;
+ Changed;
+end;
 
-  Dec(FHistPos);
-  if FHistPos < 0 then
+procedure TLMS.StepSizeChanged;
+begin
+ Changed;
+end;
+
+function TLMS.ProcessSample(Input, Signal: Double): Double;
+var
+  RMS      : Double;
+  InvRMS   : Double;
+  Coef     : Integer;
+  Residual : Double;
+  CurPos   : Integer;
+begin
+  CurPos := FBufferPos;
+  FHistory[CurPos] := Input;
+  Result := Input * FCoefficients[0];
+  RMS := 1E-9 + Sqr(FHistory[CurPos]);
+  for Coef := 1 to FOrder - 1 do
    begin
-    FHistPos := 7;
-    Move(FHistory[0], FHistory[8], 8 * SizeOf(Single));
+    Inc(CurPos);
+    if CurPos >= FOrder then CurPos := 0;
+    Result := Result + FHistory[CurPos] * FCoefficients[Coef];
+    RMS := RMS + Sqr(FHistory[CurPos]);
    end;
-  FHistory[FHistPos] := Input;
-  Result := FDeltaMul * FDelta + FXVol * Result;
-end;
 
-procedure TLMS.ProcessBlock32(const Data: PDAVSingleFixedArray;
-  SampleCount: Integer);
-var
-  Sample : Integer;
-begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample32(Data[Sample]);
-end;
+  Residual := Signal - Result;
+  InvRMS := FStepSize / RMS;
 
-initialization
-  RegisterDspProcessor32(TLMS);
+  CurPos := FBufferPos;
+  for Coef := 1 to FOrder - 1 do
+   begin
+    Inc(CurPos);
+    if CurPos >= FOrder then CurPos := 0;
+    FCoefficients[Coef] := FCoefficients[Coef] + InvRMS * Residual * FHistory[CurPos];
+   end;
+
+  Dec(FBufferPos);
+  if FBufferPos < 0 then FBufferPos := FOrder - 1;
+end;
 
 end.

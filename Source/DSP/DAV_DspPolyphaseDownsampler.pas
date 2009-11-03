@@ -555,14 +555,18 @@ end;
 
 procedure TPolyphaseDownsampler32.ProcessSampleSplit1(out Low, High: Single; Input: TDAV2SingleArray);
 begin
-  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input[1];
+  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0];
+  FX[0] := Input[1];
+  
   Low := (FY[0] + Input[0]) * 0.5;
   High := FY[0] - Low;
 end;
 
 procedure TPolyphaseDownsampler32.ProcessSampleSplit2(out Low, High: Single; Input: TDAV2SingleArray);
 begin
-  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input[1];
+  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0];
+  FX[0] := Input[1];
+
   PDav2SingleArray(FY)^[1] := (Input[0] - PDav2SingleArray(FY)^[1]) *
     PDav2DoubleArray(FCoefficients)^[1] + PDav2SingleArray(FX)^[1];
   PDav2SingleArray(FX)^[1] := Input[0];
@@ -572,13 +576,14 @@ end;
 
 procedure TPolyphaseDownsampler32.ProcessSampleSplit3(out Low, High: Single; Input: TDAV2SingleArray);
 begin
-  FY[0] := (Input[1] - FY[0]) * PDav4DoubleArray(fCoefficients)^[0] + FX[0]; FX[0] := Input[1];
+  FY[0] := (Input[1] - FY[0]) * PDav4DoubleArray(FCoefficients)^[0] + FX[0];
+  FX[0] := Input[1];
 
   PDav4SingleArray(FY)^[1] := (Input[0] - PDav4SingleArray(FY)^[1]) *
-    PDav4DoubleArray(fCoefficients)^[1] + PDav4SingleArray(FX)^[1];
+    PDav4DoubleArray(FCoefficients)^[1] + PDav4SingleArray(FX)^[1];
   PDav4SingleArray(FX)^[1] := Input[0];
   PDav4SingleArray(FY)^[2] := (PDav4SingleArray(FY)^[0] - PDav4SingleArray(FY)^[2]) *
-    PDav4DoubleArray(fCoefficients)^[2] + PDav4SingleArray(FX)^[2];
+    PDav4DoubleArray(FCoefficients)^[2] + PDav4SingleArray(FX)^[2];
   PDav4SingleArray(FX)^[2] := PDav4SingleArray(FY)^[0];
   Low := (PDav4SingleArray(FY)^[2] + PDav4SingleArray(FY)^[1]) * 0.5;
   High := PDav4SingleArray(FY)^[2] - Low;
@@ -586,15 +591,17 @@ end;
 
 procedure TPolyphaseDownsampler32.ProcessSampleSplit4(out Low, High: Single; Input: TDAV2SingleArray);
 begin
-  FY[0] := (Input[1] - FY[0]) * PDav4DoubleArray(fCoefficients)^[0] + FX[0]; FX[0] := Input[1];
+  FY[0] := (Input[1] - FY[0]) * PDav4DoubleArray(FCoefficients)^[0] + FX[0];
+  FX[0] := Input[1];
+
   PDav4SingleArray(FY)^[1] := (Input[0] - PDav4SingleArray(FY)^[1]) *
-    PDav4DoubleArray(fCoefficients)^[1] + PDav4SingleArray(FX)^[1];
+    PDav4DoubleArray(FCoefficients)^[1] + PDav4SingleArray(FX)^[1];
   PDav4SingleArray(FX)^[1] := Input[0];
   PDav4SingleArray(FY)^[2] := (PDav4SingleArray(FY)^[0] - PDav4SingleArray(FY)^[2]) *
-    PDav4DoubleArray(fCoefficients)^[2] + PDav4SingleArray(FX)^[2];
+    PDav4DoubleArray(FCoefficients)^[2] + PDav4SingleArray(FX)^[2];
   PDav4SingleArray(FX)^[2] := PDav4SingleArray(FY)^[0];
   PDav4SingleArray(FY)^[3] := (PDav4SingleArray(FY)^[1] - PDav4SingleArray(FY)^[3]) *
-    PDav4DoubleArray(fCoefficients)^[3] + PDav4SingleArray(FX)^[3];
+    PDav4DoubleArray(FCoefficients)^[3] + PDav4SingleArray(FX)^[3];
   PDav4SingleArray(FX)^[3] := PDav4SingleArray(FY)^[1];
   Low := (PDav4SingleArray(FY)^[3] + PDav4SingleArray(FY)^[2]) * 0.5;
   High := PDav4SingleArray(FY)^[3] - Low;
@@ -605,7 +612,7 @@ procedure TPolyphaseDownsampler32.ProcessSampleSplitLarge(
 var
   i: Integer;
 begin
-  FY[0] := (Input[1] - FY[0]) * PDav4DoubleArray(fCoefficients)^[0] + FX[0]; FX[0] := Input[1];
+  FY[0] := (Input[1] - FY[0]) * PDav4DoubleArray(FCoefficients)^[0] + FX[0]; FX[0] := Input[1];
   PDav2SingleArray(FY)^[1] := (Input[0] - PDav2SingleArray(FY)^[1]) *
     PDav2DoubleArray(FCoefficients)^[1] + PDav2SingleArray(FX)^[1];
   PDav2SingleArray(FX)^[1] := Input[0];
@@ -1199,10 +1206,10 @@ procedure TPolyphaseDownsampler64.ProcessSampleSplit3(
 begin
   FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input[1];
   PDav4SingleArray(FY)^[1] := (Input[0] - PDav4SingleArray(FY)^[1]) *
-    PDav4DoubleArray(fCoefficients)^[1] + PDav4SingleArray(FX)^[1];
+    PDav4DoubleArray(FCoefficients)^[1] + PDav4SingleArray(FX)^[1];
   PDav4SingleArray(FX)^[1] := Input[0];
   PDav4SingleArray(FY)^[2] := (PDav4SingleArray(FY)^[0] - PDav4SingleArray(FY)^[2]) *
-    PDav4DoubleArray(fCoefficients)^[2] + PDav4SingleArray(FX)^[2];
+    PDav4DoubleArray(FCoefficients)^[2] + PDav4SingleArray(FX)^[2];
   PDav4SingleArray(FX)^[2] := PDav4SingleArray(FY)^[0];
   Low   := (PDav4SingleArray(FY)^[2] + PDav4SingleArray(FY)^[1]) * 0.5;
   High  := PDav4SingleArray(FY)^[2] - Low;
@@ -1213,13 +1220,13 @@ procedure TPolyphaseDownsampler64.ProcessSampleSplit4(
 begin
   FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input[1];
   PDav4SingleArray(FY)^[1] := (Input[0] - PDav4SingleArray(FY)^[1]) *
-    PDav4DoubleArray(fCoefficients)^[1] + PDav4SingleArray(FX)^[1];
+    PDav4DoubleArray(FCoefficients)^[1] + PDav4SingleArray(FX)^[1];
   PDav4SingleArray(FX)^[1] := Input[0];
   PDav4SingleArray(FY)^[2] := (PDav4SingleArray(FY)^[0] - PDav4SingleArray(FY)^[2]) *
-    PDav4DoubleArray(fCoefficients)^[2] + PDav4SingleArray(FX)^[2];
+    PDav4DoubleArray(FCoefficients)^[2] + PDav4SingleArray(FX)^[2];
   PDav4SingleArray(FX)^[2] := PDav4SingleArray(FY)^[0];
   PDav4SingleArray(FY)^[3] := (PDav4SingleArray(FY)^[1] - PDav4SingleArray(FY)^[3]) *
-    PDav4DoubleArray(fCoefficients)^[3] + PDav4SingleArray(FX)^[3];
+    PDav4DoubleArray(FCoefficients)^[3] + PDav4SingleArray(FX)^[3];
   PDav4SingleArray(FX)^[3] := PDav4SingleArray(FY)^[1];
   Low   := (PDav4SingleArray(FY)^[3] + PDav4SingleArray(FY)^[2]) * 0.5;
   High  := PDav4SingleArray(FY)^[3] - Low;

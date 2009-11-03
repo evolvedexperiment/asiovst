@@ -44,10 +44,8 @@ type
     procedure ParameterNoteDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
-    procedure ParameterGuitarStringChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure ParameterGuitarStringChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FTuner : TAdvancedTuner;
   public

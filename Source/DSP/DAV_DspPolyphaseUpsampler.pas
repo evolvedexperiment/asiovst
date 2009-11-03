@@ -43,7 +43,14 @@ type
   TProcessSample32 = procedure (const Input : Single; out Output : TDAV2SingleArray) of object;
   TProcessSample64 = procedure (const Input : Double; out Output : TDAV2DoubleArray) of object;
 
-  TCustomPolyphaseDownsampler = class(TCustomPolyphaseFilter);
+  TCustomPolyphaseDownsampler = class(TCustomPolyphaseFilter)
+  protected
+    procedure NumberOfCoeffsChanged; override;
+    procedure ClearBuffers; virtual; abstract;
+    procedure PushStates; virtual; abstract;
+    procedure PopStates; virtual; abstract;
+    procedure ResetStates; virtual; abstract;
+  end;
 
   TPolyphaseUpsampler32 = class(TCustomPolyphaseDownsampler)
   private
@@ -64,10 +71,10 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output: PDAVSingleFixedArray; const SampleFrames: Integer);
-    procedure ClearBuffers;
-    procedure PushStates;
-    procedure PopStates;
-    procedure ResetStates;
+    procedure ClearBuffers; override;
+    procedure PushStates; override;
+    procedure PopStates; override;
+    procedure ResetStates; override;
 
     procedure ProcessSample32(Input: Single; out Output : TDAV2SingleArray);
 
@@ -92,16 +99,27 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure ProcessBlock(const Input, Output: PDAVDoubleFixedArray; const SampleFrames: Integer);
-    procedure ClearBuffers;
-    procedure PushStates;
-    procedure PopStates;
-    procedure ResetStates;
+    procedure ClearBuffers; override;
+    procedure PushStates; override;
+    procedure PopStates; override;
+    procedure ResetStates; override;
     procedure ProcessSample64(Input: Double; out Output : TDAV2DoubleArray);
 
     property ProcessSample: TProcessSample64 read FProcessSample64;
   end;
 
 implementation
+
+{ TCustomPolyphaseDownsampler }
+
+procedure TCustomPolyphaseDownsampler.NumberOfCoeffsChanged;
+begin
+ inherited;
+ ChooseProcedures;
+ ClearBuffers;
+end;
+
+{ TPolyphaseUpsampler32 }
 
 /////////////////////////////// Constructor //////////////////////////////////
 
@@ -111,10 +129,10 @@ const
 
 constructor TPolyphaseUpsampler32.Create;
 begin
- inherited;
  FX          := nil;
  FY          := nil;
  FStateStack := nil;
+ inherited;
 end;
 
 destructor TPolyphaseUpsampler32.Destroy;
@@ -131,7 +149,7 @@ begin
   with TPolyphaseUpsampler32(Dest) do
    begin
     inherited;
-    FProcessSample32      := Self.FProcessSample32;
+    FProcessSample32 := Self.FProcessSample32;
 
     Assert(FNumberOfCoeffs = Self.FNumberOfCoeffs);
     Move(Self.FX^, FX^, FNumberOfCoeffs * SizeOf(Single));
@@ -157,12 +175,10 @@ end;
 
 procedure TPolyphaseUpsampler32.NumberOfCoeffsChanged;
 begin
- inherited;
  ReallocMem(FX, FNumberOfCoeffs * SizeOf(Single));
  ReallocMem(FY, FNumberOfCoeffs * SizeOf(Single));
  ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Single));
- ChooseProcedures;
- ClearBuffers;
+ inherited;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -214,8 +230,8 @@ end;
 
 procedure TPolyphaseUpsampler32.ClearBuffers;
 begin
- FillChar(FX[0], FNumberOfCoeffs * SizeOf(Single), 0);
- FillChar(FY[0], FNumberOfCoeffs * SizeOf(Single), 0);
+ FillChar(FX^, FNumberOfCoeffs * SizeOf(Single), 0);
+ FillChar(FY^, FNumberOfCoeffs * SizeOf(Single), 0);
 end;
 
 
@@ -231,8 +247,8 @@ end;
 
 procedure TPolyphaseUpsampler32.ResetStates;
 begin
-  FillChar(FX[0], FNumberOfCoeffs * SizeOf(Single), 0);
-  FillChar(FY[0], FNumberOfCoeffs * SizeOf(Single), 0);
+  FillChar(FX^, FNumberOfCoeffs * SizeOf(Single), 0);
+  FillChar(FY^, FNumberOfCoeffs * SizeOf(Single), 0);
 end;
 
 
@@ -597,10 +613,10 @@ end;
 
 constructor TPolyphaseUpsampler64.Create;
 begin
- inherited;
  FX          := nil;
  FY          := nil;
  FStateStack := nil;
+ inherited;
 end;
 
 destructor TPolyphaseUpsampler64.Destroy;
@@ -640,12 +656,10 @@ end;
 
 procedure TPolyphaseUpsampler64.NumberOfCoeffsChanged;
 begin
- inherited;
  ReallocMem(FX, FNumberOfCoeffs * SizeOf(Double));
  ReallocMem(FY, FNumberOfCoeffs * SizeOf(Double));
  ReallocMem(FStateStack, 2 * FNumberOfCoeffs * SizeOf(Double));
- ChooseProcedures;
- ClearBuffers;
+ inherited;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////

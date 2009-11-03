@@ -81,7 +81,7 @@ begin
 
  for Channel := 0 to Length(FLinearPhaseSplitter) - 1
   do FLinearPhaseSplitter[Channel] := TArbitraryLinearPhaseBandSplitter.Create;
- Parameter[0] := 1000;
+ Parameter[0] := SampleRate / 4;
  Parameter[1] := 10;
  Parameter[2] := 17;
 end;
