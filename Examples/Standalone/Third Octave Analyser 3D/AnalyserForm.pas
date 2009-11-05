@@ -28,23 +28,23 @@ type
   TFmAnalyser = class(TForm)
     ASIOHost: TASIOHost;
     BarGraphScene: TGLScene;
-    Bt_Analyse: TButton;
-    Bt_CP: TButton;
-    ChannelBox: TComboBox;
-    DriverCombo: TComboBox;
+    BtAnalyse: TButton;
+    BtControlPanel: TButton;
+    CbChannel: TComboBox;
+    CbDriver: TComboBox;
     GLCamera: TGLCamera;
     GLDummyCube: TGLDummyCube;
     GLLight: TGLLightSource;
     GLSceneViewer: TGLSceneViewer;
-    Lb_Channels: TLabel;
-    Lb_dB: TLabel;
-    Lb_Drivername: TLabel;
+    LbChannels: TLabel;
+    LbFullScaleUnit: TLabel;
+    LbDrivername: TLabel;
     LbFullscale: TLabel;
     LbSpeed: TLabel;
-    RB_Fast: TRadioButton;
-    RB_Medium: TRadioButton;
-    RB_Slow: TRadioButton;
-    SEFullscaleGain: TSpinEdit;
+    RbFast: TRadioButton;
+    RbMedium: TRadioButton;
+    RbSlow: TRadioButton;
+    SeFullscaleGain: TSpinEdit;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -54,19 +54,18 @@ type
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BSDownSampled(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure Bt_AnalyseClick(Sender: TObject);
-    procedure Bt_CPClick(Sender: TObject);
-    procedure DriverComboChange(Sender: TObject);
-    procedure Lb_DrivernameClick(Sender: TObject);
-    procedure RB_FastClick(Sender: TObject);
-    procedure RB_MediumClick(Sender: TObject);
-    procedure RB_SlowClick(Sender: TObject);
-    procedure SEFullscaleGainChange(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
+    procedure BtAnalyseClick(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
+    procedure CbDriverChange(Sender: TObject);
     procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState;
-      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure GLSceneViewerMouseWheel(Sender: TObject; Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure LbDrivernameClick(Sender: TObject);
+    procedure RbFastClick(Sender: TObject);
+    procedure RbMediumClick(Sender: TObject);
+    procedure RbSlowClick(Sender: TObject);
+    procedure SeFullscaleGainChange(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     FUseDownsampling      : Boolean;
     FOldMousePoint        : TPoint;
@@ -346,19 +345,19 @@ begin
  Handled := true
 end;
 
-procedure TFmAnalyser.RB_FastClick(Sender: TObject);
+procedure TFmAnalyser.RbFastClick(Sender: TObject);
 begin
  FSpeedConst[0] := 0.99;
  CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.RB_MediumClick(Sender: TObject);
+procedure TFmAnalyser.RbMediumClick(Sender: TObject);
 begin
  FSpeedConst[0] := 0.999;
  CalculateSmoothingFactor;
 end;
 
-procedure TFmAnalyser.RB_SlowClick(Sender: TObject);
+procedure TFmAnalyser.RbSlowClick(Sender: TObject);
 begin
  FSpeedConst[0] := 0.9999;
  CalculateSmoothingFactor;
@@ -369,7 +368,7 @@ begin
  FSpeedConst[1] := 1 - FSpeedConst[0];
 end;
 
-procedure TFmAnalyser.SEFullscaleGainChange(Sender: TObject);
+procedure TFmAnalyser.SeFullscaleGainChange(Sender: TObject);
 begin
  FFSGain := SEFullscaleGain.Value;
 // AnalyserChart.LeftAxis.Maximum := FFSGain+20;
@@ -396,7 +395,7 @@ begin
   else FDownSampleCount := -1
 end;
 
-procedure TFmAnalyser.DriverComboChange(Sender: TObject);
+procedure TFmAnalyser.CbDriverChange(Sender: TObject);
 var
   i : Integer;
 begin
@@ -421,12 +420,12 @@ begin
   end;
 end;
 
-procedure TFmAnalyser.Bt_CPClick(Sender: TObject);
+procedure TFmAnalyser.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
 end;
 
-procedure TFmAnalyser.Bt_AnalyseClick(Sender: TObject);
+procedure TFmAnalyser.BtAnalyseClick(Sender: TObject);
 begin
  if Bt_Analyse.Caption = 'Analyse' then
   begin
@@ -487,7 +486,7 @@ begin
  UpdateBarGraph;
 end;
 
-procedure TFmAnalyser.Lb_DrivernameClick(Sender: TObject);
+procedure TFmAnalyser.LbDrivernameClick(Sender: TObject);
 begin
  if FDownSampleCount > 0
   then FDownSampleCount := -1

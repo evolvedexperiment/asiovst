@@ -38,6 +38,8 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       Curve = ctLinear

@@ -54,6 +54,8 @@ type
     procedure ParameterDitherChangeAmplitude(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDitherTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
     FDitherNoiseshaper : array of TDitherNoiseShaper32;
     FCriticalSection   : TCriticalSection;
@@ -64,7 +66,10 @@ implementation
 {$R *.DFM}
 
 uses
-  DitherNoiseshaperGUI;
+  DitherNoiseshaperGUI, Dialogs;
+
+resourcestring
+  ECStrOnly44100 = 'Only a samplerate of 44.1 kHz is supported!';
 
 procedure TDitherNoiseshaperModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -251,6 +256,17 @@ begin
     do Outputs[Channel, Sample] := FDitherNoiseshaper[Channel].ProcessFloat(Inputs[Channel, Sample]);
  finally
   FCriticalSection.Leave;
+ end;
+end;
+
+procedure TDitherNoiseshaperModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ try
+  if ((abs(SampleRate) / 44100)) - 1 > 0.1
+   then raise Exception.Create(ECStrOnly44100)
+ except
+  on E: Exception do MessageDlg(E.Message, mtError, [mbOK], 0);
  end;
 end;
 

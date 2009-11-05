@@ -44,7 +44,7 @@ implementation
 uses
   {$IFDEF FPC} LResources, {$ENDIF} Classes,
   {$IFDEF DELPHI7_UP} DesignIntf, {$ENDIF}
-  DAV_ASIOHOST, DAV_ASIOGenerator;
+  DAV_ASIOHost, DAV_ASIOHostAudioData, DAV_ASIOGenerator;
 
 procedure Register;
 begin

@@ -120,6 +120,11 @@ contains
   DAV_DspWaveshaper in '..\..\Source\Dsp\DAV_DspWaveshaper.pas',
   DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas',
   DAV_DspComponents in '..\..\Source\DSP\DAV_DspComponents.pas',
-  DAV_DspWindowFunctions in '..\..\Source\DSP\DAV_DspWindowFunctions.pas';
+  DAV_DspWindowFunctions in '..\..\Source\DSP\DAV_DspWindowFunctions.pas',
+  DAV_DspBuildingBlocks in '..\..\Source\DSP\DAV_DspBuildingBlocks.pas',
+  DAV_DspSpectralNoiseReduction in '..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas',
+  DAV_DspSpectralEffects in '..\..\Source\DSP\DAV_DspSpectralEffects.pas',
+  DAV_DspBlockDistribution in '..\..\Source\DSP\DAV_DspBlockDistribution.pas',
+  DAV_DspSpectrumInterpolation in '..\..\Source\DSP\DAV_DspSpectrumInterpolation.pas';
 
 end.

@@ -19,20 +19,20 @@ object FmAnalyser: TFmAnalyser
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDrivername: TLabel
     Left = 8
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
-    OnClick = Lb_DrivernameClick
+    OnClick = LbDrivernameClick
   end
-  object Lb_Channels: TLabel
+  object LbChannels: TLabel
     Left = 8
     Top = 36
-    Width = 77
+    Width = 69
     Height = 13
-    Caption = 'Output Channel:'
+    Caption = 'Input Channel:'
   end
   object LbSpeed: TLabel
     Left = 8
@@ -48,24 +48,24 @@ object FmAnalyser: TFmAnalyser
     Height = 13
     Caption = 'Fullscale = '
   end
-  object Lb_dB: TLabel
+  object LbFullScaleUnit: TLabel
     Left = 323
     Top = 64
     Width = 13
     Height = 13
     Caption = 'dB'
   end
-  object DriverCombo: TComboBox
-    Left = 65
+  object CbDriver: TComboBox
+    Left = 50
     Top = 7
-    Width = 273
+    Width = 288
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
     TabOrder = 0
-    OnChange = DriverComboChange
+    OnChange = CbDriverChange
   end
-  object Bt_CP: TButton
+  object BtControlPanel: TButton
     Left = 347
     Top = 8
     Width = 91
@@ -73,18 +73,18 @@ object FmAnalyser: TFmAnalyser
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = Bt_CPClick
+    OnClick = BtControlPanelClick
   end
-  object ChannelBox: TComboBox
-    Left = 105
+  object CbChannel: TComboBox
+    Left = 92
     Top = 32
-    Width = 233
+    Width = 246
     Height = 21
     Style = csDropDownList
     ItemHeight = 13
     TabOrder = 2
   end
-  object Bt_Analyse: TButton
+  object BtAnalyse: TButton
     Left = 347
     Top = 32
     Width = 91
@@ -93,18 +93,18 @@ object FmAnalyser: TFmAnalyser
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = Bt_AnalyseClick
+    OnClick = BtAnalyseClick
   end
-  object RB_Fast: TRadioButton
+  object RbFast: TRadioButton
     Left = 50
     Top = 63
     Width = 40
     Height = 17
     Caption = '&Fast'
     TabOrder = 4
-    OnClick = RB_FastClick
+    OnClick = RbFastClick
   end
-  object RB_Medium: TRadioButton
+  object RbMedium: TRadioButton
     Left = 92
     Top = 63
     Width = 55
@@ -113,18 +113,18 @@ object FmAnalyser: TFmAnalyser
     Checked = True
     TabOrder = 5
     TabStop = True
-    OnClick = RB_MediumClick
+    OnClick = RbMediumClick
   end
-  object RB_Slow: TRadioButton
+  object RbSlow: TRadioButton
     Left = 151
     Top = 63
     Width = 46
     Height = 17
     Caption = '&Slow'
     TabOrder = 6
-    OnClick = RB_SlowClick
+    OnClick = RbSlowClick
   end
-  object SEFullscaleGain: TSpinEdit
+  object SeFullscaleGain: TSpinEdit
     Left = 263
     Top = 60
     Width = 56
@@ -133,24 +133,24 @@ object FmAnalyser: TFmAnalyser
     MinValue = 0
     TabOrder = 7
     Value = 0
-    OnChange = SEFullscaleGainChange
+    OnChange = SeFullscaleGainChange
   end
   object GLSceneViewer: TGLSceneViewer
     Left = 8
-    Top = 96
+    Top = 88
     Width = 430
-    Height = 222
+    Height = 230
     Camera = GLCamera
     Buffer.BackgroundColor = 789774
-    FieldOfView = 100.000000000000000000
+    FieldOfView = 101.991035461425800000
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
     OnMouseWheel = GLSceneViewerMouseWheel
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreFillOutBuffer = bpfZero
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = BSDownSampled

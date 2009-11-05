@@ -67,7 +67,7 @@ implementation
 {$R *.DFM}
 
 uses
-  PngImage, DAV_GuiCommon, BodeFrequencyShifterDM, DAV_VSTModuleWithPrograms;
+  PngImage, DAV_GuiCommon, DAV_VSTModuleWithPrograms, BodeFrequencyShifterDM;
 
 { TFmBodeFrequencyShifter }
 
@@ -130,6 +130,12 @@ end;
 
 procedure TFmBodeFrequencyShifter.FormShow(Sender: TObject);
 begin
+ with TBodeFrequencyShifterDataModule(Owner) do
+  begin
+   DialFrequency.Max := ParameterProperties[0].Max;
+   DialFrequency.Min := ParameterProperties[0].Min;
+  end;
+
  UpdateFrequency;
  UpdateMix;
 end;

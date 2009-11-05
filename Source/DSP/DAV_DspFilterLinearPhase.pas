@@ -263,7 +263,7 @@ var
 begin
  GetMem(FilterKernel, FKernelSize * SizeOf(Single));
  try
-  Scale := (FFilterLength - 1) * 0.5;
+  Scale := (FKernelSize - 1) * 0.5;
   // Generate sinc delayed by (N-1)/2
   for i := 0 to (FKernelSize div 2) - 1 do
    begin

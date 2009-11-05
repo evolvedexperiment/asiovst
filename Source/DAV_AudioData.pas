@@ -30,7 +30,7 @@ unit DAV_AudioData;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-interface
+interface                    
 
 {$I DAV_Compiler.inc}
 

@@ -53,6 +53,10 @@ type
     procedure ParameterTransitionBWChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
+    procedure ParameterFrequencyDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FFreqShifter     : array of TBodeFrequencyShifter32;
     FUpMix, FDownMix : Single;
@@ -66,7 +70,10 @@ implementation
 {$R *.DFM}
 
 uses
-  BodeFrequencyShifterGUI;
+  Registry, BodeFrequencyShifterGUI;
+
+const
+  CRegKeyRoot = 'Software\Delphi ASIO & VST Project\Bode Frequency Shifter';
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -80,11 +87,34 @@ end;
 
 procedure TBodeFrequencyShifterDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  Channel  : Integer;
+  TempFreq : Single;
 begin
  assert(numInputs = numOutputs);
  assert(numInputs > 0);
  SetLength(FFreqShifter, numInputs);
+
+ with TRegistry.Create do
+  try
+   RootKey := HKEY_CURRENT_USER;
+   if OpenKey(CRegKeyRoot, False) then
+    begin
+     if ValueExists('Upper Frequency') then
+      begin
+       TempFreq := StrToFloat(ReadString('Upper Frequency'));
+       if TempFreq > ParameterProperties[0].Min
+        then ParameterProperties[0].Max := TempFreq;
+      end;
+     if ValueExists('Lower Frequency') then
+      begin
+       TempFreq := StrToFloat(ReadString('Lower Frequency'));
+       if TempFreq < ParameterProperties[0].Max
+        then ParameterProperties[0].Min := TempFreq;
+      end;
+    end
+  finally
+   Free;
+  end;
 
  ChooseProcess;
 
@@ -169,6 +199,22 @@ begin
  for Channel := 0 to Length(FFreqShifter) - 1 do
   if assigned(FFreqShifter[Channel])
    then FFreqShifter[Channel].TransitionBandwidth := Value;
+end;
+
+procedure TBodeFrequencyShifterDataModule.ParameterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
+  else PreDefined := FloatToStrF(0.001 * Parameter[Index], ffGeneral, 4, 4);
+end;
+
+procedure TBodeFrequencyShifterDataModule.ParameterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := 'Hz'
+  else PreDefined := 'kHz';
 end;
 
 procedure TBodeFrequencyShifterDataModule.ChooseProcess;

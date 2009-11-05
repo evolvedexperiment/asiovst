@@ -30,7 +30,7 @@ requires
   rtl,
   designide,
   DAV_Common_D10;
-                  
+
 contains
   DAV_Asio in '..\..\Source\Asio\DAV_Asio.pas',
   DAV_AsioInterface in '..\..\Source\Asio\DAV_AsioInterface.pas',
@@ -50,6 +50,7 @@ contains
   DAV_AsioDriverProjectCreator in '..\..\Source\Asio\DAV_AsioDriverProjectCreator.pas',
   DAV_AsioDriverControlPanelCreator in '..\..\Source\Asio\DAV_AsioDriverControlPanelCreator.pas',
   DAV_AsioDriverConfig in '..\..\Source\Asio\DAV_AsioDriverConfig.pas',
-  DAV_AsioDriver in '..\..\Source\Asio\DAV_AsioDriver.pas';
+  DAV_AsioDriver in '..\..\Source\Asio\DAV_AsioDriver.pas',
+  DAV_ASIOHostAudioData in '..\..\Source\ASIO\DAV_ASIOHostAudioData.pas';
 
 end.

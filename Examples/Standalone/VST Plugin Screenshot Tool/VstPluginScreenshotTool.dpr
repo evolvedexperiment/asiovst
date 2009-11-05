@@ -6,6 +6,13 @@ uses
   Windows, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl, PngImage,
   DAV_VstHost;
 
+resourcestring
+  RCStrProductString = 'Vst Plugin Screenshot Tool';
+  RCStrVendorString = 'Delphi ASIO & VST Project';
+  RCStrCapturing = 'Capturing';
+  RCStrWrongSyntax = 'Wrong syntax!';
+  RCStrAbout = 'Delphi ASIO & VST Project - Vst Plugin Screenshot Tool';
+
 procedure RenderScreenshot(FileName: TFileName);
 var
   Form    : TForm;
@@ -15,15 +22,15 @@ var
 begin
  with TVstHost.Create(nil) do
   try
-   ProductString := 'Vst Plugin Screenshot Tool';
-   VendorString := 'Delphi ASIO & VST Project';
+   ProductString := RCStrProductString;
+   VendorString := RCStrVendorString;
 
    with VstPlugIns.Add do
     try
      // check VST plugin is a valid plugin
      if not CheckValidPlugin(FileName) then exit;
 
-     Writeln('Capturing: ' + FileName);
+     Writeln(RCStrCapturing + ': ' + FileName);
 
      // load from file
      LoadFromFile(FileName);
@@ -40,6 +47,12 @@ begin
        then LoadPreset(FileName + '.fxp');
       Form.BorderStyle := bsNone;
       Form.Position := poScreenCenter;
+
+      if ParamStr(3) <> '' then
+       begin
+        // add further parameters here (stream a sound file, etc...)
+       end;
+
       ShowEdit(Form);
       Rct := GetRect;
       Form.ClientWidth := Rct.Right - Rct.Left;
@@ -76,7 +89,7 @@ var
   Dir : string;
   SR  : TSearchRec;
 begin
- Writeln('Delphi ASIO & VST Project - Vst Plugin Screenshot Tool');
+ Writeln(RCStrAbout);
 
  if FileExists(ParamStr(1))
   then RenderScreenshot(ParamStr(1))
@@ -92,7 +105,7 @@ begin
     end
    else
     begin
-     Writeln('Wrong syntax!');
+     Writeln(RCStrWrongSyntax);
      Writeln('Add parameter or move this tool into a directory containing VST plugins');
 
      Dir := ExtractFileDir(ParamStr(0));

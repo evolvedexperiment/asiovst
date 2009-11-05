@@ -54,7 +54,10 @@ function LinearInterpolation(const Fractional: Single; const Data: TDAV2SingleAr
 function LinearInterpolation(const Fractional: Double; const Data: TDAV2DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function LinearInterpolation(const Fractional: Single; const Data: PDAV2SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function LinearInterpolation(const Fractional: Double; const Data: PDAV2DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
-function CubicInterpolation(const Fractional, inm1, inp, inp1, inp2: Single): Single; {$IFDEF useinlining} inline; {$ENDIF}
+function CubicInterpolation(const Fractional: Single; const Data: TDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function CubicInterpolation(const Fractional: Double; const Data: TDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function CubicInterpolation(const Fractional: Single; const Data: PDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
+function CubicInterpolation(const Fractional: Double; const Data: PDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation4Point3rdOrder(const Fractional: Single; const Data: TDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation4Point3rdOrder(const Fractional: Double; const Data: TDAV4DoubleArray): Double; overload; {$IFDEF useinlining} inline; {$ENDIF}
 function BSplineInterpolation4Point3rdOrder(const Fractional: Single; Data: PDAV4SingleArray): Single; overload; {$IFDEF useinlining} inline; {$ENDIF}
@@ -350,11 +353,32 @@ begin
   Result := (1 - Fractional) * Data^[0] + Fractional * Data^[1];
 end;
 
-function CubicInterpolation(const Fractional, inm1, inp, inp1, inp2: Single): Single;
+function CubicInterpolation(const Fractional: Single; const Data: TDAV4SingleArray): Single;
 begin
-  Result := inp + 0.5 * Fractional * (inp1 - inm1 + Fractional *
-    (4 * inp1 + 2 * inm1 - 5 * inp - inp2 + Fractional *
-    (3 * (inp - inp1) - inm1 + inp2)));
+  Result := Data[1] + 0.5 * Fractional * (Data[2] - Data[0] + Fractional *
+    (4 * Data[2] + 2 * Data[0] - 5 * Data[1] - Data[3] + Fractional *
+    (3 * (Data[1] - Data[2]) - Data[0] + Data[3])));
+end;
+
+function CubicInterpolation(const Fractional: Double; const Data: TDAV4DoubleArray): Double;
+begin
+  Result := Data[1] + 0.5 * Fractional * (Data[2] - Data[0] + Fractional *
+    (4 * Data[2] + 2 * Data[0] - 5 * Data[1] - Data[3] + Fractional *
+    (3 * (Data[1] - Data[2]) - Data[0] + Data[3])));
+end;
+
+function CubicInterpolation(const Fractional: Single; const Data: PDAV4SingleArray): Single;
+begin
+  Result := Data^[1] + 0.5 * Fractional * (Data^[2] - Data^[0] + Fractional *
+    (4 * Data^[2] + 2 * Data^[0] - 5 * Data^[1] - Data^[3] + Fractional *
+    (3 * (Data^[1] - Data^[2]) - Data^[0] + Data^[3])));
+end;
+
+function CubicInterpolation(const Fractional: Double; const Data: PDAV4DoubleArray): Double;
+begin
+  Result := Data^[1] + 0.5 * Fractional * (Data^[2] - Data^[0] + Fractional *
+    (4 * Data^[2] + 2 * Data^[0] - 5 * Data^[1] - Data^[3] + Fractional *
+    (3 * (Data^[1] - Data^[2]) - Data^[0] + Data^[3])));
 end;
 
 function BSplineInterpolation4Point3rdOrder(const Fractional: Single; const Data: TDAV4SingleArray): Single;

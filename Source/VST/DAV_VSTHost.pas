@@ -61,7 +61,7 @@ uses
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
   {$IFDEF VstHostGUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,
   {$IFDEF FlatSrcollBar}TFlatScrollbarUnit, {$ENDIF}{$ENDIF}
-  DAV_Types, DAV_AudioData, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
+  DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
   DAV_DLLLoader{$ENDIF};
 
 type
@@ -288,10 +288,6 @@ type
     procedure MainsChanged(const IsOn: Boolean);
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-    procedure ProcessAudioDataCollection(Inputs, Outputs: TAudioDataCollection32); overload; virtual;
-    procedure ProcessAudioDataCollection(Inputs, Outputs: TAudioDataCollection64); overload; virtual;
-    procedure ProcessAudioDataCollectionInplace(AudioData: TAudioDataCollection32); overload; virtual;
-    procedure ProcessAudioDataCollectionInplace(AudioData: TAudioDataCollection64); overload; virtual;
     procedure ProcessDoubleReplacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
     procedure ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure SaveBank(FileName: TFileName); overload;
@@ -530,7 +526,6 @@ type
     FProductString      : string;
     FVendorString       : string;
     FVendorVersion      : Integer;
-    FVstPlugIns         : TVstPlugIns;
     FVTI                : TVstTimeInformation;
     function GetBlockSize : Integer;
     function GetHostCanDos: THostCanDos;
@@ -545,7 +540,9 @@ type
     procedure SetVstPlugIns(const Value: TVstPlugIns);
     procedure VstTimeInfoChanged(Sender: TObject);
   protected
+    FVstPlugIns : TVstPlugIns;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure CreateVstPluginList; virtual;
     property Items[Index: Integer]: TCustomVstPlugIn read GetItem; default;
   public
     constructor Create(AOwner: TComponent); override;
@@ -1282,7 +1279,7 @@ begin
   end;
  {$ENDIF}
  try
-  FVstPlugIns := TVstPlugIns.Create(Self);
+  CreateVstPluginList;
   FVTI := TVstTimeInformation.Create;
   FVTI.OnChanged := VstTimeInfoChanged;
  finally
@@ -1308,6 +1305,11 @@ begin
  finally
   inherited;
  end;
+end;
+
+procedure TCustomVstHost.CreateVstPluginList;
+begin
+ FVstPlugIns := TVstPlugIns.Create(Self);
 end;
 
 procedure TCustomVstHost.VstTimeInfoChanged(Sender: TObject);
@@ -3536,80 +3538,6 @@ begin
    if effFlagsCanReplacing in EffectFlags
     then ProcessReplacing(FVstEffect, Inputs, Outputs, SampleFrames)
     else Process(FVstEffect, Inputs, Outputs, SampleFrames);
-end;
-
-procedure TCustomVstPlugIn.ProcessAudioDataCollection(Inputs,
-  Outputs: TAudioDataCollection32);
-var
-  Channel : Integer;
-  InList,
-  OutList : array of PDAVSingleFixedArray;
-begin
- assert(Inputs.SampleFrames = Outputs.SampleFrames);
- assert(Inputs.ChannelCount >= numInputs);
- assert(Outputs.ChannelCount >= numOutputs);
-
- SetLength(InList, Inputs.ChannelCount);
- for Channel := 0 to Inputs.ChannelCount - 1
-  do InList[Channel] := Inputs[Channel].ChannelDataPointer;
-
- SetLength(OutList, Outputs.ChannelCount);
- for Channel := 0 to Outputs.ChannelCount - 1
-  do OutList[Channel] := Outputs[Channel].ChannelDataPointer;
- ProcessAudio(PPSingle(InList), PPSingle(OutList), Inputs.SampleFrames);
-end;
-
-procedure TCustomVstPlugIn.ProcessAudioDataCollection(Inputs,
-  Outputs: TAudioDataCollection64);
-var
-  Channel : Integer;
-  InList,
-  OutList : array of PDAVDoubleFixedArray;
-begin
- assert(Inputs.SampleFrames = Outputs.SampleFrames);
- assert(Inputs.ChannelCount >= numInputs);
- assert(Outputs.ChannelCount >= numOutputs);
-
- SetLength(InList, Inputs.ChannelCount);
- for Channel := 0 to Inputs.ChannelCount - 1
-  do InList[Channel] := Inputs[Channel].ChannelDataPointer;
-
- SetLength(OutList, Outputs.ChannelCount);
- for Channel := 0 to Outputs.ChannelCount - 1
-  do OutList[Channel] := Outputs[Channel].ChannelDataPointer;
- ProcessDoubleReplacing(PPDouble(InList), PPDouble(OutList), Inputs.SampleFrames);
-end;
-
-procedure TCustomVstPlugIn.ProcessAudioDataCollectionInplace(
-  AudioData: TAudioDataCollection32);
-var
-  Channel  : Integer;
-  DataList : array of PDAVSingleFixedArray;
-begin
- assert(AudioData.ChannelCount >= numInputs);
- assert(AudioData.ChannelCount >= numOutputs);
-
- SetLength(DataList, AudioData.ChannelCount);
- for Channel := 0 to AudioData.ChannelCount - 1
-  do DataList[Channel] := AudioData[Channel].ChannelDataPointer;
-
- ProcessAudio(PPSingle(DataList), PPSingle(DataList), AudioData.SampleFrames);
-end;
-
-procedure TCustomVstPlugIn.ProcessAudioDataCollectionInplace(
-  AudioData: TAudioDataCollection64);
-var
-  Channel  : Integer;
-  DataList : array of PDAVDoubleFixedArray;
-begin
- assert(AudioData.ChannelCount >= numInputs);
- assert(AudioData.ChannelCount >= numOutputs);
-
- SetLength(DataList, AudioData.ChannelCount);
- for Channel := 0 to AudioData.ChannelCount - 1
-  do DataList[Channel] := AudioData[Channel].ChannelDataPointer;
-
- ProcessDoubleReplacing(PPDouble(DataList), PPDouble(DataList), AudioData.SampleFrames);
 end;
 
 function TCustomVstPlugIn.GetInitialDelay: Integer;

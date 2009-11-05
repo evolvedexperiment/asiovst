@@ -66,11 +66,15 @@ type
 
   PDAV2ComplexSingleArray = ^TDAV2ComplexSingleArray;
   TDAV2ComplexSingleArray = array [0..1] of TComplexSingle;
+  PDAV3ComplexSingleArray = ^TDAV3ComplexSingleArray;
+  TDAV3ComplexSingleArray = array [0..2] of TComplexSingle;
   PDAV4ComplexSingleArray = ^TDAV4ComplexSingleArray;
   TDAV4ComplexSingleArray = array [0..3] of TComplexSingle;
 
   PDAV2ComplexDoubleArray = ^TDAV2ComplexDoubleArray;
   TDAV2ComplexDoubleArray = array [0..1] of TComplexDouble;
+  PDAV3ComplexDoubleArray = ^TDAV3ComplexDoubleArray;
+  TDAV3ComplexDoubleArray = array [0..2] of TComplexDouble;
   PDAV4ComplexDoubleArray = ^TDAV4ComplexDoubleArray;
   TDAV4ComplexDoubleArray = array [0..3] of TComplexDouble;
 
