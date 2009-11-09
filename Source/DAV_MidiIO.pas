@@ -463,9 +463,11 @@ end;
 function TMidiDevices.GetHandle(const ADeviceIndex: Integer): THandle;
 begin
  try
-  if not ((ADeviceIndex >= 0) and (ADeviceIndex <= (FDevices.Count - 1))) then
-   raise EMidiDevices.CreateFmt('%s: Device index out of bounds! (%d)', [ClassName,ADeviceIndex]);
-  Result := THandle(FDevices.Objects[ADeviceIndex]);
+  if FDevices.Count = 0
+   then Result := 0 else
+  if not ((ADeviceIndex >= 0) and (ADeviceIndex < FDevices.Count))
+   then raise EMidiDevices.CreateFmt('%s: Device index out of bounds! (%d)', [ClassName,ADeviceIndex])
+   else Result := THandle(FDevices.Objects[ADeviceIndex]);
  except
   Result := 0;
  end; 
