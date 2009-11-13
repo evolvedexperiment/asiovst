@@ -233,6 +233,12 @@ procedure ProcessReplacingFunc(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+procedure ProcessFuncCheck(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFuncCheck(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessDoubleReplacingFuncCheck(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 function  GetParameterFuncDummy(const Effect: PVSTEffect;
   const Index: Integer): Single; cdecl;
 procedure SetParameterFuncDummy(const Effect: PVSTEffect;
@@ -346,9 +352,9 @@ begin
    numOutputs      := 2;
 
    Dispatcher             := @DispatchEffectFunc;
-   Process                := @ProcessFunc;
-   ProcessReplacing       := @ProcessReplacingFunc;
-   ProcessDoubleReplacing := @ProcessDoubleReplacingFunc;
+   Process                := @ProcessFuncCheck;
+   ProcessReplacing       := @ProcessReplacingFuncCheck;
+   ProcessDoubleReplacing := @ProcessDoubleReplacingFuncCheck;
    SetParameter           := @SetParameterFunc;
    GetParameter           := @GetParameterFunc;
   end;
@@ -1385,6 +1391,13 @@ end;
 {$DEFINE PUREPASCAL}
 {$ENDIF}
 
+procedure ProcessFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+begin
+ if assigned(Effect) then
+  if Addr(Effect^.Process) = Addr(ProcessFunc)
+   then ProcessFunc(Effect, Inputs, Outputs, SampleFrames);
+end;
+
 procedure ProcessFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
@@ -1450,6 +1463,13 @@ asm
 end;
 {$ENDIF}
 
+procedure ProcessReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+begin
+ if assigned(Effect) then
+  if Addr(Effect^.ProcessReplacing) = Addr(ProcessReplacingFunc)
+   then ProcessReplacingFunc(Effect, Inputs, Outputs, SampleFrames);
+end;
+
 procedure ProcessReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
@@ -1514,6 +1534,13 @@ asm
   pop ebx
 end;
 {$ENDIF}
+
+procedure ProcessDoubleReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+begin
+ if assigned(Effect) then
+  if Addr(Effect^.ProcessDoubleReplacing) = Addr(ProcessDoubleReplacingFunc)
+   then ProcessDoubleReplacingFunc(Effect, Inputs, Outputs, SampleFrames);
+end;
 
 procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}

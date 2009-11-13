@@ -119,7 +119,7 @@ end;
 
 procedure TComboDataModule.ParamHPFResonanceChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighPass[0]) then
+ if Assigned(FHighPass[0]) then
   begin
    FHighPass[0].Bandwidth := 1.1 - 0.01 * Value;
    FHighPass[1].Bandwidth := FHighPass[0].Bandwidth;
@@ -153,7 +153,7 @@ end;
 
 function TComboDataModule.GetModelType: TModelType;
 begin
- result := TModelType(round(ParameterByName['Model']));
+ Result := TModelType(round(ParameterByName['Model']));
 end;
 
 procedure TComboDataModule.SetModelType(const Value: TModelType);
@@ -244,7 +244,7 @@ end;
 
 procedure TComboDataModule.ParamHPFFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighPass[0]) then
+ if Assigned(FHighPass[0]) then
   begin
    FHighPass[0].Frequency := Value;
    FHighPass[1].Frequency := FHighPass[0].Frequency;
@@ -716,16 +716,19 @@ end;
 
 procedure TComboDataModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- if assigned(FHighPass[0]) then FHighPass[0].SampleRate := SampleRate;
- if assigned(FHighPass[1]) then FHighPass[1].SampleRate := SampleRate;
- ModelType := ModelType;
+ if abs(SampleRate) > 0 then
+  begin
+   if Assigned(FHighPass[0]) then FHighPass[0].SampleRate := abs(SampleRate);
+   if Assigned(FHighPass[1]) then FHighPass[1].SampleRate := abs(SampleRate);
+   SetModelType(ModelType);
+  end;
 end;
 
 procedure TComboDataModule.VSTModuleSuspend(Sender: TObject);
 begin
- if assigned(FBuffer[0])
+ if Assigned(FBuffer[0])
   then FillChar(FBuffer[0]^[0], FBufferSize * SizeOf(Single), 0);
- if assigned(FBuffer[1])
+ if Assigned(FBuffer[1])
   then FillChar(FBuffer[1]^[0], FBufferSize * SizeOf(Single), 0);
  FillChar(FFilterState[0, 0], 10 * SizeOf(Double), 0);
 end;

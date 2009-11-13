@@ -1,7 +1,5 @@
 unit DAV_Classes;
 
-// based on code found in the GLScene (see www.glscene.org)
-
 interface
 
 {$I DAV_Compiler.inc}
@@ -112,6 +110,8 @@ type
     property SampleRateSource;
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
+
+  // the code below is based on code found in the GLScene (see www.glscene.org)
 
   TDAVUpdateAbleObject = class(TPersistent)
   private

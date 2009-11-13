@@ -34,8 +34,6 @@ interface
 
 {$I DAV_Compiler.inc}
 
-{$I DAV_Compiler.inc}
-
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
@@ -154,7 +152,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i ButterworthDM.lrs}
+  {$I ButterworthDM.lrs}
 {$ENDIF}
 
 end.

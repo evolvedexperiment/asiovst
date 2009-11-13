@@ -84,7 +84,6 @@
   The default is enabled.}
 {$DEFINE VstHostGUI}
 
-
 { Enable this option if the VST host unit should initialize the VST plugins
   similar to Cubase 4. Some opcodes are dispached before the plugin is open.
   The default is disable.}
@@ -108,6 +107,14 @@
   It probably won't crash, but the returned information is wrong.
   The default is disabled.}
 {.$DEFINE SearchPluginAndHost}
+
+{ The compiler option below enables the automatic exception handling. This
+  will catch any exceptions caused by the VST plugin and discards them.
+  The exception handling is up to the host application then. If it isn't
+  present there, all exceptions will be raised. Thus the application might
+  appear less stable to the user, hence it is most probably caused by the
+  hosted VST plugin}
+{.$DEFINE VstHostExceptionHandling}
 
 
 ///////////////////////////////////

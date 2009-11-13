@@ -207,26 +207,26 @@ end;
 
 procedure TAdvancedClipperDataModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to 1
-  do FreeAndNil(FUpDownSampling[ch]);
+ for Channel := 0 to 1
+  do FreeAndNil(FUpDownSampling[Channel]);
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmAdvancedClipper.Create(Self);
+ GUI := TFmAdvancedClipper.Create(Self);
 end;
 
 procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for ch := 0 to 1 do
-   if assigned(FUpDownSampling[ch])
-    then FUpDownSampling[ch].Factor := round(Value);
+  for Channel := 0 to 1 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].Factor := round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -239,13 +239,13 @@ end;
 
 procedure TAdvancedClipperDataModule.ParamOSFactor2Change(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for ch := 2 to 3 do
-   if assigned(FUpDownSampling[ch])
-    then FUpDownSampling[ch].Factor := round(Value);
+  for Channel := 2 to 3 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].Factor := round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -286,13 +286,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for ch := 0 to 1 do
-   if assigned(FUpDownSampling[ch])
-    then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+  for Channel := 0 to 1 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].TransitionBandwidth := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
@@ -301,13 +301,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamBW2Change(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for ch := 2 to 3 do
-   if assigned(FUpDownSampling[ch])
-    then FUpDownSampling[ch].TransitionBandwidth := 0.01 * Value;
+  for Channel := 2 to 3 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].TransitionBandwidth := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
@@ -324,13 +324,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for ch := 0 to 1 do
-   if assigned(FUpDownSampling[ch])
-    then FUpDownSampling[ch].Order := round(Value);
+  for Channel := 0 to 1 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].Order := round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -341,13 +341,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for ch := 2 to 3 do
-   if assigned(FUpDownSampling[ch])
-    then FUpDownSampling[ch].Order := round(Value);
+  for Channel := 2 to 3 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].Order := round(Value);
  finally
   FCriticalSection.Leave;
  end;

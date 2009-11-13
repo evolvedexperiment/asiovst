@@ -747,7 +747,9 @@ var
   {$ENDIF}
 begin
  Result := 0;
+ {$IFDEF VstHostExceptionHandling}
  try
+ {$ENDIF}
   if assigned(Effect) then
    begin
     thePlug := Effect.ReservedForHost;
@@ -1104,12 +1106,14 @@ begin
       Result := 0;
     end;
   end;
+ {$IFDEF VstHostExceptionHandling}
  except
   Result := 0;
   {$IFDEF Debug}
   raise;
   {$ENDIF}
  end;
+ {$ENDIF}
 end;
 {$IFDEF DELPHI10_UP} {$endregion 'General Functions'} {$ENDIF}
 
@@ -1623,11 +1627,16 @@ begin
      {$ENDIF}
 
      // copy chunk
+     {$IFDEF VstHostExceptionHandling}
      try
       i := Self.GetChunk(@p);
       TCustomVstPlugIn(Dest).SetChunk(p, i)
      except
      end;
+     {$ELSE}
+     i := Self.GetChunk(@p);
+     TCustomVstPlugIn(Dest).SetChunk(p, i)
+     {$ENDIF}
     end
    else
     begin
@@ -1692,7 +1701,9 @@ begin
     Free;
    end;
 
+ {$IFDEF VstHostExceptionHandling}
  try
+ {$ENDIF}
   {$IFDEF VstHostCubase4}
   VstDispatch(effSetProcessPrecision);
   VstDispatch(effSetBlockSize, 0, 1024);
@@ -1733,9 +1744,11 @@ begin
   FVstVersion   := GetVstVersion;
   FPlugCategory := GetPlugCategory;
   MainsChanged(True);
+ {$IFDEF VstHostExceptionHandling}
  except
   FActive := False;
  end;
+ {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.Close;
@@ -1750,6 +1763,7 @@ end;
 
 function TCustomVstPlugIn.VstDispatch(const opCode : TDispatcherOpcode; const Index, Value: Integer; const Pntr: Pointer; const opt: Single): Integer;
 begin
+ {$IFDEF VstHostExceptionHandling}
  try
   DontRaiseExceptionsAndSetFPUcodeword;
   if not assigned(FVstEffect)
@@ -1758,6 +1772,10 @@ begin
  except
   Result := 0;
  end;
+ {$ELSE}
+ DontRaiseExceptionsAndSetFPUcodeword;
+ Result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
+ {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.Process(Inputs, Outputs: PPSingle; SampleFrames: Integer);

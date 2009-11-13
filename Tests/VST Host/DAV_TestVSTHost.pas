@@ -15,7 +15,7 @@ interface
 
 uses
   TestFramework, Graphics, Registry, Classes, Contnrs, Windows, SysUtils,
-  Messages, Dialogs, DAV_Common, DAV_VSTHost;
+  Messages, Dialogs, DAV_Types, DAV_VSTHost;
 
 type
   TTestVstSuite = class(TTestSuite)
@@ -53,6 +53,7 @@ type
     procedure TestActiveSamplerateChanges;
     procedure TestActiveBlocksizeChanges;
     procedure TestPrograms;
+    procedure TestProcessReplacing;
   end;
 
   // Perverse test methods for VST Plugins
@@ -64,6 +65,8 @@ type
     procedure TestInactiveSamplerateChanges;
     procedure TestInactiveBlocksizeChanges;
     procedure TestInactiveProcessReplacing;
+    procedure TestInactiveProcess;
+    procedure TestEmptyProcessReplacing;
     procedure TestCanDoUnknownTokens;
     procedure TestInvalidOpcodes;
     procedure TestInvalidParameters;
@@ -108,6 +111,7 @@ type
     procedure TestProcess;
     procedure TestProcessDoubleReplacing;
     procedure TestSmallBlocksizes;
+    procedure TestSampleRateDependency;
 
     property BlockSize: Integer read FBlockSize write SetBlockSize;
   end;
@@ -155,6 +159,11 @@ implementation
 uses
   Math, Forms, Controls, {$IFNDEF CONSOLE_TESTRUNNER} SplashScreen, {$ENDIF}
   DAV_VSTEffect;
+
+resourcestring
+  RCStrWrongCategory = 'Plugin has the wrong category for this test';
+  RCStrPluginNoOutput = 'Plugin produces no output, the test will not work';
+  RCStrTimeVariantOutput = 'The output is too time variant for testing';
 
 function RemoveFileExt(const FileName: string): string;
 var
@@ -210,6 +219,43 @@ end;
 
 
 { TVstPluginBasicTests }
+
+procedure TVstPluginBasicTests.TestProcessReplacing;
+var
+  Input   : array of PDavSingleFixedArray;
+  Output  : array of PDavSingleFixedArray;
+  Channel : Integer;
+const
+  CBlockSize = 8192;
+begin
+ // Test Inactive ProcessReplacing
+ with FVstHost[0] do
+  begin
+   SetLength(Input, numInputs);
+   for Channel := 0 to numInputs - 1 do
+    begin
+     ReallocMem(Input[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Input[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   // setup outputs
+   SetLength(Output, numOutputs);
+   for Channel := 0 to numOutputs - 1 do
+    begin
+     ReallocMem(Output[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   Active := True;
+   SetSampleRate(44100);
+   SetBlockSize(CBlockSize);
+
+   // call correct ProcessReplacing
+   StartProcess;
+   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+   StopProcess;
+  end;
+end;
 
 procedure TVstPluginBasicTests.TestPrograms;
 var
@@ -515,6 +561,96 @@ begin
   end;
 end;
 
+procedure TVstPluginPerverseTests.TestEmptyProcessReplacing;
+var
+  Input   : array of PDavSingleFixedArray;
+  Output  : array of PDavSingleFixedArray;
+  Channel : Integer;
+const
+  CBlockSize = 8192;
+begin
+ with FVstHost[0] do
+  begin
+   SetLength(Input, numInputs);
+   for Channel := 0 to numInputs - 1 do
+    begin
+     ReallocMem(Input[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Input[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   // setup outputs
+   SetLength(Output, numOutputs);
+   for Channel := 0 to numOutputs - 1 do
+    begin
+     ReallocMem(Output[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   Active := True;
+   SetSampleRate(44100);
+   SetBlockSize(CBlockSize);
+
+   StartProcess;
+   // test with no sampleframes
+   Process(@Input[0], @Output[0], 0);
+
+   // test with no input
+   Process(nil, @Output[0], CBlockSize);
+
+   // test with no output
+   Process(@Input[0], nil, CBlockSize);
+
+   StopProcess;
+  end;
+end;
+
+procedure TVstPluginPerverseTests.TestInactiveProcess;
+var
+  Input   : array of PDavSingleFixedArray;
+  Output  : array of PDavSingleFixedArray;
+  Channel : Integer;
+const
+  CBlockSize = 8192;
+begin
+ // Test Inactive ProcessReplacing
+ with FVstHost[0] do
+  begin
+   SetLength(Input, numInputs);
+   for Channel := 0 to numInputs - 1 do
+    begin
+     ReallocMem(Input[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Input[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   // setup outputs
+   SetLength(Output, numOutputs);
+   for Channel := 0 to numOutputs - 1 do
+    begin
+     ReallocMem(Output[Channel], CBlockSize * SizeOf(Single));
+     FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
+    end;
+
+   // call process replacing before activating the plugin
+   StartProcess;
+   Process(@Input[0], @Output[0], CBlockSize);
+   StopProcess;
+
+   Active := True;
+   SetSampleRate(44100);
+   SetBlockSize(CBlockSize);
+
+   // call correct Process
+   Process(@Input[0], @Output[0], CBlockSize);
+
+   // start processing
+   StartProcess;
+   Active := False;
+
+   // call processing
+   Process(@Input[0], @Output[0], CBlockSize);
+  end;
+end;
+
 procedure TVstPluginPerverseTests.TestInactiveProcessReplacing;
 var
   Input   : array of PDavSingleFixedArray;
@@ -541,7 +677,7 @@ begin
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
-   // call process replacing
+   // call process replacing before activating the plugin
    StartProcess;
    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
    StopProcess;
@@ -549,6 +685,9 @@ begin
    Active := True;
    SetSampleRate(44100);
    SetBlockSize(CBlockSize);
+
+   // call correct ProcessReplacing
+   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
 
    // start processing
    StartProcess;
@@ -1501,10 +1640,10 @@ begin
       // Get Program Name Indexed
       VstDispatch(effGetProgramNameIndexed, 0, -1, Data);
      finally
-      Dispose(Data);
+      Free;
      end;
    finally
-    Free;
+    Dispose(Data);
    end;
 
    // edit idle
@@ -1523,8 +1662,12 @@ end;
 
 procedure TVstPluginHostTests.TestEnergyXTBug;
 begin
- FVstHost[0].VstEffectPointer.User := Pointer(random($7FFFFFFF));
- TestEnergyXT;
+ try
+  FVstHost[0].VstEffectPointer.User := Pointer(random($7FFFFFFF));
+  TestEnergyXT;
+ except
+  Fail('EnergyXT 1.X (and older 2.X versions) are likely to crash with this VST plugin'); 
+ end;
 end;
 
 procedure TVstPluginHostTests.TestAbletonLive;
@@ -1705,11 +1848,11 @@ begin
        VstDispatch(effEditClose);
 
      finally
-      Dispose(Data);
+      Free;
      end;
 
    finally
-    Free;
+    Dispose(Data);
    end;
 
    // switch off
@@ -2570,6 +2713,114 @@ begin
        Break;
       end;
     end;
+  end;
+end;
+
+procedure TVstPluginIOTests.TestSampleRateDependency;
+var
+  Channel  : Integer;
+  Param    : Integer;
+  Buffer   : array [0..1] of PDAVSingleFixedArray;
+  Delta    : array [0..1] of Double;
+  Sample   : Integer;
+  Peak     : Single;
+  Cnt, Ndx : Integer;
+const
+  CSampleRates : array [0..1] of Single = (44100, 88200);
+begin
+ with FVstHost[0] do
+  begin
+   if not (PlugCategory in [vpcEffect, vpcMastering, vpcSpacializer, vpcRoomFx,
+     vpcSurroundFx, vpcRestoration, vpcGenerator]) then
+    begin
+     StopTests(RCStrWrongCategory);
+     Exit;
+    end;
+
+   BlockSize := 1 shl 15;
+
+   // allocate and clear some memory
+   GetMem(Buffer[0], FBlockSize * SizeOf(Single));
+   GetMem(Buffer[1], FBlockSize * SizeOf(Single));
+   FillChar(Buffer[0]^, FBlockSize * SizeOf(Single), 0);
+   FillChar(Buffer[1]^, FBlockSize * SizeOf(Single), 0);
+
+   try
+    repeat
+     // clear input buffer to a dirac impulse
+     for Channel := 0 to Length(FInput) - 1 do
+      begin
+       FillChar(FInput[Channel]^, FBlockSize * SizeOf(Single), 0);
+       FInput[Channel]^[0] := 1;
+      end;
+
+     // clear output buffer
+     for Channel := 0 to Length(FOutput) - 1
+      do FillChar(FOutput[Channel]^, FBlockSize * SizeOf(Single), 0);
+
+     // process at two different sample rates
+     for Ndx := 0 to 1 do
+      begin
+       SetSampleRate(CSampleRates[Ndx]);
+
+       StartProcess;
+       for Cnt := 0 to 7 do
+        begin
+         ProcessReplacing(@FInput[0], @FOutput[0], BlockSize);
+
+         // find peak delta
+         Delta[Ndx] := 0;
+         for Sample := 0 to BlockSize - 1 do
+          if abs(FOutput[0]^[Sample] - Buffer[Ndx]^[Sample]) > Delta[Ndx]
+           then Delta[Ndx] := abs(FOutput[0]^[Sample] - Buffer[Ndx]^[Sample]);
+
+         Move(FOutput[0]^[0], Buffer[Ndx]^[0], FBlockSize * SizeOf(Single));
+
+         // eventually skip further passes already
+         if (Cnt > 3) and (Delta[Ndx] < 1E-10) then Break;
+        end;
+       StopProcess;
+
+       // find peak
+       Peak := 0;
+       for Sample := 0 to BlockSize - 1 do
+        if abs(Buffer[Ndx]^[Sample]) > Peak
+         then Peak := abs(Buffer[Ndx]^[Sample]);
+
+       // test peak
+       if Peak = 0 then
+        begin
+         StopTests(RCStrPluginNoOutput);
+         Exit;
+        end;
+
+       // test delta
+       if Delta[Ndx] > 1E-4 then
+        begin
+         StopTests(RCStrTimeVariantOutput);
+         Exit;
+        end;
+      end;
+
+     Peak := 0;
+     for Sample := 0 to BlockSize - 1 do
+      if Abs(Buffer[0]^[Sample] - Buffer[1]^[Sample]) > Peak
+       then Peak := Abs(Buffer[0]^[Sample] - Buffer[1]^[Sample]);
+
+     if Peak < 1E-2
+      then Fail('The plugin seems to be samplerate dependent');
+
+     if ElapsedTestTime < 300 then
+      begin
+       // get random parameters
+       for Param := 0 to numParams - 1
+        do Parameter[Param] := random;
+      end;
+    until ElapsedTestTime > 300;
+   finally
+    Dispose(Buffer[0]);
+    Dispose(Buffer[1]);
+   end;
   end;
 end;
 
