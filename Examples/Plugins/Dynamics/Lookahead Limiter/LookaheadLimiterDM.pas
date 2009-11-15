@@ -196,7 +196,7 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterOnOffDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'Off';
   1 : PreDefined := 'On';
  end;
@@ -205,8 +205,10 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterInputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLimiter[0].Threshold_dB := -Value;
- FLimiter[1].Threshold_dB := -Value;
+ if assigned(FLimiter[0])
+  then FLimiter[0].Threshold_dB := -Value;
+ if assigned(FLimiter[1])
+  then FLimiter[1].Threshold_dB := -Value;
 
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateInput;
@@ -215,8 +217,10 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLimiter[0].Output_dB := Value;
- FLimiter[1].Output_dB := Value;
+ if assigned(FLimiter[0])
+  then FLimiter[0].Output_dB := Value;
+ if assigned(FLimiter[1])
+  then FLimiter[1].Output_dB := Value;
 
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateOutput;
@@ -225,8 +229,10 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLimiter[0].Release := Value;
- FLimiter[1].Release := Value;
+ if assigned(FLimiter[0])
+  then FLimiter[0].Release := Value;
+ if assigned(FLimiter[1])
+  then FLimiter[1].Release := Value;
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateRelease;
 end;
@@ -253,8 +259,13 @@ end;
 procedure TLookaheadLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- FLimiter[0].SampleRate := SampleRate;
- FLimiter[1].SampleRate := SampleRate;
+ if abs(SampleRate) > 0 then
+  begin
+   if assigned(FLimiter[0])
+    then FLimiter[0].SampleRate := abs(SampleRate);
+   if assigned(FLimiter[1])
+    then FLimiter[1].SampleRate := abs(SampleRate);
+  end;
 end;
 
 end.
