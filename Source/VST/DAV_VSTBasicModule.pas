@@ -227,18 +227,27 @@ function GetParameterFunc(const Effect: PVSTEffect;
   const Index: Integer): Single; cdecl;
 procedure SetParameterFunc(const Effect: PVSTEffect; const Index: Integer;
   const Value: Single); cdecl;
+
 procedure ProcessFunc(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessReplacingFunc(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessDoubleReplacingFunc(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+
 procedure ProcessFuncCheck(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessReplacingFuncCheck(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 procedure ProcessDoubleReplacingFuncCheck(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+
+
+procedure ProcessFuncEnergyXT(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure ProcessReplacingFuncEnergyXT(const Effect: PVSTEffect;
+  const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+
 function  GetParameterFuncDummy(const Effect: PVSTEffect;
   const Index: Integer): Single; cdecl;
 procedure SetParameterFuncDummy(const Effect: PVSTEffect;
@@ -525,7 +534,7 @@ end;
 
 class function TBasicVSTModule.GetStaticDescription: string;
 begin
- result := 'Delphi ASIO & VST Package Plugin';
+ Result := 'Delphi ASIO & VST Package Plugin';
 end;
 
 function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
@@ -1608,9 +1617,25 @@ asm
 end;
 {$ENDIF}
 
+{$IFNDEF UseAudioEffectPtr}
+procedure ProcessFuncEnergyXT(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+begin
+ if not assigned(Effect) or (SampleFrames = 0) then exit;
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+   then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+end;
+
+procedure ProcessReplacingFuncEnergyXT(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+begin
+ if not assigned(Effect) or (SampleFrames = 0) then exit;
+  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+   then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+end;
+{$ENDIF}
+
 function GetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer): Single; cdecl;
 begin
- result := 0;
+ Result := 0;
 end;
 
 procedure SetParameterFuncDummy(const Effect: PVSTEffect; const Index: Integer; const Value: Single); cdecl;
@@ -1626,7 +1651,7 @@ begin
  // make sure a pointer to the TWinAmpDSPModule exists
  if not Assigned(WinAmpDSPModule) then
   begin
-   result := 1;
+   Result := 1;
    exit;
   end;
 
@@ -1658,7 +1683,7 @@ function ModifySamples(const WinAmpDSPModule: PWinAmpDSPModule;
   const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
   SampleRate: Integer): Integer; cdecl;
 begin
- result := SampleFrames;
+ Result := SampleFrames;
 
  // make sure a pointer to the TWinAmpDSPModule exists
  if not Assigned(WinAmpDSPModule) then exit;
@@ -1675,7 +1700,7 @@ function ModifySamplesDummy(const WinAmpDSPModule: PWinAmpDSPModule;
   const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
   SampleRate: Integer): Integer; cdecl;
 begin
- result := SampleFrames;
+ Result := SampleFrames;
 end;
 
 procedure Quit(const WinAmpDSPModule: PWinAmpDSPModule);
