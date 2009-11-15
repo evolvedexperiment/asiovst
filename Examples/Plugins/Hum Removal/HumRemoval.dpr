@@ -1,23 +1,28 @@
 {$J-,H+,T-P+,X+,B-,V-,O+,A+,W-,U-,R-,I-,Q-,D-,L-,Y-,C-}
-library Convolution;
+library HumRemoval;
+
+{$R 'Resources.res' 'Resources.rc'}
 
 uses
-  FastMM4,  // either download the library or comment if there is an error here
+  FastMM4,
   FastMove,
+  madExcept,
+  madLinkDisAsm,
   DAV_WinAmp,
   DAV_VSTEffect,
   DAV_VSTBasicModule,
-  ConvolutionDM in 'ConvolutionDM.pas' {ConvolutionDataModule: TVSTModule},
-  ConvolutionGUI in 'ConvolutionGUI.pas' {FmConvolution};
+  HumRemovalDSP in 'HumRemovalDSP.pas' {HumRemovalModule: TVSTModule},
+  HumRemovalGUI in 'HumRemovalGUI.pas' {FmHumRemoval},
+  DAV_DspHumRemoval in '..\..\..\Source\DSP\DAV_DspHumRemoval.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
- Result := VstModuleMain(AudioMasterCallback, TConvolutionDataModule);
+  Result := VstModuleMain(AudioMasterCallback, THumRemovalModule);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
- Result := WinampDSPModuleHeader(TConvolutionDataModule);
+  Result := WinampDSPModuleHeader(THumRemovalModule);
 end;
 
 exports VstPluginMain name 'main';

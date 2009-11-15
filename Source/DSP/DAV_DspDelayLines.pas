@@ -55,7 +55,12 @@ type
     procedure ClearBuffer; virtual; abstract;
   end;
 
-  TCustomDelayLineSamples32 = class(TCustomDelayLine, IDspProcessor32)
+  TCustomDelayLineSamples = class(TCustomDelayLine)
+  public
+    property BufferSize;
+  end;
+
+  TCustomDelayLineSamples32 = class(TCustomDelayLineSamples, IDspProcessor32)
   private
     function GetSample(Index: Integer): Single;
   protected
@@ -72,10 +77,14 @@ type
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     function ProcessSample32(Input: Single): Single;
 
+    function GetAbsMax: Single;
+    function GetMaximum: Single;
+    function GetMinimum: Single;
+
     property Sample[Index: Integer]: Single read GetSample;
   end;
 
-  TCustomDelayLineSamples64 = class(TCustomDelayLine, IDspProcessor64)
+  TCustomDelayLineSamples64 = class(TCustomDelayLineSamples, IDspProcessor64)
   private
     function GetSample(Index: Integer): Double;
   protected
@@ -91,6 +100,10 @@ type
 
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
     function ProcessSample64(Input: Double): Double;
+
+    function GetAbsMax: Double;
+    function GetMaximum: Double;
+    function GetMinimum: Double;
 
     property Sample[Index: Integer]: Double read GetSample;
   end;
@@ -245,12 +258,49 @@ constructor TCustomDelayLineSamples32.Create(const BufferSize: Integer = 0);
 begin
  FBuffer := nil;
  inherited Create(Buffersize);
+ ClearBuffer;
 end;
 
 destructor TCustomDelayLineSamples32.Destroy;
 begin
  Dispose(FBuffer);
  inherited;
+end;
+
+function TCustomDelayLineSamples32.GetAbsMax: Single;
+var
+  Pos: Integer;
+begin
+ assert(FBufferSize > 0);
+
+ Result := abs(FBuffer^[0]);
+
+ for Pos := 1 to FBufferSize - 1 do
+  if abs(FBuffer^[Pos]) > Result then Result := abs(FBuffer^[Pos]);
+end;
+
+function TCustomDelayLineSamples32.GetMaximum: Single;
+var
+  Pos: Integer;
+begin
+ assert(FBufferSize > 0);
+
+ Result := FBuffer^[0];
+
+ for Pos := 1 to FBufferSize - 1 do
+  if FBuffer^[Pos] > Result then Result := FBuffer^[Pos];
+end;
+
+function TCustomDelayLineSamples32.GetMinimum: Single;
+var
+  Pos: Integer;
+begin
+ assert(FBufferSize > 0);
+
+ Result := FBuffer^[0];
+
+ for Pos := 1 to FBufferSize - 1 do
+  if FBuffer^[Pos] < Result then Result := FBuffer^[Pos];
 end;
 
 function TCustomDelayLineSamples32.GetSample(Index: Integer): Single;
@@ -338,6 +388,7 @@ constructor TCustomDelayLineSamples64.Create(const BufferSize: Integer = 0);
 begin
  inherited Create(BufferSize);
  FBuffer := nil;
+ ClearBuffer;
 end;
 
 destructor TCustomDelayLineSamples64.Destroy;
@@ -414,6 +465,43 @@ end;
 procedure TCustomDelayLineSamples64.ClearBuffer;
 begin
  FillChar(FBuffer^, FBufferSize * SizeOf(Double), 0);
+end;
+
+function TCustomDelayLineSamples64.GetAbsMax: Double;
+var
+  Pos: Integer;
+begin
+ assert(FBufferSize > 0);
+
+ Result := abs(FBuffer^[0]);
+
+ for Pos := 1 to FBufferSize - 1 do
+  if abs(FBuffer^[Pos]) > Result
+   then Result := abs(FBuffer^[Pos]);
+end;
+
+function TCustomDelayLineSamples64.GetMaximum: Double;
+var
+  Pos: Integer;
+begin
+ assert(FBufferSize > 0);
+
+ Result := FBuffer^[0];
+
+ for Pos := 1 to FBufferSize - 1 do
+  if FBuffer^[Pos] > Result then Result := FBuffer^[Pos];
+end;
+
+function TCustomDelayLineSamples64.GetMinimum: Double;
+var
+  Pos: Integer;
+begin
+ assert(FBufferSize > 0);
+
+ Result := FBuffer^[0];
+
+ for Pos := 1 to FBufferSize - 1 do
+  if FBuffer^[Pos] < Result then Result := FBuffer^[Pos];
 end;
 
 

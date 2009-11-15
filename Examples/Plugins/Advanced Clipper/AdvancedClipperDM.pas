@@ -367,15 +367,18 @@ begin
   for i := 0 to SampleFrames - 1 do
    for ch := 0 to 1 do
     begin
+     // first stage
      FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
      for j := 0 to FUpDownSampling[ch].Factor - 1
       do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
      InterStage := FUpDownSampling[ch].Downsample64(@d);
 
+     // second stage
      FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
      for j := 0 to FUpDownSampling[ch + 2].Factor - 1
       do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
      d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
+
      if FHardClip
       then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
      Outputs[ch, i] := FOutputGain * d[0];
@@ -398,17 +401,21 @@ begin
   for i := 0 to SampleFrames - 1 do
    for ch := 0 to 1 do
     begin
+     // first stage
      FUpDownSampling[ch].Upsample64(FInputGain * Inputs[ch, i], @d);
      for j := 0 to FUpDownSampling[ch].Factor - 1
       do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
      InterStage := FUpDownSampling[ch].Downsample64(@d);
 
+     // second stage
      FUpDownSampling[ch + 2].Upsample64(InterStage, @d);
      for j := 0 to FUpDownSampling[ch + 2].Factor - 1
       do d[j] := (abs(d[j] + 1) - abs(d[j] - 1)) * 0.5;
      d[0] := FUpDownSampling[ch + 2].Downsample64(@d);
+
      if FHardClip
       then d[0] := (abs(d[0] + 1) - abs(d[0] - 1)) * 0.5;
+
      Outputs[ch, i] := FOutputGain * d[0];
     end;
  finally

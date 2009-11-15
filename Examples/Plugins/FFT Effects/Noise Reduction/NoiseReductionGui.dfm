@@ -371,7 +371,7 @@ object FmNoiseReduction: TFmNoiseReduction
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
-    ItemIndex = 7
+    ItemIndex = -1
     Items.Strings = (
       '64'
       '128'

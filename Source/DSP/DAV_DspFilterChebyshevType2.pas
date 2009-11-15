@@ -128,7 +128,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Classes, DAV_Math, DAV_Approximations;
+  Math, SysUtils, DAV_Classes, DAV_Math, DAV_Common, DAV_Approximations;
 
 const
   CHalf32 : Single = 0.5;
@@ -205,7 +205,7 @@ end;
 
 procedure TCustomChebyshev2Filter.CalculateStopbandGain;
 begin
- assert(FStopband < 0);
+ Assert(FStopband < 0);
  FStopbandGain := Power(10, -0.1 * FStopband);
  if FFixFrequency then CalculateW0;
 end;

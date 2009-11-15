@@ -1418,13 +1418,13 @@ end;
 
 procedure TCustomTimeConstantDynamics.CalculateAttackFactor;
 begin
-  if FAttack = 0 then FAttackFactor := 0
+  if FAttack = 0 then FAttackFactor := 1
   else FAttackFactor := 1 - exp( -ln2 / (FAttack * 0.001 * SampleRate));
 end;
 
 procedure TCustomTimeConstantDynamics.CalculateReleaseFactor;
 begin
-  if FRelease = 0 then FReleaseFactor := 0
+  if FRelease = 0 then FReleaseFactor := 1
   else FReleaseFactor := exp( -ln2 / (FRelease * 0.001 * SampleRate));
 end;
 

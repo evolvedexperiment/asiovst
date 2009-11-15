@@ -257,10 +257,10 @@ type
     function ProcessSample64(Input: Int64): Int64; override;
     function ProcessSampleASM: Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
-    function MagnitudeLog10(const Frequency: Double):Double; override;
-    function Phase(const Frequency: Double):Double; override;
-    function Real(const Frequency: Double):Double; override;
-    function Imaginary(const Frequency: Double):Double; override;
+    function MagnitudeLog10(const Frequency: Double) :Double; override;
+    function Phase(const Frequency: Double): Double; override;
+    function Real(const Frequency: Double): Double; override;
+    function Imaginary(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary : Double); overload; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary : Single); overload; override;
     procedure Reset; override;

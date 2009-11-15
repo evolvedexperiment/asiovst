@@ -38,16 +38,19 @@ uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   Classes, Graphics, Forms, Types, SysUtils, Controls;
 
-const
-  fkt = 0.35355339;
-
 type
   TGuiEQGraph = class;
   TFrequencyAxisLabelStyle = (flsNone, flsTop, flsBottom);
   TdBLabelStyle = (dlsNone, dlsLeft, dlsRight);
 
   TGetFilterGainEvent = function(Sender: TObject; const Frequency: Single): Single of object;
-  TGuiEQGraph = class(TCustomControl)
+
+  TCustomGuiEQGraph = class(TCustomControl)
+  public
+    constructor Create(AOwner: TComponent); override;
+  end;
+
+  TGuiEQGraph = class(TCustomGuiEQGraph)
   private
     FAutoColor               : Boolean;
     FBuffer                  : TBitmap;
@@ -64,6 +67,7 @@ type
     FBufferNeedsRepaint      : Boolean;
     FOnPaint                 : TNotifyEvent;
     FOnGetFilterGain         : TGetFilterGainEvent;
+    FAutoUpdate              : Boolean;
     procedure SetAutoColor(const Value: Boolean);
     procedure SetChartColor(const Value: TColor);
     procedure SetBorderRadius(const Value: Integer);
@@ -93,6 +97,7 @@ type
     destructor Destroy; override;
   published
     property AutoColor: Boolean read FAutoColor write SetAutoColor default true;
+    property AutoUpdate: Boolean read FAutoUpdate write FAutoUpdate;
     property GraphColorDark: TColor read FGraphColorDark write SetGraphColorDark default $303030;
     property GraphColorLight: TColor read FGraphColorLight write SetGraphColorLight default $606060;
     property ColorChart: TColor read FChartColor write SetChartColor;
@@ -147,14 +152,24 @@ implementation
 uses
   Math, DAV_Common;
 
+{ TCustomGuiEQGraph }
+
+constructor TCustomGuiEQGraph.Create(AOwner: TComponent);
+begin
+ inherited Create(AOwner);
+ ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
+   csDoubleClicks, csReplicatable, csOpaque];
+ TabStop      := False; // Ensure we're not a tab-stop
+ Color        := clBtnFace;
+end;
+
+
 { TGuiEQGraph }
 
 constructor TGuiEQGraph.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
- ControlStyle      := [csAcceptsControls, csCaptureMouse, csClickEvents,
-                       csDoubleClicks, csReplicatable, csOpaque];
- TabStop          := False; // Ensure we're not a tab-stop
+
  FMaxGain         := 15;
  FAutoColor       := False;
  FBuffer          := TBitmap.Create;
@@ -164,7 +179,6 @@ begin
  FFreqLabelStyle  := flsNone;
  FdBLabelStyle    := dlsNone;
  FBorderWidth     := 1;
- Color            := clBtnFace;
  FChartColor      := Color;
 end;
 
@@ -214,8 +228,8 @@ end;
 procedure TGuiEQGraph.Paint;
 begin
  inherited;
- if FChartBufferNeedsRepaint then RepaintChartBuffer;
- if FBufferNeedsRepaint then RepaintBuffer;
+ if FAutoUpdate or FChartBufferNeedsRepaint then RepaintChartBuffer;
+ if FAutoUpdate or FBufferNeedsRepaint then RepaintBuffer;
  Canvas.Draw(0, 0, FBuffer);
  if assigned(FOnPaint)
   then FOnPaint(Self);
@@ -291,7 +305,7 @@ begin
  if ((csLoading in ComponentState) and not (csDesigning in ComponentState))
    or (csDestroying in ComponentState) then exit;
  with FChartBuffer, Canvas do
-  if FChartBufferNeedsRepaint or (csDesigning in ComponentState) then
+  if FAutoUpdate or FChartBufferNeedsRepaint or (csDesigning in ComponentState) then
    begin
     Lock;
 
