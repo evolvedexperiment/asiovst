@@ -37,7 +37,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiLevelMeter;
+  DAV_GuiLED, DAV_GuiLevelMeter, Menus, DAV_GuiSelectBox;
 
 type
   TFmLookaheadLimiter = class(TForm)
@@ -58,16 +58,35 @@ type
     LMGainReduction: TGuiColorLevelMeter;
     Timer: TTimer;
     Lb20dB: TGuiLabel;
+    PuOutputValues: TPopupMenu;
+    Mi001dB: TMenuItem;
+    Mi002dB: TMenuItem;
+    Mi0dB: TMenuItem;
+    Mi003dB: TMenuItem;
+    Mi005dB: TMenuItem;
+    Mi01dB: TMenuItem;
+    Mi02dB: TMenuItem;
+    GuiLabel1: TGuiLabel;
+    SbProcessingType: TGuiSelectBox;
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure DialInputChange(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
-    procedure DialInputChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
+    procedure Mi001dBClick(Sender: TObject);
+    procedure Mi002dBClick(Sender: TObject);
+    procedure Mi003dBClick(Sender: TObject);
+    procedure Mi005dBClick(Sender: TObject);
+    procedure Mi01dBClick(Sender: TObject);
+    procedure Mi02dBClick(Sender: TObject);
+    procedure Mi0dBClick(Sender: TObject);
+    procedure SbProcessingTypeChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   public
     procedure UpdateInput;
     procedure UpdateOutput;
     procedure UpdateRelease;
+    procedure UpdateProcessingMode;
   end;
 
 implementation
@@ -108,6 +127,50 @@ begin
  UpdateInput;
  UpdateOutput;
  UpdateRelease;
+ UpdateProcessingMode;
+end;
+
+procedure TFmLookaheadLimiter.Mi0dBClick(Sender: TObject);
+begin
+ DialOutput.Position := 0;
+end;
+
+procedure TFmLookaheadLimiter.SbProcessingTypeChange(Sender: TObject);
+begin
+ with TLookaheadLimiterDataModule(Owner) do
+  begin
+   Parameter[3] := SbProcessingType.ItemIndex;
+  end;
+end;
+
+procedure TFmLookaheadLimiter.Mi001dBClick(Sender: TObject);
+begin
+ DialOutput.Position := -0.01;
+end;
+
+procedure TFmLookaheadLimiter.Mi002dBClick(Sender: TObject);
+begin
+ DialOutput.Position := -0.02;
+end;
+
+procedure TFmLookaheadLimiter.Mi003dBClick(Sender: TObject);
+begin
+ DialOutput.Position := -0.03;
+end;
+
+procedure TFmLookaheadLimiter.Mi005dBClick(Sender: TObject);
+begin
+ DialOutput.Position := -0.05;
+end;
+
+procedure TFmLookaheadLimiter.Mi01dBClick(Sender: TObject);
+begin
+ DialOutput.Position := -0.1;
+end;
+
+procedure TFmLookaheadLimiter.Mi02dBClick(Sender: TObject);
+begin
+ DialOutput.Position := -0.2;
 end;
 
 procedure TFmLookaheadLimiter.TimerTimer(Sender: TObject);
@@ -170,6 +233,15 @@ begin
    if Output <> DialOutput.Position
     then DialOutput.Position := Output;
    LbOutputValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+  end;
+end;
+
+procedure TFmLookaheadLimiter.UpdateProcessingMode;
+begin
+ with TLookaheadLimiterDataModule(Owner) do
+  begin
+   if SbProcessingType.ItemIndex <> Round(Parameter[3])
+    then SbProcessingType.ItemIndex := Round(Parameter[3]);
   end;
 end;
 

@@ -40,10 +40,14 @@ uses
 
 type
   TLookaheadLimiterDataModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDualMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessPeakMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -56,8 +60,10 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure ParameterProcessingModeChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterProcessingModeDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FCriticalSection : TCriticalSection;
     FLimiter         : array [0..1] of TDspLookaheadLimiter32;
@@ -88,16 +94,16 @@ procedure TLookaheadLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
-  CPresets : array [1..9, 0..2] of Single = (
-    ( 0.0, -0.01,  75),
-    ( 0.5, -0.01,  80),
-    ( 1.0, -0.01, 500),
-    ( 1.5, -0.01, 250),
-    (10.0, -0.01, 100),
-    (20.0, -0.01, 500),
-    ( 4.0, -0.01,  80),
-    ( 6.0, -0.01,  60),
-    ( 3.0, -0.01,  20));
+  CPresets : array [1..9, 0..3] of Single = (
+    ( 0.0, -0.01,  75, 0),
+    ( 0.5, -0.01,  80, 0),
+    ( 1.0, -0.01, 500, 1),
+    ( 1.5, -0.01, 250, 1),
+    (10.0, -0.01, 100, 0),
+    (20.0, -0.01, 500, 2),
+    ( 4.0, -0.01,  80, 0),
+    ( 6.0, -0.01,  60, 1),
+    ( 3.0, -0.01,  20, 0));
 begin
  // create limiter
  FLimiter[0] := TDspLookaheadLimiter32.Create;
@@ -111,7 +117,7 @@ begin
 
  // create delay lines
  for Channel := 0 to Length(FDelayLine) - 1
-  do FDelayLine[Channel] := TDelayLineSamples32.Create(FLimiter[0].LookAhead - 1);
+  do FDelayLine[Channel] := TDelayLineSamples32.Create(FLimiter[0].LookAhead);
 
  // initialize parameters
  Parameter[0] :=  0.00;
@@ -202,13 +208,34 @@ begin
  end;
 end;
 
+procedure TLookaheadLimiterDataModule.ParameterProcessingModeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ case Round(Value) of
+  0 : OnProcess := VSTModuleProcessStereo;
+  1 : OnProcess := VSTModuleProcessPeakMono;
+  2 : OnProcess := VSTModuleProcessDualMono;
+ end;
+ OnProcessReplacing := OnProcess;
+end;
+
+procedure TLookaheadLimiterDataModule.ParameterProcessingModeDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ case Round(Parameter[Index]) of
+  0 : PreDefined := 'Stereo';
+  1 : PreDefined := 'PeakMono';
+  2 : PreDefined := 'DualMono';
+ end;
+end;
+
 procedure TLookaheadLimiterDataModule.ParameterInputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLimiter[0])
-  then FLimiter[0].Threshold_dB := -Value;
- if assigned(FLimiter[1])
-  then FLimiter[1].Threshold_dB := -Value;
+ if Assigned(FLimiter[0])
+  then FLimiter[0].Input_dB := Value;
+ if Assigned(FLimiter[1])
+  then FLimiter[1].Input_dB := Value;
 
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateInput;
@@ -217,9 +244,9 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLimiter[0])
+ if Assigned(FLimiter[0])
   then FLimiter[0].Output_dB := Value;
- if assigned(FLimiter[1])
+ if Assigned(FLimiter[1])
   then FLimiter[1].Output_dB := Value;
 
  if EditorForm is TFmLookaheadLimiter
@@ -229,15 +256,44 @@ end;
 procedure TLookaheadLimiterDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLimiter[0])
+ if Assigned(FLimiter[0])
   then FLimiter[0].Release := Value;
- if assigned(FLimiter[1])
+ if Assigned(FLimiter[1])
   then FLimiter[1].Release := Value;
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateRelease;
 end;
 
-procedure TLookaheadLimiterDataModule.VSTModuleProcess(const Inputs,
+procedure TLookaheadLimiterDataModule.VSTModuleProcessStereo(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample : Integer;
+  Temp   : Single;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   FLimiter[0].InputSample(Inputs[0, Sample]);
+   FLimiter[1].InputSample(Inputs[1, Sample]);
+   Temp := Min(FLimiter[0].GainReductionFactor, FLimiter[1].GainReductionFactor);
+
+   Outputs[0, Sample] := Temp * FDelayLine[0].ProcessSample32(Inputs[0, Sample]);
+   Outputs[1, Sample] := Temp * FDelayLine[1].ProcessSample32(Inputs[1, Sample]);
+  end;
+end;
+
+procedure TLookaheadLimiterDataModule.VSTModuleProcessDualMono(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   Outputs[0, Sample] := FLimiter[0].ProcessSample32(Inputs[0, Sample]);
+   Outputs[1, Sample] := FLimiter[1].ProcessSample32(Inputs[1, Sample]);
+  end;
+end;
+
+procedure TLookaheadLimiterDataModule.VSTModuleProcessPeakMono(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample : Integer;
@@ -261,9 +317,9 @@ procedure TLookaheadLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
 begin
  if abs(SampleRate) > 0 then
   begin
-   if assigned(FLimiter[0])
+   if Assigned(FLimiter[0])
     then FLimiter[0].SampleRate := abs(SampleRate);
-   if assigned(FLimiter[1])
+   if Assigned(FLimiter[1])
     then FLimiter[1].SampleRate := abs(SampleRate);
   end;
 end;

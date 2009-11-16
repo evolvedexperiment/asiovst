@@ -114,6 +114,23 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       OnParameterChange = ParameterReleaseChange
       OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Processing Mode'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 2.000000000000000000
+      MaxInteger = 2
+      ReportVST2Properties = True
+      ShortLabel = 'Mode'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterProcessingModeChange
+      OnCustomParameterDisplay = ParameterProcessingModeDisplay
     end>
   ParameterCategories = <
     item
@@ -127,8 +144,8 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
-  OnProcess = VSTModuleProcess
-  OnProcessReplacing = VSTModuleProcess
+  OnProcess = VSTModuleProcessStereo
+  OnProcessReplacing = VSTModuleProcessStereo
   OnSampleRateChange = VSTModuleSampleRateChange
   Left = 461
   Top = 183
