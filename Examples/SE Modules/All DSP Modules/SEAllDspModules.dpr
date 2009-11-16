@@ -52,7 +52,9 @@ uses
   SETunerModule in '..\Tuner\SETunerModule.pas',
   SEVibratoModule in '..\Vibrato\SEVibratoModule.pas',
   SEVocoderModule in '..\Vocoder\SEVocoderModule.pas',
-  SEVoiceSynthModule in '..\VoiceSynth\SEVoiceSynthModule.pas';
+  SEVoiceSynthModule in '..\VoiceSynth\SEVoiceSynthModule.pas',
+  SENoiseReductionModule in '..\Noise Reduction\SENoiseReductionModule.pas',
+  SELookaheadLimiterModule in '..\Lookahead Limiter\SELookaheadLimiterModule.pas';
 
 {$E sem}
 {$R *.res}
@@ -61,7 +63,7 @@ type
   TSEModuleBaseClass = class of TSEModuleBase;
 
 const
-  CModuleClasses : array [0..194] of TSEModuleBaseClass = (
+  CModuleClasses : array [0..199] of TSEModuleBaseClass = (
     TSEBassEnhancerModule,
     TSEResurrectionBassModule,
     TSEHarmonicBassModule,
@@ -256,23 +258,28 @@ const
     TSEAudioFileOscillatorModule,
     TSESimpleAudioFileOscillatorModule,
     TSEMp3PlayerModule,
-    TSESimpleMp3PlayerModule);
+    TSESimpleMp3PlayerModule,
+    TSENoiseReductionStaticModule,
+    TSENoiseReductionControllableModule,
+    TLookaheadLimiterStaticSEModule,
+    TLookaheadLimiterParamStaticSEModule,
+    TLookaheadLimiterAutomatableSEModule);
 
-function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
+function GetModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
  if (Index >= 0) and (Index < Length(CModuleClasses)) then
   begin
    CModuleClasses[Index].GetModuleProperties(Properties);
-   result := True;
+   Result := True;
   end
- else result := False;
+ else Result := False;
 end;
 
-function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
+function MakeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer): Pointer; cdecl; export;
 begin
  if (Index >= 0) and (Index < Length(CModuleClasses)) and (ProcessType = 1)
-  then result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect
-  else result := nil;
+  then Result := CModuleClasses[Index].Create(SEAudioMaster, Reserved).Effect
+  else Result := nil;
 end;
 
 exports makeModule name 'makeModule';

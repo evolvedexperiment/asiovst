@@ -94,6 +94,7 @@ type
     procedure Loaded; override;
     procedure RenderBuffer; virtual;
 
+    procedure AntiAliasChanged; virtual;
     procedure AudioDataChanged; virtual;
     procedure AudioDataCollectionChanged; virtual;
 
@@ -334,16 +335,21 @@ begin
  if FAntiAlias <> Value then
   begin
    FAntiAlias := Value;
-   case FAntiAlias of
-         gaaNone : FOSFactor :=  1;
-     gaaLinear2x : FOSFactor :=  2;
-     gaaLinear3x : FOSFactor :=  3;
-     gaaLinear4x : FOSFactor :=  4;
-     gaaLinear8x : FOSFactor :=  8;
-    gaaLinear16x : FOSFactor := 16;
-   end;
-   Invalidate;
+   AntiAliasChanged;
   end;
+end;
+
+procedure TCustomGuiAudioDataDisplay.AntiAliasChanged;
+begin
+ case FAntiAlias of
+       gaaNone : FOSFactor :=  1;
+   gaaLinear2x : FOSFactor :=  2;
+   gaaLinear3x : FOSFactor :=  3;
+   gaaLinear4x : FOSFactor :=  4;
+   gaaLinear8x : FOSFactor :=  8;
+  gaaLinear16x : FOSFactor := 16;
+ end;
+ Invalidate;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetAudioData(const Value: TCustomAudioData);

@@ -1441,8 +1441,7 @@ end;
 
 function TLowLatencyConvolution32.ProcessSample32(Input: Single): Single;
 var
-  CurrentPosition : Integer;
-  Part            : Integer;
+  Part : Integer;
 begin
  // copy to ring buffer only
  FInputBuffer^[FInputHistorySize + FBlockPosition] := Input;

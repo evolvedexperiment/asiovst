@@ -285,8 +285,8 @@ begin
  inherited;
  with Properties^ do
   begin
-   Name := 'Lightweight Limiter';
-   ID := 'DAV Lightweight Limiter';
+   Name := 'Lookahead Limiter';
+   ID := 'DAV Lookahead Limiter';
   end;
 end;
 
@@ -295,7 +295,7 @@ function TLookaheadLimiterParamStaticSEModule.GetPinProperties(const Index: Inte
 begin
  Result := inherited GetPinProperties(Index, Properties);
  case index of
-  5..9: with Properties^ do Direction := drIn;
+  2..4: with Properties^ do Direction := drIn;
  end;
 end;
 
@@ -307,8 +307,8 @@ begin
  inherited;
  with Properties^ do
   begin
-   Name := 'Lightweight Limiter (Automatable)';
-   ID := 'DAV Lightweight Limiter (Automatable)';
+   Name := 'Lookahead Limiter (Automatable)';
+   ID := 'DAV Lookahead Limiter (Automatable)';
   end;
 end;
 
