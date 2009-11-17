@@ -46,6 +46,7 @@ type
   protected
     FInputBuffer      : PDAVSingleFixedArray;
     FOutputBuffer     : PDAVSingleFixedArray;
+    FGainBuffer       : PDAVSingleFixedArray;
     FStaticCount      : Integer;
     FLookaheadLimiter : TDspLookaheadLimiter32;
     procedure Open; override;
@@ -180,6 +181,13 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
+  2: with Properties^ do
+      begin
+       Name            := 'Gain (direct!)';
+       VariableAddress := @FGainBuffer;
+       Direction       := drOut;
+       Datatype        := dtFSample;
+      end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
@@ -217,7 +225,7 @@ function TLookaheadLimiterStaticSEModule.GetPinProperties(const Index: Integer;
 begin
  Result := inherited GetPinProperties(Index, Properties);
  case index of
-  2: with Properties^ do
+  3: with Properties^ do
       begin
        Name            := 'Input Gain [dB]';
        VariableAddress := @FInputGain;
@@ -226,7 +234,7 @@ begin
        DefaultValue    := '1';
        Result          := True;
       end;
-  3: with Properties^ do
+  4: with Properties^ do
       begin
        Name            := 'Output Gain [dB]';
        VariableAddress := @FOutputGain;
@@ -235,7 +243,7 @@ begin
        DefaultValue    := '-0.01';
        Result          := True;
       end;
-  4: with Properties^ do
+  5: with Properties^ do
       begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
@@ -255,9 +263,9 @@ procedure TLookaheadLimiterStaticSEModule.PlugStateChange(
 begin
  // has user altered LookaheadLimiter parameter?
  case CurrentPin.PinID of
-  2: FLookaheadLimiter.Input_dB  := FInputGain;
-  3: FLookaheadLimiter.Output_dB := FOutputGain;
-  4: FLookaheadLimiter.Release   := FRelease;
+  3: FLookaheadLimiter.Input_dB  := FInputGain;
+  4: FLookaheadLimiter.Output_dB := FOutputGain;
+  5: FLookaheadLimiter.Release   := FRelease;
  end;
  inherited;
 end;
@@ -265,16 +273,21 @@ end;
 procedure TLookaheadLimiterStaticSEModule.SubProcess(const BufferOffset,
   SampleFrames: Integer);
 var
-  Input     : PDAVSingleFixedArray;
-  Output    : PDAVSingleFixedArray;
-  Sample    : Integer;
+  Input  : PDAVSingleFixedArray;
+  Output : PDAVSingleFixedArray;
+  Gain   : PDAVSingleFixedArray;
+  Sample : Integer;
 begin
  // assign some pointers to your in/output buffers. usually blocks (array) of 96 samples
  Input  := PDAVSingleFixedArray(@FInputBuffer[BufferOffset]);
  Output := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
+ Gain   := PDAVSingleFixedArray(@FGainBuffer[BufferOffset]);
 
- for Sample := 0 to SampleFrames - 1
-  do Output^[Sample] := FLookaheadLimiter.ProcessSample32(Input^[Sample]);
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   Output^[Sample] := FLookaheadLimiter.ProcessSample32(Input^[Sample]);
+   Gain^[Sample] := FLookaheadLimiter.GainReductionFactor;
+  end;
 end;
 
 { TLookaheadLimiterParamStaticSEModule }
@@ -295,7 +308,7 @@ function TLookaheadLimiterParamStaticSEModule.GetPinProperties(const Index: Inte
 begin
  Result := inherited GetPinProperties(Index, Properties);
  case index of
-  2..4: with Properties^ do Direction := drIn;
+  3..5: with Properties^ do Direction := drIn;
  end;
 end;
 
@@ -350,9 +363,9 @@ end;
 procedure TLookaheadLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  case CurrentPin.PinID of
-  2..4: if (Pin[2].Status <> stRun) and
-           (Pin[3].Status <> stRun) and
-           (Pin[4].Status <> stRun)
+  3..5: if (Pin[3].Status <> stRun) and
+           (Pin[4].Status <> stRun) and
+           (Pin[5].Status <> stRun)
          then OnProcess := SubProcess
          else OnProcess := SubProcessAutomated;
  end;
@@ -367,6 +380,7 @@ var
   Output    : PDAVSingleFixedArray;
   InpGain   : PDAVSingleFixedArray;
   OutpGain  : PDAVSingleFixedArray;
+  Gain      : PDAVSingleFixedArray;
   Relse     : PDAVSingleFixedArray;
   Sample    : Integer;
 begin
@@ -375,6 +389,7 @@ begin
  Output   := PDAVSingleFixedArray(@FOutputBuffer[BufferOffset]);
  InpGain  := PDAVSingleFixedArray(@FInputGain[BufferOffset]);
  OutpGain := PDAVSingleFixedArray(@FOutputGain[BufferOffset]);
+ Gain     := PDAVSingleFixedArray(@FGainBuffer[BufferOffset]);
  Relse    := PDAVSingleFixedArray(@FRelease[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1 do
@@ -384,6 +399,7 @@ begin
     Output_dB := 10 * OutpGain[Sample];
     Release := 10 * Relse[Sample];
     Output^[Sample] := ProcessSample32(Input^[Sample]);
+    Gain^[Sample] := GainReductionFactor;
    end;
 end;
 
