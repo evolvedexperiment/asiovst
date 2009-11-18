@@ -8,9 +8,12 @@ unit DAV_Common_Lazarus;
 interface
 
 uses
-  DAV_Common, DAV_CommonRegister, DAV_Complex, DAV_ComplexData,
+    DAV_Common, DAV_CommonRegister, DAV_Complex, DAV_ComplexData, 
   DAV_MidiFile, DAV_MidiIO, DAV_AudioData, DAV_Approximations, 
-  LazarusPackageIntf;
+  DAV_MpegAudioLayer3, DAV_AudioFile, DAV_AudioFileAIFF, DAV_AudioFileAU, 
+  DAV_AudioFileDataCache, DAV_AudioFileWAV, DAV_ChannelDataCoder, 
+  DAV_ChunkAiffBasic, DAV_ChunkClasses, DAV_ChunkWaveBasic, 
+  DAV_ChunkWaveCustom, DAV_MpegAudio, LazarusPackageIntf;
 
 implementation
 

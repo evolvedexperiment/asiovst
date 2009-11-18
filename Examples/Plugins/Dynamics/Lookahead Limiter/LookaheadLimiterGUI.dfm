@@ -453,17 +453,17 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
         Height = 36
         Width = 36
       end>
-    Left = 55
+    Left = 48
     Top = 56
   end
   object Timer: TTimer
     Interval = 50
     OnTimer = TimerTimer
-    Left = 87
+    Left = 80
     Top = 56
   end
   object PuOutputValues: TPopupMenu
-    Left = 22
+    Left = 112
     Top = 56
     object Mi0dB: TMenuItem
       Caption = '0 dB'
@@ -492,6 +492,26 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     object Mi02dB: TMenuItem
       Caption = '-0.2 dB'
       OnClick = Mi02dBClick
+    end
+  end
+  object PuInputValues: TPopupMenu
+    Left = 16
+    Top = 56
+    object MiGain0dB: TMenuItem
+      Caption = '&0 dB'
+      OnClick = MiGain0dBClick
+    end
+    object MiGain1dB: TMenuItem
+      Caption = '&1 dB'
+      OnClick = MiGain1dBClick
+    end
+    object MiGain2dB: TMenuItem
+      Caption = '&2 dB'
+      OnClick = MiGain2dBClick
+    end
+    object MiGain3dB: TMenuItem
+      Caption = '&3 dB'
+      OnClick = MiGain3dBClick
     end
   end
 end

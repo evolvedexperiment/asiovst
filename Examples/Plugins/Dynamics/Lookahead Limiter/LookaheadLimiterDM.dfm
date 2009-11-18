@@ -57,7 +57,7 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Characteristic'
+      Category = 'I/O'
       DisplayName = 'Input'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -77,7 +77,7 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      Category = 'Characteristic'
+      Category = 'I/O'
       DisplayName = 'Output'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 2.000000000000000000
@@ -94,6 +94,24 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
       OnCustomParameterDisplay = ParameterOutputDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'I/O'
+      DisplayName = 'Processing Mode'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 2.000000000000000000
+      MaxInteger = 2
+      ReportVST2Properties = True
+      ShortLabel = 'Mode'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterProcessingModeChange
+      OnCustomParameterDisplay = ParameterProcessingModeDisplay
     end
     item
       Curve = ctLogarithmic
@@ -118,23 +136,42 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Processing Mode'
-      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      Category = 'Time Constants'
+      DisplayName = 'Attack Shape'
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
-      Max = 2.000000000000000000
-      MaxInteger = 2
-      ReportVST2Properties = True
-      ShortLabel = 'Mode'
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Attack'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       VSTModule = Owner
-      OnParameterChange = ParameterProcessingModeChange
-      OnCustomParameterDisplay = ParameterProcessingModeDisplay
+      OnParameterChange = ParameterAttackShapeChange
+      OnCustomParameterDisplay = ParameterAttackDisplay
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      Category = 'Time Constants'
+      DisplayName = 'Lookahead'
+      LargeStepFloat = 4.000000000000000000
+      LargeStepInteger = 4
+      Max = 1024.000000000000000000
+      MaxInteger = 1024
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'Lookahd'
+      SmallStepFloat = 2.000000000000000000
+      StepFloat = 2.000000000000000000
+      StepInteger = 2
+      Units = 'Samples'
+      VSTModule = Owner
+      OnParameterChange = ParameterLookaheadChange
+      OnCustomParameterDisplay = ParameterLookaheadDisplay
     end>
   ParameterCategories = <
     item
-      DisplayName = 'Characteristic'
+      DisplayName = 'I/O'
       VSTModule = Owner
     end
     item

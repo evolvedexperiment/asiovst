@@ -2,7 +2,7 @@ unit DAV_MpegAudioLayer3;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Common;

@@ -38,6 +38,8 @@ uses
   Classes, DAV_Types, DAV_Classes;
 
 type
+  TAttackShape = (asLinear, asParabolic); 
+
   TCustomDspLookaheadLimiter = class(TDspSampleRatePersistent)
   private
     FInput_dB      : Single;
@@ -45,6 +47,7 @@ type
     FGainReduction : Single;
     FRelease       : Single;
     FLookAhead     : Integer;
+    FAttackShape   : TAttackShape;
     procedure SetInputGain(const Value: Single);
     procedure SetOutputGain(const Value: Single);
     procedure SetRelease(const Value: Single);
@@ -71,6 +74,7 @@ type
     constructor Create; override;
 
     property GainReductionFactor: Single read FGainReduction;
+    property AttackShape: TAttackShape read FAttackShape write FAttackShape default asParabolic;
     property LookAhead: Integer read FLookAhead write SetLookAhead;
     property Output_dB: Single read FOutput_dB write SetOutputGain;
     property Release: Single read FRelease write SetRelease;
@@ -113,8 +117,9 @@ begin
  FGainReduction := 1;
  FLookAhead     := 64;
  FOutput_dB     := -0.02;
- FInput_dB  := -3;
+ FInput_dB      := -3;
  FHoldCounter   := 0;
+ FAttackShape   := asParabolic;
 
  CalculateThresholdFactor;
  CalculateOutputGainFactor;
@@ -220,9 +225,9 @@ begin
 
  FWindowSum[0] := 0;
  FWindowSum[1] := 0;
- FPeak     := 0;
- FHoldValue   := 0;
- FPeak     := 0;
+ FPeak         := 0;
+ FHoldValue    := 0;
+ FPeak         := 0;
 
  AllocateBuffer;
 end;
@@ -254,6 +259,8 @@ begin
  FillChar(FWindowBuffer32[0]^, (FLookAhead div 2) * SizeOf(Single), 0);
  FillChar(FWindowBuffer32[1]^, (FLookAhead div 2) * SizeOf(Single), 0);
  FillChar(FSampleBuffer32^, FLookAhead * SizeOf(Single), 0);
+ FWindowSum[0] := 0;
+ FWindowSum[1] := 0;
 end;
 
 procedure TDspLookaheadLimiter32.InputSample(Input: Single);
@@ -312,20 +319,36 @@ begin
 
  Input := FPeak;
 
- // apply triangle window
- Temp := FWindowBuffer32[0]^[FBufferPos[1]];
- FWindowBuffer32[0]^[FBufferPos[1]] := Input;
+ case FAttackShape of
+  asLinear :
+   begin
+    // apply rectangle window
+    Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
 
- FWindowSum[0] := FWindowSum[0] + Input - Temp;
- Input := FWindowSum[0] * 2 * FLookAheadInv;
+    FWindowBuffer32[1]^[FBufferPos[1]] := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
 
- Temp := FWindowBuffer32[1]^[FBufferPos[1]];
- FWindowBuffer32[1]^[FBufferPos[1]] := Input;
+    Input := FWindowSum[1] * FLookAheadInv;
+   end;
+  asParabolic :
+   begin
+    // apply triangle window
+    Temp := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
 
- FWindowSum[1] := FWindowSum[1] + Input - Temp;
- Input := FWindowSum[1] * 2 * FLookAheadInv;
+    FWindowSum[0] := FWindowSum[0] + Input - Temp;
+    Input := FWindowSum[0] * 2 * FLookAheadInv;
 
- // advance triangle window buffer pos
+     Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowBuffer32[1]^[FBufferPos[1]] := Input;
+
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
+    Input := FWindowSum[1] * 2 * FLookAheadInv;
+   end;
+ end;
+
+ // advance rectangle/triangle window buffer pos
  Inc(FBufferPos[1]);
  if FBufferPos[1] >= FLookAhead div 2
   then FBufferPos[1] := 0;
@@ -400,20 +423,35 @@ begin
 
  Input := FPeak;
 
- // apply triangle window
- Temp := FWindowBuffer32[0]^[FBufferPos[1]];
- FWindowBuffer32[0]^[FBufferPos[1]] := Input;
+ case FAttackShape of
+  asLinear :
+   begin
+    Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
 
- FWindowSum[0] := FWindowSum[0] + Input - Temp;
- Input := FWindowSum[0] * 2 * FLookAheadInv;
+    FWindowBuffer32[1]^[FBufferPos[1]] := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
 
- Temp := FWindowBuffer32[1]^[FBufferPos[1]];
- FWindowBuffer32[1]^[FBufferPos[1]] := Input;
+    Input := FWindowSum[1] * FLookAheadInv;
+   end;
+  asParabolic :
+   begin
+    // apply triangle window
+    Temp := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
 
- FWindowSum[1] := FWindowSum[1] + Input - Temp;
- Input := FWindowSum[1] * 2 * FLookAheadInv;
+    FWindowSum[0] := FWindowSum[0] + Input - Temp;
+    Input := FWindowSum[0] * 2 * FLookAheadInv;
 
- // advance triangle window buffer pos
+     Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowBuffer32[1]^[FBufferPos[1]] := Input;
+
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
+    Input := FWindowSum[1] * 2 * FLookAheadInv;
+   end;
+ end;
+
+ // advance rectangle/triangle window buffer pos
  Inc(FBufferPos[1]);
  if FBufferPos[1] >= FLookAhead div 2
   then FBufferPos[1] := 0;

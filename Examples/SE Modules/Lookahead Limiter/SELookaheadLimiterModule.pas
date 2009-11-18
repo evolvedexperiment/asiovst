@@ -48,6 +48,7 @@ type
     FOutputBuffer     : PDAVSingleFixedArray;
     FGainBuffer       : PDAVSingleFixedArray;
     FStaticCount      : Integer;
+    FLookaheadSamples : Integer;
     FLookaheadLimiter : TDspLookaheadLimiter32;
     procedure Open; override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
@@ -122,11 +123,15 @@ end;
 procedure TCustomLookaheadLimiterSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  inherited;
- if CurrentPin.PinID = 0 then
-  begin
-   ChooseProcess;
-   Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
-  end;
+
+ // has user altered LookaheadLimiter parameter?
+ case CurrentPin.PinID of
+  0: begin
+      ChooseProcess;
+      Pin[1].TransmitStatusChange(SampleClock, Pin[0].Status);
+     end;
+  3: FLookaheadLimiter.LookAhead := 2 * Round(0.5 * FLookaheadSamples);
+ end;
 end;
 
 // describe your module
@@ -188,6 +193,15 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
+  3: with Properties^ do
+      begin
+       Name            := 'Lookahead [samples]';
+       VariableAddress := @FLookaheadSamples;
+       Direction       := drIn;
+       Datatype        := dtEnum;
+       DefaultValue    := '64';
+       DatatypeExtra   := 'range 2,2048'; 
+      end;
   else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
@@ -198,9 +212,10 @@ end;
 constructor TLookaheadLimiterStaticSEModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited;
- FInputGain  :=   1.00;
- FOutputGain :=  -0.01;
- FRelease    := 100.00;
+ FInputGain        :=   1.00;
+ FOutputGain       :=  -0.01;
+ FRelease          := 100.00;
+ FLookaheadSamples := 64;
 end;
 
 class procedure TLookaheadLimiterStaticSEModule.GetModuleProperties(
@@ -225,7 +240,7 @@ function TLookaheadLimiterStaticSEModule.GetPinProperties(const Index: Integer;
 begin
  Result := inherited GetPinProperties(Index, Properties);
  case index of
-  3: with Properties^ do
+  4: with Properties^ do
       begin
        Name            := 'Input Gain [dB]';
        VariableAddress := @FInputGain;
@@ -234,7 +249,7 @@ begin
        DefaultValue    := '1';
        Result          := True;
       end;
-  4: with Properties^ do
+  5: with Properties^ do
       begin
        Name            := 'Output Gain [dB]';
        VariableAddress := @FOutputGain;
@@ -243,7 +258,7 @@ begin
        DefaultValue    := '-0.01';
        Result          := True;
       end;
-  5: with Properties^ do
+  6: with Properties^ do
       begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
@@ -263,9 +278,9 @@ procedure TLookaheadLimiterStaticSEModule.PlugStateChange(
 begin
  // has user altered LookaheadLimiter parameter?
  case CurrentPin.PinID of
-  3: FLookaheadLimiter.Input_dB  := FInputGain;
-  4: FLookaheadLimiter.Output_dB := FOutputGain;
-  5: FLookaheadLimiter.Release   := FRelease;
+  4: FLookaheadLimiter.Input_dB  := FInputGain;
+  5: FLookaheadLimiter.Output_dB := FOutputGain;
+  6: FLookaheadLimiter.Release   := FRelease;
  end;
  inherited;
 end;
@@ -308,7 +323,7 @@ function TLookaheadLimiterParamStaticSEModule.GetPinProperties(const Index: Inte
 begin
  Result := inherited GetPinProperties(Index, Properties);
  case index of
-  3..5: with Properties^ do Direction := drIn;
+  3..6: with Properties^ do Direction := drIn;
  end;
 end;
 
@@ -329,8 +344,10 @@ function TLookaheadLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  Result := inherited GetPinProperties(Index, Properties);
- case index of
-  2: with Properties^ do
+
+ case Index of
+  3: with Properties^ do Direction := drIn;
+  4: with Properties^ do
       begin
        Name            := 'Input Gain [dB]';
        VariableAddress := @FInputGain;
@@ -339,7 +356,7 @@ begin
        DefaultValue    := '1';
        Result          := True;
       end;
-  3: with Properties^ do
+  5: with Properties^ do
       begin
        Name            := 'Output Gain [dB]';
        VariableAddress := @FOutputGain;
@@ -348,7 +365,7 @@ begin
        DefaultValue    := '-0.01';
        Result          := True;
       end;
-  4: with Properties^ do
+  6: with Properties^ do
       begin
        Name            := 'Release [ms]';
        VariableAddress := @FRelease;
@@ -363,9 +380,9 @@ end;
 procedure TLookaheadLimiterAutomatableSEModule.PlugStateChange(const CurrentPin: TSEPin);
 begin
  case CurrentPin.PinID of
-  3..5: if (Pin[3].Status <> stRun) and
-           (Pin[4].Status <> stRun) and
-           (Pin[5].Status <> stRun)
+  4..6: if (Pin[4].Status <> stRun) and
+           (Pin[5].Status <> stRun) and
+           (Pin[6].Status <> stRun)
          then OnProcess := SubProcess
          else OnProcess := SubProcessAutomated;
  end;

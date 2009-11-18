@@ -60,10 +60,12 @@ type
     procedure ParameterTimeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTimeLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterProcessingModeChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterProcessingModeDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterProcessingModeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterProcessingModeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLookaheadDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterLookaheadChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAttackShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FCriticalSection : TCriticalSection;
     FLimiter         : array [0..1] of TDspLookaheadLimiter32;
@@ -77,7 +79,8 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Approximations, LookaheadLimiterGUI, DAV_VSTModuleWithPrograms;
+  Math, DAV_Approximations, DAV_Common, DAV_VSTModuleWithPrograms,
+  LookaheadLimiterGUI;
 
 procedure TLookaheadLimiterDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -94,16 +97,16 @@ procedure TLookaheadLimiterDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
-  CPresets : array [1..9, 0..3] of Single = (
-    ( 0.0, -0.01,  75, 0),
-    ( 0.5, -0.01,  80, 0),
-    ( 1.0, -0.01, 500, 1),
-    ( 1.5, -0.01, 250, 1),
-    (10.0, -0.01, 100, 0),
-    (20.0, -0.01, 500, 2),
-    ( 4.0, -0.01,  80, 0),
-    ( 6.0, -0.01,  60, 1),
-    ( 3.0, -0.01,  20, 0));
+  CPresets : array [1..9, 0..5] of Single = (
+    ( 0.0, -0.01, 0,  75, 1, 64),
+    ( 0.5, -0.01, 0,  80, 1, 64),
+    ( 1.0, -0.01, 1, 500, 1, 64),
+    ( 1.5, -0.01, 1, 250, 1, 64),
+    (10.0, -0.01, 0, 100, 1, 64),
+    (20.0, -0.01, 2, 500, 1, 64),
+    ( 4.0, -0.01, 0,  80, 1, 64),
+    ( 6.0, -0.01, 1,  60, 1, 64),
+    ( 3.0, -0.01, 0,  20, 1, 64));
 begin
  // create limiter
  FLimiter[0] := TDspLookaheadLimiter32.Create;
@@ -122,7 +125,10 @@ begin
  // initialize parameters
  Parameter[0] :=  0.00;
  Parameter[1] := -0.01;
- Parameter[2] := 75.00;
+ Parameter[2] :=  0.00;
+ Parameter[3] := 75.00;
+ Parameter[4] :=  1.00;
+ Parameter[5] := 64.00;
 
  for Channel := 1 to numPrograms - 1
   do Programs[Channel].SetParameters(CPresets[Channel]);
@@ -227,6 +233,52 @@ begin
   1 : PreDefined := 'PeakMono';
   2 : PreDefined := 'DualMono';
  end;
+end;
+
+procedure TLookaheadLimiterDataModule.ParameterLookaheadDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(2 * Round(0.5 * Parameter[Index]));
+end;
+
+procedure TLookaheadLimiterDataModule.ParameterLookaheadChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  LookaheadSamples : Integer;
+begin
+ LookaheadSamples := 2 * Round(0.5 * Value);
+ FCriticalSection.Enter;
+ try
+  if Assigned(FLimiter[0])
+   then FLimiter[0].LookAhead := LookaheadSamples;
+  if Assigned(FLimiter[1])
+   then FLimiter[1].LookAhead := LookaheadSamples;
+  if Assigned(FDelayLine[0])
+   then FDelayLine[0].BufferSize := LookaheadSamples;
+  if Assigned(FDelayLine[1])
+   then FDelayLine[1].BufferSize := LookaheadSamples;
+  InitialDelay := LookaheadSamples;
+ finally
+  FCriticalSection.Leave;
+ end;
+end;
+
+procedure TLookaheadLimiterDataModule.ParameterAttackDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ case TAttackShape(Round(Limit(Parameter[Index], 0, 1))) of
+     asLinear : PreDefined := 'Linear';
+  asParabolic : Predefined := 'Parabolic';
+ end;
+end;
+
+procedure TLookaheadLimiterDataModule.ParameterAttackShapeChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if Assigned(FLimiter[0])
+  then FLimiter[0].AttackShape := TAttackShape(Round(Limit(Value, 0, 1)));
+ if Assigned(FLimiter[1])
+  then FLimiter[1].AttackShape := TAttackShape(Round(Limit(Value, 0, 1)));
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterInputChange(

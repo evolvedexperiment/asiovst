@@ -33,6 +33,8 @@ unit DAV_Math;
 
 interface
 
+{$I DAV_COmpiler.inc}
+
 { Compatibility }
 
 {$IFDEF DELPHI5}
@@ -77,10 +79,10 @@ function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; 
 function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sinc(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function EvaluatePolynomial(Coefficients: array of Single; Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function EvaluatePolynomial(Coefficients: array of Double; Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function EvaluatePolynomial(Coefficients: array of Single; Input: Single): Single; overload;
+function EvaluatePolynomial(Coefficients: array of Double; Input: Double): Double; overload;
+function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; overload;
+function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; overload;
 
 const
   CTwoMulTwo2Neg32   : Single = ((2.0/$10000) / $10000);  // 2^-32
@@ -486,12 +488,12 @@ begin
   end;
 end;
 
-function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; overload;
 begin
  Result := EvaluatePolynomial(Nominator, Input) / EvaluatePolynomial(Denominator, Input);
 end;
 
-function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; overload;
 begin
  Result := EvaluatePolynomial(Nominator, Input) / EvaluatePolynomial(Denominator, Input);
 end;

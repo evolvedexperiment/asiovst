@@ -1,4 +1,4 @@
-unit DAudioFileWAV;
+unit DAV_AudioFileWAVPack;
 
 interface
 

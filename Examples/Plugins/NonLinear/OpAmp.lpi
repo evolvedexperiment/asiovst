@@ -11,7 +11,7 @@
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="2"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -35,13 +35,13 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="47">
       <Unit0>
         <Filename Value="OpAmp.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="32"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
@@ -51,10 +51,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="OpAmpModule"/>
-        <CursorPos X="26" Y="84"/>
-        <TopLine Value="65"/>
+        <CursorPos X="17" Y="105"/>
+        <TopLine Value="93"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="32"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit1>
@@ -65,11 +65,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpAmpGUI"/>
-        <CursorPos X="1" Y="41"/>
-        <TopLine Value="9"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="31"/>
-        <Loaded Value="True"/>
+        <CursorPos X="40" Y="24"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="32"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
@@ -126,11 +124,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTModule"/>
-        <CursorPos X="14" Y="32"/>
-        <TopLine Value="13"/>
-        <EditorIndex Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
         <UsageCount Value="13"/>
-        <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
@@ -172,9 +168,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <CursorPos X="35" Y="555"/>
-        <TopLine Value="538"/>
-        <EditorIndex Value="2"/>
+        <CursorPos X="3" Y="557"/>
+        <TopLine Value="540"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="14"/>
         <Loaded Value="True"/>
         <SyntaxHighlighter Value="Delphi"/>
@@ -182,17 +178,15 @@
       <Unit15>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <CursorPos X="17" Y="1909"/>
-        <TopLine Value="1889"/>
-        <EditorIndex Value="3"/>
+        <CursorPos X="15" Y="1681"/>
+        <TopLine Value="1663"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <CursorPos X="15" Y="537"/>
-        <TopLine Value="517"/>
+        <CursorPos X="14" Y="648"/>
+        <TopLine Value="628"/>
         <UsageCount Value="11"/>
       </Unit16>
       <Unit17>
@@ -213,8 +207,8 @@
       <Unit19>
         <Filename Value="..\..\..\Source\DAV_Common.pas"/>
         <UnitName Value="DAV_Common"/>
-        <CursorPos X="9" Y="426"/>
-        <TopLine Value="423"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
         <UsageCount Value="10"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit19>
@@ -255,18 +249,16 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTBasicModule"/>
-        <CursorPos X="40" Y="1307"/>
-        <TopLine Value="1290"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
         <UsageCount Value="10"/>
         <SyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\wincontrol.inc"/>
-        <CursorPos X="32" Y="6221"/>
-        <TopLine Value="6197"/>
-        <EditorIndex Value="4"/>
+        <CursorPos X="10" Y="6609"/>
+        <TopLine Value="6573"/>
         <UsageCount Value="12"/>
-        <Loaded Value="True"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\..\Source\DSP\DAV_DspDFT.pas"/>
@@ -364,36 +356,98 @@
         <TopLine Value="1084"/>
         <UsageCount Value="11"/>
       </Unit39>
+      <Unit40>
+        <Filename Value="..\..\..\Source\DAV_Math.pas"/>
+        <UnitName Value="DAV_Math"/>
+        <CursorPos X="22" Y="36"/>
+        <TopLine Value="21"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="..\..\..\Source\ASIO\DAV_AsioList.pas"/>
+        <UnitName Value="DAV_AsioList"/>
+        <CursorPos X="38" Y="18"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas"/>
+        <UnitName Value="DAV_MpegAudioLayer3"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit42>
+      <Unit43>
+        <Filename Value="..\..\..\Source\FileFormats\DAV_AudioFileWavPack.pas"/>
+        <UnitName Value="DAV_AudioFileWAVPack"/>
+        <CursorPos X="6" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit43>
+      <Unit44>
+        <Filename Value="..\..\..\Source\FileFormats\DAV_MpegAudio.pas"/>
+        <UnitName Value="DAV_MpegAudio"/>
+        <CursorPos X="57" Y="37"/>
+        <TopLine Value="11"/>
+        <UsageCount Value="10"/>
+      </Unit44>
+      <Unit45>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\components\synedit\syneditmousecmds.pp"/>
+        <UnitName Value="SynEditMouseCmds"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+      </Unit45>
+      <Unit46>
+        <Filename Value="..\..\..\..\..\..\..\Lazarus\components\synedit\synedit.pp"/>
+        <UnitName Value="SynEdit"/>
+        <CursorPos X="38" Y="6480"/>
+        <TopLine Value="6469"/>
+        <UsageCount Value="10"/>
+      </Unit46>
     </Units>
-    <JumpHistory Count="7" HistoryIndex="6">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="557" Column="10" TopLine="536"/>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="71" Column="24" TopLine="59"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="558" Column="36" TopLine="536"/>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="39" Column="62" TopLine="1"/>
       </Position2>
       <Position3>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="52" Column="6" TopLine="42"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="10" Column="50" TopLine="1"/>
       </Position3>
       <Position4>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="556" Column="1" TopLine="536"/>
+        <Caret Line="32" Column="79" TopLine="1"/>
       </Position4>
       <Position5>
-        <Filename Value="OpAmpModule.pas"/>
-        <Caret Line="50" Column="21" TopLine="35"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="129" Column="14" TopLine="109"/>
       </Position5>
       <Position6>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="559" Column="1" TopLine="536"/>
+        <Caret Line="557" Column="3" TopLine="534"/>
       </Position6>
       <Position7>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
-        <Caret Line="556" Column="34" TopLine="538"/>
+        <Caret Line="556" Column="13" TopLine="536"/>
       </Position7>
+      <Position8>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="557" Column="1" TopLine="536"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="558" Column="16" TopLine="538"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="557" Column="11" TopLine="540"/>
+      </Position10>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -425,7 +479,6 @@
         <UseLineInfoUnit Value="False"/>
         <StripSymbols Value="True"/>
       </Debugging>
-      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>
@@ -439,7 +492,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="3">
+    <BreakPoints Count="10">
       <Item1>
         <Source Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
         <Line Value="2155"/>
@@ -452,6 +505,34 @@
         <Source Value="OpAmp.lpr"/>
         <Line Value="21"/>
       </Item3>
+      <Item4>
+        <Source Value="OpAmpModule.pas"/>
+        <Line Value="83"/>
+      </Item4>
+      <Item5>
+        <Source Value="OpAmpModule.pas"/>
+        <Line Value="68"/>
+      </Item5>
+      <Item6>
+        <Source Value="OpAmpModule.pas"/>
+        <Line Value="85"/>
+      </Item6>
+      <Item7>
+        <Source Value="OpAmp.lpr"/>
+        <Line Value="21"/>
+      </Item7>
+      <Item8>
+        <Source Value="OpAmp.lpr"/>
+        <Line Value="22"/>
+      </Item8>
+      <Item9>
+        <Source Value="OpAmp.lpr"/>
+        <Line Value="23"/>
+      </Item9>
+      <Item10>
+        <Source Value="OpAmp.lpr"/>
+        <Line Value="24"/>
+      </Item10>
     </BreakPoints>
     <Exceptions Count="2">
       <Item1>

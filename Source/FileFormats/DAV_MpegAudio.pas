@@ -2,7 +2,7 @@ unit DAV_MpegAudio;
 
 interface
 
-{$I DAV_Compiler.Inc}
+{$I ..\DAV_Compiler.Inc}
 {$DEFINE SEEK_STOP}
 
 uses

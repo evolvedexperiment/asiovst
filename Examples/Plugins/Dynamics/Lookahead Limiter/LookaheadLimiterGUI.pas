@@ -68,6 +68,11 @@ type
     Mi02dB: TMenuItem;
     GuiLabel1: TGuiLabel;
     SbProcessingType: TGuiSelectBox;
+    PuInputValues: TPopupMenu;
+    MiGain0dB: TMenuItem;
+    MiGain1dB: TMenuItem;
+    MiGain2dB: TMenuItem;
+    MiGain3dB: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure DialInputChange(Sender: TObject);
@@ -82,6 +87,10 @@ type
     procedure Mi0dBClick(Sender: TObject);
     procedure SbProcessingTypeChange(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure MiGain0dBClick(Sender: TObject);
+    procedure MiGain1dBClick(Sender: TObject);
+    procedure MiGain2dBClick(Sender: TObject);
+    procedure MiGain3dBClick(Sender: TObject);
   public
     procedure UpdateInput;
     procedure UpdateOutput;
@@ -135,11 +144,31 @@ begin
  DialOutput.Position := 0;
 end;
 
+procedure TFmLookaheadLimiter.MiGain0dBClick(Sender: TObject);
+begin
+ DialInput.Position := 0;
+end;
+
+procedure TFmLookaheadLimiter.MiGain1dBClick(Sender: TObject);
+begin
+ DialInput.Position := 1;
+end;
+
+procedure TFmLookaheadLimiter.MiGain2dBClick(Sender: TObject);
+begin
+ DialInput.Position := 2;
+end;
+
+procedure TFmLookaheadLimiter.MiGain3dBClick(Sender: TObject);
+begin
+ DialInput.Position := 3;
+end;
+
 procedure TFmLookaheadLimiter.SbProcessingTypeChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   Parameter[3] := SbProcessingType.ItemIndex;
+   Parameter[2] := SbProcessingType.ItemIndex;
   end;
 end;
 
@@ -206,7 +235,7 @@ procedure TFmLookaheadLimiter.DialReleaseChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   Parameter[2] := DialRelease.Position;
+   Parameter[3] := DialRelease.Position;
   end;
 end;
 
@@ -240,8 +269,8 @@ procedure TFmLookaheadLimiter.UpdateProcessingMode;
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   if SbProcessingType.ItemIndex <> Round(Parameter[3])
-    then SbProcessingType.ItemIndex := Round(Parameter[3]);
+   if SbProcessingType.ItemIndex <> Round(Parameter[2])
+    then SbProcessingType.ItemIndex := Round(Parameter[2]);
   end;
 end;
 
@@ -251,10 +280,10 @@ var
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   Release := Parameter[2];
+   Release := Parameter[3];
    if Release <> DialRelease.Position
     then DialRelease.Position := Release;
-   LbReleaseValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbReleaseValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
   end;
 end;
 
