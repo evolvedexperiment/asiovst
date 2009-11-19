@@ -105,6 +105,7 @@ type
     procedure Exponentiate(Exponent: Double); virtual; abstract;
     procedure Rectify; virtual; abstract;
     procedure RemoveDC; virtual; abstract;
+    procedure Normalize; virtual; abstract;
 
     property Sum: Double read GetSum;
     property RMS: Double read GetRMS;
@@ -138,6 +139,7 @@ type
     procedure Exponentiate(Exponent: Double); override;
     procedure Rectify; override;
     procedure RemoveDC; override;
+    procedure Normalize; override;
 
     // data access properties
     property ChannelData[Sample: Int64]: Single read GetChannelData write SetChannelData;
@@ -171,6 +173,7 @@ type
     procedure Exponentiate(Exponent: Double); override;
     procedure Rectify; override;
     procedure RemoveDC; override;
+    procedure Normalize; override;
 
     // data access properties
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
@@ -271,6 +274,7 @@ type
     procedure Exponentiate(Exponent: Double); virtual; abstract;
     procedure Rectify; virtual; abstract;
     procedure RemoveDC; virtual; abstract;
+    procedure Normalize; virtual; abstract;
 
     property Sum: Double read GetSum;
     property RMS: Double read GetRMS;
@@ -304,6 +308,7 @@ type
     procedure Exponentiate(Exponent: Double); override;
     procedure Rectify; override;
     procedure RemoveDC; override;
+    procedure Normalize; override;
 
     // data access properties
     property ChannelData[Sample: Int64]: Single read GetChannelData write SetChannelData;
@@ -334,6 +339,7 @@ type
     procedure Exponentiate(Exponent: Double); override;
     procedure Rectify; override;
     procedure RemoveDC; override;
+    procedure Normalize; override;
 
     // data access properties
     property ChannelData[Sample: Int64]: Double read GetChannelData write SetChannelData;
@@ -380,6 +386,7 @@ type
     procedure Exponentiate(Exponent: Double); virtual;
     procedure Rectify; virtual;
     procedure RemoveDC; virtual;
+    procedure Normalize; virtual;
 
     // File I/O
     procedure LoadFromFile(const FileName: TFileName); virtual;
@@ -623,6 +630,18 @@ begin
   do FChannelData^[Sample] := FChannelData^[Sample] * Factor;
 end;
 
+procedure TAudioData32.Normalize;
+var
+  Sample : Integer;
+  Scale  : Single;
+begin
+ if SampleCount = 0 then exit;
+
+ Scale := 1 / Peak;
+ for Sample := 0 to SampleCount - 1
+  do FChannelData^[Sample] := Scale * FChannelData^[Sample];
+end;
+
 procedure TAudioData32.Exponentiate(Exponent: Double);
 var
   Sample : Integer;
@@ -795,6 +814,18 @@ var
 begin
  for Sample := 0 to SampleCount - 1
   do FChannelData^[Sample] := FChannelData^[Sample] * Factor;
+end;
+
+procedure TAudioData64.Normalize;
+var
+  Sample : Integer;
+  Scale  : Double;
+begin
+ if SampleCount = 0 then exit;
+
+ Scale := 1 / Peak;
+ for Sample := 0 to SampleCount - 1
+  do FChannelData^[Sample] := Scale * FChannelData^[Sample];
 end;
 
 procedure TAudioData64.Exponentiate(Exponent: Double);
@@ -1038,6 +1069,11 @@ begin
  FChannelData.Multiply(Factor);
 end;
 
+procedure TAudioChannel32.Normalize;
+begin
+ FChannelData.Normalize;
+end;
+
 procedure TAudioChannel32.Exponentiate(Exponent: Double);
 begin
  FChannelData.Exponentiate(Exponent);
@@ -1142,6 +1178,11 @@ begin
  FChannelData.Multiply(Factor);
 end;
 
+procedure TAudioChannel64.Normalize;
+begin
+ FChannelData.Normalize;
+end;
+
 procedure TAudioChannel64.Exponentiate(Exponent: Double);
 begin
  FChannelData.Exponentiate(Exponent);
@@ -1229,34 +1270,42 @@ end;
 
 procedure TCustomAudioDataCollection.GenerateWhiteNoise(Amplitude: Double);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to FChannels.Count - 1
-  do TCustomAudioChannel(FChannels.Items[ch]).GenerateWhiteNoise(Amplitude);
+ for Channel := 0 to FChannels.Count - 1
+  do TCustomAudioChannel(FChannels.Items[Channel]).GenerateWhiteNoise(Amplitude);
 end;
 
 procedure TCustomAudioDataCollection.Multiply(Factor: Double);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to FChannels.Count - 1
-  do TCustomAudioChannel(FChannels.Items[ch]).Multiply(Factor);
+ for Channel := 0 to FChannels.Count - 1
+  do TCustomAudioChannel(FChannels.Items[Channel]).Multiply(Factor);
 end;
 
 procedure TCustomAudioDataCollection.Rectify;
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to FChannels.Count - 1
-  do TCustomAudioChannel(FChannels.Items[ch]).Rectify;
+ for Channel := 0 to FChannels.Count - 1
+  do TCustomAudioChannel(FChannels.Items[Channel]).Rectify;
 end;
 
 procedure TCustomAudioDataCollection.RemoveDC;
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to FChannels.Count - 1
-  do TCustomAudioChannel(FChannels.Items[ch]).RemoveDC;
+ for Channel := 0 to FChannels.Count - 1
+  do TCustomAudioChannel(FChannels.Items[Channel]).RemoveDC;
+end;
+
+procedure TCustomAudioDataCollection.Normalize;
+var
+  Channel : Integer;
+begin
+ for Channel := 0 to FChannels.Count - 1
+  do TCustomAudioChannel(FChannels.Items[Channel]).Normalize;
 end;
 
 function TCustomAudioDataCollection.GetChannelCount: Integer;
@@ -1384,22 +1433,18 @@ begin
   then raise Exception.Create(RCStrNoAudioFileFormat);
 
  for i := 0 to Length(GAudioFileFormats) - 1 do
-  if UpperCase(ExtractFileExt(FileName)) = '.' + GAudioFileFormats[i].DefaultExtension then
+  if LowerCase(ExtractFileExt(FileName)) = GAudioFileFormats[i].DefaultExtension then
    begin
     with GAudioFileFormats[i].Create do
      try
       SampleFrames  := Self.SampleFrames;
       ChannelCount  := Self.ChannelCount;
-(*
-      BitsPerSample := 24;
-      Encoding      := aeInteger;
-*)
       OnEncode      := DataEncoding;
       SaveToFile(FileName);
      finally
       Free;
      end;
-    exit;
+    Exit;
    end;
 
  raise Exception.CreateFmt('Could not save file %s!', [FileName]);

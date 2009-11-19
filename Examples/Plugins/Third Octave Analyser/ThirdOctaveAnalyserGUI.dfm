@@ -14,6 +14,7 @@ object FmThirdOctaveAnalyser: TFmThirdOctaveAnalyser
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnShow = FormShow
   DesignSize = (
     342
     234)

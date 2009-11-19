@@ -44,7 +44,9 @@ type
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterSampleFramesChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterSamplesLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterSamplesRightChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
     FDelayLine       : array of TDelayLineSamples32;
@@ -72,7 +74,7 @@ procedure TSampleDelayDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel: Integer;
 begin
- assert(numOutputs = numInputs);
+ Assert(numOutputs = numInputs);
  SetLength(FDelayLine, numInputs);
  for Channel := 0 to Length(FDelayLine) - 1
   do FDelayLine[Channel] := TDelayLineSamples32.Create(1025);
@@ -91,20 +93,38 @@ begin
  GUI := TFmSampleDelay.Create(Self);
 end;
 
-procedure TSampleDelayDataModule.ParameterSampleFramesChange(
+procedure TSampleDelayDataModule.ParameterSamplesLeftChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
   Channel: Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FDelayLine) - 1
-   do FDelayLine[Channel].BufferSize := Round(1025 + Value);
+  for Channel := 0 to Length(FDelayLine) - 1 do
+   if (Channel mod 2 = 0) and Assigned(FDelayLine[Channel])
+    then FDelayLine[Channel].BufferSize := Round(1025 + Value);
  finally
   FCriticalSection.Leave;
  end;
  if EditorForm is TFmSampleDelay
-  then TFmSampleDelay(EditorForm).UpdateSampleFrames;
+  then TFmSampleDelay(EditorForm).UpdateSamplesLeft;
+end;
+
+procedure TSampleDelayDataModule.ParameterSamplesRightChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Channel: Integer;
+begin
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to Length(FDelayLine) - 1 do
+   if (Channel mod 2 = 1) and Assigned(FDelayLine[Channel])
+    then FDelayLine[Channel].BufferSize := Round(1025 + Value);
+ finally
+  FCriticalSection.Leave;
+ end;
+ if EditorForm is TFmSampleDelay
+  then TFmSampleDelay(EditorForm).UpdateSamplesRight;
 end;
 
 procedure TSampleDelayDataModule.VSTModuleProcess(const Inputs,

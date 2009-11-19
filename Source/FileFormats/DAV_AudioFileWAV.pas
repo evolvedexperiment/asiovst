@@ -250,7 +250,7 @@ end;
 destructor TCustomAudioFileWAV.Destroy;
 begin
  // make sure a data chunk is written and the file is valid
- if assigned(FStream) then
+ if Assigned(FStream) then
   begin
    if EmptyData then
     begin
@@ -276,7 +276,7 @@ end;
 
 class function TCustomAudioFileWAV.DefaultExtension: string;
 begin
- result := '.wav';
+ Result := '.wav';
 end;
 
 procedure TCustomAudioFileWAV.DeleteSubChunk(SubChunk: TCustomChunk);

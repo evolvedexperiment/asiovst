@@ -56,6 +56,7 @@ type
     procedure RB_SlowClick(Sender: TObject);
     procedure SEFullscaleGainChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     FFSGain : Single;  
   public
@@ -86,6 +87,11 @@ begin
     else AnalyserChart.AddBar(FloatToStr(0.001 * CThirdOctaveFrequencies[Band]) + ' kHz', 0, $000000FF);
    {$ENDIF}
   end;
+end;
+
+procedure TFmThirdOctaveAnalyser.FormShow(Sender: TObject);
+begin
+ Timer.Enabled := True;
 end;
 
 procedure TFmThirdOctaveAnalyser.RB_FastClick(Sender: TObject);

@@ -69,7 +69,7 @@ type
   private
     FCriticalSection : TCriticalSection;
     FLimiter         : array [0..1] of TDspLookaheadLimiter32;
-    FDelayLine       : array of TDelayLineSamples32;
+    FDelayLine       : array [0..1] of TDelayLineSamples32;
   public
     property Limiter: TDspLookaheadLimiter32 read FLimiter[0];
   end;
@@ -109,14 +109,11 @@ const
     ( 3.0, -0.01, 0,  20, 1, 64));
 begin
  // create limiter
- FLimiter[0] := TDspLookaheadLimiter32.Create;
- FLimiter[0].SampleRate := SampleRate;
-
- FLimiter[1] := TDspLookaheadLimiter32.Create;
- FLimiter[1].SampleRate := SampleRate;
-
- // configure delay lines
- SetLength(FDelayLine, numInputs);
+ for Channel := 0 to Length(FLimiter) - 1 do
+  begin
+   FLimiter[Channel] := TDspLookaheadLimiter32.Create;
+   FLimiter[Channel].SampleRate := SampleRate;
+  end;
 
  // create delay lines
  for Channel := 0 to Length(FDelayLine) - 1
@@ -138,11 +135,13 @@ procedure TLookaheadLimiterDataModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
+ // free delay line
  for Channel := 0 to Length(FDelayLine) - 1
   do FreeAndNil(FDelayLine[Channel]);
 
- FreeAndNil(FLimiter[0]);
- FreeAndNil(FLimiter[1]);
+ // free limiter line
+ for Channel := 0 to Length(FLimiter) - 1
+  do FreeAndNil(FLimiter[Channel]);
 end;
 
 procedure TLookaheadLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -312,6 +311,7 @@ begin
   then FLimiter[0].Release := Value;
  if Assigned(FLimiter[1])
   then FLimiter[1].Release := Value;
+
  if EditorForm is TFmLookaheadLimiter
   then TFmLookaheadLimiter(EditorForm).UpdateRelease;
 end;

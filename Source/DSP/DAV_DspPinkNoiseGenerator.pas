@@ -35,44 +35,65 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Classes;
 
 type
-  TPinkNoiseGenerator = class(TDspPersistent, IDspGenerator32, IDspGenerator64)
+  TCustomPinkNoiseGenerator = class(TDspPersistent)
   protected
     FContribution : Array [0..4] of Double;
+    FAmplitude    : Double;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
 
-    function ProcessSample32: Single; virtual;
-    function ProcessSample64: Double; virtual;
+    function ProcessSample32: Single; virtual; abstract;
+    function ProcessSample64: Double; virtual; abstract;
 
     procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
+
+    property Amplitude: Double read FAmplitude write FAmplitude;
+  end;
+
+  TPinkNoiseGenerator = class(TCustomPinkNoiseGenerator, IDspGenerator32,
+    IDspGenerator64)
+  public
+    function ProcessSample32: Single; override;
+    function ProcessSample64: Double; override;
+  end;
+
+  TFastPinkNoiseGenerator = class(TCustomPinkNoiseGenerator, IDspGenerator32,
+    IDspGenerator64)
+  public
+    function ProcessSample32: Single; override;
+    function ProcessSample64: Double; override;
   end;
 
 implementation
 
-{ TPinkNoiseGenerator }
+uses
+  DAV_Math;
 
-constructor TPinkNoiseGenerator.Create;
+{ TCustomPinkNoiseGenerator }
+
+constructor TCustomPinkNoiseGenerator.Create;
 begin
  inherited;
+ FAmplitude := 1; 
  FillChar(FContribution[0], Length(FContribution) * SizeOf(Double), 0);
 end;
 
-procedure TPinkNoiseGenerator.AssignTo(Dest: TPersistent);
+procedure TCustomPinkNoiseGenerator.AssignTo(Dest: TPersistent);
 begin
- if Dest is TPinkNoiseGenerator then
-  with TPinkNoiseGenerator(Dest) do
+ if Dest is TCustomPinkNoiseGenerator then
+  with TCustomPinkNoiseGenerator(Dest) do
    begin
     FContribution := Self.FContribution;
    end
  else inherited;
 end;
 
-procedure TPinkNoiseGenerator.ProcessBlock32(const Data: PDAVSingleFixedArray;
+procedure TCustomPinkNoiseGenerator.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -81,7 +102,7 @@ begin
   do Data[Sample] := ProcessSample32;
 end;
 
-procedure TPinkNoiseGenerator.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+procedure TCustomPinkNoiseGenerator.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
   Sample: Integer;
@@ -90,40 +111,78 @@ begin
   do Data[Sample] := ProcessSample64;
 end;
 
+
+{ TPinkNoiseGenerator }
+
 function TPinkNoiseGenerator.ProcessSample32: Single;
 var
   ur1      : Double;
 const
-  pA   : Array [0..4] of Single = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
-  pSUM : Array [0..4] of Single = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
+  pA   : array [0..4] of Single = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
+  pSUM : array [0..4] of Single = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
 begin
- ur1 := random;
- if (ur1 <= pSUM[0]) then FContribution[0] := (2 * random - 1) * pA[0] else
- if (ur1 <= pSUM[1]) then FContribution[1] := (2 * random - 1) * pA[1] else
- if (ur1 <= pSUM[2]) then FContribution[2] := (2 * random - 1) * pA[2] else
- if (ur1 <= pSUM[3]) then FContribution[3] := (2 * random - 1) * pA[3] else
- if (ur1 <= pSUM[4]) then FContribution[4] := (2 * random - 1) * pA[4];
- result := (FContribution[0] + FContribution[1] +
-            FContribution[2] + FContribution[3] +
-            FContribution[4]);
+ ur1 := Random;
+ if (ur1 <= pSUM[0]) then FContribution[0] := (2 * Random - 1) * pA[0] else
+ if (ur1 <= pSUM[1]) then FContribution[1] := (2 * Random - 1) * pA[1] else
+ if (ur1 <= pSUM[2]) then FContribution[2] := (2 * Random - 1) * pA[2] else
+ if (ur1 <= pSUM[3]) then FContribution[3] := (2 * Random - 1) * pA[3] else
+ if (ur1 <= pSUM[4]) then FContribution[4] := (2 * Random - 1) * pA[4];
+ Result := FAmplitude * (FContribution[0] + FContribution[1] +
+   FContribution[2] + FContribution[3] + FContribution[4]);
 end;
 
 function TPinkNoiseGenerator.ProcessSample64: Double;
 var
   ur1      : Double;
 const
-  pA   : Array [0..4] of Double = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
-  pSUM : Array [0..4] of Double = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
+  pA   : array [0..4] of Double = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
+  pSUM : array [0..4] of Double = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
 begin
- ur1 := random;
- if (ur1 <= pSUM[0]) then FContribution[0] := (2 * random - 1) * pA[0] else
- if (ur1 <= pSUM[1]) then FContribution[1] := (2 * random - 1) * pA[1] else
- if (ur1 <= pSUM[2]) then FContribution[2] := (2 * random - 1) * pA[2] else
- if (ur1 <= pSUM[3]) then FContribution[3] := (2 * random - 1) * pA[3] else
- if (ur1 <= pSUM[4]) then FContribution[4] := (2 * random - 1) * pA[4];
- result := (FContribution[0] + FContribution[1] +
-            FContribution[2] + FContribution[3] +
-            FContribution[4]);
+ ur1 := Random;
+ if (ur1 <= pSUM[0]) then FContribution[0] := (2 * Random - 1) * pA[0] else
+ if (ur1 <= pSUM[1]) then FContribution[1] := (2 * Random - 1) * pA[1] else
+ if (ur1 <= pSUM[2]) then FContribution[2] := (2 * Random - 1) * pA[2] else
+ if (ur1 <= pSUM[3]) then FContribution[3] := (2 * Random - 1) * pA[3] else
+ if (ur1 <= pSUM[4]) then FContribution[4] := (2 * Random - 1) * pA[4];
+ Result := FAmplitude * (FContribution[0] + FContribution[1] +
+   FContribution[2] + FContribution[3] + FContribution[4]);
+end;
+
+
+{ TFastPinkNoiseGenerator }
+
+function TFastPinkNoiseGenerator.ProcessSample32: Single;
+var
+  ur1      : Double;
+const
+  pA   : array [0..4] of Single = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
+  pSUM : array [0..4] of Single = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
+begin
+ ur1 := Random;
+ if (ur1 <= pSUM[0]) then FContribution[0] := FastRandom * pA[0] else
+ if (ur1 <= pSUM[1]) then FContribution[1] := FastRandom * pA[1] else
+ if (ur1 <= pSUM[2]) then FContribution[2] := FastRandom * pA[2] else
+ if (ur1 <= pSUM[3]) then FContribution[3] := FastRandom * pA[3] else
+ if (ur1 <= pSUM[4]) then FContribution[4] := FastRandom * pA[4];
+ Result := FAmplitude * (FContribution[0] + FContribution[1] +
+   FContribution[2] + FContribution[3] + FContribution[4]);
+end;
+
+function TFastPinkNoiseGenerator.ProcessSample64: Double;
+var
+  ur1      : Double;
+const
+  pA   : array [0..4] of Double = (0.23980, 0.18727, 0.1638, 0.194685, 0.214463);
+  pSUM : array [0..4] of Double = (0.00198, 0.01478, 0.06378, 0.23378, 0.91578);
+begin
+ ur1 := Random;
+ if (ur1 <= pSUM[0]) then FContribution[0] := FastRandom * pA[0] else
+ if (ur1 <= pSUM[1]) then FContribution[1] := FastRandom * pA[1] else
+ if (ur1 <= pSUM[2]) then FContribution[2] := FastRandom * pA[2] else
+ if (ur1 <= pSUM[3]) then FContribution[3] := FastRandom * pA[3] else
+ if (ur1 <= pSUM[4]) then FContribution[4] := FastRandom * pA[4];
+ Result := FAmplitude * (FContribution[0] + FContribution[1] +
+   FContribution[2] + FContribution[3] + FContribution[4]);
 end;
 
 end.

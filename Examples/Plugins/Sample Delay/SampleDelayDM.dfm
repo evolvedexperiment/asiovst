@@ -19,18 +19,38 @@ object SampleDelayDataModule: TSampleDelayDataModule
     item
       Curve = ctLinear
       CurveFactor = 1.000000000000000000
-      DisplayName = 'Sample Frames'
+      DisplayName = 'Samples Left'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 1024.000000000000000000
       MaxInteger = 1024
       Min = -1024.000000000000000000
       MinInteger = -1024
-      ShortLabel = 'Sample'
+      ReportVST2Properties = True
+      ShortLabel = 'Left'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Samples'
       VSTModule = Owner
-      OnParameterChange = ParameterSampleFramesChange
+      OnParameterChange = ParameterSamplesLeftChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Samples Right'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1024.000000000000000000
+      MaxInteger = 1024
+      Min = -1024.000000000000000000
+      MinInteger = -1024
+      ReportVST2Properties = True
+      ShortLabel = 'Right'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Samples'
+      VSTModule = Owner
+      OnParameterChange = ParameterSamplesRightChange
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

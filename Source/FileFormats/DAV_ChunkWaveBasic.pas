@@ -925,8 +925,8 @@ begin
   begin
    FormatTag      := 1;     // PCM encoding by default
    Channels       := 1;     // one channel
-   SampleRate     := 44100; // 44.1 kHz (CD quality)
-   BitsPerSample  := 16;    // 16bit    (CD quality)
+   SampleRate     := 44100; // 44.1 kHz
+   BitsPerSample  := 24;    // 24bit
    BlockAlign     := (BitsPerSample + 7) div 8 * Channels;
    BytesPerSecond := Channels * BlockAlign * SampleRate;
   end;

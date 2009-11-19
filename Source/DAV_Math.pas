@@ -85,7 +85,7 @@ function EvaluateRational(Nominator, Denominator: array of Single; Input: Single
 function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; overload;
 
 const
-  CTwoMulTwo2Neg32   : Single = ((2.0/$10000) / $10000);  // 2^-32
+  CTwoMulTwo2Neg32   : Single = ((2.0 / $10000) / $10000);  // 2^-32
   CMinusOneSixteenth : Single = -0.0625;
 
 var
@@ -172,7 +172,7 @@ asm
  PUSH  0
  PUSH  EDX
  FILD  qword ptr [ESP]
- ADD   ESP,8
+ ADD   ESP, 8
  FMULP ST(1), ST(0)
  FLD1
  FSUBP

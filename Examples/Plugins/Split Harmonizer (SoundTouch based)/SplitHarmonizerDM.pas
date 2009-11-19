@@ -506,9 +506,12 @@ begin
  try
   for Channel := 0 to NumInputs - 1 do
    begin
-    FSoundTouch[Channel].SampleRate := abs(SampleRate);
-    FDelayLine[Channel, 0].BufferSize := CInputDelay;
-    FDelayLine[Channel, 1].BufferSize := Max(1, round(Parameter[2 + 3 * Channel] * 1E-3 * abs(SampleRate)));
+    if assigned(FSoundTouch[Channel])
+     then FSoundTouch[Channel].SampleRate := abs(SampleRate);
+    if assigned(FDelayLine[Channel, 0])
+     then FDelayLine[Channel, 0].BufferSize := CInputDelay;
+    if assigned(FDelayLine[Channel, 0])
+     then FDelayLine[Channel, 1].BufferSize := Max(1, round(Parameter[2 + 3 * Channel] * 1E-3 * abs(SampleRate)));
    end;
  finally
   FCriticalSection.Leave;

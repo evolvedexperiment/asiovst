@@ -8,7 +8,7 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   numInputs = 1
-  numOutputs = 0
+  numOutputs = 1
   CurrentProgram = 0
   CurrentProgramName = 'Slow'
   IORatio = 1.000000000000000000
