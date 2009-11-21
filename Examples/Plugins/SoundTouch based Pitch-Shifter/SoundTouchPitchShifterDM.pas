@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspSoundTouch;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspSoundTouch;
 
 type
   TSoundTouchPitchShifterModule = class(TVSTModule)
@@ -46,8 +46,11 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPitchFactorChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FSoundTouch : array [0..1] of TDspSoundTouch;
+    FCriticalSection : TCriticalSection;
+    FSoundTouch      : array [0..1] of TDspSoundTouch;
   public
   end;
 
@@ -57,6 +60,16 @@ implementation
 
 uses
   Math, Dialogs, SoundTouchPitchShifterGUI, DAV_VSTCustomModule;
+
+procedure TSoundTouchPitchShifterModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TSoundTouchPitchShifterModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
 
 procedure TSoundTouchPitchShifterModule.VSTModuleOpen(Sender: TObject);
 var
@@ -79,9 +92,14 @@ procedure TSoundTouchPitchShifterModule.ParameterPitchFactorChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to NumInputs - 1 do
-  if assigned(FSoundTouch[Channel])
-   then FSoundTouch[Channel].Pitch := Power(2, Value / 12);
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to NumInputs - 1 do
+   if assigned(FSoundTouch[Channel])
+    then FSoundTouch[Channel].Pitch := Power(2, Value / 12);
+ finally
+  FCriticalSection.Leave;
+ end;
 
  // update GUI
  if EditorForm is TFmSoundTouchPitchShifter
@@ -106,9 +124,15 @@ procedure TSoundTouchPitchShifterModule.VSTModuleSampleRateChange(Sender: TObjec
 var
   Channel : Integer;
 begin
- for Channel := 0 to NumInputs - 1 do
-  if assigned(FSoundTouch[Channel])
-   then FSoundTouch[Channel].SampleRate := SampleRate;
+ FCriticalSection.Enter;
+ try
+  if Abs(SampleRate) > 0 then
+   for Channel := 0 to NumInputs - 1 do
+    if assigned(FSoundTouch[Channel])
+     then FSoundTouch[Channel].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TSoundTouchPitchShifterModule.VSTModuleProcess(const Inputs,
@@ -116,11 +140,16 @@ procedure TSoundTouchPitchShifterModule.VSTModuleProcess(const Inputs,
 var
   Channel : Integer;
 begin
- for Channel := 0 to NumInputs - 1 do
-  begin
-   FSoundTouch[Channel].WriteSamples(@Inputs[Channel, 0], SampleFrames);
-   FSoundTouch[Channel].ReadSamples(@Outputs[Channel, 0], SampleFrames);
-  end;
+ FCriticalSection.Enter;
+ try
+  for Channel := 0 to NumInputs - 1 do
+   begin
+    FSoundTouch[Channel].WriteSamples(@Inputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].ReadSamples(@Outputs[Channel, 0], SampleFrames);
+   end;
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 end.

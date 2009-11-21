@@ -1,0 +1,97 @@
+object PulsingDataModule: TPulsingDataModule
+  OldCreateOrder = False
+  Version = '1.0'
+  EffectName = 'Pulsing'
+  ProductName = 'DAV Effect Examples'
+  VendorName = 'Delphi ASIO & VST Project'
+  PlugCategory = vpcEffect
+  SampleRate = 44100.000000000000000000
+  CurrentProgram = -1
+  IORatio = 1.000000000000000000
+  UniqueID = 'Puls'
+  ShellPlugins = <>
+  Programs = <>
+  ParameterProperties = <
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Period'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 10000.000000000000000000
+      MaxInteger = 10000
+      Min = 10.000000000000000000
+      MinInteger = 10
+      ReportVST2Properties = True
+      ShortLabel = 'Period'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      VSTModule = Owner
+      OnParameterChange = ParameterPeriodChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Maximum'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 12.000000000000000000
+      MaxInteger = 12
+      Min = -48.000000000000000000
+      MinInteger = -48
+      ReportVST2Properties = True
+      ShortLabel = 'Maximum'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterMaximumChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Minimum'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 12.000000000000000000
+      MaxInteger = 12
+      Min = -48.000000000000000000
+      MinInteger = -48
+      ReportVST2Properties = True
+      ShortLabel = 'Minimum'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterMinimumChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Slewrate'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1000.000000000000000000
+      MaxInteger = 1000
+      Min = 1.000000000000000000
+      MinInteger = 1
+      ShortLabel = 'Slew'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB / s'
+      VSTModule = Owner
+      OnParameterChange = ParameterSlewrateChange
+    end>
+  ParameterCategories = <>
+  OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
+  OnEditOpen = VSTModuleEditOpen
+  OnProcess = VSTModuleProcess
+  OnProcessReplacing = VSTModuleProcess
+  OnSampleRateChange = VSTModuleSampleRateChange
+  Left = 218
+  Top = 77
+  Height = 150
+  Width = 215
+end
