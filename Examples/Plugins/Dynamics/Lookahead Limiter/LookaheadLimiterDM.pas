@@ -68,10 +68,10 @@ type
     procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FCriticalSection : TCriticalSection;
-    FLimiter         : array [0..1] of TDspLookaheadLimiter32;
+    FLimiter         : array [0..1] of TDspFeedforwardLookaheadLimiter32;
     FDelayLine       : array [0..1] of TDelayLineSamples32;
   public
-    property Limiter: TDspLookaheadLimiter32 read FLimiter[0];
+    property Limiter: TDspFeedforwardLookaheadLimiter32 read FLimiter[0];
   end;
 
 implementation
@@ -111,7 +111,7 @@ begin
  // create limiter
  for Channel := 0 to Length(FLimiter) - 1 do
   begin
-   FLimiter[Channel] := TDspLookaheadLimiter32.Create;
+   FLimiter[Channel] := TDspFeedforwardLookaheadLimiter32.Create;
    FLimiter[Channel].SampleRate := SampleRate;
   end;
 

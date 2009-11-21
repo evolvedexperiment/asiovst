@@ -93,15 +93,16 @@ begin
    j := Index;
    repeat
     if j < PlugCounts[i] then break;
-    dec(j, PlugCounts[i]);
-    inc(i);
+    Dec(j, PlugCounts[i]);
+    Inc(i);
    until (i >= Length(PlugCounts)) or (j < 0);
    if (i < Length(PlugCounts)) and (j >= 0) and assigned(GMP[i])
-    then result := GMP[i](j, Properties);
-   if result then
+    then Result := GMP[i](j, Properties);
+   if Result then
     begin
      ID := StrPas(Properties^.ID);
-     ID := ID + ' (merged) ' + IntToStr(ContainedModules.Count);
+     if Pos('merged', ContainedModules[Index]) > 0
+      then ID := ID + ' (merged) ' + IntToStr(ContainedModules.Count);
      Properties^.ID := PChar(ID);
     end;
   except

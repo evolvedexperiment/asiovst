@@ -3,7 +3,7 @@ library SEMerger;
 {.$R 'Test.res' 'Test.rc'}
 
 uses
-  Fastmm4,
+  FastMM4,
 //  FastMove,
 //  RTLVCLOptimize,
   SysUtils,

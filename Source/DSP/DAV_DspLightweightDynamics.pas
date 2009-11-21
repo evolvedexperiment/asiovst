@@ -617,12 +617,12 @@ var
   Temp: Single;
 begin
  Temp   := CHalf32 * (FThreshold_dB - InputLevel_dB);
- result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
+ Result := Temp - FastSqrtBab2(sqr(Temp) + sqr(FKnee_dB)) + MakeUpGain_dB + InputLevel_dB;
 end;
 
 function TLightweightSoftKneeFeedbackLikeLimiter.GainSample(const Input: Double): Double;
 begin
- result := FGain * FMakeUpGain * Input;
+ Result := FGain * FMakeUpGain * Input;
 end;
 
 procedure TLightweightSoftKneeFeedbackLikeLimiter.InputSample(const Input: Double);
@@ -636,7 +636,7 @@ begin
   then FPeak := FPeak + (Temp[0] - FPeak) * FAttackFactor
   else FPeak := Temp[0] + (FPeak - Temp[0]) * FReleaseFactor;
 
- Temp[0] := -CHalf32 * (FastLog2ContinousError5(FPeak) - FThrshlddB);
+ Temp[0] := -CHalf32 * (FastLog2ContinousError5(FPeak) - FThrshlddB);  // * FRatioFactor ???, PLEASE CHECK!!!
  Temp[1] := FastSqrtBab2(sqr(Temp[0]) + FKneeFactor);
  FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
 // Temp[1] := 2 * Temp[1] / (2 * Temp[1] - 1E10 * (1 / 1E10 - 1) * Temp[1] - Ratio * (1 / FRatio - 1) * Temp[0]);

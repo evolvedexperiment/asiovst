@@ -2,7 +2,7 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
   Left = 446
   Top = 223
   Caption = 'SE Merger'
-  ClientHeight = 126
+  ClientHeight = 145
   ClientWidth = 229
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
     Left = 0
     Top = 0
     Width = 229
-    Height = 126
+    Height = 145
     Align = alClient
     ItemHeight = 13
     TabOrder = 0
@@ -47,6 +47,14 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
       object MIExit: TMenuItem
         Caption = 'E&xit'
         OnClick = MIExitClick
+      end
+    end
+    object MiSettings: TMenuItem
+      Caption = '&Settings'
+      object MiAddMerged: TMenuItem
+        Caption = 'add '#39'merged'#39' to ID'
+        Checked = True
+        OnClick = MiAddMergedClick
       end
     end
   end

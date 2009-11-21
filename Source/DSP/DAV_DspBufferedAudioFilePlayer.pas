@@ -39,11 +39,11 @@ uses
   DAV_AudioFile, DAV_ChannelDataCoder;
 
 type
-  TBufferThread = class(TThread)
+  TCustomBufferThread = class(TThread)
   private
     FAudioFile        : TCustomAudioFile;
-    FBufferSize       : Integer;
     FBuffer           : TCircularStereoBuffer32;
+    FBufferSize       : Integer;
     FSampleRate       : Single;
     FStreamBuffer     : array [0..1] of PDAVSingleFixedArray;
     FStreamBufSize    : Integer;
@@ -81,6 +81,72 @@ type
     property AudioFile: TCustomAudioFile read FAudioFile;
   end;
 
+(*
+  TMonoBufferThread = class(TCustomBufferThread)
+  private
+    FBuffer       : TCircularBuffer32;
+    FStreamBuffer : PDAVSingleFixedArray;
+    function GetBufferFill: Single;
+    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+  protected
+    procedure BlockSizeChanged; override;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Execute; override;
+
+    procedure PutSamples(Data: PDAVSingleFixedArray; SampleFrames: Integer);
+
+    property BufferFill: Single read GetBufferFill;
+  end;
+
+  TStereoBufferThread = class(TCustomBufferThread)
+  private
+    FBuffer       : TCircularStereoBuffer32;
+    FStreamBuffer : array [0..1] of PDAVSingleFixedArray;
+    function GetBufferFill: Single;
+    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+  protected
+    procedure BlockSizeChanged; override;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Execute; override;
+
+    procedure PutSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
+
+    property BufferFill: Single read GetBufferFill;
+  end;
+
+  TMultiBufferThread = class(TCustomBufferThread)
+  private
+    FBuffer       : TCircularMultiBuffer32;
+    FChannelCount : Integer;
+    FStreamBuffer : TDAVArrayOfSingleFixedArray;
+    function GetBufferFill: Single;
+    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure SetChannelCount(const Value: Integer);
+    procedure ChannelCountChanged;
+  protected
+    procedure BlockSizeChanged; override;
+    procedure BufferSizeChanged; override;
+  public
+    constructor Create;
+    destructor Destroy; override;
+
+    procedure Execute; override;
+
+    procedure PutSamples(Data: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
+
+    property BufferFill: Single read GetBufferFill;
+    property ChannelCount: Integer read FChannelCount write SetChannelCount;
+  end;
+*)
+
   TBufferInterpolation = (biNone, biLinear, biHermite, biBSpline6Point5thOrder);
 
   TCustomBufferedAudioPlayer = class(TDspSampleRatePersistent)
@@ -102,7 +168,7 @@ type
     procedure SetInterpolation(const Value: TBufferInterpolation);
     procedure SetPitch(const Value: Single);
   protected
-    FBufferThread : TBufferThread;
+    FBufferThread : TCustomBufferThread;
     procedure CalculatePitchFactor; virtual;
     procedure CalculateSampleRateRatio; virtual;
     procedure SampleRateChanged; override;
@@ -165,9 +231,9 @@ implementation
 uses
   Math, DAV_DspInterpolation;
 
-{ TBufferThread }
+{ TCustomBufferThread }
 
-constructor TBufferThread.Create;
+constructor TCustomBufferThread.Create;
 begin
  inherited Create(True);
  FBufferSize := 16384;
@@ -182,7 +248,7 @@ begin
  FBuffer := TCircularStereoBuffer32.Create(FBufferSize);
 end;
 
-destructor TBufferThread.Destroy;
+destructor TCustomBufferThread.Destroy;
 begin
  Dispose(FStreamBuffer[0]);
  Dispose(FStreamBuffer[1]);
@@ -191,7 +257,7 @@ begin
  inherited;
 end;
 
-procedure TBufferThread.Execute;
+procedure TCustomBufferThread.Execute;
 var
   IdleLoops: Integer;
 begin
@@ -231,12 +297,12 @@ begin
   end;
 end;
 
-function TBufferThread.GetBufferFill: Single;
+function TCustomBufferThread.GetBufferFill: Single;
 begin
  result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize); 
 end;
 
-procedure TBufferThread.GetSamples(Left, Right: PDAVSingleFixedArray;
+procedure TCustomBufferThread.GetSamples(Left, Right: PDAVSingleFixedArray;
   SampleFrames: Integer);
 var
   SampleInBuffer: Integer;  
@@ -253,7 +319,7 @@ begin
    end;
 end;
 
-procedure TBufferThread.LoadFromFile(FileName: TFileName);
+procedure TCustomBufferThread.LoadFromFile(FileName: TFileName);
 var
   AudioFileClass : TAudioFileClass;
 begin
@@ -270,7 +336,7 @@ begin
  AudioFileChanged;
 end;
 
-procedure TBufferThread.LoadFromStream(Stream: TStream);
+procedure TCustomBufferThread.LoadFromStream(Stream: TStream);
 var
   AudioFileClass : TAudioFileClass;
 begin
@@ -287,7 +353,7 @@ begin
  AudioFileChanged;
 end;
 
-procedure TBufferThread.DecodeHandler(Sender: TObject;
+procedure TCustomBufferThread.DecodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 begin
  assert(Coder is TCustomChannel32DataCoder);
@@ -308,7 +374,7 @@ begin
   end;
 end;
 
-procedure TBufferThread.AudioFileChanged;
+procedure TCustomBufferThread.AudioFileChanged;
 begin
  if assigned(FAudioFile) then
   begin
@@ -317,33 +383,33 @@ begin
   end;
 end;
 
-procedure TBufferThread.Reset;
+procedure TCustomBufferThread.Reset;
 begin
  FCurrentPosition := 0;
 end;
 
-procedure TBufferThread.BufferSizeChanged;
+procedure TCustomBufferThread.BufferSizeChanged;
 begin
  FBuffer.BufferSize := FBufferSize;
 end;
 
-procedure TBufferThread.BlockSizeChanged;
+procedure TCustomBufferThread.BlockSizeChanged;
 begin
  ReallocMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
  ReallocMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
 end;
 
-procedure TBufferThread.CalculateTimeOut;
+procedure TCustomBufferThread.CalculateTimeOut;
 begin
  FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
 end;
 
-procedure TBufferThread.SampleRateChanged;
+procedure TCustomBufferThread.SampleRateChanged;
 begin
  CalculateTimeOut;
 end;
 
-procedure TBufferThread.SetBlockSize(Value: Integer);
+procedure TCustomBufferThread.SetBlockSize(Value: Integer);
 begin
  if Value > FBufferSize div 2
   then Value := FBufferSize div 2;
@@ -356,7 +422,7 @@ begin
   end;
 end;
 
-procedure TBufferThread.SetBufferSize(const Value: Integer);
+procedure TCustomBufferThread.SetBufferSize(const Value: Integer);
 begin
  if FBufferSize <> Value then
   begin
@@ -375,7 +441,7 @@ begin
  inherited;
  FPitchFactor  := 1;
  FAllowSuspend := False;
- FBufferThread := TBufferThread.Create;
+ FBufferThread := TCustomBufferThread.Create;
  FBufferThread.Priority := tpNormal;
  FBufferThread.AllowSuspend := FAllowSuspend;
 

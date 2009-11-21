@@ -48,10 +48,13 @@ type
     MISaveAs: TMenuItem;
     LBSEMs: TListBox;
     MINew: TMenuItem;
+    MiSettings: TMenuItem;
+    MiAddMerged: TMenuItem;
     procedure MIExitClick(Sender: TObject);
     procedure MIOpenClick(Sender: TObject);
     procedure MINewClick(Sender: TObject);
     procedure MISaveAsClick(Sender: TObject);
+    procedure MiAddMergedClick(Sender: TObject);
   private
     procedure SaveModule(Filename: TFileName);
   end;
@@ -116,9 +119,11 @@ begin
    for i := 0 to LBSEMs.Count - 1 do
     with TMemoryStream.Create do
      try
-      assert(FileExists(LBSEMs.Items[i]));
+      Assert(FileExists(LBSEMs.Items[i]));
       LoadFromFile(LBSEMs.Items[i]);
-      RD := TResourceDetails.CreateResourceDetails(RM, 0, 'SEM' + IntToStr(i), 'SEM', Size, Memory);
+      if MiAddMerged.Checked
+       then RD := TResourceDetails.CreateResourceDetails(RM, 0, 'SEMmerged' + IntToStr(i), 'SEM', Size, Memory)
+       else RD := TResourceDetails.CreateResourceDetails(RM, 0, 'SEM' + IntToStr(i), 'SEM', Size, Memory);
       AddResource(RD);
      finally
       Free;
@@ -136,6 +141,11 @@ procedure TFmSEModuleExplorer.MINewClick(Sender: TObject);
 begin
  LBSEMs.Clear;
  MISaveAs.Enabled := False;
+end;
+
+procedure TFmSEModuleExplorer.MiAddMergedClick(Sender: TObject);
+begin
+ MiAddMerged.Checked := not MiAddMerged.Checked; 
 end;
 
 procedure TFmSEModuleExplorer.MIExitClick(Sender: TObject);

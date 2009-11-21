@@ -53,13 +53,14 @@ type
     procedure SetRelease(const Value: Single);
     procedure SetLookAhead(const Value: Integer);
   protected
-    FOutputFactor  : Double;
-    FInputFactor   : Double;
-    FReleaseFactor : Double;
-    FLookAheadInv  : Double;
-    FHoldCounter   : Integer;
-    FWindowSum     : array [0..1] of Double;
-    FBufferPos     : array [0..1] of Integer;
+    FOutputFactor   : Double;
+    FInputFactor    : Double;
+    FReleaseFactor  : Double;
+    FReleaseSamples : Double;
+    FLookAheadInv   : Double;
+    FHoldCounter    : Integer;
+    FWindowSum      : array [0..1] of Double;
+    FBufferPos      : array [0..1] of Integer;
 
     procedure CalculateOutputGainFactor;
     procedure CalculateReleaseFactor;
@@ -81,7 +82,34 @@ type
     property Input_dB: Single read FInput_dB write SetInputGain;
   end;
 
-  TDspLookaheadLimiter32 = class(TCustomDspLookaheadLimiter, IDspProcessor32)
+  TCustomDspFeedforwardLookaheadLimiter = class(TCustomDspLookaheadLimiter);
+
+  TDspFeedforwardLookaheadLimiter32 = class(TCustomDspFeedforwardLookaheadLimiter, IDspProcessor32)
+  protected
+    FHoldValue      : Single;
+    FPeak           : Single;
+    FSampleBuffer32 : PDAVSingleFixedArray;
+    FWindowBuffer32 : array [0..1] of PDAVSingleFixedArray;
+    procedure AllocateBuffer;
+    procedure LookAheadChanged; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+
+    procedure InputSample(Input: Single);
+    function GainSample(Input: Single): Single;
+    function ProcessSample32(Input: Single): Single;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+  published
+    property GainReductionFactor;
+    property Output_dB;
+    property Release;
+    property Input_dB;
+  end;
+
+  TCustomDspFeedbackLikeLookaheadLimiter = class(TCustomDspLookaheadLimiter);
+
+  TDspFeedbackLikeLookaheadLimiter32 = class(TCustomDspFeedbackLikeLookaheadLimiter, IDspProcessor32)
   protected
     FHoldValue      : Single;
     FPeak           : Single;
@@ -107,7 +135,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common, DAV_Math;
+  SysUtils, Math, DAV_Approximations, DAV_Common, DAV_Math;
 
 { TCustomDspLookaheadLimiter }
 
@@ -197,9 +225,18 @@ end;
 
 procedure TCustomDspLookaheadLimiter.CalculateReleaseFactor;
 begin
+ FReleaseSamples := (FRelease * 0.001 * SampleRate);
  if FRelease = 0
-  then FReleaseFactor := 0
-  else FReleaseFactor := Exp( -ln2 / (FRelease * 0.001 * SampleRate));
+  then FReleaseFactor := 1
+  else FReleaseFactor := Power(2, -1 / FReleaseSamples);
+
+(*
+ Temp[0] := -CHalf32 * (FastLog2ContinousError5(FPeak) - FThrshlddB);
+ Temp[1] := ;
+ FGain   := FastPower2MinError3(Temp[0] - Temp[1]);
+ Temp[1] := 2 * Temp[1] / (Temp[1] - abs(Temp[0]));
+ FReleaseFactor := FastPower2MinError3(Temp[1] * FReleaseSampleCycle);
+*)
 end;
 
 procedure TCustomDspLookaheadLimiter.CalculateThresholdFactor;
@@ -213,9 +250,9 @@ begin
 end;
 
 
-{ TDspLookaheadLimiter32 }
+{ TDspFeedforwardLookaheadLimiter32 }
 
-constructor TDspLookaheadLimiter32.Create;
+constructor TDspFeedforwardLookaheadLimiter32.Create;
 begin
  FWindowBuffer32[0] := nil;
  FWindowBuffer32[1] := nil;
@@ -232,7 +269,7 @@ begin
  AllocateBuffer;
 end;
 
-destructor TDspLookaheadLimiter32.Destroy;
+destructor TDspFeedforwardLookaheadLimiter32.Destroy;
 begin
  Dispose(FWindowBuffer32[0]);
  Dispose(FWindowBuffer32[1]);
@@ -240,18 +277,18 @@ begin
  inherited;
 end;
 
-function TDspLookaheadLimiter32.GainSample(Input: Single): Single;
+function TDspFeedforwardLookaheadLimiter32.GainSample(Input: Single): Single;
 begin
  Result := Input * FOutputFactor * FGainReduction;
 end;
 
-procedure TDspLookaheadLimiter32.LookAheadChanged;
+procedure TDspFeedforwardLookaheadLimiter32.LookAheadChanged;
 begin
  AllocateBuffer;
  inherited;
 end;
 
-procedure TDspLookaheadLimiter32.AllocateBuffer;
+procedure TDspFeedforwardLookaheadLimiter32.AllocateBuffer;
 begin
  ReAllocMem(FWindowBuffer32[0], (FLookAhead div 2) * SizeOf(Single));
  ReAllocMem(FWindowBuffer32[1], (FLookAhead div 2) * SizeOf(Single));
@@ -263,7 +300,7 @@ begin
  FWindowSum[1] := 0;
 end;
 
-procedure TDspLookaheadLimiter32.InputSample(Input: Single);
+procedure TDspFeedforwardLookaheadLimiter32.InputSample(Input: Single);
 var
   Pos  : Integer;
   Temp : Single;
@@ -308,14 +345,14 @@ begin
 
  // calculate gain reduction
  Input := FInputFactor * FHoldValue;
- if Input > 1
-  then Input := (Input - 1) / Input
-  else Input := 0;
-
- // apply release
- FPeak := FReleaseFactor * FPeak;
- if Input > FPeak
-  then FPeak := Input;
+ if Input > 1 then
+  begin
+   FPeak := FReleaseFactor * FPeak;
+   Input := (Input - 1) / Input;
+   if Input > FPeak
+    then FPeak := Input;
+  end
+ else FPeak := FReleaseFactor * FPeak;
 
  Input := FPeak;
 
@@ -357,7 +394,7 @@ begin
  FGainReduction := FOutputFactor * FInputFactor * (1 - Input);
 end;
 
-procedure TDspLookaheadLimiter32.ProcessBlock32(
+procedure TDspFeedforwardLookaheadLimiter32.ProcessBlock32(
   const Data: PDAVSingleFixedArray; SampleCount: Integer);
 var
   Sample : Integer;
@@ -366,7 +403,7 @@ begin
   do Data[Sample] := ProcessSample32(Data[Sample]);
 end;
 
-function TDspLookaheadLimiter32.ProcessSample32(Input: Single): Single;
+function TDspFeedforwardLookaheadLimiter32.ProcessSample32(Input: Single): Single;
 var
   Pos  : Integer;
   Temp : Single;
@@ -412,14 +449,264 @@ begin
 
  // calculate gain reduction
  Input := FInputFactor * FHoldValue;
- if Input > 1
-  then Input := (Input - 1) / Input
-  else Input := 0;
+ if Input > 1 then
+  begin
+   FPeak := FReleaseFactor * FPeak;
+   Input := (Input - 1) / Input;
+   if Input > FPeak
+    then FPeak := Input;
+  end
+ else FPeak := FReleaseFactor * FPeak;
 
- // apply release
- FPeak := FReleaseFactor * FPeak;
- if Input > FPeak
-  then FPeak := Input;
+ Input := FPeak;
+
+ case FAttackShape of
+  asLinear :
+   begin
+    Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
+
+    FWindowBuffer32[1]^[FBufferPos[1]] := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
+
+    Input := FWindowSum[1] * FLookAheadInv;
+   end;
+  asParabolic :
+   begin
+    // apply triangle window
+    Temp := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
+
+    FWindowSum[0] := FWindowSum[0] + Input - Temp;
+    Input := FWindowSum[0] * 2 * FLookAheadInv;
+
+     Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowBuffer32[1]^[FBufferPos[1]] := Input;
+
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
+    Input := FWindowSum[1] * 2 * FLookAheadInv;
+   end;
+ end;
+
+ // advance rectangle/triangle window buffer pos
+ Inc(FBufferPos[1]);
+ if FBufferPos[1] >= FLookAhead div 2
+  then FBufferPos[1] := 0;
+
+ // calculate gain reduction
+ FGainReduction := FOutputFactor * FInputFactor * (1 - Input);
+
+ Result := FGainReduction * Result;
+end;
+
+
+{ TDspFeedbackLikeLookaheadLimiter32 }
+
+constructor TDspFeedbackLikeLookaheadLimiter32.Create;
+begin
+ FWindowBuffer32[0] := nil;
+ FWindowBuffer32[1] := nil;
+ FSampleBuffer32    := nil;
+
+ inherited;
+
+ FWindowSum[0] := 0;
+ FWindowSum[1] := 0;
+ FPeak         := 0;
+ FHoldValue    := 0;
+ FPeak         := 0;
+
+ AllocateBuffer;
+end;
+
+destructor TDspFeedbackLikeLookaheadLimiter32.Destroy;
+begin
+ Dispose(FWindowBuffer32[0]);
+ Dispose(FWindowBuffer32[1]);
+ Dispose(FSampleBuffer32);
+ inherited;
+end;
+
+function TDspFeedbackLikeLookaheadLimiter32.GainSample(Input: Single): Single;
+begin
+ Result := Input * FOutputFactor * FGainReduction;
+end;
+
+procedure TDspFeedbackLikeLookaheadLimiter32.LookAheadChanged;
+begin
+ AllocateBuffer;
+ inherited;
+end;
+
+procedure TDspFeedbackLikeLookaheadLimiter32.AllocateBuffer;
+begin
+ ReAllocMem(FWindowBuffer32[0], (FLookAhead div 2) * SizeOf(Single));
+ ReAllocMem(FWindowBuffer32[1], (FLookAhead div 2) * SizeOf(Single));
+ ReAllocMem(FSampleBuffer32, FLookAhead * SizeOf(Single));
+ FillChar(FWindowBuffer32[0]^, (FLookAhead div 2) * SizeOf(Single), 0);
+ FillChar(FWindowBuffer32[1]^, (FLookAhead div 2) * SizeOf(Single), 0);
+ FillChar(FSampleBuffer32^, FLookAhead * SizeOf(Single), 0);
+ FWindowSum[0] := 0;
+ FWindowSum[1] := 0;
+end;
+
+procedure TDspFeedbackLikeLookaheadLimiter32.InputSample(Input: Single);
+var
+  Pos  : Integer;
+  Temp : Single;
+begin
+ // get maximum and hold it
+ if abs(Input) >= FHoldValue then
+  begin
+   FHoldValue := Abs(Input);
+   FHoldCounter := FLookAhead;
+  end else
+ if FHoldCounter > 0
+  then Dec(FHoldCounter) else
+   begin
+    // find maximum
+    FHoldCounter := 0;
+    FHoldValue := Abs(FSampleBuffer32^[0]);
+    for Pos := 1 to FLookAhead - 1 do
+     if Abs(FSampleBuffer32^[Pos]) > FHoldValue then
+      begin
+       FHoldValue := Abs(FSampleBuffer32^[Pos]);
+       FHoldCounter := Pos + 1;
+      end;
+
+    if FHoldCounter >= FBufferPos[0]
+     then FHoldCounter := FHoldCounter - FBufferPos[0]
+     else FHoldCounter := FHoldCounter - FBufferPos[0] + FLookAhead;
+
+    if Abs(Input) > FHoldValue then
+     begin
+      FHoldValue := Abs(Input);
+      FHoldCounter := FLookAhead;
+     end;
+   end;
+
+ // store input sample
+ FSampleBuffer32^[FBufferPos[0]] := Input;
+
+ // update circular buffer position
+ Inc(FBufferPos[0]);
+ if FBufferPos[0] >= FLookAhead
+  then FBufferPos[0] := 0;
+
+ // calculate gain reduction
+ Input := FInputFactor * FHoldValue;
+ if Input > 1 then
+  begin
+   FPeak := FastPower2MinError3(-1 / (sqr(Input) * FReleaseSamples)) * FPeak;
+   Input := (Input - 1) / Input;
+   if Input > FPeak
+    then FPeak := Input;
+  end
+ else FPeak := FReleaseFactor * FPeak;
+
+ Input := FPeak;
+
+ case FAttackShape of
+  asLinear :
+   begin
+    // apply rectangle window
+    Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
+
+    FWindowBuffer32[1]^[FBufferPos[1]] := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
+
+    Input := FWindowSum[1] * FLookAheadInv;
+   end;
+  asParabolic :
+   begin
+    // apply triangle window
+    Temp := FWindowBuffer32[0]^[FBufferPos[1]];
+    FWindowBuffer32[0]^[FBufferPos[1]] := Input;
+
+    FWindowSum[0] := FWindowSum[0] + Input - Temp;
+    Input := FWindowSum[0] * 2 * FLookAheadInv;
+
+     Temp := FWindowBuffer32[1]^[FBufferPos[1]];
+    FWindowBuffer32[1]^[FBufferPos[1]] := Input;
+
+    FWindowSum[1] := FWindowSum[1] + Input - Temp;
+    Input := FWindowSum[1] * 2 * FLookAheadInv;
+   end;
+ end;
+
+ // advance rectangle/triangle window buffer pos
+ Inc(FBufferPos[1]);
+ if FBufferPos[1] >= FLookAhead div 2
+  then FBufferPos[1] := 0;
+
+ // calculate gain reduction
+ FGainReduction := FOutputFactor * FInputFactor * (1 - Input);
+end;
+
+procedure TDspFeedbackLikeLookaheadLimiter32.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+function TDspFeedbackLikeLookaheadLimiter32.ProcessSample32(Input: Single): Single;
+var
+  Pos  : Integer;
+  Temp : Single;
+begin
+ // hold
+ if Abs(Input) >= FHoldValue then
+  begin
+   FHoldValue := Abs(Input);
+   FHoldCounter := FLookAhead;
+  end else
+ if FHoldCounter > 0
+  then Dec(FHoldCounter) else
+   begin
+    // find maximum
+    FHoldCounter := 0;
+    FHoldValue := Abs(FSampleBuffer32^[0]);
+    for Pos := 1 to FLookAhead - 1 do
+     if Abs(FSampleBuffer32^[Pos]) > FHoldValue then
+      begin
+       FHoldValue := Abs(FSampleBuffer32^[Pos]);
+       FHoldCounter := Pos + 1;
+      end;
+
+    if FHoldCounter >= FBufferPos[0]
+     then FHoldCounter := FHoldCounter - FBufferPos[0]
+     else FHoldCounter := FHoldCounter - FBufferPos[0] + FLookAhead;
+
+    if Abs(Input) > FHoldValue then
+     begin
+      FHoldValue := Abs(Input);
+      FHoldCounter := FLookAhead;
+     end;
+   end;
+
+ // get current output sample and store input sample
+ Result := FSampleBuffer32^[FBufferPos[0]];
+ FSampleBuffer32^[FBufferPos[0]] := Input;
+
+ // update circular buffer position
+ Inc(FBufferPos[0]);
+ if FBufferPos[0] >= FLookAhead
+  then FBufferPos[0] := 0;
+
+ // calculate gain reduction
+ Input := FInputFactor * FHoldValue;
+ if Input > 1 then
+  begin
+   FPeak := FastPower2MinError3(-1 / (sqr(Input) * FReleaseSamples)) * FPeak;
+   Input := (Input - 1) / Input;
+   if Input > FPeak
+    then FPeak := Input;
+  end
+ else FPeak := FReleaseFactor * FPeak;
 
  Input := FPeak;
 
