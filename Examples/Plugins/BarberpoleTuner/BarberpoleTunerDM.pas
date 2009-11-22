@@ -108,7 +108,7 @@ begin
   4 : CenterFrequency := 783.99087196349858817139906091965;
   5 : CenterFrequency := 987.76660251224822366150908371768;
   6 : CenterFrequency := 1318.5102276514797189433670441862;
-  else raise Exception.Create('Current Frequency doesn''t exist');
+  else raise Exception.Create('Currentfrequency doesn''t exist');
  end;
 
  if assigned(FBarberpoleFilter)
@@ -131,8 +131,11 @@ end;
 procedure TBarberpoleTunerDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := SampleRate;
- if assigned(FLowpass) then FLowpass.SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  begin
+   if Assigned(FBarberpoleFilter) then FBarberpoleFilter.SampleRate := SampleRate;
+   if Assigned(FLowpass) then FLowpass.SampleRate := SampleRate;
+  end;
 end;
 
 procedure TBarberpoleTunerDataModule.VSTModuleProcess(const Inputs,

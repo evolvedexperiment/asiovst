@@ -426,11 +426,12 @@ end;
 procedure TAdvancedClipperDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to 3 do
-  if assigned(FUpDownSampling[ch])
-   then FUpDownSampling[ch].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to 3 do
+   if assigned(FUpDownSampling[Channel])
+    then FUpDownSampling[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

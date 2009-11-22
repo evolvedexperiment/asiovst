@@ -97,22 +97,23 @@ end;
 procedure TAudio2MidiTriggerModule.ParameterIntervalChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FAudio2MidiTrigger)
+ if Assigned(FAudio2MidiTrigger)
   then FAudio2MidiTrigger.Interval := 0.001 * Value;
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FAudio2MidiTrigger)
+ if Assigned(FAudio2MidiTrigger)
   then FAudio2MidiTrigger.Threshold := Value;
 end;
 
 procedure TAudio2MidiTriggerModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FAudio2MidiTrigger)
-  then FAudio2MidiTrigger.SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  if Assigned(FAudio2MidiTrigger)
+   then FAudio2MidiTrigger.SampleRate := Abs(SampleRate);
 end;
 
 procedure TAudio2MidiTriggerModule.ParameterMidiNoteChange(

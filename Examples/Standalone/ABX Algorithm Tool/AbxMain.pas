@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Menus, ComCtrls, StdCtrls, DAV_AudioData, DAV_ASIOHost, DAV_AudioFile,
-  DAV_AudioFileWav, DAV_AudioFileAu, DAV_AudioFileAIFF;
+  DAV_AudioFileWav, DAV_AudioFileAu, DAV_AudioFileAIFF, DAV_Classes;
 
 type
   TFmAbxAlgorithmTest = class(TForm)
