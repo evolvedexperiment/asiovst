@@ -39,113 +39,15 @@ uses
   DAV_AudioFile, DAV_ChannelDataCoder;
 
 type
-  TCustomBufferThread = class(TThread)
-  private
-    FAudioFile        : TCustomAudioFile;
-    FBuffer           : TCircularStereoBuffer32;
-    FBufferSize       : Integer;
-    FSampleRate       : Single;
-    FStreamBuffer     : array [0..1] of PDAVSingleFixedArray;
-    FStreamBufSize    : Integer;
-    FTimeOut          : Integer;
-    FAllowSuspend     : Boolean;
-    FCurrentPosition  : Integer;
-    FSubBlockPosition : Integer;
-    function GetBufferFill: Single;
-    procedure SetBufferSize(const Value: Integer);
-    procedure SetBlockSize(Value: Integer);
-    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+  TCustomBufferedAudioPlayer = class;
+
+  TReloadThread = class(TThread)
   protected
+    FBufferedAudioPlayer: TCustomBufferedAudioPlayer;
     procedure Execute; override;
-    procedure BlockSizeChanged; virtual;
-    procedure BufferSizeChanged; virtual;
-    procedure CalculateTimeOut; virtual;
-    procedure SampleRateChanged; virtual;
-    procedure AudioFileChanged; virtual;
   public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure GetSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
-    procedure Reset;
-
-    procedure LoadFromFile(FileName: TFileName);
-    procedure LoadFromStream(Stream: TStream);
-
-    property AllowSuspend: Boolean read FAllowSuspend write FAllowSuspend;
-    property BufferSize: Integer read FBufferSize write SetBufferSize;
-    property BlockSize: Integer read FStreamBufSize write SetBlockSize;
-    property SampleRate: Single read FSampleRate;
-    property BufferFill: Single read GetBufferFill;
-
-    property AudioFile: TCustomAudioFile read FAudioFile;
+    constructor Create(BufferedAudioPlayer: TCustomBufferedAudioPlayer);
   end;
-
-(*
-  TMonoBufferThread = class(TCustomBufferThread)
-  private
-    FBuffer       : TCircularBuffer32;
-    FStreamBuffer : PDAVSingleFixedArray;
-    function GetBufferFill: Single;
-    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
-  protected
-    procedure BlockSizeChanged; override;
-    procedure BufferSizeChanged; override;
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure Execute; override;
-
-    procedure PutSamples(Data: PDAVSingleFixedArray; SampleFrames: Integer);
-
-    property BufferFill: Single read GetBufferFill;
-  end;
-
-  TStereoBufferThread = class(TCustomBufferThread)
-  private
-    FBuffer       : TCircularStereoBuffer32;
-    FStreamBuffer : array [0..1] of PDAVSingleFixedArray;
-    function GetBufferFill: Single;
-    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
-  protected
-    procedure BlockSizeChanged; override;
-    procedure BufferSizeChanged; override;
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure Execute; override;
-
-    procedure PutSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
-
-    property BufferFill: Single read GetBufferFill;
-  end;
-
-  TMultiBufferThread = class(TCustomBufferThread)
-  private
-    FBuffer       : TCircularMultiBuffer32;
-    FChannelCount : Integer;
-    FStreamBuffer : TDAVArrayOfSingleFixedArray;
-    function GetBufferFill: Single;
-    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
-    procedure SetChannelCount(const Value: Integer);
-    procedure ChannelCountChanged;
-  protected
-    procedure BlockSizeChanged; override;
-    procedure BufferSizeChanged; override;
-  public
-    constructor Create;
-    destructor Destroy; override;
-
-    procedure Execute; override;
-
-    procedure PutSamples(Data: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
-
-    property BufferFill: Single read GetBufferFill;
-    property ChannelCount: Integer read FChannelCount write SetChannelCount;
-  end;
-*)
 
   TBufferInterpolation = (biNone, biLinear, biHermite, biBSpline6Point5thOrder);
 
@@ -157,35 +59,53 @@ type
     FInterpolation       : TBufferInterpolation;
     FPitch               : Single;
     FPitchFactor         : Single;
-    FInterpolationBuffer : array [0..1] of PDAV8SingleArray;
-    function GetBlockSize: Integer;
-    function GetBufferSize: Integer;
+    FInterpolationBuffer : array of PDAV8SingleArray;
+
+    FAudioFile        : TCustomAudioFile;
+    FBuffer           : TCircularMultiBuffer32;
+    FBufferSize       : Integer;
+    FSampleRate       : Single;
+    FStreamBuffer     : TDAVArrayOfSingleFixedArray;
+    FStreamBufSize    : Integer;
+    FTimeOut          : Integer;
+
+    FCurrentPosition  : Integer;
+    FSubBlockPosition : Integer;
     function GetBufferFill: Single;
-    function GetAudioFile: TCustomAudioFile;
-    procedure SetBlockSize(const Value: Integer);
+    procedure DecodeHandler(Sender: TObject; const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+    procedure SetBlockSize(Value: Integer);
     procedure SetBufferSize(const Value: Integer);
-    procedure SetAllowSuspend(const Value: Boolean);
     procedure SetInterpolation(const Value: TBufferInterpolation);
     procedure SetPitch(const Value: Single);
+    function CheckReload: Boolean;
   protected
-    FBufferThread : TCustomBufferThread;
-    procedure CalculatePitchFactor; virtual;
-    procedure CalculateSampleRateRatio; virtual;
-    procedure SampleRateChanged; override;
+    FBufferThread : TReloadThread;
+    procedure CalculatePitchFactor;
+    procedure CalculateSampleRateRatio;
+    procedure CalculateTimeOut;
+    procedure GetInternalSamples(Data: TDAVArrayOfSingleFixedArray; SampleFrames: Integer); overload;
+
+    procedure AudioFileChanged; virtual;
+    procedure BlockSizeChanged; virtual;
+    procedure BufferSizeChanged; virtual;
     procedure InterpolationChanged; virtual;
     procedure PitchChanged; virtual;
+    procedure SampleRateChanged; override;
   public
     constructor Create; override;
     destructor Destroy; override;
 
-    procedure GetSamples(Left, Right: PDAVSingleFixedArray; SampleFrames: Integer);
+    procedure GetSamples(Data: TDAVArrayOfSingleFixedArray; SampleFrames: Integer);
     procedure Reset;
 
-    property AllowSuspend: Boolean read FAllowSuspend write SetAllowSuspend;
-    property AudioFile: TCustomAudioFile read GetAudioFile;
-    property BlockSize: Integer read GetBlockSize write SetBlockSize;
+    procedure LoadFromFile(FileName: TFileName);
+    procedure LoadFromStream(Stream: TStream);
+
+    property AllowSuspend: Boolean read FAllowSuspend write FAllowSuspend;
+    property AudioFile: TCustomAudioFile read FAudioFile;
+    property BlockSize: Integer read FStreamBufSize write SetBlockSize;
     property BufferFill: Single read GetBufferFill;
-    property BufferSize: Integer read GetBufferSize write SetBufferSize;
+    property BufferSize: Integer read FBufferSize write SetBufferSize;
     property Interpolation: TBufferInterpolation read FInterpolation write SetInterpolation;
     property Pitch: Single read FPitch write SetPitch;
   end;
@@ -231,95 +151,124 @@ implementation
 uses
   Math, DAV_DspInterpolation;
 
-{ TCustomBufferThread }
+{ TReloadThread }
 
-constructor TCustomBufferThread.Create;
+constructor TReloadThread.Create(BufferedAudioPlayer: TCustomBufferedAudioPlayer);
 begin
+ FBufferedAudioPlayer := BufferedAudioPlayer;
  inherited Create(True);
+end;
+
+procedure TReloadThread.Execute;
+var
+  IdleLoops: Integer;
+begin
+ IdleLoops := 20;
+ with FBufferedAudioPlayer do
+  while not Terminated do
+   begin
+    if CheckReload
+     then IdleLoops := 20;
+    Dec(IdleLoops);
+    if FAllowSuspend and (IdleLoops <= 0)
+     then Suspend
+     else Sleep(FTimeOut);
+   end;
+end;
+
+{ TCustomBufferedAudioPlayer }
+
+constructor TCustomBufferedAudioPlayer.Create;
+begin
+ inherited;
+ FPitchFactor  := 1;
+ FAllowSuspend := False;
+
  FBufferSize := 16384;
  FSampleRate := 44100;
  FStreamBufSize := 4096;
  FAllowSuspend := False;
  CalculateTimeOut;
 
+ SetLength(FStreamBuffer, 2);
  GetMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
  GetMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
 
- FBuffer := TCircularStereoBuffer32.Create(FBufferSize);
+ SetLength(FInterpolationBuffer, Length(FStreamBuffer));
+
+ FBuffer := TCircularMultiBuffer32.Create(FBufferSize);
+
+ // initialize reload thread
+ FBufferThread := TReloadThread.Create(Self);
+ FBufferThread.Priority := tpNormal;
+
+ CalculateSampleRateRatio;
+ InterpolationChanged;
 end;
 
-destructor TCustomBufferThread.Destroy;
+destructor TCustomBufferedAudioPlayer.Destroy;
+var
+  Channel : Integer;
 begin
- Dispose(FStreamBuffer[0]);
- Dispose(FStreamBuffer[1]);
+ with FBufferThread do
+  begin
+   if Suspended
+    then Resume;
+   Terminate;
+   WaitFor;
+  end;
+ FreeAndNil(FBufferThread);
+
+ for Channel := 0 to Length(FStreamBuffer) - 1
+  do Dispose(FStreamBuffer[Channel]);
  FreeAndNil(FBuffer);
  FreeAndNil(FAudioFile);
+
+ for Channel := 0 to Length(FInterpolationBuffer) - 1 do
+  if Assigned(FInterpolationBuffer[Channel])
+   then Dispose(FInterpolationBuffer[Channel]);
+
  inherited;
 end;
 
-procedure TCustomBufferThread.Execute;
+function TCustomBufferedAudioPlayer.GetBufferFill: Single;
+begin
+ Result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+end;
+
+function TCustomBufferedAudioPlayer.CheckReload: Boolean;
 var
   IdleLoops: Integer;
 begin
- IdleLoops := 20;
- while not Terminated do
+ Result := False;
+ while (FBuffer.BufferSize - FBuffer.SamplesInBuffer) > FStreamBufSize do
   begin
-   while (FBuffer.BufferSize - FBuffer.SamplesInBuffer) > FStreamBufSize do
+   Result := True;
+
+   if assigned(FAudioFile) then
     begin
-     IdleLoops := 20;
-
-     if assigned(FAudioFile) then
-      begin
-       FAudioFile.OnDecode := DecodeHandler;
-       FSubBlockPosition := 0;
-       if FCurrentPosition + FStreamBufSize < FAudioFile.SampleFrames
-        then FAudioFile.Decode(FCurrentPosition * FAudioFile.ChannelCount, FStreamBufSize)
-        else
-         begin
-          FAudioFile.Decode(FCurrentPosition * FAudioFile.ChannelCount, FAudioFile.SampleFrames - FCurrentPosition);
-          FAudioFile.Decode(0, FStreamBufSize - (FAudioFile.SampleFrames - FCurrentPosition));
-          FCurrentPosition := 0;
-         end;
-       Inc(FCurrentPosition, FStreamBufSize);
-      end
-     else
-      begin
-       FillChar(FStreamBuffer[0]^, FStreamBufSize * SizeOf(Single), 0);
-       FillChar(FStreamBuffer[1]^, FStreamBufSize * SizeOf(Single), 0);
-      end;
-     FBuffer.WriteBuffer(FStreamBuffer[0], FStreamBuffer[1], FStreamBufSize);
+     FAudioFile.OnDecode := DecodeHandler;
+     FSubBlockPosition := 0;
+     if FCurrentPosition + FStreamBufSize < FAudioFile.SampleFrames
+      then FAudioFile.Decode(FCurrentPosition * FAudioFile.ChannelCount, FStreamBufSize)
+      else
+       begin
+        FAudioFile.Decode(FCurrentPosition * FAudioFile.ChannelCount, FAudioFile.SampleFrames - FCurrentPosition);
+        FAudioFile.Decode(0, FStreamBufSize - (FAudioFile.SampleFrames - FCurrentPosition));
+        FCurrentPosition := 0;
+       end;
+     Inc(FCurrentPosition, FStreamBufSize);
+    end
+   else
+    begin
+     FillChar(FStreamBuffer[0]^, FStreamBufSize * SizeOf(Single), 0);
+     FillChar(FStreamBuffer[1]^, FStreamBufSize * SizeOf(Single), 0);
     end;
-
-   Dec(IdleLoops);
-   if FAllowSuspend and (IdleLoops <= 0)
-    then Suspend
-    else Sleep(FTimeOut);
+   FBuffer.WriteBuffer(FStreamBuffer, FStreamBufSize);
   end;
 end;
 
-function TCustomBufferThread.GetBufferFill: Single;
-begin
- result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize); 
-end;
-
-procedure TCustomBufferThread.GetSamples(Left, Right: PDAVSingleFixedArray;
-  SampleFrames: Integer);
-var
-  SampleInBuffer: Integer;  
-begin
- SampleInBuffer := FBuffer.SamplesInBuffer;
- if SampleFrames < SampleInBuffer
-  then FBuffer.ReadBuffer(Left, Right, SampleFrames)
-  else
-   begin
-    if SampleInBuffer > 0
-     then FBuffer.ReadBuffer(Left, Right, SampleInBuffer);
-    FillChar( Left^, (SampleFrames - SampleInBuffer) * SizeOf(Single), 0);
-    FillChar(Right^, (SampleFrames - SampleInBuffer) * SizeOf(Single), 0);
-   end;
-end;
-
-procedure TCustomBufferThread.LoadFromFile(FileName: TFileName);
+procedure TCustomBufferedAudioPlayer.LoadFromFile(FileName: TFileName);
 var
   AudioFileClass : TAudioFileClass;
 begin
@@ -336,7 +285,7 @@ begin
  AudioFileChanged;
 end;
 
-procedure TCustomBufferThread.LoadFromStream(Stream: TStream);
+procedure TCustomBufferedAudioPlayer.LoadFromStream(Stream: TStream);
 var
   AudioFileClass : TAudioFileClass;
 begin
@@ -353,7 +302,7 @@ begin
  AudioFileChanged;
 end;
 
-procedure TCustomBufferThread.DecodeHandler(Sender: TObject;
+procedure TCustomBufferedAudioPlayer.DecodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
 begin
  assert(Coder is TCustomChannel32DataCoder);
@@ -374,42 +323,38 @@ begin
   end;
 end;
 
-procedure TCustomBufferThread.AudioFileChanged;
+procedure TCustomBufferedAudioPlayer.AudioFileChanged;
 begin
- if assigned(FAudioFile) then
+ if Assigned(FAudioFile) then
   begin
+   FBuffer.ChannelCount := FAudioFile.ChannelCount;
    FSampleRate := FAudioFile.SampleRate;
    SampleRateChanged;
   end;
 end;
 
-procedure TCustomBufferThread.Reset;
+procedure TCustomBufferedAudioPlayer.Reset;
 begin
  FCurrentPosition := 0;
 end;
 
-procedure TCustomBufferThread.BufferSizeChanged;
+procedure TCustomBufferedAudioPlayer.BufferSizeChanged;
 begin
  FBuffer.BufferSize := FBufferSize;
 end;
 
-procedure TCustomBufferThread.BlockSizeChanged;
+procedure TCustomBufferedAudioPlayer.BlockSizeChanged;
 begin
  ReallocMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
  ReallocMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
 end;
 
-procedure TCustomBufferThread.CalculateTimeOut;
+procedure TCustomBufferedAudioPlayer.CalculateTimeOut;
 begin
  FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
 end;
 
-procedure TCustomBufferThread.SampleRateChanged;
-begin
- CalculateTimeOut;
-end;
-
-procedure TCustomBufferThread.SetBlockSize(Value: Integer);
+procedure TCustomBufferedAudioPlayer.SetBlockSize(Value: Integer);
 begin
  if Value > FBufferSize div 2
   then Value := FBufferSize div 2;
@@ -422,88 +367,16 @@ begin
   end;
 end;
 
-procedure TCustomBufferThread.SetBufferSize(const Value: Integer);
+procedure TCustomBufferedAudioPlayer.SetBufferSize(const Value: Integer);
 begin
  if FBufferSize <> Value then
   begin
    FBufferSize := Value;
    if BlockSize > FBufferSize div 2
     then BlockSize := FBufferSize div 2;
-   
+
    BufferSizeChanged;
   end;
-end;
-
-{ TCustomBufferedAudioPlayer }
-
-constructor TCustomBufferedAudioPlayer.Create;
-begin
- inherited;
- FPitchFactor  := 1;
- FAllowSuspend := False;
- FBufferThread := TCustomBufferThread.Create;
- FBufferThread.Priority := tpNormal;
- FBufferThread.AllowSuspend := FAllowSuspend;
-
- CalculateSampleRateRatio;
- InterpolationChanged;
-end;
-
-destructor TCustomBufferedAudioPlayer.Destroy;
-begin
- with FBufferThread do
-  begin
-   if Suspended
-    then Resume;
-   Terminate;
-   WaitFor;
-  end;
- FreeAndNil(FBufferThread);
-
- if assigned(FInterpolationBuffer[0])
-  then Dispose(FInterpolationBuffer[0]);
- if assigned(FInterpolationBuffer[1])
-  then Dispose(FInterpolationBuffer[1]);
- inherited;
-end;
-
-function TCustomBufferedAudioPlayer.GetBlockSize: Integer;
-begin
- result := FBufferThread.BlockSize;
-end;
-
-function TCustomBufferedAudioPlayer.GetBufferFill: Single;
-begin
- result := FBufferThread.BufferFill;
-end;
-
-function TCustomBufferedAudioPlayer.GetBufferSize: Integer;
-begin
- result := FBufferThread.BufferSize;
-end;
-
-function TCustomBufferedAudioPlayer.GetAudioFile: TCustomAudioFile;
-begin
- result := FBufferThread.AudioFile;
-end;
-
-procedure TCustomBufferedAudioPlayer.SetAllowSuspend(const Value: Boolean);
-begin
- if FAllowSuspend <> Value then
-  begin
-   FAllowSuspend := Value;
-   FBufferThread.AllowSuspend := True;
-  end;
-end;
-
-procedure TCustomBufferedAudioPlayer.SetBlockSize(const Value: Integer);
-begin
- FBufferThread.BlockSize := Value;
-end;
-
-procedure TCustomBufferedAudioPlayer.SetBufferSize(const Value: Integer);
-begin
- FBufferThread.BufferSize := Value;
 end;
 
 procedure TCustomBufferedAudioPlayer.SetInterpolation(
@@ -527,32 +400,27 @@ end;
 
 procedure TCustomBufferedAudioPlayer.SampleRateChanged;
 begin
+ CalculateTimeOut;
  CalculateSampleRateRatio;
 end;
 
 procedure TCustomBufferedAudioPlayer.InterpolationChanged;
+var
+  Channel : Integer;
 begin
  case FInterpolation of
   biNone:
-   begin
-    ReallocMem(FInterpolationBuffer[0], 1 * SizeOf(Single));
-    ReallocMem(FInterpolationBuffer[1], 1 * SizeOf(Single));
-   end;
+   for Channel := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[Channel], 1 * SizeOf(Single));
   biLinear:
-   begin
-    ReallocMem(FInterpolationBuffer[0], 2 * SizeOf(Single));
-    ReallocMem(FInterpolationBuffer[1], 2 * SizeOf(Single));
-   end;
+   for Channel := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[Channel], 2 * SizeOf(Single));
   biHermite:
-   begin
-    ReallocMem(FInterpolationBuffer[0], 4 * SizeOf(Single));
-    ReallocMem(FInterpolationBuffer[1], 4 * SizeOf(Single));
-   end;
+   for Channel := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[Channel], 4 * SizeOf(Single));
   biBSpline6Point5thOrder:
-   begin
-    ReallocMem(FInterpolationBuffer[0], 6 * SizeOf(Single));
-    ReallocMem(FInterpolationBuffer[1], 6 * SizeOf(Single));
-   end;
+   for Channel := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[Channel], 6 * SizeOf(Single));
  end;
 end;
 
@@ -569,18 +437,40 @@ end;
 
 procedure TCustomBufferedAudioPlayer.CalculateSampleRateRatio;
 begin
- FRatio := FPitchFactor * FBufferThread.SampleRate / SampleRate;
+ if Assigned(FAudioFile)
+  then FRatio := FPitchFactor * FAudioFile.SampleRate / SampleRate
+  else FRatio := FPitchFactor;
 end;
 
-procedure TCustomBufferedAudioPlayer.GetSamples(Left, Right: PDAVSingleFixedArray;
+procedure TCustomBufferedAudioPlayer.GetInternalSamples(Data: TDAVArrayOfSingleFixedArray;
   SampleFrames: Integer);
 var
-  Sample : Integer;  
+  Channel        : Integer;
+  SampleInBuffer : Integer;
+begin
+ SampleInBuffer := FBuffer.SamplesInBuffer;
+ if SampleFrames < SampleInBuffer
+  then FBuffer.ReadBuffer(Data, SampleFrames)
+  else
+   begin
+    if SampleInBuffer > 0
+     then FBuffer.ReadBuffer(Data, SampleInBuffer);
+
+    for Channel := 0 to Length(Data) - 1
+     do FillChar(Data[Channel]^, (SampleFrames - SampleInBuffer) * SizeOf(Single), 0);
+   end;
+end;
+
+procedure TCustomBufferedAudioPlayer.GetSamples(Data: TDAVArrayOfSingleFixedArray;
+  SampleFrames: Integer);
+var
+  Channel : Integer;
+  Sample  : Integer;
 begin
  // eventually reactivate thread
  if FAllowSuspend and FBufferThread.Suspended then FBufferThread.Resume;
  if FRatio = 1
-  then FBufferThread.GetSamples(Left, Right, SampleFrames)
+  then GetInternalSamples(Data, SampleFrames)
   else
    case FInterpolation of
     biNone:
@@ -589,12 +479,14 @@ begin
        FFractalPos := FFractalPos + FRatio;
        while FFractalPos > 1 do
         begin
-         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1
+          do Data[Channel] := PDAVSingleFixedArray(FInterpolationBuffer[Channel]);
+         GetInternalSamples(TDAVArrayOfSingleFixedArray(FInterpolationBuffer), 1);
          FFractalPos := FFractalPos - 1;
         end;
-       Left^[Sample]  := FInterpolationBuffer[0]^[0];
-       Right^[Sample] := FInterpolationBuffer[1]^[0];
+
+       for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1
+        do Data[Channel]^[Sample]  := FInterpolationBuffer[Channel]^[0];
       end;
     biLinear:
      for Sample := 0 to SampleFrames - 1 do
@@ -602,14 +494,16 @@ begin
        FFractalPos := FFractalPos + FRatio;
        while FFractalPos > 1 do
         begin
-         FInterpolationBuffer[0]^[1] := FInterpolationBuffer[0]^[0];
-         FInterpolationBuffer[1]^[1] := FInterpolationBuffer[1]^[0];
-         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1 do
+          begin
+           FInterpolationBuffer[Channel]^[1] := FInterpolationBuffer[Channel]^[0];
+           Data[Channel] := PDAVSingleFixedArray(FInterpolationBuffer[Channel]);
+          end;
+         GetInternalSamples(TDAVArrayOfSingleFixedArray(FInterpolationBuffer), 1);
          FFractalPos := FFractalPos - 1;
         end;
-       Left^[Sample]  := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[0]));
-       Right^[Sample] := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[1]));
+       for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1
+        do Data[Channel]^[Sample]  := LinearInterpolation(1 - FFractalPos, PDAV2SingleArray(FInterpolationBuffer[Channel]));
       end;
     biHermite:
      for Sample := 0 to SampleFrames - 1 do
@@ -617,14 +511,16 @@ begin
        FFractalPos := FFractalPos + FRatio;
        while FFractalPos > 1 do
         begin
-         Move(FInterpolationBuffer[0]^[0], FInterpolationBuffer[0]^[1], 3 * SizeOf(Single));
-         Move(FInterpolationBuffer[1]^[0], FInterpolationBuffer[1]^[1], 3 * SizeOf(Single));
-         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1 do
+          begin
+           Move(FInterpolationBuffer[Channel]^[0], FInterpolationBuffer[Channel]^[1], 3 * SizeOf(Single));
+           Data[Channel] := PDAVSingleFixedArray(FInterpolationBuffer[Channel]);
+          end;
+         GetInternalSamples(TDAVArrayOfSingleFixedArray(FInterpolationBuffer), 1);
          FFractalPos := FFractalPos - 1;
         end;
-       Left^[Sample]  := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[0]));
-       Right^[Sample] := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[1]));
+       for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1
+        do Data[Channel]^[Sample]  := Hermite32_asm(1 - FFractalPos, PDAV4SingleArray(FInterpolationBuffer[Channel]));
       end;
     biBSpline6Point5thOrder:
      for Sample := 0 to SampleFrames - 1 do
@@ -632,22 +528,20 @@ begin
        FFractalPos := FFractalPos + FRatio;
        while FFractalPos > 1 do
         begin
-         Move(FInterpolationBuffer[0]^[0], FInterpolationBuffer[0]^[1], 5 * SizeOf(Single));
-         Move(FInterpolationBuffer[1]^[0], FInterpolationBuffer[1]^[1], 5 * SizeOf(Single));
-         FBufferThread.GetSamples(PDAVSingleFixedArray(FInterpolationBuffer[0]),
-           PDAVSingleFixedArray(FInterpolationBuffer[1]), 1);
+         for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1 do
+          begin
+           Move(FInterpolationBuffer[Channel]^[0], FInterpolationBuffer[Channel]^[1], 5 * SizeOf(Single));
+           Data[Channel] := PDAVSingleFixedArray(FInterpolationBuffer[Channel]);
+          end;
+         GetInternalSamples(TDAVArrayOfSingleFixedArray(FInterpolationBuffer), 1);
          FFractalPos := FFractalPos - 1;
         end;
-       Left^[Sample]  := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[0])^);
-       Right^[Sample] := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[1])^);
+       for Channel := 0 to Min(Length(Data), Length(FInterpolationBuffer)) - 1
+        do Data[Channel]^[Sample]  := BSplineInterpolation6Point5thOrder(1 - FFractalPos, PDAV6SingleArray(FInterpolationBuffer[Channel])^);
       end;
    end;
 end;
 
-procedure TCustomBufferedAudioPlayer.Reset;
-begin
- FBufferThread.Reset;
-end;
 
 { TBufferedAudioFilePlayer }
 

@@ -65,7 +65,7 @@ procedure TLinkwitzRileyModule.VSTModuleOpen(Sender: TObject);
 var
   Channel: Integer;
 begin
- assert(numOutputs = 2 * numInputs);
+ Assert(numOutputs = 2 * numInputs);
  SetLength(FLinkwitzRiley, numInputs);
  for Channel := 0 to Length(FLinkwitzRiley) - 1 do
   begin
@@ -83,20 +83,11 @@ begin
 end;
 
 procedure TLinkwitzRileyModule.VSTModuleClose(Sender: TObject);
-begin
- FreeAndNil(FLinkwitzRiley);
-end;
-
-procedure TLinkwitzRileyModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample, Channel: Integer;
+  Channel: Integer;
 begin
- // CDenorm32 +
- for Sample := 0 to SampleFrames - 1 do
-  for Channel := 0 to Length(FLinkwitzRiley) - 1
-   do FLinkwitzRiley[Channel].ProcessSample(Inputs[Channel, Sample],
-        Outputs[2 * Channel, Sample], Outputs[2 * Channel + 1, Sample])
+ for Channel := 0 to Length(FLinkwitzRiley) - 1
+  do FreeAndNil(FLinkwitzRiley[Channel]);
 end;
 
 procedure TLinkwitzRileyModule.ParameterOrderDisplay(
@@ -127,8 +118,8 @@ procedure TLinkwitzRileyModule.ParameterFrequencyChange(
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if assigned(FLinkwitzRiley[Channel])
+ for Channel := 0 to Length(FLinkwitzRiley) - 1 do
+  if Assigned(FLinkwitzRiley[Channel])
    then FLinkwitzRiley[Channel].Frequency := Value;
 end;
 
@@ -137,8 +128,8 @@ procedure TLinkwitzRileyModule.ParameterOrderChange(
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if assigned(FLinkwitzRiley[Channel])
+ for Channel := 0 to Length(FLinkwitzRiley) - 1 do
+  if Assigned(FLinkwitzRiley[Channel])
    then FLinkwitzRiley[Channel].Order := round(Value);
 end;
 
@@ -147,9 +138,22 @@ procedure TLinkwitzRileyModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if assigned(FLinkwitzRiley[Channel])
-   then FLinkwitzRiley[Channel].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FLinkwitzRiley) - 1 do
+   if assigned(FLinkwitzRiley[Channel])
+    then FLinkwitzRiley[Channel].SampleRate := Abs(SampleRate);
+end;
+
+procedure TLinkwitzRileyModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Sample, Channel: Integer;
+begin
+ // CDenorm32 +
+ for Sample := 0 to SampleFrames - 1 do
+  for Channel := 0 to Length(FLinkwitzRiley) - 1
+   do FLinkwitzRiley[Channel].ProcessSample(Inputs[Channel, Sample],
+        Outputs[2 * Channel, Sample], Outputs[2 * Channel + 1, Sample])
 end;
 
 {$IFDEF FPC}

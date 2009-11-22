@@ -100,7 +100,10 @@ procedure TPluginDataModule.VSTModuleParameterChange(Sender: TObject;
 var
   PosVal : Integer;
 begin
- FEQs[Index div 11, Index mod 11].Gain := -Value;
+ if assigned(FEQs[Index div 11, Index mod 11])
+  then FEQs[Index div 11, Index mod 11].Gain := -Value;
+
+ // update GUI
  PosVal := Round(Value * 10);
  if EditorForm is TEditorForm then
   with TEditorForm(EditorForm) do
@@ -135,13 +138,14 @@ procedure TPluginDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel, Band : Integer;
 begin
- for Channel := 0 to Length(FEQs) - 1 do
-  for Band := 0 to Length(FEQs[Channel]) - 1 do
-   begin
-    if not Assigned(FEQs[Channel, Band])
-     then FEQs[Channel, Band] := TBasicPeakFilter.Create;
-    FEQs[Channel, Band].SampleRate := SampleRate;
-   end;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FEQs) - 1 do
+   for Band := 0 to Length(FEQs[Channel]) - 1 do
+    begin
+     if not Assigned(FEQs[Channel, Band])
+      then FEQs[Channel, Band] := TBasicPeakFilter.Create;
+     FEQs[Channel, Band].SampleRate := SampleRate;
+    end;
 end;
 
 procedure TPluginDataModule.VSTModuleProcessLR(const inputs,
