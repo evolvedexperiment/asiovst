@@ -157,15 +157,16 @@ end;
 procedure TUniQuEDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  ch : Integer;
+  Channel : Integer;
 begin
- for ch := 0 to 1 do
-  begin
-   if assigned(FLow[Ch]) then FLow[Ch].SampleRate  := SampleRate;
-   if assigned(FMid[Ch]) then FMid[Ch].SampleRate  := SampleRate;
-   if assigned(FPres[Ch]) then FPres[Ch].SampleRate := SampleRate;
-   if assigned(FHigh[Ch]) then FHigh[Ch].SampleRate := SampleRate;
-  end;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to 1 do
+   begin
+    if assigned(FLow[Channel]) then FLow[Channel].SampleRate  := SampleRate;
+    if assigned(FMid[Channel]) then FMid[Channel].SampleRate  := SampleRate;
+    if assigned(FPres[Channel]) then FPres[Channel].SampleRate := SampleRate;
+    if assigned(FHigh[Channel]) then FHigh[Channel].SampleRate := SampleRate;
+   end;
 end;
 
 procedure TUniQuEDataModule.ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);

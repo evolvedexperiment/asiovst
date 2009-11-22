@@ -239,20 +239,21 @@ var
   Channel, Band : Integer;
   Transition    : Single;
 begin
- for Channel := 0 to Length(FFilters) - 1 do
-  begin
-   // calculate up/downsampler transition bandwidth
-   if 20000 / SampleRate < 0.5
-    then Transition := 20000 / SampleRate
-    else Transition := 0.499;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FFilters) - 1 do
+   begin
+    // calculate up/downsampler transition bandwidth
+    if 20000 / Abs(SampleRate) < 0.5
+     then Transition := 20000 / Abs(SampleRate)
+     else Transition := 0.499;
 
-   if assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
-   if assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
+    if assigned(FUpSampler[Channel]) then FUpSampler[Channel].Transition := Transition;
+    if assigned(FDownSampler[Channel]) then FDownSampler[Channel].Transition := Transition;
 
-   for Band := 0 to Length(FFilters[Channel]) - 1 do
-    if assigned(FFilters[Channel, Band])
-     then FFilters[Channel, Band].SampleRate := SampleRate;
-  end;
+    for Band := 0 to Length(FFilters[Channel]) - 1 do
+     if assigned(FFilters[Channel, Band])
+      then FFilters[Channel, Band].SampleRate := Abs(SampleRate);
+   end;
 end;
 
 procedure TParametriQLiteDataModule.ParameterGainChange(
@@ -285,7 +286,7 @@ var
   Band: Integer;
 begin
  Band := (Index - 1) div 4;
- if assigned(FFilters[0, Band]) then
+ if Assigned(FFilters[0, Band]) then
   case round(Value) of
     0 : FilterClass[Band] := TBasicGainFilter;
     1 : FilterClass[Band] := TBasicPeakFilter;

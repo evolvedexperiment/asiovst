@@ -171,7 +171,6 @@ begin
  if Dest is TNotifiablePersistent then
   with TNotifiablePersistent(Dest) do
    begin
-    inherited;
     FUpdateCount := Self.FUpdateCount;
     FOnChange    := Self.FOnChange;
    end

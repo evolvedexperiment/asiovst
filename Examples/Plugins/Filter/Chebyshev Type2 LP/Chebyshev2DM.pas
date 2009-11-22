@@ -70,7 +70,7 @@ begin
  for Channel := 0 to numInputs - 1 do
   begin
    FFilter[Channel] := TChebyshev2LowpassFilter.Create(4);
-   FFilter[Channel].SetFilterValues(1000, 0, 1);
+   FFilter[Channel].SetFilterValues(1000, 0, -10);
   end;
 
  Parameter[0] := 1000;
@@ -105,7 +105,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FFilter[Channel]) then FFilter[Channel].Stopband := Value;
+  if Assigned(FFilter[Channel]) then FFilter[Channel].Stopband := Value;
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -118,8 +118,8 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FFilter[Channel])
-   then FFilter[Channel].Order := round(Value); // max(2, 2 * round(0.5 * Value));
+  if Assigned(FFilter[Channel])
+   then FFilter[Channel].Order := Round(Value); // max(2, 2 * Round(0.5 * Value));
 
  // update GUI if necessary
  if EditorForm is TFmChebyshev
@@ -132,7 +132,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].FixFrequency := Value > 0.5;
 end;
 
@@ -150,7 +150,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to numInputs - 1 do
-  if assigned(FFilter[Channel])
+  if Assigned(FFilter[Channel])
    then FFilter[Channel].Frequency := Value;
 
  // update GUI if necessary
@@ -187,9 +187,10 @@ procedure TChebyshev2LPModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- for Channel := 0 to numInputs - 1 do
-  if assigned(FFilter[Channel])
-   then FFilter[Channel].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to numInputs - 1 do
+   if Assigned(FFilter[Channel])
+    then FFilter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

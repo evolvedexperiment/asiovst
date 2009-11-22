@@ -78,8 +78,11 @@ type
     procedure SetInterpolation(const Value: TBufferInterpolation);
     procedure SetPitch(const Value: Single);
     function CheckReload: Boolean;
+    function GetChannelCount: Integer;
   protected
     FBufferThread : TReloadThread;
+    procedure AllocateStreamBuffer;
+    procedure AllocateInterpolationBuffer;
     procedure CalculatePitchFactor;
     procedure CalculateSampleRateRatio;
     procedure CalculateTimeOut;
@@ -106,6 +109,7 @@ type
     property BlockSize: Integer read FStreamBufSize write SetBlockSize;
     property BufferFill: Single read GetBufferFill;
     property BufferSize: Integer read FBufferSize write SetBufferSize;
+    property ChannelCount: Integer read GetChannelCount;
     property Interpolation: TBufferInterpolation read FInterpolation write SetInterpolation;
     property Pitch: Single read FPitch write SetPitch;
   end;
@@ -179,6 +183,8 @@ end;
 { TCustomBufferedAudioPlayer }
 
 constructor TCustomBufferedAudioPlayer.Create;
+var
+  ChannelIndex : Integer;
 begin
  inherited;
  FPitchFactor  := 1;
@@ -190,11 +196,8 @@ begin
  FAllowSuspend := False;
  CalculateTimeOut;
 
- SetLength(FStreamBuffer, 2);
- GetMem(FStreamBuffer[0], FStreamBufSize * SizeOf(Single));
- GetMem(FStreamBuffer[1], FStreamBufSize * SizeOf(Single));
-
- SetLength(FInterpolationBuffer, Length(FStreamBuffer));
+ AllocateStreamBuffer;
+ AllocateInterpolationBuffer;
 
  FBuffer := TCircularMultiBuffer32.Create(FBufferSize);
 
@@ -208,7 +211,7 @@ end;
 
 destructor TCustomBufferedAudioPlayer.Destroy;
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  with FBufferThread do
   begin
@@ -219,21 +222,38 @@ begin
   end;
  FreeAndNil(FBufferThread);
 
- for Channel := 0 to Length(FStreamBuffer) - 1
-  do Dispose(FStreamBuffer[Channel]);
  FreeAndNil(FBuffer);
  FreeAndNil(FAudioFile);
 
- for Channel := 0 to Length(FInterpolationBuffer) - 1 do
-  if Assigned(FInterpolationBuffer[Channel])
-   then Dispose(FInterpolationBuffer[Channel]);
+ for ChannelIndex := 0 to Length(FStreamBuffer) - 1
+  do Dispose(FStreamBuffer[ChannelIndex]);
+
+ for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1 do
+  if Assigned(FInterpolationBuffer[ChannelIndex])
+   then Dispose(FInterpolationBuffer[ChannelIndex]);
 
  inherited;
+end;
+
+procedure TCustomBufferedAudioPlayer.AllocateStreamBuffer;
+var
+  ChannelIndex : Integer;
+begin
+ SetLength(FStreamBuffer, ChannelCount);
+ for ChannelIndex := 0 to Length(FStreamBuffer) - 1
+  do ReallocMem(FStreamBuffer[ChannelIndex], FStreamBufSize * SizeOf(Single));
 end;
 
 function TCustomBufferedAudioPlayer.GetBufferFill: Single;
 begin
  Result := 100 * (FBuffer.SamplesInBuffer / FBuffer.BufferSize);
+end;
+
+function TCustomBufferedAudioPlayer.GetChannelCount: Integer;
+begin
+ if Assigned(FAudioFile)
+  then Result := FAudioFile.ChannelCount
+  else Result := 0;
 end;
 
 function TCustomBufferedAudioPlayer.CheckReload: Boolean;
@@ -250,10 +270,10 @@ begin
      FAudioFile.OnDecode := DecodeHandler;
      FSubBlockPosition := 0;
      if FCurrentPosition + FStreamBufSize < FAudioFile.SampleFrames
-      then FAudioFile.Decode(FCurrentPosition * FAudioFile.ChannelCount, FStreamBufSize)
+      then FAudioFile.Decode(FCurrentPosition * ChannelCount, FStreamBufSize)
       else
        begin
-        FAudioFile.Decode(FCurrentPosition * FAudioFile.ChannelCount, FAudioFile.SampleFrames - FCurrentPosition);
+        FAudioFile.Decode(FCurrentPosition * ChannelCount, FAudioFile.SampleFrames - FCurrentPosition);
         FAudioFile.Decode(0, FStreamBufSize - (FAudioFile.SampleFrames - FCurrentPosition));
         FCurrentPosition := 0;
        end;
@@ -304,21 +324,19 @@ end;
 
 procedure TCustomBufferedAudioPlayer.DecodeHandler(Sender: TObject;
   const Coder: TCustomChannelDataCoder; var Position: Cardinal);
+var
+  ChannelIndex : Integer;
 begin
  assert(Coder is TCustomChannel32DataCoder);
  with TCustomChannel32DataCoder(Coder) do
   begin
-   if ChannelCount = 0 then Exit else
-   if ChannelCount = 1 then
-    begin
-     Move(ChannelPointer[0]^[0], FStreamBuffer[0]^[FSubBlockPosition], SampleFrames * SizeOf(Single));
-     Move(ChannelPointer[0]^[0], FStreamBuffer[1]^[FSubBlockPosition], SampleFrames * SizeOf(Single));
-    end
-   else
-    begin
-     Move(ChannelPointer[0]^[0], FStreamBuffer[0]^[FSubBlockPosition], SampleFrames * SizeOf(Single));
-     Move(ChannelPointer[1]^[0], FStreamBuffer[1]^[FSubBlockPosition], SampleFrames * SizeOf(Single));
-    end;
+   case ChannelCount of
+    0 : ;
+    1 : for ChannelIndex := 0 to Length(FStreamBuffer) - 1
+         do Move(ChannelPointer[0]^[0], FStreamBuffer[ChannelIndex]^[FSubBlockPosition], SampleFrames * SizeOf(Single));
+   else for ChannelIndex := 0 to Length(FStreamBuffer) - 1
+         do Move(ChannelPointer[ChannelIndex mod ChannelCount]^[0], FStreamBuffer[ChannelIndex]^[FSubBlockPosition], SampleFrames * SizeOf(Single));
+   end;
    FSubBlockPosition := FSubBlockPosition + SampleFrames;
   end;
 end;
@@ -327,9 +345,13 @@ procedure TCustomBufferedAudioPlayer.AudioFileChanged;
 begin
  if Assigned(FAudioFile) then
   begin
-   FBuffer.ChannelCount := FAudioFile.ChannelCount;
+   FBuffer.ChannelCount := ChannelCount;
    FSampleRate := FAudioFile.SampleRate;
    SampleRateChanged;
+   CalculateSampleRateRatio;
+   AllocateStreamBuffer;
+   AllocateInterpolationBuffer;
+   FBufferThread.Resume;
   end;
 end;
 
@@ -351,7 +373,7 @@ end;
 
 procedure TCustomBufferedAudioPlayer.CalculateTimeOut;
 begin
- FTimeOut := round(1000 * FStreamBufSize / FSampleRate);
+ FTimeOut := Round(1000 * FStreamBufSize / FSampleRate);
 end;
 
 procedure TCustomBufferedAudioPlayer.SetBlockSize(Value: Integer);
@@ -362,7 +384,7 @@ begin
  if FStreamBufSize <> Value then
   begin
    FStreamBufSize := Value;
-   FAudioFile.BlockSize := FAudioFile.ChannelCount * FStreamBufSize;
+   FAudioFile.BlockSize := ChannelCount * FStreamBufSize;
    BlockSizeChanged;
   end;
 end;
@@ -405,22 +427,28 @@ begin
 end;
 
 procedure TCustomBufferedAudioPlayer.InterpolationChanged;
-var
-  Channel : Integer;
 begin
+ AllocateInterpolationBuffer;
+end;
+
+procedure TCustomBufferedAudioPlayer.AllocateInterpolationBuffer;
+var
+  ChannelIndex : Integer;
+begin
+ SetLength(FInterpolationBuffer, ChannelCount);
  case FInterpolation of
   biNone:
-   for Channel := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[Channel], 1 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[ChannelIndex], 1 * SizeOf(Single));
   biLinear:
-   for Channel := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[Channel], 2 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[ChannelIndex], 2 * SizeOf(Single));
   biHermite:
-   for Channel := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[Channel], 4 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[ChannelIndex], 4 * SizeOf(Single));
   biBSpline6Point5thOrder:
-   for Channel := 0 to Length(FInterpolationBuffer) - 1
-    do ReallocMem(FInterpolationBuffer[Channel], 6 * SizeOf(Single));
+   for ChannelIndex := 0 to Length(FInterpolationBuffer) - 1
+    do ReallocMem(FInterpolationBuffer[ChannelIndex], 6 * SizeOf(Single));
  end;
 end;
 
@@ -545,6 +573,12 @@ end;
 
 { TBufferedAudioFilePlayer }
 
+constructor TBufferedAudioFilePlayer.Create;
+begin
+ inherited;
+ FFileName := '';
+end;
+
 procedure TBufferedAudioFilePlayer.SetFileName(const Value: TFileName);
 begin
  if FFileName <> Value then
@@ -554,20 +588,9 @@ begin
   end;
 end;
 
-constructor TBufferedAudioFilePlayer.Create;
-begin
- inherited;
- FFileName := '';
-end;
-
 procedure TBufferedAudioFilePlayer.FileNameChanged;
 begin
- with FBufferThread do
-  begin
-   LoadFromFile(FFileName);
-   CalculateSampleRateRatio;
-   Resume;
-  end;
+ LoadFromFile(FFileName);
 end;
 
 { TBufferedAudioStreamPlayer }
@@ -589,12 +612,7 @@ end;
 
 procedure TBufferedAudioStreamPlayer.StreamChanged;
 begin
- with FBufferThread do
-  begin
-   LoadFromStream(FStream);
-   CalculateSampleRateRatio;
-   Resume;
-  end;
+ LoadFromStream(FStream);
 end;
 
 end.

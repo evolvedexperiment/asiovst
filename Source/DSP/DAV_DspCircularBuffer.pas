@@ -274,7 +274,7 @@ type
 implementation
 
 uses
-  SysUtils;
+  SysUtils, Math;
 
 resourcestring
   RcStrLatencyTooHigh = 'Latency must be <= Buffersize!';
@@ -989,7 +989,7 @@ var
   Channel        : Integer;
   PartialSamples : Cardinal;
 begin
- Assert(Length(Data) >= ChannelCount);
+ // Assert(Length(Data) >= ChannelCount); // replaced by Min(Length(Data), ChannelCount)
 
  if SampleFrames < SamplesInBuffer
   then Result := SampleFrames
@@ -998,7 +998,7 @@ begin
  if FReadBufferPos + Result >= FBufferSize then
   begin
    PartialSamples := FBufferSize - FReadBufferPos;
-   for Channel := 0 to ChannelCount - 1 do
+   for Channel := 0 to Min(Length(Data), ChannelCount) - 1 do
     begin
      Move(FBuffer[Channel]^[FReadBufferPos],  Data[Channel]^[0], PartialSamples * SizeOf(Single));
      Move(FBuffer[Channel]^[0],  Data[Channel]^[PartialSamples], (Result - PartialSamples) * SizeOf(Single));
@@ -1011,11 +1011,11 @@ begin
   end
  else
   begin
-   for Channel := 0 to ChannelCount - 1
+   for Channel := 0 to Min(Length(Data), ChannelCount) - 1
     do Move(FBuffer[Channel]^[FReadBufferPos], Data[Channel]^[0], Result * SizeOf(Single));
    FReadBufferPos := FReadBufferPos + Result;
   end;
- assert(FSamplesInBuffer >= Result);
+ Assert(FSamplesInBuffer >= Result);
  FSamplesInBuffer := FSamplesInBuffer - Result;
 end;
 
@@ -1026,6 +1026,8 @@ var
   Channel        : Integer;
   PartialSamples : Cardinal;
 begin
+ // Assert(Length(Data) >= ChannelCount); // replaced by Min(Length(Data), ChannelCount)
+
  if SampleFrames <= FreeSampleCount
   then Result := SampleFrames
   else Result := FreeSampleCount;
@@ -1033,7 +1035,7 @@ begin
  if FWriteBufferPos + Result >= FBufferSize then
   begin
    PartialSamples := FBufferSize - FWriteBufferPos;
-   for Channel := 0 to ChannelCount - 1 do
+   for Channel := 0 to Min(Length(Data), ChannelCount) - 1 do
     begin
      Move(Data[Channel]^[0], FBuffer[Channel]^[FWriteBufferPos], PartialSamples * SizeOf(Single));
      Move(Data[Channel]^[PartialSamples], FBuffer[Channel]^[PartialSamples], (Result - PartialSamples) * SizeOf(Single));
@@ -1045,7 +1047,7 @@ begin
   end
  else
   begin
-   for Channel := 0 to ChannelCount - 1
+   for Channel := 0 to Min(Length(Data), ChannelCount) - 1
     do Move(Data[Channel]^[0], FBuffer[Channel]^[FWriteBufferPos], Result * SizeOf(Single));
    FWriteBufferPos := FWriteBufferPos + Result;
   end;
