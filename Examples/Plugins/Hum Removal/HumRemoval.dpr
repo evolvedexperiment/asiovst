@@ -13,7 +13,7 @@ uses
   DAV_VSTBasicModule,
   HumRemovalDSP in 'HumRemovalDSP.pas' {HumRemovalModule: TVSTModule},
   HumRemovalGUI in 'HumRemovalGUI.pas' {FmHumRemoval},
-  DAV_DspHumRemoval in '..\..\..\Source\DSP\DAV_DspHumRemoval.pas';
+  DAV_DspGoertzel in '..\..\..\Source\DSP\DAV_DspGoertzel.pas';
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin

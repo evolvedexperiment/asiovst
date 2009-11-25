@@ -26,11 +26,11 @@ object FmEqGraphTest: TFmEqGraphTest
     AutoUpdate = False
     GraphColorDark = clBlue
     ColorChart = clBtnFace
-    YAxis.LowerLevel = -15.000000000000000000
+    YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
+    XAxis.UpperFrequency = 9000.000000000000000000
+    XAxis.LowerFrequency = 100.000000000000000000
     OnGetFilterGain = EqGraphGetFilterGain
-    Color = clBtnFace
-    ParentColor = False
   end
   object EqGraphB: TGuiEQGraph
     Left = 8
@@ -42,12 +42,12 @@ object FmEqGraphTest: TFmEqGraphTest
     AutoUpdate = False
     GraphColorDark = clLime
     ColorChart = clBtnFace
-    YAxis.LowerLevel = -15.000000000000000000
+    YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
+    XAxis.UpperFrequency = 9000.000000000000000000
+    XAxis.LowerFrequency = 100.000000000000000000
     OnGetFilterGain = EqGraphGetFilterGain
     Anchors = [akLeft, akBottom]
-    Color = clBtnFace
-    ParentColor = False
   end
   object EqGraphC: TGuiEQGraph
     Left = 338
@@ -59,12 +59,12 @@ object FmEqGraphTest: TFmEqGraphTest
     AutoUpdate = False
     GraphColorDark = clYellow
     ColorChart = clBtnFace
-    YAxis.LowerLevel = -15.000000000000000000
+    YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
+    XAxis.UpperFrequency = 9000.000000000000000000
+    XAxis.LowerFrequency = 100.000000000000000000
     OnGetFilterGain = EqGraphGetFilterGain
     Anchors = [akTop, akRight]
-    Color = clBtnFace
-    ParentColor = False
   end
   object EqGraphD: TGuiEQGraph
     Left = 338
@@ -76,11 +76,11 @@ object FmEqGraphTest: TFmEqGraphTest
     AutoUpdate = False
     GraphColorDark = clRed
     ColorChart = clBtnFace
-    YAxis.LowerLevel = -15.000000000000000000
+    YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
+    XAxis.UpperFrequency = 9000.000000000000000000
+    XAxis.LowerFrequency = 100.000000000000000000
     OnGetFilterGain = EqGraphGetFilterGain
     Anchors = [akRight, akBottom]
-    Color = clBtnFace
-    ParentColor = False
   end
 end

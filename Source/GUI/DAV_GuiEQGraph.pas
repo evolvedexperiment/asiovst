@@ -32,7 +32,7 @@ unit DAV_GuiEQGraph;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I ..\DAV_Compiler.Inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
@@ -49,18 +49,27 @@ type
   TCustomGuiEQGraph = class;
 
   TCustomGuiEQGraphAxis = class(TPersistent)
+  private
   protected
     FOwner : TCustomGuiEQGraph;
-    procedure Changed;
+    FUpper : Single;
+    FLower : Single;
+    FRange : Single;
+    procedure RangeChanged; virtual;
+    procedure Changed; virtual;
+    procedure CalculateRange;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); virtual;
+    property Range: Single read FRange;
   end;
 
   TCustomGuiEQGraphXAxis = class(TCustomGuiEQGraphAxis)
   private
-    FLabelStyle     : TXAxisLabelStyle;
-    FUpperFrequency : Single;
-    FLowerFrequency : Single;
+    FLabelStyle   : TXAxisLabelStyle;
+    FInvUpper     : Single;
+    FInvLower     : Single;
+    FLog2Ratio    : Single;
+    FInvLog2Ratio : Single;
     procedure SetLabelStyle(const Value: TXAxisLabelStyle);
     procedure SetLowerFrequency(const Value: Single);
     procedure SetUpperFrequency(const Value: Single);
@@ -69,39 +78,65 @@ type
     procedure LabelStyleChanged; virtual;
     procedure LowerFrequencyChanged; virtual;
     procedure UpperFrequencyChanged; virtual;
+
+    procedure CalculateLowerFrequencyReciprocal;
+    procedure CalculateUpperFrequencyReciprocal;
+    procedure CalculateFrequencyRangeRatios;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); override;
 
-    property UpperFrequency: Single read FUpperFrequency write SetUpperFrequency;
-    property LowerFrequency: Single read FLowerFrequency write SetLowerFrequency;
+    // conversion between logarithmic frequency and linear
+    function LinearToLogarithmicFrequency(Value: Double): Double;
+    function LogarithmicFrequencyToLinear(Value: Double): Double;
+
+    // conversion between linear and logarithmic frequency
+    function FastLinearToLogarithmicFrequency(Value: Single): Single;
+    function FastLogarithmicFrequencyToLinear(Value: Single): Single;
+
+    property UpperFrequency: Single read FUpper write SetUpperFrequency;
+    property LowerFrequency: Single read FLower write SetLowerFrequency;
     property LabelStyle: TXAxisLabelStyle read FLabelStyle write SetLabelStyle default xlsNone;
   end;
 
   TGuiEQGraphXAxis = class(TCustomGuiEQGraphXAxis)
   published
     property LabelStyle;
+    property UpperFrequency;
+    property LowerFrequency;
   end;
 
 
   TCustomGuiEQGraphYAxis = class(TCustomGuiEQGraphAxis)
   private
-    FUpperLevel : Single;
-    FLowerLevel : Single;
-    FLabelStyle : TYAxisLabelStyle;
+    FLabelStyle       : TYAxisLabelStyle;
+    FMaximumGridLines : Integer;
     procedure SetUpperLevel(const Value: Single);
     procedure SetLowerLevel(const Value: Single);
     procedure SetLabelStyle(const Value: TYAxisLabelStyle);
+    procedure SetMaximumGridLines(const Value: Integer);
+    function GetLowerGridLine: Single;
+    function GetUpperGridLine: Single;
   protected
+    FGranularity : Single;
     procedure AssignTo(Dest: TPersistent); override;
     procedure LabelStyleChanged; virtual;
     procedure UpperLevelChanged; virtual;
     procedure LowerLevelChanged; virtual;
+    procedure MaximumGridLinesChanged; virtual;
+    procedure CalculateGranularity;
+    procedure RangeChanged; override;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); override;
 
-    property UpperLevel: Single read FUpperLevel write SetUpperLevel;
-    property LowerLevel: Single read FLowerLevel write SetLowerLevel;
+    property UpperLevel: Single read FUpper write SetUpperLevel;
+    property LowerLevel: Single read FLower write SetLowerLevel;
+
+    property UpperGridline: Single read GetUpperGridLine;
+    property LowerGridline: Single read GetLowerGridLine;
+    property Granularity: Single read FGranularity;
+
     property LabelStyle: TYAxisLabelStyle read FLabelStyle write SetLabelStyle default ylsNone;
+    property MaximumGridLines: Integer read FMaximumGridLines write SetMaximumGridLines default 10;
   end;
 
   TGuiEQGraphYAxis = class(TCustomGuiEQGraphYAxis)
@@ -127,9 +162,6 @@ type
     FBorderWidth             : Integer;
     FGraphColorDark          : TColor;
     FGraphColorLight         : TColor;
-    FChartBufferNeedsRepaint : Boolean;
-    FBufferNeedsRepaint      : Boolean;
-    FAutoUpdate              : Boolean;
     FAntiAlias               : TGuiAntiAlias;
     FOSFactor                : Integer;
     FTransparent             : Boolean;
@@ -150,14 +182,20 @@ type
     procedure SetXAxis(const Value: TGuiEQGraphXAxis);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetTransparent(const Value: Boolean);
-    procedure TransparentChanged;
+    procedure RenderGridToBitmap(Bitmap: TBitmap);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure Paint; override;
     procedure Resize; override;
 
-    procedure AntiAliasChanged;
-    procedure RenderBuffer;
+    procedure AntiAliasChanged; virtual;
+    procedure BorderRadiusChanged; virtual;
+    procedure BorderWidthChanged; virtual;
+    procedure ChartColorChanged; virtual;
+    procedure GraphColorDarkChanged; virtual;
+    procedure GraphColorLightChanged; virtual;
+    procedure RenderBuffer; virtual;
+    procedure TransparentChanged; virtual;
     procedure DownsampleBitmap(Bitmap: TBitmap);
     procedure UpsampleBitmap(Bitmap: TBitmap);
 
@@ -171,16 +209,12 @@ type
     {$IFNDEF FPC}
     procedure DrawParentImage(Dest: TCanvas); virtual;
     {$ENDIF}
-
-    property ChartBufferNeedsRepaint: Boolean read FChartBufferNeedsRepaint write FChartBufferNeedsRepaint;
-    property BufferNeedsRepaint: Boolean read FBufferNeedsRepaint write FBufferNeedsRepaint;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   published
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
-    property AutoColor: Boolean read FAutoColor write SetAutoColor default true;
-    property AutoUpdate: Boolean read FAutoUpdate write FAutoUpdate;
+    property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
     property GraphColorDark: TColor read FGraphColorDark write SetGraphColorDark default $303030;
     property GraphColorLight: TColor read FGraphColorLight write SetGraphColorLight default $606060;
     property ColorChart: TColor read FChartColor write SetChartColor;
@@ -236,7 +270,7 @@ type
 implementation
 
 uses
-  Math, DAV_Common;
+  Math, DAV_Common, DAV_Approximations;
 
 { TCustomGuiEQGraphAxis }
 
@@ -247,14 +281,17 @@ end;
 
 procedure TCustomGuiEQGraphAxis.Changed;
 begin
-(*
- if FOwner is TGuiEQGraph then
-  with TGuiEQGraph(FOwner) do
-   begin
-    RepaintChartBuffer;
-   end;
-*)
  FOwner.Invalidate;
+end;
+
+procedure TCustomGuiEQGraphAxis.RangeChanged;
+begin
+ CalculateRange;
+end;
+
+procedure TCustomGuiEQGraphAxis.CalculateRange;
+begin
+ FRange := FUpper - FLower;
 end;
 
 
@@ -264,6 +301,11 @@ constructor TCustomGuiEQGraphXAxis.Create(AOwner: TCustomGuiEQGraph);
 begin
  inherited;
  FLabelStyle  := xlsNone;
+ FLower := 20;
+ FUpper := 20000;
+ CalculateUpperFrequencyReciprocal;
+ CalculateLowerFrequencyReciprocal;
+ CalculateFrequencyRangeRatios;
 end;
 
 procedure TCustomGuiEQGraphXAxis.AssignTo(Dest: TPersistent);
@@ -274,6 +316,26 @@ begin
     FLabelStyle := Self.FLabelStyle;
    end
  else inherited;
+end;
+
+function TCustomGuiEQGraphXAxis.LogarithmicFrequencyToLinear(Value: Double): Double;
+begin
+ Result := Log2(Value * FInvLower) * FInvLog2Ratio;
+end;
+
+function TCustomGuiEQGraphXAxis.LinearToLogarithmicFrequency(Value: Double): Double;
+begin
+ Result := Power(2, Value * FLog2Ratio) * FLower;
+end;
+
+function TCustomGuiEQGraphXAxis.FastLogarithmicFrequencyToLinear(Value: Single): Single;
+begin
+ Result := FastLog2MinError3(Value * FInvLower) * FInvLog2Ratio;
+end;
+
+function TCustomGuiEQGraphXAxis.FastLinearToLogarithmicFrequency(Value: Single): Single;
+begin
+ Result := FastPower2MinError3(Value * FLog2Ratio) * FLower;
 end;
 
 procedure TCustomGuiEQGraphXAxis.SetLabelStyle(const Value: TXAxisLabelStyle);
@@ -287,30 +349,62 @@ end;
 
 procedure TCustomGuiEQGraphXAxis.SetLowerFrequency(const Value: Single);
 begin
- if FLowerFrequency <> Value then
+ if FLower <> Value then
   begin
-   FLowerFrequency := Value;
+   FLower := Value;
    LowerFrequencyChanged;
   end;
 end;
 
 procedure TCustomGuiEQGraphXAxis.SetUpperFrequency(const Value: Single);
 begin
- if FUpperFrequency <> Value then
+ if FUpper <> Value then
   begin
-   FUpperFrequency := Value;
+   FUpper := Value;
    UpperFrequencyChanged;
   end;
 end;
 
-procedure TCustomGuiEQGraphXAxis.LowerFrequencyChanged;
+procedure TCustomGuiEQGraphXAxis.UpperFrequencyChanged;
 begin
+ RangeChanged;
+ CalculateUpperFrequencyReciprocal;
+ CalculateFrequencyRangeRatios;
  Changed;
 end;
 
-procedure TCustomGuiEQGraphXAxis.UpperFrequencyChanged;
+procedure TCustomGuiEQGraphXAxis.LowerFrequencyChanged;
 begin
+ RangeChanged;
+ CalculateLowerFrequencyReciprocal;
+ CalculateFrequencyRangeRatios;
  Changed;
+end;
+
+procedure TCustomGuiEQGraphXAxis.CalculateUpperFrequencyReciprocal;
+begin
+ Assert(FUpper <> 0);
+
+ // calculate reciprocal of upper frequency
+ FInvUpper := 1 / FUpper;
+end;
+
+procedure TCustomGuiEQGraphXAxis.CalculateLowerFrequencyReciprocal;
+begin
+ Assert(FLower <> 0);
+
+ // calculate reciprocal of lower frequency
+ FInvLower := 1 / FLower;
+end;
+
+procedure TCustomGuiEQGraphXAxis.CalculateFrequencyRangeRatios;
+begin
+ Assert(FUpper <> 0);
+ Assert(FInvLower <> 0);
+
+ // calculate lograithmic frequency ratio (as new logarithm base)
+ FLog2Ratio := Log2(FUpper * FInvLower);
+ FInvLog2Ratio := 1 / FLog2Ratio;
 end;
 
 procedure TCustomGuiEQGraphXAxis.LabelStyleChanged;
@@ -324,9 +418,13 @@ end;
 constructor TCustomGuiEQGraphYAxis.Create(AOwner: TCustomGuiEQGraph);
 begin
  inherited Create(AOwner);
- FUpperLevel :=  15;
- FLowerLevel := -15;
+ FUpper :=  15;
+ FLower := -15;
  FLabelStyle := ylsNone;
+ FMaximumGridLines := 10;
+
+ CalculateRange;
+ CalculateGranularity;
 end;
 
 procedure TCustomGuiEQGraphYAxis.AssignTo(Dest: TPersistent);
@@ -334,8 +432,8 @@ begin
  if Dest is TCustomGuiEQGraphYAxis then
   with TCustomGuiEQGraphYAxis(Dest) do
    begin
-    FUpperLevel := Self.FUpperLevel;
-    FLowerLevel := Self.FLowerLevel;
+    FUpper := Self.FUpper;
+    FLower := Self.FLower;
     FLabelStyle := Self.FLabelStyle;
    end
  else inherited;
@@ -343,18 +441,30 @@ end;
 
 procedure TCustomGuiEQGraphYAxis.SetLowerLevel(const Value: Single);
 begin
- if FLowerLevel <> Value then
+ if FLower <> Value then
   begin
-   FLowerLevel := Value;
+   FLower := Value;
    LowerLevelChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraphYAxis.SetMaximumGridLines(const Value: Integer);
+begin
+ if Value < 1
+  then raise Exception.Create('Value must be larger than 0!');
+ 
+ if FMaximumGridLines <> Value then
+  begin
+   FMaximumGridLines := Value;
+   MaximumGridLinesChanged;
   end;
 end;
 
 procedure TCustomGuiEQGraphYAxis.SetUpperLevel(const Value: Single);
 begin
- if FUpperLevel <> Value then
+ if FUpper <> Value then
   begin
-   FUpperLevel := Value;
+   FUpper := Value;
    UpperLevelChanged;
   end;
 end;
@@ -375,12 +485,52 @@ end;
 
 procedure TCustomGuiEQGraphYAxis.UpperLevelChanged;
 begin
+ RangeChanged;
  Changed;
 end;
 
 procedure TCustomGuiEQGraphYAxis.LowerLevelChanged;
 begin
+ RangeChanged;
  Changed;
+end;
+
+procedure TCustomGuiEQGraphYAxis.MaximumGridLinesChanged;
+begin
+ CalculateGranularity;
+ Changed;
+end;
+
+procedure TCustomGuiEQGraphYAxis.RangeChanged;
+begin
+ inherited;
+ CalculateGranularity;
+end;
+
+function TCustomGuiEQGraphYAxis.GetLowerGridLine: Single;
+begin
+ Result := FGranularity * Trunc(FLower / FGranularity);
+end;
+
+function TCustomGuiEQGraphYAxis.GetUpperGridLine: Single;
+begin
+ Result := FGranularity * Trunc(FUpper / FGranularity);
+end;
+
+procedure TCustomGuiEQGraphYAxis.CalculateGranularity;
+var
+  RoughGranularity : Single;
+  GranularityBase  : Integer;
+  GranularityScale : Single;
+begin
+ RoughGranularity := Range / FMaximumGridLines;
+ GranularityBase  := Trunc(Log10(abs(RoughGranularity)));
+ GranularityScale := IntPower(10, GranularityBase);
+
+ FGranularity := GranularityScale * (Trunc(RoughGranularity / GranularityScale) + 1);
+
+ Assert(FGranularity >= RoughGranularity);
+ Assert(FGranularity < Range);
 end;
 
 
@@ -410,6 +560,7 @@ begin
  FGraphColorLight := $606060;
  FGraphColorDark  := $303030;
  FBorderWidth     := 1;
+ FOSFactor        := 1;
  FChartColor      := Color;
 end;
 
@@ -434,8 +585,6 @@ begin
     FBorderWidth             := Self.FBorderWidth;
     FGraphColorDark          := Self.FGraphColorDark;
     FGraphColorLight         := Self.FGraphColorLight;
-    FChartBufferNeedsRepaint := Self.FChartBufferNeedsRepaint;
-    FBufferNeedsRepaint      := Self.FBufferNeedsRepaint;
     FOnPaint                 := Self.FOnPaint;
     FOnGetFilterGain         := Self.FOnGetFilterGain;
 
@@ -454,7 +603,6 @@ procedure TGuiEQGraph.CMFontChanged(var Message: TLMessage);
 begin
  FChartBuffer.Canvas.Font.Assign(Font);
  FBuffer.Canvas.Font.Assign(Font);
- ChartBufferNeedsRepaint := True;
 end;
 
 // Drawing stuff
@@ -518,13 +666,10 @@ procedure TGuiEQGraph.Paint;
 begin
  RenderBuffer;
  Canvas.Draw(0, 0, FBuffer);
+
  inherited;
-(*
- if FAutoUpdate or FChartBufferNeedsRepaint then RepaintChartBuffer;
- if FAutoUpdate or FBufferNeedsRepaint then RepaintBuffer;
- Canvas.Draw(0, 0, FBuffer);
-*)
- if assigned(FOnPaint)
+
+ if Assigned(FOnPaint)
   then FOnPaint(Self);
 end;
 
@@ -533,9 +678,13 @@ begin
  if not FAutoColor and (FChartColor <> Value) then
   begin
    FChartColor := Value;
-   ChartBufferNeedsRepaint := True;
    Invalidate;
   end;
+end;
+
+procedure TGuiEQGraph.ChartColorChanged;
+begin
+ Invalidate;
 end;
 
 procedure TGuiEQGraph.SetBorderRadius(const Value: Integer);
@@ -543,9 +692,13 @@ begin
  if FBorderRadius <> Value then
   begin
    FBorderRadius := Value;
-   ChartBufferNeedsRepaint := True;
-   Invalidate;
+   BorderRadiusChanged;
   end;
+end;
+
+procedure TGuiEQGraph.BorderRadiusChanged;
+begin
+ Invalidate;
 end;
 
 procedure TGuiEQGraph.SetBorderWidth(const Value: Integer);
@@ -553,9 +706,13 @@ begin
  if FBorderWidth <> Value then
   begin
    FBorderWidth := Value;
-   ChartBufferNeedsRepaint := True;
-   Invalidate;
+   BorderWidthChanged;
   end;
+end;
+
+procedure TGuiEQGraph.BorderWidthChanged;
+begin
+ Invalidate;
 end;
 
 procedure TGuiEQGraph.SetAntiAlias(const Value: TGuiAntiAlias);
@@ -619,6 +776,7 @@ begin
          Brush.Color := Self.Color;
          FillRect(ClipRect);
         end;
+       RenderGridToBitmap(FBuffer);
        RenderToBitmap(FBuffer);
       end;
      else
@@ -643,6 +801,7 @@ begin
             Brush.Color := Self.Color;
             FillRect(ClipRect);
            end;
+         RenderGridToBitmap(Bmp);
          RenderToBitmap(Bmp);
          DownsampleBitmap(Bmp);
          FBuffer.Canvas.Draw(0, 0, Bmp);
@@ -655,42 +814,19 @@ begin
    end;
 end;
 
-(*
-procedure TGuiEQGraph.RepaintBuffer;
-begin
- with FBuffer, Canvas do
-  begin
-   Lock;
-   FBufferNeedsRepaint := False;
-   Draw(0, 0, FChartBuffer);
-   Unlock;
-  end;
-end;
-*)
-
-procedure TGuiEQGraph.RenderToBitmap(Bitmap: TBitmap);
+procedure TGuiEQGraph.RenderGridToBitmap(Bitmap: TBitmap);
 var
-  i, j, w, h : Integer;
-  rct        : TRect;
-  HHOffs     : Integer;
-  HalfHeight : Single;
-  NormFactor : Single;
-  Temp       : array [0..1] of Single;
-  Wdth       : Integer;
+  i, j, w, h  : Integer;
+  Rct         : TRect;
+  Txt         : string;
+  Temp        : Single;
+  Wdth        : Integer;
 begin
- if ((csLoading in ComponentState) and not (csDesigning in ComponentState))
-   or (csDestroying in ComponentState) then exit;
  with Bitmap, Canvas do
   begin
    Lock;
 
-   FChartBufferNeedsRepaint := False;
-   {$IFDEF Delphi10_Up}
-   with Margins
-    do rct := Rect(Left, Top, Width - Right, Height - Bottom);
-   {$ELSE}
-   rct := Rect(0, 0, Width, Height);
-   {$ENDIF}
+   Rct := Rect(0, 0, Width, Height);
 
    Brush.Color := Color;
    Brush.Style := bsSolid;
@@ -698,43 +834,47 @@ begin
    Brush.Color := FChartColor;
 
    Pen.Width := FOSFactor;
-   InflateRect(rct, -1, -1);
-
-   // calculate the real half height of the visible area (without the margin)
-   HalfHeight := (rct.Bottom - rct.Top) * 0.5;
-   NormFactor := HalfHeight / FYAxis.UpperLevel;
+   InflateRect(Rct, -FOSFactor, -FOSFactor);
 
    // add top margin to half height as offset
-   HHOffs := round(rct.Top + HalfHeight);
-   Wdth := round(rct.Right - rct.Left);
+   Wdth := Round(Rct.Right - Rct.Left);
 
+   (*
    // draw middle line
    Pen.Color := FGraphColorDark;
-   MoveTo(rct.Left, HHOffs);
-   LineTo(rct.Right, HHOffs);
+   HHOffs := Round(Rct.Top + HalfHeight);
+   MoveTo(Rct.Left, HHOffs);
+   LineTo(Rct.Right, HHOffs);
+   *)
 
    Pen.Color := FGraphColorLight;
-   if FYAxis.UpperLevel <=  5 then w := 1 else
-   if FYAxis.UpperLevel <= 10 then w := 5 else
+(*
+   if FYAxis.UpperLevel <=   5 then w := 1 else
+   if FYAxis.UpperLevel <=  10 then w := 5 else
    if FYAxis.UpperLevel >= 180 then w := 45 else w := 10;
-   i := w;
-   while i * NormFactor < HalfHeight do
+*)
+
+   // draw y-axis grid lines
+   with FYAxis do
     begin
-     MoveTo(rct.Left,  round(rct.Top + HalfHeight - i * NormFactor));
-     LineTo(rct.Right, round(rct.Top + HalfHeight - i * NormFactor));
+     Temp := GetLowerGridLine;
 
-     MoveTo(rct.Left,  round(rct.Top + HalfHeight + i * NormFactor));
-     LineTo(rct.Right, round(rct.Top + HalfHeight + i * NormFactor));
-
-     inc(i, w);
+     while Temp < UpperLevel do
+      begin
+       i := Round(((Temp - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+       MoveTo(Rct.Left,  Round(Rct.Bottom - i));
+       LineTo(Rct.Right, Round(Rct.Bottom - i));
+       Temp := Temp + Granularity;
+      end;
     end;
 
-   i := 10; j := 3;
-   while j * i < 20000 do
+
+   // draw x-axis grid lines
+   i := Round(IntPower(10, Trunc(Log10(abs(FXAxis.LowerFrequency)))));
+   j := Round(FXAxis.LowerFrequency / i);
+   if j = FXAxis.LowerFrequency / i then
     begin
-     w := round(rct.Left + FreqLogToLinear(j * i)    * Wdth);
-     MoveTo(w, rct.Top); LineTo(w, rct.Bottom);
-     inc(j);
+     Inc(j);
      if j >= 10 then
       begin
        i := i * 10;
@@ -742,80 +882,125 @@ begin
       end;
     end;
 
+   while j * i < FXAxis.UpperFrequency do
+    begin
+     w := Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth);
+     MoveTo(w, Rct.Top);
+     LineTo(w, Rct.Bottom);
+     Inc(j);
+     if j >= 10 then
+      begin
+       i := i * 10;
+       j := 1;
+      end;
+    end;
+
+
+   // draw text
    Font.Assign(Self.Font);
+   i := Round(IntPower(10, Trunc(Log10(abs(FXAxis.LowerFrequency)))));
+   j := Round(FXAxis.LowerFrequency / i);
+   if j = FXAxis.LowerFrequency / i then
+    begin
+     Inc(j);
+     if j >= 10 then
+      begin
+       i := i * 10;
+       j := 1;
+      end;
+    end;
+
    case FXAxis.LabelStyle of
     xlsBottom :
      begin
-      h := rct.Bottom + Font.Height - 2 - FBorderWidth div 2;
-      TextOut(Round(rct.Left + FreqLogToLinear(30)    * Wdth) - 12, h, '30Hz');
-      TextOut(Round(rct.Left + FreqLogToLinear(50)    * Wdth) - 12, h, '50Hz');
-      TextOut(Round(rct.Left + FreqLogToLinear(100)   * Wdth) - 12, h, '100Hz');
-      TextOut(Round(rct.Left + FreqLogToLinear(200)   * Wdth) - 12, h, '200Hz');
-      TextOut(Round(rct.Left + FreqLogToLinear(500)   * Wdth) - 12, h, '500Hz');
-      TextOut(Round(rct.Left + FreqLogToLinear(1000)  * Wdth) - 10, h, '1kHz');
-      TextOut(Round(rct.Left + FreqLogToLinear(2000)  * Wdth) - 10, h, '2kHz');
-      TextOut(Round(rct.Left + FreqLogToLinear(5000)  * Wdth) - 10, h, '5kHz');
-      TextOut(Round(rct.Left + FreqLogToLinear(10000) * Wdth) - 12, h, '10kHz');
+      while j * i < FXAxis.UpperFrequency do
+       begin
+        h := Rct.Bottom + Font.Height - 2 - FBorderWidth div 2;
+        TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth) - 12, h, FloatToStrF(j * i, ffGeneral, 3, 3));
+        Inc(j);
+        if j >= 10 then
+         begin
+          i := i * 10;
+          j := 1;
+         end;
+       end;
      end;
     xlsTop:
      begin
-      TextOut(Round(rct.Left + FreqLogToLinear(100) * Wdth) - 12, Round(rct.Top),'100Hz');
-      TextOut(Round(rct.Left + FreqLogToLinear(1000) * Wdth) - 10, Round(rct.Top),'1kHz');
+      TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(100) * Wdth) - 12, Round(Rct.Top),'100Hz');
+      TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(1000) * Wdth) - 10, Round(Rct.Top),'1kHz');
      end;
    end;
 
    case FYAxis.LabelStyle of
     ylsLeft:
-     begin
-      if FYAxis.UpperLevel <=  5 then w := 1 else
-      if FYAxis.UpperLevel <= 10 then w := 5 else
-      if FYAxis.UpperLevel >= 180 then w := 45 else w := 10;
-      i := w;
-      while i * NormFactor < HalfHeight do
-       begin
-        TextOut(rct.Left, round(rct.Top + HalfHeight - i * NormFactor - 5) + Font.Height div 2 + 2, '+' + IntToStr(i) + 'dB');
-        TextOut(rct.Left, round(rct.Top + HalfHeight + i * NormFactor - 5) + Font.Height div 2 + 2, '-' + IntToStr(i) + 'dB');
-        inc(i,w);
-       end;
-     end;
+     with FYAxis do
+      begin
+       Temp := GetLowerGridLine;
+
+       while Temp < UpperLevel do
+        begin
+         i := Round(((Temp - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+         Txt := IntToStr(i) + 'dB';
+         TextOut(Rct.Left,  Round(Rct.Bottom - i) + Font.Height div 2 + 2, Txt);
+         Temp := Temp + Granularity;
+        end;
+      end;
     ylsRight:
-     begin
-      if FYAxis.UpperLevel <=  5 then w := 1 else
-      if FYAxis.UpperLevel <= 10 then w := 5 else 
-      if FYAxis.UpperLevel >= 180 then w := 45 else w := 10;
-      i := w;
-      while i * NormFactor < HalfHeight do
-       begin
-        TextOut(Round(rct.Right - 27), round(HalfHeight - i * NormFactor - 5), '+' + IntToStr(i) + 'dB');
-        TextOut(Round(rct.Right - 27), round(HalfHeight + i * NormFactor - 5), '-' + IntToStr(i) + 'dB');
-        inc(i, w);
-       end;
-     end;
+     with FYAxis do
+      begin
+       Temp := GetLowerGridLine;
+
+       while Temp < UpperLevel do
+        begin
+         i := Round(((Temp - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+         Txt := IntToStr(i) + 'dB';
+         TextOut(Round(Rct.Right - TextWidth(Txt)), Round(Rct.Bottom - i) + Font.Height div 2 + 2, Txt);
+         Temp := Temp + Granularity;
+        end;
+      end;
    end;
+
+   Unlock;
+  end;
+end;
+
+procedure TGuiEQGraph.RenderToBitmap(Bitmap: TBitmap);
+var
+  w      : Integer;
+  Temp   : Single;
+  YValue : Single;
+begin
+ with Bitmap, Canvas do
+  begin
+   Lock;
 
    Pen.Color := GraphColorDark;
    Pen.Width := 2 * FOSFactor;
    if Assigned(FOnGetFilterGain) then
     begin
-     MoveTo(rct.Left, round(HHOffs - FOnGetFilterGain(Self, 20) * NormFactor));
-     Temp[0] := 1 / (rct.Right - rct.Left);
-     for w := rct.Left + 1 to rct.Right - 1
-      do LineTo(w, round(HHOffs - FOnGetFilterGain(Self, FreqLinearToLog((w - rct.Left) * Temp[0])) * NormFactor));
+     YValue := FOnGetFilterGain(Self, FXAxis.LowerFrequency);
+     MoveTo(FOSFactor, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
+     Temp := 1 / (Width - 2 * FOSFactor);
+     for w := FOSFactor + 1 to Width - FOSFactor - 1 do
+      begin
+       YValue := FOnGetFilterGain(Self, FXAxis.LinearToLogarithmicFrequency((w - FOSFactor) * Temp));
+       LineTo(w, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
+      end;
     end;
-
-
-   InflateRect(rct, 1, 1);
 
    if FBorderWidth > 0 then
     begin
      Pen.Color := Font.Color;
-     Pen.Width := FBorderWidth;
+     Pen.Width := FOSFactor * FBorderWidth;
      Brush.Style := bsClear;
-     RoundRect(rct.Left, rct.Top, rct.Right, rct.Bottom,
-       FBorderRadius, FBorderRadius);
+     RoundRect((FOSFactor * FBorderWidth) div 2,
+       (FOSFactor * FBorderWidth) div 2,
+       Width - (FOSFactor * FBorderWidth) div 2,
+       Height - (FOSFactor * FBorderWidth) div 2,
+       FOSFactor * FBorderRadius, FOSFactor * FBorderRadius);
     end;
 
-   FBufferNeedsRepaint := True;
    Unlock;
   end;
 end;
@@ -829,7 +1014,6 @@ begin
  FChartBuffer.Canvas.Brush.Color := Self.Color;
  FChartBuffer.Width := Self.Width;
  FChartBuffer.Height := Self.Height;
- ChartBufferNeedsRepaint := True;
 end;
 
 procedure TGuiEQGraph.SetGraphColorDark(const Value: TColor);
@@ -837,8 +1021,13 @@ begin
  if FGraphColorDark <> Value then
   begin
    FGraphColorDark := Value;
-   Invalidate;
+   GraphColorDarkChanged;
   end;
+end;
+
+procedure TGuiEQGraph.GraphColorDarkChanged;
+begin
+ Invalidate;
 end;
 
 procedure TGuiEQGraph.SetGraphColorLight(const Value: TColor);
@@ -846,8 +1035,13 @@ begin
  if FGraphColorLight <> Value then
   begin
    FGraphColorLight := Value;
-   Invalidate;
+   GraphColorLightChanged;
   end;
+end;
+
+procedure TGuiEQGraph.GraphColorLightChanged;
+begin
+ Invalidate;
 end;
 
 procedure TGuiEQGraph.SetTransparent(const Value: Boolean);

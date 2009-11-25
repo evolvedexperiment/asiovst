@@ -68,6 +68,7 @@ type
 
   TGuiLED = class(TCustomGuiLED)
   published
+    property Align;
     property Anchors;
     property AntiAlias;
     property Color;

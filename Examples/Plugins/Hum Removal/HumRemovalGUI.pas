@@ -63,14 +63,14 @@ type
     SbHighpassType: TGuiSelectBox;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure DialHighpassFrequencyChange(Sender: TObject);
-    procedure SbHighpassTypeChange(Sender: TObject);
-    procedure DialHighpassOrderChange(Sender: TObject);
+    function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure DialFundamentalFrequencyChange(Sender: TObject);
+    procedure DialHighpassFrequencyChange(Sender: TObject);
+    procedure DialHighpassOrderChange(Sender: TObject);
     procedure DialNotchBandwidthChange(Sender: TObject);
     procedure LedHighpassActiveClick(Sender: TObject);
-    function GuiEQGraphGetFilterGain(Sender: TObject;
-      const Frequency: Single): Single;
+    procedure LedHumProfileClick(Sender: TObject);
+    procedure SbHighpassTypeChange(Sender: TObject);
   public
     procedure UpdateHighpassActive;
     procedure UpdateHighpassType;
@@ -78,6 +78,7 @@ type
     procedure UpdateHighpassOrder;
     procedure UpdateFundamentalFrequency;
     procedure UpdateBandwidth;
+    procedure UpdateCaptureHumProfile;
   end;
 
 implementation
@@ -112,8 +113,6 @@ begin
  finally
   FreeAndNil(PngBmp);
  end;
-
- GuiEQGraph.AutoUpdate := True;
 end;
 
 procedure TFmHumRemoval.FormShow(Sender: TObject);
@@ -140,6 +139,14 @@ begin
  with THumRemovalModule(Owner) do
   begin
    Parameter[0] := 1 - Parameter[0];
+  end;
+end;
+
+procedure TFmHumRemoval.LedHumProfileClick(Sender: TObject);
+begin
+ with THumRemovalModule(Owner) do
+  begin
+   Parameter[6] := 1 - Parameter[6];
   end;
 end;
 
@@ -248,6 +255,14 @@ begin
     then DialNotchBandwidth.Position := Parameter[5];
    LbNotchBandwidthValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
    GuiEQGraph.Invalidate;
+  end;
+end;
+
+procedure TFmHumRemoval.UpdateCaptureHumProfile;
+begin
+ with THumRemovalModule(Owner) do
+  begin
+   LedHumProfile.Brightness_Percent := Limit(10 + 80 * Parameter[6], 10, 90);
   end;
 end;
 

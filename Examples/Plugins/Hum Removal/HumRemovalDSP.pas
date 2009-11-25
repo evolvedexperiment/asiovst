@@ -4,30 +4,35 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspHumRemoval, DAV_DspFilterButterworth,
-  DAV_DspFilterChebyshevType1, DAV_DspFilterChebyshevType2;
+  DAV_VSTModule, DAV_DspFilterButterworth, DAV_DspFilterChebyshevType1,
+  DAV_DspFilterChebyshevType2, DAV_DspHumRemoval, DAV_DspGoertzel;
 
 type
   THumRemovalModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure ParameterHighpassActiveDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterHighpassTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterHighpassOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
-    procedure ParameterHighpassTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessDetect(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure ParameterHighpassActiveDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterHighpassTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterHighpassOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterHighpassTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFundamentalFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBandwidthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassActiveChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterCaptureHumProfileChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FCriticalSection : TCriticalSection;
     FHumRemoval      : array of TDspHumRemoval;
+    FGoertzel        : array [0..20] of TDspGoertzel;
+    FSampleCount     : Integer;
   public
     function Magnitude_dB(Frequency: Single): Single;  
   end;
@@ -42,7 +47,7 @@ uses
 procedure THumRemovalModule.VSTModuleCreate(Sender: TObject);
 begin
  FCriticalSection := TCriticalSection.Create;
- assert(numInputs = numOutputs);
+ Assert(numInputs = numOutputs);
 end;
 
 procedure THumRemovalModule.VSTModuleDestroy(Sender: TObject);
@@ -53,12 +58,19 @@ end;
 procedure THumRemovalModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
+  Index   : Integer;
 begin
  SetLength(FHumRemoval, numInputs);
 
  // create hum removal class
  for Channel := 0 to Length(FHumRemoval) - 1
   do FHumRemoval[Channel] := TDspHumRemoval.Create;
+
+ for Index := 0 to Length(FGoertzel) - 1 do
+  begin
+   FGoertzel[Index] := TDspGoertzel.Create;
+   FGoertzel[Index].Frequency := 45 + 1 * Index;
+  end;
 
  Parameter[0] := 1;
  Parameter[1] := 0;
@@ -71,9 +83,13 @@ end;
 procedure THumRemovalModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
+  Index   : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1
   do FreeAndNil(FHumRemoval[Channel]);
+
+ for Index := 0 to Length(FGoertzel) - 1
+  do FreeAndNil(FGoertzel[Index]);
 end;
 
 procedure THumRemovalModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -93,7 +109,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if assigned(FHumRemoval[Channel]) then
+  if Assigned(FHumRemoval[Channel]) then
    case Round(Value) of
     0 : FHumRemoval[Channel].HighpassFilterType := TButterworthLowCut;
     1 : FHumRemoval[Channel].HighpassFilterType := TChebyshev1LowCutFilter;
@@ -112,7 +128,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if assigned(FHumRemoval[Channel])
+  if Assigned(FHumRemoval[Channel])
    then FHumRemoval[Channel].HighpassFilter.Frequency := Value;
 
  // eventually update GUI
@@ -127,7 +143,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if assigned(FHumRemoval[Channel])
+  if Assigned(FHumRemoval[Channel])
    then FHumRemoval[Channel].HighpassFilter.Order := Round(Value);
 
  // eventually update GUI
@@ -142,7 +158,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if assigned(FHumRemoval[Channel])
+  if Assigned(FHumRemoval[Channel])
    then FHumRemoval[Channel].HighpassFilterActive := Value > 0.5;
 
  // eventually update GUI
@@ -151,9 +167,33 @@ begin
    do UpdateHighpassActive;
 end;
 
+procedure THumRemovalModule.ParameterCaptureHumProfileChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+var
+  Ndx : Integer;
+begin
+ if Value > 0.5
+  then OnProcess := VSTModuleProcessDetect
+  else OnProcess := VSTModuleProcess;
+ OnProcessReplacing := OnProcess;
+
+ // reset sample count
+ FSampleCount := 0;
+
+ // reset goertzel filters
+ for Ndx := 0 to Length(FGoertzel) - 1 do
+  if Assigned(FGoertzel[Ndx])
+   then FGoertzel[Ndx].Reset;
+
+ // eventually update GUI
+ if EditorForm is TFmHumRemoval then
+  with TFmHumRemoval(EditorForm)
+   do UpdateCaptureHumProfile;
+end;
+
 function THumRemovalModule.Magnitude_dB(Frequency: Single): Single;
 begin
- if assigned(FHumRemoval[0])
+ if Assigned(FHumRemoval[0])
   then Result := FHumRemoval[0].Magnitude_dB(Frequency)
   else Result := 1;
 end;
@@ -164,7 +204,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if assigned(FHumRemoval[Channel])
+  if Assigned(FHumRemoval[Channel])
    then FHumRemoval[Channel].Bandwidth := Value;
 
  // eventually update GUI
@@ -179,7 +219,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if assigned(FHumRemoval[Channel])
+  if Assigned(FHumRemoval[Channel])
    then FHumRemoval[Channel].FundamentalFrequency := Value;
 
  // eventually update GUI
@@ -213,7 +253,7 @@ var
 begin
  if Abs(SampleRate) > 0 then
   for Channel := 0 to Length(FHumRemoval) - 1 do
-   if assigned(FHumRemoval[Channel])
+   if Assigned(FHumRemoval[Channel])
     then FHumRemoval[Channel].HighpassFilter.SampleRate := abs(SampleRate);
 end;
 
@@ -223,9 +263,50 @@ var
   Channel : Integer;
   Sample  : Integer;
 begin
- for Channel := 0 to numInputs - 1 do
+ for Channel := 0 to Length(FHumRemoval) - 1 do
   for Sample := 0 to SampleFrames - 1
    do Outputs[Channel, Sample] := FHumRemoval[Channel].ProcessSample32(Inputs[Channel, Sample]);
+end;
+
+procedure THumRemovalModule.VSTModuleProcessDetect(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  Channel : Integer;
+  Index   : Integer;
+  Sample  : Integer;
+  Sum     : Single;
+  Power   : Single absolute Sum;
+begin
+ for Sample := 0 to SampleFrames - 1 do
+  begin
+   Sum := 0;
+   for Channel := 0 to Length(FHumRemoval) - 1 do
+    begin
+     Outputs[Channel, Sample] := FHumRemoval[Channel].ProcessSample32(Inputs[Channel, Sample]);
+     Sum := Sum + Inputs[Channel, Sample];
+    end;
+
+   for Index := 0 to Length(FGoertzel) - 1
+    do FGoertzel[Index].ProcessSample64(Sum);
+
+   Inc(FSampleCount);
+
+   if FSampleCount >= Round(0.5 * SampleRate) then
+    begin
+     Index := 0;
+     Power := FGoertzel[0].Power_dB;
+     for Channel := 1 to Length(FGoertzel) - 1 do
+      if FGoertzel[Channel].Power_dB > Power then
+       begin
+        Power := FGoertzel[Channel].Power_dB;
+        Index := Channel;
+       end;
+
+     // set fundamental frequency  
+     Parameter[4] := FGoertzel[Index].Frequency;
+     FSampleCount := 0;
+    end;
+  end;
 end;
 
 end.

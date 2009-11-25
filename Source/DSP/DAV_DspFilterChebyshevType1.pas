@@ -128,10 +128,10 @@ const
 
 {$IFDEF HandleDenormals}
 var
-  DenormRandom   : Single;
+  DenormRandom : Single;
 const
-  CDenorm32      : Single = 1E-24;
-  CDenorm64      : Double = 1E-34;
+  CDenorm32 : Single = 1E-24;
+  CDenorm64 : Double = 1E-34;
 {$ENDIF}
 
 { TCustomChebyshev1Filter }
@@ -149,7 +149,7 @@ end;
 
 class function TCustomChebyshev1Filter.GetMaxOrder: Cardinal;
 begin
- result := 32;
+ Result := 32;
 end;
 
 procedure TCustomChebyshev1Filter.CalculateRippleGain;
@@ -246,7 +246,7 @@ end;
 
 function TCustomChebyshev1Filter.MagnitudeLog10(const Frequency: Double): Double;
 begin
- result := 10 * Log10(MagnitudeSquared(Frequency));
+ Result := 10 * Log10(MagnitudeSquared(Frequency));
 end;
 
 
@@ -571,7 +571,7 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm64 + Abs(Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
 
@@ -782,7 +782,7 @@ function TChebyshev1LowpassFilterAutomatable.MagnitudeLog10(
 const
   CLogScale : Double = 3.0102999566398119521373889472449;
 begin
- result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
+ Result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TChebyshev1LowpassFilterAutomatable.MagnitudeSquared(
@@ -804,7 +804,7 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm64 + Abs(Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
 procedure TChebyshev1LowpassFilterAutomatable.CalculateExpOrdPiHalf;
@@ -1009,7 +1009,7 @@ begin
    i := ((FOrder + 1) div 2) - 1;
    Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
- Result := CDenorm64 + Abs(Result);
+ Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
 
 { TChebyshev1HighpassFilterAutomatable }
@@ -1063,7 +1063,7 @@ function TChebyshev1HighpassFilterAutomatable.MagnitudeLog10(
 const
   CLogScale : Double = 3.0102999566398119521373889472449;
 begin
- result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
+ Result := CLogScale * FastLog2ContinousError4(MagnitudeSquared(Frequency));
 end;
 
 function TChebyshev1HighpassFilterAutomatable.MagnitudeSquared(const Frequency: Double): Double;

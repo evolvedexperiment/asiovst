@@ -124,11 +124,17 @@ function FastMax(const A, B: Single) : Single;
 function FastMod(const Arg1, Arg2: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 {$IFNDEF FPC}
-function FastInt(Sample: Single): Single; overload;
-function FastInt(Sample: Double): Double; overload;
-function FastTrunc(const Value: Single): Integer; overload;
-function FastTrunc(const Value: Double): Integer; overload;
-procedure FastTrunc(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
+function LaurentRoundInt(const Value: Single): Integer; overload;
+function LaurentRoundInt(const Value: Double): Integer; overload;
+procedure LaurentRoundInt(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
+function LaurentFastFloor(const Value: Single): Integer; overload;
+function LaurentFastFloor(const Value: Double): Integer; overload;
+procedure LaurentFastFloor(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
+function LaurentFastCeil(const Value: Single): Integer; overload;
+function LaurentFastCeil(const Value: Double): Integer; overload;
+procedure LaurentFastCeil(Input: PSingle; Output:PInteger; SampleFrames: Integer); overload;
+function LaurentFastTrunc(const Value: Single): Integer; overload;
+function LaurentFastTrunc(const Value: Double): Integer; overload;
 function FastRound(Sample: Single): Integer; overload;
 function FastRound(Sample: Double): Integer; overload;
 {$ENDIF}
@@ -178,6 +184,7 @@ const
   CMaxInt64          : Int64 =  9223372036854775807;
   CMinInt64          : Int64 = -9223372036854775807 - 1;
   CMaxSingle         : Single = 3.40282346638528860e+38;
+  CMinusHalf32       : Single = -0.5;
 
 implementation
 
@@ -839,81 +846,228 @@ begin
  Result := (Norm - round(Norm - 0.5)) * Arg2
 end;
 
-function FastTrunc(const Value: Single): Integer; overload;
+
+// LaurentRoundInt
+
+function LaurentRoundInt(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Value - CHalf64);
+ Result := Round(Value);
 end;
 {$ELSE}
 asm
- fld Value.Single
- fsub CHalf64
+ fld   Value.Single
+ fadd  st(0), st(0)
+ fadd  CHalf32
  fistp Result.Integer
+ sar   Result.Integer, 1
 end;
 {$ENDIF}
 
-function FastTrunc(const Value: Double): Integer; overload;
+function LaurentRoundInt(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Value - CHalf64);
+ Result := Round(Value);
 end;
 {$ELSE}
 asm
- fld Value.Double
- fsub CHalf64
+ fld   Value.Double
+ fadd  st(0), st(0)
+ fadd  CHalf32
  fistp Result.Integer
+ sar   Result.Integer, 1
 end;
 {$ENDIF}
 
-procedure FastTrunc(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
+procedure LaurentRoundInt(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   Output^ := Round(Input^ - 0.5);
-   inc(Output);
-   inc(Input);
+   Output^ := Round(Input^);
+   Inc(Output);
+   Inc(Input);
+  end;
+end;
+{$ELSE}
+asm
+ @Start:
+ fld   [eax].Single
+ fadd  st(0), st(0)
+ fadd  CHalf32
+ fistp [edx].Integer
+ sar   [edx].Integer, 1
+ add   eax,4
+ add   edx,4
+ loop  @Start
+end;
+{$ENDIF}
+
+function LaurentFastFloor(const Value: Single): Integer; overload;
+{$IFDEF PUREPASCAL}
+begin
+ Result := Floor(Value);
+end;
+{$ELSE}
+asm
+ fld   Value.Single
+ fadd  st(0), st(0)
+ fsub  CHalf32
+ fistp Result.Integer
+ sar   Result.Integer, 1
+end;
+{$ENDIF}
+
+function LaurentFastFloor(const Value: Double): Integer; overload;
+{$IFDEF PUREPASCAL}
+begin
+ Result := Floor(Value);
+end;
+{$ELSE}
+asm
+ fld   Value.Double
+ fadd  st(0), st(0)
+ fsub  CHalf32
+ fistp Result.Integer
+ sar   Result.Integer, 1
+end;
+{$ENDIF}
+
+procedure LaurentFastFloor(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   Output^ := Floor(Input^);
+   Inc(Output);
+   Inc(Input);
   end;
 end;
 {$ELSE}
 asm
  @Start:
  fld [eax].Single
- fsub CHalf64
+ fadd  st(0), st(0)
+ fsub  CHalf32
  fistp [edx].Integer
+ sar   [edx].Integer, 1
  add eax,4
  add edx,4
  loop    @Start
 end;
 {$ENDIF}
 
-function FastInt(Sample: Single): Single; overload;
+// LaurentFastCeil
+
+function LaurentFastCeil(const Value: Single): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Sample - 0.5);
+ Result := Ceil(Value);
 end;
 {$ELSE}
 asm
- fld Sample.Single
- fsub CHalf64
- frndint
+ fld   Value.Single
+ fadd  st(0), st(0)
+ fsubr CMinusHalf32
+ fistp Result.Integer
+ sar   Result.Integer, 1
+ neg   Result.Integer
 end;
 {$ENDIF}
 
-function FastInt(Sample: Double): Double; overload;
+function LaurentFastCeil(const Value: Double): Integer; overload;
 {$IFDEF PUREPASCAL}
 begin
- Result := Round(Sample - 0.5);
+ Result := Ceil(Value);
 end;
 {$ELSE}
 asm
- fld Sample.Double
- fsub CHalf64
- frndint
+ fld   Value.Double
+ fadd  st(0), st(0)
+ fsubr CMinusHalf32
+ fistp Result.Integer
+ sar   Result.Integer, 1
+ neg   Result.Integer
 end;
 {$ENDIF}
+
+procedure LaurentFastCeil(Input: PSingle; Output: PInteger; SampleFrames: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  i : Integer;
+begin
+ for i := 0 to SampleFrames - 1 do
+  begin
+   Output^ := Ceil(Input^);
+   Inc(Output);
+   Inc(Input);
+  end;
+end;
+{$ELSE}
+asm
+ @Start:
+ fld   [eax].Single
+ fadd  st(0), st(0)
+ fsubr CMinusHalf32
+ fistp [edx].Integer
+ sar   [edx].Integer, 1
+ neg   [edx].Integer
+ add   eax, 4
+ add   edx, 4
+ loop  @Start
+end;
+{$ENDIF}
+
+// Laurent Fast Trunc
+
+function LaurentFastTrunc(const Value: Single): Integer; overload;
+{$IFDEF PUREPASCAL}
+begin
+ Result := Trunc(Value);
+end;
+{$ELSE}
+var
+  IntCast : Integer absolute Value;
+asm
+ fld   Value.Single
+ fadd  st(0), st(0)
+ fabs
+ fadd  CMinusHalf32
+ fistp Result.Integer
+ sar   Result.Integer, 1
+ test  IntCast, $80000000
+ jz @done
+ neg Result.Integer
+ @done:
+end;
+{$ENDIF}
+
+function LaurentFastTrunc(const Value: Double): Integer; overload;
+{$IFDEF PUREPASCAL}
+begin
+ Result := Trunc(Value);
+end;
+{$ELSE}
+var
+  ByteCast : array [0..7] of Byte absolute Value;
+asm
+ fld   Value.Double
+ fadd  st(0), st(0)
+ fabs
+ fadd  CMinusHalf32
+ fistp Result.Integer
+ sar   Result.Integer, 1
+ test  ByteCast[4].Integer, $80000000
+ jz    @done
+ neg   Result.Integer
+ @done:
+end;
+{$ENDIF}
+
 
 function FastRound(Sample: Single): Integer; overload;
 {$IFDEF PUREPASCAL}

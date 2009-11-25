@@ -22,20 +22,18 @@ object FmHumRemoval: TFmHumRemoval
     Top = 8
     Width = 379
     Height = 169
-    AutoColor = False
+    AntiAlias = gaaLinear3x
     GraphColorDark = 14277598
-    GraphColorLight = 4868941
+    GraphColorLight = 2829873
     ColorChart = clBlack
-    MaxGain = 20.000000000000000000
-    FrequencyAxisLabelStyle = flsBottom
-    dBLabelStyle = dlsLeft
+    BorderRadius = 7
+    BorderWidth = 2
+    YAxis.LowerLevel = -30.000000000000000000
+    YAxis.UpperLevel = 6.000000000000000000
+    XAxis.UpperFrequency = 5000.000000000000000000
+    XAxis.LowerFrequency = 5.000000000000000000
     OnGetFilterGain = GuiEQGraphGetFilterGain
     Color = clBlack
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
     ParentColor = False
   end
   object GbHighpass: TGuiGroup
@@ -117,7 +115,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
-      ItemIndex = 2
+      ItemIndex = -1
       Items.Strings = (
         'Butterworth'
         'Chebyshev I'
@@ -318,6 +316,7 @@ object FmHumRemoval: TFmHumRemoval
       Uniformity_Percent = 40.000000000000000000
       AntiAlias = gaaLinear3x
       LineColor = 14277598
+      OnClick = LedHumProfileClick
     end
     object LbCaptureHumProfile: TGuiLabel
       Left = 32
@@ -331,6 +330,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      OnClick = LedHumProfileClick
     end
   end
   object DIL: TGuiDialImageList
