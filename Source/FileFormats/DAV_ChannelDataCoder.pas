@@ -35,7 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, Types, DAV_Types, DAV_HalfFloat;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, Types, DAV_Types,
+  DAV_HalfFloat;
 
 type
   TDAVByteArray = array [0..0] of Byte;
