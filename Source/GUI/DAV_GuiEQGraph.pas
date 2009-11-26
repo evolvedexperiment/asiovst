@@ -43,6 +43,7 @@ type
   TGuiEQGraph = class;
   TXAxisLabelStyle = (xlsNone, xlsTop, xlsBottom);
   TYAxisLabelStyle = (ylsNone, ylsLeft, ylsRight);
+  TUnitPosition = (upValue, upSide);
 
   TGetFilterGainEvent = function(Sender: TObject; const Frequency: Single): Single of object;
 
@@ -50,18 +51,22 @@ type
 
   TCustomGuiEQGraphAxis = class(TPersistent)
   private
+    procedure SetUnitPosition(const Value: TUnitPosition);
   protected
-    FOwner : TCustomGuiEQGraph;
-    FUpper : Single;
-    FLower : Single;
-    FRange : Single;
+    FOwner        : TCustomGuiEQGraph;
+    FUpper        : Single;
+    FLower        : Single;
+    FRange        : Single;
+    FUnitPosition : TUnitPosition;
     procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
     procedure CalculateRange;
     procedure RangeChanged; virtual;
+    procedure UnitPositionChanged; virtual;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); virtual;
     property Range: Single read FRange;
+    property UnitPosition: TUnitPosition read FUnitPosition write SetUnitPosition default upValue;
   end;
 
   // X-Axis
@@ -104,6 +109,7 @@ type
   TGuiEQGraphXAxis = class(TCustomGuiEQGraphXAxis)
   published
     property LabelStyle;
+    property UnitPosition;
     property UpperFrequency;
     property LowerFrequency;
   end;
@@ -148,6 +154,9 @@ type
     property LabelStyle;
     property LowerLevel;
     property UpperLevel;
+    property Granularity;
+    property MaximumGridLines;
+    property UnitPosition;
   end;
 
 
@@ -325,6 +334,7 @@ uses
 constructor TCustomGuiEQGraphAxis.Create(AOwner: TCustomGuiEQGraph);
 begin
  FOwner := AOwner;
+ FUnitPosition := upValue;
 end;
 
 procedure TCustomGuiEQGraphAxis.Changed;
@@ -337,15 +347,30 @@ begin
  CalculateRange;
 end;
 
+procedure TCustomGuiEQGraphAxis.SetUnitPosition(const Value: TUnitPosition);
+begin
+ if FUnitPosition <> Value then
+  begin
+   FUnitPosition <> Value;
+   UnitPositionChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraphAxis.UnitPositionChanged;
+begin
+ Changed;
+end;
+
 procedure TCustomGuiEQGraphAxis.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomGuiEQGraphAxis then
   with TCustomGuiEQGraphAxis(Dest) do
    begin
-    FOwner := Self.FOwner;
-    FUpper := Self.FUpper;
-    FLower := Self.FLower;
-    FRange := Self.FRange;
+    FOwner        := Self.FOwner;
+    FUpper        := Self.FUpper;
+    FLower        := Self.FLower;
+    FRange        := Self.FRange;
+    FUnitPosition := Self.UnitPosition;
    end
  else inherited;
 end;
@@ -1112,7 +1137,12 @@ begin
         if j in [1, 2, 5] then
          begin
           h := Rct.Bottom + Font.Height - 2 * FOSFactor - FBorderWidth div 2;
-          Txt := FloatToStrF(j * i, ffGeneral, 5, 5) + ' Hz';
+          Txt := FloatToStrF(j * i, ffGeneral, 5, 5);
+
+          // eventually add unit
+          if FXAxis.UnitPosition = upValue
+           then Txt := Txt + ' Hz';
+          
           TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth) - TextWidth(Txt) div 2, h, Txt);
          end;
         Inc(j);
@@ -1130,7 +1160,12 @@ begin
         if j in [1, 2, 5] then
          begin
           h := Rct.Bottom + Font.Height - 2 * FOSFactor - FBorderWidth div 2;
-          Txt := FloatToStrF(j * i, ffGeneral, 5, 5) + ' Hz';
+          Txt := FloatToStrF(j * i, ffGeneral, 5, 5);
+
+          // eventually add unit
+          if FXAxis.UnitPosition = upValue
+           then Txt := Txt + ' Hz';
+
           TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth) - TextWidth(Txt) div 2, h, Txt);
          end;
         Inc(j);

@@ -18,6 +18,22 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object LbShowFrequencyPlot: TGuiLabel
+    Left = 8
+    Top = 183
+    Width = 220
+    Height = 29
+    Alignment = taCenter
+    AntiAlias = gaaLinear4x
+    Caption = 'Show Frequency Plot'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = 15659506
+    Font.Height = -24
+    Font.Name = 'Times New Roman'
+    Font.Style = []
+    Transparent = True
+    OnClick = LbShowFrequencyPlotClick
+  end
   object GpDualLiknwitzRiley: TGuiGroup
     Left = 8
     Top = 8
@@ -201,10 +217,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 47
       Width = 15
       Height = 15
-      Brightness_Percent = 90.000000000000000000
       Color = 7373965
       LineWidth = 2
       LEDColor = 14870505
+      Brightness_Percent = 90.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
       ParentColor = False
@@ -215,10 +232,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Top = 118
       Width = 15
       Height = 15
-      Brightness_Percent = 90.000000000000000000
       Color = 7373965
       LineWidth = 2
       LEDColor = 14870505
+      Brightness_Percent = 90.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
       ParentColor = False
@@ -260,45 +278,37 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       end
     end
   end
-  object GbFrequencyResponse: TGuiGroup
+  object GuiEQGraph: TGuiEQGraph
     Left = 8
     Top = 175
     Width = 220
-    Height = 105
+    Height = 53
     AntiAlias = gaaLinear4x
-    Caption = 'Frequency Response'
+    GraphColorDark = 5991539
+    GraphColorLight = 5991539
+    ColorChart = 5991539
+    BorderRadius = 7
+    BorderWidth = 2
+    FilterSeries = <
+      item
+        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
+        Color = 15659506
+        OnGetFilterGain = GuiEQGraphGetFilterGain
+      end>
+    YAxis.LowerLevel = -15.000000000000000000
+    YAxis.UpperLevel = 3.000000000000000000
+    XAxis.LabelStyle = xlsBottom
+    XAxis.UpperFrequency = 20000.000000000000000000
+    XAxis.LowerFrequency = 20.000000000000000000
+    Color = 7373965
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 7373965
-    Font.Height = -16
+    Font.Color = 15659506
+    Font.Height = -7
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    HeaderMinWidth = 64
-    LineColor = 15659506
-    LineWidth = 3
-    ParentFont = False
-    Radius = 7
-    TabOrder = 1
+    OnClick = GuiEQGraphClick
+    ParentColor = False
     Visible = False
-    object GuiEQGraph: TGuiEQGraph
-      Left = 3
-      Top = 26
-      Width = 214
-      Height = 72
-      AutoColor = False
-      GraphColorLight = 5991539
-      ColorChart = 3158064
-      BorderRadius = 5
-      MaxGain = 15.000000000000000000
-      dBLabelStyle = dlsNone
-      OnGetFilterGain = GuiEQGraphGetFilterGain
-      Color = 7373965
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 3158064
-      Font.Height = -16
-      Font.Name = 'Times New Roman'
-      Font.Style = [fsBold]
-      ParentColor = False
-    end
   end
   object PuFrequency: TPopupMenu
     OnPopup = PuFrequencyPopup

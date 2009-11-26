@@ -40,6 +40,8 @@ uses
   DAV_DSPFilterButterworth, DAV_DSPFilterLinkwitzRiley;
 
 type
+  TProcessMode = (pmBypass, pmLowpass, pmHighpass, pmBandpass);
+
   TDualLinkwitzRileyFiltersModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -59,14 +61,21 @@ type
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FLowpass  : array of array [0..1] of TButterworthLowPassFilter;
-    FHighpass : array of array [0..1] of TButterworthHighPassFilter;
-    FSign     : Single;
+    FLowpass     : array of array [0..1] of TButterworthLowPassFilter;
+    FHighpass    : array of array [0..1] of TButterworthHighPassFilter;
+    FSign        : Single;
+    FProcessMode : TProcessMode;
+    function GetHighpass(Channel, Index: Integer): TButterworthHighPassFilter;
+    function GetLowpass(Channel, Index: Integer): TButterworthLowPassFilter;
   public
     procedure LoadLow(Index: Integer);
     procedure LoadHigh(Index: Integer);
     procedure StoreLow(Index: Integer);
     procedure StoreHigh(Index: Integer);
+    function Magnitude_dB(Frequency: Single): Single;
+
+    property Lowpass[Channel, Index: Integer]: TButterworthLowPassFilter read GetLowpass;
+    property Highpass[Channel, Index: Integer]: TButterworthHighPassFilter read GetHighpass;
   end;
 
 const
@@ -79,7 +88,7 @@ implementation
 {$ENDIF}
 
 uses
-  Registry, DualLinkwitzRileyFiltersGui;
+  Registry, DAV_Common, DAV_Approximations, DualLinkwitzRileyFiltersGui;
 
 procedure TDualLinkwitzRileyFiltersModule.VSTModuleOpen(Sender: TObject);
 var
@@ -174,6 +183,39 @@ begin
   end;
 end;
 
+function TDualLinkwitzRileyFiltersModule.Magnitude_dB(
+  Frequency: Single): Single;
+begin
+ if Integer(FProcessMode) and 1 <> 0
+  then Result := FLowpass[0, 0].MagnitudeSquared(Frequency) *
+                 FLowpass[0, 1].MagnitudeSquared(Frequency)
+  else Result := 1;
+ if Integer(FProcessMode) and 2 <> 0
+  then Result := Result * FHighpass[0, 0].MagnitudeSquared(Frequency) *
+                 FHighpass[0, 1].MagnitudeSquared(Frequency);
+ Result := 10 * FastLog10Laurent5(Result);
+end;
+
+function TDualLinkwitzRileyFiltersModule.GetHighpass(Channel,
+  Index: Integer): TButterworthHighPassFilter;
+begin
+ if (Channel >= 0) and (Channel < Length(FHighpass)) then
+  if Index in [0..1]
+   then Result := FHighpass[Channel, Index]
+   else Result := nil
+ else Result := nil;
+end;
+
+function TDualLinkwitzRileyFiltersModule.GetLowpass(Channel,
+  Index: Integer): TButterworthLowPassFilter;
+begin
+ if (Channel >= 0) and (Channel < Length(FLowpass)) then
+  if Index in [0..1]
+   then Result := FLowpass[Channel, Index]
+   else Result := nil
+ else Result := nil;
+end;
+
 procedure TDualLinkwitzRileyFiltersModule.LoadHigh(Index: Integer);
 begin
  with TRegistry.Create do
@@ -246,11 +288,12 @@ end;
 procedure TDualLinkwitzRileyFiltersModule.ParameterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Value) of
-  0 : OnProcess := VSTModuleProcessBypass;
-  1 : OnProcess := VSTModuleProcessLowpass;
-  2 : OnProcess := VSTModuleProcessHighpass;
-  3 : OnProcess := VSTModuleProcessBandpass;
+ FProcessMode := TProcessMode(Round(Limit(Value, 0, 4)));
+ case FProcessMode of
+  pmBypass   : OnProcess := VSTModuleProcessBypass;
+  pmLowpass  : OnProcess := VSTModuleProcessLowpass;
+  pmHighpass : OnProcess := VSTModuleProcessHighpass;
+  pmBandpass : OnProcess := VSTModuleProcessBandpass;
  end;
  OnProcessReplacing := OnProcess;
 
@@ -278,9 +321,9 @@ begin
  if Length(FLowpass) > 0 then
   for Channel := 0 to Length(FLowpass) - 1 do
    begin
-    if assigned(FLowpass[Channel][0])
+    if Assigned(FLowpass[Channel][0])
      then FLowpass[Channel][0].Frequency := Value;
-    if assigned(FLowpass[Channel][1])
+    if Assigned(FLowpass[Channel][1])
      then FLowpass[Channel][1].Frequency := Value;
    end;
 
@@ -297,9 +340,9 @@ begin
  if Length(FLowpass) > 0 then
   for Channel := 0 to Length(FLowpass) - 1 do
    begin
-    if assigned(FLowpass[Channel][0])
+    if Assigned(FLowpass[Channel][0])
      then FLowpass[Channel][0].Order := round(Value);
-    if assigned(FLowpass[Channel][1])
+    if Assigned(FLowpass[Channel][1])
      then FLowpass[Channel][1].Order := round(Value);
    end;
 
@@ -316,9 +359,9 @@ begin
  if Length(FHighpass) > 0 then
   for Channel := 0 to Length(FHighpass) - 1 do
    begin
-    if assigned(FHighpass[Channel][0])
+    if Assigned(FHighpass[Channel][0])
      then FHighpass[Channel][0].Frequency := Value;
-    if assigned(FHighpass[Channel][1])
+    if Assigned(FHighpass[Channel][1])
      then FHighpass[Channel][1].Frequency := Value;
    end;
 
@@ -335,9 +378,9 @@ begin
  if Length(FHighpass) > 0 then
   for Channel := 0 to Length(FHighpass) - 1 do
    begin
-    if assigned(FHighpass[Channel][0])
+    if Assigned(FHighpass[Channel][0])
      then FHighpass[Channel][0].Order := round(Value);
-    if assigned(FHighpass[Channel][1])
+    if Assigned(FHighpass[Channel][1])
      then FHighpass[Channel][1].Order := round(Value);
    end;
 
@@ -355,13 +398,13 @@ var
 begin
  for Channel := 0 to numInputs - 1 do
   begin
-   if assigned(FLowpass[Channel][0])
+   if Assigned(FLowpass[Channel][0])
     then FLowpass[Channel][0].SampleRate := SampleRate;
-   if assigned(FLowpass[Channel][1])
+   if Assigned(FLowpass[Channel][1])
     then FLowpass[Channel][1].SampleRate := SampleRate;
-   if assigned(FHighpass[Channel][0])
+   if Assigned(FHighpass[Channel][0])
     then FHighpass[Channel][0].SampleRate := SampleRate;
-   if assigned(FHighpass[Channel][1])
+   if Assigned(FHighpass[Channel][1])
     then FHighpass[Channel][1].SampleRate := SampleRate;
   end;
 end;

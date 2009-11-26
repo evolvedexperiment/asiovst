@@ -45,9 +45,7 @@ type
     DialHighpassSlope: TGuiDial;
     DialLowpassFrequency: TGuiDial;
     DialLowpassSlope: TGuiDial;
-    GbFrequencyResponse: TGuiGroup;
     GpDualLiknwitzRiley: TGuiGroup;
-    GuiEQGraph: TGuiEQGraph;
     LbDisplay: TGuiLabel;
     LbFrequency: TGuiLabel;
     LbHighpass: TGuiLabel;
@@ -104,6 +102,8 @@ type
     MiStoreD: TMenuItem;
     MiStoreE: TMenuItem;
     MiStoreF: TMenuItem;
+    GuiEQGraph: TGuiEQGraph;
+    LbShowFrequencyPlot: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -126,6 +126,8 @@ type
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
     procedure PuPresetPopup(Sender: TObject);
+    procedure LbShowFrequencyPlotClick(Sender: TObject);
+    procedure GuiEQGraphClick(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;
@@ -143,8 +145,8 @@ implementation
 {$R *.dfm}
 
 uses
-  Math, Registry, PNGImage, DAV_GuiCommon, DualLinkwitzRileyFiltersDM,
-  DAV_VSTModuleWithPrograms;
+  Math, Registry, PNGImage, DAV_GuiCommon, DAV_VSTModuleWithPrograms,
+  DualLinkwitzRileyFiltersDM;
 
 resourcestring
   RCStrLinkwitzRiley = 'Linkwitz-Riley';
@@ -222,12 +224,18 @@ begin
  LbDisplay.Caption := RCStrLinkwitzRiley;
 end;
 
+procedure TFmLinkwitzRiley.GuiEQGraphClick(Sender: TObject);
+begin
+ LbShowFrequencyPlot.Visible := True;
+ GuiEQGraph.Visible := False;
+end;
+
 function TFmLinkwitzRiley.GuiEQGraphGetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
  with Owner as TDualLinkwitzRileyFiltersModule do
   begin
-   Result := -5;
+   Result := Magnitude_dB(Frequency);
   end;
 end;
 
@@ -318,6 +326,12 @@ begin
 
  if Button = mbRight
   then PuPreset.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
+end;
+
+procedure TFmLinkwitzRiley.LbShowFrequencyPlotClick(Sender: TObject);
+begin
+ LbShowFrequencyPlot.Visible := False;
+ GuiEQGraph.Visible := True;
 end;
 
 procedure TFmLinkwitzRiley.LedHighCutClick(Sender: TObject);
@@ -419,6 +433,7 @@ begin
    if DialLowpassFrequency.Position <> Parameter[0]
     then DialLowpassFrequency.Position := Parameter[0];
    LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   GuiEQGraph.Invalidate;
   end;
 end;
 
@@ -429,6 +444,7 @@ begin
    if DialLowpassSlope.Position <> Parameter[1]
     then DialLowpassSlope.Position := Parameter[1];
    LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   GuiEQGraph.Invalidate;
   end;
 end;
 
@@ -439,6 +455,7 @@ begin
    if DialHighpassFrequency.Position <> Parameter[2]
     then DialHighpassFrequency.Position := Parameter[2];
    LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   GuiEQGraph.Invalidate;
   end;
 end;
 
@@ -449,6 +466,7 @@ begin
    if DialHighpassSlope.Position <> Parameter[3]
     then DialHighpassSlope.Position := Parameter[3];
    LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
+   GuiEQGraph.Invalidate;
   end;
 end;
 
@@ -467,6 +485,7 @@ begin
     else LedLowCut.Brightness_Percent := 10;
 
    LbDisplay.Caption := ParameterDisplay[4];
+   GuiEQGraph.Invalidate;
   end;
 end;
 
