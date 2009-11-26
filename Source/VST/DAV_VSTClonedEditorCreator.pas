@@ -13,8 +13,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Forms, SysUtils, Graphics, StdCtrls, ExtCtrls, ToolsAPI,
-  DAV_VSTPluginCloneConfig;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Forms, SysUtils, Graphics, 
+  StdCtrls, ExtCtrls, ToolsAPI, DAV_VSTPluginCloneConfig;
 
 type
   TVSTClonedEditorCreator = class(TInterfacedObject, IOTACreator, IOTAModuleCreator)

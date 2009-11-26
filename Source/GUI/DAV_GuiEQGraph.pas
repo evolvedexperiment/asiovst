@@ -55,13 +55,16 @@ type
     FUpper : Single;
     FLower : Single;
     FRange : Single;
-    procedure RangeChanged; virtual;
+    procedure AssignTo(Dest: TPersistent); override;
     procedure Changed; virtual;
     procedure CalculateRange;
+    procedure RangeChanged; virtual;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); virtual;
     property Range: Single read FRange;
   end;
+
+  // X-Axis
 
   TCustomGuiEQGraphXAxis = class(TCustomGuiEQGraphAxis)
   private
@@ -105,6 +108,7 @@ type
     property LowerFrequency;
   end;
 
+  // Y-Axis
 
   TCustomGuiEQGraphYAxis = class(TCustomGuiEQGraphAxis)
   private
@@ -147,6 +151,51 @@ type
   end;
 
 
+  // EQ Series
+
+  TGuiEQGraphSeriesCollectionItem = class(TCollectionItem)
+  private
+    FDisplayName     : string;
+    FOnGetFilterGain : TGetFilterGainEvent;
+    FColor           : TColor;
+    FLineWidth       : Integer;
+    procedure SetColor(const Value: TColor);
+    procedure SetLineWidth(const Value: Integer);
+  protected
+    function GetDisplayName: string; override;
+    procedure SetDisplayName(const Value: string); override;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure ColorChanged; virtual;
+    procedure LineWidthChanged; virtual;
+    procedure Changed; virtual;
+  public
+    constructor Create(Collection: TCollection); override;
+    destructor Destroy; override;
+  published
+    property DisplayName;
+    property Color: TColor read FColor write SetColor default clRed;
+    property LineWidth: Integer read FLineWidth write SetLineWidth default 2;
+    property OnGetFilterGain: TGetFilterGainEvent read FOnGetFilterGain write FOnGetFilterGain;
+  end;
+
+  TGuiEQGraphSeriesCollection = class(TOwnedCollection)
+  protected
+    procedure Changed; virtual;
+    function GetItem(Index: Integer): TGuiEQGraphSeriesCollectionItem; virtual;
+    procedure SetItem(Index: Integer; const Value: TGuiEQGraphSeriesCollectionItem); virtual;
+    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
+    property Items[Index: Integer]: TGuiEQGraphSeriesCollectionItem read GetItem write SetItem; default;
+  public
+    constructor Create(AOwner: TComponent);
+    function Add: TGuiEQGraphSeriesCollectionItem;
+    function Insert(Index: Integer): TGuiEQGraphSeriesCollectionItem;
+    procedure Delete(Index: Integer);
+    property Count;
+  end;
+
+
+  // EQ-Graph
+
   TCustomGuiEQGraph = class(TCustomControl)
   public
     constructor Create(AOwner: TComponent); override;
@@ -154,23 +203,22 @@ type
 
   TGuiEQGraph = class(TCustomGuiEQGraph)
   private
-    FAutoColor               : Boolean;
-    FBuffer                  : TBitmap;
-    FChartBuffer             : TBitmap;
-    FChartColor              : TColor;
-    FBorderRadius            : Integer;
-    FBorderWidth             : Integer;
-    FGraphColorDark          : TColor;
-    FGraphColorLight         : TColor;
-    FAntiAlias               : TGuiAntiAlias;
-    FOSFactor                : Integer;
-    FTransparent             : Boolean;
+    FAutoColor        : Boolean;       
+    FBuffer           : TBitmap;       
+    FChartColor       : TColor;       
+    FBorderRadius     : Integer;       
+    FBorderWidth      : Integer;       
+    FGraphColorDark   : TColor;       
+    FGraphColorLight  : TColor;       
+    FAntiAlias        : TGuiAntiAlias;       
+    FOSFactor         : Integer;       
+    FTransparent      : Boolean;       
 
-    FYAxis                   : TGuiEQGraphYAxis;
-    FXAxis                   : TGuiEQGraphXAxis;
+    FYAxis            : TGuiEQGraphYAxis;       
+    FXAxis            : TGuiEQGraphXAxis;       
 
-    FOnPaint                 : TNotifyEvent;
-    FOnGetFilterGain         : TGetFilterGainEvent;
+    FOnPaint          : TNotifyEvent;       
+    FFilterSeries     : TGuiEQGraphSeriesCollection;
 
     procedure SetAutoColor(const Value: Boolean);
     procedure SetChartColor(const Value: TColor);
@@ -183,6 +231,7 @@ type
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetTransparent(const Value: Boolean);
     procedure RenderGridToBitmap(Bitmap: TBitmap);
+    procedure SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure Paint; override;
@@ -222,12 +271,11 @@ type
     property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
 
-
+    property FilterSeries: TGuiEQGraphSeriesCollection read FFilterSeries write SetFilterSeries;
     property YAxis: TGuiEQGraphYAxis read FYAxis write SetYAxis;
     property XAxis: TGuiEQGraphXAxis read FXAxis write SetXAxis;
 
     property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
-    property OnGetFilterGain: TGetFilterGainEvent read FOnGetFilterGain write FOnGetFilterGain;
     property Align;
     property Anchors;
     property Color;
@@ -289,6 +337,19 @@ begin
  CalculateRange;
 end;
 
+procedure TCustomGuiEQGraphAxis.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomGuiEQGraphAxis then
+  with TCustomGuiEQGraphAxis(Dest) do
+   begin
+    FOwner := Self.FOwner;
+    FUpper := Self.FUpper;
+    FLower := Self.FLower;
+    FRange := Self.FRange;
+   end
+ else inherited;
+end;
+
 procedure TCustomGuiEQGraphAxis.CalculateRange;
 begin
  FRange := FUpper - FLower;
@@ -313,7 +374,12 @@ begin
  if Dest is TCustomGuiEQGraphXAxis then
   with TCustomGuiEQGraphXAxis(Dest) do
    begin
-    FLabelStyle := Self.FLabelStyle;
+    inherited;
+    FLabelStyle   := Self.FLabelStyle;
+    FInvUpper     := Self.FInvUpper;
+    FInvLower     := Self.FInvLower;
+    FLog2Ratio    := Self.FLog2Ratio;
+    FInvLog2Ratio := Self.FInvLog2Ratio;
    end
  else inherited;
 end;
@@ -432,9 +498,9 @@ begin
  if Dest is TCustomGuiEQGraphYAxis then
   with TCustomGuiEQGraphYAxis(Dest) do
    begin
-    FUpper := Self.FUpper;
-    FLower := Self.FLower;
     FLabelStyle := Self.FLabelStyle;
+    FGranularity := Self.FGranularity;
+    FMaximumGridLines := Self.FMaximumGridLines;
    end
  else inherited;
 end;
@@ -534,6 +600,131 @@ begin
 end;
 
 
+{ TGuiEQGraphSeriesCollectionItem }
+
+constructor TGuiEQGraphSeriesCollectionItem.Create(Collection: TCollection);
+begin
+ inherited;
+ FDisplayName := ClassName;
+ FColor := clRed;
+ FLineWidth := 2;
+end;
+
+destructor TGuiEQGraphSeriesCollectionItem.Destroy;
+begin
+ inherited;
+end;
+
+function TGuiEQGraphSeriesCollectionItem.GetDisplayName: string;
+begin
+ Result := FDisplayName;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.SetColor(const Value: TColor);
+begin
+ if FColor <> Value then
+  begin
+   FColor := Value;
+   ColorChanged;
+  end;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.ColorChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.SetDisplayName(const Value: string);
+begin
+ if FDisplayName <> Value then
+  begin
+   FDisplayName := Value;
+   inherited;
+  end;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.SetLineWidth(const Value: Integer);
+begin
+ if FLineWidth <> Value then
+  begin
+   FLineWidth := Value;
+   LineWidthChanged;
+  end;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.LineWidthChanged;
+begin
+ Changed;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TGuiEQGraphSeriesCollectionItem then
+  with TGuiEQGraphSeriesCollectionItem(Dest) do
+   begin
+    FColor           := Self.FColor;
+    FLineWidth       := Self.LineWidth;
+    FDisplayName     := Self.FDisplayName;
+    FOnGetFilterGain := Self.FOnGetFilterGain;
+   end
+ else inherited;
+end;
+
+procedure TGuiEQGraphSeriesCollectionItem.Changed;
+begin
+ if Collection is TGuiEQGraphSeriesCollection
+  then TGuiEQGraphSeriesCollection(Collection).Changed;
+end;
+
+
+{ TGuiEQGraphSeriesCollection }
+
+constructor TGuiEQGraphSeriesCollection.Create(AOwner: TComponent);
+begin
+ inherited Create(AOwner, TGuiEQGraphSeriesCollectionItem);
+end;
+
+function TGuiEQGraphSeriesCollection.Add: TGuiEQGraphSeriesCollectionItem;
+begin
+ Result := TGuiEQGraphSeriesCollectionItem(inherited Add);
+end;
+
+procedure TGuiEQGraphSeriesCollection.Delete(Index: Integer);
+begin
+ inherited Delete(Index);
+end;
+
+function TGuiEQGraphSeriesCollection.GetItem(Index: Integer): TGuiEQGraphSeriesCollectionItem;
+begin
+ Result := TGuiEQGraphSeriesCollectionItem(inherited GetItem(Index));
+end;
+
+function TGuiEQGraphSeriesCollection.Insert(
+  Index: Integer): TGuiEQGraphSeriesCollectionItem;
+begin
+ Result:= TGuiEQGraphSeriesCollectionItem(inherited Insert(Index));
+end;
+
+procedure TGuiEQGraphSeriesCollection.Changed;
+begin
+ if Owner is TCustomGuiEQGraph
+  then TCustomGuiEQGraph(Owner).Invalidate;
+end;
+
+procedure TGuiEQGraphSeriesCollection.Notify(Item: TCollectionItem;
+  Action: TCollectionNotification);
+begin
+ inherited;
+ Changed;
+end;
+
+procedure TGuiEQGraphSeriesCollection.SetItem(Index: Integer;
+  const Value: TGuiEQGraphSeriesCollectionItem);
+begin
+ inherited SetItem(Index, Value);
+end;
+
+
 { TCustomGuiEQGraph }
 
 constructor TCustomGuiEQGraph.Create(AOwner: TComponent);
@@ -555,8 +746,8 @@ begin
  FAutoColor       := False;
  FXAxis           := TGuiEQGraphXAxis.Create(Self);
  FYAxis           := TGuiEQGraphYAxis.Create(Self);
+ FFilterSeries    := TGuiEQGraphSeriesCollection.Create(Self);
  FBuffer          := TBitmap.Create;
- FChartBuffer     := TBitmap.Create;
  FGraphColorLight := $606060;
  FGraphColorDark  := $303030;
  FBorderWidth     := 1;
@@ -567,9 +758,9 @@ end;
 destructor TGuiEQGraph.Destroy;
 begin
  FreeAndNil(FBuffer);
- FreeAndNil(FChartBuffer);
  FreeAndNil(FXAxis);
  FreeAndNil(FYAxis);
+ FreeAndNil(FFilterSeries);
  inherited Destroy;
 end;
 
@@ -586,12 +777,10 @@ begin
     FGraphColorDark          := Self.FGraphColorDark;
     FGraphColorLight         := Self.FGraphColorLight;
     FOnPaint                 := Self.FOnPaint;
-    FOnGetFilterGain         := Self.FOnGetFilterGain;
 
     FYAxis.Assign(Self.FYAxis);
     FXAxis.Assign(Self.FXAxis);
     FBuffer.Assign(Self.FBuffer);
-    FChartBuffer.Assign(Self.FChartBuffer);
    end;
 end;
 
@@ -601,7 +790,7 @@ procedure TGuiEQGraph.CMFontChanged(var Message: TMessage);
 procedure TGuiEQGraph.CMFontChanged(var Message: TLMessage);
 {$ENDIF}
 begin
- FChartBuffer.Canvas.Font.Assign(Font);
+ inherited;
  FBuffer.Canvas.Font.Assign(Font);
 end;
 
@@ -680,6 +869,11 @@ begin
    FChartColor := Value;
    Invalidate;
   end;
+end;
+
+procedure TGuiEQGraph.SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
+begin
+ FFilterSeries.Assign(Value);
 end;
 
 procedure TGuiEQGraph.ChartColorChanged;
@@ -787,6 +981,8 @@ begin
          PixelFormat := pf32bit;
          Width       := FOSFactor * FBuffer.Width;
          Height      := FOSFactor * FBuffer.Height;
+         Canvas.Font.Assign(Font);
+         Canvas.Font.Size := FOSFactor * Font.Size;
          {$IFNDEF FPC}
          if FTransparent then
           begin
@@ -895,9 +1091,7 @@ begin
       end;
     end;
 
-
    // draw text
-   Font.Assign(Self.Font);
    i := Round(IntPower(10, Trunc(Log10(abs(FXAxis.LowerFrequency)))));
    j := Round(FXAxis.LowerFrequency / i);
    if j = FXAxis.LowerFrequency / i then
@@ -915,8 +1109,12 @@ begin
      begin
       while j * i < FXAxis.UpperFrequency do
        begin
-        h := Rct.Bottom + Font.Height - 2 - FBorderWidth div 2;
-        TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth) - 12, h, FloatToStrF(j * i, ffGeneral, 3, 3));
+        if j in [1, 2, 5] then
+         begin
+          h := Rct.Bottom + Font.Height - 2 * FOSFactor - FBorderWidth div 2;
+          Txt := FloatToStrF(j * i, ffGeneral, 5, 5) + ' Hz';
+          TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth) - TextWidth(Txt) div 2, h, Txt);
+         end;
         Inc(j);
         if j >= 10 then
          begin
@@ -927,8 +1125,21 @@ begin
      end;
     xlsTop:
      begin
-      TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(100) * Wdth) - 12, Round(Rct.Top),'100Hz');
-      TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(1000) * Wdth) - 10, Round(Rct.Top),'1kHz');
+      while j * i < FXAxis.UpperFrequency do
+       begin
+        if j in [1, 2, 5] then
+         begin
+          h := Rct.Bottom + Font.Height - 2 * FOSFactor - FBorderWidth div 2;
+          Txt := FloatToStrF(j * i, ffGeneral, 5, 5) + ' Hz';
+          TextOut(Round(Rct.Left + FXAxis.LogarithmicFrequencyToLinear(j * i) * Wdth) - TextWidth(Txt) div 2, h, Txt);
+         end;
+        Inc(j);
+        if j >= 10 then
+         begin
+          i := i * 10;
+          j := 1;
+         end;
+       end;
      end;
    end;
 
@@ -967,27 +1178,32 @@ end;
 
 procedure TGuiEQGraph.RenderToBitmap(Bitmap: TBitmap);
 var
-  w      : Integer;
-  Temp   : Single;
-  YValue : Single;
+  FilterIndex : Integer;
+  PixelIndex  : Integer;
+  Temp        : Single;
+  YValue      : Single;
 begin
  with Bitmap, Canvas do
   begin
    Lock;
 
-   Pen.Color := GraphColorDark;
-   Pen.Width := 2 * FOSFactor;
-   if Assigned(FOnGetFilterGain) then
-    begin
-     YValue := FOnGetFilterGain(Self, FXAxis.LowerFrequency);
-     MoveTo(FOSFactor, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
-     Temp := 1 / (Width - 2 * FOSFactor);
-     for w := FOSFactor + 1 to Width - FOSFactor - 1 do
-      begin
-       YValue := FOnGetFilterGain(Self, FXAxis.LinearToLogarithmicFrequency((w - FOSFactor) * Temp));
-       LineTo(w, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
-      end;
-    end;
+   for FilterIndex := 0 to FFilterSeries.Count - 1 do
+    with FFilterSeries[FilterIndex] do
+     begin
+      Pen.Color := Color;
+      Pen.Width := LineWidth * FOSFactor;
+      if Assigned(FOnGetFilterGain) then
+       begin
+        YValue := FOnGetFilterGain(Self, FXAxis.LowerFrequency);
+        MoveTo(FOSFactor, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
+        Temp := 1 / (Width - 2 * FOSFactor);
+        for PixelIndex := FOSFactor + 1 to Width - FOSFactor - 1 do
+         begin
+          YValue := FOnGetFilterGain(Self, FXAxis.LinearToLogarithmicFrequency((PixelIndex - FOSFactor) * Temp));
+          LineTo(PixelIndex, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
+         end;
+       end;
+     end;
 
    if FBorderWidth > 0 then
     begin
@@ -1011,9 +1227,7 @@ begin
  FBuffer.Canvas.Brush.Color := Self.Color;
  FBuffer.Width := Self.Width;
  FBuffer.Height := Self.Height;
- FChartBuffer.Canvas.Brush.Color := Self.Color;
- FChartBuffer.Width := Self.Width;
- FChartBuffer.Height := Self.Height;
+ Invalidate;
 end;
 
 procedure TGuiEQGraph.SetGraphColorDark(const Value: TColor);

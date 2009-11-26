@@ -40,7 +40,8 @@ interface
 {$MINENUMSIZE 4}
 
 uses
-  Windows, Classes, SysUtils, DAV_Types, DAV_SECommon;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, 
+  DAV_Types, DAV_SECommon;
 
 type
   TUgFlag = (

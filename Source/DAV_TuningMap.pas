@@ -56,7 +56,7 @@ interface
 {$I DAV_Compiler.INC}
 
 uses
-  Windows, SysUtils;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils;
 
 type
   TTuningMap = class

@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, DAV_SECommon;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, DAV_SECommon;
 
 type
   /////////////////////////////////

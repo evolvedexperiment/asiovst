@@ -14,8 +14,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Messages, Classes, Controls, Forms, StdCtrls, ComCtrls, ExtCtrls,
-  DAV_VSTPluginConfig, Graphics;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Messages, Classes, Controls, 
+  Forms, StdCtrls, ComCtrls, ExtCtrls, Graphics, DAV_VSTPluginConfig;
 
 type
   TVSTPluginWizardForm = class(TForm)

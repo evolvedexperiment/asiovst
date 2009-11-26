@@ -6,7 +6,7 @@ interface
 {-$DEFINE Emulation}
 
 uses
-  Windows, SysUtils, DAV_Complex;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} SysUtils, DAV_Complex;
 
 type
   TCudaFftResult = (

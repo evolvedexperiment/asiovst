@@ -9,11 +9,16 @@ object HumRemovalModule: THumRemovalModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'HumR'
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
       Curve = ctLinear
@@ -125,6 +130,20 @@ object HumRemovalModule: THumRemovalModule
       Units = 'Oct'
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
+    end
+    item
+      Curve = ctLinear
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Attenuation'
+      LargeStepFloat = 2.000000000000000000
+      Max = 96.000000000000000000
+      MaxInteger = 96
+      ShortLabel = 'Attn.'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB'
+      VSTModule = Owner
+      OnParameterChange = ParameterAttenuationChange
     end
     item
       Curve = ctLinear

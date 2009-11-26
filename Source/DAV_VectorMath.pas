@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Math, DAV_Types;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Math, DAV_Types;
 
 type
   TDAVVector32 = TDAV4SingleArray;

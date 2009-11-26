@@ -33,9 +33,10 @@ unit DAV_Approximations;
 interface
 
 {$I DAV_Compiler.inc}
+{$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
 uses
-  DAV_Common, {$IFDEF FPC} LCLIntf; {$DEFINE PUREPASCAL}{$ELSE}
+  DAV_Common, {$IFDEF FPC} LCLIntf; {$ELSE}
   Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};{$ENDIF}
 
   function FastInvSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -69,8 +70,6 @@ uses
   // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
   function FastCosPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart3TermFPU(const Value: Single): Single; overload;
-  function FastCosPart3TermFPU(const Value: Double): Double; overload;
   function FastCosInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -87,8 +86,6 @@ uses
   // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
   function FastCosPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart4TermFPU(const Value: Single): Single; overload;
-  function FastCosPart4TermFPU(const Value: Double): Double; overload;
   function FastCosInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -107,8 +104,6 @@ uses
   // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
   function FastCosPart5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart5TermFPU(const Value: Single): Single; overload;
-  function FastCosPart5TermFPU(const Value: Double): Double; overload;
   function FastCosInBounds5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosInBounds5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -125,8 +120,6 @@ uses
   // 6-Term: Accurate to about ?.? decimal digits over the range [0, pi/2].
   function FastCosPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart6TermFPU(const Value: Single): Single; overload;
-  function FastCosPart6TermFPU(const Value: Double): Double; overload;
   function FastCosInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCosInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -139,6 +132,18 @@ uses
   function FastSec6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCsc6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastCsc6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+
+  // FPU assembler versions
+  {$IFNDEF Purepascal}
+  function FastCosPart3TermFPU(const Value: Single): Single; overload;
+  function FastCosPart3TermFPU(const Value: Double): Double; overload;
+  function FastCosPart4TermFPU(const Value: Single): Single; overload;
+  function FastCosPart4TermFPU(const Value: Double): Double; overload;
+  function FastCosPart5TermFPU(const Value: Single): Single; overload;
+  function FastCosPart5TermFPU(const Value: Double): Double; overload;
+  function FastCosPart6TermFPU(const Value: Single): Single; overload;
+  function FastCosPart6TermFPU(const Value: Double): Double; overload;
+  {$ENDIF}
 
   // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
   function FastCosPart7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -334,6 +339,7 @@ uses
   function FastTanhOpt6Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastTanhOpt7Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
+  {$IFNDEF Purepascal}
   function FastTanhOpt3TermFPU(const Input: Single): Single; assembler; overload;
   function FastTanhOpt4TermFPU(const Input: Single): Single; assembler; overload;
   function FastTanhOpt5TermFPU(const Input: Single): Single; assembler; overload;
@@ -344,6 +350,7 @@ uses
   function FastTanhOpt5TermFPU(const Input: Double): Double; assembler; overload;
   function FastTanhOpt6TermFPU(const Input: Double): Double; assembler; overload;
   function FastTanhOpt7TermFPU(const Input: Double): Double; assembler; overload;
+  {$ENDIF}
 
   function FastTanh2Like4Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastTanh2Like3Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -540,6 +547,7 @@ begin
  Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
 end;
 
+{$IFNDEF Purepascal}
 function FastCosPart3TermFPU(const Value: Single): Single;
 asm
  fld   Value
@@ -561,6 +569,7 @@ asm
  fmulp
  fadd  [CCos3Term].Single
 end;
+{$ENDIF}
 
 function FastCosInBounds3Term(const Value: Single): Single;
 begin
@@ -652,6 +661,7 @@ begin
  Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
+{$IFNDEF Purepascal}
 function FastCosPart4TermFPU(const Value: Single): Single;
 asm
  fld   Value
@@ -677,6 +687,7 @@ asm
  fmulp
  fadd  [CCos4Term].Single
 end;
+{$ENDIF}
 
 function FastCosInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
@@ -778,6 +789,7 @@ begin
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
+{$IFNDEF Purepascal}
 function FastCosPart5TermFPU(const Value: Single): Single;
 asm
  fld   Value
@@ -807,6 +819,7 @@ asm
  fmulp
  fadd  [CCos5Term].Single
 end;
+{$ENDIF}
 
 function FastCosInBounds5Term(const Value: Single): Single;
 begin
@@ -908,6 +921,7 @@ begin
           (CCos6Term[4] + CCos6Term[5] * Result))));
 end;
 
+{$IFNDEF Purepascal}
 function FastCosPart6TermFPU(const Value: Single): Single;
 asm
  fld   Value
@@ -945,6 +959,7 @@ asm
  fmulp
  fadd [CCos6Term + 8].Double
 end;
+{$ENDIF}
 
 function FastCosInBounds6Term(const Value: Single): Single;
 begin
@@ -2930,6 +2945,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
+{$IFNDEF Purepascal}
 function FastTanhOpt3TermFPU(const Input: Single): Single; assembler;
 const
   c0 : Double =  2.66559097474027817;
@@ -3219,6 +3235,7 @@ asm
  faddp             // Stack: 1 + b * a, b * Input
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
+{$ENDIF}
 
 function FastTanh2Like4Term(const Input: Single): Single;
 var

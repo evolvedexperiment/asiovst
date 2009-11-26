@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, Windows, Forms, DAV_VSTEffect, DAV_Common,
-  DAV_VSTBasicModule;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, Forms, 
+  DAV_VSTEffect, DAV_Common, DAV_VSTBasicModule;
 
 type
   TCustomVstChannel = class(TCollectionItem)

@@ -35,8 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, Classes, SysUtils, DAV_SECommon, DAV_SEModule, DAV_SEGUI,
-  DAV_DLLLoader;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, 
+  DAV_SECommon, DAV_SEModule, DAV_SEGUI, DAV_DLLLoader;
 
 type
   TSEGetModuleProperties = function(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl;

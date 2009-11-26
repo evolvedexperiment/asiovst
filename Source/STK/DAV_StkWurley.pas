@@ -28,7 +28,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer, Windows;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_StkCommon, DAV_StkFm, 
+  DAV_StkWavePlayer;
 
 type
   TStkWurley = class(TStkFM)

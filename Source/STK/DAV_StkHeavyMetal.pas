@@ -27,7 +27,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_StkCommon, DAV_StkFm, DAV_StkWavePlayer;
 
 type
   TStkHeavyMetal = class(TStkFM)

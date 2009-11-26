@@ -146,7 +146,7 @@ procedure TFmHumRemoval.LedHumProfileClick(Sender: TObject);
 begin
  with THumRemovalModule(Owner) do
   begin
-   Parameter[6] := 1 - Parameter[6];
+   Parameter[7] := 1 - Parameter[7];
   end;
 end;
 
@@ -262,7 +262,7 @@ procedure TFmHumRemoval.UpdateCaptureHumProfile;
 begin
  with THumRemovalModule(Owner) do
   begin
-   LedHumProfile.Brightness_Percent := Limit(10 + 80 * Parameter[6], 10, 90);
+   LedHumProfile.Brightness_Percent := Limit(10 + 80 * Parameter[7], 10, 90);
   end;
 end;
 

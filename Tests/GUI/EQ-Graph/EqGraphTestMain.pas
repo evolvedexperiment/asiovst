@@ -14,6 +14,8 @@ type
     EqGraphD: TGuiEQGraph;
     function EqGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure FormCreate(Sender: TObject);
+    function EqGraphAFilterSeries1GetFilterGain(Sender: TObject;
+      const Frequency: Single): Single;
   private
     FLowpass : TBasicLowpassFilter;
   public
@@ -30,6 +32,12 @@ implementation
 procedure TFmEqGraphTest.FormCreate(Sender: TObject);
 begin
  FLowpass := TBasicLowpassFilter.Create;
+end;
+
+function TFmEqGraphTest.EqGraphAFilterSeries1GetFilterGain(Sender: TObject;
+  const Frequency: Single): Single;
+begin
+ Result := FLowpass.MagnitudeLog10(0.5 * Frequency);
 end;
 
 function TFmEqGraphTest.EqGraphGetFilterGain(Sender: TObject;

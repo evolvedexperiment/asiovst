@@ -49,12 +49,15 @@ type
     FFundamentalFrequency : Single;
     FBandwidth            : Single;
     FDcFilterActive       : Boolean;
+    FAttenuation: Single;
     procedure SetHighpassFilterType(const Value: TOrderFilterClass);
     procedure SetNotchFilterCount(const Value: Integer);
     procedure SetFundamentalFrequency(const Value: Single);
     procedure SetBandwidth(const Value: Single);
     procedure SetDcFilterActive(const Value: Boolean);
     procedure DcFilterActiveChanged;
+    procedure SetAttenuation(const Value: Single);
+    procedure AttenuationChanged;
   protected
     procedure BandwidthChanged; virtual;
     procedure FundamentalFrequencyChanged; virtual;
@@ -72,12 +75,13 @@ type
     function Magnitude_dB(const Frequency: Double): Double;
     function MagnitudeSquared(const Frequency: Double):Double;
 
-    property HighpassFilterActive: Boolean read FDcFilterActive write SetDcFilterActive; 
+    property HighpassFilterActive: Boolean read FDcFilterActive write SetDcFilterActive;
     property HighpassFilterType: TOrderFilterClass read FHighpassFilterType write SetHighpassFilterType;
     property HighpassFilter: TCustomOrderFilter read FHighpassFilter;
     property NotchFilterCount: Integer read FNotchFilterCount write SetNotchFilterCount;
     property FundamentalFrequency: Single read FFundamentalFrequency write SetFundamentalFrequency;
     property Bandwidth: Single read FBandwidth write SetBandwidth;
+    property Attenuation: Single read FAttenuation write SetAttenuation;
   end;
 
 implementation
@@ -94,6 +98,7 @@ begin
  FHighpassFilter := FHighpassFilterType.Create(2);
  FFundamentalFrequency := 50;
  FBandwidth := 0.1;
+ FAttenuation := 48;
  FNotchFilterCount := 8;
  NotchFilterCountChanged;
 end;
@@ -102,6 +107,15 @@ destructor TDspHumRemoval.Destroy;
 begin
  FreeAndNil(FHighpassFilter);
  inherited;
+end;
+
+procedure TDspHumRemoval.SetAttenuation(const Value: Single);
+begin
+ if FAttenuation <> Value then
+  begin
+   FAttenuation := Value;
+   AttenuationChanged;
+  end;
 end;
 
 procedure TDspHumRemoval.SetBandwidth(const Value: Single);
@@ -158,6 +172,15 @@ begin
  Changed;
 end;
 
+procedure TDspHumRemoval.AttenuationChanged;
+var
+  FilterNo: Integer;
+begin
+ for FilterNo := 0 to Length(FNotchFilters) - 1
+  do FNotchFilters[FilterNo].Gain := -FAttenuation + FAttenuation * FilterNo / Length(FNotchFilters);
+ Changed;
+end;
+
 procedure TDspHumRemoval.DcFilterActiveChanged;
 begin
  Changed;
@@ -195,7 +218,7 @@ begin
        Bandwidth := FBandwidth;
       end;
     end;
-   FNotchFilters[FilterNo].Gain := -48 + 48 * FilterNo / Length(FNotchFilters);
+   FNotchFilters[FilterNo].Gain := -FAttenuation + FAttenuation * FilterNo / Length(FNotchFilters);
   end;
  Changed;
 end;
@@ -211,13 +234,13 @@ begin
  if FHighpassFilter is TCustomChebyshev1Filter then
   with TCustomChebyshev1Filter(FHighpassFilter) do
    begin
-    Ripple := 0.1;
+    Ripple := 0.2;
    end else
  if FHighpassFilter is TCustomChebyshev2Filter then
   with TCustomChebyshev2Filter(FHighpassFilter) do
    begin
     FixFrequency := True;
-    Stopband := -48;
+    Stopband := -FAttenuation;
    end;
 
  FHighpassFilter.Frequency := OldFilter.Frequency;

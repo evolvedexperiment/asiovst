@@ -14,7 +14,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Windows, ToolsAPI, DAV_VSTPluginConfig;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} ToolsAPI, DAV_VSTPluginConfig;
 
 type
   TVSTPluginWizard = class(TNotifierObject, IOTAWizard, IOTARepositoryWizard,

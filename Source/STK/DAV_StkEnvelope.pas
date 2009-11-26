@@ -7,7 +7,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Common, DAV_StkCommon, Windows;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} DAV_Common, DAV_StkCommon;
 
 type
   TStkEnvelope = class(TStk)

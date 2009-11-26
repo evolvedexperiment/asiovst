@@ -28,12 +28,23 @@ object FmHumRemoval: TFmHumRemoval
     ColorChart = clBlack
     BorderRadius = 7
     BorderWidth = 2
-    YAxis.LowerLevel = -30.000000000000000000
+    FilterSeries = <
+      item
+        DisplayName = 'Mono'
+        Color = 14277598
+        OnGetFilterGain = GuiEQGraphGetFilterGain
+      end>
+    YAxis.LowerLevel = -36.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
-    XAxis.UpperFrequency = 5000.000000000000000000
-    XAxis.LowerFrequency = 5.000000000000000000
-    OnGetFilterGain = GuiEQGraphGetFilterGain
+    XAxis.LabelStyle = xlsBottom
+    XAxis.UpperFrequency = 1600.000000000000000000
+    XAxis.LowerFrequency = 4.000000000000000000
     Color = clBlack
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 14277598
+    Font.Height = -9
+    Font.Name = 'Tahoma'
+    Font.Style = []
     ParentColor = False
   end
   object GbHighpass: TGuiGroup

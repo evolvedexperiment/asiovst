@@ -95,6 +95,7 @@ type
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
+
     property Color: TColor read FColor write SetColor default clRed;
     property Visible: Boolean read FVisible write SetVisible default True;
     property Tag: Longint read FTag write FTag default 0;
@@ -401,9 +402,9 @@ begin
    end;
    FGranularity := BaseGran * IntPower(FGranBase, IntExp);
 //   assert(FGranularity > MinGran);
-   result := OldGranularity <> FGranularity;
+   Result := OldGranularity <> FGranularity;
   end
- else result := False;
+ else Result := False;
 end;
 
 procedure TCustomAxis.GranularityChanged;
@@ -698,7 +699,7 @@ var
 begin
  Item.X := X;
  Item.Y := Y;
- result := AddPoint(Item);
+ Result := AddPoint(Item);
 end;
 
 procedure TCustomGuiGraphXYDataSeries.Clear;
@@ -726,12 +727,12 @@ end;
 
 function TCustomGuiGraphXYDataSeries.First: TDAVPointSingle;
 begin
- result := FData^[0];
+ Result := FData^[0];
 end;
 
 function TCustomGuiGraphXYDataSeries.Last: TDAVPointSingle;
 begin
- result := FData^[FCount - 1];
+ Result := FData^[FCount - 1];
 end;
 
 function TCustomGuiGraphXYDataSeries.Get(Index: Integer): TDAVPointSingle;
@@ -804,7 +805,7 @@ function TGuiGraphXYDataSeries.AddPoint(Item: TDAVPointSingle): Integer;
 begin
  ReallocMem(FData, (FCount + 1) * SizeOf(TDAVPointSingle));
  FData^[FCount] := Item;
- result := FCount;
+ Result := FCount;
  Inc(FCount);
 end;
 
@@ -844,7 +845,7 @@ function TGuiGraphXYSortedDataSeries.AddPoint(
 var
   i : Integer;
 begin
- result := -1;
+ Result := -1;
  if FCount = 0 then
   begin
    ReallocMem(FData, SizeOf(TDavPointSingle));
@@ -884,14 +885,14 @@ end;
 
 function TGuiGraphXYSeriesCollectionItem.GetDisplayName: string;
 begin
- result := FDisplayName;
+ Result := FDisplayName;
 end;
 
 function TGuiGraphXYSeriesCollectionItem.GetSeriesClassName: string;
 begin
  if assigned(FSeries)
-  then result := FSeries.ClassName
-  else result := '';
+  then Result := FSeries.ClassName
+  else Result := '';
 end;
 
 procedure TGuiGraphXYSeriesCollectionItem.SetDisplayName(const Value: string);
@@ -931,6 +932,7 @@ begin
   end;
 end;
 
+
 { TGuiGraphXYSeriesCollection }
 
 constructor TGuiGraphXYSeriesCollection.Create(AOwner: TComponent);
@@ -940,7 +942,7 @@ end;
 
 function TGuiGraphXYSeriesCollection.Add: TGuiGraphXYSeriesCollectionItem;
 begin
- result := TGuiGraphXYSeriesCollectionItem(inherited Add);
+ Result := TGuiGraphXYSeriesCollectionItem(inherited Add);
 end;
 
 procedure TGuiGraphXYSeriesCollection.Delete(Index: Integer);
@@ -950,13 +952,13 @@ end;
 
 function TGuiGraphXYSeriesCollection.GetItem(Index: Integer): TGuiGraphXYSeriesCollectionItem;
 begin
- result := TGuiGraphXYSeriesCollectionItem(inherited GetItem(Index));
+ Result := TGuiGraphXYSeriesCollectionItem(inherited GetItem(Index));
 end;
 
 function TGuiGraphXYSeriesCollection.Insert(
   Index: Integer): TGuiGraphXYSeriesCollectionItem;
 begin
- result:= TGuiGraphXYSeriesCollectionItem(inherited Insert(Index));
+ Result:= TGuiGraphXYSeriesCollectionItem(inherited Insert(Index));
 end;
 
 procedure TGuiGraphXYSeriesCollection.Notify(Item: TCollectionItem;
@@ -972,6 +974,7 @@ procedure TGuiGraphXYSeriesCollection.SetItem(Index: Integer;
 begin
  inherited SetItem(Index, Value);
 end;
+
 
 { TCustomGuiGraphXY }
 
@@ -1002,8 +1005,8 @@ function TCustomGuiGraphXY.GetSeriesCollectionItem(
   Index: Integer): TGuiGraphXYSeriesCollectionItem;
 begin
  if (Index >= 0) and (Index < FSeriesCollection.Count)
-  then result := FSeriesCollection[Index]
-  else result := nil;
+  then Result := FSeriesCollection[Index]
+  else Result := nil;
 end;
 
 procedure TCustomGuiGraphXY.Loaded;

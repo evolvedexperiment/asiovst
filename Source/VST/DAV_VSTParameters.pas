@@ -5,8 +5,8 @@ interface
 {$I ..\DAV_Compiler.INC}
 
 uses
-  Classes, SysUtils, Windows, Forms, DAV_Types, DAV_VSTEffect,
-  DAV_VSTBasicModule;
+  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, Forms, 
+  DAV_Types, DAV_VSTEffect, DAV_VSTBasicModule;
 
 type
   TCustomVstParameterCategory = class(TCollectionItem)

@@ -65,7 +65,7 @@ unit DAV_SoundTouchDLL;
 interface
 
 uses
-  Windows;
+  {$IFDEF FPC}LCLIntf; {$ELSE}Windows; {$ENDIF}
 
 type
   TSoundTouchHandle = THandle;
