@@ -43,9 +43,9 @@ type
     function GetFftOrder: Byte;
     procedure SetFftOrder(const Value: Byte);
   protected
-    FFFT           : TFftReal2Complex;
-    FFFTSize       : Integer;
-    FFFTSizeHalf   : Integer;
+    FFFT         : TFftReal2Complex;
+    FFFTSize     : Integer;
+    FFFTSizeHalf : Integer;
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateFftSizeVariables; virtual;
     procedure FFTOrderChanged; virtual;

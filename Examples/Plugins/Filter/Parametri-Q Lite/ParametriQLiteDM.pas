@@ -361,14 +361,14 @@ function TParametriQLiteDataModule.GetDownSampler(
   Index: Integer): TPolyphaseDownSampler64;
 begin
  if (Index >= 0) and (Index < Length(FFilters))
-  then result := FDownSampler[0]
+  then Result := FDownSampler[0]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 function TParametriQLiteDataModule.GetFilter(Index: Integer): TCustomIIRFilter;
 begin
  if (Index >= 0) and (Index < Length(FFilters[0]))
-  then result := FFilters[0, Index]
+  then Result := FFilters[0, Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -376,7 +376,7 @@ function TParametriQLiteDataModule.GetFilterClass(
   Index: Integer): TBandwidthIIRFilterClass;
 begin
  if (Index >= 0) and (Index < Length(FFilters[0]))
-  then result := TBandwidthIIRFilterClass(FFilters[0, Index].ClassType)
+  then Result := TBandwidthIIRFilterClass(FFilters[0, Index].ClassType)
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -385,9 +385,9 @@ const
   CdBFactor : Single = 6.020487696;
 begin
  if FPeaks[0, 0] > FPeaks[1, 0]
-  then result := FPeaks[0, 0]
-  else result := FPeaks[1, 0];
- result := CdBFactor * FastLog2ContinousError5(result);
+  then Result := FPeaks[0, 0]
+  else Result := FPeaks[1, 0];
+ Result := CdBFactor * FastLog2ContinousError5(Result);
 end;
 
 function TParametriQLiteDataModule.GetOutputPeakLevel: Single;
@@ -395,16 +395,16 @@ const
   CdBFactor : Single = 6.020487696;
 begin
  if FPeaks[0, 1] > FPeaks[1, 1]
-  then result := FPeaks[0, 1]
-  else result := FPeaks[1, 1];
- result := CdBFactor * FastLog2ContinousError5(result);
+  then Result := FPeaks[0, 1]
+  else Result := FPeaks[1, 1];
+ Result := CdBFactor * FastLog2ContinousError5(Result);
 end;
 
 function TParametriQLiteDataModule.GetUpSampler(
   Index: Integer): TPolyphaseUpSampler64;
 begin
  if (Index >= 0) and (Index < Length(FFilters))
-  then result := FUpSampler[0]
+  then Result := FUpSampler[0]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 

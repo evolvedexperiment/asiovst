@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows {$ENDIF}, Messages,
   SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Types, DAV_VSTModule,
-  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
+  DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel, DAV_GuiEQGraph;
 
 type
   TFmButterworth = class(TForm)
@@ -50,10 +50,17 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControls: TGuiPanel;
+    GuiEQGraph: TGuiEQGraph;
+    Timer: TTimer;
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    function GetFilterGain(Sender: TObject;
+      const Frequency: Single): Single;
+    procedure EQGraphUpdateTimer(Sender: TObject);
+  private
+    procedure EQGraphUpdate;
   public
     procedure UpdateFrequency;
     procedure UpdateOrder;
@@ -103,6 +110,12 @@ begin
  UpdateOrder;
 end;
 
+function TFmButterworth.GetFilterGain(Sender: TObject;
+  const Frequency: Single): Single;
+begin
+ Result := TButterworthLPModule(Owner).Magnitude_dB(Frequency);
+end;
+
 procedure TFmButterworth.UpdateFrequency;
 var
   Freq : Single;
@@ -115,6 +128,7 @@ begin
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 4, 4) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4) + ' kHz';
+   EQGraphUpdate;
   end;
 end;
 
@@ -128,7 +142,19 @@ begin
    if DialOrder.Position <> Order
     then DialOrder.Position := Order;
    LbOrderValue.Caption := IntToStr(round(Order));
+   EQGraphUpdate;
   end;
+end;
+
+procedure TFmButterworth.EQGraphUpdateTimer(Sender: TObject);
+begin
+ Timer.Enabled := False;
+ GuiEQGraph.Invalidate;
+end;
+
+procedure TFmButterworth.EQGraphUpdate;
+begin
+ Timer.Enabled := True;
 end;
 
 {$IFDEF FPC}

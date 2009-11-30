@@ -2121,12 +2121,39 @@ object FmParametriQLite: TFmParametriQLite
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
-  object PlotBox: TPaintBox
+  object GuiEQGraph: TGuiEQGraph
     Left = 16
-    Top = 33
-    Width = 198
-    Height = 84
-    OnPaint = PlotBoxPaint
+    Top = 36
+    Width = 196
+    Height = 77
+    AntiAlias = gaaLinear4x
+    GraphColorDark = 4342593
+    GraphColorLight = 4342593
+    ColorChart = 1447701
+    BorderColor = 4342593
+    FilterSeries = <
+      item
+        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
+        Color = 9145737
+        OnGetFilterGain = GetFilterGain
+      end>
+    YAxis.AutoGranularity = False
+    YAxis.LabelStyle = ylsLeft
+    YAxis.LowerLevel = -17.000000000000000000
+    YAxis.UpperLevel = 17.000000000000000000
+    YAxis.Granularity = 10.000000000000000000
+    YAxis.MaximumGridLines = 4
+    XAxis.LabelStyle = xlsBottom
+    XAxis.UnitPosition = upSide
+    XAxis.UpperFrequency = 20000.000000000000000000
+    XAxis.LowerFrequency = 20.000000000000000000
+    Color = 1447701
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 12961476
+    Font.Height = -5
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
   end
   object GuiDialImageList: TGuiDialImageList
     DialImages = <

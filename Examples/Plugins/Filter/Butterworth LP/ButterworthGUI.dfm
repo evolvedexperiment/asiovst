@@ -3,7 +3,7 @@ object FmButterworth: TFmButterworth
   Top = 65
   BorderStyle = bsNone
   Caption = 'Butterworth Lowpass Filter'
-  ClientHeight = 181
+  ClientHeight = 243
   ClientWidth = 200
   Color = 657940
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object FmButterworth: TFmButterworth
   OnShow = FormShow
   DesignSize = (
     200
-    181)
+    243)
   PixelsPerInch = 96
   TextHeight = 13
   object LbButterworthFilterDemoShaddow: TGuiLabel
@@ -52,7 +52,6 @@ object FmButterworth: TFmButterworth
     Top = 44
     Width = 184
     Height = 129
-    Anchors = [akLeft, akTop, akBottom]
     AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
@@ -180,5 +179,43 @@ object FmButterworth: TFmButterworth
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
     end
+  end
+  object GuiEQGraph: TGuiEQGraph
+    Left = 8
+    Top = 179
+    Width = 184
+    Height = 56
+    AntiAlias = gaaLinear4x
+    GraphColorDark = 10526927
+    GraphColorLight = 2829139
+    ColorChart = 657940
+    BorderRadius = 8
+    BorderWidth = 2
+    FilterSeries = <
+      item
+        DisplayName = 'TGuiEQGraphSeriesCollectionItem'
+        Color = 10526927
+        OnGetFilterGain = GetFilterGain
+      end>
+    YAxis.LowerLevel = -36.000000000000000000
+    YAxis.UpperLevel = 6.000000000000000000
+    YAxis.MaximumGridLines = 3
+    XAxis.UpperFrequency = 20000.000000000000000000
+    XAxis.LowerFrequency = 20.000000000000000000
+    Anchors = [akLeft, akTop, akBottom]
+    Color = 1315880
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = 10526927
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentColor = False
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 20
+    OnTimer = EQGraphUpdateTimer
+    Left = 96
+    Top = 192
   end
 end

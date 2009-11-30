@@ -51,6 +51,8 @@ type
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FFilter: array of TCustomButterworthFilter;
+  public  
+    function Magnitude_dB(Frequency: Single): Single;
   end;
 
 implementation
@@ -60,19 +62,19 @@ implementation
 {$ENDIF}
 
 uses
-  Math, ButterworthGUI;
+  Math, DAV_Approximations, DAV_DspFilter, ButterworthGUI;
 
 procedure TButterworthLPModule.VSTModuleOpen(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFilter, numInputs);
- for ch := 0 to numInputs - 1 do
+ for ChannelIndex := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TButterworthLowPassFilter.Create;
-   FFilter[ch].SetFilterValues(1000, 0);
+   FFilter[ChannelIndex] := TButterworthLowPassFilter.Create;
+   FFilter[ChannelIndex].SetFilterValues(1000, 0);
   end;
 
  Parameter[0] := 1000;
@@ -81,10 +83,10 @@ end;
 
 procedure TButterworthLPModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1
-  do FreeAndNil(FFilter[ch]);
+ for ChannelIndex := 0 to Length(FFilter) - 1
+  do FreeAndNil(FFilter[ChannelIndex]);
 end;
 
 procedure TButterworthLPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -95,26 +97,32 @@ end;
 procedure TButterworthLPModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
   begin
-   if assigned(FFilter[Channel])
-    then FFilter[Channel].Order := round(Value);
+   if Assigned(FFilter[ChannelIndex])
+    then FFilter[ChannelIndex].Order := round(Value);
   end;
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm)
    do UpdateOrder;
 end;
 
+function TButterworthLPModule.Magnitude_dB(Frequency: Single): Single;
+begin
+ if Assigned(FFilter[0])
+  then Result := 10 * FastLog10MinError5(FFilter[0].MagnitudeSquared(Frequency));
+end;
+
 procedure TButterworthLPModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
-   then FFilter[Channel].Frequency := Value;
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  if Assigned(FFilter[ChannelIndex])
+   then FFilter[ChannelIndex].Frequency := Value;
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm)
    do UpdateFrequency;
@@ -122,32 +130,32 @@ end;
 
 procedure TButterworthLPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1
-  do FFilter[Channel].SampleRate := SampleRate;
+ for ChannelIndex := 0 to Length(FFilter) - 1
+  do FFilter[ChannelIndex].SampleRate := SampleRate;
 end;
 
 procedure TButterworthLPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[ChannelIndex, SampleIndex] := FFilter[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
 
 procedure TButterworthLPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[ChannelIndex, SampleIndex] := FFilter[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
 
 {$IFDEF FPC}

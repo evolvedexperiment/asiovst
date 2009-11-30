@@ -22,7 +22,7 @@ object FmEqGraphTest: TFmEqGraphTest
     Top = 8
     Width = 324
     Height = 242
-    GraphColorDark = clBlue
+    GraphColorDark = 2763306
     ColorChart = clBtnFace
     FilterSeries = <
       item
@@ -33,13 +33,15 @@ object FmEqGraphTest: TFmEqGraphTest
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = clNavy
+        LineWidth = 1
         OnGetFilterGain = EqGraphAFilterSeries1GetFilterGain
       end>
+    YAxis.LabelStyle = ylsLeft
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     XAxis.LabelStyle = xlsBottom
-    XAxis.UpperFrequency = 9000.000000000000000000
-    XAxis.LowerFrequency = 100.000000000000000000
+    XAxis.UpperFrequency = 13000.000000000000000000
+    XAxis.LowerFrequency = 80.000000000000000000
     Color = clBtnFace
     ParentColor = False
   end
@@ -49,7 +51,7 @@ object FmEqGraphTest: TFmEqGraphTest
     Width = 324
     Height = 242
     AntiAlias = gaaLinear3x
-    GraphColorDark = clLime
+    GraphColorDark = 2763306
     ColorChart = clBtnFace
     FilterSeries = <
       item
@@ -57,11 +59,12 @@ object FmEqGraphTest: TFmEqGraphTest
         Color = clLime
         OnGetFilterGain = EqGraphGetFilterGain
       end>
+    YAxis.LabelStyle = ylsLeft
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     XAxis.LabelStyle = xlsBottom
-    XAxis.UpperFrequency = 9000.000000000000000000
-    XAxis.LowerFrequency = 100.000000000000000000
+    XAxis.UpperFrequency = 13000.000000000000000000
+    XAxis.LowerFrequency = 80.000000000000000000
     Anchors = [akLeft, akBottom]
     Color = clBtnFace
     ParentColor = False
@@ -72,7 +75,7 @@ object FmEqGraphTest: TFmEqGraphTest
     Width = 324
     Height = 242
     AntiAlias = gaaLinear2x
-    GraphColorDark = clYellow
+    GraphColorDark = 2763306
     ColorChart = clBtnFace
     FilterSeries = <
       item
@@ -80,11 +83,12 @@ object FmEqGraphTest: TFmEqGraphTest
         Color = clYellow
         OnGetFilterGain = EqGraphGetFilterGain
       end>
+    YAxis.LabelStyle = ylsLeft
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     XAxis.LabelStyle = xlsBottom
-    XAxis.UpperFrequency = 9000.000000000000000000
-    XAxis.LowerFrequency = 100.000000000000000000
+    XAxis.UpperFrequency = 13000.000000000000000000
+    XAxis.LowerFrequency = 80.000000000000000000
     Anchors = [akTop, akRight]
     Color = clBtnFace
     ParentColor = False
@@ -95,18 +99,19 @@ object FmEqGraphTest: TFmEqGraphTest
     Width = 324
     Height = 242
     AntiAlias = gaaLinear4x
-    GraphColorDark = clRed
+    GraphColorDark = 2763306
     ColorChart = clBtnFace
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         OnGetFilterGain = EqGraphGetFilterGain
       end>
+    YAxis.LabelStyle = ylsLeft
     YAxis.LowerLevel = -40.000000000000000000
     YAxis.UpperLevel = 15.000000000000000000
     XAxis.LabelStyle = xlsBottom
-    XAxis.UpperFrequency = 9000.000000000000000000
-    XAxis.LowerFrequency = 100.000000000000000000
+    XAxis.UpperFrequency = 13000.000000000000000000
+    XAxis.LowerFrequency = 80.000000000000000000
     Anchors = [akRight, akBottom]
     Color = clBtnFace
     ParentColor = False

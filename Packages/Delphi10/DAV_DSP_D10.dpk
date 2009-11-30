@@ -35,6 +35,7 @@ requires
   vclx;
 
 contains
+  DAV_ClassesFft in '..\..\Source\DAV_ClassesFft.pas',
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
   DAV_DspAmbience in '..\..\Source\Dsp\DAV_DspAmbience.pas',
   DAV_DspAudioToMidiTrigger in '..\..\Source\Dsp\DAV_DspAudioToMidiTrigger.pas',

@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  Controls, Graphics, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel, ExtCtrls,
-  DAV_GuiVUMeter, Menus;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, Menus,
+  ExtCtrls, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiDial,
+  DAV_GuiLabel, DAV_GuiVUMeter, DAV_GuiEQGraph;
 
 type
   TFmParametriQLite = class(TForm)
@@ -198,9 +198,11 @@ type
     MIBandpass: TMenuItem;
     N1: TMenuItem;
     Timer: TTimer;
-    PlotBox: TPaintBox;
     MILowShelfA: TMenuItem;
+    GuiEQGraph: TGuiEQGraph;
     procedure FormCreate(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure DialBWChange(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
     procedure DialGainChange(Sender: TObject);
@@ -213,15 +215,13 @@ type
     procedure MIHighpassClick(Sender: TObject);
     procedure MIHighshelfClick(Sender: TObject);
     procedure MILowpassClick(Sender: TObject);
+    procedure MILowShelfAClick(Sender: TObject);
     procedure MILowshelfClick(Sender: TObject);
     procedure MINotchClick(Sender: TObject);
     procedure MIPeakClick(Sender: TObject);
     procedure PopupFilterPopup(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
-    procedure PlotBoxPaint(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
-    procedure MILowShelfAClick(Sender: TObject);
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
   private
     FBackgroundBitmap : TBitmap;
   public
@@ -383,7 +383,6 @@ begin
    Canvas.Rectangle(rct);
   end;
 
- PlotBox.ControlStyle   := PlotBox.ControlStyle + [csOpaque];
  ShapeInfo.ControlStyle := ShapeInfo.ControlStyle + [csOpaque];
 end;
 
@@ -403,11 +402,26 @@ begin
    UpdateFrequency(Band);
    UpdateFilterType(Band);
   end;
+ GuiEQGraph.YAxis.Granularity := 10; 
+end;
+
+function TFmParametriQLite.GetFilterGain(
+  Sender: TObject; const Frequency: Single): Single;
+var
+  Band : Integer;
+begin
+ with TParametriQLiteDataModule(Owner) do
+  begin
+   Result := Filter[0].MagnitudeSquared(0.5 * Frequency);
+   for Band := 1 to 7
+    do Result := Result * Filter[Band].MagnitudeSquared(0.5 * Frequency);
+   Result := 10 * FastLog10MinError5(Result);
+  end;
 end;
 
 procedure TFmParametriQLite.LbTypeClick(Sender: TObject);
 begin
- assert(Sender is TGuiLabel);
+ Assert(Sender is TGuiLabel);
  PopupFilter.Tag := (TGuiLabel(Sender).Tag - 1);
  PopupFilter.Popup(Mouse.CursorPos.X, Mouse.CursorPos.Y);
 end;
@@ -507,66 +521,6 @@ begin
  Result := (CTwenty32 * FastPower2MinError3 (value * fltl1));
 end;
 
-procedure TFmParametriQLite.PlotBoxPaint(Sender: TObject);
-var
-  R         : TRect;
-  HalfHght  : Integer;
-  c, Wdth   : Integer;
-  WdthRez   : Single;
-  Magn, Frq : Single;
-  Band      : Integer;
-const
-  CdBFactor : Single = 0.2006829232;
-begin
- with TParametriQLiteDataModule(Owner), PlotBox.Canvas do
-  begin
-   Lock;
-   R := PlotBox.ClientRect;
-   Pen.Color := $00424341;
-   RoundRect(R.Left, R.Top, R.Right, R.Bottom, 2, 2);
-   InflateRect(R, -1, -1);
-   Brush.Color := $00232422;
-   FillRect(R);
-   Wdth := R.Right - R.Left + 1;
-   WdthRez := 1 / Wdth;
-   HalfHght := (R.Bottom - R.Top) div 2;
-
-   // draw 100 Hz
-   Band := round(FastFreqLogToLinear(100) * Wdth);
-   MoveTo(Band, R.Top);
-   LineTo(Band, R.Bottom);
-
-   // draw 1 kHz
-   Band := round(FastFreqLogToLinear(1E3) * Wdth);
-   MoveTo(Band, R.Top);
-   LineTo(Band, R.Bottom);
-
-   // draw 10 kHz
-   Band := round(FastFreqLogToLinear(1E4) * Wdth);
-   MoveTo(Band, R.Top);
-   LineTo(Band, R.Bottom);
-
-   // draw middle line
-   MoveTo(1, HalfHght);
-   LineTo(Wdth, HalfHght);
-
-   Pen.Color := $00666765;
-   Magn := Filter[0].MagnitudeSquared(20);
-   for Band := 1 to 7
-    do Magn := Magn * Filter[Band].MagnitudeSquared(20);
-   MoveTo(1, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor)));
-   for c := 2 to Wdth do
-    begin
-     Frq := FastFreqLinearToLog(c * WdthRez);
-     Magn := Filter[0].MagnitudeSquared(Frq);
-     for Band := 1 to 7
-      do Magn := Magn * Filter[Band].MagnitudeSquared(Frq);
-     LineTo(c, round(HalfHght * (1 - FastLog2MinError5(Magn) * CdBFactor )));
-    end;
-   Unlock; 
-  end;
-end;
-
 procedure TFmParametriQLite.PopupFilterPopup(Sender: TObject);
 var
   FilterType: Integer;
@@ -649,7 +603,7 @@ begin
         end;
    end;
   end;
- PlotBox.Invalidate;
+ GuiEQGraph.Invalidate;
 end;
 
 procedure TFmParametriQLite.UpdateBandwidth(const Index: Integer);
@@ -699,7 +653,7 @@ begin
         end;
    end;
   end;
- PlotBox.Invalidate;
+ GuiEQGraph.Invalidate;
 end;
 
 procedure TFmParametriQLite.UpdateGain(const Index: Integer);
@@ -749,7 +703,7 @@ begin
         end;
    end;
   end;
- PlotBox.Invalidate;
+ GuiEQGraph.Invalidate;
 end;
 
 procedure TFmParametriQLite.UpdateFilterType(const Index: Integer);
@@ -767,7 +721,7 @@ begin
     7 : LbTypeValue8.Caption := ParameterDisplay[Index * 4 + 4];
    end;
   end;
- PlotBox.Invalidate;
+ GuiEQGraph.Invalidate;
 end;
 
 procedure TFmParametriQLite.DialFreqChange(Sender: TObject);
