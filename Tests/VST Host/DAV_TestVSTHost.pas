@@ -70,6 +70,7 @@ type
     procedure TestCanDoUnknownTokens;
     procedure TestInvalidOpcodes;
     procedure TestInvalidParameters;
+    procedure TestString2Parameter;
   end;
 
   // Test methods for VST Plugins for various hosts
@@ -259,25 +260,27 @@ end;
 
 procedure TVstPluginBasicTests.TestPrograms;
 var
-  i   : Integer;
-  str : string;
-  MS  : TMemoryStream;
-  MPN : TMidiProgramName;
+  ProgIndex  : Integer;
+  ParamIndex : Integer;
+  str        : string;
+  MS         : TMemoryStream;
+  MPN        : TMidiProgramName;
 begin
  with FVstHost[0] do
   begin
    Active := True;
    if numPrograms > 0 then
-    for i := 0 to 999 do
+    for ProgIndex := 0 to 999 do
      begin
-      CurrentProgram := random(numPrograms);
+      CurrentProgram := Random(numPrograms);
       if numParams > 0 then
        begin
-        Parameter[random(numParams)] := random;
-        GetParamName(random(numParams));
-        GetParamLabel(random(numParams));
-        GetParamDisplay(random(numParams));
-        String2Parameter(random(numParams), str);
+        ParamIndex := Random(numParams);
+        Parameter[ParamIndex] := Random;
+        GetParamName(ParamIndex);
+        Str := GetParamDisplay(ParamIndex);
+        Str := Str + GetParamLabel(ParamIndex);
+        String2Parameter(ParamIndex, Str);
        end;
       SetLength(str, 20);
       SetProgramName(str);
@@ -286,7 +289,7 @@ begin
       GetMidiProgramName(MPN);
      end;
 
-   for i := 0 to 9 do
+   for ProgIndex := 0 to 9 do
     begin
      MS := TMemoryStream.Create;
      try
@@ -497,17 +500,53 @@ begin
    end;
 end;
 
+procedure TVstPluginPerverseTests.TestString2Parameter;
+var
+  ParameterIndex  : Integer;
+  ParameterString : string;
+  DesiredValue    : Single;
+begin
+ with FVstHost[0] do
+  begin
+   Active := True;
+   for ParameterIndex := 0 to numParams - 1 do
+    begin
+     // set random parameter value
+     Parameter[ParameterIndex] := Random;
+
+     // store desired value
+     DesiredValue := Parameter[ParameterIndex];
+     ParameterString := ParameterDisplay[ParameterIndex] + ' ' +
+       ParameterLabel[ParameterIndex];
+
+     // change value to something different
+     repeat
+      Parameter[ParameterIndex] := Random;
+     until Parameter[ParameterIndex] <> DesiredValue;
+
+     // change value to something different
+     String2Parameter(ParameterIndex, ParameterString);
+     CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
+       ParameterLabel[ParameterIndex], 'Error at parameter ' +
+       IntToStr(ParameterIndex + 1) + '! ' + #10#13 + 'Desired Value: ' +
+       ParameterString + ', Current Value: ' + ParameterDisplay[ParameterIndex] +
+       ' ' + ParameterLabel[ParameterIndex] + '!');
+    end;
+   Active := False;
+  end;
+end;
+
 procedure TVstPluginPerverseTests.TestInactiveSamplerateChanges;
 var
-  d : Single;
+  NewSamplerate : Single;
 begin
  // Test Inactive Samplerate Change
  FVstHost[0].Active := False;
- d := 1;
- while d <= 1411200 do
+ NewSamplerate := 1;
+ while NewSamplerate <= 1411200 do
   begin
-   FVstHost[0].SetSampleRate(d);
-   d := d * 1.1;
+   FVstHost[0].SetSampleRate(NewSamplerate);
+   NewSamplerate := NewSamplerate * 1.1;
   end;
 
  // activate and directly deactivate
@@ -517,11 +556,11 @@ begin
    Active := False;
   end;
 
- d := 1;
- while d <= 1411200 do
+ NewSamplerate := 1;
+ while NewSamplerate <= 1411200 do
   begin
-   FVstHost[0].SetSampleRate(d);
-   d := d * 1.1;
+   FVstHost[0].SetSampleRate(NewSamplerate);
+   NewSamplerate := NewSamplerate * 1.1;
   end;
 end;
 

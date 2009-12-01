@@ -186,11 +186,12 @@ object FmButterworth: TFmButterworth
     Width = 184
     Height = 56
     AntiAlias = gaaLinear4x
-    GraphColorDark = 10526927
+    GraphColorDark = 4145018
     GraphColorLight = 2829139
     ColorChart = 657940
     BorderRadius = 8
     BorderWidth = 2
+    BorderColor = 10526927
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
@@ -199,6 +200,7 @@ object FmButterworth: TFmButterworth
       end>
     YAxis.LowerLevel = -36.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
+    YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 3
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
@@ -206,7 +208,7 @@ object FmButterworth: TFmButterworth
     Color = 1315880
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
-    Font.Height = -11
+    Font.Height = -7
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentColor = False

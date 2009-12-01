@@ -44,6 +44,7 @@ type
     property OffQualities;
     property IORatio;
     property UniqueID;
+    property UseDefaultString2ParameterHandler;
     property ShellPlugins;
     property TruncateStrings;
     property Programs;

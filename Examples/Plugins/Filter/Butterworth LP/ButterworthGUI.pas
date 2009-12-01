@@ -52,12 +52,11 @@ type
     PnControls: TGuiPanel;
     GuiEQGraph: TGuiEQGraph;
     Timer: TTimer;
-    procedure DialFrequencyChange(Sender: TObject);
-    procedure DialOrderChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    function GetFilterGain(Sender: TObject;
-      const Frequency: Single): Single;
+    procedure DialFrequencyChange(Sender: TObject);
+    procedure DialOrderChange(Sender: TObject);
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure EQGraphUpdateTimer(Sender: TObject);
   private
     procedure EQGraphUpdate;

@@ -261,7 +261,7 @@ type
     function SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
     function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
-    function String2Parameter(const Index: Integer; var ParameterName: string): Integer;
+    function String2Parameter(const Index: Integer; ValueString: string): Integer;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
     function VstCanDo(const CanDoString: string): Integer;
     function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
@@ -2393,7 +2393,7 @@ begin
  Result := CheckValidVstPlugin(FileName);
 end;
 
-function TCustomVstPlugIn.String2Parameter(const Index: Integer; var ParameterName: string): Integer;
+function TCustomVstPlugIn.String2Parameter(const Index: Integer; ValueString: string): Integer;
 var
   Temp : PAnsiChar;
 const
@@ -2407,11 +2407,15 @@ begin
   FillChar(Temp^, Lngth, 0);
   if FActive then
    begin
+    if Length(ValueString) > Lngth
+     then SetLength(ValueString, Lngth);
+
+    StrPCopy(Temp, ValueString);
     Result := VstDispatch(effString2Parameter, Index, 0, Temp);
-    ParameterName := StrPas(Temp);
+    ValueString := StrPas(Temp);
    end;
  finally
-
+  Dispose(Temp);
  end;
 end;
 

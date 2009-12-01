@@ -3,7 +3,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   Top = 138
   BorderStyle = bsNone
   Caption = 'Dual Linkwitz-Riley Filters'
-  ClientHeight = 176
+  ClientHeight = 235
   ClientWidth = 236
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
@@ -31,6 +31,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = []
+    Visible = False
     Transparent = True
     OnClick = LbShowFrequencyPlotClick
   end
@@ -285,10 +286,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Height = 53
     AntiAlias = gaaLinear4x
     GraphColorDark = 5991539
-    GraphColorLight = 5991539
-    ColorChart = 5991539
+    GraphColorLight = 6978950
+    ColorChart = 7373965
     BorderRadius = 7
     BorderWidth = 2
+    BorderColor = 15659506
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
@@ -297,6 +299,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       end>
     YAxis.LowerLevel = -15.000000000000000000
     YAxis.UpperLevel = 3.000000000000000000
+    YAxis.Granularity = 2.000000000000000000
     XAxis.LabelStyle = xlsBottom
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
@@ -308,7 +311,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Font.Style = [fsBold]
     OnClick = GuiEQGraphClick
     ParentColor = False
-    Visible = False
   end
   object PuFrequency: TPopupMenu
     OnPopup = PuFrequencyPopup
@@ -543,5 +545,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         OnClick = MiStoreClick
       end
     end
+  end
+  object EQGraphUpdate: TTimer
+    Interval = 10
+    OnTimer = EQGraphUpdateTimer
+    Left = 88
+    Top = 184
   end
 end

@@ -265,7 +265,7 @@ end;
 procedure TDualLinkwitzRileyFiltersModule.ParameterOrderDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- Predefined := IntToStr(12 * round(Parameter[Index]));
+ PreDefined := IntToStr(12 * Round(Parameter[Index]));
 end;
 
 procedure TDualLinkwitzRileyFiltersModule.ParameterFrequencyDisplay(
@@ -396,16 +396,22 @@ procedure TDualLinkwitzRileyFiltersModule.VSTModuleSampleRateChange(Sender: TObj
 var
   Channel: Integer;
 begin
- for Channel := 0 to numInputs - 1 do
+ if Abs(SampleRate) > 0 then
   begin
-   if Assigned(FLowpass[Channel][0])
-    then FLowpass[Channel][0].SampleRate := SampleRate;
-   if Assigned(FLowpass[Channel][1])
-    then FLowpass[Channel][1].SampleRate := SampleRate;
-   if Assigned(FHighpass[Channel][0])
-    then FHighpass[Channel][0].SampleRate := SampleRate;
-   if Assigned(FHighpass[Channel][1])
-    then FHighpass[Channel][1].SampleRate := SampleRate;
+   for Channel := 0 to Length(FLowpass) - 1 do
+    begin
+     if Assigned(FLowpass[Channel][0])
+      then FLowpass[Channel][0].SampleRate := Abs(SampleRate);
+     if Assigned(FLowpass[Channel][1])
+      then FLowpass[Channel][1].SampleRate := Abs(SampleRate);
+    end;
+   for Channel := 0 to Length(FHighpass) - 1 do
+    begin
+     if Assigned(FHighpass[Channel][0])
+      then FHighpass[Channel][0].SampleRate := Abs(SampleRate);
+     if Assigned(FHighpass[Channel][1])
+      then FHighpass[Channel][1].SampleRate := Abs(SampleRate);
+    end;
   end;
 end;
 

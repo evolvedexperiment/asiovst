@@ -7,15 +7,21 @@ object ButterworthLPModule: TButterworthLPModule
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = -1
+  CurrentProgram = 0
+  CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
+  UseDefaultString2ParameterHandler = True
   ShellPlugins = <>
-  Programs = <>
+  Programs = <
+    item
+      DisplayName = 'Default'
+      VSTModule = Owner
+    end>
   ParameterProperties = <
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       DisplayName = 'Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
@@ -32,6 +38,9 @@ object ButterworthLPModule: TButterworthLPModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
+      OnStringToParameter = StringToFrequencyParameter
     end
     item
       Curve = ctLinear
@@ -48,6 +57,8 @@ object ButterworthLPModule: TButterworthLPModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
+      OnCustomParameterDisplay = ParameterOrderDisplay
+      OnStringToParameter = StringToOrderParameter
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

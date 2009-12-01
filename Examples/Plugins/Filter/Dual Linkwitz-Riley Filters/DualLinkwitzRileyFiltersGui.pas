@@ -104,6 +104,7 @@ type
     MiStoreF: TMenuItem;
     GuiEQGraph: TGuiEQGraph;
     LbShowFrequencyPlot: TGuiLabel;
+    EQGraphUpdate: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -128,16 +129,19 @@ type
     procedure PuPresetPopup(Sender: TObject);
     procedure LbShowFrequencyPlotClick(Sender: TObject);
     procedure GuiEQGraphClick(Sender: TObject);
+    procedure EQGraphUpdateTimer(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;
     FIsLow           : Boolean;
+    FDirectUpdate    : Boolean;
   public
     procedure UpdateLowpassFrequency;
     procedure UpdateLowpassSlope;
     procedure UpdateHighpassFrequency;
     procedure UpdateHighpassSlope;
     procedure UpdateType;
+    procedure UpdateEQGraph;
   end;
 
 implementation
@@ -264,7 +268,9 @@ end;
 
 procedure TFmLinkwitzRiley.DialLowpassFrequencyMouseEnter(Sender: TObject);
 begin
- UpdateLowpassFrequency;
+ with TDualLinkwitzRileyFiltersModule(Owner)
+  do LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[0] + ' ' + ParameterLabel[0];
+
  if Sender is TGuiDial
   then FCurrentDial := TGuiDial(Sender)
 end;
@@ -280,7 +286,14 @@ end;
 
 procedure TFmLinkwitzRiley.DialLowpassSlopeMouseEnter(Sender: TObject);
 begin
- UpdateLowpassSlope;
+ with TDualLinkwitzRileyFiltersModule(Owner)
+  do LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + ' ' + ParameterLabel[1];
+end;
+
+procedure TFmLinkwitzRiley.EQGraphUpdateTimer(Sender: TObject);
+begin
+ EQGraphUpdate.Enabled := False;
+ GuiEQGraph.Invalidate;
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassFrequencyChange(Sender: TObject);
@@ -300,7 +313,9 @@ end;
 
 procedure TFmLinkwitzRiley.DialHighpassFrequencyMouseEnter(Sender: TObject);
 begin
- UpdateHighpassFrequency;
+ with TDualLinkwitzRileyFiltersModule(Owner)
+  do LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
+
  if Sender is TGuiDial
   then FCurrentDial := TGuiDial(Sender)
 end;
@@ -316,7 +331,8 @@ end;
 
 procedure TFmLinkwitzRiley.DialHighpassSlopeMouseEnter(Sender: TObject);
 begin
- UpdateHighpassSlope;
+ with TDualLinkwitzRileyFiltersModule(Owner)
+  do LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
 end;
 
 procedure TFmLinkwitzRiley.LbMouseDown(Sender: TObject;
@@ -372,7 +388,7 @@ end;
 procedure TFmLinkwitzRiley.MiStoreClick(Sender: TObject);
 begin
  with TDualLinkwitzRileyFiltersModule(Owner), TComponent(Sender) do
-  if FIsLow then StoreLow(Tag) else StoreHigh(Tag); 
+  if FIsLow then StoreLow(Tag) else StoreHigh(Tag);
 end;
 
 procedure TFmLinkwitzRiley.PuFrequencyPopup(Sender: TObject);
@@ -433,7 +449,7 @@ begin
    if DialLowpassFrequency.Position <> Parameter[0]
     then DialLowpassFrequency.Position := Parameter[0];
    LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[0] + ' ' + ParameterLabel[0];
-   GuiEQGraph.Invalidate;
+   UpdateEQGraph;
   end;
 end;
 
@@ -444,7 +460,7 @@ begin
    if DialLowpassSlope.Position <> Parameter[1]
     then DialLowpassSlope.Position := Parameter[1];
    LbDisplay.Caption := 'Slope: ' + ParameterDisplay[1] + ' ' + ParameterLabel[1];
-   GuiEQGraph.Invalidate;
+   UpdateEQGraph;
   end;
 end;
 
@@ -455,7 +471,7 @@ begin
    if DialHighpassFrequency.Position <> Parameter[2]
     then DialHighpassFrequency.Position := Parameter[2];
    LbDisplay.Caption := 'Freq.: ' + ParameterDisplay[2] + ' ' + ParameterLabel[2];
-   GuiEQGraph.Invalidate;
+   UpdateEQGraph;
   end;
 end;
 
@@ -466,7 +482,7 @@ begin
    if DialHighpassSlope.Position <> Parameter[3]
     then DialHighpassSlope.Position := Parameter[3];
    LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
-   GuiEQGraph.Invalidate;
+   UpdateEQGraph;
   end;
 end;
 
@@ -485,8 +501,15 @@ begin
     else LedLowCut.Brightness_Percent := 10;
 
    LbDisplay.Caption := ParameterDisplay[4];
-   GuiEQGraph.Invalidate;
+   UpdateEQGraph;
   end;
+end;
+
+procedure TFmLinkwitzRiley.UpdateEQGraph;
+begin
+ if FDirectUpdate
+  then GuiEQGraph.Invalidate
+  else EQGraphUpdate.Enabled := True;
 end;
 
 end.

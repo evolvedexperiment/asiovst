@@ -145,7 +145,7 @@ type
     property OnParameterChange: TParameterChangeEvent read FOnParamChange write FOnParamChange;
     property OnCustomParameterLabel: TCustomParameterLabelEvent read FOnCParamLabel write FOnCParamLabel;
     property OnCustomParameterDisplay: TCustomParameterDisplayEvent read FOnCParamDisp write FOnCParamDisp;
-    property OnStringToParameterDisplay: TString2ParameterEvent read FOnStr2Param write FOnStr2Param;
+    property OnStringToParameter: TString2ParameterEvent read FOnStr2Param write FOnStr2Param;
   end;
 
   TCustomVstParameterProperties = class(TOwnedCollection)

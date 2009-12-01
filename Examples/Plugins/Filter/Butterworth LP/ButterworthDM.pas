@@ -49,6 +49,15 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure StringToFrequencyParameter(Sender: TObject; const ParameterString: string; var Value: Single);
+    procedure ParameterFrequencyDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure StringToOrderParameter(
+      Sender: TObject; const ParameterString: string; var Value: Single);
+    procedure ParameterOrderDisplay(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(
+      Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FFilter: array of TCustomButterworthFilter;
   public  
@@ -94,6 +103,9 @@ begin
  GUI := TFmButterworth.Create(Self);
 end;
 
+
+// parameter change
+
 procedure TButterworthLPModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
@@ -104,15 +116,11 @@ begin
    if Assigned(FFilter[ChannelIndex])
     then FFilter[ChannelIndex].Order := round(Value);
   end;
+
+ // update GUI
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm)
    do UpdateOrder;
-end;
-
-function TButterworthLPModule.Magnitude_dB(Frequency: Single): Single;
-begin
- if Assigned(FFilter[0])
-  then Result := 10 * FastLog10MinError5(FFilter[0].MagnitudeSquared(Frequency));
 end;
 
 procedure TButterworthLPModule.ParamFrequencyChange(
@@ -123,17 +131,120 @@ begin
  for ChannelIndex := 0 to Length(FFilter) - 1 do
   if Assigned(FFilter[ChannelIndex])
    then FFilter[ChannelIndex].Frequency := Value;
+
+ // update GUI
  if EditorForm is TFmButterworth then
   with TFmButterworth(EditorForm)
    do UpdateFrequency;
 end;
 
+
+// parameter display
+
+procedure TButterworthLPModule.ParameterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
+  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4)
+end;
+
+procedure TButterworthLPModule.ParameterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := 'Hz'
+  else PreDefined := 'kHz';
+end;
+
+procedure TButterworthLPModule.ParameterOrderDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(Round(Parameter[Index]));
+end;
+
+
+// string to parameter conversion
+
+procedure TButterworthLPModule.StringToFrequencyParameter(
+  Sender: TObject; const ParameterString: string; var Value: Single);
+var
+  Str    : string;
+  Indxes : array [0..1] of Integer;
+  Mult   : Single;
+begin
+ Str := Trim(ParameterString);
+ if Str = '' then Exit;
+
+ // process unit extensions
+ if Pos('k', Str) > 0 then Mult := 1E3 else
+ if Pos('m', Str) > 0 then Mult := 1E-3
+  else Mult := 1;
+
+ Indxes[0] := 1;
+ while (Indxes[0] < Length(Str)) and
+  (not (Str[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] >= Length(Str)) then Exit;
+
+ Indxes[1] := Indxes[0] + 1;
+ while (Indxes[1] < Length(Str)) and
+  (Str[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
+
+ Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
+
+ try
+  Value := Mult * StrToFloat(Str);
+ except
+ end;
+end;
+
+procedure TButterworthLPModule.StringToOrderParameter(
+  Sender: TObject; const ParameterString: string; var Value: Single);
+var
+  Str    : string;
+  Indxes : array [0..1] of Integer;
+begin
+ Str := Trim(ParameterString);
+ if Str = '' then Exit;
+
+ Indxes[0] := 1;
+ while (Indxes[0] < Length(Str)) and
+  (not (Str[Indxes[0]] in ['0'..'9'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] >= Length(Str)) then Exit;
+
+ Indxes[1] := Indxes[0] + 1;
+ while (Indxes[1] < Length(Str)) and
+  (Str[Indxes[1]] in ['0'..'9']) do Inc(Indxes[1]);
+
+ Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
+
+ try
+  Value := Round(StrToFloat(Str));
+ except
+ end;
+end;
+
+
+// magnitude calculation
+
+function TButterworthLPModule.Magnitude_dB(Frequency: Single): Single;
+begin
+ if Assigned(FFilter[0])
+  then Result := 10 * FastLog10MinError5(FFilter[0].MagnitudeSquared(Frequency));
+end;
+
+
+// process related stuff
+
 procedure TButterworthLPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 var
   ChannelIndex : Integer;
 begin
- for ChannelIndex := 0 to Length(FFilter) - 1
-  do FFilter[ChannelIndex].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for ChannelIndex := 0 to Length(FFilter) - 1
+   do FFilter[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 procedure TButterworthLPModule.VSTModuleProcess(const Inputs,
