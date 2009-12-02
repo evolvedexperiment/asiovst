@@ -36,6 +36,8 @@ type
     procedure SetVstPluginName(const Value: TFileName);
   protected
     FVstHost : TVstHost;
+    function GetProductString: string; virtual;
+    function GetVendorString: string; virtual;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -75,22 +77,28 @@ type
 
   // Test methods for VST Plugins for various hosts
   TVstPluginHostTests = class(TCustomTestVstPlugin)
+  protected
+    function GetProductString: string; override;
+    function GetVendorString: string; override;
   published
-    procedure TestCubaseScan;
-    procedure TestCubase;
-    procedure TestReloadPluginCubase;
-    procedure TestFL8FastScan;
-    procedure TestFL8;
-    procedure TestTracktion2;
-    procedure TestTracktion2Scan;
-    procedure TestReaper;
-    procedure TestMULAB;
-    procedure TestCantabile;
-    procedure TestSamplitude;
     procedure TestAbletonLiveScan;
     procedure TestAbletonLive;
+    procedure TestCantabile;
+    procedure TestCubaseScan;
+    procedure TestCubase;
+    procedure TestCubaseReloadPlugin;
     procedure TestEnergyXT;
     procedure TestEnergyXTBug;
+    procedure TestFL8FastScan;
+    procedure TestFL8;
+    procedure TestMULAB;
+    procedure TestReaper;
+    procedure TestSamplitude;
+    procedure TestSoundForge10Scan;
+    procedure TestSoundForge10;
+    procedure TestSoundForge10Bug;
+    procedure TestTracktion2;
+    procedure TestTracktion2Scan;
   end;
 
   // I/O test methods for VST Plugins
@@ -192,12 +200,22 @@ begin
  inherited;
 end;
 
+function TCustomTestVstPlugin.GetProductString: string;
+begin
+ Result := 'Delphi ASIO & VST Project';
+end;
+
+function TCustomTestVstPlugin.GetVendorString: string;
+begin
+ Result := 'Delphi ASIO & VST Project';
+end;
+
 procedure TCustomTestVstPlugin.SetUp;
 begin
  with FVstHost do
   begin
-   VendorString := 'Delphi ASIO & VST Project';
-   ProductString := 'Delphi ASIO & VST Project';
+   VendorString := GetVendorString;
+   ProductString := GetProductString;
 
    with VstPlugIns.Add do
     if FileExists(FVstPluginName)
@@ -528,9 +546,7 @@ begin
      String2Parameter(ParameterIndex, ParameterString);
      CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
        ParameterLabel[ParameterIndex], 'Error at parameter ' +
-       IntToStr(ParameterIndex + 1) + '! ' + #10#13 + 'Desired Value: ' +
-       ParameterString + ', Current Value: ' + ParameterDisplay[ParameterIndex] +
-       ' ' + ParameterLabel[ParameterIndex] + '!');
+       IntToStr(ParameterIndex + 1));
     end;
    Active := False;
   end;
@@ -811,6 +827,52 @@ begin
 end;
 
 { TVstPluginHostTests }
+
+function TVstPluginHostTests.GetProductString: string;
+begin
+ if GetName = 'TestAbletonLiveScan' then Result := 'Live' else
+ if GetName = 'TestAbletonLive' then Result := 'Live' else
+ if GetName = 'TestCantabile' then Result := 'Cantabile' else
+ if GetName = 'TestCubaseScan' then Result := 'Cubase VST' else
+ if GetName = 'TestCubase' then Result := 'Cubase VST' else
+ if GetName = 'TestCubaseReloadPlugin' then Result := 'Cubase VST' else
+ if GetName = 'TestEnergyXT' then Result := 'energyXT' else
+ if GetName = 'TestEnergyXTBug' then Result := 'energyXT' else
+ if GetName = 'TestFL8FastScan' then Result := 'Fruity Wrapper' else
+ if GetName = 'TestFL8' then Result := 'Fruity Wrapper' else
+ if GetName = 'TestMULAB' then Result := 'MU.LAB' else
+ if GetName = 'TestReaper' then Result := 'REAPER' else
+ if GetName = 'TestSamplitude' then Result := 'Samplitude' else
+ if GetName = 'TestSoundForge10Scan' then Result := 'Sound Forge Pro 10.0' else
+ if GetName = 'TestSoundForge10' then Result := 'Sound Forge Pro 10.0' else
+ if GetName = 'TestSoundForge10Bug' then Result := 'Sound Forge Pro 10.0' else
+ if GetName = 'TestTracktion2' then Result := 'Tracktion 2' else
+ if GetName = 'TestTracktion2Scan' then Result := 'Tracktion 2'
+  else Result := inherited GetProductString;
+end;
+
+function TVstPluginHostTests.GetVendorString: string;
+begin
+ if GetName = 'TestAbletonLiveScan' then Result := 'Live' else
+ if GetName = 'TestAbletonLive' then Result := 'Live' else
+ if GetName = 'TestCantabile' then Result := 'Cantabile' else
+ if GetName = 'TestCubaseScan' then Result := 'Steinberg' else
+ if GetName = 'TestCubase' then Result := 'Steinberg' else
+ if GetName = 'TestCubaseReloadPlugin' then Result := 'Steinberg' else
+ if GetName = 'TestEnergyXT' then Result := 'XT Software' else
+ if GetName = 'TestEnergyXTBug' then Result := 'XT Software' else
+ if GetName = 'TestFL8FastScan' then Result := 'Fruity Wrapper' else
+ if GetName = 'TestFL8' then Result := 'Fruity Wrapper' else
+ if GetName = 'TestMULAB' then Result := 'MUTOOLS.com' else
+ if GetName = 'TestReaper' then Result := 'Cockos' else
+ if GetName = 'TestSamplitude' then Result := 'MAGIX' else
+ if GetName = 'TestSoundForge10Scan' then Result := 'Sony Creative Software' else
+ if GetName = 'TestSoundForge10' then Result := 'Sony Creative Software' else
+ if GetName = 'TestSoundForge10Bug' then Result := 'Sony Creative Software' else
+ if GetName = 'TestTracktion2' then Result := '' else
+ if GetName = 'TestTracktion2Scan' then Result := ''
+  else Result := inherited GetVendorString;
+end;
 
 procedure TVstPluginHostTests.TestFL8FastScan;
 var
@@ -1345,6 +1407,211 @@ begin
   end;
 end;
 
+procedure TVstPluginHostTests.TestSoundForge10Scan;
+var
+  Data : PChar;
+begin
+ FVstHost.VendorString := 'Sony Creative Software';
+ FVstHost.ProductString := 'Sound Forge Pro 10.0';
+
+ with FVstHost[0] do
+  begin
+   // get plugin category
+   VstDispatch(effGetPlugCategory);
+
+   // open plugin
+   VstDispatch(effOpen);
+
+   GetMem(Data, 1024);
+   try
+    // get plugin category
+    VstDispatch(effGetPlugCategory);
+
+    // get effect name string
+    VstDispatch(effGetEffectName, 0, 0, Data);
+
+    // get vendor string
+    VstDispatch(effGetVendorString, 0, 0, Data);
+
+    // get product name string
+    VstDispatch(effGetProgramName, 0, 0, Data);
+
+    // get vendor version
+    VstDispatch(effGetVendorVersion);
+
+   finally
+    Dispose(Data);
+   end;
+
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestSoundForge10;
+var
+  Data : PChar;
+  i, j : Integer;
+  rct  : TRect;
+  prct : PRect;
+begin
+ FVstHost.VendorString := 'Sony Creative Software';
+ FVstHost.ProductString := 'Sound Forge Pro 10.0';
+
+ with FVstHost[0] do
+  begin
+   // get plugin category
+   VstDispatch(effGetPlugCategory);
+
+   // open plugin
+   VstDispatch(effOpen);
+
+   // get vendor version
+   VstDispatch(effGetVendorVersion);
+
+   GetMem(Data, 1024);
+   try
+    for i := 0 to numParams - 1 do
+     begin
+      // get param properties
+      VstDispatch(effGetParameterProperties, i, 0, Data);
+
+      // get param name
+      VstDispatch(effGetParamName, i, 0, Data);
+     end;
+
+    // get param label
+    VstDispatch(effGetParamLabel, numParams - 1, 0, Data);
+
+    // get program
+    VstDispatch(effGetProgram);
+
+    // get parameter
+    for i := 0 to numParams - 1 do GetParameter(i);
+
+    // set samplerate
+    VstDispatch(effSetSampleRate, 0, 0, nil, 44100);
+
+    // set blocksize
+    VstDispatch(effSetBlockSize, 0, 4410);
+
+    with TForm.Create(nil) do
+     try
+      // open editor
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+      // set edit knob mode
+      VstDispatch(effSetEditKnobMode, 0, 2);
+
+      // get editor rect
+      VstDispatch(effEditGetRect, 0, 0, @prct);
+
+      // close editor
+      VstDispatch(effEditClose);
+     finally
+      Free;
+     end;
+
+    // get program name indexed
+    for j := 0 to numPrograms - 1
+     do VstDispatch(effGetProgramNameIndexed, j, 0, Data);
+
+    // get parameter
+    for i := 0 to numParams - 1 do GetParameter(i);
+
+    with TForm.Create(nil) do
+     try
+      // open editor
+      VstDispatch(effEditOpen, 0, 0, Pointer(Handle));
+
+      // set edit knob mode
+      VstDispatch(effSetEditKnobMode, 0, 2);
+
+      // get editor rect
+      prct := @rct;
+      VstDispatch(effEditGetRect, 0, 0, @prct);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // get program name indexed
+      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+      // get parameter
+      for i := 0 to numParams - 1 do GetParameter(i);
+
+      // get program name indexed
+      for j := 0 to numPrograms - 1
+       do VstDispatch(effGetProgramNameIndexed, j, 0, Data);
+
+      // get parameter
+      for i := 0 to numParams - 1 do GetParameter(i);
+
+      // edit idle
+      VstDispatch(effEditIdle);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // get program name indexed
+      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+      // edit idle
+      VstDispatch(effEditIdle);
+
+      // get program
+      VstDispatch(effGetProgram);
+
+      // get program name indexed
+      VstDispatch(effGetProgramNameIndexed, 0, 0, Data);
+
+      // edit idle
+      VstDispatch(effEditIdle);
+
+      // get parameter
+      for i := 0 to numParams - 1 do GetParameter(i);
+
+      // edit idle
+      VstDispatch(effEditIdle);
+
+      // close editor
+      VstDispatch(effEditClose);
+     finally
+      Free;
+     end;
+
+   finally
+    Dispose(Data);
+   end;
+
+   // mains changed
+   VstDispatch(effMainsChanged, 0, 1);
+
+   // start process
+   VstDispatch(effStartProcess);
+
+   // get tail size
+   VstDispatch(effGetTailSize);
+
+   // stop process
+   VstDispatch(effStopProcess);
+
+   // mains changed
+   VstDispatch(effMainsChanged);
+
+   VstDispatch(effClose);
+  end;
+end;
+
+procedure TVstPluginHostTests.TestSoundForge10Bug;
+begin
+ try
+  FVstHost[0].VstEffectPointer.User := Pointer(random($7FFFFFFF));
+  TestSoundForge10;
+ except
+  Fail('Sound Forge 10 (and older) are likely to crash with this VST plugin');
+ end;
+end;
+
 procedure TVstPluginHostTests.TestTracktion2;
 var
   i, j : Integer;
@@ -1705,7 +1972,7 @@ begin
   FVstHost[0].VstEffectPointer.User := Pointer(random($7FFFFFFF));
   TestEnergyXT;
  except
-  Fail('EnergyXT 1.X (and older 2.X versions) are likely to crash with this VST plugin'); 
+  Fail('EnergyXT 1.X (and older 2.X versions) are likely to crash with this VST plugin');
  end;
 end;
 
@@ -2285,7 +2552,7 @@ begin
   end;
 end;
 
-procedure TVstPluginHostTests.TestReloadPluginCubase;
+procedure TVstPluginHostTests.TestCubaseReloadPlugin;
 var
   Data : PChar;
   i, j : Integer;

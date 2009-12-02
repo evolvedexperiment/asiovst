@@ -31,6 +31,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Font.Height = -24
     Font.Name = 'Times New Roman'
     Font.Style = []
+    ParentFont = False
     Visible = False
     Transparent = True
     OnClick = LbShowFrequencyPlotClick
@@ -53,6 +54,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     ParentFont = False
     Radius = 7
     TabOrder = 0
+    OnClick = GpDualLiknwitzRileyClick
     object DialLowpassFrequency: TGuiDial
       Left = 11
       Top = 29
@@ -69,7 +71,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialLowpassFrequencyChange
+      OnDblClick = DialDblClick
       OnMouseEnter = DialLowpassFrequencyMouseEnter
+      OnMouseDown = DialMouseDown
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -79,6 +83,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
     end
     object DialLowpassSlope: TGuiDial
+      Tag = 1
       Left = 75
       Top = 29
       Width = 48
@@ -93,7 +98,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialLowpassSlopeChange
+      OnDblClick = DialDblClick
       OnMouseEnter = DialLowpassSlopeMouseEnter
+      OnMouseDown = DialMouseDown
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -115,6 +122,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      OnClick = GpDualLiknwitzRileyClick
     end
     object LbSlope: TGuiLabel
       Left = 75
@@ -129,8 +138,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      OnClick = GpDualLiknwitzRileyClick
     end
     object DialHighpassFrequency: TGuiDial
+      Tag = 2
       Left = 11
       Top = 102
       Width = 48
@@ -146,7 +158,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialHighpassFrequencyChange
+      OnDblClick = DialDblClick
       OnMouseEnter = DialHighpassFrequencyMouseEnter
+      OnMouseDown = DialMouseDown
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -156,6 +170,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       WheelStep = 1.000000000000000000
     end
     object DialHighpassSlope: TGuiDial
+      Tag = 3
       Left = 75
       Top = 102
       Width = 48
@@ -170,7 +185,9 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Min = 1.000000000000000000
       NumGlyphs = 65
       OnChange = DialHighpassSlopeChange
+      OnDblClick = DialDblClick
       OnMouseEnter = DialHighpassSlopeMouseEnter
+      OnMouseDown = DialMouseDown
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -192,6 +209,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
       PopupMenu = PuPreset
       OnClick = LedHighCutClick
       OnMouseDown = LbMouseDown
@@ -209,6 +227,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
       PopupMenu = PuPreset
       OnClick = LedLowCutClick
       OnMouseDown = LbMouseDown
@@ -250,6 +269,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Height = 17
       AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15659506
+      Font.Height = -11
+      Font.Name = 'Times New Roman'
+      Font.Style = []
       LineColor = 5398887
       Linewidth = 1
       PanelColor = 3226174
@@ -271,11 +295,6 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         AntiAlias = gaaLinear4x
         Caption = 'Value'
         Color = 3226174
-        Font.Charset = ANSI_CHARSET
-        Font.Color = 15659506
-        Font.Height = -11
-        Font.Name = 'Times New Roman'
-        Font.Style = []
       end
     end
   end
@@ -479,8 +498,8 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
   end
   object PuPreset: TPopupMenu
     OnPopup = PuPresetPopup
-    Left = 160
-    Top = 80
+    Left = 168
+    Top = 64
     object MiLoadHigh: TMenuItem
       Caption = '&Load'
       object MiLoadA: TMenuItem

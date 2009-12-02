@@ -14,6 +14,7 @@ object FmButterworth: TFmButterworth
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   DesignSize = (
     200
@@ -32,6 +33,7 @@ object FmButterworth: TFmButterworth
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbButterworthFilterDemo: TGuiLabel
     Left = 6
@@ -45,6 +47,7 @@ object FmButterworth: TFmButterworth
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
   end
   object PnControls: TGuiPanel
@@ -55,9 +58,9 @@ object FmButterworth: TFmButterworth
     AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
-    Font.Height = -11
+    Font.Height = -13
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     LineColor = 10526927
     Linewidth = 3
     PanelColor = 1315880
@@ -65,6 +68,7 @@ object FmButterworth: TFmButterworth
     Radius = 8
     TabOrder = 0
     UseDockManager = True
+    OnClick = PnControlsClick
     DesignSize = (
       184
       129)
@@ -102,11 +106,6 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
     end
     object DialOrder: TGuiDial
       Left = 104
@@ -141,11 +140,6 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
     end
     object LbOrderValue: TGuiLabel
       Left = 94
@@ -157,11 +151,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnClick = LbOrderValueClick
     end
     object LbFrequencyValue: TGuiLabel
       Left = 8
@@ -173,11 +163,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = LbFrequencyValueDblClick
     end
   end
   object GuiEQGraph: TGuiEQGraph

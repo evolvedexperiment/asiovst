@@ -60,6 +60,8 @@ type
     procedure ParameterTypeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterHighpassFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterHighpassOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure StringOrderToParameter(Sender: TObject; const Index: Integer;
+      const ParameterString: string; var Value: Single);
   private
     FLowpass     : array of array [0..1] of TButterworthLowPassFilter;
     FHighpass    : array of array [0..1] of TButterworthHighPassFilter;
@@ -194,6 +196,33 @@ begin
   then Result := Result * FHighpass[0, 0].MagnitudeSquared(Frequency) *
                  FHighpass[0, 1].MagnitudeSquared(Frequency);
  Result := 10 * FastLog10Laurent5(Result);
+end;
+
+procedure TDualLinkwitzRileyFiltersModule.StringOrderToParameter(Sender: TObject;
+  const Index: Integer; const ParameterString: string; var Value: Single);
+var
+  ProcStr : string;
+  Indxes  : array [0..1] of Integer;
+begin
+ with ParameterProperties[Index] do
+  begin
+   ProcStr := Trim(ParameterString);
+
+   Indxes[0] := 1;
+   while (Indxes[0] <= Length(ProcStr)) and
+    (not (ProcStr[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+
+   if (Indxes[0] <= Length(ProcStr)) then
+    begin
+     Indxes[1] := Indxes[0] + 1;
+     while (Indxes[1] <= Length(ProcStr)) and
+      (ProcStr[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
+
+     ProcStr := Copy(ProcStr, Indxes[0], Indxes[1] - Indxes[0]);
+
+     Value := Round(StrToFloat(ProcStr) / 12);
+    end;
+  end;
 end;
 
 function TDualLinkwitzRileyFiltersModule.GetHighpass(Channel,

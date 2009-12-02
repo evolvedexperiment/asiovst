@@ -19,16 +19,17 @@ type
     function TranslateProgramNameToIndex(ProgramName: string): Integer;
     function GetParameterByName(ParameterName: string): Single;
     function GetVstProgramByName(ProgramName: string): TVstProgram;
+    function GetParameterDisplay(Index: Integer): string;
+    function GetParameterLabel(Index: Integer): string;
+    function GetParameterName(Index: Integer): string;
+    function GetParameterString(Index: Integer): string;
     procedure SetParameterByName(ParameterName: string; const Value: Single);
     procedure SetVstProgramByName(ProgramName: string; const Value: TVstProgram);
     procedure SetParameterProperties(const Value: TCustomVstParameterProperties);
     procedure SetParameterCategories(const Value: TCustomVstParameterCategories);
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
-    function GetParameterDisplay(Index: Integer): string;
-    function GetParameterLabel(Index: Integer): string;
-    function GetParameterName(Index: Integer): string;
+    procedure SetParameterString(Index: Integer; const Value: string);
   protected
-    FUseDefaultStr2Param    : Boolean;
     FCurProgram             : Integer;
     FVstPrograms            : TCustomVstPrograms;
     FParameter              : TDAVSingleDynArray;
@@ -91,8 +92,8 @@ type
 
     procedure SetProgramParameters(const ProgramIndex: Integer; Parameters: TDAVSingleDynArray); virtual;
     procedure SetParameterCount(const Value: Integer);
+    function StringToParameter(const Index: Integer; Text: string): Boolean;
 
-    property UseDefaultString2ParameterHandler: Boolean read FUseDefaultStr2Param write FUseDefaultStr2Param default False;
     property numParams: Integer read FEffect.numParams write SetNumParams stored false;
     property numPrograms: Integer read FEffect.numPrograms write SetNumPrograms stored false;
     property CurrentProgram: Integer read FCurProgram write SetProgram;
@@ -103,6 +104,7 @@ type
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
     property ParameterCategories: TCustomVstParameterCategories read FParameterCategories write SetParameterCategories;
     property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
+    property ParameterString[Index: Integer]: string read GetParameterString write SetParameterString;
     property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
 
     property ParameterName[Index: Integer]: string read GetParameterName;
@@ -222,6 +224,11 @@ begin
 
  if FTruncateStrings and (Length(result) > 8)
   then SetLength(result, 8);
+end;
+
+function TVSTModuleWithPrograms.GetParameterString(Index: Integer): string;
+begin
+ Result := ParameterDisplay[Index] + ' ' + ParameterLabel[Index];  
 end;
 
 function TVSTModuleWithPrograms.HostCallGetParameter(const Index: Integer): Single;
@@ -429,9 +436,8 @@ begin
   else Result := 1;
 end;
 
-function TVSTModuleWithPrograms.HostCallString2Parameter(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.StringToParameter(const Index: Integer; Text: string): Boolean;
 var
-  TempStr : string;
   ProcStr : string;
   CurrVal : Single;
   Indxes  : array [0..1] of Integer;
@@ -442,23 +448,21 @@ begin
 
  with ParameterProperties[Index] do
   begin
-   Result := Integer(Assigned(OnStringToParameter) or FUseDefaultStr2Param);
-   if Assigned(Ptr) then
-    begin
-     TempStr := StrPas(PChar(ptr));
-     CurrVal := Parameter[Index];
-     if FUseDefaultStr2Param then
-      try
-       ProcStr := Trim(TempStr);
+   Result := Assigned(OnStringToParameter) or UseDefaultString2ParameterHandler;
 
-       Indxes[0] := 1;
-       while (Indxes[0] < Length(ProcStr)) and
-        (not (ProcStr[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+   CurrVal := Parameter[Index];
+   if UseDefaultString2ParameterHandler then
+    try
+     ProcStr := Trim(Text);
 
-       if (Indxes[0] >= Length(ProcStr)) then Exit;
+     Indxes[0] := 1;
+     while (Indxes[0] <= Length(ProcStr)) and
+      (not (ProcStr[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
 
+     if (Indxes[0] <= Length(ProcStr)) then
+      begin
        Indxes[1] := Indxes[0] + 1;
-       while (Indxes[1] < Length(ProcStr)) and
+       while (Indxes[1] <= Length(ProcStr)) and
         (ProcStr[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
 
        // process unit extensions
@@ -472,15 +476,22 @@ begin
        ProcStr := Copy(ProcStr, Indxes[0], Indxes[1] - Indxes[0]);
 
        CurrVal := Mult * StrToFloat(ProcStr);
-      except
       end;
-
-     if Assigned(ParameterProperties[Index].OnStringToParameter)
-      then OnStringToParameter(ParameterProperties[Index], TempStr, CurrVal);
-
-     Parameter[Index] := CurrVal;
+    except
     end;
+
+   if Assigned(ParameterProperties[Index].OnStringToParameter)
+    then OnStringToParameter(Self, Index, Text, CurrVal);
+
+   Parameter[Index] := CurrVal;
   end;
+end;
+
+function TVSTModuleWithPrograms.HostCallString2Parameter(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+begin
+ if Assigned(Ptr)
+  then Result := Integer(StringToParameter(Index, StrPas(PChar(ptr))))
+  else Result := 0;
 end;
 
 function TVSTModuleWithPrograms.HostCallVendorSpecific(const Index, Value: Integer;
@@ -761,6 +772,12 @@ end;
 procedure TVSTModuleWithPrograms.SetParameterProperties(const Value : TCustomVstParameterProperties);
 begin
  FParameterProperties.Assign(Value);
+end;
+
+procedure TVSTModuleWithPrograms.SetParameterString(Index: Integer;
+  const Value: string);
+begin
+
 end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;

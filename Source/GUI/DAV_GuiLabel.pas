@@ -61,6 +61,7 @@ type
     property DragMode;
     property Enabled;
     property Font;
+    property ParentFont;
     property PopupMenu;
     property ShowHint;
     property Visible;

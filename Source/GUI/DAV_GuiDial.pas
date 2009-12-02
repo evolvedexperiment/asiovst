@@ -234,6 +234,7 @@ type
     property Min;
     property NumGlyphs;
     property OnChange;
+    property OnDblClick;
     property OnMouseWheelUp;
     property OnMouseWheelDown;
     property OnMouseWheel;

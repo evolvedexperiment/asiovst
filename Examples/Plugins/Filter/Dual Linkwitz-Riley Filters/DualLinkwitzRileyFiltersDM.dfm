@@ -39,6 +39,7 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterLowpassFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
@@ -63,6 +64,7 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       VSTModule = Owner
       OnParameterChange = ParameterLowpassOrderChange
       OnCustomParameterDisplay = ParameterOrderDisplay
+      OnStringToParameter = StringOrderToParameter
     end
     item
       Curve = ctLogarithmic
@@ -79,6 +81,7 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterHighpassFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
@@ -102,6 +105,7 @@ object DualLinkwitzRileyFiltersModule: TDualLinkwitzRileyFiltersModule
       VSTModule = Owner
       OnParameterChange = ParameterHighpassOrderChange
       OnCustomParameterDisplay = ParameterOrderDisplay
+      OnStringToParameter = StringOrderToParameter
     end
     item
       Curve = ctLinear

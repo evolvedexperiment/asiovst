@@ -49,15 +49,11 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure StringToFrequencyParameter(Sender: TObject; const ParameterString: string; var Value: Single);
-    procedure ParameterFrequencyDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure StringToOrderParameter(
-      Sender: TObject; const ParameterString: string; var Value: Single);
-    procedure ParameterOrderDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure StringToOrderParameter(Sender: TObject; const ParameterString: string; var Value: Single);
   private
     FFilter: array of TCustomButterworthFilter;
   public  
@@ -182,13 +178,13 @@ begin
   else Mult := 1;
 
  Indxes[0] := 1;
- while (Indxes[0] < Length(Str)) and
+ while (Indxes[0] <= Length(Str)) and
   (not (Str[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
 
  if (Indxes[0] >= Length(Str)) then Exit;
 
  Indxes[1] := Indxes[0] + 1;
- while (Indxes[1] < Length(Str)) and
+ while (Indxes[1] <= Length(Str)) and
   (Str[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
 
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
@@ -209,13 +205,13 @@ begin
  if Str = '' then Exit;
 
  Indxes[0] := 1;
- while (Indxes[0] < Length(Str)) and
+ while (Indxes[0] <= Length(Str)) and
   (not (Str[Indxes[0]] in ['0'..'9'])) do Inc(Indxes[0]);
 
- if (Indxes[0] >= Length(Str)) then Exit;
+ if (Indxes[0] > Length(Str)) then Exit;
 
  Indxes[1] := Indxes[0] + 1;
- while (Indxes[1] < Length(Str)) and
+ while (Indxes[1] <= Length(Str)) and
   (Str[Indxes[1]] in ['0'..'9']) do Inc(Indxes[1]);
 
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
@@ -232,7 +228,8 @@ end;
 function TButterworthLPModule.Magnitude_dB(Frequency: Single): Single;
 begin
  if Assigned(FFilter[0])
-  then Result := 10 * FastLog10MinError5(FFilter[0].MagnitudeSquared(Frequency));
+  then Result := 10 * FastLog10MinError5(FFilter[0].MagnitudeSquared(Frequency))
+  else Result := 0; 
 end;
 
 

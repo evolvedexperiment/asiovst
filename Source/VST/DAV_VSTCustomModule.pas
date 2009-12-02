@@ -91,8 +91,6 @@ type
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
     procedure SetKeysRequired(const Value: Boolean);
     procedure ReadOnlyString(s: string); virtual;
-    function GetHostProduct: string;
-    function GetHostVendor: string;
     procedure SetOnProcessDoublesEx(const Value: TProcessDoubleEvent);
     procedure SetOnProcessEx(const Value: TProcessAudioEvent);
     procedure SetOnProcessReplacingEx(const Value: TProcessAudioEvent);
@@ -109,8 +107,6 @@ type
     FEditorNeedUpdate       : Boolean;
     FEditorRect             : ERect;
     FEffectName             : string;
-    FHostProduct            : string;
-    FHostVendor             : string;
     FInitialDelay           : Integer;
     FNumCategories          : Integer;
     FOnClose                : TNotifyEvent;
@@ -121,7 +117,11 @@ type
     FOnProcessReplacingEx   : TProcessAudioEvent;
     FProductName            : string;
     FSampleRate             : Single;
+
+    FHostProduct            : string;
+    FHostVendor             : string;
     FTruncateStrings        : Boolean;
+
     FVendorName             : string;
     FVersionMajor           : Integer;
     FVersionMinor           : Integer;
@@ -139,6 +139,8 @@ type
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
+    function GetHostProduct: string;
+    function GetHostVendor: string;
     procedure SetEffectName(const Value: string);
     procedure SetProductName(const Value: string);
     procedure SetVendorName(const Value: string);
@@ -156,7 +158,7 @@ type
     procedure OnProcessReplacingExChanged; virtual;
     procedure InitialDelayChanged; virtual;
 
-    procedure HostCallDispatchEffect(const opcode : TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single); override;
+    function HostCallDispatchEffect(const opcode : TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
@@ -235,9 +237,10 @@ type
     property BlockSize: Integer read FBlockSize write SetBlockSize default 1024;
     property CanDos: TVstCanDos read FCanDos write FCanDos default [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out];
     property EffectName: string read FEffectName write SetEffectName;
-    property HostProduct: string read GetHostProduct stored false;
-    property HostVendor: string read GetHostVendor stored false;
+    property HostProduct: string read GetHostProduct stored False;
+    property HostVendor: string read GetHostVendor stored False;
     property HostVersion: Integer read GetHostVendorVersion stored False;
+    property TruncateStrings: Boolean read FTruncateStrings write FTruncateStrings default False;
     property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
     property IORatio: Single read FEffect.ioRatio write FEffect.ioRatio;
     property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
@@ -253,7 +256,6 @@ type
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
     property TailSize: Integer read FTailSize write FTailSize default 0;
     property Tempo: Single read fTempo;
-    property TruncateStrings: Boolean read FTruncateStrings write FTruncateStrings default False;
     property UniqueID: string read GetUniqueID write SetUniqueID;
     property VendorName: string read fVendorName write SetVendorName;
     property Version: string read FVersion write FVersion;
@@ -319,16 +321,17 @@ begin
  FLog.SaveToFile('Debug.log');
  {$ENDIF}
  Randomize;
- FTruncateStrings    := False;
  FVersion            := '1.0';
  FAbout              := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
- FHostProduct        := '';
  FProcessPrecisition := pp32;
  FKeysRequired       := False;
  FSampleRate         := 44100;
  FBlockSize          := 1024;
  FEditorForm         := nil;
  FTailSize           := 0;
+ FHostProduct        := '';
+ FHostVendor         := '';
+ FTruncateStrings    := False;
  FVersionMajor       := 1;
  FVersionMinor       := 0;
  FVersionRelease     := 0;
@@ -403,15 +406,65 @@ begin
  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
 end;
 
+function TCustomVSTModule.GetHostProduct: string;
+var
+  Text : PAnsiChar;
+begin
+ if (FHostProduct = '') or (FHostProduct = 'Unknown') then
+  begin
+   // allocate and zero memory (256 byte, which is more than necessary, but
+   // just to be sure and in case of host ignoring the specs)
+   GetMem(Text, 256);
+   FillChar(Text^, 256, 0);
+   try
+    if GetHostProductString(Text)
+     then Result := StrPas(Text)
+     else Result := 'Unknown';
+    if TruncateStrings and (Length(Result) > 64)
+     then SetLength(Result, 64);
+    FHostProduct := Result;
+   finally
+    // dispose memory
+    Dispose(Text);
+   end;
+  end
+ else Result := FHostProduct;
+end;
+
+function TCustomVSTModule.GetHostVendor: string;
+var
+  Text : PAnsiChar;
+begin
+ if (FHostVendor = '') or (FHostVendor = 'Unknown') then
+  begin
+   // allocate and zero memory (256 byte, which is more than necessary, but
+   // just to be sure and in case of host ignoring the specs)
+   GetMem(Text, 256);
+   FillChar(Text^, 256, 0);
+   try
+    if GetHostVendorString(Text)
+     then Result := StrPas(Text)
+     else Result := 'Unknown';
+    if TruncateStrings and (Length(Result) > 64)
+     then SetLength(Result, 64);
+    FHostVendor := Result;
+   finally
+    // dispose memory
+    Dispose(Text);
+   end;
+  end
+ else Result := FHostVendor;
+end;
+
 procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 var
   rUID : TChunkName;
   i    : Integer;
   sUID : string;
-  hv   : boolean;
+  hv   : Boolean;
 begin
  inherited;
- hv := (Pos('WaveLab', HostProduct) < 0) {or (shortstring(temp)<>'energyXT')};
+ hv := (Pos('WaveLab', HostProduct) < 0) {or (shortstring(temp) <> 'energyXT')};
  if hv then hv := (CanDo['shellCategory'] = 1);
 
  if (PlugCategory = vpcShell) and hv then
@@ -445,8 +498,9 @@ begin
    then PlugCategory := vpcUnknown;
 end;
 
-procedure TCustomVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single);
+function TCustomVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
+ Result := inherited HostCallDispatchEffect(Opcode, Index, Value, ptr, opt);
  if Assigned(FOnDispatcher) then FOnDispatcher(Self, Opcode);
 
  {$IFDEF Debug}
@@ -1393,56 +1447,6 @@ begin
  FProductName := Value;
  if FTruncateStrings and (Length(FProductName) > 64)
   then SetLength(FProductName, 64);
-end;
-
-function TCustomVSTModule.GetHostProduct: string;
-var
-  Text : PAnsiChar;
-begin
- if (FHostProduct = '') or (FHostProduct = 'Unknown') then
-  begin
-   // allocate and zero memory (256 byte, which is more than necessary, but
-   // just to be sure and in case of host ignoring the specs)
-   GetMem(Text, 256);
-   FillChar(Text^, 256, 0);
-   try
-    if GetHostProductString(Text)
-     then Result := StrPas(Text)
-     else Result := 'Unknown';
-    if TruncateStrings and (Length(Result) > 64)
-     then SetLength(Result, 64);
-    FHostProduct := Result;
-   finally
-    // dispose memory
-    Dispose(Text);
-   end;
-  end
- else Result := FHostProduct;
-end;
-
-function TCustomVSTModule.GetHostVendor: string;
-var
-  Text : PAnsiChar;
-begin
- if (FHostVendor = '') or (FHostVendor = 'Unknown') then
-  begin
-   // allocate and zero memory (256 byte, which is more than necessary, but
-   // just to be sure and in case of host ignoring the specs)
-   GetMem(Text, 256);
-   FillChar(Text^, 256, 0);
-   try
-    if GetHostVendorString(Text)
-     then Result := StrPas(Text)
-     else Result := 'Unknown';
-    if TruncateStrings and (Length(Result) > 64)
-     then SetLength(Result, 64);
-    FHostVendor := Result;
-   finally
-    // dispose memory
-    Dispose(Text);
-   end;
-  end
- else Result := FHostVendor;
 end;
 
 procedure TCustomVSTModule.SetVersionMajor(Value: Integer);

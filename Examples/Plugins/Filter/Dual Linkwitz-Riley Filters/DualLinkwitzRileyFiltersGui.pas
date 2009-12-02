@@ -130,11 +130,16 @@ type
     procedure LbShowFrequencyPlotClick(Sender: TObject);
     procedure GuiEQGraphClick(Sender: TObject);
     procedure EQGraphUpdateTimer(Sender: TObject);
+    procedure DialDblClick(Sender: TObject);
+    procedure GpDualLiknwitzRileyClick(Sender: TObject);
+    procedure DialMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;
     FIsLow           : Boolean;
     FDirectUpdate    : Boolean;
+    FEdValue         : TEdit;
   public
     procedure UpdateLowpassFrequency;
     procedure UpdateLowpassSlope;
@@ -228,10 +233,19 @@ begin
  LbDisplay.Caption := RCStrLinkwitzRiley;
 end;
 
+procedure TFmLinkwitzRiley.GpDualLiknwitzRileyClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
 procedure TFmLinkwitzRiley.GuiEQGraphClick(Sender: TObject);
 begin
  LbShowFrequencyPlot.Visible := True;
  GuiEQGraph.Visible := False;
+
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 function TFmLinkwitzRiley.GuiEQGraphGetFilterGain(Sender: TObject;
@@ -263,6 +277,56 @@ begin
 
    if Parameter[0] <> NewValue
     then Parameter[0] := NewValue;
+  end;
+end;
+
+procedure TFmLinkwitzRiley.DialDblClick(Sender: TObject);
+begin
+ if not assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnDisplay;
+   Left := 4;
+   Top := 2;
+   Width := 75;
+   Height := 14;
+   BorderStyle := bsNone;
+   Color := LbDisplay.Color;
+   TabOrder := 0;
+   Tag := TComponent(Sender).Tag;
+   Text := LbDisplay.Caption;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmLinkwitzRiley.EdValueKeyPress(Sender: TObject; var Key: Char);
+var
+  TextValue : string;
+  CharPos   : Integer;
+begin
+ with TDualLinkwitzRileyFiltersModule(Owner) do
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    TextValue := FEdValue.Text;
+    CharPos := Pos(':', TextValue);
+    if CharPos > 0
+     then Delete(TextValue, 1, CharPos);
+    StringToParameter(FEdValue.Tag, TextValue);
+    FreeAndNil(FEdValue);
+   except
+   end;
+end;
+
+procedure TFmLinkwitzRiley.DialMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+ if Assigned(FEdValue) then
+  begin
+   FEdValue.Tag := TComponent(Sender).Tag;
+   FEdValue.Text := LbDisplay.Caption;
   end;
 end;
 
@@ -359,6 +423,9 @@ begin
    CurrentBit := round(Parameter[4]);
    Parameter[4] := (CurrentBit and $2) or ((not CurrentBit) and $1)
   end;
+
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmLinkwitzRiley.LedLowCutClick(Sender: TObject);
@@ -370,6 +437,9 @@ begin
    CurrentBit := round(Parameter[4]);
    Parameter[4] := (CurrentBit and $1) or ((not CurrentBit) and $2)
   end;
+
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmLinkwitzRiley.MiFrequencyClick(Sender: TObject);

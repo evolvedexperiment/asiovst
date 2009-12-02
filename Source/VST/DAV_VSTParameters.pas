@@ -56,31 +56,32 @@ type
   TParameterChangeEvent        = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
   TCustomParameterLabelEvent   = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
   TCustomParameterDisplayEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
-  TString2ParameterEvent       = procedure(Sender: TObject; const ParameterString: string; var Value: Single) of object;
+  TString2ParameterEvent       = procedure(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single) of object;
 
   TCustomVstParameterProperty = class(TCollectionItem)
   private
-    FSmoothStates     : TDAV2SingleArray;
-    FMin, FMax        : Single;
-    FCurve            : TCurveType;
-    FCurveFactor      : Single;
-    FInvCurveFactor   : Single;
-    FDisplayName      : string;
-    FUnits            : string;
-    FSmoothingFactor  : Single;
-    FCanBeAutomated   : Boolean;
-    FV2Properties     : Boolean;
-    FStepFloat        : Single;
-    FSmallStepFloat   : Single;
-    FLargeStepFloat   : Single;
-    FFlags            : TVstParameterPropertiesFlags;
-    FMinInteger       : Integer;
-    FMaxInteger       : Integer;
-    FStepInteger      : Integer;
-    FLargeStepInteger : Integer;
-    FCC               : Integer;
-    FShortLabel       : string[7];
-    FCategoryString   : string[24];
+    FSmoothStates        : TDAV2SingleArray;
+    FMin, FMax           : Single;
+    FCurve               : TCurveType;
+    FCurveFactor         : Single;
+    FInvCurveFactor      : Single;
+    FDisplayName         : string;
+    FUnits               : string;
+    FSmoothingFactor     : Single;
+    FCanBeAutomated      : Boolean;
+    FV2Properties        : Boolean;
+    FStepFloat           : Single;
+    FSmallStepFloat      : Single;
+    FLargeStepFloat      : Single;
+    FFlags               : TVstParameterPropertiesFlags;
+    FMinInteger          : Integer;
+    FMaxInteger          : Integer;
+    FStepInteger         : Integer;
+    FLargeStepInteger    : Integer;
+    FCC                  : Integer;
+    FShortLabel          : string[7];
+    FCategoryString      : string[24];
+    FUseDefaultStr2Param : Boolean;
 
     FVSTModule        : TBasicVSTModule;
     FOnParamChange    : TParameterChangeEvent;
@@ -141,6 +142,7 @@ type
     property StepFloat: Single read FStepFloat write FStepFloat;
     property StepInteger: Integer read FStepInteger write FStepInteger default 1;
     property Units: string read FUnits write SetUnits;
+    property UseDefaultString2ParameterHandler: Boolean read FUseDefaultStr2Param write FUseDefaultStr2Param default False;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnParameterChange: TParameterChangeEvent read FOnParamChange write FOnParamChange;
     property OnCustomParameterLabel: TCustomParameterLabelEvent read FOnCParamLabel write FOnCParamLabel;
