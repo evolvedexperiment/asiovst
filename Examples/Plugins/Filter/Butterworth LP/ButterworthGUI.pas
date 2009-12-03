@@ -62,8 +62,8 @@ type
     procedure LbFrequencyValueDblClick(Sender: TObject);
     procedure PnControlsClick(Sender: TObject);
     procedure EdValueKeyPress(Sender: TObject; var Key: Char);
-    procedure LbOrderValueClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure LbOrderValueDblClick(Sender: TObject);
   private
     FEdValue: TEdit;
     procedure EQGraphUpdate;
@@ -145,10 +145,11 @@ begin
    Text := LbFrequencyValue.Caption;
    Tag := 0;
    OnKeyPress := EdValueKeyPress;
+   SetFocus;
   end;
 end;
 
-procedure TFmButterworth.LbOrderValueClick(Sender: TObject);
+procedure TFmButterworth.LbOrderValueDblClick(Sender: TObject);
 begin
  if not Assigned(FEdValue)
   then FEdValue := TEdit.Create(Self);
@@ -165,6 +166,7 @@ begin
    Text := LbOrderValue.Caption;
    Tag := 1;
    OnKeyPress := EdValueKeyPress;
+   SetFocus;
   end;
 end;
 

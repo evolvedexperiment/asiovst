@@ -19,8 +19,8 @@ object ButterworthHPModule: TButterworthHPModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       DisplayName = 'Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 100.000000000000000000
@@ -35,8 +35,11 @@ object ButterworthHPModule: TButterworthHPModule
       StepFloat = 50.000000000000000000
       StepInteger = 50
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
       Curve = ctLinear
@@ -53,6 +56,8 @@ object ButterworthHPModule: TButterworthHPModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
+      OnCustomParameterDisplay = ParameterOrderDisplay
+      OnStringToParameter = StringToOrderParameter
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

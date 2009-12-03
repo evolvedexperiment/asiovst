@@ -34,10 +34,11 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, ExtCtrls,
-  DAV_GuiPanel;
+uses
+  {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows {$ENDIF}, Messages,
+  SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls, DAV_Types,
+  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel,
+  DAV_GuiEQGraph;
 
 type
   TFmButterworth = class(TForm)
@@ -50,10 +51,22 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControls: TGuiPanel;
-    procedure DialFrequencyChange(Sender: TObject);
-    procedure DialOrderChange(Sender: TObject);
+    GuiEQGraph: TGuiEQGraph;
+    Timer: TTimer;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure DialFrequencyChange(Sender: TObject);
+    procedure DialOrderChange(Sender: TObject);
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    procedure EQGraphUpdateTimer(Sender: TObject);
+    procedure LbFrequencyValueDblClick(Sender: TObject);
+    procedure PnControlsClick(Sender: TObject);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
+    procedure FormDestroy(Sender: TObject);
+    procedure LbOrderValueDblClick(Sender: TObject);
+  private
+    FEdValue: TEdit;
+    procedure EQGraphUpdate;
   public
     procedure UpdateFrequency;
     procedure UpdateOrder;
@@ -61,10 +74,12 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses
-  ButterworthDM, DAV_VSTModuleWithPrograms;
+  DAV_VSTModuleWithPrograms, ButterworthDM;
 
 procedure TFmButterworth.FormCreate(Sender: TObject);
 var
@@ -75,8 +90,14 @@ begin
   DialFrequency.DialBitmap.LoadFromStream(RS);
   DialOrder.DialBitmap.Assign(DialFrequency.DialBitmap);
  finally
-  RS.Free;
+  FreeAndNil(RS);
  end;
+end;
+
+procedure TFmButterworth.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmButterworth.DialFrequencyChange(Sender: TObject);
@@ -101,6 +122,71 @@ begin
  UpdateOrder;
 end;
 
+function TFmButterworth.GetFilterGain(Sender: TObject;
+  const Frequency: Single): Single;
+begin
+ Result := TButterworthHPModule(Owner).Magnitude_dB(Frequency);
+end;
+
+procedure TFmButterworth.LbFrequencyValueDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbFrequencyValue.Left;
+   Top := LbFrequencyValue.Top;
+   Width := LbFrequencyValue.Width;
+   Height := LbFrequencyValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbFrequencyValue.Caption;
+   Tag := 0;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmButterworth.LbOrderValueDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbOrderValue.Left;
+   Top := LbOrderValue.Top;
+   Width := LbOrderValue.Width;
+   Height := LbOrderValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbOrderValue.Caption;
+   Tag := 1;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmButterworth.EdValueKeyPress(Sender: TObject; var Key: Char);
+begin
+ with TButterworthHPModule(Owner) do
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    FreeAndNil(FEdValue);
+   except
+   end;
+end;
+
+procedure TFmButterworth.PnControlsClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
 procedure TFmButterworth.UpdateFrequency;
 var
   Freq : Single;
@@ -113,6 +199,7 @@ begin
    if Freq < 1000
     then LbFrequencyValue.Caption := FloatToStrF(Freq, ffGeneral, 4, 4) + ' Hz'
     else LbFrequencyValue.Caption := FloatToStrF(Freq * 1E-3, ffGeneral, 4, 4) + ' kHz';
+   EQGraphUpdate;
   end;
 end;
 
@@ -126,7 +213,24 @@ begin
    if DialOrder.Position <> Order
     then DialOrder.Position := Order;
    LbOrderValue.Caption := IntToStr(round(Order));
+   EQGraphUpdate;
   end;
 end;
+
+procedure TFmButterworth.EQGraphUpdateTimer(Sender: TObject);
+begin
+ Timer.Enabled := False;
+ GuiEQGraph.Invalidate;
+end;
+
+procedure TFmButterworth.EQGraphUpdate;
+begin
+ Timer.Enabled := True;
+end;
+
+{$IFDEF FPC}
+initialization
+  {$i ButterworthGUI.lrs}
+{$ENDIF}
 
 end.

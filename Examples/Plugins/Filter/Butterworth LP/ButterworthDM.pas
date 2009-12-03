@@ -52,8 +52,8 @@ type
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure StringToFrequencyParameter(Sender: TObject; const ParameterString: string; var Value: Single);
-    procedure StringToOrderParameter(Sender: TObject; const ParameterString: string; var Value: Single);
+    procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+    procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
   private
     FFilter: array of TCustomButterworthFilter;
   public  
@@ -163,7 +163,7 @@ end;
 // string to parameter conversion
 
 procedure TButterworthLPModule.StringToFrequencyParameter(
-  Sender: TObject; const ParameterString: string; var Value: Single);
+  Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
 var
   Str    : string;
   Indxes : array [0..1] of Integer;
@@ -195,8 +195,8 @@ begin
  end;
 end;
 
-procedure TButterworthLPModule.StringToOrderParameter(
-  Sender: TObject; const ParameterString: string; var Value: Single);
+procedure TButterworthLPModule.StringToOrderParameter(Sender: TObject;
+  const Index: Integer; const ParameterString: string; var Value: Single);
 var
   Str    : string;
   Indxes : array [0..1] of Integer;

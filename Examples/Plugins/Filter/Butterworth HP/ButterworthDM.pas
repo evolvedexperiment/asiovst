@@ -34,8 +34,6 @@ interface
 
 {$I DAV_Compiler.inc}
 
-{$I ..\DAV_Compiler.inc}
-
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
@@ -43,49 +41,57 @@ uses
 
 type
   TButterworthHPModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure StringToFrequencyParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+    procedure StringToOrderParameter(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
   private
-    FFilter : array of TCustomButterworthFilter;
+    FFilter: array of TCustomButterworthFilter;
+  public  
+    function Magnitude_dB(Frequency: Single): Single;
   end;
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses
-  Math, ButterworthGUI, DAV_DspFilter;
+  Math, DAV_Approximations, DAV_DspFilter, ButterworthGUI;
 
 procedure TButterworthHPModule.VSTModuleOpen(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFilter, numInputs);
- for ch := 0 to numInputs - 1 do
+ for ChannelIndex := 0 to numInputs - 1 do
   begin
-   FFilter[ch] := TButterworthHighPassFilter.Create;
-   FFilter[ch].SetFilterValues(20, 0);
+   FFilter[ChannelIndex] := TButterworthHighPassFilter.Create;
+   FFilter[ChannelIndex].SetFilterValues(20, 0);
   end;
 
- // set initial parameters 
  Parameter[0] := 20;
- Parameter[1] := 2;
+ Parameter[1] := 4;
 end;
 
 procedure TButterworthHPModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1
-  do FreeAndNil(FFilter[ch]);
+ for ChannelIndex := 0 to Length(FFilter) - 1
+  do FreeAndNil(FFilter[ChannelIndex]);
 end;
 
 procedure TButterworthHPModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -93,62 +99,176 @@ begin
  GUI := TFmButterworth.Create(Self);
 end;
 
+
+// parameter change
+
 procedure TButterworthHPModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
-   then FFilter[Channel].Order := round(Value);
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  begin
+   if Assigned(FFilter[ChannelIndex])
+    then FFilter[ChannelIndex].Order := round(Value);
+  end;
 
- // update GUI if necessary
- if EditorForm is TFmButterworth
-  then TFmButterworth(EditorForm).UpdateOrder;
+ // update GUI
+ if EditorForm is TFmButterworth then
+  with TFmButterworth(EditorForm)
+   do UpdateOrder;
 end;
 
 procedure TButterworthHPModule.ParamFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  if assigned(FFilter[Channel])
-   then FFilter[Channel].Frequency := Value;
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  if Assigned(FFilter[ChannelIndex])
+   then FFilter[ChannelIndex].Frequency := Value;
 
- // update GUI if necessary
- if EditorForm is TFmButterworth
-  then TFmButterworth(EditorForm).UpdateFrequency;
+ // update GUI
+ if EditorForm is TFmButterworth then
+  with TFmButterworth(EditorForm)
+   do UpdateFrequency;
 end;
+
+
+// parameter display
+
+procedure TButterworthHPModule.ParameterFrequencyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
+  else PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4)
+end;
+
+procedure TButterworthHPModule.ParameterFrequencyLabel(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] < 1000
+  then PreDefined := 'Hz'
+  else PreDefined := 'kHz';
+end;
+
+procedure TButterworthHPModule.ParameterOrderDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ PreDefined := IntToStr(Round(Parameter[Index]));
+end;
+
+
+// string to parameter conversion
+
+procedure TButterworthHPModule.StringToFrequencyParameter(
+  Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
+var
+  Str    : string;
+  Indxes : array [0..1] of Integer;
+  Mult   : Single;
+begin
+ Str := Trim(ParameterString);
+ if Str = '' then Exit;
+
+ // process unit extensions
+ if Pos('k', Str) > 0 then Mult := 1E3 else
+ if Pos('m', Str) > 0 then Mult := 1E-3
+  else Mult := 1;
+
+ Indxes[0] := 1;
+ while (Indxes[0] <= Length(Str)) and
+  (not (Str[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] >= Length(Str)) then Exit;
+
+ Indxes[1] := Indxes[0] + 1;
+ while (Indxes[1] <= Length(Str)) and
+  (Str[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
+
+ Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
+
+ try
+  Value := Mult * StrToFloat(Str);
+ except
+ end;
+end;
+
+procedure TButterworthHPModule.StringToOrderParameter(Sender: TObject;
+  const Index: Integer; const ParameterString: string; var Value: Single);
+var
+  Str    : string;
+  Indxes : array [0..1] of Integer;
+begin
+ Str := Trim(ParameterString);
+ if Str = '' then Exit;
+
+ Indxes[0] := 1;
+ while (Indxes[0] <= Length(Str)) and
+  (not (Str[Indxes[0]] in ['0'..'9'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] > Length(Str)) then Exit;
+
+ Indxes[1] := Indxes[0] + 1;
+ while (Indxes[1] <= Length(Str)) and
+  (Str[Indxes[1]] in ['0'..'9']) do Inc(Indxes[1]);
+
+ Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
+
+ try
+  Value := Round(StrToFloat(Str));
+ except
+ end;
+end;
+
+
+// magnitude calculation
+
+function TButterworthHPModule.Magnitude_dB(Frequency: Single): Single;
+begin
+ if Assigned(FFilter[0])
+  then Result := 10 * FastLog10MinError5(FFilter[0].MagnitudeSquared(Frequency))
+  else Result := 0; 
+end;
+
+
+// process related stuff
 
 procedure TButterworthHPModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to Length(FFilter) - 1
-  do FFilter[ch].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for ChannelIndex := 0 to Length(FFilter) - 1
+   do FFilter[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 procedure TButterworthHPModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[ChannelIndex, SampleIndex] := FFilter[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
 
 procedure TButterworthHPModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Sample  : Integer;
-  Channel : Integer;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FFilter) - 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FFilter[Channel].ProcessSample64(Inputs[Channel, Sample]);
+ for ChannelIndex := 0 to Length(FFilter) - 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[ChannelIndex, SampleIndex] := FFilter[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
+
+{$IFDEF FPC}
+initialization
+  {$I ButterworthDM.lrs}
+{$ENDIF}
 
 end.

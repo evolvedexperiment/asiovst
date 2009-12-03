@@ -41,8 +41,9 @@ uses
 
 type
   TGuiEQGraph = class;
-  TXAxisLabelStyle = (xlsNone, xlsTop, xlsBottom);
-  TYAxisLabelStyle = (ylsNone, ylsLeft, ylsRight);
+  TXAxisLabelPosition = (xlpNone, xlpTop, xlpBottom);
+  TYAxisLabelPosition = (ylpNone, ylpLeft, ylpRight);
+  TXAxisLabelFrequency = (xlfDecade, xlfThirdDecade, xlfAuto);
   TUnitPosition = (upValue, upSide);
 
   TGetFilterGainEvent = function(Sender: TObject; const Frequency: Single): Single of object;
@@ -73,17 +74,20 @@ type
 
   TCustomGuiEQGraphXAxis = class(TCustomGuiEQGraphAxis)
   private
-    FLabelStyle   : TXAxisLabelStyle;
-    FInvUpper     : Single;
-    FInvLower     : Single;
-    FLog2Ratio    : Single;
-    FInvLog2Ratio : Single;
-    procedure SetLabelStyle(const Value: TXAxisLabelStyle);
+    FLabelPosition  : TXAxisLabelPosition;
+    FLabelFrequency : TXAxisLabelFrequency;
+    FInvUpper       : Single;
+    FInvLower       : Single;
+    FLog2Ratio      : Single;
+    FInvLog2Ratio   : Single;
+    procedure SetLabelPosition(const Value: TXAxisLabelPosition);
     procedure SetLowerFrequency(const Value: Single);
     procedure SetUpperFrequency(const Value: Single);
+    procedure SetLabelFrequency(const Value: TXAxisLabelFrequency);
   protected
     procedure AssignTo(Dest: TPersistent); override;
-    procedure LabelStyleChanged; virtual;
+    procedure LabelPositionChanged; virtual;
+    procedure LabelFrequencyChanged; virtual;
     procedure LowerFrequencyChanged; virtual;
     procedure UpperFrequencyChanged; virtual;
 
@@ -103,27 +107,29 @@ type
 
     property UpperFrequency: Single read FUpper write SetUpperFrequency;
     property LowerFrequency: Single read FLower write SetLowerFrequency;
-    property LabelStyle: TXAxisLabelStyle read FLabelStyle write SetLabelStyle default xlsNone;
+    property LabelPosition: TXAxisLabelPosition read FLabelPosition write SetLabelPosition default xlpNone;
+    property LabelFrequency: TXAxisLabelFrequency read FLabelFrequency write SetLabelFrequency default xlfDecade;
   end;
 
   TGuiEQGraphXAxis = class(TCustomGuiEQGraphXAxis)
   published
-    property LabelStyle;
+    property LabelPosition;
     property UnitPosition;
     property UpperFrequency;
     property LowerFrequency;
+    property LabelFrequency;
   end;
 
   // Y-Axis
 
   TCustomGuiEQGraphYAxis = class(TCustomGuiEQGraphAxis)
   private
-    FLabelStyle       : TYAxisLabelStyle;
+    FLabelPosition       : TYAxisLabelPosition;
     FMaximumGridLines : Integer;
     FAutoGranularity: Boolean;
     procedure SetAutoGranularity(const Value: Boolean);
     procedure SetGranularity(const Value: Single);
-    procedure SetLabelStyle(const Value: TYAxisLabelStyle);
+    procedure SetLabelPosition(const Value: TYAxisLabelPosition);
     procedure SetLowerLevel(const Value: Single);
     procedure SetMaximumGridLines(const Value: Integer);
     procedure SetUpperLevel(const Value: Single);
@@ -135,7 +141,7 @@ type
     procedure AutoGranularityChanged; virtual;
     procedure CalculateGranularity;
     procedure GranularityChanged; virtual;
-    procedure LabelStyleChanged; virtual;
+    procedure LabelPositionChanged; virtual;
     procedure LowerLevelChanged; virtual;
     procedure MaximumGridLinesChanged; virtual;
     procedure RangeChanged; override;
@@ -150,7 +156,7 @@ type
     property LowerGridline: Single read GetLowerGridLine;
     property Granularity: Single read FGranularity write SetGranularity;
 
-    property LabelStyle: TYAxisLabelStyle read FLabelStyle write SetLabelStyle default ylsNone;
+    property LabelPosition: TYAxisLabelPosition read FLabelPosition write SetLabelPosition default ylpNone;
     property MaximumGridLines: Integer read FMaximumGridLines write SetMaximumGridLines default 10;
     property AutoGranularity: Boolean read FAutoGranularity write SetAutoGranularity default True;
   end;
@@ -158,7 +164,7 @@ type
   TGuiEQGraphYAxis = class(TCustomGuiEQGraphYAxis)
   published
     property AutoGranularity;
-    property LabelStyle;
+    property LabelPosition;
     property LowerLevel;
     property UpperLevel;
     property Granularity;
@@ -399,7 +405,8 @@ end;
 constructor TCustomGuiEQGraphXAxis.Create(AOwner: TCustomGuiEQGraph);
 begin
  inherited;
- FLabelStyle  := xlsNone;
+ FLabelPosition := xlpNone;
+ FLabelFrequency := xlfDecade;
  FLower := 20;
  FUpper := 20000;
  CalculateUpperFrequencyReciprocal;
@@ -413,7 +420,7 @@ begin
   with TCustomGuiEQGraphXAxis(Dest) do
    begin
     inherited;
-    FLabelStyle   := Self.FLabelStyle;
+    FLabelPosition   := Self.FLabelPosition;
     FInvUpper     := Self.FInvUpper;
     FInvLower     := Self.FInvLower;
     FLog2Ratio    := Self.FLog2Ratio;
@@ -442,12 +449,22 @@ begin
  Result := FastPower2MinError3(Value * FLog2Ratio) * FLower;
 end;
 
-procedure TCustomGuiEQGraphXAxis.SetLabelStyle(const Value: TXAxisLabelStyle);
+procedure TCustomGuiEQGraphXAxis.SetLabelFrequency(
+  const Value: TXAxisLabelFrequency);
 begin
- if FLabelStyle <> Value then
+ if FLabelFrequency <> Value then
   begin
-   FLabelStyle := Value;
-   LabelStyleChanged;
+   FLabelFrequency := Value;
+   LabelFrequencyChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraphXAxis.SetLabelPosition(const Value: TXAxisLabelPosition);
+begin
+ if FLabelPosition <> Value then
+  begin
+   FLabelPosition := Value;
+   LabelPositionChanged;
   end;
 end;
 
@@ -511,7 +528,12 @@ begin
  FInvLog2Ratio := 1 / FLog2Ratio;
 end;
 
-procedure TCustomGuiEQGraphXAxis.LabelStyleChanged;
+procedure TCustomGuiEQGraphXAxis.LabelPositionChanged;
+begin
+ Changed;
+end;
+
+procedure TCustomGuiEQGraphXAxis.LabelFrequencyChanged;
 begin
  Changed;
 end;
@@ -524,7 +546,7 @@ begin
  inherited Create(AOwner);
  FUpper :=  15;
  FLower := -15;
- FLabelStyle := ylsNone;
+ FLabelPosition := ylpNone;
  FMaximumGridLines := 10;
  FAutoGranularity := True;
 
@@ -537,7 +559,7 @@ begin
  if Dest is TCustomGuiEQGraphYAxis then
   with TCustomGuiEQGraphYAxis(Dest) do
    begin
-    FLabelStyle := Self.FLabelStyle;
+    FLabelPosition := Self.FLabelPosition;
     FGranularity := Self.FGranularity;
     FMaximumGridLines := Self.FMaximumGridLines;
    end
@@ -595,12 +617,12 @@ begin
   end;
 end;
 
-procedure TCustomGuiEQGraphYAxis.SetLabelStyle(const Value: TYAxisLabelStyle);
+procedure TCustomGuiEQGraphYAxis.SetLabelPosition(const Value: TYAxisLabelPosition);
 begin
- if FLabelStyle <> Value then
+ if FLabelPosition <> Value then
   begin
-   FLabelStyle := Value;
-   LabelStyleChanged;
+   FLabelPosition := Value;
+   LabelPositionChanged;
   end;
 end;
 
@@ -616,7 +638,7 @@ begin
  Changed;
 end;
 
-procedure TCustomGuiEQGraphYAxis.LabelStyleChanged;
+procedure TCustomGuiEQGraphYAxis.LabelPositionChanged;
 begin
  Changed;
 end;
@@ -1068,7 +1090,7 @@ begin
         else
        {$ENDIF}
         begin
-         Brush.Color := Self.Color;
+         Brush.Color := FChartColor;
          FillRect(ClipRect);
         end;
        RenderGridToBitmap(FBuffer);
@@ -1093,9 +1115,9 @@ begin
           end
          else
          {$ENDIF}
-          with Bmp.Canvas do
+          with Canvas do
            begin
-            Brush.Color := Self.Color;
+            Brush.Color := FChartColor;
             FillRect(ClipRect);
            end;
          RenderGridToBitmap(Bmp);
@@ -1119,6 +1141,7 @@ var
   Temp        : Single;
   Wdth        : Integer;
   Base        : Integer;
+  DrawLabel   : Boolean;
 begin
  with Bitmap, Canvas do
   begin
@@ -1126,10 +1149,8 @@ begin
 
    Rct := Rect(0, 0, Width, Height);
 
-   Brush.Color := Color;
-   Brush.Style := bsSolid;
-   FillRect(ClientRect);
    Brush.Color := FChartColor;
+   Brush.Style := bsSolid;
 
    Pen.Width := FOSFactor;
    InflateRect(Rct, -FOSFactor, -FOSFactor);
@@ -1187,7 +1208,6 @@ begin
      else Pen.Color := FGraphColorLight;
     end;
 
-
    // draw y-axis center line
    with FYAxis do
     begin
@@ -1197,6 +1217,8 @@ begin
      LineTo(Rct.Right, Round(Rct.Bottom - i));
     end;
 
+   Brush.Color := FChartColor;
+//   Brush.Style := bsClear;
 
    //////////////////////
    // draw axis labels //
@@ -1217,12 +1239,16 @@ begin
         end;
       end;
 
-     case FXAxis.LabelStyle of
-      xlsBottom :
+     case FXAxis.LabelPosition of
+      xlpBottom :
        begin
         while j * Base < FXAxis.UpperFrequency do
          begin
-          if j in [1, 2, 5] then
+          case FLabelFrequency of
+           xlfDecade : DrawLabel := j = 1;
+           xlfThirdDecade : DrawLabel := (j in [1, 2, 5]);
+          end;
+          if DrawLabel then
            begin
             Txt := FloatToStrF(j * Base, ffGeneral, 5, 5);
 
@@ -1241,11 +1267,15 @@ begin
            end;
          end;
        end;
-      xlsTop:
+      xlpTop:
        begin
         while j * Base < FXAxis.UpperFrequency do
          begin
-          if j in [1, 2, 5] then
+          case FLabelFrequency of
+           xlfDecade : DrawLabel := j = 1;
+           xlfThirdDecade : DrawLabel := (j in [1, 2, 5]);
+          end;
+          if DrawLabel then
            begin
             Txt := FloatToStrF(j * Base, ffGeneral, 5, 5);
 
@@ -1267,8 +1297,8 @@ begin
      end;
     end;
 
-   case FYAxis.LabelStyle of
-    ylsLeft:
+   case FYAxis.LabelPosition of
+    ylpLeft:
      with FYAxis do
       begin
        Temp := GetLowerGridLine;
@@ -1276,14 +1306,19 @@ begin
        while Temp < UpperLevel do
         begin
          i := Round(((Temp - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+
          Txt := FloatToStrF(Temp, ffGeneral, 5, 5);
+
+         // modify text
+         if (Temp >= 0) then Txt := '+' + Txt;
          if UnitPosition = upValue
           then Txt := Txt + ' dB';
+
          TextOut(Rct.Left + FOSFactor * (FBorderWidth div 2), Round(Rct.Bottom - i) - TextHeight(Txt) div 2, Txt);
          Temp := Temp + Granularity;
         end;
       end;
-    ylsRight:
+    ylpRight:
      with FYAxis do
       begin
        Temp := GetLowerGridLine;
@@ -1291,9 +1326,14 @@ begin
        while Temp < UpperLevel do
         begin
          i := Round(((Temp - LowerLevel) / Range) *  (Rct.Bottom - Rct.Top));
+
          Txt := FloatToStrF(Temp, ffGeneral, 5, 5);
+
+         // modify text
+         if (Temp >= 0) then Txt := '+' + Txt;
          if UnitPosition = upValue
           then Txt := Txt + ' dB';
+
          TextOut(Round(Rct.Right - FOSFactor * (FBorderWidth div 2) - TextWidth(Txt)), Round(Rct.Bottom - i) - TextHeight(Txt) div 2, Txt);
          Temp := Temp + Granularity;
         end;

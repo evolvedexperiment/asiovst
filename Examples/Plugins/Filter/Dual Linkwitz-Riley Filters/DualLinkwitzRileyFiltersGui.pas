@@ -110,6 +110,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     function GuiEQGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    procedure DialDblClick(Sender: TObject);
     procedure DialHighpassFrequencyChange(Sender: TObject);
     procedure DialHighpassFrequencyMouseEnter(Sender: TObject);
     procedure DialHighpassSlopeChange(Sender: TObject);
@@ -118,7 +119,13 @@ type
     procedure DialLowpassFrequencyMouseEnter(Sender: TObject);
     procedure DialLowpassSlopeChange(Sender: TObject);
     procedure DialLowpassSlopeMouseEnter(Sender: TObject);
+    procedure DialMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
+    procedure EQGraphUpdateTimer(Sender: TObject);
+    procedure GpDualLiknwitzRileyClick(Sender: TObject);
+    procedure GuiEQGraphClick(Sender: TObject);
     procedure LbMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure LbShowFrequencyPlotClick(Sender: TObject);
     procedure LedHighCutClick(Sender: TObject);
     procedure LedLowCutClick(Sender: TObject);
     procedure Mi31Hz5Click(Sender: TObject);
@@ -127,13 +134,6 @@ type
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
     procedure PuPresetPopup(Sender: TObject);
-    procedure LbShowFrequencyPlotClick(Sender: TObject);
-    procedure GuiEQGraphClick(Sender: TObject);
-    procedure EQGraphUpdateTimer(Sender: TObject);
-    procedure DialDblClick(Sender: TObject);
-    procedure GpDualLiknwitzRileyClick(Sender: TObject);
-    procedure DialMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;

@@ -88,6 +88,7 @@ object FmButterworth: TFmButterworth
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialFrequencyChange
+      OnDblClick = LbFrequencyValueDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -106,6 +107,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
+      OnDblClick = LbFrequencyValueDblClick
     end
     object DialOrder: TGuiDial
       Left = 104
@@ -121,6 +123,7 @@ object FmButterworth: TFmButterworth
       Max = 16.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      OnDblClick = LbOrderValueDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -140,6 +143,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
+      OnDblClick = LbOrderValueDblClick
     end
     object LbOrderValue: TGuiLabel
       Left = 94
@@ -151,7 +155,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      OnClick = LbOrderValueClick
+      OnClick = LbOrderValueDblClick
     end
     object LbFrequencyValue: TGuiLabel
       Left = 8
@@ -163,7 +167,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      OnDblClick = LbFrequencyValueDblClick
+      OnClick = LbFrequencyValueDblClick
     end
   end
   object GuiEQGraph: TGuiEQGraph
@@ -174,7 +178,7 @@ object FmButterworth: TFmButterworth
     AntiAlias = gaaLinear4x
     GraphColorDark = 4145018
     GraphColorLight = 2829139
-    ColorChart = 657940
+    ColorChart = 1315880
     BorderRadius = 8
     BorderWidth = 2
     BorderColor = 10526927
@@ -184,19 +188,21 @@ object FmButterworth: TFmButterworth
         Color = 10526927
         OnGetFilterGain = GetFilterGain
       end>
+    YAxis.LabelPosition = ylpRight
     YAxis.LowerLevel = -36.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
     YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 3
+    XAxis.LabelPosition = xlpBottom
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
     Anchors = [akLeft, akTop, akBottom]
-    Color = 1315880
+    Color = 657940
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 10526927
+    Font.Color = 7500472
     Font.Height = -7
     Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Style = [fsBold]
     ParentColor = False
   end
   object Timer: TTimer

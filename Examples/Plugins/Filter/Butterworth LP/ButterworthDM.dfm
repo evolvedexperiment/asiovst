@@ -11,7 +11,6 @@ object ButterworthLPModule: TButterworthLPModule
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
-  UseDefaultString2ParameterHandler = True
   ShellPlugins = <>
   Programs = <
     item
@@ -36,11 +35,11 @@ object ButterworthLPModule: TButterworthLPModule
       StepFloat = 50.000000000000000000
       StepInteger = 50
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
-      OnStringToParameter = StringToFrequencyParameter
     end
     item
       Curve = ctLinear
