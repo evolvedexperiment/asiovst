@@ -1,5 +1,4 @@
 object EnhancedGateDataModule: TEnhancedGateDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Gate'
@@ -8,7 +7,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdReceiveVstEvents, vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out, vcdBypass]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'EAGa'
@@ -20,7 +18,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -37,7 +34,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnCustomParameterDisplay = EAGOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -115,7 +111,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnParameterChange = EAGDecayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Duck'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -132,7 +127,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnCustomParameterDisplay = EAGOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stereo Link'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -149,7 +143,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnCustomParameterDisplay = EAGOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain'
       DisplayName = 'Side Chain Source'
@@ -209,7 +202,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnParameterChange = EAGHiCutChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
@@ -228,7 +220,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnParameterChange = EAGRatioChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
@@ -248,7 +239,6 @@ object EnhancedGateDataModule: TEnhancedGateDataModule
       OnParameterChange = EAGKneeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Range'

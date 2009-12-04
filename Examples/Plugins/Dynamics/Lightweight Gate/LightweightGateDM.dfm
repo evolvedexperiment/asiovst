@@ -1,5 +1,4 @@
 object LightweightGateDataModule: TLightweightGateDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Gate'
@@ -8,7 +7,6 @@ object LightweightGateDataModule: TLightweightGateDataModule
   VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DVLG'
@@ -100,7 +98,6 @@ object LightweightGateDataModule: TLightweightGateDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Threshold'
@@ -120,7 +117,6 @@ object LightweightGateDataModule: TLightweightGateDataModule
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
@@ -138,7 +134,6 @@ object LightweightGateDataModule: TLightweightGateDataModule
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'

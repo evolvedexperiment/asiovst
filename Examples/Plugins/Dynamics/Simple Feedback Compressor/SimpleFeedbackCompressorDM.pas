@@ -63,12 +63,12 @@ uses
 
 procedure TSimpleFeedbackCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  i : Integer;
+  Channel : Integer;
 begin
- for i := 0 to Length(FSimpleFeedbackCompressors) - 1 do
+ for Channel := 0 to Length(FSimpleFeedbackCompressors) - 1 do
   begin
-   FSimpleFeedbackCompressors[i] := TSimpleFeedbackCompressor.Create;
-   FSimpleFeedbackCompressors[i].AutoMakeUp := True;
+   FSimpleFeedbackCompressors[Channel] := TSimpleFeedbackCompressor.Create;
+   FSimpleFeedbackCompressors[Channel].AutoMakeUp := True;
   end;
 
  // initial parameters 
@@ -93,9 +93,9 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleFeedbackCompressors[0])
+ if Assigned(FSimpleFeedbackCompressors[0])
   then FSimpleFeedbackCompressors[0].Threshold_dB := Value;
- if assigned(FSimpleFeedbackCompressors[1])
+ if Assigned(FSimpleFeedbackCompressors[1])
   then FSimpleFeedbackCompressors[1].Threshold_dB := Value;
 
  // update GUI if necessary
@@ -111,7 +111,7 @@ end;
 procedure TSimpleFeedbackCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleFeedbackCompressors[0]) then
+ if Assigned(FSimpleFeedbackCompressors[0]) then
   begin
    FSimpleFeedbackCompressors[0].Ratio := 1 / Value;
    FSimpleFeedbackCompressors[1].Ratio := FSimpleFeedbackCompressors[0].Ratio;
@@ -129,9 +129,9 @@ end;
 
 procedure TSimpleFeedbackCompressorDataModule.SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleFeedbackCompressors[0])
+ if Assigned(FSimpleFeedbackCompressors[0])
   then FSimpleFeedbackCompressors[0].Release := Value;
- if assigned(FSimpleFeedbackCompressors[0])
+ if Assigned(FSimpleFeedbackCompressors[0])
   then FSimpleFeedbackCompressors[1].Release := Value;
 
  // update GUI if necessary
@@ -152,9 +152,9 @@ begin
  if Value < 3 * SampleDuration_ms
   then Value := 3 * SampleDuration_ms;
 
- if assigned(FSimpleFeedbackCompressors[0])
+ if Assigned(FSimpleFeedbackCompressors[0])
   then FSimpleFeedbackCompressors[0].Attack := Value;
- if assigned(FSimpleFeedbackCompressors[1])
+ if Assigned(FSimpleFeedbackCompressors[1])
   then FSimpleFeedbackCompressors[1].Attack := Value;
 
  // update GUI if necessary
@@ -180,14 +180,17 @@ procedure TSimpleFeedbackCompressorDataModule.VSTModuleSampleRateChange(
 var
   SampleDuration_ms : Single;
 begin
- if assigned(FSimpleFeedbackCompressors[0])
-  then FSimpleFeedbackCompressors[0].SampleRate := SampleRate;
- if assigned(FSimpleFeedbackCompressors[1])
-  then FSimpleFeedbackCompressors[1].SampleRate := SampleRate;
+ if Abs(SampleRate) <> 0 then
+  begin
+   if Assigned(FSimpleFeedbackCompressors[0])
+    then FSimpleFeedbackCompressors[0].SampleRate := SampleRate;
+   if Assigned(FSimpleFeedbackCompressors[1])
+    then FSimpleFeedbackCompressors[1].SampleRate := SampleRate;
 
- SampleDuration_ms := 1000 / SampleRate;
- if Parameter[3] < 3 * SampleDuration_ms
-  then Parameter[3] := 3 * SampleDuration_ms;
+   SampleDuration_ms := 1000 / SampleRate;
+   if Parameter[3] < 3 * SampleDuration_ms
+    then Parameter[3] := 3 * SampleDuration_ms;
+  end;
 end;
 
 end.

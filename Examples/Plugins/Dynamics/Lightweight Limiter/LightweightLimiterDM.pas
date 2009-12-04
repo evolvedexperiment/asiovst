@@ -126,13 +126,13 @@ end;
 
 procedure TLightweightLimiterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmLightweightLimiter.Create(Self);
+ GUI := TFmLightweightLimiter.Create(Self);
 end;
 
 function TLightweightLimiterDataModule.EvaluateCharacteristic(
   const Input: Single): Single;
 begin
- result:= FLightweightLimiter[0].CharacteristicCurve_dB(Input);
+ Result := FLightweightLimiter[0].CharacteristicCurve_dB(Input);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterMixChange(
@@ -175,10 +175,10 @@ end;
 procedure TLightweightLimiterDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightLimiter[0]) then
+ if Assigned(FLightweightLimiter[0]) then
   begin
    FLightweightLimiter[0].MakeUpGain_dB := Value;
-   if assigned(FLightweightLimiter[1])
+   if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].MakeUpGain_dB := FLightweightLimiter[0].MakeUpGain_dB;
   end;
  if EditorForm is TFmLightweightLimiter
@@ -246,10 +246,10 @@ end;
 procedure TLightweightLimiterDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightLimiter[0]) then
+ if Assigned(FLightweightLimiter[0]) then
   begin
    FLightweightLimiter[0].AutoMakeUp := Boolean(round(Value));
-   if assigned(FLightweightLimiter[1])
+   if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].AutoMakeUp := FLightweightLimiter[0].AutoMakeUp;
   end;
  if EditorForm is TFmLightweightLimiter
@@ -259,17 +259,17 @@ end;
 function TLightweightLimiterDataModule.GetLightweightLimiter(Index: Integer): TCustomKneeLimiter;
 begin
  if Index in [0..Length(FLightweightLimiter) - 1]
-  then result := FLightweightLimiter[Index]
+  then Result := FLightweightLimiter[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
 procedure TLightweightLimiterDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightLimiter[0]) then
+ if Assigned(FLightweightLimiter[0]) then
   begin
    FLightweightLimiter[0].Attack := Value;
-   if assigned(FLightweightLimiter[1])
+   if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].Attack := FLightweightLimiter[0].Attack;
   end;
  if EditorForm is TFmLightweightLimiter
@@ -279,10 +279,10 @@ end;
 procedure TLightweightLimiterDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightLimiter[0]) then
+ if Assigned(FLightweightLimiter[0]) then
   begin
    FLightweightLimiter[0].Release := Value;
-   if assigned(FLightweightLimiter[1])
+   if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].Release := FLightweightLimiter[0].Release;
   end;
  if EditorForm is TFmLightweightLimiter
@@ -292,10 +292,10 @@ end;
 procedure TLightweightLimiterDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightLimiter[0]) then
+ if Assigned(FLightweightLimiter[0]) then
   begin
    FLightweightLimiter[0].Threshold_dB := Value;
-   if assigned(FLightweightLimiter[1])
+   if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].Threshold_dB := Value;
   end;
  if EditorForm is TFmLightweightLimiter
@@ -305,10 +305,10 @@ end;
 procedure TLightweightLimiterDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightLimiter[0]) then
+ if Assigned(FLightweightLimiter[0]) then
   begin
    FLightweightLimiter[0].Knee_dB := Value;
-   if assigned(FLightweightLimiter[1])
+   if Assigned(FLightweightLimiter[1])
     then FLightweightLimiter[1].Knee_dB := Value;
   end;
  if EditorForm is TFmLightweightLimiter
@@ -363,21 +363,24 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   with FLightweightLimiter[0] do
-  begin
-   InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := GainReductionFactor * MakeUpGain;
-   Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
-   Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
-  end;
+   begin
+    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Temp := GainReductionFactor * MakeUpGain;
+    Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
+    Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
+   end;
 end;
 
 procedure TLightweightLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FLightweightLimiter[0])
-  then FLightweightLimiter[0].SampleRate := SampleRate;
- if assigned(FLightweightLimiter[1])
-  then FLightweightLimiter[1].SampleRate := SampleRate;
+ if Abs(SampleRate) <> 0 then
+  begin
+   if Assigned(FLightweightLimiter[0])
+    then FLightweightLimiter[0].SampleRate := SampleRate;
+   if Assigned(FLightweightLimiter[1])
+    then FLightweightLimiter[1].SampleRate := SampleRate;
+  end;
 end;
 
 end.

@@ -128,13 +128,13 @@ end;
 
 procedure TLightweightCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmLightweightCompressor.Create(Self);
+ GUI := TFmLightweightCompressor.Create(Self);
 end;
 
 function TLightweightCompressorDataModule.EvaluateCharacteristic(
   const Input: Single): Single;
 begin
- result:= FCompressor[0].CharacteristicCurve_dB(Input);
+ Result := FCompressor[0].CharacteristicCurve_dB(Input);
 end;
 
 procedure TLightweightCompressorDataModule.ChooseProcess;
@@ -155,19 +155,21 @@ end;
 function TLightweightCompressorDataModule.GetLightweightCompressor(Index: Integer): TCustomKneeCompressor;
 begin
  if Index in [0..Length(FCompressor) - 1]
-  then result := FCompressor[Index]
+  then Result := FCompressor[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
 procedure TLightweightCompressorDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].Attack := Value;
-   if assigned(FCompressor[1])
+   if Assigned(FCompressor[1])
     then FCompressor[1].Attack := FCompressor[0].Attack;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateAttack;
 end;
@@ -175,12 +177,14 @@ end;
 procedure TLightweightCompressorDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].Release := Value;
-   if assigned(FCompressor[1])
+   if Assigned(FCompressor[1])
     then FCompressor[1].Release := FCompressor[0].Release;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateRelease;
 end;
@@ -188,12 +192,14 @@ end;
 procedure TLightweightCompressorDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].Threshold_dB := Value;
-   if assigned(FCompressor[1])
+   if Assigned(FCompressor[1])
     then FCompressor[1].Threshold_dB := Value;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateThreshold;
 end;
@@ -201,12 +207,14 @@ end;
 procedure TLightweightCompressorDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].Ratio := Value;
-   if assigned(FCompressor[1])
+   if Assigned(FCompressor[1])
     then FCompressor[1].Ratio := Value;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateRatio;
 end;
@@ -214,12 +222,14 @@ end;
 procedure TLightweightCompressorDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].Knee_dB := Value;
-   if assigned(FCompressor[1])
+   if Assigned(FCompressor[1])
     then FCompressor[1].Knee_dB := Value;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateKnee;
 end;
@@ -227,11 +237,13 @@ end;
 procedure TLightweightCompressorDataModule.ParameterAutoMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].AutoMakeUp := Boolean(round(Value));
    FCompressor[1].AutoMakeUp := FCompressor[0].AutoMakeUp;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateAutoMakeUpGain;
 end;
@@ -276,11 +288,13 @@ end;
 procedure TLightweightCompressorDataModule.ParameterMakeUpGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].MakeUpGain_dB := Value;
    FCompressor[1].MakeUpGain_dB := FCompressor[0].MakeUpGain_dB;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateMakeUp;
 end;
@@ -316,6 +330,8 @@ procedure TLightweightCompressorDataModule.ParameterStereoChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateStereo;
 end;
@@ -324,6 +340,8 @@ procedure TLightweightCompressorDataModule.ParameterLimitChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  ChooseProcess;
+
+ // update GUI
  if EditorForm is TFmLightweightCompressor
   then TFmLightweightCompressor(EditorForm).UpdateLimit;
 end;
@@ -348,12 +366,12 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   with FCompressor[0] do
-  begin
-   InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := MakeUpGain * GainReductionFactor;
-   Outputs[0, Sample] := Temp * Inputs[0, Sample];
-   Outputs[1, Sample] := Temp * Inputs[1, Sample];
-  end;
+   begin
+    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Temp := MakeUpGain * GainReductionFactor;
+    Outputs[0, Sample] := Temp * Inputs[0, Sample];
+    Outputs[1, Sample] := Temp * Inputs[1, Sample];
+   end;
 end;
 
 procedure TLightweightCompressorDataModule.VSTModuleProcessStereoSoftClip(const Inputs,
@@ -376,19 +394,22 @@ var
 begin
  for Sample := 0 to SampleFrames - 1 do
   with FCompressor[0] do
-  begin
-   InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-   Temp := MakeUpGain * GainReductionFactor;
-   Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
-   Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
-  end;
+   begin
+    InputSample(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
+    Temp := MakeUpGain * GainReductionFactor;
+    Outputs[0, Sample] := FastTanhContinousError4(Temp * Inputs[0, Sample]);
+    Outputs[1, Sample] := FastTanhContinousError4(Temp * Inputs[1, Sample]);
+   end;
 end;
 
 procedure TLightweightCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FCompressor[0]) then FCompressor[0].SampleRate := SampleRate;
- if assigned(FCompressor[1]) then FCompressor[1].SampleRate := SampleRate;
+ if Abs(SampleRate) <> 0 then
+  begin
+   if Assigned(FCompressor[0]) then FCompressor[0].SampleRate := SampleRate;
+   if Assigned(FCompressor[1]) then FCompressor[1].SampleRate := SampleRate;
+  end;
 end;
 
 end.

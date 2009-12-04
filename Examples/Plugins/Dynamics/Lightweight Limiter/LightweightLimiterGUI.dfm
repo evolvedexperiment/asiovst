@@ -37,6 +37,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbThreshold: TGuiLabel
     Left = 3
@@ -51,6 +52,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbThresholdValue: TGuiLabel
     Left = 8
@@ -64,6 +66,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object DialAttack: TGuiDial
     Left = 27
@@ -86,6 +89,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -100,6 +104,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbAttackValue: TGuiLabel
     Left = 8
@@ -113,6 +118,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object DialRelease: TGuiDial
     Left = 99
@@ -135,6 +141,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRelease: TGuiLabel
     Left = 84
@@ -149,6 +156,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbReleaseValue: TGuiLabel
     Left = 78
@@ -162,6 +170,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object DialKnee: TGuiDial
     Left = 123
@@ -183,6 +192,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbKnee: TGuiLabel
     Left = 99
@@ -197,6 +207,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbKneeValue: TGuiLabel
     Left = 104
@@ -210,6 +221,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object GuiGraphXY: TGuiGraphXY
     Left = 244
@@ -265,6 +277,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbMakeUpGain: TGuiLabel
     Left = 193
@@ -279,6 +292,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbMakeUpGainValue: TGuiLabel
     Left = 191
@@ -292,14 +306,16 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LEDStereo: TGuiLED
     Left = 161
     Top = 9
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDStereoClick
@@ -316,6 +332,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LEDStereoClick
   end
   object LEDLimit: TGuiLED
@@ -323,13 +340,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 30
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDLimitClick
   end
-  object GuiLabel2: TGuiLabel
+  object LbSoftClip: TGuiLabel
     Left = 180
     Top = 29
     Width = 54
@@ -341,6 +359,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -12
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LEDLimitClick
   end
   object LEDAutoGain: TGuiLED
@@ -348,13 +367,14 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Top = 69
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDAutoGainClick
   end
-  object GuiLabel3: TGuiLabel
+  object LbAutoGain: TGuiLabel
     Left = 180
     Top = 70
     Width = 54
@@ -366,6 +386,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LEDAutoGainClick
   end
   object LMGainReduction: TGuiColorLevelMeter
@@ -374,10 +395,10 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Width = 14
     Height = 53
     BorderColor = 14277598
-    ContrastLuminanz = 0.180000007152557400
+    ContrastLuminance = 0.239999994635582000
     Upper = 20.000000000000000000
   end
-  object GuiLabel1: TGuiLabel
+  object LbGR: TGuiLabel
     Left = 275
     Top = 96
     Width = 33
@@ -390,8 +411,9 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
-  object GuiLabel4: TGuiLabel
+  object Lb0dB: TGuiLabel
     Left = 292
     Top = 163
     Width = 24
@@ -403,9 +425,10 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LEDAutoGainClick
   end
-  object GuiLabel5: TGuiLabel
+  object Lb20dB: TGuiLabel
     Left = 292
     Top = 121
     Width = 30
@@ -417,9 +440,10 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LEDAutoGainClick
   end
-  object GuiLabel6: TGuiLabel
+  object Lb10dB: TGuiLabel
     Left = 292
     Top = 142
     Width = 30
@@ -431,6 +455,7 @@ object FmLightweightLimiter: TFmLightweightLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LEDAutoGainClick
   end
   object GuiDialImageList: TGuiDialImageList

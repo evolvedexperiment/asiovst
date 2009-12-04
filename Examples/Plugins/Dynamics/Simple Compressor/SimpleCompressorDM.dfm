@@ -1,5 +1,4 @@
 object SimpleCompressorDataModule: TSimpleCompressorDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Limiter'
@@ -7,7 +6,6 @@ object SimpleCompressorDataModule: TSimpleCompressorDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'SiGa'
@@ -19,7 +17,6 @@ object SimpleCompressorDataModule: TSimpleCompressorDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -38,7 +35,6 @@ object SimpleCompressorDataModule: TSimpleCompressorDataModule
       OnParameterChange = SLThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ratio'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

@@ -1,5 +1,4 @@
 object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressorDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Multiband Compressor'
@@ -8,7 +7,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
   VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DVLC'
@@ -20,7 +18,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Low Split Frequency'
@@ -35,13 +32,13 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterLowFreqChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Mid Split Frequency'
@@ -56,13 +53,13 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMidFreqChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'High Split Frequency'
@@ -77,13 +74,13 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterHighChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
@@ -101,7 +98,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Low Attack'
@@ -121,7 +117,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Low Release'
@@ -141,7 +136,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Threshold'
@@ -156,12 +150,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Ratio'
@@ -172,12 +166,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       ShortLabel = 'L Ratio'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterRatioChange
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low Knee'
@@ -190,12 +184,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Low MakeUp Gain'
@@ -209,12 +203,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Low Mode'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -230,7 +224,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'LowMid Attack'
@@ -250,7 +243,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'LowMid Release'
@@ -270,7 +262,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid Threshold'
@@ -285,12 +276,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid Ratio'
@@ -301,12 +292,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       ShortLabel = 'LM Rtio'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterRatioChange
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid Knee'
@@ -319,12 +310,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'LowMid MakeUp Gain'
@@ -338,12 +329,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LowMid Mode'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -359,7 +350,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'HighMid Attack'
@@ -379,7 +369,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'HighMid Release'
@@ -399,7 +388,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid Threshold'
@@ -414,12 +402,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid Ratio'
@@ -430,12 +418,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       ShortLabel = 'HM Rati'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterRatioChange
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid Knee'
@@ -448,12 +436,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'HighMid MakeUp Gain'
@@ -467,12 +455,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'HighMid Mode'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -488,7 +476,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'High Attack'
@@ -508,7 +495,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'High Release'
@@ -528,7 +514,6 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Threshold'
@@ -543,12 +528,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Ratio'
@@ -559,12 +544,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       ShortLabel = 'H Ratio'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterRatioChange
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High Knee'
@@ -577,12 +562,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'High MakeUp Gain'
@@ -596,12 +581,12 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'High Mode'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

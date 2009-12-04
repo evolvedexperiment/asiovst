@@ -44,11 +44,11 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure SLThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure SLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FSimpleCompressors : Array [0..1] of TSimpleCompressor;
   public
@@ -76,15 +76,15 @@ end;
 procedure TSimpleCompressorDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TEditorForm.Create(Self);
+ GUI := TEditorForm.Create(Self);
 end;
 
 procedure TSimpleCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleCompressors[0])
+ if Assigned(FSimpleCompressors[0])
   then FSimpleCompressors[0].Threshold_dB := Value;
- if assigned(FSimpleCompressors[1])
+ if Assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Threshold_dB := Value;
 
  // update GUI if necessary
@@ -96,9 +96,9 @@ end;
 procedure TSimpleCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleCompressors[0])
+ if Assigned(FSimpleCompressors[0])
   then FSimpleCompressors[0].Ratio := 1 / Value;
- if assigned(FSimpleCompressors[1])
+ if Assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Ratio := 1 / Value;
 
  // update GUI if necessary
@@ -110,9 +110,9 @@ end;
 procedure TSimpleCompressorDataModule.SLReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleCompressors[0])
+ if Assigned(FSimpleCompressors[0])
   then FSimpleCompressors[0].Release := Value;
- if assigned(FSimpleCompressors[1])
+ if Assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Release := Value;
 
  // update GUI if necessary
@@ -124,9 +124,9 @@ end;
 procedure TSimpleCompressorDataModule.SLAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FSimpleCompressors[0])
+ if Assigned(FSimpleCompressors[0])
   then FSimpleCompressors[0].Attack := Value;
- if assigned(FSimpleCompressors[1])
+ if Assigned(FSimpleCompressors[1])
   then FSimpleCompressors[1].Attack := Value;
 
  // update GUI if necessary
@@ -138,22 +138,25 @@ end;
 procedure TSimpleCompressorDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i : Integer;
+  SampleIndex : Integer;
 begin
- for i := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-    Outputs[0, i] := FSimpleCompressors[0].ProcessSample64(Inputs[0, i]);
-    Outputs[1, i] := FSimpleCompressors[1].ProcessSample64(Inputs[1, i]);
+   Outputs[0, SampleIndex] := FSimpleCompressors[0].ProcessSample64(Inputs[0, SampleIndex]);
+   Outputs[1, SampleIndex] := FSimpleCompressors[1].ProcessSample64(Inputs[1, SampleIndex]);
   end;
 end;
 
 procedure TSimpleCompressorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FSimpleCompressors[0])
-  then FSimpleCompressors[0].SampleRate := SampleRate;
- if assigned(FSimpleCompressors[1])
-  then FSimpleCompressors[1].SampleRate := SampleRate;
+ if Abs(SampleRate) <> 0 then
+  begin
+   if Assigned(FSimpleCompressors[0])
+    then FSimpleCompressors[0].SampleRate := Abs(SampleRate);
+   if Assigned(FSimpleCompressors[1])
+    then FSimpleCompressors[1].SampleRate := Abs(SampleRate);
+  end;
 end;
 
 end.

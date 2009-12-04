@@ -1,6 +1,6 @@
 object ConvoFXDataModule: TConvoFXDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'ConvoFX'
@@ -9,7 +9,6 @@ object ConvoFXDataModule: TConvoFXDataModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 8192
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   BlockModeSize = 8192
   InitialDelay = 2048
@@ -24,7 +23,6 @@ object ConvoFXDataModule: TConvoFXDataModule
   ParameterProperties = <
     item
       CanBeAutomated = False
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Latency Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -42,7 +40,6 @@ object ConvoFXDataModule: TConvoFXDataModule
     end
     item
       CanBeAutomated = False
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Maximum IR Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -60,7 +57,6 @@ object ConvoFXDataModule: TConvoFXDataModule
       OnParameterChange = ParameterMaximumIROrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'IR Selected'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -78,7 +74,6 @@ object ConvoFXDataModule: TConvoFXDataModule
       OnParameterChange = ParameterIRChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

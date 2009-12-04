@@ -1,4 +1,4 @@
-unit LightweightMultibandCompressorDM;
+﻿unit LightweightMultibandCompressorDM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -172,19 +172,19 @@ end;
 
 procedure TLightweightMultibandCompressorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmLightweightMultibandCompressor.Create(Self);
+ GUI := TFmLightweightMultibandCompressor.Create(Self);
 end;
 
 function TLightweightMultibandCompressorDataModule.EvaluateLowCharacteristic(
   const Input: Single): Single;
 begin
- result:= FLightweightMultibandCompressor[0].CharacteristicCurve_dB(Input);
+ Result := FLightweightMultibandCompressor[0].CharacteristicCurve_dB(Input);
 end;
 
 function TLightweightMultibandCompressorDataModule.EvaluateLowMidCharacteristic(
   const Input: Single): Single;
 begin
- result:= FLightweightMultibandCompressor[1].CharacteristicCurve_dB(Input);
+ Result:= FLightweightMultibandCompressor[1].CharacteristicCurve_dB(Input);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterFrequencyLabel(
@@ -211,13 +211,13 @@ end;
 function TLightweightMultibandCompressorDataModule.EvaluateHighMidCharacteristic(
   const Input: Single): Single;
 begin
- result:= FLightweightMultibandCompressor[2].CharacteristicCurve_dB(Input);
+ Result:= FLightweightMultibandCompressor[2].CharacteristicCurve_dB(Input);
 end;
 
 function TLightweightMultibandCompressorDataModule.EvaluateHighCharacteristic(
   const Input: Single): Single;
 begin
- result:= FLightweightMultibandCompressor[3].CharacteristicCurve_dB(Input);
+ Result:= FLightweightMultibandCompressor[3].CharacteristicCurve_dB(Input);
 end;
 
 procedure TLightweightMultibandCompressorDataModule.ParameterMixChange(
@@ -243,7 +243,7 @@ procedure TLightweightMultibandCompressorDataModule.SetAutoGain(Index: Integer;
 begin
  if Index in [0..Length(FLightweightMultibandCompressor) - 1] then
   begin
-   if assigned(FLightweightMultibandCompressor[Index])
+   if Assigned(FLightweightMultibandCompressor[Index])
     then FLightweightMultibandCompressor[Index].AutoMakeUp := Value;
    if EditorForm is TFmLightweightMultibandCompressor then
     with TFmLightweightMultibandCompressor(EditorForm) do
@@ -308,7 +308,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
-  if assigned(FLinkwitzRiley[Channel, 0])
+  if Assigned(FLinkwitzRiley[Channel, 0])
    then FLinkwitzRiley[Channel, 0].Frequency := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateLowFrequency;
@@ -320,7 +320,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
-  if assigned(FLinkwitzRiley[Channel, 1])
+  if Assigned(FLinkwitzRiley[Channel, 1])
    then FLinkwitzRiley[Channel, 1].Frequency := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateMidFrequency;
@@ -332,7 +332,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
-  if assigned(FLinkwitzRiley[Channel, 2])
+  if Assigned(FLinkwitzRiley[Channel, 2])
    then FLinkwitzRiley[Channel, 2].Frequency := Value;
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do UpdateHighFrequency;
@@ -359,14 +359,14 @@ function TLightweightMultibandCompressorDataModule.GetAutoGain(
   Index: Integer): Boolean;
 begin
  if Index in [0..Length(FLightweightMultibandCompressor) - 1]
-  then result := FLightweightMultibandCompressor[Index].AutoMakeUp
+  then Result := FLightweightMultibandCompressor[Index].AutoMakeUp
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
 function TLightweightMultibandCompressorDataModule.GetLightweightMultibandCompressor(Index: Integer): TLightweightSoftKneeCompressor;
 begin
  if Index in [0..Length(FLightweightMultibandCompressor) - 1]
-  then result := FLightweightMultibandCompressor[Index]
+  then Result := FLightweightMultibandCompressor[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
@@ -376,8 +376,10 @@ var
   Band : Integer;
 begin
  Band := (Index - 4) div 7;
- if assigned(FLightweightMultibandCompressor[Band])
+ if Assigned(FLightweightMultibandCompressor[Band])
   then FLightweightMultibandCompressor[Band].Attack := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -394,8 +396,10 @@ var
   Band : Integer;
 begin
  Band := (Index - 5) div 7;
- if assigned(FLightweightMultibandCompressor[Band])
+ if Assigned(FLightweightMultibandCompressor[Band])
   then FLightweightMultibandCompressor[Band].Release := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -412,8 +416,10 @@ var
   Band : Integer;
 begin
  Band := (Index - 6) div 7;
- if assigned(FLightweightMultibandCompressor[Band])
+ if Assigned(FLightweightMultibandCompressor[Band])
   then FLightweightMultibandCompressor[Band].Threshold_dB := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -430,8 +436,10 @@ var
   Band : Integer;
 begin
  Band := (Index - 7) div 7;
- if assigned(FLightweightMultibandCompressor[Band])
+ if Assigned(FLightweightMultibandCompressor[Band])
   then FLightweightMultibandCompressor[Band].Ratio := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -448,8 +456,10 @@ var
   Band : Integer;
 begin
  Band := (Index - 8) div 7;
- if assigned(FLightweightMultibandCompressor[Band])
+ if Assigned(FLightweightMultibandCompressor[Band])
   then FLightweightMultibandCompressor[Band].Knee_dB := Value;
+
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -466,9 +476,10 @@ var
   Band : Integer;
 begin
  Band := (Index - 9) div 7;
- if assigned(FLightweightMultibandCompressor[Band])
+ if Assigned(FLightweightMultibandCompressor[Band])
   then FLightweightMultibandCompressor[Band].MakeUpGain_dB := Value;
 
+ // update GUI
  if EditorForm is TFmLightweightMultibandCompressor then
   with TFmLightweightMultibandCompressor(EditorForm) do
    case Band of
@@ -532,7 +543,6 @@ begin
      Temp[3] := GainReductionFactor * MakeUpGain;
     end;
 
-
    // gain and combine
    Outputs[0, Sample] := Temp[0] * FD[0, 0] + Temp[1] * FD[0, 1] - Temp[2] * FD[0, 2] - Temp[3] * FD[0, 3];
    Outputs[1, Sample] := Temp[0] * FD[1, 0] + Temp[1] * FD[1, 1] - Temp[2] * FD[1, 2] - Temp[3] * FD[1, 3];
@@ -583,16 +593,19 @@ procedure TLightweightMultibandCompressorDataModule.VSTModuleSampleRateChange(Se
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
+ if Abs(SampleRate) <> 0 then
   begin
-   if assigned(FLightweightMultibandCompressor[Channel])
-    then FLightweightMultibandCompressor[Channel].SampleRate := SampleRate;
-   if assigned(FLinkwitzRiley[Channel, 0])
-    then FLinkwitzRiley[Channel, 0].SampleRate := SampleRate;
-   if assigned(FLinkwitzRiley[Channel, 1])
-    then FLinkwitzRiley[Channel, 1].SampleRate := SampleRate;
-   if assigned(FLinkwitzRiley[Channel, 2])
-    then FLinkwitzRiley[Channel, 2].SampleRate := SampleRate;
+   for Channel := 0 to Length(FLightweightMultibandCompressor) - 1 do
+    begin
+     if Assigned(FLightweightMultibandCompressor[Channel])
+      then FLightweightMultibandCompressor[Channel].SampleRate := SampleRate;
+     if Assigned(FLinkwitzRiley[Channel, 0])
+      then FLinkwitzRiley[Channel, 0].SampleRate := SampleRate;
+     if Assigned(FLinkwitzRiley[Channel, 1])
+      then FLinkwitzRiley[Channel, 1].SampleRate := SampleRate;
+     if Assigned(FLinkwitzRiley[Channel, 2])
+      then FLinkwitzRiley[Channel, 2].SampleRate := SampleRate;
+    end;
   end;
 end;
 

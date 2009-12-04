@@ -114,31 +114,33 @@ end;
 
 procedure TLightweightGateDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmLightweightGate.Create(Self);
+ GUI := TFmLightweightGate.Create(Self);
 end;
 
 function TLightweightGateDataModule.EvaluateCharacteristic(
   const Input: Single): Single;
 begin
- result:= FLightweightGate[0].CharacteristicCurve_dB(Input);
+ Result := FLightweightGate[0].CharacteristicCurve_dB(Input);
 end;
 
 function TLightweightGateDataModule.GetLightweightGate(Index: Integer): TCustomKneeCompressor;
 begin
  if Index in [0..Length(FLightweightGate) - 1]
-  then result := FLightweightGate[Index]
+  then Result := FLightweightGate[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
 procedure TLightweightGateDataModule.ParameterAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightGate[0]) then
+ if Assigned(FLightweightGate[0]) then
   begin
    FLightweightGate[0].Attack := Value;
-   if assigned(FLightweightGate[1])
+   if Assigned(FLightweightGate[1])
     then FLightweightGate[1].Attack := FLightweightGate[0].Attack;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightGate
   then TFmLightweightGate(EditorForm).UpdateAttack;
 end;
@@ -146,12 +148,14 @@ end;
 procedure TLightweightGateDataModule.ParameterReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightGate[0]) then
+ if Assigned(FLightweightGate[0]) then
   begin
    FLightweightGate[0].Release := Value;
-   if assigned(FLightweightGate[1])
+   if Assigned(FLightweightGate[1])
     then FLightweightGate[1].Release := FLightweightGate[0].Release;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightGate
   then TFmLightweightGate(EditorForm).UpdateRelease;
 end;
@@ -159,12 +163,14 @@ end;
 procedure TLightweightGateDataModule.ParameterThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightGate[0]) then
+ if Assigned(FLightweightGate[0]) then
   begin
    FLightweightGate[0].Threshold_dB := Value;
-   if assigned(FLightweightGate[1])
+   if Assigned(FLightweightGate[1])
     then FLightweightGate[1].Threshold_dB := Value;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightGate
   then TFmLightweightGate(EditorForm).UpdateThreshold;
 end;
@@ -172,12 +178,14 @@ end;
 procedure TLightweightGateDataModule.ParameterRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightGate[0]) then
+ if Assigned(FLightweightGate[0]) then
   begin
    FLightweightGate[0].Ratio := Value;
-   if assigned(FLightweightGate[1])
+   if Assigned(FLightweightGate[1])
     then FLightweightGate[1].Ratio := Value;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightGate
   then TFmLightweightGate(EditorForm).UpdateRatio;
 end;
@@ -185,12 +193,14 @@ end;
 procedure TLightweightGateDataModule.ParameterKneeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLightweightGate[0]) then
+ if Assigned(FLightweightGate[0]) then
   begin
    FLightweightGate[0].Knee_dB := Value;
-   if assigned(FLightweightGate[1])
+   if Assigned(FLightweightGate[1])
     then FLightweightGate[1].Knee_dB := Value;
   end;
+
+ // update GUI
  if EditorForm is TFmLightweightGate
   then TFmLightweightGate(EditorForm).UpdateKnee;
 end;
@@ -275,10 +285,13 @@ end;
 procedure TLightweightGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FLightweightGate[0])
-  then FLightweightGate[0].SampleRate := SampleRate;
- if assigned(FLightweightGate[1])
-  then FLightweightGate[1].SampleRate := SampleRate;
+ if Abs(SampleRate) <> 0 then
+  begin
+   if Assigned(FLightweightGate[0])
+    then FLightweightGate[0].SampleRate := SampleRate;
+   if Assigned(FLightweightGate[1])
+    then FLightweightGate[1].SampleRate := SampleRate;
+  end;
 end;
 
 end.

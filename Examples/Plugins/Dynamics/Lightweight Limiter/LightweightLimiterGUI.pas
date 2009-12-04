@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_GuiLabel, Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiLevelMeter, ExtCtrls;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
+  DAV_GuiLED, DAV_GuiLevelMeter;
 
 type
   TFmLightweightLimiter = class(TForm)
@@ -48,8 +48,8 @@ type
     DialThreshold: TGuiDial;
     GuiDialImageList: TGuiDialImageList;
     GuiGraphXY: TGuiGraphXY;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
+    LbSoftClip: TGuiLabel;
+    LbAutoGain: TGuiLabel;
     LbAttack: TGuiLabel;
     LbAttackValue: TGuiLabel;
     LbKnee: TGuiLabel;
@@ -65,10 +65,10 @@ type
     LEDLimit: TGuiLED;
     LEDStereo: TGuiLED;
     LMGainReduction: TGuiColorLevelMeter;
-    GuiLabel1: TGuiLabel;
-    GuiLabel4: TGuiLabel;
-    GuiLabel5: TGuiLabel;
-    GuiLabel6: TGuiLabel;
+    LbGR: TGuiLabel;
+    Lb0dB: TGuiLabel;
+    Lb20dB: TGuiLabel;
+    Lb10dB: TGuiLabel;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure DialAttackChange(Sender: TObject);

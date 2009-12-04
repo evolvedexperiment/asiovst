@@ -1,4 +1,4 @@
-unit LA4029DM;
+﻿unit LA4029DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -136,7 +136,7 @@ end;
 
 procedure TLA4029DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLA4029s)
+ if Assigned(FLA4029s)
   then FLA4029s.Input_dB := Value;
 
  // update GUI if necessary
@@ -152,7 +152,7 @@ end;
 procedure TLA4029DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLA4029s)
+ if Assigned(FLA4029s)
   then FLA4029s.Output_dB := Value;
 
  // update GUI if necessary
@@ -167,7 +167,7 @@ end;
 
 procedure TLA4029DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLA4029s)
+ if Assigned(FLA4029s)
   then FLA4029s.Knee := 0.1 * Value;
 
  // update GUI if necessary
@@ -182,7 +182,7 @@ end;
 
 procedure TLA4029DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLA4029s)
+ if Assigned(FLA4029s)
   then FLA4029s.Ratio := 1 / Value;
 
  // update GUI if necessary
@@ -197,7 +197,7 @@ end;
 
 procedure TLA4029DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLA4029s)
+ if Assigned(FLA4029s)
   then FLA4029s.Release_ms := Value;
 
  // update GUI if necessary
@@ -233,36 +233,38 @@ end;
 
 procedure TLA4029DataModule.CalculateLevelFallOff;
 begin
- FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
+ if FLevelFallOff_ms <> 0
+  then FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
 function TLA4029DataModule.GetGRReduction: Double;
 begin
- if assigned(FLA4029s)
-  then result := FLA4029s.GainReductionFactor
-  else result := 1;
+ if Assigned(FLA4029s)
+  then Result := FLA4029s.GainReductionFactor
+  else Result := 1;
 end;
 
 function TLA4029DataModule.GetGRReduction_dB: Double;
 begin
- if assigned(FLA4029s)
-  then result := FLA4029s.GainReduction_dB
-  else result := 0;
+ if Assigned(FLA4029s)
+  then Result := FLA4029s.GainReduction_dB
+  else Result := 0;
 end;
 
 function TLA4029DataModule.GetInLevel_dB: Double;
 begin
- result := Amp_to_dB(FInLevel);
+ Result := Amp_to_dB(FInLevel);
 end;
 
 function TLA4029DataModule.GetOutLevel_dB: Double;
 begin
- result := Amp_to_dB(FOutLevel);
+ Result := Amp_to_dB(FOutLevel);
 end;
 
 procedure TLA4029DataModule.ParamVUMeterChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
    begin
@@ -285,8 +287,8 @@ end;
 
 procedure TLA4029DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- assert(round(Value) >= 0);
- if assigned(FHighpass)
+ Assert(round(Value) >= 0);
+ if Assigned(FHighpass)
   then FHighpass.Order := round(Value);
 end;
 
@@ -297,7 +299,7 @@ end;
 
 procedure TLA4029DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighpass)
+ if Assigned(FHighpass)
   then FHighpass.Frequency := Value;
 end;
 
@@ -314,6 +316,8 @@ procedure TLA4029DataModule.ParamMixChange(Sender: TObject; const Index: Integer
 begin
  FMix[0] := sqrt(0.01 * Value);
  FMix[1] := 1 - FMix[0];
+
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA4029 do
    begin
@@ -346,7 +350,7 @@ end;
 
 procedure TLA4029DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLA4029s)
+ if Assigned(FLA4029s)
   then FLA4029s.Attack_ms := Value;
 
  // update GUI if necessary
@@ -418,11 +422,14 @@ end;
 procedure TLA4029DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(FLA4029s)
-  then FLA4029s.SampleRate := SampleRate;
- if Assigned(FHighpass)
-  then FHighpass.SampleRate := SampleRate;
- CalculateLevelFallOff;
+ if Abs(SampleRate) > 0 then
+  begin
+   if Assigned(FLA4029s)
+    then FLA4029s.SampleRate := SampleRate;
+   if Assigned(FHighpass)
+    then FHighpass.SampleRate := SampleRate;
+   CalculateLevelFallOff;
+  end;
 end;
 
 procedure TLA4029DataModule.VSTModuleSoftBypass(Sender: TObject;

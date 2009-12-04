@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspConvolution, DAV_DSPFilterButterworth;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspConvolution, DAV_DSPFilterButterworth;
 
 const
   CNumChannels = 2;
@@ -54,18 +54,18 @@ type
     procedure ParameterIRChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDampingChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
     FConvolution     : array [0..CNumChannels - 1] of TLowLatencyConvolution32;
-    FImpulseResponse : array [0..CNumChannels] of PDAVSingleFixedArray;
-    FImpulseLength   : array [0..CNumChannels] of Integer;
+    FImpulseResponse : array [0..CNumChannels - 1] of PDAVSingleFixedArray;
+    FImpulseLength   : array [0..CNumChannels - 1] of Integer;
     FDirty           : Boolean;
     FGain            : Single;
     FIR              : Integer;
-    FSemaphore       : Integer;
+    FCriticalSection : TCriticalSection;
     FDampingFilter   : TButterworthLowpassFilter;
     procedure UpdateConvolutionIR;
-    procedure RenderEnvelopes(const IR: PDAVSingleFixedArray;
-      const Length: Integer);
+    procedure RenderEnvelopes(const IR: PDAVSingleFixedArray; const Length: Integer);
   end;
 
 implementation
@@ -78,7 +78,12 @@ uses
 
 procedure TConvoFxDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore := 0;
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TConvoFxDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
 end;
 
 procedure TConvoFxDataModule.VSTModuleOpen(Sender: TObject);
@@ -117,34 +122,33 @@ procedure TConvoFxDataModule.ParameterMaximumIROrderChange(
 var
   Channel: Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FConvolution) - 1 do
-   if assigned(FConvolution[Channel]) then
+   if Assigned(FConvolution[Channel]) then
     if Value >= FConvolution[Channel].MinimumIRBlockOrder
      then FConvolution[Channel].MaximumIRBlockOrder := round(Limit(Value, 7, 20))
      else Value := FConvolution[Channel].MinimumIRBlockOrder;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TConvoFxDataModule.ParameterDampingChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FDampingFilter)
+ if Assigned(FDampingFilter)
   then FDampingFilter.Frequency := Value;
  FDirty := True;
 
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   UpdateConvolutionIR;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
- 
+
+ // update GUI
  if EditorForm is TFmConvoFx
   then TFmConvoFx(EditorForm).UpdateDamping;
 end;
@@ -155,14 +159,14 @@ begin
  FGain := dB_to_Amp(Value);
  FDirty := True;
 
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   UpdateConvolutionIR;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 
+ // update GUI
  if EditorForm is TFmConvoFx
   then TFmConvoFx(EditorForm).UpdateGain;
 end;
@@ -187,8 +191,7 @@ begin
    FIR := i;
    ResName := CResNames[i - 1];
 
-   while FSemaphore > 0 do;
-   Inc(FSemaphore);
+   FCriticalSection.Enter;
    try
     // load left channel
     with TResourceStream.Create(HInstance, ResName + 'L', 'F16') do
@@ -206,8 +209,8 @@ begin
       if c < FImpulseLength[0] then
        begin
         r := FImpulseLength[0] - c;
-        assert(r > 0);
-        assert(r < Length(HFData));
+        Assert(r > 0);
+        Assert(r < Length(HFData));
         Read(HFData[0], r * 2);
         Scale := 1 / r;
         for i := 0 to r - 1
@@ -233,8 +236,8 @@ begin
       if c < FImpulseLength[1] then
        begin
         r := FImpulseLength[1] - c;
-        assert(r > 0);
-        assert(r < Length(HFData));
+        Assert(r > 0);
+        Assert(r < Length(HFData));
         Read(HFData[0], r * 2);
         Scale := 1 / r;
         for i := 0 to r - 1
@@ -245,9 +248,11 @@ begin
      end;
     UpdateConvolutionIR;
    finally
-    Dec(FSemaphore);
+    FCriticalSection.Leave;
    end;
   end;
+
+ // update GUI 
  if EditorForm is TFmConvoFx
   then TFmConvoFx(EditorForm).UpdateIRSelect;
 end;
@@ -282,22 +287,26 @@ const
 begin
  for Channel := 0 to Length(FConvolution) - 1 do
   begin
-   if abs(SampleRate - CDefaultSampleRate) < CDenorm32
+   if Abs(SampleRate - CDefaultSampleRate) < CDenorm32
     then
      begin
       TempSize := FImpulseLength[Channel];
       GetMem(TempIR, TempSize * SizeOf(Single));
-      Move(FImpulseResponse[Channel]^[0], TempIR^[0], TempSize * SizeOf(Single));
-      RenderEnvelopes(TempIR, TempSize);
       try
-       FConvolution[Channel].LoadImpulseResponse(TempIR, TempSize);
+       if Assigned(FImpulseResponse[Channel]) then
+        begin
+         Move(FImpulseResponse[Channel]^[0], TempIR^[0], TempSize * SizeOf(Single));
+         RenderEnvelopes(TempIR, TempSize);
+         FConvolution[Channel].LoadImpulseResponse(TempIR, TempSize);
+        end;
       finally
        Dispose(TempIR);
       end;
      end
     else
      begin
-      TempSize := round((FImpulseLength[Channel] - 4) * SampleRate / CDefaultSampleRate);
+      TempSize := Round((FImpulseLength[Channel] - 4) * SampleRate / CDefaultSampleRate);
+      if TempSize < 0 then Exit;
       Offset := CDefaultSampleRate / SampleRate;
       GetMem(TempIR, TempSize * SizeOf(Single));
       try
@@ -305,8 +314,8 @@ begin
        for Sample := 0 to TempSize - 1 do
         begin
          r := round(Pos - CHalf32);
-         assert(Pos - r >= 0);
-         assert(Pos - r <= 1);
+         Assert(Pos - r >= 0);
+         Assert(Pos - r <= 1);
          TempIR^[Sample] := Hermite32_asm(Pos - r, @FImpulseResponse[Channel]^[r]);
          Pos := Pos + Offset;
         end;
@@ -324,8 +333,7 @@ procedure TConvoFxDataModule.ParameterLatencyChange(
 var
   Channel: Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FConvolution) - 1 do
    if assigned(FConvolution[Channel]) then
@@ -335,7 +343,7 @@ begin
      FConvolution[Channel].MinimumIRBlockOrder := round(Value);
     end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -345,25 +353,23 @@ var
   Channel: Integer;
 begin
  // lock processing
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FConvolution) - 1
    do FConvolution[Channel].ProcessBlock(@Inputs[Channel, 0], @Outputs[Channel, 0], SampleFrames);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TConvoFxDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   UpdateConvolutionIR;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 

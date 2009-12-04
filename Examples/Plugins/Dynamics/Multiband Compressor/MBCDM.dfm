@@ -1,5 +1,4 @@
 object MBCDataModule: TMBCDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Multiband Compressor'
@@ -7,7 +6,6 @@ object MBCDataModule: TMBCDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'MBCo'
@@ -19,7 +17,6 @@ object MBCDataModule: TMBCDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Gain'
@@ -35,6 +32,7 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 0.009999999776482582
       StepFloat = 0.100000001490116100
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMLowGainChange
     end
@@ -56,11 +54,11 @@ object MBCDataModule: TMBCDataModule
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMLowFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Order'
@@ -79,7 +77,6 @@ object MBCDataModule: TMBCDataModule
       OnParameterChange = MBCDCLowOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Low'
       DisplayName = 'Low Threshold'
@@ -95,6 +92,7 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMLowThresholdChange
     end
@@ -114,6 +112,7 @@ object MBCDataModule: TMBCDataModule
       ShortLabel = 'LoRatio'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMLowRatioChange
     end
@@ -156,7 +155,6 @@ object MBCDataModule: TMBCDataModule
       OnParameterChange = MBCDMLowReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Gain'
@@ -172,11 +170,11 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 0.009999999776482582
       StepFloat = 0.100000001490116100
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMMidGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mid'
       DisplayName = 'Mid Threshold'
@@ -192,6 +190,7 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMMidThresholdChange
     end
@@ -211,6 +210,7 @@ object MBCDataModule: TMBCDataModule
       ShortLabel = 'MidRtio'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMMidRatioChange
     end
@@ -270,11 +270,11 @@ object MBCDataModule: TMBCDataModule
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMHighFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'High'
       DisplayName = 'High Order'
@@ -290,11 +290,11 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 2.000000000000000000
       StepInteger = 2
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDCHighOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'High'
       DisplayName = 'High Gain'
@@ -310,11 +310,11 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 0.009999999776482582
       StepFloat = 0.100000001490116100
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMHighGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'High'
       DisplayName = 'High Threshold'
@@ -330,6 +330,7 @@ object MBCDataModule: TMBCDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMHighThresholdChange
     end
@@ -349,6 +350,7 @@ object MBCDataModule: TMBCDataModule
       ShortLabel = 'HiRatio'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = MBCDMHighRatioChange
     end
@@ -391,7 +393,6 @@ object MBCDataModule: TMBCDataModule
       OnParameterChange = MBCDMHighReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limiter'
       LargeStepFloat = 1.000000000000000000

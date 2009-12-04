@@ -296,28 +296,29 @@ end;
 procedure TEnhancedGateDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  i, j : Integer;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
 begin
- for j := 0 to CNrChannels - 1 do
-  for i := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to CNrChannels - 1 do
+  for ChannelIndex := 0 to SampleFrames - 1 do
    begin
-    FEnhancedGates[j].InputSample(Inputs[j,i]);
-    Outputs[j,i] := FEnhancedGates[j].ProcessSample64(Inputs[j, i]);
-    FLevels[j] := 0.99 * FLevels[j];
-    if abs(Inputs[j, i]) > FLevels[j]
-     then FLevels[j] := abs(Inputs[j, i]);
+    FEnhancedGates[SampleIndex].InputSample(Inputs[SampleIndex,ChannelIndex]);
+    Outputs[SampleIndex,ChannelIndex] := FEnhancedGates[SampleIndex].ProcessSample64(Inputs[SampleIndex, ChannelIndex]);
+    FLevels[SampleIndex] := 0.99 * FLevels[SampleIndex];
+    if abs(Inputs[SampleIndex, ChannelIndex]) > FLevels[SampleIndex]
+     then FLevels[SampleIndex] := abs(Inputs[SampleIndex, ChannelIndex]);
    end;
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleProcessBypass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  j : Integer;
+  ChannelIndex : Integer;
 begin
  FLevels[0] := 0;
  FLevels[1] := 0;
- for j := 0 to CNrChannels - 1
-  do Move(Inputs[j,0], Outputs[j,0], SampleFrames * SizeOf(Single));
+ for ChannelIndex := 0 to CNrChannels - 1
+  do Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TEnhancedGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
@@ -325,9 +326,10 @@ procedure TEnhancedGateDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- for Channel := 0 to CNrChannels - 1 do
-  if assigned(FEnhancedGates[Channel])
-   then FEnhancedGates[Channel].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to CNrChannels - 1 do
+   if Assigned(FEnhancedGates[Channel])
+    then FEnhancedGates[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

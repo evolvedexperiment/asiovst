@@ -1,5 +1,4 @@
 object LightweightLimiterDataModule: TLightweightLimiterDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Limiter'
@@ -8,7 +7,6 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
   VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DVLL'
@@ -60,7 +58,6 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack'
@@ -80,7 +77,6 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Release'
@@ -100,7 +96,6 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Threshold'
@@ -115,12 +110,12 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -131,11 +126,11 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
@@ -148,12 +143,12 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'MakeUp Gain'
@@ -167,12 +162,12 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Stereo'
@@ -190,7 +185,6 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
@@ -208,7 +202,6 @@ object LightweightLimiterDataModule: TLightweightLimiterDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Auto Make Up Gain'

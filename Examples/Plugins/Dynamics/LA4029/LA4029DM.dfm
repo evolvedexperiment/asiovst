@@ -1,5 +1,4 @@
 object LA4029DataModule: TLA4029DataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'LA-4029 Leveling Amplifier'
@@ -7,7 +6,6 @@ object LA4029DataModule: TLA4029DataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = '4029'
@@ -19,7 +17,6 @@ object LA4029DataModule: TLA4029DataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'On/Off'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -36,7 +33,6 @@ object LA4029DataModule: TLA4029DataModule
       OnCustomParameterDisplay = ParamOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Input'
@@ -56,7 +52,6 @@ object LA4029DataModule: TLA4029DataModule
       OnParameterChange = SKLInputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Output'
@@ -117,7 +112,6 @@ object LA4029DataModule: TLA4029DataModule
       OnParameterChange = SKLReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
@@ -135,7 +129,6 @@ object LA4029DataModule: TLA4029DataModule
       OnCustomParameterDisplay = ParamRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Soft Knee'
@@ -152,7 +145,6 @@ object LA4029DataModule: TLA4029DataModule
       OnParameterChange = SKLSKFBChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Mix'
@@ -169,7 +161,6 @@ object LA4029DataModule: TLA4029DataModule
       OnParameterChange = ParamMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'VU-Meter'
       DisplayName = 'VUMeterDisplay'
@@ -227,7 +218,6 @@ object LA4029DataModule: TLA4029DataModule
       OnParameterChange = ParamHPFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain Filter'
       DisplayName = 'Highpass Order'

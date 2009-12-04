@@ -75,7 +75,7 @@ end;
 procedure TSimpleGateDataModule.VSTModuleEditOpen(Sender: TObject;
   var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TEditorForm.Create(Self);
+ GUI := TEditorForm.Create(Self);
 end;
 
 procedure TSimpleGateDataModule.SGDMThresholdChange(

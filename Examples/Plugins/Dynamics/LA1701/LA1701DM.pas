@@ -1,4 +1,4 @@
-unit LA1701DM;
+﻿unit LA1701DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -137,8 +137,10 @@ end;
 
 procedure TLA1701DataModule.SKLInputChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA1701s.Input_dB := Value;
+ if Assigned(FLA1701s)
+  then FLA1701s.Input_dB := Value;
 
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
    if DialInput.Position <> Value then
@@ -151,8 +153,10 @@ end;
 procedure TLA1701DataModule.SKLOutputChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA1701s.Output_dB := Value;
+ if Assigned(FLA1701s)
+  then FLA1701s.Output_dB := Value;
 
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
    if DialOutput.Position <> Value then
@@ -164,8 +168,10 @@ end;
 
 procedure TLA1701DataModule.SKLSKFBChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA1701s.Knee := 0.1 * Value;
+ if Assigned(FLA1701s)
+  then FLA1701s.Knee := 0.1 * Value;
 
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
    if DialKnee.Position <> Value then
@@ -177,8 +183,10 @@ end;
 
 procedure TLA1701DataModule.SKLRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA1701s.Ratio := 1 / Value;
+ if Assigned(FLA1701s)
+  then FLA1701s.Ratio := 1 / Value;
 
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
    if DialRatio.Position <> Log10(Value) then
@@ -190,8 +198,10 @@ end;
 
 procedure TLA1701DataModule.SKLReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA1701s.Release_ms := Value;
+ if Assigned(FLA1701s)
+  then FLA1701s.Release_ms := Value;
 
+ // update GUI
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
    if DialRelease.Position <> Log10(Value) then
@@ -224,31 +234,32 @@ end;
 
 procedure TLA1701DataModule.CalculateLevelFallOff;
 begin
- FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
+ if FLevelFallOff_ms <> 0
+  then FLevelFallOffFactor := exp(-ln2 / (FLevelFallOff_ms * 0.001 * SampleRate));
 end;
 
 function TLA1701DataModule.GetGRReduction: Double;
 begin
- if assigned(FLA1701s)
-  then result := FLA1701s.GainReductionFactor
-  else result := 1;
+ if Assigned(FLA1701s)
+  then Result := FLA1701s.GainReductionFactor
+  else Result := 1;
 end;
 
 function TLA1701DataModule.GetGRReduction_dB: Double;
 begin
- if assigned(FLA1701s)
-  then result := FLA1701s.GainReduction_dB
-  else result := 0;
+ if Assigned(FLA1701s)
+  then Result := FLA1701s.GainReduction_dB
+  else Result := 0;
 end;
 
 function TLA1701DataModule.GetInLevel_dB: Double;
 begin
- result := Amp_to_dB(FInLevel);
+ Result := Amp_to_dB(FInLevel);
 end;
 
 function TLA1701DataModule.GetOutLevel_dB: Double;
 begin
- result := Amp_to_dB(FOutLevel);
+ Result := Amp_to_dB(FOutLevel);
 end;
 
 procedure TLA1701DataModule.ParamVUMeterDisplayChange(
@@ -277,7 +288,7 @@ end;
 procedure TLA1701DataModule.ParamHPOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  assert(round(Value) >= 0);
- if assigned(FHighpass)
+ if Assigned(FHighpass)
   then FHighpass.Order := round(Value);
 end;
 
@@ -288,7 +299,7 @@ end;
 
 procedure TLA1701DataModule.ParamHPFreqChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighpass)
+ if Assigned(FHighpass)
   then FHighpass.Frequency := Value;
 end;
 
@@ -337,7 +348,8 @@ end;
 
 procedure TLA1701DataModule.SKLAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FLA1701s.Attack_ms := Value;
+ if Assigned(FLA1701s)
+  then FLA1701s.Attack_ms := Value;
 
  if Assigned(EditorForm) then
   with EditorForm as TFmLA1701 do
@@ -407,11 +419,14 @@ end;
 procedure TLA1701DataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if Assigned(FLA1701s)
-  then FLA1701s.SampleRate := SampleRate;
- if Assigned(FHighpass)
-  then FHighpass.SampleRate := SampleRate;
- CalculateLevelFallOff;
+ if Abs(SampleRate) > 0 then
+  begin
+   if Assigned(FLA1701s)
+    then FLA1701s.SampleRate := SampleRate;
+   if Assigned(FHighpass)
+    then FHighpass.SampleRate := SampleRate;
+   CalculateLevelFallOff;
+  end;
 end;
 
 procedure TLA1701DataModule.VSTModuleSoftBypass(Sender: TObject;

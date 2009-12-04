@@ -1,5 +1,4 @@
 object LA1701DataModule: TLA1701DataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'LA-1701 Leveling Amplifier'
@@ -7,7 +6,6 @@ object LA1701DataModule: TLA1701DataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = '1701'
@@ -19,7 +17,6 @@ object LA1701DataModule: TLA1701DataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'On/Off'
       Flags = [ppfParameterIsSwitch, ppfParameterSupportsDisplayIndex]
@@ -36,7 +33,6 @@ object LA1701DataModule: TLA1701DataModule
       OnCustomParameterDisplay = ParamOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Input'
@@ -56,7 +52,6 @@ object LA1701DataModule: TLA1701DataModule
       OnParameterChange = SKLInputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Output'
@@ -117,7 +112,6 @@ object LA1701DataModule: TLA1701DataModule
       OnParameterChange = SKLReleaseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Ratio'
@@ -135,7 +129,6 @@ object LA1701DataModule: TLA1701DataModule
       OnCustomParameterDisplay = ParamRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Soft Knee'
@@ -152,7 +145,6 @@ object LA1701DataModule: TLA1701DataModule
       OnParameterChange = SKLSKFBChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterSupportsDisplayIndex]
@@ -168,7 +160,6 @@ object LA1701DataModule: TLA1701DataModule
       OnParameterChange = ParamMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'VUMeter'
       DisplayName = 'VUMeterDisplay'
@@ -226,7 +217,6 @@ object LA1701DataModule: TLA1701DataModule
       OnParameterChange = ParamHPFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Sidechain Filter'
       DisplayName = 'Highpass Order'

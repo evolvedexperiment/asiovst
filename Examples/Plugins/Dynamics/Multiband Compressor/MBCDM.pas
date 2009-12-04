@@ -49,6 +49,7 @@ type
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacingLimiter(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessLimiter(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure MBCDMLowFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDCLowOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -69,10 +70,7 @@ type
     procedure MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterLimiterChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
+    procedure ParameterLimiterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLowSplit     : array [0..1] of TLinkwitzRiley;
     FHighSplit    : array [0..1] of TLinkwitzRiley;
@@ -179,7 +177,7 @@ var
   i : Integer;
 begin
  for i := 0 to Length(FLowSplit) - 1 do
-  if assigned(FLowSplit[i])
+  if Assigned(FLowSplit[i])
    then FLowSplit[i].Frequency := Value;
 
  // update GUI if necessary
@@ -199,13 +197,13 @@ var
   i : Integer;
 begin
  for i := 0 to Length(FLowSplit) - 1 do
-  if assigned(FLowSplit[i])
+  if Assigned(FLowSplit[i])
    then FLowSplit[i].Order := round(Value);
 end;
 
 procedure TMBCDataModule.MBCDMLowGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLowComp)
+ if Assigned(FLowComp)
   then FLowComp.MakeUpGain_dB := Value;
 
  // update GUI if necessary
@@ -220,7 +218,7 @@ end;
 
 procedure TMBCDataModule.MBCDMMidGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FMidComp)
+ if Assigned(FMidComp)
   then FMidComp.MakeUpGain_dB := Value;
 
  // update GUI if necessary
@@ -235,7 +233,7 @@ end;
 
 procedure TMBCDataModule.MBCDMHighGainChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighComp)
+ if Assigned(FHighComp)
   then FHighComp.MakeUpGain_dB := Value;
 
  // update GUI if necessary
@@ -250,7 +248,7 @@ end;
 
 procedure TMBCDataModule.MBCDMLowThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLowComp)
+ if Assigned(FLowComp)
   then FLowComp.Threshold_dB := Value;
 
  // update GUI if necessary
@@ -265,7 +263,7 @@ end;
 
 procedure TMBCDataModule.MBCDMMidThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FMidComp)
+ if Assigned(FMidComp)
   then FMidComp.Threshold_dB := Value;
 
  // update GUI if necessary
@@ -280,7 +278,7 @@ end;
 
 procedure TMBCDataModule.MBCDMHighThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighComp)
+ if Assigned(FHighComp)
   then FHighComp.Threshold_dB := Value;
 
  // update GUI if necessary
@@ -296,7 +294,7 @@ end;
 procedure TMBCDataModule.MBCDMLowRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLowComp)
+ if Assigned(FLowComp)
   then FLowComp.Ratio := Value;
 
  // update GUI if necessary
@@ -311,7 +309,7 @@ end;
 
 procedure TMBCDataModule.MBCDMMidRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FMidComp)
+ if Assigned(FMidComp)
   then FMidComp.Ratio := Value;
 
  // update GUI if necessary
@@ -326,7 +324,7 @@ end;
 
 procedure TMBCDataModule.MBCDMHighRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighComp)
+ if Assigned(FHighComp)
   then FHighComp.Ratio := Value;
 
  // update GUI if necessary
@@ -341,7 +339,7 @@ end;
 
 procedure TMBCDataModule.MBCDMLowAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLowComp)
+ if Assigned(FLowComp)
   then FLowComp.Attack := Value;
 
  // update GUI if necessary
@@ -356,7 +354,7 @@ end;
 
 procedure TMBCDataModule.MBCDMMidAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FMidComp)
+ if Assigned(FMidComp)
   then FMidComp.Attack := Value;
 
  // update GUI if necessary
@@ -371,7 +369,7 @@ end;
 
 procedure TMBCDataModule.MBCDMHighAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighComp)
+ if Assigned(FHighComp)
   then FHighComp.Attack := Value;
 
  // update GUI if necessary
@@ -386,7 +384,7 @@ end;
 
 procedure TMBCDataModule.MBCDMLowReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FLowComp)
+ if Assigned(FLowComp)
   then FLowComp.Release := Value;
 
  // update GUI if necessary
@@ -397,7 +395,7 @@ end;
 
 procedure TMBCDataModule.MBCDMMidReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FMidComp)
+ if Assigned(FMidComp)
   then FMidComp.Release := Value;
 
  // update GUI if necessary
@@ -408,7 +406,7 @@ end;
 
 procedure TMBCDataModule.MBCDMHighReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FHighComp)
+ if Assigned(FHighComp)
   then FHighComp.Release := Value;
 
  // update GUI if necessary
@@ -461,7 +459,7 @@ var
   i : Integer;
 begin
  for i := 0 to Length(FHighSplit) - 1 do
-  if assigned(FHighSplit[i])
+  if Assigned(FHighSplit[i])
    then FHighSplit[i].Order := round(Value);
 end;
 
@@ -470,7 +468,7 @@ var
   i : Integer;
 begin
  for i := 0 to Length(FHighSplit) - 1 do
-  if assigned(FHighSplit[i])
+  if Assigned(FHighSplit[i])
    then FHighSplit[i].Frequency := Value;
  if Assigned(EditorForm) then
   with TFmMBC(EditorForm) do
@@ -491,9 +489,9 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   if Abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := Abs(Inputs[0, i]);
    FInputPeak[0] := FMeterRelease * FInputPeak[0];
-   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
    FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
@@ -501,19 +499,19 @@ begin
    FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
    FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
 
-   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
-   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FInputPeak[3] then FInputPeak[3] := Abs(L[1]);
    FInputPeak[3] := FMeterRelease * FInputPeak[3];
 
-   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FInputPeak[4] then FInputPeak[4] := Abs(M[0]);
    FInputPeak[4] := FMeterRelease * FInputPeak[4];
-   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FInputPeak[5] then FInputPeak[5] := Abs(M[1]);
    FInputPeak[5] := FMeterRelease * FInputPeak[5];
 
-   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FInputPeak[6] then FInputPeak[6] := Abs(H[0]);
    FInputPeak[6] := FMeterRelease * FInputPeak[6];
-   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FInputPeak[7] then FInputPeak[7] := Abs(H[1]);
    FInputPeak[7] := FMeterRelease * FInputPeak[7];
 
    FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
@@ -551,27 +549,27 @@ begin
              end;
    end;
 
-   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := Abs(L[0]);
    FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
-   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := Abs(L[1]);
    FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
 
-   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := Abs(M[0]);
    FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
-   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := Abs(M[1]);
    FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
 
-   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := Abs(H[0]);
    FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
-   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := Abs(H[1]);
    FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
 
    Outputs[0, i] := L[0] + M[0] + H[0];
    Outputs[1, i] := L[1] + M[1] + H[1];
 
-   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   if Abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := Abs(Outputs[0, i]);
    FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
-   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   if Abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := Abs(Outputs[1, i]);
    FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
 end;
@@ -584,9 +582,9 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   if Abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := Abs(Inputs[0, i]);
    FInputPeak[0] := FMeterRelease * FInputPeak[0];
-   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
    FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
@@ -594,19 +592,19 @@ begin
    FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
    FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
 
-   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
-   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FInputPeak[3] then FInputPeak[3] := Abs(L[1]);
    FInputPeak[3] := FMeterRelease * FInputPeak[3];
 
-   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FInputPeak[4] then FInputPeak[4] := Abs(M[0]);
    FInputPeak[4] := FMeterRelease * FInputPeak[4];
-   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FInputPeak[5] then FInputPeak[5] := Abs(M[1]);
    FInputPeak[5] := FMeterRelease * FInputPeak[5];
 
-   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FInputPeak[6] then FInputPeak[6] := Abs(H[0]);
    FInputPeak[6] := FMeterRelease * FInputPeak[6];
-   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FInputPeak[7] then FInputPeak[7] := Abs(H[1]);
    FInputPeak[7] := FMeterRelease * FInputPeak[7];
 
    FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
@@ -644,27 +642,27 @@ begin
              end;
    end;
 
-   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := Abs(L[0]);
    FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
-   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := Abs(L[1]);
    FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
 
-   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := Abs(M[0]);
    FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
-   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := Abs(M[1]);
    FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
 
-   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := Abs(H[0]);
    FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
-   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := Abs(H[1]);
    FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
 
    Outputs[0, i] := L[0] + M[0] + H[0];
    Outputs[1, i] := L[1] + M[1] + H[1];
 
-   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   if Abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := Abs(Outputs[0, i]);
    FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
-   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   if Abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := Abs(Outputs[1, i]);
    FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
 end;
@@ -678,9 +676,9 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   if Abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := Abs(Inputs[0, i]);
    FInputPeak[0] := FMeterRelease * FInputPeak[0];
-   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
    FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
@@ -688,19 +686,19 @@ begin
    FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
    FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
 
-   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
-   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FInputPeak[3] then FInputPeak[3] := Abs(L[1]);
    FInputPeak[3] := FMeterRelease * FInputPeak[3];
 
-   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FInputPeak[4] then FInputPeak[4] := Abs(M[0]);
    FInputPeak[4] := FMeterRelease * FInputPeak[4];
-   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FInputPeak[5] then FInputPeak[5] := Abs(M[1]);
    FInputPeak[5] := FMeterRelease * FInputPeak[5];
 
-   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FInputPeak[6] then FInputPeak[6] := Abs(H[0]);
    FInputPeak[6] := FMeterRelease * FInputPeak[6];
-   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FInputPeak[7] then FInputPeak[7] := Abs(H[1]);
    FInputPeak[7] := FMeterRelease * FInputPeak[7];
 
    FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
@@ -738,27 +736,27 @@ begin
              end;
    end;
 
-   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := Abs(L[0]);
    FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
-   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := Abs(L[1]);
    FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
 
-   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := Abs(M[0]);
    FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
-   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := Abs(M[1]);
    FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
 
-   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := Abs(H[0]);
    FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
-   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := Abs(H[1]);
    FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
 
    Outputs[0, i] := FastTanhOpt3Term(L[0] + M[0] + H[0]);
    Outputs[1, i] := FastTanhOpt3Term(L[1] + M[1] + H[1]);
 
-   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   if Abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := Abs(Outputs[0, i]);
    FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
-   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   if Abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := Abs(Outputs[1, i]);
    FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
 end;
@@ -768,12 +766,15 @@ procedure TMBCDataModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FLowSplit) - 1 do
-  if assigned(FLowSplit[Channel])
-   then FLowSplit[Channel].SampleRate := SampleRate;
- for Channel := 0 to Length(FHighSplit) - 1 do
-  if assigned(FHighSplit[Channel])
-   then FHighSplit[Channel].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  begin
+   for Channel := 0 to Length(FLowSplit) - 1 do
+    if Assigned(FLowSplit[Channel])
+     then FLowSplit[Channel].SampleRate := Abs(SampleRate);
+   for Channel := 0 to Length(FHighSplit) - 1 do
+    if Assigned(FHighSplit[Channel])
+     then FHighSplit[Channel].SampleRate := Abs(SampleRate);
+  end;
 end;
 
 procedure TMBCDataModule.VSTModuleProcessDoubleReplacingLimiter(const Inputs,
@@ -784,9 +785,9 @@ var
 begin
  for i := 0 to SampleFrames - 1 do
   begin
-   if abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := abs(Inputs[0, i]);
+   if Abs(Inputs[0, i]) > FInputPeak[0] then FInputPeak[0] := Abs(Inputs[0, i]);
    FInputPeak[0] := FMeterRelease * FInputPeak[0];
-   if abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := abs(Inputs[1, i]);
+   if Abs(Inputs[1, i]) > FInputPeak[1] then FInputPeak[1] := Abs(Inputs[1, i]);
    FInputPeak[1] := FMeterRelease * FInputPeak[1];
 
    FLowSplit[0].ProcessSample(Inputs[0, i], L[0], M[0]);
@@ -794,19 +795,19 @@ begin
    FHighSplit[0].ProcessSample(M[0], M[0], H[0]);
    FHighSplit[1].ProcessSample(M[1], M[1], H[1]);
 
-   if abs(L[0]) > FInputPeak[2] then FInputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FInputPeak[2] then FInputPeak[2] := Abs(L[0]);
    FInputPeak[2] := FMeterRelease * FInputPeak[2];
-   if abs(L[1]) > FInputPeak[3] then FInputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FInputPeak[3] then FInputPeak[3] := Abs(L[1]);
    FInputPeak[3] := FMeterRelease * FInputPeak[3];
 
-   if abs(M[0]) > FInputPeak[4] then FInputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FInputPeak[4] then FInputPeak[4] := Abs(M[0]);
    FInputPeak[4] := FMeterRelease * FInputPeak[4];
-   if abs(M[1]) > FInputPeak[5] then FInputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FInputPeak[5] then FInputPeak[5] := Abs(M[1]);
    FInputPeak[5] := FMeterRelease * FInputPeak[5];
 
-   if abs(H[0]) > FInputPeak[6] then FInputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FInputPeak[6] then FInputPeak[6] := Abs(H[0]);
    FInputPeak[6] := FMeterRelease * FInputPeak[6];
-   if abs(H[1]) > FInputPeak[7] then FInputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FInputPeak[7] then FInputPeak[7] := Abs(H[1]);
    FInputPeak[7] := FMeterRelease * FInputPeak[7];
 
    FLowComp.InputSample(CHalf32 * (L[0] + L[1]));
@@ -844,27 +845,27 @@ begin
              end;
    end;
 
-   if abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := abs(L[0]);
+   if Abs(L[0]) > FOutputPeak[2] then FOutputPeak[2] := Abs(L[0]);
    FOutputPeak[2] := FMeterRelease * FOutputPeak[2];
-   if abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := abs(L[1]);
+   if Abs(L[1]) > FOutputPeak[3] then FOutputPeak[3] := Abs(L[1]);
    FOutputPeak[3] := FMeterRelease * FOutputPeak[3];
 
-   if abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := abs(M[0]);
+   if Abs(M[0]) > FOutputPeak[4] then FOutputPeak[4] := Abs(M[0]);
    FOutputPeak[4] := FMeterRelease * FOutputPeak[4];
-   if abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := abs(M[1]);
+   if Abs(M[1]) > FOutputPeak[5] then FOutputPeak[5] := Abs(M[1]);
    FOutputPeak[5] := FMeterRelease * FOutputPeak[5];
 
-   if abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := abs(H[0]);
+   if Abs(H[0]) > FOutputPeak[6] then FOutputPeak[6] := Abs(H[0]);
    FOutputPeak[6] := FMeterRelease * FOutputPeak[6];
-   if abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := abs(H[1]);
+   if Abs(H[1]) > FOutputPeak[7] then FOutputPeak[7] := Abs(H[1]);
    FOutputPeak[7] := FMeterRelease * FOutputPeak[7];
 
    Outputs[0, i] := FastTanhOpt3Term(L[0] + M[0] + H[0]);
    Outputs[1, i] := FastTanhOpt3Term(L[1] + M[1] + H[1]);
 
-   if abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := abs(Outputs[0, i]);
+   if Abs(Outputs[0, i]) > FOutputPeak[0] then FOutputPeak[0] := Abs(Outputs[0, i]);
    FOutputPeak[0] := FMeterRelease * FOutputPeak[0];
-   if abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := abs(Outputs[1, i]);
+   if Abs(Outputs[1, i]) > FOutputPeak[1] then FOutputPeak[1] := Abs(Outputs[1, i]);
    FOutputPeak[1] := FMeterRelease * FOutputPeak[1];
   end;
 end;

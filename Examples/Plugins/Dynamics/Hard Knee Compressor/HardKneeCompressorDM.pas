@@ -149,7 +149,7 @@ function THardKneeCompressorDataModule.GetCompressor(
   Index: Integer): TSimpleCompressor;
 begin
  if Index in [0..1]
-  then result := FSimpleCompressors[Index]
+  then Result := FSimpleCompressors[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
@@ -168,8 +168,11 @@ end;
 procedure THardKneeCompressorDataModule.VSTModuleSampleRateChange(
   Sender: TObject; const SampleRate: Single);
 begin
- FSimpleCompressors[0].SampleRate := SampleRate;
- FSimpleCompressors[1].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  begin
+   if Assigned(FSimpleCompressors[0]) then FSimpleCompressors[0].SampleRate := Abs(SampleRate);
+   if Assigned(FSimpleCompressors[1]) then FSimpleCompressors[1].SampleRate := Abs(SampleRate);
+  end;
 end;
 
 end.

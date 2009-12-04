@@ -1,5 +1,4 @@
 object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeCompressorDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.3'
   EffectName = 'Lightweight Feedback Compressor'
@@ -8,7 +7,6 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
   VersionRelease = 3
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DVLF'
@@ -100,7 +98,6 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Threshold'
@@ -115,6 +112,7 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
       OnCustomParameterDisplay = ParameterThresholdDisplay
@@ -133,12 +131,12 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterRatioChange
       OnCustomParameterDisplay = ParameterRatioDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'Knee'
@@ -151,12 +149,12 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = ParameterKneeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Characteristic'
       DisplayName = 'MakeUp Gain'
@@ -170,12 +168,12 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMakeUpGainChange
       OnCustomParameterDisplay = ParameterMakeUpGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Stereo'
@@ -193,7 +191,6 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Limit'
@@ -211,7 +208,6 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mode'
       DisplayName = 'Auto Make Up Gain'
@@ -229,7 +225,6 @@ object LightweightFeedbackLikeCompressorDataModule: TLightweightFeedbackLikeComp
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
