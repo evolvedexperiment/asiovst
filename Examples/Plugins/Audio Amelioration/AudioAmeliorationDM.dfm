@@ -1,5 +1,4 @@
 object AudioAmeliorationModule: TAudioAmeliorationModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Audio Amelioration'
@@ -133,6 +132,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterExciterChange
     end
@@ -149,6 +149,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterAmbienceChange
     end
@@ -165,6 +166,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
@@ -180,6 +182,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterCompressorChange
     end
@@ -196,6 +199,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterExtraBassChange
     end
@@ -214,6 +218,7 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       ShortLabel = 'Speaker'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterSpeakerChangedChange
       OnCustomParameterDisplay = ParameterSpeakerDisplay

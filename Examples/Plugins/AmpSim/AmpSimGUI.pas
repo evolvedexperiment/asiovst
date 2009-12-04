@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, StdCtrls,
-  ExtCtrls, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiSelectBox,
+  ExtCtrls, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSelectBox, DAV_GuiDial,
   DAV_GuiLED, DAV_GuiPanel;
 
 type
@@ -48,7 +48,7 @@ type
     DialResonance: TGuiDial;
     DIL: TGuiDialImageList;
     GuiLED: TGuiLED;
-    GuiPanel1: TGuiPanel;
+    PnControls: TGuiPanel;
     LbBias: TGuiLabel;
     LbBiasValue: TLabel;
     LbDrive: TGuiLabel;
@@ -63,17 +63,23 @@ type
     LbStereo: TGuiLabel;
     SBModel: TGuiSelectBox;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
-    procedure DialDriveChange(Sender: TObject);
     procedure DialBiasChange(Sender: TObject);
-    procedure DialOutputChange(Sender: TObject);
+    procedure DialDriveChange(Sender: TObject);
+    procedure DialDriveDblClick(Sender: TObject);
     procedure DialFreqChange(Sender: TObject);
+    procedure DialOutputChange(Sender: TObject);
     procedure DialResoChange(Sender: TObject);
-    procedure SBModelChange(Sender: TObject);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
     procedure LbStereoClick(Sender: TObject);
+    procedure PnControlsClick(Sender: TObject);
+    procedure SBModelChange(Sender: TObject);
+    procedure DialBiasDblClick(Sender: TObject);
   private
     FBackground : TBitmap;
+    FEdValue    : TEdit;
   public
     procedure UpdateBias;
     procedure UpdateDrive;
@@ -147,6 +153,24 @@ begin
   end;
 end;
 
+procedure TFmCombo.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
+procedure TFmCombo.FormShow(Sender: TObject);
+begin
+ UpdateModel;
+ UpdateDrive;
+ UpdateBias;
+ UpdateOutput;
+ UpdateFreq;
+ UpdateReso;
+ UpdateProcess;
+ UpdateNoise;
+end;
+
 procedure TFmCombo.FormPaint(Sender: TObject);
 begin
  Canvas.Draw(0, 0, FBackground);
@@ -171,7 +195,7 @@ begin
    Drive := ParameterByName['Drive'];
    if DialDrive.Position <> Drive
     then DialDrive.Position := Drive;
-   LbDriveValue.Caption := FloatToStrF(Drive, ffGeneral, 3, 3) + '%';
+   LbDriveValue.Caption := FloatToStrF(Drive, ffGeneral, 3, 3) + ' %';
   end;
 end;
 
@@ -184,7 +208,7 @@ begin
    Bias := ParameterByName['Bias'];
    if DialBias.Position <> Bias
     then DialBias.Position := Bias;
-   LbBiasValue.Caption := FloatToStrF(Bias, ffGeneral, 3, 3) + '%';
+   LbBiasValue.Caption :=  FloatToStrF(Bias, ffGeneral, 3, 3) + ' %';
   end;
 end;
 
@@ -197,7 +221,7 @@ begin
    Frequency := ParameterByName['HPF Frequency'];
    if DialFrequency.Position <> Frequency
     then DialFrequency.Position := Frequency;
-   LbFrequencyValue.Caption := FloatToStrF(Frequency, ffGeneral, 5, 5) + 'Hz';
+   LbFrequencyValue.Caption := FloatToStrF(Frequency, ffGeneral, 5, 5) + ' Hz';
   end;
 end;
 
@@ -244,7 +268,7 @@ begin
    Output := ParameterByName['Output'];
    if DialOutput.Position <> Output
     then DialOutput.Position := Output;
-   LbOutputValue.Caption := FloatToStrF(Output, ffGeneral, 3, 3) + 'dB';
+   LbOutputValue.Caption := FloatToStrF(Output, ffGeneral, 3, 3) + ' dB';
   end;
 end;
 
@@ -257,7 +281,7 @@ begin
    Reso := ParameterByName['HPF Resonance'];
    if DialResonance.Position <> Reso
     then DialResonance.Position := Reso;
-   LbResonanceValue.Caption := FloatToStrF(Reso, ffGeneral, 3, 3) + '%';
+   LbResonanceValue.Caption := FloatToStrF(Reso, ffGeneral, 3, 3) + ' %';
   end;
 end;
 
@@ -278,6 +302,48 @@ begin
   begin
    if Parameter[1] <> DialDrive.Position
     then Parameter[1] := DialDrive.Position;
+  end;
+end;
+
+procedure TFmCombo.DialDriveDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbDriveValue.Left;
+   Top := LbDriveValue.Top;
+   Width := LbDriveValue.Width;
+   Height := LbDriveValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbDriveValue.Caption;
+   Tag := 1;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmCombo.DialBiasDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbBiasValue.Left;
+   Top := LbBiasValue.Top;
+   Width := LbBiasValue.Width;
+   Height := LbBiasValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbBiasValue.Caption;
+   Tag := 2;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
   end;
 end;
 
@@ -311,16 +377,21 @@ begin
   end;
 end;
 
-procedure TFmCombo.FormShow(Sender: TObject);
+procedure TFmCombo.EdValueKeyPress(Sender: TObject; var Key: Char);
 begin
- UpdateModel;
- UpdateDrive;
- UpdateBias;
- UpdateOutput;
- UpdateFreq;
- UpdateReso;
- UpdateProcess;
- UpdateNoise;
+ with TComboDataModule(Owner) do
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    FreeAndNil(FEdValue);
+   except
+   end;
+end;
+
+procedure TFmCombo.PnControlsClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmCombo.LbStereoClick(Sender: TObject);

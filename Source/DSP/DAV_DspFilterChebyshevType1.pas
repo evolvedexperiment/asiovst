@@ -154,7 +154,7 @@ end;
 
 procedure TCustomChebyshev1Filter.CalculateRippleGain;
 begin
- assert(FRipple > 0);
+ Assert(FRipple > 0);
  FRippleGain := dB_to_Amp(FRipple);
 end;
 

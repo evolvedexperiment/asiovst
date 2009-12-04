@@ -99,12 +99,13 @@ type
     FFSGain             : Single;
     FSpeedConst         : array [0..1] of Single;
 
-    procedure ChooseProcess;
     function GetBandReserve: Single;
     function GetBandRMS(Index: Integer): Single;
     procedure SetBandReserve(const Value: Single);
     procedure SetUseDownsampling(const Value: Boolean);
+  protected
     procedure CalculateSmoothingFactor;
+    procedure ChooseProcess;
     procedure DownsamplingChanged;
     procedure UpdateFilters;
   public
@@ -131,13 +132,13 @@ uses
 
 procedure TAudioAmeliorationModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  // create and setup bass enhancer
- for Channel := 0 to Length(FExciter) - 1 do
+ for ChannelIndex := 0 to Length(FExciter) - 1 do
   begin
-   FExciter[Channel] := TExciter.Create;
-   FExciter[Channel].SampleRate := SampleRate;
+   FExciter[ChannelIndex] := TExciter.Create;
+   FExciter[ChannelIndex].SampleRate := SampleRate;
   end;
 
  // create and setup ambience
@@ -154,10 +155,10 @@ begin
  FCompressor.SampleRate := SampleRate;
 
  // create and setup bass enhancer
- for Channel := 0 to Length(FBassEnhancer) - 1 do
+ for ChannelIndex := 0 to Length(FBassEnhancer) - 1 do
   begin
-   FBassEnhancer[Channel] := THarmonicBass.Create;
-   FBassEnhancer[Channel].SampleRate := SampleRate;
+   FBassEnhancer[ChannelIndex] := THarmonicBass.Create;
+   FBassEnhancer[ChannelIndex].SampleRate := SampleRate;
   end;
 
  // create and setup limiter
@@ -184,13 +185,12 @@ begin
 
  UseDownsampling := True;
  DownsamplingChanged;
-
 end;
 
 procedure TAudioAmeliorationModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
-  Band    : Integer;
+  ChannelIndex : Integer;
+  BandIndex    : Integer;
 begin
  FreeAndNil(FAmbience);
  FreeAndNil(FCompressor);
@@ -198,18 +198,18 @@ begin
  FreeAndNil(FCrosstalkSimulator);
 
  // free bass enhancer
- for Channel := 0 to Length(FBassEnhancer) - 1
-  do FreeAndNil(FBassEnhancer[Channel]);
+ for ChannelIndex := 0 to Length(FBassEnhancer) - 1
+  do FreeAndNil(FBassEnhancer[ChannelIndex]);
 
  // free exciter
- for Channel := 0 to Length(FExciter) - 1
-  do FreeAndNil(FExciter[Channel]);
+ for ChannelIndex := 0 to Length(FExciter) - 1
+  do FreeAndNil(FExciter[ChannelIndex]);
 
  // free filters
- for Band := 0 to CNumFrequencies - 1 do
+ for BandIndex := 0 to CNumFrequencies - 1 do
   begin
-   FreeAndNil(FFilterArray[Band].Lowpass);
-   FreeAndNil(FFilterArray[Band].Highpass);
+   FreeAndNil(FFilterArray[BandIndex].Lowpass);
+   FreeAndNil(FFilterArray[BandIndex].Highpass);
   end;
 end;
 
@@ -480,70 +480,73 @@ end;
 procedure TAudioAmeliorationModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- FAmbience.SampleRate := SampleRate;
- FCompressor.SampleRate := SampleRate;
- FLimiter.SampleRate := SampleRate;
- FCrosstalkSimulator.SampleRate := SampleRate;
+ if Abs(SampleRate) then
+  begin
+   FAmbience.SampleRate := SampleRate;
+   FCompressor.SampleRate := SampleRate;
+   FLimiter.SampleRate := SampleRate;
+   FCrosstalkSimulator.SampleRate := SampleRate;
 
- for Channel := 0 to Length(FBassEnhancer) - 1
-  do FBassEnhancer[Channel].SampleRate := SampleRate;
+   for ChannelIndex := 0 to Length(FBassEnhancer) - 1
+    do FBassEnhancer[ChannelIndex].SampleRate := SampleRate;
 
- for Channel := 0 to Length(FExciter) - 1
-  do FExciter[Channel].SampleRate := SampleRate;
+   for ChannelIndex := 0 to Length(FExciter) - 1
+    do FExciter[ChannelIndex].SampleRate := SampleRate;
+  end;
 end;
 
 procedure TAudioAmeliorationModule.VSTModuleProcessSpeaker(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
-  Sample  : Integer;
-  Band    : Integer;
-  d, z, s : Double;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+  Band         : Integer;
+  d, z, s      : Double;
 const
   cDenorm = 1E-32;
 begin
- for Channel := 0 to min(numInputs, numOutputs) - 1
-  do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
+ for ChannelIndex := 0 to min(numInputs, numOutputs) - 1
+  do Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
 
  // apply exciter
  if ExciterActive then
-  for Channel := 0 to Length(FExciter) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FExciter[Channel].ProcessSample64(Outputs[Channel, Sample]);
+  for ChannelIndex := 0 to Length(FExciter) - 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FExciter[ChannelIndex].ProcessSample64(Outputs[ChannelIndex, SampleIndex]);
 
  // apply compression
  if CompressorActive then
-  for Sample := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    FCompressor.InputSample(0.5 * (Outputs[0, Sample] + Outputs[1, Sample]));
-    Outputs[0, Sample] := FCompressor.GainSample(Outputs[0, Sample]);
-    Outputs[1, Sample] := FCompressor.GainSample(Outputs[1, Sample]);
+    FCompressor.InputSample(0.5 * (Outputs[0, SampleIndex] + Outputs[1, SampleIndex]));
+    Outputs[0, SampleIndex] := FCompressor.GainSample(Outputs[0, SampleIndex]);
+    Outputs[1, SampleIndex] := FCompressor.GainSample(Outputs[1, SampleIndex]);
    end;
 
  // apply ambience
  if AmbienceActive then
-  for Sample := 0 to SampleFrames - 1
-   do FAmbience.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
+  for SampleIndex := 0 to SampleFrames - 1
+   do FAmbience.ProcessSample(Outputs[0, SampleIndex], Outputs[1, SampleIndex]);
 
  // apply extra bass
  if ExtraBassActive then
-  for Channel := 0 to Length(FBassEnhancer) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FBassEnhancer[Channel].ProcessSample32(Outputs[Channel, Sample]);
+  for ChannelIndex := 0 to Length(FBassEnhancer) - 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FBassEnhancer[ChannelIndex].ProcessSample32(Outputs[ChannelIndex, SampleIndex]);
 
  // apply limiter
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   FLimiter.InputSample(0.5 * (Outputs[0, Sample] + Outputs[1, Sample]));
-   Outputs[0, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[0, Sample])));
-   Outputs[1, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[1, Sample])));
+   FLimiter.InputSample(0.5 * (Outputs[0, SampleIndex] + Outputs[1, SampleIndex]));
+   Outputs[0, SampleIndex] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[0, SampleIndex])));
+   Outputs[1, SampleIndex] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[1, SampleIndex])));
   end;
 
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   d := 0.5 * (Outputs[0, Sample] + Outputs[1, Sample]);
+   d := 0.5 * (Outputs[0, SampleIndex] + Outputs[1, SampleIndex]);
    for Band := 0 to CNumFrequencies - 1 do
     begin
      if (FDownSampleCount mod FFilterArray[Band].Downsampling) <> 0
@@ -555,7 +558,7 @@ begin
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(z));
     end;
-   inc(FDownSampleCount);
+   Inc(FDownSampleCount);
    if FDownSampleCount >= FDownSampleMax then FDownSampleCount := 0;
   end;
 end;
@@ -563,56 +566,56 @@ end;
 procedure TAudioAmeliorationModule.VSTModuleProcessHeadphones(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
-  Sample  : Integer;
-  Band    : Integer;
-  d, z, s : Double;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+  Band         : Integer;
+  d, z, s      : Double;
 const
   cDenorm = 1E-32;
 begin
- for Channel := 0 to min(numInputs, numOutputs) - 1
-  do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
+ for ChannelIndex := 0 to min(numInputs, numOutputs) - 1
+  do Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
 
  // apply ambience
  if AmbienceActive then
-  for Sample := 0 to SampleFrames - 1
-   do FAmbience.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
+  for SampleIndex := 0 to SampleFrames - 1
+   do FAmbience.ProcessSample(Outputs[0, SampleIndex], Outputs[1, SampleIndex]);
 
  // apply exciter
  if ExciterActive then
-  for Channel := 0 to Length(FExciter) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FExciter[Channel].ProcessSample64(Outputs[Channel, Sample]);
+  for ChannelIndex := 0 to Length(FExciter) - 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FExciter[ChannelIndex].ProcessSample64(Outputs[ChannelIndex, SampleIndex]);
 
  // apply compression
  if CompressorActive then
-  for Sample := 0 to SampleFrames - 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
    begin
-    FCompressor.InputSample(0.5 * (Outputs[0, Sample] + Outputs[1, Sample]));
-    Outputs[0, Sample] := FCompressor.GainSample(Outputs[0, Sample]);
-    Outputs[1, Sample] := FCompressor.GainSample(Outputs[1, Sample]);
+    FCompressor.InputSample(0.5 * (Outputs[0, SampleIndex] + Outputs[1, SampleIndex]));
+    Outputs[0, SampleIndex] := FCompressor.GainSample(Outputs[0, SampleIndex]);
+    Outputs[1, SampleIndex] := FCompressor.GainSample(Outputs[1, SampleIndex]);
    end;
 
  // apply extra bass
  if ExtraBassActive then
-  for Channel := 0 to Length(FBassEnhancer) - 1 do
-   for Sample := 0 to SampleFrames - 1
-    do Outputs[Channel, Sample] := FBassEnhancer[Channel].ProcessSample32(Outputs[Channel, Sample]);
+  for ChannelIndex := 0 to Length(FBassEnhancer) - 1 do
+   for SampleIndex := 0 to SampleFrames - 1
+    do Outputs[ChannelIndex, SampleIndex] := FBassEnhancer[ChannelIndex].ProcessSample32(Outputs[ChannelIndex, SampleIndex]);
 
- for Sample := 0 to SampleFrames - 1
-  do FCrosstalkSimulator.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
+ for SampleIndex := 0 to SampleFrames - 1
+  do FCrosstalkSimulator.ProcessSample(Outputs[0, SampleIndex], Outputs[1, SampleIndex]);
 
  // apply limiter
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   FLimiter.InputSample(0.5 * (Outputs[0, Sample] + Outputs[1, Sample]));
-   Outputs[0, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[0, Sample])));
-   Outputs[1, Sample] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[1, Sample])));
+   FLimiter.InputSample(0.5 * (Outputs[0, SampleIndex] + Outputs[1, SampleIndex]));
+   Outputs[0, SampleIndex] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[0, SampleIndex])));
+   Outputs[1, SampleIndex] := Limit(2.6 * FastTanhMinError4(0.5 * FLimiter.GainSample(Outputs[1, SampleIndex])));
   end;
 
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   d := 0.5 * (Outputs[0, Sample] + Outputs[1, Sample]);
+   d := 0.5 * (Outputs[0, SampleIndex] + Outputs[1, SampleIndex]);
    for Band := 0 to CNumFrequencies - 1 do
     begin
      if (FDownSampleCount mod FFilterArray[Band].Downsampling) <> 0
@@ -624,7 +627,7 @@ begin
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(z));
     end;
-   inc(FDownSampleCount);
+   Inc(FDownSampleCount);
    if FDownSampleCount >= FDownSampleMax then FDownSampleCount := 0;
   end;
 end;
@@ -632,10 +635,10 @@ end;
 procedure TAudioAmeliorationModule.VSTModuleProcessBypass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to min(numInputs, numOutputs) - 1
-  do Move(Inputs[Channel, 0], Outputs[Channel, 0], SampleFrames * SizeOf(Single));
+ for ChannelIndex := 0 to min(numInputs, numOutputs) - 1
+  do Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
 end;
 
 end.

@@ -769,6 +769,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq2: TGuiLabel
     Tag = 2
@@ -784,6 +785,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq3: TGuiLabel
     Tag = 3
@@ -799,6 +801,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq4: TGuiLabel
     Tag = 4
@@ -814,6 +817,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq7: TGuiLabel
     Tag = 7
@@ -829,6 +833,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq6: TGuiLabel
     Tag = 6
@@ -844,6 +849,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq5: TGuiLabel
     Tag = 5
@@ -859,6 +865,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreq8: TGuiLabel
     Tag = 8
@@ -874,6 +881,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW1: TGuiLabel
     Tag = 1
@@ -889,6 +897,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW2: TGuiLabel
     Tag = 2
@@ -904,6 +913,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW3: TGuiLabel
     Tag = 3
@@ -919,6 +929,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW4: TGuiLabel
     Tag = 4
@@ -934,6 +945,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW8: TGuiLabel
     Tag = 8
@@ -949,6 +961,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW7: TGuiLabel
     Tag = 7
@@ -964,6 +977,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW6: TGuiLabel
     Tag = 6
@@ -979,6 +993,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbBW5: TGuiLabel
     Tag = 5
@@ -994,6 +1009,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object DialInput: TGuiDial
     Left = 16
@@ -1051,6 +1067,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain2: TGuiLabel
     Tag = 2
@@ -1066,6 +1083,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain3: TGuiLabel
     Tag = 3
@@ -1081,6 +1099,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain4: TGuiLabel
     Tag = 4
@@ -1096,6 +1115,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain8: TGuiLabel
     Tag = 8
@@ -1111,6 +1131,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain7: TGuiLabel
     Tag = 7
@@ -1126,6 +1147,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain6: TGuiLabel
     Tag = 6
@@ -1141,6 +1163,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain5: TGuiLabel
     Tag = 5
@@ -1156,6 +1179,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFreqValue1: TGuiLabel
     Tag = 1
@@ -1170,6 +1194,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue2: TGuiLabel
     Tag = 2
@@ -1184,6 +1209,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue4: TGuiLabel
     Tag = 4
@@ -1198,6 +1224,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue3: TGuiLabel
     Tag = 3
@@ -1212,6 +1239,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue8: TGuiLabel
     Tag = 8
@@ -1226,6 +1254,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue7: TGuiLabel
     Tag = 7
@@ -1240,6 +1269,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue6: TGuiLabel
     Tag = 6
@@ -1254,6 +1284,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbFreqValue5: TGuiLabel
     Tag = 5
@@ -1268,6 +1299,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin1: TGuiLabel
     Tag = 1
@@ -1281,6 +1313,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin2: TGuiLabel
     Tag = 2
@@ -1294,6 +1327,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin4: TGuiLabel
     Tag = 4
@@ -1307,6 +1341,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin3: TGuiLabel
     Tag = 3
@@ -1320,6 +1355,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin8: TGuiLabel
     Tag = 8
@@ -1333,6 +1369,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin7: TGuiLabel
     Left = 655
@@ -1345,6 +1382,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin6: TGuiLabel
     Tag = 6
@@ -1358,6 +1396,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMin5: TGuiLabel
     Left = 513
@@ -1370,6 +1409,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax1: TGuiLabel
     Tag = 1
@@ -1384,6 +1424,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax2: TGuiLabel
     Left = 341
@@ -1397,6 +1438,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax4: TGuiLabel
     Tag = 4
@@ -1411,6 +1453,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax3: TGuiLabel
     Tag = 3
@@ -1425,6 +1468,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax8: TGuiLabel
     Left = 761
@@ -1438,6 +1482,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax7: TGuiLabel
     Left = 691
@@ -1451,6 +1496,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax6: TGuiLabel
     Left = 621
@@ -1464,6 +1510,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object GuiMax5: TGuiLabel
     Left = 551
@@ -1477,6 +1524,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object SeparatorA1: TShape
     Tag = 1
@@ -1708,6 +1756,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType7: TGuiLabel
@@ -1724,6 +1773,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType6: TGuiLabel
@@ -1740,6 +1790,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType5: TGuiLabel
@@ -1756,6 +1807,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType4: TGuiLabel
@@ -1772,6 +1824,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType3: TGuiLabel
@@ -1788,6 +1841,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType2: TGuiLabel
@@ -1804,6 +1858,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType1: TGuiLabel
@@ -1820,6 +1875,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbInput: TGuiLabel
@@ -1835,6 +1891,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbOutput: TGuiLabel
     Left = 142
@@ -1849,6 +1906,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGain: TGuiLabel
     Left = 96
@@ -1863,6 +1921,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object ShapeInputBottom: TShape
     Left = 65
@@ -1910,6 +1969,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object VUMeter: TGuiVUMeter
     Left = 31
@@ -1949,6 +2009,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbOut: TGuiLabel
     Left = 141
@@ -1962,6 +2023,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbdB: TGuiLabel
     Left = 75
@@ -1976,6 +2038,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -11
     Font.Name = 'Arial'
     Font.Style = []
+    ParentFont = False
   end
   object LbTypeValue1: TGuiLabel
     Tag = 1
@@ -1992,6 +2055,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2010,6 +2074,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2028,6 +2093,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2046,6 +2112,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2064,6 +2131,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2082,6 +2150,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2100,6 +2169,7 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
@@ -2118,18 +2188,20 @@ object FmParametriQLite: TFmParametriQLite
     Font.Height = -12
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsItalic]
+    ParentFont = False
     PopupMenu = PopupFilter
     OnClick = LbTypeClick
   end
   object GuiEQGraph: TGuiEQGraph
     Left = 16
     Top = 36
-    Width = 196
+    Width = 197
     Height = 77
     AntiAlias = gaaLinear4x
     GraphColorDark = 4342593
-    GraphColorLight = 4342593
-    ColorChart = 1447701
+    GraphColorLight = 2960940
+    ColorChart = 2171424
+    BorderRadius = 2
     BorderColor = 4342593
     FilterSeries = <
       item
@@ -2138,13 +2210,12 @@ object FmParametriQLite: TFmParametriQLite
         OnGetFilterGain = GetFilterGain
       end>
     YAxis.AutoGranularity = False
-    YAxis.LabelStyle = ylsLeft
-    YAxis.LowerLevel = -17.000000000000000000
-    YAxis.UpperLevel = 17.000000000000000000
+    YAxis.LabelPosition = ylpLeft
+    YAxis.LowerLevel = -18.000000000000000000
+    YAxis.UpperLevel = 18.000000000000000000
     YAxis.Granularity = 10.000000000000000000
     YAxis.MaximumGridLines = 4
-    XAxis.LabelStyle = xlsBottom
-    XAxis.UnitPosition = upSide
+    XAxis.LabelPosition = xlpBottom
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
     Color = 1447701

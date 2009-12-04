@@ -45,6 +45,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterInputChange
     end
@@ -64,6 +65,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -80,6 +82,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -99,6 +102,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -116,6 +120,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -136,6 +141,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -152,6 +158,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -171,6 +178,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -188,6 +196,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -208,6 +217,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -224,6 +234,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -243,6 +254,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -260,6 +272,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -280,6 +293,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -296,6 +310,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -315,6 +330,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -332,6 +348,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -352,6 +369,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -368,6 +386,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -387,6 +406,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -404,6 +424,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -424,6 +445,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -440,6 +462,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -459,6 +482,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -476,6 +500,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -496,6 +521,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -512,6 +538,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -531,6 +558,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -548,6 +576,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -568,6 +597,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
@@ -584,6 +614,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'BW'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBandwidthChange
     end
@@ -603,6 +634,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -620,6 +652,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
@@ -640,6 +673,7 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
     end>

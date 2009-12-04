@@ -37,6 +37,9 @@ object ChebyshevHPModule: TChebyshevHPModule
       Units = 'Hz'
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
+      OnStringToParameter = StringToFrequencyParameter
     end
     item
       Curve = ctLinear
@@ -47,13 +50,16 @@ object ChebyshevHPModule: TChebyshevHPModule
       LargeStepInteger = 1
       Max = 10.000000000000000000
       MaxInteger = 10
+      Min = 0.000009999999747379
       ReportVST2Properties = True
       ShortLabel = 'Ripple'
       SmallStepFloat = 0.100000001490116100
       StepFloat = 0.100000001490116100
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamRippleChange
+      OnCustomParameterDisplay = ParameterRippleDisplay
     end
     item
       Curve = ctLinear
@@ -70,6 +76,8 @@ object ChebyshevHPModule: TChebyshevHPModule
       StepFloat = 1.000000000000000000
       VSTModule = Owner
       OnParameterChange = ParamOrderChange
+      OnCustomParameterDisplay = ParameterOrderDisplay
+      OnStringToParameter = StringToOrderParameter
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

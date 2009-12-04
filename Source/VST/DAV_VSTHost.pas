@@ -265,7 +265,7 @@ type
     function SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
     function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
     function ShellGetNextPlugin(var PluginName: string): Integer;
-    function String2Parameter(const Index: Integer; ValueString: string): Integer;
+    function String2Parameter(const Index: Integer; ValueString: string): Boolean;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
     function VstCanDo(const CanDoString: string): Integer;
     function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
@@ -2424,13 +2424,13 @@ begin
  Result := CheckValidVstPlugin(FileName);
 end;
 
-function TCustomVstPlugIn.String2Parameter(const Index: Integer; ValueString: string): Integer;
+function TCustomVstPlugIn.String2Parameter(const Index: Integer; ValueString: string): Boolean;
 var
   Temp : PAnsiChar;
 const
   Lngth = 256;
 begin
- Result := 0;
+ Result := False;
  // allocate and zero memory (256 byte, which is more than necessary, but
  // just to be sure and in case of host ignoring the specs)
  GetMem(Temp, Lngth);
@@ -2442,8 +2442,11 @@ begin
      then SetLength(ValueString, Lngth);
 
     StrPCopy(Temp, ValueString);
-    Result := VstDispatch(effString2Parameter, Index, 0, Temp);
-    ValueString := StrPas(Temp);
+    if VstDispatch(effString2Parameter, Index, 0, Temp) <> 0 then
+     begin
+      ValueString := StrPas(Temp);
+      Result := True;
+     end;
    end;
  finally
   Dispose(Temp);

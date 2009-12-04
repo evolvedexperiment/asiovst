@@ -1,6 +1,6 @@
 object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'TwoBand Distortion'
@@ -8,7 +8,6 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CODI'
@@ -44,11 +43,13 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Order'
@@ -67,7 +68,6 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       OnParameterChange = ParameterOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Distortion'
       DisplayName = 'Low Distortion'
@@ -80,11 +80,11 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamLowDistChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Distortion'
       DisplayName = 'High Distortion'
@@ -97,6 +97,7 @@ object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamHighDistChange
     end>

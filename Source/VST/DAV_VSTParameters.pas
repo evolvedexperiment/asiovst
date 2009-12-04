@@ -123,7 +123,7 @@ type
   published
     property CanBeAutomated: Boolean read FCanBeAutomated write FCanBeAutomated default True;
     property CC: Integer read FCC write FCC default -1;
-    property Curve: TCurveType read FCurve write SetCurve;
+    property Curve: TCurveType read FCurve write SetCurve default ctLinear;
     property CurveFactor: Single read FCurveFactor write SetCurveFactor;
     property Category: string read GetCategoryString write SetCategoryString;
     property CategoryIndex: Integer read GetCategoryIndex write SetCategoryIndex stored false; 

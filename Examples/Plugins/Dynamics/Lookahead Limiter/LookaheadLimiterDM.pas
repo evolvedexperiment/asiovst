@@ -66,6 +66,9 @@ type
     procedure ParameterLookaheadChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure StringToModeParameter(
+      Sender: TObject; const Index: Integer; const ParameterString: string;
+      var Value: Single);
   private
     FCriticalSection : TCriticalSection;
     FLimiter         : array [0..1] of TDspFeedforwardLookaheadLimiter32;
@@ -262,6 +265,18 @@ begin
  end;
 end;
 
+procedure TLookaheadLimiterDataModule.StringToModeParameter(
+  Sender: TObject; const Index: Integer; const ParameterString: string;
+  var Value: Single);
+var
+  Text : string;
+begin
+ Text := Trim(ParameterString);
+ if Text = 'Stereo' then Value := 0 else
+ if Text = 'PeakMono' then Value := 1 else
+ if Text = 'DualMono' then Value := 2;
+end;
+
 procedure TLookaheadLimiterDataModule.ParameterAttackDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
@@ -316,6 +331,18 @@ begin
   then TFmLookaheadLimiter(EditorForm).UpdateRelease;
 end;
 
+procedure TLookaheadLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ if abs(SampleRate) > 0 then
+  begin
+   if Assigned(FLimiter[0])
+    then FLimiter[0].SampleRate := abs(SampleRate);
+   if Assigned(FLimiter[1])
+    then FLimiter[1].SampleRate := abs(SampleRate);
+  end;
+end;
+
 procedure TLookaheadLimiterDataModule.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -361,18 +388,6 @@ begin
    Temp := FLimiter[0].GainReductionFactor;
    Outputs[0, Sample] := Temp * FDelayLine[0].ProcessSample32(Inputs[0, Sample]);
    Outputs[1, Sample] := Temp * FDelayLine[1].ProcessSample32(Inputs[1, Sample]);
-  end;
-end;
-
-procedure TLookaheadLimiterDataModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-begin
- if abs(SampleRate) > 0 then
-  begin
-   if Assigned(FLimiter[0])
-    then FLimiter[0].SampleRate := abs(SampleRate);
-   if Assigned(FLimiter[1])
-    then FLimiter[1].SampleRate := abs(SampleRate);
   end;
 end;
 

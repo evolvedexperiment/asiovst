@@ -38,6 +38,9 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DSPFilter, DAV_DSPFilterBasics;
 
+const
+  CGainRange = 15;
+
 type
   TUniQuEDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
@@ -137,38 +140,6 @@ begin
  GUI := TFmUniQuE.Create(Self);
 end;
 
-procedure TUniQuEDataModule.VSTModuleProcess(const Inputs,
-  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-var
-  ch, sample : Integer;
-begin
- for ch := 0 to 1 do
-  for sample := 0 to SampleFrames - 1 do
-   begin
-    Outputs[ch, sample] := FFade[0] * FVolume *
-                           FLow[ch].ProcessSample64(
-                           FMid[ch].ProcessSample64(
-                           FPres[ch].ProcessSample64(
-                           FHigh[ch].ProcessSample64(Inputs[ch, sample])))) +
-                           FFade[1] * Inputs[ch, sample];
-   end;
-end;
-
-procedure TUniQuEDataModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-var
-  Channel : Integer;
-begin
- if Abs(SampleRate) > 0 then
-  for Channel := 0 to 1 do
-   begin
-    if assigned(FLow[Channel]) then FLow[Channel].SampleRate  := SampleRate;
-    if assigned(FMid[Channel]) then FMid[Channel].SampleRate  := SampleRate;
-    if assigned(FPres[Channel]) then FPres[Channel].SampleRate := SampleRate;
-    if assigned(FHigh[Channel]) then FHigh[Channel].SampleRate := SampleRate;
-   end;
-end;
-
 procedure TUniQuEDataModule.ParamPowerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  if Parameter[Index] > 0.5
@@ -182,18 +153,19 @@ var
   Freq  : Single;
 begin
  if Value > 0
-  then Gain := Value * 11.46 / 15
-  else Gain := Value * 12.96 / 15;
+  then Gain := Value * 11.46 / CGainRange
+  else Gain := Value * 12.96 / CGainRange;
 
- if assigned(FPres[0]) then FPres[0].Gain := Gain;
- if assigned(FPres[1]) then FPres[1].Gain := Gain;
+ if Assigned(FPres[0]) then FPres[0].Gain := Gain;
+ if Assigned(FPres[1]) then FPres[1].Gain := Gain;
 
- Freq := 7278 + 108 * Value / 15;
+ Freq := 7278 + 108 * Value / CGainRange;
 
- if assigned(FPres[0]) then FPres[0].Frequency := Freq;
- if assigned(FPres[1]) then FPres[1].Frequency := Freq;
+ if Assigned(FPres[0]) then FPres[0].Frequency := Freq;
+ if Assigned(FPres[1]) then FPres[1].Frequency := Freq;
 
- if assigned(EditorForm) then
+ // update GUI
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdatePres;
 end;
@@ -201,7 +173,7 @@ end;
 procedure TUniQuEDataModule.ParamPhaseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  UpdateVolume;
- if assigned(EditorForm) then
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdateInvert;
 end;
@@ -210,7 +182,9 @@ procedure TUniQuEDataModule.ParamPowerChange(Sender: TObject; const Index: Integ
 begin
  FFade[0] := Value;
  FFade[1] := 1 - Value;
- if assigned(EditorForm) then
+
+ // update GUI
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdateOnOff;
 end;
@@ -221,20 +195,21 @@ var
   Freq  : Single;
 begin
  if Value > 0
-  then Gain := Value * 15 / 15
-  else Gain := Value * 13.5 / 15;
+  then Gain := Value * 15 / CGainRange
+  else Gain := Value * 13.5 / CGainRange;
 
- if assigned(FHigh[0]) then FHigh[0].Gain := Gain;
- if assigned(FHigh[1]) then FHigh[1].Gain := Gain;
+ if Assigned(FHigh[0]) then FHigh[0].Gain := Gain;
+ if Assigned(FHigh[1]) then FHigh[1].Gain := Gain;
 
- Freq := 4340 - 300 * Value / 15;
+ Freq := 4340 - 300 * Value / CGainRange;
 
- if assigned(FHigh[0]) then FHigh[0].Frequency := Freq;
- if assigned(FHigh[1]) then FHigh[1].Frequency := Freq;
+ if Assigned(FHigh[0]) then FHigh[0].Frequency := Freq;
+ if Assigned(FHigh[1]) then FHigh[1].Frequency := Freq;
 
  UpdateVolume;
 
- if assigned(EditorForm) then
+ // update GUI
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdateHigh;
 end;
@@ -244,13 +219,14 @@ var
   Gain : Single;
 begin
  if Value > 0
-  then Gain := Value * 11.9 / 15
-  else Gain := Value * 12.3 / 15;
+  then Gain := Value * 11.9 / CGainRange
+  else Gain := Value * 12.3 / CGainRange;
 
- if assigned(FLow[0]) then FLow[0].Gain := Gain;
- if assigned(FLow[1]) then FLow[1].Gain := Gain;
+ if Assigned(FLow[0]) then FLow[0].Gain := Gain;
+ if Assigned(FLow[1]) then FLow[1].Gain := Gain;
 
- if assigned(EditorForm) then
+ // update GUI
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdateLow;
 end;
@@ -260,18 +236,19 @@ var
   Gain, BW : Single;
 begin
  if Value > 0
-  then Gain := Value * 11.42 / 15
-  else Gain := Value * 13.35 / 15;
+  then Gain := Value * 11.42 / CGainRange
+  else Gain := Value * 13.35 / CGainRange;
 
- if assigned(FMid[0]) then FMid[0].Gain := Gain;
- if assigned(FMid[1]) then FMid[1].Gain := Gain;
+ if Assigned(FMid[0]) then FMid[0].Gain := Gain;
+ if Assigned(FMid[1]) then FMid[1].Gain := Gain;
 
- BW := 3.6 + 0.1 * Value / 15;
+ BW := 3.6 + 0.1 * Value / CGainRange;
 
- if assigned(FMid[0]) then FMid[0].Bandwidth := BW;
- if assigned(FMid[1]) then FMid[1].Bandwidth := BW;
+ if Assigned(FMid[0]) then FMid[0].Bandwidth := BW;
+ if Assigned(FMid[1]) then FMid[1].Bandwidth := BW;
 
- if assigned(EditorForm) then
+ // update GUI
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdateMid;
 end;
@@ -281,8 +258,8 @@ var
   HighAtt : Single;
 begin
  if Parameter[6] > 0
-  then HighAtt := 4.05 * Parameter[6] / 15
-  else HighAtt := 1.28 * Parameter[6] / 15;
+  then HighAtt := 4.05 * Parameter[6] / CGainRange
+  else HighAtt := 1.28 * Parameter[6] / CGainRange;
 
  if Parameter[2] > 0.5
   then FVolume := -dB_to_Amp(-Parameter[1] - HighAtt)
@@ -292,7 +269,9 @@ end;
 procedure TUniQuEDataModule.ParamPadChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  UpdateVolume;
- if assigned(EditorForm) then
+
+ // update GUI
+ if Assigned(EditorForm) then
   with TFmUniQuE(EditorForm)
    do UpdatePad;
 end;
@@ -307,6 +286,38 @@ begin
  if Parameter[Index] > 0.5
   then PreDefined := '-'
   else PreDefined := '+';
+end;
+
+procedure TUniQuEDataModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  ChannelIndex : Integer;
+begin
+ if Abs(SampleRate) > 0 then
+  for ChannelIndex := 0 to 1 do
+   begin
+    if Assigned(FLow[ChannelIndex]) then FLow[ChannelIndex].SampleRate   := SampleRate;
+    if Assigned(FMid[ChannelIndex]) then FMid[ChannelIndex].SampleRate   := SampleRate;
+    if Assigned(FPres[ChannelIndex]) then FPres[ChannelIndex].SampleRate := SampleRate;
+    if Assigned(FHigh[ChannelIndex]) then FHigh[ChannelIndex].SampleRate := SampleRate;
+   end;
+end;
+
+procedure TUniQuEDataModule.VSTModuleProcess(const Inputs,
+  Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+var
+  ChannelIndex, SampleIndex : Integer;
+begin
+ for ChannelIndex := 0 to 1 do
+  for SampleIndex := 0 to SampleFrames - 1 do
+   begin
+    Outputs[ChannelIndex, SampleIndex] := FFade[0] * FVolume *
+      FLow[ChannelIndex].ProcessSample64(
+      FMid[ChannelIndex].ProcessSample64(
+      FPres[ChannelIndex].ProcessSample64(
+      FHigh[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex])))) +
+      FFade[1] * Inputs[ChannelIndex, SampleIndex];
+   end;
 end;
 
 end.

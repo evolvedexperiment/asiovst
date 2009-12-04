@@ -14,6 +14,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
   DesignSize = (
@@ -72,6 +73,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbFreqValue: TGuiLabel
       Left = 16
@@ -87,6 +89,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object DialLowDist: TGuiDial
       Left = 156
@@ -121,6 +124,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbLowDistValue: TGuiLabel
       Left = 156
@@ -136,6 +140,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbHighDist: TGuiLabel
       Left = 226
@@ -151,6 +156,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object DialHighDist: TGuiDial
       Left = 226
@@ -185,6 +191,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object DialOrder: TGuiDial
       Left = 86
@@ -209,7 +216,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
     end
     object LbOrderValue: TGuiLabel
       Left = 86
-      Top = 86
+      Top = 88
       Width = 64
       Height = 19
       Alignment = taCenter
@@ -221,6 +228,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbOrder: TGuiLabel
       Left = 86
@@ -236,6 +244,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
   end
   object DIL: TGuiDialImageList

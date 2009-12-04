@@ -99,6 +99,10 @@ type
     property OnStopProcess;
     property OnSuspend;
     property OnVendorSpecific;
+
+    {$IFDEF UseDelphi}
+    property OldCreateOrder default False;
+    {$ENDIF}
   end;
 
 

@@ -1,5 +1,5 @@
 object ComboDataModule: TComboDataModule
-  OldCreateOrder = False
+  OldCreateOrder = True
   Flags = [effFlagsCanMono, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'AmpSim'
@@ -7,10 +7,9 @@ object ComboDataModule: TComboDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Amp & Speaker Simulator'
   IORatio = 1.000000000000000000
-  UniqueID = 'mdaX'
+  UniqueID = 'AmpS'
   ShellPlugins = <>
   Programs = <
     item
@@ -36,6 +35,7 @@ object ComboDataModule: TComboDataModule
       VSTModule = Owner
       OnParameterChange = ParamModelChange
       OnCustomParameterDisplay = ParamModelDisplay
+      OnStringToParameter = StringToParameterModel
     end
     item
       Curve = ctLinear
@@ -50,6 +50,7 @@ object ComboDataModule: TComboDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'S <> H'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDriveChange
     end
@@ -65,6 +66,7 @@ object ComboDataModule: TComboDataModule
       ShortLabel = 'bias'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamBiasChange
     end
@@ -82,6 +84,7 @@ object ComboDataModule: TComboDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamOutputChanged
     end
@@ -96,6 +99,7 @@ object ComboDataModule: TComboDataModule
       ShortLabel = 'stereo'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamProcessChange
       OnCustomParameterDisplay = ParamProcessDisplay
@@ -114,6 +118,7 @@ object ComboDataModule: TComboDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamHPFFreqChange
     end
@@ -129,6 +134,7 @@ object ComboDataModule: TComboDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamHPFResonanceChange
     end
@@ -147,6 +153,7 @@ object ComboDataModule: TComboDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamNoiseChange
     end>

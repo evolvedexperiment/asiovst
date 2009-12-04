@@ -13,6 +13,7 @@ object FmCombo: TFmCombo
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 96
@@ -59,6 +60,7 @@ object FmCombo: TFmCombo
     Font.Height = -21
     Font.Name = 'Trebuchet MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
   end
   object GuiLED: TGuiLED
@@ -66,9 +68,10 @@ object FmCombo: TFmCombo
     Top = 8
     Width = 25
     Height = 25
-    Brightness_Percent = 100.000000000000000000
     LineWidth = 2
     LEDColor = 192
+    Brightness_Percent = 100.000000000000000000
+    Uniformity_Percent = 44.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = 192
     OnClick = LbStereoClick
@@ -87,10 +90,11 @@ object FmCombo: TFmCombo
     Font.Height = -21
     Font.Name = 'Trebuchet MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
     OnClick = LbStereoClick
   end
-  object GuiPanel1: TGuiPanel
+  object PnControls: TGuiPanel
     Left = 8
     Top = 39
     Width = 361
@@ -104,6 +108,7 @@ object FmCombo: TFmCombo
     TabOrder = 0
     UseDockManager = True
     Transparent = True
+    OnClick = PnControlsClick
     object LbResonanceValue: TLabel
       Left = 288
       Top = 105
@@ -139,6 +144,7 @@ object FmCombo: TFmCombo
       Alignment = taCenter
       AutoSize = False
       Caption = '0.0'
+      OnClick = DialBiasDblClick
     end
     object LbDriveValue: TLabel
       Left = 8
@@ -148,6 +154,7 @@ object FmCombo: TFmCombo
       Alignment = taCenter
       AutoSize = False
       Caption = '0.0'
+      OnClick = DialDriveDblClick
     end
     object DialDrive: TGuiDial
       Left = 8
@@ -162,6 +169,7 @@ object FmCombo: TFmCombo
       Min = -100.000000000000000000
       NumGlyphs = 65
       OnChange = DialDriveChange
+      OnDblClick = DialDriveDblClick
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -184,6 +192,7 @@ object FmCombo: TFmCombo
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
+      ParentFont = False
     end
     object DialBias: TGuiDial
       Left = 78
@@ -198,6 +207,7 @@ object FmCombo: TFmCombo
       Min = -100.000000000000000000
       NumGlyphs = 65
       OnChange = DialBiasChange
+      OnDblClick = DialBiasDblClick
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -219,6 +229,7 @@ object FmCombo: TFmCombo
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
+      ParentFont = False
     end
     object DialOutput: TGuiDial
       Left = 148
@@ -296,6 +307,7 @@ object FmCombo: TFmCombo
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
+      ParentFont = False
     end
     object LbFrequency: TGuiLabel
       Left = 218
@@ -311,6 +323,7 @@ object FmCombo: TFmCombo
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
+      ParentFont = False
     end
     object LbResonance: TGuiLabel
       Left = 288
@@ -326,6 +339,7 @@ object FmCombo: TFmCombo
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
+      ParentFont = False
     end
   end
   object DIL: TGuiDialImageList

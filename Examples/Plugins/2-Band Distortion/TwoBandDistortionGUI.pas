@@ -36,8 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial,
-  DAV_GuiPanel;
+  StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl,
+  DAV_GuiDial, DAV_GuiPanel;
 
 type
   TFmTwoBandDistortion = class(TForm)
@@ -62,8 +62,10 @@ type
     procedure DialLowDistChange(Sender: TObject);
     procedure DialHighDistChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
+    FEdValue         : TEdit;
   public
     procedure UpdateFrequency;
     procedure UpdateOrder;
@@ -133,6 +135,12 @@ begin
  finally
   FreeAndNil(PngBmp);
  end;
+end;
+
+procedure TFmTwoBandDistortion.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmTwoBandDistortion.FormPaint(Sender: TObject);

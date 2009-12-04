@@ -1,5 +1,4 @@
 object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
-  OldCreateOrder = False
   Version = '1.0'
   EffectName = 'Audio to Midi Trigger'
   ProductName = 'DAV Effect Examples'
@@ -8,7 +7,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
   SampleRate = 44100.000000000000000000
   numInputs = 1
   numOutputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'A2MT'
@@ -34,6 +32,7 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdChange
     end
@@ -52,6 +51,7 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
@@ -84,6 +84,7 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       ShortLabel = 'Note'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMidiNoteChange
       OnCustomParameterDisplay = ParameterMidiNoteDisplay
@@ -102,6 +103,7 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       ShortLabel = 'VShift'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterVelocityShiftChange
     end>

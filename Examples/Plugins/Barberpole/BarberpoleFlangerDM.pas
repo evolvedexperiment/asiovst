@@ -40,6 +40,8 @@ uses
 
 type
   TBarberpoleFlangerModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -52,8 +54,6 @@ type
     procedure ParamStagesDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterAlgorithmDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterAlgorithmChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FBarberpole : Array [0..1] of TDspBarberpole32;
     FCriticalSection : TCriticalSection;
@@ -67,7 +67,7 @@ implementation
 {$R *.DFM}
 
 uses
-  BarberpoleFlangerGUI, DAV_Approximations, DAV_VSTCustomModule;
+  DAV_Approximations, DAV_VSTCustomModule, BarberpoleFlangerGUI;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -144,7 +144,7 @@ end;
 function TBarberpoleFlangerModule.GetBarberpole(Index: Integer): TDspBarberpole32;
 begin
  if Index in [0..1]
-  then result := FBarberpole[Index]
+  then Result := FBarberpole[Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
@@ -152,8 +152,8 @@ procedure TBarberpoleFlangerModule.ParamSpeedChange(Sender: TObject; const Index
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FBarberpole[0]) then FBarberpole[0].Speed := Value;
-  if assigned(FBarberpole[1]) then FBarberpole[1].Speed := Value;
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Speed := Value;
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Speed := Value;
  finally
   FCriticalSection.Leave;
  end;
@@ -173,8 +173,8 @@ procedure TBarberpoleFlangerModule.ParameterAlgorithmChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FBarberpole[0]) then FBarberpole[0].Direction := TBarberpoleDirection(round(Value));
-  if assigned(FBarberpole[1]) then FBarberpole[1].Direction := TBarberpoleDirection(round(Value));
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Direction := TBarberpoleDirection(round(Value));
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Direction := TBarberpoleDirection(round(Value));
  finally
   FCriticalSection.Leave;
  end;
@@ -199,8 +199,8 @@ procedure TBarberpoleFlangerModule.ParamStagesChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FBarberpole[0]) then FBarberpole[0].Stages := round(Value);
-  if assigned(FBarberpole[1]) then FBarberpole[1].Stages := round(Value);
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Stages := round(Value);
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Stages := round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -213,8 +213,8 @@ procedure TBarberpoleFlangerModule.ParamDepthChange(Sender: TObject; const Index
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FBarberpole[0]) then FBarberpole[0].Depth := 0.01 * Value;
-  if assigned(FBarberpole[1]) then FBarberpole[1].Depth := 0.01 * Value;
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Depth := 0.01 * Value;
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Depth := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
@@ -227,14 +227,28 @@ procedure TBarberpoleFlangerModule.ParamMixChange(Sender: TObject; const Index: 
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FBarberpole[0]) then FBarberpole[0].Mix := 0.01 * Value;
-  if assigned(FBarberpole[1]) then FBarberpole[1].Mix := 0.01 * Value;
+  if Assigned(FBarberpole[0]) then FBarberpole[0].Mix := 0.01 * Value;
+  if Assigned(FBarberpole[1]) then FBarberpole[1].Mix := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
  if EditorForm is TFmBarberpoleFlanger then
   with TFmBarberpoleFlanger(EditorForm)
    do UpdateMix;
+end;
+
+procedure TBarberpoleFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+begin
+ if Abs(SampleRate) = 0 then exit;
+
+ FCriticalSection.Enter;
+ try
+  if Assigned(FBarberpole[0]) then FBarberpole[0].SampleRate := Abs(SampleRate);
+  if Assigned(FBarberpole[1]) then FBarberpole[1].SampleRate := Abs(SampleRate);
+ finally
+  FCriticalSection.Leave;
+ end;
 end;
 
 procedure TBarberpoleFlangerModule.VSTModuleProcess(const Inputs,
@@ -247,20 +261,6 @@ begin
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FastTanhOpt5TermFPU(FBarberpole[Channel].ProcessSample32(Inputs[Channel, Sample]))
- finally
-  FCriticalSection.Leave;
- end;
-end;
-
-procedure TBarberpoleFlangerModule.VSTModuleSampleRateChange(Sender: TObject;
-  const SampleRate: Single);
-begin
- if SampleRate <= 0 then exit;
-
- FCriticalSection.Enter;
- try
-  if assigned(FBarberpole[0]) then FBarberpole[0].SampleRate := abs(SampleRate);
-  if assigned(FBarberpole[1]) then FBarberpole[1].SampleRate := abs(SampleRate);
  finally
   FCriticalSection.Leave;
  end;

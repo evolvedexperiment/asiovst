@@ -96,7 +96,7 @@ type
 
     property numParams: Integer read FEffect.numParams write SetNumParams stored false;
     property numPrograms: Integer read FEffect.numPrograms write SetNumPrograms stored false;
-    property CurrentProgram: Integer read FCurProgram write SetProgram;
+    property CurrentProgram: Integer read FCurProgram write SetProgram default 0;
     property CurrentProgramName: string read GetCurrentProgramName write SetCurrentProgramName;
     property Chunk: TMemoryStream read FChunkData;
     property Programs: TVstPrograms read FVstPrograms write SetVstPrograms;
@@ -457,7 +457,7 @@ begin
 
      Indxes[0] := 1;
      while (Indxes[0] <= Length(ProcStr)) and
-      (not (ProcStr[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+      (not (ProcStr[Indxes[0]] in ['0'..'9', '-', '+', ',', '.'])) do Inc(Indxes[0]);
 
      if (Indxes[0] <= Length(ProcStr)) then
       begin

@@ -31,6 +31,7 @@ object UniQuEDataModule: TUniQuEDataModule
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamPowerChange
       OnCustomParameterDisplay = ParamPowerDisplay
@@ -49,6 +50,7 @@ object UniQuEDataModule: TUniQuEDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamPadChange
       OnCustomParameterDisplay = ParamPadDisplay
@@ -66,6 +68,7 @@ object UniQuEDataModule: TUniQuEDataModule
       ShortLabel = 'Power'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamPhaseChange
       OnCustomParameterDisplay = ParamPhaseDisplay
@@ -86,6 +89,7 @@ object UniQuEDataModule: TUniQuEDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamLowChange
     end
@@ -105,6 +109,7 @@ object UniQuEDataModule: TUniQuEDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamMidChange
     end
@@ -124,6 +129,7 @@ object UniQuEDataModule: TUniQuEDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamPresChange
     end
@@ -143,6 +149,7 @@ object UniQuEDataModule: TUniQuEDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamHigh
     end>

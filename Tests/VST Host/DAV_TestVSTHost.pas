@@ -8,7 +8,7 @@ unit DAV_TestVSTHost;
   getesteten Unit korrekt eingerichtet und aufgerufen werden.
 
 }
-
+                                                                                          
 interface
 
 {$DEFINE NoInvalidOpcodes}
@@ -523,6 +523,7 @@ var
   ParameterIndex  : Integer;
   ParameterString : string;
   DesiredValue    : Single;
+  TrialNo         : Integer;
 begin
  with FVstHost[0] do
   begin
@@ -538,15 +539,17 @@ begin
        ParameterLabel[ParameterIndex];
 
      // change value to something different
+     TrialNo := 0;
      repeat
       Parameter[ParameterIndex] := Random;
-     until Parameter[ParameterIndex] <> DesiredValue;
+      Inc(TrialNo);
+     until (Parameter[ParameterIndex] <> DesiredValue) or (TrialNo >= 1000);
 
      // change value to something different
-     String2Parameter(ParameterIndex, ParameterString);
-     CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
-       ParameterLabel[ParameterIndex], 'Error at parameter ' +
-       IntToStr(ParameterIndex + 1));
+     if (TrialNo < 1000) and String2Parameter(ParameterIndex, ParameterString)
+      then CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
+        ParameterLabel[ParameterIndex], 'Error at parameter ' +
+        IntToStr(ParameterIndex + 1));
     end;
    Active := False;
   end;

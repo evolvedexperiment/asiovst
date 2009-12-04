@@ -1,5 +1,4 @@
 object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -10,7 +9,6 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
   VersionRelease = 2
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   InitialDelay = 64
   IORatio = 1.000000000000000000
@@ -55,7 +53,6 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Input'
@@ -70,12 +67,12 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterInputChange
       OnCustomParameterDisplay = ParameterInputDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Output'
@@ -91,12 +88,12 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterOutputChange
       OnCustomParameterDisplay = ParameterOutputDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Processing Mode'
@@ -109,9 +106,11 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterProcessingModeChange
       OnCustomParameterDisplay = ParameterProcessingModeDisplay
+      OnStringToParameter = StringToModeParameter
     end
     item
       Curve = ctLogarithmic
@@ -128,43 +127,48 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
       OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Attack Shape'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1.000000000000000000
       LargeStepInteger = 1
       Max = 1.000000000000000000
       MaxInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Attack'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterAttackShapeChange
       OnCustomParameterDisplay = ParameterAttackDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Time Constants'
       DisplayName = 'Lookahead'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
       LargeStepFloat = 4.000000000000000000
       LargeStepInteger = 4
       Max = 1024.000000000000000000
       MaxInteger = 1024
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Lookahd'
       SmallStepFloat = 2.000000000000000000
       StepFloat = 2.000000000000000000
       StepInteger = 2
       Units = 'Samples'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterLookaheadChange
       OnCustomParameterDisplay = ParameterLookaheadDisplay

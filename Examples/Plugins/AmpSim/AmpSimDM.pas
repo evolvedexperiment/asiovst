@@ -61,6 +61,7 @@ type
     procedure ParamOutputChanged(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamProcessDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure StringToParameterModel(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single);
   private
     FBufferSize     : Integer;
     FBufferPosition : Integer;
@@ -76,12 +77,14 @@ type
     FBias           : Double;
     FStereo         : Boolean;
     FIsSoftClipping : Boolean;
+    FModelType      : TModelType;
     function FilterFreq(Frequency: Double): Double;
     function GetModelType: TModelType;
     procedure SetModelType(const Value: TModelType);
   protected
     procedure DriveChanged(const Value: Single);
     procedure BiasChanged;
+    procedure ModelTypeChanged;
     procedure TrimChanged;
   public
     property ModelType: TModelType read GetModelType write SetModelType;
@@ -153,12 +156,21 @@ end;
 
 function TComboDataModule.GetModelType: TModelType;
 begin
- Result := TModelType(round(ParameterByName['Model']));
+ Result := TModelType(Round(ParameterByName['Model']));
 end;
 
 procedure TComboDataModule.SetModelType(const Value: TModelType);
 begin
- case Value of
+ if Value <> FModelType then
+  begin
+   FModelType := Value;
+   ModelTypeChanged;
+  end;
+end;
+
+procedure TComboDataModule.ModelTypeChanged;
+begin
+ case FModelType of
   mtDI:
     begin
      FLPF      := 0;
@@ -184,8 +196,8 @@ begin
      FLPF      := FilterFreq(1685);
      FMix[0]   := -1.7;
      FMix[1]   := 0.82;
-     FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-     FDelay[1] := round(SampleRate * 2.3174971031286210892236384704519E-4);
+     FDelay[0] := Round(SampleRate * 1.5276504735716468072105102352582E-4);
+     FDelay[1] := Round(SampleRate * 2.3174971031286210892236384704519E-4);
      FHPF      := FilterFreq(25);
     end;
 
@@ -194,8 +206,8 @@ begin
      FLPF      := FilterFreq(1385);
      FMix[0]   := -0.53;
      FMix[1]   := 0.21;
-     FDelay[0] := round(SampleRate * 1.361470388019060585432266848196E-4);
-     FDelay[1] := round(SampleRate * 8.382229673093042749371332774518E-4);
+     FDelay[0] := Round(SampleRate * 1.361470388019060585432266848196E-4);
+     FDelay[1] := Round(SampleRate * 8.382229673093042749371332774518E-4);
      FHPF      := FilterFreq(25);
     end;
 
@@ -204,8 +216,8 @@ begin
      FLPF      := FilterFreq(1685);
      FMix[0]   := -0.85;
      FMix[1]   := 0.41;
-     FDelay[0] := round(SampleRate * 1.5276504735716468072105102352582E-4);
-     FDelay[1] := round(SampleRate * 3.0165912518853695324283559577677E-4);
+     FDelay[0] := Round(SampleRate * 1.5276504735716468072105102352582E-4);
+     FDelay[1] := Round(SampleRate * 3.0165912518853695324283559577677E-4);
      FHPF      := FilterFreq(25);
     end;
 
@@ -214,8 +226,8 @@ begin
      FLPF      := FilterFreq(2795);
      FMix[0]   := -0.29;
      FMix[1]   := 0.38;
-     FDelay[0] := round(SampleRate * 1.0183299389002036659877800407332E-3);
-     FDelay[1] := round(SampleRate * 4.1631973355537052456286427976686E-4);
+     FDelay[0] := Round(SampleRate * 1.0183299389002036659877800407332E-3);
+     FDelay[1] := Round(SampleRate * 4.1631973355537052456286427976686E-4);
      FHPF      := FilterFreq(459);
     end;
 
@@ -224,8 +236,8 @@ begin
      FLPF      := FilterFreq(1744);
      FMix[0]   := -0.96;
      FMix[1]   := 1.6;
-     FDelay[0] := round(SampleRate * 2.8089887640449438202247191011236E-3);
-     FDelay[1] := round(SampleRate * 7.9176563737133808392715756136184E-4);
+     FDelay[0] := Round(SampleRate * 2.8089887640449438202247191011236E-3);
+     FDelay[1] := Round(SampleRate * 7.9176563737133808392715756136184E-4);
      FHPF      := FilterFreq(382);
     end;
  end;
@@ -233,7 +245,7 @@ end;
 
 procedure TComboDataModule.ParamModelChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- SetModelType(TModelType(round(Value)));
+ SetModelType(TModelType(Round(Value)));
  TrimChanged;
  {$IFDEF UseGUI}
  if Assigned(EditorForm) then
@@ -260,6 +272,22 @@ end;
 procedure TComboDataModule.ParamNoiseChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FRndAmt := dB_to_Amp(Value);
+end;
+
+procedure TComboDataModule.StringToParameterModel(
+  Sender: TObject; const Index: Integer; const ParameterString: string;
+  var Value: Single);
+var
+  Text : string;
+begin
+ Text := Trim(ParameterString);
+ if Text = 'D.I.' then Value := 0 else
+ if Text = 'Spkr Sim' then Value := 1 else
+ if Text = 'Radio' then Value := 2 else
+ if Text = 'MB 1"' then Value := 3 else
+ if Text = 'MB 8"' then Value := 4 else
+ if Text = '4x12 ^' then Value := 5 else
+ if Text = '4x12 >' then Value := 6;
 end;
 
 procedure TComboDataModule.DriveChanged(const Value: Single);
@@ -290,7 +318,7 @@ end;
 
 procedure TComboDataModule.TrimChanged;
 begin
- case round(Parameter[0]) of
+ case Round(Parameter[0]) of
   0: FTrim := 0.50;   // DI
   1: FTrim := 0.53;   // speaker sim
   2: FTrim := 1.10;   // radio
@@ -309,7 +337,7 @@ end;
 
 procedure TComboDataModule.ParamModelDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'D.I.';
   1 : PreDefined := 'Spkr Sim';
   2 : PreDefined := 'Radio';
@@ -720,7 +748,7 @@ begin
   begin
    if Assigned(FHighPass[0]) then FHighPass[0].SampleRate := abs(SampleRate);
    if Assigned(FHighPass[1]) then FHighPass[1].SampleRate := abs(SampleRate);
-   SetModelType(ModelType);
+   ModelTypeChanged;
   end;
 end;
 
