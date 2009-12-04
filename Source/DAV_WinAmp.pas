@@ -3,7 +3,7 @@ unit DAV_WinAmp;
 interface
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, DAV_Common;
+  {$IFDEF FPC}LCLIntf, LCLType, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, DAV_Common;
 
 type
   TSmallIntArray = array [0..40000] of Smallint;

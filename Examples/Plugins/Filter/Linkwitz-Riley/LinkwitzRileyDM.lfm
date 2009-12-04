@@ -22,7 +22,7 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
       Curve = ctLogarithmic
       CurveFactor = 10000
       DisplayName = 'Frequency'
-      Flags = [kVstParameterUsesFloatStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2
       Max = 20000
       MaxInteger = 20000
@@ -43,7 +43,7 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
       Curve = ctLinear
       CurveFactor = 1
       DisplayName = 'Order'
-      Flags = [kVstParameterUsesIntegerMinMax, kVstParameterUsesIntStep, kVstParameterSupportsDisplayIndex, kVstParameterSupportsDisplayCategory]
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 1
       LargeStepInteger = 1
       Max = 16

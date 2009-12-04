@@ -295,6 +295,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         AntiAlias = gaaLinear4x
         Caption = 'Value'
         Color = 3226174
+        OnClick = LbDisplayClick
       end
     end
   end
@@ -316,10 +317,12 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         Color = 15659506
         OnGetFilterGain = GuiEQGraphGetFilterGain
       end>
-    YAxis.LowerLevel = -15.000000000000000000
-    YAxis.UpperLevel = 3.000000000000000000
-    YAxis.Granularity = 2.000000000000000000
-    XAxis.LabelStyle = xlsBottom
+    YAxis.LabelPosition = ylpLeft
+    YAxis.LowerLevel = -30.000000000000000000
+    YAxis.UpperLevel = 6.000000000000000000
+    YAxis.Granularity = 20.000000000000000000
+    YAxis.MaximumGridLines = 2
+    XAxis.LabelPosition = xlpBottom
     XAxis.UpperFrequency = 20000.000000000000000000
     XAxis.LowerFrequency = 20.000000000000000000
     Color = 7373965

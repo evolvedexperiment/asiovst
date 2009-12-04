@@ -115,6 +115,8 @@ type
     constructor Create; override;
     destructor Destroy; override;
     function ProcessSample32: Single; virtual;
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray;
+      SampleCount: Integer);
 
     property Frequency: Single read FFrequency write SetFrequency;
   end;
@@ -299,6 +301,15 @@ begin
  FreeAndNil(FImpulseTrains[0]);
  FreeAndNil(FImpulseTrains[1]);
  inherited;
+end;
+
+procedure TSynchronizedImpulseTrain32.ProcessBlock32(
+  const Data: PDAVSingleFixedArray; SampleCount: Integer);
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1
+  do Data[SampleIndex] := ProcessSample32;
 end;
 
 function TSynchronizedImpulseTrain32.ProcessSample32: Single;

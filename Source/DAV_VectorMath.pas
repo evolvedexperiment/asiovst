@@ -26,7 +26,7 @@ unit DAV_VectorMath;
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
 //  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
-//  by Christian-W. Budde. All Rights Reserved.                               //
+//  by Christian-W. Budde. All Rights Reserved.                        <<       //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Math, DAV_Types;
+  {$IFDEF FPC}LCLIntf, Types, {$ELSE}Windows, {$ENDIF} Math, DAV_Types;
 
 type
   TDAVVector32 = TDAV4SingleArray;
@@ -168,8 +168,8 @@ function CreateRotationMatrix(const anAxis: TDAVVector32; Angle: Single): TDAVMa
 function MatrixMultiply(const M1, M2: TDAVMatrix32): TDAVMatrix32; overload;
 procedure MatrixMultiply(const M1, M2: TDAVMatrix32; var MResult: TDAVMatrix32); overload;
 function VectorTransform(const Value: TDAVVector32; const M: TDAVMatrix32): TDAVVector32; overload;
-procedure SetMatrixLength(Matrix : TDAVDoubleDynMatrix; Size : TPoint); overload;
-procedure SetMatrixLength(Matrix : TDAVSingleDynMatrix; Size : TPoint); overload;
+procedure SetMatrixLength(Matrix: TDAVDoubleDynMatrix; Size: TPoint); overload;
+procedure SetMatrixLength(Matrix: TDAVSingleDynMatrix; Size: TPoint); overload;
 function MatrixDeterminant(const M: TDAVMatrix32): Single; overload;
 procedure AdjointMatrix(var M: TDAVMatrix32); overload;
 procedure ScaleMatrix(var M: TDAVMatrix32; const Factor: Single); overload;

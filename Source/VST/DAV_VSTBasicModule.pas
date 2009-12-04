@@ -1594,7 +1594,7 @@ procedure ProcessDoubleReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
 begin
  if not Assigned(Effect) or (SampleFrames = 0) then Exit;
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.vObject).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1700,13 +1700,8 @@ procedure ProcessReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Ou
 {$IFDEF PUREPASCAL}
 begin
  if not Assigned(Effect) or (SampleFrames = 0) then Exit;
- {$IFDEF UseAudioEffectPtr}
- if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.vObject).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
- {$ELSE}
  if TObject(Effect^.User) is TBasicVSTModule
   then TBasicVSTModule(Effect^.User).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
- {$ENDIF}
 end;
 {$ELSE}
 asm

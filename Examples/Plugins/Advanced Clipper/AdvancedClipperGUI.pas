@@ -60,6 +60,14 @@ type
     LbOutputGain: TGuiLabel;
     LEDHardClip: TGuiLED;
     PnDisplay: TGuiPanel;
+    GuiPanel2: TGuiPanel;
+    GuiLabel1: TGuiLabel;
+    GuiLabel2: TGuiLabel;
+    GuiLabel3: TGuiLabel;
+    ClipLEDInput: TGuiLED;
+    ClipLEDStage1: TGuiLED;
+    ClipLEDStage2: TGuiLED;
+    Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -71,6 +79,8 @@ type
     procedure DialOutputGainChange(Sender: TObject);
     procedure LbHardClipClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure ClipLEDClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -88,7 +98,7 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_GuiCommon, PNGImage, AdvancedClipperDM;
+  Math, PNGImage, DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
 
 procedure TFmAdvancedClipper.FormCreate(Sender: TObject);
 var
@@ -215,11 +225,26 @@ begin
  LbDisplay.Caption := 'Advanced Clipper';
 end;
 
+procedure TFmAdvancedClipper.ClipLEDClick(Sender: TObject);
+begin
+ (Sender As TGuiLED).Brightness_Percent := 0;
+end;
+
 procedure TFmAdvancedClipper.LbHardClipClick(Sender: TObject);
 begin
  with Owner as TAdvancedClipperDataModule do
   begin
    ParameterByName['Hard Clip'] := 1 - ParameterByName['Hard Clip'];
+  end;
+end;
+
+procedure TFmAdvancedClipper.TimerTimer(Sender: TObject);
+begin
+ with TAdvancedClipperDataModule(Owner) do
+  begin
+   ClipLEDInput.Brightness_Percent := Power(Limit(PeakInput - 1, 0, 1), 0.01) * 100;
+   ClipLEDStage1.Brightness_Percent := Power(Limit(PeakStage1 - 1, 0, 1), 0.01) * 100;
+   ClipLEDStage2.Brightness_Percent := Power(Limit(PeakStage2 - 1, 0, 1), 0.01) * 100;
   end;
 end;
 

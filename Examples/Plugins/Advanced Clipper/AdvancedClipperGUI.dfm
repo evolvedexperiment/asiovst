@@ -1,9 +1,9 @@
 object FmAdvancedClipper: TFmAdvancedClipper
-  Left = 218
-  Top = 81
+  Left = 390
+  Top = 154
   BorderStyle = bsNone
   Caption = 'Advanced Clipper'
-  ClientHeight = 234
+  ClientHeight = 293
   ClientWidth = 217
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
@@ -114,6 +114,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
     end
     object LbOSFactor: TGuiLabel
       Left = 75
@@ -128,6 +129,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
     end
     object LbFilterOrder: TGuiLabel
       Left = 137
@@ -142,6 +144,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
     end
     object PnDisplay: TGuiPanel
       Left = 75
@@ -172,6 +175,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        ParentFont = False
       end
     end
   end
@@ -228,6 +232,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
     end
     object LbFilterOrder2: TGuiLabel
       Left = 73
@@ -242,6 +247,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
     end
     object DialFilterOrder2: TGuiDial
       Left = 75
@@ -298,6 +304,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Height = -11
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
     end
     object GuiPanel1: TGuiPanel
       Left = 80
@@ -328,6 +335,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        ParentFont = False
         OnClick = LbHardClipClick
       end
       object LEDHardClip: TGuiLED
@@ -346,5 +354,107 @@ object FmAdvancedClipper: TFmAdvancedClipper
         OnClick = LbHardClipClick
       end
     end
+  end
+  object GuiPanel2: TGuiPanel
+    Left = 8
+    Top = 231
+    Width = 201
+    Height = 54
+    AntiAlias = gaaLinear4x
+    Caption = 'GuiPanel2'
+    LineColor = 15659506
+    Linewidth = 3
+    PanelColor = 7373965
+    ParentColor = True
+    Radius = 7
+    TabOrder = 2
+    UseDockManager = True
+    object GuiLabel1: TGuiLabel
+      Left = 11
+      Top = 36
+      Width = 48
+      Height = 15
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = 'Input'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15659506
+      Font.Height = -11
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      ParentFont = False
+    end
+    object GuiLabel2: TGuiLabel
+      Left = 75
+      Top = 36
+      Width = 48
+      Height = 15
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = 'Stage 1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15659506
+      Font.Height = -11
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      ParentFont = False
+    end
+    object GuiLabel3: TGuiLabel
+      Left = 139
+      Top = 36
+      Width = 48
+      Height = 15
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = 'Stage 2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15659506
+      Font.Height = -11
+      Font.Name = 'Times New Roman'
+      Font.Style = []
+      ParentFont = False
+    end
+    object ClipLEDInput: TGuiLED
+      Left = 21
+      Top = 9
+      Width = 28
+      Height = 28
+      LineWidth = 2
+      LEDColor = 8244410
+      Uniformity_Percent = 50.000000000000000000
+      AntiAlias = gaaLinear4x
+      LineColor = 3226174
+      OnClick = ClipLEDClick
+    end
+    object ClipLEDStage1: TGuiLED
+      Left = 83
+      Top = 9
+      Width = 28
+      Height = 28
+      LineWidth = 2
+      LEDColor = 8234444
+      Uniformity_Percent = 50.000000000000000000
+      AntiAlias = gaaLinear4x
+      LineColor = 3226174
+      OnClick = ClipLEDClick
+    end
+    object ClipLEDStage2: TGuiLED
+      Left = 148
+      Top = 9
+      Width = 28
+      Height = 28
+      LineWidth = 2
+      LEDColor = 8226252
+      Uniformity_Percent = 50.000000000000000000
+      AntiAlias = gaaLinear4x
+      LineColor = 3226174
+      OnClick = ClipLEDClick
+    end
+  end
+  object Timer: TTimer
+    Interval = 30
+    OnTimer = TimerTimer
+    Left = 128
+    Top = 240
   end
 end

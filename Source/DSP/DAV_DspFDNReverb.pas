@@ -711,10 +711,17 @@ procedure TDspFDNReverb32.ProcessFeedbackPath(var FeedbackVector: TDAVVector32);
 begin
  if FNonLinearActive then
   begin
+   {$IFDEF FPC}
+   FeedbackVector[0] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[0]);
+   FeedbackVector[1] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[1]);
+   FeedbackVector[2] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[2]);
+   FeedbackVector[3] := FastTanhOpt5Term(FNonLinearGain * FeedbackVector[3]);
+   {$ELSE}
    FeedbackVector[0] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[0]);
    FeedbackVector[1] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[1]);
    FeedbackVector[2] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[2]);
    FeedbackVector[3] := FastTanhOpt5TermFPU(FNonLinearGain * FeedbackVector[3]);
+   {$ENDIF}
   end;
 
  // Halflife

@@ -757,7 +757,7 @@ begin
     {$IFDEF DELPHI6_UP}
     Host := Effect.Resvd2;
     {$ELSE}
-    Host := Plugin.Collection.Owner;
+    Host := TCustomVstHost(Plugin.Collection.Owner);
     {$ENDIF}
     if (Host = nil) then
      begin

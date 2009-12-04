@@ -134,6 +134,7 @@ type
     procedure MiStoreClick(Sender: TObject);
     procedure PuFrequencyPopup(Sender: TObject);
     procedure PuPresetPopup(Sender: TObject);
+    procedure LbDisplayClick(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
     FCurrentDial     : TGuiDial;
@@ -397,6 +398,11 @@ procedure TFmLinkwitzRiley.DialHighpassSlopeMouseEnter(Sender: TObject);
 begin
  with TDualLinkwitzRileyFiltersModule(Owner)
   do LbDisplay.Caption := 'Slope: ' + ParameterDisplay[3] + ' ' + ParameterLabel[3];
+end;
+
+procedure TFmLinkwitzRiley.LbDisplayClick(Sender: TObject);
+begin
+ LbDisplay.Caption := RCStrLinkwitzRiley;
 end;
 
 procedure TFmLinkwitzRiley.LbMouseDown(Sender: TObject;
