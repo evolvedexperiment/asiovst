@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspChorus;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspChorus;
 
 type
   TSimpleChorusModule = class(TVSTModule)
@@ -51,9 +51,11 @@ type
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriftChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FChorus    : Array [0..1] of TDspChorus32;
-    FSemaphore : Integer;
+    FChorus          : Array [0..1] of TDspChorus32;
+    FCriticalSection : TCriticalSection;
     function GetChorus(Index: Integer): TDspChorus32;
   public
     property Chorus[Index: Integer]: TDspChorus32 read GetChorus;
@@ -69,16 +71,27 @@ uses
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
+procedure TSimpleChorusModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TSimpleChorusModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TSimpleChorusModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- FSemaphore := 0;
  for Channel := 0 to 1 do
   begin
    FChorus[Channel] := TDspChorus32.Create;
    FChorus[Channel].SampleRate := SampleRate;
   end;
+
+ // initialize parameters
  Parameter[0] :=  0.2;
  Parameter[1] :=  4;
  Parameter[2] :=  5;
@@ -166,26 +179,27 @@ end;
 
 procedure TSimpleChorusModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-  GUI := TFmSimpleChorus.Create(Self);
+ GUI := TFmSimpleChorus.Create(Self);
 end;
 
 function TSimpleChorusModule.GetChorus(Index: Integer): TDspChorus32;
 begin
  if Index in [0..1]
-  then result := FChorus[Index]
+  then Result := FChorus[Index]
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
 end;
 
 procedure TSimpleChorusModule.ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FChorus[0]) then FChorus[0].Speed := Value;
-  if assigned(FChorus[1]) then FChorus[1].Speed := Value;
+  if Assigned(FChorus[0]) then FChorus[0].Speed := Value;
+  if Assigned(FChorus[1]) then FChorus[1].Speed := Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmSimpleChorus then
   with TFmSimpleChorus(EditorForm)
    do UpdateSpeed;
@@ -193,14 +207,15 @@ end;
 
 procedure TSimpleChorusModule.ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FChorus[0]) then FChorus[0].Stages := round(Value);
-  if assigned(FChorus[1]) then FChorus[1].Stages := round(Value);
+  if Assigned(FChorus[0]) then FChorus[0].Stages := round(Value);
+  if Assigned(FChorus[1]) then FChorus[1].Stages := round(Value);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmSimpleChorus then
   with TFmSimpleChorus(EditorForm)
    do UpdateStages;
@@ -211,18 +226,19 @@ procedure TSimpleChorusModule.ParamDriftChange(
 var
   i : Integer;
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FChorus[0]) then FChorus[0].Drift := 0.01 * Value;
-  if assigned(FChorus[1]) then
+  if Assigned(FChorus[0]) then FChorus[0].Drift := 0.01 * Value;
+  if Assigned(FChorus[1]) then
    if Value > 0
     then FChorus[1].Drift := 0.01 * Value
     else for i := 0 to FChorus[1].Stages - 1
-          do FChorus[1].LFO[i].Assign(FChorus[0].LFO[i]); 
+          do FChorus[1].LFO[i].Assign(FChorus[0].LFO[i]);
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmSimpleChorus then
   with TFmSimpleChorus(EditorForm)
    do UpdateDrift;
@@ -231,14 +247,15 @@ end;
 procedure TSimpleChorusModule.ParamDepthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FChorus[0]) then FChorus[0].Depth := 0.01 * Value;
-  if assigned(FChorus[1]) then FChorus[1].Depth := 0.01 * Value;
+  if Assigned(FChorus[0]) then FChorus[0].Depth := 0.01 * Value;
+  if Assigned(FChorus[1]) then FChorus[1].Depth := 0.01 * Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmSimpleChorus then
   with TFmSimpleChorus(EditorForm)
    do UpdateDepth;
@@ -246,14 +263,15 @@ end;
 
 procedure TSimpleChorusModule.ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FChorus[0]) then FChorus[0].Mix := 0.01 * Value;
-  if assigned(FChorus[1]) then FChorus[1].Mix := 0.01 * Value;
+  if Assigned(FChorus[0]) then FChorus[0].Mix := 0.01 * Value;
+  if Assigned(FChorus[1]) then FChorus[1].Mix := 0.01 * Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmSimpleChorus then
   with TFmSimpleChorus(EditorForm)
    do UpdateMix;
@@ -264,14 +282,13 @@ procedure TSimpleChorusModule.VSTModuleProcess(const Inputs,
 var
   Channel, Sample : Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FastTanhContinousError4(FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
@@ -280,28 +297,29 @@ procedure TSimpleChorusModule.VSTModuleProcessDoubleReplacing(const Inputs,
 var
   Channel, Sample : Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Channel := 0 to 1 do
    for Sample := 0 to SampleFrames - 1
     do Outputs[Channel, Sample] := FastTanhContinousError4(FChorus[Channel].ProcessSample32(Inputs[Channel, Sample]))
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TSimpleChorusModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- while FSemaphore > 0 do Sleep(1);
- Inc(FSemaphore);
- try
-  if assigned(FChorus[0]) then FChorus[0].SampleRate := SampleRate;
-  if assigned(FChorus[1]) then FChorus[1].SampleRate := SampleRate;
- finally
-  Dec(FSemaphore);
- end;
+ if Abs(SampleRate) > 0 then
+  begin
+   FCriticalSection.Enter;
+   try
+    if Assigned(FChorus[0]) then FChorus[0].SampleRate := SampleRate;
+    if Assigned(FChorus[1]) then FChorus[1].SampleRate := SampleRate;
+   finally
+    FCriticalSection.Leave;
+   end;
+  end;
 end;
 
 end.

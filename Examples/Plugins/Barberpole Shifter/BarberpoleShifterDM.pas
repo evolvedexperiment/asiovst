@@ -47,14 +47,10 @@ type
     procedure VSTModuleProcessStereo(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure ParameterMixChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterCoeffsChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterTransitionBWChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterCoeffsChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterTransitionBWChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FFreqShifter : array of TBodeFrequencyShifter32;
     FMix         : array [0..2] of Single;
@@ -73,8 +69,8 @@ procedure TBarberpoleShifterDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- assert(numInputs = numOutputs);
- assert(numInputs > 0);
+ Assert(numInputs = numOutputs);
+ Assert(numInputs > 0);
  SetLength(FFreqShifter, numInputs);
 
  ChooseProcess;
@@ -108,7 +104,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFreqShifter) - 1 do
-  if assigned(FFreqShifter[Channel])
+  if Assigned(FFreqShifter[Channel])
    then FFreqShifter[Channel].Frequency := Value;
 
  if EditorForm is TFmBarberpoleShifter
@@ -132,7 +128,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFreqShifter) - 1 do
-  if assigned(FFreqShifter[Channel])
+  if Assigned(FFreqShifter[Channel])
    then FFreqShifter[Channel].CoefficientCount := round(Value);
 end;
 
@@ -142,7 +138,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFreqShifter) - 1 do
-  if assigned(FFreqShifter[Channel])
+  if Assigned(FFreqShifter[Channel])
    then FFreqShifter[Channel].TransitionBandwidth := Value;
 end;
 
@@ -215,9 +211,10 @@ procedure TBarberpoleShifterDataModule.VSTModuleSampleRateChange(
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FFreqShifter) - 1 do
-  if assigned(FFreqShifter[Channel])
-   then FFreqShifter[Channel].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FFreqShifter) - 1 do
+   if Assigned(FFreqShifter[Channel])
+    then FFreqShifter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

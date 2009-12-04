@@ -1,4 +1,5 @@
 object AudioAmeliorationModule: TAudioAmeliorationModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Audio Amelioration'
@@ -13,7 +14,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Power'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -30,7 +30,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Exciter'
       DisplayName = 'Exciter'
@@ -48,7 +47,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Ambience'
       DisplayName = 'Ambience'
@@ -66,7 +64,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = '3D Sound'
       DisplayName = '3D Surround'
@@ -84,7 +81,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Compressor'
@@ -102,7 +98,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Extra Bass'
       DisplayName = 'Extra Bass'
@@ -120,7 +115,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Exciter'
       DisplayName = 'Exciter Amount'
@@ -137,7 +131,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnParameterChange = ParameterExciterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Ambience'
       DisplayName = 'Ambience Amount'
@@ -154,7 +147,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnParameterChange = ParameterAmbienceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = '3D Sound'
       DisplayName = '3D Surround Amount'
@@ -170,7 +162,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Compressor Amount'
@@ -187,7 +178,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnParameterChange = ParameterCompressorChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Extra Bass'
       DisplayName = 'Extra Bass Amount'
@@ -204,7 +194,6 @@ object AudioAmeliorationModule: TAudioAmeliorationModule
       OnParameterChange = ParameterExtraBassChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Speaker Setup'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

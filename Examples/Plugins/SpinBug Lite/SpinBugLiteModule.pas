@@ -90,7 +90,7 @@ begin
  OnProcess := VSTModuleProcessMono;
  OnProcessReplacing := VSTModuleProcessMono;
 
- if assigned(Programs) then
+ if Assigned(Programs) then
   try
    // default preset
    with programs[0] do
@@ -167,6 +167,135 @@ procedure TSpinBugLiteModule.VSTEditOpen(Sender : TObject;
   var GUI : TForm; ParentWindow : Cardinal);
 begin
  GUI := TFmSpinBugLite.Create(Self);
+end;
+
+procedure TSpinBugLiteModule.SBMCoefficientsDisplay(Sender : TObject;
+  const Index : Integer; var PreDefined : String);
+begin
+ PreDefined := IntToStr(Round(parameter[0]));
+end;
+
+procedure TSpinBugLiteModule.SBMCoefficientsChange(Sender : TObject;
+  const Index : Integer; var Value : Single);
+var
+  ival : Integer;
+begin
+ ival := Round(Value);
+ if (ival < 1) or (ival > 32) then Exit;
+ if (ival = 17) or (ival = 18) or (ival = 19) or (ival = 20) or (ival = 21) or
+    (ival = 22) or (ival = 23) or (ival = 25) or (ival = 26) or (ival = 27) or
+    (ival = 28) or (ival = 29) or (ival = 30) or (ival = 31) then Exit;
+ if Assigned(FHilbert[0]) then FHilbert[0].NumberOfCoefficients := ival;
+ if Assigned(FHilbert[1]) then FHilbert[1].NumberOfCoefficients := ival;
+
+ // update GUI
+ if Assigned(EditorForm) then
+  with (EditorForm as TFmSpinBugLite)
+   do UpdateColour;
+end;
+
+procedure TSpinBugLiteModule.SBMProcessTypeDisplay(Sender : TObject;
+  const Index : Integer; var PreDefined : String);
+begin
+ PreDefined := GetProcessTypeCaption(Round(Parameter[1]));
+end;
+
+procedure TSpinBugLiteModule.SBMProcessTypeChange(Sender : TObject;
+  const Index : Integer; var Value : Single);
+begin
+ Value := Round(Value);
+ if (Value < 1)
+  then Value := 10 else
+ if (Value > 10) then Value := 1;
+ case Round(Value) of
+   1 :
+    begin
+     OnProcess := VSTModuleProcessStereoA;
+     OnProcessReplacing := VSTModuleProcessStereoA;
+    end;
+   2 :
+    begin
+     OnProcess := VSTModuleProcessStereoB;
+     OnProcessReplacing := VSTModuleProcessStereoB;
+    end;
+   3 :
+    begin
+     OnProcess := VSTModuleProcessStereoC;
+     OnProcessReplacing := VSTModuleProcessStereoC;
+    end;
+   4 :
+    begin
+     OnProcess := VSTModuleProcessStereoD;
+     OnProcessReplacing := VSTModuleProcessStereoD;
+    end;
+   5 :
+    begin
+     OnProcess := VSTModuleProcessMono;
+     OnProcessReplacing := VSTModuleProcessMono;
+    end;
+   6 :
+    begin
+     OnProcess := VSTModuleProcessMonoL;
+     OnProcessReplacing := VSTModuleProcessMonoL;
+    end;
+   7 :
+    begin
+     OnProcess := VSTModuleProcessMonoR;
+     OnProcessReplacing := VSTModuleProcessMonoR;
+    end;
+   8 :
+    begin
+     OnProcess := VSTModuleProcessMS;
+     OnProcessReplacing := VSTModuleProcessMS;
+    end;
+   9 :
+    begin
+     OnProcess := VSTModuleProcessSpecial;
+     OnProcessReplacing := VSTModuleProcessSpecial;
+    end;
+   10 :
+    begin
+     OnProcess := VSTModuleProcessOldOne;
+     OnProcessReplacing := VSTModuleProcessOldOne;
+    end;
+  end;
+
+ // update GUI
+ if Assigned(EditorForm)
+  then (EditorForm as TFmSpinBugLite).UpdateType;
+end;
+
+procedure TSpinBugLiteModule.SBMLFOSpeedChange(Sender : TObject;
+  const Index : Integer; var Value : Single);
+begin
+ if Assigned(FSineLFO[0]) then FSineLFO[0].Frequency := Value;
+ if Assigned(FSineLFO[1]) then FSineLFO[1].Frequency := 1.01 * Value;
+
+ // update GUI
+ if Assigned(EditorForm)
+  then TFmSpinBugLite(EditorForm).UpdateLFO;
+end;
+
+procedure TSpinBugLiteModule.SBMTBWChange(Sender : TObject;
+  const Index : Integer; var Value : Single);
+begin
+ if (Value <= 0) or (Value >= 0.5) then Exit;
+ if Value <> FTBW then
+  begin
+   FTBW := Value;
+   if Assigned(FHilbert[0]) then FHilbert[0].Transition := FTBW;
+   if Assigned(FHilbert[1]) then FHilbert[1].Transition := FTBW;
+  end;
+end;
+
+procedure TSpinBugLiteModule.VSTModuleSampleRateChange(Sender : TObject;
+  const SampleRate : Single);
+begin
+ if Abs(SampleRate) > 0 then
+  begin
+   if Assigned(FSineLFO[0]) then FSineLFO[0].SampleRate := Abs(SampleRate);
+   if Assigned(FSineLFO[1]) then FSineLFO[1].SampleRate := Abs(SampleRate);
+  end;
 end;
 
 procedure TSpinBugLiteModule.VSTModuleProcessStereoA(
@@ -380,129 +509,6 @@ begin
    Outputs[1, i] := a1 - b1 + Inputs[1, i];
    Outputs[0, i] := 0.25 * (Outputs[0, i] + a2 + b2 + Inputs[1, i]);
    Outputs[1, i] := 0.25 * (Outputs[1, i] + a2 - b2 + Inputs[0, i]);
-  end;
-end;
-
-procedure TSpinBugLiteModule.VSTModuleSampleRateChange(Sender : TObject;
-  const SampleRate : Single);
-begin
- FSineLFO[0].SampleRate := SampleRate;
- FSineLFO[1].SampleRate := SampleRate;
-end;
-
-procedure TSpinBugLiteModule.SBMCoefficientsDisplay(Sender : TObject;
-  const Index : Integer; var PreDefined : String);
-begin
- PreDefined := IntToStr(round(parameter[0]));
-end;
-
-procedure TSpinBugLiteModule.SBMCoefficientsChange(Sender : TObject;
-  const Index : Integer; var Value : Single);
-var
-  ival : Integer;
-begin
- ival := round(Value);
- if (ival < 1) or (ival > 32) then Exit;
- if (ival = 17) or (ival = 18) or (ival = 19) or (ival = 20) or (ival = 21) or
-    (ival = 22) or (ival = 23) or (ival = 25) or (ival = 26) or (ival = 27) or
-    (ival = 28) or (ival = 29) or (ival = 30) or (ival = 31) then Exit;
- if assigned(FHilbert[0]) then FHilbert[0].NumberOfCoefficients := ival;
- if assigned(FHilbert[1]) then FHilbert[1].NumberOfCoefficients := ival;
- if Assigned(EditorForm) then
-  with (EditorForm as TFmSpinBugLite)
-   do UpdateColour;
-end;
-
-procedure TSpinBugLiteModule.SBMProcessTypeDisplay(Sender : TObject;
-  const Index : Integer; var PreDefined : String);
-begin
- PreDefined := GetProcessTypeCaption(round(Parameter[1]));
-end;
-
-procedure TSpinBugLiteModule.SBMProcessTypeChange(Sender : TObject;
-  const Index : Integer; var Value : Single);
-begin
- Value := round(Value);
- if (Value < 1)
-  then Value := 10 else
- if (Value > 10) then Value := 1;
- case Round(Value) of
-   1 :
-    begin
-     OnProcess := VSTModuleProcessStereoA;
-     OnProcessReplacing := VSTModuleProcessStereoA;
-    end;
-   2 :
-    begin
-     OnProcess := VSTModuleProcessStereoB;
-     OnProcessReplacing := VSTModuleProcessStereoB;
-    end;
-   3 :
-    begin
-     OnProcess := VSTModuleProcessStereoC;
-     OnProcessReplacing := VSTModuleProcessStereoC;
-    end;
-   4 :
-    begin
-     OnProcess := VSTModuleProcessStereoD;
-     OnProcessReplacing := VSTModuleProcessStereoD;
-    end;
-   5 :
-    begin
-     OnProcess := VSTModuleProcessMono;
-     OnProcessReplacing := VSTModuleProcessMono;
-    end;
-   6 :
-    begin
-     OnProcess := VSTModuleProcessMonoL;
-     OnProcessReplacing := VSTModuleProcessMonoL;
-    end;
-   7 :
-    begin
-     OnProcess := VSTModuleProcessMonoR;
-     OnProcessReplacing := VSTModuleProcessMonoR;
-    end;
-   8 :
-    begin
-     OnProcess := VSTModuleProcessMS;
-     OnProcessReplacing := VSTModuleProcessMS;
-    end;
-   9 :
-    begin
-     OnProcess := VSTModuleProcessSpecial;
-     OnProcessReplacing := VSTModuleProcessSpecial;
-    end;
-   10 :
-    begin
-     OnProcess := VSTModuleProcessOldOne;
-     OnProcessReplacing := VSTModuleProcessOldOne;
-    end;
-  end;
- if Assigned(EditorForm) then
-   with (EditorForm as TFmSpinBugLite) do
-     UpdateType;
-end;
-
-procedure TSpinBugLiteModule.SBMLFOSpeedChange(Sender : TObject;
-  const Index : Integer; var Value : Single);
-begin
- FSineLFO[0].Frequency := Value;
- FSineLFO[1].Frequency := 1.01 * Value;
-
- if assigned(EditorForm) then
-  with (EditorForm as TFmSpinBugLite)
-   do UpdateLFO;
-end;
-
-procedure TSpinBugLiteModule.SBMTBWChange(Sender : TObject;
-  const Index : Integer; var Value : Single);
-begin
- if (Value <= 0) or (Value >= 0.5) then Exit;
- if Value <> FTBW then
-  begin
-   FTBW := Value;
-   if assigned(FHilbert[0]) then FHilbert[0].Transition := FTBW;
-   if assigned(FHilbert[1]) then FHilbert[1].Transition := FTBW;
   end;
 end;
 

@@ -47,7 +47,7 @@ type
     LbDepth: TGuiLabel;
     LbRate: TGuiLabel;
     LbFeedback: TGuiLabel;
-    ScrollBar1: TScrollBar;
+    SbGain: TScrollBar;
     ScrollBar2: TScrollBar;
     ScrollBar3: TScrollBar;
     ScrollBar4: TScrollBar;
@@ -63,8 +63,18 @@ type
     LbFeedbackValue: TGuiLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure SbGainChange(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
+  public
+    procedure UpdateGain;
+    procedure UpdateMix;
+    procedure UpdateLowpass;
+    procedure UpdateDelay;
+    procedure UpdateDepth;
+    procedure UpdateRate;
+    procedure UpdateFeedback;
   end;
 
 implementation
@@ -109,9 +119,86 @@ begin
   end;
 end;
 
+procedure TFmModDelay.FormShow(Sender: TObject);
+begin
+ UpdateGain;
+ UpdateMix;
+ UpdateLowpass;
+ UpdateDelay;
+ UpdateDepth;
+ UpdateRate;
+ UpdateFeedback;
+end;
+
 procedure TFmModDelay.FormPaint(Sender: TObject);
 begin
  Canvas.Draw(0, 0, FBackgrounBitmap);
+end;
+
+procedure TFmModDelay.SbGainChange(Sender: TObject);
+begin
+ with Owner as TModDelayModule do
+  begin
+//   if Parameter[0] <> SbGain.Position 
+//    then Parameter[0] := SbGain.Position;
+  end;
+end;
+
+procedure TFmModDelay.UpdateDelay;
+begin
+ with Owner as TModDelayModule do
+  begin
+
+  end;
+end;
+
+procedure TFmModDelay.UpdateDepth;
+begin
+ with Owner as TModDelayModule do
+  begin
+
+  end;
+end;
+
+procedure TFmModDelay.UpdateFeedback;
+begin
+ with Owner as TModDelayModule do
+  begin
+
+  end;
+end;
+
+procedure TFmModDelay.UpdateGain;
+begin
+ with Owner as TModDelayModule do
+  begin
+//   if SbGain.Position <> Parameter[0] 
+//    then SbGain.Position := Parameter[0];
+  end;
+end;
+
+procedure TFmModDelay.UpdateLowpass;
+begin
+ with Owner as TModDelayModule do
+  begin
+
+  end;
+end;
+
+procedure TFmModDelay.UpdateMix;
+begin
+ with Owner as TModDelayModule do
+  begin
+
+  end;
+end;
+
+procedure TFmModDelay.UpdateRate;
+begin
+ with Owner as TModDelayModule do
+  begin
+
+  end;
 end;
 
 end.

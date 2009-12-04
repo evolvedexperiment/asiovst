@@ -15,6 +15,7 @@ object FmModDelay: TFmModDelay
   Scaled = False
   OnCreate = FormCreate
   OnPaint = FormPaint
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object LbGain: TGuiLabel
@@ -29,6 +30,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbMix: TGuiLabel
     Left = 8
@@ -42,6 +44,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbLpf: TGuiLabel
     Left = 8
@@ -55,6 +58,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbDelay: TGuiLabel
     Left = 8
@@ -68,6 +72,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbDepth: TGuiLabel
     Left = 8
@@ -81,6 +86,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbRate: TGuiLabel
     Left = 8
@@ -94,6 +100,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFeedback: TGuiLabel
     Left = 8
@@ -107,6 +114,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbGainValue: TGuiLabel
     Left = 213
@@ -121,6 +129,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbMixValue: TGuiLabel
     Left = 213
@@ -135,6 +144,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbLpfValue: TGuiLabel
     Left = 213
@@ -149,6 +159,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbDelayValue: TGuiLabel
     Left = 213
@@ -163,6 +174,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbDepthValue: TGuiLabel
     Left = 213
@@ -177,6 +189,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbRateValue: TGuiLabel
     Left = 213
@@ -191,6 +204,7 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbFeedbackValue: TGuiLabel
     Left = 213
@@ -205,14 +219,16 @@ object FmModDelay: TFmModDelay
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
-  object ScrollBar1: TScrollBar
+  object SbGain: TScrollBar
     Left = 83
     Top = 8
     Width = 124
     Height = 17
     PageSize = 0
     TabOrder = 0
+    OnChange = SbGainChange
   end
   object ScrollBar2: TScrollBar
     Left = 83

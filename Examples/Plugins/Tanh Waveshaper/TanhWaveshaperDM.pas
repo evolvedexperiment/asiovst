@@ -167,9 +167,9 @@ var
 begin
  for Channel := 0 to Length(FOversampler) - 1 do
   begin
-   if assigned(FOversampler[Channel].Upsampling)
+   if Assigned(FOversampler[Channel].Upsampling)
     then FOversampler[Channel].Upsampling.Order := round(Value);
-   if assigned(FOversampler[Channel].Downsampling)
+   if Assigned(FOversampler[Channel].Downsampling)
     then FOversampler[Channel].Downsampling.Order := round(Value);
   end;
 end;
@@ -412,9 +412,9 @@ begin
 
  for Channel := 0 to Length(FOversampler) - 1 do
   begin
-   if assigned(FOversampler[Channel].Upsampling)
+   if Assigned(FOversampler[Channel].Upsampling)
     then FOversampler[Channel].Upsampling.Factor := FOSFactor;
-   if assigned(FOversampler[Channel].Downsampling)
+   if Assigned(FOversampler[Channel].Downsampling)
     then FOversampler[Channel].Downsampling.Factor := FOSFactor;
   end;
 
@@ -460,13 +460,14 @@ procedure TTanhWaveshaperModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FOversampler) - 1 do
-  begin
-   if assigned(FOversampler[Channel].Upsampling)
-    then FOversampler[Channel].Upsampling.SampleRate := SampleRate;
-   if assigned(FOversampler[Channel].Downsampling)
-    then FOversampler[Channel].Downsampling.SampleRate := SampleRate;
-  end;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FOversampler) - 1 do
+   begin
+    if Assigned(FOversampler[Channel].Upsampling)
+     then FOversampler[Channel].Upsampling.SampleRate := Abs(SampleRate);
+    if Assigned(FOversampler[Channel].Downsampling)
+     then FOversampler[Channel].Downsampling.SampleRate := Abs(SampleRate);
+   end;
 end;
 
 end.

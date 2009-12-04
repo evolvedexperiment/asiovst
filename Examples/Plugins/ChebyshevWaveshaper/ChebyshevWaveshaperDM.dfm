@@ -1,5 +1,4 @@
 object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
@@ -8,7 +7,6 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DCWS'
@@ -28,7 +26,6 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Volume'
       LargeStepFloat = 10.000000000000000000

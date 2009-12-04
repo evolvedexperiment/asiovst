@@ -356,9 +356,10 @@ var
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
-    then FHarmonicBass[Channel].SampleRate := SampleRate;
+  if Abs(SampleRate) > 0 then
+   for Channel := 0 to Length(FHarmonicBass) - 1 do
+    if assigned(FHarmonicBass[Channel])
+     then FHarmonicBass[Channel].SampleRate := Abs(SampleRate);
  finally
   FCriticalSection.Release;
  end;

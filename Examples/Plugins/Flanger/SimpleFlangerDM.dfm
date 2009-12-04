@@ -1,5 +1,4 @@
 object SimpleFlangerModule: TSimpleFlangerModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Flanger'
@@ -7,7 +6,6 @@ object SimpleFlangerModule: TSimpleFlangerModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Chor'
@@ -31,7 +29,6 @@ object SimpleFlangerModule: TSimpleFlangerModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -66,7 +63,6 @@ object SimpleFlangerModule: TSimpleFlangerModule
       OnParameterChange = ParamSpeedChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       LargeStepFloat = 2.000000000000000000

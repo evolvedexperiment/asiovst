@@ -172,7 +172,7 @@ procedure TModDelay2Module.ParameterMixChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FModDelay[Index div 7])
+  if Assigned(FModDelay[Index div 7])
    then FModDelay[Index div 7].Mix := Value;
  finally
   FCriticalSection.Leave;
@@ -184,7 +184,7 @@ procedure TModDelay2Module.ParameterDepthChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FModDelay[Index div 7])
+  if Assigned(FModDelay[Index div 7])
    then FModDelay[Index div 7].Depth := Value;
  finally
   FCriticalSection.Leave;
@@ -196,7 +196,7 @@ procedure TModDelay2Module.ParameterRateChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FModDelay[Index div 7])
+  if Assigned(FModDelay[Index div 7])
    then FModDelay[Index div 7].Rate := Value;
  finally
   FCriticalSection.Leave;
@@ -208,7 +208,7 @@ procedure TModDelay2Module.ParameterFeedbackChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FModDelay[Index div 7])
+  if Assigned(FModDelay[Index div 7])
    then FModDelay[Index div 7].Feedback := Value;
  finally
   FCriticalSection.Leave;
@@ -220,7 +220,7 @@ procedure TModDelay2Module.ParameterDelayChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FModDelay[Index div 7])
+  if Assigned(FModDelay[Index div 7])
    then FModDelay[Index div 7].Delay := Value;
  finally
   FCriticalSection.Leave;
@@ -238,7 +238,7 @@ procedure TModDelay2Module.ParameterLowpassChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FModDelay[Index div 7])
+  if Assigned(FModDelay[Index div 7])
    then FModDelay[Index div 7].LowpassFrequency := Value;
  finally
   FCriticalSection.Leave;
@@ -284,7 +284,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FModDelay) - 1 do
-   if assigned(FModDelay[Channel])
+   if Assigned(FModDelay[Channel])
     then FModDelay[Channel].Samplerate := SampleRate;
  finally
   FCriticalSection.Leave;

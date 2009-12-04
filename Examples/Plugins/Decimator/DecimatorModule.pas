@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, DAV_Types, Forms, DAV_VSTEffect, DAV_VSTModule;
+  Windows, Forms, DAV_Types, DAV_VSTEffect, DAV_VSTModule;
 
 type
   TDecimatorFilterType = (dftLowpass, dftHighpass);
@@ -60,7 +60,7 @@ type
     FSHrate          : Double;
     FYL, FYR         : Double;
     FOutVol, FMixWet : Double;
-    FOld             : array [0..1, 0..1] of Double;
+    FState           : array [0..1, 0..1] of Double;
     FSHCounter       : Double;
     FBitDepth        : Double;
     FBitMul, FBitDiv : Double;
@@ -149,6 +149,7 @@ begin
  GUI := TVSTGUI.Create(Self);
 end;
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // Parameter Changed
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,6 +159,8 @@ procedure TVSTDecimator.ParameterCutoffChange(
 begin
  FCutoffFreqNorm := Limit(0.5 * FreqLogToLinear(Value), 0.01, 1);
  FFC := FResonance * (1 + 1 / (1 - FCutoffFreqNorm));
+
+ // update GUI
  if EditorForm is TVSTGUI then
   with TVSTGUI(EditorForm)
    do UpdateFrequency;
@@ -169,6 +172,8 @@ begin
  FResonance := Value * 0.1;
  if FResonance > 0.8 then FResonance := 0.8;
  FFC := FResonance * (1 + 1 / (1 - FCutoffFreqNorm));
+
+ // update GUI
  if EditorForm is TVSTGUI then
   with TVSTGUI(EditorForm)
    do UpdateResonance;
@@ -178,6 +183,8 @@ procedure TVSTDecimator.ParameterWetDryMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMixWet := Value * 0.01;
+
+ // update GUI
  if EditorForm is TVSTGUI then
   with TVSTGUI(EditorForm)
    do UpdateMix;
@@ -187,6 +194,8 @@ procedure TVSTDecimator.ParameterOutputVolumeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FOutVol := dB_to_Amp(Value);
+
+ // update GUI
  if EditorForm is TVSTGUI then
   with TVSTGUI(EditorForm)
    do UpdateOutput;
@@ -198,6 +207,8 @@ const
   CMul = 200/441;
 begin
  FSHrate := FreqLogToLinear(Value * cMul);
+
+ // update GUI
  if EditorForm is TVSTGUI then
   with TVSTGUI(EditorForm)
    do UpdateSampleRate;
@@ -209,6 +220,8 @@ begin
  FBitDepth := Value;
  FBitMul := Power(2, FBitDepth + 1) - 1;
  FBitDiv := 1 / FBitMul;
+
+ // update GUI
  if Assigned(EditorForm) then
   with TVSTGUI(EditorForm)
    do UpdateBits;
@@ -218,10 +231,13 @@ procedure TVSTDecimator.ParameterFilterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FFilterType := TDecimatorFilterType(round(Value));
+
+ // update GUI
  if Assigned(EditorForm) then
   with TVSTGUI(EditorForm)
    do UpdateFilterType;
 end;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // 32 Bit Processing
@@ -243,20 +259,20 @@ begin
        FYR := round(FBitMul * Inputs[1, i]) * FBitDiv;
       end;
 
-     FOld[0, 0] := FOld[0, 0] + FCutoffFreqNorm * (FYL - FOld[0, 0] + FFC * (FOld[0, 0] - FOld[0, 1])) + CDenorm32;
-     FOld[0, 1] := FOld[0, 1] + FCutoffFreqNorm * (FOld[0, 0] - FOld[0, 1]) + CDenorm32;
-     FOld[1, 0] := FOld[1, 0] + FCutoffFreqNorm * (FYR - FOld[1, 0] + FFC * (FOld[1, 0] - FOld[1, 1])) + CDenorm32;
-     FOld[1, 1] := FOld[1, 1] + FCutoffFreqNorm * (FOld[1, 0] - FOld[1, 1]) + CDenorm32;
+     FState[0, 0] := FState[0, 0] + FCutoffFreqNorm * (FYL - FState[0, 0] + FFC * (FState[0, 0] - FState[0, 1])) + CDenorm32;
+     FState[0, 1] := FState[0, 1] + FCutoffFreqNorm * (FState[0, 0] - FState[0, 1]) + CDenorm32;
+     FState[1, 0] := FState[1, 0] + FCutoffFreqNorm * (FYR - FState[1, 0] + FFC * (FState[1, 0] - FState[1, 1])) + CDenorm32;
+     FState[1, 1] := FState[1, 1] + FCutoffFreqNorm * (FState[1, 0] - FState[1, 1]) + CDenorm32;
 
      //limit coeffcients - not very elegant, but else filter
      //is particularly unstable with high resonance and low sample&hold rates
-     if FOld[0, 0] > 1 then FOld[0, 0] := 1 else if FOld[0, 0] < -1 then FOld[0, 0] := -1;
-     if FOld[0, 1] > 1 then FOld[0, 1] := 1 else if FOld[0, 1] < -1 then FOld[0, 1] := -1;
-     if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
-     if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
+     if FState[0, 0] > 1 then FState[0, 0] := 1 else if FState[0, 0] < -1 then FState[0, 0] := -1;
+     if FState[0, 1] > 1 then FState[0, 1] := 1 else if FState[0, 1] < -1 then FState[0, 1] := -1;
+     if FState[1, 0] > 1 then FState[1, 0] := 1 else if FState[1, 0] < -1 then FState[1, 0] := -1;
+     if FState[1, 1] > 1 then FState[1, 1] := 1 else if FState[1, 1] < -1 then FState[1, 1] := -1;
 
-     Outputs[0,i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FOld[0, 1])));
-     Outputs[1,i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FOld[1, 1])));
+     Outputs[0,i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FState[0, 1])));
+     Outputs[1,i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FState[1, 1])));
     end
   end
  else
@@ -271,20 +287,20 @@ begin
        FYR := round(FBitMul * Inputs[1, i]) * FBitDiv;
       end;
 
-     FOld[0, 0] := FOld[0, 0] + FCutoffFreqNorm * (FYL - FOld[0, 0] + FFC * (FOld[0, 0] - FOld[0, 1])) + CDenorm32;
-     FOld[0, 1] := FOld[0, 1] + FCutoffFreqNorm * (FOld[0, 0] - FOld[0, 1]) + CDenorm32;
-     FOld[1, 0] := FOld[1, 0] + FCutoffFreqNorm * (FYR - FOld[1, 0] + FFC * (FOld[1, 0] - FOld[1, 1])) + CDenorm32;
-     FOld[1, 1] := FOld[1, 1] + FCutoffFreqNorm * (FOld[1, 0] - FOld[1, 1]) + CDenorm32;
+     FState[0, 0] := FState[0, 0] + FCutoffFreqNorm * (FYL - FState[0, 0] + FFC * (FState[0, 0] - FState[0, 1])) + CDenorm32;
+     FState[0, 1] := FState[0, 1] + FCutoffFreqNorm * (FState[0, 0] - FState[0, 1]) + CDenorm32;
+     FState[1, 0] := FState[1, 0] + FCutoffFreqNorm * (FYR - FState[1, 0] + FFC * (FState[1, 0] - FState[1, 1])) + CDenorm32;
+     FState[1, 1] := FState[1, 1] + FCutoffFreqNorm * (FState[1, 0] - FState[1, 1]) + CDenorm32;
 
      //limit coeffcients - not very elegant, but else filter
      //is particularly unstable with high resonance and low sample&hold rates
-     if FOld[0, 0] > 1 then FOld[0, 0] := 1 else if FOld[0, 0] < -1 then FOld[0, 0] := -1;
-     if FOld[0, 1] > 1 then FOld[0, 1] := 1 else if FOld[0, 1] < -1 then FOld[0, 1] := -1;
-     if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
-     if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
+     if FState[0, 0] > 1 then FState[0, 0] := 1 else if FState[0, 0] < -1 then FState[0, 0] := -1;
+     if FState[0, 1] > 1 then FState[0, 1] := 1 else if FState[0, 1] < -1 then FState[0, 1] := -1;
+     if FState[1, 0] > 1 then FState[1, 0] := 1 else if FState[1, 0] < -1 then FState[1, 0] := -1;
+     if FState[1, 1] > 1 then FState[1, 1] := 1 else if FState[1, 1] < -1 then FState[1, 1] := -1;
 
-     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * (FYL - FOld[0, 1]))));
-     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * (FYR - FOld[0, 1]))));
+     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * (FYL - FState[0, 1]))));
+     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * (FYR - FState[0, 1]))));
     end;
   end;
 end;
@@ -312,20 +328,20 @@ begin
        FYR := round(FBitMul * Inputs[1, i]) * FBitDiv;
       end;
 
-     FOld[0, 0] := FOld[0, 0] + FCutoffFreqNorm * (FYL - FOld[0, 0] + FFC * (FOld[0, 0] - FOld[0, 1])) + CDenorm32;
-     FOld[0, 1] := FOld[0, 1] + FCutoffFreqNorm * (FOld[0, 0]-FOld[0, 1]) + CDenorm32;
-     FOld[1, 0] := FOld[1, 0] + FCutoffFreqNorm * (FYR - FOld[1, 0] + FFC * (FOld[1, 0] - FOld[1, 1])) + CDenorm32;
-     FOld[1, 1] := FOld[1, 1] + FCutoffFreqNorm * (FOld[1, 0]-FOld[1, 1]) + CDenorm32;
+     FState[0, 0] := FState[0, 0] + FCutoffFreqNorm * (FYL - FState[0, 0] + FFC * (FState[0, 0] - FState[0, 1])) + CDenorm32;
+     FState[0, 1] := FState[0, 1] + FCutoffFreqNorm * (FState[0, 0]-FState[0, 1]) + CDenorm32;
+     FState[1, 0] := FState[1, 0] + FCutoffFreqNorm * (FYR - FState[1, 0] + FFC * (FState[1, 0] - FState[1, 1])) + CDenorm32;
+     FState[1, 1] := FState[1, 1] + FCutoffFreqNorm * (FState[1, 0]-FState[1, 1]) + CDenorm32;
 
      //limit coeffcients - not very elegant, but else filter
      //is particularly unstable with high resonance and low sample&hold rates
-     if FOld[0, 0] > 1 then FOld[0, 0] := 1 else if FOld[0, 0] < -1 then FOld[0, 0] := -1;
-     if FOld[0, 1] > 1 then FOld[0, 1] := 1 else if FOld[0, 1] < -1 then FOld[0, 1] := -1;
-     if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
-     if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
+     if FState[0, 0] > 1 then FState[0, 0] := 1 else if FState[0, 0] < -1 then FState[0, 0] := -1;
+     if FState[0, 1] > 1 then FState[0, 1] := 1 else if FState[0, 1] < -1 then FState[0, 1] := -1;
+     if FState[1, 0] > 1 then FState[1, 0] := 1 else if FState[1, 0] < -1 then FState[1, 0] := -1;
+     if FState[1, 1] > 1 then FState[1, 1] := 1 else if FState[1, 1] < -1 then FState[1, 1] := -1;
 
-     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FOld[0, 1])));
-     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FOld[1, 1])));
+     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet * FState[0, 1])));
+     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet * FState[1, 1])));
     end
   end
  else
@@ -340,34 +356,35 @@ begin
        FYR := round(FBitMul * Inputs[1,i]) * FBitDiv;
       end;
 
-     FOld[0, 0] := FOld[0, 0] + FCutoffFreqNorm * (FYL - FOld[0, 0] + FFC * (FOld[0, 0] - FOld[0, 1])) + CDenorm32;
-     FOld[0, 1] := FOld[0, 1] + FCutoffFreqNorm * (FOld[0, 0] - FOld[0, 1]) + CDenorm32;
-     FOld[1, 0] := FOld[1, 0] + FCutoffFreqNorm * (FYR - FOld[1, 0] + FFC*(FOld[1, 0] - FOld[1, 1])) + CDenorm32;
-     FOld[1, 1] := FOld[1, 1] + FCutoffFreqNorm * (FOld[1, 0] - FOld[1, 1]) + CDenorm32;
+     FState[0, 0] := FState[0, 0] + FCutoffFreqNorm * (FYL - FState[0, 0] + FFC * (FState[0, 0] - FState[0, 1])) + CDenorm32;
+     FState[0, 1] := FState[0, 1] + FCutoffFreqNorm * (FState[0, 0] - FState[0, 1]) + CDenorm32;
+     FState[1, 0] := FState[1, 0] + FCutoffFreqNorm * (FYR - FState[1, 0] + FFC*(FState[1, 0] - FState[1, 1])) + CDenorm32;
+     FState[1, 1] := FState[1, 1] + FCutoffFreqNorm * (FState[1, 0] - FState[1, 1]) + CDenorm32;
 
      //limit coeffcients - not very elegant, but else filter
      //is particularly unstable with high resonance and low sample&hold rates
-     if FOld[0, 0] > 1 then FOld[0, 0] := 1 else if FOld[0, 0] < -1 then FOld[0, 0] := -1;
-     if FOld[0, 1] > 1 then FOld[0, 1] := 1 else if FOld[0, 1] < -1 then FOld[0, 1] := -1;
-     if FOld[1, 0] > 1 then FOld[1, 0] := 1 else if FOld[1, 0] < -1 then FOld[1, 0] := -1;
-     if FOld[1, 1] > 1 then FOld[1, 1] := 1 else if FOld[1, 1] < -1 then FOld[1, 1] := -1;
+     if FState[0, 0] > 1 then FState[0, 0] := 1 else if FState[0, 0] < -1 then FState[0, 0] := -1;
+     if FState[0, 1] > 1 then FState[0, 1] := 1 else if FState[0, 1] < -1 then FState[0, 1] := -1;
+     if FState[1, 0] > 1 then FState[1, 0] := 1 else if FState[1, 0] < -1 then FState[1, 0] := -1;
+     if FState[1, 1] > 1 then FState[1, 1] := 1 else if FState[1, 1] < -1 then FState[1, 1] := -1;
 
-     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet*(FYL - FOld[0, 1]))));
-     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet*(FYR - FOld[0, 1]))));
+     Outputs[0, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[0, i] + FMixWet*(FYL - FState[0, 1]))));
+     Outputs[1, i] := Limit((FOutVol * ((1 - FMixWet) * Inputs[1, i] + FMixWet*(FYR - FState[0, 1]))));
     end;
   end;
 end;
 
 procedure TVSTDecimator.VSTModuleProcessMidi(Sender: TObject;
   MidiEvent: TVstMidiEvent);
-var status : Integer;
-    CCData : Single;
+var
+  Status : Integer;
+  CCData : Single;
 begin
- status := MidiEvent.midiData[0] and $F0; // channel information is removed
+ Status := MidiEvent.midiData[0] and $F0; // channel information is removed
 
- if (status=$B0) then // midi CC ?
+ if (Status = $B0) then // midi CC ?
   begin
-   CCData := MidiEvent.midiData[2]/127; // CC data
+   CCData := MidiEvent.midiData[2] / 127; // CC data
    case MidiEvent.midiData[1] of // midi CC#
     70: Parameter[0] := FreqLinearToLog(CCData) * 2.205;
     71: Parameter[1] := 24 * CCData;

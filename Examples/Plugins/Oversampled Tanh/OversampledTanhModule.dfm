@@ -1,5 +1,4 @@
 object OversampledTanhModule: TOversampledTanhModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -10,7 +9,6 @@ object OversampledTanhModule: TOversampledTanhModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 16
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   BlockModeSize = 16
   InitialDelay = 16
@@ -24,7 +22,6 @@ object OversampledTanhModule: TOversampledTanhModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Number of Coeffs'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -41,7 +38,6 @@ object OversampledTanhModule: TOversampledTanhModule
       OnParameterChange = ParamCoeffsChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transition'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

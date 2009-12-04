@@ -1,5 +1,4 @@
 object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Bode Frequency Shifter'
@@ -29,11 +28,11 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -46,11 +45,11 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Coefficients'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -68,7 +67,6 @@ object BarberpoleShifterDataModule: TBarberpoleShifterDataModule
       OnParameterChange = ParameterCoeffsChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transition Bandwidth'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

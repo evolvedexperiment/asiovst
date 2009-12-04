@@ -32,7 +32,7 @@ unit ThirdOctaveAnalyserDM;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I DAV_Compiler.Inc}
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
@@ -58,13 +58,14 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure ParameterSmoothChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDownsampled(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure ParameterSmoothChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterFullscaleGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDownsamplingDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterDownsamplingChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDownsamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleSampleRateChange(Sender: TObject;
+      const SampleRate: Single);
   private
     FUseDownsampling: Boolean;
     function GetBandReserve: Single;
@@ -108,6 +109,7 @@ begin
  UseDownsampling := True;
  DownsamplingChanged;
 
+ // initialize parameters
  Parameter[0] := 0.99;
  Parameter[1] := 90;
  Parameter[2] := 1;
@@ -193,6 +195,8 @@ procedure TThirdOctaveAnalyserModule.ParameterFullscaleGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FFSGain := Value;
+
+ // update GUI
  if EditorForm is TFmThirdOctaveAnalyser
   then TFmThirdOctaveAnalyser(EditorForm).UpdateFullscaleGain;
 end;
@@ -289,6 +293,20 @@ begin
   end;
 end;
 
+procedure TThirdOctaveAnalyserModule.VSTModuleSampleRateChange(Sender: TObject;
+  const SampleRate: Single);
+var
+  BandIndex : Integer;
+begin
+ for BandIndex := 0 to CNumFrequencies - 1 do
+  begin
+   if Assigned(FFilterArray[BandIndex].Lowpass)
+    then FFilterArray[BandIndex].Lowpass.SampleRate := SampleRate;
+   if Assigned(FFilterArray[BandIndex].Highpass)
+    then FFilterArray[BandIndex].Highpass.SampleRate := SampleRate;
+  end;
+end;
+
 procedure TThirdOctaveAnalyserModule.VSTModuleProcessDownsampled(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
@@ -309,7 +327,7 @@ begin
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(Filtered));
     end;
-   inc(FDownSampleCount);
+   Inc(FDownSampleCount);
    if FDownSampleCount >= FDownSampleMax then FDownSampleCount := 0;
 
    if numOutputs > 0 then Outputs[0, Sample] := Inputs[0, Sample];

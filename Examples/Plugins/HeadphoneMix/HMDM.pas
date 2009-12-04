@@ -78,14 +78,14 @@ end;
 procedure THMModule.HMMEffectChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FCTSimulator)
+ if Assigned(FCTSimulator)
   then FCTSimulator.Mix := Value;
 end;
 
 procedure THMModule.HMMModelDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[index]) of
+ case Round(Parameter[index]) of
   0 : PreDefined := 'handcrafted';
   1 : PreDefined := 'matched IRCAM';
   2 : PreDefined := 'matched HDPHX';
@@ -95,8 +95,8 @@ end;
 procedure THMModule.HMMModelChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FCTSimulator) then
-  case round(Parameter[index]) of
+ if Assigned(FCTSimulator) then
+  case Round(Parameter[index]) of
    0 : begin
         FCTSimulator.Model := csmHandcrafted;
         FCTSimulator.Diameter := 0.12;
@@ -123,28 +123,29 @@ end;
 procedure THMModule.HMMPolarityChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(FCTSimulator)
+ if Assigned(FCTSimulator)
   then FCTSimulator.Polarity := (Value < 0.5);
 end;
 
 procedure THMModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample  : Integer;
+  SampleIndex  : Integer;
 begin
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, Sample] := Inputs[1, Sample];
-   Outputs[1, Sample] := Inputs[1, Sample];
+   Outputs[0, SampleIndex] := Inputs[1, SampleIndex];
+   Outputs[1, SampleIndex] := Inputs[1, SampleIndex];
 
-   FCTSimulator.ProcessSample(Outputs[0, Sample], Outputs[1, Sample]);
+   FCTSimulator.ProcessSample(Outputs[0, SampleIndex], Outputs[1, SampleIndex]);
   end;
 end;
 
 procedure THMModule.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- if assigned(FCTSimulator)
-  then FCTSimulator.SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  if Assigned(FCTSimulator)
+   then FCTSimulator.SampleRate := SampleRate;
 end;
 
 end.

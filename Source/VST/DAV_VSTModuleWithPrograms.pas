@@ -455,6 +455,10 @@ begin
     try
      ProcStr := Trim(Text);
 
+     Indxes[0] := Pos(Units, ProcStr);
+     if Indxes[0] > 0
+      then Delete(ProcStr, Indxes[0], Length(Units));
+
      Indxes[0] := 1;
      while (Indxes[0] <= Length(ProcStr)) and
       (not (ProcStr[Indxes[0]] in ['0'..'9', '-', '+', ',', '.'])) do Inc(Indxes[0]);
@@ -463,7 +467,7 @@ begin
       begin
        Indxes[1] := Indxes[0] + 1;
        while (Indxes[1] <= Length(ProcStr)) and
-        (ProcStr[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
+        (ProcStr[Indxes[1]] in ['0'..'9', 'E', ',', '.']) do Inc(Indxes[1]);
 
        // process unit extensions
        if Pos('k', ProcStr) >= Indxes[1] then Mult := 1E3 else

@@ -1,5 +1,6 @@
 object SimpleSampleDelayVST: TSimpleSampleDelayVST
-  OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Simple Delay'
@@ -7,7 +8,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
   VendorName = 'VST Wizard Example'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1.000000000000000000
   UniqueID = 'dlay'
@@ -27,7 +27,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay Length'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -44,7 +43,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       OnParameterChange = SDDelayLengthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Feedback'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -58,7 +56,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       OnParameterChange = ParameterFeedbackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Invert Feedback'
       Flags = [ppfParameterIsSwitch]
@@ -74,7 +71,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       OnCustomParameterDisplay = ParameterInvFBDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry Mix'
@@ -89,7 +85,6 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       OnParameterChange = ParamDryMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet Mix'
@@ -109,6 +104,7 @@ object SimpleSampleDelayVST: TSimpleSampleDelayVST
       VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
+  OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing

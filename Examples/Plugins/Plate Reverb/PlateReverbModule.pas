@@ -35,11 +35,13 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
-  DAV_DspPlateReverb;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspPlateReverb;
 
 type
   TPlateReverbVST = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -54,8 +56,6 @@ type
     procedure ParameterWetChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterModulationChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
   protected
     FPlateReverb     : TPlateReverb;
     FCrossover       : Single;
@@ -159,6 +159,8 @@ procedure TPlateReverbVST.ParameterDryChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Dry := 0.01 * Value;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDry;
 end;
@@ -167,6 +169,8 @@ procedure TPlateReverbVST.ParameterWetChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Wet := 0.01 * Value;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateWet;
 end;
@@ -176,11 +180,13 @@ procedure TPlateReverbVST.ParameterModulationChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
+  if Assigned(FPlateReverb)
    then FPlateReverb.Modulation := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateModulation;
 end;
@@ -190,11 +196,13 @@ procedure TPlateReverbVST.ParameterPreDelayChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
+  if Assigned(FPlateReverb)
    then FPlateReverb.PreDelay := 1E-3 * Value;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdatePreDelay;
 end;
@@ -204,11 +212,13 @@ procedure TPlateReverbVST.ParameterDecayChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
+  if Assigned(FPlateReverb)
    then FPlateReverb.Decay := 0.0025 * Value;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDecay;
 end;
@@ -218,11 +228,13 @@ procedure TPlateReverbVST.ParameterDampingChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
+  if Assigned(FPlateReverb)
    then FPlateReverb.DampingFrequency := Value;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDampingFrequency;
 end;
@@ -232,11 +244,13 @@ procedure TPlateReverbVST.ParameterInputDiffusionChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
+  if Assigned(FPlateReverb)
    then FPlateReverb.InputDiffusion := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateInputDiffusion;
 end;
@@ -246,11 +260,13 @@ procedure TPlateReverbVST.ParameterDecayChangeDiffusion(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
+  if Assigned(FPlateReverb)
    then FPlateReverb.DecayDiffusion := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmPlateReverb
   then TFmPlateReverb(EditorForm).UpdateDecayDiffusion;
 end;
@@ -295,11 +311,11 @@ end;
 
 procedure TPlateReverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- if SampleRate <= 0 then exit;
+ if SampleRate = 0 then exit;
  FCriticalSection.Enter;
  try
-  if assigned(FPlateReverb)
-   then FPlateReverb.SampleRate := SampleRate;
+  if Assigned(FPlateReverb)
+   then FPlateReverb.SampleRate := Abs(SampleRate);
  finally
   FCriticalSection.Leave;
  end;

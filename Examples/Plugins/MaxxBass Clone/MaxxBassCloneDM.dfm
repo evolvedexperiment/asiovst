@@ -1,5 +1,4 @@
 object HarmonicBassModule: THarmonicBassModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -8,7 +7,6 @@ object HarmonicBassModule: THarmonicBassModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'MaxxBass Full Reset'
   IORatio = 1.000000000000000000
   UniqueID = 'DMBC'
@@ -36,7 +34,6 @@ object HarmonicBassModule: THarmonicBassModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Frequency'
@@ -55,7 +52,6 @@ object HarmonicBassModule: THarmonicBassModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Dynamics'
       DisplayName = 'Ratio'
@@ -74,7 +70,6 @@ object HarmonicBassModule: THarmonicBassModule
       OnParameterChange = ParameterRatioChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Dynamics'
       DisplayName = 'Response'
@@ -93,7 +88,6 @@ object HarmonicBassModule: THarmonicBassModule
       OnParameterChange = ParameterResponseChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Harmonics'
       DisplayName = 'Highpass Select'
@@ -111,7 +105,6 @@ object HarmonicBassModule: THarmonicBassModule
       OnCustomParameterDisplay = ParameterHighpassDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Harmonics'
       DisplayName = 'Decay'
@@ -184,7 +177,6 @@ object HarmonicBassModule: THarmonicBassModule
       OnCustomParameterDisplay = ParameterdBDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Control'
       DisplayName = 'Listen'

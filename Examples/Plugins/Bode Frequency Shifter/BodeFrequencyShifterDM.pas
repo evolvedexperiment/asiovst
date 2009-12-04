@@ -154,7 +154,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FFreqShifter) - 1 do
-   if assigned(FFreqShifter[Channel])
+   if Assigned(FFreqShifter[Channel])
     then FFreqShifter[Channel].Frequency := Value;
  finally
   FCriticalSection.Leave;
@@ -184,7 +184,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FFreqShifter) - 1 do
-   if assigned(FFreqShifter[Channel])
+   if Assigned(FFreqShifter[Channel])
     then FFreqShifter[Channel].CoefficientCount := round(Value);
  finally
   FCriticalSection.Leave;
@@ -197,7 +197,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FFreqShifter) - 1 do
-  if assigned(FFreqShifter[Channel])
+  if Assigned(FFreqShifter[Channel])
    then FFreqShifter[Channel].TransitionBandwidth := Value;
 end;
 
@@ -292,10 +292,10 @@ procedure TBodeFrequencyShifterDataModule.VSTModuleSampleRateChange(
 var
   Channel : Integer;
 begin
- if abs(SampleRate) > 0 then
+ if Abs(SampleRate) > 0 then
   for Channel := 0 to Length(FFreqShifter) - 1 do
-   if assigned(FFreqShifter[Channel])
-    then FFreqShifter[Channel].SampleRate := abs(SampleRate);
+   if Assigned(FFreqShifter[Channel])
+    then FFreqShifter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 end.

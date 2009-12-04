@@ -40,17 +40,16 @@ uses
 
 type
   TVariableDelayVST = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure SDDelayLengthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDryMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWetMixChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
-    procedure VSTModuleSampleRateChange(Sender: TObject;
-      const SampleRate: Single);
   private
     FCriticalSection : TCriticalSection;
     FVariDelay       : array [0..1] of TCustomVariableDelay32;
@@ -108,6 +107,7 @@ begin
    FCriticalSection.Leave;
  end;
 
+ // update GUI
  if EditorForm is TVSTGUI
   then TVSTGUI(EditorForm).UpdateDelayLength;
 end;
@@ -117,6 +117,7 @@ procedure TVariableDelayVST.ParameterWetMixChange(
 begin
  FMix[1] := 0.01 * Value;
 
+ // update GUI
  if EditorForm is TVSTGUI
   then TVSTGUI(EditorForm).UpdateWetMix;
 end;
@@ -126,6 +127,7 @@ procedure TVariableDelayVST.ParamDryMixChange(
 begin
  FMix[0] := 0.01 * Value;
 
+ // update GUI
  if EditorForm is TVSTGUI
   then TVSTGUI(EditorForm).UpdateDryMix;
 end;
@@ -166,11 +168,13 @@ procedure TVariableDelayVST.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
+ if Abs(SampleRate) = 0 then Exit;
+ 
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FVariDelay) - 1 do
-   if assigned(FVariDelay[Channel])
-    then FVariDelay[Channel].SampleRate := abs(SampleRate);
+   if Assigned(FVariDelay[Channel])
+    then FVariDelay[Channel].SampleRate := Abs(SampleRate);
  finally
    FCriticalSection.Leave;
  end;

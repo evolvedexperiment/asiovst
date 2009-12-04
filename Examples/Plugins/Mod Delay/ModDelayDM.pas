@@ -49,7 +49,7 @@ type
     procedure ParameterLowpassLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterLowpassChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ModDelayModuleParameterProperties0CustomParameterDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterGainDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDelayChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -66,7 +66,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Common, ModDelayGUI;
+  Math, DAV_Common, ModDelayGUI, DAV_VSTCustomModule;
 
 procedure TModDelayModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -82,7 +82,17 @@ begin
  Parameter[6] := 10;
 end;
 
-procedure TModDelayModule.ModDelayModuleParameterProperties0CustomParameterDisplay(
+procedure TModDelayModule.VSTModuleClose(Sender: TObject);
+begin
+ FreeAndNil(FModDelay);
+end;
+
+procedure TModDelayModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+begin
+ GUI := TFmModDelay.Create(Self);
+end;
+
+procedure TModDelayModule.ParameterGainDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  Predefined := FloatToStrF(RoundTo(Parameter[Index], -2), ffGeneral, 3, 3);
@@ -91,49 +101,77 @@ end;
 procedure TModDelayModule.ParameterMixChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FModDelay)
-  then FModDelay.Mix := Value; 
+ if Assigned(FModDelay)
+  then FModDelay.Mix := Value;
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateMix;
 end;
 
 procedure TModDelayModule.ParameterDepthChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FModDelay)
+ if Assigned(FModDelay)
   then FModDelay.Depth := Value;
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateDepth;
 end;
 
 procedure TModDelayModule.ParameterRateChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FModDelay)
+ if Assigned(FModDelay)
   then FModDelay.Rate := Value;
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateRate;
 end;
 
 procedure TModDelayModule.ParameterFeedbackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FModDelay)
+ if Assigned(FModDelay)
   then FModDelay.Feedback := Value;
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateFeedback;
 end;
 
 procedure TModDelayModule.ParameterDelayChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FModDelay)
+ if Assigned(FModDelay)
   then FModDelay.Delay := Value;
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateDelay;
 end;
 
 procedure TModDelayModule.ParameterGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FGain := dB_to_Amp(Value);
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateGain;
 end;
 
 procedure TModDelayModule.ParameterLowpassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FModDelay)
+ if Assigned(FModDelay)
   then FModDelay.LowpassFrequency := Value;
+
+ // update GUI
+ if EditorForm is TFmModDelay
+  then TFmModDelay(EditorForm).UpdateLowpass;
 end;
 
 procedure TModDelayModule.ParameterLowpassLabel(
@@ -162,20 +200,10 @@ begin
   else PreDefined := 'off';
 end;
 
-procedure TModDelayModule.VSTModuleClose(Sender: TObject);
-begin
- FreeAndNil(FModDelay);
-end;
-
-procedure TModDelayModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmModDelay.Create(Self);
-end;
-
 procedure TModDelayModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FModDelay)
+ if Assigned(FModDelay)
   then FModDelay.Samplerate := SampleRate;
 end;
 

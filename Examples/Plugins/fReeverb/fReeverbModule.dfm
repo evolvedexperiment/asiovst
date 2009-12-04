@@ -1,5 +1,4 @@
 object fReeverbVST: TfReeverbVST
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'fReeverb'
@@ -7,7 +6,6 @@ object fReeverbVST: TfReeverbVST
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'fRee'
@@ -31,7 +29,6 @@ object fReeverbVST: TfReeverbVST
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry'
@@ -50,7 +47,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterDryChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet'
@@ -69,7 +65,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterWetChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'Width'
@@ -88,7 +83,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterWidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'RoomSize'
@@ -106,7 +100,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterRoomSizeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'FreeZe'
@@ -124,7 +117,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterFreezeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'Stretch'
@@ -142,7 +134,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterStretchChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Geometry'
       DisplayName = 'Damp'
@@ -161,7 +152,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterDampChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Filter Count'
       DisplayName = 'NumAllPasses'
@@ -180,7 +170,6 @@ object fReeverbVST: TfReeverbVST
       OnParameterChange = ParameterNumAllpassesChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Filter Count'
       DisplayName = 'NumCombs'

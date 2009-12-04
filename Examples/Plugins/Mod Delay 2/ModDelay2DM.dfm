@@ -1,5 +1,4 @@
 object ModDelay2Module: TModDelay2Module
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Version = '1.0'
@@ -8,7 +7,6 @@ object ModDelay2Module: TModDelay2Module
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'MDly'
@@ -24,7 +22,6 @@ object ModDelay2Module: TModDelay2Module
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Gain'
@@ -44,7 +41,6 @@ object ModDelay2Module: TModDelay2Module
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Mix'
@@ -80,7 +76,6 @@ object ModDelay2Module: TModDelay2Module
       OnCustomParameterDisplay = ParameterLowpassDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Delay'
@@ -97,7 +92,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Depth'
@@ -113,7 +107,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterDepthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Rate'
@@ -130,7 +123,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterRateChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Feedback'
@@ -148,7 +140,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterFeedbackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Gain'
@@ -168,7 +159,6 @@ object ModDelay2Module: TModDelay2Module
       OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Mix'
@@ -204,7 +194,6 @@ object ModDelay2Module: TModDelay2Module
       OnCustomParameterDisplay = ParameterLowpassDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Delay'
@@ -221,7 +210,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Depth'
@@ -237,7 +225,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterDepthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Rate'
@@ -254,7 +241,6 @@ object ModDelay2Module: TModDelay2Module
       OnParameterChange = ParameterRateChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 2'
       DisplayName = 'Feedback'

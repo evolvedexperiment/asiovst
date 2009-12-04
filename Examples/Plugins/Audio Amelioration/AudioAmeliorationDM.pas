@@ -482,7 +482,7 @@ procedure TAudioAmeliorationModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   ChannelIndex : Integer;
 begin
- if Abs(SampleRate) then
+ if Abs(SampleRate) > 0 then
   begin
    FAmbience.SampleRate := SampleRate;
    FCompressor.SampleRate := SampleRate;

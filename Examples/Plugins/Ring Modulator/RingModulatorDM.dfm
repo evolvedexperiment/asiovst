@@ -1,5 +1,4 @@
 object RingModulatorDataModule: TRingModulatorDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Ring Modulator'
@@ -9,7 +8,6 @@ object RingModulatorDataModule: TRingModulatorDataModule
   SampleRate = 44100.000000000000000000
   numInputs = 1
   numOutputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'RiMo'
@@ -39,6 +37,7 @@ object RingModulatorDataModule: TRingModulatorDataModule
       ShortLabel = 'Freq.'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel

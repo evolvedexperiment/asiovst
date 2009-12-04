@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspCrosstalkCancellation;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspCrosstalkCancellation;
 
 type
   TCTCDataModule = class(TVSTModule)
@@ -46,6 +46,7 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamSpeakerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDistanceDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -58,18 +59,14 @@ type
     procedure ParameterFilterGainChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterTypeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFilterFrequencyDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFilterFrequencyLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterBypassChange(Sender: TObject;
-      const Index: Integer; var Value: Single);
-    procedure VSTModuleProcessBypass(const Inputs,
-      Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure ParameterFilterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFilterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterBypassChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FSemaphore  : Integer;
-    FOutputGain : Single;
-    FCrosstalkCancellation: TCrosstalkCancellation32;
+    FCriticalSection       : TCriticalSection;
+    FOutputGain            : Single;
+    FCrosstalkCancellation : TCrosstalkCancellation32;
   public
   end;
 
@@ -82,7 +79,12 @@ uses
 
 procedure TCTCDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore := 0;
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TCTCDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
 end;
 
 procedure TCTCDataModule.VSTModuleOpen(Sender: TObject);
@@ -124,14 +126,15 @@ end;
 procedure TCTCDataModule.ParamRecursionStepsChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FCrosstalkCancellation)
-   then FCrosstalkCancellation.StageCount := round(Value);
+  if Assigned(FCrosstalkCancellation)
+   then FCrosstalkCancellation.StageCount := Round(Value);
  finally
-  dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateRecursionSteps;
 end;
@@ -155,7 +158,7 @@ end;
 procedure TCTCDataModule.ParameterFilterTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   1 : PreDefined := 'Simple Highpass';
  end;
 end;
@@ -171,7 +174,7 @@ end;
 procedure TCTCDataModule.ParameterFilterGainChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCrosstalkCancellation)
+ if Assigned(FCrosstalkCancellation)
   then FCrosstalkCancellation.CrosstalkFilterGain := Value;
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateFilterGain;
@@ -180,7 +183,7 @@ end;
 procedure TCTCDataModule.ParameterFilterFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCrosstalkCancellation)
+ if Assigned(FCrosstalkCancellation)
   then FCrosstalkCancellation.CrosstalkFilterFrequency := Value;
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateFilterFrequency;
@@ -189,7 +192,7 @@ end;
 procedure TCTCDataModule.ParameterFilterTypeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCrosstalkCancellation)
+ if Assigned(FCrosstalkCancellation)
   then FCrosstalkCancellation.CrosstalkFilterGain := Value;
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateFilterType;
@@ -214,7 +217,7 @@ end;
 procedure TCTCDataModule.ParameterBypassChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if Boolean(round(Value))
+ if Boolean(Round(Value))
   then OnProcess := VSTModuleProcessBypass
   else OnProcess := VSTModuleProcess;
  OnProcessReplacing := OnProcess;
@@ -223,8 +226,10 @@ end;
 procedure TCTCDataModule.ParamAttenuationChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCrosstalkCancellation)
+ if Assigned(FCrosstalkCancellation)
   then FCrosstalkCancellation.Attenuation := dB_to_Amp(Value);
+
+ // update GUI
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateAttenuation;
 end;
@@ -232,14 +237,15 @@ end;
 procedure TCTCDataModule.ParamListenerChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
-  if assigned(FCrosstalkCancellation)
+  if Assigned(FCrosstalkCancellation)
    then FCrosstalkCancellation.ListenerDistance := Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateListenerDistance;
 end;
@@ -247,14 +253,15 @@ end;
 procedure TCTCDataModule.ParamSpeakerChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
- if assigned(FCrosstalkCancellation)
-  then FCrosstalkCancellation.SpeakerDistance := Value;
+  if Assigned(FCrosstalkCancellation)
+   then FCrosstalkCancellation.SpeakerDistance := Value;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
+
+ // update GUI
  if EditorForm is TFmCTC
   then TFmCTC(EditorForm).UpdateSpeakerDistance;
 end;
@@ -264,8 +271,7 @@ procedure TCTCDataModule.VSTModuleProcess(const Inputs,
 var
   Sample : Cardinal;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -274,15 +280,15 @@ begin
     FCrosstalkCancellation.ProcessStereo(Outputs[0, Sample], Outputs[1, Sample]);
    end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TCTCDataModule.VSTModuleProcessBypass(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 begin
- move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
- move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
+ Move(Inputs[0, 0], Outputs[0, 0], SampleFrames * SizeOf(Single));
+ Move(Inputs[1, 0], Outputs[1, 0], SampleFrames * SizeOf(Single));
 end;
 
 procedure TCTCDataModule.VSTModuleProcessDoubleReplacing(const Inputs,
@@ -291,8 +297,7 @@ var
   Sample : Cardinal;
   Data   : array [0..1] of Single;
 begin
- while FSemaphore > 0 do;
- inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
@@ -303,15 +308,16 @@ begin
     Outputs[1, Sample] := Data[1];
    end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TCTCDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FCrosstalkCancellation)
-  then FCrosstalkCancellation.SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  if Assigned(FCrosstalkCancellation)
+   then FCrosstalkCancellation.SampleRate := Abs(SampleRate);
 end;
 
 end.

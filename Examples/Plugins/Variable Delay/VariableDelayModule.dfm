@@ -1,5 +1,4 @@
 object VariableDelayVST: TVariableDelayVST
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
@@ -9,7 +8,6 @@ object VariableDelayVST: TVariableDelayVST
   VendorName = 'VST Wizard Example'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1.000000000000000000
   UniqueID = 'dlay'
@@ -29,7 +27,6 @@ object VariableDelayVST: TVariableDelayVST
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delay Length'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -42,11 +39,11 @@ object VariableDelayVST: TVariableDelayVST
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = SDDelayLengthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Dry Mix'
@@ -57,11 +54,11 @@ object VariableDelayVST: TVariableDelayVST
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDryMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet Mix'
@@ -72,6 +69,7 @@ object VariableDelayVST: TVariableDelayVST
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterWetMixChange
     end>

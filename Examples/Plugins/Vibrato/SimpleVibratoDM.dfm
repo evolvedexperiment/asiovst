@@ -1,5 +1,6 @@
 object SimpleVibratoModule: TSimpleVibratoModule
-  OldCreateOrder = False
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Vibrato'
@@ -7,7 +8,6 @@ object SimpleVibratoModule: TSimpleVibratoModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Vibr'
@@ -65,7 +65,6 @@ object SimpleVibratoModule: TSimpleVibratoModule
       OnParameterChange = ParamSpeedChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semitones'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]

@@ -35,8 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFreeverbFilter;
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  DAV_VSTModule, DAV_DspFreeverbFilter;
 
 const
   CStereoSpread = 23;
@@ -78,32 +78,32 @@ type
     procedure ParameterNumCombsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterNumAllpassesChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FGain         : Single;
-    FRoomSize     : Single;
-    FRoomSizeI    : Single;
-    FDamp         : Single;
-    FDampA        : Single;
-    FWet          : Single;
-    FWet1         : Single;
-    FWet2         : Single;
-    FDry          : Single;
-    FWidth        : Single;
-    FMode         : Single;
-    FStretch      : Single;
+    FGain      : Single;
+    FRoomSize  : Single;
+    FRoomSizeI : Single;
+    FDamp      : Single;
+    FDampA     : Single;
+    FWet       : Single;
+    FWet1      : Single;
+    FWet2      : Single;
+    FDry       : Single;
+    FWidth     : Single;
+    FMode      : Single;
+    FStretch   : Single;
 
-    FComb         : array of TCombArray; // Comb filters
-    FAllpass      : array of TAllpassArray; // Allpass filters
-  protected
-    procedure UpdateMix;
-    procedure Update;
-    procedure SetRoomSize(Value: Single);
+    FComb      : array of TCombArray; // Comb filters
+    FAllpass   : array of TAllpassArray; // Allpass filters
     function GetRoomSize: Single;
-    procedure SetDamp(Value: Single);
     function GetDamp: Single;
+    function GetMode: Single;
+    procedure SetDamp(Value: Single);
+    procedure SetRoomSize(Value: Single);
     procedure SetWet(Value: Single);
     procedure SetWidth(Value: Single);
     procedure SetMode(Value: Single);
-    function GetMode: Single;
+  protected
+    procedure UpdateMix;
+    procedure Update;
     procedure ShuffleAllPassFeedBack;
     procedure BufferRezize;
   public
@@ -121,7 +121,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, fReeverbGUI, DAV_VSTCustomModule;
+  Math, DAV_VSTCustomModule, fReeverbGUI;
 
 procedure TfReeverbVST.VSTModuleOpen(Sender: TObject);
 var
@@ -271,7 +271,7 @@ procedure TfReeverbVST.Mute;
 var
   i: Integer;
 begin
- if FMode >= cFreezeMode then Exit;
+ if FMode >= CFreezeMode then Exit;
  for i := 0 to Length(FComb) - 1 do
   begin
    FComb[i, 0].Mute;
@@ -417,6 +417,8 @@ end;
 procedure TfReeverbVST.ParameterDryChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Dry := Value;
+
+ // update GUI
  if EditorForm is TFmReverb then
   with TFmReverb(EditorForm)
    do UpdateDry;
@@ -425,6 +427,8 @@ end;
 procedure TfReeverbVST.ParameterWetChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Wet := Value;
+
+ // update GUI
  if EditorForm is TFmReverb then
   with TFmReverb(EditorForm)
    do UpdateWet;
@@ -433,6 +437,8 @@ end;
 procedure TfReeverbVST.ParameterWidthChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Width := Value;
+
+ // update GUI
  if EditorForm is TFmReverb then
   with TFmReverb(EditorForm)
    do UpdateWidth;
@@ -442,6 +448,8 @@ procedure TfReeverbVST.ParameterRoomSizeChange(Sender: TObject; const Index: Int
 begin
  RoomSize := Value;
  ShuffleAllPassFeedBack;
+
+ // update GUI
  if EditorForm is TFmReverb then
   with TFmReverb(EditorForm)
    do UpdateSize;
@@ -449,39 +457,40 @@ end;
 
 procedure TfReeverbVST.VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
 begin
- BufferRezize;
+ if Abs(SampleRate) > 0
+  then BufferRezize;
 end;
 
 procedure TfReeverbVST.BufferRezize;
 var
-  s : Single;
+  Scale : Single;
 begin
- s := SampleRate / 44100 * FStretch;
+ Scale := Abs(SampleRate) / 44100 * FStretch;
 
- FComb[0, 0].BufferSize := round(CCombTuningL1 * s);
- FComb[0, 1].BufferSize := round((CCombTuningL1 + CStereoSpread) * s);
- FComb[1, 0].BufferSize := round(CCombTuningL2 * s);
- FComb[1, 1].BufferSize := round((CCombTuningL2 + CStereoSpread) * s);
- FComb[2, 0].BufferSize := round(CCombTuningL3 * s);
- FComb[2, 1].BufferSize := round((CCombTuningL3 + CStereoSpread) * s);
- FComb[3, 0].BufferSize := round(CCombTuningL4 * s);
- FComb[3, 1].BufferSize := round((CCombTuningL4 + CStereoSpread) * s);
- FComb[4, 0].BufferSize := round(CCombTuningL5 * s);
- FComb[4, 1].BufferSize := round((CCombTuningL5 + CStereoSpread) * s);
- FComb[5, 0].BufferSize := round(CCombTuningL6 * s);
- FComb[5, 1].BufferSize := round((CCombTuningL6 + CStereoSpread) * s);
- FComb[6, 0].BufferSize := round(CCombTuningL7 * s);
- FComb[6, 1].BufferSize := round((CCombTuningL7 + CStereoSpread) * s);
- FComb[7, 0].BufferSize := round(CCombTuningL8 * s);
- FComb[7, 1].BufferSize := round((CCombTuningL8 + CStereoSpread) * s);
- FAllpass[0, 0].BufferSize := round(CAllpassTuningL1 * s);
- FAllpass[0, 1].BufferSize := round((CAllpassTuningL1 + CStereoSpread) * s);
- FAllpass[1, 0].BufferSize := round(CAllpassTuningL2 * s);
- FAllpass[1, 1].BufferSize := round((CAllpassTuningL2 + CStereoSpread) * s);
- FAllpass[2, 0].BufferSize := round(CAllpassTuningL3 * s);
- FAllpass[2, 1].BufferSize := round((CAllpassTuningL3 + CStereoSpread) * s);
- FAllpass[3, 0].BufferSize := round(CAllpassTuningL4 * s);
- FAllpass[3, 1].BufferSize := round((CAllpassTuningL4 + CStereoSpread) * s);
+ FComb[0, 0].BufferSize := Round(CCombTuningL1 * Scale);
+ FComb[0, 1].BufferSize := Round((CCombTuningL1 + CStereoSpread) * Scale);
+ FComb[1, 0].BufferSize := Round(CCombTuningL2 * Scale);
+ FComb[1, 1].BufferSize := Round((CCombTuningL2 + CStereoSpread) * Scale);
+ FComb[2, 0].BufferSize := Round(CCombTuningL3 * Scale);
+ FComb[2, 1].BufferSize := Round((CCombTuningL3 + CStereoSpread) * Scale);
+ FComb[3, 0].BufferSize := Round(CCombTuningL4 * Scale);
+ FComb[3, 1].BufferSize := Round((CCombTuningL4 + CStereoSpread) * Scale);
+ FComb[4, 0].BufferSize := Round(CCombTuningL5 * Scale);
+ FComb[4, 1].BufferSize := Round((CCombTuningL5 + CStereoSpread) * Scale);
+ FComb[5, 0].BufferSize := Round(CCombTuningL6 * Scale);
+ FComb[5, 1].BufferSize := Round((CCombTuningL6 + CStereoSpread) * Scale);
+ FComb[6, 0].BufferSize := Round(CCombTuningL7 * Scale);
+ FComb[6, 1].BufferSize := Round((CCombTuningL7 + CStereoSpread) * Scale);
+ FComb[7, 0].BufferSize := Round(CCombTuningL8 * Scale);
+ FComb[7, 1].BufferSize := Round((CCombTuningL8 + CStereoSpread) * Scale);
+ FAllpass[0, 0].BufferSize := Round(CAllpassTuningL1 * Scale);
+ FAllpass[0, 1].BufferSize := Round((CAllpassTuningL1 + CStereoSpread) * Scale);
+ FAllpass[1, 0].BufferSize := Round(CAllpassTuningL2 * Scale);
+ FAllpass[1, 1].BufferSize := Round((CAllpassTuningL2 + CStereoSpread) * Scale);
+ FAllpass[2, 0].BufferSize := Round(CAllpassTuningL3 * Scale);
+ FAllpass[2, 1].BufferSize := Round((CAllpassTuningL3 + CStereoSpread) * Scale);
+ FAllpass[3, 0].BufferSize := Round(CAllpassTuningL4 * Scale);
+ FAllpass[3, 1].BufferSize := Round((CAllpassTuningL4 + CStereoSpread) * Scale);
 end;
 
 procedure TfReeverbVST.ParameterFreezeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -494,6 +503,8 @@ procedure TfReeverbVST.ParameterStretchChange(
 begin
  FStretch := 1 + 9 * Value;
  BufferRezize;
+
+ // update GUI
  if EditorForm is TFmReverb then
   with TFmReverb(EditorForm)
    do UpdateStretch;
@@ -502,6 +513,8 @@ end;
 procedure TfReeverbVST.ParameterDampChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
  Damp := Value;
+
+ // update GUI
  if EditorForm is TFmReverb then
   with TFmReverb(EditorForm)
    do UpdateDamp;
@@ -529,7 +542,7 @@ end;
 
 procedure TfReeverbVST.ParameterNumCombsChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  oldLength,i : Integer;
+  oldLength, i : Integer;
 begin
  oldLength := Length(FComb);
  if (Value < 1) or (oldLength = Round(Value))

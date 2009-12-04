@@ -44,6 +44,8 @@ type
   TSubBoostDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleResume(Sender: TObject);
     procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -57,8 +59,6 @@ type
     procedure ParameterReleaseDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
   private
     FInputFilter  : TButterworthLowPassFilter;
     FOutputFilter : TButterworthLowPassFilter;
@@ -131,17 +131,17 @@ end;
 procedure TSubBoostDataModule.ParamOrderChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FInputFilter)
+ if Assigned(FInputFilter)
   then FInputFilter.Order := round(Value);
 end;
 
 procedure TSubBoostDataModule.ParameterTuneChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FInputFilter) then FInputFilter.Frequency := Value;
- if assigned(FOutputFilter) then FOutputFilter.Frequency := Value;
+ if Assigned(FInputFilter) then FInputFilter.Frequency := Value;
+ if Assigned(FOutputFilter) then FOutputFilter.Frequency := Value;
 
  // update GUI if necessary
- if assigned(EditorForm) then
+ if Assigned(EditorForm) then
   with TFmSubBoost(EditorForm) do
    begin
     UpdateTune;
@@ -268,8 +268,11 @@ end;
 procedure TSubBoostDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- if assigned(FInputFilter) then FInputFilter.SampleRate := SampleRate;
- if assigned(FOutputFilter) then FOutputFilter.SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  begin
+   if Assigned(FInputFilter) then FInputFilter.SampleRate := Abs(SampleRate);
+   if Assigned(FOutputFilter) then FOutputFilter.SampleRate := Abs(SampleRate);
+  end;
 end;
 
 end.

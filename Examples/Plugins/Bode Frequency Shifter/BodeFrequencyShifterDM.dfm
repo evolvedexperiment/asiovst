@@ -1,5 +1,4 @@
 object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -11,7 +10,6 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
   SampleRate = 44100.000000000000000000
   numInputs = 1
   numOutputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DBFS'
@@ -36,13 +34,13 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -55,11 +53,11 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Coefficients'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -77,7 +75,6 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
       OnParameterChange = ParameterCoeffsChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Transition Bandwidth'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

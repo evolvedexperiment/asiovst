@@ -1,5 +1,4 @@
 object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Third Octave Analyser'
@@ -9,7 +8,6 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   SampleRate = 44100.000000000000000000
   numInputs = 1
   numOutputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Slow'
   IORatio = 1.000000000000000000
   UniqueID = 'TOAV'
@@ -42,11 +40,11 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterSmoothChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Fullscale Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -60,11 +58,11 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFullscaleGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Downsampling'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -86,6 +84,7 @@ object ThirdOctaveAnalyserModule: TThirdOctaveAnalyserModule
   OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessNormal
   OnProcessReplacing = VSTModuleProcessNormal
+  OnSampleRateChange = VSTModuleSampleRateChange
   Left = 286
   Top = 81
   Height = 150

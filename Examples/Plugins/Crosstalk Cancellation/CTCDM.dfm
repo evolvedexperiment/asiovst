@@ -1,6 +1,6 @@
 object CTCDataModule: TCTCDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Crosstalk Cancellation'
@@ -8,7 +8,6 @@ object CTCDataModule: TCTCDataModule
   VendorName = 'Delphi ASIO & VST Projects'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DCTC'
@@ -24,7 +23,6 @@ object CTCDataModule: TCTCDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Loudspeaker Distance'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -44,7 +42,6 @@ object CTCDataModule: TCTCDataModule
       OnCustomParameterDisplay = ParamDistanceDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Listener Distance'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -64,7 +61,6 @@ object CTCDataModule: TCTCDataModule
       OnCustomParameterDisplay = ParamDistanceDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Recursion Steps'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -82,7 +78,6 @@ object CTCDataModule: TCTCDataModule
       OnParameterChange = ParamRecursionStepsChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attenuation'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -100,7 +95,6 @@ object CTCDataModule: TCTCDataModule
       OnParameterChange = ParamAttenuationChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Type'
       LargeStepFloat = 1.000000000000000000
@@ -117,7 +111,6 @@ object CTCDataModule: TCTCDataModule
       OnCustomParameterDisplay = ParameterFilterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -137,7 +130,6 @@ object CTCDataModule: TCTCDataModule
       OnCustomParameterDisplay = ParameterFilterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Filter Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -155,7 +147,6 @@ object CTCDataModule: TCTCDataModule
       OnParameterChange = ParameterFilterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output Gain'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -173,7 +164,6 @@ object CTCDataModule: TCTCDataModule
       OnParameterChange = ParameterOutputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bypass'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -188,7 +178,6 @@ object CTCDataModule: TCTCDataModule
       OnParameterChange = ParameterBypassChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'AGC'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

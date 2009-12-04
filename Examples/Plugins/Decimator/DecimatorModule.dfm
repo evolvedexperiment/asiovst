@@ -1,5 +1,4 @@
 object VSTDecimator: TVSTDecimator
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Decimator'
@@ -8,7 +7,6 @@ object VSTDecimator: TVSTDecimator
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Preset 1'
   IORatio = 1.000000000000000000
   UniqueID = 'TBDM'
@@ -28,7 +26,6 @@ object VSTDecimator: TVSTDecimator
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Decimator'
       DisplayName = 'Samplerate'
@@ -45,11 +42,11 @@ object VSTDecimator: TVSTDecimator
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterSampleRateChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Decimator'
       DisplayName = 'Bits'
@@ -64,11 +61,11 @@ object VSTDecimator: TVSTDecimator
       ShortLabel = 'bits'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterBitsChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Post Filter'
       DisplayName = 'Cutoff Frequency'
@@ -85,11 +82,11 @@ object VSTDecimator: TVSTDecimator
       StepFloat = 100.000000000000000000
       StepInteger = 100
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterCutoffChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Post Filter'
       DisplayName = 'Resonance'
@@ -104,11 +101,11 @@ object VSTDecimator: TVSTDecimator
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       StepInteger = 0
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterResonanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Post Filter'
       DisplayName = 'FilterType'
@@ -118,15 +115,15 @@ object VSTDecimator: TVSTDecimator
       Max = 1.000000000000000000
       MaxInteger = 1
       ReportVST2Properties = True
-      ShortLabel = 'FilterT'
+      ShortLabel = 'Type'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFilterTypeChange
       OnCustomParameterDisplay = ParameterFilterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Wet/Dry Mix'
@@ -139,11 +136,11 @@ object VSTDecimator: TVSTDecimator
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterWetDryMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Mix'
       DisplayName = 'Output Volume'
@@ -159,6 +156,7 @@ object VSTDecimator: TVSTDecimator
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterOutputVolumeChange
     end>

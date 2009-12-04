@@ -101,16 +101,21 @@ procedure TBarberpoleTunerDataModule.ParameterGuitarStringChange(
 var
   CenterFrequency : Double;
 begin
- case Round(Parameter[Index]) of
-  1 : CenterFrequency := 329.62755691286992973584176104656;
-  2 : CenterFrequency := 440;
-  3 : CenterFrequency := 587.32953583481512052556602772116;
-  4 : CenterFrequency := 783.99087196349858817139906091965;
-  5 : CenterFrequency := 987.76660251224822366150908371768;
-  6 : CenterFrequency := 1318.5102276514797189433670441862;
-  else raise Exception.Create('Currentfrequency doesn''t exist');
+ try
+  case Round(Parameter[Index]) of
+   1 : CenterFrequency := 329.62755691286992973584176104656;
+   2 : CenterFrequency := 440;
+   3 : CenterFrequency := 587.32953583481512052556602772116;
+   4 : CenterFrequency := 783.99087196349858817139906091965;
+   5 : CenterFrequency := 987.76660251224822366150908371768;
+   6 : CenterFrequency := 1318.5102276514797189433670441862;
+   else raise Exception.Create('Current frequency doesn''t exist');
+  end;
+ except
+  CenterFrequency := 440;
  end;
 
+ // update GUI
  if assigned(FBarberpoleFilter)
   then FBarberpoleFilter.Frequency := CenterFrequency;
 end;

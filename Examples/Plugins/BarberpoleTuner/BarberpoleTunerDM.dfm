@@ -1,5 +1,4 @@
 object BarberpoleTunerDataModule: TBarberpoleTunerDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'BarberpoleTuner'
@@ -9,7 +8,6 @@ object BarberpoleTunerDataModule: TBarberpoleTunerDataModule
   SampleRate = 44100.000000000000000000
   numInputs = 1
   numOutputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'BaTu'
@@ -21,7 +19,6 @@ object BarberpoleTunerDataModule: TBarberpoleTunerDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Guitar String'
       LargeStepFloat = 2.000000000000000000

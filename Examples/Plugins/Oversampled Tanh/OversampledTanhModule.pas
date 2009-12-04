@@ -118,6 +118,8 @@ begin
     if assigned(FDownsampler2x[Channel]) then FDownsampler2x[Channel].Transition := 0.001 + 0.498 * Value;
     if assigned(FUpSampler2x[Channel]) then FUpSampler2x[Channel].Transition := 0.001 + 0.498 * Value;
    end;
+
+ // update GUI
  if EditorForm is TFmOversampledTanh then
   with TFmOversampledTanh(EditorForm)
    do UpdateTransition;
@@ -145,12 +147,14 @@ begin
       FUpSampler2x[Channel].Transition := 0.01;
      end;
    end;
-  if EditorForm is TFmOversampledTanh then
-   with TFmOversampledTanh(EditorForm)
-    do UpdateCoeffs;
  finally
   FCriticalSection.Leave;
  end;
+
+ // update GUI
+ if EditorForm is TFmOversampledTanh then
+  with TFmOversampledTanh(EditorForm)
+   do UpdateCoeffs;
 end;
 
 procedure TOversampledTanhModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);

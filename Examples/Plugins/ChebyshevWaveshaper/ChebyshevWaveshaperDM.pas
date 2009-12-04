@@ -65,7 +65,7 @@ implementation
 {$R *.DFM}
 
 uses
-  ChebyshevWaveshaperGUI, DAV_Common, DAV_VSTParameters;
+  DAV_Common, DAV_VSTParameters, ChebyshevWaveshaperGUI;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var
@@ -139,8 +139,8 @@ procedure TChebyshevWaveshaperDataModule.ParamHarmDisplay(
 var
   Val : Single;
 begin
- Val := abs(140 * Parameter[Index]) - 140;
- if abs(Parameter[Index]) < 1E-3
+ Val := Abs(140 * Parameter[Index]) - 140;
+ if Abs(Parameter[Index]) < 1E-3
   then PreDefined := '-oo'
   else PreDefined := FloatToStrF(Val, ffGeneral, 3, 3);
 end;
@@ -148,18 +148,20 @@ end;
 procedure TChebyshevWaveshaperDataModule.ParamHarmonicChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FChebysheWaveshaper)then
+ if Assigned(FChebysheWaveshaper)then
   begin
-   if abs(Value) < 1E-3 then
+   if Abs(Value) < 1E-3 then
     begin
      FChebysheWaveshaper.Gain[Index] := 0;
     end
    else
     begin
-     FChebysheWaveshaper.Level[Index]    := abs(Value * 140) - 140;
+     FChebysheWaveshaper.Level[Index]    := Abs(Value * 140) - 140;
      FChebysheWaveshaper.Inverted[Index] := Value < 0;
     end;
   end;
+
+ // update GUI
  if EditorForm is TFmChebyshevWaveshaper then
   with TFmChebyshevWaveshaper(EditorForm) do
    begin
@@ -170,24 +172,24 @@ end;
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel : Integer;
-  Sample  : Integer;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
 begin
- for Channel := 0 to 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[Channel, Sample]);
+ for ChannelIndex := 0 to 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[ChannelIndex, SampleIndex] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleProcessDouble(
   const Inputs, Outputs: TDAVArrayOfDoubleDynArray;
   const SampleFrames: Integer);
 var
-  Channel : Integer;
-  Sample  : Integer;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
 begin
- for Channel := 0 to 1 do
-  for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[Channel, Sample]);
+ for ChannelIndex := 0 to 1 do
+  for SampleIndex := 0 to SampleFrames - 1
+   do Outputs[ChannelIndex, SampleIndex] := FVolume * FChebysheWaveshaper.ProcessSample64(Inputs[ChannelIndex, SampleIndex]);
 end;
 
 end.

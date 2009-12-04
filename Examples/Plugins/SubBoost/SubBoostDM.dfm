@@ -1,5 +1,4 @@
 object SubBoostDataModule: TSubBoostDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SubBoost'
@@ -7,7 +6,6 @@ object SubBoostDataModule: TSubBoostDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Sub Bass Synthesizer'
   IORatio = 1.000000000000000000
   UniqueID = 'mdaB'
@@ -19,7 +17,6 @@ object SubBoostDataModule: TSubBoostDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Type'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -35,7 +32,6 @@ object SubBoostDataModule: TSubBoostDataModule
       OnCustomParameterDisplay = ParameterModeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Level'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -50,7 +46,6 @@ object SubBoostDataModule: TSubBoostDataModule
       OnParameterChange = ParameterLevelChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Tune'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -70,7 +65,6 @@ object SubBoostDataModule: TSubBoostDataModule
       OnCustomParameterDisplay = ParameterTuneDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dry Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -85,7 +79,6 @@ object SubBoostDataModule: TSubBoostDataModule
       OnParameterChange = ParameterDryChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Thresh'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -103,7 +96,6 @@ object SubBoostDataModule: TSubBoostDataModule
       OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Release'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -119,7 +111,6 @@ object SubBoostDataModule: TSubBoostDataModule
       OnCustomParameterDisplay = ParameterReleaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]

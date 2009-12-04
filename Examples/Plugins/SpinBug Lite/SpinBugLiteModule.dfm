@@ -1,5 +1,4 @@
 object SpinBugLiteModule: TSpinBugLiteModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SpinBug Lite'
@@ -7,7 +6,6 @@ object SpinBugLiteModule: TSpinBugLiteModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Mono Spin'
   IORatio = 1.000000000000000000
   UniqueID = 'SpnB'
@@ -40,7 +38,6 @@ object SpinBugLiteModule: TSpinBugLiteModule
   ParameterProperties = <
     item
       CC = 0
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Coefficients'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -60,7 +57,6 @@ object SpinBugLiteModule: TSpinBugLiteModule
     end
     item
       CC = 0
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Process Type'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -81,7 +77,6 @@ object SpinBugLiteModule: TSpinBugLiteModule
     end
     item
       CC = 0
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'LFO Speed'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -95,12 +90,12 @@ object SpinBugLiteModule: TSpinBugLiteModule
       SmoothingFactor = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = SBMLFOSpeedChange
     end
     item
       CC = 0
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'TBW'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

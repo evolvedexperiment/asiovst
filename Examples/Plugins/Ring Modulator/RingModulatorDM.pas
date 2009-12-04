@@ -34,7 +34,7 @@ interface
 
 {$I DAV_Compiler.inc}
 
-uses 
+uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspRingModulator;
 
@@ -48,10 +48,8 @@ type
     procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyDisplay(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(
-      Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
     FRingMod : array of TAutoRingModulator32;
     procedure ChooseProcess;
@@ -70,7 +68,7 @@ const
 
 procedure TRingModulatorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  Channel   : Integer;
+  ChannelIndex   : Integer;
   UpperFreq : Single;
 begin
  assert(numInputs = numOutputs);
@@ -96,8 +94,8 @@ begin
 
  ChooseProcess;
 
- for Channel := 0 to Length(FRingMod) - 1
-  do FRingMod[Channel] := TAutoRingModulator32.Create;
+ for ChannelIndex := 0 to Length(FRingMod) - 1
+  do FRingMod[ChannelIndex] := TAutoRingModulator32.Create;
 
  Parameter[0] := 10;
 
@@ -108,10 +106,10 @@ end;
 
 procedure TRingModulatorDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FRingMod) - 1
-  do FreeAndNil(FRingMod[Channel]);
+ for ChannelIndex := 0 to Length(FRingMod) - 1
+  do FreeAndNil(FRingMod[ChannelIndex]);
 end;
 
 procedure TRingModulatorDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -132,11 +130,11 @@ end;
 procedure TRingModulatorDataModule.ParameterFrequencyChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FRingMod) - 1 do
-  if assigned(FRingMod[Channel])
-   then FRingMod[Channel].Frequency := Value;
+ for ChannelIndex := 0 to Length(FRingMod) - 1 do
+  if Assigned(FRingMod[ChannelIndex])
+   then FRingMod[ChannelIndex].Frequency := Value;
 
  if EditorForm is TFmRingModulator
   then TFmRingModulator(EditorForm).UpdateFrequency;
@@ -183,21 +181,22 @@ procedure TRingModulatorDataModule.VSTModuleProcessMultiChannel(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   Sample  : Integer;
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FRingMod) - 1 do
+ for ChannelIndex := 0 to Length(FRingMod) - 1 do
   for Sample := 0 to SampleFrames - 1
-   do Outputs[Channel, Sample] := FRingMod[Channel].ProcessSample32(Inputs[Channel, Sample]);
+   do Outputs[ChannelIndex, Sample] := FRingMod[ChannelIndex].ProcessSample32(Inputs[ChannelIndex, Sample]);
 end;
 
 procedure TRingModulatorDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to Length(FRingMod) - 1 do
-  if assigned(FRingMod[Channel])
-   then FRingMod[Channel].SampleRate := SampleRate;
+ if Abs(SampleRate) > 0 then
+  for ChannelIndex := 0 to Length(FRingMod) - 1 do
+   if Assigned(FRingMod[ChannelIndex])
+    then FRingMod[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 end.

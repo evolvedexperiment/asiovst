@@ -1,5 +1,5 @@
 object ModDelayModule: TModDelayModule
-  OldCreateOrder = False
+  OldCreateOrder = True
   Version = '1.0'
   EffectName = 'Mod Delay'
   ProductName = 'DAV Effect Examples'
@@ -15,7 +15,6 @@ object ModDelayModule: TModDelayModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Gain'
@@ -32,10 +31,9 @@ object ModDelayModule: TModDelayModule
       Units = 'dB'
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
-      OnCustomParameterDisplay = ModDelayModuleParameterProperties0CustomParameterDisplay
+      OnCustomParameterDisplay = ParameterGainDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Mix'
@@ -71,7 +69,6 @@ object ModDelayModule: TModDelayModule
       OnCustomParameterDisplay = ParameterLowpassDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Delay'
@@ -88,7 +85,6 @@ object ModDelayModule: TModDelayModule
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Depth'
@@ -104,7 +100,6 @@ object ModDelayModule: TModDelayModule
       OnParameterChange = ParameterDepthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Rate'
@@ -121,7 +116,6 @@ object ModDelayModule: TModDelayModule
       OnParameterChange = ParameterRateChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Delay 1'
       DisplayName = 'Feedback'
