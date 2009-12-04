@@ -60,7 +60,7 @@ type
     procedure ParamHardClipDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParamHardClipChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FUpDownSampling  : array [0..3] of TDAVUpDownsampling;
+    FUpDownSampling  : array [0..1, 0..1] of TDAVUpDownsampling;
     FInputGain       : Single;
     FOutputGain      : Single;
     FHardClip        : Boolean;
@@ -94,7 +94,8 @@ end;
 
 procedure TAdvancedClipperDataModule.VSTModuleOpen(Sender: TObject);
 var
-  ch : Integer;
+  StageIndex   : Integer;
+  ChannelIndex : Integer;
 begin
  FHardClip      := False;
  FInputGain     := 1;
@@ -104,8 +105,9 @@ begin
  FPeakStage2    := 0;
  FPeakInput     := 0;
 
- for ch := 0 to 3
-  do FUpDownSampling[ch] := TDAVUpDownsampling.Create;
+ for StageIndex := 0 to Length(FUpDownSampling) - 1 do
+  for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1
+   do FUpDownSampling[StageIndex, ChannelIndex] := TDAVUpDownsampling.Create;
 
  Parameter[0] := -0.1;
  Parameter[1] := 4;
@@ -219,10 +221,12 @@ end;
 
 procedure TAdvancedClipperDataModule.VSTModuleClose(Sender: TObject);
 var
-  Channel : Integer;
+  StageIndex   : Integer;
+  ChannelIndex : Integer;
 begin
- for Channel := 0 to 1
-  do FreeAndNil(FUpDownSampling[Channel]);
+ for StageIndex := 0 to Length(FUpDownSampling) - 1 do
+  for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1
+   do FreeAndNil(FUpDownSampling[StageIndex, ChannelIndex]);
 end;
 
 procedure TAdvancedClipperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -232,13 +236,13 @@ end;
 
 procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to 1 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].Factor := round(Value);
+  for ChannelIndex := 0 to Length(FUpDownSampling[0]) - 1 do
+   if Assigned(FUpDownSampling[0, ChannelIndex])
+    then FUpDownSampling[0, ChannelIndex].Factor := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -250,13 +254,13 @@ end;
 
 procedure TAdvancedClipperDataModule.ParamOSFactor2Change(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 2 to 3 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].Factor := round(Value);
+  for ChannelIndex := 0 to Length(FUpDownSampling[1]) - 1 do
+   if Assigned(FUpDownSampling[1, ChannelIndex])
+    then FUpDownSampling[1, ChannelIndex].Factor := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -279,13 +283,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamRoundDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- PreDefined := IntToStr(round(Parameter[Index]));
+ PreDefined := IntToStr(Round(Parameter[Index]));
 end;
 
 procedure TAdvancedClipperDataModule.ParamHardClipDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- if Boolean(round(Parameter[Index]))
+ if Boolean(Round(Parameter[Index]))
   then PreDefined := 'On'
   else PreDefined := 'Off';
 end;
@@ -293,7 +297,7 @@ end;
 procedure TAdvancedClipperDataModule.ParamHardClipChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FHardClip := Boolean(round(Value));
+ FHardClip := Boolean(Round(Value));
 
  // update GUI
  if EditorForm is TFmAdvancedClipper
@@ -303,13 +307,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamBW1Change(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to 1 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].TransitionBandwidth := 0.01 * Value;
+  for ChannelIndex := 0 to Length(FUpDownSampling[0]) - 1 do
+   if Assigned(FUpDownSampling[0, ChannelIndex])
+    then FUpDownSampling[0, ChannelIndex].TransitionBandwidth := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
@@ -318,13 +322,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamBW2Change(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 2 to 3 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].TransitionBandwidth := 0.01 * Value;
+  for ChannelIndex := 0 to Length(FUpDownSampling[1]) - 1 do
+   if Assigned(FUpDownSampling[1, ChannelIndex])
+    then FUpDownSampling[1, ChannelIndex].TransitionBandwidth := 0.01 * Value;
  finally
   FCriticalSection.Leave;
  end;
@@ -343,13 +347,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamFilterOrder1Change(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 0 to 1 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].Order := round(Value);
+  for ChannelIndex := 0 to Length(FUpDownSampling[0]) - 1 do
+   if Assigned(FUpDownSampling[0, ChannelIndex])
+    then FUpDownSampling[0, ChannelIndex].Order := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -362,13 +366,13 @@ end;
 procedure TAdvancedClipperDataModule.ParamFilterOrder2Change(Sender: TObject;
   const Index: Integer; var Value: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  FCriticalSection.Enter;
  try
-  for Channel := 2 to 3 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].Order := round(Value);
+  for ChannelIndex := 0 to Length(FUpDownSampling[1]) - 1 do
+   if Assigned(FUpDownSampling[1, ChannelIndex])
+    then FUpDownSampling[1, ChannelIndex].Order := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -390,7 +394,7 @@ begin
  FCriticalSection.Enter;
  try
   for SampleIndex := 0 to SampleFrames - 1 do
-   for ChannelIndex := 0 to 1 do
+   for ChannelIndex := 0 to Length(FUpDownSampling) - 1 do
     begin
      // multiply input data with input gain
      InterStage := FInputGain * Inputs[ChannelIndex, SampleIndex];
@@ -401,10 +405,10 @@ begin
       then FPeakInput := abs(InterStage);
 
      // first stage
-     FUpDownSampling[ChannelIndex].Upsample64(InterStage, @SubSamples);
-     for SubSampleIndex := 0 to FUpDownSampling[ChannelIndex].Factor - 1
+     FUpDownSampling[0, ChannelIndex].Upsample64(InterStage, @SubSamples);
+     for SubSampleIndex := 0 to FUpDownSampling[0, ChannelIndex].Factor - 1
       do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
-     InterStage := FUpDownSampling[ChannelIndex].Downsample64(@SubSamples);
+     InterStage := FUpDownSampling[0, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 1 peak level
      FPeakStage1 := FPeakStage1 * FReleaseFactor;
@@ -412,10 +416,10 @@ begin
       then FPeakStage1 := abs(InterStage);
 
      // second stage
-     FUpDownSampling[ChannelIndex + 2].Upsample64(InterStage, @SubSamples);
-     for SubSampleIndex := 0 to FUpDownSampling[ChannelIndex + 2].Factor - 1
+     FUpDownSampling[1, ChannelIndex].Upsample64(InterStage, @SubSamples);
+     for SubSampleIndex := 0 to FUpDownSampling[1, ChannelIndex].Factor - 1
       do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
-     SubSamples[0] := FUpDownSampling[ChannelIndex + 2].Downsample64(@SubSamples);
+     SubSamples[0] := FUpDownSampling[1, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 2 peak level
      FPeakStage2 := FPeakStage2 * FReleaseFactor;
@@ -447,7 +451,7 @@ begin
  FCriticalSection.Enter;
  try
   for SampleIndex := 0 to SampleFrames - 1 do
-   for ChannelIndex := 0 to 1 do
+   for ChannelIndex := 0 to Length(FUpDownSampling) - 1 do
     begin
      // multiply input data with input gain
      InterStage := FInputGain * Inputs[ChannelIndex, SampleIndex];
@@ -458,10 +462,10 @@ begin
       then FPeakInput := abs(InterStage);
 
      // first stage
-     FUpDownSampling[ChannelIndex].Upsample64(InterStage, @SubSamples);
-     for SubSampleIndex := 0 to FUpDownSampling[ChannelIndex].Factor - 1
+     FUpDownSampling[0, ChannelIndex].Upsample64(InterStage, @SubSamples);
+     for SubSampleIndex := 0 to FUpDownSampling[0, ChannelIndex].Factor - 1
       do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
-     InterStage := FUpDownSampling[ChannelIndex].Downsample64(@SubSamples);
+     InterStage := FUpDownSampling[0, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 1 peak level
      FPeakStage1 := FPeakStage1 * FReleaseFactor;
@@ -469,10 +473,10 @@ begin
       then FPeakStage1 := abs(InterStage);
 
      // second stage
-     FUpDownSampling[ChannelIndex + 2].Upsample64(InterStage, @SubSamples);
-     for SubSampleIndex := 0 to FUpDownSampling[ChannelIndex + 2].Factor - 1
+     FUpDownSampling[1, ChannelIndex].Upsample64(InterStage, @SubSamples);
+     for SubSampleIndex := 0 to FUpDownSampling[1, ChannelIndex].Factor - 1
       do SubSamples[SubSampleIndex] := (abs(SubSamples[SubSampleIndex] + 1) - abs(SubSamples[SubSampleIndex] - 1)) * 0.5;
-     SubSamples[0] := FUpDownSampling[ChannelIndex + 2].Downsample64(@SubSamples);
+     SubSamples[0] := FUpDownSampling[1, ChannelIndex].Downsample64(@SubSamples);
 
      // detect stage 2 peak level
      FPeakStage2 := FPeakStage2 * FReleaseFactor;
@@ -494,13 +498,15 @@ end;
 procedure TAdvancedClipperDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  StageIndex   : Integer;
+  ChannelIndex : Integer;
 begin
  // update samplerate
  if Abs(SampleRate) > 0 then
-  for Channel := 0 to 3 do
-   if Assigned(FUpDownSampling[Channel])
-    then FUpDownSampling[Channel].SampleRate := Abs(SampleRate);
+  for StageIndex := 0 to Length(FUpDownSampling) - 1 do
+   for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1 do
+    if Assigned(FUpDownSampling[StageIndex, ChannelIndex])
+     then FUpDownSampling[StageIndex, ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 end.
