@@ -108,10 +108,8 @@ var
   ChannelIndex : Integer;
 begin
  for ChannelIndex := 0 to Length(FFilter) - 1 do
-  begin
-   if Assigned(FFilter[ChannelIndex])
-    then FFilter[ChannelIndex].Order := round(Value);
-  end;
+  if Assigned(FFilter[ChannelIndex])
+   then FFilter[ChannelIndex].Order := round(Value);
 
  // update GUI
  if EditorForm is TFmButterworth then

@@ -55,15 +55,15 @@ type
     Timer: TTimer;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
     procedure EQGraphUpdateTimer(Sender: TObject);
     procedure LbFrequencyValueDblClick(Sender: TObject);
-    procedure PnControlsClick(Sender: TObject);
-    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
-    procedure FormDestroy(Sender: TObject);
     procedure LbOrderValueDblClick(Sender: TObject);
+    procedure PnControlsClick(Sender: TObject);
   private
     FEdValue: TEdit;
     procedure EQGraphUpdate;
@@ -100,6 +100,12 @@ begin
   then FreeAndNil(FEdValue);
 end;
 
+procedure TFmButterworth.FormShow(Sender: TObject);
+begin
+ UpdateFrequency;
+ UpdateOrder;
+end;
+
 procedure TFmButterworth.DialFrequencyChange(Sender: TObject);
 begin
  with TButterworthLPModule(Owner) do
@@ -114,12 +120,6 @@ begin
   begin
    ParameterByName['Order'] := DialOrder.Position;
   end;
-end;
-
-procedure TFmButterworth.FormShow(Sender: TObject);
-begin
- UpdateFrequency;
- UpdateOrder;
 end;
 
 function TFmButterworth.GetFilterGain(Sender: TObject;

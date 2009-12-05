@@ -1,5 +1,4 @@
 object ChebyshevHPModule: TChebyshevHPModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Chebyshev Lowpass Filter'
@@ -7,7 +6,6 @@ object ChebyshevHPModule: TChebyshevHPModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
@@ -19,7 +17,6 @@ object ChebyshevHPModule: TChebyshevHPModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -42,7 +39,6 @@ object ChebyshevHPModule: TChebyshevHPModule
       OnStringToParameter = StringToFrequencyParameter
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Ripple'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -62,7 +58,6 @@ object ChebyshevHPModule: TChebyshevHPModule
       OnCustomParameterDisplay = ParameterRippleDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

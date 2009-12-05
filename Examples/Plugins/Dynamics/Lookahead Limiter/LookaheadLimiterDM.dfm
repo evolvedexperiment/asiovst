@@ -1,4 +1,5 @@
 object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -106,7 +107,6 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterProcessingModeChange
       OnCustomParameterDisplay = ParameterProcessingModeDisplay
@@ -127,11 +127,11 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterReleaseChange
       OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
+      OnStringToParameter = StringToReleaseParameter
     end
     item
       CurveFactor = 1.000000000000000000
@@ -146,7 +146,6 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       ShortLabel = 'Attack'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterAttackShapeChange
       OnCustomParameterDisplay = ParameterAttackDisplay
@@ -168,7 +167,6 @@ object LookaheadLimiterDataModule: TLookaheadLimiterDataModule
       StepFloat = 2.000000000000000000
       StepInteger = 2
       Units = 'Samples'
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterLookaheadChange
       OnCustomParameterDisplay = ParameterLookaheadDisplay

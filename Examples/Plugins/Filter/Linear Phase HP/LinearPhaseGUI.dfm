@@ -7,16 +7,16 @@ object FmLinearPhase: TFmLinearPhase
   ClientWidth = 111
   Color = 6974058
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = clSilver
+  Font.Height = -16
   Font.Name = 'Tahoma'
-  Font.Style = []
+  Font.Style = [fsBold]
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 19
   object DialFrequency: TGuiDial
     Left = 24
     Top = 36
@@ -32,12 +32,14 @@ object FmLinearPhase: TFmLinearPhase
     Min = 20.000000000000000000
     NumGlyphs = 65
     OnChange = DialFrequencyChange
+    OnDblClick = DialFrequencyDblClick
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     Position = 20.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbFrequency: TGuiLabel
     Left = 10
@@ -47,11 +49,6 @@ object FmLinearPhase: TFmLinearPhase
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Frequency'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clSilver
-    Font.Height = -16
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
   end
   object LbFrequencyValue: TGuiLabel
     Left = 10
@@ -61,10 +58,5 @@ object FmLinearPhase: TFmLinearPhase
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = '20 Hz'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clSilver
-    Font.Height = -16
-    Font.Name = 'Tahoma'
-    Font.Style = [fsBold]
   end
 end

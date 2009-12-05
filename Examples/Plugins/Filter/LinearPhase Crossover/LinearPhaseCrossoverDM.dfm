@@ -1,5 +1,4 @@
 object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   Version = '1.0'
   EffectName = 'LinearPhaseCrossover'
@@ -8,7 +7,6 @@ object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   numInputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   ProcessingMode = pmBlockSave
   BlockModeOverlap = 512
@@ -37,13 +35,13 @@ object LinearPhaseCrossoverModule: TLinearPhaseCrossoverModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

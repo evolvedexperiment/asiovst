@@ -1,5 +1,4 @@
 object PluginDataModule: TPluginDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Graphic EQ'
@@ -8,7 +7,6 @@ object PluginDataModule: TPluginDataModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd1in2out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'GrEQ'
@@ -24,7 +22,6 @@ object PluginDataModule: TPluginDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 20 Hz'
@@ -40,10 +37,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 40 Hz'
@@ -59,10 +56,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 80 Hz'
@@ -78,10 +75,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 160 Hz'
@@ -97,10 +94,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 320 Hz '
@@ -116,10 +113,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 640 Hz'
@@ -135,10 +132,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 1250 Hz'
@@ -154,10 +151,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 2500 Hz'
@@ -173,10 +170,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 5 kHz'
@@ -192,10 +189,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 10 kHz'
@@ -211,10 +208,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Left'
       DisplayName = 'Left 20 kHz'
@@ -230,10 +227,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 20 Hz'
@@ -249,10 +246,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 40 Hz'
@@ -268,10 +265,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 80 Hz'
@@ -287,10 +284,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 160 Hz'
@@ -306,10 +303,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 320 Hz'
@@ -325,10 +322,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 640 Hz'
@@ -344,10 +341,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 1250 Hz'
@@ -363,10 +360,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 2500 Hz'
@@ -382,10 +379,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 5 kHz'
@@ -401,10 +398,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 10 kHz'
@@ -420,10 +417,10 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Right'
       DisplayName = 'Right 20 kHz'
@@ -439,6 +436,7 @@ object PluginDataModule: TPluginDataModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end>
   ParameterCategories = <

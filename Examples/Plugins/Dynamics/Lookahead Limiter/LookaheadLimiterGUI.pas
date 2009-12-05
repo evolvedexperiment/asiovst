@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiGraphXY,
-  DAV_GuiLED, DAV_GuiLevelMeter, Menus, DAV_GuiSelectBox;
+  Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, StdCtrls,
+  Menus, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLED, DAV_GuiDial,
+  DAV_GuiLevelMeter, DAV_GuiSelectBox, DAV_GuiLabel;
 
 type
   TFmLookaheadLimiter = class(TForm)
@@ -75,9 +75,12 @@ type
     MiGain3dB: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure DialInputChange(Sender: TObject);
+    procedure DialInputDblClick(Sender: TObject);
     procedure DialOutputChange(Sender: TObject);
     procedure DialReleaseChange(Sender: TObject);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
     procedure Mi001dBClick(Sender: TObject);
     procedure Mi002dBClick(Sender: TObject);
     procedure Mi003dBClick(Sender: TObject);
@@ -85,12 +88,17 @@ type
     procedure Mi01dBClick(Sender: TObject);
     procedure Mi02dBClick(Sender: TObject);
     procedure Mi0dBClick(Sender: TObject);
-    procedure SbProcessingTypeChange(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
     procedure MiGain0dBClick(Sender: TObject);
     procedure MiGain1dBClick(Sender: TObject);
     procedure MiGain2dBClick(Sender: TObject);
     procedure MiGain3dBClick(Sender: TObject);
+    procedure SbProcessingTypeChange(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
+    procedure DialOutputDblClick(Sender: TObject);
+    procedure FormClick(Sender: TObject);
+    procedure DialReleaseDblClick(Sender: TObject);
+  private
+    FEdValue: TEdit;
   public
     procedure UpdateInput;
     procedure UpdateOutput;
@@ -131,12 +139,24 @@ begin
  end;
 end;
 
+procedure TFmLookaheadLimiter.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
 procedure TFmLookaheadLimiter.FormShow(Sender: TObject);
 begin
  UpdateInput;
  UpdateOutput;
  UpdateRelease;
  UpdateProcessingMode;
+end;
+
+procedure TFmLookaheadLimiter.FormClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
 end;
 
 procedure TFmLookaheadLimiter.Mi0dBClick(Sender: TObject);
@@ -219,7 +239,31 @@ procedure TFmLookaheadLimiter.DialInputChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   Parameter[0] := DialInput.Position;
+   if Parameter[0] <> DialInput.Position
+    then Parameter[0] := DialInput.Position;
+  end;
+end;
+
+procedure TFmLookaheadLimiter.DialInputDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent      := Self;
+   Left        := LbInputValue.Left;
+   Top         := LbInputValue.Top;
+   Width       := LbInputValue.Width;
+   Height      := LbInputValue.Height;
+   BorderStyle := bsNone;
+   Color       := Self.Color;
+   Text        := LbInputValue.Caption;
+   Tag         := 0;
+   TabOrder    := 0;
+   OnKeyPress  := EdValueKeyPress;
+   Font.Assign(Self.Font);
+   SetFocus;
   end;
 end;
 
@@ -227,7 +271,31 @@ procedure TFmLookaheadLimiter.DialOutputChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   Parameter[1] := DialOutput.Position;
+   if Parameter[1] <> DialOutput.Position
+    then Parameter[1] := DialOutput.Position;
+  end;
+end;
+
+procedure TFmLookaheadLimiter.DialOutputDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent      := Self;
+   Left        := LbOutputValue.Left;
+   Top         := LbOutputValue.Top;
+   Width       := LbOutputValue.Width;
+   Height      := LbOutputValue.Height;
+   BorderStyle := bsNone;
+   Color       := Self.Color;
+   Text        := LbOutputValue.Caption;
+   Tag         := 1;
+   TabOrder    := 0;
+   OnKeyPress  := EdValueKeyPress;
+   Font.Assign(Self.Font);
+   SetFocus;
   end;
 end;
 
@@ -235,8 +303,43 @@ procedure TFmLookaheadLimiter.DialReleaseChange(Sender: TObject);
 begin
  with TLookaheadLimiterDataModule(Owner) do
   begin
-   Parameter[3] := DialRelease.Position;
+   if Parameter[3] <> DialRelease.Position
+    then Parameter[3] := DialRelease.Position;
   end;
+end;
+
+procedure TFmLookaheadLimiter.DialReleaseDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent      := Self;
+   Left        := LbReleaseValue.Left;
+   Top         := LbReleaseValue.Top;
+   Width       := LbReleaseValue.Width;
+   Height      := LbReleaseValue.Height;
+   BorderStyle := bsNone;
+   Color       := Self.Color;
+   Text        := LbReleaseValue.Caption;
+   Tag         := 3;
+   TabOrder    := 0;
+   OnKeyPress  := EdValueKeyPress;
+   Font.Assign(Self.Font);
+   SetFocus;
+  end;
+end;
+
+procedure TFmLookaheadLimiter.EdValueKeyPress(Sender: TObject; var Key: Char);
+begin
+ with TLookaheadLimiterDataModule(Owner) do
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    FreeAndNil(FEdValue);
+   except
+   end;
 end;
 
 procedure TFmLookaheadLimiter.UpdateInput;

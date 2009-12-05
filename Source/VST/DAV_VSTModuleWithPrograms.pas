@@ -474,6 +474,7 @@ begin
        if Pos('K', ProcStr) >= Indxes[1] then Mult := 1024 else
        if Pos('G', ProcStr) >= Indxes[1] then Mult := 1048576 else
        if Pos('m', ProcStr) >= Indxes[1] then Mult := 1E-3 else
+       if Pos('µ', ProcStr) >= Indxes[1] then Mult := 1E-6 else
        if Pos('c', ProcStr) >= Indxes[1] then Mult := 1E-2
         else Mult := 1;
 

@@ -1,6 +1,6 @@
 object BugpassLiteDataModule: TBugpassLiteDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Linear Phase'
@@ -8,7 +8,6 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   ProcessingMode = pmBlockSave
   BlockModeOverlap = 512
@@ -46,6 +45,7 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFreqLowChange
     end
@@ -65,6 +65,7 @@ object BugpassLiteDataModule: TBugpassLiteDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFreqHighChange
     end>

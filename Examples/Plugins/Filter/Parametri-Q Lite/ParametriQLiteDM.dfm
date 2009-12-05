@@ -1,5 +1,4 @@
 object ParametriQLiteDataModule: TParametriQLiteDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Parametri-Q Lite'
@@ -7,7 +6,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'PQLt'
@@ -31,7 +29,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Input'
@@ -50,7 +47,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterInputChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Frequency'
@@ -70,7 +66,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Bandwidth'
@@ -87,7 +82,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Gain'
@@ -107,7 +101,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Type'
@@ -120,13 +113,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Frequency'
@@ -146,7 +137,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Bandwidth'
@@ -163,7 +153,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Gain'
@@ -183,7 +172,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Type'
@@ -196,13 +184,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Frequency'
@@ -222,7 +208,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Bandwidth'
@@ -239,7 +224,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Gain'
@@ -259,7 +243,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Type'
@@ -272,13 +255,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Frequency'
@@ -298,7 +279,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Bandwidth'
@@ -315,7 +295,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Gain'
@@ -335,7 +314,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Type'
@@ -348,13 +326,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Frequency'
@@ -374,7 +350,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Bandwidth'
@@ -391,7 +366,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Gain'
@@ -411,7 +385,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 5'
       DisplayName = 'Type'
@@ -424,13 +397,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Frequency'
@@ -450,7 +421,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Bandwidth'
@@ -467,7 +437,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Gain'
@@ -487,7 +456,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 6'
       DisplayName = 'Type'
@@ -500,13 +468,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Frequency'
@@ -526,7 +492,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Bandwidth'
@@ -543,7 +508,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Gain'
@@ -563,7 +527,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 7'
       DisplayName = 'Type'
@@ -576,13 +539,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Frequency'
@@ -602,7 +563,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Bandwidth'
@@ -619,7 +579,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Gain'
@@ -639,7 +598,6 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 8'
       DisplayName = 'Type'
@@ -652,13 +610,11 @@ object ParametriQLiteDataModule: TParametriQLiteDataModule
       ShortLabel = 'Type'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterTypeChange
       OnCustomParameterDisplay = ParameterTypeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'I/O'
       DisplayName = 'Output'

@@ -33,11 +33,9 @@ unit BugpassLiteDM;
 interface
 
 {$I DAV_Compiler.INC}
-{.$DEFINE Use_IPPS}
-{.$DEFINE Use_CUDA}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_Complex,
+  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,
   DAV_DspFftReal2Complex, {$IFDEF Use_IPPS}DAV_DspFftReal2ComplexIPPS, {$ENDIF}
   {$IFDEF Use_CUDA}DAV_DspFftReal2ComplexCUDA, {$ENDIF} DAV_VSTModule;
 
@@ -51,18 +49,19 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFreqLowChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFreqHighChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
-    FFilterKernel : PDAVSingleFixedArray;
-    FSignalPadded : PDAVSingleFixedArray;
-    FFilterFreq   : PDAVComplexSingleFixedArray;
-    FSignalFreq   : PDAVComplexSingleFixedArray;
-    FSemaphore    : Integer;
+    FFilterKernel    : PDAVSingleFixedArray;
+    FSignalPadded    : PDAVSingleFixedArray;
+    FFilterFreq      : PDAVComplexSingleFixedArray;
+    FSignalFreq      : PDAVComplexSingleFixedArray;
+    FCriticalSection : TCriticalSection;
     {$IFDEF Use_IPPS}
-    FFft          : TFftReal2ComplexIPPSFloat32;
+    FFft             : TFftReal2ComplexIPPSFloat32;
     {$ELSE} {$IFDEF Use_CUDA}
-    FFft          : TFftReal2ComplexCUDA32;
+    FFft             : TFftReal2ComplexCUDA32;
     {$ELSE}
-    FFft          : TFftReal2ComplexNativeFloat32;
+    FFft             : TFftReal2ComplexNativeFloat32;
     {$ENDIF}{$ENDIF}
     procedure CalculateFilterKernel;
   public
@@ -77,7 +76,7 @@ uses
 
 procedure TBugpassLiteDataModule.VSTModuleCreate(Sender: TObject);
 begin
- FSemaphore       := 0;
+ FCriticalSection := TCriticalSection.Create;
  FFilterKernel    := nil;
  FSignalPadded    := nil;
  FFilterFreq      := nil;
@@ -85,24 +84,29 @@ begin
  BlockModeOverlap := BlockModeSize div 2;
 end;
 
+procedure TBugpassLiteDataModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TBugpassLiteDataModule.VSTModuleOpen(Sender: TObject);
 begin
  {$IFDEF Use_IPPS}
- FFft := TFftReal2ComplexIPPSFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexIPPSFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  ReallocMem(FSignalFreq, (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle));
  FillChar(FFilterFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  FillChar(FSignalFreq^[0], (BlockModeSize div 2 + 1) * SizeOf(TComplexSingle), 0);
  {$ELSE} {$IFDEF Use_CUDA}
- FFft := TFftReal2ComplexCUDA32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexCUDA32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
  FillChar(FFilterFreq^[0], BlockModeSize * SizeOf(Single), 0);
  FillChar(FSignalFreq^[0], BlockModeSize * SizeOf(Single), 0);
  {$ELSE}
- FFft := TFftReal2ComplexNativeFloat32.Create(round(Log2(BlockModeSize)));
+ FFft := TFftReal2ComplexNativeFloat32.Create(Round(Log2(BlockModeSize)));
 
  ReallocMem(FFilterFreq, BlockModeSize * SizeOf(Single));
  ReallocMem(FSignalFreq, BlockModeSize * SizeOf(Single));
@@ -141,6 +145,8 @@ procedure TBugpassLiteDataModule.ParamFreqLowChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateFilterKernel;
+
+ // update GUI
  if EditorForm is TFmBugpassLite then
   with TFmBugpassLite(EditorForm)
    do UpdateFrequencyBar;
@@ -150,6 +156,8 @@ procedure TBugpassLiteDataModule.ParamFreqHighChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  CalculateFilterKernel;
+
+ // update GUI
  if EditorForm is TFmBugpassLite then
   with TFmBugpassLite(EditorForm)
    do UpdateFrequencyBar;
@@ -161,10 +169,9 @@ var
   n       : Double;
   CutOff  : array [0..1] of Double;
 begin
- if assigned(FFilterKernel) and assigned(FFilterFreq) and assigned(FFft) then
+ if Assigned(FFilterKernel) and Assigned(FFilterFreq) and Assigned(FFft) then
   begin
-   while FSemaphore > 0 do;
-   inc(FSemaphore);
+   FCriticalSection.Enter;
    try
     CutOff[0] := Parameter[0] / SampleRate;
     CutOff[1] := Parameter[1] / SampleRate;
@@ -196,7 +203,7 @@ begin
     end;
     {$ENDIF}{$ENDIF}
    finally
-    dec(FSemaphore);
+    FCriticalSection.Leave;
    end;
   end;
 end;
@@ -213,8 +220,7 @@ var
   Bin     : Integer;
   Half    : Integer;
 begin
- while FSemaphore > 0 do;
- Inc(FSemaphore);
+ FCriticalSection.Enter;
  try
   Half := BlockModeSize div 2;
   for Channel := 0 to numOutputs - 1 do
@@ -290,14 +296,15 @@ begin
     {$ENDIF}{$ENDIF}
    end;
  finally
-  Dec(FSemaphore);
+  FCriticalSection.Leave;
  end;
 end;
 
 procedure TBugpassLiteDataModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 begin
- CalculateFilterKernel;
+ if Abs(SampleRate) > 0
+  then CalculateFilterKernel;
 end;
 
 end.

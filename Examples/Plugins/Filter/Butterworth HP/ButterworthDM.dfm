@@ -1,5 +1,4 @@
 object ButterworthHPModule: TButterworthHPModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Butterworth Lowpass Filter'
@@ -7,7 +6,6 @@ object ButterworthHPModule: TButterworthHPModule
   VendorName = 'Delphi ASIO & VST Packages'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'CbcL'
@@ -42,7 +40,6 @@ object ButterworthHPModule: TButterworthHPModule
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

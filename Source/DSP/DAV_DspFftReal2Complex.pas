@@ -52,7 +52,6 @@ type
     procedure SetFFTOrder(const Value: Integer);
     procedure SetFFTSize(Value: Integer);
     procedure SetAutoScaleType(const Value: TFftAutoScaleType);
-    procedure CalculateOrderDependentValues;
     procedure SetDataOrder(const Value: TFftDataOrder);
   protected
     FBinCount      : Integer;
@@ -62,9 +61,10 @@ type
     FDataOrder     : TFftDataOrder;
     FOrder         : Integer;
     FOnSizeChanged : TNotifyEvent;
-    procedure FFTOrderChanged; virtual;
     procedure AutoScaleTypeChanged; virtual;
+    procedure CalculateOrderDependentValues;
     procedure DataOrderChanged; virtual;
+    procedure FFTOrderChanged; virtual;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; overload; virtual;
@@ -4193,7 +4193,7 @@ begin
       TempBuffer[1][ci + NbrCoef + NbrCoefH+i] := vi * c - vr * s;
      end;
 
-    inc(ci, NbrCoefD);
+    Inc(ci, NbrCoefD);
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
@@ -4227,7 +4227,7 @@ begin
    TempBuffer[1][ci + 5] := (vr + vi) * CSQRT2Div2;
    TempBuffer[1][ci + 7] := (vi - vr) * CSQRT2Div2;
 
-   inc(ci, 8);
+   Inc(ci, 8);
   until (ci >= fFFTSize);
 
 
@@ -4254,7 +4254,7 @@ begin
    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
-   inc(ci, 8);
+   Inc(ci, 8);
  until (ci >= fFFTSize);
 end;
 
@@ -4310,7 +4310,7 @@ begin
       TempBuffer[1][ci + NbrCoef + NbrCoefH+i] := vi * c - vr * s;
      end;
 
-    inc(ci, NbrCoefD);
+    Inc(ci, NbrCoefD);
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
@@ -4344,7 +4344,7 @@ begin
    TempBuffer[1][ci + 5] := (vr + vi) * CSQRT2Div2;
    TempBuffer[1][ci + 7] := (vi - vr) * CSQRT2Div2;
 
-   inc(ci, 8);
+   Inc(ci, 8);
   until (ci >= fFFTSize);
 
 
@@ -4371,7 +4371,7 @@ begin
    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
-   inc(ci, 8);
+   Inc(ci, 8);
  until (ci >= fFFTSize);
 end;
 
@@ -4427,7 +4427,7 @@ begin
       TempBuffer[1][ci + NbrCoef + NbrCoefH + i] := vi * c - vr * s;
      end;
 
-    inc(ci, NbrCoefD);
+    Inc(ci, NbrCoefD);
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
@@ -4462,7 +4462,7 @@ begin
    FBuffer[ci + 5] := (vr + vi) * CSQRT2Div2;
    FBuffer[ci + 7] := (vi - vr) * CSQRT2Div2;
 
-   inc(ci, 8);
+   Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // Penultimate and last Pass at once
@@ -4489,7 +4489,7 @@ begin
    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
-   inc(ci, 8);
+   Inc(ci, 8);
  until (ci >= fFFTSize);
 end;
 
@@ -4543,7 +4543,7 @@ begin
       TempBuffer[1][ci + NbrCoef + NbrCoefH+i] := vi * c - vr * s;
      end;
 
-    inc(ci, NbrCoefD);
+    Inc(ci, NbrCoefD);
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
@@ -4578,7 +4578,7 @@ begin
    FBuffer[ci + 5] := (vr + vi) * CSQRT2Div2;
    FBuffer[ci + 7] := (vi - vr) * CSQRT2Div2;
 
-   inc(ci, 8);
+   Inc(ci, 8);
   until (ci >= fFFTSize);
 
   // Penultimate and last Pass at once
@@ -4605,7 +4605,7 @@ begin
    TimeDomain[fBitRevLUT.LUT[ci + 6]] := Tmp[2] + Tmp[3];
    TimeDomain[fBitRevLUT.LUT[ci + 7]] := Tmp[2] - Tmp[3];
 
-   inc(ci, 8);
+   Inc(ci, 8);
  until (ci >= fFFTSize);
 end;
 

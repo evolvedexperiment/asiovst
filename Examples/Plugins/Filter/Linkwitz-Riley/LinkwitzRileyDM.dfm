@@ -1,5 +1,4 @@
 object LinkwitzRileyModule: TLinkwitzRileyModule
-  OldCreateOrder = False
   Version = '1.0'
   EffectName = 'LinkwitzRiley'
   ProductName = 'DAV Filter Examples'
@@ -9,7 +8,6 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in2out]
   SampleRate = 44100.000000000000000000
   numInputs = 1
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'LiRi'
@@ -35,13 +33,13 @@ object LinkwitzRileyModule: TLinkwitzRileyModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFrequencyChange
       OnCustomParameterLabel = ParameterFrequencyLabel
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

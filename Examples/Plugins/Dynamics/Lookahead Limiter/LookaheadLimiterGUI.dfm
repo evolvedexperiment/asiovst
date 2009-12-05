@@ -7,16 +7,18 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
   ClientWidth = 297
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -16
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
+  OnClick = FormClick
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 19
   object DialInput: TGuiDial
     Left = 24
     Top = 32
@@ -32,6 +34,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Min = -6.000000000000000000
     NumGlyphs = 65
     OnChange = DialInputChange
+    OnDblClick = DialInputDblClick
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -53,6 +56,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbInputValue: TGuiLabel
     Left = 8
@@ -66,6 +70,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    OnDblClick = DialInputDblClick
   end
   object DialOutput: TGuiDial
     Left = 100
@@ -83,6 +89,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Min = -24.000000000000000000
     NumGlyphs = 65
     OnChange = DialOutputChange
+    OnDblClick = DialOutputDblClick
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -104,6 +111,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbOutputValue: TGuiLabel
     Left = 82
@@ -117,6 +125,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    OnDblClick = DialOutputDblClick
   end
   object DialRelease: TGuiDial
     Left = 181
@@ -133,6 +143,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Min = 0.003000000026077032
     NumGlyphs = 65
     OnChange = DialReleaseChange
+    OnDblClick = DialReleaseDblClick
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -154,6 +165,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbReleaseValue: TGuiLabel
     Left = 160
@@ -167,6 +179,8 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    OnDblClick = DialReleaseDblClick
   end
   object LMGainReduction: TGuiColorLevelMeter
     Left = 242
@@ -190,6 +204,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object Lb0dB: TGuiLabel
     Left = 259
@@ -203,6 +218,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object Lb30dB: TGuiLabel
     Left = 259
@@ -216,6 +232,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object Lb10dB: TGuiLabel
     Left = 259
@@ -229,6 +246,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object Lb20dB: TGuiLabel
     Left = 259
@@ -242,6 +260,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object GuiLabel1: TGuiLabel
     Left = 8
@@ -255,6 +274,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object SbProcessingType: TGuiSelectBox
     Left = 160
@@ -454,17 +474,17 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
         Width = 36
       end>
     Left = 48
-    Top = 56
+    Top = 40
   end
   object Timer: TTimer
     Interval = 50
     OnTimer = TimerTimer
     Left = 80
-    Top = 56
+    Top = 40
   end
   object PuOutputValues: TPopupMenu
     Left = 112
-    Top = 56
+    Top = 40
     object Mi0dB: TMenuItem
       Caption = '0 dB'
       OnClick = Mi0dBClick
@@ -496,7 +516,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
   end
   object PuInputValues: TPopupMenu
     Left = 16
-    Top = 56
+    Top = 40
     object MiGain0dB: TMenuItem
       Caption = '&0 dB'
       OnClick = MiGain0dBClick

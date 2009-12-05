@@ -51,6 +51,9 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterWindowFunctionsChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure StringToWindowParameter(
+      Sender: TObject; const Index: Integer; const ParameterString: string;
+      var Value: Single);
   private
     FFilterKernel   : PDAVSingleFixedArray;
     FSignalPadded   : PDAVSingleFixedArray;
@@ -151,6 +154,22 @@ procedure TLinearPhaseDataModule.ParameterWindowFunctionsDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
+end;
+
+procedure TLinearPhaseDataModule.StringToWindowParameter(
+  Sender: TObject; const Index: Integer; const ParameterString: string;
+  var Value: Single);
+var
+  WindowIndex : Integer;
+  Text        : string;
+begin
+ Text := Trim(ParameterString);
+ for WindowIndex := 0 to Length(GWindowFunctions) - 1 do
+  if Text = GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName then
+   begin
+    Value := WindowIndex;
+    Exit;
+   end;
 end;
 
 procedure TLinearPhaseDataModule.ParameterWindowFunctionsChange(

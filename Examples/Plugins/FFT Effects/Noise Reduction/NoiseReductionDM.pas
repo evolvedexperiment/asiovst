@@ -355,9 +355,9 @@ procedure TNoiseReductionModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- if abs(SampleRate) > 0 then
+ if Abs(SampleRate) > 0 then
   for Channel := 0 to Length(FNoiseReduction) - 1
-   do FNoiseReduction[Channel].SampleRate := abs(SampleRate);
+   do FNoiseReduction[Channel].SampleRate := Abs(SampleRate);
 end;
 
 procedure TNoiseReductionModule.VSTModuleProcess(const Inputs,

@@ -1,5 +1,4 @@
 object NoiseReductionModule: TNoiseReductionModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -10,7 +9,6 @@ object NoiseReductionModule: TNoiseReductionModule
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
   BlockSize = 512
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   BlockModeSize = 512
   BlockModeOverlap = 256
@@ -37,7 +35,6 @@ object NoiseReductionModule: TNoiseReductionModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold Offset'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -51,12 +48,12 @@ object NoiseReductionModule: TNoiseReductionModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterThresholdOffsetChange
       OnCustomParameterDisplay = Parameter2DigitDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -75,7 +72,6 @@ object NoiseReductionModule: TNoiseReductionModule
       OnCustomParameterDisplay = ParameterFftOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Window Function'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -103,12 +99,12 @@ object NoiseReductionModule: TNoiseReductionModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = ' : 1'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterRatioChange
       OnCustomParameterDisplay = Parameter2DigitDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Knee'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -120,6 +116,7 @@ object NoiseReductionModule: TNoiseReductionModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterKneeChange
       OnCustomParameterDisplay = Parameter2DigitDisplay
@@ -164,7 +161,6 @@ object NoiseReductionModule: TNoiseReductionModule
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Match Threshold'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]

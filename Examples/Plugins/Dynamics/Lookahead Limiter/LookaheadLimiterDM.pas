@@ -66,7 +66,9 @@ type
     procedure ParameterLookaheadChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAttackDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure StringToModeParameter(
+    procedure StringToModeParameter(Sender: TObject; const Index: Integer; const ParameterString: string;
+      var Value: Single);
+    procedure StringToReleaseParameter(
       Sender: TObject; const Index: Integer; const ParameterString: string;
       var Value: Single);
   private
@@ -275,6 +277,51 @@ begin
  if Text = 'Stereo' then Value := 0 else
  if Text = 'PeakMono' then Value := 1 else
  if Text = 'DualMono' then Value := 2;
+end;
+
+procedure TLookaheadLimiterDataModule.StringToReleaseParameter(
+  Sender: TObject; const Index: Integer; const ParameterString: string;
+  var Value: Single);
+var
+  ProcStr : string;
+  Indxes  : array [0..1] of Integer;
+  Mult    : Single;
+begin
+ ProcStr := Trim(ParameterString);
+ Mult := 1;
+
+ Indxes[0] := Pos('ms', ProcStr);
+ if Indxes[0] > 0
+  then Delete(ProcStr, Indxes[0], 2);
+
+ Indxes[0] := Pos('µs', ProcStr);
+ if Indxes[0] > 0 then
+  begin
+   Delete(ProcStr, Indxes[0], 2);
+   Mult := 1E-3;
+  end;
+
+ Indxes[0] := Pos('s', ProcStr);
+ if Indxes[0] > 0 then
+  begin
+   Delete(ProcStr, Indxes[0], 2);
+   Mult := 1E3;
+  end;
+
+ Indxes[0] := 1;
+ while (Indxes[0] <= Length(ProcStr)) and
+  (not (ProcStr[Indxes[0]] in ['0'..'9', '-', '+', ',', '.'])) do Inc(Indxes[0]);
+
+ if (Indxes[0] <= Length(ProcStr)) then
+  begin
+   Indxes[1] := Indxes[0] + 1;
+   while (Indxes[1] <= Length(ProcStr)) and
+    (ProcStr[Indxes[1]] in ['0'..'9', 'E', ',', '.']) do Inc(Indxes[1]);
+
+   ProcStr := Copy(ProcStr, Indxes[0], Indxes[1] - Indxes[0]);
+
+   Value := Mult * StrToFloat(ProcStr);
+  end;
 end;
 
 procedure TLookaheadLimiterDataModule.ParameterAttackDisplay(

@@ -51,6 +51,7 @@ object FmUniQuE: TFmUniQuE
       OnChange = DialLowChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object DialMid: TGuiDial
       Left = 92
@@ -66,6 +67,7 @@ object FmUniQuE: TFmUniQuE
       OnChange = DialMidChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object DialPresence: TGuiDial
       Left = 173
@@ -81,6 +83,7 @@ object FmUniQuE: TFmUniQuE
       OnChange = DialPresenceChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object DialHigh: TGuiDial
       Left = 254
@@ -96,15 +99,17 @@ object FmUniQuE: TFmUniQuE
       OnChange = DialHighChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
+      WheelStep = 1.000000000000000000
     end
     object LEDOnOff: TGuiLED
       Left = 97
       Top = 10
       Width = 17
       Height = 18
-      Brightness_Percent = 100.000000000000000000
       LineWidth = 2
       LEDColor = clLime
+      Brightness_Percent = 100.000000000000000000
+      Uniformity_Percent = 44.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 5329233
       OnClick = OnOffClick
@@ -121,6 +126,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
       OnClick = OnOffClick
     end
     object LbPad: TGuiLabel
@@ -135,6 +141,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
       OnClick = PadClick
     end
     object LEDPad: TGuiLED
@@ -142,9 +149,10 @@ object FmUniQuE: TFmUniQuE
       Top = 10
       Width = 17
       Height = 18
-      Brightness_Percent = 100.000000000000000000
       LineWidth = 2
-      LEDColor = clYellow
+      LEDColor = 60671
+      Brightness_Percent = 100.000000000000000000
+      Uniformity_Percent = 44.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 5329233
       OnClick = PadClick
@@ -161,6 +169,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
       OnClick = InvertClick
     end
     object LEDInvert: TGuiLED
@@ -168,9 +177,10 @@ object FmUniQuE: TFmUniQuE
       Top = 10
       Width = 17
       Height = 18
-      Brightness_Percent = 100.000000000000000000
       LineWidth = 2
       LEDColor = 16735092
+      Brightness_Percent = 100.000000000000000000
+      Uniformity_Percent = 44.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 5329233
       OnClick = InvertClick
@@ -188,6 +198,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbMid: TGuiLabel
       Left = 92
@@ -202,6 +213,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbPRes: TGuiLabel
       Left = 173
@@ -216,6 +228,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
     object LbHigh: TGuiLabel
       Left = 254
@@ -230,6 +243,7 @@ object FmUniQuE: TFmUniQuE
       Font.Height = -16
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
     end
   end
 end

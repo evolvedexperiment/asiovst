@@ -1,5 +1,4 @@
 object VTVSTModule: TVTVSTModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Valve Tone '#39'63'
@@ -8,7 +7,6 @@ object VTVSTModule: TVTVSTModule
   PlugCategory = vpcEffect
   CanDos = [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd1in1out, vcd2in1out, vcd2in2out]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'VT63'
@@ -20,7 +18,6 @@ object VTVSTModule: TVTVSTModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Bass'
       DisplayName = 'Bass Gain'
@@ -33,11 +30,11 @@ object VTVSTModule: TVTVSTModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamLowGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Treble'
       DisplayName = 'Treble Gain'
@@ -51,11 +48,11 @@ object VTVSTModule: TVTVSTModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamHiGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Bass'
       DisplayName = 'Bass Bypass'
@@ -70,7 +67,6 @@ object VTVSTModule: TVTVSTModule
       OnParameterChange = ParamLowBypassChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Treble'
       DisplayName = 'Treble Bypass'
@@ -85,7 +81,6 @@ object VTVSTModule: TVTVSTModule
       OnParameterChange = ParamHiBypassChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Drive'
@@ -98,12 +93,12 @@ object VTVSTModule: TVTVSTModule
       ShortLabel = 'Drive'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDriveChange
       OnCustomParameterDisplay = ParamDriveDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Channel'
@@ -121,7 +116,6 @@ object VTVSTModule: TVTVSTModule
       OnCustomParameterDisplay = ParamChannelDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Output Gain'
@@ -135,6 +129,7 @@ object VTVSTModule: TVTVSTModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamOutGainChange
     end>

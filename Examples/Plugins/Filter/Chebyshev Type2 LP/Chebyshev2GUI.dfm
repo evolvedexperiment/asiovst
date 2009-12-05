@@ -32,6 +32,7 @@ object FmChebyshev: TFmChebyshev
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbChebyshevFilterDemo: TGuiLabel
     Left = 8
@@ -45,6 +46,7 @@ object FmChebyshev: TFmChebyshev
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
   end
   object PnControls: TGuiPanel
@@ -56,9 +58,9 @@ object FmChebyshev: TFmChebyshev
     AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Height = -13
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
     LineColor = 10526927
     Linewidth = 3
     PanelColor = 1315880
@@ -85,6 +87,7 @@ object FmChebyshev: TFmChebyshev
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialFrequencyChange
+      OnDblClick = DialFrequencyDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -110,6 +113,7 @@ object FmChebyshev: TFmChebyshev
       Min = -100.000000000000000000
       NumGlyphs = 65
       OnChange = DialStopbandChange
+      OnDblClick = DialStopbandDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -133,6 +137,7 @@ object FmChebyshev: TFmChebyshev
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
     end
     object LbStopband: TGuiLabel
       Left = 94
@@ -149,6 +154,7 @@ object FmChebyshev: TFmChebyshev
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
     end
     object DialOrder: TGuiDial
       Left = 190
@@ -164,6 +170,7 @@ object FmChebyshev: TFmChebyshev
       Max = 16.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      OnDblClick = DialOrderDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -188,6 +195,7 @@ object FmChebyshev: TFmChebyshev
       Font.Height = -13
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
     end
     object LbOrderValue: TGuiLabel
       Left = 182
@@ -199,11 +207,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = DialOrderDblClick
     end
     object LbStopbandValue: TGuiLabel
       Left = 94
@@ -215,11 +219,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Stopband'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = DialStopbandDblClick
     end
     object LbFrequencyValue: TGuiLabel
       Left = 8
@@ -231,11 +231,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = DialFrequencyDblClick
     end
   end
 end

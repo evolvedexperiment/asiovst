@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<PersonalityInfo>
 		<Option>
@@ -28,7 +28,8 @@
       <Projects Name="SmoothMultibandCompressor.dll">Smooth Multiband Compressor\Source\SmoothMultibandCompressor.bdsproj</Projects>
       <Projects Name="SoftKneeFeedbackCompressor.dll">Soft Knee Feedback Compressor\SoftKneeFeedbackCompressor.bdsproj</Projects>
       <Projects Name="SoftKneeLimiter.dll">Soft Knee Limiter\SoftKneeLimiter.bdsproj</Projects>
-      <Projects Name="Targets">Adhesive.dll EnhancedGate.dll HardKneeCompressor.dll LA1701.dll LA4029.dll LightweightCompressor.dll LightweightFeedbackCompressor.dll LightweightFeedbackLikeCompressor.dll LightweightGate.dll LightweightLimiter.dll LightweightMultibandCompressor.dll LightweightUpwardCompressor.dll MultibandCompressor.dll SimpleCompressor.dll SimpleFeedbackCompressor.dll SimpleGate.dll SmoothMultibandCompressor.dll SoftKneeFeedbackCompressor.dll SoftKneeLimiter.dll</Projects>
+      <Projects Name="LookaheadLimiter.dll">Lookahead Limiter\LookaheadLimiter.bdsproj</Projects>
+      <Projects Name="Targets">Adhesive.dll EnhancedGate.dll HardKneeCompressor.dll LA1701.dll LA4029.dll LightweightCompressor.dll LightweightFeedbackCompressor.dll LightweightFeedbackLikeCompressor.dll LightweightGate.dll LightweightLimiter.dll LightweightMultibandCompressor.dll LightweightUpwardCompressor.dll MultibandCompressor.dll SimpleCompressor.dll SimpleFeedbackCompressor.dll SimpleGate.dll SmoothMultibandCompressor.dll SoftKneeFeedbackCompressor.dll SoftKneeLimiter.dll LookaheadLimiter.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

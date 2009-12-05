@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial,
+  DAV_GuiPanel;
 
 type
   TFmChebyshev = class(TForm)
@@ -52,11 +53,20 @@ type
     LbStopband: TGuiLabel;
     LbStopbandValue: TGuiLabel;
     PnControls: TGuiPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialStopbandChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure DialFrequencyDblClick(Sender: TObject);
+    procedure DialStopbandDblClick(Sender: TObject);
+    procedure DialOrderDblClick(Sender: TObject);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
+    procedure PnControlsClick(Sender: TObject);
+  private
+    FEdValue: TEdit;
   public
     procedure UpdateFrequency;
     procedure UpdateStopband;
@@ -84,45 +94,145 @@ begin
  end;
 end;
 
+procedure TFmChebyshev.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
 procedure TFmChebyshev.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
  UpdateStopband;
  UpdateOrder;
+(*
+ with TChebyshevLPModule(Owner) do
+  begin
+   Resizer.SetEditorHwnd(Self.Handle);
+  end;
+*)
+end;
+
+procedure TFmChebyshev.PnControlsClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
+procedure TFmChebyshev.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ with TChebyshev2HPModule(Owner) do
+  begin
+   Resizer.SetEditorHwnd(0);
+  end;
 end;
 
 procedure TFmChebyshev.DialFrequencyChange(Sender: TObject);
 begin
- with TChebyshev2LPModule(Owner) do
+ with TChebyshev2HPModule(Owner) do
   begin
    if ParameterByName['Frequency'] <> DialFrequency.Position
     then ParameterByName['Frequency'] := DialFrequency.Position;
   end;
 end;
 
+procedure TFmChebyshev.DialFrequencyDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbFrequencyValue.Left;
+   Top := LbFrequencyValue.Top;
+   Width := LbFrequencyValue.Width;
+   Height := LbFrequencyValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbFrequencyValue.Caption;
+   Tag := 0;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
 procedure TFmChebyshev.DialOrderChange(Sender: TObject);
 begin
- with TChebyshev2LPModule(Owner) do
+ with TChebyshev2HPModule(Owner) do
   begin
    if ParameterByName['Order'] <> DialOrder.Position
     then ParameterByName['Order'] := DialOrder.Position;
   end;
 end;
 
+procedure TFmChebyshev.DialOrderDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbOrderValue.Left;
+   Top := LbOrderValue.Top;
+   Width := LbOrderValue.Width;
+   Height := LbOrderValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbOrderValue.Caption;
+   Tag := 2;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
 procedure TFmChebyshev.DialStopbandChange(Sender: TObject);
 begin
- with TChebyshev2LPModule(Owner) do
+ with TChebyshev2HPModule(Owner) do
   begin
    if ParameterByName['Stopband'] <> DialStopband.Position
     then ParameterByName['Stopband'] := DialStopband.Position;
   end;
 end;
 
+procedure TFmChebyshev.DialStopbandDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbStopbandValue.Left;
+   Top := LbStopbandValue.Top;
+   Width := LbStopbandValue.Width;
+   Height := LbStopbandValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbStopbandValue.Caption;
+   Tag := 1;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmChebyshev.EdValueKeyPress(Sender: TObject; var Key: Char);
+begin
+ with TChebyshev2HPModule(Owner) do
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    FreeAndNil(FEdValue);
+   except
+   end;
+end;
+
 procedure TFmChebyshev.UpdateFrequency;
 var
   Freq : Single;
 begin
- with TChebyshev2LPModule(Owner) do
+ with TChebyshev2HPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
    if DialFrequency.Position <> Freq
@@ -137,7 +247,7 @@ procedure TFmChebyshev.UpdateOrder;
 var
   Order : Single;
 begin
- with TChebyshev2LPModule(Owner) do
+ with TChebyshev2HPModule(Owner) do
   begin
    Order := ParameterByName['Order'];
    if DialOrder.Position <> Order
@@ -150,7 +260,7 @@ procedure TFmChebyshev.UpdateStopband;
 var
   Stopband : Single;
 begin
- with TChebyshev2LPModule(Owner) do
+ with TChebyshev2HPModule(Owner) do
   begin
    Stopband := ParameterByName['Stopband'];
    if DialStopband.Position <> Stopband

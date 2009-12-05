@@ -7,17 +7,17 @@ object FmParametriQLite: TFmParametriQLite
   ClientWidth = 794
   Color = 3092526
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
-  Font.Name = 'Tahoma'
-  Font.Style = []
+  Font.Color = 12961476
+  Font.Height = -13
+  Font.Name = 'Arial'
+  Font.Style = [fsBold]
   OldCreateOrder = False
   Scaled = False
   OnCreate = FormCreate
   OnPaint = FormPaint
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 16
   object Box8: TShape
     Tag = 8
     Left = 717
@@ -764,12 +764,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq2: TGuiLabel
     Tag = 2
@@ -780,12 +774,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq3: TGuiLabel
     Tag = 3
@@ -796,12 +784,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq4: TGuiLabel
     Tag = 4
@@ -812,12 +794,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq7: TGuiLabel
     Tag = 7
@@ -828,12 +804,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq6: TGuiLabel
     Tag = 6
@@ -844,12 +814,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq5: TGuiLabel
     Tag = 5
@@ -860,12 +824,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreq8: TGuiLabel
     Tag = 8
@@ -876,12 +834,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'FREQ'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW1: TGuiLabel
     Tag = 1
@@ -892,12 +844,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW2: TGuiLabel
     Tag = 2
@@ -908,12 +854,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW3: TGuiLabel
     Tag = 3
@@ -924,12 +864,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW4: TGuiLabel
     Tag = 4
@@ -940,12 +874,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW8: TGuiLabel
     Tag = 8
@@ -956,12 +884,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW7: TGuiLabel
     Tag = 7
@@ -972,12 +894,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW6: TGuiLabel
     Tag = 6
@@ -988,12 +904,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbBW5: TGuiLabel
     Tag = 5
@@ -1004,12 +914,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'BW'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object DialInput: TGuiDial
     Left = 16
@@ -1062,12 +966,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain2: TGuiLabel
     Tag = 2
@@ -1078,12 +976,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain3: TGuiLabel
     Tag = 3
@@ -1094,12 +986,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain4: TGuiLabel
     Tag = 4
@@ -1110,12 +996,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain8: TGuiLabel
     Tag = 8
@@ -1126,12 +1006,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain7: TGuiLabel
     Tag = 7
@@ -1142,12 +1016,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain6: TGuiLabel
     Tag = 6
@@ -1158,12 +1026,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain5: TGuiLabel
     Tag = 5
@@ -1174,12 +1036,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbFreqValue1: TGuiLabel
     Tag = 1
@@ -1751,12 +1607,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType7: TGuiLabel
@@ -1768,12 +1618,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType6: TGuiLabel
@@ -1785,12 +1629,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType5: TGuiLabel
@@ -1802,12 +1640,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType4: TGuiLabel
@@ -1819,12 +1651,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType3: TGuiLabel
@@ -1836,12 +1662,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType2: TGuiLabel
@@ -1853,12 +1673,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbType1: TGuiLabel
@@ -1870,12 +1684,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'TYPE'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
     OnClick = LbTypeClick
   end
   object LbInput: TGuiLabel
@@ -1886,12 +1694,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'INPUT'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbOutput: TGuiLabel
     Left = 142
@@ -1901,12 +1703,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'OUTPUT'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object LbGain: TGuiLabel
     Left = 96
@@ -1916,12 +1712,6 @@ object FmParametriQLite: TFmParametriQLite
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'GAIN'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object ShapeInputBottom: TShape
     Left = 65
@@ -1964,12 +1754,6 @@ object FmParametriQLite: TFmParametriQLite
     AntiAlias = gaaLinear4x
     Caption = 'Parametri-Q LITE'
     Color = 1447701
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 12961476
-    Font.Height = -13
-    Font.Name = 'Arial'
-    Font.Style = [fsBold]
-    ParentFont = False
   end
   object VUMeter: TGuiVUMeter
     Left = 31

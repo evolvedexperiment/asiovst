@@ -325,24 +325,32 @@ end;
 
 procedure TVstPluginBasicTests.TestMultipleInstances;
 var
-  i, j : Integer;
+  SequenceIndex, InstanceIndex, RandomInstance : Integer;
 const
-  CInstantCount = 33;
+  CInstantCount : array [0..1] of Integer = (2, 33);
 begin
- // open instances
- for i := 1 to CInstantCount do
-  with FVstHost.VstPlugIns.Add do
-   begin
-    LoadFromFile(FVstHost[0].DLLFileName);
-    Open;
-   end;
-
- // close and delete random instances
- for i := 1 to CInstantCount do
+ for SequenceIndex := 0 to Length(CInstantCount) - 1 do
   begin
-   j := random(FVstHost.VstPlugIns.Count);
-   FVstHost[j].Close;
-   FVstHost.VstPlugIns.Delete(j);
+   // open instances
+   for InstanceIndex := 1 to CInstantCount[SequenceIndex] do
+    with FVstHost.VstPlugIns.Add do
+     try
+      LoadFromFile(FVstHost[0].DLLFileName);
+      Open;
+     except
+      Fail('Error opening plugin : ' + IntToStr(InstanceIndex));
+     end;
+
+   // close and delete random instances
+   for InstanceIndex := 1 to CInstantCount[SequenceIndex] do
+    try
+     RandomInstance := Random(FVstHost.VstPlugIns.Count);
+     FVstHost[RandomInstance].Close;
+     FVstHost.VstPlugIns.Delete(RandomInstance);
+    except
+     Fail('Error closing plugin : ' + IntToStr(RandomInstance) + ' / ' +
+       IntToStr(InstanceIndex));
+    end;
   end;
 end;
 

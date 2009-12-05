@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, Controls, DAV_Types,
+  Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, DAV_Types,
   DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial;
 
 type
@@ -43,9 +43,13 @@ type
     DialFrequency: TGuiDial;
     LbFrequency: TGuiLabel;
     LbFrequencyValue: TGuiLabel;
-    procedure DialFrequencyChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure DialFrequencyChange(Sender: TObject);
+    procedure DialFrequencyDblClick(Sender: TObject);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
+  private
+    FEdValue : TEdit;
   public
     procedure UpdateFrequency;
   end;
@@ -72,6 +76,38 @@ end;
 procedure TFmLinearPhase.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
+end;
+
+procedure TFmLinearPhase.DialFrequencyDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := Self;
+   Left := LbFrequencyValue.Left;
+   Top := LbFrequencyValue.Top;
+   Width := LbFrequencyValue.Width;
+   Height := LbFrequencyValue.Height;
+   BorderStyle := bsNone;
+   Color := Self.Color;
+   Text := LbFrequencyValue.Caption;
+   Tag := 0;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmLinearPhase.EdValueKeyPress(Sender: TObject; var Key: Char);
+begin
+ with TLinearPhaseDataModule(Owner) do
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    FreeAndNil(FEdValue);
+   except
+   end;
 end;
 
 procedure TFmLinearPhase.DialFrequencyChange(Sender: TObject);

@@ -35,8 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, DAV_Types,
-  DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial, DAV_GuiPanel;
+  Windows, Messages, SysUtils, Classes, Forms, ExtCtrls, Controls, StdCtrls,
+  DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiDial,
+  DAV_GuiPanel;
 
 type
   TFmChebyshev = class(TForm)
@@ -52,12 +53,20 @@ type
     LbRipple: TGuiLabel;
     LbRippleValue: TGuiLabel;
     PnControls: TGuiPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure DialFrequencyChange(Sender: TObject);
     procedure DialRippleChange(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormCreate(Sender: TObject);
+    procedure DialFrequencyDblClick(Sender: TObject);
+    procedure DialRippleDblClick(Sender: TObject);
+    procedure DialOrderDblClick(Sender: TObject);
+    procedure EdValueKeyPress(Sender: TObject; var Key: Char);
+    procedure PnControlsClick(Sender: TObject);
+  private
+    FEdValue: TEdit;
   public
     procedure UpdateFrequency;
     procedure UpdateRipple;
@@ -85,6 +94,12 @@ begin
  end;
 end;
 
+procedure TFmChebyshev.FormDestroy(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
 procedure TFmChebyshev.FormShow(Sender: TObject);
 begin
  UpdateFrequency;
@@ -98,12 +113,47 @@ begin
 *)
 end;
 
+procedure TFmChebyshev.PnControlsClick(Sender: TObject);
+begin
+ if Assigned(FEdValue)
+  then FreeAndNil(FEdValue);
+end;
+
+procedure TFmChebyshev.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ with TChebyshevLPModule(Owner) do
+  begin
+   Resizer.SetEditorHwnd(0);
+  end;
+end;
+
 procedure TFmChebyshev.DialFrequencyChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
   begin
    if ParameterByName['Frequency'] <> DialFrequency.Position
     then ParameterByName['Frequency'] := DialFrequency.Position;
+  end;
+end;
+
+procedure TFmChebyshev.DialFrequencyDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbFrequencyValue.Left;
+   Top := LbFrequencyValue.Top;
+   Width := LbFrequencyValue.Width;
+   Height := LbFrequencyValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbFrequencyValue.Caption;
+   Tag := 0;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
   end;
 end;
 
@@ -116,6 +166,27 @@ begin
   end;
 end;
 
+procedure TFmChebyshev.DialOrderDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbOrderValue.Left;
+   Top := LbOrderValue.Top;
+   Width := LbOrderValue.Width;
+   Height := LbOrderValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbOrderValue.Caption;
+   Tag := 2;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
 procedure TFmChebyshev.DialRippleChange(Sender: TObject);
 begin
  with TChebyshevLPModule(Owner) do
@@ -125,12 +196,36 @@ begin
   end;
 end;
 
-procedure TFmChebyshev.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFmChebyshev.DialRippleDblClick(Sender: TObject);
+begin
+ if not Assigned(FEdValue)
+  then FEdValue := TEdit.Create(Self);
+
+ with FEdValue do
+  begin
+   Parent := PnControls;
+   Left := LbRippleValue.Left;
+   Top := LbRippleValue.Top;
+   Width := LbRippleValue.Width;
+   Height := LbRippleValue.Height;
+   BorderStyle := bsNone;
+   Color := PnControls.PanelColor;
+   Text := LbRippleValue.Caption;
+   Tag := 1;
+   OnKeyPress := EdValueKeyPress;
+   SetFocus;
+  end;
+end;
+
+procedure TFmChebyshev.EdValueKeyPress(Sender: TObject; var Key: Char);
 begin
  with TChebyshevLPModule(Owner) do
-  begin
-   Resizer.SetEditorHwnd(0);
-  end;
+  if (Key = #13) and Assigned(FEdValue) then
+   try
+    StringToParameter(FEdValue.Tag, FEdValue.Text);
+    FreeAndNil(FEdValue);
+   except
+   end;
 end;
 
 procedure TFmChebyshev.UpdateFrequency;

@@ -1,5 +1,4 @@
 object LinearPhaseDataModule: TLinearPhaseDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
@@ -8,7 +7,6 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   ProcessingMode = pmBlockSave
   BlockModeOverlap = 512
@@ -38,11 +36,11 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Window Function'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -55,6 +53,7 @@ object LinearPhaseDataModule: TLinearPhaseDataModule
       VSTModule = Owner
       OnParameterChange = ParameterWindowFunctionsChange
       OnCustomParameterDisplay = ParameterWindowFunctionsDisplay
+      OnStringToParameter = StringToWindowParameter
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen

@@ -15,6 +15,7 @@ object FmChebyshev: TFmChebyshev
   Scaled = False
   OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnShow = FormShow
   DesignSize = (
     290
@@ -33,6 +34,7 @@ object FmChebyshev: TFmChebyshev
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
   end
   object LbChebyshevFilterDemo: TGuiLabel
     Left = 8
@@ -46,6 +48,7 @@ object FmChebyshev: TFmChebyshev
     Font.Height = -21
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
   end
   object PnControls: TGuiPanel
@@ -57,9 +60,9 @@ object FmChebyshev: TFmChebyshev
     AntiAlias = gaaLinear4x
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 10526927
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Font.Height = -13
+    Font.Name = 'Verdana'
+    Font.Style = [fsBold]
     LineColor = 10526927
     Linewidth = 3
     PanelColor = 1315880
@@ -67,6 +70,7 @@ object FmChebyshev: TFmChebyshev
     Radius = 8
     TabOrder = 0
     UseDockManager = True
+    OnClick = PnControlsClick
     DesignSize = (
       274
       129)
@@ -86,6 +90,7 @@ object FmChebyshev: TFmChebyshev
       Min = 20.000000000000000000
       NumGlyphs = 65
       OnChange = DialFrequencyChange
+      OnDblClick = DialFrequencyDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -111,6 +116,7 @@ object FmChebyshev: TFmChebyshev
       Min = 0.001000000047497451
       NumGlyphs = 65
       OnChange = DialRippleChange
+      OnDblClick = DialRippleDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -129,11 +135,6 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
     end
     object LbRipple: TGuiLabel
       Left = 94
@@ -145,11 +146,6 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Ripple'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
     end
     object DialOrder: TGuiDial
       Left = 190
@@ -165,6 +161,7 @@ object FmChebyshev: TFmChebyshev
       Max = 16.000000000000000000
       NumGlyphs = 65
       OnChange = DialOrderChange
+      OnDblClick = DialOrderDblClick
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -184,11 +181,6 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
     end
     object LbOrderValue: TGuiLabel
       Left = 182
@@ -200,11 +192,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = DialOrderDblClick
     end
     object LbRippleValue: TGuiLabel
       Left = 94
@@ -216,11 +204,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Ripple'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = DialRippleDblClick
     end
     object LbFrequencyValue: TGuiLabel
       Left = 8
@@ -232,11 +216,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 10526927
-      Font.Height = -13
-      Font.Name = 'Verdana'
-      Font.Style = [fsBold]
+      OnDblClick = DialFrequencyDblClick
     end
   end
 end
