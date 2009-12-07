@@ -802,15 +802,12 @@ end;
 procedure FastAbs(var Value: TDAV4SingleArray); overload;
 {$IFDEF PUREPASCAL}
 var
-  i0 : Integer absolute Value[0];
-  i1 : Integer absolute Value[1];
-  i2 : Integer absolute Value[2];
-  i3 : Integer absolute Value[3];
+  i : Array [0..3] of Integer absolute Value;
 begin
- i0 := i0 and $7FFFFFFF;
- i1 := i1 and $7FFFFFFF;
- i2 := i2 and $7FFFFFFF;
- i3 := i3 and $7FFFFFFF;
+ i[0] := i[0] and $7FFFFFFF;
+ i[1] := i[1] and $7FFFFFFF;
+ i[2] := i[2] and $7FFFFFFF;
+ i[3] := i[3] and $7FFFFFFF;
 end;
 {$ELSE}
 asm

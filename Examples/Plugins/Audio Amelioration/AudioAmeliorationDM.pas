@@ -244,6 +244,7 @@ begin
  FPowerActive := Value > 0.5;
  ChooseProcess;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdatePower;
 end;
@@ -253,6 +254,7 @@ procedure TAudioAmeliorationModule.ParameterExciterActiveChange(
 begin
  FExciterActive := Value > 0.5;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateExciterActive;
 end;
@@ -262,13 +264,14 @@ procedure TAudioAmeliorationModule.ParameterAmbienceActiveChange(
 begin
  FAmbienceActive := Value > 0.5;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateAmbienceActive;
 end;
 
 function TAudioAmeliorationModule.GetBandReserve: Single;
 begin
- result := 100 * FBandReserve;
+ Result := 100 * FBandReserve;
 end;
 
 function TAudioAmeliorationModule.GetBandRMS(Index: Integer): Single;
@@ -283,6 +286,7 @@ procedure TAudioAmeliorationModule.Parameter3DSoundChange(
 begin
  FSourroundActive := Value > 0.5;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).Update3DSurroundActive;
 end;
@@ -292,6 +296,7 @@ procedure TAudioAmeliorationModule.ParameterCompressorActiveChange(
 begin
  FCompressorActive := Value > 0.5;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateCompressorActive;
 end;
@@ -301,6 +306,7 @@ procedure TAudioAmeliorationModule.ParameterExtraBassActiveChange(
 begin
  FExtraBassActive := Value > 0.5;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateExtraBassActive;
 end;
@@ -313,14 +319,16 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FExciter) - 1 do
-  with FExciter[Channel] do
-   begin
-    Frequency := 8000 - 5500 * FastSqrtBab1(0.01 * Value);
-    HighFrequencyLevel := 1 + 0.005 * Value;
-    LowFrequencyLevel := 1;
-    HarmonicsLevel := 0.01 + 0.01 * Value;
-   end;
+  if Assigned(FExciter[Channel]) then
+   with FExciter[Channel] do
+    begin
+     Frequency := 8000 - 5500 * FastSqrtBab1(0.01 * Value);
+     HighFrequencyLevel := 1 + 0.005 * Value;
+     LowFrequencyLevel := 1;
+     HarmonicsLevel := 0.01 + 0.01 * Value;
+    end;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateExciter;
 end;
@@ -328,9 +336,13 @@ end;
 procedure TAudioAmeliorationModule.ParameterAmbienceChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- FAmbience.Mix := 0.009 * Value;
- FAmbience.Damping := 0.3 + 0.6 * (1 - 0.01 * Value);
+ if Assigned(FAmbience) then
+  begin
+   FAmbience.Mix := 0.009 * Value;
+   FAmbience.Damping := 0.3 + 0.6 * (1 - 0.01 * Value);
+  end;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateAmbience;
 end;
@@ -338,14 +350,16 @@ end;
 procedure TAudioAmeliorationModule.ParameterCompressorChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- with FCompressor do
-  begin
-   Threshold_dB := -0.06 * Value;
-   Knee_dB := 5 * (1 - 0.01 * Value);
-   MakeUpGain_dB := -Threshold_dB + (1 - 0.01 * Value) * Knee_dB;
-   Ratio := FastPower2MinError4(0.05 * Value);
-  end;
+ if Assigned(FCompressor) then
+  with FCompressor do
+   begin
+    Threshold_dB := -0.06 * Value;
+    Knee_dB := 5 * (1 - 0.01 * Value);
+    MakeUpGain_dB := -Threshold_dB + (1 - 0.01 * Value) * Knee_dB;
+    Ratio := FastPower2MinError4(0.05 * Value);
+   end;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateCompressor;
 end;
@@ -356,17 +370,19 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FBassEnhancer) - 1 do
-  with FBassEnhancer[Channel] do
-   begin
-    HighpassSelect := hp1stOrder;
-    Frequency := 80 + 1.2 * Value;
-    HarmonicBassLevel := dB_To_Amp(-18 * (1 - 0.01 * Value));
-    OriginalBassLevel := dB_To_Amp(-0.1 * Value);
-    Decay := dB_To_Amp(-(9 + 0.1 * Value));
-    InputLevel := 1;
-    HighFrequencyLevel := 1;
-   end;
+  if Assigned(FBassEnhancer[Channel]) then
+   with FBassEnhancer[Channel] do
+    begin
+     HighpassSelect := hp1stOrder;
+     Frequency := 80 + 1.2 * Value;
+     HarmonicBassLevel := dB_To_Amp(-18 * (1 - 0.01 * Value));
+     OriginalBassLevel := dB_To_Amp(-0.1 * Value);
+     Decay := dB_To_Amp(-(9 + 0.1 * Value));
+     InputLevel := 1;
+     HighFrequencyLevel := 1;
+    end;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateExtraBass;
 end;
@@ -377,6 +393,7 @@ begin
  FIsSpeaker := Value > 0.5;
  ChooseProcess;
 
+ // update GUI
  if EditorForm is TFmAudioAmelioration
   then TFmAudioAmelioration(EditorForm).UpdateSpeaker;
 end;
@@ -427,14 +444,14 @@ begin
   begin
    // Lowpass
    DesiredFreq := CFrequencyArray[CNumFrequencies - Band - 1] * HalfThirdMulFak;
-   if DesiredFreq > 0.499 * SampleRate then DesiredFreq := 0.499 * SampleRate;   
+   if DesiredFreq > 0.499 * SampleRate then DesiredFreq := 0.499 * SampleRate;
 
    if UseDownsampling then
     while ((2 * DesiredFreq / Self.SampleRate) * (1 shl Downsampling)) < FBandReserve
      do Inc(Downsampling);
 
    // eventually create filter
-   if not assigned(FFilterArray[Band].Lowpass)
+   if not Assigned(FFilterArray[Band].Lowpass)
     then FFilterArray[Band].Lowpass := TChebyshev1LowpassFilter.Create(6);
 
    with FFilterArray[Band].Lowpass do
@@ -448,7 +465,7 @@ begin
    DesiredFreq := CFrequencyArray[CNumFrequencies - Band - 1] / HalfThirdMulFak;
 
    // eventually create filter
-   if not assigned(FFilterArray[Band].Highpass)
+   if not Assigned(FFilterArray[Band].Highpass)
     then FFilterArray[Band].Highpass := TChebyshev1HighpassFilter.Create(8);
     
    with FFilterArray[Band].Highpass do
@@ -484,16 +501,18 @@ var
 begin
  if Abs(SampleRate) > 0 then
   begin
-   FAmbience.SampleRate := SampleRate;
-   FCompressor.SampleRate := SampleRate;
-   FLimiter.SampleRate := SampleRate;
-   FCrosstalkSimulator.SampleRate := SampleRate;
+   if Assigned(FAmbience) then FAmbience.SampleRate := SampleRate;
+   if Assigned(FCompressor) then FCompressor.SampleRate := SampleRate;
+   if Assigned(FLimiter) then FLimiter.SampleRate := SampleRate;
+   if Assigned(FCrosstalkSimulator) then FCrosstalkSimulator.SampleRate := SampleRate;
 
-   for ChannelIndex := 0 to Length(FBassEnhancer) - 1
-    do FBassEnhancer[ChannelIndex].SampleRate := SampleRate;
+   for ChannelIndex := 0 to Length(FBassEnhancer) - 1 do
+    if Assigned(FBassEnhancer[ChannelIndex])
+     then FBassEnhancer[ChannelIndex].SampleRate := SampleRate;
 
-   for ChannelIndex := 0 to Length(FExciter) - 1
-    do FExciter[ChannelIndex].SampleRate := SampleRate;
+   for ChannelIndex := 0 to Length(FExciter) - 1 do
+    if Assigned(FExciter[ChannelIndex])
+     then FExciter[ChannelIndex].SampleRate := SampleRate;
   end;
 end;
 
@@ -505,7 +524,7 @@ var
   Band         : Integer;
   d, z, s      : Double;
 const
-  cDenorm = 1E-32;
+  CDenorm = 1E-32;
 begin
  for ChannelIndex := 0 to min(numInputs, numOutputs) - 1
   do Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
@@ -552,8 +571,8 @@ begin
      if (FDownSampleCount mod FFilterArray[Band].Downsampling) <> 0
       then Break;
 
-     d := FFilterArray[Band].Lowpass.ProcessSample64(d + cDenorm);
-     z := FFilterArray[Band].Highpass.ProcessSample64(d + cDenorm);
+     d := FFilterArray[Band].Lowpass.ProcessSample64(d + CDenorm);
+     z := FFilterArray[Band].Highpass.ProcessSample64(d + CDenorm);
 
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(z));
@@ -571,7 +590,7 @@ var
   Band         : Integer;
   d, z, s      : Double;
 const
-  cDenorm = 1E-32;
+  CDenorm = 1E-32;
 begin
  for ChannelIndex := 0 to min(numInputs, numOutputs) - 1
   do Move(Inputs[ChannelIndex, 0], Outputs[ChannelIndex, 0], SampleFrames * SizeOf(Single));
@@ -621,8 +640,8 @@ begin
      if (FDownSampleCount mod FFilterArray[Band].Downsampling) <> 0
       then Break;
 
-     d := FFilterArray[Band].Lowpass.ProcessSample64(d + cDenorm);
-     z := FFilterArray[Band].Highpass.ProcessSample64(d + cDenorm);
+     d := FFilterArray[Band].Lowpass.ProcessSample64(d + CDenorm);
+     z := FFilterArray[Band].Highpass.ProcessSample64(d + CDenorm);
 
      s := IntPower(FSpeedConst[0], 8 * FFilterArray[Band].Downsampling + 1);
      FFilterArray[Band].RMS := s * FFilterArray[Band].RMS + (1 - s) * Amp_to_dB(abs(z));

@@ -22,7 +22,6 @@ object ComboDataModule: TComboDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Model'
       LargeStepFloat = 1.000000000000000000
@@ -38,7 +37,6 @@ object ComboDataModule: TComboDataModule
       OnStringToParameter = StringToParameterModel
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Drive'
       LargeStepFloat = 2.000000000000000000
@@ -55,7 +53,6 @@ object ComboDataModule: TComboDataModule
       OnParameterChange = ParamDriveChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Bias'
       LargeStepFloat = 2.000000000000000000
@@ -71,7 +68,6 @@ object ComboDataModule: TComboDataModule
       OnParameterChange = ParamBiasChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Output'
       LargeStepFloat = 2.000000000000000000
@@ -89,7 +85,6 @@ object ComboDataModule: TComboDataModule
       OnParameterChange = ParamOutputChanged
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Process'
       LargeStepFloat = 1.000000000000000000
@@ -99,7 +94,6 @@ object ComboDataModule: TComboDataModule
       ShortLabel = 'stereo'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
-      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamProcessChange
       OnCustomParameterDisplay = ParamProcessDisplay
@@ -123,7 +117,6 @@ object ComboDataModule: TComboDataModule
       OnParameterChange = ParamHPFFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Highpass Filter'
       DisplayName = 'HPF Resonance'
@@ -139,7 +132,6 @@ object ComboDataModule: TComboDataModule
       OnParameterChange = ParamHPFResonanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Noise'
       Flags = [ppfParameterUsesFloatStep]

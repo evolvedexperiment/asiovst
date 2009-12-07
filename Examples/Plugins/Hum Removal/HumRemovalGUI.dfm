@@ -7,7 +7,7 @@ object FmHumRemoval: TFmHumRemoval
   ClientWidth = 396
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = 14277598
+  Font.Color = 11580859
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -22,26 +22,30 @@ object FmHumRemoval: TFmHumRemoval
     Top = 8
     Width = 379
     Height = 169
-    AntiAlias = gaaLinear3x
-    GraphColorDark = 14277598
+    AntiAlias = gaaLinear4x
+    GraphColorDark = 7699334
     GraphColorLight = 2829873
     ColorChart = clBlack
     BorderRadius = 7
     BorderWidth = 2
+    BorderColor = 14277598
     FilterSeries = <
       item
         DisplayName = 'Mono'
         Color = 14277598
         OnGetFilterGain = GuiEQGraphGetFilterGain
       end>
+    YAxis.LabelPosition = ylpLeft
     YAxis.LowerLevel = -36.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
-    XAxis.LabelStyle = xlsBottom
+    YAxis.Granularity = 20.000000000000000000
+    YAxis.MaximumGridLines = 4
+    XAxis.LabelPosition = xlpBottom
     XAxis.UpperFrequency = 1600.000000000000000000
     XAxis.LowerFrequency = 4.000000000000000000
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
+    Font.Color = 7699334
     Font.Height = -9
     Font.Name = 'Tahoma'
     Font.Style = []
@@ -77,6 +81,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object DialHighpassFrequency: TGuiDial
       Left = 35
@@ -149,6 +154,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object DialHighpassOrder: TGuiDial
       Left = 109
@@ -185,6 +191,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object LbHighpassOrderValue: TGuiLabel
       Left = 97
@@ -198,6 +205,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
   end
   object GbNotchFilters: TGuiGroup
@@ -230,6 +238,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object DialFundamentalFrequency: TGuiDial
       Left = 35
@@ -267,6 +276,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object DialNotchBandwidth: TGuiDial
       Left = 130
@@ -303,6 +313,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object LbNotchBandwidthValue: TGuiLabel
       Left = 106
@@ -316,6 +327,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
     end
     object LedHumProfile: TGuiLED
       Left = 10
@@ -341,6 +353,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Height = -17
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
       OnClick = LedHumProfileClick
     end
   end

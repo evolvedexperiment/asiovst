@@ -39,203 +39,203 @@ uses
   DAV_Common, {$IFDEF FPC} LCLIntf; {$ELSE}
   Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};{$ENDIF}
 
-  function FastInvSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastInvSqrt(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrt(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrt(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrtBab0(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrtBab1(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrtBab2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrtBab0(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrtBab1(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSqrtBab2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastInvSqrt(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastInvSqrt(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrt(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrt(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab0(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab1(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab0(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab1(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSqrtBab2(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
   function FastRoot(i: Single; n: Integer): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastIntPower(i: Single; n: Integer): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastPower(Base, Exponent: Double) : Double;
-  function FastLog2(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastPower2(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastExp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastFloorLn2(const Value: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastArctanLike(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastArctanLike(const Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2(Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastPower2(Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastExp(Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastFloorLn2(Value: Single): Integer; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastArctanLike(Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastArctanLike(Value: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastRandomGauss: Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  function FastSinLike(const Value: Single): Single; overload;
-  function FastSinLike(const Value: Double): Double; overload;
-  function FastCosLike(const Value: Single): Single; overload;
-  function FastCosLike(const Value: Double): Double; overload;
+  function FastSinLike(Value: Single): Single; overload;
+  function FastSinLike(Value: Double): Double; overload;
+  function FastCosLike(Value: Single): Single; overload;
+  function FastCosLike(Value: Double): Double; overload;
 
   { Trigonomic Approximations }
 
   // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
-  function FastCosPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
-  function FastCosPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinPart4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinPart4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
-  function FastCosPart5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc5Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc5Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc5Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc5Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about ?.? decimal digits over the range [0, pi/2].
-  function FastCosPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSinInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosInBounds6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSinInBounds6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // FPU assembler versions
   {$IFNDEF Purepascal}
-  function FastCosPart3TermFPU(const Value: Single): Single; overload;
-  function FastCosPart3TermFPU(const Value: Double): Double; overload;
-  function FastCosPart4TermFPU(const Value: Single): Single; overload;
-  function FastCosPart4TermFPU(const Value: Double): Double; overload;
-  function FastCosPart5TermFPU(const Value: Single): Single; overload;
-  function FastCosPart5TermFPU(const Value: Double): Double; overload;
-  function FastCosPart6TermFPU(const Value: Single): Single; overload;
-  function FastCosPart6TermFPU(const Value: Double): Double; overload;
+  function FastCosPart3TermFPU(Value: Single): Single; overload;
+  function FastCosPart3TermFPU(Value: Double): Double; overload;
+  function FastCosPart4TermFPU(Value: Single): Single; overload;
+  function FastCosPart4TermFPU(Value: Double): Double; overload;
+  function FastCosPart5TermFPU(Value: Single): Single; overload;
+  function FastCosPart5TermFPU(Value: Double): Double; overload;
+  function FastCosPart6TermFPU(Value: Single): Single; overload;
+  function FastCosPart6TermFPU(Value: Double): Double; overload;
   {$ENDIF}
 
   // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
-  function FastCosPart7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCosPart7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCos7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSin7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastSec7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc7Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCsc7Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart7Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCosPart7Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos7Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCos7Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin7Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSin7Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec7Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastSec7Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc7Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCsc7Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 2-Term: Accurate to about 3.2 decimal digits over the range [0, pi/4].
-  function FastTanPart2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPart2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan2Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan2Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart2Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart2Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv2Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv2Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds2Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds2Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds2Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds2Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan2Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan2Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan2Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan2Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 5.6 decimal digits over the range [0, pi/4].
-  function FastTanPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 4-Term: Accurate to about 8.2 decimal digits over the range [0, pi/4].
-  function FastTanPart4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPart4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 14 decimal digits over the range [0, pi/4].
-  function FastTanPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanPInv6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTanInBounds6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastCoTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPart6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanPInv6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanInBounds6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTanInBounds6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTan6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastCoTan6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
-  function FastArcTanPart3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcTanPart3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcTan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcTan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcCotan3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcCotan3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTanPart3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTanPart3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
-  function FastArcTanPart6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcTanPart6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcTan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcTan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcCotan6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcCotan6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTanPart6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTanPart6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcTan6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCotan6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
-  function FastArcCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCos3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCos3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
-  function FastArcCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastArcCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCos6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastArcCos6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
 
   { 2^x Approximations }
@@ -252,18 +252,18 @@ uses
 
   { Log2 Approximations }
 
-  function FastLog2ContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2Laurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2MinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2ContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2Laurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2MinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2ContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2Laurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2MinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2ContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2Laurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog2MinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2ContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2Laurent5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog2MinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
   { 10^X Approximations }
@@ -292,70 +292,70 @@ uses
 
   { Log10 Approximations }
 
-  function FastLog10ContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10Laurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10MinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10ContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10Laurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10MinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10ContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10Laurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10MinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10ContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10Laurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLog10MinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10ContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10Laurent5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLog10MinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
   { Ln Approximations }
 
-  function FastLnContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnLaurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnLaurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnMinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnLaurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnMinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnLaurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastLnMinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnLaurent5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastLnMinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 
   { Sqrt Approximations }
 
-//  function FastSqrtMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+//  function FastSqrtMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
   { TanH Approximations }
 
-  function FastTanhOpt3Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt4Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt5Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt6Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt7Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt3Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt4Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt5Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt6Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastTanhOpt7Term(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt3Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt4Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt5Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt6Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt7Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt3Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt4Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt5Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt6Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastTanhOpt7Term(Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
   {$IFNDEF Purepascal}
-  function FastTanhOpt3TermFPU(const Input: Single): Single; assembler; overload;
-  function FastTanhOpt4TermFPU(const Input: Single): Single; assembler; overload;
-  function FastTanhOpt5TermFPU(const Input: Single): Single; assembler; overload;
-  function FastTanhOpt6TermFPU(const Input: Single): Single; assembler; overload;
-  function FastTanhOpt7TermFPU(const Input: Single): Single; assembler; overload;
-  function FastTanhOpt3TermFPU(const Input: Double): Double; assembler; overload;
-  function FastTanhOpt4TermFPU(const Input: Double): Double; assembler; overload;
-  function FastTanhOpt5TermFPU(const Input: Double): Double; assembler; overload;
-  function FastTanhOpt6TermFPU(const Input: Double): Double; assembler; overload;
-  function FastTanhOpt7TermFPU(const Input: Double): Double; assembler; overload;
+  function FastTanhOpt3TermFPU(Input: Single): Single; assembler; overload;
+  function FastTanhOpt4TermFPU(Input: Single): Single; assembler; overload;
+  function FastTanhOpt5TermFPU(Input: Single): Single; assembler; overload;
+  function FastTanhOpt6TermFPU(Input: Single): Single; assembler; overload;
+  function FastTanhOpt7TermFPU(Input: Single): Single; assembler; overload;
+  function FastTanhOpt3TermFPU(Input: Double): Double; assembler; overload;
+  function FastTanhOpt4TermFPU(Input: Double): Double; assembler; overload;
+  function FastTanhOpt5TermFPU(Input: Double): Double; assembler; overload;
+  function FastTanhOpt6TermFPU(Input: Double): Double; assembler; overload;
+  function FastTanhOpt7TermFPU(Input: Double): Double; assembler; overload;
   {$ENDIF}
 
-  function FastTanh2Like4Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastTanh2Like3Term(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
-  function FastTanh2Like2Term(const Input: Single): Single;
-  function FastTanh2Like1Term(const Input: Single): Single;
+  function FastTanh2Like4Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanh2Like3Term(Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+  function FastTanh2Like2Term(Input: Single): Single;
+  function FastTanh2Like1Term(Input: Single): Single;
 
   function FastTanhMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastTanhContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -366,47 +366,47 @@ uses
   function FastTanhMinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
   function FastTanhContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-  function FastdBtoAmpMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpMinError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastdBtoAmpContinousError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError2(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError2(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError3(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError3(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError4(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError4(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpMinError5(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastdBtoAmpContinousError5(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-  function FastAmptodBMinError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent2(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent2(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent3(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent3(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent4(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent4(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBMinError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBContinousError5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent5(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-  function FastAmptodBLaurent5(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError2(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError2(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent2(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent2(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError3(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError3(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent3(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent3(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError4(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError4(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent4(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent4(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBMinError5(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBContinousError5(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent5(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+  function FastAmptodBLaurent5(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
 var
   Ln10, Ln2, Ln2Half, Ln2Rez   : Double;
@@ -535,20 +535,20 @@ type
 
 // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
 
-function FastCosPart3Term(const Value: Single): Single;
+function FastCosPart3Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
 end;
 
-function FastCosPart3Term(const Value: Double): Double;
+function FastCosPart3Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := CCos3Term[0] + Result * (CCos3Term[1] + CCos3Term[2] * Result);
 end;
 
 {$IFNDEF Purepascal}
-function FastCosPart3TermFPU(const Value: Single): Single;
+function FastCosPart3TermFPU(Value: Single): Single;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -559,7 +559,7 @@ asm
  fadd  [CCos3Term].Single
 end;
 
-function FastCosPart3TermFPU(const Value: Double): Double;
+function FastCosPart3TermFPU(Value: Double): Double;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -571,7 +571,7 @@ asm
 end;
 {$ENDIF}
 
-function FastCosInBounds3Term(const Value: Single): Single;
+function FastCosInBounds3Term(Value: Single): Single;
 begin
  case round(Value * CTwoDivPi32 - CHalf32) of
    0 : Result :=  FastCosPart3Term(Value);
@@ -582,7 +582,7 @@ begin
  end;
 end;
 
-function FastCosInBounds3Term(const Value: Double): Double;
+function FastCosInBounds3Term(Value: Double): Double;
 begin
  case round(Value * CTwoDivPi64 - CHalf64) of
    0 : Result :=  FastCosPart3Term(Value);
@@ -593,55 +593,55 @@ begin
  end;
 end;
 
-function FastCos3Term(const Value: Single): Single;
+function FastCos3Term(Value: Single): Single;
 begin
  // Get rid of values > 2 * pi
  Result := abs(FastMod(Value, CTwoPi32));
  Result := FastCosInBounds3Term(Result);
 end;
 
-function FastCos3Term(const Value: Double): Double;
+function FastCos3Term(Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
  Result := FastCosInBounds3Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
-function FastSinInBounds3Term(const Value: Single): Single;
+function FastSinInBounds3Term(Value: Single): Single;
 begin
   Result := FastCosInBounds3Term(CPiHalf32 - Value);
 end;
 
-function FastSinInBounds3Term(const Value: Double): Double;
+function FastSinInBounds3Term(Value: Double): Double;
 begin
   Result := FastCosInBounds3Term(CPiHalf64 - Value);
 end;
 
-function FastSin3Term(const Value: Single): Single;
+function FastSin3Term(Value: Single): Single;
 begin
   Result := FastCos3Term(CPiHalf32 - Value);
 end;
 
-function FastSin3Term(const Value: Double): Double;
+function FastSin3Term(Value: Double): Double;
 begin
   Result := FastCos3Term(CPiHalf64 - Value);
 end;
 
-function FastSec3Term(const Value: Single): Single;
+function FastSec3Term(Value: Single): Single;
 begin
   Result := 1 / FastCos3Term(Value);
 end;
 
-function FastSec3Term(const Value: Double): Double;
+function FastSec3Term(Value: Double): Double;
 begin
   Result := 1 / FastCos3Term(Value);
 end;
 
-function FastCsc3Term(const Value: Single): Single;
+function FastCsc3Term(Value: Single): Single;
 begin
   Result := 1 / FastCos3Term(CPiHalf32 - Value);
 end;
 
-function FastCsc3Term(const Value: Double): Double;
+function FastCsc3Term(Value: Double): Double;
 begin
   Result := 1 / FastCos3Term(CPiHalf64 - Value);
 end;
@@ -649,20 +649,20 @@ end;
 
 // 4-Term: Accurate to about 5.2 decimal digits over the range [0, pi/2].
 
-function FastCosPart4Term(const Value: Single): Single;
+function FastCosPart4Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
-function FastCosPart4Term(const Value: Double): Double;
+function FastCosPart4Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := CCos4Term[0] + Result * (CCos4Term[1] + Result * (CCos4Term[2] + CCos4Term[3] * Result));
 end;
 
 {$IFNDEF Purepascal}
-function FastCosPart4TermFPU(const Value: Single): Single;
+function FastCosPart4TermFPU(Value: Single): Single;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -675,7 +675,7 @@ asm
  fadd  [CCos4Term].Single
 end;
 
-function FastCosPart4TermFPU(const Value: Double): Double;
+function FastCosPart4TermFPU(Value: Double): Double;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -689,7 +689,7 @@ asm
 end;
 {$ENDIF}
 
-function FastCosInBounds4Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function FastCosInBounds4Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
  case Round(Value * CTwoDivPi32 - CHalf32) of
    0 : Result :=  FastCosPart4Term(Value);
@@ -700,7 +700,7 @@ begin
  end;
 end;
 
-function FastCosInBounds4Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function FastCosInBounds4Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
  case round(Value * CTwoDivPi64 - CHalf64) of
    0 : Result :=  FastCosPart4Term(Value);
@@ -711,65 +711,65 @@ begin
  end;
 end;
 
-function FastCos4Term(const Value: Single): Single;
+function FastCos4Term(Value: Single): Single;
 begin
  // Get rid of values > 2 * pi
  Result := abs(FastMod(Value, CTwoPi32));
  Result := FastCosInBounds4Term(Result);
 end;
 
-function FastCos4Term(const Value: Double): Double;
+function FastCos4Term(Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
  Result := FastCosInBounds4Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
-function FastSinPart4Term(const Value: Single): Single;
+function FastSinPart4Term(Value: Single): Single;
 begin
   Result := FastCosPart4Term(CPiHalf32 - Value);
 end;
 
-function FastSinPart4Term(const Value: Double): Double;
+function FastSinPart4Term(Value: Double): Double;
 begin
   Result := FastCosPart4Term(CPiHalf64 - Value);
 end;
 
-function FastSinInBounds4Term(const Value: Single): Single;
+function FastSinInBounds4Term(Value: Single): Single;
 begin
   Result := FastCosInBounds4Term(CPiHalf32 - Value);
 end;
 
-function FastSinInBounds4Term(const Value: Double): Double;
+function FastSinInBounds4Term(Value: Double): Double;
 begin
   Result := FastCosInBounds4Term(CPiHalf64 - Value);
 end;
 
-function FastSin4Term(const Value: Single): Single;
+function FastSin4Term(Value: Single): Single;
 begin
   Result := FastCos4Term(CPiHalf32 - Value);
 end;
 
-function FastSin4Term(const Value: Double): Double;
+function FastSin4Term(Value: Double): Double;
 begin
   Result := FastCos4Term(CPiHalf64 - Value);
 end;
 
-function FastSec4Term(const Value: Single): Single;
+function FastSec4Term(Value: Single): Single;
 begin
   Result := 1 / FastCos4Term(Value);
 end;
 
-function FastSec4Term(const Value: Double): Double;
+function FastSec4Term(Value: Double): Double;
 begin
   Result := 1 / FastCos4Term(Value);
 end;
 
-function FastCsc4Term(const Value: Single): Single;
+function FastCsc4Term(Value: Single): Single;
 begin
   Result := 1 / FastCos4Term(CPiHalf32 - Value);
 end;
 
-function FastCsc4Term(const Value: Double): Double;
+function FastCsc4Term(Value: Double): Double;
 begin
   Result := 1 / FastCos4Term(CPiHalf64 - Value);
 end;
@@ -777,20 +777,20 @@ end;
 
 // 5-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
 
-function FastCosPart5Term(const Value: Single): Single;
+function FastCosPart5Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
-function FastCosPart5Term(const Value: Double): Double;
+function FastCosPart5Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := CCos5Term[0] + Result * (CCos5Term[1] + Result * (CCos5Term[2] + Result * (CCos5Term[3] + CCos5Term[4] * Result)));
 end;
 
 {$IFNDEF Purepascal}
-function FastCosPart5TermFPU(const Value: Single): Single;
+function FastCosPart5TermFPU(Value: Single): Single;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -805,7 +805,7 @@ asm
  fadd  [CCos5Term].Single
 end;
 
-function FastCosPart5TermFPU(const Value: Double): Double;
+function FastCosPart5TermFPU(Value: Double): Double;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -821,7 +821,7 @@ asm
 end;
 {$ENDIF}
 
-function FastCosInBounds5Term(const Value: Single): Single;
+function FastCosInBounds5Term(Value: Single): Single;
 begin
  case Round(Value * CTwoDivPi32 - CHalf32) of
   0 : Result :=  FastCosPart5Term(Value);
@@ -833,7 +833,7 @@ begin
  end;
 end;
 
-function FastCosInBounds5Term(const Value: Double): Double;
+function FastCosInBounds5Term(Value: Double): Double;
 begin
  case round(Value * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart5Term(Value);
@@ -845,55 +845,55 @@ begin
  end;
 end;
 
-function FastCos5Term(const Value: Single): Single;
+function FastCos5Term(Value: Single): Single;
 begin
  // Get rid of values > 2 * pi
  Result := abs(FastMod(Value, CTwoPi32));
  Result := FastCosInBounds5Term(Result);
 end;
 
-function FastCos5Term(const Value: Double): Double;
+function FastCos5Term(Value: Double): Double;
 begin
  // Get rid of values > 2 * pi
  Result := FastCosInBounds5Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
-function FastSinInBounds5Term(const Value: Single): Single;
+function FastSinInBounds5Term(Value: Single): Single;
 begin
   Result := FastCosInBounds5Term(CPiHalf32 - Value);
 end;
 
-function FastSinInBounds5Term(const Value: Double): Double;
+function FastSinInBounds5Term(Value: Double): Double;
 begin
   Result := FastCosInBounds5Term(CPiHalf64 - Value);
 end;
 
-function FastSin5Term(const Value: Single): Single;
+function FastSin5Term(Value: Single): Single;
 begin
  Result := FastCos5Term(CPiHalf32 - Value);
 end;
 
-function FastSin5Term(const Value: Double): Double;
+function FastSin5Term(Value: Double): Double;
 begin
  Result := FastCos5Term(CPiHalf64 - Value);
 end;
 
-function FastSec5Term(const Value: Single): Single;
+function FastSec5Term(Value: Single): Single;
 begin
  Result := 1 / FastCos5Term(Value);
 end;
 
-function FastSec5Term(const Value: Double): Double;
+function FastSec5Term(Value: Double): Double;
 begin
  Result := 1 / FastCos5Term(Value);
 end;
 
-function FastCsc5Term(const Value: Single): Single;
+function FastCsc5Term(Value: Single): Single;
 begin
  Result := 1 / FastCos5Term(CPiHalf32 - Value);
 end;
 
-function FastCsc5Term(const Value: Double): Double;
+function FastCsc5Term(Value: Double): Double;
 begin
  Result := 1 / FastCos5Term(CPiHalf64 - Value);
 end;
@@ -901,7 +901,7 @@ end;
 
 // 6-Term: Accurate to about 7.3 decimal digits over the range [0, pi/2].
 
-function FastCosPart6Term(const Value: Single): Single;
+function FastCosPart6Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := CCos6Term[0] + Result *
@@ -911,7 +911,7 @@ begin
           (CCos6Term[4] + CCos6Term[5] * Result))));
 end;
 
-function FastCosPart6Term(const Value: Double): Double;
+function FastCosPart6Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := CCos6Term[0] + Result *
@@ -922,7 +922,7 @@ begin
 end;
 
 {$IFNDEF Purepascal}
-function FastCosPart6TermFPU(const Value: Single): Single;
+function FastCosPart6TermFPU(Value: Single): Single;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -941,7 +941,7 @@ asm
  fadd [CCos6Term + 8].Double
 end;
 
-function FastCosPart6TermFPU(const Value: Double): Double;
+function FastCosPart6TermFPU(Value: Double): Double;
 asm
  fld   Value
  fmul  st(0), st(0)                // Value²
@@ -961,7 +961,7 @@ asm
 end;
 {$ENDIF}
 
-function FastCosInBounds6Term(const Value: Single): Single;
+function FastCosInBounds6Term(Value: Single): Single;
 begin
  case Round(Value * CTwoDivPi32 - CHalf32) of
   0 : Result :=  FastCosPart6Term(Value);
@@ -973,7 +973,7 @@ begin
  end;
 end;
 
-function FastCosInBounds6Term(const Value: Double): Double;
+function FastCosInBounds6Term(Value: Double): Double;
 begin
  case round(Value * CTwoDivPi64 - CHalf64) of
   0 : Result :=  FastCosPart6Term(Value);
@@ -985,54 +985,54 @@ begin
  end;
 end;
 
-function FastCos6Term(const Value: Single): Single;
+function FastCos6Term(Value: Single): Single;
 begin
  Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
  Result := FastCosInBounds6Term(Result);
 end;
 
-function FastCos6Term(const Value: Double): Double;
+function FastCos6Term(Value: Double): Double;
 begin
  Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
  Result := FastCosInBounds6Term(Result);
 end;
 
-function FastSinInBounds6Term(const Value: Single): Single;
+function FastSinInBounds6Term(Value: Single): Single;
 begin
   Result := FastCosInBounds6Term(CPiHalf32 - Value);
 end;
 
-function FastSinInBounds6Term(const Value: Double): Double;
+function FastSinInBounds6Term(Value: Double): Double;
 begin
   Result := FastCosInBounds6Term(CPiHalf64 - Value);
 end;
 
-function FastSin6Term(const Value: Single): Single;
+function FastSin6Term(Value: Single): Single;
 begin
   Result := FastCos6Term(CPiHalf32 - Value);
 end;
 
-function FastSin6Term(const Value: Double): Double;
+function FastSin6Term(Value: Double): Double;
 begin
   Result := FastCos6Term(CPiHalf64 - Value);
 end;
 
-function FastSec6Term(const Value: Single): Single;
+function FastSec6Term(Value: Single): Single;
 begin
   Result := 1 / FastCos6Term(Value);
 end;
 
-function FastSec6Term(const Value: Double): Double;
+function FastSec6Term(Value: Double): Double;
 begin
   Result := 1 / FastCos6Term(Value);
 end;
 
-function FastCsc6Term(const Value: Single): Single;
+function FastCsc6Term(Value: Single): Single;
 begin
   Result := 1 / FastCos6Term(CPiHalf32 - Value);
 end;
 
-function FastCsc6Term(const Value: Double): Double;
+function FastCsc6Term(Value: Double): Double;
 begin
   Result := 1 / FastCos6Term(CPiHalf64 - Value);
 end;
@@ -1040,7 +1040,7 @@ end;
 
 // 7-Term: Accurate to about 12.1 decimal digits over the range [0, pi/2].
 
-function FastCosPart7Term(const Value: Single): Single;
+function FastCosPart7Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := CCos7Term[0] + Result *
@@ -1051,7 +1051,7 @@ begin
           (CCos7Term[5] + CCos7Term[6] * Result)))));
 end;
 
-function FastCosPart7Term(const Value: Double): Double; 
+function FastCosPart7Term(Value: Double): Double; 
 begin
  Result := Sqr(Value);
  Result := CCos7Term[0] + Result *
@@ -1062,7 +1062,7 @@ begin
           (CCos7Term[5] + CCos7Term[6] * Result)))));
 end;
 
-function FastCos7Term(const Value: Single): Single; 
+function FastCos7Term(Value: Single): Single; 
 begin
  Result := abs(FastMod(Value, CTwoPi32));            // Get rid of values > 2 * pi
  case round(Result * CTwoDivPi32 - CHalf32) of
@@ -1074,7 +1074,7 @@ begin
  end;
 end;
 
-function FastCos7Term(const Value: Double): Double;
+function FastCos7Term(Value: Double): Double;
 begin
  Result := abs(FastMod(Value, CTwoPi64));            // Get rid of values > 2 * pi
  case round(Result * CTwoDivPi64 - CHalf64) of
@@ -1086,32 +1086,32 @@ begin
  end;
 end;
 
-function FastSin7Term(const Value: Single): Single; 
+function FastSin7Term(Value: Single): Single; 
 begin
   Result := FastCos7Term(CPiHalf32 - Value);
 end;
 
-function FastSin7Term(const Value: Double): Double;
+function FastSin7Term(Value: Double): Double;
 begin
   Result := FastCos7Term(CPiHalf64 - Value);
 end;
 
-function FastSec7Term(const Value: Single): Single;
+function FastSec7Term(Value: Single): Single;
 begin
   Result := 1 / FastCos7Term(Value);
 end;
 
-function FastSec7Term(const Value: Double): Double;
+function FastSec7Term(Value: Double): Double;
 begin
   Result := 1 / FastCos7Term(Value);
 end;
 
-function FastCsc7Term(const Value: Single): Single;
+function FastCsc7Term(Value: Single): Single;
 begin
   Result := 1 / FastCos7Term(CPiHalf32 - Value);
 end;
 
-function FastCsc7Term(const Value: Double): Double;
+function FastCsc7Term(Value: Double): Double;
 begin
   Result := 1 / FastCos7Term(CPiHalf64 - Value);
 end;
@@ -1119,31 +1119,31 @@ end;
 
 // 2-Term: Accurate to about 3.2 decimal digits over the range [0, pi/4].
 
-function FastTanPart2Term(const Value: Single): Single;
+function FastTanPart2Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := Value * CTan2Term[0] / (CTan2Term[1] + Result);
 end;
 
-function FastTanPart2Term(const Value: Double): Double;
+function FastTanPart2Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := Value * CTan2Term[0] / (CTan2Term[1] + Result);
 end;
 
-function FastTanPInv2Term(const Value: Single): Single;
+function FastTanPInv2Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
 end;
 
-function FastTanPInv2Term(const Value: Double): Double;
+function FastTanPInv2Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := (CTan2Term[1] + Result) / (Value * CTan2Term[0]);
 end;
 
-function FastTanInBounds2Term(const Value: Single): Single;
+function FastTanInBounds2Term(Value: Single): Single;
 begin
   case round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi32);
@@ -1158,7 +1158,7 @@ begin
   end;
 end;
 
-function FastTanInBounds2Term(const Value: Double): Double;
+function FastTanInBounds2Term(Value: Double): Double;
 begin
   case round(Value * CFourDivPi64) of
     0 : Result :=  FastTanPart2Term(Value                    * CFourDivPi64);
@@ -1173,12 +1173,12 @@ begin
   end;
 end;
 
-function FastCotanInBounds2Term(const Value: Single): Single;
+function FastCotanInBounds2Term(Value: Single): Single;
 begin
   Result := -FastTanInBounds2Term(CPiHalf32 - Value);
 end;
 
-function FastCotanInBounds2Term(const Value: Double): Double;
+function FastCotanInBounds2Term(Value: Double): Double;
 begin
   Result := -FastTanInBounds2Term(CPiHalf64 - Value);
 end;
@@ -1187,23 +1187,23 @@ end;
 // which it will at x = pi / 2 and x = 3 * pi / 2. If this is a problem
 // in your application, take appropriate action.
 
-function FastTan2Term(const Value: Single): Single;
+function FastTan2Term(Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
   Result := FastTanInBounds2Term(Result);
 end;
 
-function FastTan2Term(const Value: Double): Double;
+function FastTan2Term(Value: Double): Double;
 begin
   Result := FastTanInBounds2Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
-function FastCotan2Term(const Value: Single): Single;
+function FastCotan2Term(Value: Single): Single;
 begin
   Result := -FastTan2Term(CPiHalf32 - Value);
 end;
 
-function FastCotan2Term(const Value: Double): Double;
+function FastCotan2Term(Value: Double): Double;
 begin
   Result := -FastTan2Term(CPiHalf64 - Value);
 end;
@@ -1211,31 +1211,31 @@ end;
 
 // 3-Term: Accurate to about 5.6 decimal digits over the range [0, pi/4].
 
-function FastTanPart3Term(const Value: Single): Single;
+function FastTanPart3Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := Value * (CTan3Term[0] + CTan3Term[1] * Result) / (CTan3Term[2] + Result);
 end;
 
-function FastTanPart3Term(const Value: Double): Double;
+function FastTanPart3Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := Value * (CTan3Term[0] + CTan3Term[1] * Result) / (CTan3Term[2] + Result);
 end;
 
-function FastTanPInv3Term(const Value: Single): Single;
+function FastTanPInv3Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
 end;
 
-function FastTanPInv3Term(const Value: Double): Double;
+function FastTanPInv3Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := (CTan3Term[2] + Result) / (Value * (CTan3Term[0] + CTan3Term[1] * Result));
 end;
 
-function FastTanInBounds3Term(const Value: Single): Single;
+function FastTanInBounds3Term(Value: Single): Single;
 begin
   case round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart3Term(Value                    * CFourDivPi32);
@@ -1250,7 +1250,7 @@ begin
   end;
 end;
 
-function FastTanInBounds3Term(const Value: Double): Double;
+function FastTanInBounds3Term(Value: Double): Double;
 begin
   Result := abs(FastMod(Value, CTwoPi64)); // Get rid of values > 2 * pi
   case round(Result * CFourDivPi64) of
@@ -1266,12 +1266,12 @@ begin
   end;
 end;
 
-function FastCotanInBounds3Term(const Value: Single): Single;
+function FastCotanInBounds3Term(Value: Single): Single;
 begin
   Result := -FastTanInBounds3Term(CPiHalf32 - Value);
 end;
 
-function FastCotanInBounds3Term(const Value: Double): Double;
+function FastCotanInBounds3Term(Value: Double): Double;
 begin
   Result := -FastTanInBounds3Term(CPiHalf64 - Value);
 end;
@@ -1280,25 +1280,25 @@ end;
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
 
-function FastTan3Term(const Value: Single): Single;
+function FastTan3Term(Value: Single): Single;
 begin
   // Get rid of values > 2 * pi
   Result := abs(FastMod(Value, CTwoPi32));
   Result := FastTanInBounds3Term(Result);
 end;
 
-function FastTan3Term(const Value: Double): Double;
+function FastTan3Term(Value: Double): Double;
 begin
   // Get rid of values > 2 * pi
   Result := FastTanInBounds3Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
-function FastCotan3Term(const Value: Single): Single;
+function FastCotan3Term(Value: Single): Single;
 begin
   Result := -FastTan3Term(CPiHalf32 - Value);
 end;
 
-function FastCotan3Term(const Value: Double): Double;
+function FastCotan3Term(Value: Double): Double;
 begin
   Result := -FastTan3Term(CPiHalf64 - Value);
 end;
@@ -1306,35 +1306,35 @@ end;
 
 // 4-Term: Accurate to about 8.2 decimal digits over the range [0, pi/4].
 
-function FastTanPart4Term(const Value: Single): Single;
+function FastTanPart4Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := Value * (CTan4Term[0] + CTan4Term[1] * Result) /
            (CTan4Term[2] + Result * (CTan4Term[3] + Result));
 end;
 
-function FastTanPart4Term(const Value: Double): Double;
+function FastTanPart4Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := Value * (CTan4Term[0] + CTan4Term[1] * Result) /
            (CTan4Term[2] + Result * (CTan4Term[3] + Result));
 end;
 
-function FastTanPInv4Term(const Value: Single): Single;
+function FastTanPInv4Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := (CTan4Term[2] + Result * (CTan4Term[3] + Result)) /
            (Value * (CTan4Term[0] + CTan4Term[1] * Result));
 end;
 
-function FastTanPInv4Term(const Value: Double): Double;
+function FastTanPInv4Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := (CTan4Term[2] + Result * (CTan4Term[3] + Result)) /
            (Value * (CTan4Term[0] + CTan4Term[1] * Result));
 end;
 
-function FastTanInBounds4Term(const Value: Single): Single;
+function FastTanInBounds4Term(Value: Single): Single;
 begin
    case round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi32);
@@ -1349,7 +1349,7 @@ begin
   end;
 end;
 
-function FastTanInBounds4Term(const Value: Double): Double;
+function FastTanInBounds4Term(Value: Double): Double;
 begin
   case round(Value * CFourDivPi64) of
     0 : Result :=  FastTanPart4Term(Value                    * CFourDivPi64);
@@ -1364,12 +1364,12 @@ begin
   end;
 end;
 
-function FastCotanInBounds4Term(const Value: Single): Single;
+function FastCotanInBounds4Term(Value: Single): Single;
 begin
   Result := -FastTanInBounds4Term(CPiHalf32 - Value);
 end;
 
-function FastCotanInBounds4Term(const Value: Double): Double;
+function FastCotanInBounds4Term(Value: Double): Double;
 begin
   Result := -FastTanInBounds4Term(CPiHalf64 - Value);
 end;
@@ -1378,23 +1378,23 @@ end;
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
 
-function FastTan4Term(const Value: Single): Single;
+function FastTan4Term(Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
   Result := FastTanInBounds4Term(Result);
 end;
 
-function FastTan4Term(const Value: Double): Double;
+function FastTan4Term(Value: Double): Double;
 begin
   Result := FastTanInBounds4Term(abs(FastMod(Value, CTwoPi64))); // Get rid of values > 2 * pi
 end;
 
-function FastCotan4Term(const Value: Single): Single;
+function FastCotan4Term(Value: Single): Single;
 begin
   Result := -FastTan4Term(CPiHalf32 - Value);
 end;
 
-function FastCotan4Term(const Value: Double): Double;
+function FastCotan4Term(Value: Double): Double;
 begin
   Result := -FastTan4Term(CPiHalf64 - Value);
 end;
@@ -1402,35 +1402,35 @@ end;
 
 // 6-Term: Accurate to about 14 decimal digits over the range [0, pi/4].
 
-function FastTanPart6Term(const Value: Single): Single;
+function FastTanPart6Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])) /
    (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result)));
 end;
 
-function FastTanPart6Term(const Value: Double): Double;
+function FastTanPart6Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])) /
    (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result)));
 end;
 
-function FastTanPInv6Term(const Value: Single): Single;
+function FastTanPInv6Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result))) /
    (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
 end;
 
-function FastTanPInv6Term(const Value: Double): Double;
+function FastTanPInv6Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := (CTan6Term[3] + Result * (CTan6Term[4] + Result * (CTan6Term[5] + Result))) /
    (Value * (CTan6Term[0] + Result * (CTan6Term[1] + Result * CTan6Term[2])));
 end;
 
-function FastTanInBounds6Term(const Value: Single): Single;
+function FastTanInBounds6Term(Value: Single): Single;
 begin
   case round(Value * CFourDivPi32) of
     0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi32);
@@ -1445,7 +1445,7 @@ begin
   end;
 end;
 
-function FastTanInBounds6Term(const Value: Double): Double;
+function FastTanInBounds6Term(Value: Double): Double;
 begin
   case round(Value * CFourDivPi64) of
     0 : Result :=  FastTanPart6Term(Value                    * CFourDivPi64);
@@ -1460,12 +1460,12 @@ begin
   end;
 end;
 
-function FastCotanInBounds6Term(const Value: Single): Single;
+function FastCotanInBounds6Term(Value: Single): Single;
 begin
   Result := -FastTanInBounds6Term(CPiHalf32 - Value);
 end;
 
-function FastCotanInBounds6Term(const Value: Double): Double;
+function FastCotanInBounds6Term(Value: Double): Double;
 begin
   Result := -FastTanInBounds6Term(CPiHalf64 - Value);
 end;
@@ -1474,23 +1474,23 @@ end;
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
 
-function FastTan6Term(const Value: Single): Single;
+function FastTan6Term(Value: Single): Single;
 begin
   Result := abs(FastMod(Value, CTwoPi32)); // Get rid of values > 2 * pi
   Result := FastTanInBounds6Term(Result);
 end;
 
-function FastTan6Term(const Value: Double): Double;
+function FastTan6Term(Value: Double): Double;
 begin
   Result := FastTanInBounds6Term(abs(FastMod(Value, CTwoPi64)));
 end;
 
-function FastCotan6Term(const Value: Single): Single;
+function FastCotan6Term(Value: Single): Single;
 begin
   Result := -FastTan6Term(CPiHalf32 - Value);
 end;
 
-function FastCotan6Term(const Value: Double): Double;
+function FastCotan6Term(Value: Double): Double;
 begin
   Result := -FastTan6Term(CPiHalf64 - Value);
 end;
@@ -1498,13 +1498,13 @@ end;
 
 // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
 
-function FastArcTanPart3Term(const Value: Single): Single;
+function FastArcTanPart3Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := Value * (CArcTan3Term[0] + CArcTan3Term[1] * Result) / (CArcTan3Term[2] + Result);
 end;
 
-function FastArcTanPart3Term(const Value: Double): Double;
+function FastArcTanPart3Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := Value * (CArcTan3Term[0] + CArcTan3Term[1] * Result) / (CArcTan3Term[2] + Result);
@@ -1514,7 +1514,7 @@ end;
 // which it will at x=pi/2 and x=3*pi/2. If this is a problem
 // in your application, take appropriate action.
 
-function FastArcTan3Term(const Value: Single): Single;
+function FastArcTan3Term(Value: Single): Single;
 var
   Complement : Boolean; // true if arg was >1
   Region     : Boolean; // true depending on region arg is in
@@ -1547,7 +1547,7 @@ begin
  if Sign then Result := -Result;               // correct for negative arg
 end;
 
-function FastArcTan3Term(const Value: Double): Double;
+function FastArcTan3Term(Value: Double): Double;
 var
   Complement : Boolean; // true if arg was >1
   Region     : Boolean; // true depending on region arg is in
@@ -1580,12 +1580,12 @@ begin
  if Sign then Result := -Result;               // correct for negative arg
 end;
 
-function FastArcCotan3Term(const Value: Single): Single;
+function FastArcCotan3Term(Value: Single): Single;
 begin
   Result := -FastArcTan3Term(CPiHalf32 - Value);
 end;
 
-function FastArcCotan3Term(const Value: Double): Double;
+function FastArcCotan3Term(Value: Double): Double;
 begin
   Result := -FastArcTan3Term(CPiHalf64 - Value);
 end;
@@ -1593,14 +1593,14 @@ end;
 
 // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
 
-function FastArcTanPart6Term(const Value: Single): Single;
+function FastArcTanPart6Term(Value: Single): Single;
 begin
  Result := Sqr(Value);
  Result := Value * (CArcTan6Term[0] + Result * (CArcTan6Term[1] + Result * CArcTan6Term[2])) /
    (CArcTan6Term[3] + Result * (CArcTan6Term[4] + Result * (CArcTan6Term[5] + Result)));
 end;
 
-function FastArcTanPart6Term(const Value: Double): Double;
+function FastArcTanPart6Term(Value: Double): Double;
 begin
  Result := Sqr(Value);
  Result := Value * (CArcTan6Term[0] + Result * (CArcTan6Term[1] + Result * CArcTan6Term[2])) /
@@ -1611,7 +1611,7 @@ end;
 // which it will at x = pi / 2 and x = 3 * pi / 2. If this is a problem
 // in your application, take appropriate action.
 
-function FastArcTan6Term(const Value: Single): Single;
+function FastArcTan6Term(Value: Single): Single;
 var
   Complement : Boolean; // true if arg was >1
   Region     : Boolean; // true depending on region arg is in
@@ -1644,7 +1644,7 @@ begin
  if Sign then Result := -Result;               // correct for negative arg
 end;
 
-function FastArcTan6Term(const Value: Double): Double;
+function FastArcTan6Term(Value: Double): Double;
 var
   Complement : Boolean; // true if arg was >1
   Region     : Boolean; // true depending on region arg is in
@@ -1677,41 +1677,41 @@ begin
  if Sign then Result := -Result;               // correct for negative arg
 end;
 
-function FastArcCotan6Term(const Value: Single): Single;
+function FastArcCotan6Term(Value: Single): Single;
 begin
   Result := -FastArcTan6Term(CPiHalf32 - Value);
 end;
 
-function FastArcCotan6Term(const Value: Double): Double;
+function FastArcCotan6Term(Value: Double): Double;
 begin
   Result := -FastArcTan6Term(CPiHalf64 - Value);
 end;
 
 // 3-Term: Accurate to about 6.6 decimal digits over the range [0, pi/12].
-function FastArcCos3Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function FastArcCos3Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
  Result := FastArcTan3Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
-function FastArcCos3Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function FastArcCos3Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
  Result := FastArcTan3Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
 
 // 6-Term: Accurate to about 13.7 decimal digits over the range [0, pi/12].
-function FastArcCos6Term(const Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function FastArcCos6Term(Value: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
  Result := FastArcTan6Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
-function FastArcCos6Term(const Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function FastArcCos6Term(Value: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 begin
  Result := FastArcTan6Term(Value * FastInvSqrt(1 - Sqr(Value)));
 end;
 
 
-function FastSinLike(const Value: Single): Single; overload;
+function FastSinLike(Value: Single): Single; overload;
 const
   C1 : Single = 7.61E-03;
   C2 : Single = -1.6605E-01;
@@ -1735,7 +1735,7 @@ asm
 {$ENDIF}
 end;
 
-function FastSinLike(const Value: Double): Double; overload;
+function FastSinLike(Value: Double): Double; overload;
 const
   C1 : Double = 7.61E-03;
   C2 : Double = -1.6605E-01;
@@ -1760,7 +1760,7 @@ asm
 {$ENDIF}
 end;
 
-function FastCosLike(const Value: Single): Single; overload;
+function FastCosLike(Value: Single): Single; overload;
 const
   C1 : Single =  3.705e-02;
   C2 : Single = -4.967e-01;
@@ -1785,7 +1785,7 @@ asm
 {$ENDIF}
 end;
 
-function FastCosLike(const Value: Double): Double; overload;
+function FastCosLike(Value: Double): Double; overload;
 const
   C1 : Double =  3.705e-02;
   C2 : Double = -4.967e-01;
@@ -1810,7 +1810,7 @@ asm
 {$ENDIF}
 end;
 
-function FastArctanLike(const Value: Single): Single; overload;
+function FastArctanLike(Value: Single): Single; overload;
 var
   VSqr : Single;
 begin
@@ -1822,7 +1822,7 @@ begin
                CArcTanLike[4]) * Value;
 end;
 
-function FastArctanLike(const Value: Double): Double; overload;
+function FastArctanLike(Value: Double): Double; overload;
 var
   VSqr : Single;
 begin
@@ -1834,12 +1834,12 @@ begin
                CArcTanLike[4]) * Value;
 end;
 
-function FastFloorLn2(const Value: Single): Integer;
+function FastFloorLn2(Value: Single): Integer;
 begin
  Result := (((Integer((@Value)^) and $7F800000) shr 23) - $7F);
 end;
 
-function FastLog2(const Value: Single): Single;
+function FastLog2(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -1986,6 +1986,9 @@ begin
                      (CP2ContError5[4]))))));
 end;
 
+
+{ Log2 Approximations }
+
 function FastLog2Laurent(Value: Single): Single;
 var
   log2 : Integer;
@@ -1997,153 +2000,142 @@ begin
  Result := Value + log2;
 end;
 
-
-{ Log2 Approximations }
-
-function FastLog2MinError2(const Value: Single): Single;
+function FastLog2MinError2(Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (CL2MinError2[0] *
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + (CL2MinError2[0] *
           Result + CL2MinError2[1]);
 end;
 
-function FastLog2ContinousError2(const Value: Single): Single;
+function FastLog2ContinousError2(Value: Single): Single;
 var
-  log2 : Integer;
-  x    : Integer absolute Result;
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
 begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (CL2Continous2[0] *
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + (CL2Continous2[0] *
            Result + CL2Continous2[1]);
 end;
 
-function FastLog2Laurent2(const Value: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute Result;
-begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + (CL2Laurent2[0] *
-           Result + CL2Laurent2[1]);
-end;
-
-function FastLog2MinError3(const Value: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute Result;
-begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + ((CL2MinError3[0] *
-           Result + CL2MinError3[1]) *
-           Result + CL2MinError3[2]);
-end;
-
-function FastLog2ContinousError3(const Value: Single): Single;
-var
-  log2 : Integer;
-  x    : Integer absolute Result;
-begin
- Result := Value;
- log2 := ((x shr 23) and $FF) - $80;
- x := x and (not ($FF shl 23)) + $7F shl 23;
- Result := log2 + ((CL2Continous3[0] *
-           Result + CL2Continous3[1]) *
-           Result + CL2Continous3[2]);
-end;
-
-function FastLog2Laurent3(const Value: Single): Single;
+function FastLog2Laurent2(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + (CL2Laurent2[0] *
+   Result + CL2Laurent2[1]);
+end;
+
+function FastLog2MinError3(Value: Single): Single;
+var
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
+begin
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + ((CL2MinError3[0] *
+   Result + CL2MinError3[1]) *
+   Result + CL2MinError3[2]);
+end;
+
+function FastLog2ContinousError3(Value: Single): Single;
+var
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
+begin
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
+ Result := (((Val shr 23) and $FF) - $80) + ((CL2Continous3[0] *
+   Result + CL2Continous3[1]) *
+   Result + CL2Continous3[2]);
+end;
+
+function FastLog2Laurent3(Value: Single): Single;
+var
+  Val : Integer absolute Value;
+  Res : Integer absolute Result;
+begin
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + (CL2Laurent3[0] *
-                                    Result + CL2Laurent3[1]) *
-                                    Result + CL2Laurent3[2];
+   Result + CL2Laurent3[1]) *
+   Result + CL2Laurent3[2];
 end;
 
-function FastLog2MinError4(const Value: Single): Single;
+function FastLog2MinError4(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
+ Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + ((CL2MinError4[0] *
-                                     Result + CL2MinError4[1]) *
-                                     Result + CL2MinError4[2]) *
-                                     Result + CL2MinError4[3];
+   Result + CL2MinError4[1]) *
+   Result + CL2MinError4[2]) *
+   Result + CL2MinError4[3];
 end;
 
-function FastLog2ContinousError4(const Value: Single): Single;
+function FastLog2ContinousError4(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
  Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + ((CL2Continous4[0] *
-                                     Result + CL2Continous4[1]) *
-                                     Result + CL2Continous4[2]) *
-                                     Result + CL2Continous4[3];
+   Result + CL2Continous4[1]) *
+   Result + CL2Continous4[2]) *
+   Result + CL2Continous4[3];
 end;
 
-function FastLog2Laurent4(const Value: Single): Single;
+function FastLog2Laurent4(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
  Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + ((CL2Laurent4[0] *
-                                     Result + CL2Laurent4[1]) *
-                                     Result + CL2Laurent4[2]) *
-                                     Result + CL2Laurent4[3];
+   Result + CL2Laurent4[1]) *
+   Result + CL2Laurent4[2]) *
+   Result + CL2Laurent4[3];
 end;
 
-function FastLog2MinError5(const Value: Single): Single;
+function FastLog2MinError5(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
  Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + (((CL2MinError5[0] *
-                                      Result + CL2MinError5[1]) *
-                                      Result + CL2MinError5[2]) *
-                                      Result + CL2MinError5[3]) *
-                                      Result + CL2MinError5[4];
+   Result + CL2MinError5[1]) *
+   Result + CL2MinError5[2]) *
+   Result + CL2MinError5[3]) *
+   Result + CL2MinError5[4];
 end;
 
-function FastLog2ContinousError5(const Value: Single): Single;
+function FastLog2ContinousError5(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
  Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + (((CL2Continous5[0] *
-                                      Result + CL2Continous5[1]) *
-                                      Result + CL2Continous5[2]) *
-                                      Result + CL2Continous5[3]) *
-                                      Result + CL2Continous5[4];
+   Result + CL2Continous5[1]) *
+   Result + CL2Continous5[2]) *
+   Result + CL2Continous5[3]) *
+   Result + CL2Continous5[4];
 end;
 
-function FastLog2Laurent5(const Value: Single): Single;
+function FastLog2Laurent5(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
 begin
  Res := Val and (not ($FF shl 23)) + $7F shl 23;
  Result := (((Val shr 23) and $FF) - $80) + (((CL2Laurent5[0] *
-                                      Result + CL2Laurent5[1]) *
-                                      Result + CL2Laurent5[2]) *
-                                      Result + CL2Laurent5[3]) *
-                                      Result + CL2Laurent5[4];
+   Result + CL2Laurent5[1]) *
+   Result + CL2Laurent5[2]) *
+   Result + CL2Laurent5[3]) *
+   Result + CL2Laurent5[4];
 end;
 
 
@@ -2231,62 +2223,62 @@ end;
 
 { Log10 Approximations }
 
-function FastLog10MinError2(const Value: Single): Single;
+function FastLog10MinError2(Value: Single): Single;
 begin
  Result := FastLog2MinError2(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10ContinousError2(const Value: Single): Single;
+function FastLog10ContinousError2(Value: Single): Single;
 begin
  Result := FastLog2ContinousError2(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10Laurent2(const Value: Single): Single;
+function FastLog10Laurent2(Value: Single): Single;
 begin
  Result := FastLog2Laurent2(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10MinError3(const Value: Single): Single;
+function FastLog10MinError3(Value: Single): Single;
 begin
  Result := FastLog2MinError3(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10ContinousError3(const Value: Single): Single;
+function FastLog10ContinousError3(Value: Single): Single;
 begin
  Result := FastLog2ContinousError3(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10Laurent3(const Value: Single): Single;
+function FastLog10Laurent3(Value: Single): Single;
 begin
  Result := FastLog2Laurent3(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10MinError4(const Value: Single): Single;
+function FastLog10MinError4(Value: Single): Single;
 begin
  Result := FastLog2MinError4(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10ContinousError4(const Value: Single): Single;
+function FastLog10ContinousError4(Value: Single): Single;
 begin
  Result := FastLog2ContinousError4(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10Laurent4(const Value: Single): Single;
+function FastLog10Laurent4(Value: Single): Single;
 begin
  Result := FastLog2Laurent4(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10MinError5(const Value: Single): Single;
+function FastLog10MinError5(Value: Single): Single;
 begin
  Result := FastLog2MinError5(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10ContinousError5(const Value: Single): Single;
+function FastLog10ContinousError5(Value: Single): Single;
 begin
  Result := FastLog2ContinousError5(Value) * CLog2of10Inv32;
 end;
 
-function FastLog10Laurent5(const Value: Single): Single;
+function FastLog10Laurent5(Value: Single): Single;
 begin
  Result := FastLog2Laurent5(Value) * CLog2of10Inv32;
 end;
@@ -2294,62 +2286,62 @@ end;
 
 { Ln Approximations }
 
-function FastLnMinError2(const Value: Single): Single;
+function FastLnMinError2(Value: Single): Single;
 begin
  Result := FastLog2MinError2(Value) * CLog2ofEInv32;
 end;
 
-function FastLnContinousError2(const Value: Single): Single;
+function FastLnContinousError2(Value: Single): Single;
 begin
  Result := FastLog2ContinousError2(Value) * CLog2ofEInv32;
 end;
 
-function FastLnLaurent2(const Value: Single): Single;
+function FastLnLaurent2(Value: Single): Single;
 begin
  Result := FastLog2Laurent2(Value) * CLog2ofEInv32;
 end;
 
-function FastLnMinError3(const Value: Single): Single;
+function FastLnMinError3(Value: Single): Single;
 begin
  Result := FastLog2MinError3(Value) * CLog2ofEInv32;
 end;
 
-function FastLnContinousError3(const Value: Single): Single;
+function FastLnContinousError3(Value: Single): Single;
 begin
  Result := FastLog2ContinousError3(Value) * CLog2ofEInv32;
 end;
 
-function FastLnLaurent3(const Value: Single): Single;
+function FastLnLaurent3(Value: Single): Single;
 begin
  Result := FastLog2Laurent3(Value) * CLog2ofEInv32;
 end;
 
-function FastLnMinError4(const Value: Single): Single;
+function FastLnMinError4(Value: Single): Single;
 begin
  Result := FastLog2MinError4(Value) * CLog2ofEInv32;
 end;
 
-function FastLnContinousError4(const Value: Single): Single;
+function FastLnContinousError4(Value: Single): Single;
 begin
  Result := FastLog2ContinousError4(Value) * CLog2ofEInv32;
 end;
 
-function FastLnLaurent4(const Value: Single): Single;
+function FastLnLaurent4(Value: Single): Single;
 begin
  Result := FastLog2Laurent4(Value) * CLog2ofEInv32;
 end;
 
-function FastLnMinError5(const Value: Single): Single;
+function FastLnMinError5(Value: Single): Single;
 begin
  Result := FastLog2MinError5(Value) * CLog2ofEInv32;
 end;
 
-function FastLnContinousError5(const Value: Single): Single;
+function FastLnContinousError5(Value: Single): Single;
 begin
  Result := FastLog2ContinousError5(Value) * CLog2ofEInv32;
 end;
 
-function FastLnLaurent5(const Value: Single): Single;
+function FastLnLaurent5(Value: Single): Single;
 begin
  Result := FastLog2Laurent5(Value) * CLog2ofEInv32;
 end;
@@ -2359,7 +2351,7 @@ end;
 
 
 (*
-function FastSqrtMinError2(const Value: Single): Single;
+function FastSqrtMinError2(Value: Single): Single;
 var
   Val : Integer absolute Value;
   Res : Integer absolute Result;
@@ -2386,7 +2378,7 @@ end;
 
 // Convert a value in dB's to a linear amplitude
 
-function FastdBtoAmpMinError2(const Value: Single): Single;
+function FastdBtoAmpMinError2(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2395,14 +2387,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError2(const Value: Double): Double;
+function FastdBtoAmpMinError2(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2MinError2(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError2(const Value: Single): Single;
+function FastdBtoAmpContinousError2(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2411,14 +2403,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError2(const Value: Double): Double;
+function FastdBtoAmpContinousError2(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2ContinousError2(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError3(const Value: Single): Single;
+function FastdBtoAmpMinError3(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2427,14 +2419,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError3(const Value: Double): Double;
+function FastdBtoAmpMinError3(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2MinError3(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError3(const Value: Single): Single;
+function FastdBtoAmpContinousError3(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2443,14 +2435,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError3(const Value: Double): Double;
+function FastdBtoAmpContinousError3(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2ContinousError3(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError4(const Value: Single): Single;
+function FastdBtoAmpMinError4(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2459,14 +2451,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError4(const Value: Double): Double;
+function FastdBtoAmpMinError4(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2MinError4(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError4(const Value: Single): Single;
+function FastdBtoAmpContinousError4(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2475,14 +2467,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError4(const Value: Double): Double;
+function FastdBtoAmpContinousError4(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2ContinousError4(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError5(const Value: Single): Single;
+function FastdBtoAmpMinError5(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2491,14 +2483,14 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpMinError5(const Value: Double): Double;
+function FastdBtoAmpMinError5(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2MinError5(Value * CdBtoAmpExpGain64)
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError5(const Value: Single): Single;
+function FastdBtoAmpContinousError5(Value: Single): Single;
 var
   IntCast : Integer absolute Value;
 begin
@@ -2507,7 +2499,7 @@ begin
   else Result := 0;
 end;
 
-function FastdBtoAmpContinousError5(const Value: Double): Double;
+function FastdBtoAmpContinousError5(Value: Double): Double;
 begin
  if (Value > -1000.0)
   then Result := FastPower2ContinousError5(Value * CdBtoAmpExpGain64)
@@ -2517,122 +2509,122 @@ end;
 
 // Convert a value in dB's to a linear amplitude
 
-function FastAmptodBMinError2(const Value: Single): Single;
+function FastAmptodBMinError2(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2MinError2(Value);
 end;
 
-function FastAmptodBMinError2(const Value: Double): Double;
+function FastAmptodBMinError2(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2MinError2(Value);
 end;
 
-function FastAmptodBContinousError2(const Value: Single): Single;
+function FastAmptodBContinousError2(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2ContinousError2(Value);
 end;
 
-function FastAmptodBContinousError2(const Value: Double): Double;
+function FastAmptodBContinousError2(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2ContinousError2(Value);
 end;
 
-function FastAmptodBLaurent2(const Value: Single): Single;
+function FastAmptodBLaurent2(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2Laurent2(Value);
 end;
 
-function FastAmptodBLaurent2(const Value: Double): Double;
+function FastAmptodBLaurent2(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2Laurent2(Value);
 end;
 
-function FastAmptodBMinError3(const Value: Single): Single;
+function FastAmptodBMinError3(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2MinError3(Value);
 end;
 
-function FastAmptodBMinError3(const Value: Double): Double;
+function FastAmptodBMinError3(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2MinError3(Value);
 end;
 
-function FastAmptodBContinousError3(const Value: Single): Single;
+function FastAmptodBContinousError3(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2ContinousError3(Value);
 end;
 
-function FastAmptodBContinousError3(const Value: Double): Double;
+function FastAmptodBContinousError3(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2ContinousError3(Value);
 end;
 
-function FastAmptodBLaurent3(const Value: Single): Single;
+function FastAmptodBLaurent3(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2Laurent3(Value);
 end;
 
-function FastAmptodBLaurent3(const Value: Double): Double;
+function FastAmptodBLaurent3(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2Laurent3(Value);
 end;
 
-function FastAmptodBMinError4(const Value: Single): Single;
+function FastAmptodBMinError4(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2MinError4(Value);
 end;
 
-function FastAmptodBMinError4(const Value: Double): Double;
+function FastAmptodBMinError4(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2MinError4(Value);
 end;
 
-function FastAmptodBContinousError4(const Value: Single): Single;
+function FastAmptodBContinousError4(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2ContinousError4(Value);
 end;
 
-function FastAmptodBContinousError4(const Value: Double): Double;
+function FastAmptodBContinousError4(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2ContinousError4(Value);
 end;
 
-function FastAmptodBLaurent4(const Value: Single): Single;
+function FastAmptodBLaurent4(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2Laurent4(Value);
 end;
 
-function FastAmptodBLaurent4(const Value: Double): Double;
+function FastAmptodBLaurent4(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2Laurent4(Value);
 end;
 
-function FastAmptodBMinError5(const Value: Single): Single;
+function FastAmptodBMinError5(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2MinError5(Value);
 end;
 
-function FastAmptodBMinError5(const Value: Double): Double;
+function FastAmptodBMinError5(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2MinError5(Value);
 end;
 
-function FastAmptodBContinousError5(const Value: Single): Single;
+function FastAmptodBContinousError5(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2ContinousError5(Value);
 end;
 
-function FastAmptodBContinousError5(const Value: Double): Double;
+function FastAmptodBContinousError5(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2ContinousError5(Value);
 end;
 
-function FastAmptodBLaurent5(const Value: Single): Single;
+function FastAmptodBLaurent5(Value: Single): Single;
 begin
  Result := CFactor2IndB32 * FastLog2Laurent5(Value);
 end;
 
-function FastAmptodBLaurent5(const Value: Double): Double;
+function FastAmptodBLaurent5(Value: Double): Double;
 begin
  Result := CFactor2IndB64 * FastLog2Laurent5(Value);
 end;
@@ -2714,14 +2706,14 @@ asm
 @@Exit:
 end;
 
-function FastPower2(const Value: Single): Single;
+function FastPower2(Value: Single): Single;
 var
   IntCast : Integer absolute Result;
 begin
  IntCast := ((($7F + round(Value)) shl 23) and $FF800000);
 end;
 
-function FastExp(const Value: Single): Single;
+function FastExp(Value: Single): Single;
 begin
  Result := FastPower2(CExp32 * Value);
 end;
@@ -2733,7 +2725,7 @@ begin
  Result := (l - $3F800000) shr (n - 1) + $3F800000;
 end;
 
-function FastInvSqrt(const Value: Single): Single; overload;
+function FastInvSqrt(Value: Single): Single; overload;
 var
   IntCst : Cardinal absolute Result;
 begin
@@ -2742,12 +2734,12 @@ begin
  Result := CHalf32 * Result * (3 - Value * Sqr(Result));
 end;
 
-function FastSqrt(const Value: Single): Single; overload;
+function FastSqrt(Value: Single): Single; overload;
 begin
  Result := Value * FastInvSqrt(Value);
 end;
 
-function FastInvSqrt(const Value: Double): Double; overload;
+function FastInvSqrt(Value: Double): Double; overload;
 var
   IntCst : Int64 absolute Result;
 begin
@@ -2756,12 +2748,12 @@ begin
  Result := CHalf64 * Result * (3 - Value * Sqr(Result));
 end;
 
-function FastSqrt(const Value: Double): Double; overload;
+function FastSqrt(Value: Double): Double; overload;
 begin
  Result := Value * FastInvSqrt(Value);
 end;
 
-function FastSqrtBab0(const Value: Single): Single; overload;
+function FastSqrtBab0(Value: Single): Single; overload;
 var
   IntCst : Integer absolute Result;
 begin
@@ -2769,7 +2761,7 @@ begin
  IntCst := ((IntCst - (1 shl 23)) shr 1) + (1 shl 29);
 end;
 
-function FastSqrtBab1(const Value: Single): Single; overload;
+function FastSqrtBab1(Value: Single): Single; overload;
 var
   IntCst : Integer absolute Result;
 begin
@@ -2778,7 +2770,7 @@ begin
  Result := CHalf32 * (Result + Value / Result);
 end;
 
-function FastSqrtBab2(const Value: Single): Single; overload;
+function FastSqrtBab2(Value: Single): Single; overload;
 var
   IntCst : Integer absolute Result;
 begin
@@ -2788,7 +2780,7 @@ begin
  Result := CQuarter32 * Result + Value / Result;
 end;
 
-function FastSqrtBab0(const Value: Double): Double; overload;
+function FastSqrtBab0(Value: Double): Double; overload;
 var
   IntCst : Int64 absolute Result;
 begin
@@ -2796,7 +2788,7 @@ begin
  IntCst := (Int64(1) shl 61) + ((IntCst - (Int64(1) shl 52)) shr 1);
 end;
 
-function FastSqrtBab1(const Value: Double): Double; overload;
+function FastSqrtBab1(Value: Double): Double; overload;
 var
   IntCst : Int64 absolute Result;
 begin
@@ -2805,7 +2797,7 @@ begin
  Result := CHalf32 * (Result + Value / Result);
 end;
 
-function FastSqrtBab2(const Value: Double): Double; overload;
+function FastSqrtBab2(Value: Double): Double; overload;
 var
   IntCst : Int64 absolute Result;
 begin
@@ -2815,7 +2807,7 @@ begin
  Result := CQuarter64 * Result + Value / Result;
 end;
 
-function FastTanhOpt3Term(const Input: Single): Single;
+function FastTanhOpt3Term(Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -2826,7 +2818,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt4Term(const Input: Single): Single;
+function FastTanhOpt4Term(Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -2838,7 +2830,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt5Term(const Input: Single): Single;
+function FastTanhOpt5Term(Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -2851,7 +2843,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt6Term(const Input: Single): Single;
+function FastTanhOpt6Term(Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -2865,7 +2857,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt7Term(const Input: Single): Single;
+function FastTanhOpt7Term(Input: Single): Single;
 var
   a, b : Double;
 begin
@@ -2880,7 +2872,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt3Term(const Input: Double): Double;
+function FastTanhOpt3Term(Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -2891,7 +2883,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt4Term(const Input: Double): Double;
+function FastTanhOpt4Term(Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -2903,7 +2895,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt5Term(const Input: Double): Double;
+function FastTanhOpt5Term(Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -2916,7 +2908,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt6Term(const Input: Double): Double;
+function FastTanhOpt6Term(Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -2930,7 +2922,7 @@ begin
  Result := (b * Input) / (b * a + 1);
 end;
 
-function FastTanhOpt7Term(const Input: Double): Double;
+function FastTanhOpt7Term(Input: Double): Double;
 var
   a, b : Double;
 begin
@@ -2946,7 +2938,7 @@ begin
 end;
 
 {$IFNDEF Purepascal}
-function FastTanhOpt3TermFPU(const Input: Single): Single; assembler;
+function FastTanhOpt3TermFPU(Input: Single): Single; assembler;
 const
   c0 : Double =  2.66559097474027817;
   c1 : Double = -0.54699348440059470;
@@ -2969,7 +2961,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt4TermFPU(const Input: Single): Single; assembler;
+function FastTanhOpt4TermFPU(Input: Single): Single; assembler;
 const
   c0 : Double =  1.74656303770202670;
   c1 : Double = -1.35205169119085666;
@@ -2995,7 +2987,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt5TermFPU(const Input: Single): Single; assembler;
+function FastTanhOpt5TermFPU(Input: Single): Single; assembler;
 const
   c0 : Double =  0.91996358346770157;
   c1 : Double = -1.46060069227128242;
@@ -3024,7 +3016,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt6TermFPU(const Input: Single): Single; assembler;
+function FastTanhOpt6TermFPU(Input: Single): Single; assembler;
 const
   c0 : Double =  0.40487405571569546;
   c1 : Double = -1.07161642656874956;
@@ -3056,7 +3048,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt7TermFPU(const Input: Single): Single; assembler;
+function FastTanhOpt7TermFPU(Input: Single): Single; assembler;
 const
   c0 : Double =  0.152641093785489734;
   c1 : Double = -0.60147655894944263;
@@ -3091,7 +3083,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt3TermFPU(const Input: Double): Double; assembler;
+function FastTanhOpt3TermFPU(Input: Double): Double; assembler;
 const
   c0 : Double =  2.66559097474027817;
   c1 : Double = -0.54699348440059470;
@@ -3114,7 +3106,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt4TermFPU(const Input: Double): Double; assembler;
+function FastTanhOpt4TermFPU(Input: Double): Double; assembler;
 const
   c0 : Double =  1.74656303770202670;
   c1 : Double = -1.35205169119085666;
@@ -3140,7 +3132,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt5TermFPU(const Input: Double): Double; assembler;
+function FastTanhOpt5TermFPU(Input: Double): Double; assembler;
 const
   c4 : Double =  0.91996358346770157;
   c3 : Double = -1.46060069227128242;
@@ -3169,7 +3161,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt6TermFPU(const Input: Double): Double; assembler;
+function FastTanhOpt6TermFPU(Input: Double): Double; assembler;
 const
   c0 : Double =  0.40487405571569546;
   c1 : Double = -1.07161642656874956;
@@ -3201,7 +3193,7 @@ asm
  fdivp             // Stack: (b * Input) / (1 + b * a)
 end;
 
-function FastTanhOpt7TermFPU(const Input: Double): Double; assembler;
+function FastTanhOpt7TermFPU(Input: Double): Double; assembler;
 const
   c0 : Double =  0.152641093785489734;
   c1 : Double = -0.60147655894944263;
@@ -3237,7 +3229,7 @@ asm
 end;
 {$ENDIF}
 
-function FastTanh2Like4Term(const Input: Single): Single;
+function FastTanh2Like4Term(Input: Single): Single;
 var
   a, b: Single;
 begin
@@ -3246,7 +3238,7 @@ begin
  Result := (Input * b) / (a * b + 24);
 end;
 
-function FastTanh2Like3Term(const Input: Single): Single;
+function FastTanh2Like3Term(Input: Single): Single;
 var
   a, b: Single;
 begin
@@ -3255,7 +3247,7 @@ begin
  Result := (Input * b) / (a * b + 12);
 end;
 
-function FastTanh2Like2Term(const Input: Single): Single;
+function FastTanh2Like2Term(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 var
   a, b: Single;
@@ -3281,7 +3273,7 @@ asm
 {$ENDIF}
 end;
 
-function FastTanh2Like1Term(const Input: Single): Single;
+function FastTanh2Like1Term(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result := Input / (abs(Input) + 3);

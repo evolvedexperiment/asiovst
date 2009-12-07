@@ -7,7 +7,7 @@ object FmButterworth: TFmButterworth
   ClientWidth = 200
   Color = 657940
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = 10526927
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -24,7 +24,7 @@ object FmButterworth: TFmButterworth
   object LbButterworthFilterDemoShaddow: TGuiLabel
     Left = 9
     Top = 11
-    Width = 184
+    Width = 186
     Height = 26
     AntiAlias = gaaLinear4x
     Caption = 'Butterworth HP'
@@ -38,7 +38,7 @@ object FmButterworth: TFmButterworth
   object LbButterworthFilterDemo: TGuiLabel
     Left = 6
     Top = 8
-    Width = 184
+    Width = 186
     Height = 26
     AntiAlias = gaaLinear4x
     Caption = 'Butterworth HP'
@@ -155,7 +155,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
-      OnClick = LbOrderValueDblClick
+      OnDblClick = LbOrderValueDblClick
     end
     object LbFrequencyValue: TGuiLabel
       Left = 8
@@ -167,7 +167,7 @@ object FmButterworth: TFmButterworth
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
-      OnClick = LbFrequencyValueDblClick
+      OnDblClick = LbFrequencyValueDblClick
     end
   end
   object GuiEQGraph: TGuiEQGraph

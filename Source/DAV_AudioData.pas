@@ -377,7 +377,7 @@ type
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); reintroduce; overload; virtual; abstract;
     destructor Destroy; override;
 
-    procedure DataChanged; virtual;
+    procedure Changed; override;
 
     // some processing functions
     procedure Add(Constant: Double); virtual;
@@ -400,7 +400,7 @@ type
     property ChannelCount: Integer read GetChannelCount write SetChannelCount;
 
     // Events
-    property OnDataChanged: TNotifyEvent read FOnDataChanged write FOnDataChanged; 
+    property OnDataChanged: TNotifyEvent read FOnDataChanged write FOnDataChanged;
   end;
 
   TCustomAudioDataCollection32 = class(TCustomAudioDataCollection)
@@ -1223,10 +1223,12 @@ begin
  CreateChannels;
 end;
 
-procedure TCustomAudioDataCollection.DataChanged;
+procedure TCustomAudioDataCollection.Changed;
 begin
- if assigned(FOnDataChanged)
+ if Assigned(FOnDataChanged)
   then FOnDataChanged(Self);
+
+ inherited;
 end;
 
 destructor TCustomAudioDataCollection.Destroy;
@@ -1365,10 +1367,10 @@ begin
        Free;
       end;
 
-     DataChanged;
+     Changed;
 
      // file loaded succesfully, now exit!
-     exit;
+     Exit;
     end;
   end;
 end;
@@ -1392,7 +1394,7 @@ begin
      finally
       Free;
      end;
-    exit;
+    Exit;
    end;
 end;
 
@@ -1416,10 +1418,10 @@ begin
       Free;
      end;
 
-    DataChanged;
+    Changed;
 
     // file loaded succesfully, now exit!
-    exit;
+    Exit;
    end;
 
  // no file format found

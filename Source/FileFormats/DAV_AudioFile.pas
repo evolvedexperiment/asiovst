@@ -170,7 +170,7 @@ var
   i : Integer;
 begin
  Result := nil;
- if not assigned(Stream) then Exit;
+ if not Assigned(Stream) then Exit;
 
  for i := 0 to Length(GAudioFileFormats) - 1 do
   if GAudioFileFormats[i].CanLoad(Stream)
@@ -209,7 +209,7 @@ var
 begin
  FS := TFileStream.Create(FileName, fmOpenRead);
  try
-  result := CanLoad(FS);
+  Result := CanLoad(FS);
  finally
   FreeAndNil(FS);
  end;
@@ -217,14 +217,14 @@ end;
 
 destructor TCustomAudioFile.Destroy;
 begin
- if FStreamOwned and assigned(FStream)
+ if FStreamOwned and Assigned(FStream)
   then FreeAndNil(FStream);
  inherited;
 end;
 
 procedure TCustomAudioFile.Encode(SamplePosition: Cardinal; SampleFrames: Cardinal);
 begin
- if not assigned(FStream)
+ if not Assigned(FStream)
   then raise Exception.Create(RCStrNoStreamAssigned);
 
  if SamplePosition + SampleFrames > Self.SampleFrames
@@ -233,7 +233,7 @@ end;
 
 procedure TCustomAudioFile.Decode(SamplePosition: Cardinal; SampleFrames: Cardinal);
 begin
- if not assigned(FStream)
+ if not Assigned(FStream)
   then raise Exception.Create(RCStrNoStreamAssigned);
 
  if SamplePosition + SampleFrames > Self.ChannelCount * Self.SampleFrames
@@ -242,7 +242,7 @@ end;
 
 procedure TCustomAudioFile.Flush;
 begin
- if assigned(FStream)
+ if Assigned(FStream)
   then SaveToStream(FStream);
 end;
 
@@ -255,7 +255,7 @@ procedure TCustomAudioFile.LoadFromFile(const FileName: TFileName);
 var
   FileStream : TFileStream;
 begin
- if assigned(FStream)
+ if Assigned(FStream)
   then raise Exception.Create(RCStrFileAlreadyLoaded);
 
  FileStream := TFileStream.Create(FileName, fmOpenRead);
@@ -269,7 +269,7 @@ end;
 
 procedure TCustomAudioFile.LoadFromStream(Stream: TStream);
 begin
- if assigned(FStream)
+ if Assigned(FStream)
   then raise Exception.Create(RCStrFileAlreadyLoaded);
 end;
 

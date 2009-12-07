@@ -214,7 +214,7 @@ type
     function ConnectOutput(const OutputNr: Integer; const State: Boolean): Integer;
     function CopyCurrentProgramTo(const Destination: Integer): Boolean;
     function GetChunk(const Data: Pointer; const IsPreset: Boolean = False): Integer;
-    function GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName): Integer;
+    function GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName; const Channel: Integer = 0): Integer;
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
     function GetDisplayName: string; override;
@@ -223,8 +223,8 @@ type
     function GetFriendlyNameString(const StringLength: Integer): string;
     function GetIcon: Integer;
     function GetInputProperties(const InputNr: Integer): TVstPinProperties;
-    function GetMidiKeyName(var MidiKeyName: TMidiKeyName): Integer;
-    function GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory): Integer;
+    function GetMidiKeyName(var MidiKeyName: TMidiKeyName; const Channel: Integer = 0): Integer;
+    function GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory; const Channel: Integer = 0): Integer;
     function GetMidiProgramName(var MidiProgramName: TMidiProgramName): Integer;
     function GetNumProgramCategories: Integer;
     function GetOutputProperties(const OutputNr: Integer): TVstPinProperties;
@@ -246,7 +246,7 @@ type
     function GetVendorVersion: Integer;
     function GetVstVersion: Integer;
     function GetVu: Single;
-    function HasMidiProgramsChanged: Integer;
+    function HasMidiProgramsChanged(const Channel: Integer = 0): Integer;
     function Identify: Integer;
     function Idle: Integer;
     function KeysRequired: Integer;
@@ -2915,45 +2915,45 @@ begin
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName): Integer;
+function TCustomVstPlugIn.GetCurrentMidiProgram(var MidiProgramName: TMidiProgramName; const Channel: Integer = 0): Integer;
 begin
  // returns the programIndex of the current program.
  // passed <ptr> points to MidiProgramName struct.
  // struct will be filled with information for the current program.
  if FActive
-  then Result := VstDispatch(effGetCurrentMidiProgram, 0, 0, @MidiProgramName, 0)
+  then Result := VstDispatch(effGetCurrentMidiProgram, Channel, 0, @MidiProgramName, 0)
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory): Integer;
+function TCustomVstPlugIn.GetMidiProgramCategory(var MidiProgramCategory: TMidiProgramCategory; const Channel: Integer = 0): Integer;
 begin
  // passed <ptr> points to MidiProgramCategory struct.
  // struct will be filled with information for 'thisCategoryIndex'.
  // returns number of used CategoryIndexes.
  // if 0 is returned, no MidiProgramCategories supported.
  if FActive
-  then Result := VstDispatch(effGetMidiProgramCategory, 0, 0, @MidiProgramCategory, 0)
+  then Result := VstDispatch(effGetMidiProgramCategory, Channel, 0, @MidiProgramCategory, 0)
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.HasMidiProgramsChanged: Integer;
+function TCustomVstPlugIn.HasMidiProgramsChanged(const Channel: Integer = 0): Integer;
 begin
  // returns 1 if the MidiProgramNames or MidiKeyNames
  // had changed on this channel, 0 otherwise. <ptr> ignored.
 
  if FActive
-  then Result := VstDispatch(effHasMidiProgramsChanged, 0, 0, nil, 0)
+  then Result := VstDispatch(effHasMidiProgramsChanged, Channel, 0, nil, 0)
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetMidiKeyName(var MidiKeyName: TMidiKeyName): Integer;
+function TCustomVstPlugIn.GetMidiKeyName(var MidiKeyName: TMidiKeyName; const Channel: Integer = 0): Integer;
 begin
  // struct will be filled with information for 'thisProgramIndex' and
  // 'thisKeyNumber'. If keyName is "" the standard name of the key
  // will be displayed. If 0 is returned, no MidiKeyNames are
  // defined for 'thisProgramIndex'.
  if FActive
-  then Result := VstDispatch(effGetMidiKeyName, 0, 0, @MidiKeyName, 0)
+  then Result := VstDispatch(effGetMidiKeyName, Channel, 0, @MidiKeyName, 0)
   else Result := 0;
 end;
 

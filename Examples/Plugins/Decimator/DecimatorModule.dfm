@@ -1,4 +1,5 @@
 object VSTDecimator: TVSTDecimator
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Decimator'

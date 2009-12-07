@@ -2,7 +2,7 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
   Left = 286
   Top = 77
   Caption = 'Approximation Benchmark'
-  ClientHeight = 266
+  ClientHeight = 304
   ClientWidth = 670
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
     Left = 284
     Top = 0
     Width = 386
-    Height = 266
+    Height = 304
     SeriesCollection = <
       item
         DisplayName = 'TGuiGraphXYSeriesCollectionItem'
@@ -47,20 +47,20 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
   object Splitter: TSplitter
     Left = 281
     Top = 0
-    Height = 266
+    Height = 304
   end
   object Memo: TMemo
     Left = 0
     Top = 0
     Width = 281
-    Height = 266
+    Height = 304
     Align = alLeft
     TabOrder = 0
     OnClick = MemoClick
   end
   object MainMenu: TMainMenu
-    Left = 328
-    Top = 120
+    Left = 16
+    Top = 8
     object MIFile: TMenuItem
       Caption = '&File'
       object MISaveLog: TMenuItem
@@ -79,6 +79,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       Caption = '&Benchmark'
       object MICos: TMenuItem
         Caption = 'Cos(x)'
+        object MiCosAll: TMenuItem
+          Caption = '&All'
+          OnClick = MiCosAllClick
+        end
+        object N11: TMenuItem
+          Caption = '-'
+        end
         object MIFastCos3Term: TMenuItem
           Caption = 'Complete &3 Term'
           OnClick = MIFastCos3TermClick
@@ -117,6 +124,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MISin: TMenuItem
         Caption = 'Sin(x)'
+        object MiSinAll: TMenuItem
+          Caption = '&All'
+          OnClick = MiSinAllClick
+        end
+        object N12: TMenuItem
+          Caption = '-'
+        end
         object MISinComplete3Term: TMenuItem
           Caption = 'Complete &3 Term'
           OnClick = MISinComplete3TermClick
@@ -155,6 +169,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MITan: TMenuItem
         Caption = 'Tan(x)'
+        object MiTanAll: TMenuItem
+          Caption = 'All'
+          OnClick = MiTanAllClick
+        end
+        object N13: TMenuItem
+          Caption = '-'
+        end
         object MITanComplete2Term: TMenuItem
           Caption = 'Complete &2 Term'
           OnClick = MITanComplete2TermClick
@@ -193,6 +214,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MITanh: TMenuItem
         Caption = 'Tanh(x)'
+        object MiTanhAll: TMenuItem
+          Caption = 'All'
+          OnClick = MiTanhAllClick
+        end
+        object N14: TMenuItem
+          Caption = '-'
+        end
         object MITanhComplete3Term: TMenuItem
           Caption = 'Rational Polynom &3 Term'
           OnClick = MITanhComplete3TermClick
@@ -274,6 +302,14 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MILog2: TMenuItem
         Caption = 'Log2(x)'
+        OnClick = MILog2Click
+        object MiLog2All: TMenuItem
+          Caption = 'All'
+          OnClick = MiLog2AllClick
+        end
+        object N15: TMenuItem
+          Caption = '-'
+        end
         object MILog2MinError2Term: TMenuItem
           Caption = 'min. Error &2 Term'
           OnClick = MILog2MinError2TermClick
@@ -312,6 +348,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MILn: TMenuItem
         Caption = 'Ln(x)'
+        object MiLnAll: TMenuItem
+          Caption = '&All'
+          OnClick = MiLnAllClick
+        end
+        object N16: TMenuItem
+          Caption = '-'
+        end
         object MILnMinError2Term: TMenuItem
           Caption = 'min. Error &2 Term'
           OnClick = MILnMinError2TermClick
@@ -350,6 +393,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MIPower2: TMenuItem
         Caption = '2^(x)'
+        object MiPower2All: TMenuItem
+          Caption = '&All'
+          OnClick = MiPower2AllClick
+        end
+        object N17: TMenuItem
+          Caption = '-'
+        end
         object MIPower2MinError2Term: TMenuItem
           Caption = 'min. Error &2 Term'
           OnClick = MIPower2MinError2TermClick
@@ -388,6 +438,13 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
       end
       object MIExp: TMenuItem
         Caption = 'Exp(x)'
+        object MiExpAll: TMenuItem
+          Caption = '&All'
+          OnClick = MiExpAllClick
+        end
+        object N18: TMenuItem
+          Caption = '-'
+        end
         object MIExpMinError2Term: TMenuItem
           Caption = 'min. Error &2 Term'
           OnClick = MIExpMinError2TermClick
@@ -422,6 +479,85 @@ object FmApproximationBenchmark: TFmApproximationBenchmark
         object MIExpContError5Term: TMenuItem
           Caption = 'cont. Error &5 Term'
           OnClick = MIExpContError5TermClick
+        end
+      end
+    end
+    object MiAccuracy: TMenuItem
+      Caption = 'Accuracy'
+      object MiAccuracyLog2: TMenuItem
+        Caption = 'Log2'
+        object MiAccuracyLog2MinError2: TMenuItem
+          Caption = 'min. Error &2 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object MiAccuracyLog2MinError3: TMenuItem
+          Tag = 1
+          Caption = 'min. Error &3 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object MiAccuracyLog2MinError4: TMenuItem
+          Tag = 2
+          Caption = 'min. Error &4 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object MiAccuracyLog2MinError5: TMenuItem
+          Tag = 3
+          Caption = 'min. Error &5 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object N19: TMenuItem
+          Caption = '-'
+        end
+        object MiAccuracyLog2ContError2: TMenuItem
+          Tag = 4
+          Caption = 'cont. Error &2 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object MiAccuracyLog2ContError3: TMenuItem
+          Tag = 5
+          Caption = 'cont. Error &3 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object MiAccuracyLog2ContError4: TMenuItem
+          Tag = 6
+          Caption = 'cont. Error &4 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+        object MiAccuracyLog2ContError5: TMenuItem
+          Tag = 7
+          Caption = 'cont. Error &5 Term'
+          OnClick = MiAccuracyLog2Click
+        end
+      end
+      object N2x1: TMenuItem
+        Caption = '2^(x)'
+        object MiAccuracyPower2MinError2: TMenuItem
+          Caption = 'min. Error &2 Term'
+          OnClick = MiAccuracyPower2MinErrorClick
+        end
+        object MiAccuracyPower2MinError3: TMenuItem
+          Caption = 'min. Error &3 Term'
+        end
+        object MiAccuracyPower2MinError4: TMenuItem
+          Caption = 'min. Error &4 Term'
+        end
+        object MiAccuracyPower2MinError5: TMenuItem
+          Caption = 'min. Error &5 Term'
+        end
+        object N20: TMenuItem
+          Caption = '-'
+        end
+        object MiAccuracyPower2ContError2: TMenuItem
+          Caption = 'cont. Error &2 Term'
+        end
+        object MiAccuracyPower2ContError3: TMenuItem
+          Caption = 'cont. Error &3 Term'
+        end
+        object MiAccuracyPower2ContError4: TMenuItem
+          Caption = 'cont. Error &4 Term'
+        end
+        object MiAccuracyPower2ContError5: TMenuItem
+          Caption = 'cont. Error &5 Term'
         end
       end
     end

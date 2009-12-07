@@ -15,6 +15,8 @@ program VSTPluginUnitTest;
 {$ENDIF}
 
 uses
+  FastMM4,
+  FastMove,
   Forms,
   TestFramework,
   GUITestRunner,

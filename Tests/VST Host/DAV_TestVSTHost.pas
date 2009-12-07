@@ -265,14 +265,19 @@ begin
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
-   Active := True;
-   SetSampleRate(44100);
-   SetBlockSize(CBlockSize);
+   try
+    Active := True;
+    SetSampleRate(44100);
+    SetBlockSize(CBlockSize);
 
-   // call correct ProcessReplacing
-   StartProcess;
-   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
-   StopProcess;
+    // call correct ProcessReplacing
+    StartProcess;
+    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    StopProcess;
+   finally
+    for Channel := 0 to numInputs  - 1 do Dispose(Input[Channel]);
+    for Channel := 0 to numOutputs - 1 do Dispose(Output[Channel]);
+   end;
   end;
 end;
 
@@ -302,7 +307,7 @@ begin
        end;
       SetLength(str, 20);
       SetProgramName(str);
-      CopyCurrentProgramTo(random(numPrograms));
+      CopyCurrentProgramTo(Random(numPrograms));
       FillChar(MPN, SizeOf(MPN), 0);
       GetMidiProgramName(MPN);
      end;
@@ -343,13 +348,15 @@ begin
 
    // close and delete random instances
    for InstanceIndex := 1 to CInstantCount[SequenceIndex] do
-    try
+    begin
      RandomInstance := Random(FVstHost.VstPlugIns.Count);
-     FVstHost[RandomInstance].Close;
-     FVstHost.VstPlugIns.Delete(RandomInstance);
-    except
-     Fail('Error closing plugin : ' + IntToStr(RandomInstance) + ' / ' +
-       IntToStr(InstanceIndex));
+     try
+      FVstHost[RandomInstance].Close;
+      FVstHost.VstPlugIns.Delete(RandomInstance);
+     except
+      Fail('Error closing plugin : ' + IntToStr(RandomInstance) + ' / ' +
+        IntToStr(InstanceIndex));
+     end;
     end;
   end;
 end;
@@ -530,6 +537,7 @@ procedure TVstPluginPerverseTests.TestString2Parameter;
 var
   ParameterIndex  : Integer;
   ParameterString : string;
+  TrialIndex      : Integer;
   DesiredValue    : Single;
   TrialNo         : Integer;
 begin
@@ -538,26 +546,29 @@ begin
    Active := True;
    for ParameterIndex := 0 to numParams - 1 do
     begin
-     // set random parameter value
-     Parameter[ParameterIndex] := Random;
+     for TrialIndex := 0 to 99 do
+      begin
+       // set random parameter value
+       Parameter[ParameterIndex] := Random;
 
-     // store desired value
-     DesiredValue := Parameter[ParameterIndex];
-     ParameterString := ParameterDisplay[ParameterIndex] + ' ' +
-       ParameterLabel[ParameterIndex];
+       // store desired value
+       DesiredValue := Parameter[ParameterIndex];
+       ParameterString := ParameterDisplay[ParameterIndex] + ' ' +
+         ParameterLabel[ParameterIndex];
 
-     // change value to something different
-     TrialNo := 0;
-     repeat
-      Parameter[ParameterIndex] := Random;
-      Inc(TrialNo);
-     until (Parameter[ParameterIndex] <> DesiredValue) or (TrialNo >= 1000);
+       // change value to something different
+       TrialNo := 0;
+       repeat
+        Parameter[ParameterIndex] := Random;
+        Inc(TrialNo);
+       until (Parameter[ParameterIndex] <> DesiredValue) or (TrialNo >= 1000);
 
-     // change value to something different
-     if (TrialNo < 1000) and String2Parameter(ParameterIndex, ParameterString)
-      then CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
-        ParameterLabel[ParameterIndex], 'Error at parameter ' +
-        IntToStr(ParameterIndex + 1));
+       // change value to something different
+       if (TrialNo < 1000) and String2Parameter(ParameterIndex, ParameterString)
+        then CheckEquals(ParameterString, ParameterDisplay[ParameterIndex] + ' ' +
+          ParameterLabel[ParameterIndex], 'Error at parameter ' +
+          IntToStr(ParameterIndex + 1));
+      end;
     end;
    Active := False;
   end;
@@ -652,21 +663,26 @@ begin
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
-   Active := True;
-   SetSampleRate(44100);
-   SetBlockSize(CBlockSize);
+   try
+    Active := True;
+    SetSampleRate(44100);
+    SetBlockSize(CBlockSize);
 
-   StartProcess;
-   // test with no sampleframes
-   Process(@Input[0], @Output[0], 0);
+    StartProcess;
+    // test with no sampleframes
+    Process(@Input[0], @Output[0], 0);
 
-   // test with no input
-   Process(nil, @Output[0], CBlockSize);
+    // test with no input
+    Process(nil, @Output[0], CBlockSize);
 
-   // test with no output
-   Process(@Input[0], nil, CBlockSize);
+    // test with no output
+    Process(@Input[0], nil, CBlockSize);
 
-   StopProcess;
+    StopProcess;
+   finally
+    for Channel := 0 to numInputs  - 1 do Dispose(Input[Channel]);
+    for Channel := 0 to numOutputs - 1 do Dispose(Output[Channel]);
+   end;
   end;
 end;
 
@@ -696,24 +712,29 @@ begin
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
-   // call process replacing before activating the plugin
-   StartProcess;
-   Process(@Input[0], @Output[0], CBlockSize);
-   StopProcess;
+   try
+    // call process replacing before activating the plugin
+    StartProcess;
+    Process(@Input[0], @Output[0], CBlockSize);
+    StopProcess;
 
-   Active := True;
-   SetSampleRate(44100);
-   SetBlockSize(CBlockSize);
+    Active := True;
+    SetSampleRate(44100);
+    SetBlockSize(CBlockSize);
 
-   // call correct Process
-   Process(@Input[0], @Output[0], CBlockSize);
+    // call correct Process
+    Process(@Input[0], @Output[0], CBlockSize);
 
-   // start processing
-   StartProcess;
-   Active := False;
+    // start processing
+    StartProcess;
+    Active := False;
 
-   // call processing
-   Process(@Input[0], @Output[0], CBlockSize);
+    // call processing
+    Process(@Input[0], @Output[0], CBlockSize);
+   finally
+    for Channel := 0 to numInputs  - 1 do Dispose(Input[Channel]);
+    for Channel := 0 to numOutputs - 1 do Dispose(Output[Channel]);
+   end;
   end;
 end;
 
@@ -743,24 +764,29 @@ begin
      FillChar(Output[Channel]^, CBlockSize * SizeOf(Single), 0);
     end;
 
-   // call process replacing before activating the plugin
-   StartProcess;
-   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
-   StopProcess;
+   try
+    // call process replacing before activating the plugin
+    StartProcess;
+    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    StopProcess;
 
-   Active := True;
-   SetSampleRate(44100);
-   SetBlockSize(CBlockSize);
+    Active := True;
+    SetSampleRate(44100);
+    SetBlockSize(CBlockSize);
 
-   // call correct ProcessReplacing
-   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    // call correct ProcessReplacing
+    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
 
-   // start processing
-   StartProcess;
-   Active := False;
+    // start processing
+    StartProcess;
+    Active := False;
 
-   // call processing
-   ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    // call processing
+    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+   finally
+    for Channel := 0 to numInputs  - 1 do Dispose(Input[Channel]);
+    for Channel := 0 to numOutputs - 1 do Dispose(Output[Channel]);
+   end;
   end;
 end;
 
@@ -3050,7 +3076,7 @@ begin
    if not (PlugCategory in [vpcEffect, vpcMastering, vpcSpacializer, vpcRoomFx,
      vpcSurroundFx, vpcRestoration, vpcGenerator]) then
     begin
-     StopTests(RCStrWrongCategory);
+     Fail(RCStrWrongCategory);
      Exit;
     end;
 
@@ -3107,14 +3133,14 @@ begin
        // test peak
        if Peak = 0 then
         begin
-         StopTests(RCStrPluginNoOutput);
+         Fail(RCStrPluginNoOutput);
          Exit;
         end;
 
        // test delta
        if Delta[Ndx] > 1E-4 then
         begin
-         StopTests(RCStrTimeVariantOutput);
+         Fail(RCStrTimeVariantOutput);
          Exit;
         end;
       end;
@@ -3342,40 +3368,53 @@ end;
 {$IFNDEF CONSOLE_TESTRUNNER}
 procedure EnumerateVstPlugins;
 var
-  SR   : TSearchRec;
-  TS   : TTestVstSuite;
-  Hndl : HMODULE;
+  SR      : TSearchRec;
+  TS      : TTestVstSuite;
+  Hndl    : HMODULE;
+  Log     : TStringList;
+  PlugCnt : Integer;
 begin
  with TFmSplashScreen.Create(nil) do
   try
    Show;
-   if FindFirst('*.dll', faAnyFile, SR) = 0 then
-    try
-     repeat
-      try
-       LbScannedPlugin.Caption := SR.Name;
-//       Invalidate;
-       Application.ProcessMessages;
-       Hndl := LoadLibrary(PChar(SR.Name));
-       if (GetProcAddress(Hndl, 'VSTMain') <> nil) or
-          (GetProcAddress(Hndl, 'main') <> nil) then
-        begin
-         TS := TTestVstSuite.Create(SR.Name);
-         TS.VstPluginName := SR.Name;
-         TS.AddTests(TVstPluginBasicTests);
-         TS.AddTests(TVstPluginPerverseTests);
-         TS.AddTests(TVstPluginHostTests);
-         TS.AddTests(TVstPluginIOTests);
-         TS.AddTests(TVstPluginIOThreadTests);
-         RegisterTest(TS);
-        end;
-      except
-      end;
-     until FindNext(SR) <> 0;
-    finally
-     // Must free up resources used by these successful finds
-     FindClose(SR);
-    end;
+   Log := TStringList.Create;
+   PlugCnt := 0;
+   try
+    if FindFirst('*.dll', faAnyFile, SR) = 0 then
+     try
+      repeat
+       try
+        LbScannedPlugin.Caption := SR.Name;
+ //       Invalidate;
+        Application.ProcessMessages;
+        Hndl := LoadLibrary(PChar(SR.Name));
+        if (GetProcAddress(Hndl, 'VSTMain') <> nil) or
+           (GetProcAddress(Hndl, 'main') <> nil) then
+         begin
+          Log.Add(SR.Name);
+          Log.SaveToFile('scan.log');
+          TS := TTestVstSuite.Create(SR.Name);
+          TS.VstPluginName := SR.Name;
+          TS.AddTests(TVstPluginBasicTests);
+          TS.AddTests(TVstPluginPerverseTests);
+          TS.AddTests(TVstPluginHostTests);
+          TS.AddTests(TVstPluginIOTests);
+          TS.AddTests(TVstPluginIOThreadTests);
+          RegisterTest(TS);
+          Inc(PlugCnt);
+          if PlugCnt > 20 then Break; // only 20 plugins allowed
+         end;
+       except
+       end;
+      until FindNext(SR) <> 0;
+      DeleteFile('scan.log');
+     finally
+      // Must free up resources used by these successful finds
+      FindClose(SR);
+     end;
+   finally
+    FreeAndNil(Log);
+   end;
   finally
    Free;
   end;

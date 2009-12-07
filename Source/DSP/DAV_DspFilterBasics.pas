@@ -162,12 +162,12 @@ procedure TBasicPeakFilter.CalculateCoefficients;
 var
   t : Double;
 begin
- t := FGainFactor / (FGainFactor + FAlpha);
- FDenominator[2] := (FGainFactor - FAlpha) / (FGainFactor + FAlpha);
- FDenominator[1] := -2 * ExpW0.Re * t;
+ t := 1 / (FGainFactor + FAlpha);
+ FDenominator[2] := (FGainFactor - FAlpha) * t;
+ FDenominator[1] := -2 * ExpW0.Re * FGainFactor * t;
  FNominator[1] := FDenominator[1];
- FNominator[0] := (1 + FAlpha * FGainFactor) * t;
- FNominator[2] := (1 - FAlpha * FGainFactor) * t;
+ FNominator[0] := (FGainFactor + FAlpha * Sqr(FGainFactor)) * t;
+ FNominator[2] := (FGainFactor - FAlpha * Sqr(FGainFactor)) * t;
  CalcPolesZeros;
 end;
 

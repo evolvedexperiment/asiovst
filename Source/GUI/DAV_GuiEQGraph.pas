@@ -219,42 +219,71 @@ type
   // EQ-Graph
 
   TCustomGuiEQGraph = class(TCustomControl)
-  public
-    constructor Create(AOwner: TComponent); override;
-  end;
-
-  TGuiEQGraph = class(TCustomGuiEQGraph)
   private
     FAutoColor        : Boolean;
-    FBuffer           : TBitmap;
     FChartColor       : TColor;
     FBorderRadius     : Integer;
     FBorderWidth      : Integer;
     FBorderColor      : TColor;
     FGraphColorDark   : TColor;
     FGraphColorLight  : TColor;
+
+    FOnPaint          : TNotifyEvent;
+
+    FFilterSeries     : TGuiEQGraphSeriesCollection;
+
+    FYAxis            : TGuiEQGraphYAxis;
+    FXAxis            : TGuiEQGraphXAxis;
+    procedure SetAutoColor(const Value: Boolean);
+    procedure SetBorderColor(const Value: TColor);
+    procedure SetBorderRadius(const Value: Integer);
+    procedure SetBorderWidth(const Value: Integer);
+    procedure SetChartColor(const Value: TColor);
+    procedure SetGraphColorDark(const Value: TColor);
+    procedure SetGraphColorLight(const Value: TColor);
+    procedure SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
+    procedure SetXAxis(const Value: TGuiEQGraphXAxis);
+    procedure SetYAxis(const Value: TGuiEQGraphYAxis);
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure AutoColorChanged; virtual;
+    procedure BorderRadiusChanged; virtual;
+    procedure BorderWidthChanged; virtual;
+    procedure BorderColorChanged; virtual;
+    procedure ChartColorChanged; virtual;
+    procedure GraphColorDarkChanged; virtual;
+    procedure GraphColorLightChanged; virtual;
+  public
+    constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+    procedure ChartChanged; virtual;
+
+    property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
+    property GraphColorDark: TColor read FGraphColorDark write SetGraphColorDark default $303030;
+    property GraphColorLight: TColor read FGraphColorLight write SetGraphColorLight default $606060;
+    property ColorChart: TColor read FChartColor write SetChartColor;
+    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
+    property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
+    property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
+
+    property FilterSeries: TGuiEQGraphSeriesCollection read FFilterSeries write SetFilterSeries;
+    property YAxis: TGuiEQGraphYAxis read FYAxis write SetYAxis;
+    property XAxis: TGuiEQGraphXAxis read FXAxis write SetXAxis;
+
+    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
+  end;
+
+  TGuiEQGraph = class(TCustomGuiEQGraph)
+  private
+    FBuffer           : TBitmap;
     FAntiAlias        : TGuiAntiAlias;
     FOSFactor         : Integer;
     FTransparent      : Boolean;
+    FChartChanged     : Boolean;
 
-    FYAxis            : TGuiEQGraphYAxis;       
-    FXAxis            : TGuiEQGraphXAxis;       
-
-    FOnPaint          : TNotifyEvent;       
-    FFilterSeries     : TGuiEQGraphSeriesCollection;
-
-    procedure SetAutoColor(const Value: Boolean);
-    procedure SetChartColor(const Value: TColor);
-    procedure SetBorderRadius(const Value: Integer);
-    procedure SetGraphColorDark(const Value: TColor);
-    procedure SetGraphColorLight(const Value: TColor);
-    procedure SetBorderWidth(const Value: Integer);
-    procedure SetYAxis(const Value: TGuiEQGraphYAxis);
-    procedure SetXAxis(const Value: TGuiEQGraphXAxis);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetTransparent(const Value: Boolean);
-    procedure SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
-    procedure SetBorderColor(const Value: TColor);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure Paint; override;
@@ -262,12 +291,6 @@ type
     procedure Loaded; override;
 
     procedure AntiAliasChanged; virtual;
-    procedure BorderRadiusChanged; virtual;
-    procedure BorderWidthChanged; virtual;
-    procedure BorderColorChanged; virtual;
-    procedure ChartColorChanged; virtual;
-    procedure GraphColorDarkChanged; virtual;
-    procedure GraphColorLightChanged; virtual;
     procedure RenderBuffer; virtual;
     procedure TransparentChanged; virtual;
     procedure DownsampleBitmap(Bitmap: TBitmap);
@@ -288,22 +311,23 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
+    procedure ChartChanged; override;
   published
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
-    property AutoColor: Boolean read FAutoColor write SetAutoColor default False;
-    property GraphColorDark: TColor read FGraphColorDark write SetGraphColorDark default $303030;
-    property GraphColorLight: TColor read FGraphColorLight write SetGraphColorLight default $606060;
-    property ColorChart: TColor read FChartColor write SetChartColor;
-    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
-    property BorderWidth: Integer read FBorderWidth write SetBorderWidth default 1;
-    property BorderColor: TColor read FBorderColor write SetBorderColor default $202020;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
+    property AutoColor;
+    property BorderColor;
+    property BorderRadius;
+    property BorderWidth;
+    property ColorChart;
+    property FilterSeries;
+    property GraphColorDark;
+    property GraphColorLight;
+    property XAxis;
+    property YAxis;
 
-    property FilterSeries: TGuiEQGraphSeriesCollection read FFilterSeries write SetFilterSeries;
-    property YAxis: TGuiEQGraphYAxis read FYAxis write SetYAxis;
-    property XAxis: TGuiEQGraphXAxis read FXAxis write SetXAxis;
+    property OnPaint;
 
-    property OnPaint: TNotifyEvent read FOnPaint write FOnPaint;
     property Align;
     property Anchors;
     property Color;
@@ -358,7 +382,7 @@ end;
 
 procedure TCustomGuiEQGraphAxis.Changed;
 begin
- FOwner.Invalidate;
+ FOwner.ChartChanged;
 end;
 
 procedure TCustomGuiEQGraphAxis.RangeChanged;
@@ -802,7 +826,7 @@ end;
 procedure TGuiEQGraphSeriesCollection.Changed;
 begin
  if Owner is TCustomGuiEQGraph
-  then TCustomGuiEQGraph(Owner).Invalidate;
+  then TCustomGuiEQGraph(Owner).ChartChanged;
 end;
 
 procedure TGuiEQGraphSeriesCollection.Notify(Item: TCollectionItem;
@@ -826,8 +850,172 @@ begin
  inherited Create(AOwner);
  ControlStyle := [csAcceptsControls, csCaptureMouse, csClickEvents,
    csDoubleClicks, csReplicatable, csOpaque];
- TabStop      := False; // Ensure we're not a tab-stop
- Color        := clBtnFace;
+ TabStop := False; // Ensure we're not a tab-stop
+ Color := clBtnFace;
+
+ FXAxis           := TGuiEQGraphXAxis.Create(Self);
+ FYAxis           := TGuiEQGraphYAxis.Create(Self);
+ FFilterSeries    := TGuiEQGraphSeriesCollection.Create(Self);
+
+ FAutoColor       := False;
+ FChartColor      := Color;
+ FGraphColorLight := $606060;
+ FGraphColorDark  := $303030;
+ FBorderColor     := $202020;
+ FBorderWidth     := 1;
+end;
+
+destructor TCustomGuiEQGraph.Destroy;
+begin
+ FreeAndNil(FXAxis);
+ FreeAndNil(FYAxis);
+ FreeAndNil(FFilterSeries);
+ inherited Destroy;
+end;
+
+procedure TCustomGuiEQGraph.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomGuiEQGraph then
+  with TCustomGuiEQGraph(Dest) do
+   begin
+    FAutoColor       := Self.FAutoColor;
+    FChartColor      := Self.FChartColor;
+    FBorderRadius    := Self.FBorderRadius;
+    FBorderWidth     := Self.FBorderWidth;
+    FBorderColor     := Self.FBorderColor;
+    FGraphColorDark  := Self.FGraphColorDark;
+    FGraphColorLight := Self.FGraphColorLight;
+    FOnPaint         := Self.FOnPaint;
+
+    FFilterSeries.Assign(Self.FFilterSeries);
+    FYAxis.Assign(Self.FYAxis);
+    FXAxis.Assign(Self.FXAxis);
+   end;
+end;
+
+procedure TCustomGuiEQGraph.SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
+begin
+ FFilterSeries.Assign(Value);
+end;
+
+procedure TCustomGuiEQGraph.SetChartColor(const Value: TColor);
+begin
+ if not FAutoColor and (FChartColor <> Value) then
+  begin
+   FChartColor := Value;
+   ChartColorChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.SetBorderColor(const Value: TColor);
+begin
+ if FBorderColor <> Value then
+  begin
+   FBorderColor := Value;
+   BorderColorChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.SetBorderRadius(const Value: Integer);
+begin
+ if FBorderRadius <> Value then
+  begin
+   FBorderRadius := Value;
+   BorderRadiusChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.SetAutoColor(const Value: Boolean);
+begin
+ if FAutoColor <> Value then
+  begin
+   FAutoColor := Value;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.SetBorderWidth(const Value: Integer);
+begin
+ if FBorderWidth <> Value then
+  begin
+   FBorderWidth := Value;
+   BorderWidthChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.SetGraphColorDark(const Value: TColor);
+begin
+ if FGraphColorDark <> Value then
+  begin
+   FGraphColorDark := Value;
+   GraphColorDarkChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.SetGraphColorLight(const Value: TColor);
+begin
+ if FGraphColorLight <> Value then
+  begin
+   FGraphColorLight := Value;
+   GraphColorLightChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.AutoColorChanged;
+begin
+ if FAutoColor then
+  begin
+(*
+   FChartColor32 := Lighten(Color32(Color),60);
+   FChartColor := WinColor(FChartColor32);
+*)
+   ChartChanged;
+  end;
+end;
+
+procedure TCustomGuiEQGraph.BorderWidthChanged;
+begin
+ ChartChanged;
+end;
+
+procedure TCustomGuiEQGraph.SetXAxis(const Value: TGuiEQGraphXAxis);
+begin
+ FXAxis.Assign(Value);
+end;
+
+procedure TCustomGuiEQGraph.SetYAxis(const Value: TGuiEQGraphYAxis);
+begin
+ FYAxis.Assign(Value);
+end;
+
+procedure TCustomGuiEQGraph.ChartChanged;
+begin
+ Invalidate;
+end;
+
+procedure TCustomGuiEQGraph.BorderColorChanged;
+begin
+ ChartChanged;
+end;
+
+procedure TCustomGuiEQGraph.BorderRadiusChanged;
+begin
+ ChartChanged;
+end;
+
+procedure TCustomGuiEQGraph.ChartColorChanged;
+begin
+ ChartChanged;
+end;
+
+procedure TCustomGuiEQGraph.GraphColorDarkChanged;
+begin
+ ChartChanged;
+end;
+
+procedure TCustomGuiEQGraph.GraphColorLightChanged;
+begin
+ ChartChanged;
 end;
 
 
@@ -837,31 +1025,21 @@ constructor TGuiEQGraph.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
 
- FAutoColor       := False;
- FXAxis           := TGuiEQGraphXAxis.Create(Self);
- FYAxis           := TGuiEQGraphYAxis.Create(Self);
- FFilterSeries    := TGuiEQGraphSeriesCollection.Create(Self);
- FBuffer          := TBitmap.Create;
+ FBuffer := TBitmap.Create;
  with FBuffer do
   begin
    Canvas.Brush.Color := Self.Color;
    Width := Self.Width;
    Height := Self.Height;
   end;
- FGraphColorLight := $606060;
- FGraphColorDark  := $303030;
- FBorderColor     := $202020;
- FBorderWidth     := 1;
- FOSFactor        := 1;
- FChartColor      := Color;
+
+ FOSFactor := 1;
+ FTransparent := False;
 end;
 
 destructor TGuiEQGraph.Destroy;
 begin
  FreeAndNil(FBuffer);
- FreeAndNil(FXAxis);
- FreeAndNil(FYAxis);
- FreeAndNil(FFilterSeries);
  inherited Destroy;
 end;
 
@@ -871,21 +1049,10 @@ begin
  if Dest is TGuiEQGraph then
   with TGuiEQGraph(Dest) do
    begin
-    FAutoColor       := Self.FAutoColor;
-    FChartColor      := Self.FChartColor;
-    FBorderRadius    := Self.FBorderRadius;
-    FBorderWidth     := Self.FBorderWidth;
-    FBorderColor     := Self.FBorderColor;
-    FGraphColorDark  := Self.FGraphColorDark;
-    FGraphColorLight := Self.FGraphColorLight;
     FAntiAlias       := Self.FAntiAlias;
     FOSFactor        := Self.FOSFactor;
     FTransparent     := Self.FTransparent;
-    FOnPaint         := Self.FOnPaint;
 
-    FFilterSeries.Assign(Self.FFilterSeries);
-    FYAxis.Assign(Self.FYAxis);
-    FXAxis.Assign(Self.FXAxis);
     FBuffer.Assign(Self.FBuffer);
    end;
 end;
@@ -899,6 +1066,7 @@ begin
  inherited;
  FBuffer.Canvas.Font.Assign(Font);
 end;
+
 
 // Drawing stuff
 
@@ -955,13 +1123,23 @@ begin
   Parent.Perform(WM_PAINT, Longint(DC), 0);
   RestoreDC(DC, SaveIndex);
 end;
+procedure TGuiEQGraph.ChartChanged;
+begin
+ FChartChanged := True;
+ inherited;
+end;
+
 {$ENDIF}
 
 procedure TGuiEQGraph.Paint;
 begin
- if assigned(FBuffer) then
+ if Assigned(FBuffer) then
   begin
-   RenderBuffer;
+   if FChartChanged then
+    begin
+     FChartChanged := False;
+     RenderBuffer;
+    end;
    Canvas.Draw(0, 0, FBuffer);
   end;
 
@@ -969,67 +1147,6 @@ begin
 
  if Assigned(FOnPaint)
   then FOnPaint(Self);
-end;
-
-procedure TGuiEQGraph.SetChartColor(const Value: TColor);
-begin
- if not FAutoColor and (FChartColor <> Value) then
-  begin
-   FChartColor := Value;
-   Invalidate;
-  end;
-end;
-
-procedure TGuiEQGraph.SetFilterSeries(const Value: TGuiEQGraphSeriesCollection);
-begin
- FFilterSeries.Assign(Value);
-end;
-
-procedure TGuiEQGraph.ChartColorChanged;
-begin
- Invalidate;
-end;
-
-procedure TGuiEQGraph.SetBorderColor(const Value: TColor);
-begin
- if FBorderColor <> Value then
-  begin
-   FBorderColor := Value;
-   BorderColorChanged;
-  end;
-end;
-
-procedure TGuiEQGraph.SetBorderRadius(const Value: Integer);
-begin
- if FBorderRadius <> Value then
-  begin
-   FBorderRadius := Value;
-   BorderRadiusChanged;
-  end;
-end;
-
-procedure TGuiEQGraph.BorderColorChanged;
-begin
- Invalidate;
-end;
-
-procedure TGuiEQGraph.BorderRadiusChanged;
-begin
- Invalidate;
-end;
-
-procedure TGuiEQGraph.SetBorderWidth(const Value: Integer);
-begin
- if FBorderWidth <> Value then
-  begin
-   FBorderWidth := Value;
-   BorderWidthChanged;
-  end;
-end;
-
-procedure TGuiEQGraph.BorderWidthChanged;
-begin
- Invalidate;
 end;
 
 procedure TGuiEQGraph.SetAntiAlias(const Value: TGuiAntiAlias);
@@ -1051,23 +1168,7 @@ begin
    gaaLinear8x : FOSFactor :=  8;
   gaaLinear16x : FOSFactor := 16;
  end;
- Invalidate;
-end;
-
-procedure TGuiEQGraph.SetAutoColor(const Value: Boolean);
-begin
- if FAutoColor <> Value then
-  begin
-   FAutoColor := Value;
-   if FAutoColor then
-    begin
-(*
-     FChartColor32 := Lighten(Color32(Color),60);
-     FChartColor := WinColor(FChartColor32);
-     RepaintChartBuffer;
-*)
-    end;
-  end;
+ ChartChanged;
 end;
 
 procedure TGuiEQGraph.RenderBuffer;
@@ -1348,13 +1449,14 @@ procedure TGuiEQGraph.RenderToBitmap(Bitmap: TBitmap);
 var
   FilterIndex : Integer;
   PixelIndex  : Integer;
+  Offset      : Integer;
   Temp        : Single;
   YValue      : Single;
 begin
  with Bitmap, Canvas do
   begin
    Lock;
-
+   Offset := FOSFactor * FBorderWidth;
    for FilterIndex := 0 to FFilterSeries.Count - 1 do
     with FFilterSeries[FilterIndex] do
      begin
@@ -1363,12 +1465,13 @@ begin
       if Assigned(FOnGetFilterGain) then
        begin
         YValue := FOnGetFilterGain(Self, FXAxis.LowerFrequency);
-        MoveTo(FOSFactor, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
+        MoveTo(FOSFactor, Round((Height - Offset) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) + Offset div 2));
         Temp := 1 / (Width - 2 * FOSFactor);
         for PixelIndex := FOSFactor + 1 to Width - FOSFactor - 1 do
          begin
+
           YValue := FOnGetFilterGain(Self, FXAxis.LinearToLogarithmicFrequency((PixelIndex - FOSFactor) * Temp));
-          LineTo(PixelIndex, Round((Height - FOSFactor) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) - FOSFactor));
+          LineTo(PixelIndex, Round((Height - Offset) * (1 - (YValue - FYAxis.LowerLevel) / FYAxis.Range) + Offset div 2));
          end;
        end;
      end;
@@ -1393,42 +1496,14 @@ end;
 procedure TGuiEQGraph.Resize;
 begin
  inherited;
- if assigned(FBuffer) then
+ if Assigned(FBuffer) then
   with FBuffer do
    begin
     Canvas.Brush.Color := Self.Color;
     Width := Self.Width;
     Height := Self.Height;
    end;
- Invalidate;
-end;
-
-procedure TGuiEQGraph.SetGraphColorDark(const Value: TColor);
-begin
- if FGraphColorDark <> Value then
-  begin
-   FGraphColorDark := Value;
-   GraphColorDarkChanged;
-  end;
-end;
-
-procedure TGuiEQGraph.GraphColorDarkChanged;
-begin
- Invalidate;
-end;
-
-procedure TGuiEQGraph.SetGraphColorLight(const Value: TColor);
-begin
- if FGraphColorLight <> Value then
-  begin
-   FGraphColorLight := Value;
-   GraphColorLightChanged;
-  end;
-end;
-
-procedure TGuiEQGraph.GraphColorLightChanged;
-begin
- Invalidate;
+ ChartChanged;
 end;
 
 procedure TGuiEQGraph.Loaded;
@@ -1448,17 +1523,7 @@ end;
 
 procedure TGuiEQGraph.TransparentChanged;
 begin
- Invalidate;
-end;
-
-procedure TGuiEQGraph.SetXAxis(const Value: TGuiEQGraphXAxis);
-begin
- FXAxis.Assign(Value);
-end;
-
-procedure TGuiEQGraph.SetYAxis(const Value: TGuiEQGraphYAxis);
-begin
- FYAxis.Assign(Value);
+ ChartChanged;
 end;
 
 end.

@@ -44,6 +44,7 @@ type
   TFmButterworth = class(TForm)
     DialFrequency: TGuiDial;
     DialOrder: TGuiDial;
+    GuiEQGraph: TGuiEQGraph;
     LbButterworthFilterDemo: TGuiLabel;
     LbButterworthFilterDemoShaddow: TGuiLabel;
     LbFrequency: TGuiLabel;
@@ -51,7 +52,6 @@ type
     LbOrder: TGuiLabel;
     LbOrderValue: TGuiLabel;
     PnControls: TGuiPanel;
-    GuiEQGraph: TGuiEQGraph;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

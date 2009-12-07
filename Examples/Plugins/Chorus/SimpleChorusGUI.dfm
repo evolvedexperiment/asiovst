@@ -7,8 +7,8 @@ object FmSimpleChorus: TFmSimpleChorus
   ClientWidth = 306
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -19
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FmSimpleChorus: TFmSimpleChorus
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 23
   object DialSpeed: TGuiDial
     Left = 16
     Top = 32
@@ -112,11 +112,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Speed'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
   end
   object LbStages: TGuiLabel
     Left = 65
@@ -126,11 +121,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Stages'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
   end
   object LbDepth: TGuiLabel
     Left = 128
@@ -140,11 +130,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Depth'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
   end
   object LbMix: TGuiLabel
     Left = 188
@@ -154,11 +139,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Mix'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
   end
   object LbSpeedValue: TGuiLabel
     Left = 3
@@ -172,6 +152,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbStagesValue: TGuiLabel
     Left = 63
@@ -185,6 +166,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbDepthValue: TGuiLabel
     Left = 123
@@ -198,6 +180,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object LbMixValue: TGuiLabel
     Left = 183
@@ -211,6 +194,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object DialDrift: TGuiDial
     Left = 254
@@ -242,11 +226,6 @@ object FmSimpleChorus: TFmSimpleChorus
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Drift'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
   end
   object LbDriftValue: TGuiLabel
     Left = 241
@@ -260,6 +239,7 @@ object FmSimpleChorus: TFmSimpleChorus
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
   end
   object DIL: TGuiDialImageList
     DialImages = <>

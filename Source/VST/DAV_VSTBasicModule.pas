@@ -1485,9 +1485,12 @@ end;
 procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- if not Assigned(Effect) or (SampleFrames = 0) then Exit;
-  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-   then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+ // check consistency
+ if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+  then Exit;
+
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1538,9 +1541,12 @@ end;
 procedure ProcessReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- if not Assigned(Effect) or (SampleFrames = 0) then Exit;
-  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-   then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+ // check consistency
+ if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+  then Exit;
+
+ if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1592,7 +1598,10 @@ procedure ProcessDoubleReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- if not Assigned(Effect) or (SampleFrames = 0) then Exit;
+ // check consistency
+ if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+  then Exit;
+
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
   then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
 end;
@@ -1646,7 +1655,10 @@ end;
 procedure ProcessFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- if not Assigned(Effect) or (SampleFrames = 0) then Exit;
+ // check consistency
+ if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+  then Exit;
+
  if TObject(Effect^.User) is TBasicVSTModule
   then TBasicVSTModule(Effect^.User).HostCallProcess(Inputs, Outputs, SampleFrames);
 end;
@@ -1699,7 +1711,10 @@ end;
 procedure ProcessReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- if not Assigned(Effect) or (SampleFrames = 0) then Exit;
+ // check consistency
+ if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+  then Exit;
+
  if TObject(Effect^.User) is TBasicVSTModule
   then TBasicVSTModule(Effect^.User).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
 end;
@@ -1752,7 +1767,9 @@ end;
 procedure ProcessDoubleReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
- if not Assigned(Effect) or (SampleFrames = 0) then Exit;
+ // check consistency
+ if not Assigned(Effect) or (SampleFrames = 0) or (Inputs = nil) or (Outputs = nil)
+  then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
   then TBasicVSTModule(Effect^.User).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);

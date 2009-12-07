@@ -1,4 +1,5 @@
 object SimpleChorusModule: TSimpleChorusModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
@@ -65,6 +66,7 @@ object SimpleChorusModule: TSimpleChorusModule
       SmallStepFloat = 0.100000001490116100
       StepFloat = 1.000000000000000000
       Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamSpeedChange
     end
@@ -99,6 +101,7 @@ object SimpleChorusModule: TSimpleChorusModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDepthChange
     end
@@ -113,6 +116,7 @@ object SimpleChorusModule: TSimpleChorusModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamMixChange
     end
@@ -127,6 +131,7 @@ object SimpleChorusModule: TSimpleChorusModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDriftChange
     end>

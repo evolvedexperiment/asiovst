@@ -358,7 +358,7 @@ end;
 procedure TFmLinkwitzRiley.EQGraphUpdateTimer(Sender: TObject);
 begin
  EQGraphUpdate.Enabled := False;
- GuiEQGraph.Invalidate;
+ GuiEQGraph.ChartChanged;
 end;
 
 procedure TFmLinkwitzRiley.DialHighpassFrequencyChange(Sender: TObject);

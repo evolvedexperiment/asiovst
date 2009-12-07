@@ -40,6 +40,8 @@ uses
 
 type
   TSimpleChorusModule = class(TVSTModule)
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -51,8 +53,6 @@ type
     procedure ParamStagesChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriftChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleCreate(Sender: TObject);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FChorus          : Array [0..1] of TDspChorus32;
     FCriticalSection : TCriticalSection;

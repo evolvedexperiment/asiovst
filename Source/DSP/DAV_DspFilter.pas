@@ -1273,7 +1273,7 @@ asm
  fadd [self.FState + 8].Double       // d1 + a1 * Input - b0 * r, r, r
  fstp [self.FState].Double           // d0 = a1 * Input + d1 + b1 * r, r, r
  fmul [self.FDenominator + 8].Double // b1 * r, r
- fld Input.Double                    // Input, b1 * r, r
+ fld Input.Single                    // Input, b1 * r, r
  fmul [self.FNominator + 16].Double  // a2*Input, b1 * r, r
  fsubrp st(1), st(0)                 // b1 * r + a2 * Input, r !!!
  fstp [self.FState + 8].Double       // d1 = b1 * r + a2 * Input, r !!!

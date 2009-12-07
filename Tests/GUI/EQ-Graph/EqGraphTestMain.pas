@@ -12,9 +12,9 @@ type
     EqGraphB: TGuiEQGraph;
     EqGraphC: TGuiEQGraph;
     EqGraphD: TGuiEQGraph;
-    function EqGraphGetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
     procedure FormCreate(Sender: TObject);
-    function EqGraphAFilterSeries1GetFilterGain(Sender: TObject;
+    function GetFilterSubGain(Sender: TObject;
       const Frequency: Single): Single;
   private
     FLowpass : TBasicLowpassFilter;
@@ -34,13 +34,13 @@ begin
  FLowpass := TBasicLowpassFilter.Create;
 end;
 
-function TFmEqGraphTest.EqGraphAFilterSeries1GetFilterGain(Sender: TObject;
+function TFmEqGraphTest.GetFilterSubGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
  Result := FLowpass.MagnitudeLog10(0.5 * Frequency);
 end;
 
-function TFmEqGraphTest.EqGraphGetFilterGain(Sender: TObject;
+function TFmEqGraphTest.GetFilterGain(Sender: TObject;
   const Frequency: Single): Single;
 begin
  Result := FLowpass.MagnitudeLog10(Frequency);

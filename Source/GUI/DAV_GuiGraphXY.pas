@@ -161,13 +161,15 @@ type
 
   TCustomGuiGraphXYDataSeries = class(TCustomGuiGraphXYSeries)
   private
-    FData   : PDAVPointSingleFixedArray;
-    FCount  : Integer;
+    FData  : PDAVPointSingleFixedArray;
+    FCount : Integer;
   protected
     function Get(Index: Integer): TDAVPointSingle;
     procedure Put(Index: Integer; Item: TDAVPointSingle);
   public
     constructor Create; override;
+    destructor Destroy; override;
+
     function AddPoint(X, Y : Single): Integer; overload; virtual;
     function AddPoint(Item: TDAVPointSingle): Integer; overload; virtual; abstract;
     class procedure Error(const Msg: string; Data: Integer); overload; virtual;
@@ -253,6 +255,7 @@ type
     procedure SetFlags(const Value: TGraphXYFlags);
     procedure ShowLabelsChanged;
     procedure SetFrameColor(const Value: TColor);
+    procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
   protected
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure UpdateBuffer; override;
@@ -269,7 +272,7 @@ type
   published
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
-    property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write FSeriesCollection;
+    property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write SetSeriesCollection;
     property XAxis: TCustomAxis read FXAxis write FXAxis;
     property YAxis: TCustomAxis read FYAxis write FYAxis;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
@@ -421,18 +424,18 @@ var
 begin
  OldGranularity := FGranularity;
  MinGran   := MinimumGranularityDistance * ValuePerPixel;
- MinCount  := round(PixelSize / MinimumGranularityDistance - 0.5);
+ MinCount  := Round(PixelSize / MinimumGranularityDistance - 0.5);
  if MinCount > 0 then
   begin
    GranRange := Range / MinCount;
-   IntExp := round(Log2(GranRange) / Log2(FGranBase) - 0.5);
-   BaseGran := round(GranRange * IntPower(FGranBase, -IntExp) + 0.5);
+   IntExp := Round(Log2(GranRange) / Log2(FGranBase) - 0.5);
+   BaseGran := Round(GranRange * IntPower(FGranBase, -IntExp) + 0.5);
    case BaseGran of
     3, 4 : BaseGran := 5;
     6..9 : BaseGran := 10;
    end;
    FGranularity := BaseGran * IntPower(FGranBase, IntExp);
-//   assert(FGranularity > MinGran);
+//   Assert(FGranularity > MinGran);
    Result := OldGranularity <> FGranularity;
   end
  else Result := False;
@@ -461,6 +464,7 @@ end;
 procedure TCustomAxis.RangeChanged;
 begin
  CalculateRange;
+ CalculatePixelValueRelation;
  CalculateZeroPosition;
  if cafAutoGranularity in Flags
   then CalculateAutoGranularity;
@@ -580,7 +584,7 @@ end;
 procedure TCustomAxis.Changed;
 begin
  // something changed, send notify event
- if assigned(FOnChanged)
+ if Assigned(FOnChanged)
   then FOnChanged(Self)
 end;
 
@@ -646,7 +650,7 @@ end;
 
 procedure TCustomGuiGraphXYSeries.Changed;
 begin
- if assigned(FOnChange) then FOnChange(Self)
+ if Assigned(FOnChange) then FOnChange(Self)
 end;
 
 procedure TCustomGuiGraphXYSeries.SetColor(const Value: TColor);
@@ -687,7 +691,7 @@ var
   Scale    : TDAVPointSingle;
   Value    : Single;
 begin
- if Visible and assigned(FOnEvaluate) then
+ if Visible and Assigned(FOnEvaluate) then
   with GraphXY, Bitmap do
    begin
     Scale.X   := FXAxis.ValuePerPixel / OversamplingFactor;
@@ -698,11 +702,11 @@ begin
     Canvas.Pen.Color := fColor;
     Canvas.Pen.Width := LineWidth * OversamplingFactor;
     Value := FOnEvaluate(Self, Offset.X);
-    Canvas.MoveTo(0 {+ Left}, round(Offset.Y - Scale.Y * Value));
+    Canvas.MoveTo(0 {+ Left}, Round(Offset.Y - Scale.Y * Value));
     for x := 1 to OversamplingFactor * FXAxis.PixelSize do
      begin
       Value := FOnEvaluate(Self, Offset.X + x * Scale.X);
-      Canvas.LineTo(0 {+ Left} + x, round(Offset.Y - Scale.Y * Value));
+      Canvas.LineTo(0 {+ Left} + x, Round(Offset.Y - Scale.Y * Value));
      end;
    end;
 end;
@@ -724,6 +728,12 @@ begin
  FData := nil;
 end;
 
+destructor TCustomGuiGraphXYDataSeries.Destroy;
+begin
+ Dispose(FData);
+ inherited;
+end;
+
 function TCustomGuiGraphXYDataSeries.AddPoint(X, Y: Single): Integer;
 var
   Item: TDAVPointSingle;
@@ -736,7 +746,7 @@ end;
 procedure TCustomGuiGraphXYDataSeries.Clear;
 begin
  FCount := 0;
- ReallocMem(FData, FCount);
+ FillChar(FData^, FCount * SizeOf(Single), 0);
 end;
 
 class procedure TCustomGuiGraphXYDataSeries.Error(const Msg: string; Data: Integer);
@@ -783,6 +793,7 @@ begin
    FData^[Index] := Item;
   end;
 end;
+
 
 { TGuiGraphXYDataSeries }
 
@@ -889,7 +900,7 @@ begin
    i := 0; while i < FCount do
     begin
      if FData^[i].X > Item.X then Break;
-     inc(i);
+     Inc(i);
     end;
    ReallocMem(FData, (FCount + 1) * SizeOf(TDAVPointSingle));
    if i < FCount
@@ -910,7 +921,7 @@ end;
 
 destructor TGuiGraphXYSeriesCollectionItem.Destroy;
 begin
- if assigned(FSeries) then FreeAndNil(FSeries);
+ if Assigned(FSeries) then FreeAndNil(FSeries);
  inherited;
 end;
 
@@ -921,7 +932,7 @@ end;
 
 function TGuiGraphXYSeriesCollectionItem.GetSeriesClassName: string;
 begin
- if assigned(FSeries)
+ if Assigned(FSeries)
   then Result := FSeries.ClassName
   else Result := '';
 end;
@@ -937,7 +948,7 @@ end;
 
 procedure TGuiGraphXYSeriesCollectionItem.Changed;
 begin
- if assigned(FSeriesClassChanged)
+ if Assigned(FSeriesClassChanged)
   then FSeriesClassChanged(Self);
 end;
 
@@ -996,8 +1007,11 @@ procedure TGuiGraphXYSeriesCollection.Notify(Item: TCollectionItem;
   Action: TCollectionNotification);
 begin
  inherited;
- assert(Owner is TCustomGuiGraphXY);
- TCustomGuiGraphXY(Owner).UpdateBuffer;
+ if UpdateCount = 0 then
+  begin
+   Assert(Owner is TCustomGuiGraphXY);
+   TCustomGuiGraphXY(Owner).UpdateBuffer;
+  end;
 end;
 
 procedure TGuiGraphXYSeriesCollection.SetItem(Index: Integer;
@@ -1028,7 +1042,7 @@ destructor TCustomGuiGraphXY.Destroy;
 begin
  FreeAndNil(FXAxis);
  FreeAndNil(FYAxis);
-// FreeAndNil(FSeriesCollection); ToDo!
+ FreeAndNil(FSeriesCollection);
  inherited Destroy;
 end;
 
@@ -1071,8 +1085,8 @@ begin
    Rct := ClipRect;
    FrameRect(Rct);
    InflateRect(Rct, -1, -1);
-   ZeroPos   := Point(round(XAxis.ZeroPosition * OversamplingFactor * XAxis.PixelSize),
-                      round((1 - YAxis.ZeroPosition) * OversamplingFactor * YAxis.PixelSize));
+   ZeroPos   := Point(Round(XAxis.ZeroPosition * OversamplingFactor * XAxis.PixelSize),
+                      Round((1 - YAxis.ZeroPosition) * OversamplingFactor * YAxis.PixelSize));
 
    Pen.Color   := FLineColor;
    Pen.Width   := OversamplingFactor;
@@ -1084,7 +1098,7 @@ begin
     begin
      PixelRange := OversamplingFactor * (PixelSize - 2);
      NormGran := FGranularity * FRangeReci;
-     c := FZeroPosition + round(0.5 - FZeroPosition / NormGran) * NormGran;
+     c := FZeroPosition + Round(0.5 - FZeroPosition / NormGran) * NormGran;
      while c < 0 do c := c + NormGran;
      while c < 1 do
       begin
@@ -1092,8 +1106,8 @@ begin
         then Pen.Color := FFrameColor
         else Pen.Color := FLineColor;
 
-       MoveTo(Rct.Left + round(c * PixelRange), Rct.Top);
-       LineTo(Rct.Left + round(c * PixelRange), Rct.Bottom);
+       MoveTo(Rct.Left + Round(c * PixelRange), Rct.Top);
+       LineTo(Rct.Left + Round(c * PixelRange), Rct.Bottom);
 
        if (gfShowLabels in Self.Flags) then
         begin
@@ -1102,7 +1116,7 @@ begin
           begin
            str := '0';
            TextSize := TextExtent(str);
-           TextOut(Rct.Left + round(c * PixelRange - TextSize.cx) - OversamplingFactor * TextXMargin,
+           TextOut(Rct.Left + Round(c * PixelRange - TextSize.cx) - OversamplingFactor * TextXMargin,
                    ZeroPos.Y, str);
           end
          else
@@ -1110,7 +1124,7 @@ begin
            str := FloatToStrF(fLower + FRange * c, ffGeneral, 2, 2);
            TextSize := TextExtent(str);
 
-           TextOut(Rct.Left + round(c * PixelRange - 0.5 * TextSize.cx),
+           TextOut(Rct.Left + Round(c * PixelRange - 0.5 * TextSize.cx),
                    ZeroPos.Y, str);
           end;
         end;
@@ -1124,7 +1138,7 @@ begin
      begin
       PixelRange := OversamplingFactor * (PixelSize - 2);
       NormGran := FGranularity * fRangeReci;
-      c := FZeroPosition + round( -FZeroPosition / NormGran + 0.5) * NormGran;
+      c := FZeroPosition + Round( -FZeroPosition / NormGran + 0.5) * NormGran;
       while c < 0 do c := c + NormGran;
       while c < 1 do
        begin
@@ -1132,8 +1146,8 @@ begin
         then Pen.Color := FFrameColor
         else Pen.Color := FLineColor;
 
-        MoveTo(Rct.Left, Rct.Bottom - round(c * PixelRange));
-        LineTo(Rct.Right, Rct.Bottom - round(c * PixelRange));
+        MoveTo(Rct.Left, Rct.Bottom - Round(c * PixelRange));
+        LineTo(Rct.Right, Rct.Bottom - Round(c * PixelRange));
 
        if (gfShowLabels in Self.Flags) then
         begin
@@ -1144,7 +1158,7 @@ begin
            TextSize := TextExtent(str);
 
            TextOut(ZeroPos.X - TextSize.cx - OversamplingFactor * TextXMargin,
-                   Rct.Top + round((1 - c) * PixelRange - 0.5 * TextSize.cy),
+                   Rct.Top + Round((1 - c) * PixelRange - 0.5 * TextSize.cy),
                    str);
           end;
         end;
@@ -1154,7 +1168,7 @@ begin
      end;
 
    for SeriesNr := 0 to FSeriesCollection.Count - 1 do
-    if assigned(FSeriesCollection[SeriesNr].FSeries)
+    if Assigned(FSeriesCollection[SeriesNr].FSeries)
      then FSeriesCollection[SeriesNr].FSeries.PaintToGraph(Self, Bitmap);
   end;
 end;
@@ -1264,6 +1278,12 @@ begin
   end;
 end;
 
+procedure TCustomGuiGraphXY.SetSeriesCollection(
+  const Value: TGuiGraphXYSeriesCollection);
+begin
+ FSeriesCollection.Assign(Value);
+end;
+
 procedure TCustomGuiGraphXY.SetSeriesCollectionItem(Index: Integer;
   const Value: TGuiGraphXYSeriesCollectionItem);
 begin
@@ -1279,8 +1299,8 @@ end;
 
 procedure RegisterSeriesClass(SeriesClass: TCustomGuiGraphXYSeriesClass);
 begin
-  if not Assigned(SeriesClassList) then SeriesClassList := TClassList.Create;
-  SeriesClassList.Add(SeriesClass);
+ if not Assigned(SeriesClassList) then SeriesClassList := TClassList.Create;
+ SeriesClassList.Add(SeriesClass);
 end;
 
 initialization

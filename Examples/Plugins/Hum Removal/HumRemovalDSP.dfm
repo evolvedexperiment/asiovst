@@ -1,5 +1,4 @@
 object HumRemovalModule: THumRemovalModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -9,7 +8,6 @@ object HumRemovalModule: THumRemovalModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'HumR'
@@ -21,7 +19,6 @@ object HumRemovalModule: THumRemovalModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Highpass'
       DisplayName = 'Highpass Active'
@@ -39,7 +36,6 @@ object HumRemovalModule: THumRemovalModule
       OnCustomParameterDisplay = ParameterHighpassActiveDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Highpass'
       DisplayName = 'Highpass Type'
@@ -132,7 +128,6 @@ object HumRemovalModule: THumRemovalModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Attenuation'
       LargeStepFloat = 2.000000000000000000
@@ -142,11 +137,11 @@ object HumRemovalModule: THumRemovalModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterAttenuationChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Capture Hum Profile'
       LargeStepFloat = 1.000000000000000000

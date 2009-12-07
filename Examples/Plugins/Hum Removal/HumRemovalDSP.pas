@@ -105,12 +105,15 @@ begin
    FGoertzel[Index].Frequency := 45 + 1 * Index;
   end;
 
+ // initialize parameters
  Parameter[0] := 1;
  Parameter[1] := 0;
  Parameter[2] := 75;
  Parameter[3] := 2;
  Parameter[4] := 50;
  Parameter[5] := 0.08;
+ Parameter[6] := 48;
+ Parameter[7] := 0;
 end;
 
 procedure THumRemovalModule.VSTModuleClose(Sender: TObject);
@@ -161,8 +164,9 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to Length(FHumRemoval) - 1 do
-  if Assigned(FHumRemoval[Channel])
-   then FHumRemoval[Channel].HighpassFilter.Frequency := Value;
+  if Assigned(FHumRemoval[Channel]) then
+   if Assigned(FHumRemoval[Channel].HighpassFilter)
+    then FHumRemoval[Channel].HighpassFilter.Frequency := Value;
 
  // eventually update GUI
  if EditorForm is TFmHumRemoval then
@@ -185,8 +189,8 @@ begin
    do UpdateHighpassOrder;
 end;
 
-procedure THumRemovalModule.ParameterHighpassActiveChange(
-  Sender: TObject; const Index: Integer; var Value: Single);
+procedure THumRemovalModule.ParameterHighpassActiveChange(Sender: TObject;
+  const Index: Integer; var Value: Single);
 var
   Channel : Integer;
 begin
@@ -283,9 +287,9 @@ procedure THumRemovalModule.ParameterHighpassTypeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
  case Round(Parameter[Index]) of
-  0 : Predefined := 'Butterworth';
-  1 : Predefined := 'Chebyshev I';
-  2 : Predefined := 'Chebyshev II';
+  0 : PreDefined := 'Butterworth';
+  1 : PreDefined := 'Chebyshev I';
+  2 : PreDefined := 'Chebyshev II';
  end;
 end;
 

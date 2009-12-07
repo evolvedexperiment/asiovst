@@ -22,6 +22,11 @@
   The default is enabled. }
 {$DEFINE ZeroArray}
 
+{ Enable this option for platform independent testing. No assembler code is
+  used if this is checked}
+{.$DEFINE PUREPASCAL}
+
+
 //////////////////////////////
 //  ASIO Compiler Switches  //
 //////////////////////////////

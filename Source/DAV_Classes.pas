@@ -86,7 +86,22 @@ type
   {.$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'AudioComponent classes'} {$ENDIF}
-  TCustomAudioComponent = class(TComponent)
+  TNotifiableComponent = class(TComponent)
+  private
+    FUpdateCount : Integer;
+    FOnChange    : TNotifyEvent;
+  protected
+    procedure AssignTo(Dest: TPersistent); override;
+
+    property UpdateCount: Integer read FUpdateCount;
+  public
+    procedure Changed; virtual;
+    procedure BeginUpdate; virtual;
+    procedure EndUpdate; virtual;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
+  end;
+
+  TCustomAudioComponent = class(TNotifiableComponent)
   private
     FInternalSampleRateSource : TSampleRateSource;
     function GetSampleRate: Double;
@@ -179,18 +194,18 @@ end;
 
 procedure TNotifiablePersistent.BeginUpdate;
 begin
-  Inc(FUpdateCount);
+ Inc(FUpdateCount);
 end;
 
 procedure TNotifiablePersistent.Changed;
 begin
-  if (FUpdateCount = 0) and Assigned(FOnChange) then FOnChange(Self);
+ if (FUpdateCount = 0) and Assigned(FOnChange) then FOnChange(Self);
 end;
 
 procedure TNotifiablePersistent.EndUpdate;
 begin
-  Assert(FUpdateCount > 0, 'Unpaired TThreadPersistent.EndUpdate');
-  Dec(FUpdateCount);
+ Assert(FUpdateCount > 0, 'Unpaired TThreadPersistent.EndUpdate');
+ Dec(FUpdateCount);
 end;
 
 
@@ -238,6 +253,7 @@ procedure TCustomAudioComponent.AssignTo(Dest: TPersistent);
 begin
  if Dest is TCustomAudioComponent then
   begin
+   inherited;
    TCustomAudioComponent(Dest).FInternalSampleRateSource := FInternalSampleRateSource;
    TCustomAudioComponent(Dest).FSampleRateSource         := FSampleRateSource;
   end
@@ -448,6 +464,36 @@ var
 begin
  for i := 0 to Length(AClasses) - 1
   do RegisterDspProcessor64(AClasses[i]);
+end;
+
+{ TNotifiableComponent }
+
+procedure TNotifiableComponent.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TNotifiablePersistent then
+  with TNotifiablePersistent(Dest) do
+   begin
+    FUpdateCount := Self.FUpdateCount;
+    FOnChange    := Self.FOnChange;
+   end
+  else inherited;
+end;
+
+procedure TNotifiableComponent.BeginUpdate;
+begin
+ Inc(FUpdateCount);
+end;
+
+procedure TNotifiableComponent.Changed;
+begin
+ if (FUpdateCount = 0) and Assigned(FOnChange)
+  then FOnChange(Self);
+end;
+
+procedure TNotifiableComponent.EndUpdate;
+begin
+ Assert(FUpdateCount > 0, 'Unpaired TThreadPersistent.EndUpdate');
+ Dec(FUpdateCount);
 end;
 
 end.

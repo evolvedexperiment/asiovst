@@ -40,11 +40,11 @@ uses
 type
   TDecimatorFilterType = (dftLowpass, dftHighpass);
   TVSTDecimator = class(TVSTModule)
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMidi(Sender: TObject; MidiEvent: TVstMidiEvent);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure VSTModuleOpen(Sender: TObject);
     procedure ParameterSampleRateChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBitsChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterCutoffChange(Sender: TObject; const Index: Integer; var Value: Single);

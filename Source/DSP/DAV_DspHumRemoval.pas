@@ -104,8 +104,12 @@ begin
 end;
 
 destructor TDspHumRemoval.Destroy;
+var
+  FilterIndex : Integer;
 begin
  FreeAndNil(FHighpassFilter);
+ for FilterIndex := 0 to Length(FNotchFilters) - 1
+  do FreeAndNil(FNotchFilters[FilterIndex]);
  inherited;
 end;
 
