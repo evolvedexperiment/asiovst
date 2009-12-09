@@ -184,6 +184,11 @@ end;
 {$ENDIF}
 
 function Hermite32I_asm(const Fractional: Single; Pntr: PDAVSingleFixedArray): Single;
+{$IFDEF PUREPASCAL}
+begin
+
+end;
+{$ELSE}
 asm
     fld   [Pntr + 16].Single      // x1
     fsub  [Pntr     ].Single      // x1-xm1
@@ -209,8 +214,14 @@ asm
     fmul Fractional.Single        // res-x0
     fadd [Pntr + 8].Single        // res
 end;
+{$ENDIF}
 
 function Hermite64I_asm(const Fractional: Double; Pntr: PDAVDoubleFixedArray): Double;
+{$IFDEF PUREPASCAL}
+begin
+
+end;
+{$ELSE}
 asm
     fld   [Pntr + 32].Double      // x1
     fsub  [Pntr     ].Double      // x1-xm1
@@ -236,6 +247,7 @@ asm
     fmul Fractional.Double        // res-x0
     fadd [Pntr + 16].Double       // res
 end;
+{$ENDIF}
 
 function Hermite1(const Fractional: Single; const Data: TDAV4SingleArray): Single;
 var

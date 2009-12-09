@@ -164,7 +164,7 @@ begin
 end;
 
 
-{$IFNDEF PUREPASCAL}
+{$IFDEF PUREPASCAL}
 
 function FastRandom: Single;
 begin

@@ -374,12 +374,8 @@ procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoub
 var
   i : Integer;
 begin
- for i := 0 to SampleCount - 1 do
-  begin
-   Doubles^ := Singles^;
-   Inc(Singles);
-   Inc(Doubles);
-  end;
+ for i := 0 to SampleCount - 1
+  do Doubles^[i] := Singles^[i];
 end;
 {$ELSE}
 asm
@@ -395,12 +391,8 @@ procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSing
 var
   i : Integer;
 begin
- for i := 0 to SampleCount - 1 do
-  begin
-   Singles^ := Doubles^;
-   Inc(Singles);
-   Inc(Doubles);
-  end;
+ for i := 0 to SampleCount - 1
+  do Singles^[i] := Doubles^[i];
 end;
 {$ELSE}
 asm
