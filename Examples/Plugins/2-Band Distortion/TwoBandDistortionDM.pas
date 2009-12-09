@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  Classes, Messages, SysUtils, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
   DAV_DSPFilterLinkwitzRiley;
 
 type
@@ -63,7 +64,9 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   TwoBandDistortionGUI, DAV_Approximations, DAV_VSTCustomModule;
@@ -231,5 +234,10 @@ begin
   with TFmTwoBandDistortion(EditorForm)
    do UpdateFrequency;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i TwoBandDistortionDM.lrs}
+{$ENDIF}
 
 end.

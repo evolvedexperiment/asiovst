@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, Controls, Graphics, ExtCtrls,
-  StdCtrls, DAV_Types, DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiDial, DAV_GuiPanel;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Messages,
+  SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_Types,
+  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel;
 
 type
   TFmTwoBandDistortion = class(TForm)
@@ -75,7 +75,9 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses
   Math, DAV_GUICommon, PNGImage, TwoBandDistortionDM;
@@ -252,5 +254,10 @@ begin
     then DialOrder.Position := Order;
   end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i TwoBandDistortionGUI.lrs}
+{$ENDIF}
 
 end.
