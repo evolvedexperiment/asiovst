@@ -17,12 +17,12 @@ object FmGroupBoxTest: TFmGroupBoxTest
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
-  object LbLineWidth: TLabel
+  object LbOutlineWidth: TLabel
     Left = 8
     Top = 149
-    Width = 54
+    Width = 69
     Height = 13
-    Caption = 'Line Width:'
+    Caption = 'Outline Width:'
   end
   object LbRoundRadius: TLabel
     Left = 8
@@ -66,14 +66,14 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Caption = 'Group D'
     TabOrder = 3
   end
-  object TbLineWidth: TTrackBar
+  object TbOutlineWidth: TTrackBar
     Left = 84
     Top = 148
     Width = 186
     Height = 18
     TabOrder = 4
     ThumbLength = 12
-    OnChange = TbLineWidthChange
+    OnChange = TbOutlineWidthChange
   end
   object TbRoundRadius: TTrackBar
     Left = 84

@@ -303,7 +303,7 @@ end;
 
 procedure TCustomGuiLED.RenderLEDToBitmap32(const Bitmap: TBitmap);
 var
-  Steps, i      : Integer;
+  Steps, Y      : Integer;
   Rad           : Single;
   XStart        : Single;
   BW            : Single;

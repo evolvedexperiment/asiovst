@@ -8,22 +8,22 @@ uses
 
 type
   TFmGroupBoxTest = class(TForm)
+    CbTransparent: TCheckBox;
     GroupA: TGuiGroup;
     GroupB: TGuiGroup;
     GroupC: TGuiGroup;
     GroupD: TGuiGroup;
-    TbLineWidth: TTrackBar;
-    LbLineWidth: TLabel;
-    TbRoundRadius: TTrackBar;
+    LbOutlineWidth: TLabel;
     LbRoundRadius: TLabel;
-    CbTransparent: TCheckBox;
-    procedure TbRoundRadiusChange(Sender: TObject);
-    procedure TbLineWidthChange(Sender: TObject);
-    procedure CbTransparentClick(Sender: TObject);
+    TbOutlineWidth: TTrackBar;
+    TbRoundRadius: TTrackBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure TbRoundRadiusChange(Sender: TObject);
+    procedure TbOutlineWidthChange(Sender: TObject);
+    procedure CbTransparentClick(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -52,7 +52,8 @@ end;
 
 procedure TFmGroupBoxTest.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ if CbTransparent.Checked
+  then Canvas.Draw(0, 0, FBackgrounBitmap);
 end;
 
 procedure TFmGroupBoxTest.FormResize(Sender: TObject);
@@ -87,12 +88,12 @@ begin
   end;
 end;
 
-procedure TFmGroupBoxTest.TbLineWidthChange(Sender: TObject);
+procedure TFmGroupBoxTest.TbOutlineWidthChange(Sender: TObject);
 begin
- GroupA.LineWidth := TbLineWidth.Position;
- GroupB.LineWidth := TbLineWidth.Position;
- GroupC.LineWidth := TbLineWidth.Position;
- GroupD.LineWidth := TbLineWidth.Position;
+ GroupA.OutlineWidth := TbOutlineWidth.Position;
+ GroupB.OutlineWidth := TbOutlineWidth.Position;
+ GroupC.OutlineWidth := TbOutlineWidth.Position;
+ GroupD.OutlineWidth := TbOutlineWidth.Position;
 end;
 
 procedure TFmGroupBoxTest.TbRoundRadiusChange(Sender: TObject);
@@ -109,6 +110,9 @@ begin
  GroupB.Transparent := CbTransparent.Checked;
  GroupC.Transparent := CbTransparent.Checked;
  GroupD.Transparent := CbTransparent.Checked;
+ LbOutlineWidth.Transparent := CbTransparent.Checked;
+ LbRoundRadius.Transparent := CbTransparent.Checked;
+ Invalidate;
 end;
 
 end.

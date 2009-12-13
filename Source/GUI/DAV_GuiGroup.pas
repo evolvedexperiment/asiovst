@@ -12,15 +12,16 @@ uses
 type
   TCustomGuiGroup = class(TCustomGroupBox)
   private
-    FAntiAlias   : TGuiAntiAlias;
-    FAutoFocus   : Boolean;
-    FCaption     : string;
-    FLineColor   : TColor;
-    FLineWidth   : Integer;
-    FOSFactor    : Integer;
-    FOwnerDraw   : Boolean;
-    FRoundRadius : Integer;
-    FTransparent : Boolean;
+    FAntiAlias    : TGuiAntiAlias;
+    FAutoFocus    : Boolean;
+    FCaption      : string;
+    FLineColor    : TColor;
+    FOutlineWidth : Integer;
+    FGroupColor   : TColor;
+    FOSFactor     : Integer;
+    FOwnerDraw    : Boolean;
+    FRoundRadius  : Integer;
+    FTransparent  : Boolean;
     procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMParentColorChanged(var Message: TWMNoParams); message CM_PARENTCOLORCHANGED;
@@ -29,20 +30,22 @@ type
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetCaption(const Value: string);
     procedure SetLineColor(const Value: TColor);
-    procedure SetLineWidth(const Value: Integer);
+    procedure SetOutlineWidth(const Value: Integer);
     procedure SetOwnerDraw(const Value: Boolean);
     procedure SetRoundRadius(Value: Integer);
     procedure SetTransparent (const Value: Boolean);
     procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
+    procedure SetGroupColor(const Value: TColor);
   protected
     procedure Click; override;
     procedure Paint; override;
     procedure AntiAliasChanged; virtual;
     procedure CaptionChanged; virtual;
+    procedure GroupColorChanged;
     procedure LineColorChanged; virtual;
-    procedure LineWidthChanged; virtual;
+    procedure OutlineWidthChanged; virtual;
     procedure RoundRadiusChanged; virtual;
-    procedure RenderGroupToBitmap(Bitmap: TBitmap); virtual; abstract;
+    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
@@ -50,14 +53,15 @@ type
     property Caption: string read FCaption write SetCaption;
     property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
     property LineColor: TColor read FLineColor write SetLineColor default clBtnShadow;
-    property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
+    property GroupColor: TColor read FGroupColor write SetGroupColor default clBtnShadow;
+    property OutlineWidth: Integer read FOutlineWidth write SetOutlineWidth default 1;
     property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
   TCustomGuiGroupA = class(TCustomGuiGroup)
   protected
-    procedure RenderGroupToBitmap(Bitmap: TBitmap); override;
+    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); override;
   end;
 
   TCustomGuiGroupB = class(TCustomGuiGroup)
@@ -67,11 +71,11 @@ type
     procedure SetHeaderMinWidth(const Value: Integer);
     procedure SetOffset(const Value: Integer);
   protected
-    procedure RenderGroupToBitmap(Bitmap: TBitmap); override;
+    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); override;
   public
     constructor Create(AOwner: TComponent); override;
     property HeaderMinWidth: Integer read FHeaderMinWidth write SetHeaderMinWidth default 32;
-    property Offset: Integer read FOffset write SetOffset default 0;
+    property Offset: Integer read FOffset write SetOffset default 1;
   end;
 
   TGuiGroupA = class(TCustomGuiGroupA)
@@ -93,7 +97,7 @@ type
     property HelpContext;
     property Hint;
     property LineColor;
-    property LineWidth;
+    property OutlineWidth;
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
@@ -149,7 +153,7 @@ type
     property HelpContext;
     property Hint;
     property LineColor;
-    property LineWidth;
+    property OutlineWidth;
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
@@ -204,7 +208,8 @@ begin
  FRoundRadius    := 2;
  FCaption        := 'Group'; //Name;
  FLineColor      := clBtnShadow;
- FLineWidth      := 1;
+ FGroupColor     := clBtnShadow;
+ FOutlineWidth   := 1;
 end;
 
 procedure TCustomGuiGroup.SetAntiAlias(const Value: TGuiAntiAlias);
@@ -238,6 +243,20 @@ begin
   end;
 end;
 
+procedure TCustomGuiGroup.SetGroupColor(const Value: TColor);
+begin
+ if FGroupColor <> Value then
+  begin
+   FGroupColor := Value;
+   GroupColorChanged;
+  end;
+end;
+
+procedure TCustomGuiGroup.GroupColorChanged;
+begin
+ Invalidate;
+end;
+
 procedure TCustomGuiGroup.CaptionChanged;
 begin
  Invalidate;
@@ -257,16 +276,16 @@ begin
  Invalidate;
 end;
 
-procedure TCustomGuiGroup.SetLineWidth(const Value: Integer);
+procedure TCustomGuiGroup.SetOutlineWidth(const Value: Integer);
 begin
- if FLineWidth <> Value then
+ if FOutlineWidth <> Value then
   begin
-   FLineWidth := Value;
-   LineWidthChanged;
+   FOutlineWidth := Value;
+   OutlineWidthChanged;
   end;
 end;
 
-procedure TCustomGuiGroup.LineWidthChanged;
+procedure TCustomGuiGroup.OutlineWidthChanged;
 begin
  Invalidate;
 end;
@@ -340,10 +359,10 @@ end;
 
 procedure TCustomGuiGroup.Paint;
 var
-  BorderRect : TRect;
+  OutlineRect : TRect;
   Buffer     : TBitmap;
 begin
- BorderRect := ClientRect;
+ OutlineRect := ClientRect;
 
  if not FOwnerDraw or (Width <= 0) or (Height <= 0) then
   begin
@@ -365,9 +384,9 @@ begin
     case FAntiAlias of
      gaaNone     :
       begin
-       {$IFNDEF FPC}if FTransparent then DrawParentImage(Canvas) else {$ENDIF}
+       {$IFNDEF FPC} if FTransparent then DrawParentImage(Canvas) else {$ENDIF}
        FillRect(ClipRect);
-       RenderGroupToBitmap(Buffer);
+       RenderGroupBoxToBitmap(Buffer);
       end;
      gaaLinear2x :
       begin
@@ -379,7 +398,7 @@ begin
         end else
        {$ENDIF}
        FillRect(ClipRect);
-       RenderGroupToBitmap(Buffer);
+       RenderGroupBoxToBitmap(Buffer);
        Downsample2xBitmap32(Buffer);
       end;
      gaaLinear3x :
@@ -392,7 +411,7 @@ begin
         end else
        {$ENDIF}
        FillRect(ClipRect);
-       RenderGroupToBitmap(Buffer);
+       RenderGroupBoxToBitmap(Buffer);
        Downsample3xBitmap32(Buffer);
       end;
      gaaLinear4x :
@@ -405,7 +424,7 @@ begin
         end else
        {$ENDIF}
        FillRect(ClipRect);
-       RenderGroupToBitmap(Buffer);
+       RenderGroupBoxToBitmap(Buffer);
        Downsample4xBitmap32(Buffer);
       end;
      gaaLinear8x :
@@ -419,7 +438,7 @@ begin
         end else
        {$ENDIF}
        FillRect(ClipRect);
-       RenderGroupToBitmap(Buffer);
+       RenderGroupBoxToBitmap(Buffer);
        Downsample2xBitmap32(Buffer);
        Downsample4xBitmap32(Buffer);
       end;
@@ -434,7 +453,7 @@ begin
         end else
        {$ENDIF}
        FillRect(ClipRect);
-       RenderGroupToBitmap(Buffer);
+       RenderGroupBoxToBitmap(Buffer);
        Downsample4xBitmap32(Buffer);
        Downsample4xBitmap32(Buffer);
       end;
@@ -470,7 +489,7 @@ end;
 
 { TCustomGuiGroupA }
 
-procedure TCustomGuiGroupA.RenderGroupToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiGroupA.RenderGroupBoxToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexSingle;
   Steps, i : Integer;
@@ -488,7 +507,7 @@ begin
 
    Brush.Style := bsSolid;
    Brush.Color := Color;
-   Pen.Width   := FOSFactor * FLineWidth;
+   Pen.Width   := FOSFactor * FOutlineWidth;
    Pen.Color   := FLineColor;
    Font.Assign(Self.Font);
    Font.Size := FOSFactor * Font.Size;
@@ -502,8 +521,8 @@ begin
             LineTo(TextSize.cx + 11, TextSize.cy + 4);
            end;
        2 : begin
-            LineOffs[0] := Round(Linewidth div 2);
-            LineOffs[1] := Round((Linewidth + 1) div 2);
+            LineOffs[0] := Round(OutlineWidth div 2);
+            LineOffs[1] := Round((OutlineWidth + 1) div 2);
             with ClipRect do
              begin
               PntArray[ 0] := Point(Left  + 1 + LineOffs[0], Bottom - 1 - LineOffs[1]);
@@ -537,7 +556,7 @@ begin
         Val.Re := Val.Re * rad; Val.Im := Val.Im * rad;
 
         GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
-        PtsArray[0] := Point(Round(Linewidth div 2), Round(Linewidth div 2 + rad));
+        PtsArray[0] := Point(Round(OutlineWidth div 2), Round(OutlineWidth div 2 + rad));
 
         // upper left corner
         for i := 1 to Steps div 4 - 1 do
@@ -545,9 +564,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i] := Point(Round(Linewidth div 2 + rad + Val.Re), Round(Linewidth div 2 + rad + Val.Im));
+          PtsArray[i] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 4] := Point(Linewidth div 2 + rad, Linewidth div 2 + 0);
+        PtsArray[Steps div 4] := Point(OutlineWidth div 2 + rad, OutlineWidth div 2 + 0);
 
         // upper right corner
         for i := Steps div 4 to Steps div 2 - 1 do
@@ -555,9 +574,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (Linewidth + 1) div 2 + Val.Re), Round(Linewidth div 2 + rad + Val.Im));
+          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (Linewidth + 1) div 2, Linewidth div 2 + rad);
+        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (OutlineWidth + 1) div 2, OutlineWidth div 2 + rad);
 
         // lower right corner
         for i := Steps div 2 to 3 * Steps div 4 - 1 do
@@ -565,9 +584,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (Linewidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (Linewidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (Linewidth + 1) div 2, ClipRect.Bottom - (Linewidth + 1) div 2);
+        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (OutlineWidth + 1) div 2, ClipRect.Bottom - (OutlineWidth + 1) div 2);
 
         // lower left corner
         for i := 3 * Steps div 4 to Steps - 1 do
@@ -575,9 +594,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 3] := Point(Round(Linewidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (Linewidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 3] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
+        PtsArray[Steps + 3] := Point(OutlineWidth div 2, rad + OutlineWidth div 2);
 
         PolyGon(PtsArray);
 
@@ -590,7 +609,7 @@ begin
         Val.Re := -rad; Val.Im := 0;
 
         GetSinCos(2 * Pi / (Steps div 2 - 1), Off.Im, Off.Re);
-        rct := Rect(Linewidth div 2, Linewidth div 2, max(TextSize.cx + 10, FOSFactor * FHeaderMinWidth) - (Linewidth + 1) div 2, TextSize.cy + 5 - (Linewidth + 1) div 2);
+        rct := Rect(OutlineWidth div 2, OutlineWidth div 2, max(TextSize.cx + 10, FOSFactor * FHeaderMinWidth) - (OutlineWidth + 1) div 2, TextSize.cy + 5 - (OutlineWidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
         // upper left corner
@@ -636,7 +655,7 @@ end;
 constructor TCustomGuiGroupB.Create(AOwner: TComponent);
 begin
  inherited;
- FOffset         := 0;
+ FOffset         := 1;
  FHeaderMinWidth := 32;
 end;
 
@@ -651,18 +670,18 @@ end;
 
 procedure TCustomGuiGroupB.SetOffset(const Value: Integer);
 begin
- if FOffset <> Value then
-  begin
-   FOffset := Value;
-   Invalidate;
-  end;
+ if Value > 0 then
+  if FOffset <> Value then
+   begin
+    FOffset := Value;
+    Invalidate;
+   end;
 end;
 
-procedure TCustomGuiGroupB.RenderGroupToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiGroupB.RenderGroupBoxToBitmap(Bitmap: TBitmap);
 var
   Val, Off : TComplexSingle;
   Steps, i : Integer;
-  LineOffs : array[0..1] of Integer;
   rct      : TRect;
   tmp      : Single;
   rad      : Integer;
@@ -675,46 +694,53 @@ begin
 
    Brush.Style := bsSolid;
    Brush.Color := Color;
-   Pen.Width   := FOSFactor * FLineWidth;
+   Pen.Width   := FOSFactor * FOutlineWidth;
    Pen.Color   := FLineColor;
    Font.Assign(Self.Font);
    Font.Size   := FOSFactor * Font.Size;
    TextSize    := TextExtent(FCaption);
-   TextSize.cx := 2 * FOSFactor * (FLineWidth + FOffset) + TextSize.cx;
+   TextSize.cx := TextSize.cx + 2 * FOSFactor * (FOutlineWidth + FOffset);
    if TextSize.cx < FHeaderMinWidth
-    then TextSize.cx := TextSize.cx + FOSFactor * FHeaderMinWidth; 
+    then TextSize.cx := TextSize.cx + FOSFactor * FHeaderMinWidth;
+   TextSize.cy := TextSize.cy + 3 * FOSFactor * FOutlineWidth div 2;
+
+   rct := ClipRect;
+   InflateRect(rct, -FOSFactor * (OutlineWidth + 1) div 2, -FOSFactor * (OutlineWidth + 1) div 2);
 
    case FRoundRadius of
     0, 1 : begin
-            FrameRect(ClipRect);
-            FillRect(Rect(1, 1, TextSize.cx + 12, TextSize.cy + 4));
-            MoveTo(1, TextSize.cy + 4);
-            LineTo(TextSize.cx + 11, TextSize.cy + 4);
+            Rectangle(rct.Left, rct.Top, rct.Right + 1, rct.Bottom + 1);
+            Brush.Color := FGroupColor;
+            FillRect(Rect(rct.Left + FOSFactor * OutlineWidth div 2, rct.Top + FOSFactor * OutlineWidth div 2, TextSize.cx, TextSize.cy));
+            MoveTo(FOSFactor * FOutlineWidth, TextSize.cy);
+            LineTo(TextSize.cx, TextSize.cy);
+            LineTo(TextSize.cx, rct.Top);
            end;
        2 : begin
-            LineOffs[0] := Round(Linewidth div 2);
-            LineOffs[1] := Round((Linewidth + 1) div 2);
-            with ClipRect do
-             PolyLine([Point(Left  + 1 + LineOffs[0], Bottom - 1 - LineOffs[1]),
-                       Point(Left      + LineOffs[0], Bottom - 2 - LineOffs[1]),
-                       Point(Left      + LineOffs[0], Top    + 2 + LineOffs[0]),
-                       Point(Left  + 2 + LineOffs[0], Top        + LineOffs[0]),
-                       Point(Right - 2 - LineOffs[1], Top        + LineOffs[0]),
-                       Point(Right     - LineOffs[1], Top    + 2 + LineOffs[0]),
-                       Point(Right - 1 - LineOffs[1], Top    + 1 + LineOffs[0]),
-                       Point(Right     - LineOffs[1], Top    + 2 + LineOffs[0]),
-                       Point(Right     - LineOffs[1], Bottom - 2 - LineOffs[1]),
-                       Point(Right - 2 - LineOffs[1], Bottom     - LineOffs[1]),
-                       Point(Left  + 2 + LineOffs[0], Bottom     - LineOffs[1]),
-                       Point(Left      + LineOffs[0], Bottom - 2 - LineOffs[1])]);
-            FillRect(Rect(1, 1, TextSize.cx + 12, TextSize.cy + 4));
-            MoveTo(1, TextSize.cy + 4);
-            LineTo(TextSize.cx + 11, TextSize.cy + 4);
-            // MoveTo(TextSize.cx + 12, 1);
-            // LineTo(TextSize.cx + 12, TextSize.cy + 3);
+            with rct do
+             PolyLine([Point(Left  + 1 * FOSFactor, Bottom - 1 * FOSFactor),
+                       Point(Left                 , Bottom - 2 * FOSFactor),
+                       Point(Left                 , Top    + 2 * FOSFactor),
+                       Point(Left  + 2 * FOSFactor, Top                   ),
+                       Point(Right - 2 * FOSFactor, Top                   ),
+                       Point(Right                , Top    + 2 * FOSFactor),
+                       Point(Right - 1 * FOSFactor, Top    + 1 * FOSFactor),
+                       Point(Right                , Top    + 2 * FOSFactor),
+                       Point(Right                , Bottom - 2 * FOSFactor),
+                       Point(Right - 2 * FOSFactor, Bottom                ),
+                       Point(Left  + 2 * FOSFactor, Bottom                ),
+                       Point(Left                 , Bottom - 2 * FOSFactor)]);
+            Brush.Color := FGroupColor;
+            FillRect(Rect(rct.Left + FOSFactor * OutlineWidth div 2, rct.Top + FOSFactor * OutlineWidth div 2, TextSize.cx, TextSize.cy));
+            MoveTo(FOSFactor * FOutlineWidth, TextSize.cy);
+            LineTo(TextSize.cx, TextSize.cy);
+            LineTo(TextSize.cx, rct.Top);
            end;
     else
      begin
+      rct := ClipRect;
+      InflateRect(rct, -FOSFactor * (OutlineWidth + 1) div 2, -FOSFactor * (OutlineWidth + 1) div 2);
+
       rad := FOSFactor * FRoundRadius;
       Steps := Round(2 / arcsin(1 / rad)) + 1;
       if Steps > 1 then
@@ -724,7 +750,7 @@ begin
         Val.Re := Val.Re * rad; Val.Im := Val.Im * rad;
 
         GetSinCos(2 * Pi / (Steps - 1), Off.Im, Off.Re);
-        PtsArray[0] := Point(Round(Linewidth div 2), Round(Linewidth div 2 + rad));
+        PtsArray[0] := Point(Round(OutlineWidth div 2), Round(OutlineWidth div 2 + rad));
 
         // upper left corner
         for i := 1 to Steps div 4 - 1 do
@@ -732,9 +758,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i] := Point(Round(Linewidth div 2 + rad + Val.Re), Round(Linewidth div 2 + rad + Val.Im));
+          PtsArray[i] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 4] := Point(Linewidth div 2 + rad, Linewidth div 2 + 0);
+        PtsArray[Steps div 4] := Point(OutlineWidth div 2 + rad, OutlineWidth div 2 + 0);
 
         // upper right corner
         for i := Steps div 4 to Steps div 2 - 1 do
@@ -742,9 +768,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (Linewidth + 1) div 2 + Val.Re), Round(Linewidth div 2 + rad + Val.Im));
+          PtsArray[i + 1] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(OutlineWidth div 2 + rad + Val.Im));
          end;
-        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (Linewidth + 1) div 2, Linewidth div 2 + rad);
+        PtsArray[Steps div 2 + 1] := Point(ClipRect.Right - (OutlineWidth + 1) div 2, OutlineWidth div 2 + rad);
 
         // lower right corner
         for i := Steps div 2 to 3 * Steps div 4 - 1 do
@@ -752,9 +778,9 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (Linewidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (Linewidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 2] := Point(Round(ClipRect.Right - rad - (OutlineWidth + 1) div 2 + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (Linewidth + 1) div 2, ClipRect.Bottom - (Linewidth + 1) div 2);
+        PtsArray[3 * Steps div 4 + 2] := Point(ClipRect.Right - rad - (OutlineWidth + 1) div 2, ClipRect.Bottom - (OutlineWidth + 1) div 2);
 
         // lower left corner
         for i := 3 * Steps div 4 to Steps - 1 do
@@ -762,11 +788,13 @@ begin
           tmp := Val.Re * Off.Re - Val.Im * Off.Im;
           Val.Im := Val.Im * Off.Re + Val.Re * Off.Im;
           Val.Re := tmp;
-          PtsArray[i + 3] := Point(Round(Linewidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (Linewidth + 1) div 2 - rad + Val.Im));
+          PtsArray[i + 3] := Point(Round(OutlineWidth div 2 + rad + Val.Re), Round(ClipRect.Bottom - (OutlineWidth + 1) div 2 - rad + Val.Im));
          end;
-        PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
+        PtsArray[Steps + 3] := Point(OutlineWidth div 2, rad + OutlineWidth div 2);
 
         PolyGon(PtsArray);
+
+
 
         // Draw inner text
         //////////////////
@@ -776,7 +804,7 @@ begin
         Val.Re := -rad; Val.Im := 0;
 
         GetSinCos(2 * Pi / (Steps div 2 - 1), Off.Im, Off.Re);
-        rct := Rect(Linewidth div 2, Linewidth div 2, TextSize.cx + 10 - (Linewidth + 1) div 2, TextSize.cy + 5 - (Linewidth + 1) div 2);
+        rct := Rect(OutlineWidth div 2, OutlineWidth div 2, TextSize.cx + 10 - (OutlineWidth + 1) div 2, TextSize.cy + 5 - (OutlineWidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 
         // upper left corner
@@ -811,7 +839,7 @@ begin
    end;
 
    Brush.Style := bsClear;
-   TextOut(FOSFactor * (FLineWidth + FOffset), 2, FCaption);
+   TextOut(FOSFactor * (FOutlineWidth + FOffset), FOSFactor * FOutlineWidth, FCaption);
    Unlock;
   end;
 end;
@@ -824,7 +852,7 @@ end;
 procedure TMFControlsCustomGroupBox.Paint;
 var
   memoryBitmap   : TBitmap;
-  borderRect,
+  OutlineRect,
   textBounds     : TRect;
   textSize       : TSize;
   textHeightHalf : Integer;
@@ -853,7 +881,7 @@ begin
    end;
 
   with ClientRect do
-   if not (fBorder = brMFStyle) then
+   if not (fOutline = brMFStyle) then
     begin
      {$IFDEF MFC_COMPILER_4_UP}
      if BidiMode = bdRightToLeft
@@ -869,7 +897,7 @@ begin
                        (Left + Right + textSize.cx) div 2, ClientRect.Top + textSize.cy);
 
   // Draw Background
-  if FTransparent //or (Border=brFullRound)
+  if FTransparent //or (Outline=brFullRound)
    then DrawParentImage(Self, memoryBitmap.Canvas)
    else
     begin
@@ -877,9 +905,9 @@ begin
      memoryBitmap.Canvas.FillRect(ClientRect);
     end;
 
-  // Draw Border
-  memoryBitmap.Canvas.Pen.Color := FBorderColor;
-  case fBorder of
+  // Draw Outline
+  memoryBitmap.Canvas.Pen.Color := FOutlineColor;
+  case fOutline of
     brFull:
       {$IFDEF MFC_COMPILER_4_UP}
       if BidiMode = bdRightToLeft then
@@ -1048,7 +1076,7 @@ begin
          // Draw Text
          Canvas.Brush.Style := bsSolid;
          Canvas.Font.Color  := Canvas.Brush.Color;
-         Canvas.Brush.Color := FBorderColor;
+         Canvas.Brush.Color := FOutlineColor;
          DrawText(Canvas.Handle, PChar(Caption), Length(Caption), textBounds, format);
          // Copy memoryBitmap to screen
         end;
