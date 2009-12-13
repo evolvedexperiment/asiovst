@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
+  Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   Controls, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiLabel;
 
 type
@@ -57,17 +58,28 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses
-  Math, PngImage, DAV_VSTModuleWithPrograms, SimpleVibratoDM;
+  Math, {$IFDEF FPC} Graphics, {$ELSE} PngImage, {$ENDIF}
+  DAV_VSTModuleWithPrograms, SimpleVibratoDM;
 
 procedure TFmSimpleVibrato.FormCreate(Sender: TObject);
 var
   RS     : TResourceStream;
+  {$IFDEF FPC}
+  PngBmp : TPortableNetworkGraphic;
+  {$ELSE}
   PngBmp : TPngObject;
+  {$ENDIF}
 begin
+ {$IFDEF FPC}
+ PngBmp := TPortableNetworkGraphic.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'VibratoKnob', 'PNG');
   try
@@ -131,5 +143,10 @@ begin
    LbSpeedValue.Caption := FloatToStrF(RoundTo(Speed, -2), ffGeneral, 2, 2) + ' Hz';
   end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i SimpleVibratoGUI.lrs}
+{$ENDIF}
 
 end.

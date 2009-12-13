@@ -18,6 +18,9 @@ var
   VSTOpAmp : TVSTOpAmp;
 begin
  try
+  Application.Initialize;
+//  AppInitialized := True;
+
   VSTOpAmp := TVSTOpAmp.Create(Application);
   VSTOpAmp.Effect^.user := VSTOpAmp;
   VSTOpAmp.AudioMaster := audioMaster;

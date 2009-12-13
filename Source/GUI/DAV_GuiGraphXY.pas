@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
+  {$IFDEF FPC} LCLIntf, LResources, LMessages, Types, {$ELSE} Windows, {$ENDIF}
   Classes, Graphics, Forms, Messages, SysUtils, RTLConsts, Controls,
   DAV_GuiBaseControl;
 
@@ -297,7 +297,9 @@ type
     property PopupMenu;
     property SeriesCollection;
     property ShowHint;
+    {$IFNDEF FPC}
     property Transparent;
+    {$ENDIF}
     property Visible;
   end;
 

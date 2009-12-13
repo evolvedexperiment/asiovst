@@ -65,6 +65,7 @@ type
     procedure SlewRateChanged; virtual;
   public
     constructor Create; override;
+    procedure Reset; virtual;
 
     function ProcessSample32(Input: Single): Single;
     function ProcessSample64(Input: Double): Double;
@@ -241,6 +242,13 @@ begin
  if FCurrentGain < FMinimumGain then FCurrentGain := FMinimumGain;
 
  Result := FCurrentGain * Input;
+end;
+
+procedure TCustomPulsing.Reset;
+begin
+ FSampleCount := 0;
+ FStateIndex := 0;
+ FCurrentGain := FMinimumGain;
 end;
 
 

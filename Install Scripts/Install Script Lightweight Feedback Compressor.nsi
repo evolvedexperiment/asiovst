@@ -102,6 +102,9 @@ Section "Lightweight Feedback Compressor VST-Plugin" SecVSTPlugin
   
   !system 'copy "..\Bin\LightweightFeedbackCompressor.dll" "..\Bin\Lightweight Feedback Compressor.dll"'  
 
+  ;ADD YOUR OWN FILES HERE...
+  File "..\Bin\Lightweight Feedback Compressor.dll"
+
   !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
   IntCmp $BugReportState 0 SkipDLLCall
     

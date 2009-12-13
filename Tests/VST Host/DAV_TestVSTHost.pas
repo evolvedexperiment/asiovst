@@ -49,6 +49,8 @@ type
 
   // Basic test methods for VST Plugins
   TVstPluginBasicTests = class(TCustomTestVstPlugin)
+  public
+    constructor Create(MethodName: string); override;
   published
     procedure TestMultipleInstances;
     procedure TestActiveParameterSweeps;
@@ -395,6 +397,12 @@ begin
    FVstHost[0].SetSampleRate(d);
    d := d * 1.1;
   end;
+end;
+
+constructor TVstPluginBasicTests.Create(MethodName: string);
+begin
+ inherited;
+ FailsOnMemoryLeak := True;
 end;
 
 procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;

@@ -80,14 +80,17 @@
       </Item14>
     </Files>
     <Type Value="RunAndDesignTime"/>
-    <RequiredPkgs Count="2">
+    <RequiredPkgs Count="3">
       <Item1>
-        <PackageName Value="DAV_Common_Lazarus"/>
+        <PackageName Value="IDEIntf"/>
       </Item1>
       <Item2>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item2>
+      <Item3>
         <PackageName Value="LCL"/>
         <MinVersion Major="1" Valid="True"/>
-      </Item2>
+      </Item3>
     </RequiredPkgs>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)\"/>

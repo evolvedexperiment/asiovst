@@ -55,7 +55,7 @@ begin
 
      // scan for module properties contained in the current SEM
      PlugCounts[i] := 0;
-     while GMP[i](PlugCounts[i], @MP) do inc(PlugCounts[i]);
+     while GMP[i](PlugCounts[i], @MP) do Inc(PlugCounts[i]);
 
     finally
      FreeAndNil(RS);
@@ -70,7 +70,7 @@ var
   i : Integer; 
 begin
  for i := 0 to Length(DLLLoader) do
-  if assigned(DLLLoader) then
+  if Assigned(DLLLoader) then
    try
     DLLLoader[i].Unload;
    finally
@@ -86,7 +86,7 @@ var
   i, j : Integer;
   ID   : string;
 begin
- result := False;
+ Result := False;
  if Length(DLLLoader) > 0 then
   try
    i := 0;
@@ -96,7 +96,7 @@ begin
     Dec(j, PlugCounts[i]);
     Inc(i);
    until (i >= Length(PlugCounts)) or (j < 0);
-   if (i < Length(PlugCounts)) and (j >= 0) and assigned(GMP[i])
+   if (i < Length(PlugCounts)) and (j >= 0) and Assigned(GMP[i])
     then Result := GMP[i](j, Properties);
    if Result then
     begin
@@ -106,7 +106,7 @@ begin
      Properties^.ID := PChar(ID);
     end;
   except
-   result := False;
+   Result := False;
   end;
 end;
 
@@ -114,29 +114,29 @@ function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2Aud
 var
   i, j : Integer;
 begin
- result := nil;
+ Result := nil;
  if Length(DLLLoader) > 0 then
   try
    i := 0;
    j := Index;
    repeat
-    if j < PlugCounts[i] then break;
-    dec(j, PlugCounts[i]);
-    inc(i);
+    if j < PlugCounts[i] then Break;
+    Dec(j, PlugCounts[i]);
+    Inc(i);
    until (i >= Length(PlugCounts)) or (j < 0);
 
-   if (i < Length(PlugCounts)) and (j >= 0) and assigned(MM[i])
-    then result := MM[i](j, ProcessType, SEAudioMaster, Reserved);
+   if (i < Length(PlugCounts)) and (j >= 0) and Assigned(MM[i])
+    then Result := MM[i](j, ProcessType, SEAudioMaster, Reserved);
   except
-   result := nil;
+   Result := nil;
   end;
 
-  if assigned(result) then
-   with PSE2ModStructBase(result)^ do
-    begin
-     Magic := $29A2A826;
-     Magic := 2 * Magic;
-    end;
+ if Assigned(Result) then
+  with PSE2ModStructBase(Result)^ do
+   begin
+    Magic := $29A2A826;
+    Magic := 2 * Magic;
+   end;
 end;
 
 initialization

@@ -32,10 +32,10 @@ unit DAV_GuiCommon;
 
 interface
 
-{$I DAV_Compiler.inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages,
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
   {$ELSE} Windows, Messages, {$ENDIF}
   Graphics, Classes;
 
@@ -52,6 +52,13 @@ type
   end;
   TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
+
+(*
+  TGuiPointFloat = packed record
+    x: Single;
+    y: Single;
+  end;
+*)
 
 procedure Downsample2xBitmap32(var Bitmap: TBitmap);
 procedure Downsample2xBitmap24(var Bitmap: TBitmap);
@@ -77,18 +84,56 @@ uses
 
 procedure Downsample2xBitmap32(var Bitmap: TBitmap);
 var
-  x, y : Integer;
+  x, y         : Integer;
+{$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  SourcePixels  : Array [0..1, 0..1] of TFPColor;
+  DestPixel     : TFPColor; // TRGB32
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ with SrcIntfImg do
+  try
+   begin
+    LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+
+    // first stage
+    for y := 0 to (Height div 2) - 1 do
+     begin
+      for x := 0 to (Width  div 2) - 1 do
+       begin
+        DestPixel := Colors[x, y];
+        SourcePixels[0, 0] := Colors[2 * x    , y * 2    ];
+        SourcePixels[0, 1] := Colors[2 * x    , y * 2 + 1];
+        SourcePixels[1, 0] := Colors[2 * x + 1, y * 2    ];
+        SourcePixels[1, 1] := Colors[2 * x + 1, y * 2 + 1];
+
+        DestPixel.Blue  := (SourcePixels[0, 0].Blue + SourcePixels[0, 1].Blue + SourcePixels[1, 0].Blue + SourcePixels[1, 1].Blue) div 4;
+        DestPixel.Green := (SourcePixels[0, 0].Green + SourcePixels[0, 1].Green + SourcePixels[1, 0].Green + SourcePixels[1, 1].Green) div 4;
+        DestPixel.Red   := (SourcePixels[0, 0].Red + SourcePixels[0, 1].Red + SourcePixels[1, 0].Red + SourcePixels[1, 1].Red) div 4;
+        Colors[x, y] := DestPixel;
+       end;
+     end;
+    CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+    Bitmap.Handle := ImgHandle;
+    Bitmap.MaskHandle := ImgMaskHandle;
+   end;
+  finally
+   Free;
+  end;
+end;
+{$ELSE}
   Line : Array [0..2] of PRGB32Array;
 begin
-{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
    for y := 0 to (Height div 2) - 1 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 2];
-     Line[2] := Scanline[y * 2 + 1];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 2];
+     Line[2] := ScanLine[y * 2 + 1];
      for x := 0 to (Width  div 2) - 1 do
       begin
        Line[0, x].B := (Line[1, 2 * x].B + Line[2, 2 * x].B + Line[1, 2 * x + 1].B + Line[2, 2 * x + 1].B) div 4;
@@ -98,23 +143,62 @@ begin
       end;
     end;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Downsample2xBitmap24(var Bitmap: TBitmap);
 var
-  x, y : Integer;
+  x, y         : Integer;
+{$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  SourcePixels  : Array [0..1, 0..1] of TFPColor;
+  DestPixel     : TFPColor; // TRGB32
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  TempBitmap    : TBitmap;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ with SrcIntfImg do
+  try
+   begin
+    LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+
+    // first stage
+    for y := 0 to (Height div 2) - 1 do
+     begin
+      for x := 0 to (Width  div 2) - 1 do
+       begin
+        DestPixel := Colors[x, y];
+        SourcePixels[0, 0] := Colors[2 * x    , y * 2    ];
+        SourcePixels[0, 1] := Colors[2 * x    , y * 2 + 1];
+        SourcePixels[1, 0] := Colors[2 * x + 1, y * 2    ];
+        SourcePixels[1, 1] := Colors[2 * x + 1, y * 2 + 1];
+
+        DestPixel.Blue  := (SourcePixels[0, 0].Blue + SourcePixels[0, 1].Blue + SourcePixels[1, 0].Blue + SourcePixels[1, 1].Blue) div 4;
+        DestPixel.Green := (SourcePixels[0, 0].Green + SourcePixels[0, 1].Green + SourcePixels[1, 0].Green + SourcePixels[1, 1].Green) div 4;
+        DestPixel.Red   := (SourcePixels[0, 0].Red + SourcePixels[0, 1].Red + SourcePixels[1, 0].Red + SourcePixels[1, 1].Red) div 4;
+        Colors[x, y] := DestPixel;
+       end;
+     end;
+    SrcIntfImg.CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+    Bitmap.Handle := ImgHandle;
+    Bitmap.MaskHandle := ImgMaskHandle;
+   end;
+  finally
+   Free;
+  end;
+end;
+{$ELSE}
   Line : Array [0..2] of PRGB24Array;
 begin
-{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
    for y := 0 to (Height div 2) - 1 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 2];
-     Line[2] := Scanline[y * 2 + 1];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 2];
+     Line[2] := ScanLine[y * 2 + 1];
      for x := 0 to (Width  div 2) - 1 do
       begin
        Line[0, x].B := (Line[1, 2 * x].B + Line[2, 2 * x].B + Line[1, 2 * x + 1].B + Line[2, 2 * x + 1].B) div 4;
@@ -123,25 +207,75 @@ begin
       end;
     end;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Downsample3xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
+{$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  SourcePixels  : Array [0..2, 0..2] of TFPColor;
+  DestPixel     : TFPColor; // TRGB32
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  TempBitmap    : TBitmap;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ with SrcIntfImg do
+  try
+   begin
+    LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+
+    // first stage
+    for y := 0 to (Height div 3) - 1 do
+     begin
+      for x := 0 to (Width  div 3) - 1 do
+       begin
+        DestPixel := Colors[x, y];
+        SourcePixels[0, 0] := Colors[3 * x    , y * 3    ];
+        SourcePixels[0, 1] := Colors[3 * x    , y * 3 + 1];
+        SourcePixels[0, 2] := Colors[3 * x    , y * 3 + 2];
+        SourcePixels[1, 0] := Colors[3 * x + 1, y * 3    ];
+        SourcePixels[1, 1] := Colors[3 * x + 1, y * 3 + 1];
+        SourcePixels[1, 2] := Colors[3 * x + 1, y * 3 + 2];
+        SourcePixels[2, 0] := Colors[3 * x + 2, y * 3    ];
+        SourcePixels[2, 1] := Colors[3 * x + 2, y * 3 + 1];
+        SourcePixels[2, 2] := Colors[3 * x + 2, y * 3 + 2];
+
+        DestPixel.Blue  := (SourcePixels[0, 0].Blue + SourcePixels[0, 1].Blue + SourcePixels[0, 2].Blue +
+                            SourcePixels[1, 0].Blue + SourcePixels[1, 1].Blue + SourcePixels[1, 2].Blue +
+                            SourcePixels[2, 0].Blue + SourcePixels[2, 1].Blue + SourcePixels[2, 2].Blue) div 9;
+        DestPixel.Green := (SourcePixels[0, 0].Green + SourcePixels[0, 1].Green + SourcePixels[0, 2].Green +
+                            SourcePixels[1, 0].Green + SourcePixels[1, 1].Green + SourcePixels[1, 2].Green +
+                            SourcePixels[2, 0].Green + SourcePixels[2, 1].Green + SourcePixels[2, 2].Green) div 9;
+        DestPixel.Red   := (SourcePixels[0, 0].Red + SourcePixels[0, 1].Red + SourcePixels[0, 2].Red +
+                            SourcePixels[1, 0].Red + SourcePixels[1, 1].Red + SourcePixels[1, 2].Red +
+                            SourcePixels[2, 0].Red + SourcePixels[2, 1].Red + SourcePixels[2, 2].Red) div 9;
+        Colors[x, y] := DestPixel;
+       end;
+     end;
+    SrcIntfImg.CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+    Bitmap.Handle := ImgHandle;
+    Bitmap.MaskHandle := ImgMaskHandle;
+   end;
+  finally
+   Free;
+  end;
+end;
+{$ELSE}
   x3   : Integer;
   Line : Array [0..3] of PRGB32Array;
 begin
-{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
    for y := 0 to (Height div 3) - 1 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[3 * y];
-     Line[2] := Scanline[3 * y + 1];
-     Line[3] := Scanline[3 * y + 2];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[3 * y];
+     Line[2] := ScanLine[3 * y + 1];
+     Line[3] := ScanLine[3 * y + 2];
      for x := 0 to (Width  div 3) - 1 do
       begin
        x3 := 3 * x;
@@ -160,25 +294,75 @@ begin
       end;
     end;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Downsample3xBitmap24(var Bitmap: TBitmap);
 var
   x, y : Integer;
+{$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  SourcePixels  : Array [0..2, 0..2] of TFPColor;
+  DestPixel     : TFPColor; // TRGB32
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  TempBitmap    : TBitmap;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ with SrcIntfImg do
+  try
+   begin
+    LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+
+    // first stage
+    for y := 0 to (Height div 3) - 1 do
+     begin
+      for x := 0 to (Width  div 3) - 1 do
+       begin
+        DestPixel := Colors[x, y];
+        SourcePixels[0, 0] := Colors[3 * x    , y * 3    ];
+        SourcePixels[0, 1] := Colors[3 * x    , y * 3 + 1];
+        SourcePixels[0, 2] := Colors[3 * x    , y * 3 + 2];
+        SourcePixels[1, 0] := Colors[3 * x + 1, y * 3    ];
+        SourcePixels[1, 1] := Colors[3 * x + 1, y * 3 + 1];
+        SourcePixels[1, 2] := Colors[3 * x + 1, y * 3 + 2];
+        SourcePixels[2, 0] := Colors[3 * x + 2, y * 3    ];
+        SourcePixels[2, 1] := Colors[3 * x + 2, y * 3 + 1];
+        SourcePixels[2, 2] := Colors[3 * x + 2, y * 3 + 2];
+
+        DestPixel.Blue  := (SourcePixels[0, 0].Blue + SourcePixels[0, 1].Blue + SourcePixels[0, 2].Blue +
+                            SourcePixels[1, 0].Blue + SourcePixels[1, 1].Blue + SourcePixels[1, 2].Blue +
+                            SourcePixels[2, 0].Blue + SourcePixels[2, 1].Blue + SourcePixels[2, 2].Blue) div 9;
+        DestPixel.Green := (SourcePixels[0, 0].Green + SourcePixels[0, 1].Green + SourcePixels[0, 2].Green +
+                            SourcePixels[1, 0].Green + SourcePixels[1, 1].Green + SourcePixels[1, 2].Green +
+                            SourcePixels[2, 0].Green + SourcePixels[2, 1].Green + SourcePixels[2, 2].Green) div 9;
+        DestPixel.Red   := (SourcePixels[0, 0].Red + SourcePixels[0, 1].Red + SourcePixels[0, 2].Red +
+                            SourcePixels[1, 0].Red + SourcePixels[1, 1].Red + SourcePixels[1, 2].Red +
+                            SourcePixels[2, 0].Red + SourcePixels[2, 1].Red + SourcePixels[2, 2].Red) div 9;
+        Colors[x, y] := DestPixel;
+       end;
+     end;
+    SrcIntfImg.CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+    Bitmap.Handle := ImgHandle;
+    Bitmap.MaskHandle := ImgMaskHandle;
+   end;
+  finally
+   Free;
+  end;
+end;
+{$ELSE}
   x3   : Integer;
   Line : Array [0..3] of PRGB24Array;
 begin
-{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
    for y := 0 to (Height div 3) - 1 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[3 * y];
-     Line[2] := Scanline[3 * y + 1];
-     Line[3] := Scanline[3 * y + 2];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[3 * y];
+     Line[2] := ScanLine[3 * y + 1];
+     Line[3] := ScanLine[3 * y + 2];
      for x := 0 to (Width  div 3) - 1 do
       begin
        x3 := 3 * x;
@@ -194,26 +378,86 @@ begin
       end;
     end;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Downsample4xBitmap32(var Bitmap: TBitmap);
 var
   x, y : Integer;
+{$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  SourcePixels  : Array [0..3, 0..3] of TFPColor;
+  DestPixel     : TFPColor; // TRGB32
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  TempBitmap    : TBitmap;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ with SrcIntfImg do
+  try
+   begin
+    LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+
+    // first stage
+    for y := 0 to (Height div 4) - 1 do
+     begin
+      for x := 0 to (Width  div 4) - 1 do
+       begin
+        DestPixel := Colors[x, y];
+        SourcePixels[0, 0] := Colors[4 * x    , y * 4    ];
+        SourcePixels[0, 1] := Colors[4 * x    , y * 4 + 1];
+        SourcePixels[0, 2] := Colors[4 * x    , y * 4 + 2];
+        SourcePixels[0, 3] := Colors[4 * x    , y * 4 + 3];
+        SourcePixels[1, 0] := Colors[4 * x + 1, y * 4    ];
+        SourcePixels[1, 1] := Colors[4 * x + 1, y * 4 + 1];
+        SourcePixels[1, 2] := Colors[4 * x + 1, y * 4 + 2];
+        SourcePixels[1, 3] := Colors[4 * x + 1, y * 4 + 3];
+        SourcePixels[2, 0] := Colors[4 * x + 2, y * 4    ];
+        SourcePixels[2, 1] := Colors[4 * x + 2, y * 4 + 1];
+        SourcePixels[2, 2] := Colors[4 * x + 2, y * 4 + 2];
+        SourcePixels[2, 3] := Colors[4 * x + 2, y * 4 + 3];
+        SourcePixels[3, 0] := Colors[4 * x + 3, y * 4    ];
+        SourcePixels[3, 1] := Colors[4 * x + 3, y * 4 + 1];
+        SourcePixels[3, 2] := Colors[4 * x + 3, y * 4 + 2];
+        SourcePixels[3, 3] := Colors[4 * x + 3, y * 4 + 3];
+
+        DestPixel.Blue  := (SourcePixels[0, 0].Blue + SourcePixels[0, 1].Blue + SourcePixels[0, 2].Blue + SourcePixels[0, 3].Blue +
+                            SourcePixels[1, 0].Blue + SourcePixels[1, 1].Blue + SourcePixels[1, 2].Blue + SourcePixels[1, 3].Blue +
+                            SourcePixels[2, 0].Blue + SourcePixels[2, 1].Blue + SourcePixels[2, 2].Blue + SourcePixels[2, 3].Blue +
+                            SourcePixels[3, 0].Blue + SourcePixels[3, 1].Blue + SourcePixels[3, 2].Blue + SourcePixels[3, 3].Blue) div 16;
+        DestPixel.Green := (SourcePixels[0, 0].Green + SourcePixels[0, 1].Green + SourcePixels[0, 2].Green + SourcePixels[0, 3].Green +
+                            SourcePixels[1, 0].Green + SourcePixels[1, 1].Green + SourcePixels[1, 2].Green + SourcePixels[1, 3].Green +
+                            SourcePixels[2, 0].Green + SourcePixels[2, 1].Green + SourcePixels[2, 2].Green + SourcePixels[2, 3].Green +
+                            SourcePixels[3, 0].Green + SourcePixels[3, 1].Green + SourcePixels[3, 2].Green + SourcePixels[3, 3].Green) div 16;
+        DestPixel.Red   := (SourcePixels[0, 0].Red + SourcePixels[0, 1].Red + SourcePixels[0, 2].Red + SourcePixels[0, 3].Red +
+                            SourcePixels[1, 0].Red + SourcePixels[1, 1].Red + SourcePixels[1, 2].Red + SourcePixels[1, 3].Red +
+                            SourcePixels[2, 0].Red + SourcePixels[2, 1].Red + SourcePixels[2, 2].Red + SourcePixels[2, 3].Red +
+                            SourcePixels[3, 0].Red + SourcePixels[3, 1].Red + SourcePixels[3, 2].Red + SourcePixels[3, 3].Red) div 16;
+        Colors[x, y] := DestPixel;
+       end;
+     end;
+    SrcIntfImg.CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+    Bitmap.Handle := ImgHandle;
+    Bitmap.MaskHandle := ImgMaskHandle;
+   end;
+  finally
+   Free;
+  end;
+end;
+{$ELSE}
   x4   : Integer;
   Line : Array [0..4] of PRGB32Array;
 begin
-{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
    for y := 0 to (Height div 4) - 1 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 4];
-     Line[2] := Scanline[y * 4 + 1];
-     Line[3] := Scanline[y * 4 + 2];
-     Line[4] := Scanline[y * 4 + 3];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 4];
+     Line[2] := ScanLine[y * 4 + 1];
+     Line[3] := ScanLine[y * 4 + 2];
+     Line[4] := ScanLine[y * 4 + 3];
      for x := 0 to (Width  div 4) - 1 do
       begin
        x4 := 4 * x;
@@ -236,26 +480,86 @@ begin
       end;
     end;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Downsample4xBitmap24(var Bitmap: TBitmap);
 var
   x, y : Integer;
+{$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  SourcePixels  : Array [0..3, 0..3] of TFPColor;
+  DestPixel     : TFPColor; // TRGB32
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  TempBitmap    : TBitmap;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ with SrcIntfImg do
+  try
+   begin
+    LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+
+    // first stage
+    for y := 0 to (Height div 4) - 1 do
+     begin
+      for x := 0 to (Width  div 4) - 1 do
+       begin
+        DestPixel := Colors[x, y];
+        SourcePixels[0, 0] := Colors[4 * x    , y * 4    ];
+        SourcePixels[0, 1] := Colors[4 * x    , y * 4 + 1];
+        SourcePixels[0, 2] := Colors[4 * x    , y * 4 + 2];
+        SourcePixels[0, 3] := Colors[4 * x    , y * 4 + 3];
+        SourcePixels[1, 0] := Colors[4 * x + 1, y * 4    ];
+        SourcePixels[1, 1] := Colors[4 * x + 1, y * 4 + 1];
+        SourcePixels[1, 2] := Colors[4 * x + 1, y * 4 + 2];
+        SourcePixels[1, 3] := Colors[4 * x + 1, y * 4 + 3];
+        SourcePixels[2, 0] := Colors[4 * x + 2, y * 4    ];
+        SourcePixels[2, 1] := Colors[4 * x + 2, y * 4 + 1];
+        SourcePixels[2, 2] := Colors[4 * x + 2, y * 4 + 2];
+        SourcePixels[2, 3] := Colors[4 * x + 2, y * 4 + 3];
+        SourcePixels[3, 0] := Colors[4 * x + 3, y * 4    ];
+        SourcePixels[3, 1] := Colors[4 * x + 3, y * 4 + 1];
+        SourcePixels[3, 2] := Colors[4 * x + 3, y * 4 + 2];
+        SourcePixels[3, 3] := Colors[4 * x + 3, y * 4 + 3];
+
+        DestPixel.Blue  := (SourcePixels[0, 0].Blue + SourcePixels[0, 1].Blue + SourcePixels[0, 2].Blue + SourcePixels[0, 3].Blue +
+                            SourcePixels[1, 0].Blue + SourcePixels[1, 1].Blue + SourcePixels[1, 2].Blue + SourcePixels[1, 3].Blue +
+                            SourcePixels[2, 0].Blue + SourcePixels[2, 1].Blue + SourcePixels[2, 2].Blue + SourcePixels[2, 3].Blue +
+                            SourcePixels[3, 0].Blue + SourcePixels[3, 1].Blue + SourcePixels[3, 2].Blue + SourcePixels[3, 3].Blue) div 16;
+        DestPixel.Green := (SourcePixels[0, 0].Green + SourcePixels[0, 1].Green + SourcePixels[0, 2].Green + SourcePixels[0, 3].Green +
+                            SourcePixels[1, 0].Green + SourcePixels[1, 1].Green + SourcePixels[1, 2].Green + SourcePixels[1, 3].Green +
+                            SourcePixels[2, 0].Green + SourcePixels[2, 1].Green + SourcePixels[2, 2].Green + SourcePixels[2, 3].Green +
+                            SourcePixels[3, 0].Green + SourcePixels[3, 1].Green + SourcePixels[3, 2].Green + SourcePixels[3, 3].Green) div 16;
+        DestPixel.Red   := (SourcePixels[0, 0].Red + SourcePixels[0, 1].Red + SourcePixels[0, 2].Red + SourcePixels[0, 3].Red +
+                            SourcePixels[1, 0].Red + SourcePixels[1, 1].Red + SourcePixels[1, 2].Red + SourcePixels[1, 3].Red +
+                            SourcePixels[2, 0].Red + SourcePixels[2, 1].Red + SourcePixels[2, 2].Red + SourcePixels[2, 3].Red +
+                            SourcePixels[3, 0].Red + SourcePixels[3, 1].Red + SourcePixels[3, 2].Red + SourcePixels[3, 3].Red) div 16;
+        Colors[x, y] := DestPixel;
+       end;
+     end;
+    SrcIntfImg.CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+    Bitmap.Handle := ImgHandle;
+    Bitmap.MaskHandle := ImgMaskHandle;
+   end;
+  finally
+   Free;
+  end;
+end;
+{$ELSE}
   x4   : Integer;
   Line : Array [0..4] of PRGB24Array;
 begin
-{$IFNDEF FPC}
  with Bitmap do
   begin
    // first stage
    for y := 0 to (Height div 4) - 1 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 4];
-     Line[2] := Scanline[y * 4 + 1];
-     Line[3] := Scanline[y * 4 + 2];
-     Line[4] := Scanline[y * 4 + 3];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 4];
+     Line[2] := ScanLine[y * 4 + 1];
+     Line[3] := ScanLine[y * 4 + 2];
+     Line[4] := ScanLine[y * 4 + 3];
      for x := 0 to (Width  div 4) - 1 do
       begin
        x4 := 4 * x;
@@ -274,50 +578,74 @@ begin
       end;
     end;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 procedure Upsample2xBitmap32(var Bitmap: TBitmap);
 var
-  x, y : Integer;
+  x, y         : Integer;
+{$IFDEF FPC}
+  SrcIntfImg   : TLazIntfImage;
+  SourcePixels : Array [0..1, 0..1] of TFPColor;
+  DestPixel    : TFPColor;
+begin
+ SrcIntfImg := TLazIntfImage.Create(0, 0);
+ SrcIntfImg.LoadFromBitmap(Bitmap.Handle, Bitmap.MaskHandle);
+ with SrcIntfImg do
+  begin
+   // first stage
+   for y := (Height div 2) - 1 downto 0 do
+    begin
+     for x := (Width  div 2) - 1 downto 0 do
+      begin
+       DestPixel := Colors[x, y];
+       SourcePixels[0, 0] := Colors[2 * x    , y * 2    ];
+       SourcePixels[0, 1] := Colors[2 * x    , y * 2 + 1];
+       SourcePixels[1, 0] := Colors[2 * x + 1, y * 2    ];
+       SourcePixels[1, 1] := Colors[2 * x + 1, y * 2 + 1];
+
+       SourcePixels[0, 0].Blue := DestPixel.Blue;
+       SourcePixels[0, 1].Blue := DestPixel.Blue;
+       SourcePixels[1, 0].Blue := DestPixel.Blue;
+       SourcePixels[1, 1].Blue := DestPixel.Blue;
+       SourcePixels[0, 0].Green := DestPixel.Green;
+       SourcePixels[0, 1].Green := DestPixel.Green;
+       SourcePixels[1, 0].Green := DestPixel.Green;
+       SourcePixels[1, 1].Green := DestPixel.Green;
+       SourcePixels[0, 0].Red := DestPixel.Red;
+       SourcePixels[0, 1].Red := DestPixel.Red;
+       SourcePixels[1, 0].Red := DestPixel.Red;
+       SourcePixels[1, 1].Red := DestPixel.Red;
+      end;
+    end;
+  end;
+end;
+{$ELSE}
   x2   : Integer;
   Line : Array [0..2] of PRGB32Array;
 begin
- {$IFNDEF FPC}
  with Bitmap do
   begin
-   assert(PixelFormat = pf32bit);
+   Assert(PixelFormat = pf32bit);
 
    // first stage
    for y := (Height div 2) - 1 downto 0 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 2];
-     Line[2] := Scanline[y * 2 + 1];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 2];
+     Line[2] := ScanLine[y * 2 + 1];
      for x := (Width  div 2) - 1 downto 0 do
       begin
        x2 := 2 * x;
-       Line[1, x2    ].B := Line[0, x].B;
-       Line[2, x2    ].B := Line[0, x].B;
-       Line[1, x2 + 1].B := Line[0, x].B;
-       Line[2, x2 + 1].B := Line[0, x].B;
-       Line[1, x2    ].G := Line[0, x].G;
-       Line[2, x2    ].G := Line[0, x].G;
-       Line[1, x2 + 1].G := Line[0, x].G;
-       Line[2, x2 + 1].G := Line[0, x].G;
-       Line[1, x2    ].R := Line[0, x].R;
-       Line[2, x2    ].R := Line[0, x].R;
-       Line[1, x2 + 1].R := Line[0, x].R;
-       Line[2, x2 + 1].R := Line[0, x].R;
-       Line[1, x2    ].A := Line[0, x].A;
-       Line[2, x2    ].A := Line[0, x].A;
-       Line[1, x2 + 1].A := Line[0, x].A;
-       Line[2, x2 + 1].A := Line[0, x].A;
+       Line[1, x2    ] := Line[0, x];
+       Line[2, x2    ] := Line[0, x];
+       Line[1, x2 + 1] := Line[0, x];
+       Line[2, x2 + 1] := Line[0, x];
       end;
     end;
   end;
- {$ENDIF}
 end;
+{$ENDIF}
 
 procedure Upsample2xBitmap24(var Bitmap: TBitmap);
 var
@@ -328,29 +656,21 @@ begin
  {$IFNDEF FPC}
  with Bitmap do
   begin
-   assert(PixelFormat = pf24bit);
+   Assert(PixelFormat = pf24bit);
 
    // first stage
    for y := (Height div 2) - 1 downto 0 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 2];
-     Line[2] := Scanline[y * 2 + 1];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 2];
+     Line[2] := ScanLine[y * 2 + 1];
      for x := (Width  div 2) - 1 downto 0 do
       begin
        x2 := 2 * x;
-       Line[1, x2    ].B := Line[0, x].B;
-       Line[2, x2    ].B := Line[0, x].B;
-       Line[1, x2 + 1].B := Line[0, x].B;
-       Line[2, x2 + 1].B := Line[0, x].B;
-       Line[1, x2    ].G := Line[0, x].G;
-       Line[2, x2    ].G := Line[0, x].G;
-       Line[1, x2 + 1].G := Line[0, x].G;
-       Line[2, x2 + 1].G := Line[0, x].G;
-       Line[1, x2    ].R := Line[0, x].R;
-       Line[2, x2    ].R := Line[0, x].R;
-       Line[1, x2 + 1].R := Line[0, x].R;
-       Line[2, x2 + 1].R := Line[0, x].R;
+       Line[1, x2    ] := Line[0, x];
+       Line[2, x2    ] := Line[0, x];
+       Line[1, x2 + 1] := Line[0, x];
+       Line[2, x2 + 1] := Line[0, x];
       end;
     end;
   end;
@@ -366,54 +686,27 @@ begin
  {$IFNDEF FPC}
  with Bitmap do
   begin
-   assert(PixelFormat = pf32bit);
+   Assert(PixelFormat = pf32bit);
 
    // first stage
    for y := (Height div 3) - 1 downto 0 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 3];
-     Line[2] := Scanline[y * 3 + 1];
-     Line[3] := Scanline[y * 3 + 2];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 3];
+     Line[2] := ScanLine[y * 3 + 1];
+     Line[3] := ScanLine[y * 3 + 2];
      for x := (Width  div 3) - 1 downto 0 do
       begin
        x3 := 3 * x;
-       Line[1, x3    ].B := Line[0, x].B;
-       Line[2, x3    ].B := Line[0, x].B;
-       Line[3, x3    ].B := Line[0, x].B;
-       Line[1, x3 + 1].B := Line[0, x].B;
-       Line[2, x3 + 1].B := Line[0, x].B;
-       Line[3, x3 + 1].B := Line[0, x].B;
-       Line[1, x3 + 2].B := Line[0, x].B;
-       Line[2, x3 + 2].B := Line[0, x].B;
-       Line[3, x3 + 2].B := Line[0, x].B;
-       Line[1, x3    ].G := Line[0, x].G;
-       Line[2, x3    ].G := Line[0, x].G;
-       Line[3, x3    ].G := Line[0, x].G;
-       Line[1, x3 + 1].G := Line[0, x].G;
-       Line[2, x3 + 1].G := Line[0, x].G;
-       Line[3, x3 + 1].G := Line[0, x].G;
-       Line[1, x3 + 2].G := Line[0, x].G;
-       Line[2, x3 + 2].G := Line[0, x].G;
-       Line[3, x3 + 2].G := Line[0, x].G;
-       Line[1, x3    ].R := Line[0, x].R;
-       Line[2, x3    ].R := Line[0, x].R;
-       Line[3, x3    ].R := Line[0, x].R;
-       Line[1, x3 + 1].R := Line[0, x].R;
-       Line[2, x3 + 1].R := Line[0, x].R;
-       Line[3, x3 + 1].R := Line[0, x].R;
-       Line[1, x3 + 2].R := Line[0, x].R;
-       Line[2, x3 + 2].R := Line[0, x].R;
-       Line[3, x3 + 2].R := Line[0, x].R;
-       Line[1, x3    ].A := Line[0, x].A;
-       Line[2, x3    ].A := Line[0, x].A;
-       Line[3, x3    ].A := Line[0, x].A;
-       Line[1, x3 + 1].A := Line[0, x].A;
-       Line[2, x3 + 1].A := Line[0, x].A;
-       Line[3, x3 + 1].A := Line[0, x].A;
-       Line[1, x3 + 2].A := Line[0, x].A;
-       Line[2, x3 + 2].A := Line[0, x].A;
-       Line[3, x3 + 2].A := Line[0, x].A;
+       Line[1, x3    ] := Line[0, x];
+       Line[2, x3    ] := Line[0, x];
+       Line[3, x3    ] := Line[0, x];
+       Line[1, x3 + 1] := Line[0, x];
+       Line[2, x3 + 1] := Line[0, x];
+       Line[3, x3 + 1] := Line[0, x];
+       Line[1, x3 + 2] := Line[0, x];
+       Line[2, x3 + 2] := Line[0, x];
+       Line[3, x3 + 2] := Line[0, x];
       end;
     end;
   end;
@@ -429,45 +722,27 @@ begin
  {$IFNDEF FPC}
  with Bitmap do
   begin
-   assert(PixelFormat = pf24bit);
+   Assert(PixelFormat = pf24bit);
 
    // first stage
    for y := (Height div 3) - 1 downto 0 do
     begin
-     Line[0] := Scanline[y];
-     Line[1] := Scanline[y * 3];
-     Line[2] := Scanline[y * 3 + 1];
-     Line[3] := Scanline[y * 3 + 2];
+     Line[0] := ScanLine[y];
+     Line[1] := ScanLine[y * 3];
+     Line[2] := ScanLine[y * 3 + 1];
+     Line[3] := ScanLine[y * 3 + 2];
      for x := (Width  div 3) - 1 downto 0 do
       begin
        x3 := 3 * x;
-       Line[1, x3    ].B := Line[0, x].B;
-       Line[2, x3    ].B := Line[0, x].B;
-       Line[3, x3    ].B := Line[0, x].B;
-       Line[1, x3 + 1].B := Line[0, x].B;
-       Line[2, x3 + 1].B := Line[0, x].B;
-       Line[3, x3 + 1].B := Line[0, x].B;
-       Line[1, x3 + 2].B := Line[0, x].B;
-       Line[2, x3 + 2].B := Line[0, x].B;
-       Line[3, x3 + 2].B := Line[0, x].B;
-       Line[1, x3    ].G := Line[0, x].G;
-       Line[2, x3    ].G := Line[0, x].G;
-       Line[3, x3    ].G := Line[0, x].G;
-       Line[1, x3 + 1].G := Line[0, x].G;
-       Line[2, x3 + 1].G := Line[0, x].G;
-       Line[3, x3 + 1].G := Line[0, x].G;
-       Line[1, x3 + 2].G := Line[0, x].G;
-       Line[2, x3 + 2].G := Line[0, x].G;
-       Line[3, x3 + 2].G := Line[0, x].G;
-       Line[1, x3    ].R := Line[0, x].R;
-       Line[2, x3    ].R := Line[0, x].R;
-       Line[3, x3    ].R := Line[0, x].R;
-       Line[1, x3 + 1].R := Line[0, x].R;
-       Line[2, x3 + 1].R := Line[0, x].R;
-       Line[3, x3 + 1].R := Line[0, x].R;
-       Line[1, x3 + 2].R := Line[0, x].R;
-       Line[2, x3 + 2].R := Line[0, x].R;
-       Line[3, x3 + 2].R := Line[0, x].R;
+       Line[1, x3    ] := Line[0, x];
+       Line[2, x3    ] := Line[0, x];
+       Line[3, x3    ] := Line[0, x];
+       Line[1, x3 + 1] := Line[0, x];
+       Line[2, x3 + 1] := Line[0, x];
+       Line[3, x3 + 1] := Line[0, x];
+       Line[1, x3 + 2] := Line[0, x];
+       Line[2, x3 + 2] := Line[0, x];
+       Line[3, x3 + 2] := Line[0, x];
       end;
     end;
   end;
@@ -484,22 +759,17 @@ begin
  with Bitmap do
   for y := (Height div 4) - 1 downto 0 do
    begin
-    assert(PixelFormat = pf32bit);
+    Assert(PixelFormat = pf32bit);
 
-    Line[0] := Scanline[y];
-    Line[1] := Scanline[y * 4];
-    Line[2] := Scanline[y * 4 + 1];
-    Line[3] := Scanline[y * 4 + 2];
-    Line[4] := Scanline[y * 4 + 3];
+    Line[0] := ScanLine[y];
+    Line[1] := ScanLine[y * 4];
+    Line[2] := ScanLine[y * 4 + 1];
+    Line[3] := ScanLine[y * 4 + 2];
+    Line[4] := ScanLine[y * 4 + 3];
     for x := (Width  div 4) - 1 downto 0 do
      for i := 1 to 4 do
-      for j := 0 to 3 do
-       begin
-        Line[i, 4 * x + j].B := Line[0, x].B;
-        Line[i, 4 * x + j].G := Line[0, x].G;
-        Line[i, 4 * x + j].R := Line[0, x].R;
-        Line[i, 4 * x + j].A := Line[0, x].A;
-       end;
+      for j := 0 to 3
+       do Line[i, 4 * x + j] := Line[0, x];
    end;
  {$ENDIF}
 end;
@@ -514,21 +784,17 @@ begin
  with Bitmap do
   for y := (Height div 4) - 1 downto 0 do
    begin
-    assert(PixelFormat = pf32bit);
+    Assert(PixelFormat = pf32bit);
 
-    Line[0] := Scanline[y];
-    Line[1] := Scanline[y * 4];
-    Line[2] := Scanline[y * 4 + 1];
-    Line[3] := Scanline[y * 4 + 2];
-    Line[4] := Scanline[y * 4 + 3];
+    Line[0] := ScanLine[y];
+    Line[1] := ScanLine[y * 4];
+    Line[2] := ScanLine[y * 4 + 1];
+    Line[3] := ScanLine[y * 4 + 2];
+    Line[4] := ScanLine[y * 4 + 3];
     for x := (Width  div 4) - 1 downto 0 do
      for i := 1 to 4 do
-      for j := 0 to 3 do
-       begin
-        Line[i, 4 * x + j].B := Line[0, x].B;
-        Line[i, 4 * x + j].G := Line[0, x].G;
-        Line[i, 4 * x + j].R := Line[0, x].R;
-       end;
+      for j := 0 to 3
+       do Line[i, 4 * x + j] := Line[0, x];
    end;
  {$ENDIF}
 end;

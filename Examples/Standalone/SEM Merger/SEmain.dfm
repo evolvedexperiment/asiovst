@@ -2,7 +2,7 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
   Left = 446
   Top = 223
   Caption = 'SE Merger'
-  ClientHeight = 145
+  ClientHeight = 164
   ClientWidth = 229
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object FmSEModuleExplorer: TFmSEModuleExplorer
     Left = 0
     Top = 0
     Width = 229
-    Height = 145
+    Height = 164
     Align = alClient
     ItemHeight = 13
     TabOrder = 0

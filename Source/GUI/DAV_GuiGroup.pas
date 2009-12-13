@@ -323,9 +323,9 @@ end;
 
 procedure TCustomGuiGroup.DrawParentImage(Dest: TCanvas);
 var
-  SaveIndex: Integer;
-  DC: THandle;
-  Position: TPoint;
+  SaveIndex : Integer;
+  DC        : THandle;
+  Position  : TPoint;
 begin
   if Parent = nil then Exit;
   DC := Dest.Handle;

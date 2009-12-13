@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
+  Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
   DAV_VSTModule, DAV_DspVibrato;
 
 type
@@ -60,10 +61,12 @@ type
 
 implementation
 
-{$R *.DFM}
+{$IFNDEF FPC}
+{$R *.dfm}
+{$ENDIF}
 
 uses
-  SimpleVibratoGUI, DAV_Approximations, DAV_VSTCustomModule;
+  DAV_Approximations, DAV_VSTCustomModule, SimpleVibratoGUI;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -227,5 +230,10 @@ begin
   FCriticalSection.Leave;
  end;
 end;
+
+{$IFDEF FPC}
+initialization
+  {$i SimpleVibratoDM.lrs}
+{$ENDIF}
 
 end.

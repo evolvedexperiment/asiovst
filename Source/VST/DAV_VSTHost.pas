@@ -201,7 +201,7 @@ type
     procedure EditClose;
     {$ENDIF}
     procedure AssignTo(Dest: TPersistent); override;
-    procedure IOchanged;
+    procedure IOChanged;
     procedure NeedIdle;
   public
     constructor Create(Collection: TCollection); override;
@@ -562,7 +562,7 @@ type
     property Language: TVstHostLanguage read FLanguage write FLanguage default hlEnglish;
     property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
     property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
-    property ManageIdleAutomaticly : Boolean read FautoIdle write FautoIdle;
+    property ManageIdleAutomaticly : Boolean read FAutoIdle write FAutoIdle;
     property NumAutomatableParameters : Integer read FnumAutomatable write FnumAutomatable default 0;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
@@ -1347,7 +1347,7 @@ end;
 
 function TCustomVstHost.GetItem(Index: Integer): TCustomVstPlugIn;
 begin
- assert(Assigned(FVstPlugIns));
+ Assert(Assigned(FVstPlugIns));
  Result := FVstPlugIns[Index];
 end;
 
@@ -2067,6 +2067,8 @@ begin
 end;
 
 procedure TCustomVstPlugIn.ShowEdit;
+var
+  rct : TRect;
 begin
  if not Assigned(GUIControl) then
   begin
@@ -2076,6 +2078,7 @@ begin
      Caption := VendorString + ' - ' + ProductString;
      BorderStyle := bsToolWindow;
      Position := poDesktopCenter;
+     Visible := True;
      OnClose := FormCloseHandler;
      OnActivate := EditActivateHandler;
      OnDeActivate := EditDeactivateHandler;
@@ -2083,6 +2086,13 @@ begin
     end;
    FGUIControlCreated := True;
    ShowEdit(GUIControl);
+
+   Rct := GetRect;
+   with TForm(FGUIControl) do
+    begin
+     ClientWidth := rct.Right - rct.Left;
+     ClientHeight := rct.Bottom - rct.Top;
+    end; 
   end;
 end;
 

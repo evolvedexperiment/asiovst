@@ -5,7 +5,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls,
+  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls, {$IFDEF Windows} Windows, {$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF} Classes, Forms,
   DAV_Types, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTBasicModule,
   DAV_VSTShellPlugins, DAV_VSTOfflineTask;
@@ -607,9 +607,9 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
-      Parent := TWinControl.CreateParented(HWnd(ptr));
-//      Handle := HWnd(ptr);
-//      SetParent(Handle, HWnd(ptr));
+//      Parent := TWinControl.CreateParented(HWnd(ptr));
+      SetParent(Handle, HWnd(ptr));
+      //      Handle := HWnd(ptr);
 //      Parent := TWinControl.CreateParented(HWnd(ptr));
       {$ENDIF}
       Visible := True;

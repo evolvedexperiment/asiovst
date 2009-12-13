@@ -35,20 +35,24 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}
-  Classes, Graphics, Forms, Messages, SysUtils, Controls, DAV_GuiBaseControl;
+  {$IFDEF FPC} LCLIntf, LCLType, LResources, LMessages, FPImage, IntfGraphics,
+  {$ELSE} Windows, {$ENDIF} Classes, Graphics, Forms, Messages, SysUtils,
+  Controls, DAV_GuiBaseControl;
 
 type
   TCustomGuiLED = class(TCustomGuiBaseAntialiasedControl)
   private
-    FLEDColor   : TColor;
-    FOnChange   : TNotifyEvent;
-    FBrightness : Single;
-    FUniformity: Single;
+    FLEDColor     : TColor;
+    FOnChange     : TNotifyEvent;
+    FBrightness   : Single;
+    FUniformity   : Single;
+    FBorderFactor : Single;
     procedure SetLEDColor(const Value: TColor);
     procedure SetBrightness(const Value: Single);
     procedure SetUniformity(const Value: Single);
+    procedure SetBorderStrength(const Value: Single);
     function GetUniformity: Single;
+    function GetBorderStrength: Single;
   protected
     procedure RenderLEDToBitmap24(const Bitmap: TBitmap); virtual;
     procedure RenderLEDToBitmap32(const Bitmap: TBitmap); virtual;
@@ -62,6 +66,7 @@ type
     property LineWidth;
     property LEDColor: TColor read FLEDColor write SetLEDColor default clBlack;
     property Brightness_Percent: Single read FBrightness write SetBrightness;
+    property BorderStrength_Percent: Single read GetBorderStrength write SetBorderStrength;
     property Uniformity_Percent: Single read GetUniformity write SetUniformity;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
@@ -122,33 +127,38 @@ begin
   Result := Angle;
 end;
 
-{ This function solves for x in the equation "x is y% of z". }
-function SolveForX(Y, Z: Longint): Longint;
+{ This function solves for Re in the equation "x is y% of z". }
+function SolveForX(Im, Z: Longint): Longint;
 begin
-  Result := round( Z * (Y * 0.01) );//tt
+  Result := Round(Z * (Im * 0.01));//tt
 end;
 
-{ This function solves for y in the equation "x is y% of z". }
-function SolveForY(X, Z: Longint): Longint;
+{ This function solves for Im in the equation "x is y% of z". }
+function SolveForY(Re, Z: Longint): Longint;
 begin
-  if Z = 0 then Result := 0 else Result := round( (X * 100.0) / Z ); //t
+  if Z = 0 then Result := 0 else Result := Round((Re * 100.0) / Z); //t
 end;
 
 
 constructor TCustomGuiLED.Create(AOwner: TComponent);
 begin
-  inherited Create(AOwner);
-  FLEDColor    := clBlack;
-  FLineColor   := clRed;
-  FLineWidth   := 1;
-  FBrightness  := 100;
-  FUniformity  := 0.4;
-  FBuffer.PixelFormat := pf32bit
+ inherited Create(AOwner);
+ FLEDColor    := clBlack;
+ FLineColor   := clRed;
+ FLineWidth   := 1;
+ FBrightness  := 100;
+ FUniformity  := 0.4;
+ FBuffer.PixelFormat := pf32bit
 end;
 
 destructor TCustomGuiLED.Destroy;
 begin
-  inherited Destroy;
+ inherited Destroy;
+end;
+
+function TCustomGuiLED.GetBorderStrength: Single;
+begin
+ Result := 100 * (1 - FBorderFactor);
 end;
 
 function TCustomGuiLED.GetUniformity: Single;
@@ -170,22 +180,56 @@ begin
   end;
 end;
 
+procedure TCustomGuiLED.SetBorderStrength(const Value: Single);
+begin
+ if FBorderFactor <> Value then
+  begin
+   FBorderFactor := 1 - Limit(0.01 * Value, 0, 1);
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiLED.SetBrightness(const Value: Single);
+begin
+ if FBrightness <> Value then
+  begin
+   FBrightness := Value;
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiLED.SetLEDColor(const Value: TColor);
+begin
+ if (Value <> FLEDColor) then
+  begin
+   FLEDColor := Value;
+   Invalidate;
+  end;
+end;
+
 procedure TCustomGuiLED.RenderLEDToBitmap24(const Bitmap: TBitmap);
 var
-  Steps, i : Integer;
-  Rad      : Single;
-  XStart   : Single;
-  BW       : Single;
-  Center   : TPointFloat;
-  Line     : PRGB24Array;
-  LEDColor : TRGB24;
-  Scale    : Single;
-  Bright   : Single;
+  Steps, i      : Integer;
+  Rad           : Single;
+  XStart        : Single;
+  BW            : Single;
+  Center        : TComplexSingle;
+  {$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  CurCol        : TFPColor;
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  {$ELSE}
+  Line          : PRGB24Array;
+  {$ENDIF}
+  LEDColor      : TRGB24;
+  Scale         : Single;
+  Bright        : Single;
 begin
  with Bitmap, Canvas do
   begin
    Brush.Color := Self.Color;
-   Assert(Bitmap.PixelFormat = pf24bit); 
+   Assert(Bitmap.PixelFormat = pf24bit);
 
    LEDColor.R := $FF and FLEDColor;
    LEDColor.G := $FF and (FLEDColor shr 8);
@@ -197,22 +241,56 @@ begin
    if Rad <= 0 then Exit;
    BW := 1 - FLineWidth * OversamplingFactor / Rad;
 
-   Center.x := 0.5 * Width;
-   Center.y := 0.5 * Height;
+   Center.Re := 0.5 * Width;
+   Center.Im := 0.5 * Height;
    Pen.Color := FLineColor;
    Brush.Color := FLEDColor;
 
-   {$IFNDEF FPC}
-   for I := 0 to round(2 * Rad) do
-    begin
-     XStart := Sqrt(abs(Sqr(rad) - Sqr(Rad - i)));
-     Line := Scanline[round(Center.y - (Rad - i))];
-     for Steps := Round(Center.x - XStart) to Round(Center.x + XStart) do
+   {$IFDEF FPC}
+   SrcIntfImg := TLazIntfImage.Create(0, 0);
+   with SrcIntfImg do
+    try
+     LoadFromBitmap(Bitmap.BitmapHandle, Bitmap.MaskHandle);
+     for I := 0 to Round(2 * Rad) do
       begin
-       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.x) + Sqr(Rad - i)) / Sqr(Rad)));
+       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
+       for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
+        begin
+         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - i)) / Sqr(Rad)));
 
-       if Sqr(steps - Center.x) + Sqr(Rad - i) > Sqr(BW * Rad)
-        then Scale := 0.4 * Scale;
+         if Sqr(steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad)
+          then Scale := FBorderFactor * Scale;
+
+         Scale := 256 * Scale;
+
+         // manipulate pixel
+         CurCol := Colors[Steps, Round(2 * (Center.Im - (Rad - I))) div 2];
+
+         CurCol.Blue  := Round(Scale * LEDColor.B);
+         CurCol.Green := Round(Scale * LEDColor.G);
+         CurCol.Red   := Round(Scale * LEDColor.R);
+
+         Colors[Steps, Round(2 * (Center.Im - (Rad - I))) div 2] := CurCol;
+//         assert(Integer(@(Line[Steps])) and 1 <> 1);
+        end;
+      end;
+     CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+     Bitmap.Handle := ImgHandle;
+     Bitmap.MaskHandle := ImgMaskHandle;
+    finally
+     Free;
+    end;
+   {$ELSE}
+   for I := 0 to Round(2 * Rad) do
+    begin
+     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
+     Line := Scanline[Round(2 * (Center.Im - (Rad - I))) div 2];
+     for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
+      begin
+       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - i)) / Sqr(Rad)));
+
+       if Sqr(steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad)
+        then Scale := FBorderFactor * Scale;
        Line[Steps].B := Round(Scale * LEDColor.B);
        Line[Steps].G := Round(Scale * LEDColor.G);
        Line[Steps].R := Round(Scale * LEDColor.R);
@@ -225,19 +303,28 @@ end;
 
 procedure TCustomGuiLED.RenderLEDToBitmap32(const Bitmap: TBitmap);
 var
-  Steps, i : Integer;
-  Rad      : Single;
-  XStart   : Single;
-  BW       : Single;
-  Center   : TPointFloat;
-  Line     : PRGB32Array;
-  LEDColor : TRGB32;
-  Scale    : Single;
-  Bright   : Single;
+  Steps, i      : Integer;
+  Rad           : Single;
+  XStart        : Single;
+  BW            : Single;
+  Center        : TComplexSingle;
+  {$IFDEF FPC}
+  SrcIntfImg    : TLazIntfImage;
+  YPixelPos     : Integer;
+  CurCol        : TFPColor;
+  ImgHandle     : HBitmap;
+  ImgMaskHandle : HBitmap;
+  {$ELSE}
+  Line          : PRGB32Array;
+  {$ENDIF}
+  LEDColor      : TRGB32;
+  Scale         : Single;
+  Bright        : Single;
 begin
  with Bitmap, Canvas do
   begin
    Brush.Color := Self.Color;
+   Assert(Bitmap.PixelFormat = pf32bit);
 
    LEDColor.A := $FF;
    LEDColor.R := $FF and FLEDColor;
@@ -250,37 +337,63 @@ begin
    if Rad <= 0 then Exit;
    BW := 1 - FLineWidth * OversamplingFactor / Rad;
 
-   Center.x := 0.5 * Width;
-   Center.y := 0.5 * Height;
+   Center.Re := 0.5 * Width;
+   Center.Im := 0.5 * Height;
    Pen.Color := FLineColor;
    Brush.Color := FLEDColor;
 
-   {$IFNDEF FPC}
-   for i := 0 to Round(2 * Rad) do
-    begin
-     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
-     Line := Scanline[round(Center.y - (Rad - i))];
-     for steps := round(Center.x - XStart) to round(Center.x + XStart) do
+   {$IFDEF FPC}
+   SrcIntfImg := TLazIntfImage.Create(0, 0);
+   with SrcIntfImg do
+    try
+     LoadFromBitmap(Bitmap.BitmapHandle, Bitmap.MaskHandle);
+     for I := 0 to Round(2 * Rad) do
       begin
-       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(Steps - Center.x) + Sqr(Rad - i)) / Sqr(rad)));
+       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
+       for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
+        begin
+         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - i)) / Sqr(Rad)));
 
-       if Sqr(steps - Center.x) + Sqr(Rad - i) > Sqr(BW * Rad)
-        then Scale := 0.4 * Scale;
-       Line[steps].B := round(Scale * LEDColor.B);
-       Line[steps].G := round(Scale * LEDColor.G);
-       Line[steps].R := round(Scale * LEDColor.R);
+         if Sqr(steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad)
+          then Scale := FBorderFactor * Scale;
+
+         Scale := 256 * Scale;
+
+         // manipulate pixel
+         YPixelPos := Round(2 * (Center.Im - (Rad - I))) div 2;
+         CurCol := Colors[Steps, YPixelPos];
+
+         CurCol.Blue  := Round(Scale * LEDColor.B);
+         CurCol.Green := Round(Scale * LEDColor.G);
+         CurCol.Red   := Round(Scale * LEDColor.R);
+
+         Colors[Steps, YPixelPos] := CurCol;
+//         assert(Integer(@(Line[Steps])) and 1 <> 1);
+        end;
+      end;
+     CreateBitmaps(ImgHandle, ImgMaskHandle, false);
+     Bitmap.Handle := ImgHandle;
+     Bitmap.MaskHandle := ImgMaskHandle;
+    finally
+     Free;
+    end;
+   {$ELSE}
+   for Y := 0 to Round(2 * Rad) do
+    begin
+     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
+     Line := Scanline[Round(2 * (Center.Im - (Rad - Y))) div 2];
+     for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
+      begin
+       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(Steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
+
+       if Sqr(Steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
+        then Scale := FBorderFactor * Scale;
+       Line[Steps].B := Round(Scale * LEDColor.B);
+       Line[Steps].G := Round(Scale * LEDColor.G);
+       Line[Steps].R := Round(Scale * LEDColor.R);
       end;
     end;
    {$ENDIF}
-  end;
-end;
-
-procedure TCustomGuiLED.SetBrightness(const Value: Single);
-begin
- if FBrightness <> Value then
-  begin
-   FBrightness := Value;
-   Invalidate;
   end;
 end;
 
@@ -301,7 +414,7 @@ begin
        // draw background
        {$IFNDEF FPC}
        if FTransparent
-        then DrawParentImage(FBuffer.Canvas)
+        then CopyParentImage(Self, FBuffer.Canvas)
         else
        {$ENDIF}
         begin
@@ -328,7 +441,7 @@ begin
          {$IFNDEF FPC}
          if FTransparent then
           begin
-           DrawParentImage(Bmp.Canvas);
+           CopyParentImage(Self, Bmp.Canvas);
            UpsampleBitmap(Bmp);
           end
          else
@@ -356,15 +469,6 @@ begin
      Unlock;
     end;
    end;
-end;
-
-procedure TCustomGuiLED.SetLEDColor(const Value: TColor);
-begin
- if (Value <> FLEDColor) then
-  begin
-   FLEDColor := Value;
-   Invalidate;
-  end;
 end;
 
 end.

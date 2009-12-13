@@ -179,10 +179,8 @@ type
   protected
     FLineColor       : TColor;
     FLineWidth       : Integer;
-    {$IFNDEF FPC}
     FTransparent     : Boolean;
     procedure SetTransparent(Value: Boolean); virtual;
-    {$ENDIF}
 
     procedure SetLineWidth(Value: Integer); virtual;
     procedure SetLineColor(Value: TColor); virtual;
@@ -190,9 +188,7 @@ type
     constructor Create(AOwner: TComponent); overload; override;
     property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
     property LineColor: TColor read FLineColor write SetLineColor default clBlack;
-    {$IFNDEF FPC}
     property Transparent: Boolean read FTransparent write SetTransparent default False;
-    {$ENDIF}
   end;
 
   TCustomGuiBaseMouseControl = class(TCustomGuiBaseControl)
@@ -215,13 +211,14 @@ type
     procedure DragMouseMoveMiddle(Shift: TShiftState; X, Y: Integer); dynamic;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); dynamic;
 
+    {$IFNDEF FPC}
+
     {$IFNDEF Delphi7_Up}
-    procedure WMMouseWheel(var Message : TWMMouseWheel);  message WM_MOUSEWHEEL;      // Sping
-    procedure DoOnMouseWheel(Delta: Integer; MousePos: TPoint); virtual;              // Sping
+    procedure WMMouseWheel(var Message : TWMMouseWheel);  message WM_MOUSEWHEEL;
+    procedure DoOnMouseWheel(Delta: Integer; MousePos: TPoint); virtual;
     procedure MouseWheelHandler(var Message: TMessage); dynamic;
     {$ENDIF}
 
-    {$IFNDEF FPC}
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     {$ELSE}
@@ -561,6 +558,30 @@ begin
 end;
 
 {$IFNDEF FPC}
+
+{$IFNDEF Delphi7_Up}
+function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+  MousePos: TPoint): Boolean;
+begin
+ // not used yet
+end;
+
+procedure TCustomGuiBaseMouseControl.MouseWheelHandler(var Message: TMessage);
+begin
+end;
+
+procedure TCustomGuiBaseMouseControl.WMMouseWheel(var Message: TWMMouseWheel);
+begin
+ if not Mouse.WheelPresent then
+  begin
+   Mouse.FWheelPresent := True;
+   Mouse.SettingChanged(SPI_GETWHEELSCROLLLINES);
+  end;
+ if DoMouseWheel(KeysToShiftState(Message.Keys), WheelDelta, SmallPointToPoint(Pos))
+  then Message.Result := 1
+end;
+{$ENDIF}
+
 procedure TBufferedGraphicControl.WMEraseBkgnd(var Message: TWmEraseBkgnd);
 begin
   Message.Result := 0;
@@ -623,9 +644,7 @@ begin
  inherited;
  FLineWidth   := 1;
  FLineColor   := clBlack;
- {$IFNDEF FPC}
  FTransparent := False;
- {$ENDIF}
 end;
 
 procedure TCustomGuiBaseControl.SetLineColor(Value: TColor);
@@ -646,7 +665,6 @@ begin
   end;
 end;
 
-{$IFNDEF FPC}
 procedure TCustomGuiBaseControl.SetTransparent(Value: Boolean);
 begin
  if FTransparent <> Value then
@@ -655,7 +673,7 @@ begin
    Invalidate;
   end;
 end;
-{$ENDIF}
+
 
 { TCustomGuiBaseMouseControl }
 
@@ -849,29 +867,6 @@ begin
 
   FTimerMustRedraw := False;
 end;
-
-{$IFNDEF Delphi7_Up}
-function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
-  MousePos: TPoint): Boolean;
-begin
- // not used yet
-end;
-
-procedure TCustomGuiBaseMouseControl.MouseWheelHandler(var Message: TMessage);
-begin
-end;
-
-procedure TCustomGuiBaseMouseControl.WMMouseWheel(var Message: TWMMouseWheel);
-begin
- if not Mouse.WheelPresent then
-  begin
-   Mouse.FWheelPresent := True;
-   Mouse.SettingChanged(SPI_GETWHEELSCROLLLINES);
-  end;
- if DoMouseWheel(KeysToShiftState(Message.Keys), WheelDelta, SmallPointToPoint(Pos))
-  then Message.Result := 1
-end;
-{$ENDIF}
 
 { TGUIShadow }
 

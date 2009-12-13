@@ -74,7 +74,7 @@ begin
  with TOpenDialog.Create(Self) do
   begin
    DefaultExt := '.sem';
-   Filter := 'SE Modules (*.sem)|*.sem';
+   Filter := 'SE Modules (*.sem)|*.sem;*.sep';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Select SE Module';
    if Execute then

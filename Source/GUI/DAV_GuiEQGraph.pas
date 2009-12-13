@@ -1057,6 +1057,12 @@ begin
    end;
 end;
 
+procedure TGuiEQGraph.ChartChanged;
+begin
+ FChartChanged := True;
+ inherited;
+end;
+
 {$IFNDEF FPC}
 procedure TGuiEQGraph.CMFontChanged(var Message: TMessage);
 {$ELSE}
@@ -1123,12 +1129,6 @@ begin
   Parent.Perform(WM_PAINT, Longint(DC), 0);
   RestoreDC(DC, SaveIndex);
 end;
-procedure TGuiEQGraph.ChartChanged;
-begin
- FChartChanged := True;
- inherited;
-end;
-
 {$ENDIF}
 
 procedure TGuiEQGraph.Paint;

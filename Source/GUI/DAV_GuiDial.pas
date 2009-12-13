@@ -914,13 +914,13 @@ end;
 { This function solves for x in the equation "x is y% of z". }
 function SolveForX(Y, Z: Longint): Longint;
 begin
-  Result := round(Z * (Y * 0.01));//tt
+  Result := Round(Z * (Y * 0.01));//tt
 end;
 
 { This function solves for y in the equation "x is y% of z". }
 function SolveForY(X, Z: Longint): Longint;
 begin
-  if Z = 0 then Result := 0 else Result := round((X * 100.0) / Z); //t
+  if Z = 0 then Result := 0 else Result := Round((X * 100.0) / Z); //t
 end;
 
 
@@ -1328,7 +1328,7 @@ begin
       end;
 
      Pen.Width := OversamplingFactor * fLineWidth;
-     Pen.Color := fLineColor;
+     Pen.Color := FLineColor;
      Brush.Color := FCircleColor;
      Polygon(PtsArray);
     end;
@@ -1683,7 +1683,7 @@ var
   XStart   : Single;
   LineFrac : Single;
   BW       : Single;
-  Center   : TPointFloat;
+  Center   : TComplexSingle;
   Line     : PRGB32Array;
 begin
  with Bitmap, Canvas do
@@ -1699,38 +1699,38 @@ begin
    BW := 1 - OversamplingFactor / Rad; // border width = 1 pixel
    if Rad < 0 then exit;
 
-   Center.x := 0.5 * Width;
-   Center.y := 0.5 * Height;
-   Pen.Color := fLineColor;
+   Center.Re := 0.5 * Width;
+   Center.Im := 0.5 * Height;
+   Pen.Color := FLineColor;
    Brush.Color := FCircleColor;
 
    {$IFNDEF FPC}
-   for i := 0 to round(2 * Rad) do
+   for i := 0 to Round(2 * Rad) do
     begin
-     XStart := sqrt(abs(sqr(rad) - sqr(Rad - i)));
-     Line := Scanline[round(Center.y - (Rad - i))];
-     for steps := round(Center.x - XStart) to round(Center.x + XStart) do
+     XStart := Sqrt(abs(Sqr(rad) - Sqr(Rad - i)));
+     Line := ScanLine[Round(Center.Im - (Rad - i))];
+     for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
       begin
-       val := 2.9999 * abs(ArcTan2(steps - Center.x, (Rad - i)) / Pi);
-       if round(1.5 + val) mod 3 = 0
+       val := 2.9999 * abs(ArcTan2(Steps - Center.Re, (Rad - i)) / Pi);
+       if Round(1.5 + val) mod 3 = 0
         then val := val * 50 - 99.5
         else val := -Round(99.5 + val * 50) mod 100;
-       if sqr(steps - Center.x) + sqr(Rad - i) > sqr(BW * Rad) then val := -$90;
+       if Sqr(Steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad) then val := -$90;
 
-       Line[steps].B := round(Line[steps].B + val);
-       Line[steps].G := round(Line[steps].G + val);
-       Line[steps].R := round(Line[steps].R + val);
+       Line[Steps].B := Round(Line[Steps].B + val);
+       Line[Steps].G := Round(Line[Steps].G + val);
+       Line[Steps].R := Round(Line[Steps].R + val);
       end;
 
      GetSinCos(PositionToAngle - (PI * 0.5), Cmplx.Im, Cmplx.Re);
-     Pnt := Point(Round(Center.x + Cmplx.Re * BW * Rad), Round(Center.y + Cmplx.Im * BW * Rad));
+     Pnt := Point(Round(Center.Re + Cmplx.Re * BW * Rad), Round(Center.Im + Cmplx.Im * BW * Rad));
 
      //LineFrac := 0.01 * fIndLineLength;
      LineFrac := 0.5;
      Pen.Width := 3 * OversamplingFactor;
      MoveTo(Pnt.X, Pnt.Y);
-     LineTo(Round((1 - LineFrac) * Pnt.X + LineFrac * Center.x),
-            Round((1 - LineFrac) * Pnt.Y + LineFrac * Center.y));
+     LineTo(Round((1 - LineFrac) * Pnt.X + LineFrac * Center.Re),
+            Round((1 - LineFrac) * Pnt.Y + LineFrac * Center.Im));
     end;
    {$ENDIF}
   end;
@@ -1779,7 +1779,7 @@ begin
       end;
 
      Pen.Width := fLineWidth;
-     Pen.Color := fLineColor;
+     Pen.Color := FLineColor;
      Brush.Color := FCircleColor;
      Polygon(PtsArray);
     end;

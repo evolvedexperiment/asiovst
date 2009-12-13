@@ -1,0 +1,165 @@
+object FmLEDTest: TFmLEDTest
+  Left = 218
+  Height = 266
+  Top = 77
+  Width = 150
+  Caption = 'LED-Test'
+  ClientHeight = 266
+  ClientWidth = 150
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnPaint = FormPaint
+  OnResize = FormResize
+  OnShow = FormShow
+  LCLVersion = '0.9.29'
+  object LED1: TGuiLED
+    Left = 8
+    Height = 64
+    Top = 8
+    Width = 64
+    LineWidth = 2
+    LEDColor = clBlue
+    Brightness_Percent = 100
+    BorderStrength_Percent = 100
+    Uniformity_Percent = 50
+    LineColor = clRed
+  end
+  object LED2: TGuiLED
+    Left = 78
+    Height = 64
+    Top = 8
+    Width = 64
+    LineWidth = 2
+    LEDColor = clYellow
+    Brightness_Percent = 100
+    BorderStrength_Percent = 100
+    Uniformity_Percent = 50
+    Anchors = [akTop, akRight]
+    AntiAlias = gaaLinear2x
+    LineColor = clRed
+  end
+  object LED3: TGuiLED
+    Left = 8
+    Height = 64
+    Top = 78
+    Width = 64
+    LineWidth = 2
+    LEDColor = clRed
+    Brightness_Percent = 100
+    BorderStrength_Percent = 100
+    Uniformity_Percent = 50
+    Anchors = [akLeft, akBottom]
+    AntiAlias = gaaLinear3x
+    LineColor = clRed
+  end
+  object LED4: TGuiLED
+    Left = 78
+    Height = 64
+    Top = 78
+    Width = 64
+    LineWidth = 2
+    LEDColor = clLime
+    Brightness_Percent = 100
+    BorderStrength_Percent = 100
+    Uniformity_Percent = 50
+    Anchors = [akRight, akBottom]
+    AntiAlias = gaaLinear4x
+    LineColor = clRed
+  end
+  object LbUniformiy: TLabel
+    Left = 8
+    Height = 14
+    Top = 147
+    Width = 54
+    Anchors = [akLeft, akBottom]
+    Caption = 'Uniformity:'
+    ParentColor = False
+  end
+  object LbBrightness: TLabel
+    Left = 8
+    Height = 14
+    Top = 173
+    Width = 55
+    Anchors = [akLeft, akBottom]
+    Caption = 'Brightness:'
+    ParentColor = False
+  end
+  object LbLineWidth: TLabel
+    Left = 8
+    Height = 14
+    Top = 224
+    Width = 55
+    Anchors = [akLeft, akBottom]
+    Caption = 'Line Width:'
+    ParentColor = False
+  end
+  object LbBorderStrength: TLabel
+    Left = 8
+    Height = 14
+    Top = 199
+    Width = 37
+    Anchors = [akLeft, akBottom]
+    Caption = 'Border:'
+    ParentColor = False
+  end
+  object TbUniformity: TTrackBar
+    Left = 63
+    Height = 17
+    Top = 150
+    Width = 79
+    Frequency = 10
+    Max = 100
+    OnChange = TbUniformityChange
+    Position = 50
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 0
+  end
+  object TbBrightness: TTrackBar
+    Left = 63
+    Height = 17
+    Top = 174
+    Width = 79
+    Frequency = 10
+    Max = 100
+    OnChange = TbBrightnessChange
+    Position = 90
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 1
+  end
+  object TbLineWidth: TTrackBar
+    Left = 63
+    Height = 17
+    Top = 225
+    Width = 79
+    Max = 6
+    Min = 1
+    OnChange = TbLineWidthChange
+    Position = 2
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 2
+  end
+  object TbBorderStrength: TTrackBar
+    Left = 63
+    Height = 17
+    Top = 200
+    Width = 79
+    Frequency = 10
+    Max = 100
+    OnChange = TbBorderStrengthChange
+    Position = 90
+    Anchors = [akLeft, akRight, akBottom]
+    TabOrder = 3
+  end
+  object CbTransparent: TCheckBox
+    Left = 32
+    Height = 17
+    Top = 247
+    Width = 79
+    Anchors = [akBottom]
+    Caption = 'Transparent'
+    OnClick = CbTransparentClick
+    TabOrder = 4
+  end
+end

@@ -15,12 +15,10 @@ type
     FAlignment     : TAlignment;
     FCaption       : string;
     FOSFactor      : Integer;
-    {$IFNDEF FPC}
     FTransparent   : Boolean;
     FShadow        : TGUIShadow;
     procedure SetTransparent(Value: Boolean); virtual;
     procedure ShadowChangedHandler(Sender: TObject);
-    {$ENDIF}
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
@@ -30,20 +28,16 @@ type
     procedure AlignmentChanged; virtual;
     procedure AntiAliasChanged; virtual;
     procedure CaptionChanged; virtual;
-    {$IFNDEF FPC}
     procedure ShadowChanged; virtual;
     procedure TransparentChanged; virtual; 
-    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property Caption: string read FCaption write SetCaption;
-    {$IFNDEF FPC}
     property Shadow: TGUIShadow read FShadow write FShadow;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
-    {$ENDIF}
   end;
 
   TGuiLabel = class(TCustomGuiLabel)
@@ -65,9 +59,9 @@ type
     property PopupMenu;
     property ShowHint;
     property Visible;
-    {$IFNDEF FPC}
     property Transparent;
 //    property Shadow;
+    {$IFNDEF FPC}
     property OnCanResize;
     {$ENDIF}
     property OnClick;
@@ -102,22 +96,17 @@ begin
  FAntiAlias   := gaaNone;
  FOSFactor    := 1;
  FAlignment   := taLeftJustify;
- {$IFNDEF FPC}
  FTransparent := False;
  FShadow      := TGuiShadow.Create;
  FShadow.OnChange := ShadowChangedHandler;
- {$ENDIF}
 end;
 
 destructor TCustomGuiLabel.Destroy;
 begin
- {$IFNDEF FPC}
  FreeAndNil(FShadow);
- {$ENDIF}
  inherited;
 end;
 
-{$IFNDEF FPC}
 procedure TCustomGuiLabel.ShadowChanged;
 begin
  Invalidate;
@@ -127,7 +116,6 @@ procedure TCustomGuiLabel.ShadowChangedHandler(Sender: TObject);
 begin
  ShadowChanged;
 end;
-{$ENDIF}
 
 procedure TCustomGuiLabel.UpdateBuffer;
 var
@@ -146,7 +134,7 @@ begin
  case FAntiAlias of
   gaaNone     :
    begin
-    {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
+    if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else
     FBuffer.Canvas.FillRect(FBuffer.Canvas.ClipRect);
     RenderLabelToBitmap(FBuffer);
    end;
@@ -161,13 +149,11 @@ begin
       Font.Assign(FBuffer.Canvas.Font);
       Brush.Assign(FBuffer.Canvas.Brush);
       Pen.Assign(FBuffer.Canvas.Pen);
-      {$IFNDEF FPC}
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
         Upsample2xBitmap(Bmp);
        end else
-      {$ENDIF}
       Canvas.FillRect(ClipRect);
 {
       if FShadow.Visible then
@@ -194,13 +180,11 @@ begin
       Font.Assign(FBuffer.Canvas.Font);
       Brush.Assign(FBuffer.Canvas.Brush);
       Pen.Assign(FBuffer.Canvas.Pen);
-      {$IFNDEF FPC}
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
         Upsample3xBitmap(Bmp);
        end else
-      {$ENDIF}
       Canvas.FillRect(ClipRect);
       RenderLabelToBitmap(Bmp);
       Downsample3xBitmap(Bmp);
@@ -220,14 +204,12 @@ begin
       Font.Assign(FBuffer.Canvas.Font);
       Brush.Assign(FBuffer.Canvas.Brush);
       Pen.Assign(FBuffer.Canvas.Pen);
-      {$IFNDEF FPC}
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
 //        DrawParentImage(Bmp.Canvas);
         Upsample4xBitmap(Bmp);
        end else
-      {$ENDIF}
       FillRect(ClipRect);
       RenderLabelToBitmap(Bmp);
       Downsample4xBitmap(Bmp);
@@ -247,7 +229,6 @@ begin
       Canvas.Font.Assign(FBuffer.Canvas.Font);
       Canvas.Brush.Assign(FBuffer.Canvas.Brush);
       Canvas.Pen.Assign(FBuffer.Canvas.Pen);
-      {$IFNDEF FPC}
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
@@ -255,7 +236,6 @@ begin
         Upsample4xBitmap(Bmp);
         Upsample2xBitmap(Bmp);
        end else
-      {$ENDIF}
       Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
       RenderLabelToBitmap(Bmp);
       Downsample4xBitmap(Bmp);
@@ -276,7 +256,6 @@ begin
       Canvas.Font.Assign(FBuffer.Canvas.Font);
       Canvas.Brush.Assign(FBuffer.Canvas.Brush);
       Canvas.Pen.Assign(FBuffer.Canvas.Pen);
-      {$IFNDEF FPC}
       if FTransparent then
        begin
         CopyParentImage(Self, Bmp.Canvas);
@@ -284,7 +263,6 @@ begin
         Upsample4xBitmap(Bmp);
         Upsample4xBitmap(Bmp);
        end else
-      {$ENDIF}
       Bmp.Canvas.FillRect(Bmp.Canvas.ClipRect);
       RenderLabelToBitmap(Bmp);
       Downsample4xBitmap(Bmp);
@@ -365,7 +343,6 @@ begin
  Invalidate;
 end;
 
-{$IFNDEF FPC}
 procedure TCustomGuiLabel.SetTransparent(Value: Boolean);
 begin
  if FTransparent <> Value then
@@ -379,7 +356,5 @@ procedure TCustomGuiLabel.TransparentChanged;
 begin
  Invalidate;
 end;
-
-{$ENDIF}
 
 end.

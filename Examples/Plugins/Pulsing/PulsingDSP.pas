@@ -15,10 +15,8 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterPeriodChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSlewrateChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMaximumChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterMinimumChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMaximumChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMinimumChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FPulsing : array of TSymetricPulsing;
   public
@@ -112,7 +110,7 @@ var
 begin
  if Abs(SampleRate) > 0 then
   for Channel := 0 to Length(FPulsing) - 1
-   do FPulsing[Channel].SampleRate := SampleRate;
+   do FPulsing[Channel].SampleRate := Abs(SampleRate);
 end;
 
 procedure TPulsingDataModule.VSTModuleProcess(const Inputs,
