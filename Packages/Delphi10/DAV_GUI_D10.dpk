@@ -31,7 +31,10 @@ requires
   designide,
   DAV_Modular_D10,
   DAV_Common_D10,
-  DAV_VSTPlugin_D10;
+  DAV_VSTPlugin_D10,
+  xmlrtl,
+  vclactnband,
+  vclx;
 
 contains
   DAV_GuiRegister in '..\..\Source\GUI\DAV_GuiRegister.pas',
@@ -61,6 +64,7 @@ contains
   DAV_GuiSelectBox in '..\..\Source\GUI\DAV_GuiSelectBox.pas',
   DAV_GuiStaticWaveform in '..\..\Source\GUI\DAV_GuiStaticWaveform.pas',
   DAV_GuiVUMeter in '..\..\Source\GUI\DAV_GuiVUMeter.pas',
-  DAV_GuiBackgrounds in '..\..\Source\GUI\DAV_GuiBackgrounds.pas';
+  DAV_GuiBackgrounds in '..\..\Source\GUI\DAV_GuiBackgrounds.pas',
+  DAV_GuiEQSlide in '..\..\Source\GUI\DAV_GuiEQSlide.pas';
 
 end.

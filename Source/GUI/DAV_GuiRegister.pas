@@ -25,10 +25,11 @@ implementation
 uses
   {$IFDEF FPC} LResources, {$ELSE} DAV_GuiGroup, DAV_GuiLevelMeter, {$ENDIF}
   DAV_GuiADSRGraph, DAV_GuiStaticWaveform, DAV_GuiDynamicWaveform,
-  DAV_GuiAudioDataDisplay, DAV_GuiDial, DAV_GuiLED, DAV_GuiPanel, DAV_GuiLabel,
+  DAV_GuiAudioDataDisplay, DAV_GuiLED, DAV_GuiPanel, DAV_GuiDial, DAV_GuiLabel,
   DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
-  {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds, {$ENDIF} DAV_GuiEQGraph;
+  {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds, {$ENDIF} DAV_GuiEQSlide,
+  DAV_GuiEQGraph;
 
 procedure Register;
 begin
@@ -37,8 +38,8 @@ begin
     TGuiVUMeter, TGuiDial, TGuiDialMetal, TGuiCorrelationMeter, TGuiSelectBox,
     TGuiMidiKeys, TGuiButton, {$IFNDEF FPC} TGuiGroupA, TGuiGroupB, TGuiGroup,
     TGuiLevelMeter, TGuiColorLevelMeter, {$ENDIF} TGuiGraphXY, TGuiDialEx,
-    TGuiDialImageList, TGuiDialImageRenderer, TGuiSwitch,
-    {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiEQGraph]);
+    TGuiDialImageList, TGuiDialImageRenderer, TGuiEQGraph, TGuiEQSlide,
+    {$IFNDEF FPC} TGuiModular, TGuiBackground, {$ENDIF} TGuiSwitch]);
 
   RegisterPropertyEditor(TypeInfo(string), TGuiDialLayerCollectionItem, 'PrimitiveClassName', nil);
   RegisterPropertyEditor(TypeInfo(TCustomGuiDialPrimitive), TGuiDialLayerCollectionItem, 'Primitive', TPrimitiveClassProperty);

@@ -37,9 +37,12 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows,{$ENDIF}
   Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspVibrato;
+  DAV_VSTModule, DAV_DspVibrato, DAV_VSTCustomModule;
 
 type
+
+  { TSimpleVibratoModule }
+
   TSimpleVibratoModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
@@ -66,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  DAV_Approximations, DAV_VSTCustomModule, SimpleVibratoGUI;
+  DAV_Approximations, SimpleVibratoGUI;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
