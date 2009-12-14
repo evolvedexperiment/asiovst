@@ -120,9 +120,9 @@ type
     procedure SetColor(const Value: TColor);
     procedure SetVisible(const Value: Boolean);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     procedure Changed;
     procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const Bitmap: TBitmap); virtual; abstract;
-    procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; virtual;
 
@@ -214,6 +214,7 @@ type
     procedure SetSeriesClassName(const Value: string);
     procedure Changed;
   protected
+    procedure AssignTo(Dest: TPersistent); override;
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
   public
@@ -245,6 +246,7 @@ type
   TCustomGuiGraphXY = class(TCustomGuiBaseAntialiasedControl)
   private
     FOnChange         : TNotifyEvent;
+    FBorderColor      : TColor;
     FFrameColor       : TColor;
     FXAxis            : TCustomAxis;
     FYAxis            : TCustomAxis;
@@ -256,20 +258,24 @@ type
     procedure ShowLabelsChanged;
     procedure SetFrameColor(const Value: TColor);
     procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
+    procedure SetBorderColor(const Value: TColor);
   protected
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure BorderColorChanged; virtual;
+    procedure FrameColorChanged; virtual;
+    procedure Loaded; override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
+    procedure RenderGraphXYToBitmap(const Bitmap: TBitmap); virtual;
+    procedure Resize; override;
     procedure SettingsChanged(Sender: TObject); virtual;
     procedure UpdateBuffer; override;
-    procedure FrameColorChanged; virtual;
-    procedure RenderGraphXYToBitmap(const Bitmap: TBitmap); virtual;
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure Resize; override;
-    procedure Loaded; override;
     property SeriesCollectionItem[Index: Integer]: TGuiGraphXYSeriesCollectionItem read GetSeriesCollectionItem write SetSeriesCollectionItem; default;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure UpdateGraph;
   published
+    property BorderColor: TColor read FBorderColor write SetBorderColor default clRed;
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write SetSeriesCollection;
@@ -284,6 +290,7 @@ type
     property Align;
     property Anchors;
     property AntiAlias;
+    property BorderColor;
     property Color;
     property Constraints;
     property DragCursor;
@@ -948,6 +955,18 @@ begin
   end;
 end;
 
+procedure TGuiGraphXYSeriesCollectionItem.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TGuiGraphXYSeriesCollectionItem then
+  with TGuiGraphXYSeriesCollectionItem(Dest) do
+   begin
+    FSeries.Assign(Self.FSeries);
+    FDisplayName := Self.FDisplayName;
+    FSeriesClassChanged := Self.FSeriesClassChanged;
+   end;
+end;
+
 procedure TGuiGraphXYSeriesCollectionItem.Changed;
 begin
  if Assigned(FSeriesClassChanged)
@@ -1028,6 +1047,7 @@ end;
 constructor TCustomGuiGraphXY.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  FBorderColor      := clRed;
   FLineColor        := clBlack;
   FLineColor        := clMaroon;
   FFrameColor       := clRed;
@@ -1083,7 +1103,7 @@ const
 begin
  with Bitmap, Canvas do
   begin
-   Brush.Color := FLineColor;
+   Brush.Color := FBorderColor;
    Rct := ClipRect;
    FrameRect(Rct);
    InflateRect(Rct, -1, -1);
@@ -1247,6 +1267,28 @@ begin
  UpdateGraph;
 end;
 
+procedure TCustomGuiGraphXY.AssignTo(Dest: TPersistent);
+begin
+ inherited;
+ if Dest is TCustomGuiGraphXY then
+  with TCustomGuiGraphXY(Dest) do
+   begin
+    FOnChange    := Self.FOnChange;
+    FBorderColor := Self.FBorderColor;
+    FFrameColor  := Self.FFrameColor;
+    FFlags       := Self.FFlags;
+
+    FXAxis.Assign(Self.FXAxis);
+    FYAxis.Assign(Self.FYAxis);
+    FSeriesCollection.Assign(Self.FSeriesCollection);
+   end;
+end;
+
+procedure TCustomGuiGraphXY.BorderColorChanged;
+begin
+ UpdateGraph;
+end;
+
 procedure TCustomGuiGraphXY.ShowLabelsChanged;
 begin
  Changed;
@@ -1255,6 +1297,15 @@ end;
 procedure TCustomGuiGraphXY.UpdateGraph;
 begin
  Invalidate;
+end;
+
+procedure TCustomGuiGraphXY.SetBorderColor(const Value: TColor);
+begin
+ if FBorderColor <> Value then
+  begin
+   FBorderColor := Value;
+   BorderColorChanged;
+  end;
 end;
 
 procedure TCustomGuiGraphXY.SetFlags(const Value: TGraphXYFlags);

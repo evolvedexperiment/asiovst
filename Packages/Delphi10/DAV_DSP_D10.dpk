@@ -29,25 +29,25 @@ requires
   vcl,
   rtl,
   DAV_Common_D10,
-  designide,
-  xmlrtl,
-  vclactnband,
-  vclx;
+  designide;
 
 contains
-  DAV_ClassesFft in '..\..\Source\DAV_ClassesFft.pas',
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
+  DAV_ClassesFft in '..\..\Source\DAV_ClassesFft.pas',
   DAV_DspAmbience in '..\..\Source\Dsp\DAV_DspAmbience.pas',
   DAV_DspAudioToMidiTrigger in '..\..\Source\Dsp\DAV_DspAudioToMidiTrigger.pas',
   DAV_DspBarberpole in '..\..\Source\Dsp\DAV_DspBarberpole.pas',
   DAV_DspBarberpoleTuner in '..\..\Source\Dsp\DAV_DspBarberpoleTuner.pas',
   DAV_DspBesselFilter in '..\..\Source\Dsp\DAV_DspBesselFilter.pas',
+  DAV_DspBlockDistribution in '..\..\Source\DSP\DAV_DspBlockDistribution.pas',
   DAV_DspBufferedAudioFilePlayer in '..\..\Source\Dsp\DAV_DspBufferedAudioFilePlayer.pas',
   DAV_DspBufferedAudioFileRecorder in '..\..\Source\Dsp\DAV_DspBufferedAudioFileRecorder.pas',
   DAV_DspBufferedMp3Player in '..\..\Source\Dsp\DAV_DspBufferedMp3Player.pas',
+  DAV_DspBuildingBlocks in '..\..\Source\DSP\DAV_DspBuildingBlocks.pas',
   DAV_DspCepstrum in '..\..\Source\Dsp\DAV_DspCepstrum.pas',
   DAV_DspChorus in '..\..\Source\Dsp\DAV_DspChorus.pas',
   DAV_DspCircularBuffer in '..\..\Source\Dsp\DAV_DspCircularBuffer.pas',
+  DAV_DspComponents in '..\..\Source\DSP\DAV_DspComponents.pas',
   DAV_DspConvolution in '..\..\Source\Dsp\DAV_DspConvolution.pas',
   DAV_DspCorrelation in '..\..\Source\Dsp\DAV_DspCorrelation.pas',
   DAV_DspCrosstalkCancellation in '..\..\Source\Dsp\DAV_DspCrosstalkCancellation.pas',
@@ -109,6 +109,9 @@ contains
   DAV_DspRemez in '..\..\Source\Dsp\DAV_DspRemez.pas',
   DAV_DspRingModulator in '..\..\Source\Dsp\DAV_DspRingModulator.pas',
   DAV_DspSimpleOscillator in '..\..\Source\Dsp\DAV_DspSimpleOscillator.pas',
+  DAV_DspSpectralEffects in '..\..\Source\DSP\DAV_DspSpectralEffects.pas',
+  DAV_DspSpectralNoiseReduction in '..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas',
+  DAV_DspSpectrumInterpolation in '..\..\Source\DSP\DAV_DspSpectrumInterpolation.pas',
   DAV_DspStateVariableFilter in '..\..\Source\Dsp\DAV_DspStateVariableFilter.pas',
   DAV_DspSweepOscillator in '..\..\Source\Dsp\DAV_DspSweepOscillator.pas',
   DAV_DspTransientProcessor in '..\..\Source\Dsp\DAV_DspTransientProcessor.pas',
@@ -119,13 +122,7 @@ contains
   DAV_DspVocoder in '..\..\Source\Dsp\DAV_DspVocoder.pas',
   DAV_DspVoiceSynth in '..\..\Source\Dsp\DAV_DspVoiceSynth.pas',
   DAV_DspWaveshaper in '..\..\Source\Dsp\DAV_DspWaveshaper.pas',
-  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas',
-  DAV_DspComponents in '..\..\Source\DSP\DAV_DspComponents.pas',
   DAV_DspWindowFunctions in '..\..\Source\DSP\DAV_DspWindowFunctions.pas',
-  DAV_DspBuildingBlocks in '..\..\Source\DSP\DAV_DspBuildingBlocks.pas',
-  DAV_DspSpectralNoiseReduction in '..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas',
-  DAV_DspSpectralEffects in '..\..\Source\DSP\DAV_DspSpectralEffects.pas',
-  DAV_DspBlockDistribution in '..\..\Source\DSP\DAV_DspBlockDistribution.pas',
-  DAV_DspSpectrumInterpolation in '..\..\Source\DSP\DAV_DspSpectrumInterpolation.pas';
+  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas';
 
 end.

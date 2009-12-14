@@ -843,6 +843,8 @@ procedure TLightweightSoftKneeCompressor.RatioChanged;
 begin
  inherited;
  FRatioFactor := CHalf32 * (1 / Ratio - 1);
+ if AutoMakeUp
+  then CalculateAutoMakeUpGain;
 end;
 
 procedure TLightweightSoftKneeCompressor.AutoMakeUpChanged;

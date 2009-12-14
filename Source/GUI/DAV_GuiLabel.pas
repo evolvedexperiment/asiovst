@@ -11,12 +11,12 @@ uses
 type
   TCustomGuiLabel = class(TBufferedGraphicControl)
   private
-    FAntiAlias     : TGuiAntiAlias;
-    FAlignment     : TAlignment;
-    FCaption       : string;
-    FOSFactor      : Integer;
-    FTransparent   : Boolean;
-    FShadow        : TGUIShadow;
+    FAntiAlias        : TGuiAntiAlias;
+    FAlignment        : TAlignment;
+    FCaption          : string;
+    FOSFactor         : Integer;
+    FTransparent      : Boolean;
+    FShadow           : TGUIShadow;
     procedure SetTransparent(Value: Boolean); virtual;
     procedure ShadowChangedHandler(Sender: TObject);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
@@ -29,7 +29,7 @@ type
     procedure AntiAliasChanged; virtual;
     procedure CaptionChanged; virtual;
     procedure ShadowChanged; virtual;
-    procedure TransparentChanged; virtual; 
+    procedure TransparentChanged; virtual;
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
@@ -60,7 +60,7 @@ type
     property ShowHint;
     property Visible;
     property Transparent;
-//    property Shadow;
+    property Shadow;
     {$IFNDEF FPC}
     property OnCanResize;
     {$ENDIF}
@@ -285,6 +285,18 @@ begin
   begin
    TextSize := TextExtent(FCaption);
    Brush.Style := bsClear;
+
+   if FShadow.Visible then
+    begin
+     Font.Color := FShadow.Color;
+     case FAlignment of
+       taLeftJustify : TextOut(FOSFactor * FShadow.Offset.X, FOSFactor * FShadow.Offset.Y, FCaption);
+      taRightJustify : TextOut(FOSFactor * FShadow.Offset.X + Bitmap.Width - TextSize.cx, FOSFactor * FShadow.Offset.Y, FCaption);
+            taCenter : TextOut(FOSFactor * FShadow.Offset.X + (Bitmap.Width - TextSize.cx) div 2, FOSFactor * FShadow.Offset.Y, FCaption);
+     end;
+     Font.Color := Self.Font.Color;
+    end;
+
    case FAlignment of
      taLeftJustify : TextOut(0, 0, FCaption);
     taRightJustify : TextOut(Bitmap.Width - TextSize.cx, 0, FCaption);

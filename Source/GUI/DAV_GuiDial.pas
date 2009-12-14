@@ -136,6 +136,8 @@ type
     procedure CurveMappingChanged; virtual;
     procedure InertiaChanged; virtual;
     procedure PositionChanged; virtual;
+    procedure MaximumChanged; virtual;
+    procedure MinimumChanged; virtual;
     procedure RenderBitmap(const Bitmap: TBitmap); override;
 
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -901,7 +903,7 @@ function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
 const
   MulFak = 180 / Pi;
 begin
-  Result := arctan2(X2 - X1, Y1 - Y2) * MulFak;
+  Result := ArcTan2(X2 - X1, Y1 - Y2) * MulFak;
 end;
 
 function SafeAngle(Angle: Single): Single;
@@ -1121,8 +1123,8 @@ end;
 function TCustomGuiStitchedControl.GetDialImageIndex: Integer;
 begin
  if assigned(FDialImageItem)
-  then result := FDialImageItem.Index
-  else result := -1;
+  then Result := FDialImageItem.Index
+  else Result := -1;
 end;
 
 procedure TCustomGuiStitchedControl.DoAutoSize;
@@ -1286,7 +1288,7 @@ begin
   then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
   else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
  NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference);
- result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
+ Result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
 end;
 
 function TCustomGuiDial.PositionToAngle: Single;
@@ -1355,12 +1357,12 @@ end;
 
 function TCustomGuiDial.GetGlyphNr: Integer;
 begin
- result := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
+ Result := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
 end;
 
 function TCustomGuiDial.GetMappedPosition: Single;
 begin
- result := MapValue(NormalizedPosition) * (Max - Min) + Min;
+ Result := MapValue(NormalizedPosition) * (Max - Min) + Min;
 end;
 
 function TCustomGuiDial.UnmapValue(Value: Double): Double;
@@ -1380,9 +1382,7 @@ begin
    {$ENDIF}
 
    FMax := Value;
-   if FPosition > Value then FPosition := Value;
-   if FDefaultPosition > Value then FDefaultPosition := Value;
-   Invalidate;
+   MaximumChanged;
   end;
 end;
 
@@ -1396,10 +1396,21 @@ begin
    {$ENDIF}
 
    FMin := Value;
-   if FPosition < Value then FPosition := Value;
-   if FDefaultPosition < Value then FDefaultPosition := Value;
-   Invalidate;
   end;
+end;
+
+procedure TCustomGuiDial.MaximumChanged;
+begin
+ if FPosition > FMax then FPosition := FMax;
+ if FDefaultPosition > FMax then FDefaultPosition := FMax;
+ Invalidate;
+end;
+
+procedure TCustomGuiDial.MinimumChanged;
+begin
+ if FPosition < FMin then FPosition := FMin;
+ if FDefaultPosition < FMin then FDefaultPosition := FMin;
+ Invalidate;
 end;
 
 procedure TCustomGuiDial.SetNormalizedPosition(const Value: Single);
@@ -1408,7 +1419,7 @@ var
 begin
  NewValue := Min + Value * (Max - Min);
 
- if assigned(FOnQuantizeValue)
+ if Assigned(FOnQuantizeValue)
   then FOnQuantizeValue(Self, NewValue);
 
  Position := NewValue;
@@ -1478,8 +1489,8 @@ end;
 function TCustomGuiDial.MapValue(Value: Double): Double;
 begin
  if Value < 0
-  then result := -Power(abs(Value), FCurveMappingExp)
-  else result :=  Power(abs(Value), FCurveMappingExp);
+  then Result := -Power(abs(Value), FCurveMappingExp)
+  else Result :=  Power(abs(Value), FCurveMappingExp);
 end;
 
 procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
@@ -1592,7 +1603,7 @@ end;
 
 function TCustomGuiSwitch.GetGlyphNr: Integer;
 begin
- result := FGlyphNr;
+ Result := FGlyphNr;
 end;
 
 procedure TCustomGuiSwitch.MouseDown(Button: TMouseButton; Shift: TShiftState;
@@ -1819,7 +1830,7 @@ end;
 
 function TGuiDialImageCollection.Add: TGuiDialImageCollectionItem;
 begin
- result := TGuiDialImageCollectionItem(inherited Add);
+ Result := TGuiDialImageCollectionItem(inherited Add);
 end;
 
 procedure TGuiDialImageCollection.Delete(Index: Integer);
@@ -1830,13 +1841,13 @@ end;
 function TGuiDialImageCollection.GetItem(
   Index: Integer): TGuiDialImageCollectionItem;
 begin
- result := TGuiDialImageCollectionItem(inherited GetItem(Index));
+ Result := TGuiDialImageCollectionItem(inherited GetItem(Index));
 end;
 
 function TGuiDialImageCollection.Insert(
   Index: Integer): TGuiDialImageCollectionItem;
 begin
- result:= TGuiDialImageCollectionItem(inherited Insert(Index));
+ Result:= TGuiDialImageCollectionItem(inherited Insert(Index));
 end;
 
 procedure TGuiDialImageCollection.Notify(Item: TCollectionItem;
@@ -1876,17 +1887,17 @@ end;
 
 function TGuiDialImageCollectionItem.GetDisplayName: string;
 begin
- result := FDisplayName;
+ Result := FDisplayName;
 end;
 
 function TGuiDialImageCollectionItem.GetHeight: Integer;
 begin
- result := FDialBitmap.Height;
+ Result := FDialBitmap.Height;
 end;
 
 function TGuiDialImageCollectionItem.GetWidth: Integer;
 begin
- result := FDialBitmap.Width;
+ Result := FDialBitmap.Width;
 end;
 
 procedure TGuiDialImageCollectionItem.LinkStitchedControl(Dial: TCustomGuiStitchedControl);
@@ -2008,13 +2019,13 @@ end;
 
 function TGuiDialImageList.GetCount: Integer;
 begin
-  result := FDialImageCollection.Count;
+  Result := FDialImageCollection.Count;
 end;
 
 function TGuiDialImageList.GetItems(Index: Integer): TGuiDialImageCollectionItem;
 begin
  if (Index >= 0) and (Index < FDialImageCollection.Count)
-  then result := FDialImageCollection[Index]
+  then Result := FDialImageCollection[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 
@@ -2031,7 +2042,7 @@ end;
 
 function TGuiDialLayerCollection.Add: TGuiDialLayerCollectionItem;
 begin
- result := TGuiDialLayerCollectionItem(inherited Add);
+ Result := TGuiDialLayerCollectionItem(inherited Add);
 end;
 
 procedure TGuiDialLayerCollection.Delete(Index: Integer);
@@ -2041,12 +2052,12 @@ end;
 
 function TGuiDialLayerCollection.GetItem(Index: Integer): TGuiDialLayerCollectionItem;
 begin
- result := TGuiDialLayerCollectionItem(inherited GetItem(Index));
+ Result := TGuiDialLayerCollectionItem(inherited GetItem(Index));
 end;
 
 function TGuiDialLayerCollection.Insert(Index: Integer): TGuiDialLayerCollectionItem;
 begin
- result:= TGuiDialLayerCollectionItem(inherited Insert(Index));
+ Result:= TGuiDialLayerCollectionItem(inherited Insert(Index));
 end;
 
 procedure TGuiDialLayerCollection.Notify(Item: TCollectionItem;
@@ -2080,14 +2091,14 @@ end;
 
 function TGuiDialLayerCollectionItem.GetDisplayName: string;
 begin
- result := FDisplayName;
+ Result := FDisplayName;
 end;
 
 function TGuiDialLayerCollectionItem.GetPrimitiveClassName: string;
 begin
  if assigned(FPrimitive)
-  then result := FPrimitive.ClassName
-  else result := '';
+  then Result := FPrimitive.ClassName
+  else Result := '';
 end;
 
 procedure TGuiDialLayerCollectionItem.SetDisplayName(const Value: string);
@@ -2720,14 +2731,14 @@ end;
 
 function TGuiDialImageRenderer.GetCount: Integer;
 begin
- result := FDialLayerCollection.Count;
+ Result := FDialLayerCollection.Count;
 end;
 
 function TGuiDialImageRenderer.GetItems(
   Index: Integer): TGuiDialLayerCollectionItem;
 begin
  if (Index >= 0) and (Index < FDialLayerCollection.Count)
-  then result := FDialLayerCollection[Index]
+  then Result := FDialLayerCollection[Index]
   else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
 end;
 

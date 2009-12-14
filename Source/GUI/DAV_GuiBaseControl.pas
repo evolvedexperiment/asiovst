@@ -61,6 +61,7 @@ type
     FTransparency : Byte;
     FVisible      : Boolean;
     FOnChange     : TNotifyEvent;
+    FColor: TColor;
     function GetOffsetX: Integer;
     function GetOffsetY: Integer;
     procedure SetBlur(const Value: Byte);
@@ -70,16 +71,18 @@ type
     procedure SetVisible(const Value: Boolean);
     procedure SetOffset(const Value: TPoint);
     procedure Changed;
+    procedure SetColor(const Value: TColor);
   public
     constructor Create; virtual;
     property Offset : TPoint read FOffset write SetOffset;
   published
-    property Blur : Byte read FBlur write SetBlur default 4;
-    property OffsetX : Integer read GetOffsetX write SetOffsetX default 1;
-    property OffsetY : Integer read GetOffsetY write SetOffsetY default 1;
-    property Transparency : Byte read FTransparency write SetTransparency default $FF;
-    property Visible : Boolean read FVisible write SetVisible default False;
-    property OnChange : TNotifyEvent read FOnChange write FOnChange;
+    property Blur: Byte read FBlur write SetBlur default 4;
+    property Color: TColor read FColor write SetColor;
+    property OffsetX: Integer read GetOffsetX write SetOffsetX default 1;
+    property OffsetY: Integer read GetOffsetY write SetOffsetY default 1;
+    property Transparency: Byte read FTransparency write SetTransparency default $FF;
+    property Visible: Boolean read FVisible write SetVisible default False;
+    property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
   TBufferedGraphicControl = class(TGraphicControl)
@@ -560,7 +563,7 @@ end;
 {$IFNDEF FPC}
 
 {$IFNDEF Delphi7_Up}
-function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+function TCustomGuiBaseMouseControl.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
   MousePos: TPoint): Boolean;
 begin
  // not used yet
@@ -900,6 +903,15 @@ begin
  if FBlur <> Value then
   begin
    FBlur := Value;
+   Changed;
+  end;
+end;
+
+procedure TGUIShadow.SetColor(const Value: TColor);
+begin
+ if FColor <> Value then
+  begin
+   FColor := Value;
    Changed;
   end;
 end;
