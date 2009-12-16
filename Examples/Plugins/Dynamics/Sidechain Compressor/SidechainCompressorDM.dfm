@@ -9,6 +9,7 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
   VendorName = 'Delphi ASIO & VST Project'
   VersionRelease = 2
   PlugCategory = vpcEffect
+  CanDos = [vcdReceiveVstMidiEvent, vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out]
   SampleRate = 44100.000000000000000000
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
@@ -17,6 +18,10 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
   Programs = <
     item
       DisplayName = 'Default'
+      VSTModule = Owner
+    end
+    item
+      DisplayName = 'Old Default'
       VSTModule = Owner
     end
     item
@@ -61,6 +66,82 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
     end>
   ParameterProperties = <
     item
+      CurveFactor = 1.000000000000000000
+      Category = 'Sidechain'
+      DisplayName = 'Lowcut Frequency'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'LC Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterLowcutFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      Category = 'Sidechain'
+      DisplayName = 'LowCut Slope'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 16.000000000000000000
+      MaxInteger = 16
+      ReportVST2Properties = True
+      ShortLabel = 'LC Ord.'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB/Oct'
+      VSTModule = Owner
+      OnParameterChange = ParameterLowcutSlopeChange
+      OnCustomParameterDisplay = ParameterSlopeDisplay
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      Category = 'Sidechain'
+      DisplayName = 'Highcut Frequency'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'HC Freq'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterHighcutFrequencyChange
+      OnCustomParameterLabel = ParameterFrequencyLabel
+      OnCustomParameterDisplay = ParameterFrequencyDisplay
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      Category = 'Sidechain'
+      DisplayName = 'Highcut Slope'
+      Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 16.000000000000000000
+      MaxInteger = 16
+      ReportVST2Properties = True
+      ShortLabel = 'HC Ord.'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'dB/Oct'
+      VSTModule = Owner
+      OnParameterChange = ParameterHighcutSlopeChange
+      OnCustomParameterDisplay = ParameterSlopeDisplay
+    end
+    item
       Curve = ctLogarithmic
       CurveFactor = 100000.000000000000000000
       Category = 'Time Constants'
@@ -77,6 +158,26 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
       Units = 'ms'
       VSTModule = Owner
       OnParameterChange = ParameterAttackChange
+      OnCustomParameterLabel = ParameterTimeLabel
+      OnCustomParameterDisplay = ParameterTimeDisplay
+    end
+    item
+      Curve = ctLogarithmic
+      CurveFactor = 100.000000000000000000
+      Category = 'Time Constants'
+      DisplayName = 'Hold'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
+      LargeStepFloat = 2.000000000000000000
+      Max = 1000.000000000000000000
+      MaxInteger = 1000
+      Min = 0.009999999776482582
+      ShortLabel = 'Hold'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'ms'
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterHoldChange
       OnCustomParameterLabel = ParameterTimeLabel
       OnCustomParameterDisplay = ParameterTimeDisplay
     end
@@ -254,12 +355,17 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
     item
       DisplayName = 'Mode'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Sidechain'
+      VSTModule = Owner
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
   OnEditOpen = VSTModuleEditOpen
   OnBlockSizeChange = VSTModuleBlockSizeChange
   OnProcess = VSTModuleProcessMono
+  OnProcessMidi = VSTModuleProcessMidi
   OnProcessReplacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange
   OnStartProcess = VSTModuleStartProcess

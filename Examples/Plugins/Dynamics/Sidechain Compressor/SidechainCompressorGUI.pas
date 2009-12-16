@@ -37,54 +37,89 @@ interface
 uses 
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Dialogs,
   DAV_Types, DAV_VSTModule, DAV_VstHost, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiSlider;
+  DAV_GuiGraphXY, DAV_GuiLED, DAV_GuiSlider, DAV_GuiEQGraph, DAV_GuiPanel;
 
 type
   TFmSidechainCompressor = class(TForm)
-    PnTitle: TPanel;
-    LbTitle: TGuiLabel;
+    GuiEQGraph: TGuiEQGraph;
+    GuiGraphXY: TGuiGraphXY;
     LbAttack: TGuiLabel;
-    LbRelease: TGuiLabel;
-    LbThreshold: TGuiLabel;
+    LbAttackValue: TGuiLabel;
+    LbAutoMakeUpGain: TGuiLabel;
+    LbHighcutFrequency: TGuiLabel;
+    LbHighcutFrequencyValue: TGuiLabel;
+    LbHighcutOrder: TGuiLabel;
+    LbHighcutOrderValue: TGuiLabel;
+    LbHold: TGuiLabel;
+    LbHoldValue: TGuiLabel;
     LbKnee: TGuiLabel;
+    LbKneeValue: TGuiLabel;
+    LbLowcutFrequency: TGuiLabel;
+    LbLowcutFrequencyValue: TGuiLabel;
+    LbLowcutOrder: TGuiLabel;
+    LbLowcutOrderValue: TGuiLabel;
+    LbMakeUpGainValue: TGuiLabel;
+    LbMakupGain: TGuiLabel;
     LbRatio: TGuiLabel;
+    LbRatioValue: TGuiLabel;
+    LbRelease: TGuiLabel;
+    LbReleaseValue: TGuiLabel;
+    LbSidechainVstPlugin: TGuiLabel;
+    LbSoftClip: TGuiLabel;
+    LbStereo: TGuiLabel;
+    LbThreshold: TGuiLabel;
+    LbThresholdValue: TGuiLabel;
+    LbTitle: TGuiLabel;
+    LEDAutoGain: TGuiLED;
+    LEDSoftClip: TGuiLED;
+    LEDStereo: TGuiLED;
+    PnTitle: TPanel;
     SliderAttack: TGuiSlider;
+    SliderHighcutFrequency: TGuiSlider;
+    SliderHighcutOrder: TGuiSlider;
+    SliderHold: TGuiSlider;
+    SliderKnee: TGuiSlider;
+    SliderLowcutFrequency: TGuiSlider;
+    SliderLowcutOrder: TGuiSlider;
+    SliderMakeUpGain: TGuiSlider;
+    SliderRatio: TGuiSlider;
     SliderRelease: TGuiSlider;
     SliderThreshold: TGuiSlider;
-    SliderKnee: TGuiSlider;
-    SliderRatio: TGuiSlider;
-    LbAttackValue: TGuiLabel;
-    LbReleaseValue: TGuiLabel;
-    LbThresholdValue: TGuiLabel;
-    LbKneeValue: TGuiLabel;
-    LbRatioValue: TGuiLabel;
-    LbSidechainVstPlugin: TGuiLabel;
+    LbMix: TGuiLabel;
+    LbMixValue: TGuiLabel;
+    SliderMix: TGuiSlider;
+    GuiLabel1: TGuiLabel;
+    LEDSideChain: TGuiLED;
+    GuiPanel1: TGuiPanel;
     LbVstPluginValue: TGuiLabel;
-    LbMakupGain: TGuiLabel;
-    SliderMakeUpGain: TGuiSlider;
-    LbMakeUpGainValue: TGuiLabel;
-    LbAutoMakeUpGain: TGuiLabel;
-    LEDAutoGain: TGuiLED;
-    LbSoftClip: TGuiLabel;
-    LEDSoftClip: TGuiLED;
-    LbStereo: TGuiLabel;
-    LEDStereo: TGuiLED;
-    GuiGraphXY: TGuiGraphXY;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    function GetFilterGain(Sender: TObject; const Frequency: Single): Single;
+    procedure LbVstPluginValueClick(Sender: TObject);
+    procedure LbVstPluginValueDblClick(Sender: TObject);
+    procedure LEDAutoGainClick(Sender: TObject);
+    procedure LEDSoftClipClick(Sender: TObject);
+    procedure LEDStereoClick(Sender: TObject);
     procedure SliderAttackChange(Sender: TObject);
+    procedure SliderHighcutFrequencyChange(Sender: TObject);
+    procedure SliderHighcutOrderChange(Sender: TObject);
+    procedure SliderHoldChange(Sender: TObject);
+    procedure SliderKneeChange(Sender: TObject);
+    procedure SliderLowcutFrequencyChange(Sender: TObject);
+    procedure SliderLowcutOrderChange(Sender: TObject);
+    procedure SliderMakeUpGainChange(Sender: TObject);
+    procedure SliderRatioChange(Sender: TObject);
     procedure SliderReleaseChange(Sender: TObject);
     procedure SliderThresholdChange(Sender: TObject);
-    procedure SliderRatioChange(Sender: TObject);
-    procedure SliderKneeChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure SliderMakeUpGainChange(Sender: TObject);
-    procedure LEDStereoClick(Sender: TObject);
-    procedure LEDSoftClipClick(Sender: TObject);
-    procedure LEDAutoGainClick(Sender: TObject);
-    procedure LbVstPluginValueDblClick(Sender: TObject);
-    procedure LbVstPluginValueClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure SliderMixChange(Sender: TObject);
+    procedure LbClearDblClick(Sender: TObject);
   public
+    procedure UpdateLowcutFrequency;
+    procedure UpdateLowcutOrder;
+    procedure UpdateHighcutFrequency;
+    procedure UpdateHighcutOrder;
     procedure UpdateAttack;
+    procedure UpdateHold;
     procedure UpdateRelease;
     procedure UpdateThreshold;
     procedure UpdateRatio;
@@ -93,6 +128,7 @@ type
     procedure UpdateStereo;
     procedure UpdateLimit;
     procedure UpdateAutoMakeUpGain;
+    procedure UpdateMix;
     procedure UpdateVstPlugin;
     function EvaluateCharacteristic(Sender: TObject; X: Double): Double;
   end;
@@ -114,7 +150,12 @@ end;
 
 procedure TFmSidechainCompressor.FormShow(Sender: TObject);
 begin
+ UpdateLowcutFrequency;
+ UpdateLowcutOrder;
+ UpdateHighcutFrequency;
+ UpdateHighcutOrder;
  UpdateAttack;
+ UpdateHold;
  UpdateRelease;
  UpdateThreshold;
  UpdateRatio;
@@ -123,6 +164,23 @@ begin
  UpdateStereo;
  UpdateLimit;
  UpdateAutoMakeUpGain;
+ UpdateMix;
+end;
+
+function TFmSidechainCompressor.GetFilterGain(
+  Sender: TObject; const Frequency: Single): Single;
+begin
+ with TSidechainCompressorDataModule(Owner)
+  do Result := EvaluateFrequencyResponse(Frequency);
+end;
+
+procedure TFmSidechainCompressor.LbClearDblClick(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   VstPlugIn.Active := False;
+   LbVstPluginValue.Caption := '(double click to load)';
+  end;
 end;
 
 procedure TFmSidechainCompressor.LbVstPluginValueClick(Sender: TObject);
@@ -146,35 +204,45 @@ begin
    Filter := 'VST plugin (*.dll)|*.dll';
    Options := [ofHideReadOnly, ofFileMustExist, ofEnableSizing];
    Title := 'Select a VST Plugin';
-   if Execute
-    then LoadVSTPlugin(FileName);
+   if Execute then
+    begin
+     LoadVSTPlugin(FileName);
+     LbVstPluginValueClick(Self);
+    end;
   finally
    Free;
   end;
 end;
 
-procedure TFmSidechainCompressor.LEDAutoGainClick(Sender: TObject);
+procedure TFmSidechainCompressor.SliderLowcutFrequencyChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[8] := Integer(LEDAutoGain.Brightness_Percent < 50);
-   if not SliderMakeUpGain.Enabled then UpdateMakeUp;
+   Parameter[0] := SliderLowcutFrequency.Position;
   end;
 end;
 
-procedure TFmSidechainCompressor.LEDSoftClipClick(Sender: TObject);
+procedure TFmSidechainCompressor.SliderLowcutOrderChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[7] := Integer(LEDSoftClip.Brightness_Percent < 50);
+   Parameter[1] := SliderLowcutOrder.Position;
   end;
 end;
 
-procedure TFmSidechainCompressor.LEDStereoClick(Sender: TObject);
+procedure TFmSidechainCompressor.SliderHighcutFrequencyChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[6] := Integer(LEDStereo.Brightness_Percent < 50);
+   Parameter[2] := SliderHighcutFrequency.Position;
+  end;
+end;
+
+procedure TFmSidechainCompressor.SliderHighcutOrderChange(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[3] := SliderHighcutOrder.Position;
   end;
 end;
 
@@ -182,7 +250,15 @@ procedure TFmSidechainCompressor.SliderAttackChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[0] := SliderAttack.Position;
+   Parameter[4] := SliderAttack.Position;
+  end;
+end;
+
+procedure TFmSidechainCompressor.SliderHoldChange(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[5] := SliderHold.Position;
   end;
 end;
 
@@ -190,7 +266,7 @@ procedure TFmSidechainCompressor.SliderReleaseChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[1] := SliderRelease.Position;
+   Parameter[6] := SliderRelease.Position;
   end;
 end;
 
@@ -198,7 +274,7 @@ procedure TFmSidechainCompressor.SliderThresholdChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[2] := SliderThreshold.Position;
+   Parameter[7] := SliderThreshold.Position;
   end;
 end;
 
@@ -212,7 +288,7 @@ procedure TFmSidechainCompressor.SliderRatioChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[3] := SliderRatio.Position;
+   Parameter[8] := SliderRatio.Position;
   end;
 end;
 
@@ -220,7 +296,7 @@ procedure TFmSidechainCompressor.SliderKneeChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[4] := SliderKnee.Position;
+   Parameter[9] := SliderKnee.Position;
   end;
 end;
 
@@ -228,7 +304,96 @@ procedure TFmSidechainCompressor.SliderMakeUpGainChange(Sender: TObject);
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Parameter[5] := SliderMakeUpGain.Position;
+   Parameter[10] := SliderMakeUpGain.Position;
+  end;
+end;
+
+procedure TFmSidechainCompressor.LEDStereoClick(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[11] := Integer(LEDStereo.Brightness_Percent < 50);
+  end;
+end;
+
+procedure TFmSidechainCompressor.LEDSoftClipClick(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[12] := Integer(LEDSoftClip.Brightness_Percent < 50);
+  end;
+end;
+
+procedure TFmSidechainCompressor.LEDAutoGainClick(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[13] := Integer(LEDAutoGain.Brightness_Percent < 50);
+   if not SliderMakeUpGain.Enabled then UpdateMakeUp;
+  end;
+end;
+
+procedure TFmSidechainCompressor.SliderMixChange(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[14] := SliderMix.Position;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateLowcutFrequency;
+var
+  Frequency : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Frequency := Parameter[0];
+   if Frequency <> SliderLowcutFrequency.Position
+    then SliderLowcutFrequency.Position := Frequency;
+   LbLowcutFrequencyValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   GuiEQGraph.ChartChanged;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateLowcutOrder;
+var
+  Order : Integer;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Order := Round(Parameter[1]);
+   if Order <> Round(SliderLowcutOrder.Position)
+    then SliderLowcutOrder.Position := Order;
+   LbLowcutOrderValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   GuiEQGraph.ChartChanged;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateHighcutFrequency;
+var
+  Frequency : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Frequency := Parameter[2];
+   if Frequency <> SliderHighcutFrequency.Position
+    then SliderHighcutFrequency.Position := Frequency;
+   LbHighcutFrequencyValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   GuiEQGraph.ChartChanged;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateHighcutOrder;
+var
+  Order : Integer;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Order := Round(Parameter[3]);
+   if Order <> Round(SliderHighcutOrder.Position)
+    then SliderHighcutOrder.Position := Order;
+   LbHighcutOrderValue.Caption := ParameterDisplay[3] + ' ' + ParameterLabel[3];
+   GuiEQGraph.ChartChanged;
   end;
 end;
 
@@ -238,10 +403,23 @@ var
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Attack := Parameter[0];
+   Attack := Parameter[4];
    if Attack <> SliderAttack.Position
     then SliderAttack.Position := Attack;
-   LbAttackValue.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbAttackValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateHold;
+var
+  Hold : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Hold := Parameter[5];
+   if Hold <> SliderHold.Position
+    then SliderHold.Position := Hold;
+   LbHoldValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
   end;
 end;
 
@@ -251,10 +429,38 @@ var
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Release := Parameter[1];
+   Release := Parameter[6];
    if Release <> SliderRelease.Position
     then SliderRelease.Position := Release;
-   LbReleaseValue.Caption := ParameterDisplay[1] + ' ' + ParameterLabel[1];
+   LbReleaseValue.Caption := ParameterDisplay[6] + ' ' + ParameterLabel[6];
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateThreshold;
+var
+  Threshold : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Threshold := Parameter[7];
+   if Threshold <> SliderThreshold.Position
+    then SliderThreshold.Position := Threshold;
+   LbThresholdValue.Caption := ParameterDisplay[7] + ' ' + ParameterLabel[7];
+   GuiGraphXY.UpdateGraph;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateRatio;
+var
+  Ratio : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Ratio := Parameter[8];
+   if Ratio <> SliderRatio.Position
+    then SliderRatio.Position := Ratio;
+   LbRatioValue.Caption := ParameterDisplay[8] + ' : 1';
+   GuiGraphXY.UpdateGraph;
   end;
 end;
 
@@ -264,10 +470,10 @@ var
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Knee := Parameter[4];
+   Knee := Parameter[9];
    if Knee <> SliderKnee.Position
     then SliderKnee.Position := Knee;
-   LbKneeValue.Caption := ParameterDisplay[4] + ' ' + ParameterLabel[4];
+   LbKneeValue.Caption := ParameterDisplay[9] + ' ' + ParameterLabel[9];
    GuiGraphXY.UpdateGraph;
   end;
 end;
@@ -281,35 +487,7 @@ begin
    MakeUp := SidechainCompressor[0].MakeUpGain_dB;
    if MakeUp <> SliderMakeUpGain.Position
     then SliderMakeUpGain.Position := MakeUp;
-   LbMakeUpGainValue.Caption := ParameterDisplay[5] + ' ' + ParameterLabel[5];
-   GuiGraphXY.UpdateGraph;
-  end;
-end;
-
-procedure TFmSidechainCompressor.UpdateRatio;
-var
-  Ratio : Single;
-begin
- with TSidechainCompressorDataModule(Owner) do
-  begin
-   Ratio := Parameter[3];
-   if Ratio <> SliderRatio.Position
-    then SliderRatio.Position := Ratio;
-   LbRatioValue.Caption := ParameterDisplay[3] + ' : 1';
-   GuiGraphXY.UpdateGraph;
-  end;
-end;
-
-procedure TFmSidechainCompressor.UpdateThreshold;
-var
-  Threshold : Single;
-begin
- with TSidechainCompressorDataModule(Owner) do
-  begin
-   Threshold := Parameter[2];
-   if Threshold <> SliderThreshold.Position
-    then SliderThreshold.Position := Threshold;
-   LbThresholdValue.Caption := ParameterDisplay[2] + ' ' + ParameterLabel[2];
+   LbMakeUpGainValue.Caption := ParameterDisplay[10] + ' ' + ParameterLabel[10];
    GuiGraphXY.UpdateGraph;
   end;
 end;
@@ -320,23 +498,9 @@ var
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Brightness := 100 * (0.3 + 0.7 * Parameter[6]);
+   Brightness := 100 * (0.3 + 0.7 * Parameter[11]);
    if Brightness <> LEDStereo.Brightness_Percent
     then LEDStereo.Brightness_Percent := Brightness;
-  end;
-end;
-
-procedure TFmSidechainCompressor.UpdateAutoMakeUpGain;
-var
-  Brightness : Single;
-begin
- with TSidechainCompressorDataModule(Owner) do
-  begin
-   Brightness := 100 * (0.3 + 0.7 * Parameter[8]);
-   if Brightness <> LEDAutoGain.Brightness_Percent
-    then LEDAutoGain.Brightness_Percent := Brightness;
-   SliderMakeUpGain.Enabled := Brightness < 50;
-   GuiGraphXY.UpdateGraph;
   end;
 end;
 
@@ -346,9 +510,36 @@ var
 begin
  with TSidechainCompressorDataModule(Owner) do
   begin
-   Brightness := 100 * (0.3 + 0.7 * Parameter[7]);
+   Brightness := 100 * (0.3 + 0.7 * Parameter[12]);
    if Brightness <> LEDSoftClip.Brightness_Percent
     then LEDSoftClip.Brightness_Percent := Brightness;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateAutoMakeUpGain;
+var
+  Brightness : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Brightness := 100 * (0.3 + 0.7 * Parameter[13]);
+   if Brightness <> LEDAutoGain.Brightness_Percent
+    then LEDAutoGain.Brightness_Percent := Brightness;
+   SliderMakeUpGain.Enabled := Brightness < 50;
+   GuiGraphXY.UpdateGraph;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateMix;
+var
+  Mix : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Mix := Parameter[14];
+   if Mix <> SliderMix.Position
+    then SliderMix.Position := Mix;
+   LbMixValue.Caption := ParameterDisplay[14] + ' ' + ParameterLabel[14];
   end;
 end;
 
