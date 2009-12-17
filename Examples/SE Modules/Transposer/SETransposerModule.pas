@@ -113,7 +113,7 @@ end;
 // describe the pins (plugs)
 function TSETransposerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSETransposerPins(index) of
   // typical input plug (inputs are listed first)
   pinMidiIn: with Properties^ do
@@ -137,8 +137,8 @@ begin
                 Direction       := drOut;
                 Datatype        := dtMIDI2;
                end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
- end;;
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+ end;
 end;
 
 end.

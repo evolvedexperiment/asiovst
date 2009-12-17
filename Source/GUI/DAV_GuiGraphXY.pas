@@ -252,6 +252,7 @@ type
     FYAxis            : TCustomAxis;
     FSeriesCollection : TGuiGraphXYSeriesCollection;
     FFlags            : TGraphXYFlags;
+    FBorderRadius: TColor;
     function GetSeriesCollectionItem(Index: Integer): TGuiGraphXYSeriesCollectionItem;
     procedure SetSeriesCollectionItem(Index: Integer; const Value: TGuiGraphXYSeriesCollectionItem);
     procedure SetFlags(const Value: TGraphXYFlags);
@@ -259,9 +260,11 @@ type
     procedure SetFrameColor(const Value: TColor);
     procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
     procedure SetBorderColor(const Value: TColor);
+    procedure SetBorderRadius(const Value: TColor);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure BorderColorChanged; virtual;
+    procedure BorderRadiusChanged; virtual;
     procedure FrameColorChanged; virtual;
     procedure Loaded; override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -276,6 +279,7 @@ type
     procedure UpdateGraph;
   published
     property BorderColor: TColor read FBorderColor write SetBorderColor default clRed;
+    property BorderRadius: TColor read FBorderRadius write SetBorderRadius default 0;
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write SetSeriesCollection;
@@ -1048,6 +1052,7 @@ constructor TCustomGuiGraphXY.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FBorderColor      := clRed;
+  FBorderRadius     := 0;
   FLineColor        := clBlack;
   FLineColor        := clMaroon;
   FFrameColor       := clRed;
@@ -1267,6 +1272,11 @@ begin
  UpdateGraph;
 end;
 
+procedure TCustomGuiGraphXY.BorderRadiusChanged;
+begin
+ UpdateGraph;
+end;
+
 procedure TCustomGuiGraphXY.AssignTo(Dest: TPersistent);
 begin
  inherited;
@@ -1305,6 +1315,15 @@ begin
   begin
    FBorderColor := Value;
    BorderColorChanged;
+  end;
+end;
+
+procedure TCustomGuiGraphXY.SetBorderRadius(const Value: TColor);
+begin
+ if FBorderRadius <> Value then
+  begin
+   FBorderRadius := Value;
+   BorderRadiusChanged;
   end;
 end;
 

@@ -33,7 +33,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Style = [fsBold]
     HeaderMinWidth = 64
     LineColor = 15659506
-    LineWidth = 3
+    OutlineWidth = 3
     ParentFont = False
     Radius = 7
     TabOrder = 0
@@ -115,6 +115,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOSFactor: TGuiLabel
       Left = 75
@@ -130,6 +131,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFilterOrder: TGuiLabel
       Left = 137
@@ -145,6 +147,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object PnDisplay: TGuiPanel
       Left = 75
@@ -176,6 +179,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Name = 'Times New Roman'
         Font.Style = []
         ParentFont = False
+        Shadow.Color = clBlack
       end
     end
   end
@@ -193,7 +197,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Style = [fsBold]
     HeaderMinWidth = 64
     LineColor = 15659506
-    LineWidth = 3
+    OutlineWidth = 3
     ParentFont = False
     Radius = 7
     TabOrder = 1
@@ -233,6 +237,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFilterOrder2: TGuiLabel
       Left = 73
@@ -248,6 +253,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialFilterOrder2: TGuiDial
       Left = 75
@@ -305,6 +311,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object GuiPanel1: TGuiPanel
       Left = 80
@@ -336,6 +343,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         Font.Name = 'Times New Roman'
         Font.Style = []
         ParentFont = False
+        Shadow.Color = clBlack
         OnClick = LbHardClipClick
       end
       object LEDHardClip: TGuiLED
@@ -347,6 +355,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         LineWidth = 2
         LEDColor = 14870505
         Brightness_Percent = 90.000000000000000000
+        BorderStrength_Percent = 100.000000000000000000
         Uniformity_Percent = 36.754447937011720000
         AntiAlias = gaaLinear4x
         LineColor = 3226174
@@ -369,7 +378,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Radius = 7
     TabOrder = 2
     UseDockManager = True
-    object GuiLabel1: TGuiLabel
+    object LbClipInput: TGuiLabel
       Left = 11
       Top = 36
       Width = 48
@@ -383,8 +392,9 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
-    object GuiLabel2: TGuiLabel
+    object LbClipStage1: TGuiLabel
       Left = 75
       Top = 36
       Width = 48
@@ -398,8 +408,9 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
-    object GuiLabel3: TGuiLabel
+    object LbClipStage2: TGuiLabel
       Left = 139
       Top = 36
       Width = 48
@@ -413,6 +424,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object ClipLEDInput: TGuiLED
       Left = 21
@@ -421,6 +433,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 28
       LineWidth = 2
       LEDColor = 8244410
+      Brightness_Percent = 100.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 50.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
@@ -433,6 +447,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 28
       LineWidth = 2
       LEDColor = 8234444
+      Brightness_Percent = 100.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 50.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
@@ -445,6 +461,8 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 28
       LineWidth = 2
       LEDColor = 8226252
+      Brightness_Percent = 100.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 50.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 3226174

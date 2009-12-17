@@ -300,6 +300,7 @@ begin
             Brush.Color := FLineColor;
             FrameRect(ClipRect);
            end;
+(*
        2 : begin
             with ClipRect do
              Polygon([Point(Left  + 1, Bottom - 2), Point(Left     , Bottom - 3),
@@ -309,6 +310,7 @@ begin
                       Point(Right - 1, Bottom - 2), Point(Right - 3, Bottom - 1),
                       Point(Left  + 2, Bottom - 1), Point(Left,      Bottom - 3)]);
            end;
+*)
     else
      begin
       rad := FOSFactor * FRoundRadius;

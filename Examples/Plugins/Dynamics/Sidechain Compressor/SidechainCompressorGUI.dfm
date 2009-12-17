@@ -370,7 +370,7 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Uniformity_Percent = 50.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = 9681911
-    OnClick = LEDAutoGainClick
+    OnClick = LEDSideChainClick
   end
   object PnTitle: TPanel
     Left = 0
@@ -657,10 +657,10 @@ object FmSidechainCompressor: TFmSidechainCompressor
     Height = 20
     AntiAlias = gaaLinear3x
     Caption = 'GuiPanel1'
-    Color = 5196083
     LineColor = 9681911
     Linewidth = 1
     PanelColor = 4341035
+    ParentColor = True
     TabOrder = 14
     UseDockManager = True
     DesignSize = (

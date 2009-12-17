@@ -173,7 +173,7 @@ type
   TDelayLineTime32 = class(TDspSampleRatePersistent, IDspProcessor32)
   private
     FFractionalDelay : TDelayLineFractional32;
-    FTime: Double;
+    FTime            : Double;
     procedure SetTime(const Value: Double);
     procedure TimeChanged;
   public
@@ -210,7 +210,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_DspInterpolation;
+  SysUtils, Math, DAV_DspInterpolation;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -509,27 +509,38 @@ end;
 
 constructor TCustomDelayLineFractional.Create(const FractionalBufferSize: Double = 0);
 begin
- assert(FractionalBufferSize >= 0);
+ Assert(FractionalBufferSize >= 0);
  inherited Create(Trunc(FractionalBufferSize));
  FFractional := FractionalBufferSize - FBufferSize;
 end;
 
 procedure TCustomDelayLineFractional.FractionalChanged;
 begin
- assert(FFractional >= 0);
+ Assert(FFractional >= 0);
 end;
 
 function TCustomDelayLineFractional.GetFractional: Double;
 begin
- Result := FBufferSize + FFractional;
+ Result := 2 + FBufferSize + FFractional;
 end;
 
 procedure TCustomDelayLineFractional.SetFractional(const Value: Double);
 begin
  if FractionalBuffersize <> Value then
   begin
+(*
+   if Value > 2 then
+    begin
+     BufferSize := Trunc(Value) - 2
+    end
+   else
+    begin
+     BufferSize := 0;
+     FFractional := Value - Trunc(Value);
+    end;
+*)
    BufferSize := Trunc(Value);
-   FFractional := Value - FBufferSize;
+   FFractional := Value - BufferSize;
    FractionalChanged;
   end;
 end;
@@ -552,8 +563,17 @@ begin
 end;
 
 procedure TDelayLineFractional32.BufferSizeChanged;
+var
+  RealBufferPos : Integer;
 begin
- ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
+ // damn hack!!!
+ RealBufferPos := Max(4, FBufferSize);
+
+ if FBufferPos > RealBufferPos
+  then FBufferPos := 0;
+ ReallocMem(FBuffer, RealBufferPos * SizeOf(Single));
+ FillChar(FBuffer^, RealBufferPos * SizeOf(Single), 0);
+// ReallocMem(FBuffer, FBufferSize * SizeOf(Single));
 end;
 
 procedure TDelayLineFractional32.ProcessBlock32(const Data: PDAVSingleFixedArray;
@@ -569,7 +589,7 @@ function TDelayLineFractional32.ProcessSample32(Input: Single): Single;
 begin
  FBuffer^[FBufferPos] := Input;
 
- inc(FBufferPos);
+ Inc(FBufferPos);
  if FBufferPos >= BufferSize - 1
   then FBufferPos := 0;
 
@@ -662,8 +682,11 @@ end;
 
 procedure TDelayLineTime32.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
+var
+  SampleIndex : Integer;
 begin
-
+ for SampleIndex := 0 to SampleCount - 1
+  do Data[SampleIndex] := ProcessSample32(Data[SampleIndex]);
 end;
 
 function TDelayLineTime32.ProcessSample32(Input: Single): Single;

@@ -41,6 +41,9 @@ uses
 
 type
   TFmAdvancedClipper = class(TForm)
+    ClipLEDInput: TGuiLED;
+    ClipLEDStage1: TGuiLED;
+    ClipLEDStage2: TGuiLED;
     DialFilterOrder1: TGuiDial;
     DialFilterOrder2: TGuiDial;
     DialInputGain: TGuiDial;
@@ -50,6 +53,10 @@ type
     GpStage1: TGuiGroup;
     GpStage2: TGuiGroup;
     GuiPanel1: TGuiPanel;
+    GuiPanel2: TGuiPanel;
+    LbClipInput: TGuiLabel;
+    LbClipStage1: TGuiLabel;
+    LbClipStage2: TGuiLabel;
     LbDisplay: TGuiLabel;
     LbFilterOrder: TGuiLabel;
     LbFilterOrder2: TGuiLabel;
@@ -60,13 +67,6 @@ type
     LbOutputGain: TGuiLabel;
     LEDHardClip: TGuiLED;
     PnDisplay: TGuiPanel;
-    GuiPanel2: TGuiPanel;
-    GuiLabel1: TGuiLabel;
-    GuiLabel2: TGuiLabel;
-    GuiLabel3: TGuiLabel;
-    ClipLEDInput: TGuiLED;
-    ClipLEDStage1: TGuiLED;
-    ClipLEDStage2: TGuiLED;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -82,7 +82,7 @@ type
     procedure ClipLEDClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackgroundBitmap : TBitmap;
   public
     procedure UpdateInputGain;
     procedure UpdateOSFactor1;
@@ -111,8 +111,8 @@ var
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackgroundBitmap := TBitmap.Create;
+ with FBackgroundBitmap do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -157,7 +157,24 @@ end;
 
 procedure TFmAdvancedClipper.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackgroundBitmap);
+end;
+
+procedure TFmAdvancedClipper.FormPaint(Sender: TObject);
+begin
+ Canvas.Draw(0, 0, FBackgroundBitmap);
+end;
+
+procedure TFmAdvancedClipper.FormShow(Sender: TObject);
+begin
+ UpdateInputGain;
+ UpdateOSFactor1;
+ UpdateOSFactor2;
+ UpdateOrder1;
+ UpdateOrder2;
+ UpdateOutputGain;
+ UpdateHardClip;
+ LbDisplay.Caption := 'Advanced Clipper';
 end;
 
 procedure TFmAdvancedClipper.DialFilterOrder1Change(Sender: TObject);
@@ -206,23 +223,6 @@ begin
   begin
    ParameterByName['Stage 2: Oversampling Factor'] := DialOSFactor2.Position;
   end;
-end;
-
-procedure TFmAdvancedClipper.FormPaint(Sender: TObject);
-begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
-end;
-
-procedure TFmAdvancedClipper.FormShow(Sender: TObject);
-begin
- UpdateInputGain;
- UpdateOSFactor1;
- UpdateOSFactor2;
- UpdateOrder1;
- UpdateOrder2;
- UpdateOutputGain;
- UpdateHardClip;
- LbDisplay.Caption := 'Advanced Clipper';
 end;
 
 procedure TFmAdvancedClipper.ClipLEDClick(Sender: TObject);

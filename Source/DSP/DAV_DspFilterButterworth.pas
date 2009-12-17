@@ -116,7 +116,7 @@ type
     property Frequency;
     property SampleRate;
   end;
-  TButterworthLowCut = TCustomButterworthHighPassFilter;
+  TButterworthLowCutFilter = TCustomButterworthHighPassFilter;
 
   TButterworthLowPassFilter = class(TCustomButterworthLowPassFilter)
   published

@@ -80,14 +80,16 @@ type
     procedure ParameterSlopeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterVstEnableChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FVstHost           : TVstHost;
-    FCriticalSection   : TCriticalSection;
-    FCompressor        : array [0..1] of TCustomKneeCompressor;
-    FDelayLine         : array [0..1] of TDelayLineTime32;
-    FLowcut            : array [0..1] of TCustomOrderFilter;
-    FHighcut           : array [0..1] of TCustomOrderFilter;
-    FMixFactor         : Single;
+    FVstHost             : TVstHost;
+    FCriticalSection     : TCriticalSection;
+    FCompressor          : array [0..1] of TCustomKneeCompressor;
+    FDelayLine           : array [0..1] of TDelayLineTime32;
+    FLowcut              : array [0..1] of TCustomOrderFilter;
+    FHighcut             : array [0..1] of TCustomOrderFilter;
+    FMixFactor           : Single;
+    FProcessVSTSidechain : Boolean;
     function GetSidechainCompressor(Index: Integer): TCustomKneeCompressor;
     procedure ChooseProcess;
     function GetVSTPlugin: TCustomVstPlugIn;
@@ -123,18 +125,19 @@ procedure TSidechainCompressorDataModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 const
-  CPresets : array [1..11, 0..14] of Single = (
-    (20, 1, 20000, 1, 15, 0.1,  75, -10,  5, 2  ,  6, 0, 0, 0, 100),
-    (20, 1, 20000, 1, 50, 0.1, 500, -10,  3, 4  ,  3, 0, 1, 0, 100),
-    (20, 1, 20000, 1, 20, 0.1, 100, -12,  4, 2.5,  6, 0, 0, 0, 100),
-    (20, 1, 20000, 1, 20, 0.1,  80, -15,  8, 2  ,  8, 0, 1, 0, 100),
-    (20, 1, 20000, 1,  5, 0.1,  60, -20,  7, 3  , 13, 1, 0, 0, 100),
-    (20, 1, 20000, 1,  1, 0.1,  50, -30,  6, 2  , 18, 0, 0, 0, 100),
-    (20, 1, 20000, 1,  8, 0.1,  64, -30, 12, 5  , 17, 0, 0, 0, 100),
-    (20, 1, 20000, 1, 16, 0.1,  78, -24, 15, 1.8, 19, 0, 1, 0, 100),
-    (20, 1, 20000, 1,  1, 0.1,  20, -14,  5, 3  ,  8, 0, 1, 0, 100),
-    (20, 1, 20000, 1,  3, 0.1,  44, -17,  7, 1  ,  9, 1, 0, 0, 100),
-    (20, 1, 20000, 1,  8, 0.1,  56, -11,  9, 4  ,  5, 1, 1, 0, 100));
+  CPresets : array [1..12, 0..15] of Single = (
+    (20, 1, 20000, 1, 15   , 0.1,  75, -10,  5, 2  ,  6, 0, 0, 0, 100, 1),
+    (20, 1, 20000, 1, 50   , 0.1, 500, -10,  3, 4  ,  3, 0, 1, 0, 100, 1),
+    (20, 1, 20000, 1, 20   , 0.1, 100, -12,  4, 2.5,  6, 0, 0, 0, 100, 1),
+    (20, 1, 20000, 1, 20   , 0.1,  80, -15,  8, 2  ,  8, 0, 1, 0, 100, 1),
+    (20, 1, 20000, 1,  5   , 0.1,  60, -20,  7, 3  , 13, 1, 0, 0, 100, 1),
+    (20, 1, 20000, 1,  1   , 0.1,  50, -30,  6, 2  , 18, 0, 0, 0, 100, 1),
+    (20, 1, 20000, 1,  8   , 0.1,  64, -30, 12, 5  , 17, 0, 0, 0, 100, 1),
+    (20, 1, 20000, 1, 16   , 0.1,  78, -24, 15, 1.8, 19, 0, 1, 0, 100, 1),
+    (20, 1, 20000, 1,  1   , 0.1,  20, -14,  5, 3  ,  8, 0, 1, 0, 100, 1),
+    (20, 1, 20000, 1,  3   , 0.1,  44, -17,  7, 1  ,  9, 1, 0, 0, 100, 1),
+    (20, 1, 20000, 1,  8   , 0.1,  56, -11,  9, 4  ,  5, 1, 1, 0, 100, 1),
+    (70, 0, 20000, 0,  0.01, 0.8,  50, -50,  4, 0  , 26, 0, 0, 0, 100, 1));
 begin
  // create compressor
  for Channel := 0 to Length(FCompressor) - 1 do
@@ -431,6 +434,16 @@ begin
   then TFmSidechainCompressor(EditorForm).UpdateMix;
 end;
 
+procedure TSidechainCompressorDataModule.ParameterVstEnableChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FProcessVSTSidechain := Value > 0.5;
+
+ // update GUI
+ if EditorForm is TFmSidechainCompressor
+  then TFmSidechainCompressor(EditorForm).UpdateEnableVSTSideChain;
+end;
+
 procedure TSidechainCompressorDataModule.ParameterTimeLabel(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 var
@@ -628,7 +641,7 @@ begin
  FCriticalSection.Enter;
  try
   // process hosted VST plugin
-  if FVstHost[0].Active
+  if FVstHost[0].Active and FProcessVSTSidechain
    then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
@@ -669,7 +682,7 @@ begin
  FCriticalSection.Enter;
  try
   // process hosted VST plugin
-  if FVstHost[0].Active
+  if FVstHost[0].Active and FProcessVSTSidechain
    then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
@@ -700,7 +713,7 @@ begin
  FCriticalSection.Enter;
  try
   // process hosted VST plugin
-  if FVstHost[0].Active
+  if FVstHost[0].Active and FProcessVSTSidechain
    then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin
@@ -741,7 +754,7 @@ begin
  FCriticalSection.Enter;
  try
   // process hosted VST plugin
-  if FVstHost[0].Active
+  if FVstHost[0].Active and FProcessVSTSidechain  
    then FVstHost[0].ProcessReplacing(@Inputs[0], @Outputs[0], SampleFrames)
    else
     begin

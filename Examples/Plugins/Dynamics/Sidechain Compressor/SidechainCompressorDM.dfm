@@ -63,6 +63,10 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
     item
       DisplayName = 'Potentials'
       VSTModule = Owner
+    end
+    item
+      DisplayName = 'Instant Drum Crushing'
+      VSTModule = Owner
     end>
   ParameterProperties = <
     item
@@ -342,6 +346,20 @@ object SidechainCompressorDataModule: TSidechainCompressorDataModule
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMixChange
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Enable VST Sidechain'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Enable'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      VSTModule = Owner
+      OnParameterChange = ParameterVstEnableChange
     end>
   ParameterCategories = <
     item

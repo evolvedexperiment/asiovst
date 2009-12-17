@@ -383,7 +383,7 @@ type
     FOnInputStatusChange     : TSEInputStateChangedEvent;
     FOnGuiNotify             : TSEGuiNotifyEvent;
     FOnVoiceReset            : TSEVoiceResetEvent;
-    FOnProgramChange: TNotifyEvent;
+    FOnProgramChange         : TNotifyEvent;
 
     function GetEffect: PSE2ModStructBase;
     function GetSampleClock: Cardinal;
@@ -542,12 +542,12 @@ end;
 
 function TSEPin.GetIsConnected: Boolean;
 begin
- result := FModule.CallHost(SEAudioMasterIsPinConnected, FPinIndex, 0, nil) <> 0;
+ Result := FModule.CallHost(SEAudioMasterIsPinConnected, FPinIndex, 0, nil) <> 0;
 end;
 
 procedure TSEPin.StatusUpdate(AStatus: TSEStateType);
 begin
- if assigned(FOnStatusUpdate) then FOnStatusUpdate(Self, AStatus);
+ if Assigned(FOnStatusUpdate) then FOnStatusUpdate(Self, AStatus);
  FStatus := AStatus;
  Module.PlugStateChange(Self);
  if AStatus = stOneOff // one-offs need re-set once processed
@@ -559,25 +559,27 @@ var
   BlockPos    : Cardinal;
   SampleClock : Cardinal;
 begin
- assert(FDataType = dtFSample);
- assert(assigned(FModule));
+ Assert(FDataType = dtFSample);
+ Assert(Assigned(FModule));
  BlockPos := FModule.CallHost(SEAudioMasterGetBlockStartClock, FPinIndex, 0, nil);
  SampleClock := FModule.SampleClock;
- result := PDAVSingleFixedArray(FVariablePtr^)[(SampleClock - BlockPos)];
+ Result := PDAVSingleFixedArray(FVariablePtr^)[(SampleClock - BlockPos)];
 end;
 
 procedure TSEPin.TransmitStatusChange(SampleClock: Cardinal; NewState: TSEStateType);
 begin
- assert(assigned(FModule));
- FModule.CallHost(SEAudioMasterSetPinStatus, FPinIndex, Integer(NewState), Pointer(SampleClock));
+ if Assigned(FModule)
+  then FModule.CallHost(SEAudioMasterSetPinStatus, FPinIndex, Integer(NewState), Pointer(SampleClock));
 end;
 
 procedure TSEPin.TransmitMIDI(SampleClock: Cardinal; Msg: Cardinal);
 begin
  // MIDI data must allways be timestamped at or after the current 'clock'.
- assert(assigned(FModule));
- assert(SampleClock >= FModule.SampleClock);
- FModule.CallHost(SEAudioMasterSendMIDI, FPinIndex, Msg, Pointer(SampleClock));
+ if Assigned(FModule) then
+  begin
+   Assert(SampleClock >= FModule.SampleClock);
+   FModule.CallHost(SEAudioMasterSendMIDI, FPinIndex, Msg, Pointer(SampleClock));
+  end;
 end;
 
 { TSEModuleBase }
@@ -644,10 +646,10 @@ begin
    if (not (iofUICommunication in Properties.Flags)) or
       (          iofUIDualFlag in Properties.Flags) then // skip GUI plugs
     begin
-     FPins[i].Init(Self, i, TSEPlugDataType(Properties.DataType), Properties.VariableAddress);
-     inc(i);
+     FPins[i].Init(Self, I, TSEPlugDataType(Properties.DataType), Properties.VariableAddress);
+     Inc(i);
     end;
-   inc(PlugDescriptionIndex);
+   Inc(PlugDescriptionIndex);
   end;
 
  // now set up any additional 'autoduplicate' plugs
@@ -664,12 +666,12 @@ begin
       FPins[i].Init(Self, i, TSEPlugDataType(Properties.DataType), nil);
       inc(i);
      end;
- if assigned(FOnOpen) then FOnOpen(Self);
+ if Assigned(FOnOpen) then FOnOpen(Self);
 end;
 
 procedure TSEModuleBase.Close;
 begin
- if assigned(FOnClose) then FOnClose(Self);
+ if Assigned(FOnClose) then FOnClose(Self);
 end;
 
 
@@ -677,29 +679,29 @@ function TSEModuleBase.Dispatcher(opCode: TSEPluginModuleOpcodes; Index, Value: 
 var
   Event : TSEEvent;
 begin
- result := 0;
+ Result := 0;
  case opCode of
   seffOpen  : Open;
   seffClose : begin
                Close;
                Free;
-               result := 1;
+               Result := 1;
               end;
   seffSetSampleRate: setSampleRate(Opt);
   seffSetBlockSize: setBlockSize(Value);
   seffGetPinProperties:
    begin
-    result := Integer(GetPinProperties(Index, PSEPinProperties(Ptr)));
+    Result := Integer(GetPinProperties(Index, PSEPinProperties(Ptr)));
 (*
     // check for illegal flag combinations
     // 'Dual' Input plugs must be private (GuiModule can set the Value, but User must not be able to)
-    assert((not iofUICommunicationDual in SEPinProperties(Ptr).Flags) or
+    Assert((not iofUICommunicationDual in SEPinProperties(Ptr).Flags) or
                (iofPrivate in PSEPinProperties(Ptr).Flags) or
                (PSEPinProperties(Ptr).direction = drOut);
 *)
 
     // 'Patch Store' Input plugs must be private, or GuiModule
-    assert((not (iofPatchStore in PSEPinProperties(Ptr).Flags)) or
+    Assert((not (iofPatchStore in PSEPinProperties(Ptr).Flags)) or
                 (iofHidePin in PSEPinProperties(Ptr).Flags) or
                 (PSEPinProperties(Ptr).Direction = drOut) or
                 (iofUICommunication in PSEPinProperties(Ptr).Flags));
@@ -708,22 +710,22 @@ begin
    begin
     // obsolete
     // getModuleProperties ( (SEModuleProperties * )Ptr) ? 1 : 0;
-    result := 0;
+    Result := 0;
    end;
   seffGetEffectName:
    begin
 //    StrCopy(Ptr, PChar('obsolete'));
 
-    result := 0;
+    Result := 0;
    end;
   seffGetUniqueId:
    begin
 //    StrCopy(Ptr, PChar('obsolete'));
-    result := 0;
+    Result := 0;
    end;
   seffAddEvent:
    begin
-    assert(False); // not used in SDK2
+    Assert(False); // not used in SDK2
     Event := PSEEvent(Ptr)^; // can't directly use object allocated by host, make a copy
 //    AddEvent(Event);
    end;
@@ -736,10 +738,10 @@ begin
    end;
   seffIsEventListEmpty:
    begin
-    assert(false);  // not used in SDK2
+    Assert(false);  // not used in SDK2
 //      return events == 0 ? 1 : 0;
    end;
-  seffGetSdkVersion: result := CSeSdkVersion;
+  seffGetSdkVersion: Result := CSeSdkVersion;
   seffGuiNotify: GuiNotify(Value, Index, Ptr);
   seffQueryDebugInfo:
    begin
@@ -758,49 +760,49 @@ end;
 function TSEModuleBase.GetPin(Index: Integer): TSEPin;
 begin
  if (Length(FPins) > Index) and (Index >= 0)
-  then result := FPins[Index]
-  else result := nil;
+  then Result := FPins[Index]
+  else Result := nil;
 end;
 
 function TSEModuleBase.CallHost(Opcode: TSEHostOpcodes; Index: Integer = 0; Value: Integer = 0; Ptr: Pointer = nil; Opt: Single = 0): Integer;
 begin
- if assigned(FSEAudioMaster)
-  then result := FSEAudioMaster(@FEffect, Opcode, Index, Value, Ptr, Opt)
-  else result := 0;
+ if Assigned(FSEAudioMaster)
+  then Result := FSEAudioMaster(@FEffect, Opcode, Index, Value, Ptr, Opt)
+  else Result := 0;
 end;
 
 function TSEModuleBase.GetSampleClock: Cardinal;
 begin
-  result := CallHost(SEAudioMasterGetSampleClock);
+  Result := CallHost(SEAudioMasterGetSampleClock);
 end;
 
 function TSEModuleBase.GetTotalPinCount: Integer;
 begin
- result := CallHost(SEAudioMasterGetTotalPinCount);
+ Result := CallHost(SEAudioMasterGetTotalPinCount);
 end;
 
 procedure TSEModuleBase.GuiNotify(AUserMsgID, ASize: Integer; AData: Pointer);
 begin
- if assigned(FOnGuiNotify)
+ if Assigned(FOnGuiNotify)
   then FOnGuiNotify(Self, AUserMsgID, ASize, AData);
 end;
 
 procedure TSEModuleBase.InputStatusChange(PlugIndex: Integer;
   NewState: TSEStateType);
 begin
- if assigned(FOnInputStatusChange)
+ if Assigned(FOnInputStatusChange)
   then FOnInputStatusChange(Self, PlugIndex, NewState);
 end;
 
 procedure TSEModuleBase.MidiData(AClock, AMidiMsg: Cardinal; PinID: Integer);
 begin
- if assigned(FOnMidiData)
+ if Assigned(FOnMidiData)
   then FOnMidiData(Self, AClock, AMidiMsg, PinID);
 end;
 
 procedure TSEModuleBase.PlugStateChange(const CurrentPin: TSEPin);
 begin
- if assigned(FOnPlugStateChangeEvent)
+ if Assigned(FOnPlugStateChangeEvent)
   then FOnPlugStateChangeEvent(Self, CurrentPin);
 end;
 
@@ -824,34 +826,34 @@ end;
 
 procedure TSEModuleBase.BlockSizeChanged;
 begin
- if assigned(FOnBlockSizeChangeEvent)
+ if Assigned(FOnBlockSizeChangeEvent)
   then FOnBlockSizeChangeEvent(Self);
 end;
 
 procedure TSEModuleBase.SampleRateChanged;
 begin
- if assigned(FOnSampleRateChangeEvent)
+ if Assigned(FOnSampleRateChangeEvent)
   then FOnSampleRateChangeEvent(Self);
 end;
 
 procedure TSEModuleBase.SetProcess(const Value: TSE2ProcessEvent);
 begin
  if @FOnProcessEvent <> @Value then
-  if assigned(Value)
+  if Assigned(Value)
    then FOnProcessEvent := Value
    else FOnProcessEvent := ProcessIdle;
 end;
 
 procedure TSEModuleBase.VoiceReset(Future: Integer);
 begin
- if assigned(FOnVoiceReset)
+ if Assigned(FOnVoiceReset)
   then FOnVoiceReset(Self, Future);
 end;
 
 // gets a pins properties, after clearing the structure (prevents garbage getting in)
 function TSEModuleBase.GetEffect: PSE2ModStructBase;
 begin
- result := @FEffect;
+ Result := @FEffect;
 end;
 
 class procedure TSEModuleBase.GetModuleProperties(Properties: PSEModuleProperties);
@@ -882,39 +884,39 @@ end;
 
 function TSEModuleBase.GetName(name: PChar): Boolean;
 begin
- result := False;
+ Result := False;
 end;
 
 function TSEModuleBase.GetInputPinCount: Integer;
 begin
- result := CallHost(SEAudioMasterGetInputPinCount);
+ Result := CallHost(SEAudioMasterGetInputPinCount);
 end;
 
 function TSEModuleBase.GetOutputPinCount: Integer;
 begin
- result := CallHost(SEAudioMasterGetOutputPinCount);
+ Result := CallHost(SEAudioMasterGetOutputPinCount);
 end;
 
 function TSEModuleBase.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  {return m_sample_clock;}
- result := False;
+ Result := False;
 end;
 
 function TSEModuleBase.GetPinPropertiesClean(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
  FillChar(Properties^, SizeOf(TSEPinProperties), 0); // clear structure
- result := GetPinProperties(Index, Properties);
+ Result := GetPinProperties(Index, Properties);
 end;
 
 function TSEModuleBase.GetUniqueId(name: PChar): Boolean;
 begin
- result := False;
+ Result := False;
 end;
 
 procedure TSEModuleBase.HandleEvent(Event: PSeEvent);
 begin
- assert(Event.TimeStamp = SampleClock);
+ Assert(Event.TimeStamp = SampleClock);
  case Event.EventType of
   uetStatChange: GetPin(Integer(Event.PtrParam)).StatusUpdate(TSEStateType(Event.IntParamA));
 (* not used anymore
@@ -947,12 +949,12 @@ begin
       GuiNotify( Event.IntParamA, (void * ) Event.IntParamB );
       free( (void * ) Event.IntParamB ); // free memory block
       break;*)
-  uetProgChange: if assigned(FOnProgramChange)
+  uetProgChange: if Assigned(FOnProgramChange)
                   then FOnProgramChange(Self);
   uetMIDI : MidiData(Event.TimeStamp, Event.IntParamA, Event.IntParamB);
-  else; // assert(false); // un-handled event
+  else; // Assert(false); // un-handled event
  end;
- if assigned(OnEvent)
+ if Assigned(OnEvent)
   then OnEvent(Event)
 end;
 
@@ -974,7 +976,7 @@ end;
 // insert event sorted.  Pass pointer to tempory event structure(event data will be copied by SE)
 procedure TSEModuleBase.AddEvent(Event: TSEEvent);
 begin
- assert(Event.TimeStamp >= SampleClock);
+ Assert(Event.TimeStamp >= SampleClock);
  CallHost(SEAudioMasterAddEvent, 0, 0, @Event);
 
 //  delete p_event;
@@ -1006,9 +1008,9 @@ end;
 
 function TSEModuleBase.ResolveFileName(const FileName: TFileName): TFileName;
 begin
- SetLength(result, 256);
+ SetLength(Result, 256);
  CallHost(SEAudioMasterResolveFilename2, Integer(PChar(FileName)),
-   Length(result), PChar(result));
+   Length(Result), PChar(Result));
 end;
 
 function TSEModuleBase.ResolveFileName(const Pin: Integer): TFileName;
@@ -1016,7 +1018,7 @@ var
   str: array[0..1023] of char;
 begin
  CallHost(SEAudioMasterResolveFilename, Pin, Length(str), @str[0]);
- result := StrPas(str);
+ Result := StrPas(str);
 end;
 
 procedure TSEModuleBase.Resume; // from either sleep or suspend
@@ -1039,7 +1041,7 @@ begin
    e = e.Next;
   end;
 *)
- if assigned(FOnResume) then FOnResume(Self);
+ if Assigned(FOnResume) then FOnResume(Self);
 end;
 
 procedure TSEModuleBase.ProcessIdle(const BufferPos, SampleFrames: Integer);
@@ -1054,12 +1056,12 @@ end;
 
 function SE1Dispatcher(Effect: PSE1ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 begin
- result := Effect.SEModule.Dispatcher(opCode, Index, Value, Ptr, Opt);
+ Result := Effect.SEModule.Dispatcher(opCode, Index, Value, Ptr, Opt);
 end;
 
 function SE2Dispatcher(Effect: PSE2ModStructBase; Opcode: TSEPluginModuleOpcodes; Index, Value: Integer; Ptr: Pointer; Opt: Single): Integer; cdecl;
 begin
- result := Effect.SEModule.Dispatcher(opCode, Index, Value, Ptr, Opt);
+ Result := Effect.SEModule.Dispatcher(opCode, Index, Value, Ptr, Opt);
 end;
 
 procedure SE1Process(Effect: PSE1ModStructBase; inputs, outputs: PDAVArrayOfSingleFixedArray; SampleFrames: Integer); cdecl;
@@ -1070,7 +1072,7 @@ end;
 procedure SE2Process(ModuleBase: TSEModuleBase; BufferOffset: Integer; SampleFrames: Integer); cdecl;
 begin
  with ModuleBase do
-  if assigned(OnProcess)
+  if Assigned(OnProcess)
    then OnProcess(BufferOffset, SampleFrames);
 end;
 
@@ -1090,73 +1092,73 @@ end;
 function IOFlagToString(IOFlag: TSEIOFlag): string;
 begin
  case IOFlag of
-  iofPolyphonicActive    : result := 'Polyphonic Active';
-  iofIgnorePatchChange   : result := 'Ignore Patch Change';
-  iofRename              : result := 'Rename';
-  iofAutoDuplicate       : result := 'Auto Duplicate';
-  iofFilename            : result := 'Filename';
-  iofSetableOutput       : result := 'Setable Output';
-  iofCustomisable        : result := 'Customisable';
-  iofAdder               : result := 'Adder';
-  iofHidePin             : result := 'Hide Pin';
-  iofLinearInput         : result := 'Linear Input';
-  iofUICommunication     : result := 'UI Communication';
-  iofAutoEnum            : result := 'Auto Enum';
-  iofHideWhenLocked      : result := 'Hide When Locked';
-  iofParameterScreenOnly : result := 'Parameter Screen Only';
-  iofDoNotCheckEnum      : result := 'Do Not Check Enum';
-  iofUIDualFlag          : result := 'UI Dual Flag';
-  iofPatchStore          : result := 'Patch Store';
-  iofParamPrivate        : result := 'Parameter Private';
-  iofMinimized           : result := 'Minimized';
-  else                     result := '';
+  iofPolyphonicActive    : Result := 'Polyphonic Active';
+  iofIgnorePatchChange   : Result := 'Ignore Patch Change';
+  iofRename              : Result := 'Rename';
+  iofAutoDuplicate       : Result := 'Auto Duplicate';
+  iofFilename            : Result := 'Filename';
+  iofSetableOutput       : Result := 'Setable Output';
+  iofCustomisable        : Result := 'Customisable';
+  iofAdder               : Result := 'Adder';
+  iofHidePin             : Result := 'Hide Pin';
+  iofLinearInput         : Result := 'Linear Input';
+  iofUICommunication     : Result := 'UI Communication';
+  iofAutoEnum            : Result := 'Auto Enum';
+  iofHideWhenLocked      : Result := 'Hide When Locked';
+  iofParameterScreenOnly : Result := 'Parameter Screen Only';
+  iofDoNotCheckEnum      : Result := 'Do Not Check Enum';
+  iofUIDualFlag          : Result := 'UI Dual Flag';
+  iofPatchStore          : Result := 'Patch Store';
+  iofParamPrivate        : Result := 'Parameter Private';
+  iofMinimized           : Result := 'Minimized';
+  else                     Result := '';
  end;
 end;
 
 function IOFlagsToString(IOFlags: TSEIOFlags): string;
 begin
- result := '';
- if iofPolyphonicActive in IOFlags then result := 'Polyphonic Active';
- if iofIgnorePatchChange in IOFlags then result := result + 'Ignore Patch Change,';
- if iofRename in IOFlags then result := result + 'Rename,';
- if iofAutoDuplicate in IOFlags then result := result + 'Auto Duplicate,';
- if iofFilename in IOFlags then result := result + 'Filename,';
- if iofSetableOutput in IOFlags then result := result + 'Setable Output,';
- if iofCustomisable in IOFlags then result := result + 'Customisable,';
- if iofAdder in IOFlags then result := result + 'Adder,';
- if iofHidePin in IOFlags then result := result + 'Hide Pin,';
- if iofLinearInput in IOFlags then result := result + 'Linear Input,';
- if iofUICommunication in IOFlags then result := result + 'UI Communication,';
- if iofAutoEnum in IOFlags then result := result + 'Auto Enum,';
- if iofHideWhenLocked in IOFlags then result := result + 'Hide When Locked,';
- if iofParameterScreenOnly in IOFlags then result := result + 'Parameter Screen Only,';
- if iofDoNotCheckEnum in IOFlags then result := result + 'Do Not Check Enum,';
- if iofUIDualFlag in IOFlags then result := result + 'UI Dual Flag,';
- if iofPatchStore in IOFlags then result := result + 'Patch Store,';
- if iofParamPrivate in IOFlags then result := result + 'Parameter Private,';
- if iofMinimized in IOFlags then result := result + 'Minimized,';
- if Length(result) > 0 then SetLength(result, Length(result) - 1); 
+ Result := '';
+ if iofPolyphonicActive in IOFlags then Result := 'Polyphonic Active';
+ if iofIgnorePatchChange in IOFlags then Result := Result + 'Ignore Patch Change,';
+ if iofRename in IOFlags then Result := Result + 'Rename,';
+ if iofAutoDuplicate in IOFlags then Result := Result + 'Auto Duplicate,';
+ if iofFilename in IOFlags then Result := Result + 'Filename,';
+ if iofSetableOutput in IOFlags then Result := Result + 'Setable Output,';
+ if iofCustomisable in IOFlags then Result := Result + 'Customisable,';
+ if iofAdder in IOFlags then Result := Result + 'Adder,';
+ if iofHidePin in IOFlags then Result := Result + 'Hide Pin,';
+ if iofLinearInput in IOFlags then Result := Result + 'Linear Input,';
+ if iofUICommunication in IOFlags then Result := Result + 'UI Communication,';
+ if iofAutoEnum in IOFlags then Result := Result + 'Auto Enum,';
+ if iofHideWhenLocked in IOFlags then Result := Result + 'Hide When Locked,';
+ if iofParameterScreenOnly in IOFlags then Result := Result + 'Parameter Screen Only,';
+ if iofDoNotCheckEnum in IOFlags then Result := Result + 'Do Not Check Enum,';
+ if iofUIDualFlag in IOFlags then Result := Result + 'UI Dual Flag,';
+ if iofPatchStore in IOFlags then Result := Result + 'Patch Store,';
+ if iofParamPrivate in IOFlags then Result := Result + 'Parameter Private,';
+ if iofMinimized in IOFlags then Result := Result + 'Minimized,';
+ if Length(Result) > 0 then SetLength(Result, Length(Result) - 1); 
 end;
 
 function PropertyFlagsToString(Flags: TUgFlags): string;
 begin
- result := '';
- if ugfVoiceMonIgnore in Flags then result := result + 'Voice Monitor Ignore, ';
- if ugfPolyphonicAgregator in Flags then result := result + 'Polyphonic Agregator, ';
- if ugfSuspend in Flags then result := result + 'Suspended, ';
- if ugfOpen in Flags then result := result + 'Open, ';
- if ugfNeverSuspend in Flags then result := result + 'Never Suspend, ';
- if ugfClone in Flags then result := result + 'Clone, ';
- if ugfSendTimeinfoToHost in Flags then result := result + 'Send TimeInfo to Host';
- if result = '' then result := '-'
+ Result := '';
+ if ugfVoiceMonIgnore in Flags then Result := Result + 'Voice Monitor Ignore, ';
+ if ugfPolyphonicAgregator in Flags then Result := Result + 'Polyphonic Agregator, ';
+ if ugfSuspend in Flags then Result := Result + 'Suspended, ';
+ if ugfOpen in Flags then Result := Result + 'Open, ';
+ if ugfNeverSuspend in Flags then Result := Result + 'Never Suspend, ';
+ if ugfClone in Flags then Result := Result + 'Clone, ';
+ if ugfSendTimeinfoToHost in Flags then Result := Result + 'Send TimeInfo to Host';
+ if Result = '' then Result := '-'
 end;
 
 function PropertyGUIFlagsToString(Flags: TGuiFlags): string;
 begin
- result := '';
- if gfControlView in Flags then result := result + 'Control View, ';
- if gfStructureView in Flags then result := result + 'Structure View';
- if result = '' then result := '-'
+ Result := '';
+ if gfControlView in Flags then Result := Result + 'Control View, ';
+ if gfStructureView in Flags then Result := Result + 'Structure View';
+ if Result = '' then Result := '-'
 end;
 
 end.

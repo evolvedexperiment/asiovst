@@ -22,7 +22,7 @@ type
   TWAConfig = procedure(const Handle : PWinAmpDSPModule); cdecl;
   TWAInit = function(const Handle: PWinAmpDSPModule): Integer; cdecl;
   TWAQuit = procedure(const Handle: PWinAmpDSPModule); cdecl;
-  TWAModifySamples = function(const This_Mod: PWinAmpDSPModule;
+  TWAModifySamples = function(const Handle: PWinAmpDSPModule;
     const Samples: Pointer; const SamplesFrame, BitPerSample, ChannelCount,
     SampleRate: Integer): Integer; cdecl;
 

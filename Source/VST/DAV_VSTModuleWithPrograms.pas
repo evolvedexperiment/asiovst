@@ -184,46 +184,46 @@ end;
 function TVSTModuleWithPrograms.GetParameterDisplay(Index: Integer): string;
 begin
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
-  then result := RStrUndefined
+  then Result := RStrUndefined
   else
    begin
     if (effFlagsProgramChunks in FEffect.EffectFlags)
-     then result := FloatToStr(FOnGetChunkParamEvent(Self, Index))
+     then Result := FloatToStr(FOnGetChunkParamEvent(Self, Index))
      else if (numPrograms > 0)
-      then result := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
-      else result := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
+      then Result := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
+      else Result := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
 
     with FParameterProperties[Index] do
      if Assigned(OnCustomParameterDisplay)
-      then OnCustomParameterDisplay(Self, Index, result);
+      then OnCustomParameterDisplay(Self, Index, Result);
    end;
 
- if FTruncateStrings and (Length(result) > 8)
-  then SetLength(result, 8);
+ if FTruncateStrings and (Length(Result) > 8)
+  then SetLength(Result, 8);
 end;
 
 function TVSTModuleWithPrograms.GetParameterLabel(Index: Integer): string;
 begin
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
-  then result := RStrUndefined
+  then Result := RStrUndefined
   else
    begin
-    result := FParameterProperties[Index].Units;
+    Result := FParameterProperties[Index].Units;
     if Assigned(FParameterProperties[Index].OnCustomParameterLabel)
-     then FParameterProperties[Index].OnCustomParameterLabel(Self, Index, result);
+     then FParameterProperties[Index].OnCustomParameterLabel(Self, Index, Result);
    end;
- if FTruncateStrings and (Length(result) > 8)
-  then SetLength(result, 8);
+ if FTruncateStrings and (Length(Result) > 8)
+  then SetLength(Result, 8);
 end;
 
 function TVSTModuleWithPrograms.GetParameterName(Index: Integer): string;
 begin
  if Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count)
-  then result := FParameterProperties[Index].DisplayName
-  else result := RStrUndefined;
+  then Result := FParameterProperties[Index].DisplayName
+  else Result := RStrUndefined;
 
- if FTruncateStrings and (Length(result) > 8)
-  then SetLength(result, 8);
+ if FTruncateStrings and (Length(Result) > 8)
+  then SetLength(Result, 8);
 end;
 
 function TVSTModuleWithPrograms.GetParameterString(Index: Integer): string;
@@ -268,62 +268,62 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetProgramName(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
 var
-  str : string;
+  Str : string;
 begin
  Result := 0;
 
- if Assigned(ptr) then
+ if Assigned(Ptr) then
   begin
    if numPrograms > 0
-    then str := Programs[FCurProgram].DisplayName
-    else str := '';
-   if FTruncateStrings and (Length(str) > 24)
-    then SetLength(str, 24);
-   StrPCopy(ptr, str);
+    then Str := Programs[FCurProgram].DisplayName
+    else Str := '';
+   if FTruncateStrings and (Length(Str) > 24)
+    then SetLength(Str, 24);
+   StrPCopy(Ptr, Str);
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParamLabel(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParamLabel(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
 var
-  str : string;
+  Str : string;
 begin
  Result := 0;
- if Assigned(ptr) then
+ if Assigned(Ptr) then
   begin
    Str := ParameterLabel[Index];
-   if FTruncateStrings and (Length(str) > 8)
-    then SetLength(str, 8);
-   StrPCopy(ptr, str);
+   if FTruncateStrings and (Length(Str) > 8)
+    then SetLength(Str, 8);
+   StrPCopy(Ptr, Str);
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParamDisplay(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParamDisplay(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
 var
-  str : string;
+  Str : string;
 begin
  Result := 0;
- if Assigned(ptr) then
+ if Assigned(Ptr) then
   begin
-   str := ParameterDisplay[Index];
-   if FTruncateStrings and (Length(str) > 8)
-    then SetLength(str, 8);
-   StrPCopy(ptr, str);
+   Str := ParameterDisplay[Index];
+   if FTruncateStrings and (Length(Str) > 8)
+    then SetLength(Str, 8);
+   StrPCopy(Ptr, Str);
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParamName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParamName(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
 var
-  str : string;
+  Str : string;
 begin
  Result := 0;
- if Assigned(ptr) then
+ if Assigned(Ptr) then
   begin
-   str := ParameterName[Index];
-   if FTruncateStrings and (Length(str) > 8)
-    then SetLength(str, 8);
-   StrPCopy(ptr, str);
+   Str := ParameterName[Index];
+   if FTruncateStrings and (Length(Str) > 8)
+    then SetLength(Str, 8);
+   StrPCopy(Ptr, Str);
   end;
 end;
 
@@ -336,7 +336,7 @@ begin
 
  if (effFlagsHasEditor in FEffect.EffectFlags) and Assigned(FEditorForm) then
   begin
-   pr := min(numParams, FParameterProperties.Count);
+   pr := Min(numParams, FParameterProperties.Count);
    if Assigned(FOnParameterChangeEvent) and
       (not (effFlagsProgramChunks in FEffect.EffectFlags)) then
     if numPrograms > 0 then
@@ -505,7 +505,7 @@ var
   ParamStr  : string;
   ParamUnit : string;
 begin
- result := inherited HostCallVendorSpecific(Index, Value, ptr, opt);
+ Result := inherited HostCallVendorSpecific(Index, Value, ptr, opt);
  if (vcdCockosExtension in CanDos) then
   begin
    if (Index = Integer(effGetParamDisplay)) and
@@ -523,14 +523,14 @@ begin
       end;
      ParamStr := ParamStr + #0;
      StrCopy(ptr, PChar(ParamStr));
-     result := $BEEF;
+     Result := $BEEF;
     end else
    if (Index = Integer($DEADBEF0)) and Assigned(Ptr) and
       (Value >= 0) and (Value < numParams) then
     begin
      PDAV2SingleArray(Ptr)^[0] := 0;
      PDAV2SingleArray(Ptr)^[1] := 1;
-     result := $BEEF;
+     Result := $BEEF;
     end;
   end;
 end;
@@ -803,12 +803,12 @@ function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: str
 begin
  if not Assigned(FParameterProperties) or (FParameterProperties.Count = 0)
   then raise Exception.Create(RStrNoParameterAvailable);
- result := 0;
- while result < FParameterProperties.Count do
-  if ParameterName = FParameterProperties[result].DisplayName
+ Result := 0;
+ while Result < FParameterProperties.Count do
+  if ParameterName = FParameterProperties[Result].DisplayName
    then break
-   else inc(result);
- if result = FParameterProperties.Count
+   else inc(Result);
+ if Result = FParameterProperties.Count
   then raise Exception.Create(RStrUnknownParameterName + ': ' + ParameterName);
 end;
 
@@ -816,12 +816,12 @@ function TVSTModuleWithPrograms.TranslateProgramNameToIndex(ProgramName: string)
 begin
  if FVstPrograms.Count = 0
   then raise Exception.Create(RStrNoProgramAvailable);
- result := 0;
- while result < FVstPrograms.Count do
-  if ProgramName = FVstPrograms[result].DisplayName
+ Result := 0;
+ while Result < FVstPrograms.Count do
+  if ProgramName = FVstPrograms[Result].DisplayName
    then break
-   else inc(result);
- if result = FVstPrograms.Count
+   else inc(Result);
+ if Result = FVstPrograms.Count
   then raise Exception.Create(RStrUnknownProgramName);
 end;
 
@@ -890,7 +890,7 @@ begin
  if (effFlagsProgramChunks in FEffect.EffectFlags)
   then
    begin
-    assert(Assigned(FOnGetChunkParamEvent));
+    Assert(Assigned(FOnGetChunkParamEvent));
     Result := FOnGetChunkParamEvent(Self, Index)
    end
   else
@@ -902,12 +902,12 @@ end;
 
 function TVSTModuleWithPrograms.GetParameterByName(ParameterName: string): Single;
 begin
- result := Parameter[TranslateParameterNameToIndex(ParameterName)];
+ Result := Parameter[TranslateParameterNameToIndex(ParameterName)];
 end;
 
 function TVSTModuleWithPrograms.GetVstProgramByName(ProgramName: string): TVstProgram;
 begin
- result := Programs[TranslateProgramNameToIndex(ProgramName)];
+ Result := Programs[TranslateProgramNameToIndex(ProgramName)];
 end;
 
 end.

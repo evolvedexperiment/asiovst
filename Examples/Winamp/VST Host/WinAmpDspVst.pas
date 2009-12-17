@@ -172,7 +172,7 @@ end;
 function GetModule(const Which: Integer): PWinAmpDSPModule;
 begin
  case Which of
-   0 : result := @WADSPModule;
+   0 : Result := @WADSPModule;
  else
   Result := nil;
  end;
@@ -297,14 +297,14 @@ end;
 function Init(const This_Mod: PWinAmpDSPModule): Integer;
 begin
  // make sure a pointer to the TWinAmpDSPModule exists
- if not Assigned(This_Mod) or assigned(This_Mod^.UserData) then
+ if not Assigned(This_Mod) or Assigned(This_Mod^.UserData) then
   begin
-   result := 1;
+   Result := 1;
    exit;
   end;
 
  // assert that no other instance exists already
- assert(This_Mod^.UserData = nil);
+ Assert(This_Mod^.UserData = nil);
 
  DontRaiseExceptionsAndSetFPUcodeword;
 
@@ -321,7 +321,7 @@ end;
 procedure Config(const This_Mod: PWinAmpDSPModule);
 begin
  // assert that a pointer to the TWinAmpDSPModule exists
- assert(assigned(This_Mod));
+ Assert(Assigned(This_Mod));
 
  // open config dialog
  if Assigned(This_Mod^.UserData)
@@ -332,7 +332,7 @@ function ModifySamples(const This_Mod: PWinAmpDSPModule;
   const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
   SampleRate: Integer): Integer; cdecl;
 begin
- result := SampleFrames;
+ Result := SampleFrames;
 
  // make sure a pointer to the TWinAmpDSPModule exists
  if not Assigned(This_Mod) then exit;
@@ -349,18 +349,18 @@ function ModifySamplesDummy(const This_Mod: PWinAmpDSPModule;
   const Samples: Pointer; const SampleFrames, BitPerSample, ChannelCount,
   SampleRate: Integer): Integer; cdecl;
 begin
- result := SampleFrames;
+ Result := SampleFrames;
 end;
 
 procedure Quit(const This_Mod: PWinAmpDSPModule);
 begin
  // assert that a pointer to the TWinAmpDSPModule exists
- if assigned(This_Mod) and assigned(This_Mod^.UserData) then
+ if Assigned(This_Mod) and Assigned(This_Mod^.UserData) then
   try
    DontRaiseExceptionsAndSetFPUcodeword;
    This_Mod^.ModifySamples := ModifySamplesDummy;
    sleep(5);
-   if assigned(Application)
+   if Assigned(Application)
     then Application.ProcessMessages;
    This_Mod^.UserData.Quit;
   finally
@@ -397,7 +397,7 @@ begin
  try
   SetLength(FFxpName, 256);
 
-  assert(HInstance = AWinAmpDspModule.hDLLinstance);
+  Assert(HInstance = AWinAmpDspModule.hDLLinstance);
   
 //  GetModuleFileName(HInstance, @FFxpName[1], 254);
   GetModuleFileName(AWinAmpDspModule.hDLLinstance, @FFxpName[1], 254);
@@ -487,7 +487,7 @@ begin
     FVstHost[0].CloseEdit;
     FEditorForm.Close;
     FreeAndNil(FEditorForm);
-    if assigned(FEditorForm)
+    if Assigned(FEditorForm)
      then FreeAndNil(FEditorForm);
    except  
    end;
@@ -524,18 +524,18 @@ end;
 
 function TWinAmpObject.GetEnhanced: Boolean;
 begin
- result := FEnhanceFak > 1;
+ Result := FEnhanceFak > 1;
 end;
 
 function TWinAmpObject.GetWinampDSPModule: TWinampDSPModule;
 begin
- assert(assigned(FWinAmpDspModule));
- result := FWinAmpDspModule^;
+ Assert(Assigned(FWinAmpDspModule));
+ Result := FWinAmpDspModule^;
 end;
 
 procedure TWinAmpObject.AudioMasterUpdateDisplay(Sender: TObject);
 begin
- if assigned(FEditorForm)
+ if Assigned(FEditorForm)
   then FEditorForm.CBPreset.ItemIndex := FVstHost[0].CurrentProgram;
 end;
 
@@ -551,7 +551,7 @@ begin
   FCriticalSection.Acquire;
   try
   {$ENDIF}
-   if not assigned(FEditorForm)
+   if not Assigned(FEditorForm)
     then FEditorForm := TFmWinAmpVST.Create(Self);
 
    if FVSTHost[0].Active then
@@ -1061,7 +1061,7 @@ begin
  end;
  {$ENDIF}
 
- if assigned(FEditorForm)
+ if Assigned(FEditorForm)
   then FEditorForm.UpdatePluginInformation;
 end;
 
@@ -1097,7 +1097,7 @@ begin
     end;
   end;
 
- if assigned(FEditorForm) then
+ if Assigned(FEditorForm) then
   try
    FVstHost[0].ShowEdit(FEditorForm.PnGUI);
    FVstHost[0].Idle;

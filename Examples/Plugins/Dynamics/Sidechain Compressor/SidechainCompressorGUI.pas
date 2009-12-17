@@ -113,6 +113,7 @@ type
     procedure SliderThresholdChange(Sender: TObject);
     procedure SliderMixChange(Sender: TObject);
     procedure LbClearDblClick(Sender: TObject);
+    procedure LEDSideChainClick(Sender: TObject);
   public
     procedure UpdateLowcutFrequency;
     procedure UpdateLowcutOrder;
@@ -129,6 +130,7 @@ type
     procedure UpdateLimit;
     procedure UpdateAutoMakeUpGain;
     procedure UpdateMix;
+    procedure UpdateEnableVSTSideChain;
     procedure UpdateVstPlugin;
     function EvaluateCharacteristic(Sender: TObject; X: Double): Double;
   end;
@@ -341,6 +343,14 @@ begin
   end;
 end;
 
+procedure TFmSidechainCompressor.LEDSideChainClick(Sender: TObject);
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Parameter[15] := Integer(LEDSideChain.Brightness_Percent < 50);
+  end;
+end;
+
 procedure TFmSidechainCompressor.UpdateLowcutFrequency;
 var
   Frequency : Single;
@@ -527,6 +537,18 @@ begin
     then LEDAutoGain.Brightness_Percent := Brightness;
    SliderMakeUpGain.Enabled := Brightness < 50;
    GuiGraphXY.UpdateGraph;
+  end;
+end;
+
+procedure TFmSidechainCompressor.UpdateEnableVSTSideChain;
+var
+  Brightness : Single;
+begin
+ with TSidechainCompressorDataModule(Owner) do
+  begin
+   Brightness := 100 * (0.3 + 0.7 * Parameter[15]);
+   if Brightness <> LEDSideChain.Brightness_Percent
+    then LEDSideChain.Brightness_Percent := Brightness;
   end;
 end;
 

@@ -320,7 +320,7 @@ var
   WADSPHeader  : TWinAmpDSPheader;
   WAVstModule  : TBasicVSTModuleClass;
 
-function GetWinampModule(const Which : Integer): PWinAmpDSPModule; cdecl;
+function GetWinampModule(const Which: Integer): PWinAmpDSPModule; cdecl;
 begin
  case Which of
    0 : begin
@@ -1839,7 +1839,7 @@ end;
 
 // WinAmp Stuff
 
-function Init(const WinAmpDSPModule: PWinAmpDSPModule): Integer;
+function Init(const WinAmpDSPModule: PWinAmpDSPModule): Integer; cdecl;
 begin
  // make sure a pointer to the TWinAmpDSPModule exists
  if not Assigned(WinAmpDSPModule) then
@@ -1862,14 +1862,17 @@ begin
  end;
 end;
 
-procedure Config(const WinAmpDSPModule: PWinAmpDSPModule);
+procedure Config(const WinAmpDSPModule: PWinAmpDSPModule); cdecl;
 begin
  // assert that a pointer to the TWinAmpDSPModule exists
  Assert(Assigned(WinAmpDSPModule));
 
  // open config dialog
- if Assigned(WinAmpDSPModule^.UserData)
-  then TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpConfig;
+ if Assigned(WinAmpDSPModule^.UserData) then
+  try
+   TBasicVSTModule(WinAmpDSPModule^.UserData).WinAmpConfig;
+  except
+  end;
 end;
 
 function ModifySamples(const WinAmpDSPModule: PWinAmpDSPModule;

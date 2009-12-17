@@ -314,12 +314,12 @@ type
     procedure ReleaseChanged; virtual;
     procedure CalculateAttackFactor; virtual;
     procedure CalculateReleaseFactor; virtual;
-    procedure Reset; virtual;
 
     // hidden properties
     property Knee_dB;
   public
     constructor Create; override;
+    procedure Reset; virtual;
 
     property Attack: Double read FAttack write SetAttack;             // in ms
     property Release: Double read FRelease write SetRelease;          // in ms

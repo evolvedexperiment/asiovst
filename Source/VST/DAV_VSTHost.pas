@@ -72,7 +72,7 @@ type
   {$IFDEF DELPHI10_UP} {$region 'General Types'} {$ENDIF}
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
   TVstAutomateEvent = procedure(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single) of object;
-  TVstProcessEventsEvent = procedure(Sender: TObject; p: PVstEvents) of object;
+  TVstProcessEventsEvent = procedure(Sender: TObject; VstEvents: PVstEvents) of object;
   TVstAutomationNotifyEvent = procedure(Sender: TObject; ParameterIndex: Integer) of object;
   TVstSampleRateChangedEvent = procedure(Sender: TObject; SampleRate: Single) of object;
   TVstPinConnectedEvent = function(Sender: TObject; PinNr: Integer; isInput: Boolean): Boolean of object;
