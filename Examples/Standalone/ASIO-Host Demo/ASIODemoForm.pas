@@ -252,7 +252,12 @@ begin
    OutBuffer[L, Sample] := (1 - FPan) * Data;
    OutBuffer[R, Sample] := FPan * Data;
   end;
- ASIOHost.Active := False; 
+
+  { following line was removed by MyCo
+    @C.W.B: When I uncomment this, ASIO doesn't work at all, and the EXE crashs when I close it
+            please confirm this change, because I don't know why this line was added}
+
+  //  ASIOHost.Active := False;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
