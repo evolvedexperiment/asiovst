@@ -153,7 +153,7 @@ type
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
-  TGuiSliderGDI = class(TCustomGuiSlider)
+  TGuiSliderGDI = class(TCustomGuiSliderGDI)
   published
     property Align;
     property Anchors;
@@ -210,7 +210,7 @@ type
     {$ENDIF}
   end;
 
-  TGuiSlider = TGuiSliderGDI;
+  TGuiSlider = class(TGuiSliderGDI);
 
 implementation
 

@@ -3,7 +3,7 @@ object FmRingModulator: TFmRingModulator
   Top = 81
   BorderStyle = bsNone
   Caption = 'Ring Modulator'
-  ClientHeight = 130
+  ClientHeight = 129
   ClientWidth = 147
   Color = 7373965
   Font.Charset = DEFAULT_CHARSET
@@ -22,7 +22,7 @@ object FmRingModulator: TFmRingModulator
   object GpFrequency: TGuiGroup
     Left = 8
     Top = 8
-    Width = 129
+    Width = 131
     Height = 113
     AntiAlias = gaaLinear4x
     Caption = 'Frequency'
@@ -31,9 +31,10 @@ object FmRingModulator: TFmRingModulator
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 7373965
+    GroupColor = 15659506
     LineColor = 15659506
     OutlineWidth = 3
+    PanelColor = 7373965
     ParentFont = False
     Radius = 5
     TabOrder = 0

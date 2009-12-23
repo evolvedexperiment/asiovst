@@ -41,14 +41,14 @@ uses
 
 type
   TFmBodeFrequencyShifter = class(TForm)
-    GpFrequency: TGuiGroup;
     DialFrequency: TGuiDial;
-    PnDisplay: TGuiPanel;
-    LbFrequencyValue: TGuiLabel;
-    GpMix: TGuiGroup;
     DialMix: TGuiDial;
-    PnMix: TGuiPanel;
+    GpFrequency: TGuiGroup;
+    GpMix: TGuiGroup;
+    LbFrequencyValue: TGuiLabel;
     LbMixValue: TGuiLabel;
+    PnDisplay: TGuiPanel;
+    PnMix: TGuiPanel;
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);

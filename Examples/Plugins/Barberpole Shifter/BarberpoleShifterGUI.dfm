@@ -31,9 +31,10 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 7373965
+    GroupColor = 15659506
     LineColor = 15659506
     OutlineWidth = 3
+    PanelColor = 7373965
     ParentFont = False
     Radius = 5
     TabOrder = 0
@@ -114,9 +115,10 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 7373965
+    GroupColor = 15659506
     LineColor = 15659506
     OutlineWidth = 3
+    PanelColor = 7373965
     ParentFont = False
     Radius = 5
     TabOrder = 1

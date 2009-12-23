@@ -31,10 +31,11 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 7373965
+    GroupColor = 15659506
     HeaderMinWidth = 64
     LineColor = 15659506
     OutlineWidth = 3
+    PanelColor = 7373965
     ParentFont = False
     Radius = 7
     TabOrder = 0
@@ -196,10 +197,11 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
-    GroupColor = 7373965
+    GroupColor = 15659506
     HeaderMinWidth = 64
     LineColor = 15659506
     OutlineWidth = 3
+    PanelColor = 7373965
     ParentFont = False
     Radius = 7
     TabOrder = 1
@@ -318,7 +320,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     object GuiPanel1: TGuiPanel
       Left = 80
       Top = 7
-      Width = 100
+      Width = 105
       Height = 19
       AntiAlias = gaaLinear4x
       Caption = 'PnDisplay'
@@ -357,7 +359,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
         LineWidth = 2
         LEDColor = 14870505
         Brightness_Percent = 90.000000000000000000
-        BorderStrength_Percent = 100.000000000000000000
+        BorderStrength_Percent = 75.000000000000000000
         Uniformity_Percent = 36.754447937011720000
         AntiAlias = gaaLinear4x
         LineColor = 3226174

@@ -1,14 +1,14 @@
 object FmSimpleFlanger: TFmSimpleFlanger
-  Left = 218
-  Top = 81
+  Left = 269
+  Top = 103
   BorderStyle = bsNone
   Caption = 'Simple Flanger'
   ClientHeight = 89
   ClientWidth = 195
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -19
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 23
   object DialSpeed: TGuiDial
     Left = 16
     Top = 32
@@ -25,7 +25,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     CurveMapping = -1.799999952316284000
     DefaultPosition = 1.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.009999999776482582
@@ -46,7 +46,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Height = 36
     DefaultPosition = 10.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -66,7 +66,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Height = 36
     DefaultPosition = 50.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 100.000000000000000000
     NumGlyphs = 65
@@ -87,11 +87,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Speed'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbDepth: TGuiLabel
     Left = 72
@@ -101,11 +97,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Depth'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbMix: TGuiLabel
     Left = 132
@@ -115,11 +107,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Mix'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbSpeedValue: TGuiLabel
     Left = 3
@@ -133,6 +121,8 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbDepthValue: TGuiLabel
     Left = 67
@@ -146,6 +136,8 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbMixValue: TGuiLabel
     Left = 127
@@ -159,5 +151,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
 end

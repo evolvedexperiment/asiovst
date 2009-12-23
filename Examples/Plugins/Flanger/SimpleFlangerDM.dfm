@@ -1,4 +1,7 @@
 object SimpleFlangerModule: TSimpleFlangerModule
+  OldCreateOrder = True
+  OnCreate = VSTModuleCreate
+  OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'
   EffectName = 'Flanger'
@@ -41,6 +44,7 @@ object SimpleFlangerModule: TSimpleFlangerModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDepthChange
     end
@@ -65,11 +69,15 @@ object SimpleFlangerModule: TSimpleFlangerModule
     item
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
       LargeStepFloat = 2.000000000000000000
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Mix'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
     end>
   ParameterCategories = <>

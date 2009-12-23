@@ -48,6 +48,8 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
   private
     FVibrato         : Array [0..1] of TDspVibrato32;
     FCriticalSection : TCriticalSection;
@@ -66,12 +68,21 @@ uses
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
+procedure TSimpleFlangerModule.VSTModuleCreate(Sender: TObject);
+begin
+ FCriticalSection := TCriticalSection.Create;
+end;
+
+procedure TSimpleFlangerModule.VSTModuleDestroy(Sender: TObject);
+begin
+ FreeAndNil(FCriticalSection);
+end;
+
 procedure TSimpleFlangerModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- FCriticalSection := TCriticalSection.Create;
- for Channel := 0 to 1 do
+ for Channel := 0 to Length(FVibrato) - 1 do
   begin
    FVibrato[Channel] := TDspVibrato32.Create;
    FVibrato[Channel].SampleRate := SampleRate;
@@ -108,9 +119,11 @@ begin
 end;
 
 procedure TSimpleFlangerModule.VSTModuleClose(Sender: TObject);
+var
+  Channel : Integer;
 begin
- FreeAndNil(FVibrato[0]);
- FreeAndNil(FVibrato[1]);
+ for Channel := 0 to Length(FVibrato) - 1
+  do FreeAndNil(FVibrato[Channel]);
 end;
 
 procedure TSimpleFlangerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
