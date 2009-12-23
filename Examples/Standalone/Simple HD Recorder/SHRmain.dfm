@@ -23,9 +23,11 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 8
     Width = 41
     Height = 40
-    Brightness_Percent = 10.000000000000000000
     LineWidth = 2
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 70.000000000000000000
+    Uniformity_Percent = 44.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -52,9 +54,11 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 8
     Width = 41
     Height = 40
-    Brightness_Percent = 10.000000000000000000
     LineWidth = 2
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 70.000000000000000000
+    Uniformity_Percent = 44.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -63,9 +67,11 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 8
     Width = 41
     Height = 40
-    Brightness_Percent = 10.000000000000000000
     LineWidth = 2
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 70.000000000000000000
+    Uniformity_Percent = 44.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -74,9 +80,11 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Top = 8
     Width = 41
     Height = 40
-    Brightness_Percent = 10.000000000000000000
     LineWidth = 2
     LEDColor = clRed
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 70.000000000000000000
+    Uniformity_Percent = 44.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = clRed
   end
@@ -93,7 +101,9 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbMic2: TGuiLabel
     Left = 207
@@ -108,7 +118,9 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbMic3: TGuiLabel
     Left = 254
@@ -123,7 +135,9 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbMic4: TGuiLabel
     Left = 301
@@ -138,7 +152,9 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object BtSetup: TGuiButton
     Left = 348
@@ -182,10 +198,10 @@ object FmSimpleHDRecorder: TFmSimpleHDRecorder
     Left = 216
     Top = 16
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     Left = 248

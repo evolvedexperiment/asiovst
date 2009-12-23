@@ -18,25 +18,30 @@ type
     FCaption      : string;
     FOSFactor     : Integer;
     FButtonColor  : TColor;
+    FShadow       : TGUIShadow;
     procedure SetRoundRadius(Value: Integer);
-    procedure RenderButtonToBitmap(const Bitmap: TBitmap);
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetButtonColor(const Value: TColor);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
+    procedure SetShadow(const Value: TGUIShadow);
     procedure DownsampleBitmap(Bitmap: TBitmap);
     procedure UpsampleBitmap(Bitmap: TBitmap);
   protected
     procedure UpdateBuffer; override;
     procedure AntiAliasChanged; virtual;
+    procedure RenderButtonToBitmap(const Bitmap: TBitmap);
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Alignment: TAlignment read FAlignment write SetAlignment;
     property Caption: string read FCaption write SetCaption;
     property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnShadow;
     property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
     property LineColor default clBtnHighlight;
+    property Shadow: TGUIShadow read FShadow write SetShadow;
   end;
 
   TGuiButton = class(TCustomGuiButton)
@@ -58,6 +63,7 @@ type
     property ButtonColor;
     property PopupMenu;
     property Radius;
+    property Shadow;
     property ShowHint;
     property Visible;
     {$IFNDEF FPC}
@@ -95,12 +101,21 @@ begin
  inherited;
  ControlStyle  := ControlStyle + [csFramed, csOpaque, csReplicatable,
                                   csAcceptsControls];
+
+ FShadow       := TGUIShadow.Create;
+
  FAlignment    := taCenter;
  FCaption      := 'empty';
  FRoundRadius  := 2;
  FOSFactor     := 1;
- fLineColor    := clBtnHighlight;
+ FLineColor    := clBtnHighlight;
  FButtonColor  := clBtnShadow;
+end;
+
+destructor TCustomGuiButton.Destroy;
+begin
+ FreeAndNil(FShadow);
+ inherited;
 end;
 
 procedure TCustomGuiButton.RenderButtonToBitmap(const Bitmap: TBitmap);
@@ -122,7 +137,7 @@ begin
    Brush.Style := bsClear;
    Brush.Color := FButtonColor;
    Pen.Width   := FOSFactor * fLineWidth;
-   Pen.Color   := fLineColor;
+   Pen.Color   := FLineColor;
    
    case FRoundRadius of
     0, 1 : FillRect(ClipRect);
@@ -189,13 +204,25 @@ begin
         PtsArray[Steps + 3] := Point(Linewidth div 2, rad + Linewidth div 2);
 
         PolyGon(PtsArray);
-        if fLineColor <> FButtonColor
+        if FLineColor <> FButtonColor
          then PolyLine(PtsArray);
        end;
      end;
    end;
 
    TextSize := TextExtent(FCaption);
+
+   if FShadow.Visible then
+    begin
+     Font.Color := FShadow.Color;
+     case FAlignment of
+       taLeftJustify : TextOut(FOSFactor * FShadow.Offset.X, (Bitmap.Height - TextSize.cy) div 2 + FOSFactor * FShadow.Offset.Y, FCaption);
+      taRightJustify : TextOut(FOSFactor * FShadow.Offset.X + Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2 + FOSFactor * FShadow.Offset.Y, FCaption);
+            taCenter : TextOut(FOSFactor * FShadow.Offset.X + (Bitmap.Width - TextSize.cx) div 2, (Bitmap.Height - TextSize.cy) div 2 + FOSFactor * FShadow.Offset.Y, FCaption);
+     end;
+     Font.Color := Self.Font.Color;
+    end;
+
    case FAlignment of
      taLeftJustify : TextOut(0, (Bitmap.Height - TextSize.cy) div 2, FCaption);
     taRightJustify : TextOut(Bitmap.Width - TextSize.cx, (Bitmap.Height - TextSize.cy) div 2, FCaption);
@@ -348,6 +375,11 @@ begin
    FRoundRadius := Value;
    Invalidate;
   end;
+end;
+
+procedure TCustomGuiButton.SetShadow(const Value: TGUIShadow);
+begin
+ FShadow.Assign(Value);
 end;
 
 end.

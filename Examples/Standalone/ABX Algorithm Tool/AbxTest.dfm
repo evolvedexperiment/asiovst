@@ -1,6 +1,6 @@
 object FmAbxTest: TFmAbxTest
-  Left = 218
-  Top = 77
+  Left = 643
+  Top = 73
   Caption = 'ABX Test'
   ClientHeight = 388
   ClientWidth = 396

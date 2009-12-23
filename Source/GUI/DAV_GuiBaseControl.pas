@@ -120,6 +120,7 @@ type
     procedure Resize; override;
     procedure ResizeBuffer; dynamic;
     procedure UpdateBuffer; dynamic; abstract;
+    procedure FontChanged; virtual;
 
     procedure Loaded; override;
   public
@@ -637,8 +638,14 @@ end;
 
 procedure TBufferedGraphicControl.CMFontChanged(var Message: {$IFDEF FPC}TLMessage{$ELSE}TMessage{$ENDIF});
 begin
+ FontChanged;
+end;
+
+procedure TBufferedGraphicControl.FontChanged;
+begin
  Invalidate;
 end;
+
 
 { TCustomGuiBaseControl }
 

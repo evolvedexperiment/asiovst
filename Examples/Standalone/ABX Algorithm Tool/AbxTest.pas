@@ -123,7 +123,7 @@ end;
 
 procedure TFmAbxTest.WriteLogText(Sender: TObject; LogText: string);
 begin
- if assigned(FLogStrings)
+ if Assigned(FLogStrings)
   then FLogStrings.Add(LogText);
 end;
 
@@ -156,7 +156,7 @@ end;
 
 procedure TFmAbxTest.NextTrial(GuessWasCorrect: Boolean);
 begin
- if assigned(FAbxTest)
+ if Assigned(FAbxTest)
   then FAbxTest.NextTrial(GuessWasCorrect);
 
  RandomizeAssignment;
@@ -192,13 +192,13 @@ end;
 
 procedure TFmAbxTest.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if assigned(FAbxTest)
+ if Assigned(FAbxTest)
   then FAbxTest.SampleRate := FmAbxAlgorithmTest.ASIOHost.SampleRate;
 end;
 
 procedure TFmAbxTest.AssignAudiodataX;
 begin
- if assigned(FAbxTest) then
+ if Assigned(FAbxTest) then
   case FCurrentX of
    xaXisA : FAbxTest.Processed := False;
    xaXisB : FAbxTest.Processed := True;
@@ -216,7 +216,7 @@ begin
  RandomizeAssignment;
  AssignAudiodataX;
 
- if assigned(FAbxTest) then
+ if Assigned(FAbxTest) then
   begin
    FAbxTest.OnLogMessage := WriteLogText;
    FAbxTest.OnTestDone := TestDone;
@@ -233,7 +233,7 @@ end;
 
 procedure TFmAbxTest.UpdateStatusBar;
 begin
- if assigned(FAbxTest)
+ if Assigned(FAbxTest)
   then StatusBar.SimpleText := FAbxTest.TestInfo;
 
  if BtAudioStop.Enabled

@@ -22,6 +22,7 @@ type
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetCaption(const Value: string);
     procedure SetAlignment(const Value: TAlignment);
+    procedure SetShadow(const Value: TGUIShadow);
   protected
     procedure RenderLabelToBitmap(const Bitmap: TBitmap); virtual;
     procedure UpdateBuffer; override;
@@ -30,13 +31,14 @@ type
     procedure CaptionChanged; virtual;
     procedure ShadowChanged; virtual;
     procedure TransparentChanged; virtual;
+    procedure FontChanged; override;
   public
     constructor Create(AOwner: TComponent); overload; override;
     destructor Destroy; override;
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Alignment: TAlignment read FAlignment write SetAlignment default taLeftJustify;
     property Caption: string read FCaption write SetCaption;
-    property Shadow: TGUIShadow read FShadow write FShadow;
+    property Shadow: TGUIShadow read FShadow write SetShadow;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
@@ -105,6 +107,12 @@ destructor TCustomGuiLabel.Destroy;
 begin
  FreeAndNil(FShadow);
  inherited;
+end;
+
+procedure TCustomGuiLabel.FontChanged;
+begin
+ inherited;
+ FBuffer.Canvas.Font.Assign(Self.Font);
 end;
 
 procedure TCustomGuiLabel.ShadowChanged;
@@ -348,6 +356,11 @@ begin
    FCaption := Value;
    CaptionChanged;
   end;
+end;
+
+procedure TCustomGuiLabel.SetShadow(const Value: TGUIShadow);
+begin
+ FShadow.Assign(Value);
 end;
 
 procedure TCustomGuiLabel.CaptionChanged;

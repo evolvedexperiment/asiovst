@@ -194,7 +194,7 @@ end;
 
 procedure TCustomAbxTestSetup.NextTrial(GuessWasCorrect: Boolean);
 begin
- inc(FStepCount);
+ Inc(FStepCount);
 end;
 
 procedure TCustomAbxTestSetup.SampleRateChanged;

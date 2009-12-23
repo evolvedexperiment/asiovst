@@ -17,7 +17,7 @@ type
     FArrowButtonWidth : Integer;
     FButtonColor      : TColor;
     FItemIndex        : Integer;
-    FItems            : TStringList;
+    FItems            : TStrings;
     FOnChange         : TNotifyEvent;
     FRoundRadius      : Integer;
     FPopupMenu        : TPopupMenu;
@@ -30,7 +30,7 @@ type
     procedure SetArrowWidth(const Value: Integer);
     procedure SetButtonColor(const Value: TColor);
     procedure SetItemIndex(Value: Integer);
-    procedure SetItems(const Value: TStringList);
+    procedure SetItems(const Value: TStrings);
     procedure SetRoundRadius(Value: Integer);
     procedure SetSelectBoxColor(const Value: TColor);
   protected
@@ -55,7 +55,7 @@ type
     property Alternate: Boolean read FAlternate write SetAlternate default False; 
     property ButtonColor: TColor read FButtonColor write SetButtonColor default clBtnShadow;
     property ItemIndex: Integer read FItemIndex write SetItemIndex;
-    property Items: TStringList read FItems write SetItems;
+    property Items: TStrings read FItems write SetItems;
     property LineColor default clBtnHighlight;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
@@ -490,7 +490,7 @@ begin
  Invalidate;
 end;
 
-procedure TCustomGuiSelectBox.SetItems(const Value: TStringList);
+procedure TCustomGuiSelectBox.SetItems(const Value: TStrings);
 begin
  if Assigned(FItems)
   then FItems.Assign(Value)

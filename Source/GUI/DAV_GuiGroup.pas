@@ -30,12 +30,12 @@ type
     procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetCaption(const Value: string);
     procedure SetLineColor(const Value: TColor);
+    procedure SetGroupColor(const Value: TColor);
     procedure SetOutlineWidth(const Value: Integer);
     procedure SetOwnerDraw(const Value: Boolean);
     procedure SetRoundRadius(Value: Integer);
     procedure SetTransparent (const Value: Boolean);
     procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
-    procedure SetGroupColor(const Value: TColor);
   protected
     procedure Click; override;
     procedure Paint; override;
@@ -92,6 +92,7 @@ type
     property DragKind;
     property DragMode;
     property Enabled;
+    property GroupColor;
     property OwnerDraw;
     property Font;
     property HelpContext;
@@ -149,6 +150,7 @@ type
     property Offset;
     property OwnerDraw;
     property Font;
+    property GroupColor;
     property HeaderMinWidth;
     property HelpContext;
     property Hint;
@@ -739,6 +741,7 @@ begin
     else
      begin
       rct := ClipRect;
+      Brush.Color := FGroupColor;
       InflateRect(rct, -FOSFactor * (OutlineWidth + 1) div 2, -FOSFactor * (OutlineWidth + 1) div 2);
 
       rad := FOSFactor * FRoundRadius;

@@ -1112,7 +1112,7 @@ begin
    Result := THeader(Header).ReadHeader(Self, CRC);
   end;
 
- if assigned(CRC) then FreeAndNil(CRC);
+ if Assigned(CRC) then FreeAndNil(CRC);
 end;
 
 procedure TBitStream.SetSyncWord(SyncWord: Cardinal);
@@ -1140,7 +1140,7 @@ end;
 
 destructor THeader.Destroy;
 begin
- if assigned(FOffset) then Dispose(FOffset);
+ if Assigned(FOffset) then Dispose(FOffset);
  inherited;
 end;
 
@@ -1947,7 +1947,7 @@ end;
 destructor TLayer3Decoder.Destroy;
 begin
  FreeAndNil(FBitReserve);
- if assigned(FSideInfo)
+ if Assigned(FSideInfo)
   then Dispose(FSideInfo);
  inherited Destroy;
 end;
@@ -3399,7 +3399,7 @@ end;
 function TCustomMpegAudio.ReadBuffer(chLeft, chRight: PDAVSingleFixedArray;
   Size: Integer): Integer;
 var
-  FrameRead            : Boolean;
+  FrameRead     : Boolean;
   SamplesToRead : Integer;
 begin
  Result := 0;
@@ -3415,17 +3415,22 @@ begin
       begin
        FillChar(FBuffer.OutputLeft[0],  FBuffer.BufferSize * SizeOf(Single), 0);
        FillChar(FBuffer.OutputRight[0], FBuffer.BufferSize * SizeOf(Single), 0);
-       if assigned(FOnEndOfFile)
+       if Assigned(FOnEndOfFile)
         then FOnEndOfFile(Self);
       end
      else
       begin
-       if assigned(FOnFrameChanged)
+       if Assigned(FOnFrameChanged)
         then FOnFrameChanged(Self);
        FCurrentPos := FCurrentPos + 1152;
       end;
     end
-   else FBuffer.Clear;
+   else
+    begin
+     FBuffer.Clear;
+     if Assigned(FOnEndOfFile)
+      then FOnEndOfFile(Self);
+    end;
   if (Size - Result) > (FBuffer.BufferSize - FBufferPos)
    then SamplesToRead := (FBuffer.BufferSize - FBufferPos)
    else SamplesToRead := (Size - Result);

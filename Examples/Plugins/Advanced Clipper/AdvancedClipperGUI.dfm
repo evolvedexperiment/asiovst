@@ -31,6 +31,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
+    GroupColor = 7373965
     HeaderMinWidth = 64
     LineColor = 15659506
     OutlineWidth = 3
@@ -195,6 +196,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
+    GroupColor = 7373965
     HeaderMinWidth = 64
     LineColor = 15659506
     OutlineWidth = 3
@@ -370,7 +372,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
     Width = 201
     Height = 54
     AntiAlias = gaaLinear4x
-    Caption = 'GuiPanel2'
+    Caption = 'PnClipping'
     LineColor = 15659506
     Linewidth = 3
     PanelColor = 7373965
@@ -434,7 +436,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       LEDColor = 8244410
       Brightness_Percent = 100.000000000000000000
-      BorderStrength_Percent = 100.000000000000000000
+      BorderStrength_Percent = 75.000000000000000000
       Uniformity_Percent = 50.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
@@ -448,7 +450,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       LEDColor = 8234444
       Brightness_Percent = 100.000000000000000000
-      BorderStrength_Percent = 100.000000000000000000
+      BorderStrength_Percent = 75.000000000000000000
       Uniformity_Percent = 50.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
@@ -462,7 +464,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       LEDColor = 8226252
       Brightness_Percent = 100.000000000000000000
-      BorderStrength_Percent = 100.000000000000000000
+      BorderStrength_Percent = 75.000000000000000000
       Uniformity_Percent = 50.000000000000000000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
