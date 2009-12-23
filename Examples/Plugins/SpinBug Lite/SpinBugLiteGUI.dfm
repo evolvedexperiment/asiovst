@@ -36,6 +36,8 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbTitle: TGuiLabel
     Left = 7
@@ -50,7 +52,9 @@ object FmSpinBugLite: TFmSpinBugLite
     Font.Height = -64
     Font.Name = 'Comic Sans MS'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object DialLFO: TGuiDial
     Left = 213
@@ -97,7 +101,7 @@ object FmSpinBugLite: TFmSpinBugLite
       'm+s'
       'special'
       'old one')
-    LineColor = 2097152
+    LineColor = clWhite
     ParentFont = False
     Radius = 4
     SelectBoxColor = 271837
@@ -135,7 +139,7 @@ object FmSpinBugLite: TFmSpinBugLite
       'medium'
       'soft'
       'smooth')
-    LineColor = 2097152
+    LineColor = clWhite
     ParentFont = False
     Radius = 4
     SelectBoxColor = 271837

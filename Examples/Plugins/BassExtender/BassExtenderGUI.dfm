@@ -44,6 +44,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialFrequency: TGuiDial
       Left = 22
@@ -84,6 +86,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFrequencyValue: TGuiLabel
       Left = 12
@@ -98,6 +102,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
       Left = 116
@@ -112,6 +118,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOrder: TGuiDial
       Left = 126
@@ -152,6 +160,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDivideValue: TGuiLabel
       Left = 220
@@ -166,6 +176,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialDivide: TGuiDial
       Left = 230
@@ -204,6 +216,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbShapeValue: TGuiLabel
       Left = 324
@@ -218,6 +232,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialShape: TGuiDial
       Left = 334
@@ -256,6 +272,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbBalanceValue: TGuiLabel
       Left = 428
@@ -270,6 +288,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialBalance: TGuiDial
       Left = 438
@@ -307,6 +327,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialThreshold: TGuiDial
       Left = 22
@@ -343,6 +365,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbThresholdValue: TGuiLabel
       Left = 12
@@ -357,6 +381,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbRatioValue: TGuiLabel
       Left = 116
@@ -371,6 +397,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialRatio: TGuiDial
       Left = 126
@@ -411,6 +439,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbAttackValue: TGuiLabel
       Left = 220
@@ -425,6 +455,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialAttack: TGuiDial
       Left = 230
@@ -465,6 +497,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbReleaseValue: TGuiLabel
       Left = 324
@@ -479,6 +513,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialRelease: TGuiDial
       Left = 334
@@ -519,6 +555,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbCompressionValue: TGuiLabel
       Left = 428
@@ -533,6 +571,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialCompression: TGuiDial
       Left = 438
@@ -571,6 +611,8 @@ object FmBassExtender: TFmBassExtender
       Font.Height = -19
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object DIL: TGuiDialImageList

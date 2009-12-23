@@ -1339,7 +1339,8 @@ begin
  else
   begin
    FActive := False;
-   FDriver.Stop;
+   if Assigned(FDriver)
+    then FDriver.Stop;
    if FBuffersCreated
     then ClearBuffers;
   end;

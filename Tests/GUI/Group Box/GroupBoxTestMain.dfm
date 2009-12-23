@@ -31,6 +31,21 @@ object FmGroupBoxTest: TFmGroupBoxTest
     Height = 13
     Caption = 'Round Radius:'
   end
+  object ShGroupColor: TShape
+    Left = 129
+    Top = 196
+    Width = 17
+    Height = 17
+    Brush.Color = clBtnShadow
+    OnMouseDown = ShGroupColorMouseDown
+  end
+  object LbColor: TLabel
+    Left = 94
+    Top = 197
+    Width = 29
+    Height = 13
+    Caption = 'Color:'
+  end
   object GroupA: TGuiGroup
     Left = 8
     Top = 8
@@ -87,10 +102,14 @@ object FmGroupBoxTest: TFmGroupBoxTest
   object CbTransparent: TCheckBox
     Left = 8
     Top = 196
-    Width = 97
+    Width = 80
     Height = 17
     Caption = 'Transparent'
     TabOrder = 6
     OnClick = CbTransparentClick
+  end
+  object ColorDialog: TColorDialog
+    Left = 168
+    Top = 184
   end
 end

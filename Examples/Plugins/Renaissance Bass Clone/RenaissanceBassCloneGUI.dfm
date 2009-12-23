@@ -19,7 +19,7 @@ object FmRenaissanceBassClone: TFmRenaissanceBassClone
     Width = 17
     Height = 241
     BorderColor = clWindowFrame
-    ContrastLuminanz = 0.300000011920929000
+    ContrastLuminance = 0.300000011920929000
     Upper = 1.000000000000000000
   end
   object GuiColorLevelMeter2: TGuiColorLevelMeter
@@ -28,7 +28,7 @@ object FmRenaissanceBassClone: TFmRenaissanceBassClone
     Width = 17
     Height = 241
     BorderColor = clWindowFrame
-    ContrastLuminanz = 0.300000011920929000
+    ContrastLuminance = 0.300000011920929000
     Upper = 1.000000000000000000
   end
   object LbAudio: TGuiLabel
@@ -38,6 +38,7 @@ object FmRenaissanceBassClone: TFmRenaissanceBassClone
     Height = 14
     Alignment = taCenter
     Caption = 'Audio'
+    Shadow.Color = clBlack
   end
   object LbRenaissanceBass: TGuiLabel
     Left = 628
@@ -46,6 +47,7 @@ object FmRenaissanceBassClone: TFmRenaissanceBassClone
     Height = 14
     Alignment = taCenter
     Caption = 'RenaissanceBass'
+    Shadow.Color = clBlack
   end
   object LbOriginalBass: TGuiLabel
     Left = 620
@@ -54,6 +56,7 @@ object FmRenaissanceBassClone: TFmRenaissanceBassClone
     Height = 14
     Alignment = taCenter
     Caption = 'Original Bass'
+    Shadow.Color = clBlack
   end
   object LbClipIndicator: TGuiLabel
     Left = 628
@@ -62,6 +65,7 @@ object FmRenaissanceBassClone: TFmRenaissanceBassClone
     Height = 14
     Alignment = taCenter
     Caption = 'No Clip'
+    Shadow.Color = clBlack
   end
   object LbFrequency: TLabel
     Left = 16

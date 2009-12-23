@@ -43,6 +43,7 @@ type
     property BitmapChanged: Boolean read FBitmapChanged write SetBitmapChanged; 
   public
     constructor Create (AOwner: TComponent); override;
+    destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); override;
 
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
@@ -198,6 +199,12 @@ begin
                 end;
   else raise Exception.Create('not yet supported');
  end;
+end;
+
+destructor TCustomGuiPanel.Destroy;
+begin
+ FreeAndNil(FBitmap);
+ inherited;
 end;
 
 procedure TCustomGuiPanel.DownsampleBitmap(Bitmap: TBitmap);

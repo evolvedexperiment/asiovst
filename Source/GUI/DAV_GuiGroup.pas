@@ -12,59 +12,73 @@ uses
 type
   TCustomGuiGroup = class(TCustomGroupBox)
   private
-    FAntiAlias    : TGuiAntiAlias;
     FAutoFocus    : Boolean;
     FCaption      : string;
     FLineColor    : TColor;
     FOutlineWidth : Integer;
     FGroupColor   : TColor;
-    FOSFactor     : Integer;
+    FPanelColor   : TColor;
     FOwnerDraw    : Boolean;
     FRoundRadius  : Integer;
-    FTransparent  : Boolean;
     procedure CMDialogChar(var Message: TCMDialogChar); message CM_DIALOGCHAR;
     procedure CMEnabledChanged(var Message: TMessage); message CM_ENABLEDCHANGED;
     procedure CMParentColorChanged(var Message: TWMNoParams); message CM_PARENTCOLORCHANGED;
     procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
-    procedure DrawParentImage(Dest: TCanvas);
-    procedure SetAntiAlias(const Value: TGuiAntiAlias);
     procedure SetCaption(const Value: string);
     procedure SetLineColor(const Value: TColor);
     procedure SetGroupColor(const Value: TColor);
     procedure SetOutlineWidth(const Value: Integer);
     procedure SetOwnerDraw(const Value: Boolean);
     procedure SetRoundRadius(Value: Integer);
-    procedure SetTransparent (const Value: Boolean);
-    procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
+    procedure SetPanelColor(const Value: TColor);
   protected
     procedure Click; override;
-    procedure Paint; override;
-    procedure AntiAliasChanged; virtual;
     procedure CaptionChanged; virtual;
-    procedure GroupColorChanged;
+    procedure GroupColorChanged; virtual;
+    procedure PanelColorChanged; virtual;
     procedure LineColorChanged; virtual;
     procedure OutlineWidthChanged; virtual;
     procedure RoundRadiusChanged; virtual;
-    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); virtual; abstract;
   public
     constructor Create(AOwner: TComponent); override;
-    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property AutoFocus: Boolean read FAutoFocus write FAutoFocus default True;
     property Caption: string read FCaption write SetCaption;
     property OwnerDraw: Boolean read FOwnerDraw write SetOwnerDraw default True;
     property LineColor: TColor read FLineColor write SetLineColor default clBtnShadow;
     property GroupColor: TColor read FGroupColor write SetGroupColor default clBtnShadow;
+    property PanelColor: TColor read FPanelColor write SetPanelColor default clBtnFace;
     property OutlineWidth: Integer read FOutlineWidth write SetOutlineWidth default 1;
     property Radius: Integer read FRoundRadius write SetRoundRadius default 2;
+  end;
+
+  TCustomGuiGroupGDI = class(TCustomGuiGroup)
+  private
+    FAntiAlias   : TGuiAntiAlias;
+    FOSFactor    : Integer;
+    FTransparent : Boolean;
+    procedure SetAntiAlias(const Value: TGuiAntiAlias);
+    procedure SetTransparent(const Value: Boolean);
+    procedure DrawParentImage(Dest: TCanvas);
+    procedure WMMove(var Message: {$IFDEF FPC}TLMMove{$ELSE}TWMMove{$ENDIF}); message WM_MOVE;
+  protected
+    procedure Paint; override;
+    procedure AntiAliasChanged; virtual;
+    procedure TransparentChanged; virtual;
+
+    procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); virtual; abstract;
+  public
+    constructor Create(AOwner: TComponent); override;
+    property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
   end;
 
-  TCustomGuiGroupA = class(TCustomGuiGroup)
+
+  TCustomGuiGroupA = class(TCustomGuiGroupGDI)
   protected
     procedure RenderGroupBoxToBitmap(Bitmap: TBitmap); override;
   end;
 
-  TCustomGuiGroupB = class(TCustomGuiGroup)
+  TCustomGuiGroupB = class(TCustomGuiGroupGDI)
   private
     FHeaderMinWidth : Integer;
     FOffset         : Integer;
@@ -99,6 +113,7 @@ type
     property Hint;
     property LineColor;
     property OutlineWidth;
+    property PanelColor;
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
@@ -156,6 +171,7 @@ type
     property Hint;
     property LineColor;
     property OutlineWidth;
+    property PanelColor;
     property ParentColor;
     property ParentFont;
     property ParentShowHint;
@@ -190,8 +206,7 @@ type
     property OnUnDock;
   end;
 
-  TGuiGroup = class(TGuiGroupB)
-  end;
+  TGuiGroup = class(TGuiGroupB);
 
 implementation
 
@@ -203,37 +218,14 @@ uses
 constructor TCustomGuiGroup.Create(AOwner: TComponent);
 begin
  inherited;
- ControlStyle    := ControlStyle + [csOpaque, //csReplicatable,
-                                    csAcceptsControls];
- FOwnerDraw      := True;
- FOSFactor       := 1;
- FRoundRadius    := 2;
- FCaption        := 'Group'; //Name;
- FLineColor      := clBtnShadow;
- FGroupColor     := clBtnShadow;
- FOutlineWidth   := 1;
-end;
-
-procedure TCustomGuiGroup.SetAntiAlias(const Value: TGuiAntiAlias);
-begin
- if FAntiAlias <> Value then
-  begin
-   FAntiAlias := Value;
-   AntiAliasChanged;
-  end;
-end;
-
-procedure TCustomGuiGroup.AntiAliasChanged;
-begin
- case FAntiAlias of
-       gaaNone : FOSFactor :=  1;
-   gaaLinear2x : FOSFactor :=  2;
-   gaaLinear3x : FOSFactor :=  3;
-   gaaLinear4x : FOSFactor :=  4;
-   gaaLinear8x : FOSFactor :=  8;
-  gaaLinear16x : FOSFactor := 16;
- end;
- Invalidate;
+ ControlStyle  := ControlStyle + [csOpaque];
+ FOwnerDraw    := True;
+ FRoundRadius  := 2;
+ FCaption      := 'Group'; //Name;
+ FLineColor    := clBtnShadow;
+ FGroupColor   := clBtnShadow;
+ FPanelColor   := clBtnFace;
+ FOutlineWidth := 1;
 end;
 
 procedure TCustomGuiGroup.SetCaption(const Value: string);
@@ -342,7 +334,41 @@ begin
  Invalidate;
 end;
 
-procedure TCustomGuiGroup.DrawParentImage(Dest: TCanvas);
+procedure TCustomGuiGroup.SetOwnerDraw(const Value: Boolean);
+begin
+ if FOwnerDraw <> Value then
+  begin
+   FOwnerDraw := Value;
+   RecreateWnd;
+   Invalidate;
+  end;
+end;
+
+procedure TCustomGuiGroup.SetPanelColor(const Value: TColor);
+begin
+ if FPanelColor <> Value then
+  begin
+   FPanelColor := Value;
+   PanelColorChanged;
+  end;
+end;
+
+procedure TCustomGuiGroup.PanelColorChanged;
+begin
+ Invalidate;
+end;
+
+
+{ TCustomGuiGroupGDI }
+
+constructor TCustomGuiGroupGDI.Create(AOwner: TComponent);
+begin
+ inherited;
+ FAntiAlias := gaaNone;
+ FOSFactor  := 1;
+end;
+
+procedure TCustomGuiGroupGDI.DrawParentImage(Dest: TCanvas);
 var
   SaveIndex : Integer;
   DC        : THandle;
@@ -359,7 +385,38 @@ begin
   RestoreDC(DC, SaveIndex);
 end;
 
-procedure TCustomGuiGroup.Paint;
+procedure TCustomGuiGroupGDI.SetAntiAlias(const Value: TGuiAntiAlias);
+begin
+ if FAntiAlias <> Value then
+  begin
+   FAntiAlias := Value;
+   AntiAliasChanged;
+  end;
+end;
+
+procedure TCustomGuiGroupGDI.AntiAliasChanged;
+begin
+ case FAntiAlias of
+       gaaNone : FOSFactor :=  1;
+   gaaLinear2x : FOSFactor :=  2;
+   gaaLinear3x : FOSFactor :=  3;
+   gaaLinear4x : FOSFactor :=  4;
+   gaaLinear8x : FOSFactor :=  8;
+  gaaLinear16x : FOSFactor := 16;
+ end;
+ Invalidate;
+end;
+
+procedure TCustomGuiGroupGDI.SetTransparent(const Value: Boolean);
+begin
+ if FTransparent <> Value then
+  begin
+   FTransparent := Value;
+   TransparentChanged;
+  end;
+end;
+
+procedure TCustomGuiGroupGDI.Paint;
 var
   OutlineRect : TRect;
   Buffer     : TBitmap;
@@ -467,27 +524,17 @@ begin
  end;
 end;
 
-procedure TCustomGuiGroup.SetOwnerDraw(const Value: Boolean);
+procedure TCustomGuiGroupGDI.TransparentChanged;
 begin
- if FOwnerDraw <> Value then
-  begin
-   FOwnerDraw := Value;
-   RecreateWnd;
-   Invalidate;
-  end;
-end;
-
-procedure TCustomGuiGroup.SetTransparent(const Value: Boolean);
-begin
- FTransparent := Value;
  Invalidate;
 end;
 
-procedure TCustomGuiGroup.WMMove(var Message: TWMMove);
+procedure TCustomGuiGroupGDI.WMMove(var Message: TWMMove);
 begin
  inherited;
  if FTransparent then Invalidate;
 end;
+
 
 { TCustomGuiGroupA }
 
@@ -508,7 +555,7 @@ begin
    Lock;
 
    Brush.Style := bsSolid;
-   Brush.Color := Color;
+   Brush.Color := FPanelColor;
    Pen.Width   := FOSFactor * FOutlineWidth;
    Pen.Color   := FLineColor;
    Font.Assign(Self.Font);
@@ -550,7 +597,7 @@ begin
     else
      begin
       rad := FOSFactor * FRoundRadius;
-      Steps := Round(2 / arcsin(1 / rad)) + 1;
+      Steps := Round(2 / Arcsin(1 / rad)) + 1;
       if Steps > 1 then
       begin
         SetLength(PtsArray, Steps + 4);
@@ -695,7 +742,7 @@ begin
    Lock;
 
    Brush.Style := bsSolid;
-   Brush.Color := Color;
+   Brush.Color := FPanelColor;
    Pen.Width   := FOSFactor * FOutlineWidth;
    Pen.Color   := FLineColor;
    Font.Assign(Self.Font);
@@ -741,13 +788,13 @@ begin
     else
      begin
       rct := ClipRect;
-      Brush.Color := FGroupColor;
+      Brush.Color := FPanelColor;
       InflateRect(rct, -FOSFactor * (OutlineWidth + 1) div 2, -FOSFactor * (OutlineWidth + 1) div 2);
 
       rad := FOSFactor * FRoundRadius;
       Steps := Round(2 / arcsin(1 / rad)) + 1;
       if Steps > 1 then
-      begin
+       begin
         SetLength(PtsArray, Steps + 4);
         Val.Im := 0; Val.Re := -1;
         Val.Re := Val.Re * rad; Val.Im := Val.Im * rad;
@@ -798,15 +845,14 @@ begin
         PolyGon(PtsArray);
 
 
-
         // Draw inner text
         //////////////////
 
-        Brush.Color   := FLineColor;
+        Brush.Color := FGroupColor;
         SetLength(PtsArray, Steps div 2 + 5);
         Val.Re := -rad; Val.Im := 0;
 
-        GetSinCos(2 * Pi / (Steps div 2 - 1), Off.Im, Off.Re);
+        GetSinCos(Pi / (Steps div 2 - 1), Off.Im, Off.Re);
         rct := Rect(OutlineWidth div 2, OutlineWidth div 2, TextSize.cx + 10 - (OutlineWidth + 1) div 2, TextSize.cy + 5 - (OutlineWidth + 1) div 2);
         PtsArray[0] := Point(Round(rct.Left), Round(rct.Top + rad));
 

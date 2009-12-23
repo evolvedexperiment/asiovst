@@ -120,7 +120,6 @@ begin
  FVol           :=    1;
  FChannelOffset :=    0;
  GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
-
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
@@ -135,11 +134,13 @@ begin
    ASIOHost.DriverIndex := DriverCombo.ItemIndex;
    ChannelBox.Clear;
    for Channel := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
-   begin
-    ChannelBox.Items.Add(
-     ASIOHost.OutputChannelInfos[2 * Channel].name + ' / ' +
-     ASIOHost.OutputChannelInfos[2 * Channel + 1].name);
-   end;
+    begin
+     ChannelBox.Items.Add(
+       ASIOHost.OutputChannelInfos[2 * Channel].Name + ' / ' +
+       ASIOHost.OutputChannelInfos[2 * Channel + 1].Name);
+    end;
+
+   // store current ASIO driver index
    with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
     try
      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);

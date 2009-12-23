@@ -31,8 +31,9 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
+    GroupColor = 7373965
     LineColor = 15659506
-    LineWidth = 2
+    OutlineWidth = 3
     ParentFont = False
     Radius = 5
     TabOrder = 0
@@ -96,6 +97,8 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        ParentFont = False
+        Shadow.Color = clBlack
       end
     end
   end
@@ -111,8 +114,9 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
+    GroupColor = 7373965
     LineColor = 15659506
-    LineWidth = 2
+    OutlineWidth = 3
     ParentFont = False
     Radius = 5
     TabOrder = 1
@@ -174,6 +178,8 @@ object FmBodeFrequencyShifter: TFmBodeFrequencyShifter
         Font.Height = -11
         Font.Name = 'Times New Roman'
         Font.Style = []
+        ParentFont = False
+        Shadow.Color = clBlack
       end
     end
   end

@@ -31,7 +31,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -16
     Font.Name = 'Arial'
     Font.Style = [fsBold, fsUnderline]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object Barberpole: TPaintBox
     Left = 8
@@ -52,7 +54,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbLowE: TGuiLabel
     Left = 127
@@ -66,7 +70,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbNoteClick
   end
   object LbA: TGuiLabel
@@ -81,7 +87,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbNoteClick
   end
   object LbD: TGuiLabel
@@ -96,7 +104,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbNoteClick
   end
   object LbG: TGuiLabel
@@ -111,7 +121,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbNoteClick
   end
   object LbH: TGuiLabel
@@ -126,7 +138,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbNoteClick
   end
   object LbE: TGuiLabel
@@ -141,7 +155,9 @@ object FmBarberpoleTuner: TFmBarberpoleTuner
     Font.Height = -21
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbNoteClick
   end
   object Timer: TTimer

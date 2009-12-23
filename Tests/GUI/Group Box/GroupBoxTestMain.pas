@@ -3,18 +3,21 @@ unit GroupBoxTestMain;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls, DAV_GuiGroup;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ComCtrls, ExtCtrls, DAV_GuiGroup;
 
 type
   TFmGroupBoxTest = class(TForm)
     CbTransparent: TCheckBox;
+    ColorDialog: TColorDialog;
     GroupA: TGuiGroup;
     GroupB: TGuiGroup;
     GroupC: TGuiGroup;
     GroupD: TGuiGroup;
+    LbColor: TLabel;
     LbOutlineWidth: TLabel;
     LbRoundRadius: TLabel;
+    ShGroupColor: TShape;
     TbOutlineWidth: TTrackBar;
     TbRoundRadius: TTrackBar;
     procedure FormCreate(Sender: TObject);
@@ -24,6 +27,7 @@ type
     procedure TbRoundRadiusChange(Sender: TObject);
     procedure TbOutlineWidthChange(Sender: TObject);
     procedure CbTransparentClick(Sender: TObject);
+    procedure ShGroupColorMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -84,6 +88,23 @@ begin
        Line[x].G := round($84 - $48 * (s[1] - h));
        Line[x].R := round($8D - $50 * (s[1] - h));
       end;
+    end;
+  end;
+end;
+
+procedure TFmGroupBoxTest.ShGroupColorMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+ with ColorDialog do
+  begin
+   Color := ShGroupColor.Brush.Color;
+   if Execute then
+    begin
+     ShGroupColor.Brush.Color := Color;
+     GroupA.GroupColor := Color;
+     GroupB.GroupColor := Color;
+     GroupC.GroupColor := Color;
+     GroupD.GroupColor := Color;
     end;
   end;
 end;

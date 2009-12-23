@@ -108,7 +108,7 @@ type
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
   end;
 
-  TGuiSlider = class(TCustomGuiSlider)
+  TCustomGuiSliderGDI = class(TCustomGuiSlider)
   private
     FBuffer       : TBitmap;
     FAntiAlias    : TGuiAntiAlias;
@@ -149,33 +149,31 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-  published
     property AntiAlias: TGuiAntiAlias read FAntiAlias write SetAntiAlias default gaaNone;
     property Transparent: Boolean read FTransparent write SetTransparent default False;
+  end;
+
+  TGuiSliderGDI = class(TCustomGuiSlider)
+  published
+    property Align;
+    property Anchors;
+    property AntiAlias;
     property AutoColor;
     property BorderColor;
     property BorderRadius;
     property BorderWidth;
+    property Color;
+    property Constraints;
     property CurveMapping;
     property DefaultPosition;
     property Direction;
-    property Max;
-    property Min;
-    property Position;
-    property SlideColor;
-    property ShowText;
-
-    property OnChange;
-    property OnPaint;
-
-    property Align;
-    property Anchors;
-    property Color;
-    property Constraints;
     property DragCursor;
     property DragKind;
     property DragMode;
     property Font;
+    property Max;
+    property Min;
+    property OnChange;
     property OnClick;
     property OnConstrainedResize;
     property OnContextPopup;
@@ -193,19 +191,26 @@ type
     property OnMouseWheel;
     property OnMouseWheelDown;
     property OnMouseWheelUp;
+    property OnPaint;
     property OnResize;
     property OnStartDock;
     property OnStartDrag;
     property ParentColor;
     property ParentShowHint;
     property PopupMenu;
+    property Position;
     property ShowHint;
+    property ShowText;
+    property SlideColor;
+    property Transparent;
     property Visible;
     {$IFNDEF FPC}
     property BiDiMode;
     property OnCanResize;
     {$ENDIF}
   end;
+
+  TGuiSlider = TGuiSliderGDI;
 
 implementation
 
@@ -474,9 +479,9 @@ begin
 end;
 
 
-{ TGuiSlider }
+{ TCustomGuiSliderGDI }
 
-constructor TGuiSlider.Create(AOwner: TComponent);
+constructor TCustomGuiSliderGDI.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
 
@@ -492,17 +497,17 @@ begin
  FTransparent := False;
 end;
 
-destructor TGuiSlider.Destroy;
+destructor TCustomGuiSliderGDI.Destroy;
 begin
  FreeAndNil(FBuffer);
  inherited Destroy;
 end;
 
-procedure TGuiSlider.AssignTo(Dest: TPersistent);
+procedure TCustomGuiSliderGDI.AssignTo(Dest: TPersistent);
 begin
  inherited;
- if Dest is TGuiSlider then
-  with TGuiSlider(Dest) do
+ if Dest is TCustomGuiSliderGDI then
+  with TCustomGuiSliderGDI(Dest) do
    begin
     FAntiAlias       := Self.FAntiAlias;
     FOSFactor        := Self.FOSFactor;
@@ -512,16 +517,16 @@ begin
    end;
 end;
 
-procedure TGuiSlider.ControlChanged;
+procedure TCustomGuiSliderGDI.ControlChanged;
 begin
  FChartChanged := True;
  inherited;
 end;
 
 {$IFNDEF FPC}
-procedure TGuiSlider.CMFontChanged(var Message: TMessage);
+procedure TCustomGuiSliderGDI.CMFontChanged(var Message: TMessage);
 {$ELSE}
-procedure TGuiSlider.CMFontChanged(var Message: TLMessage);
+procedure TCustomGuiSliderGDI.CMFontChanged(var Message: TLMessage);
 {$ENDIF}
 begin
  inherited;
@@ -529,7 +534,7 @@ begin
 end;
 
 
-procedure TGuiSlider.MouseDown(Button: TMouseButton; Shift: TShiftState;
+procedure TCustomGuiSliderGDI.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 var
   NormalizedPosition : Single;
@@ -543,7 +548,7 @@ begin
  inherited;
 end;
 
-procedure TGuiSlider.MouseMove(Shift: TShiftState; X, Y: Integer);
+procedure TCustomGuiSliderGDI.MouseMove(Shift: TShiftState; X, Y: Integer);
 var
   NormalizedPosition : Single;
 begin
@@ -559,7 +564,7 @@ end;
 
 // Drawing stuff
 
-procedure TGuiSlider.UpsampleBitmap(Bitmap: TBitmap);
+procedure TCustomGuiSliderGDI.UpsampleBitmap(Bitmap: TBitmap);
 begin
  case FAntiAlias of
    gaaLinear2x: Upsample2xBitmap32(Bitmap);
@@ -577,7 +582,7 @@ begin
  end;
 end;
 
-procedure TGuiSlider.DownsampleBitmap(Bitmap: TBitmap);
+procedure TCustomGuiSliderGDI.DownsampleBitmap(Bitmap: TBitmap);
 begin
  case FAntiAlias of
    gaaLinear2x: Downsample2xBitmap32(Bitmap);
@@ -596,7 +601,7 @@ begin
 end;
 
 {$IFNDEF FPC}
-procedure TGuiSlider.DrawParentImage(Dest: TCanvas);
+procedure TCustomGuiSliderGDI.DrawParentImage(Dest: TCanvas);
 var
   SaveIndex : Integer;
   DC        : THandle;
@@ -614,7 +619,7 @@ begin
 end;
 {$ENDIF}
 
-procedure TGuiSlider.Paint;
+procedure TCustomGuiSliderGDI.Paint;
 begin
  if Assigned(FBuffer) then
   begin
@@ -632,7 +637,7 @@ begin
   then FOnPaint(Self);
 end;
 
-procedure TGuiSlider.SetAntiAlias(const Value: TGuiAntiAlias);
+procedure TCustomGuiSliderGDI.SetAntiAlias(const Value: TGuiAntiAlias);
 begin
  if FAntiAlias <> Value then
   begin
@@ -641,7 +646,7 @@ begin
   end;
 end;
 
-procedure TGuiSlider.AntiAliasChanged;
+procedure TCustomGuiSliderGDI.AntiAliasChanged;
 begin
  case FAntiAlias of
        gaaNone : FOSFactor :=  1;
@@ -654,7 +659,7 @@ begin
  ControlChanged;
 end;
 
-procedure TGuiSlider.RenderBuffer;
+procedure TCustomGuiSliderGDI.RenderBuffer;
 var
   Bmp: TBitmap;
 begin
@@ -715,7 +720,7 @@ begin
    end;
 end;
 
-procedure TGuiSlider.RenderToBitmap(Bitmap: TBitmap);
+procedure TCustomGuiSliderGDI.RenderToBitmap(Bitmap: TBitmap);
 var
   Offset   : Integer;
   Scale    : Single;
@@ -757,7 +762,7 @@ begin
   end;
 end;
 
-procedure TGuiSlider.Resize;
+procedure TCustomGuiSliderGDI.Resize;
 begin
  inherited;
  if Assigned(FBuffer) then
@@ -770,13 +775,13 @@ begin
  ControlChanged;
 end;
 
-procedure TGuiSlider.Loaded;
+procedure TCustomGuiSliderGDI.Loaded;
 begin
  inherited;
  Resize;
 end;
 
-procedure TGuiSlider.SetTransparent(const Value: Boolean);
+procedure TCustomGuiSliderGDI.SetTransparent(const Value: Boolean);
 begin
  if FTransparent <> Value then
   begin
@@ -785,7 +790,7 @@ begin
   end;
 end;
 
-procedure TGuiSlider.TransparentChanged;
+procedure TCustomGuiSliderGDI.TransparentChanged;
 begin
  ControlChanged;
 end;

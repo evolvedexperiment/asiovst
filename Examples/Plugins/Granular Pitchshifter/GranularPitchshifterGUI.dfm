@@ -2,13 +2,13 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
   Left = 396
   Top = 84
   BorderStyle = bsNone
-  Caption = 'GranularPitchShifter'
+  Caption = 'Granular Pitch-Shifter'
   ClientHeight = 93
   ClientWidth = 277
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -19
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 23
   object DialStages: TGuiDial
     Left = 116
     Top = 31
@@ -24,7 +24,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Height = 36
     DefaultPosition = 4.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 16.000000000000000000
     Min = 2.000000000000000000
@@ -46,11 +46,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Stages'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbStagesValue: TGuiLabel
     Left = 104
@@ -64,6 +60,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialSemitones: TGuiDial
     Left = 32
@@ -72,7 +70,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Height = 36
     DefaultPosition = 4.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 12.000000000000000000
     Min = -12.000000000000000000
@@ -94,11 +92,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Semitones'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbSemitonesValue: TGuiLabel
     Left = 8
@@ -112,6 +106,8 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialGranularity: TGuiDial
     Left = 196
@@ -121,7 +117,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     CurveMapping = -1.500000000000000000
     DefaultPosition = 20.000000000000000000
     DialImageIndex = -1
-    LineColor = clRed
+    LineColor = 14277598
     LineWidth = 2
     Max = 1000.000000000000000000
     Min = 1.000000000000000000
@@ -143,11 +139,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Granularity'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbGranularityValue: TGuiLabel
     Left = 176
@@ -161,5 +153,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
 end

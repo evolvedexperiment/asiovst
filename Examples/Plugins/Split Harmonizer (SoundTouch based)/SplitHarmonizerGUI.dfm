@@ -25,6 +25,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Height = 24
     AntiAlias = gaaLinear4x
     Caption = 'Encoding:'
+    Shadow.Color = clBlack
   end
   object SwEncoding: TGuiSwitch
     Left = 150
@@ -52,6 +53,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     AntiAlias = gaaLinear4x
     Caption = 'PnStageA'
     LineColor = 15133420
+    Linewidth = 3
     PanelColor = 987667
     ParentColor = True
     Radius = 7
@@ -86,6 +88,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Detune'
+      Shadow.Color = clBlack
     end
     object LbDetuneAValue: TGuiLabel
       Left = 16
@@ -100,6 +103,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDelayA: TGuiLabel
       Left = 109
@@ -109,6 +114,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Delay'
+      Shadow.Color = clBlack
     end
     object DialDelayA: TGuiDial
       Left = 134
@@ -147,6 +153,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbMixA: TGuiLabel
       Left = 202
@@ -156,6 +164,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Mix'
+      Shadow.Color = clBlack
     end
     object DialMixA: TGuiDial
       Left = 227
@@ -191,6 +200,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object PnStageB: TGuiPanel
@@ -201,6 +212,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     AntiAlias = gaaLinear4x
     Caption = 'PnStageA'
     LineColor = 15133420
+    Linewidth = 3
     PanelColor = 987667
     ParentColor = True
     Radius = 7
@@ -235,6 +247,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Detune'
+      Shadow.Color = clBlack
     end
     object LbDetuneBValue: TGuiLabel
       Left = 16
@@ -249,6 +262,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDelayB: TGuiLabel
       Left = 109
@@ -258,6 +273,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Delay'
+      Shadow.Color = clBlack
     end
     object DialDelayB: TGuiDial
       Left = 134
@@ -296,6 +312,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbMixB: TGuiLabel
       Left = 202
@@ -305,6 +323,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Alignment = taCenter
       AntiAlias = gaaLinear4x
       Caption = 'Mix'
+      Shadow.Color = clBlack
     end
     object DialMixB: TGuiDial
       Left = 227
@@ -340,6 +359,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Height = -16
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object DIL: TGuiDialImageList
