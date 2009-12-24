@@ -252,7 +252,7 @@ type
     FYAxis            : TCustomAxis;
     FSeriesCollection : TGuiGraphXYSeriesCollection;
     FFlags            : TGraphXYFlags;
-    FBorderRadius: TColor;
+    FBorderRadius     : Integer;
     function GetSeriesCollectionItem(Index: Integer): TGuiGraphXYSeriesCollectionItem;
     procedure SetSeriesCollectionItem(Index: Integer; const Value: TGuiGraphXYSeriesCollectionItem);
     procedure SetFlags(const Value: TGraphXYFlags);
@@ -260,7 +260,7 @@ type
     procedure SetFrameColor(const Value: TColor);
     procedure SetSeriesCollection(const Value: TGuiGraphXYSeriesCollection);
     procedure SetBorderColor(const Value: TColor);
-    procedure SetBorderRadius(const Value: TColor);
+    procedure SetBorderRadius(const Value: Integer);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure BorderColorChanged; virtual;
@@ -279,7 +279,7 @@ type
     procedure UpdateGraph;
   published
     property BorderColor: TColor read FBorderColor write SetBorderColor default clRed;
-    property BorderRadius: TColor read FBorderRadius write SetBorderRadius default 0;
+    property BorderRadius: Integer read FBorderRadius write SetBorderRadius default 0;
     property FrameColor: TColor read FFrameColor write SetFrameColor default clRed;
     property Flags: TGraphXYFlags read FFlags write SetFlags default [gfShowLabels];
     property SeriesCollection: TGuiGraphXYSeriesCollection read FSeriesCollection write SetSeriesCollection;
@@ -1318,7 +1318,7 @@ begin
   end;
 end;
 
-procedure TCustomGuiGraphXY.SetBorderRadius(const Value: TColor);
+procedure TCustomGuiGraphXY.SetBorderRadius(const Value: Integer);
 begin
  if FBorderRadius <> Value then
   begin

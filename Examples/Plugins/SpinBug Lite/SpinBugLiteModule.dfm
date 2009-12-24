@@ -1,4 +1,5 @@
 object SpinBugLiteModule: TSpinBugLiteModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'SpinBug Lite'

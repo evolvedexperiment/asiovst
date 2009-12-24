@@ -51,8 +51,8 @@ type
     AnalyserChart: TChart;
     ASIOHost: TASIOHost;
     BarSeries: TBarSeries;
-    Bt_Analyse: TButton;
-    Bt_CP: TButton;
+    BtAnalyse: TButton;
+    BtControlPanel: TButton;
     ChannelBox: TComboBox;
     DriverCombo: TComboBox;
     Lb_Channels: TLabel;
@@ -70,8 +70,8 @@ type
     procedure AnalyserChartDblClick(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BSNormal(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure Bt_AnalyseClick(Sender: TObject);
-    procedure Bt_CPClick(Sender: TObject);
+    procedure BtAnalyseClick(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
     procedure RB_FastClick(Sender: TObject);
     procedure RB_MediumClick(Sender: TObject);
@@ -85,7 +85,7 @@ type
     FChannelNr      : Integer;
     FSampleRateReci : Double;
     FFSGain         : Single;
-
+    FIniFile        : TFileName;
     FBuffer         : PDAVSingleFixedArray;  // the Buffer
     FBufferSize     : Integer;               // Buffer size
     FBufferPosition : Integer;               // position within the Buffer
@@ -103,7 +103,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Inifiles, Registry, DAV_Common, DAV_ASIOConvert, DAV_DspDft;
+  Inifiles, Registry, DAV_Common, DAV_Math, DAV_ASIOConvert, DAV_DspDft;
 
 procedure TFmAnalyser.FormCreate(Sender: TObject);
 var
@@ -129,8 +129,11 @@ begin
    Application.Terminate;
   end;
 
+ // set absolute ini file 
+ FIniFile := ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI';
+
  // and make sure all controls are enabled or disabled
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+ with TIniFile.Create(FIniFile) do
   try
    Left := ReadInteger('Layout', 'Audio Left', Left);
    Top := ReadInteger('Layout', 'Audio Top', Top);
@@ -162,7 +165,7 @@ end;
 procedure TFmAnalyser.FormDestroy(Sender: TObject);
 begin
  ASIOHost.Active := False;
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+ with TIniFile.Create(FIniFile) do
   try
    WriteInteger('Layout', 'Audio Left', Left);
    WriteInteger('Layout', 'Audio Top', Top);
@@ -216,8 +219,8 @@ procedure TFmAnalyser.DriverComboChange(Sender: TObject);
 var
   i : Integer;
 begin
- Bt_CP.Enabled := False;
- Bt_Analyse.Enabled := False;
+ BtControlPanel.Enabled := False;
+ BtAnalyse.Enabled := False;
  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
  if DriverCombo.ItemIndex >= 0 then
   begin
@@ -225,34 +228,34 @@ begin
    ChannelBox.Clear;
    for i := 0 to ASIOHost.InputChannelCount - 1
     do ChannelBox.Items.Add(ASIOHost.InputChannelInfos[i].name);
-   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+   with TIniFile.Create(FIniFile) do
     try
      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
     finally
      Free;
     end;
-   Bt_CP.Enabled := True;
-   Bt_Analyse.Enabled := True;
+   BtControlPanel.Enabled := True;
+   BtAnalyse.Enabled := True;
    ChannelBox.ItemIndex := 0;
   end;
 end;
 
-procedure TFmAnalyser.Bt_CPClick(Sender: TObject);
+procedure TFmAnalyser.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
 end;
 
-procedure TFmAnalyser.Bt_AnalyseClick(Sender: TObject);
+procedure TFmAnalyser.BtAnalyseClick(Sender: TObject);
 begin
- if Bt_Analyse.Caption = 'Analyse' then
+ if BtAnalyse.Caption = 'Analyse' then
   begin
    ASIOHost.Active := True; // Start Audio
-   Bt_Analyse.Caption := 'Stop';
+   BtAnalyse.Caption := 'Stop';
   end
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   Bt_Analyse.Caption := 'Analyse';
+   BtAnalyse.Caption := 'Analyse';
   end;
  Timer.Enabled := ASIOHost.Active;
 end;

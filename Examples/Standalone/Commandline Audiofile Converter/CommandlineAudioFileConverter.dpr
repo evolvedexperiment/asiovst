@@ -5,6 +5,7 @@ program CommandlineAudioFileConverter;
 uses
   DAV_Types,
   DAV_Common,
+  DAV_Math,
   DAV_AudioFile,
   DAV_AudioFileWav,
   DAV_AudioFileAiff,

@@ -7,8 +7,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
   ClientWidth = 329
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -19
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 23
   object DialThreshold: TGuiDial
     Left = 27
     Top = 120
@@ -38,6 +38,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Position = -20.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbThreshold: TGuiLabel
     Left = 3
@@ -47,11 +48,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Threshold'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
     Left = 8
@@ -65,6 +62,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialAttack: TGuiDial
     Left = 27
@@ -87,6 +86,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -96,11 +96,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Attack'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
     Left = 8
@@ -114,6 +110,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRelease: TGuiDial
     Left = 107
@@ -136,6 +134,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRelease: TGuiLabel
     Left = 92
@@ -145,11 +144,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Release'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
     Left = 86
@@ -163,6 +158,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRatio: TGuiDial
     Left = 107
@@ -185,6 +182,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRatio: TGuiLabel
     Left = 99
@@ -194,11 +192,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Ratio'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
     Left = 86
@@ -212,6 +206,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialKnee: TGuiDial
     Left = 187
@@ -233,6 +229,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbKnee: TGuiLabel
     Left = 163
@@ -242,11 +239,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Soft Knee'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
     Left = 168
@@ -260,12 +253,16 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
     Left = 168
     Top = 11
     Width = 74
     Height = 74
+    BorderColor = 14277598
+    BorderRadius = 2
     FrameColor = 6844281
     Flags = []
     SeriesCollection = <
@@ -315,6 +312,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbMakeUpGain: TGuiLabel
     Left = 250
@@ -324,11 +322,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Make Up'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbMakeUpGainValue: TGuiLabel
     Left = 248
@@ -342,14 +336,18 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LEDStereo: TGuiLED
     Left = 248
     Top = 9
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDStereoClick
@@ -366,6 +364,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDStereoClick
   end
   object LEDLimit: TGuiLED
@@ -373,8 +373,10 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Top = 30
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDLimitClick
@@ -391,6 +393,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDLimitClick
   end
   object LEDAutoGain: TGuiLED
@@ -398,8 +402,10 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Top = 69
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     OnClick = LEDAutoGainClick
@@ -416,6 +422,8 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
   object LEDOversample: TGuiLED
@@ -423,8 +431,10 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Top = 51
     Width = 15
     Height = 15
-    Brightness_Percent = 10.000000000000000000
     LEDColor = 14277598
+    Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
+    Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
     Visible = False
@@ -442,7 +452,9 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
   object GuiDialImageList: TGuiDialImageList

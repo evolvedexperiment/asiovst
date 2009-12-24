@@ -50,6 +50,7 @@ object FmLA4029: TFmLA4029
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialRelease: TGuiDial
       Left = 8
@@ -71,6 +72,7 @@ object FmLA4029: TFmLA4029
       Position = 1.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRelease: TGuiLabel
       Left = 8
@@ -86,6 +88,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbAttack: TGuiLabel
       Left = 8
@@ -101,6 +105,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbTitle: TGuiLabel
       Left = 149
@@ -116,16 +122,20 @@ object FmLA4029: TFmLA4029
       Font.Height = -15
       Font.Name = 'Arial'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LEDOnOff: TGuiLED
       Left = 69
       Top = 11
       Width = 16
       Height = 16
-      Brightness_Percent = 100.000000000000000000
       Color = clBlack
       LineWidth = 2
       LEDColor = clRed
+      Brightness_Percent = 100.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear4x
       LineColor = clRed
       ParentColor = False
@@ -145,6 +155,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -13
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDOnOffClick
     end
     object LbSlow: TGuiLabel
@@ -161,6 +173,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFast: TGuiLabel
       Left = 8
@@ -176,6 +190,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object VUMeter: TGuiVUMeter
       Left = 72
@@ -206,6 +222,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       ButtonColor = 2105376
       Radius = 5
+      Shadow.Color = clBlack
       OnClick = BtInClick
     end
     object BtGR: TGuiButton
@@ -226,6 +243,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       ButtonColor = clBlack
       Radius = 5
+      Shadow.Color = clBlack
       OnClick = BtGRClick
     end
     object BtOut: TGuiButton
@@ -246,6 +264,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       ButtonColor = clBlack
       Radius = 5
+      Shadow.Color = clBlack
       OnClick = BtOutClick
     end
     object LbVUMeterDisplay: TLabel
@@ -280,6 +299,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLevelingAmplifier: TLabel
       Left = 219
@@ -328,6 +349,7 @@ object FmLA4029: TFmLA4029
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object PnMix: TGuiPanel
       Left = 248
@@ -390,6 +412,7 @@ object FmLA4029: TFmLA4029
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object DialOutput: TGuiDial
       Left = 88
@@ -409,6 +432,7 @@ object FmLA4029: TFmLA4029
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbInput: TGuiLabel
       Left = 8
@@ -424,6 +448,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOutput: TGuiLabel
       Left = 88
@@ -439,6 +465,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialRatio: TGuiDial
       Left = 168
@@ -457,6 +485,7 @@ object FmLA4029: TFmLA4029
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbRatioX: TGuiLabel
       Left = 168
@@ -472,6 +501,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialKnee: TGuiDial
       Left = 248
@@ -490,6 +521,7 @@ object FmLA4029: TFmLA4029
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbKnee: TGuiLabel
       Left = 248
@@ -505,6 +537,8 @@ object FmLA4029: TFmLA4029
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object PnKnee: TGuiPanel
       Left = 248

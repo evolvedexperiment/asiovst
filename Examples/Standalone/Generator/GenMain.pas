@@ -1027,7 +1027,7 @@ var
 begin
  FCriticalSection.Enter;
  try
-  FAudioFile.GetSamples(OutBuffer[0], OutBuffer[1], ASIOHost.BufferSize);
+  FAudioFile.GetSamples(OutBuffer, ASIOHost.BufferSize);
 
   for Sample := 0 to ASIOHost.BufferSize - 1 do
    begin

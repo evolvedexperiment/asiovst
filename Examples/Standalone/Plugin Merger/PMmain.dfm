@@ -131,7 +131,14 @@ object FmPluginMerger: TFmPluginMerger
         Height = 60
         Caption = 'Preview'
         Color = clSilver
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        PanelColor = clSilver
         ParentColor = False
+        ParentFont = False
         Radius = 3
         TabOrder = 2
         Transparent = True
@@ -157,6 +164,7 @@ object FmPluginMerger: TFmPluginMerger
           Width = 56
           Height = 33
           Caption = 'Test'
+          Shadow.Color = clBlack
         end
       end
       object SEFontSize: TSpinEdit

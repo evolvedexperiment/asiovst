@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Menus,
-  StdCtrls Dialogs, DAV_Types, DAV_DspNoiseShapingFilterDesigner;
+  StdCtrls, Dialogs, DAV_Types, DAV_DspNoiseShapingFilterDesigner;
 
 type
   TFmNoiseshapingFilterDesigner = class(TForm)

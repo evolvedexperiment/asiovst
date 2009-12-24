@@ -9,7 +9,7 @@ object EditorForm: TEditorForm
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Name = 'Verdana'
   Font.Style = []
   OldCreateOrder = False
   Scaled = False
@@ -59,71 +59,83 @@ object EditorForm: TEditorForm
     Top = 32
     Width = 64
     Height = 64
-    LineColor = clGray
     CircleColor = clSilver
     DefaultPosition = -0.000000000100000001
+    DialImageIndex = -1
+    LineColor = clGray
+    LineWidth = 2
     Max = -0.000000000100000001
     Min = -96.000000000000000000
     NumGlyphs = 31
+    OnChange = DialThresholdChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     Position = -0.000000000100000001
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialThresholdChange
+    WheelStep = 1.000000000000000000
   end
   object DialRatio: TGuiDial
     Left = 88
     Top = 32
     Width = 64
     Height = 64
-    LineColor = clGray
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clGray
+    LineWidth = 2
     Max = 200.000000000000000000
     NumGlyphs = 31
+    OnChange = DialRatioChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialRatioChange
+    WheelStep = 1.000000000000000000
   end
   object DialAttack: TGuiDial
     Left = 166
     Top = 32
     Width = 64
     Height = 64
-    LineColor = clGray
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clGray
+    LineWidth = 2
     Max = 300.000000000000000000
     Min = -200.000000000000000000
     NumGlyphs = 31
+    OnChange = DialAttackChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialAttackChange
+    WheelStep = 1.000000000000000000
   end
   object DialRelease: TGuiDial
     Left = 246
     Top = 32
     Width = 64
     Height = 64
-    LineColor = clGray
     CircleColor = clSilver
     DefaultPosition = 699.000000000000000000
+    DialImageIndex = -1
+    LineColor = clGray
+    LineWidth = 2
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
     NumGlyphs = 31
+    OnChange = DialReleaseChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     Position = 699.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialReleaseChange
+    WheelStep = 1.000000000000000000
   end
   object LbRatio: TGuiLabel
     Left = 88
@@ -140,6 +152,8 @@ object EditorForm: TEditorForm
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbAttack: TGuiLabel
     Left = 166
@@ -156,6 +170,8 @@ object EditorForm: TEditorForm
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbRelease: TGuiLabel
     Left = 246
@@ -172,6 +188,8 @@ object EditorForm: TEditorForm
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbThreshold: TGuiLabel
     Left = 8
@@ -188,6 +206,8 @@ object EditorForm: TEditorForm
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbMakeUpValue: TLabel
     Left = 324
@@ -203,16 +223,19 @@ object EditorForm: TEditorForm
     Top = 32
     Width = 64
     Height = 64
-    LineColor = clGray
     CircleColor = clSilver
+    DialImageIndex = -1
+    LineColor = clGray
+    LineWidth = 2
     Max = 40.000000000000000000
     NumGlyphs = 31
+    OnChange = DialMakeUpChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
-    OnChange = DialMakeUpChange
+    WheelStep = 1.000000000000000000
   end
   object LbMakeUp: TGuiLabel
     Left = 324
@@ -229,5 +252,7 @@ object EditorForm: TEditorForm
     Font.Height = -11
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
 end

@@ -27,6 +27,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Height = 15
     LEDColor = 14277598
     Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
     Uniformity_Percent = 36.754447937011720000
     AntiAlias = gaaLinear3x
     LineColor = clRed
@@ -44,6 +45,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLow: TGuiLabel
@@ -58,6 +61,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbLowMid: TGuiLabel
     Left = 139
@@ -71,6 +76,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbHighMid: TGuiLabel
     Left = 275
@@ -84,6 +91,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbHigh: TGuiLabel
     Left = 413
@@ -97,6 +106,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -19
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialLowFreq: TGuiDial
     Left = 84
@@ -134,6 +145,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialMidFreq: TGuiDial
     Left = 224
@@ -171,6 +184,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialHighFreq: TGuiDial
     Left = 354
@@ -208,6 +223,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbLowS: TGuiLabel
     Left = 36
@@ -221,7 +238,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLowMute: TGuiLabel
@@ -236,7 +255,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLowBypass: TGuiLabel
@@ -251,7 +272,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLowMidSolo: TGuiLabel
@@ -266,7 +289,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLowMidMute: TGuiLabel
@@ -281,7 +306,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbLowMidBypass: TGuiLabel
@@ -296,7 +323,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbHighMidSolo: TGuiLabel
@@ -311,7 +340,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbHighMidMute: TGuiLabel
@@ -326,7 +357,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbHighMidBypass: TGuiLabel
@@ -341,7 +374,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbHighSolo: TGuiLabel
@@ -356,7 +391,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbHighMute: TGuiLabel
@@ -371,7 +408,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object LbHighBypass: TGuiLabel
@@ -386,7 +425,9 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDSoftClipClick
   end
   object PnLowBand: TGuiPanel
@@ -438,6 +479,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowThresholdValue: TGuiLabel
       Left = 166
@@ -452,6 +495,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowAttack: TGuiDial
       Left = 25
@@ -489,6 +534,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowAttackValue: TGuiLabel
       Left = 6
@@ -503,6 +550,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowRelease: TGuiDial
       Left = 105
@@ -540,6 +589,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowReleaseValue: TGuiLabel
       Left = 84
@@ -554,6 +605,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowRatio: TGuiDial
       Left = 265
@@ -591,6 +644,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowRatioValue: TGuiLabel
       Left = 244
@@ -605,6 +660,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowKnee: TGuiDial
       Left = 345
@@ -641,6 +698,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowKneeValue: TGuiLabel
       Left = 326
@@ -655,12 +714,16 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object GXYLow: TGuiGraphXY
       Left = 497
       Top = 10
       Width = 68
       Height = 56
+      BorderColor = 14277598
+      BorderRadius = 2
       FrameColor = 6844281
       Flags = []
       SeriesCollection = <
@@ -725,6 +788,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMakeUpGainValue: TGuiLabel
       Left = 406
@@ -739,6 +804,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LEDLowAutoGain: TGuiLED
       Left = 494
@@ -747,6 +814,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 15
       LEDColor = 14277598
       Brightness_Percent = 10.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
@@ -764,6 +832,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDLowAutoGainClick
     end
   end
@@ -819,6 +889,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMidThresholdValue: TGuiLabel
       Tag = 1
@@ -834,6 +906,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowMidAttack: TGuiDial
       Tag = 1
@@ -873,6 +947,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMidAttackValue: TGuiLabel
       Tag = 1
@@ -888,6 +964,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowMidRelease: TGuiDial
       Tag = 1
@@ -927,6 +1005,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMidReleaseValue: TGuiLabel
       Tag = 1
@@ -942,6 +1022,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowMidRatio: TGuiDial
       Tag = 1
@@ -981,6 +1063,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMidRatioValue: TGuiLabel
       Tag = 1
@@ -996,6 +1080,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowMidKnee: TGuiDial
       Tag = 1
@@ -1034,6 +1120,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMidKneeValue: TGuiLabel
       Tag = 1
@@ -1049,6 +1137,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object GXYLowMid: TGuiGraphXY
       Tag = 1
@@ -1056,6 +1146,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
+      BorderColor = 14277598
+      BorderRadius = 2
       FrameColor = 6844281
       Flags = []
       SeriesCollection = <
@@ -1122,6 +1214,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowMidMakeUpGainValue: TGuiLabel
       Tag = 1
@@ -1137,6 +1231,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LEDLowMidAutoGain: TGuiLED
       Tag = 1
@@ -1146,6 +1242,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 15
       LEDColor = 14277598
       Brightness_Percent = 10.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
@@ -1164,6 +1261,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDLowMidAutoGainClick
     end
   end
@@ -1219,6 +1318,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMidThresholdValue: TGuiLabel
       Tag = 2
@@ -1234,6 +1335,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighMidAttack: TGuiDial
       Tag = 2
@@ -1273,6 +1376,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMidAttackValue: TGuiLabel
       Tag = 2
@@ -1288,6 +1393,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighMidRelease: TGuiDial
       Tag = 2
@@ -1327,6 +1434,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMidReleaseValue: TGuiLabel
       Tag = 2
@@ -1342,6 +1451,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighMidRatio: TGuiDial
       Tag = 2
@@ -1381,6 +1492,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMidRatioValue: TGuiLabel
       Tag = 2
@@ -1396,6 +1509,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighMidKnee: TGuiDial
       Tag = 2
@@ -1434,6 +1549,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMidKneeValue: TGuiLabel
       Tag = 2
@@ -1449,6 +1566,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object GXYHighMid: TGuiGraphXY
       Tag = 2
@@ -1456,6 +1575,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
+      BorderColor = 14277598
+      BorderRadius = 2
       FrameColor = 6844281
       Flags = []
       SeriesCollection = <
@@ -1522,6 +1643,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMidMakeUpGainValue: TGuiLabel
       Tag = 2
@@ -1537,6 +1660,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LEDHighMidAutoGain: TGuiLED
       Tag = 2
@@ -1546,6 +1671,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 15
       LEDColor = 14277598
       Brightness_Percent = 10.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
@@ -1564,6 +1690,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDHighMidAutoGainClick
     end
   end
@@ -1619,6 +1747,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighThresholdValue: TGuiLabel
       Tag = 3
@@ -1634,6 +1764,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighAttack: TGuiDial
       Tag = 3
@@ -1673,6 +1805,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighAttackValue: TGuiLabel
       Tag = 3
@@ -1688,6 +1822,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighRelease: TGuiDial
       Tag = 3
@@ -1727,6 +1863,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighReleaseValue: TGuiLabel
       Tag = 3
@@ -1742,6 +1880,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighRatio: TGuiDial
       Tag = 3
@@ -1781,6 +1921,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighRatioValue: TGuiLabel
       Tag = 3
@@ -1796,6 +1938,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighKnee: TGuiDial
       Tag = 3
@@ -1834,6 +1978,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighKneeValue: TGuiLabel
       Tag = 3
@@ -1849,6 +1995,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object GXYHigh: TGuiGraphXY
       Tag = 3
@@ -1856,6 +2004,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Top = 10
       Width = 68
       Height = 56
+      BorderColor = 14277598
+      BorderRadius = 2
       FrameColor = 6844281
       Flags = []
       SeriesCollection = <
@@ -1922,6 +2072,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -19
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighMakeUpGainValue: TGuiLabel
       Tag = 3
@@ -1937,6 +2089,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LEDHighAutoGain: TGuiLED
       Tag = 3
@@ -1946,6 +2100,7 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Height = 15
       LEDColor = 14277598
       Brightness_Percent = 10.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear3x
       LineColor = clRed
@@ -1964,6 +2119,8 @@ object FmLightweightMultibandCompressor: TFmLightweightMultibandCompressor
       Font.Height = -11
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LEDHighAutoGainClick
     end
   end

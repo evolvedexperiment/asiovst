@@ -166,7 +166,7 @@ implementation
 {$ENDIF}
 
 uses
-  Math, IniFiles, DAV_Common, DAV_Approximations, DAV_AudioFileWAV,
+  Math, IniFiles, DAV_Common, DAV_Math, DAV_Approximations, DAV_AudioFileWAV,
   DAV_AudioFileAIFF, DAV_AudioFileAU, WaveIOX, LunchBoxSetup, LunchBoxAbout,
   LunchBoxVST;
 

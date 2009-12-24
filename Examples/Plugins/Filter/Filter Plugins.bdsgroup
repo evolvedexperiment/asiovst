@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<PersonalityInfo>
 		<Option>
@@ -8,7 +8,9 @@
 			<Option Name="GUID">{6E011940-D7B9-4238-BBA8-CF6FD8881785}</Option>
 		</Option>
 	</PersonalityInfo>
-	<Default.Personality>  <Projects>
+	<Default.Personality>  
+    
+    <Projects>
       <Projects Name="BugpassLite.dll">Bugpass\BugpassLite.bdsproj</Projects>
       <Projects Name="ButterworthHP.dll">Butterworth HP\ButterworthHP.bdsproj</Projects>
       <Projects Name="ButterworthLP.dll">Butterworth LP\ButterworthLP.bdsproj</Projects>
@@ -25,7 +27,11 @@
       <Projects Name="UniQuE.dll">UniQuE\UniQuE.bdsproj</Projects>
       <Projects Name="Valueable.dll">Valueable\Valueable.bdsproj</Projects>
       <Projects Name="ValueableStereo.dll">Valueable\ValueableStereo.bdsproj</Projects>
-      <Projects Name="Targets">BugpassLite.dll ButterworthHP.dll ButterworthLP.dll ChebyshevHP.dll ChebyshevLP.dll Chebyshev2HP.dll Chebyshev2LP.dll GraphicEQ.dll LinearPhaseHP.dll LinearPhaseLP.dll LinearPhaseCrossover.dll LinkwitzRiley.dll ParametriQLite.dll UniQuE.dll Valueable.dll ValueableStereo.dll</Projects>
+      <Projects Name="DualLinkwitzRileyFilters.dll">Dual Linkwitz-Riley Filters\DualLinkwitzRileyFilters.bdsproj</Projects>
+      <Projects Name="LinearPhaseLinkwitzRileyHP.dll">Linear Phase LinkwitzRiley HP\LinearPhaseLinkwitzRileyHP.bdsproj</Projects>
+      <Projects Name="LinearPhaseLinkwitzRileyLP.dll">Linear Phase LinkwitzRiley LP\LinearPhaseLinkwitzRileyLP.bdsproj</Projects>
+      <Projects Name="LinkwitzRileySeparated.dll">Linkwitz-Riley Separated\LinkwitzRileySeparated.bdsproj</Projects>
+      <Projects Name="Targets">BugpassLite.dll ButterworthHP.dll ButterworthLP.dll ChebyshevHP.dll ChebyshevLP.dll Chebyshev2HP.dll Chebyshev2LP.dll GraphicEQ.dll LinearPhaseHP.dll LinearPhaseLP.dll LinearPhaseCrossover.dll LinkwitzRiley.dll ParametriQLite.dll UniQuE.dll Valueable.dll ValueableStereo.dll DualLinkwitzRileyFilters.dll LinearPhaseLinkwitzRileyHP.dll LinearPhaseLinkwitzRileyLP.dll LinkwitzRileySeparated.dll</Projects>
     </Projects>
     <Dependencies/>
   </Default.Personality>

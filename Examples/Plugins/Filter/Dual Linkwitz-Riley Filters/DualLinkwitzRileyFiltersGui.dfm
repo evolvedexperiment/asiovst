@@ -34,6 +34,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     ParentFont = False
     Visible = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbShowFrequencyPlotClick
   end
   object GpDualLiknwitzRiley: TGuiGroup
@@ -48,9 +49,11 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Font.Height = -16
     Font.Name = 'Times New Roman'
     Font.Style = [fsBold]
+    GroupColor = 15659506
     HeaderMinWidth = 64
     LineColor = 15659506
-    LineWidth = 3
+    OutlineWidth = 3
+    PanelColor = 7373965
     ParentFont = False
     Radius = 7
     TabOrder = 0
@@ -123,6 +126,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
       OnClick = GpDualLiknwitzRileyClick
     end
     object LbSlope: TGuiLabel
@@ -139,6 +143,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Name = 'Times New Roman'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
       OnClick = GpDualLiknwitzRileyClick
     end
     object DialHighpassFrequency: TGuiDial
@@ -211,6 +216,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Style = []
       ParentFont = False
       PopupMenu = PuPreset
+      Shadow.Color = clBlack
       OnClick = LedHighCutClick
       OnMouseDown = LbMouseDown
     end
@@ -229,6 +235,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       Font.Style = []
       ParentFont = False
       PopupMenu = PuPreset
+      Shadow.Color = clBlack
       OnClick = LedLowCutClick
       OnMouseDown = LbMouseDown
     end
@@ -241,6 +248,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       LineWidth = 2
       LEDColor = 14870505
       Brightness_Percent = 90.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
@@ -256,6 +264,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       LineWidth = 2
       LEDColor = 14870505
       Brightness_Percent = 90.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear4x
       LineColor = 3226174
@@ -295,6 +304,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
         AntiAlias = gaaLinear4x
         Caption = 'Value'
         Color = 3226174
+        Shadow.Color = clBlack
         OnClick = LbDisplayClick
       end
     end
@@ -305,26 +315,26 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
     Width = 220
     Height = 53
     AntiAlias = gaaLinear4x
-    GraphColorDark = 5991539
-    GraphColorLight = 6978950
-    ColorChart = 7373965
+    BorderColor = 15659506
     BorderRadius = 7
     BorderWidth = 2
-    BorderColor = 15659506
+    ColorChart = 7373965
     FilterSeries = <
       item
         DisplayName = 'TGuiEQGraphSeriesCollectionItem'
         Color = 15659506
         OnGetFilterGain = GuiEQGraphGetFilterGain
       end>
+    GraphColorDark = 5991539
+    GraphColorLight = 6978950
+    XAxis.LabelPosition = xlpBottom
+    XAxis.UpperFrequency = 20000.000000000000000000
+    XAxis.LowerFrequency = 20.000000000000000000
     YAxis.LabelPosition = ylpLeft
     YAxis.LowerLevel = -30.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
     YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 2
-    XAxis.LabelPosition = xlpBottom
-    XAxis.UpperFrequency = 20000.000000000000000000
-    XAxis.LowerFrequency = 20.000000000000000000
     Color = 7373965
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 15659506

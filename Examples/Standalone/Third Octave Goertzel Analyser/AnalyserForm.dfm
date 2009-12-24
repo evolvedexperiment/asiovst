@@ -65,7 +65,7 @@ object FmAnalyser: TFmAnalyser
     TabOrder = 0
     OnChange = DriverComboChange
   end
-  object Bt_CP: TButton
+  object BtControlPanel: TButton
     Left = 350
     Top = 8
     Width = 91
@@ -73,7 +73,7 @@ object FmAnalyser: TFmAnalyser
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = Bt_CPClick
+    OnClick = BtControlPanelClick
   end
   object ChannelBox: TComboBox
     Left = 104
@@ -84,7 +84,7 @@ object FmAnalyser: TFmAnalyser
     ItemHeight = 13
     TabOrder = 2
   end
-  object Bt_Analyse: TButton
+  object BtAnalyse: TButton
     Left = 350
     Top = 32
     Width = 91
@@ -93,7 +93,7 @@ object FmAnalyser: TFmAnalyser
     Default = True
     Enabled = False
     TabOrder = 3
-    OnClick = Bt_AnalyseClick
+    OnClick = BtAnalyseClick
   end
   object RB_Fast: TRadioButton
     Left = 49

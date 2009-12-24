@@ -207,58 +207,21 @@ begin
  if (Value < 1)
   then Value := 10 else
  if (Value > 10) then Value := 1;
+
  case Round(Value) of
-   1 :
-    begin
-     OnProcess := VSTModuleProcessStereoA;
-     OnProcessReplacing := VSTModuleProcessStereoA;
-    end;
-   2 :
-    begin
-     OnProcess := VSTModuleProcessStereoB;
-     OnProcessReplacing := VSTModuleProcessStereoB;
-    end;
-   3 :
-    begin
-     OnProcess := VSTModuleProcessStereoC;
-     OnProcessReplacing := VSTModuleProcessStereoC;
-    end;
-   4 :
-    begin
-     OnProcess := VSTModuleProcessStereoD;
-     OnProcessReplacing := VSTModuleProcessStereoD;
-    end;
-   5 :
-    begin
-     OnProcess := VSTModuleProcessMono;
-     OnProcessReplacing := VSTModuleProcessMono;
-    end;
-   6 :
-    begin
-     OnProcess := VSTModuleProcessMonoL;
-     OnProcessReplacing := VSTModuleProcessMonoL;
-    end;
-   7 :
-    begin
-     OnProcess := VSTModuleProcessMonoR;
-     OnProcessReplacing := VSTModuleProcessMonoR;
-    end;
-   8 :
-    begin
-     OnProcess := VSTModuleProcessMS;
-     OnProcessReplacing := VSTModuleProcessMS;
-    end;
-   9 :
-    begin
-     OnProcess := VSTModuleProcessSpecial;
-     OnProcessReplacing := VSTModuleProcessSpecial;
-    end;
-   10 :
-    begin
-     OnProcess := VSTModuleProcessOldOne;
-     OnProcessReplacing := VSTModuleProcessOldOne;
-    end;
+    1 : OnProcess := VSTModuleProcessStereoA;
+    2 : OnProcess := VSTModuleProcessStereoB;
+    3 : OnProcess := VSTModuleProcessStereoC;
+    4 : OnProcess := VSTModuleProcessStereoD;
+    5 : OnProcess := VSTModuleProcessMono;
+    6 : OnProcess := VSTModuleProcessMonoL;
+    7 : OnProcess := VSTModuleProcessMonoR;
+    8 : OnProcess := VSTModuleProcessMS;
+    9 : OnProcess := VSTModuleProcessSpecial;
+   10 : OnProcess := VSTModuleProcessOldOne;
   end;
+
+ OnProcess := VSTModuleProcess;
 
  // update GUI
  if Assigned(EditorForm)

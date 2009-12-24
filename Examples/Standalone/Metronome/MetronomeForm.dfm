@@ -17,7 +17,7 @@ object FmASIO: TFmASIO
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDrivername: TLabel
     Left = 8
     Top = 8
     Width = 31
@@ -55,7 +55,7 @@ object FmASIO: TFmASIO
     TabOrder = 0
     OnChange = DriverComboChange
   end
-  object Bt_CP: TButton
+  object BtControlPanel: TButton
     Left = 156
     Top = 5
     Width = 81
@@ -63,9 +63,9 @@ object FmASIO: TFmASIO
     Caption = 'Control Panel'
     Enabled = False
     TabOrder = 1
-    OnClick = Bt_CPClick
+    OnClick = BtControlPanelClick
   end
-  object Bt_Play: TButton
+  object BtPlay: TButton
     Left = 156
     Top = 32
     Width = 81
@@ -74,7 +74,7 @@ object FmASIO: TFmASIO
     Default = True
     Enabled = False
     TabOrder = 2
-    OnClick = Bt_PlayClick
+    OnClick = BtPlayClick
   end
   object SETempo: TSpinEdit
     Left = 50
@@ -98,10 +98,10 @@ object FmASIO: TFmASIO
     TabOrder = 4
     OnChange = SbVolumeChange
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     ConvertOptimizations = [coSSE]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000

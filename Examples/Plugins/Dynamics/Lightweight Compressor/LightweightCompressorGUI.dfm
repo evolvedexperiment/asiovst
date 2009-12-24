@@ -7,8 +7,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
   ClientWidth = 329
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -19
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 23
   object DialThreshold: TGuiDial
     Left = 27
     Top = 120
@@ -47,11 +47,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Threshold'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
     Left = 8
@@ -65,6 +61,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialAttack: TGuiDial
     Left = 27
@@ -97,11 +95,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Attack'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
     Left = 8
@@ -115,6 +109,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRelease: TGuiDial
     Left = 107
@@ -147,11 +143,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Release'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
     Left = 86
@@ -165,6 +157,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRatio: TGuiDial
     Left = 107
@@ -197,11 +191,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Ratio'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
     Left = 86
@@ -215,6 +205,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialKnee: TGuiDial
     Left = 187
@@ -246,11 +238,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Soft Knee'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
     Left = 168
@@ -264,12 +252,15 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
     Left = 168
     Top = 11
     Width = 74
     Height = 74
+    BorderColor = 14277598
     FrameColor = 6844281
     Flags = []
     SeriesCollection = <
@@ -329,11 +320,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Make Up'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbMakeUpGainValue: TGuiLabel
     Left = 248
@@ -347,6 +334,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LEDStereo: TGuiLED
     Left = 248
@@ -355,6 +344,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Height = 15
     LEDColor = 14277598
     Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
     Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
     LineColor = 14277598
@@ -372,6 +362,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDStereoClick
   end
   object LEDLimit: TGuiLED
@@ -381,6 +373,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Height = 15
     LEDColor = 14277598
     Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
     Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
     LineColor = 14277598
@@ -398,6 +391,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDLimitClick
   end
   object LEDAutoGain: TGuiLED
@@ -407,6 +402,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Height = 15
     LEDColor = 14277598
     Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
     Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
     LineColor = 14277598
@@ -424,6 +420,8 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
   object LEDOversample: TGuiLED
@@ -433,6 +431,7 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Height = 15
     LEDColor = 14277598
     Brightness_Percent = 10.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
     Uniformity_Percent = 40.000000000000000000
     AntiAlias = gaaLinear3x
     LineColor = 14277598
@@ -451,7 +450,9 @@ object FmLightweightCompressor: TFmLightweightCompressor
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Visible = False
+    Shadow.Color = clBlack
     OnClick = LEDAutoGainClick
   end
   object GuiDialImageList: TGuiDialImageList

@@ -7,8 +7,8 @@ object FmLightweightGate: TFmLightweightGate
   ClientWidth = 253
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
-  Font.Height = -11
+  Font.Color = 14277598
+  Font.Height = -19
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
@@ -16,7 +16,7 @@ object FmLightweightGate: TFmLightweightGate
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 23
   object DialThreshold: TGuiDial
     Left = 27
     Top = 120
@@ -37,6 +37,7 @@ object FmLightweightGate: TFmLightweightGate
     PointerAngles.Resolution = 270.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbThreshold: TGuiLabel
     Left = 3
@@ -46,11 +47,7 @@ object FmLightweightGate: TFmLightweightGate
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Threshold'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbThresholdValue: TGuiLabel
     Left = 8
@@ -64,6 +61,8 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialAttack: TGuiDial
     Left = 27
@@ -86,6 +85,7 @@ object FmLightweightGate: TFmLightweightGate
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbAttack: TGuiLabel
     Left = 18
@@ -95,11 +95,7 @@ object FmLightweightGate: TFmLightweightGate
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Attack'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbAttackValue: TGuiLabel
     Left = 8
@@ -113,6 +109,8 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRelease: TGuiDial
     Left = 107
@@ -135,6 +133,7 @@ object FmLightweightGate: TFmLightweightGate
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRelease: TGuiLabel
     Left = 92
@@ -144,11 +143,7 @@ object FmLightweightGate: TFmLightweightGate
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Release'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbReleaseValue: TGuiLabel
     Left = 86
@@ -162,6 +157,8 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRatio: TGuiDial
     Left = 107
@@ -184,6 +181,7 @@ object FmLightweightGate: TFmLightweightGate
     Position = 10.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbRatio: TGuiLabel
     Left = 99
@@ -193,11 +191,7 @@ object FmLightweightGate: TFmLightweightGate
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Ratio'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbRatioValue: TGuiLabel
     Left = 86
@@ -211,13 +205,15 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialKnee: TGuiDial
     Left = 187
     Top = 120
     Width = 36
     Height = 36
-    CurveMapping = -0.800000011920928900
+    CurveMapping = -0.800000011920929000
     DefaultPosition = 1.000000000000000000
     DialImageList = GuiDialImageList
     DialImageIndex = -1
@@ -232,6 +228,7 @@ object FmLightweightGate: TFmLightweightGate
     Position = 3.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skHorizontal
+    WheelStep = 1.000000000000000000
   end
   object LbKnee: TGuiLabel
     Left = 163
@@ -241,11 +238,7 @@ object FmLightweightGate: TFmLightweightGate
     Alignment = taCenter
     AntiAlias = gaaLinear4x
     Caption = 'Soft Knee'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = 14277598
-    Font.Height = -19
-    Font.Name = 'Tahoma'
-    Font.Style = []
+    Shadow.Color = clBlack
   end
   object LbKneeValue: TGuiLabel
     Left = 168
@@ -259,12 +252,16 @@ object FmLightweightGate: TFmLightweightGate
     Font.Height = -16
     Font.Name = 'Tahoma'
     Font.Style = []
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object GuiGraphXY: TGuiGraphXY
     Left = 168
     Top = 11
     Width = 74
     Height = 74
+    BorderColor = 14277598
+    BorderRadius = 2
     FrameColor = 6844281
     Flags = []
     SeriesCollection = <

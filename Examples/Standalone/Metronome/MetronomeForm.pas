@@ -42,10 +42,10 @@ uses
 type
   TFmASIO = class(TForm)
     ASIOHost: TASIOHost;
-    Bt_CP: TButton;
-    Bt_Play: TButton;
+    BtControlPanel: TButton;
+    BtPlay: TButton;
     DriverCombo: TComboBox;
-    Lb_Drivername: TLabel;
+    LbDrivername: TLabel;
     LbBPM: TLabel;
     LbTempo: TLabel;
     LbVolume: TLabel;
@@ -55,8 +55,8 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostBufferSwitch(Sender: TObject; InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure Bt_CPClick(Sender: TObject);
-    procedure Bt_PlayClick(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
+    procedure BtPlayClick(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
     procedure SBVolumeChange(Sender: TObject);
     procedure SETempoChange(Sender: TObject);
@@ -65,6 +65,7 @@ type
     FPosition  : TComplexDouble;
     FVolume    : Single;
     FBeatPos   : Integer;
+    FIniFile   : TIniFile;
     procedure CalculateSineAngles;
   public
     FSamplesPerBeat : Single;
@@ -83,7 +84,7 @@ implementation
 {$ENDIF}
 
 uses
-  Inifiles, DAV_Common;
+  Inifiles, DAV_Common, DAV_Math;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
@@ -100,8 +101,10 @@ begin
    Application.Terminate;
   end;
 
+ FIniFile := ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI';
+
  // and make sure all controls are enabled or disabled
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+ with TIniFile.Create(FIniFile) do
   try
    Left := ReadInteger('Layout', 'Audio Left', Left);
    Top := ReadInteger('Layout', 'Audio Top', Top);
@@ -114,7 +117,7 @@ end;
 
 procedure TFmASIO.FormDestroy(Sender: TObject);
 begin
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+ with TIniFile.Create(FIniFile) do
   try
    WriteInteger('Layout', 'Audio Left', Left);
    WriteInteger('Layout', 'Audio Top', Top);
@@ -126,20 +129,20 @@ end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
 begin
- Bt_CP.Enabled := False;
- Bt_Play.Enabled := False;
+ BtControlPanel.Enabled := False;
+ BtPlay.Enabled := False;
  DriverCombo.ItemIndex := DriverCombo.Items.IndexOf(DriverCombo.Text);
  if DriverCombo.ItemIndex >= 0 then
   begin
    ASIOHost.DriverIndex:=DriverCombo.ItemIndex;
-   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
+   with TIniFile.Create(FIniFile) do
     try
      WriteInteger('Audio', 'Asio Driver', DriverCombo.ItemIndex);
     finally
      Free;
     end;
-   Bt_CP.Enabled := True;
-   Bt_Play.Enabled := True;
+   BtControlPanel.Enabled := True;
+   BtPlay.Enabled := True;
   end;
 end;
 
@@ -154,7 +157,7 @@ begin
  CalculateSineAngles;
 end;
 
-procedure TFmASIO.Bt_CPClick(Sender: TObject);
+procedure TFmASIO.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
 end;
@@ -169,12 +172,12 @@ begin
  FSamplesPerBeat := 60 / SETempo.Value * ASIOHost.SampleRate;
 end;
 
-procedure TFmASIO.Bt_PlayClick(Sender: TObject);
+procedure TFmASIO.BtPlayClick(Sender: TObject);
 begin
- if Bt_Play.Caption = 'Start Audio' then
+ if BtPlay.Caption = 'Start Audio' then
   begin
    ASIOHost.Active := True; // Start Audio
-   Bt_Play.Caption := 'Stop Audio';
+   BtPlay.Caption := 'Stop Audio';
    FMetroVolume    := 1;
    FSamplesCount   := 0;
    FPosition.Re    := 1;
@@ -183,7 +186,7 @@ begin
  else
   begin
    ASIOHost.Active := False; // Stop Audio
-   Bt_Play.Caption := 'Start Audio';
+   BtPlay.Caption := 'Start Audio';
    FBeatPos:=0;
   end;
 end;

@@ -42,7 +42,7 @@ uses
 type
   TFmLightweightGate = class(TForm)
     DialAttack: TGuiDial;
-    DialKnee: TGuiDial;
+    DialKnee: TGuiDial;       
     DialRatio: TGuiDial;
     DialRelease: TGuiDial;
     DialThreshold: TGuiDial;

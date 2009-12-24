@@ -36,22 +36,22 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
-  DAV_GuiDial, StdCtrls, DAV_GuiGroup, DAV_GuiEQGraph;
+  Dialogs, ExtCtrls, StdCtrls, DAV_GuiPanel, DAV_GuiLabel, DAV_GuiBaseControl,
+  DAV_GuiDial, DAV_GuiGroup, DAV_GuiEQGraph;
 
 type
   TFmLinkwitzRiley = class(TForm)
-    GpStage1: TGuiGroup;
     DialFrequency: TGuiDial;
     DialSlope: TGuiDial;
     DialType: TGuiDial;
+    GbFrequencyResponse: TGuiGroup;
+    GpLinkwitzRiley: TGuiGroup;
+    GuiEQGraph: TGuiEQGraph;
+    LbDisplay: TGuiLabel;
     LbIFrequency: TGuiLabel;
     LbSlope: TGuiLabel;
     LbType: TGuiLabel;
     PnDisplay: TGuiPanel;
-    LbDisplay: TGuiLabel;
-    GbFrequencyResponse: TGuiGroup;
-    GuiEQGraph: TGuiEQGraph;
     procedure FormPaint(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure DialTypeChange(Sender: TObject);
