@@ -45,10 +45,15 @@ type
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleBlockSizeChange(Sender: TObject; const BlockSize: Integer);
-    procedure AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure AHBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure AHBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure AHShortCircuit(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ASIODriverDisplay(Sender: TObject; const Index: Integer; var PreDefined: String);
+    procedure ParameterUseSSEMMXChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterUseSSEMMXDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterAccuracyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterAccuracyChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FASIOHost        : TASIOHost;
     FInBuffer        : array of PDavSingleFixedArray;
@@ -61,8 +66,8 @@ type
     procedure AHLatencyChanged(Sender: TObject);
     procedure InternalBufferSizeChanged;
   public
-    property BufferUnderruns : Integer read FBufferUnderruns;
-    property AsioHost : TASIOHost read FASIOHost;
+    property BufferUnderruns: Integer read FBufferUnderruns;
+    property AsioHost: TASIOHost read FASIOHost;
   end;
 
 implementation
@@ -70,7 +75,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, ASIOVSTGUI;
+  Math, Dialogs, ASIOVSTGUI;
 
 procedure TASIOVSTModule.VSTModuleOpen(Sender: TObject);
 begin
@@ -91,7 +96,8 @@ begin
    ASIOTime.Speed := 1;
    ASIOTime.SampleRate := 44100;
    ASIOTime.Flags := [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid];
-   OnBufferSwitch32 := AHBufferSwitch;
+   OnBufferSwitch32 := AHBufferSwitch32;
+//   OnBufferSwitch64 := AHBufferSwitch64;
    OnLatencyChanged := AHLatencyChanged;
   end;
  with ParameterProperties[0] do
@@ -120,7 +126,7 @@ begin
  GUI := TFmASIOVST.Create(Self);
  with (GUI As TFmASIOVST) do
   try
-   CB_ASIO.Items := FASIOHost.DriverList;
+   CbASIO.Items := FASIOHost.DriverList;
    DisplayASIOInformation;
   except
   end;
@@ -134,7 +140,7 @@ end;
 
 procedure TASIOVSTModule.InternalBufferSizeChanged;
 begin
- if assigned(FASIOHost) then
+ if Assigned(FASIOHost) then
   with FASIOHost do
    begin
     FIntBufSize := max(Integer(FASIOHost.BufferSize), BlockSize) * FNrOfBuffers;
@@ -158,13 +164,27 @@ begin
  InternalBufferSizeChanged;
 end;
 
-procedure TASIOVSTModule.AHBufferSwitch(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+procedure TASIOVSTModule.AHBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   BufferByteSize : Integer;
 begin
  BufferByteSize := FASIOHost.BufferSize * SizeOf(Single);
  if (FIntWritePos > FIntReadPos) and (FIntWritePos < FIntReadPos + Integer(FASIOHost.BufferSize))
-  then inc(FBufferUnderruns);
+  then Inc(FBufferUnderruns);
+ Move(FInBuffer[0, FIntReadPos], OutBuffer[0, 0], BufferByteSize);
+ Move(FInBuffer[1, FIntReadPos], OutBuffer[1, 0], BufferByteSize);
+ Move(InBuffer[0, 0], FOutBuffer[0, FIntReadPos], BufferByteSize);
+ Move(InBuffer[1, 0], FOutBuffer[1, FIntReadPos], BufferByteSize);
+ FIntReadPos := (FIntReadPos + Integer(FASIOHost.BufferSize)) mod (FNrOfBuffers * Integer(FASIOHost.BufferSize));
+end;
+
+procedure TASIOVSTModule.AHBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
+var
+  BufferByteSize : Integer;
+begin
+ BufferByteSize := FASIOHost.BufferSize * SizeOf(Single);
+ if (FIntWritePos > FIntReadPos) and (FIntWritePos < FIntReadPos + Integer(FASIOHost.BufferSize))
+  then Inc(FBufferUnderruns);
  Move(FInBuffer[0, FIntReadPos], OutBuffer[0, 0], BufferByteSize);
  Move(FInBuffer[1, FIntReadPos], OutBuffer[1, 0], BufferByteSize);
  Move(InBuffer[0, 0], FOutBuffer[0, FIntReadPos], BufferByteSize);
@@ -200,7 +220,7 @@ begin
    DelayCnt := 0;
    while (DelayCnt < 500) and (FIntWritePos = FIntReadPos) and FASIOHost.Active do
     begin
-     inc(DelayCnt);
+     Inc(DelayCnt);
      Sleep(1);
     end;
   end;
@@ -211,18 +231,51 @@ begin
  PreDefined := FASIOHost.DriverName;
 end;
 
+procedure TASIOVSTModule.ParameterAccuracyChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if Value > 0.5
+  then FASIOHost.ConvertMethod := cm64
+  else FASIOHost.ConvertMethod := cm32;
+end;
+
+procedure TASIOVSTModule.ParameterAccuracyDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] > 0.5
+  then PreDefined := '64'
+  else PreDefined := '32';
+end;
+
+procedure TASIOVSTModule.ParameterUseSSEMMXDisplay(
+  Sender: TObject; const Index: Integer; var PreDefined: string);
+begin
+ if Parameter[Index] > 0.5
+  then PreDefined := 'On'
+  else PreDefined := 'Off';
+end;
+
+procedure TASIOVSTModule.ParameterUseSSEMMXChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ with FASIOHost do
+  if Value > 0.5
+   then ConvertOptimizations := [coSSE, co3DNow]
+   else ConvertOptimizations := [];
+end;
+
 procedure TASIOVSTModule.ASIODriverChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if not assigned(FASIOHost) then Exit;
+ if not Assigned(FASIOHost) then Exit;
  if FASIOHost.DriverIndex = Round(Value) then Exit;
  FASIOHost.Active := False;
  FASIOHost.DriverIndex := Round(Value);
  InitialDelay := FASIOHost.InputLatency + FASIOHost.OutputLatency + Integer(FASIOHost.BufferSize);
  if Assigned(EditorForm) then
   with TFmASIOVST(EditorForm) do
-   if CB_ASIO.ItemIndex <> FASIOHost.DriverIndex then
+   if CbASIO.ItemIndex <> FASIOHost.DriverIndex then
     begin
-     CB_ASIO.ItemIndex := FASIOHost.DriverIndex;
+     CbASIO.ItemIndex := FASIOHost.DriverIndex;
      DisplayASIOInformation;
     end;
  FASIOHost.Active := True;

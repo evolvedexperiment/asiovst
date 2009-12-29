@@ -1,12 +1,11 @@
 object ASIOVSTModule: TASIOVSTModule
-  OldCreateOrder = False
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'ASIO Extender'
   ProductName = 'DAV Tools Examples'
   VendorName = 'Delphi ASIO & VST Project'
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Init'
   IORatio = 1.000000000000000000
   UniqueID = 'ASIO'
@@ -18,7 +17,6 @@ object ASIOVSTModule: TASIOVSTModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'ASIO Driver'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -34,6 +32,40 @@ object ASIOVSTModule: TASIOVSTModule
       VSTModule = Owner
       OnParameterChange = ASIODriverChange
       OnCustomParameterDisplay = ASIODriverDisplay
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Use SSE/MMX'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ShortLabel = 'Use SSE'
+      SmallStepFloat = 1.000000000000000000
+      StepFloat = 1.000000000000000000
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterUseSSEMMXChange
+      OnCustomParameterDisplay = ParameterUseSSEMMXDisplay
+    end
+    item
+      CurveFactor = 1.000000000000000000
+      DisplayName = 'Accuracy'
+      Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
+      LargeStepFloat = 1.000000000000000000
+      LargeStepInteger = 1
+      Max = 1.000000000000000000
+      MaxInteger = 1
+      ReportVST2Properties = True
+      ShortLabel = 'Accurac'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'bit'
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterAccuracyChange
+      OnCustomParameterDisplay = ParameterAccuracyDisplay
     end>
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
@@ -44,6 +76,6 @@ object ASIOVSTModule: TASIOVSTModule
   OnProcessReplacing = VSTModuleProcess
   Left = 251
   Top = 331
-  Height = 156
-  Width = 285
+  Height = 188
+  Width = 282
 end

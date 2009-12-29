@@ -30,7 +30,7 @@ unit DAV_AudioData;
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-interface                    
+interface
 
 {$I DAV_Compiler.inc}
 
@@ -92,8 +92,9 @@ type
     function GetSum: Double; virtual; abstract;
     function GetRMS: Double; virtual; abstract;
     function GetPeak: Double; virtual; abstract;
+    procedure AllocateMemory(SampleCount: Int64); virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SampleFramesChanged(NewSampleFrames: Int64); virtual;
+    procedure SampleCountChanged(NewSampleCount: Int64); virtual;
   public
     constructor Create; override;
 
@@ -125,8 +126,8 @@ type
     function GetSum: Double; override;
     function GetRMS: Double; override;
     function GetPeak: Double; override;
+    procedure AllocateMemory(SampleCount: Int64); override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SampleFramesChanged(NewSampleFrames: Int64); override;
   public
     constructor Create(DataPtr: PDAVSingleFixedArray = nil); reintroduce; virtual;
     destructor Destroy; override;
@@ -159,7 +160,7 @@ type
     function GetSum: Double; override;
     function GetRMS: Double; override;
     function GetPeak: Double; override;
-    procedure SampleFramesChanged(NewSampleFrames: Int64); override;
+    procedure AllocateMemory(SampleCount: Int64); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(DataPtr: PDAVDoubleFixedArray = nil); reintroduce; virtual;
@@ -189,15 +190,15 @@ type
 
   TCustomAudioDataComponent = class(TCustomAudioComponent)
   private
-    FAudioData             : TCustomAudioData;
-    FOnSampleFramesChanged : TNotifyEvent;
+    FAudioData            : TCustomAudioData;
+    FOnSampleCountChanged : TNotifyEvent;
     procedure SetSampleCount(const Value: Cardinal);
     function GetSampleCount: Cardinal;
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
     destructor Destroy; override;
-    property OnSampleFramesChanged: TNotifyEvent read FOnSampleFramesChanged write FOnSampleFramesChanged;
+    property OnSampleCountChanged: TNotifyEvent read FOnSampleCountChanged write FOnSampleCountChanged;
     property AudioData: TCustomAudioData read FAudioData;
     property SampleCount: Cardinal read GetSampleCount write SetSampleCount;
   end;
@@ -209,7 +210,7 @@ type
     property SampleCount;
     property SampleRate;
     property SampleRateSource;
-    property OnSampleFramesChanged;
+    property OnSampleCountChanged;
   end;
 
   TAudioData64Component = class(TCustomAudioDataComponent)
@@ -219,7 +220,7 @@ type
     property SampleCount;
     property SampleRate;
     property SampleRateSource;
-    property OnSampleFramesChanged;
+    property OnSampleCountChanged;
   end;
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -261,7 +262,7 @@ type
     function GetPeak: Double; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetDisplayName(const Value: string); override;
-    procedure SampleFramesChanged; virtual;
+    procedure SampleCountChanged; virtual;
 
     property AudioDataCollection: TCustomAudioDataCollection read GetAudioDataCollection;
   public
@@ -295,7 +296,7 @@ type
     function GetSum: Double; override;
     function GetRMS: Double; override;
     function GetPeak: Double; override;
-    procedure SampleFramesChanged; override;
+    procedure SampleCountChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(Collection: TCollection); override;
@@ -326,7 +327,7 @@ type
     function GetSum: Double; override;
     function GetRMS: Double; override;
     function GetPeak: Double; override;
-    procedure SampleFramesChanged; override;
+    procedure SampleCountChanged; override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create(Collection: TCollection); override;
@@ -470,6 +471,7 @@ uses
 resourcestring
   RCStrNoAudioFileFormat = 'No audio file format registered';
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrSampleOutOfRange = 'Sample out of range (%d)';
 
 {$IFDEF DELPHI10_UP} {$region 'AudioData implementation'} {$ENDIF}
 { TCustomAudioData }
@@ -477,7 +479,7 @@ resourcestring
 constructor TCustomAudioData.Create;
 begin
  inherited;
- SampleFramesChanged(0);
+ SampleCountChanged(0);
 end;
 
 procedure TCustomAudioData.AssignTo(Dest: TPersistent);
@@ -490,13 +492,14 @@ begin
   end;
 end;
 
-procedure TCustomAudioData.SampleFramesChanged(NewSampleFrames: Int64);
+procedure TCustomAudioData.SampleCountChanged(NewSampleCount: Int64);
 begin
  if not FExternalData then
   begin
-   FSampleCount := NewSampleFrames;
-//   if assigned(FOnSampleFramesChanged)
-//    then FOnSampleFramesChanged(Self);
+   AllocateMemory(NewSampleCount);
+   FSampleCount := NewSampleCount;
+//   if Assigned(FOnSampleCountChanged)
+//    then FOnSampleCountChanged(Self);
   end;
 end;
 
@@ -504,7 +507,7 @@ procedure TCustomAudioData.SetSampleCount(const Value: Cardinal);
 begin
  if (FSampleCount <> Value) and not FExternalData then
   begin
-   SampleFramesChanged(Value);
+   SampleCountChanged(Value);
   end;
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -523,21 +526,13 @@ end;
 
 destructor TAudioData32.Destroy;
 begin
- if assigned(FChannelData) then
+ if Assigned(FChannelData) then
   begin
    if not FExternalData
     then Dispose(FChannelData);
    FChannelData := nil;
   end;
  inherited;
-end;
-
-procedure TAudioData32.Add(Constant: Double);
-var
-  Sample : Integer;
-begin
- for Sample := 0 to SampleCount - 1
-  do FChannelData^[Sample] := Constant + FChannelData^[Sample];
 end;
 
 procedure TAudioData32.AssignTo(Dest: TPersistent);
@@ -550,6 +545,23 @@ begin
   then ConvertSingleToDouble(FChannelData,
                              PDAVDoubleFixedArray(TAudioData64(Dest).FChannelData),
                              FSampleCount);
+end;
+
+procedure TAudioData32.Add(Constant: Double);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do FChannelData^[Sample] := Constant + FChannelData^[Sample];
+end;
+
+procedure TAudioData32.AllocateMemory(SampleCount: Int64);
+begin
+ ReallocMem(FChannelData, SampleCount * SizeOf(Single));
+
+ // check if new length is longer than the old length and fill with zeroes if necessary
+ if SampleCount > Self.SampleCount
+  then FillChar(FChannelData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Single), 0);
 end;
 
 procedure TAudioData32.Clear;
@@ -569,7 +581,7 @@ function TAudioData32.GetChannelData(Sample: Int64): Single;
 begin
  if (Sample >= 0) and (Sample < SampleCount)
   then Result := FChannelData[Sample]
-  else raise Exception.Create('Sample out of range');
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
 
 function TAudioData32.GetPeak: Double;
@@ -648,7 +660,7 @@ var
   Sample : Integer;
 begin
  for Sample := 0 to SampleCount - 1
-  do FChannelData^[Sample] := sign(FChannelData^[Sample]) * Power(Abs(FChannelData^[Sample]), Exponent);
+  do FChannelData^[Sample] := Sign(FChannelData^[Sample]) * Power(Abs(FChannelData^[Sample]), Exponent);
 end;
 
 procedure TAudioData32.Rectify;
@@ -661,8 +673,8 @@ end;
 
 procedure TAudioData32.RemoveDC;
 var
-  Sample       : Integer;
-  DC           : Double;
+  Sample : Integer;
+  DC     : Double;
 begin
  if SampleCount = 0 then exit;
 
@@ -671,25 +683,13 @@ begin
   do FChannelData^[Sample] := FChannelData^[Sample] - DC;
 end;
 
-procedure TAudioData32.SampleFramesChanged(NewSampleFrames: Int64);
-begin
- if not ExternalData then
-  begin
-   ReallocMem(FChannelData, NewSampleFrames * SizeOf(Single));
-
-   // check if new length is longer than the old length and fill with zeroes if necessary
-   if NewSampleFrames > SampleCount
-    then FillChar(FChannelData^[SampleCount], (NewSampleFrames - SampleCount) * SizeOf(Single), 0);
-  end;
- inherited;
-end;
-
 procedure TAudioData32.SetChannelData(Sample: Int64; const Value: Single);
 begin
  if (Sample >= 0) and (Sample < SampleCount)
   then FChannelData[Sample] := Value
-  else raise Exception.Create('Sample out of range');
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
+
 
 { TAudioData64 }
 
@@ -703,21 +703,13 @@ end;
 
 destructor TAudioData64.Destroy;
 begin
- if assigned(FChannelData) then
+ if Assigned(FChannelData) then
   begin
    if not FExternalData
     then Dispose(FChannelData);
    FChannelData := nil;
   end;
  inherited;
-end;
-
-procedure TAudioData64.Add(Constant: Double);
-var
-  Sample : Integer;
-begin
- for Sample := 0 to SampleCount - 1
-  do FChannelData^[Sample] := Constant + FChannelData^[Sample];
 end;
 
 procedure TAudioData64.AssignTo(Dest: TPersistent);
@@ -730,6 +722,23 @@ begin
   then ConvertDoubleToSingle(FChannelData,
                              PDAVSingleFixedArray(TAudioData32(Dest).FChannelData),
                              FSampleCount);
+end;
+
+procedure TAudioData64.Add(Constant: Double);
+var
+  Sample : Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do FChannelData^[Sample] := Constant + FChannelData^[Sample];
+end;
+
+procedure TAudioData64.AllocateMemory(SampleCount: Int64);
+begin
+ ReallocMem(FChannelData, SampleCount * SizeOf(Double));
+
+ // check if new length is longer than the old length and fill with zeroes if necessary
+ if SampleCount > Self.SampleCount
+  then FillChar(FChannelData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Double), 0);
 end;
 
 procedure TAudioData64.Clear;
@@ -749,19 +758,19 @@ function TAudioData64.GetChannelData(Sample: Int64): Double;
 begin
  if (Sample >= 0) and (Sample < SampleCount)
   then Result := FChannelData[Sample]
-  else raise Exception.Create('Sample out of range');
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
 
 function TAudioData64.GetPeak: Double;
 var
   Sample       : Integer;
-  SampleFrames : Integer;
+  SampleCount : Integer;
 begin
  Result := 0;
- SampleFrames := SampleCount;
- if SampleFrames = 0 then exit;
+ SampleCount := SampleCount;
+ if SampleCount = 0 then exit;
 
- for Sample := 0 to SampleFrames - 1 do
+ for Sample := 0 to SampleCount - 1 do
   if abs(FChannelData^[Sample]) > Result
    then Result := abs(FChannelData^[Sample]);
 end;
@@ -769,29 +778,29 @@ end;
 function TAudioData64.GetRMS: Double;
 var
   Sample       : Integer;
-  SampleFrames : Integer;
+  SampleCount : Integer;
   SquaredSum   : Double;
 begin
  Result := 0;
- SampleFrames := SampleCount;
- if SampleFrames = 0 then exit;
+ SampleCount := SampleCount;
+ if SampleCount = 0 then exit;
 
  SquaredSum := 0;
- for Sample := 0 to SampleFrames - 1
+ for Sample := 0 to SampleCount - 1
   do SquaredSum := SquaredSum + sqr(FChannelData^[Sample]);
- Result := sqrt(SquaredSum / SampleFrames);
+ Result := sqrt(SquaredSum / SampleCount);
 end;
 
 function TAudioData64.GetSum: Double;
 var
   Sample       : Integer;
-  SampleFrames : Integer;
+  SampleCount : Integer;
 begin
  Result       := 0;
- SampleFrames := SampleCount;
- if SampleFrames = 0 then exit;
+ SampleCount := SampleCount;
+ if SampleCount = 0 then exit;
 
- for Sample := 0 to SampleFrames - 1
+ for Sample := 0 to SampleCount - 1
   do Result := Result + FChannelData^[Sample];
 end;
 
@@ -848,35 +857,22 @@ end;
 procedure TAudioData64.RemoveDC;
 var
   Sample       : Integer;
-  SampleFrames : Integer;
+  SampleCount : Integer;
   DC           : Double;
 begin
- SampleFrames := SampleCount;
- if SampleFrames = 0 then exit;
+ SampleCount := SampleCount;
+ if SampleCount = 0 then exit;
 
- DC := Sum / SampleFrames;
- for Sample := 0 to SampleFrames - 1
+ DC := Sum / SampleCount;
+ for Sample := 0 to SampleCount - 1
   do FChannelData^[Sample] := FChannelData^[Sample] - DC;
-end;
-
-procedure TAudioData64.SampleFramesChanged(NewSampleFrames: Int64);
-begin
- if ExternalData then
-  begin
-   ReallocMem(FChannelData, NewSampleFrames * SizeOf(Double));
-
-   // check if new length is longer than the old length and fill with zeroes if necessary
-   if NewSampleFrames > SampleCount
-    then FillChar(FChannelData^[SampleCount], (NewSampleFrames - SampleCount) * SizeOf(Double), 0);
-  end;
- inherited;
 end;
 
 procedure TAudioData64.SetChannelData(Sample: Int64; const Value: Double);
 begin
  if (Sample >= 0) and (Sample < SampleCount)
   then FChannelData[Sample] := Value
-  else raise Exception.Create('Sample out of range');
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
@@ -900,7 +896,7 @@ begin
   with TCustomAudioDataComponent(Dest) do
    begin
     FAudioData.Assign(Self.FAudioData);
-    FOnSampleFramesChanged := Self.FOnSampleFramesChanged;
+    FOnSampleCountChanged := Self.FOnSampleCountChanged;
    end
  else inherited;
 end;
@@ -911,8 +907,8 @@ begin
   begin
    FAudioData.SampleCount := Value;
 
-   if assigned(FOnSampleFramesChanged)
-    then FOnSampleFramesChanged(Self);
+   if Assigned(FOnSampleCountChanged)
+    then FOnSampleCountChanged(Self);
   end;
 end;
 
@@ -946,7 +942,7 @@ procedure TCustomAudioChannels.Update(Item: TCollectionItem);
 {$ENDIF}
 begin
  inherited;
- if assigned(OnChanged)
+ if Assigned(OnChanged)
   then OnChanged(Self);
 end;
 
@@ -956,7 +952,7 @@ constructor TCustomAudioChannel.Create(Collection: TCollection);
 begin
  inherited;
  FDisplayName := 'Channel ' + IntToStr(Collection.Count);
- SampleFramesChanged;
+ SampleCountChanged;
 end;
 
 procedure TCustomAudioChannel.AssignTo(Dest: TPersistent);
@@ -981,7 +977,7 @@ begin
  Result := FDisplayName;
 end;
 
-procedure TCustomAudioChannel.SampleFramesChanged;
+procedure TCustomAudioChannel.SampleCountChanged;
 begin
  FSampleCount := AudioDataCollection.SampleFrames;
 end;
@@ -1004,7 +1000,7 @@ begin
     do FChannelData := TAudioData32.Create(FChannelDataPointerList[FChannels.Count - 1]);
   end
  else FChannelData := TAudioData32.Create;
- SampleFramesChanged;
+ SampleCountChanged;
 end;
 
 destructor TAudioChannel32.Destroy;
@@ -1091,10 +1087,10 @@ begin
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-procedure TAudioChannel32.SampleFramesChanged;
+procedure TAudioChannel32.SampleCountChanged;
 begin
  inherited;
- if assigned(FChannelData)
+ if Assigned(FChannelData)
   then FChannelData.SampleCount := FSampleCount;
 end;
 
@@ -1115,7 +1111,7 @@ begin
     do FChannelData := TAudioData64.Create(FChannelDataPointerList[FChannels.Count - 1]);
   end
  else FChannelData := TAudioData64.Create;
- SampleFramesChanged;
+ SampleCountChanged;
 end;
 
 destructor TAudioChannel64.Destroy;
@@ -1200,10 +1196,10 @@ begin
 end;
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-procedure TAudioChannel64.SampleFramesChanged;
+procedure TAudioChannel64.SampleCountChanged;
 begin
  inherited;
- if assigned(FChannelData)
+ if Assigned(FChannelData)
   then FChannelData.SampleCount := FSampleCount;
 end;
 
@@ -1233,7 +1229,7 @@ end;
 
 destructor TCustomAudioDataCollection.Destroy;
 begin
- if assigned(FChannels) then FreeAndNil(FChannels);
+ if Assigned(FChannels) then FreeAndNil(FChannels);
  inherited;
 end;
 
@@ -1313,7 +1309,7 @@ end;
 
 function TCustomAudioDataCollection.GetChannelCount: Integer;
 begin
- if assigned(FChannels)
+ if Assigned(FChannels)
   then Result := FChannels.Count
   else Result := 0;
 end;
@@ -1326,7 +1322,7 @@ begin
   begin
    assert(FChannels.Items[ch] is TCustomAudioChannel);
    if TCustomAudioChannel(FChannels.Items[ch]).SampleCount <> FSampleFrames
-    then TCustomAudioChannel(FChannels.Items[ch]).SampleFramesChanged;
+    then TCustomAudioChannel(FChannels.Items[ch]).SampleCountChanged;
   end;
 end;
 
@@ -1509,20 +1505,20 @@ procedure TCustomAudioDataCollection32.RebuildChannelList(Sender: TObject);
 var
   i : Integer;
 begin
- if (not FExternalData) and assigned(FChannels) then
+ if (not FExternalData) and Assigned(FChannels) then
   begin
    SetLength(FChannelDataPointerList, FChannels.Count);
    for i := 0 to FChannels.Count - 1 do
     if FChannels.Items[i] is TAudioChannel32 then
      with TAudioChannel32(FChannels.Items[i]) do
-//      if assigned(FChannelData) then // it might be necessary to remove this check in the future!
+//      if Assigned(FChannelData) then // it might be necessary to remove this check in the future!
        FChannelDataPointerList[i] := ChannelDataPointer;
   end;
 end;
 
 function TCustomAudioDataCollection32.GetAudioChannel(Index: Integer): TAudioChannel32;
 begin
- if assigned(FChannels) then
+ if Assigned(FChannels) then
   if (Index < 0) or (Index >= FChannels.Count)
    then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
    else Result := TAudioChannel32(FChannels.Items[index])

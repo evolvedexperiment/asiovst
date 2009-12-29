@@ -40,12 +40,12 @@ uses
 
 type
   TFmASIOVST = class(TForm)
-    CB_ASIO: TComboBox;
+    CbASIO: TComboBox;
     CBShortCircuit: TCheckBox;
-    Lb_ASIOOutput: TLabel;
+    LbAsioOutput: TLabel;
     Memo: TMemo;
-    procedure CB_ASIOChange(Sender: TObject);
-    procedure Lb_ASIOOutputClick(Sender: TObject);
+    procedure CbASIOChange(Sender: TObject);
+    procedure LbAsioOutputClick(Sender: TObject);
     procedure CBShortCircuitClick(Sender: TObject);
   public
     procedure DisplayASIOInformation;
@@ -63,16 +63,16 @@ begin
  with TASIOVSTModule(Owner) do
   begin
    if not CBShortCircuit.Checked
-    then AsioHost.OnBufferSwitch32 := AHBufferSwitch
+    then AsioHost.OnBufferSwitch32 := AHBufferSwitch32
     else AsioHost.OnBufferSwitch32 := AHShortCircuit;
   end;
 end;
 
-procedure TFmASIOVST.CB_ASIOChange(Sender: TObject);
+procedure TFmASIOVST.CbASIOChange(Sender: TObject);
 begin
  with TASIOVSTModule(Owner) do
   begin
-   Parameter[0] := CB_ASIO.ItemIndex;
+   Parameter[0] := CbASIO.ItemIndex;
    DisplayASIOInformation;
   end;
 end;
@@ -97,7 +97,7 @@ begin
   end;
 end;
 
-procedure TFmASIOVST.Lb_ASIOOutputClick(Sender: TObject);
+procedure TFmASIOVST.LbAsioOutputClick(Sender: TObject);
 begin
  TASIOVSTModule(Owner).AsioHost.ControlPanel;
 end;

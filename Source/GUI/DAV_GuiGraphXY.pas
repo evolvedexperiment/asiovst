@@ -1108,9 +1108,11 @@ const
 begin
  with Bitmap, Canvas do
   begin
-   Brush.Color := FBorderColor;
+   Pen.Color := FBorderColor;
+   Brush.Style := bsClear;
    Rct := ClipRect;
-   FrameRect(Rct);
+   RoundRect(Rct.Left, Rct.Top, Rct.Right, Rct.Bottom,
+     OversamplingFactor * FBorderRadius, OversamplingFactor * FBorderRadius);
    InflateRect(Rct, -1, -1);
    ZeroPos   := Point(Round(XAxis.ZeroPosition * OversamplingFactor * XAxis.PixelSize),
                       Round((1 - YAxis.ZeroPosition) * OversamplingFactor * YAxis.PixelSize));
