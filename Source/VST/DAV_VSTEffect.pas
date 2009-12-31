@@ -513,11 +513,12 @@ type
     sat102             {$IFDEF DELPHI6_UP} = 28 {$ENDIF},  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2
     satNumSpeakerArr   {$IFDEF DELPHI6_UP} = 29 {$ENDIF});
 
+  {$A4}  
   TVstPinPropertiesFlag = (vppIsActive, vppIsStereo, vppUseSpeaker);
   TVstPinPropertiesFlags = set of TVstPinPropertiesFlag;
 
   PVstPinProperties = ^TVstPinProperties;
-  TVstPinProperties = packed record
+  TVstPinProperties = record
     Caption         : array[0..63] of AnsiChar;
     Flags           : TVstPinPropertiesFlags;  // see pin properties flags
     ArrangementType : TVstSpeakerArrangementType;

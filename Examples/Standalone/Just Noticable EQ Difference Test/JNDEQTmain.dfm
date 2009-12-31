@@ -15,6 +15,7 @@ object FmJNDEQT: TFmJNDEQT
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyPress = FormKeyPress
   OnPaint = FormPaint
   OnResize = FormResize
   OnShow = FormShow
@@ -160,17 +161,17 @@ object FmJNDEQT: TFmJNDEQT
     Top = 297
     Width = 84
     Height = 8
-    Transparent = True
+    Anchors = [akLeft, akTop, akRight]
     BorderRadius = 2
+    Color = 8620693
     DefaultPosition = 3.000000000000000000
     Max = 3.000000000000000000
     Min = -30.000000000000000000
+    OnChange = SliderVolumeChange
+    ParentColor = False
     Position = 3.000000000000000000
     SlideColor = clBlack
-    OnChange = SliderVolumeChange
-    Anchors = [akLeft, akTop, akRight]
-    Color = 8620693
-    ParentColor = False
+    Transparent = True
   end
   object BtMedia: TGuiMediaButton
     Left = 8
@@ -201,9 +202,10 @@ object FmJNDEQT: TFmJNDEQT
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
-    GroupColor = 10333885
+    GroupColor = clBlack
     LineColor = clBlack
     OutlineWidth = 2
+    PanelColor = 10333885
     ParentColor = False
     ParentFont = False
     Radius = 5
@@ -376,53 +378,53 @@ object FmJNDEQT: TFmJNDEQT
       Top = 62
       Width = 179
       Height = 8
-      Transparent = True
+      Anchors = [akLeft, akTop, akRight]
       BorderRadius = 2
+      Color = 8620693
       CurveMapping = 1.000000000000000000
       DefaultPosition = 3.000000000000000000
       Max = 10.000000000000000000
       Min = 0.100000001490116100
+      OnChange = SliderBandwidthChange
+      ParentColor = False
       Position = 3.000000000000000000
       SlideColor = clBlack
-      OnChange = SliderBandwidthChange
-      Anchors = [akLeft, akTop, akRight]
-      Color = 8620693
-      ParentColor = False
+      Transparent = True
     end
     object SliderFrequency: TGuiSlider
       Left = 68
       Top = 46
       Width = 179
       Height = 8
-      Transparent = True
+      Anchors = [akLeft, akTop, akRight]
       BorderRadius = 2
+      Color = 8620693
       CurveMapping = 2.000000000000000000
       DefaultPosition = 1000.000000000000000000
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
+      OnChange = SliderFrequencyChange
+      ParentColor = False
       Position = 1000.000000000000000000
       SlideColor = clBlack
-      OnChange = SliderFrequencyChange
-      Anchors = [akLeft, akTop, akRight]
-      Color = 8620693
-      ParentColor = False
+      Transparent = True
     end
     object SliderGain: TGuiSlider
       Left = 68
       Top = 30
       Width = 179
       Height = 8
-      Transparent = True
+      Anchors = [akLeft, akTop, akRight]
       BorderRadius = 2
+      Color = 8620693
       DefaultPosition = 15.000000000000000000
       Max = 15.000000000000000000
       Min = -15.000000000000000000
+      OnChange = SliderGainChange
+      ParentColor = False
       Position = 15.000000000000000000
       SlideColor = clBlack
-      OnChange = SliderGainChange
-      Anchors = [akLeft, akTop, akRight]
-      Color = 8620693
-      ParentColor = False
+      Transparent = True
     end
   end
   object PnSelectorA: TGuiPanel
@@ -444,7 +446,8 @@ object FmJNDEQT: TFmJNDEQT
     Radius = 5
     TabOrder = 3
     UseDockManager = True
-    OnClick = LbSelectionClick
+    OnMouseDown = LbSelectionMouseDown
+    OnMouseUp = LbSelectionMouseUp
     object LbSelectionA: TGuiLabel
       Tag = 1
       Left = 25
@@ -463,7 +466,8 @@ object FmJNDEQT: TFmJNDEQT
       ParentFont = False
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbSelectionClick
+      OnMouseDown = LbSelectionMouseDown
+      OnMouseUp = LbSelectionMouseUp
     end
   end
   object PnSelectorB: TGuiPanel
@@ -485,7 +489,8 @@ object FmJNDEQT: TFmJNDEQT
     Radius = 5
     TabOrder = 4
     UseDockManager = True
-    OnClick = LbSelectionClick
+    OnMouseDown = LbSelectionMouseDown
+    OnMouseUp = LbSelectionMouseUp
     object LbSelectionB: TGuiLabel
       Tag = 2
       Left = 27
@@ -504,7 +509,8 @@ object FmJNDEQT: TFmJNDEQT
       ParentFont = False
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbSelectionClick
+      OnMouseDown = LbSelectionMouseDown
+      OnMouseUp = LbSelectionMouseUp
     end
   end
   object PnSelectorX: TGuiPanel
@@ -525,7 +531,7 @@ object FmJNDEQT: TFmJNDEQT
     Radius = 5
     TabOrder = 5
     UseDockManager = True
-    OnClick = LbSelectionClick
+    OnMouseDown = LbSelectionMouseDown
     object LbSelectionX: TGuiLabel
       Left = 29
       Top = 3
@@ -543,7 +549,7 @@ object FmJNDEQT: TFmJNDEQT
       ParentFont = False
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbSelectionClick
+      OnMouseDown = LbSelectionMouseDown
     end
   end
   object PnSelectorXisA: TGuiPanel
@@ -653,7 +659,7 @@ object FmJNDEQT: TFmJNDEQT
     DesignSize = (
       100
       48)
-    object LbPass: TGuiLabel
+    object LbSkip: TGuiLabel
       Left = 7
       Top = 5
       Width = 85
@@ -661,7 +667,7 @@ object FmJNDEQT: TFmJNDEQT
       Alignment = taCenter
       Anchors = [akLeft, akTop, akRight]
       AntiAlias = gaaLinear4x
-      Caption = 'Pass'
+      Caption = 'Skip'
       Color = 10333885
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -671,7 +677,7 @@ object FmJNDEQT: TFmJNDEQT
       ParentFont = False
       Shadow.Color = 5663873
       Shadow.Visible = True
-      OnClick = LbPassClick
+      OnClick = LbSkipClick
     end
   end
   object MainMenu: TMainMenu
@@ -748,6 +754,13 @@ object FmJNDEQT: TFmJNDEQT
         Caption = '&Audio'
         OnClick = MiAudioSettingsClick
       end
+      object N4: TMenuItem
+        Caption = '-'
+      end
+      object MiLatchButtons: TMenuItem
+        Caption = 'Latch Buttons'
+        OnClick = MiLatchButtonsClick
+      end
     end
   end
   object OD: TOpenDialog
@@ -788,5 +801,12 @@ object FmJNDEQT: TFmJNDEQT
     Filter = 'Just Noticable Difference Files (*.JND)|*.jnd'
     Left = 24
     Top = 160
+  end
+  object ResultButtonEnabler: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = ResultButtonEnablerTimer
+    Left = 240
+    Top = 152
   end
 end

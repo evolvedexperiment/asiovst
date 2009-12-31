@@ -35,22 +35,22 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types,
-  DAV_DspFilterButterworth, DAV_VSTModule;
+  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  DAV_DspFilterButterworth;
 
 {$I DAV_Compiler.inc}
 
 type
   TBaxxpanderModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcessNormal(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure VSTModuleProcessSaturated(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterDryWetChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixerChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleProcessSaturated(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure ParameterLimitChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterShapeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -66,13 +66,13 @@ implementation
 {$R *.DFM}
 
 uses
-  DAV_Approximations, DAV_DspWaveshaper; // BaxxpanderGui;
+  DAV_Approximations, DAV_DspWaveshaper;
 
 procedure TBaxxpanderModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
- assert(NumInputs = NumOutputs);
+ Assert(NumInputs = NumOutputs);
  SetLength(FButterworthSplitter,  numInputs);
 
  for Channel := 0 to Length(FButterworthSplitter) - 1 do
@@ -102,7 +102,7 @@ end;
 
 procedure TBaxxpanderModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
 begin
-//  GUI := TFmBaxxpanderGui.Create(Self);
+// GUI := TFmBaxxpanderGui.Create(Self);
 end;
 
 procedure TBaxxpanderModule.ParameterDryWetChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -158,10 +158,9 @@ procedure TBaxxpanderModule.VSTModuleSampleRateChange(Sender: TObject;
 var
   Channel : Integer;
 begin
- for Channel := 0 to Length(FButterworthSplitter) - 1 do
-  begin
-   FButterworthSplitter[Channel].SampleRate := SampleRate;
-  end;
+ if Abs(SampleRate) > 0 then
+  for Channel := 0 to Length(FButterworthSplitter) - 1
+   do FButterworthSplitter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessNormal(const Inputs,

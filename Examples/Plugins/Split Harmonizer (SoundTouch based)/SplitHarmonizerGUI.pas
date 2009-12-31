@@ -45,6 +45,8 @@ type
     DialDelayB: TGuiDial;
     DialDetuneA: TGuiDial;
     DialDetuneB: TGuiDial;
+    DialLowpassA: TGuiDial;
+    DialLowpassB: TGuiDial;
     DialMixA: TGuiDial;
     DialMixB: TGuiDial;
     DIL: TGuiDialImageList;
@@ -57,6 +59,10 @@ type
     LbDetuneB: TGuiLabel;
     LbDetuneBValue: TGuiLabel;
     LbEncoding: TGuiLabel;
+    LbLowpassA: TGuiLabel;
+    LbLowpassAValue: TGuiLabel;
+    LbLowpassB: TGuiLabel;
+    LbLowpassBValue: TGuiLabel;
     LbMixA: TGuiLabel;
     LbMixAValue: TGuiLabel;
     LbMixB: TGuiLabel;
@@ -74,6 +80,8 @@ type
     procedure DialMixAChange(Sender: TObject);
     procedure DialMixBChange(Sender: TObject);
     procedure SwEncodingChange(Sender: TObject);
+    procedure DialLowpassAChange(Sender: TObject);
+    procedure DialLowpassBChange(Sender: TObject);
   private
     FBackgrounBitmap : TBitmap;
   public
@@ -81,12 +89,16 @@ type
     procedure UpdateSemitones(const Channel: Integer);
     procedure UpdateDelay(const Channel: Integer);
     procedure UpdateMix(const Channel: Integer);
+    procedure UpdateLowpassFilter(const Channel: Integer);
   end;
 
 implementation
 
 uses
   Math, PngImage, SplitHarmonizerDM, DAV_VSTModuleWithPrograms;
+
+resourcestring
+  RCStrChannelInvalid = 'Channel invalid (%d)';
 
 {$R *.DFM}
 
@@ -115,9 +127,9 @@ begin
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
        s[0] := s[1];
-       Line[x].B := round($0F + $0E * s[1]);;
-       Line[x].G := round($12 + $0E * s[1]);;
-       Line[x].R := round($13 + $0E * s[1]);;
+       Line[x].B := Round($0F + $0E * s[1]);;
+       Line[x].G := Round($12 + $0E * s[1]);;
+       Line[x].R := Round($13 + $0E * s[1]);;
       end;
     end;
   end;
@@ -136,6 +148,8 @@ begin
    DialDetuneB.DialImageIndex := 0;
    DialDelayA.DialImageIndex := 0;
    DialDelayB.DialImageIndex := 0;
+   DialLowpassA.DialImageIndex := 0;
+   DialLowpassB.DialImageIndex := 0;
    DialMixA.DialImageIndex := 0;
    DialMixB.DialImageIndex := 0;
   finally
@@ -160,13 +174,15 @@ begin
  UpdateDelay(1);
  UpdateMix(0);
  UpdateMix(1);
+ UpdateLowpassFilter(0);
+ UpdateLowpassFilter(1);
 end;
 
 procedure TFmSplitHarmonizer.SwEncodingChange(Sender: TObject);
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
-   if round(Parameter[0]) <> SwEncoding.GlyphNr
+   if Round(Parameter[0]) <> SwEncoding.GlyphNr
     then Parameter[0] := SwEncoding.GlyphNr;
   end;
 end;
@@ -179,7 +195,7 @@ begin
     begin
      Parameter[1] := DialDetuneA.Position;
      if ssAlt in KeyboardStateToShiftState
-      then Parameter[4] := -Parameter[1];
+      then Parameter[5] := -Parameter[1];
     end;
   end;
 end;
@@ -192,7 +208,20 @@ begin
     begin
      Parameter[2] := DialDelayA.Position;
      if ssAlt in KeyboardStateToShiftState
-      then Parameter[5] := Parameter[2];
+      then Parameter[6] := Parameter[2];
+    end;
+  end;
+end;
+
+procedure TFmSplitHarmonizer.DialLowpassAChange(Sender: TObject);
+begin
+ with TSplitHarmonizerModule(Owner) do
+  begin
+   if Parameter[3] <> DialLowpassA.Position then
+    begin
+     Parameter[3] := DialLowpassA.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[7] := Parameter[3];
     end;
   end;
 end;
@@ -201,11 +230,11 @@ procedure TFmSplitHarmonizer.DialMixAChange(Sender: TObject);
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
-   if Parameter[3] <> DialMixA.Position then
+   if Parameter[4] <> DialMixA.Position then
     begin
-     Parameter[3] := DialMixA.Position;
+     Parameter[4] := DialMixA.Position;
      if ssAlt in KeyboardStateToShiftState
-      then Parameter[6] := Parameter[3];
+      then Parameter[8] := Parameter[4];
     end;
   end;
 end;
@@ -214,11 +243,11 @@ procedure TFmSplitHarmonizer.DialDetuneBChange(Sender: TObject);
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
-   if Parameter[4] <> DialDetuneB.Position then
+   if Parameter[5] <> DialDetuneB.Position then
     begin
-     Parameter[4] := DialDetuneB.Position;
+     Parameter[5] := DialDetuneB.Position;
      if ssAlt in KeyboardStateToShiftState
-      then Parameter[1] := -Parameter[4];
+      then Parameter[1] := -Parameter[5];
     end;
   end;
 end;
@@ -227,11 +256,24 @@ procedure TFmSplitHarmonizer.DialDelayBChange(Sender: TObject);
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
-   if Parameter[5] <> DialDelayB.Position then
+   if Parameter[6] <> DialDelayB.Position then
     begin
-     Parameter[5] := DialDelayB.Position;
+     Parameter[6] := DialDelayB.Position;
      if ssAlt in KeyboardStateToShiftState
-      then Parameter[2] := Parameter[5];
+      then Parameter[2] := Parameter[6];
+    end;
+  end;
+end;
+
+procedure TFmSplitHarmonizer.DialLowpassBChange(Sender: TObject);
+begin
+ with TSplitHarmonizerModule(Owner) do
+  begin
+   if Parameter[7] <> DialLowpassB.Position then
+    begin
+     Parameter[7] := DialLowpassB.Position;
+     if ssAlt in KeyboardStateToShiftState
+      then Parameter[3] := Parameter[7];
     end;
   end;
 end;
@@ -240,72 +282,92 @@ procedure TFmSplitHarmonizer.DialMixBChange(Sender: TObject);
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
-   if Parameter[6] <> DialMixB.Position then
+   if Parameter[8] <> DialMixB.Position then
     begin
-     Parameter[6] := DialMixB.Position;
+     Parameter[8] := DialMixB.Position;
      if ssAlt in KeyboardStateToShiftState
-      then Parameter[3] := Parameter[6];
+      then Parameter[4] := Parameter[8];
     end;
   end;
 end;
 
 procedure TFmSplitHarmonizer.UpdateDelay(const Channel: Integer);
 var
-  Dial  : TGuiDial;
-  Labl  : TGuiLabel;
+  Dial : TGuiDial;
+  Labl : TGuiLabel;
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
    case Channel of
     0 : begin Dial := DialDelayA; Labl := LbDelayAValue; end;
     1 : begin Dial := DialDelayB; Labl := LbDelayBValue; end;
-    else raise Exception.CreateFmt('Channel invalid (%d)', [Channel]);
+    else raise Exception.CreateFmt(RCStrChannelInvalid, [Channel]);
    end;
-   if Dial.Position <> Parameter[2 + 3 * Channel]
-    then Dial.Position := Parameter[2 + 3 * Channel];
-   Labl.Caption := FloatToStrF(RoundTo(Parameter[2 + 3 * Channel], -1), ffGeneral, 4, 4) + ' ms';
+   if Dial.Position <> Parameter[2 + 4 * Channel]
+    then Dial.Position := Parameter[2 + 4 * Channel];
+   Labl.Caption := FloatToStrF(RoundTo(Parameter[2 + 4 * Channel], -1), ffGeneral, 4, 4) + ' ms';
   end;
 end;
 
 procedure TFmSplitHarmonizer.UpdateEncoding;
 begin
  with TSplitHarmonizerModule(Owner)
-  do SwEncoding.GlyphNr := round(Parameter[0]);
-end;
-
-procedure TFmSplitHarmonizer.UpdateMix(const Channel: Integer);
-var
-  Dial  : TGuiDial;
-  Labl  : TGuiLabel;
-begin
- with TSplitHarmonizerModule(Owner) do
-  begin
-   case Channel of
-    0 : begin Dial := DialMixA; Labl := LbMixAValue; end;
-    1 : begin Dial := DialMixB; Labl := LbMixBValue; end;
-    else raise Exception.CreateFmt('Channel invalid (%d)', [Channel]);
-   end;
-   if Dial.Position <> Parameter[3 + 3 * Channel]
-    then Dial.Position := Parameter[3 + 3 * Channel];
-   Labl.Caption := FloatToStrF(RoundTo(50 + 0.5 * Parameter[3 + 3 * Channel], -1), ffGeneral, 4, 4) + ' %';
-  end;
+  do SwEncoding.GlyphNr := Round(Parameter[0]);
 end;
 
 procedure TFmSplitHarmonizer.UpdateSemitones(const Channel: Integer);
 var
-  Dial  : TGuiDial;
-  Labl  : TGuiLabel;
+  Dial : TGuiDial;
+  Labl : TGuiLabel;
 begin
  with TSplitHarmonizerModule(Owner) do
   begin
    case Channel of
     0 : begin Dial := DialDetuneA; Labl := LbDetuneAValue; end;
     1 : begin Dial := DialDetuneB; Labl := LbDetuneBValue; end;
-    else raise Exception.CreateFmt('Channel invalid (%d)', [Channel]);
+    else raise Exception.CreateFmt(RCStrChannelInvalid, [Channel]);
    end;
-   if Dial.Position <> Parameter[1 + 3 * Channel]
-    then Dial.Position := Parameter[1 + 3 * Channel];
-   Labl.Caption := IntToStr(Round(Parameter[1 + 3 * Channel])) + ' Cent';
+   if Dial.Position <> Parameter[1 + 4 * Channel]
+    then Dial.Position := Parameter[1 + 4 * Channel];
+   Labl.Caption := IntToStr(Round(Parameter[1 + 4 * Channel])) + ' Cent';
+  end;
+end;
+
+procedure TFmSplitHarmonizer.UpdateLowpassFilter(const Channel: Integer);
+var
+  Dial : TGuiDial;
+  Labl : TGuiLabel;
+begin
+ with TSplitHarmonizerModule(Owner) do
+  begin
+   case Channel of
+    0 : begin Dial := DialLowpassA; Labl := LbLowpassAValue; end;
+    1 : begin Dial := DialLowpassB; Labl := LbLowpassBValue; end;
+    else raise Exception.CreateFmt(RCStrChannelInvalid, [Channel]);
+   end;
+   if Dial.Position <> Parameter[3 + 4 * Channel]
+    then Dial.Position := Parameter[3 + 4 * Channel];
+   if Parameter[3 + 4 * Channel] < 1000
+    then Labl.Caption := FloatToStrF(Parameter[3 + 4 * Channel], ffGeneral, 4, 4) + ' Hz'
+    else Labl.Caption := FloatToStrF(Parameter[3 + 4 * Channel] * 1E-3, ffGeneral, 3, 3) + ' kHz';
+  end;
+end;
+
+procedure TFmSplitHarmonizer.UpdateMix(const Channel: Integer);
+var
+  Dial : TGuiDial;
+  Labl : TGuiLabel;
+begin
+ with TSplitHarmonizerModule(Owner) do
+  begin
+   case Channel of
+    0 : begin Dial := DialMixA; Labl := LbMixAValue; end;
+    1 : begin Dial := DialMixB; Labl := LbMixBValue; end;
+    else raise Exception.CreateFmt(RCStrChannelInvalid, [Channel]);
+   end;
+   if Dial.Position <> Parameter[4 + 4 * Channel]
+    then Dial.Position := Parameter[4 + 4 * Channel];
+   Labl.Caption := FloatToStrF(RoundTo(50 + 0.5 * Parameter[4 + 4 * Channel], -1), ffGeneral, 4, 4) + ' %';
   end;
 end;
 

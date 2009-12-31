@@ -36,7 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_SoundTouchDLLResource, DAV_DspDelayLines; //DAV_SoundTouch;
+  DAV_VSTModule, DAV_DspDelayLines, DAV_DspFilter, DAV_DspFilterButterworth,  
+  DAV_SoundTouchDLLResource; //DAV_SoundTouch;
 
 const
   CInputDelay = 5384;
@@ -57,7 +58,7 @@ type
     procedure ParameterDelayBChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterEncodeChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterEncodeDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterMixLeftChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterMixAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterMixRightChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSemiTonesAChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterSemiTonesBChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -68,9 +69,12 @@ type
     procedure ParameterSequenceChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterAutoSettingsChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterLowpassAChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterLowpassBChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FSoundTouch      : array [0..1] of TSoundTouch;
     FDelayLine       : array [0..1, 0..1] of TDelayLineSamples32;
+    FLowpassFilter   : array [0..1] of TButterworthLowPassFilter;
     FMix             : array [0..1] of Single;
     FCriticalSection : TCriticalSection;
     FAutoSettings    : Boolean;
@@ -104,14 +108,27 @@ procedure TSplitHarmonizerModule.VSTModuleOpen(Sender: TObject);
 var
   Channel : Integer;
 begin
+ // initialize sound touch pitch shifter
  for Channel := 0 to Length(FSoundTouch) - 1 do
   begin
    FSoundTouch[Channel] := TSoundTouch.Create;
+  end;
+
+ // initialize delay lines
+ for Channel := 0 to Length(FDelayLine) - 1 do
+  begin
    FDelayLine[Channel, 0] := TDelayLineSamples32.Create;
    FDelayLine[Channel, 0].BufferSize := CInputDelay;
    FDelayLine[Channel, 1] := TDelayLineSamples32.Create;
    FDelayLine[Channel, 1].BufferSize := CInputDelay;
   end;
+
+ for Channel := 0 to Length(FLowpassFilter) - 1 do
+  begin
+   FLowpassFilter[Channel] := TButterworthLowPassFilter.Create(1);
+   FLowpassFilter[Channel].SampleRate := SampleRate;
+  end;
+
  Parameter[ 0] := 0;
  Parameter[ 1] := -20;
  Parameter[ 2] := 10;
@@ -136,8 +153,17 @@ procedure TSplitHarmonizerModule.VSTModuleClose(Sender: TObject);
 var
   Channel : Integer;
 begin
- for Channel := 0 to NumInputs - 1
+ for Channel := 0 to Length(FSoundTouch) - 1
   do FreeAndNil(FSoundTouch[Channel]);
+
+ for Channel := 0 to Length(FDelayLine) - 1 do
+  begin
+   FreeAndNil(FDelayLine[Channel, 0]);
+   FreeAndNil(FDelayLine[Channel, 1]);
+  end;
+
+ for Channel := 0 to Length(FLowpassFilter) - 1
+  do FreeAndNil(FLowpassFilter[Channel]);
 end;
 
 procedure TSplitHarmonizerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -150,7 +176,7 @@ procedure TSplitHarmonizerModule.ParameterSemiTonesAChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FSoundTouch[0])
+  if Assigned(FSoundTouch[0])
    then FSoundTouch[0].Pitch := Power(2, Value / 1200);
  finally
   FCriticalSection.Leave;
@@ -165,7 +191,7 @@ procedure TSplitHarmonizerModule.ParameterSemiTonesBChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FSoundTouch[1])
+  if Assigned(FSoundTouch[1])
    then FSoundTouch[1].Pitch := Power(2, Value / 1200);
  finally
   FCriticalSection.Leave;
@@ -180,9 +206,9 @@ procedure TSplitHarmonizerModule.ParameterUseAntiAliasChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FSoundTouch[0])
+  if Assigned(FSoundTouch[0])
    then FSoundTouch[0].UseAntiAliasFilter := Value > 0.5;
-  if assigned(FSoundTouch[1])
+  if Assigned(FSoundTouch[1])
    then FSoundTouch[1].UseAntiAliasFilter := Value > 0.5;
  finally
   FCriticalSection.Leave;
@@ -197,7 +223,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to 1 do
-   if assigned(FSoundTouch[Channel])
+   if Assigned(FSoundTouch[Channel])
     then FSoundTouch[Channel].UseQuickSeek := Value > 0.5;
  finally
   FCriticalSection.Leave;
@@ -213,6 +239,28 @@ begin
   end;
 end;
 
+procedure TSplitHarmonizerModule.ParameterLowpassAChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if Assigned(FLowpassFilter[0])
+  then FLowpassFilter[0].Frequency := Value;
+
+ // update GUI
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateLowpassFilter(0);
+end;
+
+procedure TSplitHarmonizerModule.ParameterLowpassBChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ if Assigned(FLowpassFilter[1])
+  then FLowpassFilter[1].Frequency := Value;
+
+ // update GUI
+ if EditorForm is TFmSplitHarmonizer
+  then TFmSplitHarmonizer(EditorForm).UpdateLowpassFilter(1);
+end;
+
 procedure TSplitHarmonizerModule.AutoSettingsChanged;
 var
   Channel : Integer;
@@ -220,7 +268,7 @@ begin
  if FAutoSettings then
   begin
    for Channel := 0 to 1 do
-    if assigned(FSoundTouch[Channel]) then
+    if Assigned(FSoundTouch[Channel]) then
      begin
       FSoundTouch[Channel].OverlapMs := -1;
       FSoundTouch[Channel].SequenceMs := -1;
@@ -258,10 +306,10 @@ begin
   if not FAutoSettings then
    for Channel := 0 to 1 do
     begin
-     if assigned(FSoundTouch[Channel])
-      then FSoundTouch[Channel].SequenceMs := round(Value);
-     if assigned(FDelayLine[Channel, 0])
-      then FDelayLine[Channel, 0].BufferSize := round(0.001 * Value * SampleRate);
+     if Assigned(FSoundTouch[Channel])
+      then FSoundTouch[Channel].SequenceMs := Round(Value);
+     if Assigned(FDelayLine[Channel, 0])
+      then FDelayLine[Channel, 0].BufferSize := Round(0.001 * Value * SampleRate);
 
     end;
  finally
@@ -278,8 +326,8 @@ begin
  try
   if not FAutoSettings then
    for Channel := 0 to 1 do
-    if assigned(FSoundTouch[Channel])
-     then FSoundTouch[Channel].SeekWindow := round(Value);
+    if Assigned(FSoundTouch[Channel])
+     then FSoundTouch[Channel].SeekWindow := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -294,8 +342,8 @@ begin
  try
   if not FAutoSettings then
    for Channel := 0 to 1 do
-    if assigned(FSoundTouch[Channel])
-     then FSoundTouch[Channel].OverlapMs := round(Value);
+    if Assigned(FSoundTouch[Channel])
+     then FSoundTouch[Channel].OverlapMs := Round(Value);
  finally
   FCriticalSection.Leave;
  end;
@@ -306,8 +354,8 @@ procedure TSplitHarmonizerModule.ParameterDelayAChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FDelayLine[0, 1])
-   then FDelayLine[0, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
+  if Assigned(FDelayLine[0, 1])
+   then FDelayLine[0, 1].BufferSize := Max(1, Round(Value * SampleRate * 1E-3));
  finally
   FCriticalSection.Leave;
  end;
@@ -320,8 +368,8 @@ procedure TSplitHarmonizerModule.ParameterDelayBChange(
 begin
  FCriticalSection.Enter;
  try
-  if assigned(FDelayLine[1, 1])
-   then FDelayLine[1, 1].BufferSize := Max(1, round(Value * SampleRate * 1E-3));
+  if Assigned(FDelayLine[1, 1])
+   then FDelayLine[1, 1].BufferSize := Max(1, Round(Value * SampleRate * 1E-3));
  finally
   FCriticalSection.Leave;
  end;
@@ -329,10 +377,12 @@ begin
   then TFmSplitHarmonizer(EditorForm).UpdateDelay(1);
 end;
 
-procedure TSplitHarmonizerModule.ParameterMixLeftChange(
+procedure TSplitHarmonizerModule.ParameterMixAChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[0] := 0.01 * Value;
+
+ // update GUI
  if EditorForm is TFmSplitHarmonizer
   then TFmSplitHarmonizer(EditorForm).UpdateMix(0);
 end;
@@ -341,6 +391,8 @@ procedure TSplitHarmonizerModule.ParameterMixRightChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
  FMix[1] := 0.01 * Value;
+
+ // update GUI
  if EditorForm is TFmSplitHarmonizer
   then TFmSplitHarmonizer(EditorForm).UpdateMix(1);
 end;
@@ -348,7 +400,7 @@ end;
 procedure TSplitHarmonizerModule.ParameterEncodeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- case round(Value) of
+ case Round(Value) of
   0 : begin
        OnProcess := VSTModuleProcessLR;
        OnProcessDoubleReplacing := VSTModuleProcessReplacing64LR;
@@ -364,7 +416,7 @@ end;
 procedure TSplitHarmonizerModule.ParameterEncodeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := 'L/R';
   1 : PreDefined := 'M/S';
  end;
@@ -379,12 +431,18 @@ var
 begin
  FCriticalSection.Enter;
  try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FLowpassFilter[0].ProcessSample32(Inputs[0, Sample]);
+    Outputs[1, Sample] := FLowpassFilter[1].ProcessSample32(Inputs[1, Sample]);
+   end;
+
   for Channel := 0 to NumInputs - 1 do
    begin
     Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
     Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
 
-    FSoundTouch[Channel].PutSamples(@Inputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].PutSamples(@Outputs[Channel, 0], SampleFrames);
     FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
    end;
 
@@ -407,12 +465,18 @@ var
 begin
  FCriticalSection.Enter;
  try
+  for Sample := 0 to SampleFrames - 1 do
+   begin
+    Outputs[0, Sample] := FLowpassFilter[0].ProcessSample32(FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
+    Outputs[1, Sample] := FLowpassFilter[1].ProcessSample32(FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample])));
+   end;
+
   for Channel := 0 to NumInputs - 1 do
    begin
     Mix[Channel, 0] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) - FMix[Channel] + CHalf32);
     Mix[Channel, 1] := CHalf32 * (1 - CHalf32 * abs(FMix[Channel]) + FMix[Channel] + CHalf32);
 
-    FSoundTouch[Channel].PutSamples(@Inputs[Channel, 0], SampleFrames);
+    FSoundTouch[Channel].PutSamples(@Outputs[Channel, 0], SampleFrames);
     FSoundTouch[Channel].ReceiveSamples(@Outputs[Channel, 0], SampleFrames);
    end;
 
@@ -438,8 +502,8 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
+    Outputs[0, Sample] := FLowpassFilter[0].ProcessSample32(FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
+    Outputs[1, Sample] := FLowpassFilter[1].ProcessSample32(FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample])));
    end;
 
   for Channel := 0 to NumInputs - 1 do
@@ -473,8 +537,8 @@ begin
  try
   for Sample := 0 to SampleFrames - 1 do
    begin
-    Outputs[0, Sample] := FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample]));
-    Outputs[1, Sample] := FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample]));
+    Outputs[0, Sample] := FLowpassFilter[0].ProcessSample32(FDelayLine[0, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] + Inputs[1, Sample])));
+    Outputs[1, Sample] := FLowpassFilter[1].ProcessSample32(FDelayLine[1, 1].ProcessSample32(CHalf32 * (Inputs[0, Sample] - Inputs[1, Sample])));
    end;
 
   for Channel := 0 to NumInputs - 1 do
@@ -506,12 +570,14 @@ begin
  try
   for Channel := 0 to NumInputs - 1 do
    begin
-    if assigned(FSoundTouch[Channel])
+    if Assigned(FSoundTouch[Channel])
      then FSoundTouch[Channel].SampleRate := abs(SampleRate);
-    if assigned(FDelayLine[Channel, 0])
+    if Assigned(FDelayLine[Channel, 0])
      then FDelayLine[Channel, 0].BufferSize := CInputDelay;
-    if assigned(FDelayLine[Channel, 0])
-     then FDelayLine[Channel, 1].BufferSize := Max(1, round(Parameter[2 + 3 * Channel] * 1E-3 * abs(SampleRate)));
+    if Assigned(FDelayLine[Channel, 1])
+     then FDelayLine[Channel, 1].BufferSize := Max(1, Round(Parameter[2 + 4 * Channel] * 1E-3 * Abs(SampleRate)));
+    if Assigned(FLowpassFilter[Channel])
+     then FLowpassFilter[Channel].SampleRate := SampleRate;
    end;
  finally
   FCriticalSection.Leave;

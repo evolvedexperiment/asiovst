@@ -1,5 +1,4 @@
 object SplitHarmonizerModule: TSplitHarmonizerModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -9,7 +8,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'DDPS'
@@ -33,7 +31,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Encoding'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -48,7 +45,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnCustomParameterDisplay = ParameterEncodeDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage A'
       DisplayName = 'Semi Tones A'
@@ -64,11 +60,11 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
       StepInteger = 10
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterSemiTonesAChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage A'
       DisplayName = 'Delay A'
@@ -85,7 +81,25 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnParameterChange = ParameterDelayAChange
     end
     item
-      Curve = ctLinear
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      DisplayName = 'Lowpass Filter A'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'LPF A'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterLowpassAChange
+    end
+    item
       CurveFactor = 1.000000000000000000
       Category = 'Stage A'
       DisplayName = 'Mix A'
@@ -99,11 +113,11 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
-      OnParameterChange = ParameterMixLeftChange
+      OnParameterChange = ParameterMixAChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage B'
       DisplayName = 'Semi Tones B'
@@ -119,11 +133,11 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
       StepInteger = 10
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterSemiTonesBChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage B'
       DisplayName = 'Delay B'
@@ -140,7 +154,25 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnParameterChange = ParameterDelayBChange
     end
     item
-      Curve = ctLinear
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
+      DisplayName = 'Lowpass Filter B'
+      Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
+      LargeStepFloat = 2.000000000000000000
+      Max = 20000.000000000000000000
+      MaxInteger = 20000
+      Min = 20.000000000000000000
+      MinInteger = 20
+      ReportVST2Properties = True
+      ShortLabel = 'LPF B'
+      SmallStepFloat = 0.500000000000000000
+      StepFloat = 1.000000000000000000
+      Units = 'Hz'
+      UseDefaultString2ParameterHandler = True
+      VSTModule = Owner
+      OnParameterChange = ParameterLowpassBChange
+    end
+    item
       CurveFactor = 1.000000000000000000
       Category = 'Stage B'
       DisplayName = 'Mix B'
@@ -154,11 +186,11 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMixRightChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Use AntiAlias Filter'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -174,7 +206,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Use Quick Seek'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -190,7 +221,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Use Auto Settings'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -206,7 +236,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Sequence'
       LargeStepFloat = 2.000000000000000000
@@ -220,7 +249,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnParameterChange = ParameterSequenceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Seek Window'
       LargeStepFloat = 2.000000000000000000
@@ -234,7 +262,6 @@ object SplitHarmonizerModule: TSplitHarmonizerModule
       OnParameterChange = ParameterSeekWindowChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Overlap'
       LargeStepFloat = 2.000000000000000000

@@ -569,7 +569,7 @@ begin
  if (Index < 0) or (Index >= ParameterProperties.Count) then
   begin
    Result := 0;
-   exit;
+   Exit;
   end;
 
  Result := Integer(ParameterProperties[Index].ReportVST2Properties);
@@ -577,17 +577,22 @@ begin
   with PVstParameterPropertyRecord(ptr)^ do
    begin
     // copy display name
-    str := ParameterProperties[Index].DisplayName;
-    SetLength(str, 64);
-    StrCopy(Caption, @str[1]);
+    str := ParameterProperties[Index].DisplayName + #0;
+    FillChar(Caption, SizeOf(Caption), 0);
+    if Length(Str) > 64 then SetLength(str, 64);
+    StrPCopy(Caption, str);
 
     // copy short label
-    str := ParameterProperties[Index].ShortLabel;
-    SetLength(str, 8);
-    StrCopy(shortLabel, @str[1]);
+    str := ParameterProperties[Index].ShortLabel + #0;
+    FillChar(shortLabel, SizeOf(shortLabel), 0);
+    if Length(Str) > 8 then SetLength(str, 8);
+    StrPCopy(shortLabel, str);
 
     // assign flags
     Flags := ParameterProperties[Index].Flags;
+
+    // clear future
+    FillChar(Future, SizeOf(Future), 0);
 
     // use integer min/max
     if ppfParameterUsesIntegerMinMax in Flags then
@@ -618,9 +623,10 @@ begin
     // copy category label
     if ppfParameterSupportsDisplayCategory in Flags then
      begin
-      str := ParameterProperties[Index].Category;
-      SetLength(str, 24);
-      StrCopy(CategoryLabel, @str[1]);
+      str := ParameterProperties[Index].Category + #0;
+      if Length(Str) > 24 then SetLength(Str, 24);
+      FillChar(CategoryLabel, SizeOf(CategoryLabel), 0);
+      StrPCopy(CategoryLabel, str);
       Category := ParameterProperties[Index].CategoryIndex;
       if (Category > 0) and (Category <= ParameterCategories.Count)
        then numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory

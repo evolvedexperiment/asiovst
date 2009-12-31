@@ -1,6 +1,6 @@
 object BaxxpanderModule: TBaxxpanderModule
-  OldCreateOrder = False
-  Flags = [effFlagsCanMono, effFlagsCanReplacing]
+  OldCreateOrder = True
+  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
   Version = '1'
   EffectName = 'Baxxpander'
   ProductName = 'DAV Effect Examples'
@@ -8,7 +8,6 @@ object BaxxpanderModule: TBaxxpanderModule
   VersionRelease = 1
   CanDos = [vcdReceiveVstMidiEvent, vcdReceiveVstTimeInfo, vcdPlugAsSend, vcdMixDryWet, vcdMetapass, vcd1in1out, vcd2in2out, vcd4in4out, vcd4in8out, vcd8in4out, vcdLiveWithoutToolbar, vcdBypass, vcdCockosExtension]
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Bass Only'
   IORatio = 1.000000000000000000
   UniqueID = 'BAXX'
@@ -48,7 +47,6 @@ object BaxxpanderModule: TBaxxpanderModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Dry/Wet'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -63,7 +61,6 @@ object BaxxpanderModule: TBaxxpanderModule
       OnParameterChange = ParameterDryWetChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Limit'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -78,7 +75,6 @@ object BaxxpanderModule: TBaxxpanderModule
       OnParameterChange = ParameterLimitChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mixer'
       Flags = [ppfParameterUsesFloatStep]
@@ -95,7 +91,6 @@ object BaxxpanderModule: TBaxxpanderModule
       OnParameterChange = ParameterMixerChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'On/Off'
       LargeStepFloat = 2.000000000000000000
@@ -108,7 +103,6 @@ object BaxxpanderModule: TBaxxpanderModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Shape'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

@@ -4,7 +4,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
   BorderStyle = bsNone
   Caption = 'SoundTouch Detuner'
   ClientHeight = 267
-  ClientWidth = 325
+  ClientWidth = 414
   Color = 987667
   Font.Charset = DEFAULT_CHARSET
   Font.Color = 15133420
@@ -19,7 +19,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
   PixelsPerInch = 96
   TextHeight = 23
   object LbEncoding: TGuiLabel
-    Left = 39
+    Left = 85
     Top = 120
     Width = 105
     Height = 24
@@ -28,7 +28,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     Shadow.Color = clBlack
   end
   object SwEncoding: TGuiSwitch
-    Left = 150
+    Left = 196
     Top = 120
     Width = 138
     Height = 24
@@ -36,7 +36,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     DefaultGlyphNr = 0
     DialImageIndex = -1
     GlyphNr = 0
-    LineColor = clRed
+    LineColor = 15133420
     LineWidth = 2
     NumGlyphs = 2
     OnChange = SwEncodingChange
@@ -48,7 +48,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
   object PnStageA: TGuiPanel
     Left = 8
     Top = 8
-    Width = 310
+    Width = 398
     Height = 106
     AntiAlias = gaaLinear4x
     Caption = 'PnStageA'
@@ -157,9 +157,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Shadow.Color = clBlack
     end
     object LbMixA: TGuiLabel
-      Left = 202
-      Top = 9
-      Width = 87
+      Left = 318
+      Top = 8
+      Width = 39
       Height = 24
       Alignment = taCenter
       AntiAlias = gaaLinear4x
@@ -167,8 +167,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Shadow.Color = clBlack
     end
     object DialMixA: TGuiDial
-      Left = 227
-      Top = 39
+      Left = 320
+      Top = 38
       Width = 36
       Height = 36
       AntiAlias = gaaLinear2x
@@ -188,8 +188,8 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       WheelStep = 1.000000000000000000
     end
     object LbMixAValue: TGuiLabel
-      Left = 202
-      Top = 77
+      Left = 295
+      Top = 76
       Width = 87
       Height = 18
       Alignment = taCenter
@@ -203,11 +203,61 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       ParentFont = False
       Shadow.Color = clBlack
     end
+    object LbLowpassA: TGuiLabel
+      Left = 204
+      Top = 9
+      Width = 91
+      Height = 24
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = 'Lowpass'
+      Shadow.Color = clBlack
+    end
+    object DialLowpassA: TGuiDial
+      Left = 231
+      Top = 38
+      Width = 36
+      Height = 36
+      AntiAlias = gaaLinear2x
+      CurveMapping = -0.400000005960464500
+      DefaultPosition = 10.000000000000000000
+      DialImageList = DIL
+      DialImageIndex = -1
+      LineColor = 15133420
+      LineWidth = 3
+      Max = 20000.000000000000000000
+      Min = 20.000000000000000000
+      NumGlyphs = 65
+      OnChange = DialLowpassAChange
+      PointerAngles.Start = 225
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      Position = 8000.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
+    end
+    object LbLowpassAValue: TGuiLabel
+      Left = 206
+      Top = 76
+      Width = 87
+      Height = 18
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = '8000 Hz'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15133420
+      Font.Height = -16
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
+    end
   end
   object PnStageB: TGuiPanel
     Left = 8
     Top = 151
-    Width = 310
+    Width = 398
     Height = 107
     AntiAlias = gaaLinear4x
     Caption = 'PnStageA'
@@ -240,9 +290,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       WheelStep = 1.000000000000000000
     end
     object LbDetuneB: TGuiLabel
-      Left = 16
+      Left = 20
       Top = 9
-      Width = 87
+      Width = 79
       Height = 24
       Alignment = taCenter
       AntiAlias = gaaLinear4x
@@ -266,9 +316,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Shadow.Color = clBlack
     end
     object LbDelayB: TGuiLabel
-      Left = 109
+      Left = 121
       Top = 9
-      Width = 87
+      Width = 63
       Height = 24
       Alignment = taCenter
       AntiAlias = gaaLinear4x
@@ -316,9 +366,9 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Shadow.Color = clBlack
     end
     object LbMixB: TGuiLabel
-      Left = 202
+      Left = 318
       Top = 9
-      Width = 87
+      Width = 39
       Height = 24
       Alignment = taCenter
       AntiAlias = gaaLinear4x
@@ -326,7 +376,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Shadow.Color = clBlack
     end
     object DialMixB: TGuiDial
-      Left = 227
+      Left = 320
       Top = 39
       Width = 36
       Height = 36
@@ -347,7 +397,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       WheelStep = 1.000000000000000000
     end
     object LbMixBValue: TGuiLabel
-      Left = 202
+      Left = 295
       Top = 77
       Width = 87
       Height = 18
@@ -360,6 +410,56 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
+    end
+    object LbLowpassBValue: TGuiLabel
+      Left = 206
+      Top = 76
+      Width = 87
+      Height = 18
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = '8000 Hz'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15133420
+      Font.Height = -16
+      Font.Name = 'Verdana'
+      Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
+    end
+    object DialLowpassB: TGuiDial
+      Left = 231
+      Top = 38
+      Width = 36
+      Height = 36
+      AntiAlias = gaaLinear2x
+      CurveMapping = -0.400000005960464500
+      DefaultPosition = 10.000000000000000000
+      DialImageList = DIL
+      DialImageIndex = -1
+      LineColor = 15133420
+      LineWidth = 3
+      Max = 20000.000000000000000000
+      Min = 20.000000000000000000
+      NumGlyphs = 65
+      OnChange = DialLowpassBChange
+      PointerAngles.Start = 225
+      PointerAngles.Range = 270
+      PointerAngles.Resolution = 270.000000000000000000
+      Position = 8000.000000000000000000
+      ScrollRange_Pixel = 400.000000000000000000
+      StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
+    end
+    object LbLowpassB: TGuiLabel
+      Left = 204
+      Top = 9
+      Width = 91
+      Height = 24
+      Alignment = taCenter
+      AntiAlias = gaaLinear4x
+      Caption = 'Lowpass'
       Shadow.Color = clBlack
     end
   end

@@ -2841,7 +2841,7 @@ function TCustomVstPlugIn.GetParameterProperties(const Index: Integer;
   var ParameterProperties: TVstParameterPropertyRecord): Boolean;
 begin
  if FActive
-  then Result := VstDispatch(effGetParameterProperties, Index, 0, @Result) <> 0
+  then Result := VstDispatch(effGetParameterProperties, Index, 0, @ParameterProperties) <> 0
   else Result := False;
 end;
 

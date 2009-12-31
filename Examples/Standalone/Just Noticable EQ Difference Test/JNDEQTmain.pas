@@ -40,7 +40,7 @@ uses
   ExtCtrls, DAV_Types, DAV_GuiBaseControl, DAV_GuiLabel, DAV_GuiSlider,
   DAV_AsioHost, DAV_GuiMediaButton, DAV_DspPinkNoiseGenerator, DAV_DspFilter,
   DAV_DspFilterBasics, DAV_DspBufferedMp3Player, DAV_GuiGroup,
-  DAV_GuiPanel, DAV_GuiLED;
+  DAV_GuiPanel, DAV_GuiLED, DAV_GuiButton;
 
 type
   TXAssignment = (xaXisA = 1, xaXisB = 2);
@@ -63,7 +63,7 @@ type
     LbGain: TGuiLabel;
     LbGainValue: TGuiLabel;
     LbInformation: TGuiLabel;
-    LbPass: TGuiLabel;
+    LbSkip: TGuiLabel;
     LbSelectionA: TGuiLabel;
     LbSelectionB: TGuiLabel;
     LbSelectionX: TGuiLabel;
@@ -107,20 +107,23 @@ type
     SliderFrequency: TGuiSlider;
     SliderGain: TGuiSlider;
     SliderVolume: TGuiSlider;
+    MiLatchButtons: TMenuItem;
+    N4: TMenuItem;
+    ResultButtonEnabler: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure AsioHostBuffersCreate(Sender: TObject);
     procedure AsioHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure AsioHostSampleRateChanged(Sender: TObject);
     procedure BtMediaClick(Sender: TObject);
     procedure LbAudioFileValueDblClick(Sender: TObject);
     procedure LbAutoVolumeAdjustmentClick(Sender: TObject);
-    procedure LbPassClick(Sender: TObject);
-    procedure LbSelectionClick(Sender: TObject);
+    procedure LbSkipClick(Sender: TObject);
     procedure LbXisAClick(Sender: TObject);
     procedure LbXisBClick(Sender: TObject);
     procedure MiAudioSettingsClick(Sender: TObject);
@@ -134,32 +137,39 @@ type
     procedure SliderFrequencyChange(Sender: TObject);
     procedure SliderGainChange(Sender: TObject);
     procedure SliderVolumeChange(Sender: TObject);
+    procedure MiLatchButtonsClick(Sender: TObject);
+    procedure LbSelectionMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure LbSelectionMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ResultButtonEnablerTimer(Sender: TObject);
   private
-    FBackgroundBitmap  : TBitmap;
-    FBufferedPlayer    : TBufferedMP3FilePlayer;
-    FPinkNoise         : array [0..1] of TFastPinkNoiseGenerator;
-    FEQFilter          : array [0..1, 0..1] of TBasicPeakFilter;
-    FAudioBuffer       : array [0..1, 0..1] of PDAVSingleFixedArray;
-    FPeak              : array [0..1, 0..1] of Double;
-    FCurrentX          : TXAssignment;
-    FCurrentIndex      : Integer;
-    FSelection         : TSelection;
-    FCurrentGainDelta  : Double;
-    FVolumeFactor      : Double;
-    FAdditionalFactor  : Double;
-    FPeakReleaseFactor : Double;
-    FPeakRelease       : Double;
-    FBandwidth         : Double;
-    FFrequency         : Double;
-    FTrialNo           : Integer;
-    FTrialCount        : Integer;
-    FLog               : TStringList;
-    FEncryptLogFile    : Boolean;
-    FIniFile           : string;
-    FVolumeAutoAdj     : Boolean;
+    FBackgroundBitmap    : TBitmap;
+    FBufferedPlayer      : TBufferedMP3FilePlayer;
+    FPinkNoise           : array [0..1] of TFastPinkNoiseGenerator;
+    FEQFilter            : array [0..1, 0..1] of TBasicPeakFilter;
+    FAudioBuffer         : array [0..1, 0..1] of PDAVSingleFixedArray;
+    FPeak                : array [0..1, 0..1] of Double;
+    FCurrentX            : TXAssignment;
+    FCurrentIndex        : Integer;
+    FSelection           : TSelection;
+    FCurrentGainDelta    : Double;
+    FVolumeFactor        : Double;
+    FAdditionalFactor    : Double;
+    FPeakReleaseFactor   : Double;
+    FPeakRelease         : Double;
+    FBandwidth           : Double;
+    FFrequency           : Double;
+    FTrialNo             : Integer;
+    FTrialCount          : Integer;
+    FLog                 : TStringList;
+    FEncryptLogFile      : Boolean;
+    FIniFile             : string;
+    FVolumeAutoAdj       : Boolean;
+    FOutputChannelOffset : Integer;
     procedure SetSelection(const Value: TSelection);
     procedure SetPeakReleaseFactor(const Value: Double);
     procedure SetVolumeAutoAdjustment(const Value: Boolean);
+    function CheckDecryptEnabled: Boolean;
+    procedure DisableResultButtons;
   protected
     procedure PeakReleaseChanged;
     procedure SelectionChanged;
@@ -178,6 +188,7 @@ type
     procedure LoadFromFile(FileName: TFileName);
 
     property IniFile: string read FIniFile;
+    property OutputChannelOffset: Integer read FOutputChannelOffset write FOutputChannelOffset;
     property Selection: TSelection read FSelection write SetSelection;
     property PeakRelease: Double read FPeakRelease write SetPeakReleaseFactor;
     property VolumeAutoAdjustment: Boolean read FVolumeAutoAdj write SetVolumeAutoAdjustment;
@@ -191,7 +202,7 @@ implementation
 {$R *.dfm}
 
 uses
-  IniFiles, Math, Mapi,
+  IniFiles, Math, Mapi, ShellApi,
   ZLibEx, // get this library here: http://www.dellapasqua.com/delphizlib/
   DAV_GuiCommon, DAV_Common, DAV_Approximations, JNDEQTaudio, JNDEQTsurvey;
 
@@ -247,6 +258,7 @@ begin
 
  FFrequency := SliderFrequency.Position;
  FBandwidth := SliderBandwidth.Position;
+ FOutputChannelOffset := 0;
  FVolumeFactor := 1;
  FCurrentIndex := 0;
  FVolumeAutoAdj := False;
@@ -266,18 +278,32 @@ begin
   for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
    do FreeAndNil(FEQFilter[BandIndex, ChannelIndex]);
 
+ // free audio buffers
+ for BandIndex := 0 to Length(FAudioBuffer) - 1 do
+  for ChannelIndex := 0 to Length(FAudioBuffer[BandIndex]) - 1
+   do Dispose(FAudioBuffer[BandIndex, ChannelIndex]);
+
  // free buffered player
  FreeAndNil(FBufferedPlayer);
 
  // free pink noise generator
  for ChannelIndex := 0 to Length(FEQFilter[BandIndex]) - 1
-  do FPinkNoise[ChannelIndex] := TFastPinkNoiseGenerator.Create;
+  do FreeAndNil(FPinkNoise[ChannelIndex]);
 
  FreeAndNil(FBackgroundBitmap);
 
  // free log
  FLog.SaveToFile(ExtractFilePath(ParamStr(0)) + 'Temp.log');
  FreeAndNil(FLog);
+end;
+
+procedure TFmJNDEQT.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+ case Key of
+  '1', 'a', 'A' : Selection := sA;
+  '3', 'b', 'B' : Selection := sB;
+  '2', 'x', 'X' : Selection := sX;
+ end;
 end;
 
 procedure TFmJNDEQT.FormShow(Sender: TObject);
@@ -297,6 +323,7 @@ begin
    FBandwidth := ReadFloat('Test', 'Bandwidth', FBandwidth);
    SliderFrequency.Position := FFrequency;
    SliderBandwidth.Position := FBandwidth;
+   MiLatchButtons.Checked := ReadBool('Settings', 'Latch Buttons', MiLatchButtons.Checked);
   finally
    Free;
   end;
@@ -313,6 +340,7 @@ begin
    WriteFloat('Test', 'Frequency', SliderFrequency.Position);
    WriteFloat('Test', 'Bandwidth', SliderBandwidth.Position);
    WriteString('Test', 'File', FBufferedPlayer.Filename);
+   WriteBool('Settings', 'Latch Buttons', MiLatchButtons.Checked);
   finally
    Free;
   end;
@@ -407,23 +435,30 @@ begin
   else LbAutoVolumeAdjValue.Caption := 'Off';
 end;
 
-procedure TFmJNDEQT.LbPassClick(Sender: TObject);
+procedure TFmJNDEQT.LbSkipClick(Sender: TObject);
 var
   str : string;
 begin
- str := 'Trial ' + IntToStr(FTrialNo + 1) + ': Passed';
+ str := 'Trial ' + IntToStr(FTrialNo + 1) + ': Skipped';
  str := TimeToStr(Now) + ' - ' + str;
  FLog.Add(str + ' (' + FloatToStrF(FCurrentGainDelta, ffGeneral, 4, 4) + ')');
 
  Inc(FTrialNo);
- if (FTrialCount > 0) and (FTrialNo >= FTrialCount)
-  then TestDone;
+ if (FTrialCount > 0) and (FTrialNo >= FTrialCount) then
+  begin
+   TestDone;
+   Exit;
+  end;
 
  // trial information
  str := 'Trial: ' + IntToStr(FTrialNo + 1);
  if FTrialCount > 0 then str := str + ' / ' + IntToStr(FTrialCount);
  LbInformation.Caption := str;
 
+ // temporarily disable buttons
+ DisableResultButtons;
+
+ // update gain delta
  FCurrentGainDelta := FCurrentGainDelta * 1.6;
  UpdateFilterGain;
 
@@ -431,18 +466,40 @@ begin
  UpdateSelection;
 end;
 
-procedure TFmJNDEQT.LbSelectionClick(Sender: TObject);
+procedure TFmJNDEQT.DisableResultButtons;
+begin
+ // temporarily disable buttons
+ PnSelectorXisA.OnClick := nil;
+ PnSelectorXisB.OnClick := nil;
+ PnSkip.OnClick := nil;
+ LbXisA.OnClick := nil;
+ LbXisB.OnClick := nil;
+ LbSkip.OnClick := nil;
+ ResultButtonEnabler.Enabled := True;
+end;
+
+procedure TFmJNDEQT.LbSelectionMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+ if MiLatchButtons.Checked
+  then Selection := sX;
+end;
+
+procedure TFmJNDEQT.LbSelectionMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
 begin
  Selection := TSelection(TComponent(Sender).Tag);
 end;
 
 procedure TFmJNDEQT.LbXisAClick(Sender: TObject);
 begin
+ LbXisA.Font.Color := $00006CFF;
  NextTrial(Integer(FCurrentX) = Integer(gXisA));
 end;
 
 procedure TFmJNDEQT.LbXisBClick(Sender: TObject);
 begin
+ LbXisB.Font.Color := $00006CFF;
  NextTrial(Integer(FCurrentX) = Integer(gXisB));
 end;
 
@@ -558,6 +615,11 @@ begin
  Close;
 end;
 
+procedure TFmJNDEQT.MiLatchButtonsClick(Sender: TObject);
+begin
+ MiLatchButtons.Checked := not MiLatchButtons.Checked;
+end;
+
 procedure TFmJNDEQT.MiPinkNoiseClick(Sender: TObject);
 begin
  FBufferedPlayer.Filename := '';
@@ -606,6 +668,20 @@ begin
   then FCurrentIndex := Integer(FCurrentX) - 1;
 end;
 
+procedure TFmJNDEQT.ResultButtonEnablerTimer(Sender: TObject);
+begin
+ ResultButtonEnabler.Enabled := False;
+ PnSelectorXisA.OnClick := LbXisAClick;
+ PnSelectorXisB.OnClick := LbXisBClick;
+ PnSkip.OnClick := LbSkipClick;
+ LbXisA.OnClick := LbXisAClick;
+ LbXisB.OnClick := LbXisBClick;
+ LbSkip.OnClick := LbSkipClick;
+ LbXisA.Font.Color := clBlack;
+ LbXisB.Font.Color := clBlack;
+ LbSkip.Font.Color := clBlack;
+end;
+
 procedure TFmJNDEQT.NextTrial(GuessWasCorrect: Boolean);
 var
   str : string;
@@ -618,13 +694,19 @@ begin
  FLog.Add(str + ' (' + FloatToStrF(FCurrentGainDelta, ffGeneral, 4, 4) + ')');
 
  Inc(FTrialNo);
- if (FTrialCount > 0) and (FTrialNo >= FTrialCount)
-  then TestDone;
+ if (FTrialCount > 0) and (FTrialNo >= FTrialCount) then
+  begin
+   TestDone;   
+   Exit;
+  end;
 
  // trial information
  str := 'Trial: ' + IntToStr(FTrialNo + 1);
  if FTrialCount > 0 then str := str + ' / ' + IntToStr(FTrialCount);
  LbInformation.Caption := str;
+
+ // temporarily disable buttons
+ DisableResultButtons;
 
  if GuessWasCorrect
   then FCurrentGainDelta := FCurrentGainDelta * 0.75
@@ -759,6 +841,7 @@ var
 begin
  BtMedia.ButtonState := mbsPlay;
  AsioHost.Active := False;
+ LbInformation.Caption := 'Test Done';
  ClientHeight := BtMedia.Top + BtMedia.Height + 4;
 
  DecodeTime(Now, H, M, D, MO);
@@ -818,13 +901,27 @@ begin
  Assert(FLog.Count = 0);
 end;
 
+function TFmJNDEQT.CheckDecryptEnabled: Boolean;
+const
+  CDecryptPassword = 'tseTqEdnJ';
+begin
+ with TIniFile.Create(FmJNDEQT.IniFile) do
+  try
+   Result := (ReadString('Decrypt', 'Password', '') = CDecryptPassword) or
+     (InputBox('Enter Password', 'Enter Password:', '') = CDecryptPassword);
+  finally
+   Free;
+  end;
+end;
+
 procedure TFmJNDEQT.MiDecryptJNDfileClick(Sender: TObject);
 var
   FS : TFileStream;
   CS : TZDecompressionStream;
+  FN : TFileName;
 begin
  if OpenDialog.Execute then
-  if InputBox('Enter Password', 'Enter Password:', '') = 'tseTqEdnJ' then
+  if CheckDecryptEnabled then
    begin
     FS := TFileStream.Create(OpenDialog.FileName, fmOpenRead);
     with FS do
@@ -834,7 +931,12 @@ begin
        with TStringList.Create do
         try
          LoadFromStream(CS);
-         SaveToFile('Decrypted.log');
+         FN := ChangeFileExt(OpenDialog.FileName, '.log');
+         SaveToFile(FN);
+         try
+          ShellExecute(Handle, 'open', 'notepad.exe', PAnsiChar(FN), nil, SW_SHOWNORMAL);
+         except
+         end;
         finally
          Free;
         end;
@@ -990,11 +1092,9 @@ begin
       then FPeak[BandIndex, ChannelIndex] := Abs(FAudioBuffer[BandIndex, ChannelIndex, SampleIndex]);
     end;
 
- for ChannelIndex := 0 to AsioHost.OutputChannelCount - 1 do
-  for SampleIndex := 0 to AsioHost.BufferSize - 1 do
-   begin
-    OutBuffer[ChannelIndex, SampleIndex] := FAudioBuffer[FCurrentIndex, ChannelIndex mod Length(FAudioBuffer[FCurrentIndex]), SampleIndex];
-   end;
+ for ChannelIndex := OutputChannelOffset to Min(OutputChannelOffset + 2, AsioHost.OutputChannelCount) - 1 do
+  for SampleIndex := 0 to AsioHost.BufferSize - 1
+   do OutBuffer[ChannelIndex, SampleIndex] := FAudioBuffer[FCurrentIndex, ChannelIndex mod Length(FAudioBuffer[FCurrentIndex]), SampleIndex];
 end;
 
 end.

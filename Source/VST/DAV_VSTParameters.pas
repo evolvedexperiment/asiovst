@@ -79,8 +79,8 @@ type
     FStepInteger         : Integer;
     FLargeStepInteger    : Integer;
     FCC                  : Integer;
-    FShortLabel          : string[7];
-    FCategoryString      : string[24];
+    FShortLabel          : string;
+    FCategoryString      : string;
     FUseDefaultStr2Param : Boolean;
 
     FVSTModule        : TBasicVSTModule;
@@ -89,8 +89,6 @@ type
     FOnCParamDisp     : TCustomParameterDisplayEvent;
     FOnStr2Param      : TString2ParameterEvent;
 
-    function GetShortLabel: string;
-    function GetCategoryString: string;
     function GetCategoryIndex: Integer;
     procedure SetShortLabel(const Value: string);
     procedure SetCurve(const Value: TCurveType);
@@ -109,6 +107,7 @@ type
     procedure MinimumChanged; virtual;
     procedure SetDisplayName(const AValue: string); override;
     procedure ShortLabelChanged; virtual;
+    procedure CategoryStringChanged; virtual;
     procedure UnitsChanged; virtual;
   public
     {$IFDEF FPC}
@@ -125,8 +124,8 @@ type
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write SetCurve default ctLinear;
     property CurveFactor: Single read FCurveFactor write SetCurveFactor;
-    property Category: string read GetCategoryString write SetCategoryString;
-    property CategoryIndex: Integer read GetCategoryIndex write SetCategoryIndex stored false; 
+    property Category: string read FCategoryString write SetCategoryString;
+    property CategoryIndex: Integer read GetCategoryIndex write SetCategoryIndex stored false;
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
     property LargeStepFloat: Single read FLargeStepFloat write FLargeStepFloat;
@@ -136,7 +135,7 @@ type
     property Min: Single read FMin write SetMin;
     property MinInteger: Integer read FMinInteger write FMinInteger default 0;
     property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
-    property ShortLabel: string read GetShortLabel write SetShortLabel;
+    property ShortLabel: string read FShortLabel write SetShortLabel;
     property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
     property SmoothingFactor: Single read FSmoothingFactor write SetSmoothingFactor;
     property StepFloat: Single read FStepFloat write FStepFloat;
@@ -225,6 +224,7 @@ begin
  inherited;
 end;
 
+
 { TCustomVstParameterCategories }
 
 constructor TCustomVstParameterCategories.Create(AOwner: TComponent);
@@ -260,7 +260,7 @@ var
 begin
  if VSTModule is TVSTModuleWithPrograms then
   with TVSTModuleWithPrograms(VSTModule) do
-   if assigned(ParameterProperties) then
+   if Assigned(ParameterProperties) then
     begin
      for i := 0 to ParameterProperties.Count - 1 do
       if ParameterProperties[i].Category = Items[Index].DisplayName
@@ -278,11 +278,11 @@ function TCustomVstParameterCategories.CategoryExists(const Value: string): Bool
 var
   i : Integer;
 begin
- result := False;
+ Result := False;
  for i := 0 to Count - 1 do
   if Items[i].DisplayName = Value then
    begin
-    result := True;
+    Result := True;
     exit;
    end;
 end;
@@ -291,11 +291,11 @@ function TCustomVstParameterCategories.CategoryIndex(const Value: string): Integ
 var
   i : Integer;
 begin
- result := -1;
+ Result := -1;
  for i := 0 to Count - 1 do
   if Items[i].DisplayName = Value then
    begin
-    result := i;
+    Result := i;
     exit;
    end;
 end;
@@ -306,7 +306,7 @@ var
 begin
  if VSTModule is TVSTModuleWithPrograms then
   with TVSTModuleWithPrograms(VSTModule) do
-   if assigned(ParameterProperties) then
+   if Assigned(ParameterProperties) then
     for c := 0 to Count - 1 do
      begin
       Items[c].FParamsInCat := 0;
@@ -315,6 +315,7 @@ begin
         then Inc(Items[c].FParamsInCat);
      end;
 end;
+
 
 { TCustomVstParameterProperty }
 
@@ -373,9 +374,9 @@ begin
    with TVSTModuleWithPrograms(FVSTModule) do
     begin
      if not (effFlagsProgramChunks in Effect^.EffectFlags) then
-      if assigned(Programs) and (Programs.Count > 0) then
+      if Assigned(Programs) and (Programs.Count > 0) then
        for i := 0 to Programs.Count - 1 do
-        if assigned(Programs[i])
+        if Assigned(Programs[i])
          then Programs[i].SetParameterCount(Collection.Count - 1)
       else SetParameterCount(Collection.Count - 1);
 
@@ -461,7 +462,7 @@ procedure TCustomVstParameterProperty.SetCategoryIndex(const Value: Integer);
 begin
  if VSTModule is TVSTModuleWithPrograms then
   with TVSTModuleWithPrograms(VSTModule) do
-   if assigned(ParameterCategories) then
+   if Assigned(ParameterCategories) then
     if (Value > 0) and (Value <= ParameterCategories.Count)
      then Category := ParameterCategories[Value - 1].DisplayName
      else Category := '';
@@ -474,7 +475,7 @@ begin
  if Category <> Value then
   if VSTModule is TVSTModuleWithPrograms then
    with TVSTModuleWithPrograms(VSTModule) do
-    if assigned(ParameterCategories) then
+    if Assigned(ParameterCategories) then
      with ParameterCategories do
       begin
        if (Value = '') then
@@ -482,25 +483,34 @@ begin
          catndx := CategoryIndex(FCategoryString);
          if (catndx >= 0) and (catndx < Count - 1) then
           begin
-           dec(Items[catndx].FParamsInCat);
-           assert(Items[catndx].FParamsInCat >= 0);
+           Dec(Items[catndx].FParamsInCat);
+           Assert(Items[catndx].FParamsInCat >= 0);
           end;
          FCategoryString := Value;
+         CategoryStringChanged;
         end
        else
         begin
          FCategoryString := Value;
+         CategoryStringChanged;
+
          catndx := CategoryIndex(FCategoryString);
          if catndx < 0 then
           with Add do
            begin
-            DisplayName := Value;
-            inc(FParamsInCat);
+            DisplayName := FCategoryString;
+            Inc(FParamsInCat);
            end else
          if (catndx >= 0) and (catndx < Count - 1)
           then inc(Items[catndx].FParamsInCat);
         end;
       end;
+end;
+
+procedure TCustomVstParameterProperty.CategoryStringChanged;
+begin
+ if Length(FCategoryString) > 23
+  then SetLength(FCategoryString, 23); 
 end;
 
 procedure TCustomVstParameterProperty.SetCurve(const Value: TCurveType);
@@ -573,15 +583,10 @@ function TCustomVstParameterProperty.GetCategoryIndex: Integer;
 begin
  if VSTModule is TVSTModuleWithPrograms then
   with TVSTModuleWithPrograms(VSTModule) do
-   if assigned(ParameterCategories)
-    then result := ParameterCategories.CategoryIndex(Category) + 1
-    else result := 0
- else result := 0;
-end;
-
-function TCustomVstParameterProperty.GetCategoryString: string;
-begin
- result := FCategoryString;
+   if Assigned(ParameterCategories)
+    then Result := ParameterCategories.CategoryIndex(Category) + 1
+    else Result := 0
+ else Result := 0;
 end;
 
 function TCustomVstParameterProperty.GetDisplayName: string;
@@ -601,11 +606,6 @@ end;
 procedure TCustomVstParameterProperty.UnitsChanged;
 begin
  // nothing todo yet;
-end;
-
-function TCustomVstParameterProperty.GetShortLabel: string;
-begin
-  Result := FShortLabel;
 end;
 
 procedure TCustomVstParameterProperty.SetShortLabel(const Value: string);
@@ -638,7 +638,8 @@ end;
 
 procedure TCustomVstParameterProperty.ShortLabelChanged;
 begin
- // nothing todo yet;
+ if Length(FShortLabel) > 7
+  then SetLength(FShortLabel, 7);
 end;
 
 { TCustomVstParameterProperties }

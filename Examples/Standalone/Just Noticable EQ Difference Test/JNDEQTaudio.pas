@@ -41,16 +41,19 @@ uses
 
 type
   TFmSetup = class(TForm)
-    LbPreset: TGuiLabel;
-    SbDrivers: TGuiSelectBox;
-    PnControlPanel: TGuiPanel;
     LbControlPanel: TGuiLabel;
+    LbOutputChannels: TGuiLabel;
+    LbPreset: TGuiLabel;
+    PnControlPanel: TGuiPanel;
+    SbChannels: TGuiSelectBox;
+    SbDrivers: TGuiSelectBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure SbDriversChange(Sender: TObject);
     procedure LbControlPanelClick(Sender: TObject);
+    procedure SbChannelsChange(Sender: TObject);
   private
     FBackgroundBitmap : TBitmap;
   end;
@@ -82,12 +85,22 @@ begin
    if SbDrivers.ItemIndex = -1
     then SbDrivers.ItemIndex := FmJNDEQT.AsioHost.DriverList.IndexOf('ASIO4ALL v2');
    SbDriversChange(Self);
+
+   SbChannels.ItemIndex := ReadInteger('Setup', 'Output Channel Pair Index', 0);
+   SbChannelsChange(Self);
   finally
    Free;
   end;
 end;
 
+procedure TFmSetup.SbChannelsChange(Sender: TObject);
+begin
+ FmJNDEQT.OutputChannelOffset := SbChannels.ItemIndex * 2;
+end;
+
 procedure TFmSetup.SbDriversChange(Sender: TObject);
+var
+  ChannelIndex : Integer;
 begin
  with FmJNDEQT.ASIOHost do
   if SbDrivers.ItemIndex >= 0 then
@@ -95,6 +108,14 @@ begin
     DriverIndex := SbDrivers.ItemIndex;
     if Assigned(OnReset)
      then OnReset(Self);
+
+    SbChannels.Clear;
+    for ChannelIndex := 0 to (FmJNDEQT.ASIOHost.OutputChannelCount div 2) - 1 do
+     begin
+      SbChannels.Items.Add(
+        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex].Name + ' / ' +
+        FmJNDEQT.ASIOHost.OutputChannelInfos[2 * ChannelIndex + 1].Name);
+     end;
    end;
 end;
 

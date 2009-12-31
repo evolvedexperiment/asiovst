@@ -367,6 +367,7 @@ procedure TVstPluginBasicTests.TestActiveParameterSweeps;
 var
   Param : Integer;
   Value : Single;
+  PP    : TVstParameterPropertyRecord;
 begin
  with FVstHost[0] do
   begin
@@ -375,10 +376,23 @@ begin
    for Param := 0 to numParams - 1 do
     begin
      Value := 0;
-     while Value < 1 do
+     repeat
+      Parameter[Param] := Value;
+      Value := Value + 0.01;
+     until Value > 1;
+     Parameter[Param] := 1;
+
+     // get invalid parameter properties
+     if GetParameterProperties(Param, PP) then
       begin
-       Parameter[Param] := Value;
-       Value := Value + 0.01;
+       CheckTrue(PP.MaxInteger >= PP.MinInteger, 'Parameter ' +
+         IntToStr(Param) + ': MaxInteger < MinInteger!');
+       CheckTrue(PP.LargeStepFloat >= PP.SmallStepFloat, 'Parameter ' +
+         IntToStr(Param) + ': LargeStepFloat < SmallStepFloat!');
+       CheckTrue(PP.LargeStepInteger >= PP.StepInteger, 'Parameter ' +
+         IntToStr(Param) + ': LargeStepInteger < StepInteger!');
+       CheckTrue(PP.Future[0] = #0, 'Parameter ' +
+         IntToStr(Param) + ': Future character value <> 0!');
       end;
     end;
    Active := False
