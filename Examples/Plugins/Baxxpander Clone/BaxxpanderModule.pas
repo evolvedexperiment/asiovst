@@ -38,8 +38,6 @@ uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspFilterButterworth;
 
-{$I DAV_Compiler.inc}
-
 type
   TBaxxpanderModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
@@ -159,8 +157,9 @@ var
   Channel : Integer;
 begin
  if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FButterworthSplitter) - 1
-   do FButterworthSplitter[Channel].SampleRate := Abs(SampleRate);
+  for Channel := 0 to Length(FButterworthSplitter) - 1 do
+   if Assigned(FButterworthSplitter[Channel])
+    then FButterworthSplitter[Channel].SampleRate := Abs(SampleRate);
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessNormal(const Inputs,

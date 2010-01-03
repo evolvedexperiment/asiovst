@@ -1,6 +1,6 @@
 object BaxxpanderModule: TBaxxpanderModule
   OldCreateOrder = True
-  Flags = [effFlagsHasEditor, effFlagsCanMono, effFlagsCanReplacing]
+  Flags = [effFlagsCanMono, effFlagsCanReplacing]
   Version = '1'
   EffectName = 'Baxxpander'
   ProductName = 'DAV Effect Examples'
@@ -57,6 +57,7 @@ object BaxxpanderModule: TBaxxpanderModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterDryWetChange
     end
@@ -71,6 +72,7 @@ object BaxxpanderModule: TBaxxpanderModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterLimitChange
     end
@@ -87,6 +89,7 @@ object BaxxpanderModule: TBaxxpanderModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterMixerChange
     end
@@ -113,6 +116,7 @@ object BaxxpanderModule: TBaxxpanderModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterShapeChange
     end>

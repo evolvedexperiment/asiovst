@@ -1,5 +1,4 @@
 object PartyDelayDataModule: TPartyDelayDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -9,7 +8,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'Pr-D'
@@ -25,7 +23,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'On/Off'
@@ -43,7 +40,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Pan'
@@ -57,11 +53,11 @@ object PartyDelayDataModule: TPartyDelayDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterPanChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Gain'
@@ -76,11 +72,11 @@ object PartyDelayDataModule: TPartyDelayDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Polarity'
@@ -113,11 +109,11 @@ object PartyDelayDataModule: TPartyDelayDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'ms'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Feedback'
@@ -131,11 +127,11 @@ object PartyDelayDataModule: TPartyDelayDataModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterFeedbackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Filter Type'
@@ -171,7 +167,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFilterFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Filter Gain'
@@ -207,7 +202,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Frequency Shift'
@@ -239,7 +233,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Shift Order'
@@ -258,7 +251,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Drive'
@@ -274,7 +266,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDriveChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 1'
       DisplayName = 'Balance'
@@ -292,7 +283,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBalanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'On/Off'
@@ -310,7 +300,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Pan'
@@ -328,7 +317,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterPanChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Gain'
@@ -347,7 +335,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Polarity'
@@ -384,7 +371,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Feedback'
@@ -402,7 +388,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFeedbackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Filter Type'
@@ -438,7 +423,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFilterFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Filter Gain'
@@ -474,7 +458,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Frequency Shift'
@@ -506,7 +489,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Shift Order'
@@ -525,7 +507,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Drive'
@@ -541,7 +522,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDriveChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 2'
       DisplayName = 'Balance'
@@ -559,7 +539,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBalanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'On/Off'
@@ -577,7 +556,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Pan'
@@ -595,7 +573,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterPanChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Gain'
@@ -614,7 +591,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Polarity'
@@ -651,7 +627,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Feedback'
@@ -669,7 +644,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFeedbackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Filter Type'
@@ -705,7 +679,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFilterFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Filter Gain'
@@ -741,7 +714,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Frequency Shift'
@@ -773,7 +745,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Shift Order'
@@ -792,7 +763,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Drive'
@@ -808,7 +778,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDriveChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 3'
       DisplayName = 'Balance'
@@ -826,7 +795,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBalanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'On/Off'
@@ -844,7 +812,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnCustomParameterDisplay = ParameterOnOffDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Pan'
@@ -862,7 +829,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterPanChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Gain'
@@ -881,7 +847,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Polarity'
@@ -918,7 +883,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDelayChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Feedback'
@@ -936,7 +900,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFeedbackChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Filter Type'
@@ -972,7 +935,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterFilterFreqChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Filter Gain'
@@ -1008,7 +970,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBandwidthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Frequency Shift'
@@ -1040,7 +1001,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftFrequencyChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Shift Order'
@@ -1059,7 +1019,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterShiftOrderChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Drive'
@@ -1075,7 +1034,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterDriveChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Band 4'
       DisplayName = 'Balance'
@@ -1093,7 +1051,6 @@ object PartyDelayDataModule: TPartyDelayDataModule
       OnParameterChange = ParameterBalanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

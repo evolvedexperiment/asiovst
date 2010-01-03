@@ -249,7 +249,7 @@ begin
  if FShiftFreq[Band] <> Value then
   begin
    FShiftFreq[Band] := Value;
-   if assigned(FFreqShift[Band])
+   if Assigned(FFreqShift[Band])
     then FFreqShift[Band].Frequency := Value;
   end;
 
@@ -275,7 +275,7 @@ begin
    FCriticalSection.Enter;
    try
     FShiftOrder[Band] := LimitInt(Round(Value), 1, 32);
-    if assigned(FFreqShift[Band])
+    if Assigned(FFreqShift[Band])
      then FFreqShift[Band].CoefficientCount := FShiftOrder[Band];
    finally
     FCriticalSection.Leave;
@@ -360,7 +360,7 @@ var
   Band : Integer;
 begin
  Band := Index div ParametersPerBand;
- if assigned(FFilter[Band])
+ if Assigned(FFilter[Band])
   then FFilter[Band].BandWidth := Value;
 
  if EditorForm is TFmPartyDelay
@@ -373,7 +373,7 @@ var
   Band : Integer;
 begin
  Band := Index div ParametersPerBand;
- if assigned(FFilter[Band])
+ if Assigned(FFilter[Band])
   then FFilter[Band].Gain := Value;
 
  if EditorForm is TFmPartyDelay
@@ -386,7 +386,7 @@ var
   Band : Integer;
 begin
  Band := Index div ParametersPerBand;
- if assigned(FFilter[Band])
+ if Assigned(FFilter[Band])
   then FFilter[Band].Frequency := Value;
 
  if EditorForm is TFmPartyDelay
@@ -402,7 +402,7 @@ begin
  Band := Index div ParametersPerBand;
  if Value <> 0 then
   begin
-   if not assigned(FFreqShift[Band]) then
+   if not Assigned(FFreqShift[Band]) then
     begin
      FCriticalSection.Enter;
      try
@@ -454,7 +454,7 @@ begin
     end;
   end
  else
-  if assigned(FFreqShift[Band])
+  if Assigned(FFreqShift[Band])
    then FreeAndNil(FFreqShift[Band]);
 
  if EditorForm is TFmPartyDelay
@@ -516,7 +516,7 @@ var
   Band : Integer;
 begin
  Band := Index div ParametersPerBand;
- if assigned(FDelayLine[Band]) then
+ if Assigned(FDelayLine[Band]) then
   begin
    FDelayLine[Band].Time := 0.001 * Value;
    FDelayLine[Band].Reset;
@@ -586,15 +586,15 @@ begin
  if abs(SampleRate) > 0 then
   begin
    for Band := 0 to Length(FDelayLine) - 1 do
-    if assigned(FDelayLine[Band])
+    if Assigned(FDelayLine[Band])
      then FDelayLine[Band].Samplerate := SampleRate;
 
    for Band := 0 to Length(FFilter) - 1 do
-    if assigned(FFilter[Band])
+    if Assigned(FFilter[Band])
      then FFilter[Band].Samplerate := SampleRate;
 
    for Band := 0 to Length(FFreqShift) - 1 do
-    if assigned(FFreqShift[Band])
+    if Assigned(FFreqShift[Band])
      then FFreqShift[Band].Samplerate := SampleRate;
   end;
 end;
@@ -602,7 +602,7 @@ end;
 procedure TPartyDelayDataModule.VSTModuleParameterChange(Sender: TObject;
   const Index: Integer; var Value: Single);
 begin
- if assigned(EditorForm) then
+ if Assigned(EditorForm) then
   with TFmPartyDelay(EditorForm) do
    begin
     StatusBar.SimpleText := ParameterProperties[Index].DisplayName + ': ' +
@@ -629,11 +629,11 @@ begin
          FScale[Band, 1] * Inputs[1, Sample] +
          FFeedback[Band] * FLastOutput[Band];
 
-       if assigned(FFilter[Band])
+       if Assigned(FFilter[Band])
         then FLastOutput[Band] := FFilter[Band].ProcessSample64(FLastOutput[Band]);
 
        // eventually shift frequency
-       if assigned(FFreqShift[Band]) then
+       if Assigned(FFreqShift[Band]) then
         begin
          FFreqShift[Band].ProcessSample(FLastOutput[Band], Up, Down);
          FLastOutput[Band] := FFSGain[Band, 0] * FLastOutput[Band] +

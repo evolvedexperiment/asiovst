@@ -31,10 +31,7 @@ requires
   designide,
   DAV_Modular_D10,
   DAV_Common_D10,
-  DAV_VSTPlugin_D10,
-  xmlrtl,
-  vclactnband,
-  vclx;
+  DAV_VSTPlugin_D10;
 
 contains
   DAV_GuiRegister in '..\..\Source\GUI\DAV_GuiRegister.pas',
