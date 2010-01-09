@@ -121,15 +121,15 @@ end;
 
 procedure TFmChebyshev.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
-   Resizer.SetEditorHwnd(0);
+//   Resizer.SetEditorHwnd(0);
   end;
 end;
 
 procedure TFmChebyshev.DialFrequencyChange(Sender: TObject);
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
    if ParameterByName['Frequency'] <> DialFrequency.Position
     then ParameterByName['Frequency'] := DialFrequency.Position;
@@ -159,7 +159,7 @@ end;
 
 procedure TFmChebyshev.DialOrderChange(Sender: TObject);
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
    if ParameterByName['Order'] <> DialOrder.Position
     then ParameterByName['Order'] := DialOrder.Position;
@@ -189,7 +189,7 @@ end;
 
 procedure TFmChebyshev.DialStopbandChange(Sender: TObject);
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
    if ParameterByName['Stopband'] <> DialStopband.Position
     then ParameterByName['Stopband'] := DialStopband.Position;
@@ -219,7 +219,7 @@ end;
 
 procedure TFmChebyshev.EdValueKeyPress(Sender: TObject; var Key: Char);
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   if (Key = #13) and Assigned(FEdValue) then
    try
     StringToParameter(FEdValue.Tag, FEdValue.Text);
@@ -232,7 +232,7 @@ procedure TFmChebyshev.UpdateFrequency;
 var
   Freq : Single;
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
    Freq := ParameterByName['Frequency'];
    if DialFrequency.Position <> Freq
@@ -247,7 +247,7 @@ procedure TFmChebyshev.UpdateOrder;
 var
   Order : Single;
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
    Order := ParameterByName['Order'];
    if DialOrder.Position <> Order
@@ -260,7 +260,7 @@ procedure TFmChebyshev.UpdateStopband;
 var
   Stopband : Single;
 begin
- with TChebyshev2HPModule(Owner) do
+ with TChebyshev2LPModule(Owner) do
   begin
    Stopband := ParameterByName['Stopband'];
    if DialStopband.Position <> Stopband

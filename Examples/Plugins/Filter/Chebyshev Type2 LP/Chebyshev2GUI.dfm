@@ -33,6 +33,7 @@ object FmChebyshev: TFmChebyshev
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
     ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbChebyshevFilterDemo: TGuiLabel
     Left = 8
@@ -48,6 +49,7 @@ object FmChebyshev: TFmChebyshev
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object PnControls: TGuiPanel
     Left = 8
@@ -138,6 +140,7 @@ object FmChebyshev: TFmChebyshev
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbStopband: TGuiLabel
       Left = 94
@@ -155,6 +158,7 @@ object FmChebyshev: TFmChebyshev
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOrder: TGuiDial
       Left = 190
@@ -196,6 +200,7 @@ object FmChebyshev: TFmChebyshev
       Font.Name = 'Verdana'
       Font.Style = [fsBold]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOrderValue: TGuiLabel
       Left = 182
@@ -207,6 +212,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Order'
       Color = 1315880
+      Shadow.Color = clBlack
       OnDblClick = DialOrderDblClick
     end
     object LbStopbandValue: TGuiLabel
@@ -219,6 +225,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Stopband'
       Color = 1315880
+      Shadow.Color = clBlack
       OnDblClick = DialStopbandDblClick
     end
     object LbFrequencyValue: TGuiLabel
@@ -231,6 +238,7 @@ object FmChebyshev: TFmChebyshev
       AntiAlias = gaaLinear4x
       Caption = 'Frequency'
       Color = 1315880
+      Shadow.Color = clBlack
       OnDblClick = DialFrequencyDblClick
     end
   end

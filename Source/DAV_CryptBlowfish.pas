@@ -266,7 +266,6 @@ var
   DataL   : Cardinal;
   DataR   : Cardinal;
 begin ;
- i := 0;
  j := 0;
 
  // clear p-box

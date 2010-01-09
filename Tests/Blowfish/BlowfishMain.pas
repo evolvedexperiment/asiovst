@@ -43,7 +43,6 @@ implementation
 procedure TFmBlowfish.BtExecuteClick(Sender: TObject);
 var
   FS  : TFileStream;
-  Key : string;
 begin
  if RbEncryption.Checked then
   begin
@@ -56,7 +55,7 @@ begin
 
    // encrypt stream
    FS := TFileStream.Create(EdInputFile.Text, fmOpenReadWrite);
-   with TBlowFish.Create('Test') do
+   with TBlowFish.Create(EdPassword.Text) do
     try
      Encrypt(FS);
     finally
@@ -111,7 +110,7 @@ var
 begin
  MS := TMemoryStream.Create;
  try
-  with TBlowFish.Create('Test') do
+  with TBlowFish.Create(EdPassword.Text) do
    try
     // simple test
     Data[0] := 0;

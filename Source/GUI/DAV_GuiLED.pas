@@ -209,7 +209,7 @@ end;
 
 procedure TCustomGuiLED.RenderLEDToBitmap24(const Bitmap: TBitmap);
 var
-  Steps, i      : Integer;
+  Steps, Y      : Integer;
   Rad           : Single;
   XStart        : Single;
   BW            : Single;
@@ -251,26 +251,26 @@ begin
    with SrcIntfImg do
     try
      LoadFromBitmap(Bitmap.BitmapHandle, Bitmap.MaskHandle);
-     for I := 0 to Round(2 * Rad) do
+     for Y := 0 to Round(2 * Rad) do
       begin
-       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
+       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
        for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
         begin
-         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - i)) / Sqr(Rad)));
+         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
 
-         if Sqr(steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad)
+         if Sqr(steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
           then Scale := FBorderFactor * Scale;
 
          Scale := 256 * Scale;
 
          // manipulate pixel
-         CurCol := Colors[Steps, Round(2 * (Center.Im - (Rad - I))) div 2];
+         CurCol := Colors[Steps, Round(2 * (Center.Im - (Rad - Y))) div 2];
 
          CurCol.Blue  := Round(Scale * LEDColor.B);
          CurCol.Green := Round(Scale * LEDColor.G);
          CurCol.Red   := Round(Scale * LEDColor.R);
 
-         Colors[Steps, Round(2 * (Center.Im - (Rad - I))) div 2] := CurCol;
+         Colors[Steps, Round(2 * (Center.Im - (Rad - Y))) div 2] := CurCol;
 //         assert(Integer(@(Line[Steps])) and 1 <> 1);
         end;
       end;
@@ -281,15 +281,15 @@ begin
      Free;
     end;
    {$ELSE}
-   for I := 0 to Round(2 * Rad) do
+   for Y := 0 to Round(2 * Rad) do
     begin
-     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
-     Line := Scanline[Round(2 * (Center.Im - (Rad - I))) div 2];
+     XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
+     Line := Scanline[Round(2 * (Center.Im - (Rad - Y))) div 2];
      for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
       begin
-       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - i)) / Sqr(Rad)));
+       Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
 
-       if Sqr(steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad)
+       if Sqr(steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
         then Scale := FBorderFactor * Scale;
        Line[Steps].B := Round(Scale * LEDColor.B);
        Line[Steps].G := Round(Scale * LEDColor.G);
@@ -347,20 +347,20 @@ begin
    with SrcIntfImg do
     try
      LoadFromBitmap(Bitmap.BitmapHandle, Bitmap.MaskHandle);
-     for I := 0 to Round(2 * Rad) do
+     for Y := 0 to Round(2 * Rad) do
       begin
-       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - i)));
+       XStart := Sqrt(abs(Sqr(Rad) - Sqr(Rad - Y)));
        for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
         begin
-         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(steps - Center.Re) + Sqr(Rad - i)) / Sqr(Rad)));
+         Scale := Bright * (1 - FUniformity * Math.Max(0, (Sqr(Steps - Center.Re) + Sqr(Rad - Y)) / Sqr(Rad)));
 
-         if Sqr(steps - Center.Re) + Sqr(Rad - i) > Sqr(BW * Rad)
+         if Sqr(Steps - Center.Re) + Sqr(Rad - Y) > Sqr(BW * Rad)
           then Scale := FBorderFactor * Scale;
 
          Scale := 256 * Scale;
 
          // manipulate pixel
-         YPixelPos := Round(2 * (Center.Im - (Rad - I))) div 2;
+         YPixelPos := Round(2 * (Center.Im - (Rad - Y))) div 2;
          CurCol := Colors[Steps, YPixelPos];
 
          CurCol.Blue  := Round(Scale * LEDColor.B);

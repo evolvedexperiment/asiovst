@@ -320,7 +320,7 @@ type
   );
 
   PVstEvent = ^TVstEvent;
-  TVstEvent = packed record      // a generic timestamped event
+  TVstEvent = record      // a generic timestamped event
     EventType   : TVSTEventType; // see above
     ByteSize    : LongInt;       // of this event, excl. type and ByteSize
     DeltaFrames : LongInt;       // sample frames related to the current block start sample position
@@ -329,7 +329,7 @@ type
   end;
 
   PVstEvents = ^TVstEvents;
-  TVstEvents = packed record  // a block of events for the current audio block
+  TVstEvents = record  // a block of events for the current audio block
     NumEvents : LongInt;
     Reserved  : LongInt;                     // zero
     Events    : array[0..2047] of PVstEvent; // variable
@@ -397,7 +397,7 @@ type
   TVstTimeInfoFlags = set of TVstTimeInfoFlag;
 
   PVstTimeInfo = ^TVstTimeInfo;
-  TVstTimeInfo = packed record
+  TVstTimeInfo = record
     SamplePos          : Double;            // current location
     SampleRate         : Double;
     NanoSeconds        : Double;            // system time
@@ -415,7 +415,7 @@ type
   end;
 
   PVstVariableIo = ^TVstVariableIo;
-  TVstVariableIo = packed record
+  TVstVariableIo = record
     Inputs                    : PPSingle;
     Outputs                   : PPSingle;
     NumSamplesInput           : LongInt;
@@ -445,7 +445,7 @@ type
   TVstParameterPropertiesFlags = set of TVstParameterPropertiesFlag;
 
   PVstParameterPropertyRecord = ^TVstParameterPropertyRecord;
-  TVstParameterPropertyRecord = packed record
+  TVstParameterPropertyRecord = record
     StepFloat        : Single;
     SmallStepFloat   : Single;
     LargeStepFloat   : Single;
@@ -513,7 +513,6 @@ type
     sat102             {$IFDEF DELPHI6_UP} = 28 {$ENDIF},  // L R C Lfe Ls Rs Tfl Tfc Tfr Trl Trr Lfe2
     satNumSpeakerArr   {$IFDEF DELPHI6_UP} = 29 {$ENDIF});
 
-  {$A4}  
   TVstPinPropertiesFlag = (vppIsActive, vppIsStereo, vppUseSpeaker);
   TVstPinPropertiesFlags = set of TVstPinPropertiesFlag;
 

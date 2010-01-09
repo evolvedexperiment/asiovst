@@ -119,6 +119,7 @@ object FmBlowfish: TFmBlowfish
     Height = 21
     Anchors = [akLeft, akTop, akRight]
     TabOrder = 7
+    Text = 'Password'
   end
   object OD: TOpenDialog
     Filter = 'All files (*.*)|*.*'
