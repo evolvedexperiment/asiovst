@@ -1,4 +1,5 @@
 object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressorDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0.2'
   EffectName = 'Lightweight Multiband Compressor'
@@ -18,7 +19,8 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
     end>
   ParameterProperties = <
     item
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Low Split Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -28,7 +30,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Min = 20.000000000000000000
       MinInteger = 20
       ReportVST2Properties = True
-      ShortLabel = 'Low Spl'
+      ShortLabel = 'L Freq'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
@@ -39,7 +41,8 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       Category = 'Crossover'
       DisplayName = 'Mid Split Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -49,7 +52,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Min = 20.000000000000000000
       MinInteger = 20
       ReportVST2Properties = True
-      ShortLabel = 'Mid Spl'
+      ShortLabel = 'M Freq'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'
@@ -60,7 +63,8 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       OnCustomParameterDisplay = ParameterFrequencyDisplay
     end
     item
-      CurveFactor = 1.000000000000000000
+      Curve = ctLogarithmic
+      CurveFactor = 1000.000000000000000000
       Category = 'Crossover'
       DisplayName = 'High Split Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -70,7 +74,7 @@ object LightweightMultibandCompressorDataModule: TLightweightMultibandCompressor
       Min = 20.000000000000000000
       MinInteger = 20
       ReportVST2Properties = True
-      ShortLabel = 'High Sp'
+      ShortLabel = 'H Freq'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'Hz'

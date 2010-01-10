@@ -44,6 +44,7 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
@@ -55,13 +56,12 @@ type
     procedure ParameterRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterResponseChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDecayChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParameterInputChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterdBDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterListenDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure ParameterHighpassDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
   private
-    FHarmonicBass : array [0..1] of TCustomHarmonicBass;
+    FHarmonicBass    : array [0..1] of TCustomHarmonicBass;
     FCriticalSection : TCriticalSection;
     procedure CalculateGains;
   public
@@ -184,7 +184,7 @@ end;
 procedure THarmonicBassModule.ParameterHighpassDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0 : PreDefined := '16 Hz DC Filter';
   1 : PreDefined := '12 dB/oct';
   2 : PreDefined := '24 dB/oct';
@@ -217,7 +217,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
+   if Assigned(FHarmonicBass[Channel])
     then FHarmonicBass[Channel].HighpassSelect := THighpassSelect(round(Value));
  finally
   FCriticalSection.Release;
@@ -232,7 +232,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
+   if Assigned(FHarmonicBass[Channel])
     then FHarmonicBass[Channel].InputLevel := Value;
  finally
   FCriticalSection.Release;
@@ -247,7 +247,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
+   if Assigned(FHarmonicBass[Channel])
     then FHarmonicBass[Channel].Decay := 0.5 * dB_to_Amp(Value);
  finally
   FCriticalSection.Release;
@@ -264,7 +264,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
+   if Assigned(FHarmonicBass[Channel])
     then FHarmonicBass[Channel].Response := Value * CScale;
  finally
   FCriticalSection.Release;
@@ -279,7 +279,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
+   if Assigned(FHarmonicBass[Channel])
     then FHarmonicBass[Channel].Ratio := Value;
  finally
   FCriticalSection.Release;
@@ -311,7 +311,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel]) then
+   if Assigned(FHarmonicBass[Channel]) then
     case round(Parameter[8]) of
      0 : begin
           FHarmonicBass[Channel].OriginalBassLevel := Parameter[6];
@@ -342,7 +342,7 @@ begin
  FCriticalSection.Enter;
  try
   for Channel := 0 to Length(FHarmonicBass) - 1 do
-   if assigned(FHarmonicBass[Channel])
+   if Assigned(FHarmonicBass[Channel])
     then FHarmonicBass[Channel].Frequency := Value;
  finally
   FCriticalSection.Release;
@@ -358,7 +358,7 @@ begin
  try
   if Abs(SampleRate) > 0 then
    for Channel := 0 to Length(FHarmonicBass) - 1 do
-    if assigned(FHarmonicBass[Channel])
+    if Assigned(FHarmonicBass[Channel])
      then FHarmonicBass[Channel].SampleRate := Abs(SampleRate);
  finally
   FCriticalSection.Release;
@@ -368,8 +368,8 @@ end;
 procedure THarmonicBassModule.VSTModuleProcess(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Channel   : Integer;
-  Sample    : Integer;
+  Channel : Integer;
+  Sample  : Integer;
 begin
  FCriticalSection.Enter;
  try
@@ -384,8 +384,8 @@ end;
 procedure THarmonicBassModule.VSTModuleProcessDoubleReplacing(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Channel   : Integer;
-  Sample    : Integer;
+  Channel : Integer;
+  Sample  : Integer;
 begin
  FCriticalSection.Enter;
  try

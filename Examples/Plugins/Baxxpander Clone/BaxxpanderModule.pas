@@ -154,12 +154,12 @@ end;
 procedure TBaxxpanderModule.VSTModuleSampleRateChange(Sender: TObject;
   const SampleRate: Single);
 var
-  Channel : Integer;
+  ChannelIndex : Integer;
 begin
  if Abs(SampleRate) > 0 then
-  for Channel := 0 to Length(FButterworthSplitter) - 1 do
-   if Assigned(FButterworthSplitter[Channel])
-    then FButterworthSplitter[Channel].SampleRate := Abs(SampleRate);
+  for ChannelIndex := 0 to Length(FButterworthSplitter) - 1 do
+   if Assigned(FButterworthSplitter[ChannelIndex])
+    then FButterworthSplitter[ChannelIndex].SampleRate := Abs(SampleRate);
 end;
 
 procedure TBaxxpanderModule.VSTModuleProcessNormal(const Inputs,

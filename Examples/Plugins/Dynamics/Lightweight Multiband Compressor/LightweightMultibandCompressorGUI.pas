@@ -309,6 +309,7 @@ begin
  UpdateLowRatio;
  UpdateLowRelease;
  UpdateLowThreshold;
+ UpdateLowFrequency;
  UpdateLowMidAttack;
  UpdateLowMidAutoMakeUpGain;
  UpdateLowMidKnee;
@@ -316,6 +317,7 @@ begin
  UpdateLowMidRatio;
  UpdateLowMidRelease;
  UpdateLowMidThreshold;
+ UpdateMidFrequency;
  UpdateHighMidAttack;
  UpdateHighMidAutoMakeUpGain;
  UpdateHighMidKnee;
@@ -330,6 +332,7 @@ begin
  UpdateHighRatio;
  UpdateHighRelease;
  UpdateHighThreshold;
+ UpdateHighFrequency;
  UpdateLimit;
 end;
 

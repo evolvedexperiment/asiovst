@@ -25,7 +25,7 @@ unit DAV_DspFilter;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2005-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2005-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -335,25 +335,25 @@ end;
 
 procedure TCustomFilter.GetIR(ImpulseResonse: TDAVSingleDynArray);
 var
-  i : Cardinal;
+  SampleIndex : Cardinal;
 begin
  if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
  ImpulseResonse[0] := ProcessSample64(1.0);
- for i := 1 to Length(ImpulseResonse) - 1
-  do ImpulseResonse[i] := ProcessSample64(0.0);
+ for SampleIndex := 1 to Length(ImpulseResonse) - 1
+  do ImpulseResonse[SampleIndex] := ProcessSample64(0.0);
  PopStates;
 end;
 
 procedure TCustomFilter.GetIR(ImpulseResonse: TDAVDoubleDynArray);
 var
-  i : Cardinal;
+  SampleIndex : Cardinal;
 begin
  if Length(ImpulseResonse) = 0 then Exit;
  PushStates;
  ImpulseResonse[0] := ProcessSample64(1.0);
- for i := 1 to Length(ImpulseResonse) - 1
-  do ImpulseResonse[i] := ProcessSample64(0.0);
+ for SampleIndex := 1 to Length(ImpulseResonse) - 1
+  do ImpulseResonse[SampleIndex] := ProcessSample64(0.0);
  PopStates;
 end;
 
@@ -368,19 +368,19 @@ end;
 procedure TCustomFilter.ProcessBlock32(const Data: PDAVSingleFixedArray;
   SampleCount: Integer);
 var
-  Sample: Integer;
+  SampleIndex : Integer;
 begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample32(Data[Sample]);
+ for SampleIndex := 0 to SampleCount - 1
+  do Data[SampleIndex] := ProcessSample32(Data[SampleIndex]);
 end;
 
 procedure TCustomFilter.ProcessBlock64(const Data: PDAVDoubleFixedArray;
   SampleCount: Integer);
 var
-  Sample: Integer;
+  SampleIndex : Integer;
 begin
- for Sample := 0 to SampleCount - 1
-  do Data[Sample] := ProcessSample64(Data[Sample]);
+ for SampleIndex := 0 to SampleCount - 1
+  do Data[SampleIndex] := ProcessSample64(Data[SampleIndex]);
 end;
 
 function TCustomFilter.ProcessSample32(Input: Single): Single;
@@ -650,7 +650,7 @@ end;
 procedure TCustomGainFrequencyFilter.CalculateGainFactor;
 begin
  FGainFactor := dB_to_Amp(CHalf32 * FGain_dB); // do not change this!
- FGainFactorSquared := sqr(FGainFactor);
+ FGainFactorSquared := Sqr(FGainFactor);
 end;
 
 procedure TCustomGainFrequencyFilter.CalculateW0;
@@ -788,7 +788,7 @@ var
   Cmplx    : TComplexDouble;
 begin
  Cmplx := Goertzel(PDAVDoubleFixedArray(@FIR[0]), FKernelSize, Pi * Frequency / SampleRate);
- Result := FGainFactor * (sqr(Cmplx.Re) + sqr(Cmplx.Im));
+ Result := FGainFactor * (Sqr(Cmplx.Re) + Sqr(Cmplx.Im));
 end;
 
 procedure TCustomFIRFilter.PopStates;
@@ -1073,8 +1073,8 @@ var
   cw : Double;
 begin
  cw := 2 * cos(2 * Frequency * Pi * FSRR);
- Result := (sqr(FNominator[0] - FNominator[2]) + sqr(FNominator[1]) + (FNominator[1] * (FNominator[0] + FNominator[2]) + FNominator[0] * FNominator[2] * cw) * cw)
-         / (sqr(1 - FDenominator[2]) + sqr(FDenominator[1]) + (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw );
+ Result := (Sqr(FNominator[0] - FNominator[2]) + Sqr(FNominator[1]) + (FNominator[1] * (FNominator[0] + FNominator[2]) + FNominator[0] * FNominator[2] * cw) * cw)
+         / (Sqr(1 - FDenominator[2]) + Sqr(FDenominator[1]) + (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw );
 end;
 
 function TBiquadIIRFilter.MagnitudeLog10(const Frequency: Double): Double;
@@ -1088,7 +1088,7 @@ var
 begin
  GetSinCos(2 * Frequency * Pi * FSRR, sw, cw);
  Result := ArcTan2(-sw * (FNominator[0] * (2 * cw * FDenominator[2] + FDenominator[1]) + FNominator[1] * (FDenominator[2] - 1) - FNominator[2] * (2 * cw + FDenominator[1])),
-                  (FNominator[0] * (FDenominator[2] * (2 * sqr(cw) - 1) + 1 + FDenominator[1] * cw) + FNominator[1] * (cw * (FDenominator[2] + 1) + FDenominator[1]) + FNominator[2] * (2 * sqr(cw) + FDenominator[1] * cw + FDenominator[2] - 1)));
+                  (FNominator[0] * (FDenominator[2] * (2 * Sqr(cw) - 1) + 1 + FDenominator[1] * cw) + FNominator[1] * (cw * (FDenominator[2] + 1) + FDenominator[1]) + FNominator[2] * (2 * Sqr(cw) + FDenominator[1] * cw + FDenominator[2] - 1)));
 end;
 
 function TBiquadIIRFilter.Real(const Frequency: Double): Double;
@@ -1098,8 +1098,8 @@ begin
  cw := cos(2 * Frequency * Pi * FSRR);
  Real := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
           +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-          + (2 * sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2]))
-          / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
+          + (2 * Sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2]))
+          / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
           + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
 end;
 
@@ -1109,8 +1109,8 @@ var
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
-              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - sqr(cw))
-              / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
+              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw))
+              / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
               + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]))
 end;
 
@@ -1119,13 +1119,13 @@ var
   cw, Divider : Double;
 begin
  cw := cos(2 * Frequency * Pi * FSRR);
- Divider   := 1 / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
+ Divider   := 1 / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
                     + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
               +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-              + (2 * sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
+              + (2 * Sqr(cw)-1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
-              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
+              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
 end;
 
 procedure TBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
@@ -1133,13 +1133,13 @@ var
   Cw, Divider : Double;
 begin
  cw := cos(2 * Frequency * pi * FSRR);
- Divider   := 1 / ( sqr(FDenominator[2]) - 2 * FDenominator[2] + sqr(FDenominator[1]) + 1
+ Divider   := 1 / ( Sqr(FDenominator[2]) - 2 * FDenominator[2] + Sqr(FDenominator[1]) + 1
                     + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
  Real      := (FNominator[0] + FNominator[1] * FDenominator[1] + FNominator[2] * FDenominator[2]
               +        cw     * (FNominator[1] * (1 + FDenominator[2]) + FDenominator[1] * (FNominator[2] + FNominator[0]))
-              + (2 * sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
+              + (2 * Sqr(cw) - 1) * (FNominator[0] * FDenominator[2] + FNominator[2])) * Divider;
  Imaginary := (FDenominator[1] * (FNominator[2] - FNominator[0]) + FNominator[1] * (1 - FDenominator[2])
-              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - sqr(cw)) * Divider;
+              + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
 end;
 
 procedure TBiquadIIRFilter.Reset;
@@ -1208,7 +1208,7 @@ begin
  q :=  FDenominator[2];
  FPoles[0].Re := p;
  FPoles[1].Re := p;
- e := q - sqr(p);
+ e := q - Sqr(p);
  if e > 0
   then
    begin

@@ -25,7 +25,7 @@ unit TalkBoxDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,11 +44,17 @@ const
 type
   TTalkBoxDataModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleResume(Sender: TObject);
-    procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure VSTModuleClose(Sender: TObject);
+    procedure VSTModuleResume(Sender: TObject);
+    procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
+    procedure ParameterCarrierDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure VSTModuleSuspend(Sender: TObject);
+    procedure ParameterCarierSelectChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterWetChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterDryChange(
+      Sender: TObject; const Index: Integer; var Value: Single);
   private
     FBuf       : array [0..1] of PDAVSingleFixedArray;
     FCar       : array [0..1] of PDAVSingleFixedArray;
@@ -63,6 +69,7 @@ type
     FD, FU     : Array [0..4] of Single;
     procedure LPC(buf, car: PDAVSingleFixedArray; n, o: Integer);
     procedure LPCDurbin(r : PDAVSingleFixedArray; p : Integer; k : PDAVSingleFixedArray; var g: Single);
+    procedure ResetStates;
   public
   end;
 
@@ -70,15 +77,11 @@ implementation
 
 {$R *.DFM}
 
+uses
+  DAV_Common;
+
 procedure TTalkBoxDataModule.VSTModuleOpen(Sender: TObject);
 begin
- Parameter[0] := 100; // Wet  [%]
- Parameter[1] := 0;   // Dry  [%]
- Parameter[2] := 0;   // Swap
-(*
- Parameter[3] := 1;   // Quality
-*)
-
  ///initialise...
  GetMem(FBuf[0], CMaxBufferSize * SizeOf(Single));
  GetMem(FBuf[1], CMaxBufferSize * SizeOf(Single));
@@ -87,6 +90,13 @@ begin
  GetMem(FCar[1], CMaxBufferSize * SizeOf(Single));
  FWinSize := 1; //trigger window recalc
  FK := 0;
+
+ // default parameters
+ Parameter[0] := 100; // Wet  [%]
+ Parameter[1] := 0;   // Dry  [%]
+ Parameter[2] := 0;   // Swap
+ Parameter[3] := 1;   // Quality
+
  VSTModuleSuspend(Sender);
 end;
 
@@ -284,26 +294,38 @@ begin
   if (abs(FU[3]) < den) then FU[3] := 0;
 end;
 
+procedure TTalkBoxDataModule.ParameterCarierSelectChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FSwap := Integer(Parameter[2] > 0.5);
+end;
+
+procedure TTalkBoxDataModule.ParameterWetChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FWet := 0.5 * Sqr(0.01 * Parameter[0]);
+end;
+
+procedure TTalkBoxDataModule.ParameterDryChange(
+  Sender: TObject; const Index: Integer; var Value: Single);
+begin
+ FDry := 2   * Sqr(0.01 * Parameter[1]);
+end;
+
 procedure TTalkBoxDataModule.VSTModuleResume(Sender: TObject);
 var
   fs    : Single;
   n     : Integer;
   p, dp : Single;
 begin
- fs := SampleRate;
- if (fs <  8000) then fs :=  8000.0;
- if (fs > 96000) then fs := 96000.0;
+ fs := Limit(SampleRate, 8000, 96000);
 
- if Parameter[2] > 0.5
-  then FSwap := 1
-  else FSwap := 0;
-
- n := round(0.01633 * fs);
+ n := Round(0.01633 * fs);
  if (n > CMaxBufferSize)
   then n := CMaxBufferSize;
 
  //FO = round(0.0005 * fs);
- FO := round((0.0001 + 0.0004 * Parameter[3]) * fs);
+ FO := Round((0.0001 + 0.0004 * Parameter[3]) * fs);
 
  if (n <> FWinSize) then //recalc hanning window
   begin
@@ -316,12 +338,14 @@ begin
      p := p + dp;
     end;
   end;
-
- FWet := 0.5 * Sqr(0.01 * Parameter[0]);
- FDry := 2   * Sqr(0.01 * Parameter[1]);
 end;
 
 procedure TTalkBoxDataModule.VSTModuleSuspend(Sender: TObject);
+begin
+ ResetStates;
+end;
+
+procedure TTalkBoxDataModule.ResetStates;
 begin
  FPos := 0;
  FK   := 0;
