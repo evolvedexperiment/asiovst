@@ -2,7 +2,7 @@ unit DAV_DLLLoader;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$IFDEF Win32} Windows, {$ENDIF}

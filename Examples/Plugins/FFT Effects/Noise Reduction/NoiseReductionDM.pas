@@ -32,7 +32,7 @@ unit NoiseReductionDM;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   Windows, Messages, Classes, Forms, SyncObjs, DAV_Types, DAV_Complex,

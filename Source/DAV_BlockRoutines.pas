@@ -32,7 +32,7 @@ unit DAV_BlockRoutines;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   DAV_Types, DAV_Complex;

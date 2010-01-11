@@ -25,12 +25,14 @@ unit DAV_DspSpectrumInterpolation;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
 interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   DAV_Types, DAV_Complex;

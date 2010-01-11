@@ -32,7 +32,7 @@ unit DAV_VSTShellPlugins;
 
 interface
 
-{$I ..\DAV_Compiler.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   Classes, DAV_Types, DAV_VSTEffect, DAV_VSTBasicModule;

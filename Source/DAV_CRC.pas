@@ -2,7 +2,7 @@ unit DAV_CRC;
 
 interface
 
-//uses Shared;
+{$I ..\DAV_Compiler.inc}
 
 type
   TCRC16 = class

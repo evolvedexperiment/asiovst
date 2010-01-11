@@ -2,7 +2,7 @@ unit DAV_GuiMidiKeys;
 
 interface
 
-{$I ..\DAV_Compiler.Inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LResources, LMessages, {$ELSE} Windows, {$ENDIF}

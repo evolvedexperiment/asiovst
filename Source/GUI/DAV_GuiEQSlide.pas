@@ -32,7 +32,7 @@ unit DAV_GuiEQSlide;
 
 interface
 
-{$I ..\DAV_Compiler.Inc}
+{$I ..\DAV_Compiler.inc}
 
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} Windows, Messages, {$ENDIF}

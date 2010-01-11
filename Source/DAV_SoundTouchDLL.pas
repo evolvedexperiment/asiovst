@@ -64,6 +64,8 @@ unit DAV_SoundTouchDLL;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   {$IFDEF FPC}LCLIntf; {$ELSE}Windows; {$ENDIF}
 

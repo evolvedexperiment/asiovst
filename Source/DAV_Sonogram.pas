@@ -32,7 +32,7 @@ unit DAV_Sonogram;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 {$DEFINE Use_IPPS}
 
 uses

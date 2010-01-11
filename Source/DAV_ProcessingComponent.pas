@@ -2,7 +2,7 @@ unit DAV_ProcessingComponent;
 
 interface
 
-{$I DAV_CompilerSwitches.INC}
+{$I DAV_Compiler.inc}
 
 uses
   Classes, DAV_Types;

@@ -32,6 +32,8 @@ unit DAV_WinAmp;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
   {$IFDEF FPC}LCLIntf, LCLType, {$ELSE}Windows, {$ENDIF} Classes, SysUtils, DAV_Common;
 

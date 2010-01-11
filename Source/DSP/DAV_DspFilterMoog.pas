@@ -34,6 +34,8 @@ unit DAV_DspFilterMoog;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   DAV_Common, DAV_Complex, DAV_DspFilter;
 

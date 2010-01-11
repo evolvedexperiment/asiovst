@@ -32,7 +32,7 @@ unit DAV_ClassesFft;
 
 interface
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   Classes, DAV_Types, DAV_Classes, DAV_DspFftReal2Complex;

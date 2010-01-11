@@ -2,6 +2,8 @@ unit DAV_ASIODriver;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Classes, Windows, Forms, ActiveX, ComObj, DAV_ASIO;
 

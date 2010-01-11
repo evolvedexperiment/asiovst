@@ -10,7 +10,7 @@ unit DAV_AsioDriverProjectCreator;
 
 interface
 
-{$I ..\DAV_Compiler.INC}
+{$I ..\DAV_Compiler.inc}
 
 uses
   ToolsAPI,

@@ -1,7 +1,5 @@
 unit DAV_DspLorenzOscilator;
 
-interface
-
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
@@ -78,6 +76,9 @@ interface
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
+interface
+
+{$I ..\DAV_Compiler.inc}
 
 uses
   SysUtils, DAV_Types, DAV_Classes;

@@ -33,6 +33,8 @@ unit DAV_CryptBlowfish;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
   Windows, Messages, SysUtils, Classes;
 
