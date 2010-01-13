@@ -36,7 +36,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspFilter, DAV_DspTransformerSimulation;
+  DAV_DspTransformerSimulation;
 
 type
   TAnalogueMojoDM = class(TVSTModule)

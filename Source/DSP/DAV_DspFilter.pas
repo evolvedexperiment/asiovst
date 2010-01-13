@@ -919,6 +919,12 @@ end;
 
 { TFirstOrderAllpassFilter }
 
+constructor TFirstOrderAllpassFilter.Create;
+begin
+ inherited;
+ FState := 0;
+end;
+
 procedure TFirstOrderAllpassFilter.AssignTo(Dest: TPersistent);
 begin
  if Dest is TFirstOrderAllpassFilter then
@@ -936,16 +942,10 @@ begin
  // do nothing yet;
 end;
 
-constructor TFirstOrderAllpassFilter.Create;
-begin
- inherited;
- FState := 0;
-end;
-
 procedure TFirstOrderAllpassFilter.FrequencyChanged;
 begin
- assert (FFrequency >= -0.5);
- assert (FFrequency <= 1);
+ Assert(FFrequency >= -0.5);
+ Assert(FFrequency <= 1);
 // inherited;
 end;
 
@@ -1009,6 +1009,7 @@ procedure TFirstOrderAllpassFilter.SetOrder(const Value: Cardinal);
 begin
  raise Exception.Create('Order is fixed!');
 end;
+
 
 { TCustomBandwidthIIRFilter }
 

@@ -1126,7 +1126,7 @@ end;
 procedure TCustomAsioHostBasic.OpenDriver;
 var
   OldActive    : Boolean;
-  ErrorMessage : PChar;
+  ErrorMessage : PAnsiChar;
 begin
  // store last active state and deactivate current driver
  OldActive := False;

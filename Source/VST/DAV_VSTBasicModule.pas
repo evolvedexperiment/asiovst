@@ -424,7 +424,7 @@ end;
 procedure TBasicVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 {$IFNDEF UseAudioEffectPtr}
 var
-  HostProduct : PChar;
+  HostProduct : PAnsiChar;
 {$ENDIF}  
 begin
  FAudioMaster := AM;

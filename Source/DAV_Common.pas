@@ -148,11 +148,13 @@ function unDenormalize(const Value: Single): Single;
 function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+(*
 procedure Msg(b: Boolean); overload;
 procedure Msg(m: string; m2: string = ''); overload;
 procedure Msg(i: Integer); overload;
 procedure Msg(s: Single); overload;
 procedure Msg(m: string; i: Integer); overload;
+*)
 
 function FloatWithUnit(const Value: Double):string;
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
@@ -1114,8 +1116,9 @@ end;
 {$IFNDEF FPC}
 function GetApplicationFilename: string;
 var
-  s : array[0..$7FF] of AnsiChar;
+  s : PWideChar;
 begin
+ GetMem(s, $7FF);
  GetModuleFilename(hInstance, s, SizeOf(s));
  Result := StrPas(s);
  Result := ExtractFilename(Result);
@@ -1123,13 +1126,15 @@ end;
 
 function GetApplicationDirectory: string;
 var
-  s : array[0..$7FF] of AnsiChar;
+  s : PWideChar;
 begin
+ GetMem(s, $7FF);
  GetModuleFilename(hInstance, s, SizeOf(s));
  Result := StrPas(s);
  Result := ExtractFileDir(Result);
 end;
 
+(*
 procedure Msg(b: Boolean);
 begin if b then Msg('TRUE') else Msg('FALSE');end;
 procedure Msg(m: string; m2: string = '');
@@ -1140,6 +1145,7 @@ procedure Msg(s: Single);
 begin Msg(FloatToStrF(s, ffFixed, 3, 3)); end;
 procedure Msg(m: string; i:Integer);
 begin MessageBox(0, PAnsiChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
+*)
 {$WARNINGS ON}
 
 function FloatWithUnit(const Value: Double): string;

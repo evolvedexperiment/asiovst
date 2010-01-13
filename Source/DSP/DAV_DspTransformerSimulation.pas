@@ -36,8 +36,8 @@ interface
 
 uses
   Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFilter,
-  DAV_DspFilterButterworth, DAV_DspWaveshaper, DAV_DspPolyphaseUpsampler,
-  DAV_DspPolyphaseDownsampler;
+  DAV_FilterSimple, DAV_DspFilterBasics, DAV_DspFilterButterworth,
+  DAV_DspWaveshaper, DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
   TCustomTransformatorSimulation = class(TDspSampleRatePersistent,

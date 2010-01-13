@@ -499,8 +499,9 @@ begin
  Result := Error;
 end;
 
-procedure SetHuffTable(GHuffmanCodeTable: PHuffmanCodeTable; Name: PAnsiChar; XLength, YLength, LinBits, LinMax, Ref: Integer;
-                       Table: PHuffBits; HLength: PChar; Val: PPHTArray; TreeLength: Cardinal);
+procedure SetHuffTable(GHuffmanCodeTable: PHuffmanCodeTable;
+  Name: PAnsiChar; XLength, YLength, LinBits, LinMax, Ref: Integer;
+  Table: PHuffBits; HLength: PAnsiChar; Val: PPHTArray; TreeLength: Cardinal);
 begin
  StrLCopy(GHuffmanCodeTable.TableName, Name, SizeOf(GHuffmanCodeTable.TableName));
  GHuffmanCodeTable.XLength := XLength;

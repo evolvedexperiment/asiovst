@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <PersonalityInfo>
+    <Option>
+      <Option Name="Personality">Default.Personality</Option>
+      <Option Name="ProjectType"></Option>
+      <Option Name="Version">1.0</Option>
+      <Option Name="GUID">{9A4A18DB-EAF2-49A8-A709-ED3F37F03BE6}</Option>
+    </Option>
+  </PersonalityInfo>
+  <Default.Personality>
+    
+    <Projects>
+      <Projects Name="DAV_Common_D14.bpl">DAV_Common_D14.bdsproj</Projects>
+      <Projects Name="DAV_DSP_D14.bpl">DAV_DSP_D14.bdsproj</Projects>
+      <Projects Name="DAV_ASIOHost_D14.bpl">DAV_ASIOHost_D14.bdsproj</Projects>
+      <Projects Name="DAV_SEHost_D14.bpl">DAV_SEHost_D14.bdsproj</Projects>
+      <Projects Name="DAV_VSTHost_D14.bpl">DAV_VSTHost_D14.bdsproj</Projects>
+      <Projects Name="DAV_VSTPlugin_D14.bpl">DAV_VSTPlugin_D14.bdsproj</Projects>
+      <Projects Name="DAV_Modular_D14.bpl">DAV_Modular_D14.bdsproj</Projects>
+      <Projects Name="DAV_GUI_D14.bpl">DAV_GUI_D14.bdsproj</Projects>
+      <Projects Name="Targets">DAV_Common_D14.bpl DAV_DSP_D14.bpl DAV_ASIOHost_D14.bpl DAV_SEHost_D14.bpl DAV_VSTHost_D14.bpl DAV_VSTPlugin_D14.bpl DAV_Modular_D14.bpl DAV_GUI_D14.bpl</Projects>
+    </Projects>
+    <Dependencies/>
+  </Default.Personality>
+</BorlandProject>
