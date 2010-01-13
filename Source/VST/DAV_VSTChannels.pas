@@ -96,7 +96,7 @@ end;
 
 function TCustomVstChannel.GetDisplayName: string;
 begin
- result := FLabel;
+ Result := FLabel;
 end;
 
 procedure TCustomVstChannel.SetDisplayName(const AValue: string);

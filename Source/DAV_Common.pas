@@ -148,13 +148,13 @@ function unDenormalize(const Value: Single): Single;
 function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-(*
+{$IFNDEF DELPHI12_UP}
 procedure Msg(b: Boolean); overload;
 procedure Msg(m: string; m2: string = ''); overload;
 procedure Msg(i: Integer); overload;
 procedure Msg(s: Single); overload;
 procedure Msg(m: string; i: Integer); overload;
-*)
+{$ENDIF}
 
 function FloatWithUnit(const Value: Double):string;
 function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
@@ -1116,7 +1116,7 @@ end;
 {$IFNDEF FPC}
 function GetApplicationFilename: string;
 var
-  s : PWideChar;
+  s : {$IFDEF DELPHI12_UP}PWideChar; {$ELSE} PChar; {$ENDIF}
 begin
  GetMem(s, $7FF);
  GetModuleFilename(hInstance, s, SizeOf(s));
@@ -1126,7 +1126,7 @@ end;
 
 function GetApplicationDirectory: string;
 var
-  s : PWideChar;
+  s : {$IFDEF DELPHI12_UP}PWideChar; {$ELSE} PChar; {$ENDIF}
 begin
  GetMem(s, $7FF);
  GetModuleFilename(hInstance, s, SizeOf(s));
@@ -1134,7 +1134,7 @@ begin
  Result := ExtractFileDir(Result);
 end;
 
-(*
+{$IFNDEF DELPHI12_UP}
 procedure Msg(b: Boolean);
 begin if b then Msg('TRUE') else Msg('FALSE');end;
 procedure Msg(m: string; m2: string = '');
@@ -1145,7 +1145,7 @@ procedure Msg(s: Single);
 begin Msg(FloatToStrF(s, ffFixed, 3, 3)); end;
 procedure Msg(m: string; i:Integer);
 begin MessageBox(0, PAnsiChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
-*)
+{$ENDIF}
 {$WARNINGS ON}
 
 function FloatWithUnit(const Value: Double): string;
@@ -1163,11 +1163,15 @@ var
 begin
  repeat
   SetLength(Result, Length(Result) + 1);
+  {$IFDEF DELPHI2009_UP}
+  C := AnsiPos(Delimiter, S);
+  {$ELSE}
   C := Pos(Delimiter, S);
+  {$ENDIF}
   if C = 0 then C := Length(S) + 1;
   Result[Length(Result)- 1] := Copy(S, 1, C- 1);
   Delete(S, 1, C);
- until length(S)= 0;
+ until Length(S)= 0;
 end;
 
 function MakeGoodFileName(s: string): string;
@@ -1175,8 +1179,12 @@ var
   i: Integer;
 begin
  Result := '';
- for i := 1 to length(s) do
+ for i := 1 to Length(s) do
+  {$IFDEF DELPHI2009_UP}
+  if CharInSet(s[i], ['*', '\', '/', '[', ']', '"', '|', '<', '>', '?', ':'])
+  {$ELSE}
   if not (s[i] in ['*', '\', '/', '[', ']', '"', '|', '<', '>', '?', ':'])
+  {$ENDIF}
    then Result := Result + s[i]
    else Result := Result + '-';
 end;

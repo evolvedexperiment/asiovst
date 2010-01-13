@@ -20,7 +20,7 @@ type
   TDispatcherOpcode = (
     effOpen,                  //  0: initialise
     effClose,                 //  1: exit, release all memory and other resources!
-    effSetProgram,            //  2: program no in <value>
+    effSetProgram,            //  2: program no in <Value>
     effGetProgram,            //  3: return current program no.
     effSetProgramName,        //  4: user changed program name (max 24 char + 0) to as passed in string
     effGetProgramName,        //  5: stuff program name (max 24 char + 0) into string
@@ -33,19 +33,19 @@ type
     effGetVu,                 //  9: NOT USED SINCE 2.4 - called if (flags & (effFlagsHasClip | effFlagsHasVu))
 
     // system
-    effSetSampleRate,         // 10: in opt (float value in Hz; for example 44100.0Hz)
-    effSetBlockSize,          // 11: in value (this is the maximun size of an audio block,
+    effSetSampleRate,         // 10: in opt (float Value in Hz; for example 44100.0Hz)
+    effSetBlockSize,          // 11: in Value (this is the maximun size of an audio block,
                               //     pls check sampleframes in process call)
     effMainsChanged,          // 12: the user has switched the 'power on' button to
-                              //     value (0 off, else on). This only switches audio
+                              //     Value (0 off, else on). This only switches audio
                               //     processing; you should flush delay buffers etc.
     // editor
     effEditGetRect,           // 13: stuff rect (top, left, bottom, right) into ptr
     effEditOpen,              // 14: system dependant Window Pointer in ptr
     effEditClose,             // 15: no arguments
     effEditDraw,              // 16: NOT USED SINCE 2.4 - draw method, ptr points to rect  (MAC only)
-    effEditMouse,             // 17: NOT USED SINCE 2.4 - index: x, value: y (MAC only)
-    effEditKey,               // 18: NOT USED SINCE 2.4 - system keycode in value
+    effEditMouse,             // 17: NOT USED SINCE 2.4 - index: x, Value: y (MAC only)
+    effEditKey,               // 18: NOT USED SINCE 2.4 - system keycode in Value
     effEditIdle,              // 19: no arguments. Be gentle!
     effEditTop,               // 20: NOT USED SINCE 2.4 - window has topped, no arguments
     effEditSleep,             // 21: NOT USED SINCE 2.4 - window goes to background
@@ -62,33 +62,33 @@ type
     effCanBeAutomated,            // 26: parameter index in <index>
     effString2Parameter,          // 27: parameter index in <index>, string in <ptr>
     effGetNumProgramCategories,   // 28: NOT USED IN 2.4 - no arguments. this is for dividing programs into groups (like GM)
-    effGetProgramNameIndexed,     // 29: get program name of category <value>, program <index> into <ptr>.
-                                  //     category (that is, <value>) may be -1, in which case program indices
+    effGetProgramNameIndexed,     // 29: get program name of category <Value>, program <index> into <ptr>.
+                                  //     category (that is, <Value>) may be -1, in which case program indices
                                   //     are enumerated linearily (as usual); otherwise, each category starts
                                   //     over with index 0.
     effCopyProgram,               // 30: NOT USED IN 2.4 - copy current program to destination <index>, note: implies setParameter
                                   //     connections, configuration
-    effConnectInput,              // 31: NOT USED IN 2.4 - input at <index> has been (dis-)connected; <value> == 0: disconnected, else connected
+    effConnectInput,              // 31: NOT USED IN 2.4 - input at <index> has been (dis-)connected; <Value> == 0: disconnected, else connected
     effConnectOutput,             // 32: NOT USED IN 2.4 - same as input
     effGetInputProperties,        // 33: <index>, VstPinProperties* in ptr, return != 0 => true
     effGetOutputProperties,       // 34: dto
-    effGetPlugCategory,           // 35: no parameter, return value is category
+    effGetPlugCategory,           // 35: no parameter, return Value is category
 
     // realtime
     effGetCurrentPosition,        // 36: NOT USED IN 2.4 - for external dsp, see flag bits below
     effGetDestinationBuffer,      // 37: NOT USED IN 2.4 - for external dsp, see flag bits below. returns float*
 
     // offline
-    effOfflineNotify,             // 38: ptr = VstAudioFile array, value = count, index = start flag
-    effOfflinePrepare,            // 39: ptr = VstOfflineTask array, value = count
-    effOfflineRun,                // 40: ptr = VstOfflineTask array, value = count
+    effOfflineNotify,             // 38: ptr = VstAudioFile array, Value = count, index = start flag
+    effOfflinePrepare,            // 39: ptr = VstOfflineTask array, Value = count
+    effOfflineRun,                // 40: ptr = VstOfflineTask array, Value = count
 
     // other
     effProcessVarIo,              // 41: VstVariableIo* in <ptr>
-    effSetSpeakerArrangement,     // 42: PVstSpeakerArrangement pluginInput in <value>
+    effSetSpeakerArrangement,     // 42: PVstSpeakerArrangement pluginInput in <Value>
                                   //     PVstSpeakerArrangement pluginOutput in <ptr>
-    effSetBlockSizeAndSampleRate, // 43: NOT USED IN 2.4 - block size in <value>, sampleRate in <opt>
-    effSetBypass,                 // 44: onOff in <value> (0 = off)
+    effSetBlockSizeAndSampleRate, // 43: NOT USED IN 2.4 - block size in <Value>, sampleRate in <opt>
+    effSetBypass,                 // 44: onOff in <Value> (0 = off)
     effGetEffectName,             // 45: char* name (max 32 Bytes) in <ptr>
     effGetErrorText,              // 46: NOT USED IN 2.4 - char* text (max 256 Bytes) in <ptr>
     effGetVendorString,           // 47: fills <ptr> with a string identifying the vendor (max 64 char)
@@ -101,16 +101,16 @@ type
                                   //     NOT USED IN 2.4 - return 1 to keep idle calls beeing issued
     // gui
     effGetIcon,                   // 54: NOT USED IN 2.4 - void* in <ptr>, not yet defined
-    effSetViewPosition,           // 55: NOT USED IN 2.4 - set view position (in window) to x <index> y <value>
+    effSetViewPosition,           // 55: NOT USED IN 2.4 - set view position (in window) to x <index> y <Value>
 
     // and...
     effGetParameterProperties,    // 56: of param <index>, TVstParameterProperties* in <ptr>
     effKeysRequired,              // 57: NOT USED IN 2.4 - returns 0: needs keys (default for 1.0 plugs), 1: don't need
     effGetVstVersion,             // 58: returns 2; older versions return 0
 
-    effEditKeyDown,               // 59: character in <index>, virtual in <value>, modifiers in <opt>  return -1 if not used, return 1 if used
-    effEditKeyUp,                 // 60: character in <index>, virtual in <value>, modifiers in <opt>  return -1 if not used, return 1 if used
-    effSetEditKnobMode,           // 61: mode in <value>: 0: circular, 1:circular relativ, 2:linear
+    effEditKeyDown,               // 59: character in <index>, virtual in <Value>, modifiers in <opt>  return -1 if not used, return 1 if used
+    effEditKeyUp,                 // 60: character in <index>, virtual in <Value>, modifiers in <opt>  return -1 if not used, return 1 if used
+    effSetEditKnobMode,           // 61: mode in <Value>: 0: circular, 1:circular relativ, 2:linear
 
     // midi plugins channeldependent programs
     effGetMidiProgramName,        // 62: passed <ptr> points to MidiProgramName struct.
@@ -138,7 +138,7 @@ type
     effBeginSetProgram,           // 67: called before a new program is loaded
     effEndSetProgram,             // 68: called when the program is loaded
 
-    effGetSpeakerArrangement,     // 69: ^PVstSpeakerArrangement pluginInput in <value>
+    effGetSpeakerArrangement,     // 69: ^PVstSpeakerArrangement pluginInput in <Value>
                                   //     ^PVstSpeakerArrangement pluginOutput in <ptr>
     effShellGetNextPlugin,        // 70: This opcode is only called, if plugin is of type kPlugCategShell.
                                   //     returns the next plugin's uniqueID.
@@ -147,7 +147,7 @@ type
     effStartProcess,              // 71: Called before the start of process call
     effStopProcess,               // 72: Called after the stop of process call
     effSetTotalSampleToProcess,   // 73: Called in offline (non RealTime) Process before process is called, indicates how many sample will be processed
-    effSetPanLaw,                 // 74: PanLaw : Type (Linear, Equal Power,.. see enum PanLaw Type) in <value>,
+    effSetPanLaw,                 // 74: PanLaw : Type (Linear, Equal Power,.. see enum PanLaw Type) in <Value>,
                                   //     Gain in <opt>: for Linear : [1.0 => 0dB PanLaw], [~0.58 => -4.5dB], [0.5 => -6.02dB]
     effBeginLoadBank,             // 75: Called before a Bank is loaded, <ptr> points to VstPatchChunkInfo structure
                                   //     return -1 if the Bank can not be loaded, return 1 if it can be loaded else 0 (for compatibility)
@@ -165,38 +165,38 @@ type
 
 
   TAudioMasterOpcode = (
-    audioMasterAutomate,      //  0: index, value, returns 0
+    audioMasterAutomate,      //  0: index, Value, returns 0
     audioMasterVersion,       //  1: vst version, currently 2 (0 for older), 2400 for VST 2.4!
     audioMasterCurrentId,     //  2: returns the unique id of a plug that's currently loading
     audioMasterIdle,          //  3: call application idle routine (this will call effEditIdle for all open editors too)
     audioMasterPinConnected,  //  4: inquire if an input or output is beeing connected;
                               //     index enumerates input or output counting from zero,
-                              //     value is 0 for input and != 0 otherwise. note: the
-                              //     return value is 0 for <true> such that older versions
+                              //     Value is 0 for input and != 0 otherwise. note: the
+                              //     return Value is 0 for <true> such that older versions
     audioMasterUnused,        //  5: placeholder
 
     // VstEvents + VstTimeInfo
-    audioMasterWantMidi,      //  6: <value> is a filter which is currently ignored
+    audioMasterWantMidi,      //  6: <Value> is a filter which is currently ignored
     audioMasterGetTime,       //  7: returns const VstTimeInfo* (or 0 if not supported)
-                              //     <value> should contain a mask indicating which fields are required
+                              //     <Value> should contain a mask indicating which fields are required
                               //     (see valid masks above), as some items may require extensive conversions
     audioMasterProcessEvents, //  8: VstEvents* in <ptr>
-    audioMasterSetTime,       //  9: NOT USED IN 2.4 - VstTimenfo* in <ptr>, filter in <value>, not supported
-    audioMasterTempoAt,       // 10: NOT USED IN 2.4 - returns tempo (in bpm * 10000) at sample frame location passed in <value>
+    audioMasterSetTime,       //  9: NOT USED IN 2.4 - VstTimenfo* in <ptr>, filter in <Value>, not supported
+    audioMasterTempoAt,       // 10: NOT USED IN 2.4 - returns tempo (in bpm * 10000) at sample frame location passed in <Value>
 
     // parameters
     audioMasterGetNumAutomatableParameters, // 11: NOT USED IN 2.4
-    audioMasterGetParameterQuantization,    // 12: NOT USED IN 2.4 - returns the integer value for +1.0 representation,
-                                            //     or 1 if full Single float precision is maintained in automation. parameter index in <value> (-1: all, any) connections, configuration
+    audioMasterGetParameterQuantization,    // 12: NOT USED IN 2.4 - returns the integer Value for +1.0 representation,
+                                            //     or 1 if full Single float precision is maintained in automation. parameter index in <Value> (-1: all, any) connections, configuration
     audioMasterIOChanged,                   // 13: numInputs and/or numOutputs has changed
     audioMasterNeedIdle,                    // 14: NOT USED IN 2.4 - plug needs idle calls (outside its editor window)
-    audioMasterSizeWindow,                  // 15: index: width, value: height
+    audioMasterSizeWindow,                  // 15: index: width, Value: height
     audioMasterGetSampleRate,
     audioMasterGetBlockSize,
     audioMasterGetInputLatency,
     audioMasterGetOutputLatency,
-    audioMasterGetPreviousPlug,             // 20: NOT USED IN 2.4 - input pin in <value> (-1: first to come), returns cEffect*
-    audioMasterGetNextPlug,                 // 21: NOT USED IN 2.4 - output pin in <value> (-1: first to come), returns cEffect*
+    audioMasterGetPreviousPlug,             // 20: NOT USED IN 2.4 - input pin in <Value> (-1: first to come), returns cEffect*
+    audioMasterGetNextPlug,                 // 21: NOT USED IN 2.4 - output pin in <Value> (-1: first to come), returns cEffect*
 
     // realtime info
     audioMasterWillReplaceOrAccumulate,     // 22: NOT USED IN 2.4 - returns: 0: not supported, 1: replace, 2: accumulate
@@ -255,7 +255,7 @@ type
   TEffFlag = (
     effFlagsHasEditor,           // if set, is expected to react to editor messages
     effFlagsHasClip,             // NOT USED SINCE 2.4 - return > 1. in getVu() if clipped
-    effFlagsHasVu,               // NOT USED SINCE 2.4 - return vu value in getVu(); > 1. means clipped
+    effFlagsHasVu,               // NOT USED SINCE 2.4 - return vu Value in getVu(); > 1. means clipped
     effFlagsCanMono,             // NOT USED SINCE 2.4 - if numInputs == 2, makes sense to be used for mono in
     effFlagsCanReplacing,        // MUST BE SET! supports in place output (processReplacing() exsists)
     effFlagsProgramChunks,       // program data are handled in formatless chunks
@@ -576,7 +576,7 @@ type
 
 //---Speaker Types---------------------------------
 // user-defined speaker types (to be extended in the negative range)
-// (will be handled as their corresponding speaker types with abs values:
+// (will be handled as their corresponding speaker types with abs Values:
 // e.g abs(stU1) == stL, abs(stU2) == stR)
 
   TVstSpeakerType = (
@@ -778,7 +778,7 @@ type
     SelectionSize        : Double;                   // number of frames in selection, or 0
     SelectedChannelsMask : LongInt;                  // 1 bit per channel
     NumMarkers           : LongInt;                  // number of markers in the file
-    TimeRulerUnit        : LongInt;                  // see doc for possible values
+    TimeRulerUnit        : LongInt;                  // see doc for possible Values
     TimeRulerOffset      : Double;                   // offset in time ruler (positive or negative)
     Tempo                : Double;                   // as bpm
     TimeSigNumerator     : LongInt;                  // time signature numerator
@@ -1040,16 +1040,16 @@ function FourCharToLong(C1, C2, C3, C4: AnsiChar): Longint;
 function FMod(d1, d2: Double): Double;
 function Rect(Left, Top, Right, Bottom : Smallint):ERect;
 
-procedure dB2string(value: Single; text: PAnsiChar);
-procedure dB2stringRound(value: Single; text: PAnsiChar);
-procedure Float2String(value: Single; text: PAnsiChar);
-procedure Long2string(value: Longint; text: PAnsiChar);
-procedure Float2StringAsLong(value: Single; text: PAnsiChar);
+procedure dB2string(Value: Single; text: PAnsiChar);
+procedure dB2stringRound(Value: Single; text: PAnsiChar);
+procedure Float2String(Value: Single; text: PAnsiChar);
+procedure Long2string(Value: Longint; text: PAnsiChar);
+procedure Float2StringAsLong(Value: Single; text: PAnsiChar);
 procedure Hz2string(samples, sampleRate: Single; text: PAnsiChar);
 procedure ms2string(samples, sampleRate: Single; text: PAnsiChar);
 
-function gapSmallValue(value, maxValue: Double): Double;
-function invGapSmallValue(value, maxValue: Double): Double;
+function gapSmallValue(Value, maxValue: Double): Double;
+function invGapSmallValue(Value, maxValue: Double): Double;
 
 function Opcode2String(opcode: TDispatcherOpcode): string;
 function KeyCodeToInteger(VKC: TVstKeyCode): Integer;
@@ -1077,43 +1077,43 @@ begin
  Result := d1 - (i * d2);
 end;
 
-procedure dB2string(value: Single; text: PAnsiChar);
+procedure dB2string(Value: Single; text: PAnsiChar);
 begin
- if (value <= 0)
+ if (Value <= 0)
   then StrCopy(text, '   -oo  ')
-  else Float2String(20 * log10(value), text);
+  else Float2String(20 * log10(Value), text);
 end;
 
-procedure dB2stringRound(value: Single; text: PAnsiChar);
+procedure dB2stringRound(Value: Single; text: PAnsiChar);
 begin
- if (value <= 0)
+ if (Value <= 0)
   then StrCopy(text, '    -96 ')
-  else long2string(Round(20 * log10(value)), text);
+  else Long2String(Round(20 * Log10(Value)), text);
 end;
 
-procedure Float2String(value: Single; text: PAnsiChar);
+procedure Float2String(Value: Single; Text: PAnsiChar);
 begin
- StrCopy(text, PAnsiChar(Format('%f', [value])));
+ StrCopy(Text, PAnsiChar(Format('%f', [Value])));
 end;
 
-procedure Long2string(value: Longint; text: PAnsiChar);
+procedure Long2string(Value: Longint; text: PAnsiChar);
 begin
-  if (value >= 100000000) then
-  begin
-    StrCopy(text, ' Huge!  ');
-    Exit;
-  end;
-  StrCopy(text, PAnsiChar(Format('%7d', [Value])));
-end;
-
-procedure Float2StringAsLong(value: Single; text: PAnsiChar);
-begin
- if (value >= 100000000) then
+ if (Value >= 100000000) then
   begin
    StrCopy(text, ' Huge!  ');
    Exit;
   end;
- StrCopy(text, PAnsiChar(Format('%7.0f', [value])));
+ StrCopy(text, PAnsiChar(Format('%7d', [Value])));
+end;
+
+procedure Float2StringAsLong(Value: Single; text: PAnsiChar);
+begin
+ if (Value >= 100000000) then
+  begin
+   StrCopy(text, ' Huge!  ');
+   Exit;
+  end;
+ StrCopy(text, PAnsiChar(Format('%7.0f', [Value])));
 end;
 
 procedure Hz2string(samples, sampleRate: Single; text: PAnsiChar);
@@ -1128,18 +1128,18 @@ begin
  Float2String(samples * 1000 / sampleRate, text);
 end;
 
-function gapSmallValue(value, maxValue: double): Double;
+function gapSmallValue(Value, maxValue: double): Double;
 begin
- Result := Power(maxValue, value);
+ Result := Power(maxValue, Value);
 end;
 
-function invGapSmallValue(value, maxValue: double): Double;
+function invGapSmallValue(Value, maxValue: double): Double;
 var
   r : Double;
 begin
  r := 0;
- if (value <> 0)
-  then r := logN(maxValue, value);
+ if (Value <> 0)
+  then r := logN(maxValue, Value);
  Result :=  r;
 end;
 
