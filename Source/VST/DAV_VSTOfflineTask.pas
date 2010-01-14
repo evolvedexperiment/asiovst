@@ -194,226 +194,226 @@ end;
 
 function TCustomVstOfflineTask.GetDestinationFormat: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.DestinationFormat;
 end;
 
 function TCustomVstOfflineTask.GetDestinationSampleRate: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.DestinationSampleRate;
 end;
 
 function TCustomVstOfflineTask.GetExtraBuffer: Pointer;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.ExtraBuffer;
 end;
 
 function TCustomVstOfflineTask.GetFlags: TVstOfflineTaskFlags;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.Flags;
 end;
 
 function TCustomVstOfflineTask.GetHostOwned: Pointer;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.HostOwned;
 end;
 
 function TCustomVstOfflineTask.GetIndex: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.Index;
 end;
 
 function TCustomVstOfflineTask.GetInputBuffer: Pointer;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.InputBuffer;
 end;
 
 function TCustomVstOfflineTask.GetMaxFramesToWrite: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.MaxFramesToWrite;
 end;
 
 function TCustomVstOfflineTask.GetNumDestinationChannels: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.NumDestinationChannels;
 end;
 
 function TCustomVstOfflineTask.GetNumFramesInSourceFile: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.NumFramesInSourceFile;
 end;
 
 function TCustomVstOfflineTask.GetNumFramesToProcess: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.NumFramesToProcess;
 end;
 
 function TCustomVstOfflineTask.GetNumSourceChannels: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.NumSourceChannels;
 end;
 
 function TCustomVstOfflineTask.GetOutputBuffer: Pointer;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.OutputBuffer;
 end;
 
 function TCustomVstOfflineTask.GetOutputText: string;
 begin
- assert(assigned(FVstOfflineTaskRecord));
- Result := FVstOfflineTaskRecord.OutputText;
+ Assert(Assigned(FVstOfflineTaskRecord));
+ Result := string(FVstOfflineTaskRecord.OutputText);
 end;
 
 function TCustomVstOfflineTask.GetPlugOwned: Pointer;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.PlugOwned;
 end;
 
 function TCustomVstOfflineTask.GetPositionToProcessFrom: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.PositionToProcessFrom;
 end;
 
 function TCustomVstOfflineTask.GetProcessName: string;
 begin
- assert(assigned(FVstOfflineTaskRecord));
- Result := FVstOfflineTaskRecord.ProcessName;
+ Assert(Assigned(FVstOfflineTaskRecord));
+ Result := string(FVstOfflineTaskRecord.ProcessName);
 end;
 
 function TCustomVstOfflineTask.GetProgress: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.Progress;
 end;
 
 function TCustomVstOfflineTask.GetProgressMode: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.ProgressMode;
 end;
 
 function TCustomVstOfflineTask.GetProgressText: string;
 begin
- assert(assigned(FVstOfflineTaskRecord));
- Result := FVstOfflineTaskRecord.ProgressText;
+ Assert(Assigned(FVstOfflineTaskRecord));
+ Result := string(FVstOfflineTaskRecord.ProgressText);
 end;
 
 function TCustomVstOfflineTask.GetReadCount: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.ReadCount;
 end;
 
 function TCustomVstOfflineTask.GetReadPosition: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.ReadPosition;
 end;
 
 function TCustomVstOfflineTask.GetSizeInputBuffer: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.SizeInputBuffer;
 end;
 
 function TCustomVstOfflineTask.GetSizeOutputBuffer: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.SizeOutputBuffer;
 end;
 
 function TCustomVstOfflineTask.GetSourceFormat: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.SourceFormat;
 end;
 
 function TCustomVstOfflineTask.GetSourceSampleRate: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.SourceSampleRate;
 end;
 
 function TCustomVstOfflineTask.GetValue: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.Value;
 end;
 
 function TCustomVstOfflineTask.GetWriteCount: LongInt;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.WriteCount;
 end;
 
 function TCustomVstOfflineTask.GetWritePosition: Double;
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  Result := FVstOfflineTaskRecord.WritePosition;
 end;
 
 procedure TCustomVstOfflineTask.SetDestinationFormat(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.DestinationFormat := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetDestinationSampleRate(Value: Double);
 begin
  if Value < 0 then Value := 0;
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  if FVstOfflineTaskRecord.DestinationSampleRate <> Value
   then FVstOfflineTaskRecord.DestinationSampleRate := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetExtraBuffer(const Value: Pointer);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.ExtraBuffer := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetFlags(const Value: TVstOfflineTaskFlags);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.Flags := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetHostOwned(const Value: Pointer);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.HostOwned := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetIndex(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.Index := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetInputBuffer(const Value: Pointer);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.InputBuffer := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetMaxFramesToWrite(Value: Double);
 begin
  if Value < -1 then Value := -1;
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  if FVstOfflineTaskRecord.MaxFramesToWrite <> Value
   then FVstOfflineTaskRecord.MaxFramesToWrite := Value;
 end;
@@ -421,7 +421,7 @@ end;
 procedure TCustomVstOfflineTask.SetNumDestinationChannels(Value: LongInt);
 begin
  if Value < -1 then Value := -1;
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  if FVstOfflineTaskRecord.NumDestinationChannels <> Value
   then FVstOfflineTaskRecord.NumDestinationChannels := Value;
 end;
@@ -429,7 +429,7 @@ end;
 procedure TCustomVstOfflineTask.SetNumFramesInSourceFile(Value: Double);
 begin
  if Value < -1 then Value := -1;
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  if FVstOfflineTaskRecord.NumFramesInSourceFile <> Value
   then FVstOfflineTaskRecord.NumFramesInSourceFile := Value;
 end;
@@ -437,7 +437,7 @@ end;
 procedure TCustomVstOfflineTask.SetNumFramesToProcess(Value: Double);
 begin
  if Value < -1 then Value := -1;
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  if FVstOfflineTaskRecord.NumFramesToProcess <> Value
   then FVstOfflineTaskRecord.NumFramesToProcess := Value;
 end;
@@ -445,14 +445,14 @@ end;
 procedure TCustomVstOfflineTask.SetNumSourceChannels(Value: LongInt);
 begin
  if Value < -1 then Value := -1;
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  if FVstOfflineTaskRecord.NumSourceChannels <> Value
   then FVstOfflineTaskRecord.NumSourceChannels := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetOutputBuffer(const Value: Pointer);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.OutputBuffer := Value;
 end;
 
@@ -471,13 +471,13 @@ end;
 
 procedure TCustomVstOfflineTask.SetPlugOwned(const Value: Pointer);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.PlugOwned := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetPositionToProcessFrom(const Value: Double);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.PositionToProcessFrom := Value;
 end;
 
@@ -496,13 +496,13 @@ end;
 
 procedure TCustomVstOfflineTask.SetProgress(const Value: Double);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.Progress := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetProgressMode(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.ProgressMode := Value;
 end;
 
@@ -521,13 +521,13 @@ end;
 
 procedure TCustomVstOfflineTask.SetReadCount(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.ReadCount := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetReadPosition(const Value: Double);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.ReadPosition := Value;
 end;
 
@@ -547,7 +547,7 @@ end;
 
 procedure TCustomVstOfflineTask.SetSourceFormat(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.SourceFormat := Value;
 end;
 
@@ -560,19 +560,19 @@ end;
 
 procedure TCustomVstOfflineTask.SetValue(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.Value := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetWriteCount(const Value: LongInt);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.WriteCount := Value;
 end;
 
 procedure TCustomVstOfflineTask.SetWritePosition(const Value: Double);
 begin
- assert(assigned(FVstOfflineTaskRecord));
+ Assert(Assigned(FVstOfflineTaskRecord));
  FVstOfflineTaskRecord.WritePosition := Value;
 end;
 

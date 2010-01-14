@@ -126,11 +126,14 @@ procedure TAnalogueMojoDM.VSTModuleProcessStereo(const Inputs,
   Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
   SampleIndex  : Integer;
+const
+  CCrossTalkCoeff : array [0..1, 0..1] of Single = (
+    (0.033, 0.967), (0.034, 0.967));
 begin
  for SampleIndex := 0 to SampleFrames - 1 do
   begin
-   Outputs[0, SampleIndex] := FTransformator[0].ProcessSample64(0.033 * Inputs[1, SampleIndex] + 0.967 * Inputs[0, SampleIndex]);
-   Outputs[1, SampleIndex] := FTransformator[1].ProcessSample64(0.034 * Inputs[0, SampleIndex] + 0.967 * Inputs[1, SampleIndex]);
+   Outputs[0, SampleIndex] := FTransformator[0].ProcessSample64(CCrossTalkCoeff[0, 0] * Inputs[1, SampleIndex] + CCrossTalkCoeff[0, 1] * Inputs[0, SampleIndex]);
+   Outputs[1, SampleIndex] := FTransformator[1].ProcessSample64(CCrossTalkCoeff[1, 0] * Inputs[0, SampleIndex] + CCrossTalkCoeff[1, 1] * Inputs[1, SampleIndex]);
   end;
 end;
 

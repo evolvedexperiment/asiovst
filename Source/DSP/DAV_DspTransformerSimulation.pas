@@ -25,7 +25,7 @@ unit DAV_DspTransformerSimulation;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2005-2010        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,27 +35,29 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFilter,
-  DAV_FilterSimple, DAV_DspFilterBasics, DAV_DspFilterButterworth,
+  Classes, DAV_Types, DAV_Classes, DAV_DspFilter, DAV_DspFilterSimple,
   DAV_DspWaveshaper, DAV_DspPolyphaseUpsampler, DAV_DspPolyphaseDownsampler;
 
 type
   TCustomTransformatorSimulation = class(TDspSampleRatePersistent,
     IDspProcessor32, IDspProcessor64)
   private
-    FLowpassState : Double;
-    FLpCoeffs     : array [0..1] of Double;
-    FHpFreq       : Single;
-    FInputGain    : Single;
-    FHighpass     : TButterworthHighPassFilter;
-    FWaveshaper   : TChebyshevWaveshaper;
+    FHighpass     : TFirstOrderLowcutFilter;
+    FLowpass      : TFirstOrderHighcutFilter;
     FUpsampler    : TPolyphaseUpsampler64;
     FDownsampler  : TPolyphaseDownsampler64;
+    FWaveshaper   : TChebyshevWaveshaper;
+    FHpFreq       : Single;
+    FInputGain    : Single;
+    FDampFreq     : Single;
+    FWSCoeffs     : array [0..3] of Single;
     procedure SetHPFreq(const Value: Single);
-    procedure CalculateLowpassCoefficients;
+    procedure SetDampFreq(const Value: Single);
   protected
     procedure SampleRateChanged; override;
     procedure HighpassFrequencyChanged; virtual;
+    procedure DampingFrequencyChanged; virtual;
+    function Waveshaper(Input: Double): Double;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -66,6 +68,7 @@ type
     procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
 
     property HighpassFrequency: Single read FHpFreq write SetHPFreq;
+    property DampingFrequency: Single read FDampFreq write SetDampFreq;
   end;
 
   TTransformatorSimulation = class(TCustomTransformatorSimulation)
@@ -83,13 +86,23 @@ uses
 constructor TCustomTransformatorSimulation.Create;
 begin
  inherited;
+ FHpFreq := 10;
+ FDampFreq := 12000;
 
  // create highpass
- FHighpass := TButterworthHighPassFilter.Create(1);
+ FHighpass := TFirstOrderLowcutFilter.Create;
  with FHighpass do
   begin
    SampleRate := Self.SampleRate;
-   Frequency := 10;
+   Frequency := FHpFreq;
+  end;
+
+ // create highpass
+ FLowpass := TFirstOrderHighcutFilter.Create;
+ with FLowpass do
+  begin
+   SampleRate := Self.SampleRate;
+   Frequency := FDampFreq;
   end;
 
  // create waveshaper
@@ -102,6 +115,10 @@ begin
    Gain[2] := 1E-4;
    Inverted[1] := False;
   end;
+ FWSCoeffs[0] := FWaveshaper.Coefficients[0];
+ FWSCoeffs[1] := FWaveshaper.Coefficients[1];
+ FWSCoeffs[2] := FWaveshaper.Coefficients[2];
+ FWSCoeffs[3] := FWaveshaper.Coefficients[3];
 
  // create upsampler
  FUpsampler := TPolyphaseUpsampler64.Create;
@@ -122,8 +139,12 @@ begin
   end;
 
  FInputGain := 1 / FWaveshaper.ProcessSample64(1);
+end;
 
- CalculateLowpassCoefficients; 
+procedure TCustomTransformatorSimulation.DampingFrequencyChanged;
+begin
+ if Assigned(FLowpass)
+  then FLowpass.Frequency := FDampFreq;
 end;
 
 destructor TCustomTransformatorSimulation.Destroy;
@@ -135,6 +156,15 @@ begin
  inherited;
 end;
 
+procedure TCustomTransformatorSimulation.SetDampFreq(const Value: Single);
+begin
+ if FDampFreq <> Value then
+  begin
+   FDampFreq := Value;
+   DampingFrequencyChanged;
+  end;
+end;
+
 procedure TCustomTransformatorSimulation.SetHPFreq(const Value: Single);
 begin
  if FHpFreq <> Value then
@@ -142,6 +172,13 @@ begin
    FHpFreq := Value;
    HighpassFrequencyChanged;
   end;
+end;
+
+function TCustomTransformatorSimulation.Waveshaper(Input: Double): Double;
+begin
+// Result := FWaveshaper.ProcessSample64(Input);
+ Result := FWSCoeffs[0] + Input * (FWSCoeffs[1] +
+   (Input * (FWSCoeffs[2] + (FWSCoeffs[3] * Input))));
 end;
 
 procedure TCustomTransformatorSimulation.HighpassFrequencyChanged;
@@ -154,13 +191,7 @@ procedure TCustomTransformatorSimulation.SampleRateChanged;
 begin
  inherited;
  FHighpass.SampleRate := SampleRate;
- CalculateLowpassCoefficients;
-end;
-
-procedure TCustomTransformatorSimulation.CalculateLowpassCoefficients;
-begin
- FLpCoeffs[0] := 0.03;
- FLpCoeffs[1] := 0.97;
+ FLowpass.SampleRate := SampleRate;
 end;
 
 procedure TCustomTransformatorSimulation.ProcessBlock32(
@@ -185,24 +216,24 @@ function TCustomTransformatorSimulation.ProcessSample32(Input: Single): Single;
 var
   Data : TDAV2DoubleArray;
 begin
- Result := FLpCoeffs[0] * FLowpassState + FLpCoeffs[1] * FHighpass.ProcessSample32(Input);
- FLowpassState := Result;
- FUpsampler.ProcessSample64(FInputGain * Result, Data);
- Data[0] := FWaveshaper.ProcessSample64(Data[0]);
- Data[1] := FWaveshaper.ProcessSample64(Data[1]);
- Result := FDownsampler.ProcessSample64(Data)
+ Result := CHalf32 * (Input + FLowpass.ProcessSample32(Input));
+ Result := FHighpass.ProcessSample32(Result);
+ FUpsampler.ProcessSample(FInputGain * Result, Data);
+ Data[0] := Waveshaper(Data[0]);
+ Data[1] := Waveshaper(Data[1]);
+ Result := FDownsampler.ProcessSample(Data);
 end;
 
 function TCustomTransformatorSimulation.ProcessSample64(Input: Double): Double;
 var
   Data : TDAV2DoubleArray;
 begin
- Result := FLpCoeffs[0] * FLowpassState + FLpCoeffs[1] * FHighpass.ProcessSample64(Input);
- FLowpassState := Result;
- FUpsampler.ProcessSample64(FInputGain * Result, Data);
- Data[0] := FWaveshaper.ProcessSample64(Data[0]);
- Data[1] := FWaveshaper.ProcessSample64(Data[1]);
- Result := FDownsampler.ProcessSample64(Data);
+ Result := CHalf64 * (Input + FLowpass.ProcessSample32(Input));
+ Result := FHighpass.ProcessSample32(Result);
+ FUpsampler.ProcessSample(FInputGain * Result, Data);
+ Data[0] := Waveshaper(Data[0]);
+ Data[1] := Waveshaper(Data[1]);
+ Result := FDownsampler.ProcessSample(Data);
 end;
 
 end.

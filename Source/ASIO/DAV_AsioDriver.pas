@@ -617,46 +617,46 @@ end;
 function TDavASIODriver.Init(SysHandle: HWND): boolean;
 begin
   fParentWindowHandle := SysHandle;
-  result := true;
+  Result := true;
 end;
 
 function TDavASIODriver.GetDriverName: string;
 begin
-  result := 'DAV Abstract Driver';
+  Result := 'DAV Abstract Driver';
 end;
 
 function TDavASIODriver.GetDriverVersion: LongInt;
 begin
-  result := 0;
+  Result := 0;
 end;
 
 function TDavASIODriver.GetErrorMessage: string;
 begin
-  result := '';
+  Result := '';
 end;
 
 function TDavASIODriver.Start: TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.Stop: TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.GetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
 begin
   NumInputChannels  := 1;
   NumOutputChannels := 1;
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.GetLatencies(out InputLatency, OutputLatency: Integer): TASIOError;
 begin
   InputLatency  := 0;
   OutputLatency := 0; 
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.GetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
@@ -665,24 +665,24 @@ begin
   MaxSize       := 1024;
   PreferredSize := 512;
   Granularity   := -1;
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 
 function TDavASIODriver.CanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.GetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
 begin
   SampleRate := 44100;
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.SetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 
@@ -697,12 +697,12 @@ begin
     StrCopy(Name, 'Internal');
   end;
   NumSources := 1;  
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.SetClockSource(Reference: LongInt): TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.GetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
@@ -711,7 +711,7 @@ begin
   SamplePosition.Lo := 0;
   TimeStamp.Hi := 0;
   TimeStamp.Lo := 0;
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.GetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
@@ -727,24 +727,24 @@ begin
   Info.IsActive := ASIOFalse;
   StrPCopy(Info.Name, 'Default channel');
 
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 begin
-  result := ASE_NotPresent; // doesn't allocate anything right now
+  Result := ASE_NotPresent; // doesn't allocate anything right now
 end;
 
 
 function TDavASIODriver.DisposeBuffers: TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 function TDavASIODriver.ControlPanel: TASIOError;
 var r: TRect;
 begin
-  result:=ASE_NotPresent;
+  Result:=ASE_NotPresent;
   if Assigned(GlobalDriverControlPanel) then
   begin
     // Hardcore centering ;)
@@ -769,12 +769,12 @@ end;
 
 function TDavASIODriver.Future(Selector: LongInt; Opt: Pointer): TASIOError;
 begin
-  result := ASE_NotPresent;
+  Result := ASE_NotPresent;
 end;
 
 function TDavASIODriver.OutputReady: TASIOError;
 begin
-  result := ASE_OK;
+  Result := ASE_OK;
 end;
 
 
@@ -784,107 +784,107 @@ end;
 
 function TDavASIODriver.AsioInit(SysHandle: HWND): TASIOBool;
 begin
-  result := TASIOBool(Init(SysHandle));
+ Result := TASIOBool(Init(SysHandle));
 end;
 
 procedure TDavASIODriver.AsioGetDriverName(Name: PAnsiChar);
 begin
-  strcopy(Name,pchar(copy(GetDriverName,0,32)));
+ Strcopy(Name, PAnsiChar(Copy(GetDriverName, 0, 32)));
 end;
 
 function TDavASIODriver.AsioGetDriverVersion: Longint;
 begin
-  result := GetDriverVersion;
+ Result := GetDriverVersion;
 end;
 
 procedure TDavASIODriver.AsioGetErrorMessage(Msg: PAnsiChar);
 begin
-  strcopy(Msg,pchar(copy(GetErrorMessage,0,124)));
+ StrCopy(Msg, PAnsiChar(Copy(GetErrorMessage, 0, 124)));
 end;
 
 function TDavASIODriver.AsioStart: TASIOError;
 begin
-  result := Start;
+  Result := Start;
 end;
 
 function TDavASIODriver.AsioStop: TASIOError;
 begin
-  result := Stop;
+  Result := Stop;
 end;
 
 function TDavASIODriver.AsioGetChannels(out NumInputChannels, NumOutputChannels: Integer): TASIOError;
 begin
-  result := GetChannels(NumInputChannels, NumOutputChannels);
+  Result := GetChannels(NumInputChannels, NumOutputChannels);
 end;
 
 function TDavASIODriver.AsioGetLatencies(out InputLatency, OutputLatency: Integer): TASIOError;
 begin
-  result := GetLatencies(InputLatency, OutputLatency);
+  Result := GetLatencies(InputLatency, OutputLatency);
 end;
 
 function TDavASIODriver.AsioGetBufferSize(out MinSize, MaxSize, PreferredSize, Granularity: Integer): TASIOError;
 begin
-  result := GetBufferSize(MinSize, MaxSize, PreferredSize, Granularity);
+  Result := GetBufferSize(MinSize, MaxSize, PreferredSize, Granularity);
 end;
 
 function TDavASIODriver.AsioCanSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
-  result := CanSampleRate(SampleRate);
+  Result := CanSampleRate(SampleRate);
 end;
 
 function TDavASIODriver.AsioGetSampleRate(out SampleRate: TASIOSampleRate): TASIOError;
 begin
-  result := GetSampleRate(SampleRate);
+  Result := GetSampleRate(SampleRate);
 end;
 
 function TDavASIODriver.AsioSetSampleRate(SampleRate: TASIOSampleRate): TASIOError;
 begin
-  result := SetSampleRate(SampleRate);
+  Result := SetSampleRate(SampleRate);
 end;
 
 function TDavASIODriver.AsioGetClockSources(Clocks: PASIOClockSources; out NumSources: LongInt): TASIOError;
 begin
-  result := GetClockSources(Clocks, NumSources);
+  Result := GetClockSources(Clocks, NumSources);
 end;
 
 function TDavASIODriver.AsioSetClockSource(Reference: LongInt): TASIOError;
 begin
-  result := SetClockSource(Reference);
+  Result := SetClockSource(Reference);
 end;
 
 function TDavASIODriver.AsioGetSamplePosition(out SamplePosition: TASIOSamples; out TimeStamp: TASIOTimeStamp): TASIOError;
 begin
-  result := GetSamplePosition(SamplePosition, TimeStamp);
+  Result := GetSamplePosition(SamplePosition, TimeStamp);
 end;
 
 function TDavASIODriver.AsioGetChannelInfo(var Info: TASIOChannelInfo): TASIOError;
 begin
-  result := GetChannelInfo(Info);
+  Result := GetChannelInfo(Info);
 end;
 
 function TDavASIODriver.AsioCreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError;
 begin
-  result := CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
+  Result := CreateBuffers(BufferInfos, NumChannels, BufferSize, Callbacks);
 end;
 
 function TDavASIODriver.AsioDisposeBuffers: TASIOError;
 begin
-  result := DisposeBuffers;
+  Result := DisposeBuffers;
 end;
 
 function TDavASIODriver.AsioControlPanel: TASIOError;
 begin
-  result := ControlPanel;
+  Result := ControlPanel;
 end;
 
 function TDavASIODriver.AsioFuture(Selector: LongInt; Opt: Pointer): TASIOError;
 begin
-  result := Future(Selector, Opt);
+  Result := Future(Selector, Opt);
 end;
 
 function TDavASIODriver.AsioOutputReady: TASIOError;
 begin
-  result:=OutputReady;
+  Result := OutputReady;
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion 'Asio driver class implementation'} {$ENDIF}

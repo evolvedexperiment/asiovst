@@ -23,7 +23,7 @@ package DAV_SEHost_D14;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $528000}
 {$DESCRIPTION 'ASIO & VST Project - SE Host Package'}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   vcl,

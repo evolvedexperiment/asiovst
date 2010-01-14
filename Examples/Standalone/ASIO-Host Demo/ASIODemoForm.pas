@@ -136,8 +136,8 @@ begin
    for Channel := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
     begin
      ChannelBox.Items.Add(
-       ASIOHost.OutputChannelInfos[2 * Channel].Name + ' / ' +
-       ASIOHost.OutputChannelInfos[2 * Channel + 1].Name);
+       string(ASIOHost.OutputChannelInfos[2 * Channel].Name) + ' / ' +
+       string(ASIOHost.OutputChannelInfos[2 * Channel + 1].Name));
     end;
 
    // store current ASIO driver index

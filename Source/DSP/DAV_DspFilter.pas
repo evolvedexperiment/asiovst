@@ -194,28 +194,6 @@ type
   TCustomIIRFilter = class(TCustomGainFrequencyFilter)
   end;
 
-  TFirstOrderAllpassFilter = class(TCustomIIRFilter)
-  protected
-    FState  : Double;
-    FStates : TDAVDoubleDynArray;
-    procedure FrequencyChanged; override;
-    function GetOrder: Cardinal; override;
-    procedure CalculateCoefficients; override;
-    procedure SetOrder(const Value: Cardinal); override;
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    constructor Create; override;
-    function ProcessSample32(Input: Single): Single; override;
-    function ProcessSample64(Input: Double): Double; override;
-    function MagnitudeLog10(const Frequency: Double): Double; override;
-    function MagnitudeSquared(const Frequency: Double): Double; override;
-    procedure Reset; override;
-    procedure ResetStates; override;
-    procedure ResetStatesInt64; override;
-    procedure PushStates; override;
-    procedure PopStates; override; 
-  end;
-
   TBandwidthIIRFilterClass = class of TCustomBandwidthIIRFilter;
   TCustomBandwidthIIRFilter = class(TCustomIIRFilter)
   private
@@ -915,99 +893,6 @@ end;
 procedure TCustomFIRFilter.SetOrder(const Value: Cardinal);
 begin
  KernelSize := Value;
-end;
-
-{ TFirstOrderAllpassFilter }
-
-constructor TFirstOrderAllpassFilter.Create;
-begin
- inherited;
- FState := 0;
-end;
-
-procedure TFirstOrderAllpassFilter.AssignTo(Dest: TPersistent);
-begin
- if Dest is TFirstOrderAllpassFilter then
-  with TFirstOrderAllpassFilter(Dest) do
-   begin
-    inherited;
-    FState  := Self.FState;
-    FStates := Self.FStates;
-   end
-  else inherited;
-end;
-
-procedure TFirstOrderAllpassFilter.CalculateCoefficients;
-begin
- // do nothing yet;
-end;
-
-procedure TFirstOrderAllpassFilter.FrequencyChanged;
-begin
- Assert(FFrequency >= -0.5);
- Assert(FFrequency <= 1);
-// inherited;
-end;
-
-function TFirstOrderAllpassFilter.GetOrder: Cardinal;
-begin
- Result := 1;
-end;
-
-function TFirstOrderAllpassFilter.MagnitudeLog10(
-  const Frequency: Double): Double;
-begin
- Result := FGain_dB;
-end;
-
-function TFirstOrderAllpassFilter.MagnitudeSquared(
-  const Frequency: Double): Double;
-begin
- Result := FGainFactor;
-end;
-
-procedure TFirstOrderAllpassFilter.PopStates;
-begin
- FState := FStates[Length(FStates) - 1];
- SetLength(FStates, Length(FStates) - 1);
-end;
-
-function TFirstOrderAllpassFilter.ProcessSample32(Input: Single): Single;
-begin
- Result := FState + FFrequency * Input;
- FState := Input - FFrequency * Result;
-end;
-
-function TFirstOrderAllpassFilter.ProcessSample64(Input: Double): Double;
-begin
- Result := FState + FFrequency * Input;
- FState := Input - FFrequency * Result;
-end;
-
-procedure TFirstOrderAllpassFilter.PushStates;
-begin
- SetLength(FStates, Length(FStates) + 1);
- FStates[Length(FStates) - 1] := FState;
-end;
-
-procedure TFirstOrderAllpassFilter.Reset;
-begin
- FFrequency := 0;
-end;
-
-procedure TFirstOrderAllpassFilter.ResetStates;
-begin
- FState := 0;
-end;
-
-procedure TFirstOrderAllpassFilter.ResetStatesInt64;
-begin
- FState := 0;
-end;
-
-procedure TFirstOrderAllpassFilter.SetOrder(const Value: Cardinal);
-begin
- raise Exception.Create('Order is fixed!');
 end;
 
 

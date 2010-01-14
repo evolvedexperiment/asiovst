@@ -11,12 +11,12 @@ uses
 type
   TCustomVstChannel = class(TCollectionItem)
   private
-    FLabel              : ShortString;
-    FShortLabel         : ShortString;
+    FLabel              : string;
+    FShortLabel         : string;
     FSpeakerArrangement : TVstSpeakerArrangementType;
     FFlags              : TVstPinPropertiesFlags;
     FVSTModule          : TBasicVSTModule;
-    procedure SetShortLabel(const Value: ShortString);
+    procedure SetShortLabel(const Value: string);
   protected
     procedure AssignTo(Dest: TPersistent); override;
 
@@ -31,7 +31,7 @@ type
     destructor Destroy; override;
   published
     property DisplayName{$IFNDEF FPC}: string read GetDisplayName write SetDisplayName{$ENDIF};
-    property ShortLabel: ShortString read FShortLabel write SetShortLabel;
+    property ShortLabel: string read FShortLabel write SetShortLabel;
     property SpeakerArrangement: TVstSpeakerArrangementType read FSpeakerArrangement write FSpeakerArrangement;
     property Flags: TVstPinPropertiesFlags read FFlags write FFlags;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
@@ -108,7 +108,7 @@ begin
   end;
 end;
 
-procedure TCustomVstChannel.SetShortLabel(const Value: ShortString);
+procedure TCustomVstChannel.SetShortLabel(const Value: string);
 begin
  if FShortLabel <> Value then
   begin

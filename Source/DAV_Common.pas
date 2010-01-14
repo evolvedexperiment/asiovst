@@ -1164,7 +1164,7 @@ begin
  repeat
   SetLength(Result, Length(Result) + 1);
   {$IFDEF DELPHI2009_UP}
-  C := AnsiPos(Delimiter, S);
+  C := AnsiPos(string(Delimiter), S);
   {$ELSE}
   C := Pos(Delimiter, S);
   {$ENDIF}

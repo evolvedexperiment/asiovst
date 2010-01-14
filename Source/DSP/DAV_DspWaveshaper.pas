@@ -48,6 +48,7 @@ type
     procedure SetLevel(Harmonic: Integer; const Value: Double);
     procedure SetOrder(Value: Integer);
     procedure SetInverted(Harmonic: Integer; const Value: Boolean);
+    function GetCoefficients(Index: Integer): Double;
   protected
     FChebyshevCoeffs : TDAVDoubleDynArray;
     FGains           : TDAVDoubleDynArray;
@@ -63,6 +64,7 @@ type
     property Gain[Harmonic: Integer]: Double read GetGain write SetGain;
     property Level[Harmonic: Integer]: Double read GetLevel write SetLevel;
     property Inverted[Harmonic: Integer]: Boolean read GetInverted write SetInverted;
+    property Coefficients[Harmonic: Integer]: Double read GetCoefficients;
   published
     property Order: Integer read GetOrder write SetOrder;
   end;
@@ -110,6 +112,9 @@ implementation
 
 uses
   SysUtils, Math, DAV_Common, DAV_Math;
+
+resourcestring
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
 
 function Waveshaper1(Input, Parameter :Single): Single;
 begin
@@ -337,10 +342,17 @@ begin
  else inherited;
 end;
 
+function TChebyshevWaveshaper.GetCoefficients(Index: Integer): Double;
+begin
+ if (Index < 0) or (Index >= Length(FChebyshevCoeffs))
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index])
+  else Result := FChebyshevCoeffs[Index];
+end;
+
 function TChebyshevWaveshaper.GetGain(Harmonic: Integer): Double;
 begin
  if (Harmonic < 0) or (Harmonic >= Order)
-  then raise Exception.Create('Index out of bounds')
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Harmonic])
   else Result := FGains[Harmonic];
 end;
 
@@ -460,7 +472,7 @@ end;
 procedure TChebyshevWaveshaper.SetGain(Harmonic: Integer; const Value: Double);
 begin
  if (Harmonic < 0) or (Harmonic >= Order)
-  then raise Exception.Create('Index out of bounds (' + IntToStr(Harmonic) + ')')
+  then raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Harmonic])
   else
    begin
     FGains[Harmonic] := Value;

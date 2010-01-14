@@ -901,7 +901,7 @@ begin
       begin
        FDriver.GetDriverName(DrName);
        if DrName <> ''
-        then FDriverName := DrName;
+        then FDriverName := string(DrName);
        FDriverVersion := FDriver.GetDriverVersion;
        UpdateCanDos;
        GetCurrentClockSource;
@@ -1153,7 +1153,7 @@ begin
             GetMem(ErrorMessage, 128);
             try
              FDriver.GetErrorMessage(ErrorMessage);
-             raise Exception.Create(ErrorMessage);
+             raise Exception.Create(string(ErrorMessage));
             finally
              Dispose(ErrorMessage);
             end;

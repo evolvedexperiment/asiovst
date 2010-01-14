@@ -460,14 +460,24 @@ begin
       then Delete(ProcStr, Indxes[0], Length(Units));
 
      Indxes[0] := 1;
+     {$IFDEF DELPHI2009_UP}
+     while (Indxes[0] <= Length(ProcStr)) and
+      (not (CharInSet(ProcStr[Indxes[0]], ['0'..'9', '-', '+', ',', '.']))) do Inc(Indxes[0]);
+     {$ELSE}
      while (Indxes[0] <= Length(ProcStr)) and
       (not (ProcStr[Indxes[0]] in ['0'..'9', '-', '+', ',', '.'])) do Inc(Indxes[0]);
+     {$ENDIF}
 
      if (Indxes[0] <= Length(ProcStr)) then
       begin
        Indxes[1] := Indxes[0] + 1;
+       {$IFDEF DELPHI2009_UP}
+       while (Indxes[1] <= Length(ProcStr)) and
+        (CharInSet(ProcStr[Indxes[1]], ['0'..'9', 'E', ',', '.'])) do Inc(Indxes[1]);
+       {$ELSE}
        while (Indxes[1] <= Length(ProcStr)) and
         (ProcStr[Indxes[1]] in ['0'..'9', 'E', ',', '.']) do Inc(Indxes[1]);
+       {$ENDIF}
 
        // process unit extensions
        if Pos('k', ProcStr) >= Indxes[1] then Mult := 1E3 else
@@ -580,13 +590,13 @@ begin
     str := ParameterProperties[Index].DisplayName + #0;
     FillChar(Caption, SizeOf(Caption), 0);
     if Length(Str) > 64 then SetLength(str, 64);
-    StrPCopy(Caption, str);
+    StrPCopy(@Caption[0], str);
 
     // copy short label
     str := ParameterProperties[Index].ShortLabel + #0;
     FillChar(shortLabel, SizeOf(shortLabel), 0);
     if Length(Str) > 8 then SetLength(str, 8);
-    StrPCopy(shortLabel, str);
+    StrPCopy(@shortLabel[0], str);
 
     // assign flags
     Flags := ParameterProperties[Index].Flags;
@@ -626,7 +636,7 @@ begin
       str := ParameterProperties[Index].Category + #0;
       if Length(Str) > 24 then SetLength(Str, 24);
       FillChar(CategoryLabel, SizeOf(CategoryLabel), 0);
-      StrPCopy(CategoryLabel, str);
+      StrPCopy(@CategoryLabel[0], str);
       Category := ParameterProperties[Index].CategoryIndex;
       if (Category > 0) and (Category <= ParameterCategories.Count)
        then numParametersInCategory := ParameterCategories[Category - 1].ParametersInCategory

@@ -126,7 +126,7 @@ end;
 
 function TCustomVstShellPlugin.GetUniqueID: string;
 begin
- Result := FUniqueID;
+ Result := string(FUniqueID);
 end;
 
 procedure TCustomVstShellPlugin.SetUniqueID(FID: string);

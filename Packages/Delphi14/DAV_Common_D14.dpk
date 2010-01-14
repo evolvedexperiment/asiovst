@@ -1,6 +1,6 @@
 package DAV_Common_D14;
 
-{$M+}
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -27,7 +27,8 @@ package DAV_Common_D14;
 
 requires
   vcl,
-  rtl;
+  rtl,
+  designide;
 
 contains
   DAV_Common in '..\..\Source\DAV_Common.pas',
@@ -64,5 +65,7 @@ contains
   DAV_StereoBuffer in '..\..\Source\DAV_StereoBuffer.pas',
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
+  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas';
+
 end.

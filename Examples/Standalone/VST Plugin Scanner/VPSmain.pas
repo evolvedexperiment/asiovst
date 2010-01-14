@@ -25,7 +25,7 @@ unit VPSmain;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ end;
 
 procedure TVSTScanThread.ListPlainVSTproperties;
 begin
- if assigned(FListViewItem) then
+ if Assigned(FListViewItem) then
   with FVSTHost[0], FListViewItem.SubItems do
    try
     Add(UniqueID);

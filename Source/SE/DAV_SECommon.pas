@@ -112,7 +112,7 @@ begin
 
 // two formats are allowed, a list of values or a range
 
- if Pos('range', FEnumList) = 1 then // how about upper/mixed case?
+ if AnsiPos('range', FEnumList) = 1 then // how about upper/mixed case?
   try
    FRangeMode := True;
    List := FEnumList;     // List = 'range 3, 6'

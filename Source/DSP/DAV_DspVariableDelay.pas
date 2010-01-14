@@ -35,7 +35,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_Classes, DAV_DspInterpolation, DAV_DspFilter;
+  DAV_Types, DAV_Classes, DAV_DspInterpolation, DAV_DspFilter,
+  DAV_DspFilterSimple;
 
 type
   TCustomVariableDelay = class(TDspSampleRatePersistent)
@@ -296,6 +297,7 @@ begin
 // FBufferOutPos := FBufferPos + 1;
 end;
 
+
 { TVariableDelay32Allpass }
 
 constructor TVariableDelay32Allpass.Create;
@@ -304,16 +306,17 @@ begin
  FAllpassFilter := TFirstOrderAllpassFilter.Create;
 end;
 
-procedure TVariableDelay32Allpass.DelayChanged;
-begin
- inherited;
- FAllpassFilter.Frequency := 0.5 * FFractional;
-end;
-
 destructor TVariableDelay32Allpass.Destroy;
 begin
  FreeAndNil(FAllpassFilter);
  inherited;
+end;
+
+procedure TVariableDelay32Allpass.DelayChanged;
+begin
+ inherited;
+ if Assigned(FAllpassFilter)
+  then FAllpassFilter.FractionalDelay := FFractional;
 end;
 
 class function TVariableDelay32Allpass.InterpolatorLength: Integer;
@@ -324,7 +327,7 @@ end;
 function TVariableDelay32Allpass.ProcessSample32(Input: Single): Single;
 begin
  FBuffer[FBufferPos] := Input;
- inc(FBufferPos);
+ Inc(FBufferPos);
  if FBufferPos >= FBufferSize then FBufferPos := 0;
  Result := FAllpassFilter.ProcessSample64(FBuffer[FBufferPos]);
 end;
@@ -332,7 +335,8 @@ end;
 procedure TVariableDelay32Allpass.SampleRateChanged;
 begin
  inherited;
- FAllpassFilter.SampleRate := SampleRate;
+ if Assigned(FAllpassFilter)
+  then FAllpassFilter.SampleRate := SampleRate;
 end;
 
 initialization

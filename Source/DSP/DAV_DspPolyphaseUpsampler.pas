@@ -921,6 +921,7 @@ asm
 
  popad
 end;
+
 procedure TPolyphaseUpsampler64.ProcessSample64(Input: Double;
   out Output: TDAV2DoubleArray);
 begin

@@ -240,7 +240,7 @@ end;
 procedure TCustomButterworthFilter.CalculateW0;
 begin
  FW0 := 2 * Pi * SampleRateReciprocal * (Frequency * FDownsampleFak);
- FTanW0 := Tan(FW0 * CHalf64)
+ FTanW0 := Tan(FW0 * CHalf64);
 end;
 
 procedure TCustomButterworthFilter.SetFilterValues(const AFrequency, AGain : Single);
@@ -349,16 +349,16 @@ var
   i     : Integer;
   a, cw : Double;
 begin
- cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
- Result := sqr(FFilterGain);
+ cw := 2 * cos(2 * Frequency * Pi * SampleRateReciprocal); a := Sqr(cw + 2);
+ Result := Sqr(FFilterGain);
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
-       sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+  do Result := Result * a / (1 + Sqr(FCoeffs[2 * i]) +
+       Sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
        cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+   Result := Result * (cw + 2) / (1 + Sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
@@ -399,7 +399,7 @@ begin
   begin
    A.Re :=  2 * Cmplx.Re * (Cmplx.Re + 1);
    A.Im := -2 * Cmplx.Im * (Cmplx.Re + 1);
-   B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
    R := ComplexMultiply(R, ComplexDivide(A, B));
    inc(i);
@@ -579,7 +579,7 @@ var
   Cmplx       : TComplexDouble;
 begin
  if FOrder = 0 then exit;
- FFilterGain := sqr(FGainFactor);
+ FFilterGain := Sqr(FGainFactor);
  K := FTanW0;
  K2 := K * K;
 
@@ -610,18 +610,18 @@ var
   a, cw : Double;
 begin
  cw     := 2 * cos(2 * Frequency * pi * fSRR);
- a      := sqr(cw - 2);
- Result := sqr(FFilterGain);
+ a      := Sqr(cw - 2);
+ Result := Sqr(FFilterGain);
 
  for i := 0 to (FOrder div 2) - 1
   do Result := Result * a /
-  (1 + sqr(FCoeffs[2 * i]) + sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+  (1 + Sqr(FCoeffs[2 * i]) + Sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
    cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
 
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+   Result := Result * (cw - 2) / (1 + Sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
@@ -671,7 +671,7 @@ begin
    A.Im := -2 * Cmplx.Im * (Cmplx.Re - 1);
    R := ComplexMultiply(R, A);
 
-   A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
    R := ComplexDivide(R, A);
 
@@ -915,7 +915,7 @@ var
   Cmplx : TComplexDouble;
 begin
  Complex(Frequency, Cmplx.Re, Cmplx.Im);
- Result := sqr(Cmplx.Re) + sqr(Cmplx.Im);
+ Result := Sqr(Cmplx.Re) + Sqr(Cmplx.Im);
 end;
 
 procedure TCustomButterworthSplitBandFilter.Complex(const Frequency: Double;
@@ -956,7 +956,7 @@ begin
  i := 0;
  while i < (FOrder div 2) do
   begin
-   A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
+   A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
    ComplexDivideInplace(Real, Imaginary, A.Re, A.Im);
    inc(i);
@@ -1261,16 +1261,16 @@ var
   i     : Integer;
   a, cw : Double;
 begin
- cw := 2 * FastCosInBounds3Term(2 * Frequency * Pi * SampleRateReciprocal); a := sqr(cw + 2);
- Result := sqr(FFilterGain);
+ cw := 2 * FastCosInBounds3Term(2 * Frequency * Pi * SampleRateReciprocal); a := Sqr(cw + 2);
+ Result := Sqr(FFilterGain);
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) +
-       sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
+  do Result := Result * a / (1 + Sqr(FCoeffs[2 * i]) +
+       Sqr(FCoeffs[2 * i + 1]) + 2 * FCoeffs[2 * i + 1] +
        cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw + 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+   Result := Result * (cw + 2) / (1 + Sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
  Result := {$IFDEF HandleDenormals}CDenorm64 + {$ENDIF} Abs(Result);
 end;
@@ -1297,18 +1297,18 @@ var
   a, cw : Double;
 begin
  cw := 2 * FastCosInBounds3Term(2 * Frequency * Pi * SampleRateReciprocal);
- a := sqr(cw - 2);
+ a := Sqr(cw - 2);
  Result := 1;
  for i := 0 to (FOrder div 2) - 1
-  do Result := Result * a / (1 + sqr(FCoeffs[2 * i]) + sqr(FCoeffs[2 * i + 1]) +
+  do Result := Result * a / (1 + Sqr(FCoeffs[2 * i]) + Sqr(FCoeffs[2 * i + 1]) +
        2 * FCoeffs[2 * i + 1] + cw * ((FCoeffs[2 * i] - cw) * FCoeffs[2 * i + 1] - FCoeffs[2 * i]));
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   Result := Result * (cw - 2) / (1 + sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
+   Result := Result * (cw - 2) / (1 + Sqr(FCoeffs[2 * i]) - cw * FCoeffs[2 * i]);
   end;
 
- Result := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} Abs(sqr(FFilterGain) * Result);
+ Result := {$IFDEF HandleDenormals}CDenorm32 + {$ENDIF} Abs(Sqr(FFilterGain) * Result);
 end;
 
 initialization
