@@ -37,6 +37,7 @@
     <DelphiCompile Include="DAV_GUI_D11.dpk">
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
+    <DCCReference Include="..\..\Source\GUI\DAV_Common_D11.dcp" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiADSRGraph.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiAudioDataDisplay.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiAudioDataDisplayAxis.pas" />
@@ -58,6 +59,7 @@
     <DCCReference Include="..\..\Source\GUI\DAV_GuiLabel.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiLED.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiLevelMeter.pas" />
+    <DCCReference Include="..\..\Source\GUI\DAV_GuiMediaButton.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeys.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeyZones.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiModular.pas" />
@@ -67,11 +69,10 @@
     <DCCReference Include="..\..\Source\GUI\DAV_GuiSlider.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiStaticWaveform.pas" />
     <DCCReference Include="..\..\Source\GUI\DAV_GuiVUMeter.pas" />
-    <DCCReference Include="DAV_Common_D11.dcp" />
-    <DCCReference Include="DAV_Modular_D11.dcp" />
-    <DCCReference Include="DAV_VSTPlugin_D11.dcp" />
-    <DCCReference Include="designide.dcp" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="..\..\Source\GUI\DAV_Modular_D11.dcp" />
+    <DCCReference Include="..\..\Source\GUI\DAV_VSTPlugin_D11.dcp" />
+    <DCCReference Include="..\..\Source\GUI\designide.dcp" />
+    <DCCReference Include="..\..\Source\GUI\rtl.dcp" />
+    <DCCReference Include="..\..\Source\GUI\vcl.dcp" />
   </ItemGroup>
 </Project>

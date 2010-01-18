@@ -762,12 +762,9 @@ begin
 end;
 
 function TAudioData64.GetPeak: Double;
-var
-  Sample       : Integer;
-  SampleCount : Integer;
+var Sample : Integer;
 begin
  Result := 0;
- SampleCount := SampleCount;
  if SampleCount = 0 then exit;
 
  for Sample := 0 to SampleCount - 1 do
@@ -778,11 +775,9 @@ end;
 function TAudioData64.GetRMS: Double;
 var
   Sample       : Integer;
-  SampleCount : Integer;
   SquaredSum   : Double;
 begin
  Result := 0;
- SampleCount := SampleCount;
  if SampleCount = 0 then exit;
 
  SquaredSum := 0;
@@ -792,12 +787,9 @@ begin
 end;
 
 function TAudioData64.GetSum: Double;
-var
-  Sample       : Integer;
-  SampleCount : Integer;
+var Sample: Integer;
 begin
- Result       := 0;
- SampleCount := SampleCount;
+ Result := 0;
  if SampleCount = 0 then exit;
 
  for Sample := 0 to SampleCount - 1
@@ -856,11 +848,9 @@ end;
 
 procedure TAudioData64.RemoveDC;
 var
-  Sample       : Integer;
-  SampleCount : Integer;
-  DC           : Double;
+  Sample : Integer;
+  DC     : Double;
 begin
- SampleCount := SampleCount;
  if SampleCount = 0 then exit;
 
  DC := Sum / SampleCount;

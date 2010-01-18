@@ -37,7 +37,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Common, DAV_Classes, DAV_DspFilter;
+  Classes, DAV_Common, DAV_Classes, DAV_DspFilterSimple, DAV_DspFilter;
 
 type
   TSpectralDelayFilter = class(TCustomIIRFilter)
@@ -212,8 +212,15 @@ var
   Filter : Integer;
 begin
  inherited;
+
+//  @CWB: there is no TFirstOrderAllpassFilter.Frequency
+
+// for Filter := 0 to Length(FFilters) - 1
+//  do FFilters[Filter].Frequency := Frequency;
+
  for Filter := 0 to Length(FFilters) - 1
-  do FFilters[Filter].Frequency := Frequency;
+  do FFilters[Filter].FractionalDelay := Frequency;
+
 end;
 
 initialization

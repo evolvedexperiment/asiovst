@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_Classes, DAV_DspDelayLines, DAV_DspFilter,
+  DAV_Types, DAV_Classes, DAV_DspDelayLines, DAV_DspFilterSimple,
   DAV_DspLFO, DAV_DSPFilterButterworth;
 
 const
@@ -412,8 +412,14 @@ begin
   then FBufferInPos := FBufferInPos - FInternalBufferSize;
  SPos := Excursion * FLFO.Sine;
  Pos := round(SPos);
- FAllpass.Frequency := Pos - SPos;
- assert(abs(FAllpass.Frequency) < 1);
+
+//  @CWB: there is no TFirstOrderAllpassFilter.Frequency
+// FAllpass.Frequency := Pos - SPos;
+// assert(abs(FAllpass.Frequency) < 1);
+
+ FAllpass.FractionalDelay := Pos - SPos;
+ assert(abs(FAllpass.FractionalDelay) < 1);
+
  Pos := FBufferInPos + Pos;
 
  if Pos >= FInternalBufferSize then Pos := Pos - FInternalBufferSize else

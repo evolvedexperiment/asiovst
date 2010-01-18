@@ -51,6 +51,7 @@ contains
   DAV_AsioDriverControlPanelCreator in '..\..\Source\Asio\DAV_AsioDriverControlPanelCreator.pas',
   DAV_AsioDriverConfig in '..\..\Source\Asio\DAV_AsioDriverConfig.pas',
   DAV_AsioDriver in '..\..\Source\Asio\DAV_AsioDriver.pas',
-  DAV_ASIOHostAudioData in '..\..\Source\ASIO\DAV_ASIOHostAudioData.pas';
+  DAV_ASIOHostAudioData in '..\..\Source\ASIO\DAV_ASIOHostAudioData.pas',
+  DAV_AsioDriverBasicModule in '..\..\Source\ASIO\DAV_AsioDriverBasicModule.pas';
 
 end.

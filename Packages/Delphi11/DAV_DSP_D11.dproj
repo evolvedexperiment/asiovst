@@ -38,6 +38,7 @@
       <MainSource>MainSource</MainSource>
     </DelphiCompile>
     <DCCReference Include="..\..\Source\DAV_ClassesFft.pas" />
+    <DCCReference Include="..\..\Source\DSP\DAV_Common_D11.dcp" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspAmbience.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspAudioToMidiTrigger.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspBarberpole.pas" />
@@ -81,6 +82,7 @@
     <DCCReference Include="..\..\Source\Dsp\DAV_DspFilterLinkwitzRiley.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspFilterManager.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspFilterMoog.pas" />
+    <DCCReference Include="..\..\Source\DSP\DAV_DspFilterSimple.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspFilterSpectralDelay.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspFreeverb.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspFreeverbFilter.pas" />
@@ -130,8 +132,7 @@
     <DCCReference Include="..\..\Source\Dsp\DAV_DspWaveshaper.pas" />
     <DCCReference Include="..\..\Source\DSP\DAV_DspWindowFunctions.pas" />
     <DCCReference Include="..\..\Source\Dsp\DAV_DspWindowing.pas" />
-    <DCCReference Include="DAV_Common_D11.dcp" />
-    <DCCReference Include="rtl.dcp" />
-    <DCCReference Include="vcl.dcp" />
+    <DCCReference Include="..\..\Source\DSP\rtl.dcp" />
+    <DCCReference Include="..\..\Source\DSP\vcl.dcp" />
   </ItemGroup>
 </Project>
