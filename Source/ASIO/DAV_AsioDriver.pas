@@ -150,7 +150,7 @@ type
 
   var GlobalDriverControlPanel: TDavASIODriverCP;
 
-IMPLEMENTATION
+implementation
 
 uses sysutils;
 

@@ -4,21 +4,16 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
-  ToolWin, ComCtrls, StdCtrls, Menus;
+  ToolWin, ComCtrls, StdCtrls, Menus, DAV_ASIODriver;
 
 type
-  TFmAsioDriverControlPanel = class(TForm)
+  TFmAsioDriverControlPanel = class(TDavASIODriverCP)
     LbDriver: TLabel;
     CbDriver: TComboBox;
     BtControlPanel: TButton;
-    procedure FormCreate(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
     procedure CbDriverChange(Sender: TObject);
-  private
-    FRegName : string;
-  public
   end;
 
 implementation
@@ -28,77 +23,33 @@ uses
 
 {$R *.dfm}
 
-procedure TFmAsioDriverControlPanel.FormCreate(Sender: TObject);
-begin
- FRegName := 'SOFTWARE\ASIO\' + CDriverDescription;
- CbDriver.Items := TAsioHost(Owner).DriverList;
- if CbDriver.Items.Count = 0 then
-  try
-   raise Exception.Create('No ASIO Driver present! Application Terminated!');
-  except
-   Application.Terminate;
-  end;
-
-(*
- // and make sure all controls are enabled or disabled
- with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
-  try
-   Left := ReadInteger('Layout', 'Audio Left', Left);
-   Top := ReadInteger('Layout', 'Audio Top', Top);
-   CbDriver.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
-   if CbDriver.ItemIndex >= 0 then CbDriverChange(CbDriver);
-   ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
-  finally
-   Free;
-  end;
-*)
-end;
-
 procedure TFmAsioDriverControlPanel.FormShow(Sender: TObject);
 begin
- CbDriver.ItemIndex := TAsioHost(Owner).DriverIndex;
+  if not assigned(Driver) then exit;
+  Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';
+  cbDriver.Items:=TAsioHostDriver(Driver).AsioHost.DriverList;
+
+  CbDriver.ItemIndex := TAsioHostDriver(Driver).AsioHost.DriverIndex;
 end;
 
 procedure TFmAsioDriverControlPanel.CbDriverChange(Sender: TObject);
-var
-  Channel : Integer;
 begin
+ if not assigned(Driver) then exit;
+ 
  BtControlPanel.Enabled := False;
-// BtStartStop.Enabled := False;
  CbDriver.ItemIndex := CbDriver.Items.IndexOf(CbDriver.Text);
  if CbDriver.ItemIndex >= 0 then
   begin
-   TAsioHost(Owner).DriverIndex := CbDriver.ItemIndex;
-(*
-   ChannelBox.Clear;
-   for Channel := 0 to (ASIOHost.OutputChannelCount div 2) - 1 do
-   begin
-    ChannelBox.Items.Add(
-     ASIOHost.OutputChannelInfos[2 * Channel].name + ' / ' +
-     ASIOHost.OutputChannelInfos[2 * Channel + 1].name);
-   end;
-   with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'ASIODemo.INI') do
-    try
-     WriteInteger('Audio', 'Asio Driver', CbDriver.ItemIndex);
-    finally
-     Free;
-    end;
-*)
+   TAsioHostDriver(Driver).AsioHost.DriverIndex := CbDriver.ItemIndex;
+
    BtControlPanel.Enabled := True;
-//   BtStartStop.Enabled := True;
-//   ChannelBox.ItemIndex := 0;
   end;
 end;
 
-procedure TFmAsioDriverControlPanel.FormClose(Sender: TObject;
-  var Action: TCloseAction);
-begin
- Action := caHide;
-end;
-
 procedure TFmAsioDriverControlPanel.BtControlPanelClick(Sender: TObject);
-begin
- TAsioHost(Owner).ControlPanel;
+begin   
+  if not assigned(Driver) then exit;
+  TAsioHostDriver(Driver).AsioHost.ControlPanel;
 end;
 
 end.

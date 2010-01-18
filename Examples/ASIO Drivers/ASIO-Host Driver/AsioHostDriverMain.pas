@@ -7,7 +7,7 @@ unit AsioHostDriverMain;
 interface
 
 uses
-  Windows, SysUtils, Classes, Forms, ComObj, DAV_Common, DAV_ASIO,
+  Windows, SysUtils, Classes, Forms, ComObj, DAV_Common, DAV_Types, DAV_ASIO,
   DAV_ASIODriver, DAV_AsioHost;
 
 const
@@ -49,7 +49,6 @@ type
     FTimeInfoMode   : Boolean;
     FDriverVersion  : Integer;
     FSystemHandle   : HWND;
-    FControlPanel   : TForm;
     FAsioHost       : TAsioHost;
     FErrorMessage   : array [0..127] of Char;
     FInputBuffers   : TDAVArrayOfSingleFixedArray;
@@ -83,7 +82,6 @@ type
     function GetChannelInfo(var Info: TASIOChannelInfo): TASIOError; override;
     function CreateBuffers(BufferInfos: PASIOBufferInfos; NumChannels, BufferSize: LongInt; const Callbacks: TASIOCallbacks): TASIOError; override;
     function DisposeBuffers: TASIOError; override;
-    function ControlPanel: TASIOError; override;
     function Future(Selector: LongInt; Opt: Pointer): TASIOError; override;
     function OutputReady: TASIOError; override;
 
@@ -188,6 +186,9 @@ begin
    DriverIndex := AsioHost.DriverList.IndexOf('ASIO4ALL v2');
    FBlockFrames := FAsioHost.BufferSize;
   end;
+  
+  SetControlPanelClass(TFmAsioDriverControlPanel);
+  InitControlPanel;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -195,15 +196,13 @@ end;
 destructor TAsioHostDriver.Destroy;
 begin
  Stop;
+ FreeAndNil(FAsioHost);
  DisposeBuffers;
  SetLength(FInputBuffers, 0);
  SetLength(FOutputBuffers, 0);
  SetLength(FInMap, 0);
  SetLength(FOutMap, 0);
 
- if Assigned(FControlPanel)
-  then FreeAndNil(FControlPanel);
- FreeAndNil(FAsioHost);
  inherited;
 end;
 
@@ -274,12 +273,14 @@ end;
 
 procedure TAsioHostDriver.TimerOn;
 begin
- FAsioHost.Active := True;
+ if assigned(FAsioHost) then
+  FAsioHost.Active := True;
 end;
 
 procedure TAsioHostDriver.TimerOff;
 begin
- FAsioHost.Active := False;
+ if assigned(FAsioHost) then
+   FAsioHost.Active := False;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -618,23 +619,6 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function TAsioHostDriver.ControlPanel: TASIOError;
-begin
- if Assigned(FControlPanel) then
-  begin
-   FControlPanel.Showmodal; // Important, there are Host that push the window back... eg. SynthMaker
-  end
- else
-  begin
-   FControlPanel := TFmAsioDriverControlPanel.Create(FAsioHost);
-//   FControlPanel.ParentWindow := FSystemHandle;
-   FControlPanel.ShowModal; // Important, there are Host that push the window back... eg. SynthMaker
-  end;
- Result := ASE_OK;
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-
 function TAsioHostDriver.Future(Selector: Integer; Opt: Pointer): TASIOError;
 begin
  Result := ASE_SUCCESS;
@@ -707,28 +691,28 @@ var
   Channel : Integer;
   Offset  : Integer;
 begin
- if FStarted and Assigned(FCallbacks) then
+  if FStarted and Assigned(FCallbacks) then
   begin
    GetNanoSeconds(FSystemTime);      // latch system time
-
+  
    if FToggle = 0
     then Offset := 0
     else Offset := FBlockFrames;
 
    for Channel := 0 to Min(FActiveInputs,AsioHost.InputChannelCount) - 1
-    do Move(InBuffer[Channel]^[0], FInputBuffers[Channel]^[Offset], AsioHost.BufferSize * SizeOf(Single));
+    do Move(InBuffer[Channel]^[0], FInputBuffers[Channel]^[Offset], FBlockFrames * SizeOf(Single));
 
    for Channel := 0 to Min(FActiveOutputs,AsioHost.OutputChannelCount) - 1
-    do Move(FOutputBuffers[Channel]^[Offset], OutBuffer[Channel]^[0], AsioHost.BufferSize * SizeOf(Single));
+    do Move(FOutputBuffers[Channel]^[Offset], OutBuffer[Channel]^[0], FBlockFrames* SizeOf(Single));
 
    FSamplePosition := FSamplePosition + FBlockFrames;
 
    if FTimeInfoMode
     then BufferSwitchX
     else FCallbacks^.BufferSwitch(FToggle, ASIOFalse);
-
+                            
    FToggle := 1 - FToggle;
-  end;
+  end; 
 end;
 
 initialization

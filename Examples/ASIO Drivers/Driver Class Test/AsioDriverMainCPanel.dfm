@@ -28,7 +28,7 @@ object DriverTestCP: TDriverTestCP
     ParentFont = False
   end
   object btnDone: TButton
-    Left = 152
+    Left = 280
     Top = 77
     Width = 75
     Height = 25
@@ -36,5 +36,15 @@ object DriverTestCP: TDriverTestCP
     Default = True
     ModalResult = 1
     TabOrder = 0
+  end
+  object Button1: TButton
+    Left = 16
+    Top = 77
+    Width = 75
+    Height = 25
+    Caption = 'Reset'
+    Default = True
+    TabOrder = 1
+    OnClick = Button1Click
   end
 end

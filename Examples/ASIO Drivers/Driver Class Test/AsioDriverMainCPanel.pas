@@ -10,7 +10,9 @@ type
   TDriverTestCP = class(TDavASIODriverCP)
     btnDone: TButton;
     lbStupid: TLabel;
+    Button1: TButton;
     procedure FormShow(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -20,6 +22,13 @@ type
 implementation
 
 {$R *.dfm}
+
+uses AsioDriverMain;
+
+procedure TDriverTestCP.Button1Click(Sender: TObject);
+begin
+  TDriverTest(Driver).ASIORequestReset;
+end;
 
 procedure TDriverTestCP.FormShow(Sender: TObject);
 begin

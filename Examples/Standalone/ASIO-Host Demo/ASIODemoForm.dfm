@@ -66,6 +66,7 @@ object FmASIO: TFmASIO
     Width = 273
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -85,6 +86,7 @@ object FmASIO: TFmASIO
     Width = 233
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -141,6 +143,7 @@ object FmASIO: TFmASIO
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = ASIOHostBufferSwitch32
+    OnReset = ASIOHostReset
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 8
     Top = 8

@@ -68,6 +68,7 @@ type
     procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
     procedure Lb_ChannelsClick(Sender: TObject);
+    procedure ASIOHostReset(Sender: TObject);
   private
     procedure SetFrequency(const Value: Double);
   public
@@ -278,6 +279,11 @@ begin
    OutBuffer[L, Sample] := (1 - FPan) * Data;
    OutBuffer[R, Sample] := FPan * Data;
   end;
+end;
+
+procedure TFmASIO.ASIOHostReset(Sender: TObject);
+begin
+  ASIOHost.Active := True;
 end;
 
 {$IFDEF FPC}

@@ -158,7 +158,6 @@ type
     FDriver               : IStdCallAsio;
     {$ENDIF}
     FHandle               : THandle;
-    FHandleOwned          : Boolean;
     FAsioTime             : TAsioTimeSub;
     FEngineVersion        : Integer;
     FBuffersCreated       : Boolean;
@@ -200,12 +199,14 @@ type
     {$IFDEF FPC}
     procedure WndProc(var Msg: TLMessage);
     procedure PMAsio(var Message: TLMessage); message PM_Asio;
+    procedure PMReset(var Message: TLMessage); message PM_Reset;
     procedure PMUpdateSamplePos(var Message: TLMessage); message PM_UpdateSamplePos;
     procedure PMBufferSwitch(var Message: TLMessage); message PM_BufferSwitch;
     procedure PMBufferSwitchTimeInfo(var Message: TLMessage); message PM_BufferSwitchTimeInfo;
     {$ELSE}
     procedure WndProc(var Msg: TMessage);
-    procedure PMAsio(var Message: TMessage); message PM_Asio;
+    procedure PMAsio(var Message: TMessage); message PM_Asio;   
+    procedure PMReset(var Message: TMessage); message PM_Reset;
     procedure PMUpdateSamplePos(var Message: TMessage); message PM_UpdateSamplePos;
     procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
     procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
@@ -221,9 +222,12 @@ type
     procedure DetermineBuffersize; virtual;
     procedure AquireCurrentSampleRate;
     procedure SetSampleRate(Value: Double); virtual;
+    
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure DefaultHandler(var Message); override;
+
     function CanSampleRate(SampleRate: TAsioSampleRate): TAsioError; virtual;
     function GetNumDrivers: Integer; virtual;
     procedure CloseDriver; virtual;
@@ -636,12 +640,7 @@ procedure AsioBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TAsioBool)
 begin
  if Assigned(GAsioHost) then
   case DirectProcess of
-   AsioFalse:
-   begin
-    PMBufSwitch.WParam := AM_BufferSwitch;
-    PMBufSwitch.LParam := DoubleBufferIndex;
-    GAsioHost.Dispatch(PMBufSwitch);
-   end;
+   AsioFalse: PostMessage(GAsioHost.FHandle, PMBufSwitch.Msg, AM_BufferSwitch, DoubleBufferIndex);
    AsioTrue : GAsioHost.BufferSwitch(DoubleBufferIndex);
   end;
 end;
@@ -654,9 +653,7 @@ begin
    AsioFalse :
    begin
     GAsioHost.AsioTime.FBufferTime := Params;
-    PMBufSwitchTimeInfo.WParam := AM_BufferSwitchTimeInfo;
-    PMBufSwitchTimeInfo.LParam := DoubleBufferIndex;
-    GAsioHost.Dispatch(PMBufSwitchTimeInfo);
+    PostMessage(GAsioHost.FHandle, PMBufSwitchTimeInfo.Msg, AM_BufferSwitchTimeInfo, DoubleBufferIndex);
    end;
    AsioTrue : GAsioHost.BufferSwitchTimeInfo(DoubleBufferIndex, params);
   end;
@@ -685,37 +682,25 @@ begin
   kAsioResetRequest :
    if Assigned(GAsioHost) then
     begin
-     PMReset.Msg := PM_Asio;
-     PMReset.WParam := AM_ResetRequest;
-     PMReset.LParam := 0;
-     GAsioHost.Dispatch(PMReset);
+     PostMessage(GAsioHost.FHandle, PM_Asio, AM_ResetRequest, 0);
      Result := 1;
     end;
   kAsioBufferSizeChange :
    if Assigned(GAsioHost) then
     begin
-     PMReset.Msg := PM_Asio;
-     PMReset.WParam := AM_ResetRequest;
-     PMReset.LParam := 0;
-     GAsioHost.Dispatch(PMReset);
+     PostMessage(GAsioHost.FHandle, PM_Asio, AM_ResetRequest, 0);
      Result := 1;
     end;
   kAsioResyncRequest :
    if Assigned(GAsioHost) then
     begin
-     PMReset.Msg := PM_Asio;
-     PMReset.WParam := AM_LatencyChanged;
-     PMReset.LParam := 0;
-     GAsioHost.Dispatch(PMReset);
+     PostMessage(GAsioHost.FHandle, PM_Asio, AM_LatencyChanged, 0);
      Result := 1;
     end;
   kAsioLatenciesChanged :
    if Assigned(GAsioHost) then
     begin
-     PMReset.Msg := PM_Asio;
-     PMReset.WParam := AM_LatencyChanged;
-     PMReset.LParam := 0;
-     GAsioHost.Dispatch(PMReset);
+     PostMessage(GAsioHost.FHandle, PM_Asio, AM_LatencyChanged, 0);
      Result := 1;
     end;
   kAsioSupportsTimeInfo :
@@ -744,14 +729,7 @@ end;
 
 constructor TCustomAsioHostBasic.Create(AOwner: TComponent);
 begin
-  FHandleOwned := False;
-  if AOwner is TWinControl
-   then FHandle := TWinControl(AOwner).Handle
-   else
-    begin
-     FHandle := AllocateHWnd(WndProc);
-     FHandleOwned := True;
-    end;
+  FHandle := AllocateHWnd(WndProc);
 
   {$IFNDEF AllowMultipleAsioHosts}
   if GAsioHost <> nil
@@ -800,8 +778,7 @@ begin
   if Assigned(FOnDestroy) then FOnDestroy(Self);
   if Active then Active := False;
   CloseDriver;
-  if FHandleOwned
-   then DeallocateHWnd(FHandle);
+  DeallocateHWnd(FHandle);
   FAsioDriverList.Free;
   SetLength(FInConverters, 0);
   SetLength(FOutConverters, 0);
@@ -812,17 +789,30 @@ begin
  end;
 end;
 
+
 {$IFNDEF FPC}
+
+procedure TCustomAsioHostBasic.DefaultHandler(var Message);
+begin
+  with TMessage(Message) do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+end;
+
 procedure TCustomAsioHostBasic.WndProc(var Msg: TMessage);
 begin
- with Msg do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+  with Msg do dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
+
 {$ELSE}
 function DefWindowProc(hWnd:THandle; Msg:UINT; wParam:WPARAM; lParam:LPARAM):LResult; external 'user32' name 'DefWindowProcA';
 
+procedure TCustomAsioHostBasic.DefaultHandler(var Message);
+begin
+  with TLMessage(Message) do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+end;
+
 procedure TCustomAsioHostBasic.WndProc(var Msg: TLMessage);
 begin
- with Msg do Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+ with Msg do dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 {$ENDIF}
 
@@ -1240,14 +1230,9 @@ procedure TCustomAsioHostBasic.PMAsio(var Message: TMessage);
 begin
  if FDriver = nil then exit;
  case Message.WParam of
-  AM_ResetRequest:
-   begin
-    OpenDriver; // restart the driver
-    if Assigned (FOnReset) then FOnReset(Self);
-   end;
-  AM_BufferSwitch: BufferSwitch(Message.LParam); // process a buffer
-  AM_BufferSwitchTimeInfo: BufferSwitchTimeInfo(Message.LParam,
-    AsioTime.FBufferTime);  // process a buffer with time
+  AM_ResetRequest:         Reset;
+  AM_BufferSwitch:         BufferSwitch(Message.LParam); // process a buffer
+  AM_BufferSwitchTimeInfo: BufferSwitchTimeInfo(Message.LParam, AsioTime.FBufferTime);  // process a buffer with time
   AM_LatencyChanged:
    begin
     if Assigned(FDriver)
@@ -1255,6 +1240,15 @@ begin
     if Assigned(FOnLatencyChanged) then FOnLatencyChanged(Self);
    end;
  end;
+end;
+
+{$IFDEF FPC}
+procedure TCustomAsioHostBasic.PMReset(var Message: TLMessage);
+{$ELSE}
+procedure TCustomAsioHostBasic.PMReset(var Message: TMessage);
+{$ENDIF}
+begin
+  Reset;
 end;
 
 {$IFDEF FPC}

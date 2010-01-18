@@ -28,22 +28,13 @@
   <Target Name="ASIODemo:Make">
     <MSBuild Projects="..\..\Standalone\ASIO-Host Demo\ASIODemo.dproj" Targets="Make" />
   </Target>
-  <Target Name="test">
-    <MSBuild Projects="F:\DelphiProjects\MProject\Libs\Asio\test\test.dproj" Targets="" />
-  </Target>
-  <Target Name="test:Clean">
-    <MSBuild Projects="F:\DelphiProjects\MProject\Libs\Asio\test\test.dproj" Targets="Clean" />
-  </Target>
-  <Target Name="test:Make">
-    <MSBuild Projects="F:\DelphiProjects\MProject\Libs\Asio\test\test.dproj" Targets="Make" />
-  </Target>
   <Target Name="Build">
-    <CallTarget Targets="AsioDriver;ASIODemo;test" />
+    <CallTarget Targets="AsioDriver;ASIODemo" />
   </Target>
   <Target Name="Clean">
-    <CallTarget Targets="AsioDriver:Clean;ASIODemo:Clean;test:Clean" />
+    <CallTarget Targets="AsioDriver:Clean;ASIODemo:Clean" />
   </Target>
   <Target Name="Make">
-    <CallTarget Targets="AsioDriver:Make;ASIODemo:Make;test:Make" />
+    <CallTarget Targets="AsioDriver:Make;ASIODemo:Make" />
   </Target>
 </Project>
