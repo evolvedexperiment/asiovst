@@ -12,12 +12,11 @@ type
     cbDrivers: TComboBox;
     btnControlPanel: TButton;
     procedure cbDriversChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure btnControlPanelClick(Sender: TObject);
   private
     { Private-Deklarationen }
   public
-    { Public-Deklarationen }
+    procedure PanelLoaded; override;
   end;
 
 implementation
@@ -34,7 +33,7 @@ begin
   TDavASIOInterceptor(Driver).DriverIndex := cbDrivers.ItemIndex;
 end;
 
-procedure TInterceptorTestCP.FormShow(Sender: TObject);
+procedure TInterceptorTestCP.PanelLoaded;
 begin
   if not assigned(Driver) then exit;
   Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';

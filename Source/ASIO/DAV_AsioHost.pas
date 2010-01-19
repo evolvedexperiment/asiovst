@@ -226,6 +226,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+
     procedure DefaultHandler(var Message); override;
 
     function CanSampleRate(SampleRate: TAsioSampleRate): TAsioError; virtual;
@@ -236,6 +237,8 @@ type
     procedure Reset; virtual;
     procedure SetInputGain(Channel, Gain: Integer); virtual;
     procedure SetOutputGain(Channel, Gain: Integer); virtual;
+
+    procedure SetIgnoredDriver(ignore: TGuid);
 
     property Active: Boolean read FActive write SetActive default False;
     property AsioTime: TAsioTimeSub read FAsioTime Write FAsioTime;
@@ -848,6 +851,12 @@ end;
 function TCustomAsioHostBasic.GetDriverList: TStrings;
 begin
   result := FAsioDriverList.DriverNames;
+end;
+
+procedure TCustomAsioHostBasic.SetIgnoredDriver(ignore: TGuid);
+begin
+  FAsioDriverList.SetIgnoredDriver(ignore);
+  FAsioDriverList.UpdateList;
 end;
 
 procedure TCustomAsioHostBasic.SetDriverName(const s: string);

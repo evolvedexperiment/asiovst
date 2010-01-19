@@ -4,16 +4,17 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, ExtCtrls,
-  ToolWin, ComCtrls, StdCtrls, Menus, DAV_ASIODriver;
+  ToolWin, ComCtrls, StdCtrls, Menus, DAV_ASIODriver, XPMan;
 
 type
   TFmAsioDriverControlPanel = class(TDavASIODriverCP)
     LbDriver: TLabel;
     CbDriver: TComboBox;
     BtControlPanel: TButton;
-    procedure FormShow(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
     procedure CbDriverChange(Sender: TObject);
+  public
+    procedure PanelLoaded; override;
   end;
 
 implementation
@@ -23,7 +24,7 @@ uses
 
 {$R *.dfm}
 
-procedure TFmAsioDriverControlPanel.FormShow(Sender: TObject);
+procedure TFmAsioDriverControlPanel.PanelLoaded;     
 begin
   if not assigned(Driver) then exit;
   Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';

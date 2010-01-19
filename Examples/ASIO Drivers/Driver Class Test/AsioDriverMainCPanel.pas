@@ -11,12 +11,11 @@ type
     btnDone: TButton;
     lbStupid: TLabel;
     Button1: TButton;
-    procedure FormShow(Sender: TObject);
     procedure Button1Click(Sender: TObject);
   private
     { Private-Deklarationen }
   public
-    { Public-Deklarationen }
+    procedure PanelLoaded; override;
   end;
 
 implementation
@@ -28,9 +27,9 @@ uses AsioDriverMain;
 procedure TDriverTestCP.Button1Click(Sender: TObject);
 begin
   TDriverTest(Driver).ASIORequestReset;
-end;
+end;  
 
-procedure TDriverTestCP.FormShow(Sender: TObject);
+procedure TDriverTestCP.PanelLoaded;  
 begin
   Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';
 end;

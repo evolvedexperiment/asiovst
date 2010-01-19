@@ -43,6 +43,7 @@ type
   public
     Driver: TDavASIODriver;
     constructor Create(AOwner: TComponent); override;
+    procedure PanelLoaded; virtual;
   end;
 
   TTDavASIODriverCP = class of TDavASIODriverCP;
@@ -166,6 +167,9 @@ begin
   inherited Create(AOwner);
   Driver := nil;
 end;
+
+procedure TDavASIODriverCP.PanelLoaded;
+begin end;
 
 {$IFDEF DELPHI10_UP} {$endregion 'Control panel implementation'} {$ENDIF}
 
@@ -610,6 +614,7 @@ begin
   begin
     if not assigned(GlobalDriverControlPanel) then GlobalDriverControlPanel := fControlPanelClass.Create(nil);
     GlobalDriverControlPanel.Driver := self;
+    GlobalDriverControlPanel.PanelLoaded;
     if GlobalDriverControlPanel.Visible then GlobalDriverControlPanel.BringToFront;
   end;
 end;

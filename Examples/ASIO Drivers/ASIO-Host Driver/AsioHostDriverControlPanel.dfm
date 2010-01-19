@@ -1,11 +1,9 @@
 object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
-  Left = 533
-  Top = 126
-  BorderIcons = [biSystemMenu]
-  BorderStyle = bsDialog
+  Left = 0
+  Top = 0
   Caption = 'ASIO VST Host Driver - Control Panel'
-  ClientHeight = 37
-  ClientWidth = 308
+  ClientHeight = 35
+  ClientWidth = 306
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,10 +12,9 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnShow = FormShow
   DesignSize = (
-    308
-    37)
+    306
+    35)
   PixelsPerInch = 96
   TextHeight = 13
   object LbDriver: TLabel
@@ -30,7 +27,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
   object CbDriver: TComboBox
     Left = 47
     Top = 8
-    Width = 168
+    Width = 166
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
@@ -39,7 +36,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
     OnChange = CbDriverChange
   end
   object BtControlPanel: TButton
-    Left = 221
+    Left = 219
     Top = 8
     Width = 81
     Height = 22

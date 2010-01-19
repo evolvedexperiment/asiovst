@@ -37,6 +37,7 @@ type
     constructor Create; overload;
     destructor Destroy; override;
 
+    procedure SetIgnoredDriver(ignore: TGuid);
     procedure UpdateList;
     function DriverNumberByName(DriverName: string): Integer;
     property Items[Index: Integer]: TDAVAsioDriverDesc read GetItem;
@@ -82,8 +83,7 @@ end;
 constructor TDAVAsioDriverList.Create(Ignore: TGuid);
 begin
  Create;
- FIgnoreGuid := Ignore;
- FHasIgnoreGuid := True;
+ SetIgnoredDriver(Ignore);
 end;
 
 destructor TDAVAsioDriverList.Destroy;
@@ -92,6 +92,12 @@ begin
   FreeAndNil(FList);
   FreeAndNil(FNameList);
   inherited;
+end;
+
+procedure TDAVAsioDriverList.SetIgnoredDriver(ignore: TGuid);
+begin
+ FIgnoreGuid := Ignore;
+ FHasIgnoreGuid := True;
 end;
 
 procedure TDAVAsioDriverList.ClearList;
