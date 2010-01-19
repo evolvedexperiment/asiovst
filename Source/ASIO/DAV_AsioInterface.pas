@@ -110,12 +110,12 @@ begin
  inherited Create;
  CoInitialize(nil);
  CoCreateInstance(AsioCLSID, nil, CLSCTX_INPROC_SERVER, AsioCLSID, ASIODriverInterface);
- Okay := assigned(ASIODriverInterface);
+ Okay := Assigned(ASIODriverInterface);
 end;
 
 destructor TStdCallAsio.Destroy;
 begin
- if assigned(ASIODriverInterface) then ASIODriverInterface := nil;
+ if Assigned(ASIODriverInterface) then ASIODriverInterface := nil;
  CoUninitialize;
  inherited Destroy;
 end;

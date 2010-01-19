@@ -183,7 +183,7 @@ type
   TMIDIKey                    = TMIDIDataByte;
   TMIDINote                   = TMIDIKey;
 
-    // event if data is received
+  // event if data is received
   TOnMidiInData = procedure (const ADeviceIndex: Integer; const AStatus, AData1, AData2: Byte) of object;
   // event of system exclusive data is received
   TOnSysExData = procedure (const ADeviceIndex: Integer; const AStream: TMemoryStream) of object;
@@ -245,7 +245,7 @@ implementation
 
 { TMidiBase }
 type
-  TSysExBuffer = array[0..cSysExBufferSize] of Char;
+  TSysExBuffer = array[0..CSysExBufferSize] of Char;
 
   TSysExData = class
   private
@@ -313,7 +313,7 @@ var
   lInCaps : TMidiInCaps;
 begin
  inherited;
- FSysExData := TObjectList.Create(true);
+ FSysExData := TObjectList.Create(True);
  try
   ll := midiInGetNumDevs;
  except
@@ -323,10 +323,10 @@ begin
   try
    MidiResult := midiInGetDevCaps(i, @lInCaps, SizeOf(TMidiInCaps));
    if MidiResult = MMSYSERR_NOERROR then
-   begin
-    FDevices.Add(StrPas(lInCaps.szPname));
-    FSysExData.Add(TSysExData.Create);
-   end;
+    begin
+     FDevices.Add(StrPas(lInCaps.szPname));
+     FSysExData.Add(TSysExData.Create);
+    end;
   except
    // do nothing but supress the exception to the end user
   end;
@@ -531,7 +531,7 @@ begin
  Result := '';
  AStream.Position := 0;
  for i := 0 to AStream.Size - 1 do
-  Result := Result + Format('%.2x ', [ Byte(PChar(AStream.Memory)[i]) ]);
+  Result := Result + Format('%.2x ', [Byte(PChar(AStream.Memory)[i])]);
 end;
 
 procedure StrToSysExStream(const AString: string; const AStream: TMemoryStream);
@@ -544,9 +544,9 @@ begin
  lStr := StringReplace(AnsiUpperCase(AString), ' ', '', [rfReplaceAll]);
  AStream.Size := Length(lStr) div 2 - 1;
  AStream.Position := 0;
- for i:=1 to AStream.Size do
-  PChar(AStream.Memory)[i-1] :=
-   Char(AnsiPos(lStr[ i*2 - 1], cHex) shl 4 + AnsiPos(lStr[i*2], cHex));
+ for i:=1 to AStream.Size
+  do PChar(AStream.Memory)[i-1] := Char(AnsiPos(lStr[i * 2 - 1], cHex) shl 4 +
+    AnsiPos(lStr[i * 2], cHex));
 end;
 
 end.

@@ -25,7 +25,7 @@ unit BassExtenderDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ uses
 
 procedure TBassExtenderModule.VSTModuleOpen(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
  FDivideMix[0]     := 0.5;
  FDivideMix[1]     := 0.5;
@@ -100,20 +100,20 @@ begin
  FCompressorMix[1] := 0.5;
  FBalance[0]       := 1;
  FBalance[1]       := 1;
- for ch := 0 to numInputs - 1 do
+ for ChannelIndex := 0 to numInputs - 1 do
   begin
-   FLowpass[ch, 0]  := TButterworthLowpassFilter.Create;
-   FLowpass[ch, 1]  := TButterworthLowpassFilter.Create;
-   FHighpass[ch, 0] := TButterworthHighpassFilter.Create;
-   FHighpass[ch, 1] := TButterworthHighpassFilter.Create;
-   FLowpass[ch, 0].SetFilterValues(80, 0);
-   FLowpass[ch, 1].SetFilterValues(80, 0);
-   FHighpass[ch, 0].SetFilterValues(80, 0);
-   FHighpass[ch, 1].SetFilterValues(80, 0);
+   FLowpass[ChannelIndex, 0]  := TButterworthLowpassFilter.Create;
+   FLowpass[ChannelIndex, 1]  := TButterworthLowpassFilter.Create;
+   FHighpass[ChannelIndex, 0] := TButterworthHighpassFilter.Create;
+   FHighpass[ChannelIndex, 1] := TButterworthHighpassFilter.Create;
+   FLowpass[ChannelIndex, 0].SetFilterValues(80, 0);
+   FLowpass[ChannelIndex, 1].SetFilterValues(80, 0);
+   FHighpass[ChannelIndex, 0].SetFilterValues(80, 0);
+   FHighpass[ChannelIndex, 1].SetFilterValues(80, 0);
 
-   FCompressor[ch]    := TSimpleCompressor.Create;
-   FCompressor[ch].AutoMakeUp := True;
-   FOctaveDivider[ch] := TOcatveDivider.Create;
+   FCompressor[ChannelIndex]    := TSimpleCompressor.Create;
+   FCompressor[ChannelIndex].AutoMakeUp := True;
+   FOctaveDivider[ChannelIndex] := TOcatveDivider.Create;
   end;
 
  Parameter[ 0] := 70;    // Split Frequency [Hz]
@@ -178,16 +178,16 @@ end;
 
 procedure TBassExtenderModule.VSTModuleClose(Sender: TObject);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to numInputs - 1 do
+ for ChannelIndex := 0 to numInputs - 1 do
   begin
-   FreeAndNil(FLowpass[ch, 0]);
-   FreeAndNil(FLowpass[ch, 1]);
-   FreeAndNil(FHighpass[ch, 0]);
-   FreeAndNil(FHighpass[ch, 1]);
-   FreeAndNil(FCompressor[ch]);
-   FreeAndNil(FOctaveDivider[ch]);
+   FreeAndNil(FLowpass[ChannelIndex, 0]);
+   FreeAndNil(FLowpass[ChannelIndex, 1]);
+   FreeAndNil(FHighpass[ChannelIndex, 0]);
+   FreeAndNil(FHighpass[ChannelIndex, 1]);
+   FreeAndNil(FCompressor[ChannelIndex]);
+   FreeAndNil(FOctaveDivider[ChannelIndex]);
   end;
 end;
 
@@ -198,36 +198,33 @@ end;
 
 procedure TBassExtenderModule.ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch, Order : Integer;
+  ChannelIndex, Order : Integer;
 begin
  Order := round(Value);
- for ch := 0 to 1 do
+ for ChannelIndex := 0 to 1 do
   begin
-   if assigned(FLowpass[ch, 0]) then FLowpass[ch, 0].Order  := Order;
-   if assigned(FLowpass[ch, 1]) then FLowpass[ch, 1].Order  := Order;
-   if assigned(FHighpass[ch, 0]) then FHighpass[ch, 0].Order := Order;
-   if assigned(FHighpass[ch, 1]) then FHighpass[ch, 1].Order := Order;
+   if Assigned(FLowpass[ChannelIndex, 0]) then FLowpass[ChannelIndex, 0].Order  := Order;
+   if Assigned(FLowpass[ChannelIndex, 1]) then FLowpass[ChannelIndex, 1].Order  := Order;
+   if Assigned(FHighpass[ChannelIndex, 0]) then FHighpass[ChannelIndex, 0].Order := Order;
+   if Assigned(FHighpass[ChannelIndex, 1]) then FHighpass[ChannelIndex, 1].Order := Order;
   end;
 
  FSign := 1 - 2 * (Order mod 2);
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateSplitOrder;
-   end;
+ // update GUI
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateSplitOrder;
 end;
 
 procedure TBassExtenderModule.ParamReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then FCompressor[0].Release := Value;
- if assigned(FCompressor[1]) then FCompressor[1].Release := Value;
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateRelease;
-   end;
+ if Assigned(FCompressor[0]) then FCompressor[0].Release := Value;
+ if Assigned(FCompressor[1]) then FCompressor[1].Release := Value;
+
+ // update GUI
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateRelease;
 end;
 
 procedure TBassExtenderModule.ParamReleaseLabel(
@@ -271,41 +268,37 @@ end;
 procedure TBassExtenderModule.ParamThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then FCompressor[0].Threshold_dB := Value;
- if assigned(FCompressor[1]) then FCompressor[1].Threshold_dB := Value;
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateThreshold;
-   end;
+ if Assigned(FCompressor[0]) then FCompressor[0].Threshold_dB := Value;
+ if Assigned(FCompressor[1]) then FCompressor[1].Threshold_dB := Value;
+
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateThreshold;
 end;
 
 procedure TBassExtenderModule.ParamRatioChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then
+ if Assigned(FCompressor[0]) then
   begin
    FCompressor[0].Ratio := 1 / Value;
-   if assigned(FCompressor[1])
+   if Assigned(FCompressor[1])
     then FCompressor[1].Ratio := FCompressor[0].Ratio;
   end;
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateRatio;
-   end;
+
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateRatio;
 end;
 
 procedure TBassExtenderModule.ParamShapeChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FOctaveDivider[0]) then FOctaveDivider[0].Shape := 0.01 * Value;
- if assigned(FOctaveDivider[1]) then FOctaveDivider[1].Shape := 0.01 * Value;
+ if Assigned(FOctaveDivider[0]) then FOctaveDivider[0].Shape := 0.01 * Value;
+ if Assigned(FOctaveDivider[1]) then FOctaveDivider[1].Shape := 0.01 * Value;
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateShape;
-   end;
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateShape;
 end;
 
 procedure TBassExtenderModule.ParamDividerChange(
@@ -314,11 +307,9 @@ begin
  FDivideMix[0] := Limit(0.01 * Value, 0, 1);
  FDivideMix[1] := 1 - FDivideMix[0];
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateDivider;
-   end;
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateDivider;
 end;
 
 procedure TBassExtenderModule.ParamCompressionMixChange(
@@ -327,11 +318,9 @@ begin
  FCompressorMix[0] := Limit(0.01 * Value, 0, 1);
  FCompressorMix[1] := 1 - FCompressorMix[0];
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateCompressionMix;
-   end;
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateCompressionMix;
 end;
 
 procedure TBassExtenderModule.ParamBalanceChange(
@@ -340,11 +329,9 @@ begin
  FBalance[1] := Limit(1 + 0.01 * Value, 0, 2);
  FBalance[0] := 2 - FBalance[1];
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateBalance;
-   end;
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateBalance;
 end;
 
 procedure TBassExtenderModule.ParamSplitOrderDisplay(
@@ -402,7 +389,7 @@ end;
 procedure TBassExtenderModule.ParamModeDisplay(
   Sender: TObject; const Index: Integer; var PreDefined: string);
 begin
- case round(Parameter[Index]) of
+ case Round(Parameter[Index]) of
   0: PreDefined := 'Stereo';
   1: PreDefined := 'Mid only';
   2: PreDefined := 'Light';
@@ -413,14 +400,12 @@ end;
 procedure TBassExtenderModule.ParamAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor[0]) then FCompressor[0].Attack := 1E-3 * Value;
- if assigned(FCompressor[1]) then FCompressor[1].Attack := 1E-3 * Value;
+ if Assigned(FCompressor[0]) then FCompressor[0].Attack := 1E-3 * Value;
+ if Assigned(FCompressor[1]) then FCompressor[1].Attack := 1E-3 * Value;
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateAttack;
-   end;
+ // update GUI
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateAttack;
 end;
 
 procedure TBassExtenderModule.ParamAttackLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
@@ -432,39 +417,38 @@ end;
 
 procedure TBassExtenderModule.ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
- for ch := 0 to 1 do
+ for ChannelIndex := 0 to 1 do
   begin
-   if assigned(FLowpass[ch, 0]) then FLowpass[ch, 0].Frequency  := Value;
-   if assigned(FLowpass[ch, 1]) then FLowpass[ch, 1].Frequency  := Value;
-   if assigned(FHighpass[ch, 0]) then FHighpass[ch, 0].Frequency := Value;
-   if assigned(FHighpass[ch, 1]) then FHighpass[ch, 1].Frequency := Value;
+   if Assigned(FLowpass[ChannelIndex, 0]) then FLowpass[ChannelIndex, 0].Frequency  := Value;
+   if Assigned(FLowpass[ChannelIndex, 1]) then FLowpass[ChannelIndex, 1].Frequency  := Value;
+   if Assigned(FHighpass[ChannelIndex, 0]) then FHighpass[ChannelIndex, 0].Frequency := Value;
+   if Assigned(FHighpass[ChannelIndex, 1]) then FHighpass[ChannelIndex, 1].Frequency := Value;
   end;
 
- if EditorForm is TFmBassExtender then
-  with TFmBassExtender(EditorForm) do
-   begin
-    UpdateSplitFrequency;
-   end;
+ // update GUI 
+ if EditorForm is TFmBassExtender
+  then TFmBassExtender(EditorForm).UpdateSplitFrequency;
 end;
 
 procedure TBassExtenderModule.VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample, ch : Integer;
-  L, H       : Double;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
+  L, H         : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for ch := 0 to 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
+  for ChannelIndex := 0 to 1 do
    begin
-    L := cDenorm64 + Inputs[ch, Sample];
-    H := FHighpass[ch, 0].ProcessSample64(cDenorm64 +
-         FHighpass[ch, 1].ProcessSample64(FSign * L));
-    L := FLowpass[ch, 1].ProcessSample64(L);
-    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
-      FOctaveDivider[ch].ProcessSample32(L) + FDivideMix[1] * L);
-    FCompressor[ch].InputSample(L);
-    Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
+    L := cDenorm64 + Inputs[ChannelIndex, SampleIndex];
+    H := FHighpass[ChannelIndex, 0].ProcessSample64(cDenorm64 +
+         FHighpass[ChannelIndex, 1].ProcessSample64(FSign * L));
+    L := FLowpass[ChannelIndex, 1].ProcessSample64(L);
+    L := FLowpass[ChannelIndex, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ChannelIndex].ProcessSample32(L) + FDivideMix[1] * L);
+    FCompressor[ChannelIndex].InputSample(L);
+    Outputs[ChannelIndex, SampleIndex] := FBalance[0] * (FCompressorMix[0] * FCompressor[ChannelIndex].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
    end;
 end;
@@ -472,33 +456,34 @@ end;
 procedure TBassExtenderModule.VSTModuleProcess64(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Sample, ch : Integer;
-  L, H       : Double;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
+  L, H         : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for ch := 0 to 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
+  for ChannelIndex := 0 to 1 do
    begin
-    L := cDenorm64 + Inputs[ch, Sample];
-    H := FHighpass[ch, 0].ProcessSample64(cDenorm64 +
-         FHighpass[ch, 1].ProcessSample64(FSign * L));
-    L := FLowpass[ch, 1].ProcessSample64(L);
-    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
-      FOctaveDivider[ch].ProcessSample64(L) + FDivideMix[1] * L);
-    FCompressor[ch].InputSample(L);
-    Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
+    L := cDenorm64 + Inputs[ChannelIndex, SampleIndex];
+    H := FHighpass[ChannelIndex, 0].ProcessSample64(cDenorm64 +
+         FHighpass[ChannelIndex, 1].ProcessSample64(FSign * L));
+    L := FLowpass[ChannelIndex, 1].ProcessSample64(L);
+    L := FLowpass[ChannelIndex, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ChannelIndex].ProcessSample64(L) + FDivideMix[1] * L);
+    FCompressor[ChannelIndex].InputSample(L);
+    Outputs[ChannelIndex, SampleIndex] := FBalance[0] * (FCompressorMix[0] * FCompressor[ChannelIndex].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
    end;
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample     : Integer;
-  L, H, M, S : Double;
+  SampleIndex : Integer;
+  L, H, M, S  : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
    // Mid
-   L := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
+   L := cDenorm64 + Inputs[0, SampleIndex] + Inputs[1, SampleIndex];
    H := FHighpass[0, 0].ProcessSample64(cDenorm64 +
         FHighpass[0, 1].ProcessSample64(FSign * L));
    L := FLowpass[0, 1].ProcessSample64(L);
@@ -509,28 +494,28 @@ begin
                        FCompressorMix[1] * L) + FBalance[1] * H;
 
    // Side
-   L := Inputs[0, Sample] - Inputs[1, Sample];
+   L := Inputs[0, SampleIndex] - Inputs[1, SampleIndex];
    H := FHighpass[1, 0].ProcessSample64(
         FHighpass[1, 1].ProcessSample64(FSign * L));
    L := FLowpass[1, 0].ProcessSample32(
         FLowpass[1, 1].ProcessSample32(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
-   Outputs[0, Sample] := 0.5 * (M + S);
-   Outputs[1, Sample] := 0.5 * (M - S);
+   Outputs[0, SampleIndex] := 0.5 * (M + S);
+   Outputs[1, SampleIndex] := 0.5 * (M - S);
   end;
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessMS64(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Sample     : Integer;
-  L, H, M, S : Double;
+  SampleIndex : Integer;
+  L, H, M, S  : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
    // Mid
-   L := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
+   L := cDenorm64 + Inputs[0, SampleIndex] + Inputs[1, SampleIndex];
    H := FHighpass[0, 0].ProcessSample64(cDenorm64 +
         FHighpass[0, 1].ProcessSample64(FSign * L));
    L := FLowpass[0, 1].ProcessSample64(L);
@@ -541,32 +526,33 @@ begin
                        FCompressorMix[1] * L) + FBalance[1] * H;
 
    // Side
-   L := Inputs[0, Sample] - Inputs[1, Sample];
+   L := Inputs[0, SampleIndex] - Inputs[1, SampleIndex];
    H := FHighpass[1, 0].ProcessSample64(
         FHighpass[1, 1].ProcessSample64(FSign * L));
    L := FLowpass[1, 0].ProcessSample64(
         FLowpass[1, 1].ProcessSample64(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
-   Outputs[0, Sample] := 0.5 * (M + S);
-   Outputs[1, Sample] := 0.5 * (M - S);
+   Outputs[0, SampleIndex] := 0.5 * (M + S);
+   Outputs[1, SampleIndex] := 0.5 * (M - S);
   end;
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessLight32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample, ch : Integer;
-  L, H       : Double;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
+  L, H         : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for ch := 0 to 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
+  for ChannelIndex := 0 to 1 do
    begin
-    L := FLowpass[ch, 1].ProcessSample64(cDenorm64 + Inputs[ch, Sample]);
-    H := FHighpass[ch, 1].ProcessSample64(Inputs[ch, Sample] - L);
-    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
-      FOctaveDivider[ch].ProcessSample32(L) + FDivideMix[1] * L);
-    FCompressor[ch].InputSample(L);
-    Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
+    L := FLowpass[ChannelIndex, 1].ProcessSample64(cDenorm64 + Inputs[ChannelIndex, SampleIndex]);
+    H := FHighpass[ChannelIndex, 1].ProcessSample64(Inputs[ChannelIndex, SampleIndex] - L);
+    L := FLowpass[ChannelIndex, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ChannelIndex].ProcessSample32(L) + FDivideMix[1] * L);
+    FCompressor[ChannelIndex].InputSample(L);
+    Outputs[ChannelIndex, SampleIndex] := FBalance[0] * (FCompressorMix[0] * FCompressor[ChannelIndex].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
    end;
 end;
@@ -574,31 +560,32 @@ end;
 procedure TBassExtenderModule.VSTModuleProcessLight64(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Sample, ch : Integer;
-  L, H       : Double;
+  SampleIndex  : Integer;
+  ChannelIndex : Integer;
+  L, H         : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
-  for ch := 0 to 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
+  for ChannelIndex := 0 to 1 do
    begin
-    L := FLowpass[ch, 1].ProcessSample64(cDenorm64 + Inputs[ch, Sample]);
-    H := FHighpass[ch, 1].ProcessSample64(Inputs[ch, Sample] - L);
-    L := FLowpass[ch, 0].ProcessSample64(FDivideMix[0] *
-      FOctaveDivider[ch].ProcessSample64(L) + FDivideMix[1] * L);
-    FCompressor[ch].InputSample(L);
-    Outputs[ch, Sample] := FBalance[0] * (FCompressorMix[0] * FCompressor[ch].GainSample(L) +
+    L := FLowpass[ChannelIndex, 1].ProcessSample64(cDenorm64 + Inputs[ChannelIndex, SampleIndex]);
+    H := FHighpass[ChannelIndex, 1].ProcessSample64(Inputs[ChannelIndex, SampleIndex] - L);
+    L := FLowpass[ChannelIndex, 0].ProcessSample64(FDivideMix[0] *
+      FOctaveDivider[ChannelIndex].ProcessSample64(L) + FDivideMix[1] * L);
+    FCompressor[ChannelIndex].InputSample(L);
+    Outputs[ChannelIndex, SampleIndex] := FBalance[0] * (FCompressorMix[0] * FCompressor[ChannelIndex].GainSample(L) +
                            FCompressorMix[1] * L) + FBalance[1] * H;
    end;
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessLightMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
 var
-  Sample     : Integer;
-  L, H, M, S : Double;
+  SampleIndex : Integer;
+  L, H, M, S  : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
    // Mid
-   M := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
+   M := cDenorm64 + Inputs[0, SampleIndex] + Inputs[1, SampleIndex];
    L := FLowpass[0, 1].ProcessSample64(M);
    H := FHighpass[0, 1].ProcessSample64(M - L);
    L := FLowpass[0, 0].ProcessSample64(FDivideMix[0] *
@@ -609,28 +596,28 @@ begin
                        FCompressorMix[1] * L) + FBalance[1] * H;
 
    // Side
-   L := Inputs[0, Sample] - Inputs[1, Sample];
+   L := Inputs[0, SampleIndex] - Inputs[1, SampleIndex];
    H := FHighpass[1, 0].ProcessSample64(
         FHighpass[1, 1].ProcessSample64(FSign * L));
    L := FLowpass[1, 0].ProcessSample64(
         FLowpass[1, 1].ProcessSample64(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
-   Outputs[0, Sample] := 0.5 * (M + S);
-   Outputs[1, Sample] := 0.5 * (M - S);
+   Outputs[0, SampleIndex] := 0.5 * (M + S);
+   Outputs[1, SampleIndex] := 0.5 * (M - S);
   end;
 end;
 
 procedure TBassExtenderModule.VSTModuleProcessLightMS64(const Inputs,
   Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
 var
-  Sample     : Integer;
-  L, H, M, S : Double;
+  SampleIndex : Integer;
+  L, H, M, S  : Double;
 begin
- for Sample := 0 to SampleFrames - 1 do
+ for SampleIndex := 0 to SampleFrames - 1 do
   begin
    // Mid
-   M := cDenorm64 + Inputs[0, Sample] + Inputs[1, Sample];
+   M := cDenorm64 + Inputs[0, SampleIndex] + Inputs[1, SampleIndex];
    L := FLowpass[0, 1].ProcessSample64(M);
    H := FHighpass[0, 1].ProcessSample64(M - L);
    L := FLowpass[0, 0].ProcessSample64(FDivideMix[0] *
@@ -641,15 +628,15 @@ begin
                        FCompressorMix[1] * L) + FBalance[1] * H;
 
    // Side
-   L := Inputs[0, Sample] - Inputs[1, Sample];
+   L := Inputs[0, SampleIndex] - Inputs[1, SampleIndex];
    H := FHighpass[1, 0].ProcessSample64(
         FHighpass[1, 1].ProcessSample64(FSign * L));
    L := FLowpass[1, 0].ProcessSample64(
         FLowpass[1, 1].ProcessSample64(L));
    S := FBalance[0] * L + FBalance[1] * H;
 
-   Outputs[0, Sample] := 0.5 * (M + S);
-   Outputs[1, Sample] := 0.5 * (M - S);
+   Outputs[0, SampleIndex] := 0.5 * (M + S);
+   Outputs[1, SampleIndex] := 0.5 * (M - S);
   end;
 end;
 

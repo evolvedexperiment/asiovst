@@ -461,15 +461,13 @@ asm
  fadd CDenorm32
  {$ENDIF}
  fmul  [eax.FFilterGain].Double
- jz @End
-  fld st(0)
-  fadd [eax.FState].Double
-  fld st(0)
-  fmul [eax.FCoeff].Double
-  faddp st(2), st(0)
-  fxch
-  fstp [eax.FState].Double
- @End:
+ fld st(0)
+ fadd [eax.FState].Double
+ fld st(0)
+ fmul [eax.FCoeff].Double
+ faddp st(2), st(0)
+ fxch
+ fstp [eax.FState].Double
  {$ENDIF}
 end;
 

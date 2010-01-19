@@ -1,10 +1,10 @@
 unit MultiChannelDriverMain;
 
+interface
+
 {$I DAV_Compiler.inc}
 
 {$WARN SYMBOL_PLATFORM OFF}
-
-interface
 
 uses
   Windows, SysUtils, Classes, Forms, ComObj, DAV_Common, DAV_Types, DAV_ASIO,
@@ -127,14 +127,15 @@ begin
 end;
 
 procedure GetNanoSeconds(var Time: TASIOTimeStamp);
-var NanoSeconds : Double;
+var
+  NanoSeconds : Double;
 begin
- // it looks stupid, but this has to be in to lines, otherwise it would be an integer multiplication
- // this fucking bullshit took me 10 hours to find it :)
- NanoSeconds := timegettime;
- NanoSeconds := NanoSeconds*1000000;
- Time.Hi := floor(NanoSeconds / CTwoRaisedTo32);
- Time.Lo := floor(NanoSeconds - Time.Hi * CTwoRaisedTo32);
+ // it looks stupid, but this has to be in two lines, otherwise it would be an
+ // integer multiplication this fucking bullshit took me 10 hours to find it :)
+ NanoSeconds := TimeGetTime;
+ NanoSeconds := NanoSeconds * 1000000;
+ Time.Hi := Floor(NanoSeconds / CTwoRaisedTo32);
+ Time.Lo := Floor(NanoSeconds - Time.Hi * CTwoRaisedTo32);
 end;
 
 
@@ -144,7 +145,7 @@ end;
 
 function TAsioHostDriverWrapper.GetDriverClass: TTDavASIODriver;
 begin
-  result := TAsioHostDriver;
+  Result := TAsioHostDriver;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,67 +153,72 @@ end;
 { TAsioHostDriver }
 
 procedure TAsioHostDriver.LoadDriverSettings;
-var i: integer; s: string;
+var
+  i : Integer;
+  s : string;
 begin
-  Settings.DriverIndex := -1;
-  for i := 1 to 16 do
+ with Settings do
   begin
-    Settings.InputAssignment[i] := 0;
-    Settings.OutputAssignment[i] := 0;
+   DriverIndex := -1;
+   for i := 1 to 16 do
+    begin
+     InputAssignment[i] := 0;
+     OutputAssignment[i] := 0;
+    end;
+   Inputs := 0;
+   Outputs := 0;
   end;
-  Settings.Inputs := 0;
-  Settings.Outputs := 0;
-
 
   with TRegistry.Create, Settings do
-  try
-    RootKey:=HKEY_LOCAL_MACHINE;
+   try
+    RootKey := HKEY_LOCAL_MACHINE;
     if OpenKeyReadOnly('software\asio\' + CDriverName) then
-    begin
+     begin
       if ValueExists('DriverIndex') then DriverIndex := ReadInteger('DriverIndex');
       for i := 16 downto 1 do
-      begin
-        if i<10 then s := '0' + inttostr(i) else s := inttostr(i);
+       begin
+        if i < 10 then s := '0' + IntToStr(i) else s := IntToStr(i);
 
         if ValueExists('in' + s) then InputAssignment[i] := ReadInteger('in' + s);
         if ValueExists('out' + s) then OutputAssignment[i] := ReadInteger('out' + s);
 
-        if InputAssignment[i]=0 then Inputs := i-1;
-        if OutputAssignment[i]=0 then Outputs := i-1;
-      end;
+        if InputAssignment[i] = 0 then Inputs := i - 1;
+        if OutputAssignment[i] = 0 then Outputs := i - 1;
+       end;
 
     end;
-  finally
+   finally
     Free;
-  end;
+   end;
 
-  if Settings.Inputs<1 then Settings.Inputs := 2;
-  if Settings.Outputs<1 then Settings.Outputs := 2;
-
+  if Settings.Inputs < 1 then Settings.Inputs := 2;
+  if Settings.Outputs < 1 then Settings.Outputs := 2;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TAsioHostDriver.SaveDriverSettings;
-var i: integer; s: string;
+var
+  i : Integer;
+  s : string;
 begin
-  with TRegistry.Create, Settings do
+ with TRegistry.Create, Settings do
   try
-    RootKey:=HKEY_LOCAL_MACHINE;
-    if OpenKey('software\asio\' + CDriverName, true) then
+   RootKey := HKEY_LOCAL_MACHINE;
+   if OpenKey('software\asio\' + CDriverName, True) then
     begin
-      WriteInteger('DriverIndex', DriverIndex);
+     WriteInteger('DriverIndex', DriverIndex);
 
-      for i := 1 to 16 do
+     for i := 1 to 16 do
       begin
-        if i<10 then s := '0' + inttostr(i) else s := inttostr(i);
+       if i < 10 then s := '0' + IntToStr(i) else s := IntToStr(i);
 
-        WriteInteger('in' + s, InputAssignment[i]);
-        WriteInteger('out' + s, OutputAssignment[i]);
+       WriteInteger('in' + s, InputAssignment[i]);
+       WriteInteger('out' + s, OutputAssignment[i]);
       end;
     end;
   finally
-    Free;
+   Free;
   end;
 end;
 
@@ -262,8 +268,8 @@ begin
  with FAsioHost do
   begin
    SetIgnoredDriver(InterfaceGUID);
-   if Settings.DriverIndex<0 then
-     Settings.DriverIndex := AsioHost.DriverList.IndexOf('ASIO4ALL v2');
+   if Settings.DriverIndex < 0
+    then Settings.DriverIndex := AsioHost.DriverList.IndexOf('ASIO4ALL v2');
 
    DriverIndex := Settings.DriverIndex;
    OnBufferSwitch32 := BufferSwitch32EventHandler;
@@ -272,8 +278,8 @@ begin
    FBlockFrames := FAsioHost.BufferSize;
   end;
   
-  SetControlPanelClass(TFmAsioDriverControlPanel);
-  InitControlPanel;
+ SetControlPanelClass(TFmAsioDriverControlPanel);
+ InitControlPanel;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -295,7 +301,7 @@ end;
 
 function TAsioHostDriver.Init(SysHandle: HWND): boolean;
 begin
- Result := true;
+ Result := True;
  FSystemHandle := SysHandle;
  if FActive then Exit;
 
@@ -358,14 +364,14 @@ end;
 
 procedure TAsioHostDriver.TimerOn;
 begin
- if assigned(FAsioHost) then
-  FAsioHost.Active := True;
+ if Assigned(FAsioHost)
+  then FAsioHost.Active := True;
 end;
 
 procedure TAsioHostDriver.TimerOff;
 begin
- if assigned(FAsioHost) then
-   FAsioHost.Active := False;
+ if Assigned(FAsioHost)
+  then FAsioHost.Active := False;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -487,8 +493,8 @@ begin
  TimeStamp.Hi := FSystemTime.Hi;
  if (FSamplePosition >= CTwoRaisedTo32) then
   begin
-   SamplePosition.Hi := round(FSamplePosition * CTwoRaisedTo32Reciprocal);
-   SamplePosition.Lo := round(FSamplePosition - (SamplePosition.Hi * CTwoRaisedTo32));
+   SamplePosition.Hi := Round(FSamplePosition * CTwoRaisedTo32Reciprocal);
+   SamplePosition.Lo := Round(FSamplePosition - (SamplePosition.Hi * CTwoRaisedTo32));
   end
  else
   begin
@@ -549,6 +555,7 @@ begin
       end;
     end;
   end;
+
  StrPCopy(Info.Name, 'Channel ' + IntToStr(Info.Channel + 1));
  Result := ASE_OK;
 end;
@@ -682,7 +689,7 @@ begin
  Stop;
 
  for Channel := 0 to FActiveInputs - 1 do
-   if assigned(FInputBuffers[Channel]) then
+   if Assigned(FInputBuffers[Channel]) then
    begin
      Dispose(FInputBuffers[Channel]);
      FInputBuffers[Channel] := nil;
@@ -691,7 +698,7 @@ begin
  FActiveInputs := 0;
 
  for Channel := 0 to FActiveOutputs - 1 do 
-   if assigned(FOutputBuffers[Channel]) then
+   if Assigned(FOutputBuffers[Channel]) then
    begin
      Dispose(FOutputBuffers[Channel]);
      FOutputBuffers[Channel] := nil;
@@ -759,10 +766,8 @@ end;
 procedure TAsioHostDriver.ResetRequestedHandler(Sender: TObject);
 begin
  if Assigned(FCallbacks) then
-  if Assigned(FCallbacks.AsioMessage) then
-   begin
-    FCallbacks.AsioMessage(kAsioResetRequest, 0, nil, nil);
-   end;
+  if Assigned(FCallbacks.AsioMessage)
+   then FCallbacks.AsioMessage(kAsioResetRequest, 0, nil, nil);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -775,33 +780,33 @@ begin
   if FStarted and Assigned(FCallbacks) then
   begin
    GetNanoSeconds(FSystemTime);      // latch system time
-  
+
    if FToggle = 0
     then Offset := 0
     else Offset := FBlockFrames;
   // Min(FActiveInputs,AsioHost.InputChannelCount) - 1
 
   // Fill Zero
-   for Channel := 0 to AsioHost.OutputChannelCount - 1 do Fillchar(OutBuffer[Channel]^[0], 0, FBlockFrames * SizeOf(Single));
+   for Channel := 0 to AsioHost.OutputChannelCount - 1
+    do Fillchar(OutBuffer[Channel]^[0], 0, FBlockFrames * SizeOf(Single));
 
    for Channel := 0 to FActiveInputs - 1 do
-    if Settings.InputAssignment[FOutMap[Channel]+1]>1 then
-     Move(InBuffer[Settings.InputAssignment[FInMap[Channel]+1]-2]^[0], FInputBuffers[Channel]^[Offset], FBlockFrames * SizeOf(Single))
-    else
-     Fillchar(FInputBuffers[Channel]^[Offset], 0, FBlockFrames * SizeOf(Single));
+    if Settings.InputAssignment[FOutMap[Channel] + 1] > 1
+     then Move(InBuffer[Settings.InputAssignment[FInMap[Channel] + 1] - 2]^[0], FInputBuffers[Channel]^[Offset], FBlockFrames * SizeOf(Single))
+     else Fillchar(FInputBuffers[Channel]^[Offset], 0, FBlockFrames * SizeOf(Single));
 
    for Channel := 0 to FActiveOutputs - 1 do
-    if Settings.OutputAssignment[FOutMap[Channel]+1]>1 then
-     Move(FOutputBuffers[Channel]^[Offset], OutBuffer[Settings.OutputAssignment[FOutMap[Channel]+1]-2]^[0], FBlockFrames* SizeOf(Single));
+    if Settings.OutputAssignment[FOutMap[Channel] + 1] > 1
+     then Move(FOutputBuffers[Channel]^[Offset], OutBuffer[Settings.OutputAssignment[FOutMap[Channel] + 1] - 2]^[0], FBlockFrames * SizeOf(Single));
 
    FSamplePosition := FSamplePosition + FBlockFrames;
 
    if FTimeInfoMode
     then BufferSwitchX
     else FCallbacks^.BufferSwitch(FToggle, ASIOFalse);
-                            
+
    FToggle := 1 - FToggle;
-  end; 
+  end;
 end;
 
 initialization

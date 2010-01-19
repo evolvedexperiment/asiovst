@@ -53,7 +53,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
     Top = 39
     Width = 392
     Height = 236
-    ActivePage = pageOutputs
+    ActivePage = pageInputs
     Anchors = [akLeft, akTop, akRight]
     MultiLine = True
     TabOrder = 2
@@ -179,7 +179,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 1
+        TabOrder = 0
         OnChange = InputSettingsChanged
       end
       object cbIn02: TComboBox
@@ -190,7 +190,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 2
+        TabOrder = 1
         OnChange = InputSettingsChanged
       end
       object cbIn03: TComboBox
@@ -201,7 +201,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 3
+        TabOrder = 2
         OnChange = InputSettingsChanged
       end
       object cbIn04: TComboBox
@@ -212,7 +212,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 4
+        TabOrder = 3
         OnChange = InputSettingsChanged
       end
       object cbIn05: TComboBox
@@ -223,7 +223,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 5
+        TabOrder = 4
         OnChange = InputSettingsChanged
       end
       object cbIn06: TComboBox
@@ -234,7 +234,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 6
+        TabOrder = 5
         OnChange = InputSettingsChanged
       end
       object cbIn07: TComboBox
@@ -245,7 +245,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 7
+        TabOrder = 6
         OnChange = InputSettingsChanged
       end
       object cbIn08: TComboBox
@@ -256,7 +256,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 8
+        TabOrder = 7
         OnChange = InputSettingsChanged
       end
       object cbIn09: TComboBox
@@ -267,7 +267,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 9
+        TabOrder = 8
         OnChange = InputSettingsChanged
       end
       object cbIn10: TComboBox
@@ -278,7 +278,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 10
+        TabOrder = 9
         OnChange = InputSettingsChanged
       end
       object cbIn11: TComboBox
@@ -289,7 +289,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 11
+        TabOrder = 10
         OnChange = InputSettingsChanged
       end
       object cbIn12: TComboBox
@@ -300,7 +300,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 12
+        TabOrder = 11
         OnChange = InputSettingsChanged
       end
       object cbIn13: TComboBox
@@ -311,7 +311,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 13
+        TabOrder = 12
         OnChange = InputSettingsChanged
       end
       object cbIn14: TComboBox
@@ -322,7 +322,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 14
+        TabOrder = 13
         OnChange = InputSettingsChanged
       end
       object cbIn15: TComboBox
@@ -333,7 +333,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 15
+        TabOrder = 14
         OnChange = InputSettingsChanged
       end
       object cbIn16: TComboBox
@@ -344,7 +344,7 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Height = 21
         Style = csDropDownList
         ItemHeight = 13
-        TabOrder = 0
+        TabOrder = 15
         OnChange = InputSettingsChanged
       end
     end
@@ -470,8 +470,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 1
+        ItemHeight = 0
+        TabOrder = 0
         OnChange = OutputSettingsChanged
       end
       object cbOut02: TComboBox
@@ -481,8 +481,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 2
+        ItemHeight = 0
+        TabOrder = 1
         OnChange = OutputSettingsChanged
       end
       object cbOut03: TComboBox
@@ -492,8 +492,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 3
+        ItemHeight = 0
+        TabOrder = 2
         OnChange = OutputSettingsChanged
       end
       object cbOut04: TComboBox
@@ -503,8 +503,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 4
+        ItemHeight = 0
+        TabOrder = 3
         OnChange = OutputSettingsChanged
       end
       object cbOut05: TComboBox
@@ -514,8 +514,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 5
+        ItemHeight = 0
+        TabOrder = 4
         OnChange = OutputSettingsChanged
       end
       object cbOut06: TComboBox
@@ -525,8 +525,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 6
+        ItemHeight = 0
+        TabOrder = 5
         OnChange = OutputSettingsChanged
       end
       object cbOut07: TComboBox
@@ -536,8 +536,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 7
+        ItemHeight = 0
+        TabOrder = 6
         OnChange = OutputSettingsChanged
       end
       object cbOut08: TComboBox
@@ -547,8 +547,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 8
+        ItemHeight = 0
+        TabOrder = 7
         OnChange = OutputSettingsChanged
       end
       object cbOut09: TComboBox
@@ -558,8 +558,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 9
+        ItemHeight = 0
+        TabOrder = 8
         OnChange = OutputSettingsChanged
       end
       object cbOut10: TComboBox
@@ -569,8 +569,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 10
+        ItemHeight = 0
+        TabOrder = 9
         OnChange = OutputSettingsChanged
       end
       object cbOut11: TComboBox
@@ -580,8 +580,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 11
+        ItemHeight = 0
+        TabOrder = 10
         OnChange = OutputSettingsChanged
       end
       object cbOut12: TComboBox
@@ -591,8 +591,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 12
+        ItemHeight = 0
+        TabOrder = 11
         OnChange = OutputSettingsChanged
       end
       object cbOut13: TComboBox
@@ -602,8 +602,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 13
+        ItemHeight = 0
+        TabOrder = 12
         OnChange = OutputSettingsChanged
       end
       object cbOut14: TComboBox
@@ -613,8 +613,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 14
+        ItemHeight = 0
+        TabOrder = 13
         OnChange = OutputSettingsChanged
       end
       object cbOut15: TComboBox
@@ -624,8 +624,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 15
+        ItemHeight = 0
+        TabOrder = 14
         OnChange = OutputSettingsChanged
       end
       object cbOut16: TComboBox
@@ -635,8 +635,8 @@ object FmAsioDriverControlPanel: TFmAsioDriverControlPanel
         Width = 131
         Height = 21
         Style = csDropDownList
-        ItemHeight = 13
-        TabOrder = 0
+        ItemHeight = 0
+        TabOrder = 15
         OnChange = OutputSettingsChanged
       end
     end

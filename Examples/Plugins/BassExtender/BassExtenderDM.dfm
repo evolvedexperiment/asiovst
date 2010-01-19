@@ -1,5 +1,4 @@
 object BassExtenderModule: TBassExtenderModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Bass Extender'
@@ -7,7 +6,6 @@ object BassExtenderModule: TBassExtenderModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'BASS'
@@ -42,6 +40,7 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 20000
       Min = 20.000000000000000000
       MinInteger = 20
+      ReportVST2Properties = True
       ShortLabel = 'Freq'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
@@ -53,7 +52,6 @@ object BassExtenderModule: TBassExtenderModule
       OnCustomParameterDisplay = ParamFreqDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Frequency Splitter'
       DisplayName = 'Split Order'
@@ -64,6 +62,7 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 32
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Order'
       SmallStepFloat = 2.000000000000000000
       StepFloat = 2.000000000000000000
@@ -73,7 +72,6 @@ object BassExtenderModule: TBassExtenderModule
       OnCustomParameterDisplay = ParamSplitOrderDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Frequency Divider'
       DisplayName = 'Divider'
@@ -81,15 +79,16 @@ object BassExtenderModule: TBassExtenderModule
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Divider'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamDividerChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Frequency Divider'
       DisplayName = 'Shape'
@@ -97,15 +96,16 @@ object BassExtenderModule: TBassExtenderModule
       LargeStepFloat = 2.000000000000000000
       LargeStepInteger = 2
       Max = 100.000000000000000000
+      ReportVST2Properties = True
       ShortLabel = 'Shape'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamShapeChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Threshold'
@@ -116,10 +116,12 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 0
       Min = -60.000000000000000000
       MinInteger = -60
-      ShortLabel = 'Thresho'
+      ReportVST2Properties = True
+      ShortLabel = 'Thres.'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamThresholdChange
     end
@@ -135,6 +137,7 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 1000
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Ratio'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
@@ -154,6 +157,7 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 1000000
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Attack'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
@@ -175,6 +179,7 @@ object BassExtenderModule: TBassExtenderModule
       MaxInteger = 10000
       Min = 1.000000000000000000
       MinInteger = 1
+      ReportVST2Properties = True
       ShortLabel = 'Release'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 10.000000000000000000
@@ -185,7 +190,6 @@ object BassExtenderModule: TBassExtenderModule
       OnCustomParameterDisplay = ParamReleaseDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Compressor'
       DisplayName = 'Compression Mix'
@@ -201,7 +205,6 @@ object BassExtenderModule: TBassExtenderModule
       OnParameterChange = ParamCompressionMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Balance'
@@ -211,15 +214,16 @@ object BassExtenderModule: TBassExtenderModule
       Max = 100.000000000000000000
       Min = -100.000000000000000000
       MinInteger = -100
+      ReportVST2Properties = True
       ShortLabel = 'Balance'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = '%'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamBalanceChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Misc.'
       DisplayName = 'Mode'
@@ -228,6 +232,7 @@ object BassExtenderModule: TBassExtenderModule
       LargeStepInteger = 1
       Max = 3.000000000000000000
       MaxInteger = 3
+      ReportVST2Properties = True
       ShortLabel = 'Mode'
       SmallStepFloat = 1.000000000000000000
       StepFloat = 1.000000000000000000

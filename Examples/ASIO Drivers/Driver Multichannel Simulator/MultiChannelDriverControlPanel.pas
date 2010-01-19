@@ -8,28 +8,10 @@ uses
 
 type
   TFmAsioDriverControlPanel = class(TDavASIODriverCP)
-    LbDriver: TLabel;
-    CbDriver: TComboBox;
     BtControlPanel: TButton;
-    pcAssignments: TPageControl;
-    pageInputs: TTabSheet;
-    pageOutputs: TTabSheet;
-    lbIn01: TLabel;
-    lbIn02: TLabel;
-    lbIn03: TLabel;
-    lbIn04: TLabel;
-    lbIn05: TLabel;
-    lbIn06: TLabel;
-    lbIn07: TLabel;
-    lbIn08: TLabel;
-    lbIn09: TLabel;
-    lbIn10: TLabel;
-    lbIn11: TLabel;
-    lbIn12: TLabel;
-    lbIn13: TLabel;
-    lbIn14: TLabel;
-    lbIn15: TLabel;
-    lbIn16: TLabel;
+    btnApply: TButton;
+    btnClose: TButton;
+    CbDriver: TComboBox;
     cbIn01: TComboBox;
     cbIn02: TComboBox;
     cbIn03: TComboBox;
@@ -45,23 +27,7 @@ type
     cbIn13: TComboBox;
     cbIn14: TComboBox;
     cbIn15: TComboBox;
-    cbIn16: TComboBox; 
-    lbOut01: TLabel;
-    lbOut02: TLabel;
-    lbOut03: TLabel;
-    lbOut04: TLabel;
-    lbOut05: TLabel;
-    lbOut06: TLabel;
-    lbOut07: TLabel;
-    lbOut08: TLabel;
-    lbOut09: TLabel;
-    lbOut10: TLabel;
-    lbOut11: TLabel;
-    lbOut12: TLabel;
-    lbOut13: TLabel;
-    lbOut14: TLabel;
-    lbOut15: TLabel;
-    lbOut16: TLabel;
+    cbIn16: TComboBox;
     cbOut01: TComboBox;
     cbOut02: TComboBox;
     cbOut03: TComboBox;
@@ -78,19 +44,53 @@ type
     cbOut14: TComboBox;
     cbOut15: TComboBox;
     cbOut16: TComboBox;
-    btnClose: TButton;
-    btnApply: TButton;
-    procedure BtControlPanelClick(Sender: TObject);
-    procedure CbDriverChange(Sender: TObject);
-    procedure btnCloseClick(Sender: TObject);
-    procedure btnApplyClick(Sender: TObject);
-    procedure InputSettingsChanged(Sender: TObject);
+    LbDriver: TLabel;
+    lbIn01: TLabel;
+    lbIn02: TLabel;
+    lbIn03: TLabel;
+    lbIn04: TLabel;
+    lbIn05: TLabel;
+    lbIn06: TLabel;
+    lbIn07: TLabel;
+    lbIn08: TLabel;
+    lbIn09: TLabel;
+    lbIn10: TLabel;
+    lbIn11: TLabel;
+    lbIn12: TLabel;
+    lbIn13: TLabel;
+    lbIn14: TLabel;
+    lbIn15: TLabel;
+    lbIn16: TLabel;
+    lbOut01: TLabel;
+    lbOut02: TLabel;
+    lbOut03: TLabel;
+    lbOut04: TLabel;
+    lbOut05: TLabel;
+    lbOut06: TLabel;
+    lbOut07: TLabel;
+    lbOut08: TLabel;
+    lbOut09: TLabel;
+    lbOut10: TLabel;
+    lbOut11: TLabel;
+    lbOut12: TLabel;
+    lbOut13: TLabel;
+    lbOut14: TLabel;
+    lbOut15: TLabel;
+    lbOut16: TLabel;
+    PageInputs: TTabSheet;
+    PageOutputs: TTabSheet;
+    pcAssignments: TPageControl;
     procedure FormCreate(Sender: TObject);
+    procedure BtControlPanelClick(Sender: TObject);
+    procedure btnApplyClick(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
+    procedure CbDriverChange(Sender: TObject);
+    procedure InputSettingsChanged(Sender: TObject);
     procedure OutputSettingsChanged(Sender: TObject);
   public
-    inputboxes: array[1..16] of TComboBox;
-    outputboxes: array[1..16] of TComboBox;
-    ModifiedSelections: boolean;
+    InputBoxes: array[1..16] of TComboBox;
+    OutputBoxes: array[1..16] of TComboBox;
+    ModifiedSelections: Boolean;
     procedure PanelLoaded; override;
     procedure UpdateSelection;
     procedure CopyToSettings;
@@ -103,15 +103,35 @@ uses
 
 {$R *.dfm}
 
-procedure TFmAsioDriverControlPanel.PanelLoaded;
-var i: integer;
+procedure TFmAsioDriverControlPanel.FormCreate(Sender: TObject);
+var
+  i: Integer;
 begin
-  if not assigned(Driver) then exit;
+ // inputs page
+ with PageInputs do
+  for i := 0 to ControlCount - 1 do
+   if Controls[i] is TComboBox then
+    if Controls[i].Tag in [1..16]
+     then InputBoxes[Controls[i].Tag] := TComboBox(Controls[i]);
 
-  Caption:=Driver.GetDriverName + ' (Version ' + inttostr(Driver.GetDriverVersion) + ')';
-  cbDriver.Items:=TAsioHostDriver(Driver).AsioHost.DriverList;
+ // outputs page
+ with PageOutputs do
+  for i := 0 to ControlCount - 1 do
+   if Controls[i] is TComboBox then
+    if Controls[i].Tag in [1..16]
+     then OutputBoxes[Controls[i].Tag] := TComboBox(Controls[i]);
+end;
 
-  pcAssignments.Visible := false;  // no redraw for 16 comboboxes
+procedure TFmAsioDriverControlPanel.PanelLoaded;
+var
+  i: Integer;
+begin
+  if not Assigned(Driver) then Exit;
+
+  Caption := Driver.GetDriverName + ' (Version ' + IntToStr(Driver.GetDriverVersion) + ')';
+  cbDriver.Items := TAsioHostDriver(Driver).AsioHost.DriverList;
+
+  pcAssignments.Visible := False;  // no redraw for 16 comboboxes
 
   cbIn01.Clear;
   cbIn01.Items.Add('- none -');
@@ -122,52 +142,53 @@ begin
   cbOut01.Items.Add('- zero -');
   with TAsioHostDriver(Driver).Asiohost do
   begin
-   for i := 0 to InputChannelCount-1 do cbIn01.Items.Add(string(OutputChannelInfos[i].Name));
-   for i := 0 to OutputChannelCount-1 do cbOut01.Items.Add(string(OutputChannelInfos[i].Name));
+   for i := 0 to InputChannelCount - 1 do cbIn01.Items.Add(string(InputChannelInfos[i].Name));
+   for i := 0 to OutputChannelCount - 1 do cbOut01.Items.Add(string(OutputChannelInfos[i].Name));
   end;
 
-  for i := 2 to 16 do inputboxes[i].Items.Assign(cbIn01.Items);
-  for i := 2 to 16 do outputboxes[i].Items.Assign(cbOut01.Items);
+  for i := 2 to 16 do InputBoxes[i].Items.Assign(cbIn01.Items);
+  for i := 2 to 16 do OutputBoxes[i].Items.Assign(cbOut01.Items);
 
   UpdateSelection;
-  pcAssignments.Visible := true;
+  pcAssignments.Visible := True;
 end;
 
 procedure TFmAsioDriverControlPanel.InputSettingsChanged(Sender: TObject);
-var i: integer;
+var
+  i: Integer;
 begin
-  if not (Sender is TComboBox) then exit;
+ if not (Sender is TComboBox) then Exit;
 
-  with TComboBox(Sender) do
-    if ItemIndex<1 then
-    begin
-      for i := tag+1 to 16 do inputboxes[i].Enabled := false;
+ with TComboBox(Sender) do
+  if ItemIndex < 1
+   then for i := Tag + 1 to 16 do InputBoxes[i].Enabled := False
+   else for i := Tag + 1 to 16 do
+    if (InputBoxes[i - 1].ItemIndex > 0) and OutputBoxes[i - 1].Enabled
+     then InputBoxes[i].Enabled := True;
 
-    end else
-      for i := tag+1 to 16 do
-       if (inputboxes[i-1].ItemIndex>0) and outputboxes[i-1].enabled then inputboxes[i].Enabled := true;
-
-  ModifiedSelections := true;
+  ModifiedSelections := True;
 end;
 
 procedure TFmAsioDriverControlPanel.OutputSettingsChanged(Sender: TObject);
-var i: integer;
+var
+  i : Integer;
 begin
-  if not (Sender is TComboBox) then exit;
+  if not (Sender is TComboBox) then Exit;
 
   with TComboBox(Sender) do
-    if ItemIndex<1 then
+    if ItemIndex < 1 then
     begin
-      for i := tag+1 to 16 do outputboxes[i].Enabled := false;
+      for i := Tag + 1 to 16 do OutputBoxes[i].Enabled := False;
     end else
-      for i := tag+1 to 16 do
-       if (outputboxes[i-1].ItemIndex>0) and outputboxes[i-1].enabled then outputboxes[i].Enabled := true;
+      for i := Tag + 1 to 16 do
+       if (OutputBoxes[i - 1].ItemIndex > 0) and OutputBoxes[i - 1].Enabled then OutputBoxes[i].Enabled := True;
 
-  ModifiedSelections := true;
+  ModifiedSelections := True;
 end;
 
 procedure TFmAsioDriverControlPanel.UpdateSelection;
-var i: integer;
+var
+  i: Integer;
 begin
   with TAsioHostDriver(Driver).Settings do
   begin
@@ -175,11 +196,11 @@ begin
 
     for i := 1 to 16 do
     begin
-      inputboxes[i].ItemIndex := InputAssignment[i];
-      inputboxes[i].Enabled := (i=1) or ( (InputAssignment[i-1]>0) and inputboxes[i-1].Enabled);
+      InputBoxes[i].ItemIndex := InputAssignment[i];
+      InputBoxes[i].Enabled := (i = 1) or ( (InputAssignment[i - 1] > 0) and InputBoxes[i - 1].Enabled);
 
-      outputboxes[i].ItemIndex := OutputAssignment[i];
-      outputboxes[i].Enabled := (i=1) or ( (OutputAssignment[i-1]>0) and outputboxes[i-1].Enabled);
+      OutputBoxes[i].ItemIndex := OutputAssignment[i];
+      OutputBoxes[i].Enabled := (i = 1) or ( (OutputAssignment[i - 1] > 0) and OutputBoxes[i - 1].Enabled);
     end;
   end;
   ModifiedSelections := false;
@@ -188,11 +209,12 @@ end;
 procedure TFmAsioDriverControlPanel.btnCloseClick(Sender: TObject);
 begin
   UpdateSelection;
-  close;
+  Close;
 end;
 
 procedure TFmAsioDriverControlPanel.CopyToSettings;
-var i: integer;
+var
+  i: Integer;
 begin
   with TAsioHostDriver(Driver).Settings do
   begin
@@ -200,27 +222,15 @@ begin
 
     for i := 1 to 16 do
     begin
-      InputAssignment[i] := inputboxes[i].ItemIndex;
-      OutputAssignment[i] := outputboxes[i].ItemIndex;
+      InputAssignment[i] := InputBoxes[i].ItemIndex;
+      OutputAssignment[i] := OutputBoxes[i].ItemIndex;
     end;
   end;
 end;
 
-procedure TFmAsioDriverControlPanel.FormCreate(Sender: TObject);
-var i: integer;
-begin
-  for i := 0 to pageInputs.ControlCount-1 do
-   if pageInputs.Controls[i] is TComboBox then
-    inputboxes[pageInputs.Controls[i].Tag] := TComboBox(pageInputs.Controls[i]);
-
-  for i := 0 to pageOutputs.ControlCount-1 do
-   if pageOutputs.Controls[i] is TComboBox then
-    outputboxes[pageOutputs.Controls[i].Tag] := TComboBox(pageOutputs.Controls[i]);
-end;
-
 procedure TFmAsioDriverControlPanel.btnApplyClick(Sender: TObject);
 begin
-  if not assigned(Driver) then exit;
+  if not Assigned(Driver) then exit;
 
   CopyToSettings;
   TAsioHostDriver(Driver).SaveAndReset(self);
@@ -228,16 +238,17 @@ end;
 
 procedure TFmAsioDriverControlPanel.CbDriverChange(Sender: TObject);
 begin
- if not assigned(Driver) then exit;
+ if not Assigned(Driver) then exit;
 
  CopyToSettings;
  TAsioHostDriver(Driver).SaveAndReset(self);
 end;
 
 procedure TFmAsioDriverControlPanel.BtControlPanelClick(Sender: TObject);
-var r: integer;
+var
+  r: Integer;
 begin
-  if not assigned(Driver) then exit;
+  if not Assigned(Driver) then exit;
 
   if ModifiedSelections then
   begin
