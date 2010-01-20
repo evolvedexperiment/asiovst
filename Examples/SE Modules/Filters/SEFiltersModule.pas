@@ -25,7 +25,7 @@ unit SEFiltersModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 //  SynthEdit is witten by Jef McClintock (see http://www.synthedit.com/      //
@@ -149,17 +149,6 @@ type
   public
     constructor Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer); override;
     class procedure GetModuleProperties(Properties : PSEModuleProperties); override;
-  end;
-
-  TShapeFilter = class(TBasicPeakFilter)
-  private
-    FShape: Double;
-    procedure SetShape(const Value: Double);
-  protected
-    procedure CalculateCoefficients; override;
-    procedure BandwidthChanged; override;
-  public
-    property Shape : Double read FShape write SetShape;
   end;
 
   TSEBasicShapeModule = class(TCustomSEGainFrequencyModule)
@@ -747,92 +736,12 @@ begin
   end;
 end;
 
-{ TShapeFilter }
-
-procedure TShapeFilter.BandwidthChanged;
-var
-  d : Double;
-begin
- if abs(FShape) > 1
-  then d := ln(1 + Power(FBandWidth, abs(FShape)))
-  else d := ln(1 + FBandWidth);
- if abs(FShape) > 1
-  then FAlpha := tan(FW0 * 0.5) * d / (cos(0.5 * FW0)) * 2
-  else FAlpha := tan(FW0 * 0.5) * d / (cos(0.5 * FW0)) * Power(2, abs(FShape));
-end;
-
-procedure TShapeFilter.CalculateCoefficients;
-var t, K, G, V, A  : Double;
-begin
- if FShape < -1 then
-  begin
-   G := FGainFactor * (2 + FShape);
-   V := Power(FGainFactor ,(2 + FShape));
-
-   K := tan(FW0 * 0.5);
-   A := Power(FGainFactor, - 0.5);
-
-   t               := 1 / (sqr(K) / V + 1 + FAlpha * A);
-   FDenominator[1] := 2 * (sqr(K) / V - 1) * t;
-   FDenominator[2] := t * (sqr(K) / V + 1 - FAlpha * A);
-
-   FNominator[0]   :=     (sqr(K) * G + FAlpha / A + 1) * t;
-   FNominator[1]   := 2 * (sqr(K) * G              - 1) * t;
-   FNominator[2]   :=     (sqr(K) * G - FAlpha / A + 1) * t;
-  end else
- if FShape > 1 then
-  begin
-   G := FGainFactor * (2 - FShape);
-   V := Power(FGainFactor ,(2 - FShape));
-
-   K := tan(FW0 * 0.5);
-   A := Power(FGainFactor, 0.5);
-
-   t               := 1 / (sqr(K) * V + 1 + FAlpha * A);
-   FDenominator[1] := 2 * (sqr(K) * V - 1) * t;
-   FDenominator[2] := t * (sqr(K) * V + 1 - FAlpha * A);
-
-   FNominator[0]   :=     V * (sqr(K) + FAlpha * A + G) * t;
-   FNominator[1]   := 2 * V * (sqr(K)              - G) * t;
-   FNominator[2]   :=     V * (sqr(K) - FAlpha * A + G) * t;
-  end
- else
-  begin
-   if FShape < 0
-    then G := 1
-    else G := Power(FGainFactor, 2 * FShape);
-
-   K := tan(FW0*0.5);
-   V := Power(FGainFactor, FShape);
-   A := Power(FGainFactor, sqr(FShape) + 0.5 * FShape - 1);
-
-   t               := 1 / (sqr(K) * V + FAlpha * A + 1);
-   FDenominator[1] := 2 * (sqr(K) * V              - 1) * t;
-   FDenominator[2] := t * (sqr(K) * V - FAlpha * A + 1);
-
-   FNominator[0]   :=     G * (sqr(K) / V + FAlpha / A + 1) * t;
-   FNominator[1]   := 2 * G * (sqr(K) / V              - 1) * t;
-   FNominator[2]   :=     G * (sqr(K) / V - FAlpha / A + 1) * t;
-  end;
-
- CalcPolesZeros;
-end;
-
-procedure TShapeFilter.SetShape(const Value: Double);
-begin
- if FShape <> Value then
-  begin
-   FShape := Value;
-   BandwidthChanged;
-   CalculateCoefficients;
-  end;
-end;
 
 { TSEBasicShapeModule }
 
 constructor TSEBasicShapeModule.Create(SEAudioMaster: TSE2audioMasterCallback; Reserved: Pointer);
 begin
- FFilter := TShapeFilter.Create;
+ FFilter := TBasicShapeFilter.Create;
  FFilter.Frequency := 1000;
  FFilter.Gain      := 0;
  FFilter.Bandwidth := 1;
@@ -898,7 +807,7 @@ begin
    FFilter.Frequency := 10000 * Freq[Sample];
    FFilter.Gain      := 15 * Gain[Sample];
    FFilter.Bandwidth := 0.1 + 9.9 * abs(BW[Sample]);
-   TShapeFilter(FFilter).Shape := Sym[Sample];
+   TBasicShapeFilter(FFilter).Shape := Sym[Sample];
    Output^[Sample]   := FFilter.ProcessSample64(Input[Sample] + cDenorm64);
   end;
 end;

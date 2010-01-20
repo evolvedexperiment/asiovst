@@ -1753,6 +1753,7 @@ begin
 //  4 : Result := sqr(Selectivity + sqrt(sqr(Selectivity) + 1));
 //  3 : Result :=
 //       Temp := sqrt(1 - sqr(1 / Selectivity));
+  else raise Exception.Create('not implemented yet!');
  end;
 end;
 

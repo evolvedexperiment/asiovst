@@ -358,10 +358,11 @@ end;
 {$IFDEF Debug}
 procedure TCustomVSTModule.AddLogMessage(const Text: string);
 begin
- if assigned(FLog) then
-  begin
+ if Assigned(FLog) then
+  try
    FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
    FLog.SaveToFile('Debug.log');
+  except
   end;
 end;
 {$ENDIF}

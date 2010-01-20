@@ -40,7 +40,6 @@ uses
 type
   TCustomLevelingAmplifier = class(TDspSampleRatePersistent, IDspProcessor64)
   private
-    FSampleRate: Double;
     function GetGainReductiondB: Double;
     function GetInput_dB: Double;
     function GetOutput_dB: Double;

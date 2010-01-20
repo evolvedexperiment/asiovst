@@ -37,7 +37,8 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Types, DAV_ASIOHost;
+  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Types, DAV_ASIOHost,
+  DAV_DspSimpleOscillator;
 
 type
   TFmASIO = class(TForm)
@@ -46,9 +47,9 @@ type
     BtStartStop: TButton;
     ChannelBox: TComboBox;
     DriverCombo: TComboBox;
-    Lb_Channels: TLabel;
-    Lb_Copyright: TLabel;
-    Lb_Drivername: TLabel;
+    LbChannels: TLabel;
+    LbCopyright: TLabel;
+    LbDrivername: TLabel;
     LbFreq: TLabel;
     LbPanorama: TLabel;
     LbVolume: TLabel;
@@ -67,16 +68,20 @@ type
     procedure SbVolumeChange(Sender: TObject);
     procedure ASIOHostBufferSwitch64(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
-    procedure Lb_ChannelsClick(Sender: TObject);
     procedure ASIOHostReset(Sender: TObject);
   private
     procedure SetFrequency(const Value: Double);
+    procedure SetAmplitude(const Value: Double);
+  protected
+    procedure AmplitudeChanged; virtual;
+    procedure FrequencyChanged; virtual;
   public
-    FAngle, FPosition   : TComplexDouble;
-    FPan, FFreq, FVol   : Double;
-    FChannelOffset      : Byte;
+    FOscillator       : TSimpleOscillator64;
+    FPan, FFreq, FAmp : Double;
+    FChannelOffset    : Byte;
   published
-    property Frequency : Double read FFreq write SetFrequency;
+    property Frequency: Double read FFreq write SetFrequency;
+    property Amplitude: Double read FAmp write SetAmplitude;
   end;
 
 var
@@ -91,13 +96,16 @@ implementation
 uses
   SysUtils, Inifiles, DAV_Common, DAV_Math;
 
+resourcestring
+  RCStrNoASIODriverPresent = 'No ASIO Driver present! Application Terminated!';
+
 procedure TFmASIO.FormCreate(Sender: TObject);
 begin
  DriverCombo.Items := ASIOHost.DriverList;
 
  if DriverCombo.Items.Count = 0 then
   try
-   raise Exception.Create('No ASIO Driver present! Application Terminated!');
+   raise Exception.Create(RCStrNoASIODriverPresent);
   except
    Application.Terminate;
   end;
@@ -114,13 +122,18 @@ begin
    Free;
   end;
 
- FPosition.Re   :=    0;
- FPosition.Im   :=   -1;
+ FAmp           :=    1;
  FFreq          := 1000;
  FPan           :=    0.5;
- FVol           :=    1;
  FChannelOffset :=    0;
- GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
+
+ FOscillator := TSimpleOscillator64.Create;
+ with FOscillator do
+  begin
+   Frequency := FFreq;
+   Amplitude := FAmp;
+   SampleRate := ASIOHost.SampleRate;
+  end;
 end;
 
 procedure TFmASIO.DriverComboChange(Sender: TObject);
@@ -169,15 +182,10 @@ begin
    WriteInteger('Audio', 'Channels', ChannelBox.ItemIndex);
   finally
    Free;
-  end; 
-end;
+  end;
 
-procedure TFmASIO.Lb_ChannelsClick(Sender: TObject);
-begin
- AsioHost.CanSampleRate(48000);
- AsioHost.SampleRate := 48000;
- AsioHost.CanSampleRate(44100);
- AsioHost.SampleRate := 44100;
+ AsioHost.Active := False; 
+ FreeAndNil(FOscillator);  
 end;
 
 procedure TFmASIO.BtStartStopClick(Sender: TObject);
@@ -204,24 +212,43 @@ begin
  Frequency := FreqLinearToLog(SbFreq.Position * 0.00001);
 end;
 
+procedure TFmASIO.SetAmplitude(const Value: Double);
+begin
+ if FAmp <> Value then
+  begin
+   FAmp := Value;
+   AmplitudeChanged;
+  end;
+end;
+
 procedure TFmASIO.SetFrequency(const Value: Double);
 begin
  if FFreq <> Value then
   begin
    FFreq := Value;
-   LbFreq.Caption := 'Frequency: ' + FloatTostrF(FFreq, ffGeneral, 5, 5) + ' Hz';
-   GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
+   FrequencyChanged;
   end;
+end;
+
+procedure TFmASIO.AmplitudeChanged;
+begin
+ FOscillator.Amplitude := FAmp;
+ if FAmp = 0
+  then LbVolume.Caption := 'Volume: 0 equals -oo dB'
+  else LbVolume.Caption := 'Volume: ' +
+                           FloatToStrF(FAmp, ffFixed, 2, 2) + ' equals ' +
+                           FloatToStrF(Amp_to_dB(FAmp), ffGeneral, 2, 2) + ' dB';
+end;
+
+procedure TFmASIO.FrequencyChanged;
+begin
+ FOscillator.Frequency := FFreq;
+ LbFreq.Caption := 'Frequency: ' + FloatToStrF(FFreq, ffGeneral, 5, 5) + ' Hz';
 end;
 
 procedure TFmASIO.SbVolumeChange(Sender: TObject);
 begin
- FVol := SbVolume.Position * 0.00001;
- if FVol = 0
-  then LbVolume.Caption := 'Volume: 0 equals -oo dB'
-  else LbVolume.Caption := 'Volume: ' +
-                           FloattostrF(FVol, ffFixed, 2, 2) + ' equals ' +
-                           FloattostrF(Amp_to_dB(FVol), ffGeneral, 2, 2) + ' dB';
+ Amplitude := SbVolume.Position * 0.00001;
 end;
 
 procedure TFmASIO.SbPanChange(Sender: TObject);
@@ -234,56 +261,45 @@ end;
 
 procedure TFmASIO.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- GetSinCos(2 * Pi * FFreq / ASIOHost.SampleRate, FAngle.Im, FAngle.Re);
+ if Assigned(FOscillator)
+  then FOscillator.SampleRate := ASIOHost.SampleRate;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleFixedArray);
 var
   Sample : Integer;
-  Data   : Double;
   L, R   : Integer;
 begin
  L := FChannelOffset;
  R := L + 1;
  for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   Data := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
-   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
-   FPosition.Re := Data; Data := Data * FVol;
-   OutBuffer[L, Sample] := (1 - FPan) * Data;
-   OutBuffer[R, Sample] := FPan * Data;
+   OutBuffer[L, Sample] := (1 - FPan) * FOscillator.Sine;
+   OutBuffer[R, Sample] := FPan * FOscillator.Sine;
+   FOscillator.CalculateNextSample;
   end;
-
-  { following line was removed by MyCo
-    @C.W.B: When I uncomment this, ASIO doesn't work at all, and the EXE crashs when I close it
-            please confirm this change, because I don't know why this line was added}
-
-  //  ASIOHost.Active := False;
 end;
 
 procedure TFmASIO.ASIOHostBufferSwitch64(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfDoubleFixedArray);
 var
   Sample : Integer;
-  Data   : Double;
   L, R   : Integer;
 begin
  L := FChannelOffset;
  R := L + 1;
  for Sample := 0 to ASIOHost.BufferSize - 1 do
   begin
-   Data := FPosition.Re * FAngle.Re - FPosition.Im * FAngle.Im;
-   FPosition.Im := FPosition.Im * FAngle.Re + FPosition.Re * FAngle.Im;
-   FPosition.Re := Data; Data := Data * FVol;
-   OutBuffer[L, Sample] := (1 - FPan) * Data;
-   OutBuffer[R, Sample] := FPan * Data;
+   OutBuffer[L, Sample] := (1 - FPan) * FOscillator.Sine;
+   OutBuffer[R, Sample] := FPan * FOscillator.Sine;
+   FOscillator.CalculateNextSample;
   end;
 end;
 
 procedure TFmASIO.ASIOHostReset(Sender: TObject);
 begin
-  ASIOHost.Active := True;
+ ASIOHost.Active := True;
 end;
 
 {$IFDEF FPC}
@@ -292,4 +308,3 @@ initialization
 {$ENDIF}
 
 end.
-

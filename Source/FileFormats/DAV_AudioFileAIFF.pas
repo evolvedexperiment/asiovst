@@ -283,8 +283,8 @@ end;
 
 function TCustomAudioFileAIFF.GetDataSize: Cardinal;
 begin
- Result := FCommonChunk.SampleFrames * FCommonChunk.Channels *
-   ((FCommonChunk.SampleSize + 7) div 8);
+ Result := FCommonChunk.SampleFrames * Cardinal(FCommonChunk.Channels) *
+   Cardinal((FCommonChunk.SampleSize + 7) div 8);
 end;
 
 function TCustomAudioFileAIFF.GetEncoding: TAudioEncoding;

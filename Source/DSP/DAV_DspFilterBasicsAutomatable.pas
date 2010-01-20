@@ -177,7 +177,6 @@ begin
  FNominator[1] := FDenominator[1];
  FNominator[0] := (1 + FAlpha * FGainFactor) * t;
  FNominator[2] := (1 - FAlpha * FGainFactor) * t;
- CalcPolesZeros;
 end;
 
 { TAutomatableAllpassFilter }
@@ -212,7 +211,6 @@ begin
  FNominator[0] := FGainFactor * t * (A1 - A2 * cn + sA);
  FNominator[1] := FGainFactor * t * (A2 - A1 * cn) * 2;
  FNominator[2] := FGainFactor * t * (A1 - A2 * cn - sA);
- CalcPolesZeros;
 end;
 
 { TAutomatableLowShelfAFilter }
@@ -270,7 +268,6 @@ begin
  FNominator[0] := FGainFactor * (A1 + A2 * cn + sA) * t;
  FNominator[1] := FGainFactor * (A2 + A1 * cn) * -2 * t;
  FNominator[2] := FGainFactor * (A1 + A2 * cn - sA) * t;
- CalcPolesZeros;
 end;
 
 { TAutomatableHighShelfAFilter }
@@ -319,32 +316,28 @@ end;
 
 procedure TAutomatableHighcutFilter.CalculateCoefficients;
 var
-  cn, t : Double;
+  t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := FExpW0.Re;
- FNominator[0]   := sqr(FGainFactor) * (1 - cn) * 0.5 * t;
+ FNominator[0]   := Sqr(FGainFactor) * (1 - FExpW0.Re) * 0.5 * t;
  FNominator[1]   := 2 * FNominator[0];
  FNominator[2]   := FNominator[0];
- FDenominator[1] := -2 * cn * t;
+ FDenominator[1] := -2 * FExpW0.Re * t;
  FDenominator[2] := (1 - FAlpha) * t;
- CalcPolesZeros;
 end;
 
 { TAutomatableLowcutFilter }
 
 procedure TAutomatableLowcutFilter.CalculateCoefficients;
 var
-  cn, t : Double;
+  t : Double;
 begin
  t := 1 / (1 + FAlpha);
- cn := FExpW0.Re;
- FNominator[0]   := sqr(FGainFactor) * (1 + cn) * 0.5 * t;
+ FNominator[0]   := Sqr(FGainFactor) * (1 + FExpW0.Re) * 0.5 * t;
  FNominator[1]   := -2 * FNominator[0];
  FNominator[2]   := FNominator[0];
- FDenominator[1] := -2 * cn * t;
+ FDenominator[1] := -2 * FExpW0.Re * t;
  FDenominator[2] := (1 - FAlpha) * t;
- CalcPolesZeros;
 end;
 
 { TAutomatableBandpassFilter }

@@ -954,7 +954,7 @@ procedure TFormatChunk.CalculateChunkSize;
 begin
  FChunkSize := SizeOf(TWavFormatRecord);
  if FWaveFormatRecord.FormatTag <> 1
-  then FChunkSize := FChunkSize + SizeOf(Word) + Length(FFormatSpecific);
+  then FChunkSize := FChunkSize + SizeOf(Word) + Cardinal(Length(FFormatSpecific));
 end;
 
 procedure TFormatChunk.LoadFromStream(Stream: TStream);

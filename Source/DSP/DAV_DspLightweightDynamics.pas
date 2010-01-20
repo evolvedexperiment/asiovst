@@ -204,9 +204,9 @@ type
     procedure AutoMakeUpChanged; override;
     procedure CalculateAttackFactor; override;
     procedure CalculateReleaseFactor; override;
-    procedure Reset; override;
   public
     constructor Create; override;
+    procedure Reset; override;
     function TranslatePeakToGain(const PeakLevel: Double): Double; override;
     function ProcessSample64(Input: Double): Double; override;
     function CharacteristicCurve_dB(const InputLevel_dB: Double): Double; override;

@@ -1,4 +1,5 @@
 object ParametriQLiteDataModule: TParametriQLiteDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Parametri-Q Lite'

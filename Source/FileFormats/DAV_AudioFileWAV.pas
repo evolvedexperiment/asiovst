@@ -25,7 +25,7 @@ unit DAV_AudioFileWAV;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -224,6 +224,9 @@ type
   end;
 
 implementation
+
+uses
+  DAV_Common;
 
 resourcestring
   RCRIFFChunkNotFound  = 'This is not a RIFF file!';
@@ -626,9 +629,13 @@ begin
 end;
 
 procedure TCustomAudioFileWAV.SetChannels(const Value: Cardinal);
+var
+  WordValue : Word;
 begin
+ WordValue := Word(IntLimit(Value, 0, 65536));
+
  // assert stream is empty
- if assigned(FStream) and not EmptyData
+ if Assigned(FStream) and not EmptyData
   then raise Exception.Create(RCStrCantChangeTheFormat);
 
  inherited;
@@ -636,8 +643,8 @@ begin
  with FFormatChunk do
   if Channels <> Value then
    begin
-    Channels       := Value;
-    BlockAlign     := FBytesPerSample * Value;
+    Channels       := WordValue;
+    BlockAlign     := Word(FBytesPerSample * WordValue);
     BytesPerSecond := BlockAlign * SampleRate;
    end;
 

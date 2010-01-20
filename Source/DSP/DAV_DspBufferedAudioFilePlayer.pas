@@ -257,8 +257,6 @@ begin
 end;
 
 function TCustomBufferedAudioPlayer.CheckReload: Boolean;
-var
-  IdleLoops: Integer;
 begin
  Result := False;
  while (FBuffer.BufferSize - FBuffer.SamplesInBuffer) > FStreamBufSize do

@@ -484,7 +484,7 @@ procedure TAIFFCommonChunk.CalculateChunkSize;
 begin
  FChunkSize := SizeOf(AIFFCommonRecord);
  if FCompressionType <> ctNotAvailable
-  then FChunkSize := FChunkSize + SizeOf(TChunkName) + Length(FCompressionName);
+  then FChunkSize := FChunkSize + SizeOf(TChunkName) + Cardinal(Length(FCompressionName));
 end;
 
 procedure TAIFFCommonChunk.LoadFromStream(Stream: TStream);

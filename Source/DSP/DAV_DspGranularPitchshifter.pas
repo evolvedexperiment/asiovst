@@ -531,7 +531,6 @@ end;
 function TDspGranularPitchShifter64.ProcessSample64(Input: Double): Double;
 var
   i, p : Integer;
-  d, m : Double;
   v    : Double;
 begin
  inherited;

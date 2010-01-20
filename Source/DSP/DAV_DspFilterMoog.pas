@@ -46,7 +46,7 @@ type
     FThermalVoltage    : Single;
     FThermalVoltageInv : Single;
     FResonance         : Single;
-    FGainCorrection    : Single;
+//    FGainCorrection    : Single;
     FScaleFactor       : Single;
     procedure CalculateInvertedThermalVoltage;
     procedure SetThermalVoltage(const Value: Single);

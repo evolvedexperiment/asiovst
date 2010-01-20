@@ -17,27 +17,26 @@ object FmASIO: TFmASIO
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object Lb_Drivername: TLabel
+  object LbDrivername: TLabel
     Left = 7
     Top = 12
     Width = 31
     Height = 13
     Caption = 'Driver:'
   end
-  object Lb_Channels: TLabel
+  object LbChannels: TLabel
     Left = 7
     Top = 36
     Width = 82
     Height = 13
     Caption = 'Output Channels:'
-    OnClick = Lb_ChannelsClick
   end
-  object Lb_Copyright: TLabel
+  object LbCopyright: TLabel
     Left = 87
     Top = 202
     Width = 262
     Height = 13
-    Caption = '(C)opyright in 2004-2009 by  Delphi ASIO && VST Project'
+    Caption = '(C)opyright in 2004-2010 by  Delphi ASIO && VST Project'
   end
   object LbFreq: TLabel
     Left = 8

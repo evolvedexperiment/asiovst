@@ -771,8 +771,6 @@ begin
 end;
 
 procedure TCustomYinTuner.CalculateBufferLength;
-var
-  NewBufferLength : Integer;
 begin
  FBlockSize := Round(min(0.025, 1 / FMinimumFrequency) *
    (SampleRate / FDownSampleFactor)) * 2;
@@ -797,7 +795,6 @@ end;
 function ParabolicMinimum(Input: PDAVSingleFixedArray; SampleCount, Position,
   Span: Cardinal): Single;
 var
-  Step       : Single;
   Res, Frac  : Single;
   s0, s1, s2 : Single;
   Resold     : Single;
@@ -849,13 +846,11 @@ end;
 procedure TCustomYinTuner.BlockProcessingHandler(Sender: TObject;
   const Input: PDAVSingleFixedArray);
 var
-  c, j, tau   : Cardinal;
+  j, Tau      : Cardinal;
   period      : Integer;
   temp        : array [0..1] of Single;
   SampleCount : Cardinal;
 begin
- c   := 0;
- tau := 0;
  temp[0] := 0;
  temp[1] := 0;
  FYinBuffer^[0] := 1;

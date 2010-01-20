@@ -15,7 +15,7 @@ object FmASIO: TFmASIO
   Font.Name = 'MS Sans Serif'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  object Lb_Drivername: TLabel
+  object LbDrivername: TLabel
     Left = 7
     Height = 14
     Top = 12
@@ -24,7 +24,7 @@ object FmASIO: TFmASIO
     Color = clNone
     ParentColor = False
   end
-  object Lb_Channels: TLabel
+  object LbChannels: TLabel
     Left = 7
     Height = 14
     Top = 36
@@ -33,7 +33,7 @@ object FmASIO: TFmASIO
     Color = clNone
     ParentColor = False
   end
-  object Lb_Copyright: TLabel
+  object LbCopyright: TLabel
     Left = 87
     Height = 14
     Top = 202

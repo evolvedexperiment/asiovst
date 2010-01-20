@@ -629,8 +629,7 @@ end;
 
 procedure TMultiBufferThread.ChannelCountChanged;
 var
-  Channel         : Integer;
-  OldChannelCount : Integer;
+  Channel : Integer;
 begin
  if ChannelCount < Length(FStreamBuffer) then
   begin

@@ -76,6 +76,7 @@ contains
   DAV_DspFilterLinkwitzRiley in '..\..\Source\Dsp\DAV_DspFilterLinkwitzRiley.pas',
   DAV_DspFilterManager in '..\..\Source\Dsp\DAV_DspFilterManager.pas',
   DAV_DspFilterMoog in '..\..\Source\Dsp\DAV_DspFilterMoog.pas',
+  DAV_DspFilterSimple in '..\..\Source\Dsp\DAV_DspFilterSimple.pas',
   DAV_DspFilterSpectralDelay in '..\..\Source\Dsp\DAV_DspFilterSpectralDelay.pas',
   DAV_DspFreeverb in '..\..\Source\Dsp\DAV_DspFreeverb.pas',
   DAV_DspFreeverbFilter in '..\..\Source\Dsp\DAV_DspFreeverbFilter.pas',

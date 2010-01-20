@@ -38,8 +38,6 @@ uses
   Classes, DAV_Types, DAV_Complex, DAV_Classes;
 
 type
-  TPNType = array[0..1] of TComplexSingle;
-
   TCustomFilter = class(TDspSampleRatePersistent, IDspProcessor32,
     IDspProcessor64)
   protected
@@ -115,6 +113,8 @@ type
   protected
     function GetOrder: Cardinal; virtual; abstract;
     procedure SetOrder(const Value: Cardinal); virtual; abstract;
+    procedure CalculateCoefficients; virtual; abstract;
+    procedure CoefficientsChanged; virtual;
   public  
     property Order: Cardinal read GetOrder write SetOrder;
   end;
@@ -132,7 +132,6 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateW0; virtual;
     procedure CalculateGainFactor; virtual;
-    procedure CalculateCoefficients; virtual; abstract;
     procedure FrequencyChanged; virtual;
     procedure GainChanged; virtual;
     procedure CalculateSamplerateDependentVariables; override;
@@ -214,18 +213,17 @@ type
 
   TBiquadIIRFilter = class(TCustomBandwidthIIRFilter)
   protected
-    FDenominator  : array[1..2] of Double;
-    FNominator    : array[0..2] of Double;
-    FPoles        : TPNType;
-    FZeros        : TPNType;
-    FState        : array[0..1] of Double;
+    FDenominator  : array [1..2] of Double;
+    FNominator    : array [0..2] of Double;
+    FPoles        : array [0..1] of TComplexSingle;
+    FZeros        : array [0..1] of TComplexSingle;
+    FState        : array [0..1] of Double;
     FStateStack   : array of array[0..1] of Double;
-    procedure CalcPolesZeros; virtual;
-    function GetPoles: TPNType;
-    function GetZeros: TPNType;
+    procedure CalculatePoleZeroes; virtual;
     function GetOrder: Cardinal; override;
     procedure SetOrder(const Value: Cardinal); override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure CoefficientsChanged; override;
   public
     constructor Create; override;
     procedure ResetStates; override;
@@ -244,8 +242,6 @@ type
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
-    property Poles: TPNType read FPoles; //GetPoles;
-    property Zeros: TPNType read FZeros; //GetZeros;
   published
     property Gain;
     property Frequency;
@@ -598,6 +594,15 @@ begin
   do Result := FFilterArray[i].ProcessSample64(Result);
 end;
 
+
+{ TCustomFilterWithOrder }
+
+procedure TCustomFilterWithOrder.CoefficientsChanged;
+begin
+ CalculateCoefficients;
+end;
+
+
 { TCustomGainFrequencyFilter }
 
 constructor TCustomGainFrequencyFilter.Create;
@@ -642,14 +647,14 @@ end;
 procedure TCustomGainFrequencyFilter.FrequencyChanged;
 begin
  CalculateW0;
- CalculateCoefficients;
+ CoefficientsChanged;
  Changed;
 end;
 
 procedure TCustomGainFrequencyFilter.GainChanged;
 begin
  CalculateGainFactor;
- CalculateCoefficients;
+ CoefficientsChanged;
  Changed;
 end;
 
@@ -657,7 +662,7 @@ procedure TCustomGainFrequencyFilter.CalculateSamplerateDependentVariables;
 begin
  inherited;
  CalculateW0;
- CalculateCoefficients;
+ CoefficientsChanged;
 end;
 
 procedure TCustomGainFrequencyFilter.SetFrequency(Value: Double);
@@ -708,7 +713,7 @@ end;
 
 procedure TCustomOrderFilter.OrderChanged;
 begin
- CalculateCoefficients;
+ CoefficientsChanged;
  Changed;
 end;
 
@@ -917,7 +922,7 @@ end;
 procedure TCustomBandwidthIIRFilter.BandwidthChanged;
 begin
  CalculateAlpha;
- CalculateCoefficients;
+ CoefficientsChanged;
  Changed;
 end;
 
@@ -931,7 +936,7 @@ procedure TCustomBandwidthIIRFilter.CalculateAlpha;
 begin
  if (FExpW0.Im = 0)
   then FAlpha := FExpW0.Im /( 2 * FBandWidth)
-  else FAlpha := Sinh(ln22 * cos(FW0 * 0.5) * FBandWidth * (FW0 / FExpW0.Im)) * FExpW0.Im;
+  else FAlpha := Sinh(ln22 * Sqrt(0.5 * (1 + FExpW0.Re)) * FBandWidth * (FW0 / FExpW0.Im)) * FExpW0.Im;
 end;
 
 procedure TCustomBandwidthIIRFilter.SetBW(Value: Double);
@@ -951,6 +956,7 @@ begin
  inherited;
  FBandWidth := 1;
  CalculateCoefficients;
+ CalculatePoleZeroes;
  ResetStates;
 end;
 
@@ -1014,6 +1020,12 @@ begin
               + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
 end;
 
+procedure TBiquadIIRFilter.CoefficientsChanged;
+begin
+ inherited;
+ // CalculatePoleZeroes;
+end;
+
 procedure TBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
 var
   Cw, Divider : Double;
@@ -1066,7 +1078,7 @@ begin
   else inherited;
 end;
 
-procedure TBiquadIIRFilter.CalcPolesZeros;
+procedure TBiquadIIRFilter.CalculatePoleZeroes;
 var
   p, q : Double;
   e    : Double;
@@ -1075,7 +1087,7 @@ begin
  q := (FNominator[2] / FNominator[0]);
  FZeros[0].Re := p;
  FZeros[1].Re := p;
- e := q - (p * p);
+ e := q - Sqr(p);
  if e > 0
   then
    begin
@@ -1084,8 +1096,8 @@ begin
    end
   else
    begin
-    FZeros[0].Re := FZeros[0].Re + sqrt(-e);
-    FZeros[1].Re := FZeros[0].Re - sqrt(-e);
+    FZeros[0].Re := FZeros[0].Re + Sqrt(-e);
+    FZeros[1].Re := FZeros[0].Re - Sqrt(-e);
     FZeros[0].Im := 0;
     FZeros[1].Im := 0;
    end;
@@ -1103,8 +1115,8 @@ begin
    end
   else
    begin
-    FPoles[0].Re := FPoles[0].Re + sqrt(-e);
-    FPoles[1].Re := FPoles[0].Re - sqrt(-e);
+    FPoles[0].Re := FPoles[0].Re + Sqrt(-e);
+    FPoles[1].Re := FPoles[0].Re - Sqrt(-e);
     FPoles[0].Im := 0;
     FPoles[1].Im := 0;
    end;
@@ -1222,30 +1234,6 @@ end;
 function TBiquadIIRFilter.GetOrder: Cardinal;
 begin
  Result := 2;
-end;
-
-function TBiquadIIRFilter.GetPoles: TPNType;
-var
-  p, q : Double;
-begin
- p := FDenominator[1] / (2 * FDenominator[2]);
- q := (1 / FDenominator[2]);
- Result[0].Re := p;
- Result[1].Re := p;
- Result[0].Im :=  sqrt(q - (p * p));
- Result[1].Im := -Result[0].Im;
-end;
-
-function TBiquadIIRFilter.GetZeros:TPNType;
-var
-  p, q : Double;
-begin
- p := FNominator[1] / (2 * FNominator[2]);
- q := (FNominator[0] / FNominator[2]);
- Result[0].Re := p;
- Result[1].Re := p;
- Result[0].Im :=  sqrt(q - (p * p));
- Result[1].Im := -Result[0].Im;
 end;
 
 end.
