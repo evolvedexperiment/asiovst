@@ -118,6 +118,7 @@ begin
    DriverCombo.ItemIndex := ReadInteger('Audio', 'Asio Driver', -1);
    if DriverCombo.ItemIndex >= 0 then DriverComboChange(DriverCombo);
    ChannelBox.ItemIndex := ReadInteger('Audio', 'Channels', 0);
+   FChannelOffset := ChannelBox.ItemIndex * 2;
   finally
    Free;
   end;
