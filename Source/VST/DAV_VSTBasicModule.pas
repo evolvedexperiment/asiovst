@@ -438,6 +438,7 @@ begin
   GetHostProductString(HostProduct);
   FUseAudioEffectPtr := (StrPos('energyXT', HostProduct) <> nil) or
     (StrPos('Sound Forge Pro 10.0', HostProduct) <> nil);
+
   if FUseAudioEffectPtr then
    with FEffect do
     begin

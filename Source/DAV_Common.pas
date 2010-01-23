@@ -152,7 +152,7 @@ function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$END
 type
   TSysCharSet = set of AnsiChar;
 
-function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; inline;
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 procedure Msg(b: Boolean); overload;
 procedure Msg(m: string; m2: string = ''); overload;
 procedure Msg(i: Integer); overload;
