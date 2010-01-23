@@ -38,7 +38,7 @@ uses
   Classes, DAV_Types, DAV_VSTEffect, DAV_VSTBasicModule;
 
 type
-  TUIDInstantiateEvent = procedure(Sender: TObject; UID: string) of object;
+  TUIDInstantiateEvent = procedure(Sender: TObject; UID: TChunkName) of object;
 
   TCustomVstShellPlugin = class(TCollectionItem)
   private
@@ -51,8 +51,8 @@ type
     FUniqueID         : TChunkName;
     FVSTModule        : TBasicVSTModule;
     FOnInstanciate    : TUIDInstantiateEvent;
-    procedure SetUniqueID(FID: String);
-    function GetUniqueID: string;
+    procedure SetUniqueID(FID: AnsiString);
+    function GetUniqueID: AnsiString;
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure SetDisplayName(const AValue: string); override;
@@ -71,7 +71,7 @@ type
     property NumParams: Integer read FNumParams write FNumParams default -1;
     property NumPrograms: Integer read FNumPrograms write FNumPrograms default -1;
     property PlugCategory: TVstPluginCategory read FPlugCategory write FPlugCategory;
-    property UniqueID: string read GetUniqueID write SetUniqueID;
+    property UniqueID: AnsiString read GetUniqueID write SetUniqueID;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnInstanciate: TUIDInstantiateEvent read FOnInstanciate write FOnInstanciate;
   end;
@@ -124,12 +124,12 @@ begin
   else inherited;
 end;
 
-function TCustomVstShellPlugin.GetUniqueID: string;
+function TCustomVstShellPlugin.GetUniqueID: AnsiString;
 begin
- Result := string(FUniqueID);
+ Result := AnsiString(FUniqueID);
 end;
 
-procedure TCustomVstShellPlugin.SetUniqueID(FID: string);
+procedure TCustomVstShellPlugin.SetUniqueID(FID: AnsiString);
 begin
  if Length(FID) < 4
   then Move(FID[1], FUniqueID[0], Length(FID))

@@ -25,7 +25,7 @@ unit DAV_ChunkAiffBasic;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -466,7 +466,7 @@ end;
 
 class function TAIFFCommonChunk.GetClassChunkName: TChunkName;
 begin
- result := 'COMM';
+ Result := 'COMM';
 end;
 
 procedure TAIFFCommonChunk.AssignTo(Dest: TPersistent);
@@ -670,17 +670,17 @@ end;
 
 class function TAIFFFormChunk.GetClassChunkName: TChunkName;
 begin
- result := 'FORM';
+ Result := 'FORM';
 end;
 
 class function TAIFFFormChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TAIFFFormRecord);
+ Result := SizeOf(TAIFFFormRecord);
 end;
 
 function TAIFFFormChunk.GetFormType: string;
 begin
- result := AIFFFormRecord.FormType;
+ Result := string(AIFFFormRecord.FormType);
 end;
 
 procedure TAIFFFormChunk.SetFormType(Value: string);
@@ -714,12 +714,12 @@ end;
 
 class function TAIFFFormatVersionChunk.GetClassChunkName: TChunkName;
 begin
- result := 'FVER';
+ Result := 'FVER';
 end;
 
 class function TAIFFFormatVersionChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TAIFFFormatVersionRecord);
+ Result := SizeOf(TAIFFFormatVersionRecord);
 end;
 
 procedure TAIFFFormatVersionChunk.SetTimeStamp(const Value: Cardinal);
@@ -805,12 +805,12 @@ end;
 
 function TAIFFMarkerItem.GetDisplayName: string;
 begin
- result := FMarkerName;
+ Result := FMarkerName;
 end;
 
 function TAIFFMarkerItem.GetSize: Cardinal;
 begin
- result := SizeOf(TAIFFMarkerRecord) + Length(FMarkerName) + 1;
+ Result := SizeOf(TAIFFMarkerRecord) + Length(FMarkerName) + 1;
 end;
 
 procedure TAIFFMarkerItem.LoadFromStream(Stream: TStream);
@@ -885,12 +885,12 @@ end;
 
 class function TAIFFMarkerChunk.GetClassChunkName: TChunkName;
 begin
- result := 'MARK';
+ Result := 'MARK';
 end;
 
 function TAIFFMarkerChunk.GetMarkerCount: Byte;
 begin
- result := FMarkers.Count;
+ Result := FMarkers.Count;
 end;
 
 procedure TAIFFMarkerChunk.AssignTo(Dest: TPersistent);
@@ -961,12 +961,12 @@ end;
 
 function TAIFFCommentItem.GetDisplayName: string;
 begin
- result := FComment;
+ Result := FComment;
 end;
 
 function TAIFFCommentItem.GetSize: Cardinal;
 begin
- result := SizeOf(TAIFFCommentRecord) + Length(FComment) + 1;
+ Result := SizeOf(TAIFFCommentRecord) + Length(FComment) + 1;
 end;
 
 procedure TAIFFCommentItem.LoadFromStream(Stream: TStream);
@@ -1050,12 +1050,12 @@ end;
 
 class function TAIFFCommentChunk.GetClassChunkName: TChunkName;
 begin
- result := 'COMT';
+ Result := 'COMT';
 end;
 
 function TAIFFCommentChunk.GetCommentCount: Byte;
 begin
- result := FComments.Count;
+ Result := FComments.Count;
 end;
 
 procedure TAIFFCommentChunk.LoadFromStream(Stream: TStream);
@@ -1125,12 +1125,12 @@ end;
 
 class function TAIFFInstrumentChunk.GetClassChunkName: TChunkName;
 begin
- result := 'INST';
+ Result := 'INST';
 end;
 
 class function TAIFFInstrumentChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TAIFFInstrumentRecord); 
+ Result := SizeOf(TAIFFInstrumentRecord);
 end;
 
 procedure TAIFFInstrumentChunk.SetBaseNote(const Value: Byte);
@@ -1212,14 +1212,14 @@ end;
 
 class function TAIFFMIDIChunk.GetClassChunkName: TChunkName;
 begin
- result := 'MIDI';
+ Result := 'MIDI';
 end;
 
 function TAIFFMIDIChunk.GetMIDIData(index: Integer): Byte;
 begin
  if (index >= 0) and (index < Length(FMIDIData))
-  then result := FMIDIData[index]
-  else result := 0;
+  then Result := FMIDIData[index]
+  else Result := 0;
 end;
 
 procedure TAIFFMIDIChunk.LoadFromStream(Stream: TStream);
@@ -1268,18 +1268,18 @@ end;
 
 function TAIFFAudioRecordingChunk.GetAESChannelStatusData: string;
 begin
- SetLength(result, 24);
- Move(AudioRecordingRecord.AESChannelStatusData[0], result[1], 24);
+ SetLength(Result, 24);
+ Move(AudioRecordingRecord.AESChannelStatusData[0], Result[1], 24);
 end;
 
 class function TAIFFAudioRecordingChunk.GetClassChunkName: TChunkName;
 begin
- result := 'AESD';
+ Result := 'AESD';
 end;
 
 class function TAIFFAudioRecordingChunk.GetClassChunkSize: Integer;
 begin
- result := SizeOf(TAIFFAudioRecordingRecord); 
+ Result := SizeOf(TAIFFAudioRecordingRecord);
 end;
 
 procedure TAIFFAudioRecordingChunk.SetAESChannelStatusData(const Value: string);
@@ -1314,19 +1314,19 @@ end;
 
 function TAIFFApplicationSpecificChunk.GetApplicationSignature: string;
 begin
- result := FApplicationSignature;
+ Result := string(FApplicationSignature);
 end;
 
 class function TAIFFApplicationSpecificChunk.GetClassChunkName: TChunkName;
 begin
- result := 'APPL';
+ Result := 'APPL';
 end;
 
-function TAIFFApplicationSpecificChunk.GetData(index: Integer): Byte;
+function TAIFFApplicationSpecificChunk.GetData(Index: Integer): Byte;
 begin
- if (index >= 0) and (index < Length(FApplicationData))
-  then result := Byte(FApplicationData[index + 1])
-  else result := 0;
+ if (Index >= 0) and (Index < Length(FApplicationData))
+  then Result := Byte(FApplicationData[Index + 1])
+  else Result := 0;
 end;
 
 procedure TAIFFApplicationSpecificChunk.SetApplicationSignature(const Value: string);
@@ -1377,28 +1377,28 @@ end;
 
 class function TAIFFNameChunk.GetClassChunkName: TChunkName;
 begin
-  result := 'NAME';
+  Result := 'NAME';
 end;
 
 { TAIFFAuthorChunk }
 
 class function TAIFFAuthorChunk.GetClassChunkName: TChunkName;
 begin
- result := 'AUTH';
+ Result := 'AUTH';
 end;
 
 { TAIFFCopyrightChunk }
 
 class function TAIFFCopyrightChunk.GetClassChunkName: TChunkName;
 begin
- result := '(c) ';
+ Result := '(c) ';
 end;
 
 { TAIFFAnnotationChunk }
 
 class function TAIFFAnnotationChunk.GetClassChunkName: TChunkName;
 begin
- result := 'ANNO';
+ Result := 'ANNO';
 end;
 
 end.

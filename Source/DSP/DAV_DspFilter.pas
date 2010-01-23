@@ -788,9 +788,9 @@ asm
   fld   [edx].Double
   fmul  st(0),st(1)
   fld   [eax].Double
-  faddp
+  faddp st(1), st(0)
 
-  fstp [eax].Double
+  fstp  [eax].Double
   add   eax, 8
   add   edx, 8
   loop  @SmallLoop
@@ -811,22 +811,22 @@ asm
   fld   [edx].Double
   fmul  st(0),st(1)
   fld   [eax].Double
-  faddp
+  faddp st(1), st(0)
   fstp  [eax].Double
   fld   [edx+8].Double
   fmul  st(0),st(1)
   fld   [eax+8].Double
-  faddp
+  faddp st(1), st(0)
   fstp  [eax+8].Double
   fld   [edx+16].Double
   fmul  st(0),st(1)
   fld   [eax+16].Double
-  faddp
+  faddp st(1), st(0)
   fstp  [eax+16].Double
   fld   [edx+24].Double
   fmul  st(0),st(1)
   fld   [eax+24].Double
-  faddp
+  faddp st(1), st(0)
   fstp  [eax+24].Double
 
   add   eax, 32
@@ -842,7 +842,7 @@ asm
   fld   [edx].Double
   fmul  st(0),st(1)
   fld   [eax].Double
-  faddp
+  faddp st(1), st(0)
   fstp [eax].Double
 
   add   eax, 8

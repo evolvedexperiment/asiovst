@@ -59,9 +59,9 @@ function Tanh(const X: Extended): Extended; {$IFDEF SUPPORTS_INLINE} inline; {$E
 function Tanh(const X: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Tanh(const X: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double); overload;
-procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended); overload;
-procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single); overload;
+procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double); overload;
+procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue : Extended); overload;
+procedure GetSinCos(const Frequency: Single; out SinValue, CosValue : Single); overload;
 
 function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function NextPowerOf2(Value: Integer): Integer; {$IFDEF Purepascal} {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} {$ENDIF}
@@ -252,7 +252,7 @@ begin
  Result := (ep - 1) / (ep + 1);
 end;
 
-procedure GetSinCos(const Frequency: Extended; var SinValue, CosValue : Extended);
+procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue : Extended);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
@@ -267,7 +267,7 @@ asm
 end;
 {$ENDIF}
 
-procedure GetSinCos(const Frequency: Double; var SinValue, CosValue : Double);
+procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
@@ -282,7 +282,7 @@ asm
 end;
 {$ENDIF}
 
-procedure GetSinCos(const Frequency: Single; var SinValue, CosValue : Single);
+procedure GetSinCos(const Frequency: Single; out SinValue, CosValue : Single);
 {$IFDEF PUREPASCAL}
 begin
  SinValue := Sin(Frequency);
@@ -395,13 +395,13 @@ begin
 end;
 {$ELSE}
 asm
- fld Value.Extended
+ fld   Value.Extended
  fld1
  fsubp
  fxtract
- fstp st(0)
+ fstp  st(0)
  fld1
- faddp
+ faddp st(1), st(0)
  fistp result.Integer
 end;
 {$ENDIF}

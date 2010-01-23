@@ -25,7 +25,7 @@ unit DAV_ComplexData;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Classes, DAV_Common, DAV_Complex, DAV_AudioData;
+  Classes, DAV_Classes, DAV_Complex;
 
 type
   TCustomComplexData = class;

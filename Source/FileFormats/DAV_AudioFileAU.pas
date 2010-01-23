@@ -25,7 +25,7 @@ unit DAV_AudioFileAU;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -457,8 +457,6 @@ var
   ChunkEnd    : Cardinal;
   DataDecoder : TCustomChannelDataCoder;
   Samples     : Cardinal;
-const
-  CZero: Cardinal = 0;
 begin
  // check if sample
  if SampleFrames > 0 then
@@ -495,7 +493,7 @@ begin
       FreeAndNil(DataDecoder);
      end;
 
-    assert(Stream.Position = ChunkEnd);
+    Assert(Stream.Position = ChunkEnd);
     Position := ChunkEnd;
    end;
 end;

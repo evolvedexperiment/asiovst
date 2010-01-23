@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Classes, DAV_Types, DAV_Common, DAV_Complex, DAV_DspFilter;
+  Classes, DAV_Classes, DAV_Types, DAV_Complex, DAV_DspFilter;
 
 type
   TCustomFirstOrderFilter = class(TCustomIIRFilter)

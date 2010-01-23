@@ -1093,27 +1093,27 @@ end;
 
 procedure Float2String(Value: Single; Text: PAnsiChar);
 begin
- StrCopy(Text, PAnsiChar(Format('%f', [Value])));
+ StrPCopy(Text, AnsiString(Format('%f', [Value])));
 end;
 
-procedure Long2string(Value: Longint; text: PAnsiChar);
+procedure Long2string(Value: Longint; Text: PAnsiChar);
 begin
- if (Value >= 100000000) then
+ if (Value >= 1E8) then
   begin
-   StrCopy(text, ' Huge!  ');
+   StrCopy(Text, 'Huge!');
    Exit;
   end;
- StrCopy(text, PAnsiChar(Format('%7d', [Value])));
+ StrPCopy(Text, AnsiString(Format('%7d', [Value])));
 end;
 
-procedure Float2StringAsLong(Value: Single; text: PAnsiChar);
+procedure Float2StringAsLong(Value: Single; Text: PAnsiChar);
 begin
- if (Value >= 100000000) then
+ if (Value >= 1E8) then
   begin
-   StrCopy(text, ' Huge!  ');
+   StrCopy(Text, 'Huge!');
    Exit;
   end;
- StrCopy(text, PAnsiChar(Format('%7.0f', [Value])));
+ StrPCopy(Text, AnsiString(Format('%7.0f', [Value])));
 end;
 
 procedure Hz2string(samples, sampleRate: Single; text: PAnsiChar);

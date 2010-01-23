@@ -25,7 +25,7 @@ unit DAV_AudioFileAIFF;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, Contnrs, SysUtils, DAV_Types, DAV_AudioFile, DAV_ChunkClasses,
+  Classes, SysUtils, DAV_Types, DAV_AudioFile, DAV_ChunkClasses,
   DAV_ChunkAiffBasic, DAV_ChannelDataCoder;
 
 type

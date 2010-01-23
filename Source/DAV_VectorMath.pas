@@ -622,33 +622,33 @@ asm
     ret $08
 
     @@FPU:      // 327363
-    FLD  DWORD PTR [EAX]
-    FMUL DWORD PTR [EBP + $C]
-    FLD  DWORD PTR [EDX]
-    FMUL DWORD PTR [EBP + $8]
-    FADD
-    FSTP DWORD PTR [ECX]
+    FLD   DWORD PTR [EAX]
+    FMUL  DWORD PTR [EBP + $C]
+    FLD   DWORD PTR [EDX]
+    FMUL  DWORD PTR [EBP + $8]
+    FADDP st(1), st(0)
+    FSTP  DWORD PTR [ECX]
 
-    FLD  DWORD PTR [EAX + 4]
-    FMUL DWORD PTR [EBP + $C]
-    FLD  DWORD PTR [EDX + 4]
-    FMUL DWORD PTR [EBP + 8]
-    FADD
-    FSTP DWORD PTR [ECX + 4]
+    FLD   DWORD PTR [EAX + 4]
+    FMUL  DWORD PTR [EBP + $C]
+    FLD   DWORD PTR [EDX + 4]
+    FMUL  DWORD PTR [EBP + 8]
+    FADDP st(1), st(0)
+    FSTP  DWORD PTR [ECX + 4]
 
-    FLD  DWORD PTR [EAX + 8]
-    FMUL DWORD PTR [EBP + $C]
-    FLD  DWORD PTR [EDX + 8]
-    FMUL DWORD PTR [EBP + $8]
-    FADD
-    FSTP DWORD PTR [ECX + 8]
+    FLD   DWORD PTR [EAX + 8]
+    FMUL  DWORD PTR [EBP + $C]
+    FLD   DWORD PTR [EDX + 8]
+    FMUL  DWORD PTR [EBP + $8]
+    FADDP st(1), st(0)
+    FSTP  DWORD PTR [ECX + 8]
 
-    FLD  DWORD PTR [EAX + 12]
-    FMUL DWORD PTR [EBP + $C]
-    FLD  DWORD PTR [EDX + 12]
-    FMUL DWORD PTR [EBP + $8]
-    FADD
-    FSTP DWORD PTR [ECX + 12]
+    FLD   DWORD PTR [EAX + 12]
+    FMUL  DWORD PTR [EBP + $C]
+    FLD   DWORD PTR [EDX + 12]
+    FMUL  DWORD PTR [EBP + $8]
+    FADDP st(1), st(0)
+    FSTP  DWORD PTR [ECX + 12]
 {$ELSE}
 begin
    vr[0] := (F1 * V1[0]) + (F2 * V2[0]);
@@ -775,17 +775,17 @@ end;
 function VectorDotProduct(const V1, V2: TDAVVector32): Single;
 {$IFNDEF PUREPASCAL}
 asm
-    FLD DWORD PTR [EAX]
-    FMUL DWORD PTR [EDX]
-    FLD DWORD PTR [EAX + 4]
-    FMUL DWORD PTR [EDX + 4]
-    FADDP
-    FLD DWORD PTR [EAX + 8]
-    FMUL DWORD PTR [EDX + 8]
-    FADDP
-    FLD DWORD PTR [EAX + 12]
-    FMUL DWORD PTR [EDX + 12]
-    FADDP
+    FLD   DWORD PTR [EAX]
+    FMUL  DWORD PTR [EDX]
+    FLD   DWORD PTR [EAX + 4]
+    FMUL  DWORD PTR [EDX + 4]
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 8]
+    FMUL  DWORD PTR [EDX + 8]
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 12]
+    FMUL  DWORD PTR [EDX + 12]
+    FADDP ST(1), ST(0)
 {$ELSE}
 begin
    Result := V1[0] * V2[0] + V1[1] * V2[1] + V1[2] * V2[2] + V1[3] * V2[3];
@@ -801,15 +801,15 @@ asm
     fld   dword ptr [eax +  4]
     fsub  dword ptr [edx +  4]
     fmul  dword ptr [ecx +  4]
-    fadd
+    faddp st(1), st(0)
     fld   dword ptr [eax +  8]
     fsub  dword ptr [edx +  8]
     fmul  dword ptr [ecx +  8]
-    fadd
+    faddp st(1), st(0)
     fld   dword ptr [eax + 12]
     fsub  dword ptr [edx + 12]
     fmul  dword ptr [ecx + 12]
-    fadd
+    faddp st(1), st(0)
 {$ELSE}
 begin
    Result :=   Direction[0] * (p[0] - Origin[0])
@@ -884,11 +884,11 @@ function VectorLength(const Value: array of Single): Single;
 asm
     FLDZ                           // initialize sum
     @@Loop:
-    FLD  DWORD PTR [EAX  +  4 * EDX] // load a component
-    FMUL ST, ST
-    FADDP
-    SUB  EDX, 1
-    JNL  @@Loop
+    FLD   DWORD PTR [EAX + 4 * EDX] // load a component
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    SUB   EDX, 1
+    JNL   @@Loop
     FSQRT
 {$ELSE}
 var
@@ -908,14 +908,14 @@ function VectorLength(const Value: TDAVVector32): Single;
 // Result is passed in ST(0)
 {$IFNDEF PUREPASCAL}
 asm
-    FLD  DWORD PTR [EAX]
-    FMUL ST, ST
-    FLD  DWORD PTR [EAX+4]
-    FMUL ST, ST
-    FADDP
-    FLD  DWORD PTR [EAX+8]
-    FMUL ST, ST
-    FADDP
+    FLD   DWORD PTR [EAX]
+    FMUL  ST, ST
+    FLD   DWORD PTR [EAX+4]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX+8]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
     FSQRT
 {$ELSE}
 begin
@@ -931,17 +931,17 @@ end;
 function VectorNorm(const Value: TDAVVector32): Single;
 {$IFNDEF PUREPASCAL}
 asm
-    FLD DWORD PTR [EAX];
-    FMUL ST, ST
-    FLD DWORD PTR [EAX + 4];
-    FMUL ST, ST
-    FADD
-    FLD DWORD PTR [EAX + 8];
-    FMUL ST, ST
-    FADD
-    FLD DWORD PTR [EAX + 12];
-    FMUL ST, ST
-    FADD
+    FLD   DWORD PTR [EAX];
+    FMUL  ST, ST
+    FLD   DWORD PTR [EAX + 4];
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 8];
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 12];
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
 {$ELSE}
 begin
    Result := Value[0] * Value[0] + Value[1] * Value[1] + Value[2] * Value[2] + Value[3] * Value[3];
@@ -955,7 +955,7 @@ asm
     @@Loop:
     FLD  DWORD PTR [EAX + 4 * EDX] // load a component
     FMUL ST, ST                    // make square
-    FADDP                          // add previous calculated sum
+    FADDP ST(1), ST(0)             // add previous calculated sum
     SUB  EDX, 1
     JNL  @@Loop
 {$ELSE}
@@ -1000,27 +1000,27 @@ asm
     ret
 
     @@FPU:
-    FLD  DWORD PTR [EAX]
-    FMUL ST, ST
-    FLD  DWORD PTR [EAX+4]
-    FMUL ST, ST
-    FADD
-    FLD  DWORD PTR [EAX+8]
-    FMUL ST, ST
-    FADD
+    FLD    DWORD PTR [EAX]
+    FMUL   ST, ST
+    FLD    DWORD PTR [EAX+4]
+    FMUL   ST, ST
+    FADDP  ST(1), ST(0)
+    FLD    DWORD PTR [EAX+8]
+    FMUL   ST, ST
+    FADDP  ST(1), ST(0)
     FSQRT
     FLD1
-    FDIVR
-    FLD  ST
-    FMUL DWORD PTR [EAX]
-    FSTP DWORD PTR [EAX]
-    FLD  ST
-    FMUL DWORD PTR [EAX+4]
-    FSTP DWORD PTR [EAX+4]
-    FMUL DWORD PTR [EAX+8]
-    FSTP DWORD PTR [EAX+8]
-    xor   edx, edx
-    mov   [eax+12], edx
+    FDIVRP ST, ST
+    FLD    ST
+    FMUL   DWORD PTR [EAX]
+    FSTP   DWORD PTR [EAX]
+    FLD    ST
+    FMUL   DWORD PTR [EAX+4]
+    FSTP   DWORD PTR [EAX+4]
+    FMUL   DWORD PTR [EAX+8]
+    FSTP   DWORD PTR [EAX+8]
+    XOR    EDX, EDX
+    MOV    [EAX + 12], EDX
 {$ELSE}
 var
    invLen : Single;
@@ -1065,27 +1065,27 @@ asm
     ret
 
     @@FPU:
-    FLD  DWORD PTR [EAX]
-    FMUL ST, ST
-    FLD  DWORD PTR [EAX+4]
-    FMUL ST, ST
-    FADD
-    FLD  DWORD PTR [EAX+8]
-    FMUL ST, ST
-    FADD
+    FLD    DWORD PTR [EAX]
+    FMUL   ST, ST
+    FLD    DWORD PTR [EAX+4]
+    FMUL   ST, ST
+    FADDP  ST(1), ST(0)
+    FLD    DWORD PTR [EAX+8]
+    FMUL   ST, ST
+    FADDP  ST, ST
     FSQRT
     FLD1
-    FDIVR
-    FLD  ST
-    FMUL DWORD PTR [EAX]
-    FSTP DWORD PTR [EDX]
-    FLD  ST
-    FMUL DWORD PTR [EAX+4]
-    FSTP DWORD PTR [EDX+4]
-    FMUL DWORD PTR [EAX+8]
-    FSTP DWORD PTR [EDX+8]
-    xor   eax, eax
-    mov   [edx+12], eax
+    FDIVRP ST, ST
+    FLD    ST
+    FMUL   DWORD PTR [EAX]
+    FSTP   DWORD PTR [EDX]
+    FLD    ST
+    FMUL   DWORD PTR [EAX+4]
+    FSTP   DWORD PTR [EDX+4]
+    FMUL   DWORD PTR [EAX+8]
+    FSTP   DWORD PTR [EDX+8]
+    XOR    EAX, EAX
+    MOV    [EDX + 12], EAX
 {$ELSE}
 var
    invLen : Single;
@@ -1326,15 +1326,15 @@ asm
     FLD  DWORD PTR [EAX +  4]
     FSUB DWORD PTR [EDX +  4]
     FABS
-    FADD
+    FADDP ST(1), ST(0)
     FLD  DWORD PTR [EAX +  8]
     FSUB DWORD PTR [EDX +  8]
     FABS
-    FADD
+    FADDP ST(1), ST(0)
     FLD  DWORD PTR [EAX + 12]
     FSUB DWORD PTR [EDX + 12]
     FABS
-    FADD
+    FADDP ST(1), ST(0)
 {$ELSE}
 begin
    Result := Abs(v2[0] - v1[0])
@@ -1347,21 +1347,21 @@ end;
 function VectorDistance(const v1, v2: TDAVVector32): Single;
 {$IFNDEF PUREPASCAL}
 asm
-    FLD  DWORD PTR [EAX     ]
-    FSUB DWORD PTR [EDX     ]
-    FMUL ST, ST
-    FLD  DWORD PTR [EAX +  4]
-    FSUB DWORD PTR [EDX +  4]
-    FMUL ST, ST
-    FADD
-    FLD  DWORD PTR [EAX +  8]
-    FSUB DWORD PTR [EDX +  8]
-    FMUL ST, ST
-    FADD
-    FLD  DWORD PTR [EAX + 12]
-    FSUB DWORD PTR [EDX + 12]
-    FMUL ST, ST
-    FADD
+    FLD   DWORD PTR [EAX     ]
+    FSUB  DWORD PTR [EDX     ]
+    FMUL  ST, ST
+    FLD   DWORD PTR [EAX +  4]
+    FSUB  DWORD PTR [EDX +  4]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX +  8]
+    FSUB  DWORD PTR [EDX +  8]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 12]
+    FSUB  DWORD PTR [EDX + 12]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
     FSQRT
 {$ELSE}
 begin
@@ -1380,21 +1380,21 @@ function VectorDistance2(const v1, v2: TDAVVector32): Single;
 // Result is passed on the stack
 {$IFNDEF PUREPASCAL}
 asm
-    FLD  DWORD PTR [EAX    ]
-    FSUB DWORD PTR [EDX    ]
-    FMUL ST, ST
-    FLD  DWORD PTR [EAX + 4]
-    FSUB DWORD PTR [EDX + 4]
-    FMUL ST, ST
-    FADD
-    FLD  DWORD PTR [EAX + 8]
-    FSUB DWORD PTR [EDX + 8]
-    FMUL ST, ST
-    FADD
-    FLD  DWORD PTR [EAX + 12]
-    FSUB DWORD PTR [EDX + 12]
-    FMUL ST, ST
-    FADD
+    FLD   DWORD PTR [EAX    ]
+    FSUB  DWORD PTR [EDX    ]
+    FMUL  ST, ST
+    FLD   DWORD PTR [EAX + 4]
+    FSUB  DWORD PTR [EDX + 4]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 8]
+    FSUB  DWORD PTR [EDX + 8]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 12]
+    FSUB  DWORD PTR [EDX + 12]
+    FMUL  ST, ST
+    FADDP ST(1), ST(0)
 {$ELSE}
 begin
    Result := Sqr(v2[0] - v1[0]) +
@@ -2080,7 +2080,7 @@ asm
     test vSIMD, 1
     jz @@FPU
     @@3DNow:
-    lea eax, [ebp+8]
+    lea eax, [ebp + 8]
     db $0F,$6E,$00           /// movd mm0, [eax]
     db $0F,$0F,$C8,$97       /// pfrsqrt  mm1, mm0
 
@@ -2098,7 +2098,7 @@ asm
     fld Value
     fsqrt
     fld1
-    fdivr
+    fdivrp st(1), st(0)
     @@End:
 {$ELSE}
 begin
@@ -2125,17 +2125,17 @@ end;
 function PlaneEvaluatePoint(const plane: TDAVHomogeneousVector32; const Point: TDAVVector32): Single;
 {$IFNDEF PUREPASCAL}
 asm
-    FLD  DWORD PTR [EAX     ]
-    FMUL DWORD PTR [EDX     ]
-    FLD  DWORD PTR [EAX +  4]
-    FMUL DWORD PTR [EDX +  4]
-    FADDP
-    FLD  DWORD PTR [EAX +  8]
-    FMUL DWORD PTR [EDX +  8]
-    FADDP
-    FLD  DWORD PTR [EAX + 12]
-    FMUL DWORD PTR [EDX + 12]
-    FADDP
+    FLD   DWORD PTR [EAX     ]
+    FMUL  DWORD PTR [EDX     ]
+    FLD   DWORD PTR [EAX +  4]
+    FMUL  DWORD PTR [EDX +  4]
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX +  8]
+    FMUL  DWORD PTR [EDX +  8]
+    FADDP ST(1), ST(0)
+    FLD   DWORD PTR [EAX + 12]
+    FMUL  DWORD PTR [EDX + 12]
+    FADDP ST(1), ST(0)
 {$ELSE}
 begin
    Result := plane[0] * Point[0] +
@@ -2155,11 +2155,11 @@ asm
     fld   dword ptr [eax+4]
     fsub  dword ptr [edx+4]
     fmul  dword ptr [ecx+4]
-    faddp
+    faddp st(1), st(0)
     fld   dword ptr [eax+8]
     fsub  dword ptr [edx+8]
     fmul  dword ptr [ecx+8]
-    faddp
+    faddp st(1), st(0)
     ftst
     fstsw ax
     sahf

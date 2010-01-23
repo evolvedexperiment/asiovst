@@ -222,7 +222,11 @@ end;
 procedure TAsioDriverWizardForm.edtVersionMajorKeyPress(Sender: TObject;
   var Key: Char);
 begin
+ {$IFDEF DELPHI12_UP}
+ if not CharInSet(Key, [#8, '0'..'9'])
+ {$ELSE}
  if not (Key in [#8, '0'..'9'])
+ {$ENDIF}
   then Key := #0;
 end;
 

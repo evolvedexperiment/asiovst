@@ -25,7 +25,7 @@ unit DAV_ChannelDataCoder;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -1074,7 +1074,8 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * SizeOf(THalfFloat);
- result := Granularity * ((Value + Granularity - 1) div Granularity);
+ Assert(Granularity >= 1);
+ Result := Granularity * ((Value + Granularity - 1) div Granularity);
 end;
 
 procedure TChannel32DataCoderFloat16.InterleaveData;
@@ -1082,8 +1083,8 @@ var
   Sample  : Cardinal;
   Channel : Cardinal;
 begin
- assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(THalfFloat)));
- assert(Length(FChannelArray) = Integer(FChannelCount));
+ Assert(FBlocksize = (SampleFrames * FChannelCount * SizeOf(THalfFloat)));
+ Assert(Length(FChannelArray) = Integer(FChannelCount));
  for Channel := 0 to FChannelCount - 1 do
   for Sample := 0 to FSampleFrames - 1
    do PDAVHalfFloatFixedArray(FBlockBuffer)^[Sample * FChannelCount + Channel] := SingleToHalfFloat(FChannelArray[Channel]^[Sample]);
@@ -1125,7 +1126,8 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * SizeOf(Single);
- result := Granularity * ((Value + Granularity - 1) div Granularity);
+ Assert(Granularity >= 1);
+ Result := Granularity * ((Value + Granularity - 1) div Granularity);
 end;
 
 procedure TChannel32DataCoderFloat32.InterleaveData;
@@ -1187,7 +1189,8 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * SizeOf(Double);
- result := Granularity * ((Value + Granularity - 1) div Granularity);
+ Assert(Granularity >= 1);
+ Result := Granularity * ((Value + Granularity - 1) div Granularity);
 end;
 
 procedure TChannel32DataCoderFloat64.InterleaveData;
@@ -1953,7 +1956,8 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * SizeOf(Single);
- result := Granularity * ((Value + Granularity - 1) div Granularity);
+ Assert(Granularity >= 1);
+ Result := Granularity * ((Value + Granularity - 1) div Granularity);
 end;
 
 procedure TChannel64DataCoderFloat32.InterleaveData;
@@ -2015,7 +2019,8 @@ var
   Granularity : Cardinal;
 begin
  Granularity := ChannelCount * SizeOf(Double);
- result := Granularity * ((Value + Granularity - 1) div Granularity);
+ Assert(Granularity >= 1);
+ Result := Granularity * ((Value + Granularity - 1) div Granularity);
 end;
 
 procedure TChannel64DataCoderFloat64.InterleaveData;

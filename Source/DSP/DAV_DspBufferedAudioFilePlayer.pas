@@ -183,8 +183,6 @@ end;
 { TCustomBufferedAudioPlayer }
 
 constructor TCustomBufferedAudioPlayer.Create;
-var
-  ChannelIndex : Integer;
 begin
  inherited;
  FPitchFactor  := 1;

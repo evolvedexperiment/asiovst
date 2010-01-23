@@ -863,13 +863,13 @@ var
     ForwarderLibrary       : string;
     ForwarderLibraryHandle : HINST;
 
-    function ParsestringToNumber(Astring: string): LongWord;
+    function ParseStringToNumber(Astring: string): LongWord;
     var
       CharCounter: Integer;
     begin
       Result := 0;
       for CharCounter := 0 to Length(Astring) - 1 do
-        if Astring[CharCounter] in ['0'..'9'] then
+        if CharInSet(Astring[CharCounter], ['0'..'9']) then
           Result := (Result * 10) +
             Byte(Byte(Astring[CharCounter]) - Byte('0'))
         else

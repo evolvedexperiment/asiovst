@@ -576,7 +576,7 @@ end;
 function TBasicVSTModule.GetPreviousPlug(const Input: Integer): PVSTEffect;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetPreviousPlug, 0, 0, nil, 0))
+  then Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetPreviousPlug, 0, Input, nil, 0))
   else Result := nil;
 end;
 
@@ -588,7 +588,7 @@ end;
 function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetNextPlug, 0, 0, nil, 0))
+  then Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetNextPlug, 0, Output, nil, 0))
   else Result := nil;
 end;
 
@@ -696,10 +696,10 @@ begin
   else Result := 0;
 end;
 
-function TBasicVSTModule.OpenWindow(const aWindow: PVstWindow): pointer;
+function TBasicVSTModule.OpenWindow(const aWindow: PVstWindow): Pointer;
 begin
  if Assigned(FAudioMaster)
-  then Result := pointer(FAudioMaster(@FEffect, audioMasterOpenWindow, 0, 0, aWindow, 0))
+  then Result := Pointer(FAudioMaster(@FEffect, audioMasterOpenWindow, 0, 0, aWindow, 0))
   else Result := nil;
 end;
 
@@ -713,7 +713,7 @@ end;
 function TBasicVSTModule.GetDirectory: Pointer;
 begin
  if Assigned(FAudioMaster)
-  then Result := pointer(FAudioMaster(@FEffect, audioMasterGetDirectory, 0, 0, nil, 0))
+  then Result := Pointer(FAudioMaster(@FEffect, audioMasterGetDirectory, 0, 0, nil, 0))
   else Result := nil;
 end;
 

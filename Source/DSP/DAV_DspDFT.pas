@@ -722,18 +722,18 @@ end;
 function Goertzel(TimeSignal: PDAVDoubleFixedArray; const Length: Integer; const Angular: TComplexDouble): TComplexDouble; overload;
 {$IFDEF PUREPASCAL}
 var
-  Pos, Angle : TComplexDouble;
-  i          : Integer;
+  Pos : TComplexDouble;
+  i   : Integer;
 begin
  Pos.Re := 0;
  Pos.Im := 1;
- result.Re := 0;
- result.Im := TimeSignal[0];
+ Result.Re := 0;
+ Result.Im := TimeSignal[0];
  for i := 1 to Length - 1 do
   begin
    ComplexMultiplyInplace(Pos, Angular);
-   result.Re := result.Re + Pos.Re * TimeSignal[i];
-   result.Im := result.Im + Pos.Im * TimeSignal[i];
+   Result.Re := Result.Re + Pos.Re * TimeSignal[i];
+   Result.Im := Result.Im + Pos.Im * TimeSignal[i];
   end;
 end;
 {$ELSE}

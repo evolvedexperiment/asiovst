@@ -630,17 +630,17 @@ end;
 function TCustomHrir.GetChunkSize: Cardinal;
 begin
  with FHrirHeader
-  do result := SizeOf(FHrirHeader) + 2 * SampleFrames * BytesPerSample;
+  do Result := SizeOf(FHrirHeader) + 2 * SampleFrames * BytesPerSample;
 end;
 
 class function TCustomHrir.GetClassChunkName: TChunkName;
 begin
- result := 'hrir';
+ Result := 'hrir';
 end;
 
 function TCustomHrir.GetPosition: TSphereVector3D;
 begin
- result := FHrirHeader.Position;
+ Result := FHrirHeader.Position;
 end;
 
 procedure TCustomHrir.SwapChannels;
@@ -875,23 +875,23 @@ function TCustomHrirGeneralInformation.GetChunkSize: Cardinal;
 begin
  // calculate chunk size
  with FGeneralInformationRecord
-  do result := 5 + Byte(Title[0]) + SizeOf(Date) + Byte(Context[0]) +
+  do Result := 5 + Byte(Title[0]) + SizeOf(Date) + Byte(Context[0]) +
                    Byte(Copyright[0]) + Byte(Author[0]) + Byte(Notes[0]);
 end;
 
 class function TCustomHrirGeneralInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hrgi';
+ Result := 'hrgi';
 end;
 
 function TCustomHrirGeneralInformation.GetString(const Index: Integer): string;
 begin
  case Index of
-  0 : result := FGeneralInformationRecord.Title;
-  1 : result := FGeneralInformationRecord.Context;
-  2 : result := FGeneralInformationRecord.Copyright;
-  3 : result := FGeneralInformationRecord.Author;
-  4 : result := FGeneralInformationRecord.Notes;
+  0 : Result := string(FGeneralInformationRecord.Title);
+  1 : Result := string(FGeneralInformationRecord.Context);
+  2 : Result := string(FGeneralInformationRecord.Copyright);
+  3 : Result := string(FGeneralInformationRecord.Author);
+  4 : Result := string(FGeneralInformationRecord.Notes);
  end;
 end;
 
@@ -899,11 +899,11 @@ procedure TCustomHrirGeneralInformation.SetString(const Index: Integer;
   const Value: string);
 begin
  case Index of
-  0 : FGeneralInformationRecord.Title := Value;
-  1 : FGeneralInformationRecord.Context := Value;
-  2 : FGeneralInformationRecord.Copyright := Value;
-  3 : FGeneralInformationRecord.Author := Value;
-  4 : FGeneralInformationRecord.Notes := Value;
+  0 : FGeneralInformationRecord.Title := ShortString(Value);
+  1 : FGeneralInformationRecord.Context := ShortString(Value);
+  2 : FGeneralInformationRecord.Copyright := ShortString(Value);
+  3 : FGeneralInformationRecord.Author := ShortString(Value);
+  4 : FGeneralInformationRecord.Notes := ShortString(Value);
  end;
 end;
 
@@ -1004,19 +1004,19 @@ function TCustomHrirSubjectInformation.GetChunkSize: Cardinal;
 begin
  // calculate chunk size
  with FSubjectRecord
-  do result := 2 + Byte(ID[0]) + SizeOf(Sex) + Byte(Desc[0]);
+  do Result := 2 + Byte(ID[0]) + SizeOf(Sex) + Byte(Desc[0]);
 end;
 
 class function TCustomHrirSubjectInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hrsi';
+ Result := 'hrsi';
 end;
 
 function TCustomHrirSubjectInformation.GetString(const Index: Integer): string;
 begin
  case Index of
-  0 : result := FSubjectRecord.ID;
-  1 : result := FSubjectRecord.Desc;
+  0 : Result := string(FSubjectRecord.ID);
+  1 : Result := string(FSubjectRecord.Desc);
  end;
 end;
 
@@ -1024,8 +1024,8 @@ procedure TCustomHrirSubjectInformation.SetString(const Index: Integer;
   const Value: string);
 begin
  case Index of
-  0 : FSubjectRecord.ID := Value;
-  1 : FSubjectRecord.Desc := Value;
+  0 : FSubjectRecord.ID := ShortString(Value);
+  1 : FSubjectRecord.Desc := ShortString(Value);
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
  end;
 end;
@@ -1095,22 +1095,22 @@ function TCustomHrirRoomInformation.GetChunkSize: Cardinal;
 begin
  // calculate chunk size
  with FRoomRecord
-  do result := 3 * SizeOf(Single) + Byte(RoomType[0]) + 1;
+  do Result := 3 * SizeOf(Single) + Byte(RoomType[0]) + 1;
 end;
 
 class function TCustomHrirRoomInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hrri'
+ Result := 'hrri'
 end;
 
 function TCustomHrirRoomInformation.GetRoomType: string;
 begin
- result := FRoomRecord.RoomType;
+ Result := string(FRoomRecord.RoomType);
 end;
 
 procedure TCustomHrirRoomInformation.SetRoomType(const Value: string);
 begin
- FRoomRecord.RoomType := Value;
+ FRoomRecord.RoomType := ShortString(Value);
 end;
 
 procedure TCustomHrirRoomInformation.LoadFromStream(Stream: TStream);
@@ -1192,21 +1192,21 @@ function TCustomHrirMicrophoneInformation.GetChunkSize: Cardinal;
 begin
  // calculate chunk size
  with FMicrophoneRecord
-  do result := 3 + Byte(MicType[0]) + Byte(Manufacturer[0]) + Byte(Notes[0]);
+  do Result := 3 + Byte(MicType[0]) + Byte(Manufacturer[0]) + Byte(Notes[0]);
 end;
 
 class function TCustomHrirMicrophoneInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hrmi';
+ Result := 'hrmi';
 end;
 
 function TCustomHrirMicrophoneInformation.GetString(
   const Index: Integer): string;
 begin
  case Index of
-  0 : result := FMicrophoneRecord.MicType;
-  1 : result := FMicrophoneRecord.Manufacturer;
-  2 : result := FMicrophoneRecord.Notes;
+  0 : Result := string(FMicrophoneRecord.MicType);
+  1 : Result := string(FMicrophoneRecord.Manufacturer);
+  2 : Result := string(FMicrophoneRecord.Notes);
  end;
 end;
 
@@ -1214,9 +1214,9 @@ procedure TCustomHrirMicrophoneInformation.SetString(const Index: Integer;
   const Value: string);
 begin
  case Index of
-  0 : FMicrophoneRecord.MicType := Value;
-  1 : FMicrophoneRecord.Manufacturer := Value;
-  2 : FMicrophoneRecord.Notes := Value;
+  0 : FMicrophoneRecord.MicType := ShortString(Value);
+  1 : FMicrophoneRecord.Manufacturer := ShortString(Value);
+  2 : FMicrophoneRecord.Notes := ShortString(Value);
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
  end;
 end;
@@ -1289,23 +1289,23 @@ end;
 function TCustomHrirOutboardInformation.GetChunkSize: Cardinal;
 begin
  with FOutboardRecord
-  do result := 4 + Byte(ADConverter[0]) + Byte(DAConverter[0]) +
+  do Result := 4 + Byte(ADConverter[0]) + Byte(DAConverter[0]) +
        Byte(Amplifier[0]) + Byte(Loudspeaker[0]);
 end;
 
 class function TCustomHrirOutboardInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hroi';
+ Result := 'hroi';
 end;
 
 function TCustomHrirOutboardInformation.GetString(const Index: Integer): string;
 begin
  with FOutboardRecord do
   case Index of
-   0 : result := ADConverter;
-   1 : result := DAConverter;
-   2 : result := Amplifier;
-   3 : result := Loudspeaker;
+   0 : Result := string(ADConverter);
+   1 : Result := string(DAConverter);
+   2 : Result := string(Amplifier);
+   3 : Result := string(Loudspeaker);
   end;
 end;
 
@@ -1314,10 +1314,10 @@ procedure TCustomHrirOutboardInformation.SetString(const Index: Integer;
 begin
  with FOutboardRecord do
   case Index of
-   0 : ADConverter := Value;
-   1 : DAConverter := Value;
-   2 : Amplifier := Value;
-   3 : Loudspeaker := Value;
+   0 : ADConverter := ShortString(Value);
+   1 : DAConverter := ShortString(Value);
+   2 : Amplifier := ShortString(Value);
+   3 : Loudspeaker := ShortString(Value);
    else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
   end;
 end;
@@ -1399,27 +1399,27 @@ function TCustomHrirMeasurementInformation.GetChunkSize: Cardinal;
 begin
  // calculate chunk size
  with FMeasurementRecord
-  do result := 2 + SizeOf(Distance) + Byte(MeasurementType[0]) +
+  do Result := 2 + SizeOf(Distance) + Byte(MeasurementType[0]) +
        SizeOf(MeasuredLength) + Byte(ExcitationType[0]) + SizeOf(Integer);
 end;
 
 class function TCustomHrirMeasurementInformation.GetClassChunkName: TChunkName;
 begin
- result := 'hrme';
+ Result := 'hrme';
 end;
 
 function TCustomHrirMeasurementInformation.GetString(
   const Index: Integer): string;
 begin
  case Index of
-  0 : result := FMeasurementRecord.MeasurementType;
-  1 : result := FMeasurementRecord.ExcitationType;
+  0 : Result := string(FMeasurementRecord.MeasurementType);
+  1 : Result := string(FMeasurementRecord.ExcitationType);
  end;
 end;
 
 function TCustomHrirMeasurementInformation.GetSymmetric: Boolean;
 begin
- result := (FMeasurementRecord.Flags and 1) > 0;
+ Result := (FMeasurementRecord.Flags and 1) > 0;
 end;
 
 procedure TCustomHrirMeasurementInformation.LoadFromStream(Stream: TStream);
@@ -1503,8 +1503,8 @@ procedure TCustomHrirMeasurementInformation.SetString(const Index: Integer;
   const Value: string);
 begin
  case Index of
-  0 : FMeasurementRecord.MeasurementType := Value;
-  1 : FMeasurementRecord.ExcitationType := Value;
+  0 : FMeasurementRecord.MeasurementType := ShortString(Value);
+  1 : FMeasurementRecord.ExcitationType := ShortString(Value);
   else raise Exception.CreateFmt(RCStrIndexOutOfBounds, [Index]);
  end;
 end;
@@ -1537,26 +1537,26 @@ end;
 
 function TCustomHrtfs.GetChunkSize: Cardinal;
 begin
- result := inherited GetChunkSize;
+ Result := inherited GetChunkSize;
 end;
 
 class function TCustomHrtfs.GetClassChunkName: TChunkName;
 begin
- result := 'HRTF';
+ Result := 'HRTF';
 end;
 
 function TCustomHrtfs.GetDate: TDateTime;
 begin
  if assigned(FGeneralInformation)
-  then result := FGeneralInformation.Date
-  else result := Now;
+  then Result := FGeneralInformation.Date
+  else Result := Now;
 end;
 
 function TCustomHrtfs.GetDistance: Single;
 begin
  if assigned(FMeasurementInformation)
-  then result := FMeasurementInformation.Distance
-  else result := 0;
+  then Result := FMeasurementInformation.Distance
+  else Result := 0;
 end;
 
 function TCustomHrtfs.GetGeneralInfoString(const Index: Integer): String;
@@ -1564,14 +1564,14 @@ begin
  if assigned(FGeneralInformation) then
   with FGeneralInformation do
    case index of
-    0 : result := Title;
-    1 : result := Context;
-    2 : result := Copyright;
-    3 : result := Author;
-    4 : result := Notes; 
-    else result := '';
+    0 : Result := Title;
+    1 : Result := Context;
+    2 : Result := Copyright;
+    3 : Result := Author;
+    4 : Result := Notes;
+    else Result := '';
    end
- else result := '';
+ else Result := '';
 end;
 
 procedure TCustomHrtfs.GetHrirByIndex(const Index: Integer;
@@ -1587,8 +1587,8 @@ end;
 function TCustomHrtfs.GetHrir(Index: Integer): TCustomHrir;
 begin
  if Index in [0..(FHrirList.Count - 1)]
-  then result := TCustomHrir(FHrirList[Index])
-  else result := nil;
+  then Result := TCustomHrir(FHrirList[Index])
+  else Result := nil;
 end;
 
 procedure TCustomHrtfs.GetHrirByIndex(const Index: Integer;
@@ -1603,17 +1603,17 @@ end;
 
 function TCustomHrtfs.GetHrirCount: Integer;
 begin
- result := FHrirList.Count;
+ Result := FHrirList.Count;
 end;
 
 function TCustomHrtfs.GetMaximumHrirSize: Integer;
 var
   Index : Integer;
 begin
- result := 0;
+ Result := 0;
  for Index := 0 to FHrirList.Count - 1 do
-  if TCustomHrir(FHrirList[Index]).SampleFrames > result
-   then result := TCustomHrir(FHrirList[Index]).SampleFrames;
+  if TCustomHrir(FHrirList[Index]).SampleFrames > Result
+   then Result := TCustomHrir(FHrirList[Index]).SampleFrames;
 end;
 
 function TCustomHrtfs.GetMinimumHrirSize: Integer;
@@ -1621,83 +1621,83 @@ var
   Index : Integer;
 begin
  if FHrirList.Count = 0
-  then result := 0
+  then Result := 0
   else
    begin
-    result := TCustomHrir(FHrirList[0]).SampleFrames;
+    Result := TCustomHrir(FHrirList[0]).SampleFrames;
     for Index := 1 to FHrirList.Count - 1 do
-     if TCustomHrir(FHrirList[Index]).SampleFrames < result
-      then result := TCustomHrir(FHrirList[Index]).SampleFrames;
+     if TCustomHrir(FHrirList[Index]).SampleFrames < Result
+      then Result := TCustomHrir(FHrirList[Index]).SampleFrames;
    end;
 end;
 
 function TCustomHrtfs.GetMeasuredLength: Integer;
 begin
  if assigned(FMeasurementInformation)
-  then result := FMeasurementInformation.MeasuredLength
-  else result := 0;
+  then Result := FMeasurementInformation.MeasuredLength
+  else Result := 0;
 end;
 
 function TCustomHrtfs.GetMeasurementString(const Index: Integer): String;
 begin
- result := '';
+ Result := '';
  if assigned(FMeasurementInformation) then
   with FMeasurementInformation do
    case Index of
-    0 : result := MeasurementType;
-    1 : result := ExcitationType;
+    0 : Result := MeasurementType;
+    1 : Result := ExcitationType;
    end;
 end;
 
 function TCustomHrtfs.GetMicString(const Index: Integer): String;
 begin
- result := '';
+ Result := '';
  if assigned(FMicrophoneInformation) then
   with FMicrophoneInformation do
    case Index of
-    0 : result := MicType;
-    1 : result := Manufacturer;
-    2 : result := Notes;
+    0 : Result := MicType;
+    1 : Result := Manufacturer;
+    2 : Result := Notes;
    end;
 end;
 
 function TCustomHrtfs.GetOutboardString(const Index: Integer): String;
 begin
- result := '';
+ Result := '';
  if assigned(FOutboardInformation) then
   with FOutboardInformation do
    case Index of
-    0 : result := ADConverter;
-    1 : result := DAConverter;
-    2 : result := Amplifier;
-    3 : result := Loudspeaker;
+    0 : Result := ADConverter;
+    1 : Result := DAConverter;
+    2 : Result := Amplifier;
+    3 : Result := Loudspeaker;
    end;
 end;
 
 function TCustomHrtfs.GetRoomDim(const Index: Integer): Single;
 begin
- result := 0;
+ Result := 0;
  if assigned(FRoomInformation) then
   with FRoomInformation do
    case Index of
-    0 : result := X;
-    1 : result := Y;
-    2 : result := Z;
+    0 : Result := X;
+    1 : Result := Y;
+    2 : Result := Z;
    end;
 end;
 
 function TCustomHrtfs.GetRoomType: String;
 begin
  if assigned(FRoomInformation)
-  then result := FRoomInformation.RoomType
-  else result := '';
+  then Result := FRoomInformation.RoomType
+  else Result := '';
 end;
 
 function TCustomHrtfs.GetSex: THrirSexType;
 begin
  if assigned(FSubjectInformation)
-  then result := FSubjectInformation.Sex
-  else result := stUnknown;
+  then Result := FSubjectInformation.Sex
+  else Result := stUnknown;
 end;
 
 function TCustomHrtfs.GetSubjectString(const Index: Integer): String;
@@ -1705,18 +1705,18 @@ begin
  if assigned(FSubjectInformation) then
   with FSubjectInformation do
    case index of
-    0 : result := ID;
-    1 : result := Description;
-    else result := '';
+    0 : Result := ID;
+    1 : Result := Description;
+    else Result := '';
    end
- else result := '';
+ else Result := '';
 end;
 
 function TCustomHrtfs.GetSymmetric: Boolean;
 begin
  if not assigned(FMeasurementInformation)
-  then result := FMeasurementInformation.Symmetric
-  else result := False;
+  then Result := FMeasurementInformation.Symmetric
+  else Result := False;
 end;
 
 procedure TCustomHrtfs.SetDate(const Value: TDateTime);
@@ -1899,13 +1899,13 @@ var
   CosAzimuth : Double;
 begin
  CosAzimuth := cos(A.Azimuth - B.Azimuth);
- result := 0.5 * ((cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
+ Result := 0.5 * ((cos(A.Polar - B.Polar) * (CosAzimuth + 1) +
                    cos(A.Polar + B.Polar) * (CosAzimuth - 1)));
 end;
 
 function GetSphericTriangleAngleNoCos(A, B, C: Double): Double;
 begin
- result := arccos((A - B * C) / (sqrt((1 - sqr(B)) * (1 - sqr(C)))));
+ Result := arccos((A - B * C) / (sqrt((1 - sqr(B)) * (1 - sqr(C)))));
 end;
 
 procedure TCustomHrtfs.CalculateScaleFactors(const SpherePos, A,
@@ -2535,7 +2535,7 @@ begin
  SpherePos3D.Azimuth := SpherePos.Azimuth;
  SpherePos3D.Polar := SpherePos.Polar;
  SpherePos3D.Radius := 1;
- result := FindNearestHrirs(SpherePos3D);
+ Result := FindNearestHrirs(SpherePos3D);
 end;
 
 function TCustomHrtfs.FindNearestHrirs(const SpherePos: TSphereVector3D): TCustomHrir;
@@ -2548,10 +2548,10 @@ begin
  assert(FHrirList.Count > 0);
 
  // initialize with first HRIR
- result := TCustomHrir(FHrirList[0]);
+ Result := TCustomHrir(FHrirList[0]);
 
  // initialize with first angle/distance
- MinimumAngle := GetOrthodromicAngle2D(result.Position, SpherePos);
+ MinimumAngle := GetOrthodromicAngle2D(Result.Position, SpherePos);
 
  // search for better distances..
  for i := 1 to FHrirList.Count - 1 do
@@ -2562,7 +2562,7 @@ begin
    if CurrentAngle < MinimumAngle then
     begin
      MinimumAngle := CurrentAngle;
-     result := TempHrir;
+     Result := TempHrir;
     end;
   end;
 end;
@@ -2574,7 +2574,7 @@ begin
  SpherePos3D.Azimuth := SpherePos.Azimuth;
  SpherePos3D.Polar := SpherePos.Polar;
  SpherePos3D.Radius := 1;
- result := FindSecondNearestHrirs(SpherePos3D, Nearest);
+ Result := FindSecondNearestHrirs(SpherePos3D, Nearest);
 end;
 
 function TCustomHrtfs.FindSecondNearestHrirs(const SpherePos: TSphereVector3D; const Nearest: TCustomHrir): TCustomHrir;
@@ -2590,18 +2590,18 @@ begin
 
  // initialize with first HRIR
  if TCustomHrir(FHrirList[0]) <> Nearest
-  then result := TCustomHrir(FHrirList[0])
-  else result := TCustomHrir(FHrirList[1]);
+  then Result := TCustomHrir(FHrirList[0])
+  else Result := TCustomHrir(FHrirList[1]);
 
  // initialize with first angle/distance
- MinimumAngle := GetOrthodromicAngle2D(result.Position, SpherePos);
+ MinimumAngle := GetOrthodromicAngle2D(Result.Position, SpherePos);
 
  // check whether an on polar axis situation has been found
- OnPolarAxisFound := (result.Position.Polar = SpherePos.Polar) and
+ OnPolarAxisFound := (Result.Position.Polar = SpherePos.Polar) and
    (SpherePos.Polar = Nearest.Polar);
 
  // check whether an on azimuth axis situation has been found
- OnAzimuthAxisFound := (result.Position.Azimuth = SpherePos.Azimuth) and
+ OnAzimuthAxisFound := (Result.Position.Azimuth = SpherePos.Azimuth) and
    (SpherePos.Azimuth = Nearest.Azimuth);
 
  // search for better distances..
@@ -2618,12 +2618,12 @@ begin
        if (CurrentAngle < MinimumAngle) then
         begin
          MinimumAngle := CurrentAngle;
-         result := TempHrir;
+         Result := TempHrir;
         end else
        else
         begin
          MinimumAngle := CurrentAngle;
-         result := TempHrir;
+         Result := TempHrir;
          OnPolarAxisFound := True;
         end;
      end;
@@ -2635,12 +2635,12 @@ begin
        if (CurrentAngle < MinimumAngle) then
         begin
          MinimumAngle := CurrentAngle;
-         result := TempHrir;
+         Result := TempHrir;
         end else
        else
         begin
          MinimumAngle := CurrentAngle;
-         result := TempHrir;
+         Result := TempHrir;
          OnAzimuthAxisFound := True;
         end;
      end;
@@ -2650,7 +2650,7 @@ begin
        (CurrentAngle < MinimumAngle) then
      begin
       MinimumAngle := CurrentAngle;
-      result := TempHrir;
+      Result := TempHrir;
      end;
    end;
 end;

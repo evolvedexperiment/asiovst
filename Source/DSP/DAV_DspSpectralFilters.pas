@@ -390,7 +390,6 @@ procedure TSpectralSmoothing32.BuildFilter(
 var
   Bin  : Integer;
   Half : Integer;
-  Temp : Double;
 begin
  // eventually logarithmize magnitude!
 

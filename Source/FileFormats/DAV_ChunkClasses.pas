@@ -25,7 +25,7 @@ unit DAV_ChunkClasses;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ end;
 
 function TCustomChunk.GetChunkName: string;
 begin
- Result := FChunkName;
+ Result := string(FChunkName);
 end;
 
 function TCustomChunk.GetChunkSize: Cardinal;
@@ -524,7 +524,8 @@ procedure TDefinedChunk.SetChunkName(const Value: string);
 begin
  inherited;
  if Value <> FChunkName
-  then raise Exception.Create('Chunk name must always be ''' + FChunkName + '''');
+  then raise Exception.Create('Chunk name must always be ''' +
+    string(FChunkName) + '''');
 end;
 
 { TFixedDefinedChunk }

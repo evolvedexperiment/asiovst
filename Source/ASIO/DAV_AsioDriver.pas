@@ -794,7 +794,7 @@ end;
 
 procedure TDavASIODriver.AsioGetDriverName(Name: PAnsiChar);
 begin
- Strcopy(Name, PAnsiChar(Copy(GetDriverName, 0, 32)));
+ StrPCopy(Name, AnsiString(Copy(GetDriverName, 0, 32)));
 end;
 
 function TDavASIODriver.AsioGetDriverVersion: Longint;
@@ -804,7 +804,7 @@ end;
 
 procedure TDavASIODriver.AsioGetErrorMessage(Msg: PAnsiChar);
 begin
- StrCopy(Msg, PAnsiChar(Copy(GetErrorMessage, 0, 124)));
+ StrPCopy(Msg, AnsiString(Copy(GetErrorMessage, 0, 124)));
 end;
 
 function TDavASIODriver.AsioStart: TASIOError;

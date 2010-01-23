@@ -25,7 +25,7 @@ unit DAV_Approximations;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -528,10 +528,6 @@ uses
   Math, SysUtils, DAV_Math;
 
 { Trigonomic Approximations }
-
-type
-  TQuadrant = 0..3;
-  TOctant   = 0..7;
 
 // 3-Term: Accurate to about 3.2 decimal digits over the range [0, pi/2].
 
@@ -2678,7 +2674,7 @@ asm
   cmp     ecx, 0
   jge     @@Exit
   fld1
-  fdivrp                 // 1 / Result
+  fdivrp  st(1), st(0)   // 1 / Result
   jmp     @@Exit
 @@RealPower:
   fld     Base

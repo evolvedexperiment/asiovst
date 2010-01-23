@@ -14,6 +14,7 @@
       <Parsing>
         <SyntaxOptions>
           <CStyleOperator Value="False"/>
+          <CPPInline Value="False"/>
         </SyntaxOptions>
       </Parsing>
       <Other>

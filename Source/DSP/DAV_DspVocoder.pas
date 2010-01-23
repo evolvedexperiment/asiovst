@@ -540,8 +540,8 @@ begin
 end;
 
 procedure TBarkScaleVocoder.SynthesisBandwidthChanged;
-var
-  Band: Integer;
+//var
+//  Band: Integer;
 begin
 (*
  for Band := 0 to Length(FSynthesisFilters) - 1 do

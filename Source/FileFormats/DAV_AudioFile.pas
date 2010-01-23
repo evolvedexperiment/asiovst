@@ -25,7 +25,7 @@ unit DAV_AudioFile;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, SysUtils, DAV_Common, DAV_ChunkClasses, DAV_ChannelDataCoder;
+  Classes, SysUtils, DAV_ChannelDataCoder;
 
 type
   TCodingEvent = procedure(Sender: TObject;

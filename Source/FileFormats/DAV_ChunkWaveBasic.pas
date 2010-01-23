@@ -25,7 +25,7 @@ unit DAV_ChunkWaveBasic;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -1676,7 +1676,7 @@ end;
 
 function TAssociatedDataListChunk.GetTypeID: string;
 begin
- Result := AssociatedDataListRecord.TypeID;
+ Result := string(AssociatedDataListRecord.TypeID);
 end;
 
 procedure TAssociatedDataListChunk.SetTypeID(const Value: string);
@@ -2080,11 +2080,11 @@ begin
 end;
 
 // Some Wrapper Functions
-function TCustomBextChunk.GetDescription: string; begin Result := BextRecord.Description; end;
-function TCustomBextChunk.GetOriginationDate: string; begin Result := BextRecord.OriginationDate; end;
-function TCustomBextChunk.GetOriginationTime: string; begin Result := BextRecord.OriginationTime; end;
-function TCustomBextChunk.GetOriginator: string; begin Result := BextRecord.Originator; end;
-function TCustomBextChunk.GetOriginatorRef: string; begin Result := BextRecord.OriginatorRef; end;
+function TCustomBextChunk.GetDescription: string; begin Result := string(BextRecord.Description); end;
+function TCustomBextChunk.GetOriginationDate: string; begin Result := string(BextRecord.OriginationDate); end;
+function TCustomBextChunk.GetOriginationTime: string; begin Result := string(BextRecord.OriginationTime); end;
+function TCustomBextChunk.GetOriginator: string; begin Result := string(BextRecord.Originator); end;
+function TCustomBextChunk.GetOriginatorRef: string; begin Result := string(BextRecord.OriginatorRef); end;
 
 procedure TCustomBextChunk.SetDescription(const Value: string);
 begin
@@ -2171,20 +2171,20 @@ begin
 end;
 
 // Some Wrapper Functions 
-function TCartChunk.GetArtist: string; begin Result := CartRecord.Artist; end;
-function TCartChunk.GetCategory: string; begin Result := CartRecord.Category; end;
-function TCartChunk.GetClassification: string; begin Result := CartRecord.Classification; end;
-function TCartChunk.GetClientID: string; begin Result := CartRecord.ClientID; end;
-function TCartChunk.GetCutID: string; begin Result := CartRecord.CutID; end;
-function TCartChunk.GetEndDate: string; begin Result := CartRecord.EndDate; end;
-function TCartChunk.GetEndTime: string; begin Result := CartRecord.EndTime; end;
-function TCartChunk.GetOutCue: string; begin Result := CartRecord.OutCue; end;
-function TCartChunk.GetProducerAppID: string; begin Result := CartRecord.ProducerAppID; end;
-function TCartChunk.GetProducerAppVersion: string; begin Result := CartRecord.ProducerAppVersion; end;
-function TCartChunk.GetStartDate: string; begin Result := CartRecord.StartDate; end;
-function TCartChunk.GetStartTime: string; begin Result := CartRecord.StartTime; end;
-function TCartChunk.GetTitle: string; begin Result := CartRecord.Title; end;
-function TCartChunk.GetUserDef: string; begin Result := CartRecord.UserDef; end;
+function TCartChunk.GetArtist: string; begin Result := string(CartRecord.Artist); end;
+function TCartChunk.GetCategory: string; begin Result := string(CartRecord.Category); end;
+function TCartChunk.GetClassification: string; begin Result := string(CartRecord.Classification); end;
+function TCartChunk.GetClientID: string; begin Result := string(CartRecord.ClientID); end;
+function TCartChunk.GetCutID: string; begin Result := string(CartRecord.CutID); end;
+function TCartChunk.GetEndDate: string; begin Result := string(CartRecord.EndDate); end;
+function TCartChunk.GetEndTime: string; begin Result := string(CartRecord.EndTime); end;
+function TCartChunk.GetOutCue: string; begin Result := string(CartRecord.OutCue); end;
+function TCartChunk.GetProducerAppID: string; begin Result := string(CartRecord.ProducerAppID); end;
+function TCartChunk.GetProducerAppVersion: string; begin Result := string(CartRecord.ProducerAppVersion); end;
+function TCartChunk.GetStartDate: string; begin Result := string(CartRecord.StartDate); end;
+function TCartChunk.GetStartTime: string; begin Result := string(CartRecord.StartTime); end;
+function TCartChunk.GetTitle: string; begin Result := string(CartRecord.Title); end;
+function TCartChunk.GetUserDef: string; begin Result := string(CartRecord.UserDef); end;
 
 procedure TCartChunk.SetArtist(const Value: string);
 begin

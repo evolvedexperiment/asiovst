@@ -2,7 +2,7 @@ unit DAV_CRC;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 type
   TCRC16 = class

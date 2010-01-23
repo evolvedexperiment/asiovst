@@ -26,7 +26,7 @@ unit DAV_Common;
 //  The initial developer of this code is Tobias Fleischer and                //
 //  Christian-W. Budde                                                        //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2003-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -149,6 +149,7 @@ function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDI
 function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 {$IFNDEF DELPHI12_UP}
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; inline;
 procedure Msg(b: Boolean); overload;
 procedure Msg(m: string; m2: string = ''); overload;
 procedure Msg(i: Integer); overload;
@@ -1135,6 +1136,11 @@ begin
 end;
 
 {$IFNDEF DELPHI12_UP}
+function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
+begin
+ Result := C in CharSet;
+end;
+
 procedure Msg(b: Boolean);
 begin if b then Msg('TRUE') else Msg('FALSE');end;
 procedure Msg(m: string; m2: string = '');

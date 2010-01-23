@@ -131,11 +131,11 @@ type
     procedure AddLogMessage(const Text: string);
     {$ENDIF}
     function GetPluginFlags: TEffFlags; virtual;
-    function GetUniqueID: string; virtual;
+    function GetUniqueID: AnsiString; virtual;
     function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
     function OfflineRun(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); override;
-    procedure SetUniqueID(const Value: string); virtual;
+    procedure SetUniqueID(const Value: AnsiString); virtual;
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
@@ -256,7 +256,7 @@ type
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
     property TailSize: Integer read FTailSize write FTailSize default 0;
     property Tempo: Single read fTempo;
-    property UniqueID: string read GetUniqueID write SetUniqueID;
+    property UniqueID: AnsiString read GetUniqueID write SetUniqueID;
     property VendorName: string read fVendorName write SetVendorName;
     property Version: string read FVersion write FVersion;
     property VersionMajor: Integer read FVersionMajor write SetVersionMajor default 1;
@@ -419,7 +419,7 @@ begin
    FillChar(Text^, 256, 0);
    try
     if GetHostProductString(Text)
-     then Result := StrPas(Text)
+     then Result := string(StrPas(Text))
      else Result := 'Unknown';
     if TruncateStrings and (Length(Result) > 64)
      then SetLength(Result, 64);
@@ -444,7 +444,7 @@ begin
    FillChar(Text^, 256, 0);
    try
     if GetHostVendorString(Text)
-     then Result := StrPas(Text)
+     then Result := string(StrPas(Text))
      else Result := 'Unknown';
     if TruncateStrings and (Length(Result) > 64)
      then SetLength(Result, 64);
@@ -461,7 +461,6 @@ procedure TCustomVSTModule.SetAudioMaster(const AM :TAudioMasterCallbackFunc);
 var
   rUID : TChunkName;
   i    : Integer;
-  sUID : string;
   hv   : Boolean;
 begin
  inherited;
@@ -484,11 +483,11 @@ begin
          if NumOutputs  >= 0 then FEffect.numOutputs := NumOutputs;
          if NumPrograms >= 0 then FEffect.numPrograms := NumPrograms;
          if NumParams   >= 0 then FEffect.numParams := NumParams;
-         fPlugCategory := PlugCategory;
+         FPlugCategory := PlugCategory;
          if Assigned(OnInstanciate) then
           begin
-           sUID := UniqueID;
-           OnInstanciate(Self, sUID);
+           Move(UniqueID[1], rUID, Min(4, Length(UniqueID)));
+           OnInstanciate(Self, rUID);
           end;
          IOChanged;
         end;
@@ -939,7 +938,7 @@ begin
   if vcdCockosExtension in FCanDos
    then Result := Integer($BEEF0000)
    else Result := 0;
- if Assigned(FOnCanDo) then FOnCanDo(Self, PAnsiChar(ptr));
+ if Assigned(FOnCanDo) then FOnCanDo(Self, string(PAnsiChar(ptr)));
 end;
 
 function TCustomVSTModule.HostCallGetTailSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
@@ -1125,7 +1124,7 @@ begin
  Result := Integer(fProcessPrecisition); // [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
 end;
 
-function TCustomVSTModule.GetUniqueID: string;
+function TCustomVSTModule.GetUniqueID: AnsiString;
 begin
  Result := FEffect.UniqueID[3] +
            FEffect.UniqueID[2] +
@@ -1133,7 +1132,7 @@ begin
            FEffect.UniqueID[0];
 end;
 
-procedure TCustomVSTModule.SetUniqueID(const Value: string);
+procedure TCustomVSTModule.SetUniqueID(const Value: AnsiString);
 var
   i : Integer;
 begin

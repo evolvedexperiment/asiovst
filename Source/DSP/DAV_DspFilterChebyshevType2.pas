@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Complex, DAV_DspFilter, DAV_DspFilterChebyshev;
+  Classes, DAV_Complex, DAV_DspFilterChebyshev;
 
 type
   TCustomChebyshev2Filter = class(TCustomChebyshevFilter)
@@ -50,7 +50,7 @@ type
     FCoeffs        : array [0..127] of Double;
     FState         : array [0..63] of Double;
     FStateStack    : array of array [0..63] of Double;
-    function CorrectFrequency(CurrentFrequenc: Double): Double; virtual; abstract;
+    function CorrectFrequency(CurrentFrequency: Double): Double; virtual; abstract;
     procedure AssignTo(Dest: TPersistent); override;
     procedure CalculateW0; override;
     procedure CalculateHypFactors; override;
@@ -73,7 +73,7 @@ type
 
   TCustomChebyshev2LowpassFilter = class(TCustomChebyshev2Filter)
   protected
-    function CorrectFrequency(CurrentFrequenc: Double): Double; override;
+    function CorrectFrequency(CurrentFrequency: Double): Double; override;
   public
     function ProcessSample64(Input: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
@@ -100,7 +100,7 @@ type
 
   TCustomChebyshev2HighpassFilter = class(TCustomChebyshev2Filter)
   protected
-    function CorrectFrequency(CurrentFrequenc: Double): Double; override;
+    function CorrectFrequency(CurrentFrequency: Double): Double; override;
   public
     function ProcessSample64(Input: Double): Double; override;
     function Phase(const Frequency: Double): Double; override;
@@ -128,7 +128,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Classes, DAV_Math, DAV_Common, DAV_Approximations;
+  Math, SysUtils, DAV_Classes, DAV_Math, DAV_Approximations;
 
 const
   CHalf32 : Single = 0.5;
@@ -248,8 +248,6 @@ begin
 end;
 
 procedure TCustomChebyshev2Filter.SetFilterValues(const AFrequency, AGain, AStopband : Single);
-const
-  ln10_0025 : Double = 5.7564627325E-2;
 begin
  FFrequency  := AFrequency;
  FGain_dB    := AGain;
@@ -288,7 +286,7 @@ end;
 
 { TCustomChebyshev2LowpassFilter }
 
-function TCustomChebyshev2LowpassFilter.CorrectFrequency(CurrentFrequenc: Double): Double;
+function TCustomChebyshev2LowpassFilter.CorrectFrequency(CurrentFrequency: Double): Double;
 var
   t : Double;
 begin
@@ -404,12 +402,12 @@ asm
  fadd  [eax.FState + ecx * 8 + 8].Double
  fld   st(3)
  fmul  [eax.FCoeffs + edx * 8].Double
- faddp
+ faddp st(1), st(0)
  fstp  [eax.FState + ecx * 8].Double
  fmul  [eax.FCoeffs + edx * 8 + 16].Double
  fxch
  fxch  st(2)
- faddp
+ faddp st(1), st(0)
  fstp  [eax.FState + ecx * 8 + 8].Double
  ja    @FilterLoop
 
@@ -482,7 +480,7 @@ end;
 
 { TCustomChebyshev2HighpassFilter }
 
-function TCustomChebyshev2HighpassFilter.CorrectFrequency(CurrentFrequenc: Double): Double;
+function TCustomChebyshev2HighpassFilter.CorrectFrequency(CurrentFrequency: Double): Double;
 var
   t : Double;
 begin
@@ -605,12 +603,12 @@ asm
  fadd   [eax.FState + ecx * 8 + 8].Double
  fld    st(3)
  fmul   [eax.FCoeffs + edx * 8].Double
- faddp
+ faddp  st(1), st(0)
  fstp   [eax.FState + ecx * 8].Double
  fmul   [eax.FCoeffs + edx * 8 + 16].Double
  fxch
  fxch   st(2)
- faddp
+ faddp  st(1), st(0)
  fstp   [eax.FState + ecx * 8 + 8].Double
  ja     @FilterLoop
 

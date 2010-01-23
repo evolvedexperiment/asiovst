@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Complex, DAV_DspFilter, DAV_DspFilterChebyshev;
+  Classes, DAV_Complex, DAV_DspFilterChebyshev;
 
 type
   TCustomChebyshev1Filter = class(TCustomChebyshevFilter)
@@ -212,8 +212,6 @@ begin
 end;
 
 procedure TCustomChebyshev1Filter.SetFilterValues(const AFrequency, AGain, ARipple : Single);
-const
-  ln10_0025 : Double = 5.7564627325E-2;
 begin
  FFrequency  := AFrequency;
  FGain_dB    := AGain;
@@ -364,12 +362,12 @@ asm
  fadd  [eax.FState + ecx * 8 + 8].Double
  fld   st(3)
  fadd  st(0), st(0)
- faddp
+ faddp st(1), st(0)
  fstp  [eax.FState + ecx * 8].Double
  fmul  [eax.FCoeffs + ecx * 8 + 8].Double
  fxch
  fxch  st(2)
- faddp
+ faddp st(1), st(0)
  fstp  [eax.FState + ecx * 8 + 8].Double
  ja    @FilterLoop
 
@@ -430,40 +428,40 @@ asm
  test ecx, 1
  jz @OrderLoop
 
-  fld  [eax.FExpOrdPiHalf.Re]               // B.Re, A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(0)                         // A.Re * B.Re, A.Re, A.Im, K, FFilterGain
-  fld  [eax.FExpOrdPiHalf.Im]               // B.Im, A.Re * B.Re, A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(3)                         // A.Im * B.Im, A.Re * B.Re, A.Re, A.Im, K, FFilterGain
-  fsubp                                     // A.Re * B.Re - A.Im * B.Im := New A.Re, A.Re, A.Im, K, FFilterGain
+  fld    [eax.FExpOrdPiHalf.Re]             // B.Re, A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(0)                       // A.Re * B.Re, A.Re, A.Im, K, FFilterGain
+  fld    [eax.FExpOrdPiHalf.Im]             // B.Im, A.Re * B.Re, A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(3)                       // A.Im * B.Im, A.Re * B.Re, A.Re, A.Im, K, FFilterGain
+  fsubp  st(1), st(0)                       // A.Re * B.Re - A.Im * B.Im := New A.Re, A.Re, A.Im, K, FFilterGain
 
-  fxch st(2)                                // A.Im, A.Re, New A.Re, K, FFilterGain
-  fmul [eax.FExpOrdPiHalf.Re]               // A.Im * B.Re, A.Re, New A.Re, K, FFilterGain
-  fxch st(1)                                // A.Re, A.Im * B.Re, New A.Re, K, FFilterGain
-  fmul  [eax.FExpOrdPiHalf.Im]              // B.Im * A.Re, A.Im * B.Re, New A.Re, K, FFilterGain
-  faddp                                     // B.Im * A.Re, A.Im * B.Re := New A.Im, New A.Re, K, FFilterGain
+  fxch   st(2)                              // A.Im, A.Re, New A.Re, K, FFilterGain
+  fmul   [eax.FExpOrdPiHalf.Re]             // A.Im * B.Re, A.Re, New A.Re, K, FFilterGain
+  fxch   st(1)                              // A.Re, A.Im * B.Re, New A.Re, K, FFilterGain
+  fmul   [eax.FExpOrdPiHalf.Im]             // B.Im * A.Re, A.Im * B.Re, New A.Re, K, FFilterGain
+  faddp  st(1), st(0)                       // B.Im * A.Re, A.Im * B.Re := New A.Im, New A.Re, K, FFilterGain
   fxch                                      // New A.Re, New A.Im, K, FFilterGain
 
-  fld  [eax.FHypFactors + 8].Double         // FHypFactors[1], A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(3)                         // K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
+  fld    [eax.FHypFactors + 8].Double       // FHypFactors[1], A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(3)                       // K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
 
   fld1                                      // 1, K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
-  fadd st(0), st(1)                         // 1 + K * FHypFactors[1], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
+  fadd   st(0), st(1)                       // 1 + K * FHypFactors[1], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
   fld1                                      // 1, 1 + K * FHypFactors[1], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
-  fdivrp                                    // 1 / (1 + K * FHypFactors[1]) := t[0], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
+  fdivrp st(1), st(0)                       // 1 / (1 + K * FHypFactors[1]) := t[0], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain
 
-  fmul st(5), st(0)                         // t[0], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain * t[0]
-  fxch st(1)                                // K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0]
-  fmul st(5), st(0)                         // K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
+  fmul   st(5), st(0)                       // t[0], K * FHypFactors[1], A.Re, A.Im, K, FFilterGain * t[0]
+  fxch   st(1)                              // K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0]
+  fmul   st(5), st(0)                       // K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
 
   fld1                                      // 1, K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
-  fsubrp                                    // 1 - K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
+  fsubrp st(1), st(0)                       // 1 - K * FHypFactors[1], t, A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
   fmulp                                     // (1 - K * FHypFactors[1]) * t, A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
 
-  fstp [eax.FCoeffs + 8 * ecx - 8].Double   // store to FCoeffs[2 * i + 1], A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
+  fstp   [eax.FCoeffs + 8 * ecx - 8].Double // store to FCoeffs[2 * i + 1], A.Re, A.Im, K, FFilterGain * t[0] * K * FHypFactors[1]
 
-  fxch st(3)                                // FFilterGain * t * K², A.Im, K, A.Re
-  fmul  [eax.FRippleGain].Double            // FRippleGain * FFilterGain * t * K², A.Im, K, A.Re
-  fxch st(3)                                // A.Im, K, A.Re, FRippleGain * FFilterGain * t * K²
+  fxch   st(3)                              // FFilterGain * t * K², A.Im, K, A.Re
+  fmul   [eax.FRippleGain].Double           // FRippleGain * FFilterGain * t * K², A.Im, K, A.Re
+  fxch   st(3)                              // A.Im, K, A.Re, FRippleGain * FFilterGain * t * K²
 
 
  dec ecx
@@ -471,73 +469,73 @@ asm
 
  @OrderLoop:
   // calculate t1 = 1 / (FHypFactors[0] - sqr(A.Re));
-  fld  st(0)                                // A.Re, A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(0)                         // A.Re², A.Re, A.Im, K, FFilterGain
-  fld  [eax.FHypFactors].Double             // FHypFactors[0], A.Re², A.Re, A.Im, K, FFilterGain
-  fsubrp                                    // FHypFactors[0] - A.Re², A.Re, A.Im, K, FFilterGain
-  fld1                                      // 1, FHypFactors[0] - A.Re², A.Re, A.Im, K, FFilterGain
-  fdivrp                                    // t1 = 1 / (FHypFactors[0] - A.Re²), A.Re, A.Im, K, FFilterGain
+  fld    st(0)                               // A.Re, A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(0)                        // A.Re², A.Re, A.Im, K, FFilterGain
+  fld    [eax.FHypFactors].Double            // FHypFactors[0], A.Re², A.Re, A.Im, K, FFilterGain
+  fsubrp st(1), st(0)                        // FHypFactors[0] - A.Re², A.Re, A.Im, K, FFilterGain
+  fld1                                       // 1, FHypFactors[0] - A.Re², A.Re, A.Im, K, FFilterGain
+  fdivrp st(1), st(0)                        // t1 = 1 / (FHypFactors[0] - A.Re²), A.Re, A.Im, K, FFilterGain
 
   // calculate t2 = 2 * A.Re * t1 * K * FHypFactors[1];
-  fld st(1)                                 // A.Re, t1, A.Re, A.Im, K, FFilterGain
-  fadd st(0), st(0)                         // 2 * A.Re, t1, A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(1)                         // 2 * A.Re * t1, t1, A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(4)                         // 2 * A.Re * t1 * K, t1, A.Re, A.Im, K, FFilterGain
-  fmul [eax.FHypFactors + 8].Double         // t2 = FHypFactors[1]* 2 * A.Re * t1 * K, t1, A.Re, A.Im, K, FFilterGain
+  fld    st(1)                               // A.Re, t1, A.Re, A.Im, K, FFilterGain
+  fadd   st(0), st(0)                        // 2 * A.Re, t1, A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(1)                        // 2 * A.Re * t1, t1, A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(4)                        // 2 * A.Re * t1 * K, t1, A.Re, A.Im, K, FFilterGain
+  fmul   [eax.FHypFactors + 8].Double        // t2 = FHypFactors[1]* 2 * A.Re * t1 * K, t1, A.Re, A.Im, K, FFilterGain
 
   // calculate t = 1 / (t2 + K² + t1);
-  fld  st(4)                                // K, t2, t1, A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(0)                         // K², t2, t1, A.Re, A.Im, K, FFilterGain
-  fadd st(0), st(1)                         // K² + t2, t2, t1, A.Re, A.Im, K, FFilterGain
-  fadd st(0), st(2)                         // K² + t2 + t1, t2, t1, A.Re, A.Im, K, FFilterGain
-  fld1                                      // 1, K² + t2 + t1, t2, t1, A.Re, A.Im, K, FFilterGain
-  fdivrp                                    // t = 1 / (K² + t2 + t1), t2, t1, A.Re, A.Im, K, FFilterGain
+  fld    st(4)                               // K, t2, t1, A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(0)                        // K², t2, t1, A.Re, A.Im, K, FFilterGain
+  fadd   st(0), st(1)                        // K² + t2, t2, t1, A.Re, A.Im, K, FFilterGain
+  fadd   st(0), st(2)                        // K² + t2 + t1, t2, t1, A.Re, A.Im, K, FFilterGain
+  fld1                                       // 1, K² + t2 + t1, t2, t1, A.Re, A.Im, K, FFilterGain
+  fdivrp st(1), st(0)                        // t = 1 / (K² + t2 + t1), t2, t1, A.Re, A.Im, K, FFilterGain
 
   // FFilterGain = FFilterGain * t;
-  fmul st(6), st(0)                         // t, t2, t1, A.Re, A.Im, K, FFilterGain * t
-  fxch st(5)                                // K, t2, t1, A.Re, A.Im, t, FFilterGain * t
-  fmul st(6), st(0)                         // K, t2, t1, A.Re, A.Im, t, FFilterGain * t * K
-  fmul st(6), st(0)                         // K, t2, t1, A.Re, A.Im, t, FFilterGain * t * K²
-  fxch st(5)                                // t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
+  fmul   st(6), st(0)                        // t, t2, t1, A.Re, A.Im, K, FFilterGain * t
+  fxch   st(5)                               // K, t2, t1, A.Re, A.Im, t, FFilterGain * t
+  fmul   st(6), st(0)                        // K, t2, t1, A.Re, A.Im, t, FFilterGain * t * K
+  fmul   st(6), st(0)                        // K, t2, t1, A.Re, A.Im, t, FFilterGain * t * K²
+  fxch   st(5)                               // t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
 
   // calculate Coeff[0] = 2 * (t1 - K2) * t
-  fld  st(5)                                // K, t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
-  fmul st(0), st(0)                         // K², t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
-  fsubr st(0), st(3)                        // t1 - K², t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
-  fmul st(0), st(1)                         // t * (t1 - K²), t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
-  fadd st(0), st(0)                         // 2 * t * (t1 - K²), t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
-  fstp [eax.FCoeffs + 8 * ecx - 16].Double  // store to FCoeffs[2 * i]
+  fld    st(5)                               // K, t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
+  fmul   st(0), st(0)                        // K², t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
+  fsubr  st(0), st(3)                        // t1 - K², t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
+  fmul   st(0), st(1)                        // t * (t1 - K²), t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
+  fadd   st(0), st(0)                        // 2 * t * (t1 - K²), t, t2, t1, A.Re, A.Im, K, FFilterGain * t * K²
+  fstp   [eax.FCoeffs + 8 * ecx - 16].Double // store to FCoeffs[2 * i]
 
   // calculate Coeff[1] = (t2 - t1 - K2) * t;
-  fxch st(2)                                // t1, t2, t, A.Re, A.Im, K, FFilterGain * t * K²
-  fld  st(5)                                // K, t1, t2, t, A.Re, A.Im, K, FFilterGain * t * K²
-  fmul st(0), st(0)                         // K², t1, t2, t, A.Re, A.Im, K, FFilterGain * t * K²
-  faddp                                     // t1 + K², t2, t, A.Re, A.Im, K, FFilterGain * t * K²
-  fsubp                                     // t2 - t1 - K², t, A.Re, A.Im, K, FFilterGain * t * K²
-  fmulp                                     // (t2 - t1 - K²) * t, A.Re, A.Im, K, FFilterGain * t * K²
-  fstp [eax.FCoeffs + 8 * ecx - 8].Double   // store to FCoeffs[2 * i + 1], A.Re, A.Im, K, FFilterGain * t * K²
+  fxch   st(2)                               // t1, t2, t, A.Re, A.Im, K, FFilterGain * t * K²
+  fld    st(5)                               // K, t1, t2, t, A.Re, A.Im, K, FFilterGain * t * K²
+  fmul   st(0), st(0)                        // K², t1, t2, t, A.Re, A.Im, K, FFilterGain * t * K²
+  faddp  st(1), st(0)                        // t1 + K², t2, t, A.Re, A.Im, K, FFilterGain * t * K²
+  fsubp  st(1), st(0)                        // t2 - t1 - K², t, A.Re, A.Im, K, FFilterGain * t * K²
+  fmulp                                      // (t2 - t1 - K²) * t, A.Re, A.Im, K, FFilterGain * t * K²
+  fstp   [eax.FCoeffs + 8 * ecx - 8].Double  // store to FCoeffs[2 * i + 1], A.Re, A.Im, K, FFilterGain * t * K²
 
   // advance complex
-  fld  [eax.FExpOrdPiHalf.Re]               // B.Re, A.Re, A.Im, K, FFilterGain
-  fld  [eax.FExpOrdPiHalf.Im]               // B.Im, B.Re, A.Re, A.Im, K, FFilterGain
-  fmulp                                     // B.Im * B.Re, A.Re, A.Im, K, FFilterGain
-  fadd st(0), st(0)                         // 2 * B.Im * B.Re = B'', A.Re, A.Im, K, FFilterGain
-  fld  [eax.FExpOrdPiHalf.Re]               // B.Re, B'', A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(0)                         // B.Re², B'', A.Re, A.Im, K, FFilterGain
-  fld  [eax.FExpOrdPiHalf.Im]               // B.Im, B.Re², B'', A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(0)                         // B.Im², B.Re², B'', A.Re, A.Im, K, FFilterGain
-  fsubp                                     // B.Im² + B.Re² = B', B'', A.Re, A.Im, K, FFilterGain
-  fld st(2)                                 // A.Re, B', B'', A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(1)                         // A.Re * B', B', B'', A.Re, A.Im, K, FFilterGain
-  fld st(4)                                 // A.Im, A.Re * B', B', B'', A.Re, A.Im, K, FFilterGain
-  fmul st(0), st(3)                         // A.Im * B'', A.Re * B', B', B'', A.Re, A.Im, K, FFilterGain
-  fsubp                                     // A.Re * B' - A.Im * B'' := New A.Re, B', B'', A.Re, A.Im, K, FFilterGain
-  fxch st(4)                                // A.Im, B', B'', A.Re, New A.Re, K, FFilterGain
-  fmulp                                     // A.Im * B', B'', A.Re, New A.Re, K, FFilterGain
-  fxch st(2)                                // A.Re, B'', A.Im * B', New A.Re, K, FFilterGain
-  fmulp                                     // A.Re * B'', A.Im * B', New A.Re, K, FFilterGain
-  faddp                                     // A.Re * B'' + A.Im * B' := New A.Im, New A.Re, K, FFilterGain
-  fxch st(1)                                // New A.Re, New A.Im, K, FFilterGain
+  fld    [eax.FExpOrdPiHalf.Re]              // B.Re, A.Re, A.Im, K, FFilterGain
+  fld    [eax.FExpOrdPiHalf.Im]              // B.Im, B.Re, A.Re, A.Im, K, FFilterGain
+  fmulp                                      // B.Im * B.Re, A.Re, A.Im, K, FFilterGain
+  fadd   st(0), st(0)                        // 2 * B.Im * B.Re = B'', A.Re, A.Im, K, FFilterGain
+  fld    [eax.FExpOrdPiHalf.Re]              // B.Re, B'', A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(0)                        // B.Re², B'', A.Re, A.Im, K, FFilterGain
+  fld    [eax.FExpOrdPiHalf.Im]              // B.Im, B.Re², B'', A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(0)                        // B.Im², B.Re², B'', A.Re, A.Im, K, FFilterGain
+  fsubp  st(1), st(0)                        // B.Im² + B.Re² = B', B'', A.Re, A.Im, K, FFilterGain
+  fld    st(2)                               // A.Re, B', B'', A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(1)                        // A.Re * B', B', B'', A.Re, A.Im, K, FFilterGain
+  fld    st(4)                               // A.Im, A.Re * B', B', B'', A.Re, A.Im, K, FFilterGain
+  fmul   st(0), st(3)                        // A.Im * B'', A.Re * B', B', B'', A.Re, A.Im, K, FFilterGain
+  fsubp  st(1), st(0)                        // A.Re * B' - A.Im * B'' := New A.Re, B', B'', A.Re, A.Im, K, FFilterGain
+  fxch   st(4)                               // A.Im, B', B'', A.Re, New A.Re, K, FFilterGain
+  fmulp                                      // A.Im * B', B'', A.Re, New A.Re, K, FFilterGain
+  fxch   st(2)                               // A.Re, B'', A.Im * B', New A.Re, K, FFilterGain
+  fmulp                                      // A.Re * B'', A.Im * B', New A.Re, K, FFilterGain
+  faddp  st(1), st(0)                        // A.Re * B'' + A.Im * B' := New A.Im, New A.Re, K, FFilterGain
+  fxch   st(1)                               // New A.Re, New A.Im, K, FFilterGain
 
   // advance
   sub  ecx, 2
@@ -681,22 +679,22 @@ asm
  push  ecx
  jz @SingleStage
  @FilterLoop:
-  sub  ecx, 4
-  fld  st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
-  fsubp
-  fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  sub   ecx, 4
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
+  fsubp st(1), st(0)
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:
@@ -1042,8 +1040,6 @@ end;
 procedure TChebyshev1HighpassFilterAutomatable.CalculateHypFactors;
 var
   t : array [0..1] of Single;
-const
-  CExp1: Single = 0.69314718055994530941723212145818;
 begin
  t[0] := 1 / FastSqrtBab1(sqr(FRippleGain) - 1);
  t[0] := FastLog2MinError3(t[0] + FastSqrtBab1(sqr(t[0]) + 1)) * FOrderInv;

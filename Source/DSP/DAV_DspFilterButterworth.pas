@@ -462,12 +462,12 @@ asm
   fadd  [eax.FState + ecx * 4 + 8].Double
   fld   st(3)
   fadd  st(0), st(0)
-  faddp
+  faddp st(1), st(0)
   fstp  [eax.FState + ecx * 4].Double
   fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch  st(2)
-  faddp
+  faddp st(1), st(0)
   fstp  [eax.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
@@ -534,12 +534,12 @@ asm
   fadd  [eax.FState + ecx * 4 + 8].Double
   fld   st(3)
   fadd  st(0), st(0)
-  faddp
+  faddp st(1), st(0)
   fstp  [eax.FState + ecx * 4].Double
   fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
   fxch  st(2)
-  faddp
+  faddp st(1), st(0)
   fstp  [eax.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
@@ -737,39 +737,40 @@ asm
  push ecx
  jz @SingleStage
  @FilterLoop:
-  sub  ecx, 4
-  fld  st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
+  sub   ecx, 4
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
   fsubp
-  fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:
  pop ecx
  shr ecx, 1
  sub ecx, [eax.FOrder]
+
  jz @End
-  mov ecx, [eax.FOrder]
-  dec ecx
-  shl ecx, 1
-  fld st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
+  mov    ecx, [eax.FOrder]
+  dec    ecx
+  shl    ecx, 1
+  fld    st(0)
+  fadd   [eax.FState + ecx * 4].Double
+  fld    st(0)
+  fmul   [eax.FCoeffs + ecx * 4].Double
   fsubrp st(2), st(0)
   fxch
-  fstp [eax.FState + ecx * 4].Double
+  fstp   [eax.FState + ecx * 4].Double
  @End:
  {$ENDIF}
 end;
@@ -819,22 +820,22 @@ asm
  push  ecx
  jz @SingleStage
  @FilterLoop:
-  sub  ecx, 4
-  fld  st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
+  sub   ecx, 4
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
   fsubp
-  fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4 + 8].Double
  ja @FilterLoop
 
  @SingleStage:
@@ -1034,39 +1035,39 @@ asm
   sub  ecx, 4
 
   // lowpass
-  fld  st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
-  faddp
-  fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4 + 8].Double
   fxch
 
   // highpass
-  fld  st(0)
-  fadd [eax.FHPState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FHPState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
+  fld   st(0)
+  fadd  [eax.FHPState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FHPState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
   fsubp
-  fstp [eax.FHPState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fstp  [eax.FHPState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FHPState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FHPState + ecx * 4 + 8].Double
   fxch
  ja @FilterLoop
 
@@ -1080,23 +1081,23 @@ asm
   shl ecx, 1
 
   // lowpass
-  fld st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
   faddp st(2), st(0)
   fxch
-  fstp [eax.FState + ecx * 4].Double
+  fstp  [eax.FState + ecx * 4].Double
   fxch
 
   // highpass
-  fld st(0)
-  fadd [eax.FHPState + ecx * 4].Double
-  fld st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
+  fld    st(0)
+  fadd   [eax.FHPState + ecx * 4].Double
+  fld    st(0)
+  fmul   [eax.FCoeffs + ecx * 4].Double
   fsubrp st(2), st(0)
   fxch
-  fstp [eax.FHPState + ecx * 4].Double
+  fstp   [eax.FHPState + ecx * 4].Double
   fxch
  @End:
  fstp [Lowpass].Single
@@ -1169,39 +1170,39 @@ asm
   sub  ecx, 4
 
   // lowpass
-  fld  st(0)
-  fadd [eax.FState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
-  faddp
-  fstp [eax.FState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fld   st(0)
+  fadd  [eax.FState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FState + ecx * 4 + 8].Double
   fxch
 
   // highpass
-  fld  st(0)
-  fadd [eax.FHPState + ecx * 4].Double
-  fld  st(0)
-  fld  st(0)
-  fmul [eax.FCoeffs + ecx * 4].Double
-  fadd [eax.FHPState + ecx * 4 + 8].Double
-  fld  st(3)
-  fadd st(0), st(0)
+  fld   st(0)
+  fadd  [eax.FHPState + ecx * 4].Double
+  fld   st(0)
+  fld   st(0)
+  fmul  [eax.FCoeffs + ecx * 4].Double
+  fadd  [eax.FHPState + ecx * 4 + 8].Double
+  fld   st(3)
+  fadd  st(0), st(0)
   fsubp
-  fstp [eax.FHPState + ecx * 4].Double
-  fmul [eax.FCoeffs + ecx * 4 + 8].Double
+  fstp  [eax.FHPState + ecx * 4].Double
+  fmul  [eax.FCoeffs + ecx * 4 + 8].Double
   fxch
-  fxch st(2)
-  faddp
-  fstp [eax.FHPState + ecx * 4 + 8].Double
+  fxch  st(2)
+  faddp st(1), st(0)
+  fstp  [eax.FHPState + ecx * 4 + 8].Double
   fxch
  ja @FilterLoop
 
@@ -1215,9 +1216,9 @@ asm
   shl ecx, 1
 
   // lowpass
-  fld st(0)
+  fld  st(0)
   fadd [eax.FState + ecx * 4].Double
-  fld st(0)
+  fld  st(0)
   fmul [eax.FCoeffs + ecx * 4].Double
   faddp st(2), st(0)
   fxch
