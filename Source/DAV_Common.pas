@@ -149,6 +149,9 @@ function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDI
 function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
 {$IFNDEF DELPHI12_UP}
+type
+  TSysCharSet = set of AnsiChar;
+
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; inline;
 procedure Msg(b: Boolean); overload;
 procedure Msg(m: string; m2: string = ''); overload;

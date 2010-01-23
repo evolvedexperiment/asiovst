@@ -869,7 +869,11 @@ var
     begin
       Result := 0;
       for CharCounter := 0 to Length(Astring) - 1 do
+        {$IFDEF DELPHI12_UP}
         if CharInSet(Astring[CharCounter], ['0'..'9']) then
+        {$ELSE}
+        if Astring[CharCounter] in ['0'..'9'] then
+        {$ENDIF}
           Result := (Result * 10) +
             Byte(Byte(Astring[CharCounter]) - Byte('0'))
         else
