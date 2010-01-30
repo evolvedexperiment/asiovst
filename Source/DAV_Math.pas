@@ -163,17 +163,12 @@ begin
   else Result := Cosh(Order * ArcCosh(Value));
 end;
 
-
-{$IFDEF PUREPASCAL}
-
 function FastRandom: Single;
+{$IFDEF PUREPASCAL}
 begin
  Result := 2 * Random - 1;
 end;
-
 {$ELSE}
-
-function FastRandom: Single;
 asm
  IMUL  EDX, RandSeed, 08088405H
  INC   EDX
@@ -187,7 +182,6 @@ asm
  FLD1
  FSUBP
 end;
-
 {$ENDIF}
 
 function RandomGauss: Extended;
