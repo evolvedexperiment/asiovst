@@ -35,6 +35,11 @@ interface
 
 {$I DAV_Compiler.inc}
 
+{$IFDEF Darwin}
+  {$DEFINE PUREPASCAL} // for OSX use pure pascal code
+{$ENDIF}
+
+
 { Compatibility }
 
 {$IFDEF DELPHI5}

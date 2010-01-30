@@ -36,6 +36,10 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$IFDEF Darwin}
+  {$DEFINE PUREPASCAL} // for OSX use pure pascal code
+{$ENDIF}
+
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
   DAV_Types, DAV_Complex;
@@ -1781,7 +1785,7 @@ end;
 
 procedure TFftReal2ComplexNativeFloat32.PerformIFFTTwo32(
   const FreqDomain, TimeDomain: PDAVSingleFixedArray);
-{$IFNDEF PUREPASCAL}
+{$IFDEF PUREPASCAL}
 var
   Tmp : Array [0..1] of Double;
   FD  : PDAV4SingleArray absolute FreqDomain;
@@ -1831,11 +1835,11 @@ var
   FD  : PDAV2ComplexSingleArray absolute FreqDomain;
   TD  : PDAV4SingleArray absolute TimeDomain;
 begin
-  Tmp[0] := FD[0].Re + FD.Im;
-  Tmp[1] := FD[0].Re - FD.Im;
+  Tmp[0] := FD[0].Re + FD[0].Im;
+  Tmp[1] := FD[0].Re - FD[0].Im;
 
-  TD[1]  := Tmp[1] + FD[1].Im; * 2;
-  TD[3]  := Tmp[1] - FD[1].Im; * 2;
+  TD[1]  := Tmp[1] + FD[1].Im * 2;
+  TD[3]  := Tmp[1] - FD[1].Im * 2;
   TD[0]  := Tmp[0] + FD[1].Re * 2;
   TD[2]  := Tmp[0] - FD[1].Re * 2;
 end;
@@ -4619,4 +4623,4 @@ initialization
 finalization
   DestroyLUTList;
 
-end.
+end.

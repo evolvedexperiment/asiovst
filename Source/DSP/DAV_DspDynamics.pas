@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_Classes, DAV_DSPFilterButterworth;
+  DAV_Types, DAV_Classes, DAV_DspFilterButterworth;
 
 type
   {$IFDEF DELPHI7_UP}
@@ -3019,4 +3019,4 @@ initialization
     TSimpleCompressor, TSoftKneeCompressor, TSimpleFeedbackCompressor,
     TSoftKneeFeedbackCompressor, TSimpleRMSCompressor, TCompressor]);
 
-end.
+end.

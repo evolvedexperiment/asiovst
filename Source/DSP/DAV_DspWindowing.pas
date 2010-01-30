@@ -354,13 +354,13 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw           := (CoefficientPointer[0] - PDAVCoefficientsArray(CoefficientPointer)^[1] * xPosition.Im);
-    SpkCrFk      := SpkCrFk + cw;
-    SpkCrFkSq    := SpkCrFk + cw * cw;
-    StartAdr[r]  := StartAdr[r] * cw;
-    cw           := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
+    cw                 := (CoefficientPointer[0] - PDAVSingleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor  := SpectrumCorrectionFactor + cw * cw;
+    StartAdr[r]        := StartAdr[r] * cw;
+    cw                 := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
    end
 end;
 {$ENDIF}
@@ -507,7 +507,7 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                := CoefficientPointer[0] - PDAVCoefficientsArray(CoefficientPointer)^[1] * xPosition.Im;
+    cw                := CoefficientPointer[0] - PDAVDoubleFixedArray(CoefficientPointer)^[1] * xPosition.Im;
     SpkCrFk           := SpkCrFk + cw;
     SpkCrFkSq         := SpkCrFk + cw * cw;
     StartAdr[r]       := StartAdr[r] * cw;
@@ -589,7 +589,7 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                    := CoefficientPointer[0] - PDAVCoefficientsArray(CoefficientPointer)^[1] * xPosition.Im;
+    cw                    := CoefficientPointer[0] - PDAVDoubleFixedArray(CoefficientPointer)^[1] * xPosition.Im;
     SpkCrFk               := SpkCrFk + cw;
     SpkCrFkSq             := SpkCrFk + cw * cw;
     StartAdr[r]           := StartAdr[r] * cw;
@@ -666,8 +666,8 @@ begin
   with ParameterRecord do
    begin
     cw           := CoefficientPointer[0] + xPosition.Im  * 
-                    (PDAVCoefficientsArray(CoefficientPointer)^[1] + xPosition.Im  *
-                     PDAVCoefficientsArray(CoefficientPointer)^[2]);
+                    (PDAVSingleFixedArray(CoefficientPointer)^[1] + xPosition.Im  *
+                     PDAVSingleFixedArray(CoefficientPointer)^[2]);
     SpkCrFk      := SpkCrFk + cw;
     SpkCrFkSq    := SpkCrFk + cw * cw;
     StartAdr[r]  := StartAdr[r] * cw;
@@ -5105,4 +5105,4 @@ begin
 end;
 {$ENDIF}
 
-end.
+end.

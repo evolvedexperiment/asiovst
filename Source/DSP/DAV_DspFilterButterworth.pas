@@ -1,4 +1,4 @@
-unit DAV_DSPFilterButterworth;
+unit DAV_DspFilterButterworth;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -1321,4 +1321,4 @@ initialization
     TButterworthLowPassFilter, TButterworthLowPassFilterAutomatable,
     TButterworthHighPassFilterAutomatable]);
 
-end.
+end.

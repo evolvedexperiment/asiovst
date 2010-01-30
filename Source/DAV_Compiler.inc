@@ -434,8 +434,8 @@
   {$UNDEF BORLAND}
   {$DEFINE CPUASM} // FPC defines CPU32, CPU64 and Unix automatically
 
-  {$IFDEF Carbon}
-    {$DEFINE PUREPASCAL} // for OSX use pure pascal code 
+  {$IFDEF Darwin}
+    {-$DEFINE PUREPASCAL} // for OSX use pure pascal code
   {$ENDIF}
 {$ENDIF}
 
