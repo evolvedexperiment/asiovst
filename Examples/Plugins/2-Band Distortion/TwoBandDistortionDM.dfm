@@ -1,4 +1,5 @@
 object TwoBandDistortionDataModule: TTwoBandDistortionDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]

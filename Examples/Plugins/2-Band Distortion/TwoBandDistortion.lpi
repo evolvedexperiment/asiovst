@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="\"/>
+    <Version Value="7"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False"/>
+        <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
+      </Flags>
+      <MainUnit Value="0"/>
+      <TargetFileExt Value=".exe"/>
+      <Title Value="2-Band Distortion"/>
+      <ActiveEditorIndexAtStart Value="2"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+      <Language Value=""/>
+      <CharSet Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="6">
+      <Item1>
+        <PackageName Value="DAV_VSTPlugin_Lazarus"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="DAV_GUI_Lazarus"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="DAV_DSP_Lazarus"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="DAV_Common_Lazarus"/>
+      </Item4>
+      <Item5>
+        <PackageName Value="ImagesForLazarus"/>
+      </Item5>
+      <Item6>
+        <PackageName Value="LCL"/>
+      </Item6>
+    </RequiredPackages>
+    <Units Count="8">
+      <Unit0>
+        <Filename Value="TwoBandDistortion.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="59" Y="22"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="TwoBandDistortionDataModule"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="TwoBandDistortionDM"/>
+        <CursorPos X="1" Y="255"/>
+        <TopLine Value="222"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FmTwoBandDistortion"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="TwoBandDistortionGUI"/>
+        <CursorPos X="52" Y="109"/>
+        <TopLine Value="94"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="..\..\..\Source\GUI\DAV_GuiBaseControl.pas"/>
+        <UnitName Value="DAV_GuiBaseControl"/>
+        <CursorPos X="1" Y="307"/>
+        <TopLine Value="307"/>
+        <UsageCount Value="10"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\Source\GUI\DAV_GuiDial.pas"/>
+        <UnitName Value="DAV_GuiDial"/>
+        <CursorPos X="45" Y="903"/>
+        <TopLine Value="900"/>
+        <UsageCount Value="10"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
+        <UnitName Value="DAV_DspFilterButterworth"/>
+        <CursorPos X="34" Y="175"/>
+        <TopLine Value="148"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\..\..\Source\GUI\DAV_GuiPanel.pas"/>
+        <UnitName Value="DAV_GuiPanel"/>
+        <CursorPos X="10" Y="124"/>
+        <TopLine Value="107"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\..\..\Source\DSP\DAV_DspFftReal2Complex.pas"/>
+        <UnitName Value="DAV_DspFftReal2Complex"/>
+        <CursorPos X="18" Y="1807"/>
+        <TopLine Value="1798"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+    </Units>
+    <JumpHistory Count="16" HistoryIndex="15">
+      <Position1>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <Caret Line="85" Column="10" TopLine="60"/>
+      </Position1>
+      <Position2>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <Caret Line="134" Column="1" TopLine="120"/>
+      </Position2>
+      <Position3>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="66" Column="38" TopLine="42"/>
+      </Position3>
+      <Position4>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="127" Column="84" TopLine="110"/>
+      </Position4>
+      <Position5>
+        <Filename Value="TwoBandDistortion.lpr"/>
+        <Caret Line="17" Column="30" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="TwoBandDistortion.lpr"/>
+        <Caret Line="19" Column="1" TopLine="9"/>
+      </Position6>
+      <Position7>
+        <Filename Value="TwoBandDistortion.lpr"/>
+        <Caret Line="44" Column="38" TopLine="17"/>
+      </Position7>
+      <Position8>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="165" Column="1" TopLine="133"/>
+      </Position8>
+      <Position9>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="40" Column="12" TopLine="22"/>
+      </Position9>
+      <Position10>
+        <Filename Value="TwoBandDistortion.lpr"/>
+        <Caret Line="10" Column="1" TopLine="1"/>
+      </Position10>
+      <Position11>
+        <Filename Value="TwoBandDistortion.lpr"/>
+        <Caret Line="50" Column="1" TopLine="17"/>
+      </Position11>
+      <Position12>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <Caret Line="109" Column="1" TopLine="99"/>
+      </Position12>
+      <Position13>
+        <Filename Value="TwoBandDistortionDM.pas"/>
+        <Caret Line="72" Column="43" TopLine="55"/>
+      </Position13>
+      <Position14>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <Caret Line="38" Column="71" TopLine="22"/>
+      </Position14>
+      <Position15>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <Caret Line="260" Column="27" TopLine="228"/>
+      </Position15>
+      <Position16>
+        <Filename Value="TwoBandDistortionGUI.pas"/>
+        <Caret Line="101" Column="1" TopLine="88"/>
+      </Position16>
+    </JumpHistory>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="8"/>
+    <PathDelim Value="\"/>
+    <SearchPaths>
+      <IncludeFiles Value="..\..\..\Source\"/>
+      <OtherUnitFiles Value="..\..\..\Packages\Lazarus\;..\..\..\Source\;..\..\..\Source\VST\;..\..\..\Source\Math\;..\..\..\Source\DSP\;..\..\..\Source\GUI\"/>
+      <UnitOutputDirectory Value="..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+        <IncludeAssertionCode Value="True"/>
+        <CPPInline Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+      <Options>
+        <LinkerOptions Value="-framework carbon"/>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+        <ExecutableType Value="Library"/>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

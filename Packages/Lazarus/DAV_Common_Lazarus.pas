@@ -8,7 +8,7 @@ unit DAV_Common_Lazarus;
 interface
 
 uses
-    DAV_Common, DAV_CommonRegister, DAV_Complex, DAV_ComplexData, 
+  DAV_Common, DAV_CommonRegister, DAV_Complex, DAV_ComplexData,
   DAV_AudioData, DAV_Approximations, DAV_MpegAudioLayer3, DAV_AudioFile, 
   DAV_AudioFileAIFF, DAV_AudioFileAU, DAV_AudioFileDataCache, 
   DAV_AudioFileWAV, DAV_ChannelDataCoder, DAV_ChunkAiffBasic, 

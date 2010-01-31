@@ -298,15 +298,17 @@ begin
 end;
 
 procedure SubArrays(const from, amount, Output: TDAVArrayOfSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i : Integer;
 begin
   for i:=0 to dim1-1 do SubArrays(from[i], amount[i], Output[i], dim2);
 end;
 
 procedure MulArrays(const Input1, Input2, Output: TDAVArrayOfSingleDynArray; const dim1, dim2: integer);
-var i: integer;
+var
+  i : Integer;
 begin
-  for i:=0 to dim1-1 do MulArrays(Input1[i], Input2[i], Output[i], dim2);
+  for i := 0 to dim1 - 1 do MulArrays(Input1[i], Input2[i], Output[i], dim2);
 end;
 
 

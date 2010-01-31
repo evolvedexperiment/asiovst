@@ -3,17 +3,16 @@ library TwoBandDistortion;
 
 {$I DAV_Compiler.inc}
 
-// if the file below is missing please execute the batch file in this
-// directory first to compile the resource file
-
-{$R 'TwoBandDistortion.res' 'TwoBandDistortion.rc'}
-
 uses
   Interfaces,
   Forms,
-  DAV_VSTModule,
-  DAV_VSTEffect,
   DAV_Common,
+  DAV_VSTBasicModule,
+  DAV_VSTEffect,
+  ImagesForLazarus,
+  {$IFNDEF DARWIN}
+  DAV_WinAmp,
+  {$ENDIF}
   TwoBandDistortionDM in 'TwoBandDistortionDM.pas' {TwoBandDistortionDataModule: TVSTModule},
   TwoBandDistortionGUI in 'TwoBandDistortionGUI.pas' {FmTwoBandDistortion};
 
@@ -22,14 +21,24 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TTwoBandDistortionDataModule);
 end;
 
+{$IFNDEF DARWIN}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
  Result := WinampDSPModuleHeader(TTwoBandDistortionDataModule);
 end;
+{$ENDIF}
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
-exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main',
+  VSTPluginMain name 'main_plugin',
+  VSTPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 
 begin
  Application.Initialize;

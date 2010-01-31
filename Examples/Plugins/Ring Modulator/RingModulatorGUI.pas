@@ -58,7 +58,9 @@ type
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   PngImage, DAV_GuiCommon, RingModulatorDM, DAV_VSTModuleWithPrograms,
@@ -150,5 +152,10 @@ begin
    LbDisplay.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
   end;
 end;
+
+{$IFDEF FPC}
+initialization
+
+{$ENDIF}
 
 end.

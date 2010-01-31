@@ -1804,7 +1804,7 @@ const
   c2 : Double = 2;
 asm
  fld  [FreqDomain +  8].Single
- fld  FreqDomain.Single
+ fld  [FreqDomain].Single
  fld  st(0)
  fadd st(0),st(2)
  fxch st(2)
@@ -4623,4 +4623,4 @@ initialization
 finalization
   DestroyLUTList;
 
-end.
+end.

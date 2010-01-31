@@ -35,9 +35,9 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes, Messages,
-  SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_Types,
-  DAV_VSTModule, DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel;
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Classes,
+  SysUtils, Forms, Controls, Graphics, ExtCtrls, StdCtrls, DAV_VSTModule,
+  DAV_GuiLabel, DAV_GuiBaseControl, DAV_GuiDial, DAV_GuiPanel;
 
 type
   TFmTwoBandDistortion = class(TForm)
@@ -80,20 +80,51 @@ implementation
 {$ENDIF}
 
 uses
-  Math, DAV_GUICommon, PNGImage, TwoBandDistortionDM;
+  Math, DAV_GUICommon,
+  {$IFDEF FPC}
+  LazPNG,
+  {$ELSE}
+  PNGImage,
+  {$ENDIF}
+  TwoBandDistortionDM;
 
 procedure TFmTwoBandDistortion.FormCreate(Sender: TObject);
 var
-  RS     : TResourceStream;
   x, y   : Integer;
   s      : array[0..1] of Single;
   b      : ShortInt;
   Line   : PRGB24Array;
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
+  RS     : TResourceStream;
   PngBmp : TPngObject;
+  {$ENDIF}
 
 begin
  // Create Background Image
  FBackgrounBitmap := TBitmap.Create;
+
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
+  with DIL.DialImages.Add do
+   begin
+    DialBitmap.Canvas.Brush.Color := $696969;
+    DialBitmap.Assign(PngBmp);
+    NumGlyphs := 65;
+   end;
+  DialFreq.DialImageIndex := 0;
+  DialOrder.DialImageIndex := 0;
+  DialHighDist.DialImageIndex := 0;
+  DialLowDist.DialImageIndex := 0;
+ finally
+  FreeAndNil(PngBmp);
+ end;
+
+ {$ELSE}
+
  with FBackgrounBitmap do
   begin
    PixelFormat := pf24bit;
@@ -107,7 +138,7 @@ begin
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := round($3F + $1A * s[1]);
+       b := Round($3F + $1A * s[1]);
        s[0] := s[1];
        Line[x].B := b;
        Line[x].G := b;
@@ -137,6 +168,7 @@ begin
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmTwoBandDistortion.FormDestroy(Sender: TObject);
@@ -258,6 +290,7 @@ end;
 {$IFDEF FPC}
 initialization
   {$i TwoBandDistortionGUI.lrs}
+  {$i TwoBandDistortionPNG.lrs}
 {$ENDIF}
 
 end.

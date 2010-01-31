@@ -36,7 +36,7 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Classes, Messages, SysUtils, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
+  Classes, SysUtils, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
   DAV_DspFilterLinkwitzRiley;
 
 type
@@ -69,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  TwoBandDistortionGUI, DAV_Approximations, DAV_VSTCustomModule;
+  TwoBandDistortionGUI, DAV_Approximations;
 
 procedure TTwoBandDistortionDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -124,8 +124,14 @@ begin
      // using Linkwitz-Riley TwoBand filters
      FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
 
+     {$IFDEF FPC}
+     Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
+       FastTanhOpt5Term(FLowMix[1]  * Low) +  FHighMix[0] * High +
+       FastTanhOpt5Term(FHighMix[1] * High);
+     {$ELSE}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
                                  FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
+     {$ENDIF}
    end;
  finally
   FCriticalSection.Leave;
@@ -148,8 +154,14 @@ begin
      // using Linkwitz-Riley TwoBand filters
      FLinkwitzRiley[ChannelIndex].ProcessSample(Inputs[ChannelIndex, SampleIndex], Low, High);
 
+     {$IFDEF FPC}
+     Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  +
+       FastTanhOpt5Term(FLowMix[1]  * Low) +  FHighMix[0] * High +
+       FastTanhOpt5Term(FHighMix[1] * High);
+     {$ELSE}
      Outputs[ChannelIndex, SampleIndex] := FLowMix[0]  * Low  + FastTanhOpt5TermFPU(FLowMix[1]  * Low) +
                                  FHighMix[0] * High + FastTanhOpt5TermFPU(FHighMix[1] * High);
+     {$ENDIF}
    end;
  finally
   FCriticalSection.Leave;

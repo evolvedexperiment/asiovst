@@ -74,6 +74,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFreqValue: TGuiLabel
       Left = 16
@@ -90,6 +91,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialLowDist: TGuiDial
       Left = 156
@@ -125,6 +127,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbLowDistValue: TGuiLabel
       Left = 156
@@ -141,6 +144,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighDist: TGuiLabel
       Left = 226
@@ -157,6 +161,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighDist: TGuiDial
       Left = 226
@@ -192,6 +197,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOrder: TGuiDial
       Left = 86
@@ -229,6 +235,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOrder: TGuiLabel
       Left = 86
@@ -245,6 +252,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       Font.Name = 'Trebuchet MS'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object DIL: TGuiDialImageList

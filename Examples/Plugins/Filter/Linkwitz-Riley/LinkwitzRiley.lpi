@@ -42,7 +42,7 @@
       <Unit0>
         <Filename Value="LinkwitzRiley.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="1" Y="30"/>
+        <CursorPos X="1" Y="6"/>
         <TopLine Value="2"/>
         <EditorIndex Value="1"/>
         <UsageCount Value="24"/>
@@ -159,7 +159,6 @@
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>
-        <ExecutableType Value="Library"/>
       </Options>
     </Linking>
     <Other>
