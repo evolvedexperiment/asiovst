@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_DSPFilterLinkwitzRiley, DAV_SECommon, DAV_SEModule;
+  DAV_Types, DAV_DspFilterLinkwitzRiley, DAV_SECommon, DAV_SEModule;
 
 type
   // define some constants to make referencing in/outs clearer

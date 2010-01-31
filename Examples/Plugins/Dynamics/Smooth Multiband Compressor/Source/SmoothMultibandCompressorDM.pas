@@ -37,7 +37,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_DspFilterLinkwitzRiley,
-  DAV_DSPFilterButterworth, DAV_DspFilterLinearPhaseCrossover;
+  DAV_DspFilterButterworth, DAV_DspFilterLinearPhaseCrossover;
 
 type
   TBandState = (bsBypass, bsMute, bsSmooth, bsClipped);

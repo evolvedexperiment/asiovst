@@ -136,8 +136,8 @@ implementation
 
 uses
   Math, Dialogs, Controls, Types, OversampleTemplateGUI, DAV_VSTPrograms,
-  DAV_VSTModuleWithDsp, DAV_DSPFilterButterworth, DAV_DSPFilterChebyshev,
-  DAV_DSPFilterChebyshevType1, DAV_DSPBesselFilter;
+  DAV_VSTModuleWithDsp, DAV_DspFilterButterworth, DAV_DspFilterChebyshev,
+  DAV_DspFilterChebyshevType1, DAV_DspBesselFilter;
 
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
 begin

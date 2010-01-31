@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
   Classes, Messages, SysUtils, Forms, SyncObjs, DAV_Types, DAV_VSTModule,
-  DAV_DSPFilterLinkwitzRiley;
+  DAV_DspFilterLinkwitzRiley;
 
 type
   TTwoBandDistortionDataModule = class(TVSTModule)

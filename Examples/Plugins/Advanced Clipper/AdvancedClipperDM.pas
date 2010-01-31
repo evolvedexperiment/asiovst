@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DSPUpDownsampling;
+  DAV_VSTModule, DAV_DspUpDownsampling;
 
 type
   TAdvancedClipperDataModule = class(TVSTModule)

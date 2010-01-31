@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DSPDynamics, DAV_DSPFrequencyDivider, DAV_DSPFilterButterworth;
+  DAV_DspDynamics, DAV_DspFrequencyDivider, DAV_DspFilterButterworth;
 
 type
   TBassExtenderModule = class(TVSTModule)

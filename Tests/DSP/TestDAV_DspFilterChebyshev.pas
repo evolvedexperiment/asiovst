@@ -1,4 +1,4 @@
-unit TestDAV_DSPFilterChebyshev;
+unit TestDAV_DspFilterChebyshev;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -36,7 +36,7 @@ interface
 
 uses
   TestFramework, DAV_Common, DAV_Complex, DAV_DspFilter,
-  DAV_DSPFilterChebyshev, DAV_DSPFilterChebyshevType1;
+  DAV_DspFilterChebyshev, DAV_DspFilterChebyshevType1;
 
 type
   // Test methods for class TChebyshev1LowpassFilter

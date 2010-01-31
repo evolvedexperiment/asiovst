@@ -36,7 +36,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_DspFilter,
-  DAV_DSPFilterButterworth, DAV_DspFilterBasics, DAV_DspDynamics,
+  DAV_DspFilterButterworth, DAV_DspFilterBasics, DAV_DspDynamics,
   DAV_DspLightweightDynamics, Dav_DspPsychoacousticBassEnhancer, DAV_VSTModule;
 
 type

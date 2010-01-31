@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DSPFilterButterworth, DAV_DspWaveshaper;
+  DAV_DspFilterButterworth, DAV_DspWaveshaper;
 
 type
   TExciterDataModule = class(TVSTModule)

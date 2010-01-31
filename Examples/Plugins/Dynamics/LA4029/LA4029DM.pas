@@ -1,4 +1,4 @@
-﻿unit LA4029DM;
+unit LA4029DM;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -36,7 +36,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DSPDynamics, DAV_DSPLevelingAmplifier, DAV_DSPFilterButterworth;
+  DAV_DspDynamics, DAV_DspLevelingAmplifier, DAV_DspFilterButterworth;
 
 type
   TLA4029DataModule = class(TVSTModule)

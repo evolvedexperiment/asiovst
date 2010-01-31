@@ -3,7 +3,7 @@ unit SEToolsModule;
 interface
 
 uses
-  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DSPLFO;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspLFO;
 
 type
   TSEToolsModuleClass = class of TSEToolsModule;

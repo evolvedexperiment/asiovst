@@ -36,7 +36,7 @@ interface
 
 uses
   TestFramework, DAV_DspPolyphaseUpsampler, DAV_DspExciter,
-  DAV_DspFilterLinkwitzRiley, DAV_Common, Classes, DAV_DSPFilterButterworth, 
+  DAV_DspFilterLinkwitzRiley, DAV_Common, Classes, DAV_DspFilterButterworth, 
   DAV_DspCommon, DAV_DspDynamics, DAV_DspPolyphaseDownsampler, 
   DAV_DspLightweightDynamics, DAV_DspFilter;
 

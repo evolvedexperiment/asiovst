@@ -1,4 +1,4 @@
-unit DAV_DSPLevelingAmplifier;
+unit DAV_DspLevelingAmplifier;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

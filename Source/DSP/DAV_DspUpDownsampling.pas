@@ -1,4 +1,4 @@
-unit DAV_DSPUpDownSampling;
+unit DAV_DspUpDownSampling;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

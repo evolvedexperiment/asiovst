@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, {$ELSE} Windows, {$ENDIF} Messages,
   SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule, DAV_DspFilterChebyshev,
-  DAV_DSPFilterChebyshevType2, DAV_VstWindowSizer;
+  DAV_DspFilterChebyshevType2, DAV_VstWindowSizer;
 
 type
   TChebyshev2HPModule = class(TVSTModule)

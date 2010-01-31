@@ -1,4 +1,4 @@
-unit DAV_DSPStateVariableFilter;
+unit DAV_DspStateVariableFilter;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

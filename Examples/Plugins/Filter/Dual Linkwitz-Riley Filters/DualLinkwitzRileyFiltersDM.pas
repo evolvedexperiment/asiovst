@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
   Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DSPFilterButterworth, DAV_DSPFilterLinkwitzRiley;
+  DAV_DspFilterButterworth, DAV_DspFilterLinkwitzRiley;
 
 type
   TProcessMode = (pmBypass, pmLowpass, pmHighpass, pmBandpass);

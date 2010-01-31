@@ -36,8 +36,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_VSTEffect, DAV_VstHost, DAV_DSPFilter, DAV_DspDynamics,
-  DAV_DspLightweightDynamics, DAV_DspDelayLines, DAV_DSPFilterButterworth;
+  DAV_VSTModule, DAV_VSTEffect, DAV_VstHost, DAV_DspFilter, DAV_DspDynamics,
+  DAV_DspLightweightDynamics, DAV_DspDelayLines, DAV_DspFilterButterworth;
 
 type
   TSidechainCompressorDataModule = class(TVSTModule)

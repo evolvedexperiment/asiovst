@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, SyncObjs, DAV_Types,
-  DAV_VSTModule, DAV_DspConvolution, DAV_DSPFilterButterworth;
+  DAV_VSTModule, DAV_DspConvolution, DAV_DspFilterButterworth;
 
 const
   CNumChannels = 2;

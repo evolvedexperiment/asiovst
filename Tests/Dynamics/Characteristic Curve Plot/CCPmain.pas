@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   Contnrs, GR32_Image, GR32_Chart, StdCtrls, MFControlsEdit, MFControlsSpinEdit,
-  DAV_DSPDynamics, DAV_DSPLevelingAmplifier, DAV_GuiBaseControl, DAV_GuiDial,
+  DAV_DspDynamics, DAV_DspLevelingAmplifier, DAV_GuiBaseControl, DAV_GuiDial,
   DAV_GuiGraphXY;
 
 type

@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_DSPDynamics, DAV_DSPLightweightDynamics, DAV_SECommon,
+  DAV_Types, DAV_DspDynamics, DAV_DspLightweightDynamics, DAV_SECommon,
   DAV_SEModule;
 
 type

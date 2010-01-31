@@ -36,7 +36,7 @@ interface
 
 uses 
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DSPFilter, DAV_DSPFilterBasics;
+  DAV_DspFilter, DAV_DspFilterBasics;
 
 const
   CGainRange = 15;

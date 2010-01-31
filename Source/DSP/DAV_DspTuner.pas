@@ -36,7 +36,7 @@ interface
 {$DEFINE OnlineFreqCalc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DSPFilterButterworth,
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspFilterButterworth,
   DAV_DspCorrelation, DAV_DspCepstrum, DAV_DspBuildingBlocks;
 
 type

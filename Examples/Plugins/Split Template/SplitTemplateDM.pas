@@ -37,8 +37,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Forms, Themes, DAV_Types,
   DAV_VSTModule, DAV_VSTEffect, DAV_VSTParameters, DAV_VSTModuleWithPrograms,
-  DAV_VSTCustomModule, DAV_DSPFilterButterworth, DAV_DspUpDownsampling,
-  DAV_VstHost, DAV_DSPLFO;
+  DAV_VSTCustomModule, DAV_DspFilterButterworth, DAV_DspUpDownsampling,
+  DAV_VstHost, DAV_DspLFO;
 
 type
   TLowPassArray = array [0..1] of TButterworthLowPassFilter;

@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
-  DAV_DspLightweightDynamics, DAV_DSPFilterButterworth;
+  DAV_DspLightweightDynamics, DAV_DspFilterButterworth;
 
 type
   TAdhesiveDataModule = class(TVSTModule)

@@ -37,7 +37,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DSPFilterChebyshev,
+  DAV_Types, DAV_SECommon, DAV_SEModule, DAV_DspFilterChebyshev,
   DAV_DspFilterChebyshevType1;
 
 type

@@ -37,7 +37,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LMessages, {$ELSE} FastMove, Windows, Messages, {$ENDIF}
   SysUtils, Classes, Forms, DAV_Types, DAV_DspPolyphaseHilbert, DAV_VSTModule,
-  DAV_DSPLFO;
+  DAV_DspLFO;
 
 type
   TSpinBugLiteModule = class(TVSTModule)

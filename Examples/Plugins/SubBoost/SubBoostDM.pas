@@ -36,7 +36,7 @@ interface
 
 uses
   Windows, Forms, Messages, SysUtils, Classes, DAV_Types, DAV_VSTModule,
-  DAV_DSPFilterButterworth;
+  DAV_DspFilterButterworth;
 
 type
   TProcessType = (ptDistort, ptDivide, ptInvert, ptKeyOsc);

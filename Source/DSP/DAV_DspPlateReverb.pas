@@ -36,7 +36,7 @@ interface
 
 uses
   DAV_Types, DAV_Classes, DAV_DspDelayLines, DAV_DspFilterSimple,
-  DAV_DspLFO, DAV_DSPFilterButterworth;
+  DAV_DspLFO, DAV_DspFilterButterworth;
 
 const
   CInternalSampleRate : Single = 29761;

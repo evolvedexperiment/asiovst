@@ -1,4 +1,4 @@
-unit TestDAV_DSPFilterButterworth;
+unit TestDAV_DspFilterButterworth;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -33,7 +33,7 @@ unit TestDAV_DSPFilterButterworth;
 interface
 
 uses
-  TestFramework, DAV_DSPFilterButterworth, DAV_DspFilter, DAV_Common;
+  TestFramework, DAV_DspFilterButterworth, DAV_DspFilter, DAV_Common;
 
 type
   // Test methods for class TButterworthFilter
