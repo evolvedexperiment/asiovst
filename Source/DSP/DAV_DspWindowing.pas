@@ -34,6 +34,8 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
+{$UNDEF PUREPASCAL}
+
 uses
   DAV_Types, DAV_Classes, DAV_Complex;
 
@@ -426,13 +428,13 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] -  PDAVCoefficientsArray(CoefficientPointer)^[1] * xPosition.Im);
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
+    cw := (CoefficientPointer[0] -  PDAVDoubleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
    end
 end;
 {$ENDIF}
@@ -507,14 +509,14 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                := CoefficientPointer[0] - PDAVDoubleFixedArray(CoefficientPointer)^[1] * xPosition.Im;
-    SpkCrFk           := SpkCrFk + cw;
-    SpkCrFkSq         := SpkCrFk + cw * cw;
-    StartAdr[r]       := StartAdr[r] * cw;
+    cw                          := CoefficientPointer[0] - PDAVSingleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im;
+    SpectrumCorrectionFactor    := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor     := SpuaredCorrectionFactor + cw * cw;
+    StartAdr[r]                 := StartAdr[r] * cw;
     EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw                := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im      := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re      := cw;
+    cw                          := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im          := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re          := cw;
    end
 end;
 {$ENDIF}
@@ -589,14 +591,14 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                    := CoefficientPointer[0] - PDAVDoubleFixedArray(CoefficientPointer)^[1] * xPosition.Im;
-    SpkCrFk               := SpkCrFk + cw;
-    SpkCrFkSq             := SpkCrFk + cw * cw;
-    StartAdr[r]           := StartAdr[r] * cw;
+    cw                          := CoefficientPointer[0] - PDAVDoubleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im;
+    SpectrumCorrectionFactor    := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor     := SpuaredCorrectionFactor + cw * cw;
+    StartAdr[r]                 := StartAdr[r] * cw;
     EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw                    := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im          := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re          := cw;
+    cw                          := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im          := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re          := cw;
    end
 end;
 {$ENDIF}
@@ -665,15 +667,15 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw           := CoefficientPointer[0] + xPosition.Im  * 
-                    (PDAVSingleFixedArray(CoefficientPointer)^[1] + xPosition.Im  *
-                     PDAVSingleFixedArray(CoefficientPointer)^[2]);
-    SpkCrFk      := SpkCrFk + cw;
-    SpkCrFkSq    := SpkCrFk + cw * cw;
-    StartAdr[r]  := StartAdr[r] * cw;
-    cw           := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
+    cw := CoefficientPointer[0] + ComplexPosition.Im  *
+      (PDAVSingleFixedArray(CoefficientPointer)^[1] + ComplexPosition.Im  *
+       PDAVSingleFixedArray(CoefficientPointer)^[2]);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
+    StartAdr[r] := StartAdr[r] * cw;
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
    end
 end;
 {$ENDIF}
@@ -735,21 +737,22 @@ asm
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  r  : Integer;
+  cw : Double;
 begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-         CoefficientPointer[ci[2]]));
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
+    cw := (CoefficientPointer[0] + ComplexPosition.Im  *
+          (CoefficientPointer[1] + ComplexPosition.Im  *
+           CoefficientPointer[2]));
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
    end
 end;
 {$ENDIF}
@@ -826,16 +829,16 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-         CoefficientPointer[ci[2]]));
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
+    cw := (CoefficientPointer[0] + ComplexPosition.Im  *
+          (CoefficientPointer[1] + ComplexPosition.Im  *
+           CoefficientPointer[2]));
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
     EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
    end
 end;
 {$ENDIF}
@@ -906,15 +909,16 @@ asm
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  r  : Integer;
+  cw : Double;
 begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
     cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-         CoefficientPointer[ci[2]]));
+          (CoefficientPointer[ci[1]] + xPosition.Im  *
+           CoefficientPointer[ci[2]]));
     SpkCrFk := SpkCrFk + cw;
     SpkCrFkSq := SpkCrFk + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
@@ -992,9 +996,9 @@ begin
   with ParameterRecord do
    begin
     cw := (CoefficientPointer[ 0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-         CoefficientPointer[ci[3]])));
+          (CoefficientPointer[ci[1]] + xPosition.Im  *
+          (CoefficientPointer[ci[2]] + xPosition.Im  *
+           CoefficientPointer[ci[3]])));
 
     SpkCrFk := SpkCrFk + cw;
     SpkCrFkSq := SpkCrFk + cw * cw;
@@ -1065,16 +1069,17 @@ asm
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  r  : Integer;
+  cw : Double;
 begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
     cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-         CoefficientPointer[ci[3]])));
+          (CoefficientPointer[ci[1]] + xPosition.Im  *
+          (CoefficientPointer[ci[2]] + xPosition.Im  *
+           CoefficientPointer[ci[3]])));
 
     SpkCrFk := SpkCrFk + cw;
     SpkCrFkSq := SpkCrFk + cw * cw;
@@ -1161,9 +1166,9 @@ begin
   with ParameterRecord do
    begin
     cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-         CoefficientPointer[ci[3]])));
+          (CoefficientPointer[ci[1]] + xPosition.Im  *
+          (CoefficientPointer[ci[2]] + xPosition.Im  *
+           CoefficientPointer[ci[3]])));
 
     SpkCrFk := SpkCrFk + cw;
     SpkCrFkSq := SpkCrFk + cw * cw;
@@ -4793,6 +4798,8 @@ begin
 end;
 {$ENDIF}
 
+{$DEFINE PUREPASCAL}
+
 procedure DoWinLoopHanning32Forward(StartAdr: PDAVSingleFixedArray; var ParameterRecord: TParameterRecord; SampleCount: Integer);
 {$IFNDEF PUREPASCAL}
 asm
@@ -4854,13 +4861,13 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
+    cw := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
    end
 end;
@@ -4936,13 +4943,13 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
+    cw := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
     EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
    end
@@ -5010,13 +5017,13 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := cw;
+    cw := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
     StartAdr[r] := StartAdr[r] * cw;
    end
 end;
@@ -5092,14 +5099,14 @@ begin
  for r := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                    := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im          := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re          := cw;
-    cw                    := (0.5 -  0.5 * xPosition.Im);
+    cw                          := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im          := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re          := cw;
+    cw                          := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk               := SpkCrFk + cw;
-    SpkCrFkSq             := SpkCrFk + cw * cw;
-    StartAdr[r]           := StartAdr[r] * cw;
+    SpectrumCorrectionFactor    := SpectrumCorrectionFactor + cw;
+    SpuaredCorrectionFactor     := SpuaredCorrectionFactor + cw * cw;
+    StartAdr[r]                 := StartAdr[r] * cw;
     EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
    end
 end;

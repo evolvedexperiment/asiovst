@@ -1,4 +1,4 @@
-unit DAV_DspPolyphaseIIRDesigner;
+unit DAV_DspPolyphaseIirDesigner;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -313,4 +313,4 @@ begin
   until abs(q_i2) <= 1e-100;
 end;
 
-end.
+end.

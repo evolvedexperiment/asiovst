@@ -24,7 +24,7 @@
     <Version Minor="3"/>
     <Files Count="50">
       <Item1>
-        <Filename Value="..\..\Resources\DAV_DSPRegister.lrs"/>
+        <Filename Value="..\..\Resources\DAV_DspRegister.lrs"/>
         <Type Value="LRS"/>
       </Item1>
       <Item2>
@@ -101,7 +101,7 @@
       </Item19>
       <Item20>
         <Filename Value="..\..\Source\DSP\DAV_DspFilterButterworth.pas"/>
-        <UnitName Value="DAV_DSPFilterButterworth"/>
+        <UnitName Value="DAV_DspFilterButterworth"/>
       </Item20>
       <Item21>
         <Filename Value="..\..\Source\DSP\DAV_DspFilterChebyshev.pas"/>
@@ -145,7 +145,7 @@
       </Item30>
       <Item31>
         <Filename Value="..\..\Source\DSP\DAV_DspFrequencyDivider.pas"/>
-        <UnitName Value="DAV_DSPFrequencyDivider"/>
+        <UnitName Value="DAV_DspFrequencyDivider"/>
       </Item31>
       <Item32>
         <Filename Value="..\..\Source\DSP\DAV_DspInterpolation.pas"/>
@@ -153,11 +153,11 @@
       </Item32>
       <Item33>
         <Filename Value="..\..\Source\DSP\DAV_DspLevelingAmplifier.pas"/>
-        <UnitName Value="DAV_DSPLevelingAmplifier"/>
+        <UnitName Value="DAV_DspLevelingAmplifier"/>
       </Item33>
       <Item34>
         <Filename Value="..\..\Source\DSP\DAV_DspLFO.pas"/>
-        <UnitName Value="DAV_DSPLFO"/>
+        <UnitName Value="DAV_DspLFO"/>
       </Item34>
       <Item35>
         <Filename Value="..\..\Source\DSP\DAV_DspLightweightDynamics.pas"/>
@@ -214,7 +214,7 @@
       </Item47>
       <Item48>
         <Filename Value="..\..\Source\DSP\DAV_DspUpDownsampling.pas"/>
-        <UnitName Value="DAV_DSPUpDownsampling"/>
+        <UnitName Value="DAV_DspUpDownsampling"/>
       </Item48>
       <Item49>
         <Filename Value="..\..\Source\DSP\DAV_DspWaveshaper.pas"/>
@@ -249,4 +249,4 @@
       <IgnoreBinaries Value="False"/>
     </PublishOptions>
   </Package>
-</CONFIG>
+</CONFIG>

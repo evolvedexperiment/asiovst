@@ -316,7 +316,7 @@ end;
 begin
  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0];
  FX[0] := Input[1];
- Result := CHalf * (FY[0] + Input[0]);
+ Result := CHalf32 * (FY[0] + Input[0]);
 end;
 {$ENDIF}
 
@@ -352,7 +352,7 @@ end;
 begin
  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input[1];
  FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input[0];
- Result := CHalf * (FY[0] + FY[1]);
+ Result := CHalf32 * (FY[0] + FY[1]);
 end;
 {$ENDIF}
 
@@ -397,7 +397,7 @@ begin
  FY[0] := (Input[1] - FY[0]) * FCoefficients[0] + FX[0]; FX[0] := Input[1];
  FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input[0];
  FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2];    FX[2] := FY[0];
- Result := CHalf * (FY[1] + FY[2]);
+ Result := CHalf32 * (FY[1] + FY[2]);
 end;
 {$ENDIF}
 
@@ -451,7 +451,7 @@ begin
  FY[1] := (Input[0] - FY[1]) * FCoefficients[1] + FX[1]; FX[1] := Input[0];
  FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2];    FX[2] := FY[0];
  FY[3] := (FY[1] - FY[3]) * FCoefficients[3] + FX[3];    FX[3] := FY[1];
- Result := CHalf * (FY[2] + FY[3]);
+ Result := CHalf32 * (FY[2] + FY[3]);
 end;
 {$ENDIF}
 
@@ -526,7 +526,7 @@ begin
    FY[i]:= (FY[i-2] - FY[i]) * FCoefficients[i] + FX[i];
    FX[i]:=  FY[i-2];
   end;
- Result := CHalf * (FY[FNumberOfCoeffs - 1] + FY[FNumberOfCoeffs - 2]);
+ Result := CHalf32 * (FY[FNumberOfCoeffs - 1] + FY[FNumberOfCoeffs - 2]);
 end;
 {$ENDIF}
 
@@ -1294,4 +1294,4 @@ begin
  Result := FProcessSample64(Output);
 end;
 
-end.
+end.

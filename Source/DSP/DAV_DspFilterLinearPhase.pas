@@ -268,7 +268,7 @@ begin
   for i := 0 to (FKernelSize div 2) - 1 do
    begin
     Temp := PI * (i - Scale);
-    FilterKernel^[i] := sin(2.0 * Cutoff * Temp) / Temp;
+    FilterKernel^[i] := Sin(Temp) / Temp;
     FilterKernel^[FKernelSize - i] := -FilterKernel^[i];
    end;
   ApplyHanningWindow(FilterKernel, FKernelSize);

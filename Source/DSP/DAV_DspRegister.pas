@@ -53,7 +53,7 @@ end;
 
 {$IFDEF FPC}
 initialization
-  {$i ..\..\Resources\DAV_DspRegister.lrs}
+  {$i ..\..\Resources\DAV_DSPRegister.lrs}
 {$ENDIF}
 
-end.
+end.

@@ -307,7 +307,7 @@ begin
 end;
 
 procedure TLightweightSoftKneeLimiter.InputSample(const Input: Double);
-{$IFDEF XPUREPASCAL}
+{$IFDEF PUREPASCAL}
 var
   Temp : Single;
 begin
@@ -424,7 +424,7 @@ end;
 {$ENDIF}
 
 function TLightweightSoftKneeLimiter.ProcessSample64(Input: Double): Double;
-{$IFDEF XPUREPASCAL}
+{$IFDEF PUREPASCAL}
 var
   Temp : Single;
 begin
@@ -1853,4 +1853,4 @@ initialization
     TLightweightSoftKneeFeedbackCompressor,
     TLightweightSoftKneeFeedbackLikeCompressor]);
 
-end.
+end.

@@ -387,13 +387,13 @@ asm
 
  pop edi
 end;
+{$ENDIF}
+
 procedure TPolyphaseUpsampler32.ProcessSample32(Input: Single;
   out Output: TDAV2SingleArray);
 begin
  FProcessSample32(Input, Output);
 end;
-
-{$ENDIF}
 
 procedure TPolyphaseUpsampler32.ProcessSample4(const Input : Single; out Output : TDAV2SingleArray);
 {$IFDEF PUREPASCAL}
@@ -921,14 +921,13 @@ asm
 
  popad
 end;
+{$ENDIF}
 
 procedure TPolyphaseUpsampler64.ProcessSample64(Input: Double;
   out Output: TDAV2DoubleArray);
 begin
  FProcessSample64(Input, Output);
 end;
-
-{$ENDIF}
 
 procedure TPolyphaseUpsampler64.ProcessSampleLarge(const Input : Double; out Output : TDAV2DoubleArray);
 {$IFDEF PUREPASCAL}
@@ -1008,4 +1007,4 @@ asm
 end;
 {$ENDIF}
 
-end.
+end.
