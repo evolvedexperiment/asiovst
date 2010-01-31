@@ -34,8 +34,6 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-{$UNDEF PUREPASCAL}
-
 uses
   DAV_Types, DAV_Classes, DAV_Complex;
 
@@ -301,12 +299,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -321,48 +319,48 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
 var
-  r  : Integer;
-  cw : Double;
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                 := (CoefficientPointer[0] - PDAVSingleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im);
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor  := SpectrumCorrectionFactor + cw * cw;
-    StartAdr[r]        := StartAdr[r] * cw;
-    cw                 := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := (CoefficientPointer[0] - PDAV2SingleArray(CoefficientPointer)^[1] * ComplexPosition.Im);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
+    ComplexPosition.Re := CurrentValue;
    end
 end;
 {$ENDIF}
@@ -374,12 +372,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -394,47 +392,48 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] -  PDAVDoubleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im);
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := (CoefficientPointer[0] - PDAV2DoubleArray(CoefficientPointer)^[1] * ComplexPosition.Im);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
+    ComplexPosition.Re := CurrentValue;
    end
 end;
 {$ENDIF}
@@ -448,12 +447,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -473,17 +472,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -491,32 +490,33 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                          := CoefficientPointer[0] - PDAVSingleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im;
-    SpectrumCorrectionFactor    := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor     := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r]                 := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw                          := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
-    ComplexPosition.Im          := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re          := cw;
+    CurrentValue := CoefficientPointer[0] - PDAV2SingleArray(CoefficientPointer)^[1] * ComplexPosition.Im;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor  := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
    end
 end;
 {$ENDIF}
@@ -530,12 +530,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -555,17 +555,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -573,32 +573,33 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
 @exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                          := CoefficientPointer[0] - PDAVDoubleFixedArray(CoefficientPointer)^[1] * ComplexPosition.Im;
-    SpectrumCorrectionFactor    := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor     := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r]                 := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw                          := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
-    ComplexPosition.Im          := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re          := cw;
+    CurrentValue := CoefficientPointer[0] - PDAV2DoubleArray(CoefficientPointer)^[1] * ComplexPosition.Im;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor  := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
    end
 end;
 {$ENDIF}
@@ -610,12 +611,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 16].Double
@@ -632,50 +633,50 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
 var
-  r  : Integer;
-  cw : Double;
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := CoefficientPointer[0] + ComplexPosition.Im  *
-      (PDAVSingleFixedArray(CoefficientPointer)^[1] + ComplexPosition.Im  *
-       PDAVSingleFixedArray(CoefficientPointer)^[2]);
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := PDAV4SingleArray(CoefficientPointer)[0] + ComplexPosition.Im  *
+      (PDAV4SingleArray(CoefficientPointer)^[1] + ComplexPosition.Im  *
+       PDAV4SingleArray(CoefficientPointer)^[2]);
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
+    ComplexPosition.Re := CurrentValue;
    end
 end;
 {$ENDIF}
@@ -687,12 +688,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 16].Double
@@ -709,51 +710,51 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
 var
-  r  : Integer;
-  cw : Double;
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + ComplexPosition.Im  *
-          (CoefficientPointer[1] + ComplexPosition.Im  *
-           CoefficientPointer[2]));
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := (PDAV4DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im  *
+          (PDAV4DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im  *
+           PDAV4DoubleArray(CoefficientPointer)[2]));
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
-   end
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -766,12 +767,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 16].Double
@@ -793,17 +794,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -811,35 +812,36 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + ComplexPosition.Im  *
-          (CoefficientPointer[1] + ComplexPosition.Im  *
-           CoefficientPointer[2]));
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := (PDAV4SingleArray(CoefficientPointer)[0] + ComplexPosition.Im  *
+          (PDAV4SingleArray(CoefficientPointer)[1] + ComplexPosition.Im  *
+           PDAV4SingleArray(CoefficientPointer)[2]));
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
-   end
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -852,12 +854,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 16].Double
@@ -879,17 +881,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -897,36 +899,36 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
 var
-  r  : Integer;
-  cw : Double;
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-          (CoefficientPointer[ci[1]] + xPosition.Im  *
-           CoefficientPointer[ci[2]]));
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    CurrentValue := (PDAV4DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im  *
+          (PDAV4DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im  *
+           PDAV4DoubleArray(CoefficientPointer)[2]));
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -937,12 +939,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 24].Double
@@ -961,52 +963,53 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ 0] + xPosition.Im  * 
-          (CoefficientPointer[ci[1]] + xPosition.Im  *
-          (CoefficientPointer[ci[2]] + xPosition.Im  *
-           CoefficientPointer[ci[3]])));
+    CurrentValue := (PDAV4SingleArray(CoefficientPointer)[0] + ComplexPosition.Im  * 
+      (PDAV4SingleArray(CoefficientPointer)[1] + ComplexPosition.Im  *
+      (PDAV4SingleArray(CoefficientPointer)[2] + ComplexPosition.Im  *
+       PDAV4SingleArray(CoefficientPointer)[3])));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1017,12 +1020,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 24].Double
@@ -1041,53 +1044,53 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
 var
-  r  : Integer;
-  cw : Double;
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-          (CoefficientPointer[ci[1]] + xPosition.Im  *
-          (CoefficientPointer[ci[2]] + xPosition.Im  *
-           CoefficientPointer[ci[3]])));
+    CurrentValue := (PDAV4DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+          (PDAV4DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+          (PDAV4DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+           PDAV4DoubleArray(CoefficientPointer)[3])));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1100,12 +1103,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 24].Double
@@ -1129,17 +1132,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -1147,37 +1150,38 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-          (CoefficientPointer[ci[1]] + xPosition.Im  *
-          (CoefficientPointer[ci[2]] + xPosition.Im  *
-           CoefficientPointer[ci[3]])));
+    CurrentValue := (PDAV4SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV4SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV4SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+       PDAV4SingleArray(CoefficientPointer)[3])));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1190,12 +1194,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 24].Double
@@ -1219,17 +1223,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -1237,37 +1241,38 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-         CoefficientPointer[ci[3]])));
+    CurrentValue := (PDAV4DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV4DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV4DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+       PDAV4DoubleArray(CoefficientPointer)[3])));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1278,12 +1283,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 32].Double
@@ -1304,53 +1309,54 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[0] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-         CoefficientPointer[ci[4]]))));
+    CurrentValue := (PDAV6SingleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+      (PDAV6SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+       PDAV6SingleArray(CoefficientPointer)[4]))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1361,12 +1367,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 32].Double
@@ -1387,53 +1393,54 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-         CoefficientPointer[ci[4]]))));
+    CurrentValue := (PDAV6DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+       PDAV6DoubleArray(CoefficientPointer)[4]))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1446,12 +1453,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 32].Double
@@ -1477,17 +1484,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -1495,40 +1502,39 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..4] of Integer = (0, 1, 2, 3, 4);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-         CoefficientPointer[ci[4]]))));
+    CurrentValue := (PDAV6SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+       PDAV6SingleArray(CoefficientPointer)[4]))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1541,12 +1547,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 32].Double
@@ -1572,17 +1578,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -1590,40 +1596,39 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..4] of Integer = (0, 1, 2, 3, 4);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-         CoefficientPointer[ci[4]]))));
+    CurrentValue := (PDAV6DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+       PDAV6DoubleArray(CoefficientPointer)[4]))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1634,12 +1639,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 40].Double
@@ -1662,56 +1667,55 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..5] of Integer = (0, 1, 2, 3, 4, 5);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-         CoefficientPointer[ci[5]])))));
+    CurrentValue := (PDAV6SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+       PDAV6SingleArray(CoefficientPointer)[5])))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1722,12 +1726,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 40].Double
@@ -1750,56 +1754,55 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..5] of Integer = (0, 1, 2, 3, 4, 5);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-         CoefficientPointer[ci[5]])))));
+    CurrentValue := (PDAV6DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+       PDAV6DoubleArray(CoefficientPointer)[5])))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1812,12 +1815,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 40].Double
@@ -1845,17 +1848,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -1863,41 +1866,40 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..5] of Integer = (0, 1, 2, 3, 4, 5);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-         CoefficientPointer[ci[5]])))));
+    CurrentValue := (PDAV6SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV6SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+       PDAV6SingleArray(CoefficientPointer)[5])))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -1910,12 +1912,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 40].Double
@@ -1943,17 +1945,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -1961,41 +1963,40 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..5] of Integer = (0, 1, 2, 3, 4, 5);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-         CoefficientPointer[ci[5]])))));
+    CurrentValue := (PDAV6DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV6DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+       PDAV6DoubleArray(CoefficientPointer)[5])))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2006,12 +2007,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 48].Double
@@ -2036,57 +2037,56 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..6] of Integer = (0, 1, 2, 3, 4, 5, 6);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-         CoefficientPointer[ci[6]]))))));
+    CurrentValue := (PDAV8SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+       PDAV8SingleArray(CoefficientPointer)[6]))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2097,12 +2097,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 48].Double
@@ -2127,57 +2127,56 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..6] of Integer = (0, 1, 2, 3, 4, 5, 6);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  *
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-         CoefficientPointer[ci[6]]))))));
+    CurrentValue := (PDAV8DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+       PDAV8DoubleArray(CoefficientPointer)[6]))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2190,12 +2189,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 48].Double
@@ -2225,17 +2224,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -2243,42 +2242,41 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
-const
-  ci : Array [0..6] of Integer = (0, 1, 2, 3, 4, 5, 6);
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-         CoefficientPointer[ci[6]]))))));
+    CurrentValue := (PDAV8SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+       PDAV8SingleArray(CoefficientPointer)[6]))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2291,12 +2289,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 48].Double
@@ -2326,17 +2324,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -2344,40 +2342,41 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-         CoefficientPointer[ci[6]]))))));
+    CurrentValue := (PDAV8DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+      (PDAV8DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+       PDAV8DoubleArray(CoefficientPointer)[6]))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2388,12 +2387,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 56].Double
@@ -2420,56 +2419,57 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-         CoefficientPointer[ci[7]])))))));
+    CurrentValue := (PDAV8SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+       PDAV8SingleArray(CoefficientPointer)[7])))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2480,12 +2480,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 56].Double
@@ -2512,56 +2512,57 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  *
-         CoefficientPointer[ci[7]])))))));
+    CurrentValue := (PDAV8DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV8DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+       PDAV8DoubleArray(CoefficientPointer)[7])))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2574,12 +2575,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 56].Double
@@ -2611,17 +2612,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -2629,41 +2630,42 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-         CoefficientPointer[ci[7]])))))));
+    CurrentValue := (PDAV8SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV8SingleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+       PDAV8SingleArray(CoefficientPointer)[7])))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2676,12 +2678,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 56].Double
@@ -2713,17 +2715,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -2731,41 +2733,42 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-         CoefficientPointer[ci[7]])))))));
+    CurrentValue := (PDAV8DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+        (PDAV8DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+        (PDAV8DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+        (PDAV8DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+        (PDAV8DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+        (PDAV8DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+        (PDAV8DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+         PDAV8DoubleArray(CoefficientPointer)[7])))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2776,12 +2779,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 64].Double
@@ -2810,57 +2813,58 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-         CoefficientPointer[ci[8]]))))))));
+    CurrentValue := (PDAV16SingleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+      (PDAV16SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[7] + ComplexPosition.Im *
+       PDAV16SingleArray(CoefficientPointer)[8]))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2871,12 +2875,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 64].Double
@@ -2905,57 +2909,58 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  *
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-         CoefficientPointer[ci[8]]))))))));
+    CurrentValue := (PDAV16DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[7] + ComplexPosition.Im *
+       PDAV16DoubleArray(CoefficientPointer)[8]))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -2968,12 +2973,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 64].Double
@@ -3007,17 +3012,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -3025,42 +3030,43 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  *
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-         CoefficientPointer[ci[8]]))))))));
+    CurrentValue := (PDAV16SingleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+      (PDAV16SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+      (PDAV16SingleArray(CoefficientPointer)[7] + ComplexPosition.Im *
+       PDAV16SingleArray(CoefficientPointer)[8]))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3073,12 +3079,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 64].Double
@@ -3112,17 +3118,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -3130,42 +3136,43 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  *
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-         CoefficientPointer[ci[8]]))))))));
+    CurrentValue := (PDAV16DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im *
+      (PDAV16DoubleArray(CoefficientPointer)[7] + ComplexPosition.Im *
+       PDAV16DoubleArray(CoefficientPointer)[8]))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3176,12 +3183,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 72].Double
@@ -3212,58 +3219,59 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-         CoefficientPointer[ci[9]])))))))));
+    CurrentValue := (PDAV16SingleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+        (PDAV16SingleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+        (PDAV16SingleArray(CoefficientPointer)[2] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[7] + ComplexPosition.Im *
+        (PDAV16SingleArray(CoefficientPointer)[8] + ComplexPosition.Im *
+         PDAV16SingleArray(CoefficientPointer)[9])))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3274,12 +3282,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 72].Double
@@ -3310,58 +3318,59 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-         CoefficientPointer[ci[9]])))))))));
+    CurrentValue := (PDAV16DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[8] + ComplexPosition.Im * 
+         PDAV16DoubleArray(CoefficientPointer)[9])))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3374,12 +3383,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 72].Double
@@ -3415,17 +3424,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -3433,43 +3442,44 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  *
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-         CoefficientPointer[ci[9]])))))))));
+    CurrentValue := (PDAV16SingleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[1] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[2] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[4] + ComplexPosition.Im *
+        (PDAV16SingleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[8] + ComplexPosition.Im * 
+         PDAV16SingleArray(CoefficientPointer)[9])))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3482,12 +3492,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 72].Double
@@ -3523,17 +3533,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -3541,43 +3551,44 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-         CoefficientPointer[ci[9]])))))))));
+    CurrentValue := (PDAV16DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[8] + ComplexPosition.Im * 
+         PDAV16DoubleArray(CoefficientPointer)[9])))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3588,12 +3599,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 80].Double
@@ -3626,59 +3637,60 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-        (CoefficientPointer[ci[9]] + xPosition.Im  * 
-         CoefficientPointer[ci[10]]))))))))));
+    CurrentValue := (PDAV16SingleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[1] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[2] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[8] + ComplexPosition.Im *
+        (PDAV16SingleArray(CoefficientPointer)[9] + ComplexPosition.Im * 
+         PDAV16SingleArray(CoefficientPointer)[10]))))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3689,12 +3701,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 80].Double
@@ -3727,59 +3739,60 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-        (CoefficientPointer[ci[9]] + xPosition.Im  * 
-         CoefficientPointer[ci[10]]))))))))));
+    CurrentValue := (PDAV16DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[8] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[9] + ComplexPosition.Im * 
+         PDAV16DoubleArray(CoefficientPointer)[10]))))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3792,12 +3805,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 80].Double
@@ -3835,17 +3848,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -3853,44 +3866,45 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-        (CoefficientPointer[ci[9]] + xPosition.Im  * 
-         CoefficientPointer[ci[10]]))))))))));
+    CurrentValue := (PDAV16SingleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[1] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[2] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[3] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[8] + ComplexPosition.Im * 
+        (PDAV16SingleArray(CoefficientPointer)[9] + ComplexPosition.Im * 
+         PDAV16SingleArray(CoefficientPointer)[10]))))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -3903,12 +3917,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld [ebx + 80].Double
@@ -3946,17 +3960,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -3964,44 +3978,45 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := (CoefficientPointer[ci[0]] + xPosition.Im  * 
-        (CoefficientPointer[ci[1]] + xPosition.Im  * 
-        (CoefficientPointer[ci[2]] + xPosition.Im  * 
-        (CoefficientPointer[ci[3]] + xPosition.Im  * 
-        (CoefficientPointer[ci[4]] + xPosition.Im  * 
-        (CoefficientPointer[ci[5]] + xPosition.Im  * 
-        (CoefficientPointer[ci[6]] + xPosition.Im  * 
-        (CoefficientPointer[ci[7]] + xPosition.Im  * 
-        (CoefficientPointer[ci[8]] + xPosition.Im  * 
-        (CoefficientPointer[ci[9]] + xPosition.Im  * 
-         CoefficientPointer[ci[10]]))))))))));
+    CurrentValue := (PDAV16DoubleArray(CoefficientPointer)[0] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[1] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[2] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[3] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[4] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[5] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[6] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[7] + ComplexPosition.Im * 
+        (PDAV16DoubleArray(CoefficientPointer)[8] + ComplexPosition.Im *
+        (PDAV16DoubleArray(CoefficientPointer)[9] + ComplexPosition.Im *
+         PDAV16DoubleArray(CoefficientPointer)[10]))))))))));
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+   end;
 end;
 {$ENDIF}
 
@@ -4012,8 +4027,8 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
  fld [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
  fld [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
 
@@ -4033,23 +4048,24 @@ asm
 
  fstp [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
  fstp [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
- fstp [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double   // SpkCrFkSq
+ fstp [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double   // SpuaredCorrectionFactor
 
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
+var
+  SampleIndex  : Integer;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    SpkCrFk := SpkCrFk + xPosition.Re;
-    SpkCrFkSq := SpkCrFkSq + Sqr(xPosition.Re);
-    StartAdr[r] := StartAdr[r] * xPosition.Re;
-    xPosition.Re := xPosition.Re + xAngle.Re;
-   end
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + ComplexPosition.Re;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + Sqr(ComplexPosition.Re);
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * ComplexPosition.Re;
+    ComplexPosition.Re := ComplexPosition.Re + ComplexAngle.Re;
+   end;
 end;
 {$ENDIF}
 
@@ -4062,8 +4078,8 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
  fld [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
  fld [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
 
@@ -4088,8 +4104,8 @@ asm
 
  fstp [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
  fstp [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
- fstp [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double   // SpkCrFkSq
+ fstp [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double   // SpuaredCorrectionFactor
 
  pop edi
  pop ebx
@@ -4097,16 +4113,16 @@ asm
 end;
 {$ELSE}
 var
-  r  : Integer;
+  SampleIndex  : Integer;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    SpkCrFk      := SpkCrFk + 2 * xPosition.Re;
-    SpkCrFkSq    := SpkCrFkSq + 2 * Sqr(xPosition.Re);
-    StartAdr[r]  := StartAdr[r] * xPosition.Re;
-    EndAdr[-r]   := EndAdr[-r] * xPosition.Re;
-    xPosition.Re := xPosition.Re + xAngle.Re;
+    SpectrumCorrectionFactor   := SpectrumCorrectionFactor + 2 * ComplexPosition.Re;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + 2 * Sqr(ComplexPosition.Re);
+    StartAdr[SampleIndex]  := StartAdr[SampleIndex] * ComplexPosition.Re;
+    EndAdr[-SampleIndex]   := EndAdr[-SampleIndex] * ComplexPosition.Re;
+    ComplexPosition.Re := ComplexPosition.Re + ComplexAngle.Re;
    end;
 end;
 {$ENDIF}
@@ -4118,8 +4134,8 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
  fld [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
  fld [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
 
@@ -4139,22 +4155,22 @@ asm
 
  fstp [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
  fstp [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
- fstp [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double   // SpkCrFkSq
+ fstp [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double   // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
 var
-  r  : Integer;
+  SampleIndex  : Integer;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    SpkCrFk := SpkCrFk + xPosition.Re;
-    SpkCrFkSq := SpkCrFkSq + Sqr(xPosition.Re);
-    StartAdr[r] := StartAdr[r] * xPosition.Re;
-    xPosition.Re := xPosition.Re + xAngle.Re;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + ComplexPosition.Re;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + Sqr(ComplexPosition.Re);
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * ComplexPosition.Re;
+    ComplexPosition.Re := ComplexPosition.Re + ComplexAngle.Re;
    end
 end;
 {$ENDIF}
@@ -4168,8 +4184,8 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
  fld [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
  fld [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
 
@@ -4194,8 +4210,8 @@ asm
 
  fstp [edx     ].Double   // Counter, Offset, fSpkCorFak, fSpkCorFakSq
  fstp [edx + 16].Double   // Offset, fSpkCorFak, fSpkCorFakSq
- fstp [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double   // SpkCrFkSq
+ fstp [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double   // SpuaredCorrectionFactor
 
  pop edi
  pop ebx
@@ -4203,16 +4219,16 @@ asm
 end;
 {$ELSE}
 var
-  r  : Integer;
+  SampleIndex  : Integer;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    SpkCrFk      := SpkCrFk + 2 * xPosition.Re;
-    SpkCrFkSq    := SpkCrFkSq + 2 * Sqr(xPosition.Re);
-    StartAdr[r]  := StartAdr[r] * xPosition.Re;
-    EndAdr[-r]   := EndAdr[-r] * xPosition.Re;
-    xPosition.Re := xPosition.Re + xAngle.Re;
+    SpectrumCorrectionFactor   := SpectrumCorrectionFactor + 2 * ComplexPosition.Re;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + 2 * Sqr(ComplexPosition.Re);
+    StartAdr[SampleIndex]  := StartAdr[SampleIndex] * ComplexPosition.Re;
+    EndAdr[-SampleIndex]   := EndAdr[-SampleIndex] * ComplexPosition.Re;
+    ComplexPosition.Re := ComplexPosition.Re + ComplexAngle.Re;
    end;
 end;
 {$ENDIF}
@@ -4224,12 +4240,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4241,45 +4257,46 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
    add eax, 4
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4293,12 +4310,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4315,51 +4332,52 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
    sub edi, 4
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
 
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4371,12 +4389,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4388,45 +4406,46 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
    add eax, 8
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4440,12 +4459,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4462,48 +4481,49 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
    add eax, 8
    sub edi, 8
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4515,12 +4535,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4532,45 +4552,46 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
    add eax, 4
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4584,12 +4605,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4606,51 +4627,52 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
    sub edi, 4
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
 
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4662,12 +4684,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4679,45 +4701,46 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
    add eax, 8
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4731,12 +4754,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(0)
@@ -4752,53 +4775,52 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
    add eax, 8
    sub edi, 8
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := xPosition.Re * xAngle.Re-xPosition.Im * xAngle.Im;
-    xPosition.Im := xPosition.Im * xAngle.Re + xPosition.Re * xAngle.Im;
-    xPosition.Re := cw;
-    cw := (0.5 -  0.5 * xPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re-ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpkCrFk := SpkCrFk + cw;
-    SpkCrFkSq := SpkCrFk + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
-
-{$DEFINE PUREPASCAL}
 
 procedure DoWinLoopHanning32Forward(StartAdr: PDAVSingleFixedArray; var ParameterRecord: TParameterRecord; SampleCount: Integer);
 {$IFNDEF PUREPASCAL}
@@ -4807,12 +4829,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -4827,48 +4849,49 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
-    cw := (0.5 -  0.5 * ComplexPosition.Im);
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4882,12 +4905,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -4907,17 +4930,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 4
@@ -4925,33 +4948,34 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
-    cw := (0.5 -  0.5 * ComplexPosition.Im);
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -4963,12 +4987,12 @@ asm
  jng @exit
  push ebx
  mov ebx, [edx + 48]
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -4983,48 +5007,49 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
     ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re := cw;
-    cw := (0.5 -  0.5 * ComplexPosition.Im);
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpectrumCorrectionFactor := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r] := StartAdr[r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}
@@ -5038,12 +5063,12 @@ asm
  push edi
  mov ebx, [edx + 48]
  mov edi, EndAdr
- fld [edx + 40].Double   // SpkCrFkSq
- fld [edx + 32].Double   // SpkCrFk, SpkCrFkSq
- fld [edx + 24].Double   // xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx + 16].Double   // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx +  8].Double   // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fld [edx     ].Double   // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
+ fld [edx + 40].Double   // SpuaredCorrectionFactor
+ fld [edx + 32].Double   // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 24].Double   // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx + 16].Double   // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx +  8].Double   // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fld [edx     ].Double   // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
  @cosloop:
    fld st(1)
@@ -5063,17 +5088,17 @@ asm
    fmul st(0), st(0)
    faddp st(6), st(0)
 
-   fld st(3)             // Im, r, i, Re, Im
-   fmul st(0), st(2)     // Im * i, r, i, Re, Im
-   fld st(3)             // Re, Im * i, r, i, Re, Im
-   fmul st(0), st(2)     // Re * r, Im * i, r, i, Re, Im
-   fsubrp                // newRe, r, i, Re, Im
+   fld st(3)             // Im, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Im * i, SampleIndex, i, Re, Im
+   fld st(3)             // Re, Im * i, SampleIndex, i, Re, Im
+   fmul st(0), st(2)     // Re * SampleIndex, Im * i, SampleIndex, i, Re, Im
+   fsubrp                // newRe, SampleIndex, i, Re, Im
 
-   fld st(4)             // Im, newRe, r, i, Re, Im
-   fmulp st(2), st(0)    // newRe, Im * r, i, Re, Im
-   fld st(3)             // Re, newRe, Im * r, i, Re, Im
-   fmulp st(3), st(0)    // newRe, Im * r, Re * i, Re, Im
-   fxch                  // Im * r, newRe, Re * i, Re, Im
+   fld st(4)             // Im, newRe, SampleIndex, i, Re, Im
+   fmulp st(2), st(0)    // newRe, Im * SampleIndex, i, Re, Im
+   fld st(3)             // Re, newRe, Im * SampleIndex, i, Re, Im
+   fmulp st(3), st(0)    // newRe, Im * SampleIndex, Re * i, Re, Im
+   fxch                  // Im * SampleIndex, newRe, Re * i, Re, Im
    faddp st(2), st(0)    // newRe, newIm, Re, Im
 
    add eax, 8
@@ -5081,33 +5106,34 @@ asm
 
  loop @cosloop
 
- fstp [edx     ].Double  // xPosition.Re, xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp [edx +  8].Double  // xPosition.Im, xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Re, xAngle.Im, SpkCrFk, SpkCrFkSq
- fstp st(0)              // xAngle.Im, SpkCrFk, SpkCrFkSq
+ fstp [edx     ].Double  // ComplexPosition.Re, ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx +  8].Double  // ComplexPosition.Im, ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Re, ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp st(0)              // ComplexAngle.Im, SpectrumCorrectionFactor, SpuaredCorrectionFactor
 
- fstp [edx + 32].Double  // SpkCrFk, SpkCrFkSq
- fstp [edx + 40].Double  // SpkCrFkSq
+ fstp [edx + 32].Double  // SpectrumCorrectionFactor, SpuaredCorrectionFactor
+ fstp [edx + 40].Double  // SpuaredCorrectionFactor
  pop edi
  pop ebx
  @Exit:
 end;
 {$ELSE}
-var r  : Integer;
-    cw : Double;
+var
+  SampleIndex  : Integer;
+  CurrentValue : Double;
 begin
- for r := 0 to SampleCount - 1 do
+ for SampleIndex := 0 to SampleCount - 1 do
   with ParameterRecord do
    begin
-    cw                          := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
-    ComplexPosition.Im          := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
-    ComplexPosition.Re          := cw;
-    cw                          := (0.5 -  0.5 * ComplexPosition.Im);
+    CurrentValue := ComplexPosition.Re * ComplexAngle.Re - ComplexPosition.Im * ComplexAngle.Im;
+    ComplexPosition.Im := ComplexPosition.Im * ComplexAngle.Re + ComplexPosition.Re * ComplexAngle.Im;
+    ComplexPosition.Re := CurrentValue;
+    CurrentValue := (0.5 -  0.5 * ComplexPosition.Im);
 
-    SpectrumCorrectionFactor    := SpectrumCorrectionFactor + cw;
-    SpuaredCorrectionFactor     := SpuaredCorrectionFactor + cw * cw;
-    StartAdr[r]                 := StartAdr[r] * cw;
-    EndAdr[SampleCount - 1 - r] := EndAdr[SampleCount - 1 - r] * cw;
+    SpectrumCorrectionFactor := SpectrumCorrectionFactor + CurrentValue;
+    SpuaredCorrectionFactor  := SpuaredCorrectionFactor + CurrentValue * CurrentValue;
+    StartAdr[SampleIndex] := StartAdr[SampleIndex] * CurrentValue;
+    EndAdr[SampleCount - 1 - SampleIndex] := EndAdr[SampleCount - 1 - SampleIndex] * CurrentValue;
    end
 end;
 {$ENDIF}

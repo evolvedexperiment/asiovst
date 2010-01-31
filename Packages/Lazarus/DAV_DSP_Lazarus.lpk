@@ -189,7 +189,7 @@
       </Item41>
       <Item42>
         <Filename Value="..\..\Source\DSP\DAV_DspPolyphaseIirDesigner.pas"/>
-        <UnitName Value="DAV_DspPolyphaseIIRDesigner"/>
+        <UnitName Value="DAV_DspPolyphaseIirDesigner"/>
       </Item42>
       <Item43>
         <Filename Value="..\..\Source\DSP\DAV_DspPolyphaseUpsampler.pas"/>
