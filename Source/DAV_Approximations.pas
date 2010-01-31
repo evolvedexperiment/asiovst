@@ -2634,6 +2634,11 @@ end;
 
 function FastPower(Base, Exponent : Double): Double;
 // The Original Code is Fastcode (Contributor(s): John O'Harrow)
+{$IFDEF PUREPASCAL}
+begin
+ Result := Power(Base, Exponent);
+end;
+{$ELSE}
 const
   Max  : Double = MaxInt;
 var
@@ -2701,6 +2706,7 @@ asm
   fstp    st(1)
 @@Exit:
 end;
+{$ENDIF}
 
 function FastPower2(Value: Single): Single;
 var
@@ -3376,4 +3382,4 @@ end;
 initialization
  InitConstants;
 
-end.
+end.

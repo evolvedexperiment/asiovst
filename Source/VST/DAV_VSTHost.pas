@@ -715,10 +715,16 @@ begin
 end;
 
 procedure DontRaiseExceptionsAndSetFPUcodeword;
+{$IFDEF PUREPASCAL}
+begin
+
+end;
+{$ELSE}
 asm
  fnclex                  // Don't raise pending exceptions enabled by the new flags
  fldcw   SCRound8087CW   // SCRound8087CW: Word = $133F; round FPU codeword, with exceptions disabled
 end;
+{$ENDIF}
 
 function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 var
@@ -3648,4 +3654,4 @@ finalization
   FreeAndNil(GHostList);
   {$ENDIF}
 
-end.
+end.

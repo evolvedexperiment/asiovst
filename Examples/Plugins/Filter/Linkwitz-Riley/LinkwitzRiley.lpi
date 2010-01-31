@@ -8,11 +8,13 @@
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
         <Runnable Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
+      <Title Value="Linkwitz Riley"/>
       <UseAppBundle Value="False"/>
-      <ActiveEditorIndexAtStart Value="0"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -28,7 +30,7 @@
         <FormatVersion Value="1"/>
         <HostApplicationFilename Value="C:\Users\Christian Budde\Projects\VSTPack\Bin\VST Plugin Analyser.exe"/>
         <CommandLineParams Value="LinkwitzRiley.DLL"/>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="1">
@@ -36,16 +38,15 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="6">
       <Unit0>
         <Filename Value="LinkwitzRiley.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="35" Y="17"/>
-        <TopLine Value="1"/>
+        <CursorPos X="1" Y="30"/>
+        <TopLine Value="2"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="LinkwitzRileyDM.pas"/>
@@ -54,12 +55,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="LinkwitzRileyDM"/>
-        <CursorPos X="53" Y="40"/>
-        <TopLine Value="22"/>
+        <CursorPos X="59" Y="48"/>
+        <TopLine Value="37"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="24"/>
         <Loaded Value="True"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\..\Source\DAV_Common.pas"/>
@@ -67,7 +67,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\..\Source\VST\DAV_VSTOfflineTask.pas"/>
@@ -75,7 +74,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\Source\DSP\DAV_DspButterworthFilter.pas"/>
@@ -83,10 +81,16 @@
         <CursorPos X="19" Y="661"/>
         <TopLine Value="651"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="LinkwitzRiley.lpi"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="140"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="XML"/>
+      </Unit5>
     </Units>
-    <JumpHistory Count="2" HistoryIndex="1">
+    <JumpHistory Count="8" HistoryIndex="7">
       <Position1>
         <Filename Value="LinkwitzRiley.lpr"/>
         <Caret Line="4" Column="21" TopLine="1"/>
@@ -95,28 +99,52 @@
         <Filename Value="LinkwitzRiley.lpr"/>
         <Caret Line="20" Column="54" TopLine="1"/>
       </Position2>
+      <Position3>
+        <Filename Value="LinkwitzRileyDM.pas"/>
+        <Caret Line="40" Column="53" TopLine="22"/>
+      </Position3>
+      <Position4>
+        <Filename Value="LinkwitzRileyDM.pas"/>
+        <Caret Line="42" Column="44" TopLine="28"/>
+      </Position4>
+      <Position5>
+        <Filename Value="LinkwitzRiley.lpr"/>
+        <Caret Line="14" Column="26" TopLine="7"/>
+      </Position5>
+      <Position6>
+        <Filename Value="LinkwitzRiley.lpr"/>
+        <Caret Line="24" Column="1" TopLine="15"/>
+      </Position6>
+      <Position7>
+        <Filename Value="LinkwitzRiley.lpr"/>
+        <Caret Line="11" Column="1" TopLine="4"/>
+      </Position7>
+      <Position8>
+        <Filename Value="LinkwitzRiley.lpr"/>
+        <Caret Line="31" Column="25" TopLine="20"/>
+      </Position8>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="LinkwitzRiley"/>
+    </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\..\Source\;$(ProjOutDir)\"/>
       <OtherUnitFiles Value="..\..\..\..\Source\;..\..\..\..\Source\VST\;..\..\..\..\Source\DSP\;..\..\..\..\Source\Math\"/>
-      <UnitOutputDirectory Value="..\..\..\..\Bin"/>
+      <UnitOutputDirectory Value="..\..\..\..\Bin\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
         <IncludeAssertionCode Value="True"/>
         <CPPInline Value="False"/>
-        <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
-      <TargetCPU Value="i386"/>
-      <TargetOS Value="Win32"/>
       <Optimizations>
         <VariablesInRegisters Value="True"/>
       </Optimizations>
@@ -127,6 +155,10 @@
       </Debugging>
       <LinkSmart Value="True"/>
       <Options>
+        <LinkerOptions Value="-framework carbon"/>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
         <ExecutableType Value="Library"/>
       </Options>
     </Linking>

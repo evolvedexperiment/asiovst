@@ -7,10 +7,12 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
+        <Runnable Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
+      <ActiveEditorIndexAtStart Value="1"/>
     </General>
     <PublishOptions>
       <Version Value="2"/>
@@ -23,7 +25,7 @@
         <FormatVersion Value="1"/>
         <HostApplicationFilename Value="C:\Users\Christian Budde\Projects\VSTPack\Bin\VST Plugin Analyser.exe"/>
         <CommandLineParams Value="OpAmp.dll"/>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="2">
@@ -41,7 +43,6 @@
         <CursorPos X="48" Y="23"/>
         <TopLine Value="1"/>
         <UsageCount Value="48"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit0>
       <Unit1>
         <Filename Value="OpAmpModule.pas"/>
@@ -51,9 +52,10 @@
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="OpAmpModule"/>
         <CursorPos X="40" Y="114"/>
-        <TopLine Value="86"/>
+        <TopLine Value="92"/>
+        <EditorIndex Value="0"/>
         <UsageCount Value="48"/>
-        <SyntaxHighlighter Value="Delphi"/>
+        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="OpAmpGUI.pas"/>
@@ -62,10 +64,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpAmpGUI"/>
-        <CursorPos X="40" Y="24"/>
+        <CursorPos X="31" Y="15"/>
         <TopLine Value="1"/>
+        <EditorIndex Value="1"/>
         <UsageCount Value="48"/>
-        <SyntaxHighlighter Value="Delphi"/>
+        <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="OpAmpModule.lfm"/>
@@ -124,7 +127,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="11"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
@@ -135,7 +137,6 @@
         <CursorPos X="55" Y="8"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithPrograms.pas"/>
@@ -146,7 +147,6 @@
         <CursorPos X="31" Y="24"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithMidi.pas"/>
@@ -157,7 +157,6 @@
         <CursorPos X="49" Y="4"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
@@ -168,7 +167,6 @@
         <CursorPos X="44" Y="20"/>
         <TopLine Value="1"/>
         <UsageCount Value="22"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
@@ -190,7 +188,6 @@
         <CursorPos X="54" Y="24"/>
         <TopLine Value="1"/>
         <UsageCount Value="8"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lcltype.pp"/>
@@ -205,7 +202,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="8"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\ideintf\checklistboxeditordlg.pas"/>
@@ -236,7 +232,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="8"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
@@ -247,7 +242,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\wincontrol.inc"/>
@@ -280,7 +274,6 @@
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="8"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\customform.inc"/>
@@ -308,7 +301,6 @@
         <CursorPos X="23" Y="23"/>
         <TopLine Value="22"/>
         <UsageCount Value="9"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Polygons.pas"/>
@@ -357,7 +349,6 @@
         <CursorPos X="22" Y="36"/>
         <TopLine Value="21"/>
         <UsageCount Value="8"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit40>
       <Unit41>
         <Filename Value="..\..\..\Source\ASIO\DAV_AsioList.pas"/>
@@ -414,7 +405,6 @@
         <CursorPos X="52" Y="760"/>
         <TopLine Value="742"/>
         <UsageCount Value="18"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit48>
       <Unit49>
         <Filename Value="..\..\..\Source\DAV_VectorMath.pas"/>
@@ -422,7 +412,6 @@
         <CursorPos X="25" Y="38"/>
         <TopLine Value="11"/>
         <UsageCount Value="17"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit49>
       <Unit50>
         <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lclclasses.pp"/>
@@ -465,7 +454,6 @@
         <CursorPos X="26" Y="6"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
-        <SyntaxHighlighter Value="Delphi"/>
       </Unit55>
     </Units>
     <JumpHistory Count="0" HistoryIndex="-1"/>
@@ -474,7 +462,7 @@
     <Version Value="8"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\..\..\Bin\OPAmp.dll"/>
+      <Filename Value="OPAmp"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source\"/>
@@ -485,10 +473,9 @@
     </SearchPaths>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="Delphi"/>
+        <CStyleOperator Value="False"/>
         <IncludeAssertionCode Value="True"/>
         <CPPInline Value="False"/>
-        <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
     <CodeGeneration>
@@ -497,8 +484,8 @@
     <Linking>
       <Debugging>
         <UseLineInfoUnit Value="False"/>
-        <StripSymbols Value="True"/>
       </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

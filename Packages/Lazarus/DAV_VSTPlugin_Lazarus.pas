@@ -8,11 +8,11 @@ unit DAV_VSTPlugin_Lazarus;
 interface
 
 uses
-  DAV_VstWindowSizer, DAV_VSTBasicModule, DAV_VSTChannels, 
-  DAV_VSTCustomModule, DAV_VSTEffect, DAV_VSTModule, DAV_VSTModuleWithDsp, 
-  DAV_VSTModuleWithMidi, DAV_VSTModuleWithPrograms, DAV_VSTOfflineTask, 
-  DAV_VSTParameters, DAV_VSTPrograms, DAV_VSTShellPlugins, 
-  DAV_BufferMathPascal, DAV_VSTModuleLazIDE, LazarusPackageIntf;
+    DAV_VSTBasicModule, DAV_VSTChannels, DAV_VSTCustomModule, DAV_VSTEffect, 
+  DAV_VSTModule, DAV_VSTModuleWithDsp, DAV_VSTModuleWithMidi, 
+  DAV_VSTModuleWithPrograms, DAV_VSTOfflineTask, DAV_VSTParameters, 
+  DAV_VSTPrograms, DAV_VSTShellPlugins, DAV_BufferMathPascal, 
+  DAV_VSTModuleLazIDE, LazarusPackageIntf;
 
 implementation
 

@@ -169,6 +169,8 @@ type
 
 implementation
 
+{$R DAV_DspFilterButterworth.res}
+
 uses
   Math, SysUtils, DAV_Common, DAV_Math, DAV_Approximations;
 

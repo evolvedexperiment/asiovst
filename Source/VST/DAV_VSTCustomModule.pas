@@ -608,7 +608,9 @@ begin
       ParentWindow := HWnd(ptr);
       {$ELSE}
 //      Parent := TWinControl.CreateParented(HWnd(ptr));
+      {$IFDEF Windows}
       SetParent(Handle, HWnd(ptr));
+      {$ENDIF}
       //      Handle := HWnd(ptr);
 //      Parent := TWinControl.CreateParented(HWnd(ptr));
       {$ENDIF}
@@ -1498,4 +1500,4 @@ begin
   else FEffect.version := (FVersionMajor shl 16) + (FVersionMinor shl 8) + FVersionRelease;
 end;
 
-end.
+end.

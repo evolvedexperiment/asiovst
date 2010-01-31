@@ -55,8 +55,11 @@ unit DAV_VstWindowSizer;
 
 interface
 
+{$I ..\DAV_Compiler.inc}
+
 uses
-  Windows, Messages, Controls, Types, Contnrs, DAV_VSTCustomModule;
+  {$IFDEF FPC}LCLIntf, LCLType, LMessages, {$IFDEF Windows} Windows, {$ENDIF}
+  {$ELSE} Windows, Messages, {$ENDIF} Messages, Controls, Types, Contnrs, DAV_VSTCustomModule;
 
 type
   TResizeFlag = (rfTrackParentSize, rfSimulateDragEdge,
@@ -1422,4 +1425,4 @@ finalization
   FreeAndNil(GFramesTrack);
   FreeAndNil(GEditors);
 
-end.
+end.

@@ -6,24 +6,36 @@ library LinkwitzRiley;
 uses
   Interfaces,
   Forms,
+  {$IFNDEF DARWIN}
   DAV_WinAmp,
+  {$ENDIF}
   DAV_VSTEffect,
   DAV_VSTBasicModule,
   LinkwitzRileyDM in 'LinkwitzRileyDM.pas' {LinkwitzRileyModule: TVSTModule};
 
-function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VSTPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
  Result := VstModuleMain(AudioMasterCallback, TLinkwitzRileyModule);
 end;
 
+{$IFNDEF DARWIN}
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
  Result := WinampDSPModuleHeader(TLinkwitzRileyModule);
 end;
+{$ENDIF}
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
-exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main';
+  VSTPluginMain name 'main_plugin';
+  VSTPluginMain name 'VSTPluginMain';
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 
 begin
-end.
+end.

@@ -1,6 +1,6 @@
 library NoGUIFilter;
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 uses
   Interfaces,
@@ -9,7 +9,7 @@ uses
   DAV_VSTParameters,
   FilterModule in 'FilterModule.pas';
 
-function main(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
+function VSTPluginMain(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
   VSTFilterModule : TVSTFilter;
 begin
@@ -104,8 +104,17 @@ begin
   end;
 end;
 
-exports Main name 'main';
-exports Main name 'VSTPluginMain';
+exports
+{$IFDEF DARWIN}  {OS X entry points}
+  VSTPluginMain name '_main',
+  VSTPluginMain name '_main_macho',
+  VSTPluginMain name '_VSTPluginMain';
+{$ELSE}
+  VSTPluginMain name 'main';
+  VSTPluginMain name 'main_plugin';
+  VSTPluginMain name 'VSTPluginMain';
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
+{$ENDIF}
 
 begin
-end.
+end.

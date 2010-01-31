@@ -36,7 +36,7 @@ interface
 
 uses 
   {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
-  Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspFilterLinkwitzRiley;
 
 type
@@ -161,4 +161,4 @@ initialization
   {$i LinkwitzRileyDM.lrs}
 {$ENDIF}
 
-end.
+end.
