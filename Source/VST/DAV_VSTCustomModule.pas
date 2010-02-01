@@ -5,7 +5,8 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls, {$IFDEF Windows} Windows, {$ENDIF}
+  {$IFDEF FPC}LCLIntf, LCLType, LMessages, Controls,
+  {$IFDEF Windows} Windows, {$ENDIF} {$IFDEF DARWIN} MacOSAll,{$ENDIF}
   {$ELSE} Windows, Messages, {$ENDIF} Classes, Forms,
   DAV_Types, DAV_VSTEffect, DAV_VSTChannels, DAV_VSTBasicModule,
   DAV_VSTShellPlugins, DAV_VSTOfflineTask;
@@ -486,7 +487,7 @@ begin
          FPlugCategory := PlugCategory;
          if Assigned(OnInstanciate) then
           begin
-           Move(UniqueID[1], rUID, Min(4, Length(UniqueID)));
+           System.Move(UniqueID[1], rUID, Min(4, Length(UniqueID)));
            OnInstanciate(Self, rUID);
           end;
          IOChanged;
@@ -593,6 +594,10 @@ begin
 end;
 
 function TCustomVSTModule.HostCallEditOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+{$IFDEF DARWIN}
+var
+  ViewRef : HIViewRef;
+{$ENDIF}
 begin
  {$IFDEF Debug} AddLogMessage('HostCallEditOpen'); {$ENDIF}
  Result := 0;
@@ -607,12 +612,16 @@ begin
       {$IFNDEF FPC}
       ParentWindow := HWnd(ptr);
       {$ELSE}
-//      Parent := TWinControl.CreateParented(HWnd(ptr));
-      {$IFDEF Windows}
-      SetParent(Handle, HWnd(ptr));
-      {$ENDIF}
-      //      Handle := HWnd(ptr);
-//      Parent := TWinControl.CreateParented(HWnd(ptr));
+        {$IFDEF Windows}
+        SetParent(Handle, HWnd(ptr));
+        {$ELSE}
+        {$IFDEF DARWIN}
+        HIViewGetRoot(WindowRef(ptr));
+        {$ELSE}
+        Handle := HWnd(ptr);
+        Parent := TWinControl.CreateParented(HWnd(ptr));
+        {$ENDIF}
+        {$ENDIF}
       {$ENDIF}
       Visible := True;
       BorderStyle := bsNone;
@@ -695,9 +704,9 @@ begin
   with PVstPinProperties(ptr)^ do
    begin
     str := 'Input #' + IntToStr(Index + 1) + #0;
-    Move(str[1], Caption, Length(str));
+    System.Move(str[1], Caption, Length(str));
     str := 'In' + IntToStr(Index + 1) + #0;
-    Move(str[1], ShortLabel, Length(str));
+    System.Move(str[1], ShortLabel, Length(str));
 
     case numInputs of
      1: ArrangementType := satMono;
@@ -728,9 +737,9 @@ begin
   with PVstPinProperties(ptr)^ do
    begin
     str := 'Output #' + IntToStr(Index + 1) + #0;
-    Move(str[1], Caption, Length(str));
+    System.Move(str[1], Caption, Length(str));
     str := 'Out' + IntToStr(Index + 1) + #0;
-    Move(str[1], ShortLabel, Length(str));
+    System.Move(str[1], ShortLabel, Length(str));
 
     case numOutputs of
      1: ArrangementType := satMono;
