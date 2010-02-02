@@ -185,7 +185,7 @@ asm
  ADD   ESP, 8
  FMULP ST(1), ST(0)
  FLD1
- FSUBP
+ FSUBP ST, ST
 end;
 {$ENDIF}
 
@@ -396,7 +396,7 @@ end;
 asm
  fld   Value.Extended
  fld1
- fsubp
+ fsubp st, st
  fxtract
  fstp  st(0)
  fld1

@@ -5,7 +5,7 @@ object FmASIO: TFmASIO
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Demo application for ASIO-Host'
-  ClientHeight = 505
+  ClientHeight = 503
   ClientWidth = 644
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object FmASIO: TFmASIO
   OnDestroy = FormDestroy
   DesignSize = (
     644
-    505)
+    503)
   PixelsPerInch = 96
   TextHeight = 13
   object LbDrivername: TLabel
@@ -52,6 +52,7 @@ object FmASIO: TFmASIO
     Pen.Color = clBtnShadow
   end
   object Lb50: TLabel
+    Tag = 4
     Left = 117
     Top = 245
     Width = 24
@@ -66,8 +67,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb63: TLabel
+    Tag = 5
     Left = 135
     Top = 258
     Width = 25
@@ -82,8 +85,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb80: TLabel
+    Tag = 6
     Left = 150
     Top = 271
     Width = 24
@@ -98,8 +103,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb100: TLabel
+    Tag = 7
     Left = 170
     Top = 245
     Width = 29
@@ -114,8 +121,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb125: TLabel
+    Tag = 8
     Left = 188
     Top = 258
     Width = 30
@@ -130,8 +139,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb160: TLabel
+    Tag = 9
     Left = 204
     Top = 271
     Width = 29
@@ -146,8 +157,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb200: TLabel
+    Tag = 10
     Left = 223
     Top = 245
     Width = 29
@@ -162,8 +175,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb250: TLabel
+    Tag = 11
     Left = 243
     Top = 258
     Width = 30
@@ -178,8 +193,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb500: TLabel
+    Tag = 14
     Left = 294
     Top = 258
     Width = 30
@@ -194,8 +211,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb630: TLabel
+    Tag = 15
     Left = 311
     Top = 271
     Width = 29
@@ -210,8 +229,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb800: TLabel
+    Tag = 16
     Left = 332
     Top = 245
     Width = 29
@@ -226,6 +247,7 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object LbLM: TLabel
     Left = 8
@@ -328,6 +350,7 @@ object FmASIO: TFmASIO
     ParentFont = False
   end
   object Lb1k6: TLabel
+    Tag = 19
     Left = 382
     Top = 245
     Width = 32
@@ -342,8 +365,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb1k25: TLabel
+    Tag = 18
     Left = 365
     Top = 271
     Width = 37
@@ -358,8 +383,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb1k: TLabel
+    Tag = 17
     Left = 351
     Top = 258
     Width = 25
@@ -374,8 +401,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb2k: TLabel
+    Tag = 20
     Left = 405
     Top = 258
     Width = 25
@@ -390,8 +419,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb2k5: TLabel
+    Tag = 21
     Left = 418
     Top = 271
     Width = 32
@@ -406,8 +437,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb3k15: TLabel
+    Tag = 22
     Left = 437
     Top = 245
     Width = 37
@@ -422,8 +455,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb4k: TLabel
+    Tag = 23
     Left = 455
     Top = 258
     Width = 25
@@ -438,8 +473,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb315: TLabel
+    Tag = 12
     Left = 259
     Top = 271
     Width = 29
@@ -454,8 +491,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb400: TLabel
+    Tag = 13
     Left = 278
     Top = 245
     Width = 29
@@ -470,8 +509,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb5k: TLabel
+    Tag = 24
     Left = 475
     Top = 271
     Width = 24
@@ -486,6 +527,7 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object PeakMeterLeft: TGuiColorLevelMeter
     Left = 624
@@ -535,8 +577,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb25Hz: TLabel
+    Tag = 1
     Left = 63
     Top = 245
     Width = 24
@@ -551,8 +595,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb31Hz: TLabel
+    Tag = 2
     Left = 79
     Top = 258
     Width = 33
@@ -567,8 +613,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb40Hz: TLabel
+    Tag = 3
     Left = 99
     Top = 271
     Width = 24
@@ -583,8 +631,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb6k3Hz: TLabel
+    Tag = 25
     Left = 492
     Top = 245
     Width = 32
@@ -599,8 +649,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb8kHz: TLabel
+    Tag = 26
     Left = 511
     Top = 258
     Width = 25
@@ -615,8 +667,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb10kHz: TLabel
+    Tag = 27
     Left = 528
     Top = 271
     Width = 29
@@ -631,8 +685,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb12k5Hz: TLabel
+    Tag = 28
     Left = 542
     Top = 245
     Width = 37
@@ -647,8 +703,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb16kHz: TLabel
+    Tag = 29
     Left = 564
     Top = 258
     Width = 30
@@ -663,8 +721,10 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object Lb20kHz: TLabel
+    Tag = 30
     Left = 579
     Top = 271
     Width = 29
@@ -679,6 +739,7 @@ object FmASIO: TFmASIO
     ParentColor = False
     ParentFont = False
     Transparent = True
+    OnDblClick = LbFrequencyDblClick
   end
   object LedClipR: TGuiLED
     Left = 620
@@ -686,6 +747,7 @@ object FmASIO: TFmASIO
     Width = 16
     Height = 16
     LEDColor = clRed
+    Brightness_Percent = 100.000000000000000000
     BorderStrength_Percent = 50.000000000000000000
     Uniformity_Percent = 50.000000000000000000
     AntiAlias = gaaLinear4x
@@ -698,6 +760,7 @@ object FmASIO: TFmASIO
     Width = 16
     Height = 16
     LEDColor = clRed
+    Brightness_Percent = 100.000000000000000000
     BorderStrength_Percent = 50.000000000000000000
     Uniformity_Percent = 50.000000000000000000
     AntiAlias = gaaLinear4x
@@ -712,7 +775,7 @@ object FmASIO: TFmASIO
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
-    TabOrder = 35
+    TabOrder = 0
     OnChange = DriverComboChange
   end
   object BtControlPanel: TButton
@@ -723,7 +786,7 @@ object FmASIO: TFmASIO
     Anchors = [akTop, akRight]
     Caption = 'Control Panel'
     Enabled = False
-    TabOrder = 36
+    TabOrder = 1
     OnClick = BtControlPanelClick
   end
   object ChannelBox: TComboBox
@@ -734,7 +797,7 @@ object FmASIO: TFmASIO
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     ItemHeight = 13
-    TabOrder = 37
+    TabOrder = 2
     OnChange = ChannelBoxChange
   end
   object BtStartStop: TButton
@@ -746,7 +809,7 @@ object FmASIO: TFmASIO
     Caption = 'Start Audio'
     Default = True
     Enabled = False
-    TabOrder = 38
+    TabOrder = 3
     OnClick = BtStartStopClick
   end
   object SB200L: TScrollBar
@@ -758,7 +821,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 10
+    TabOrder = 14
     OnChange = SBVolumeChange
   end
   object SB160L: TScrollBar
@@ -770,7 +833,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 9
+    TabOrder = 13
     OnChange = SBVolumeChange
   end
   object SB125L: TScrollBar
@@ -782,7 +845,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 8
+    TabOrder = 12
     OnChange = SBVolumeChange
   end
   object SB100L: TScrollBar
@@ -794,7 +857,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 7
+    TabOrder = 11
     OnChange = SBVolumeChange
   end
   object SB80L: TScrollBar
@@ -806,7 +869,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 6
+    TabOrder = 10
     OnChange = SBVolumeChange
   end
   object SB63L: TScrollBar
@@ -818,7 +881,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 5
+    TabOrder = 9
     OnChange = SBVolumeChange
   end
   object SB50L: TScrollBar
@@ -830,7 +893,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 4
+    TabOrder = 8
     OnChange = SBVolumeChange
   end
   object SB400L: TScrollBar
@@ -842,7 +905,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 13
+    TabOrder = 17
     OnChange = SBVolumeChange
   end
   object SB315L: TScrollBar
@@ -854,7 +917,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 12
+    TabOrder = 16
     OnChange = SBVolumeChange
   end
   object SB250L: TScrollBar
@@ -866,7 +929,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 11
+    TabOrder = 15
     OnChange = SBVolumeChange
   end
   object SB500L: TScrollBar
@@ -878,7 +941,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 14
+    TabOrder = 18
     OnChange = SBVolumeChange
   end
   object SB200R: TScrollBar
@@ -890,7 +953,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 39
+    TabOrder = 45
     OnChange = SBVolumeChange
   end
   object SB160R: TScrollBar
@@ -902,7 +965,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 40
+    TabOrder = 44
     OnChange = SBVolumeChange
   end
   object SB125R: TScrollBar
@@ -914,7 +977,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 41
+    TabOrder = 43
     OnChange = SBVolumeChange
   end
   object SB100R: TScrollBar
@@ -938,7 +1001,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 43
+    TabOrder = 41
     OnChange = SBVolumeChange
   end
   object SB63R: TScrollBar
@@ -950,7 +1013,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 44
+    TabOrder = 40
     OnChange = SBVolumeChange
   end
   object SB50R: TScrollBar
@@ -962,7 +1025,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 45
+    TabOrder = 39
     OnChange = SBVolumeChange
   end
   object SB400R: TScrollBar
@@ -974,7 +1037,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 46
+    TabOrder = 48
     OnChange = SBVolumeChange
   end
   object SB315R: TScrollBar
@@ -998,7 +1061,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 48
+    TabOrder = 46
     OnChange = SBVolumeChange
   end
   object SB500R: TScrollBar
@@ -1022,7 +1085,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 50
+    TabOrder = 55
     OnChange = SBVolumeChange
   end
   object SB1k6R: TScrollBar
@@ -1034,7 +1097,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 51
+    TabOrder = 54
     OnChange = SBVolumeChange
   end
   object SB1k25R: TScrollBar
@@ -1046,7 +1109,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 52
+    TabOrder = 53
     OnChange = SBVolumeChange
   end
   object SB1kR: TScrollBar
@@ -1058,7 +1121,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 53
+    TabOrder = 52
     OnChange = SBVolumeChange
   end
   object SB800R: TScrollBar
@@ -1070,7 +1133,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 54
+    TabOrder = 51
     OnChange = SBVolumeChange
   end
   object SB630R: TScrollBar
@@ -1082,7 +1145,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 55
+    TabOrder = 50
     OnChange = SBVolumeChange
   end
   object SB4kR: TScrollBar
@@ -1094,7 +1157,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 56
+    TabOrder = 58
     OnChange = SBVolumeChange
   end
   object SB3k15R: TScrollBar
@@ -1118,7 +1181,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 58
+    TabOrder = 56
     OnChange = SBVolumeChange
   end
   object SB5kR: TScrollBar
@@ -1142,7 +1205,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 20
+    TabOrder = 24
     OnChange = SBVolumeChange
   end
   object SB1k6L: TScrollBar
@@ -1154,7 +1217,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 19
+    TabOrder = 23
     OnChange = SBVolumeChange
   end
   object SB1k25L: TScrollBar
@@ -1166,7 +1229,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 18
+    TabOrder = 22
     OnChange = SBVolumeChange
   end
   object SB1kL: TScrollBar
@@ -1178,7 +1241,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 17
+    TabOrder = 21
     OnChange = SBVolumeChange
   end
   object SB800L: TScrollBar
@@ -1190,7 +1253,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 16
+    TabOrder = 20
     OnChange = SBVolumeChange
   end
   object SB630L: TScrollBar
@@ -1202,7 +1265,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 15
+    TabOrder = 19
     OnChange = SBVolumeChange
   end
   object SB4kL: TScrollBar
@@ -1214,7 +1277,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 23
+    TabOrder = 27
     OnChange = SBVolumeChange
   end
   object SB3k15L: TScrollBar
@@ -1226,7 +1289,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 22
+    TabOrder = 26
     OnChange = SBVolumeChange
   end
   object SB2k5L: TScrollBar
@@ -1238,7 +1301,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 21
+    TabOrder = 25
     OnChange = SBVolumeChange
   end
   object SB5kL: TScrollBar
@@ -1250,7 +1313,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 24
+    TabOrder = 28
     OnChange = SBVolumeChange
   end
   object SB40L: TScrollBar
@@ -1262,7 +1325,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 3
+    TabOrder = 7
     OnChange = SBVolumeChange
   end
   object SB31L: TScrollBar
@@ -1274,7 +1337,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 2
+    TabOrder = 6
     OnChange = SBVolumeChange
   end
   object SB25L: TScrollBar
@@ -1286,7 +1349,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 1
+    TabOrder = 5
     OnChange = SBVolumeChange
   end
   object SB20L: TScrollBar
@@ -1297,7 +1360,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 0
+    TabOrder = 4
     OnChange = SBVolumeChange
   end
   object SB6k3L: TScrollBar
@@ -1309,7 +1372,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 25
+    TabOrder = 29
     OnChange = SBVolumeChange
   end
   object SB12k5L: TScrollBar
@@ -1321,7 +1384,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 28
+    TabOrder = 32
     OnChange = SBVolumeChange
   end
   object SB10kL: TScrollBar
@@ -1333,7 +1396,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 27
+    TabOrder = 31
     OnChange = SBVolumeChange
   end
   object SB8kL: TScrollBar
@@ -1345,7 +1408,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 26
+    TabOrder = 30
     OnChange = SBVolumeChange
   end
   object SB16kL: TScrollBar
@@ -1357,7 +1420,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 29
+    TabOrder = 33
     OnChange = SBVolumeChange
   end
   object SB20kL: TScrollBar
@@ -1369,7 +1432,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 30
+    TabOrder = 34
     OnChange = SBVolumeChange
   end
   object SB40R: TScrollBar
@@ -1381,7 +1444,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 34
+    TabOrder = 38
     OnChange = SBVolumeChange
   end
   object SB31R: TScrollBar
@@ -1393,7 +1456,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 33
+    TabOrder = 37
     OnChange = SBVolumeChange
   end
   object SB25R: TScrollBar
@@ -1405,7 +1468,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 32
+    TabOrder = 36
     OnChange = SBVolumeChange
   end
   object SB20R: TScrollBar
@@ -1417,7 +1480,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 31
+    TabOrder = 35
     OnChange = SBVolumeChange
   end
   object SB6k3R: TScrollBar
@@ -1441,7 +1504,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 61
+    TabOrder = 63
     OnChange = SBVolumeChange
   end
   object SB10kR: TScrollBar
@@ -1465,7 +1528,7 @@ object FmASIO: TFmASIO
     Kind = sbVertical
     PageSize = 0
     Position = 100
-    TabOrder = 63
+    TabOrder = 61
     OnChange = SBVolumeChange
   end
   object SB16kR: TScrollBar

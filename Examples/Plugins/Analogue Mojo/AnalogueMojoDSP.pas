@@ -32,10 +32,11 @@ unit AnalogueMojoDSP;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspTransformerSimulation;
 
 type
@@ -51,12 +52,13 @@ type
     FTransformator : array of TTransformatorSimulation;
     procedure ChooseProcess;
   public
-
   end;
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 procedure TAnalogueMojoDM.VSTModuleOpen(Sender: TObject);
 var
@@ -147,5 +149,10 @@ begin
   for SampleIndex := 0 to SampleFrames - 1
    do Outputs[ChannelIndex, SampleIndex] := FTransformator[ChannelIndex].ProcessSample64(Inputs[ChannelIndex, SampleIndex])
 end;
+
+{$IFDEF FPC}
+initialization
+  {$I AnalogueMojoDSP.lrs}
+{$ENDIF}
 
 end.

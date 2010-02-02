@@ -35,7 +35,8 @@ interface
 {$I DAV_Compiler.inc}
 
 uses 
-  Windows, Messages, SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
+  {$IFDEF FPC}LCLIntf, LResources, {$ELSE} Windows, {$ENDIF}
+  SysUtils, Classes, Forms, DAV_Types, DAV_VSTModule,
   DAV_DspAudioToMidiTrigger;
 
 type
@@ -59,7 +60,9 @@ type
 
 implementation
 
+{$IFNDEF FPC}
 {$R *.DFM}
+{$ENDIF}
 
 uses
   Audio2MidiTriggerGui, DAV_Common, DAV_VSTBasicModule;
@@ -157,5 +160,10 @@ begin
   do Outputs[0, Sample] := FAudio2MidiTrigger.ProcessSample32(Inputs[0, Sample]);
  SendVstEventsToHost(FMidiEvent);
 end;
+
+{$IFNDEF FPC}
+initialization
+  {$I Audio2MidiTriggerDM.lrs}
+{$ENDIF}
 
 end.

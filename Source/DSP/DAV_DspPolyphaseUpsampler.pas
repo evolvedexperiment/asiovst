@@ -123,10 +123,6 @@ end;
 
 /////////////////////////////// Constructor //////////////////////////////////
 
-const
-  CHalf32: Single = 0.5;
-  CHalf64: Double = 0.5;
-
 constructor TPolyphaseUpsampler32.Create;
 begin
  FX          := nil;
@@ -289,20 +285,20 @@ begin
 end;
 {$ELSE}
 asm
- push edi
- mov  edi, [eax.FY]                  // edi = FY
- mov  ecx, [eax.FX]                  // esi = FX
- mov  eax, [eax.FCoefficients]       // ecx = FCoefficients
- fld  [ecx].Single                    // FX[0]
- fld  Input.Single                    // Input, FX[0]
- fst  [Output + 4].Single             // Output[1] := Input;
- fst  [ecx].Single                    // FX[0] := Input;
- fsub [edi].Single                    // (Input - FY[0])
- fmul [eax].Double                    // (Input - FY[0]) * FCoefficients[0]
- faddp                                // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst  [edi].Single                    // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [Output].Single                 // Output[1] := FY[3];
- pop edi
+ push  edi
+ mov   edi, [eax.FY]                  // edi = FY
+ mov   ecx, [eax.FX]                  // esi = FX
+ mov   eax, [eax.FCoefficients]       // ecx = FCoefficients
+ fld   [ecx].Single                   // FX[0]
+ fld   Input.Single                   // Input, FX[0]
+ fst   [Output + 4].Single            // Output[1] := Input;
+ fst   [ecx].Single                   // FX[0] := Input;
+ fsub  [edi].Single                   // (Input - FY[0])
+ fmul  [eax].Double                   // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                         // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fst   [edi].Single                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [Output].Single                // Output[1] := FY[3];
+ pop   edi
 end;
 {$ENDIF}
 
@@ -321,23 +317,23 @@ asm
  mov ecx, [eax.FX]                  // esi = FX
  mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
- fld  [ecx].Single                   // FX[0]
- fld  Input.Single                   // Input, FX[0]
- fst  [ecx].Single                   // FX[0] := Input;
- fsub [edi].Single                   // (Input - FY[0])
- fmul [eax].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst  [edi].Single                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [Output].Single                // Output[1] := FY[3];
+ fld   [ecx].Single                 // FX[0]
+ fld   Input.Single                 // Input, FX[0]
+ fst   [ecx].Single                 // FX[0] := Input;
+ fsub  [edi].Single                 // (Input - FY[0])
+ fmul  [eax].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fst   [edi].Single                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [Output].Single              // Output[1] := FY[3];
 
- fld  [ecx + 4].Single               // FX[1]
- fld  Input.Single                   // Input, FX[1]
- fst  [ecx + 4].Single               // FX[1] := Input;
- fsub [edi + 4].Single               // (Input - FY[1])
- fmul [eax + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst  [edi + 4].Single               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [Output + 4].Single            // Output[1] := FY[1];
+ fld   [ecx + 4].Single             // FX[1]
+ fld   Input.Single                 // Input, FX[1]
+ fst   [ecx + 4].Single             // FX[1] := Input;
+ fsub  [edi + 4].Single             // (Input - FY[1])
+ fmul  [eax + 8].Double             // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fst   [edi + 4].Single             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [Output + 4].Single          // Output[1] := FY[1];
 
  pop edi
 end;
@@ -359,31 +355,31 @@ asm
  mov ecx, [eax.FX]                  // esi = FX
  mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
- fld [ecx].Single                    // FX[0]
- fld Input.Single                    // Input, FX[0]
- fst  [ecx].Single                   // FX[0] := Input;
- fsub [edi].Single                   // (Input - FY[0])
- fmul [eax].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Single                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [ecx].Single                 // FX[0]
+ fld   Input.Single                 // Input, FX[0]
+ fst   [ecx].Single                 // FX[0] := Input;
+ fsub  [edi].Single                 // (Input - FY[0])
+ fmul  [eax].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Single                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld [ecx + 4].Single                // FX[1]
- fld Input.Single                    // Input, FX[1]
- fst  [ecx + 4].Single               // FX[1] := Input;
- fsub [edi + 4].Single               // (Input - FY[1])
- fmul [eax + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst  [edi + 4].Single               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [Output + 4].Single            // Output[1] := FY[1];
+ fld   [ecx + 4].Single             // FX[1]
+ fld   Input.Single                 // Input, FX[1]
+ fst   [ecx + 4].Single             // FX[1] := Input;
+ fsub  [edi + 4].Single             // (Input - FY[1])
+ fmul  [eax + 8].Double             // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fst   [edi + 4].Single             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [Output + 4].Single          // Output[1] := FY[1];
 
- fld  [ecx +  8].Single              // FX[2]
- fld  [edi].Single                   // FY[0], FX[2]
- fst  [ecx +  8].Single              // FX[2] := FY[0];
- fsub [edi +  8].Single              // (FY[0] - FY[2])
- fmul [eax + 16].Double              // (FY[0] - FY[2]) * FCoefficients[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst  [edi +  8].Single              // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Single                // Output[0] := FY[2];
+ fld   [ecx +  8].Single            // FX[2]
+ fld   [edi].Single                 // FY[0], FX[2]
+ fst   [ecx +  8].Single            // FX[2] := FY[0];
+ fsub  [edi +  8].Single            // (FY[0] - FY[2])
+ fmul  [eax + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
+ faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fst   [edi +  8].Single            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output].Single              // Output[0] := FY[2];
 
  pop edi
 end;
@@ -412,39 +408,39 @@ asm
  mov ecx, [eax.FX]                  // esi = FX
  mov eax, [eax.FCoefficients]       // ecx = FCoefficients
 
- fld  [ecx].Single                   // FX[0]
- fld  Input.Single                   // Input, FX[0]
- fst  [ecx].Single                   // FX[0] := Input;
- fsub [edi].Single                   // (Input - FY[0])
- fmul [eax].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Single                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [ecx].Single                 // FX[0]
+ fld   Input.Single                 // Input, FX[0]
+ fst   [ecx].Single                 // FX[0] := Input;
+ fsub  [edi].Single                 // (Input - FY[0])
+ fmul  [eax].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Single                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld  [ecx + 4].Single               // FX[1]
- fld  Input.Single                   // Input, FX[1]
- fst  [ecx + 4].Single               // FX[1] := Input;
- fsub [edi + 4].Single               // (Input - FY[1])
- fmul [eax + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [edi + 4].Single               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fld   [ecx + 4].Single             // FX[1]
+ fld   Input.Single                 // Input, FX[1]
+ fst   [ecx + 4].Single             // FX[1] := Input;
+ fsub  [edi + 4].Single             // (Input - FY[1])
+ fmul  [eax + 8].Double             // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [edi + 4].Single             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
- fld  [ecx +  8].Single              // FX[2]
- fld  [edi].Single                   // FY[0], FX[2]
- fst  [ecx +  8].Single              // FX[2] := FY[0];
- fsub [edi +  8].Single              // (FY[0] - FY[2])
- fmul [eax + 16].Double              // (FY[0] - FY[2]) * FCoefficients[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst  [edi + 8].Single               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Single                // Output[0] := FY[2];
+ fld   [ecx +  8].Single            // FX[2]
+ fld   [edi].Single                 // FY[0], FX[2]
+ fst   [ecx +  8].Single            // FX[2] := FY[0];
+ fsub  [edi +  8].Single            // (FY[0] - FY[2])
+ fmul  [eax + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
+ faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fst   [edi + 8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output].Single              // Output[0] := FY[2];
 
- fld  [ecx + 12].Single              // FX[2], FY[2]
- fld  [edi +  4].Single              // FY[0], FX[2], FY[2]
- fst  [ecx + 12].Single              // FX[2] := FY[0];
- fsub [edi + 12].Single              // (FY[0] - FY[2]), FY[2]
- fmul [eax + 24].Double              // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst  [edi + 12].Single              // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output + 4].Single            // Output[1] := FY[3];
+ fld   [ecx + 12].Single            // FX[2], FY[2]
+ fld   [edi +  4].Single            // FY[0], FX[2], FY[2]
+ fst   [ecx + 12].Single            // FX[2] := FY[0];
+ fsub  [edi + 12].Single            // (FY[0] - FY[2]), FY[2]
+ fmul  [eax + 24].Double            // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi + 12].Single            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output + 4].Single          // Output[1] := FY[3];
 
  pop edi
 end;
@@ -474,56 +470,56 @@ asm
  mov  edi, [eax.FY]                  // edi = FY
  mov  ebx, [eax.FCoefficients]       // ebx = FCoefficients
 
- fld  [esi].Single                    // FX[0]
- fld  Input.Single                    // Input, FX[0]
- fst  [esi].Single                    // FX[0] := Input;
- fsub [edi].Single                    // (Input - FY[0])
- fmul [ebx].Double                    // (Input - FY[0]) * FCoefficients[0]
- faddp                                // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Single                    // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [esi].Single                  // FX[0]
+ fld   Input.Single                  // Input, FX[0]
+ fst   [esi].Single                  // FX[0] := Input;
+ fsub  [edi].Single                  // (Input - FY[0])
+ fmul  [ebx].Double                  // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                        // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Single                  // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld  [esi + 4].Single                // FX[1]
- fld  Input.Single                    // Input, FX[1]
- fst  [esi + 4].Single                // FX[1] := Input;
- fsub [edi + 4].Single                // (Input - FY[1])
- fmul [ebx + 8].Double                // (Input - FY[1]) * FCoefficients[1]
- faddp                                // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [edi + 4].Single                // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fld   [esi + 4].Single              // FX[1]
+ fld   Input.Single                  // Input, FX[1]
+ fst   [esi + 4].Single              // FX[1] := Input;
+ fsub  [edi + 4].Single              // (Input - FY[1])
+ fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [edi + 4].Single              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
- push ecx                             // The Saviour of ECX
+ push ecx                            // The Saviour of ECX
  mov  ecx,[eax.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
- sub  ecx, 4                          // "Den Rest mach ich selber"
+ sub  ecx, 4                         // "Den Rest mach ich selber"
 @Loopy:
- fld  [esi +  8].Single               // FX[2], FY[2]
- fld  [edi].Single                    // FY[0], FX[2], FY[2]
- fst  [esi +  8].Single               // FX[2] := FY[0];
- fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 16].Double               // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                                // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fstp [edi +  8].Single               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- add  esi, 4
- add  edi, 4
- add  ebx, 8                          // Weiter geht's
- loop @Loopy
- pop ecx                              // ecx hat ausgedient!
+ fld   [esi +  8].Single             // FX[2], FY[2]
+ fld   [edi].Single                  // FY[0], FX[2], FY[2]
+ fst   [esi +  8].Single             // FX[2] := FY[0];
+ fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fstp  [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ add   esi, 4
+ add   edi, 4
+ add   ebx, 8                        // Weiter geht's
+ loop  @Loopy
+ pop   ecx                           // ecx hat ausgedient!
 
- fld  [esi +  8].Single               // FX[2], FY[2]
- fld  [edi].Single                    // FY[0], FX[2], FY[2]
- fst  [esi +  8].Single               // FX[2] := FY[0];
- fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 16].Double               // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                                // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst  [edi +  8].Single               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output + 4].Single             // Output[0] := FY[2];
+ fld   [esi +  8].Single             // FX[2], FY[2]
+ fld   [edi].Single                  // FY[0], FX[2], FY[2]
+ fst   [esi +  8].Single             // FX[2] := FY[0];
+ fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output + 4].Single           // Output[0] := FY[2];
 
- fld  [esi + 12].Single               // FX[2], FY[2]
- fld  [edi +  4].Single               // FY[0], FX[2], FY[2]
- fst  [esi + 12].Single               // FX[2] := FY[0];
- fsub [edi + 12].Single               // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 24].Double               // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                                // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst [edi + 12].Single                // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Single                 // Output[1] := FY[3];
+ fld   [esi + 12].Single             // FX[2], FY[2]
+ fld   [edi +  4].Single             // FY[0], FX[2], FY[2]
+ fst   [esi + 12].Single             // FX[2] := FY[0];
+ fsub  [edi + 12].Single             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 24].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi + 12].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output].Single               // Output[1] := FY[3];
 
  popad
 end;
@@ -554,56 +550,56 @@ asm
  mov  edi, [eax.FY]                  // edi = FY
  mov  ebx, [eax.FCoefficients]       // ebx = FCoefficients
 
- fld  [esi].Single                    // FX[0]
- fld  Input.Single                    // Input, FX[0]
- fst  [esi].Single                    // FX[0] := Input;
- fsub [edi].Single                    // (Input - FY[0])
- fmul [ebx].Double                    // (Input - FY[0]) * FCoefficients[0]
- faddp                                // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Single                    // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [esi].Single                  // FX[0]
+ fld   Input.Single                  // Input, FX[0]
+ fst   [esi].Single                  // FX[0] := Input;
+ fsub  [edi].Single                  // (Input - FY[0])
+ fmul  [ebx].Double                  // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                        // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Single                  // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld  [esi + 4].Single                // FX[1]
- fld  Input.Single                    // Input, FX[1]
- fst  [esi + 4].Single                // FX[1] := Input;
- fsub [edi + 4].Single                // (Input - FY[1])
- fmul [ebx + 8].Double                // (Input - FY[1]) * FCoefficients[1]
- faddp                                // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [edi + 4].Single                // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fld   [esi + 4].Single              // FX[1]
+ fld   Input.Single                  // Input, FX[1]
+ fst   [esi + 4].Single              // FX[1] := Input;
+ fsub  [edi + 4].Single              // (Input - FY[1])
+ fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [edi + 4].Single              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
- push ecx                             // The Saviour of ECX
- mov  ecx,[eax.FNumberOfCoeffs]      // ECX=self.FNumberOfCoeffs
- sub  ecx, 4                          // "Den Rest mach ich selber"
+ push  ecx                           // The Saviour of ECX
+ mov   ecx,[eax.FNumberOfCoeffs]     // ECX=self.FNumberOfCoeffs
+ sub   ecx, 4                        // "Den Rest mach ich selber"
 @Loopy:
- fld  [esi +  8].Single               // FX[2], FY[2]
- fld  [edi].Single                    // FY[0], FX[2], FY[2]
- fst  [esi +  8].Single               // FX[2] := FY[0];
- fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 16].Double               // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                                // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fstp [edi +  8].Single               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- add  esi, 4
- add  edi, 4
- add  ebx, 8                          // Weiter geht's
- loop @Loopy
- pop ecx                              // ecx hat ausgedient!
+ fld   [esi +  8].Single             // FX[2], FY[2]
+ fld   [edi].Single                  // FY[0], FX[2], FY[2]
+ fst   [esi +  8].Single             // FX[2] := FY[0];
+ fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fstp  [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ add   esi, 4
+ add   edi, 4
+ add   ebx, 8                        // Weiter geht's
+ loop  @Loopy
+ pop   ecx                           // ecx hat ausgedient!
 
- fld  [esi +  8].Single               // FX[2], FY[2]
- fld  [edi].Single                    // FY[0], FX[2], FY[2]
- fst  [esi +  8].Single               // FX[2] := FY[0];
- fsub [edi +  8].Single               // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 16].Double               // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                                // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst  [edi +  8].Single               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Single                 // Output[0] := FY[2];
+ fld   [esi +  8].Single             // FX[2], FY[2]
+ fld   [edi].Single                  // FY[0], FX[2], FY[2]
+ fst   [esi +  8].Single             // FX[2] := FY[0];
+ fsub  [edi +  8].Single             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi +  8].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output].Single               // Output[0] := FY[2];
 
- fld  [esi + 12].Single               // FX[2], FY[2]
- fld  [edi +  4].Single               // FY[0], FX[2], FY[2]
- fst  [esi + 12].Single               // FX[2] := FY[0];
- fsub [edi + 12].Single               // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 24].Double               // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                                // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst [edi + 12].Single                // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output + 4].Single             // Output[1] := FY[3];
+ fld   [esi + 12].Single             // FX[2], FY[2]
+ fld   [edi +  4].Single             // FY[0], FX[2], FY[2]
+ fst   [esi + 12].Single             // FX[2] := FY[0];
+ fsub  [edi + 12].Single             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 24].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi + 12].Single             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output + 4].Single           // Output[1] := FY[3];
 
  popad
 end;
@@ -772,15 +768,15 @@ asm
  mov esi, [eax.FX]                  // esi = FX
  mov edi, [eax.FY]                  // edi = FY
  mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
- fld [esi].Double                    // FX[0]
- fld Input.Double                    // Input, FX[0]
- fst [Output + 4].Single             // Output[1] := Input;
- fst  [esi].Double                   // FX[0] := Input;
- fsub [edi].Double                   // (Input - FY[0])
- fmul [ebx].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst  [edi].Double                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [Output].Double                // Output[1] := FY[3];
+ fld   [esi].Double                 // FX[0]
+ fld   Input.Double                 // Input, FX[0]
+ fst   [Output + 4].Single          // Output[1] := Input;
+ fst   [esi].Double                 // FX[0] := Input;
+ fsub  [edi].Double                 // (Input - FY[0])
+ fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fst   [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [Output].Double              // Output[1] := FY[3];
  popad
 end;
 {$ENDIF}
@@ -800,23 +796,23 @@ asm
  mov edi, [eax.FY]                  // edi = FY
  mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
- fld [esi].Double                    // FX[0]
- fld Input.Double                    // Input, FX[0]
- fst  [esi].Double                   // FX[0] := Input;
- fsub [edi].Double                   // (Input - FY[0])
- fmul [ebx].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fst  [edi].Double                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [Output].Double                // Output[1] := FY[3];
+ fld   [esi].Double                 // FX[0]
+ fld   Input.Double                 // Input, FX[0]
+ fst   [esi].Double                 // FX[0] := Input;
+ fsub  [edi].Double                 // (Input - FY[0])
+ fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fst   [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [Output].Double              // Output[1] := FY[3];
 
- fld [esi + 8].Double                // FX[1]
- fld Input.Single                    // Input, FX[1]
- fst  [esi + 8].Double               // FX[1] := Input;
- fsub [edi + 8].Double               // (Input - FY[1])
- fmul [ebx + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst  [edi + 8].Double               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [Output + 8].Double            // Output[1] := FY[1];
+ fld   [esi + 8].Double              // FX[1]
+ fld   Input.Single                  // Input, FX[1]
+ fst   [esi + 8].Double              // FX[1] := Input;
+ fsub  [edi + 8].Double              // (Input - FY[1])
+ fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fst   [edi + 8].Double              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [Output + 8].Double           // Output[1] := FY[1];
 
  popad
 end;
@@ -838,31 +834,31 @@ asm
  mov edi, [eax.FY]                  // edi = FY
  mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
- fld [esi].Double                    // FX[0]
- fld Input.Double                    // Input, FX[0]
- fst  [esi].Double                   // FX[0] := Input;
- fsub [edi].Double                   // (Input - FY[0])
- fmul [ebx].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Double                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [esi].Double                 // FX[0]
+ fld   Input.Double                 // Input, FX[0]
+ fst   [esi].Double                 // FX[0] := Input;
+ fsub  [edi].Double                 // (Input - FY[0])
+ fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld [esi + 8].Double                // FX[1]
- fld Input.Single                    // Input, FX[1]
- fst  [esi + 8].Double               // FX[1] := Input;
- fsub [edi + 8].Double               // (Input - FY[1])
- fmul [ebx + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fst  [edi + 8].Double               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [Output + 8].Double            // Output[1] := FY[1];
+ fld   [esi + 8].Double             // FX[1]
+ fld   Input.Single                 // Input, FX[1]
+ fst   [esi + 8].Double             // FX[1] := Input;
+ fsub  [edi + 8].Double             // (Input - FY[1])
+ fmul  [ebx + 8].Double             // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fst   [edi + 8].Double             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [Output + 8].Double          // Output[1] := FY[1];
 
- fld [esi + 16].Double               // FX[2]
- fld [edi].Double                    // FY[0], FX[2]
- fst  [esi + 16].Double              // FX[2] := FY[0];
- fsub [edi + 16].Double              // (FY[0] - FY[2])
- fmul [ebx + 16].Double              // (FY[0] - FY[2]) * FCoefficients[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst [edi + 16].Double               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Double                // Output[0] := FY[2];
+ fld   [esi + 16].Double            // FX[2]
+ fld   [edi].Double                 // FY[0], FX[2]
+ fst   [esi + 16].Double            // FX[2] := FY[0];
+ fsub  [edi + 16].Double            // (FY[0] - FY[2])
+ fmul  [ebx + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
+ faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fst [edi + 16].Double              // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp [Output].Double               // Output[0] := FY[2];
 
  popad
 end;
@@ -885,39 +881,39 @@ asm
  mov edi, [eax.FY]                  // edi = FY
  mov ebx, [eax.FCoefficients]       // ecx = FCoefficients
 
- fld [esi].Double                    // FX[0]
- fld Input.Double                    // Input, FX[0]
- fst  [esi].Double                   // FX[0] := Input;
- fsub [edi].Double                   // (Input - FY[0])
- fmul [ebx].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Double                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [esi].Double                 // FX[0]
+ fld   Input.Double                 // Input, FX[0]
+ fst   [esi].Double                 // FX[0] := Input;
+ fsub  [edi].Double                 // (Input - FY[0])
+ fmul  [ebx].Double                 // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                       // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Double                 // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld [esi + 8].Double                // FX[1]
- fld Input.Double                    // Input, FX[1]
- fst  [esi + 8].Double               // FX[1] := Input;
- fsub [edi + 8].Double               // (Input - FY[1])
- fmul [ebx + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [edi + 8].Double               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fld   [esi + 8].Double             // FX[1]
+ fld   Input.Double                 // Input, FX[1]
+ fst   [esi + 8].Double             // FX[1] := Input;
+ fsub  [edi + 8].Double             // (Input - FY[1])
+ fmul  [ebx + 8].Double             // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                       // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [edi + 8].Double             // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
- fld [esi + 16].Double               // FX[2]
- fld [edi].Double                    // FY[0], FX[2]
- fst  [esi + 16].Double              // FX[2] := FY[0];
- fsub [edi + 16].Double              // (FY[0] - FY[2])
- fmul [ebx + 16].Double              // (FY[0] - FY[2]) * FCoefficients[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fst [edi + 16].Double               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Double                // Output[0] := FY[2];
+ fld   [esi + 16].Double            // FX[2]
+ fld   [edi].Double                 // FY[0], FX[2]
+ fst   [esi + 16].Double            // FX[2] := FY[0];
+ fsub  [edi + 16].Double            // (FY[0] - FY[2])
+ fmul  [ebx + 16].Double            // (FY[0] - FY[2]) * FCoefficients[2]
+ faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fst   [edi + 16].Double            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output].Double              // Output[0] := FY[2];
 
- fld [esi + 24].Double               // FX[2], FY[2]
- fld [edi + 8].Double                // FY[0], FX[2], FY[2]
- fst  [esi + 24].Double              // FX[2] := FY[0];
- fsub [edi + 24].Double              // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 24].Double              // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst [edi + 24].Double               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output + 8].Double            // Output[1] := FY[3];
+ fld   [esi + 24].Double            // FX[2], FY[2]
+ fld   [edi + 8].Double             // FY[0], FX[2], FY[2]
+ fst   [esi + 24].Double            // FX[2] := FY[0];
+ fsub  [edi + 24].Double            // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 24].Double            // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                       // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi + 24].Double            // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output + 8].Double          // Output[1] := FY[3];
 
  popad
 end;
@@ -952,59 +948,59 @@ asm
  mov edi, [eax.FY]                   // edi = FY
  mov ebx, [eax.FCoefficients]        // ecx = FCoefficients
 
- fld [esi].Double                    // FX[0]
- fld Input.Double                    // Input, FX[0]
- fst  [esi].Double                   // FX[0] := Input;
- fsub [edi].Double                   // (Input - FY[0])
- fmul [ebx].Double                   // (Input - FY[0]) * FCoefficients[0]
- faddp                               // (Input - FY[0]) * FCoefficients[0] + FX[0]
- fstp [edi].Double                   // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fld   [esi].Double                  // FX[0]
+ fld   Input.Double                  // Input, FX[0]
+ fst   [esi].Double                  // FX[0] := Input;
+ fsub  [edi].Double                  // (Input - FY[0])
+ fmul  [ebx].Double                  // (Input - FY[0]) * FCoefficients[0]
+ faddp st, st                        // (Input - FY[0]) * FCoefficients[0] + FX[0]
+ fstp  [edi].Double                  // FY[0] := (Input - FY[0]) * FCoefficients[0] + FX[0]
 
- fld [esi + 8].Double                // FX[1]
- fld Input.Double                    // Input, FX[1]
- fst  [esi + 8].Double               // FX[1] := Input;
- fsub [edi + 8].Double               // (Input - FY[1])
- fmul [ebx + 8].Double               // (Input - FY[1]) * FCoefficients[1]
- faddp                               // (Input - FY[1]) * FCoefficients[1] + FX[1]
- fstp [edi + 8].Double               // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fld   [esi + 8].Double              // FX[1]
+ fld   Input.Double                  // Input, FX[1]
+ fst   [esi + 8].Double              // FX[1] := Input;
+ fsub  [edi + 8].Double              // (Input - FY[1])
+ fmul  [ebx + 8].Double              // (Input - FY[1]) * FCoefficients[1]
+ faddp st, st                        // (Input - FY[1]) * FCoefficients[1] + FX[1]
+ fstp  [edi + 8].Double              // FY[1] := (Input - FY[1]) * FCoefficients[1] + FX[1]
 
  push ecx                            // The Saviour of ECX
  mov ecx,[eax.FNumberOfCoeffs]       // ECX=self.FNumberOfCoeffs
  sub ecx, 4                          // "Den Rest mach ich selber"
 @Loopy:
- fld [esi + 16].Double               // FX[2], FY[2]
- fld [edi].Double                    // FY[0], FX[2], FY[2]
- fst  [esi + 16].Double              // FX[2] := FY[0];
- fsub [edi + 16].Double              // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 16].Double              // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fstp [edi + 16].Double              // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- add esi,8
- add edi,8
- add ebx,8                           // Weiter geht's
+ fld   [esi + 16].Double             // FX[2], FY[2]
+ fld   [edi].Double                  // FY[0], FX[2], FY[2]
+ fst   [esi + 16].Double             // FX[2] := FY[0];
+ fsub  [edi + 16].Double             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fstp  [edi + 16].Double             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ add   esi, 8
+ add   edi, 8
+ add   ebx, 8                        // Weiter geht's
  loop @Loopy
- pop ecx                             // ecx hat ausgedient!
+ pop   ecx                             // ecx hat ausgedient!
 
- fld [esi + 16].Double               // FX[2], FY[2]
- fld [edi].Double                    // FY[0], FX[2], FY[2]
- fst  [esi + 16].Double              // FX[2] := FY[0];
- fsub [edi + 16].Double              // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 16].Double              // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst [edi + 16].Double               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output].Double                // Output[0] := FY[2];
+ fld   [esi + 16].Double             // FX[2], FY[2]
+ fld   [edi].Double                  // FY[0], FX[2], FY[2]
+ fst   [esi + 16].Double             // FX[2] := FY[0];
+ fsub  [edi + 16].Double             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 16].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi + 16].Double             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output].Double               // Output[0] := FY[2];
 
- fld [esi + 24].Double               // FX[2], FY[2]
- fld [edi + 8].Double                // FY[0], FX[2], FY[2]
- fst  [esi + 24].Double              // FX[2] := FY[0];
- fsub [edi + 24].Double              // (FY[0] - FY[2]), FY[2]
- fmul [ebx + 24].Double              // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
- faddp                               // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
- fst [edi + 24].Double               // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
- fstp [Output + 8].Double            // Output[1] := FY[3];
+ fld   [esi + 24].Double             // FX[2], FY[2]
+ fld   [edi + 8].Double              // FY[0], FX[2], FY[2]
+ fst   [esi + 24].Double             // FX[2] := FY[0];
+ fsub  [edi + 24].Double             // (FY[0] - FY[2]), FY[2]
+ fmul  [ebx + 24].Double             // (FY[0] - FY[2]) * FCoefficients[2], FY[2]
+ faddp st, st                        // (FY[0] - FY[2]) * FCoefficients[2] + FX[2], FY[2]
+ fst   [edi + 24].Double             // FY[2] := (FY[0] - FY[2]) * FCoefficients[2] + FX[2]
+ fstp  [Output + 8].Double           // Output[1] := FY[3];
 
  popad
 end;
 {$ENDIF}
 
-end.
+end.

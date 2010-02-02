@@ -48,41 +48,57 @@ const
 type
   TFmASIO = class(TForm)
     ASIOHost: TASIOHost;
+    BtAllOctaves: TButton;
+    BtAllThirdOctaves: TButton;
     BtControlPanel: TButton;
+    BtMute: TButton;
     BtStartStop: TButton;
+    CbLinkChannels: TCheckBox;
     ChannelBox: TComboBox;
     DriverCombo: TComboBox;
-    LbChannels: TLabel;
-    LbDrivername: TLabel;
     Lb0L: TLabel;
     Lb0R: TLabel;
     Lb100: TLabel;
+    Lb10kHz: TLabel;
     Lb125: TLabel;
     Lb12AL: TLabel;
     Lb12AR: TLabel;
+    Lb12k5Hz: TLabel;
     Lb160: TLabel;
+    Lb16kHz: TLabel;
     Lb1k: TLabel;
     Lb1k25: TLabel;
     Lb1k6: TLabel;
     Lb200: TLabel;
+    Lb20Hz: TLabel;
+    Lb20kHz: TLabel;
     Lb24AL: TLabel;
     Lb24AR: TLabel;
     Lb250: TLabel;
+    Lb25Hz: TLabel;
     Lb2k: TLabel;
     Lb2k5: TLabel;
     Lb315: TLabel;
+    Lb31Hz: TLabel;
     Lb3k15: TLabel;
     Lb400: TLabel;
+    Lb40Hz: TLabel;
     Lb4k: TLabel;
     Lb50: TLabel;
     Lb500: TLabel;
     Lb5k: TLabel;
     Lb63: TLabel;
     Lb630: TLabel;
+    Lb6k3Hz: TLabel;
     Lb80: TLabel;
     Lb800: TLabel;
+    Lb8kHz: TLabel;
+    LbChannels: TLabel;
+    LbDrivername: TLabel;
     LbLM: TLabel;
     LbRS: TLabel;
+    LedClipL: TGuiLED;
+    LedClipR: TGuiLED;
     MeterTimer: TTimer;
     MiddleL: TShape;
     MiddleR: TShape;
@@ -90,10 +106,16 @@ type
     PeakMeterRight: TGuiColorLevelMeter;
     SB100L: TScrollBar;
     SB100R: TScrollBar;
+    SB10kL: TScrollBar;
+    SB10kR: TScrollBar;
     SB125L: TScrollBar;
     SB125R: TScrollBar;
+    SB12k5L: TScrollBar;
+    SB12k5R: TScrollBar;
     SB160L: TScrollBar;
     SB160R: TScrollBar;
+    SB16kL: TScrollBar;
+    SB16kR: TScrollBar;
     SB1k25L: TScrollBar;
     SB1k25R: TScrollBar;
     SB1k6L: TScrollBar;
@@ -102,18 +124,28 @@ type
     SB1kR: TScrollBar;
     SB200L: TScrollBar;
     SB200R: TScrollBar;
+    SB20kL: TScrollBar;
+    SB20kR: TScrollBar;
+    SB20L: TScrollBar;
+    SB20R: TScrollBar;
     SB250L: TScrollBar;
     SB250R: TScrollBar;
+    SB25L: TScrollBar;
+    SB25R: TScrollBar;
     SB2k5L: TScrollBar;
     SB2k5R: TScrollBar;
     SB2kL: TScrollBar;
     SB2kR: TScrollBar;
     SB315L: TScrollBar;
     SB315R: TScrollBar;
+    SB31L: TScrollBar;
+    SB31R: TScrollBar;
     SB3k15L: TScrollBar;
     SB3k15R: TScrollBar;
     SB400L: TScrollBar;
     SB400R: TScrollBar;
+    SB40L: TScrollBar;
+    SB40R: TScrollBar;
     SB4kL: TScrollBar;
     SB4kR: TScrollBar;
     SB500L: TScrollBar;
@@ -126,47 +158,15 @@ type
     SB630R: TScrollBar;
     SB63L: TScrollBar;
     SB63R: TScrollBar;
+    SB6k3L: TScrollBar;
+    SB6k3R: TScrollBar;
     SB800L: TScrollBar;
     SB800R: TScrollBar;
     SB80L: TScrollBar;
     SB80R: TScrollBar;
-    ShBackText: TShape;
-    SB40L: TScrollBar;
-    SB31L: TScrollBar;
-    SB25L: TScrollBar;
-    SB20L: TScrollBar;
-    SB6k3L: TScrollBar;
-    SB12k5L: TScrollBar;
-    SB10kL: TScrollBar;
     SB8kL: TScrollBar;
-    SB16kL: TScrollBar;
-    SB20kL: TScrollBar;
-    SB40R: TScrollBar;
-    SB31R: TScrollBar;
-    SB25R: TScrollBar;
-    SB20R: TScrollBar;
-    SB6k3R: TScrollBar;
-    SB12k5R: TScrollBar;
-    SB10kR: TScrollBar;
     SB8kR: TScrollBar;
-    SB16kR: TScrollBar;
-    SB20kR: TScrollBar;
-    Lb20Hz: TLabel;
-    Lb25Hz: TLabel;
-    Lb31Hz: TLabel;
-    Lb40Hz: TLabel;
-    Lb6k3Hz: TLabel;
-    Lb8kHz: TLabel;
-    Lb10kHz: TLabel;
-    Lb12k5Hz: TLabel;
-    Lb16kHz: TLabel;
-    Lb20kHz: TLabel;
-    BtMute: TButton;
-    BtAllThirdOctaves: TButton;
-    BtAllOctaves: TButton;
-    LedClipR: TGuiLED;
-    LedClipL: TGuiLED;
-    CbLinkChannels: TCheckBox;
+    ShBackText: TShape;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
@@ -184,6 +184,7 @@ type
     procedure BtAllOctavesClick(Sender: TObject);
     procedure LedClipLClick(Sender: TObject);
     procedure LedClipRClick(Sender: TObject);
+    procedure LbFrequencyDblClick(Sender: TObject);
   private
     procedure CalculatePeakDecay;
   public
@@ -205,7 +206,8 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, DAV_Approximations, DAV_Common, DAV_Math;
+  SysUtils, Inifiles, Dialogs, DAV_Approximations, DAV_Common, DAV_Math,
+  MultiSineGeneratorFrequency;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
 var
@@ -265,6 +267,52 @@ begin
 
  for BandIndex := 0 to Length(FOscillators) - 1
   do FreeAndNil(FOscillators[BandIndex]);
+end;
+
+procedure TFmASIO.LbFrequencyDblClick(Sender: TObject);
+var
+  FormatSettings : TFormatSettings;
+  ShiftAllFreqs  : Boolean;
+  NewFrequency   : Single;
+  Ratio          : Single;
+  Band           : Integer;
+begin
+ GetLocaleFormatSettings(1033, FormatSettings);
+ with TFmSetFrequency.Create(Self) do
+  try
+   EdFrequency.Text := FloatToStr(FOscillators[TLabel(Sender).Tag].Frequency);
+   ShiftAllFreqs := ssShift in KeyboardStateToShiftState;
+
+   if ShowModal = mrOK then
+    try
+     NewFrequency := StrToFloat(EdFrequency.Text);
+     if ShiftAllFreqs then
+      begin
+       Ratio := NewFrequency / FOscillators[TLabel(Sender).Tag].Frequency;
+       for Band := 0 to Length(FOscillators) - 1 do
+        begin
+         NewFrequency := FOscillators[Band].Frequency * Ratio;
+         FOscillators[Band].Frequency := NewFrequency;
+(*
+         if NewFrequency > 1000
+          then TLabel(Sender).Caption := FloatToStrF(1E-3 * NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' kHz'
+          else TLabel(Sender).Caption := FloatToStrF(       NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' Hz';
+*)
+        end;
+      end
+     else
+      begin
+       FOscillators[TLabel(Sender).Tag].Frequency := NewFrequency;
+       if NewFrequency > 1000
+        then TLabel(Sender).Caption := FloatToStrF(1E-3 * NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' kHz'
+        else TLabel(Sender).Caption := FloatToStrF(       NewFrequency, ffGeneral, 3, 3, FormatSettings) + ' Hz';
+      end;
+    except
+     on E: EConvertError do MessageDlg(E.Message, mtError, [mbOK], 0);
+    end;
+  finally
+   Free;
+  end;
 end;
 
 procedure TFmASIO.LedClipLClick(Sender: TObject);
