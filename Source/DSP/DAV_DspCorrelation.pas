@@ -106,6 +106,7 @@ type
     FCorrelationFreq    : PDAVComplexDoubleFixedArray;
 
     procedure FFTOrderChanged; override;
+    procedure AssignTo(Dest: TPersistent); override;
 
     {$IFDEF Use_IPPS}
     property Fft : TFftReal2ComplexIPPSFloat64 read GetFft;
@@ -373,7 +374,7 @@ end;
 
 function TCustomCorrelation.GetFftOrder: Byte;
 begin
- result := FFft.Order;
+ Result := FFft.Order;
 end;
 
 procedure TCustomCorrelation.FFTOrderChanged;
@@ -427,35 +428,51 @@ begin
  ReallocMem(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
  ReallocMem(FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
 
- FillChar(FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
- FillChar(FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FSignalFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
+ FillChar(FCorrelationFreq^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle), 0);
 end;
 
 {$IFDEF Use_IPPS}
 function TCorrelation32.GetFft : TFftReal2ComplexIPPSFloat32;
 begin
- result := TFftReal2ComplexIPPSFloat32(FFft);
+ Result := TFftReal2ComplexIPPSFloat32(FFft);
 end;
 
 {$ELSE} {$IFDEF Use_CUDA}
 
 function TCorrelation32.GetFft : TFftReal2ComplexCUDA32;
 begin
- result := TFftReal2ComplexCUDA32(FFft);
+ Result := TFftReal2ComplexCUDA32(FFft);
 end;
 
 {$ELSE}
 
 function TCorrelation32.GetFft : TFftReal2ComplexNativeFloat32;
 begin
- result := TFftReal2ComplexNativeFloat32(FFft);
+ Result := TFftReal2ComplexNativeFloat32(FFft);
 end;
 {$ENDIF}{$ENDIF}
 
 procedure TCorrelation32.AssignTo(Dest: TPersistent);
+var
+  Bin : Integer;
 begin
  inherited;
- // yet todo!!!
+ if Dest is TCorrelation32 then
+  with TCorrelation32(Dest) do 
+   begin
+    Move(Self.FSignalFreq^, FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+    Move(Self.FCorrelationFreq^, FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
+   end else
+ if Dest is TCorrelation64 then
+  with TCorrelation64(Dest) do
+   begin
+    for Bin := 0 to FFFTSizeHalf do
+     begin
+      FSignalFreq^[Bin] := Self.FSignalFreq^[Bin];
+      FCorrelationFreq^[Bin] := Self.FCorrelationFreq^[Bin];
+     end;
+   end;
 end;
 
 procedure TCorrelation32.AutoCorrelation(
@@ -531,16 +548,38 @@ end;
 {$IFDEF Use_IPPS}
 function TCorrelation64.GetFft : TFftReal2ComplexIPPSFloat64;
 begin
- result := TFftReal2ComplexIPPSFloat64(FFft);
+ Result := TFftReal2ComplexIPPSFloat64(FFft);
 end;
 
 {$ELSE}
 
 function TCorrelation64.GetFft : TFftReal2ComplexNativeFloat64;
 begin
- result := TFftReal2ComplexNativeFloat64(FFft);
+ Result := TFftReal2ComplexNativeFloat64(FFft);
 end;
 {$ENDIF}
+
+procedure TCorrelation64.AssignTo(Dest: TPersistent);
+var
+  Bin : Integer;
+begin
+ inherited;
+ if Dest is TCorrelation32 then
+  with TCorrelation32(Dest) do
+   begin
+    for Bin := 0 to FFFTSizeHalf do
+     begin
+      FSignalFreq^[Bin] := Self.FSignalFreq^[Bin];
+      FCorrelationFreq^[Bin] := Self.FCorrelationFreq^[Bin];
+     end;
+   end else
+ if Dest is TCorrelation64 then
+  with TCorrelation64(Dest) do
+   begin
+    Move(Self.FSignalFreq^, FSignalFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+    Move(Self.FCorrelationFreq^, FCorrelationFreq, (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
+   end;
+end;
 
 procedure TCorrelation64.AutoCorrelation(
   const SignalCorrelation: PDAVDoubleFixedArray);
