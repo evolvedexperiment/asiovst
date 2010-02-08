@@ -84,6 +84,12 @@ type
     procedure SetLowerFrequency(const Value: Single);
     procedure SetUpperFrequency(const Value: Single);
     procedure SetLabelFrequency(const Value: TXAxisLabelFrequency);
+
+    // property filer
+    procedure ReadLowerProperty(Reader: TReader);
+    procedure ReadUpperProperty(Reader: TReader);
+    procedure WriteLowerProperty(Writer: TWriter);
+    procedure WriteUpperProperty(Writer: TWriter);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure LabelPositionChanged; virtual;
@@ -94,6 +100,8 @@ type
     procedure CalculateLowerFrequencyReciprocal;
     procedure CalculateUpperFrequencyReciprocal;
     procedure CalculateFrequencyRangeRatios;
+
+    procedure DefineProperties(Filer: TFiler); override;
   public
     constructor Create(AOwner: TCustomGuiEQGraph); override;
 
@@ -451,6 +459,36 @@ begin
     FInvLog2Ratio := Self.FInvLog2Ratio;
    end
  else inherited;
+end;
+
+procedure TCustomGuiEQGraphXAxis.DefineProperties(Filer: TFiler);
+begin
+ inherited;
+  inherited DefineProperties(Filer);
+  Filer.DefineProperty('LowerFrequency', ReadLowerProperty,
+    WriteLowerProperty, LowerFrequency = 0);
+  Filer.DefineProperty('UpperFrequency', ReadUpperProperty,
+    WriteUpperProperty, UpperFrequency = 0);
+end;
+
+procedure TCustomGuiEQGraphXAxis.ReadLowerProperty(Reader: TReader);
+begin
+ FLower := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiEQGraphXAxis.WriteLowerProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FLower);
+end;
+
+procedure TCustomGuiEQGraphXAxis.ReadUpperProperty(Reader: TReader);
+begin
+ FUpper := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiEQGraphXAxis.WriteUpperProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FUpper);
 end;
 
 function TCustomGuiEQGraphXAxis.LogarithmicFrequencyToLinear(Value: Double): Double;

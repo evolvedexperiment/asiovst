@@ -50,14 +50,13 @@ type
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterFilterOrderDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterOversamplingChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterOversamplingChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
-    FCriticalSection   : TCriticalSection;
-    FConvolution       : TLowLatencyConvolutionStereo32;
+    FCriticalSection     : TCriticalSection;
+    FConvolution         : TLowLatencyConvolutionStereo32;
     FLinkwitzRileyFilter : TButterworthLowPassFilter;
-    FDownsampler       : TPolyphaseDownsampler64;
-    FOversampled       : Boolean;
+    FDownsampler         : TPolyphaseDownsampler64;
+    FOversampled         : Boolean;
     procedure CalculateFilterKernel;
   public
   end;

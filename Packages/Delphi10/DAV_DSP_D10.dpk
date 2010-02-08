@@ -29,7 +29,10 @@ requires
   vcl,
   rtl,
   DAV_Common_D10,
-  designide;
+  designide,
+  xmlrtl,
+  vclactnband,
+  vclx;
 
 contains
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
@@ -124,6 +127,7 @@ contains
   DAV_DspVoiceSynth in '..\..\Source\Dsp\DAV_DspVoiceSynth.pas',
   DAV_DspWaveshaper in '..\..\Source\Dsp\DAV_DspWaveshaper.pas',
   DAV_DspWindowFunctions in '..\..\Source\DSP\DAV_DspWindowFunctions.pas',
-  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas';
+  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas',
+  DAV_DspAnalogueFilterPrototypes in '..\..\Source\DSP\DAV_DspAnalogueFilterPrototypes.pas';
 
 end.

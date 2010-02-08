@@ -1,6 +1,6 @@
 library SEConvolution;
 
-{$I DAV_Compiler.INC}
+{$I DAV_Compiler.inc}
 
 {-$R 'IR.res' 'IR.rc'}
 
@@ -17,11 +17,11 @@ uses
 
 function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): Boolean; cdecl; export;
 begin
- result := True;
+ Result := True;
  case Index of
   0: TSEConvolutionModule.GetModuleProperties(Properties);
   1: TSELowLatencyConvolutionModule.GetModuleProperties(Properties);
-  else result := False;
+  else Result := False;
  end;;
 end;
 
@@ -35,9 +35,9 @@ begin
    0: SEModuleBase := TSEConvolutionModule.Create(SEAudioMaster, Reserved);
    1: SEModuleBase := TSELowLatencyConvolutionModule.Create(SEAudioMaster, Reserved);
   end;
- if assigned(SEModuleBase)
-  then result := SEModuleBase.Effect
-  else result := nil;
+ if Assigned(SEModuleBase)
+  then Result := SEModuleBase.Effect
+  else Result := nil;
 end;
 
 exports makeModule name 'makeModule';

@@ -158,6 +158,9 @@ type
     procedure SetPosition(Value: Single);
     procedure SetCurveMapping(const Value: Single);
     procedure SetNormalizedPosition(const Value: Single);
+
+    procedure ReadMaxProperty(Reader: TReader);
+    procedure WriteMaxProperty(Writer: TWriter);
   protected
     function GetGlyphNr: Integer; override;
 
@@ -173,7 +176,7 @@ type
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveLeft(Shift: TShiftState; X, Y: Integer); override;
     procedure DragMouseMoveRight(Shift: TShiftState; X, Y: Integer); override;
-    procedure ReadState(Reader: TReader); override;
+    procedure DefineProperties(Filer: TFiler); override;
     function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer; MousePos: TPoint): Boolean; override;
 
     property NormalizedPosition: Single read GetNormalizedPosition write SetNormalizedPosition;
@@ -1295,15 +1298,21 @@ begin
   FInertiaExp             := 1;
   FInertiaScale           := 1;
   FMin                    := 0;
-  FWheelStep              := 1; 
-  if csDesigning in ComponentState
-   then FMax := 100;
+  FMax                    := 100;
+  FWheelStep              := 1;
 end;
 
 destructor TCustomGuiDial.Destroy;
 begin
   FreeAndNil(FPointerAngles);
   inherited Destroy;
+end;
+
+procedure TCustomGuiDial.DefineProperties(Filer: TFiler);
+begin
+  inherited DefineProperties(Filer);
+  Filer.DefineProperty('Max', ReadMaxProperty,
+    WriteMaxProperty, Max = 0);
 end;
 
 function TCustomGuiDial.DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
@@ -1371,13 +1380,6 @@ begin
   end;
 end;
 
-procedure TCustomGuiDial.ReadState(Reader: TReader);
-begin
- if csDesigning in ComponentState
-  then FMax := 0;
- inherited;
-end;
-
 function TCustomGuiDial.GetNormalizedPosition: Single;
 begin
  if Max = Min
@@ -1400,6 +1402,16 @@ begin
  if Value < 0
   then Result := -Power(abs(Value), 1 / FCurveMappingExp)
   else Result :=  Power(abs(Value), 1 / FCurveMappingExp)
+end;
+
+procedure TCustomGuiDial.ReadMaxProperty(Reader: TReader);
+begin
+ FMax := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiDial.WriteMaxProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FMax);
 end;
 
 procedure TCustomGuiDial.SetMax(const Value: Single);

@@ -99,6 +99,17 @@ type
     procedure SetSmoothingFactor(const Value: Single);
     procedure SetCategoryString(const Value: string);
     procedure SetCategoryIndex(const Value: Integer);
+
+    procedure ReadMaxProperty(Reader: TReader);
+    procedure WriteMaxProperty(Writer: TWriter);
+    procedure ReadStepFloatProperty(Reader: TReader);
+    procedure WriteStepFloatProperty(Writer: TWriter);
+    procedure ReadCurveFactorProperty(Reader: TReader);
+    procedure WriteCurveFactorProperty(Writer: TWriter);
+    procedure ReadSmallStepFloatProperty(Reader: TReader);
+    procedure WriteSmallStepFloatProperty(Writer: TWriter);
+    procedure ReadLargeStepFloatProperty(Reader: TReader);
+    procedure WriteLargeStepFloatProperty(Writer: TWriter);
   protected
     function GetDisplayName: string; override;
     procedure AssignTo(Dest: TPersistent); override;
@@ -109,6 +120,7 @@ type
     procedure ShortLabelChanged; virtual;
     procedure CategoryStringChanged; virtual;
     procedure UnitsChanged; virtual;
+    procedure DefineProperties(Filer: TFiler); override;
   public
     {$IFDEF FPC}
     constructor Create(ACollection: TCollection); override;
@@ -336,22 +348,18 @@ begin
   FFlags            := [];
   FLargeStepInteger := 10;
   FSmoothingFactor  := 0;
+  FMin              := 0;
+  FMax              := 1;
+  FStepFloat        := 1;
+  FCurveFactor      := 1;
+  FSmallStepFloat   := 0.5;
+  FLargeStepFloat   := 2;
   FCanBeAutomated   := True;
   FV2Properties     := False;
   FDisplayName      := 'Parameter ' + IntTostr(Collection.Count);
 
-  assert(Collection is TCustomVstParameterProperties);
+  Assert(Collection is TCustomVstParameterProperties);
   FVSTModule := TCustomVstParameterProperties(Collection).VSTModule;
-
-//  if csDesigning in FVSTModule.ComponentState then
-   begin
-    FMin            := 0;
-    FStepFloat      := 1;
-    FMax            := 1;
-    FCurveFactor    := 1;
-    FSmallStepFloat := 0.5;
-    FLargeStepFloat := 2;
-   end;
 
   with FVSTModule as TVSTModuleWithPrograms do
    try
@@ -394,6 +402,21 @@ begin
  end;
 end;
 
+procedure TCustomVstParameterProperty.DefineProperties(Filer: TFiler);
+begin
+  inherited DefineProperties(Filer);
+  Filer.DefineProperty('Max', ReadMaxProperty,
+    WriteMaxProperty, Max = 0);
+  Filer.DefineProperty('StepFloat', ReadStepFloatProperty,
+    WriteStepFloatProperty, StepFloat = 0);
+  Filer.DefineProperty('CurveFactor', ReadCurveFactorProperty,
+    WriteCurveFactorProperty, CurveFactor = 0);
+  Filer.DefineProperty('SmallStepFloat', ReadSmallStepFloatProperty,
+    WriteSmallStepFloatProperty, SmallStepFloat = 0);
+  Filer.DefineProperty('LargeStepFloat', ReadLargeStepFloatProperty,
+    WriteLargeStepFloatProperty, LargeStepFloat = 0);
+end;
+
 function TCustomVstParameterProperty.VSTParameter2Parameter(const Value: Single): Single;
 begin
  Result := Value;
@@ -404,6 +427,60 @@ begin
  else
  end;
  Result := Smooth(Result * (Max - Min) + Min);
+end;
+
+procedure TCustomVstParameterProperty.ReadCurveFactorProperty(Reader: TReader);
+begin
+ FCurveFactor := Reader.ReadFloat;
+end;
+
+procedure TCustomVstParameterProperty.ReadLargeStepFloatProperty(
+  Reader: TReader);
+begin
+ FStepFloat := Reader.ReadFloat;
+end;
+
+procedure TCustomVstParameterProperty.ReadMaxProperty(Reader: TReader);
+begin
+ FMax := Reader.ReadFloat;
+end;
+
+procedure TCustomVstParameterProperty.ReadSmallStepFloatProperty(
+  Reader: TReader);
+begin
+ FSmallStepFloat := Reader.ReadFloat;
+end;
+
+procedure TCustomVstParameterProperty.ReadStepFloatProperty(Reader: TReader);
+begin
+ FStepFloat := Reader.ReadFloat;
+end;
+
+procedure TCustomVstParameterProperty.WriteCurveFactorProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FCurveFactor);
+end;
+
+procedure TCustomVstParameterProperty.WriteLargeStepFloatProperty(
+  Writer: TWriter);
+begin
+ Writer.WriteFloat(FLargeStepFloat);
+end;
+
+procedure TCustomVstParameterProperty.WriteMaxProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FMax);
+end;
+
+procedure TCustomVstParameterProperty.WriteSmallStepFloatProperty(
+  Writer: TWriter);
+begin
+ Writer.WriteFloat(FSmallStepFloat);
+end;
+
+procedure TCustomVstParameterProperty.WriteStepFloatProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FStepFloat);
 end;
 
 function TCustomVstParameterProperty.Parameter2VSTParameter(const Value: Single): Single;

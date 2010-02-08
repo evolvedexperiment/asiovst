@@ -70,6 +70,14 @@ type
     procedure SetSlideColor(const Value: TColor);
     procedure SetDirection(const Value: TSliderDirection);
     procedure SetShowText(const Value: Boolean);
+
+    // floating point storage filer
+    procedure ReadDefaultPositionProperty(Reader: TReader);
+    procedure WriteDefaultPositionProperty(Writer: TWriter);
+    procedure ReadMaxProperty(Reader: TReader);
+    procedure WriteMaxProperty(Writer: TWriter);
+    procedure ReadPositionProperty(Reader: TReader);
+    procedure WritePositionProperty(Writer: TWriter);
   protected
     function MapValue(Value: Double): Double;
     function UnmapValue(Value: Double): Double;
@@ -87,6 +95,8 @@ type
     procedure ControlChanged; virtual;
     procedure SlideColorChanged; virtual;
     procedure ShowTextChanged; virtual;
+
+    procedure DefineProperties(Filer: TFiler); override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -270,6 +280,17 @@ begin
    end;
 end;
 
+procedure TCustomGuiSlider.DefineProperties(Filer: TFiler);
+begin
+  inherited DefineProperties(Filer);
+  Filer.DefineProperty('Position', ReadPositionProperty,
+    WritePositionProperty, Position = 0);
+  Filer.DefineProperty('DefaultPosition', ReadDefaultPositionProperty,
+    WriteDefaultPositionProperty, DefaultPosition = 0);
+  Filer.DefineProperty('Max', ReadMaxProperty,
+    WriteMaxProperty, Max = 0);
+end;
+
 procedure TCustomGuiSlider.SetBorderColor(const Value: TColor);
 begin
  if FBorderColor <> Value then
@@ -404,6 +425,21 @@ begin
  ControlChanged;
 end;
 
+procedure TCustomGuiSlider.ReadDefaultPositionProperty(Reader: TReader);
+begin
+ FDefaultPosition := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiSlider.ReadMaxProperty(Reader: TReader);
+begin
+ FMax := Reader.ReadFloat;
+end;
+
+procedure TCustomGuiSlider.ReadPositionProperty(Reader: TReader);
+begin
+ FPosition := Reader.ReadFloat;
+end;
+
 procedure TCustomGuiSlider.SetShowText(const Value: Boolean);
 begin
  if FShowText <> Value then
@@ -476,6 +512,21 @@ begin
  if Value < 0
   then Result := -Power(abs(Value), 1 / FCurveMappingExp)
   else Result :=  Power(abs(Value), 1 / FCurveMappingExp)
+end;
+
+procedure TCustomGuiSlider.WriteDefaultPositionProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FDefaultPosition);
+end;
+
+procedure TCustomGuiSlider.WriteMaxProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FMax);
+end;
+
+procedure TCustomGuiSlider.WritePositionProperty(Writer: TWriter);
+begin
+ Writer.WriteFloat(FPosition);
 end;
 
 

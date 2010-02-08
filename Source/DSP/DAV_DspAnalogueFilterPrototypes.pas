@@ -38,22 +38,63 @@ uses
   Classes, SysUtils, DAV_Common, DAV_Complex;
 
 type
-  TCustomAnalogueFilterPrototype = class(TObject)
+  TCustomAnalogueFilterPrototype = class(TPersistent)
   protected
-    function GetOrder: Integer; virtual; abstract;
-    procedure SetOrder(Value: Integer); virtual; abstract;
+    procedure CalculateCoefficients; virtual; abstract;
   public
     function Complex64(Frequency: Double): TComplexDouble; overload; virtual; abstract;
     function Complex32(Frequency: Single): TComplexSingle; overload; virtual;
     function Magnitude(Frequency: Double): Double; virtual;
     function Magnitude_dB(Frequency: Double): Double; virtual;
     function Phase(Frequency: Double): Double; virtual;
-
-    property Order: Integer read GetOrder write SetOrder;
   end;
   TCustomAnalogueFilterPrototypeClass = class of TCustomAnalogueFilterPrototype;
 
-  TCustomBiquadAnalogueFilterPrototype = class(TCustomAnalogueFilterPrototype)
+  TCustomVariableOrderAnalogueFilterPrototype = class(TCustomAnalogueFilterPrototype)
+  protected
+    function GetOrder: Double; virtual; abstract;
+    procedure SetOrder(Value: Double); virtual; abstract;
+  public
+    property Order: Double read GetOrder write SetOrder;
+  end;
+
+  TCustomIntegerOrderAnalogueFilterPrototype = class(TCustomAnalogueFilterPrototype)
+  protected
+    function GetOrder: Integer; virtual; abstract;
+    procedure SetOrder(Value: Integer); virtual; abstract;
+  public
+    property Order: Integer read GetOrder write SetOrder;
+  end;
+
+  TCustomAnalogueArbitraryIntegerOrderFilterPrototype =
+    class(TCustomIntegerOrderAnalogueFilterPrototype)
+  private
+    FOrder : Integer;
+  protected
+    function GetOrder: Integer; override;
+    procedure SetOrder(Value: Integer); override;
+    procedure OrderChanged; virtual;
+  end;
+
+  TCustomAnalogueButterworthFilterPrototype = class(TCustomAnalogueFilterPrototype)
+  private
+    FFrequency : Double;
+    FOrder     : Double;
+    procedure SetFrequency(const Value: Double);
+    procedure SetOrder(const Value: Double);
+    procedure FrequencyChanged;
+    procedure OrderChanged;
+  public
+    // yet to complete (see Normalized Butterworth polynomials,
+    // http://en.wikipedia.org/wiki/Butterworth_filter)
+
+    function Magnitude(Frequency: Double): Double; override;
+
+    property Frequency: Double read FFrequency write SetFrequency;
+    property Order: Double read FOrder write SetOrder;
+  end;
+
+  TCustomBiquadAnalogueFilterPrototype = class(TCustomIntegerOrderAnalogueFilterPrototype)
   private
     FNominator   : array [0..2] of Double;
     FDenominator : array [0..2] of Double;
@@ -64,12 +105,14 @@ type
     procedure SetFrequency(const Value: Double);
     procedure SetGain(const Value: Double);
     procedure CalculateAlpha;
+    function GetDenominator(Index: Integer): Double;
+    function GetNominator(Index: Integer): Double;
   protected
     FAlpha      : Double;
     FGainFactor : Double;
-    procedure CalculateCoefficients; virtual; abstract;
     function GetOrder: Integer; override;
     procedure SetOrder(Value: Integer); override;
+    procedure AssignTo(Dest: TPersistent); override;
 
     procedure BandwidthChanged; virtual;
     procedure FrequencyChanged; virtual;
@@ -81,6 +124,8 @@ type
     property Frequency: Double read FFrequency write SetFrequency;
     property Bandwidth: Double read FBandwidth write SetBandwidth;
     property Gain: Double read FGain write SetGain;
+    property Nominator[Index: Integer]: Double read GetNominator;
+    property Denominator[Index: Integer]: Double read GetDenominator;
   end;
   TCustomBiquadAnalogueFilterPrototypeClass = class of TCustomBiquadAnalogueFilterPrototype;
 
@@ -166,6 +211,55 @@ type
     procedure CalculateCoefficients; override;
   end;
 
+  TCustomAnalogueWeightingFilterPrototype = class(TCustomIntegerOrderAnalogueFilterPrototype)
+  end;
+  TCustomAnalogueWeightingFilterPrototypeClass = class of TCustomAnalogueWeightingFilterPrototype;
+
+  TAnalogueAWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
+  private
+    FDenominator : Array [0..3] of Double;
+    FGainFactor  : Double;
+  protected
+    function GetOrder: Integer; override;
+  public
+    constructor Create; virtual;
+    function Complex64(Frequency: Double): TComplexDouble; override;
+  end;
+
+  TAnalogueBWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
+  private
+    FDenominator : Array [0..2] of Double;
+    FGainFactor  : Double;
+  protected
+    function GetOrder: Integer; override;
+  public
+    constructor Create; virtual;
+    function Complex64(Frequency: Double): TComplexDouble; override;
+  end;
+
+  TAnalogueCWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
+  private
+    FDenominator : Array [0..1] of Double;
+    FGainFactor  : Double;
+  protected
+    function GetOrder: Integer; override;
+  public
+    constructor Create; virtual;
+    function Complex64(Frequency: Double): TComplexDouble; override;
+  end;
+
+  TAnalogueDWeightingFilterPrototype = class(TCustomAnalogueWeightingFilterPrototype)
+  private
+    FNominator   : Array [0..1] of Double;
+    FDenominator : Array [0..3] of Double;
+    FGainFactor  : Double;
+  protected
+    function GetOrder: Integer; override;
+  public
+    constructor Create; virtual;
+    function Complex64(Frequency: Double): TComplexDouble; override;
+  end;
+
 implementation
 
 uses
@@ -173,6 +267,7 @@ uses
 
 resourcestring
   RCStrFixedOrder = 'The order of a biquad filter can not be changed';
+  RCStrIndexOutOfBounds = 'Index out of bounds';
 
 { TCustomAnalogueFilterPrototype }
 
@@ -210,6 +305,65 @@ begin
 end;
 
 
+{ TCustomAnalogueArbitraryIntegerOrderFilterPrototype }
+
+function TCustomAnalogueArbitraryIntegerOrderFilterPrototype.GetOrder: Integer;
+begin
+ Result := FOrder;
+end;
+
+procedure TCustomAnalogueArbitraryIntegerOrderFilterPrototype.SetOrder(Value: Integer);
+begin
+ if FOrder <> Value then
+  begin
+   FOrder := Value;
+   OrderChanged;
+  end;
+end;
+
+procedure TCustomAnalogueArbitraryIntegerOrderFilterPrototype.OrderChanged;
+begin
+ CalculateCoefficients;
+end;
+
+
+{ TCustomAnalogueButterworthFilterPrototype }
+
+function TCustomAnalogueButterworthFilterPrototype.Magnitude(
+  Frequency: Double): Double;
+begin
+ Result := Sqrt( 1 / (1 + Power(Frequency / FFrequency, 2 * FOrder)));
+end;
+
+procedure TCustomAnalogueButterworthFilterPrototype.SetFrequency(
+  const Value: Double);
+begin
+ if FFrequency <> Value then
+  begin
+   FFrequency := Value;
+   FrequencyChanged;
+  end;
+end;
+
+procedure TCustomAnalogueButterworthFilterPrototype.SetOrder(
+  const Value: Double);
+begin
+ if FOrder <> Value then
+  begin
+   FOrder := Value;
+   OrderChanged;
+  end;
+end;
+
+procedure TCustomAnalogueButterworthFilterPrototype.FrequencyChanged;
+begin
+end;
+
+procedure TCustomAnalogueButterworthFilterPrototype.OrderChanged;
+begin
+end;
+
+
 { TCustomBiquadAnalogueFilterPrototype }
 
 constructor TCustomBiquadAnalogueFilterPrototype.Create;
@@ -242,6 +396,22 @@ begin
                      (FDenominator[1] * (FNominator[0] - FNominator[2] * Sqr(Omega)))) * Divisor;
 end;
 
+function TCustomBiquadAnalogueFilterPrototype.GetDenominator(
+  Index: Integer): Double;
+begin
+ if Index in [0..2]
+  then Result := FDenominator[Index]
+  else raise Exception.Create(RCStrIndexOutOfBounds);
+end;
+
+function TCustomBiquadAnalogueFilterPrototype.GetNominator(
+  Index: Integer): Double;
+begin
+ if Index in [0..2]
+  then Result := FNominator[Index]
+  else raise Exception.Create(RCStrIndexOutOfBounds);
+end;
+
 function TCustomBiquadAnalogueFilterPrototype.GetOrder: Integer;
 begin
  Result := 2;
@@ -250,6 +420,22 @@ end;
 procedure TCustomBiquadAnalogueFilterPrototype.CalculateAlpha;
 begin
  FAlpha := (2 * Sinh(ln22 * FBandwidth));
+end;
+
+procedure TCustomBiquadAnalogueFilterPrototype.AssignTo(Dest: TPersistent);
+begin
+ if Dest is TCustomBiquadAnalogueFilterPrototype then
+  with TCustomBiquadAnalogueFilterPrototype(Dest) do
+   begin
+    Move(Self.FNominator[0], FNominator[0], Length(FNominator) * SizeOf(Double));
+    Move(Self.FDenominator[0], FDenominator[0], Length(FDenominator) * SizeOf(Double));
+    FGain := Self.FGain;
+    FBandwidth := Self.FBandwidth;
+    FFrequency := Self.FFrequency;
+    FAlpha := Self.FAlpha;
+    FGainFactor := Self.FGainFactor;
+   end
+ else inherited;
 end;
 
 procedure TCustomBiquadAnalogueFilterPrototype.BandwidthChanged;
@@ -730,6 +916,191 @@ begin
    FDenominator[1] := Power(FGainFactor, Abs(FShape) - 1) * FAlpha;
    FDenominator[2] := Power(FGainFactor, 0.5 * (Abs(FShape) - FShape));
   end;
+end;
+
+
+{ TAnalogueAWeightingFilterPrototype }
+
+constructor TAnalogueAWeightingFilterPrototype.Create;
+begin
+ inherited;
+
+ // exact values according to DIN EN 61672-1
+ FDenominator[0] := 2 * Pi * 20.598997;
+ FDenominator[1] := 2 * Pi * 107.65264864;
+ FDenominator[2] := 2 * Pi * 737.86223074;
+ FDenominator[3] := 2 * Pi * 12194.22;
+
+ FGainFactor := 7390104064;
+end;
+
+function TAnalogueAWeightingFilterPrototype.GetOrder: Integer;
+begin
+  Result := 6;
+end;
+
+function TAnalogueAWeightingFilterPrototype.Complex64(
+  Frequency: Double): TComplexDouble;
+var
+  Omega   : Double;
+  Divisor : Double;
+  Cmplex  : TComplexDouble;
+begin
+ Omega := 2 * Pi * Frequency;
+
+ Divisor  := Sqr(Omega) / (Sqr(Sqr(FDenominator[0]) - Sqr(Omega)) +
+   Sqr(2 * FDenominator[0] * Omega));
+ Result.Re := (Sqr(Omega) - Sqr(FDenominator[0])) * Divisor;
+ Result.Im := 2 * Omega * FDenominator[0] * Divisor;
+
+ Divisor  := Sqr(Omega) / (Sqr(Sqr(FDenominator[3]) - Sqr(Omega)) +
+   Sqr(2 * FDenominator[3] * Omega));
+ Cmplex.Re := (Sqr(Omega) - Sqr(FDenominator[3])) * Divisor;
+ Cmplex.Im := 2 * Omega * FDenominator[3] * Divisor;
+
+ ComplexMultiplyInplace(Result, Cmplex);
+
+ Divisor  := FGainFactor / (Sqr(FDenominator[1] * FDenominator[2] - Sqr(Omega)) +
+   Sqr((FDenominator[1] + FDenominator[2]) * Omega));
+
+ Cmplex.Re := (FDenominator[1] * FDenominator[2] - Sqr(Omega)) * Divisor;
+ Cmplex.Im := -Omega * (FDenominator[1] + FDenominator[2]) * Divisor;
+
+ ComplexMultiplyInplace(Result, Cmplex);
+end;
+
+
+{ TAnalogueBWeightingFilterPrototype }
+
+constructor TAnalogueBWeightingFilterPrototype.Create;
+begin
+ // exact values according to DIN EN 61672-1
+ FDenominator[0] := 2 * Pi * 20.598997058;
+ FDenominator[2] := 2 * Pi * 12194.217148;
+
+ // from http://en.wikipedia.org/wiki/A-weighting
+ FDenominator[1] := 995.9;
+ FGainFactor := 5.91797E9;
+end;
+
+function TAnalogueBWeightingFilterPrototype.Complex64(
+  Frequency: Double): TComplexDouble;
+var
+  Omega   : Double;
+  Divisor : Double;
+  Cmplex  : TComplexDouble;
+begin
+ Omega := 2 * Pi * Frequency;
+
+ Divisor  := Sqr(Omega) / (Sqr(Sqr(FDenominator[0]) - Sqr(Omega)) +
+   Sqr(2 * FDenominator[0] * Omega));
+ Result.Re := (Sqr(Omega) - Sqr(FDenominator[0])) * Divisor;
+ Result.Im := 2 * Omega * FDenominator[0] * Divisor;
+
+ Divisor  := 1 / (Sqr(Sqr(FDenominator[2]) - 1 * Sqr(Omega)) +
+   Sqr(2 * FDenominator[2] * Omega));
+ Cmplex.Re := (Sqr(FDenominator[2]) - Sqr(Omega)) * Divisor;
+ Cmplex.Im := -2 * Omega * FDenominator[2] * Divisor;
+
+ ComplexMultiplyInplace(Result, Cmplex);
+
+ Divisor  := FGainFactor / (Sqr(FDenominator[1]) + Sqr(Omega));
+ Result.Re := Sqr(Omega) * Divisor;
+ Result.Im := Omega * FDenominator[1] * Divisor;
+
+ ComplexMultiplyInplace(Result, Cmplex);
+end;
+
+function TAnalogueBWeightingFilterPrototype.GetOrder: Integer;
+begin
+ Result := 5;
+end;
+
+
+{ TAnalogueCWeightingFilterPrototype }
+
+constructor TAnalogueCWeightingFilterPrototype.Create;
+begin
+ inherited;
+
+ // exact values according to DIN EN 61672-1
+ FDenominator[0] := 2 * Pi * 20.598997058;
+ FDenominator[1] := 2 * Pi * 12194.217148;
+
+ FGainFactor := 5912384512;
+end;
+
+function TAnalogueCWeightingFilterPrototype.GetOrder: Integer;
+begin
+  Result := 4;
+end;
+
+function TAnalogueCWeightingFilterPrototype.Complex64(
+  Frequency: Double): TComplexDouble;
+var
+  Omega   : Double;
+  Divisor : Double;
+  Cmplex  : TComplexDouble;
+begin
+ Omega := 2 * Pi * Frequency;
+
+ Divisor  := FGainFactor * Sqr(Omega) / (Sqr(Sqr(FDenominator[0]) - Sqr(Omega)) +
+   Sqr(2 * FDenominator[0] * Omega));
+
+ Result.Re := (Sqr(Omega) - Sqr(FDenominator[0])) * Divisor;
+ Result.Im := 2 * Omega * FDenominator[0] * Divisor;
+
+ Divisor  := 1 / (Sqr(Sqr(FDenominator[1]) - 1 * Sqr(Omega)) +
+   Sqr(2 * FDenominator[1] * Omega));
+
+ Cmplex.Re := (Sqr(FDenominator[1]) - Sqr(Omega)) * Divisor;
+ Cmplex.Im := -2 * Omega * FDenominator[1] * Divisor;
+
+ ComplexMultiplyInplace(Result, Cmplex);
+end;
+
+
+{ TAnalogueDWeightingFilterPrototype }
+
+constructor TAnalogueDWeightingFilterPrototype.Create;
+begin
+ // from http://en.wikipedia.org/wiki/A-weighting
+ FNominator[0] := 4.0975E7;
+ FNominator[1] := 6532;
+ FDenominator[0] := 3.8836E8;
+ FDenominator[1] := 21514;
+ FDenominator[2] := 1776.3;
+ FDenominator[3] := 7288.5;
+ FGainFactor := 91104.32;
+end;
+
+function TAnalogueDWeightingFilterPrototype.Complex64(
+  Frequency: Double): TComplexDouble;
+var
+  Omega   : Double;
+  Divisor : Double;
+  Cmplex  : TComplexDouble;
+begin
+ Omega := 2 * Pi * Frequency;
+
+ Divisor  := 1 / (Sqr(FDenominator[0] - Sqr(Omega)) + Sqr(FDenominator[1] * Omega));
+ Result.Re := ((FNominator[0] - Sqr(Omega)) * (FDenominator[0] - Sqr(Omega)) +
+              (FNominator[1] * FDenominator[1] * Sqr(Omega))) * Divisor;
+ Result.Im := Omega * (FNominator[1]   * (FDenominator[0] - Sqr(Omega)) -
+                     (FDenominator[1] * (FNominator[0] - Sqr(Omega)))) * Divisor;
+
+ Divisor  := FGainFactor / (Sqr(FDenominator[2] * FDenominator[3] - Sqr(Omega)) +
+   Sqr((FDenominator[2] + FDenominator[3]) * Omega));
+
+ Cmplex.Re := Sqr(Omega) * (FDenominator[2] + FDenominator[3]) * Divisor;
+ Cmplex.Im := Omega * (FDenominator[2] * FDenominator[3] - Sqr(Omega)) * Divisor;
+
+ ComplexMultiplyInplace(Result, Cmplex);
+end;
+
+function TAnalogueDWeightingFilterPrototype.GetOrder: Integer;
+begin
+ Result := 4;
 end;
 
 end.

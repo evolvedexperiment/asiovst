@@ -135,7 +135,7 @@ begin
  except
   RegisteredName := '';
  end;
- if (RegisteredName <> 'Treck.de')
+ if (RegisteredName <> 'Treck.de') and (RegisteredName <> 'Boris Kovalev')
   then
    begin
     ID := $29A2A826;

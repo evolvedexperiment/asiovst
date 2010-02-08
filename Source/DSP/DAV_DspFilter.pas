@@ -35,7 +35,7 @@ interface
 {$I ..\DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_Complex, DAV_Classes;
+  Classes, DAV_Types, DAV_Complex, DAV_Classes, DAV_DspAnalogueFilterPrototypes;
 
 type
   TCustomFilter = class(TDspSampleRatePersistent, IDspProcessor32,
@@ -211,7 +211,7 @@ type
     property BandWidth: Double read FBandWidth write SetBW;
   end;
 
-  TBiquadIIRFilter = class(TCustomBandwidthIIRFilter)
+  TCustomBiquadIIRFilter = class(TCustomBandwidthIIRFilter)
   protected
     FDenominator  : array [1..2] of Double;
     FNominator    : array [0..2] of Double;
@@ -242,11 +242,44 @@ type
     procedure Reset; override;
     procedure PushStates; override;
     procedure PopStates; override;
+  end;
+
+  TBiquadIIRFilter = class(TCustomBiquadIIRFilter)
   published
     property Gain;
     property Frequency;
     property SampleRate;
     property Bandwidth;
+  end;
+
+  TBilinearTransformedBiquadIIRFilter = class(TCustomBiquadIIRFilter)
+  private
+    function GetAnaloguePrototypeClass: TCustomBiquadAnalogueFilterPrototypeClass;
+    procedure SetAnaloguePrototype(const Value: TCustomBiquadAnalogueFilterPrototype);
+    procedure SetAnaloguePrototypeClass(const Value: TCustomBiquadAnalogueFilterPrototypeClass);
+  protected
+    FBandwidthWarpFactor : Double;
+    FWarpedFrequency     : Double;
+    FAnaloguePrototype   : TCustomBiquadAnalogueFilterPrototype;
+    FPrototypeOwned      : Boolean;
+    procedure GainChanged; override;
+    procedure FrequencyChanged; override;
+    procedure BandwidthChanged; override;
+    procedure CalculateW0; override;
+    procedure CalculateAlpha; override;
+  public
+    constructor Create; override;
+    destructor Destroy; override;
+    procedure CalculateCoefficients; override;
+  published
+    property Gain;
+    property Frequency;
+    property SampleRate;
+    property Bandwidth;
+    property AnaloguePrototypeClass: TCustomBiquadAnalogueFilterPrototypeClass
+      read GetAnaloguePrototypeClass write SetAnaloguePrototypeClass;
+    property AnaloguePrototype: TCustomBiquadAnalogueFilterPrototype
+      read FAnaloguePrototype write SetAnaloguePrototype;
   end;
 
 implementation
@@ -949,9 +982,9 @@ begin
   end;
 end;
 
-{ TBiquadIIRFilter }
+{ TCustomBiquadIIRFilter }
 
-constructor TBiquadIIRFilter.Create;
+constructor TCustomBiquadIIRFilter.Create;
 begin
  inherited;
  FBandWidth := 1;
@@ -960,7 +993,7 @@ begin
  ResetStates;
 end;
 
-function TBiquadIIRFilter.MagnitudeSquared(const Frequency: Double): Double;
+function TCustomBiquadIIRFilter.MagnitudeSquared(const Frequency: Double): Double;
 var
   cw : Double;
 begin
@@ -969,12 +1002,12 @@ begin
          / (Sqr(1 - FDenominator[2]) + Sqr(FDenominator[1]) + (FDenominator[1] * (FDenominator[2] + 1) + cw * FDenominator[2]) * cw );
 end;
 
-function TBiquadIIRFilter.MagnitudeLog10(const Frequency: Double): Double;
+function TCustomBiquadIIRFilter.MagnitudeLog10(const Frequency: Double): Double;
 begin
  Result := 10 * Log10(MagnitudeSquared(Frequency));
 end;
 
-function TBiquadIIRFilter.Phase(const Frequency: Double): Double;
+function TCustomBiquadIIRFilter.Phase(const Frequency: Double): Double;
 var
   cw, sw : Double;
 begin
@@ -983,7 +1016,7 @@ begin
                   (FNominator[0] * (FDenominator[2] * (2 * Sqr(cw) - 1) + 1 + FDenominator[1] * cw) + FNominator[1] * (cw * (FDenominator[2] + 1) + FDenominator[1]) + FNominator[2] * (2 * Sqr(cw) + FDenominator[1] * cw + FDenominator[2] - 1)));
 end;
 
-function TBiquadIIRFilter.Real(const Frequency: Double): Double;
+function TCustomBiquadIIRFilter.Real(const Frequency: Double): Double;
 var
   cw : Double;
 begin
@@ -995,7 +1028,7 @@ begin
           + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]));
 end;
 
-function TBiquadIIRFilter.Imaginary(const Frequency: Double): Double;
+function TCustomBiquadIIRFilter.Imaginary(const Frequency: Double): Double;
 var
   cw : Double;
 begin
@@ -1006,7 +1039,7 @@ begin
               + 2 * cw * (FDenominator[1] * (FDenominator[2] + 1) + 2 * cw * FDenominator[2]))
 end;
 
-procedure TBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
+procedure TCustomBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
 var
   cw, Divider : Double;
 begin
@@ -1020,13 +1053,13 @@ begin
               + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
 end;
 
-procedure TBiquadIIRFilter.CoefficientsChanged;
+procedure TCustomBiquadIIRFilter.CoefficientsChanged;
 begin
  inherited;
  // CalculatePoleZeroes;
 end;
 
-procedure TBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
+procedure TCustomBiquadIIRFilter.Complex(const Frequency: Double; out Real, Imaginary: Single);
 var
   Cw, Divider : Double;
 begin
@@ -1040,32 +1073,32 @@ begin
               + 2 * cw * (FNominator[2] - FNominator[0] * FDenominator[2])) * sqrt(1 - Sqr(cw)) * Divider;
 end;
 
-procedure TBiquadIIRFilter.Reset;
+procedure TCustomBiquadIIRFilter.Reset;
 begin
  Gain := 0;
 end;
 
-procedure TBiquadIIRFilter.ResetStates;
+procedure TCustomBiquadIIRFilter.ResetStates;
 begin
  FState[0] := 0;
  FState[1] := 0;
 end;
 
-procedure TBiquadIIRFilter.ResetStatesInt64;
+procedure TCustomBiquadIIRFilter.ResetStatesInt64;
 begin
  PInt64(@FState[0])^ := 0;
  PInt64(@FState[1])^ := 0;
 end;
 
-procedure TBiquadIIRFilter.SetOrder(const Value: Cardinal);
+procedure TCustomBiquadIIRFilter.SetOrder(const Value: Cardinal);
 begin
  raise Exception.Create('Order is fixed!');
 end;
 
-procedure TBiquadIIRFilter.AssignTo(Dest: TPersistent);
+procedure TCustomBiquadIIRFilter.AssignTo(Dest: TPersistent);
 begin
- if Dest is TBiquadIIRFilter then
-  with TBiquadIIRFilter(Dest) do
+ if Dest is TCustomBiquadIIRFilter then
+  with TCustomBiquadIIRFilter(Dest) do
    begin
     inherited;
     FDenominator  := Self.FDenominator;
@@ -1078,7 +1111,7 @@ begin
   else inherited;
 end;
 
-procedure TBiquadIIRFilter.CalculatePoleZeroes;
+procedure TCustomBiquadIIRFilter.CalculatePoleZeroes;
 var
   p, q : Double;
   e    : Double;
@@ -1122,7 +1155,7 @@ begin
    end;
 end;
 
-function TBiquadIIRFilter.ProcessSample64(Input: Double): Double;
+function TCustomBiquadIIRFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
  Result    := FNominator[0] * Input + FState[0];
@@ -1150,7 +1183,7 @@ asm
 end;
 {$ENDIF}
 
-function TBiquadIIRFilter.ProcessSample32(Input: Single): Single;
+function TCustomBiquadIIRFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
  Result    := FNominator[0] * Input + FState[0];
@@ -1178,14 +1211,14 @@ asm
 end;
 {$ENDIF}
 
-function TBiquadIIRFilter.ProcessSample64(Input: Int64): Int64;
+function TCustomBiquadIIRFilter.ProcessSample64(Input: Int64): Int64;
 begin
  Result              := Round(FNominator[0] * Input) + PInt64(@FState[0])^;
  PInt64(@FState[0])^ := Round(FNominator[1] * Input) - Round(FDenominator[1] * Result) + PInt64(@FState[1])^;
  PInt64(@FState[1])^ := Round(FNominator[2] * Input) - Round(FDenominator[2] * Result);
 end;
 
-function TBiquadIIRFilter.ProcessSampleASM: Double;
+function TCustomBiquadIIRFilter.ProcessSampleASM: Double;
 {$IFDEF PUREPASCAL}
 begin
 end;
@@ -1212,7 +1245,7 @@ asm
 end;
 {$ENDIF}
 
-procedure TBiquadIIRFilter.PushStates;
+procedure TCustomBiquadIIRFilter.PushStates;
 begin
  SetLength(FStateStack, Length(FStateStack) + 1);
  if Length(FStateStack) > 1
@@ -1220,7 +1253,7 @@ begin
  Move(FState[0], FStateStack[0, 0], Length(FStateStack[0]) * SizeOf(Double));
 end;
 
-procedure TBiquadIIRFilter.PopStates;
+procedure TCustomBiquadIIRFilter.PopStates;
 begin
  if Length(FStateStack) > 0 then
   begin
@@ -1231,9 +1264,147 @@ begin
   end;
 end;
 
-function TBiquadIIRFilter.GetOrder: Cardinal;
+function TCustomBiquadIIRFilter.GetOrder: Cardinal;
 begin
  Result := 2;
+end;
+
+{ TBilinearTransformedBiquadIIRFilter }
+
+constructor TBilinearTransformedBiquadIIRFilter.Create;
+begin
+ inherited;
+end;
+
+destructor TBilinearTransformedBiquadIIRFilter.Destroy;
+begin
+ if FPrototypeOwned and Assigned(FAnaloguePrototype)
+  then FreeAndNil(FAnaloguePrototype);
+  
+ inherited;
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.CalculateW0;
+begin
+ inherited;
+ FWarpedFrequency := FExpW0.Im / (1 + FExpW0.Re);
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.CalculateAlpha;
+begin
+ FBandwidthWarpFactor := 1 / Sqrt(0.5 * (1 + FExpW0.Re));
+
+ if Assigned(FAnaloguePrototype)
+  then FAnaloguePrototype.Bandwidth := FBandWidth * FBandwidthWarpFactor;
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.CalculateCoefficients;
+var
+  K, K2   : Double;
+  Divisor : Double;
+  AnaNom  : array [0..2] of Double;
+  AnaDen  : array [0..2] of Double;
+begin
+ if Assigned(FAnaloguePrototype) then
+  begin
+   AnaNom[0] := FAnaloguePrototype.Nominator[0];
+   AnaNom[1] := FAnaloguePrototype.Nominator[1];
+   AnaNom[2] := FAnaloguePrototype.Nominator[2];
+   AnaDen[0] := FAnaloguePrototype.Denominator[0];
+   AnaDen[1] := FAnaloguePrototype.Denominator[1];
+   AnaDen[2] := FAnaloguePrototype.Denominator[2];
+
+   K := FWarpedFrequency;
+   K2 := Sqr(K);
+
+   Divisor := 1 / (AnaDen[0] * K2 + AnaDen[1] * K + AnaDen[2]);
+
+   FNominator[0] := (AnaNom[0] * K2 + AnaNom[1] * K + AnaNom[2]) * Divisor;
+   FNominator[1] := 2 * (AnaNom[0] * K2 - AnaNom[2]) * Divisor;
+   FNominator[2] := (AnaNom[0] * K2 - AnaNom[1] * K + AnaNom[2]) * Divisor;
+   FDenominator[1] := 2 * (AnaDen[0] * K2 - AnaDen[2]) * Divisor;
+   FDenominator[2] := (AnaDen[0] * K2 - AnaDen[1] * K + AnaDen[2]) * Divisor;
+  end
+ else
+  begin
+   FNominator[0] := 1;
+   FNominator[1] := 0;
+   FNominator[2] := 0;
+   FDenominator[1] := 0;
+   FDenominator[2] := 0;
+  end;
+ inherited;
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.BandwidthChanged;
+begin
+ if Assigned(FAnaloguePrototype)
+  then FAnaloguePrototype.Bandwidth := FBandWidth * FBandwidthWarpFactor;
+ inherited;
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.FrequencyChanged;
+begin
+ if Assigned(FAnaloguePrototype) then
+  begin
+   FAnaloguePrototype.Frequency := FFrequency;
+   FAnaloguePrototype.Bandwidth := FBandWidth * FBandwidthWarpFactor;
+  end;
+ inherited;
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.GainChanged;
+begin
+ if Assigned(FAnaloguePrototype)
+  then FAnaloguePrototype.Gain := FGain_dB;
+ inherited;
+end;
+
+function TBilinearTransformedBiquadIIRFilter.GetAnaloguePrototypeClass: TCustomBiquadAnalogueFilterPrototypeClass;
+begin
+ if Assigned(FAnaloguePrototype)
+  then Result := TCustomBiquadAnalogueFilterPrototypeClass(FAnaloguePrototype.ClassType)
+  else Result := nil;
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.SetAnaloguePrototype(
+  const Value: TCustomBiquadAnalogueFilterPrototype);
+var
+  OldPrototype : TCustomBiquadAnalogueFilterPrototype;
+begin
+ if FPrototypeOwned then
+  begin
+   OldPrototype := FAnaloguePrototype;
+   FAnaloguePrototype := Value;
+   if Assigned(OldPrototype)
+    then FreeAndNil(OldPrototype);
+   FPrototypeOwned := False;
+  end
+ else FAnaloguePrototype := Value
+end;
+
+procedure TBilinearTransformedBiquadIIRFilter.SetAnaloguePrototypeClass(
+  const Value: TCustomBiquadAnalogueFilterPrototypeClass);
+var
+  OldPrototype : TCustomBiquadAnalogueFilterPrototype;
+begin
+ if Value <> GetAnaloguePrototypeClass then
+  begin
+   OldPrototype := FAnaloguePrototype;
+   FAnaloguePrototype := Value.Create;
+   FPrototypeOwned := True;
+   if Assigned(OldPrototype) then
+    begin
+     FAnaloguePrototype.Assign(OldPrototype);
+     FreeAndNil(OldPrototype);
+    end
+   else
+    begin
+     FAnaloguePrototype.Frequency := FFrequency;
+     FAnaloguePrototype.Bandwidth := FBandWidth * FExpW0.Re;
+     FAnaloguePrototype.Gain := FGain_dB;
+    end;
+  end;
 end;
 
 end.
