@@ -1,4 +1,4 @@
-﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
 			<ProjectGuid>{6C7BBD54-EDAD-4D8E-9657-A435AA093FF2}</ProjectGuid>
 			<MainSource>DAV_ASIOHost_D14.dpk</MainSource>
@@ -25,7 +25,6 @@
 			<GenPackage>true</GenPackage>
 			<DCC_Platform>x86</DCC_Platform>
 			<DCC_Description>ASIO &amp; VST Project - ASIO Host</DCC_Description>
-			<DCC_DependencyCheckOutputName>C:\Documents and Settings\All Users\Documents\RAD Studio\7.0\Bpl\DAV_ASIOHost_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_N>false</DCC_N>
 			<DCC_S>false</DCC_S>
 			<GenDll>true</GenDll>
