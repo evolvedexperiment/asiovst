@@ -42,6 +42,8 @@ type
   protected
     procedure CalculateCoefficients; virtual; abstract;
   public
+    constructor Create; virtual; abstract;
+
     function Complex64(Frequency: Double): TComplexDouble; overload; virtual; abstract;
     function Complex32(Frequency: Single): TComplexSingle; overload; virtual;
     function Magnitude(Frequency: Double): Double; virtual;
@@ -118,7 +120,7 @@ type
     procedure FrequencyChanged; virtual;
     procedure GainChanged; virtual;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function Complex64(Frequency: Double): TComplexDouble; override;
 
     property Frequency: Double read FFrequency write SetFrequency;
@@ -212,6 +214,8 @@ type
   end;
 
   TCustomAnalogueWeightingFilterPrototype = class(TCustomIntegerOrderAnalogueFilterPrototype)
+  protected
+    procedure SetOrder(Value: Integer); override;
   end;
   TCustomAnalogueWeightingFilterPrototypeClass = class of TCustomAnalogueWeightingFilterPrototype;
 
@@ -221,8 +225,9 @@ type
     FGainFactor  : Double;
   protected
     function GetOrder: Integer; override;
+    procedure CalculateCoefficients; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function Complex64(Frequency: Double): TComplexDouble; override;
   end;
 
@@ -232,8 +237,9 @@ type
     FGainFactor  : Double;
   protected
     function GetOrder: Integer; override;
+    procedure CalculateCoefficients; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function Complex64(Frequency: Double): TComplexDouble; override;
   end;
 
@@ -242,9 +248,10 @@ type
     FDenominator : Array [0..1] of Double;
     FGainFactor  : Double;
   protected
+    procedure CalculateCoefficients; override;
     function GetOrder: Integer; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function Complex64(Frequency: Double): TComplexDouble; override;
   end;
 
@@ -254,9 +261,10 @@ type
     FDenominator : Array [0..3] of Double;
     FGainFactor  : Double;
   protected
+    procedure CalculateCoefficients; override;
     function GetOrder: Integer; override;
   public
-    constructor Create; virtual;
+    constructor Create; override;
     function Complex64(Frequency: Double): TComplexDouble; override;
   end;
 
@@ -919,12 +927,24 @@ begin
 end;
 
 
+{ TCustomAnalogueWeightingFilterPrototype }
+
+procedure TCustomAnalogueWeightingFilterPrototype.SetOrder(Value: Integer);
+begin
+ raise Exception.Create(RCStrFixedOrder);
+end;
+
+
 { TAnalogueAWeightingFilterPrototype }
 
 constructor TAnalogueAWeightingFilterPrototype.Create;
 begin
  inherited;
+ CalculateCoefficients;
+end;
 
+procedure TAnalogueAWeightingFilterPrototype.CalculateCoefficients;
+begin
  // exact values according to DIN EN 61672-1
  FDenominator[0] := 2 * Pi * 20.598997;
  FDenominator[1] := 2 * Pi * 107.65264864;
@@ -945,23 +965,20 @@ var
   Omega   : Double;
   Divisor : Double;
   Cmplex  : TComplexDouble;
+  Temp    : array [0..1] of Double;
 begin
  Omega := 2 * Pi * Frequency;
 
- Divisor  := Sqr(Omega) / (Sqr(Sqr(FDenominator[0]) - Sqr(Omega)) +
-   Sqr(2 * FDenominator[0] * Omega));
- Result.Re := (Sqr(Omega) - Sqr(FDenominator[0])) * Divisor;
- Result.Im := 2 * Omega * FDenominator[0] * Divisor;
+ Temp[0] := (Sqr(Omega) - Sqr(FDenominator[0]));
+ Temp[1] := (Sqr(Omega) - Sqr(FDenominator[3]));
 
- Divisor  := Sqr(Omega) / (Sqr(Sqr(FDenominator[3]) - Sqr(Omega)) +
-   Sqr(2 * FDenominator[3] * Omega));
- Cmplex.Re := (Sqr(Omega) - Sqr(FDenominator[3])) * Divisor;
- Cmplex.Im := 2 * Omega * FDenominator[3] * Divisor;
+ Result.Re := Temp[0] * Temp[1] - 4 * Sqr(Omega) * FDenominator[0] * FDenominator[3];
+ Result.Im := 2 * Omega * (FDenominator[0] * Temp[1] + FDenominator[3] * Temp[0]);
 
- ComplexMultiplyInplace(Result, Cmplex);
-
- Divisor  := FGainFactor / (Sqr(FDenominator[1] * FDenominator[2] - Sqr(Omega)) +
-   Sqr((FDenominator[1] + FDenominator[2]) * Omega));
+ Divisor  := FGainFactor * Sqr(Omega) * Sqr(Omega) /
+   ((Sqr(Sqr(FDenominator[3]) - Sqr(Omega)) + Sqr(2 * FDenominator[3] * Omega)) *
+    (Sqr(Sqr(FDenominator[0]) - Sqr(Omega)) + Sqr(2 * FDenominator[0] * Omega)) *
+    (Sqr(FDenominator[1] * FDenominator[2] - Sqr(Omega)) + Sqr((FDenominator[1] + FDenominator[2]) * Omega)));
 
  Cmplex.Re := (FDenominator[1] * FDenominator[2] - Sqr(Omega)) * Divisor;
  Cmplex.Im := -Omega * (FDenominator[1] + FDenominator[2]) * Divisor;
@@ -973,6 +990,12 @@ end;
 { TAnalogueBWeightingFilterPrototype }
 
 constructor TAnalogueBWeightingFilterPrototype.Create;
+begin
+ inherited;
+ CalculateCoefficients;
+end;
+
+procedure TAnalogueBWeightingFilterPrototype.CalculateCoefficients;
 begin
  // exact values according to DIN EN 61672-1
  FDenominator[0] := 2 * Pi * 20.598997058;
@@ -1022,7 +1045,11 @@ end;
 constructor TAnalogueCWeightingFilterPrototype.Create;
 begin
  inherited;
+ CalculateCoefficients;
+end;
 
+procedure TAnalogueCWeightingFilterPrototype.CalculateCoefficients;
+begin
  // exact values according to DIN EN 61672-1
  FDenominator[0] := 2 * Pi * 20.598997058;
  FDenominator[1] := 2 * Pi * 12194.217148;
@@ -1063,6 +1090,12 @@ end;
 { TAnalogueDWeightingFilterPrototype }
 
 constructor TAnalogueDWeightingFilterPrototype.Create;
+begin
+ inherited;
+ CalculateCoefficients;
+end;
+
+procedure TAnalogueDWeightingFilterPrototype.CalculateCoefficients;
 begin
  // from http://en.wikipedia.org/wiki/A-weighting
  FNominator[0] := 4.0975E7;
