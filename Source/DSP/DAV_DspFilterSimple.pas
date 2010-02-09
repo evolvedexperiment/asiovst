@@ -108,7 +108,11 @@ type
   TFirstOrderHighShelfFilter = class(TCustomFirstOrderFilter, IDspProcessor32,
     IDspProcessor64)
   protected
+    FAddCoeff : Double;
     procedure CalculateCoefficients; override;
+  public
+    function ProcessSample32(Input: Single): Single; override;
+    function ProcessSample64(Input: Double): Double; override;
   end;
 
   TFirstOrderHighcutFilter = class(TCustomFirstOrderFilter, IDspProcessor32,
@@ -363,11 +367,8 @@ procedure TFirstOrderLowShelfFilter.CalculateCoefficients;
 var
   K : Double;
 begin
-// raise Exception.Create('Yet todo!');
-
  K := FExpW0.Im / (1 + FExpW0.Re);
-
- FFilterGain := 1;
+ FFilterGain := (K * FGainFactor + 1) / (K / FGainFactor + 1);
  FCoeff := (FGainFactor * K - 1) / (FGainFactor * K + 1);
  FAddCoeff := (K - FGainFactor) / (K + FGainFactor);
 end;
@@ -411,6 +412,8 @@ asm
  {$IFDEF HandleDenormals}
  fadd CDenorm64
  {$ENDIF}
+ fmul  [eax.FFilterGain].Double
+ jz @End
   fld   st(0)
   fadd  [eax.FState].Double
   fld   st(0)
@@ -420,15 +423,77 @@ asm
   fsubrp st(2), st(0)
   fxch
   fstp  [eax.FState].Double
+ @End:
  {$ENDIF}
 end;
+
 
 { TFirstOrderHighShelfFilter }
 
 procedure TFirstOrderHighShelfFilter.CalculateCoefficients;
+var
+  K : Double;
 begin
- raise Exception.Create('Yet todo!');
+ K := FExpW0.Im / (1 + FExpW0.Re);
+ FFilterGain := (K * FGainFactor + 1) / (K / FGainFactor + 1);
+ FCoeff := (FGainFactor * K - 1) / (FGainFactor * K + 1);
+ FAddCoeff := (K - FGainFactor) / (K + FGainFactor);
 end;
+
+function TFirstOrderHighShelfFilter.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ Input := FFilterGain * Input;
+ Result := Input + FState;
+ FState := Input * FCoeff - Result * FAddCoeff;
+{$ELSE}
+asm
+ fld Input.Single
+ {$IFDEF HandleDenormals}
+ fadd CDenorm32
+ {$ENDIF}
+ fmul  [eax.FFilterGain].Double
+ jz @End
+  fld   st(0)
+  fadd  [eax.FState].Double
+  fld   st(0)
+  fmul  [eax.FAddCoeff].Double
+  fxch  st(2)
+  fmul  [eax.FCoeff].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp  [eax.FState].Double
+ @End:
+ {$ENDIF}
+end;
+
+function TFirstOrderHighShelfFilter.ProcessSample64(Input: Double): Double;
+{$IFDEF PUREPASCAL}
+begin
+ Input := FFilterGain * Input;
+ Result := Input + FState;
+ FState := Input * FCoeff - Result * FAddCoeff;
+{$ELSE}
+asm
+ fld Input.Double
+ {$IFDEF HandleDenormals}
+ fadd CDenorm64
+ {$ENDIF}
+ fmul  [eax.FFilterGain].Double
+ jz @End
+  fld   st(0)
+  fadd  [eax.FState].Double
+  fld   st(0)
+  fmul  [eax.FAddCoeff].Double
+  fxch  st(2)
+  fmul  [eax.FCoeff].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp  [eax.FState].Double
+ @End:
+ {$ENDIF}
+end;
+
 
 { TFirstOrderHighcut }
 
