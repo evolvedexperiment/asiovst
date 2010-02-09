@@ -98,6 +98,7 @@ type
   TFirstOrderLowShelfFilter = class(TCustomFirstOrderFilter, IDspProcessor32,
     IDspProcessor64)
   protected
+    FAddCoeff : Double;
     procedure CalculateCoefficients; override;
   public
     function ProcessSample32(Input: Single): Single; override;
@@ -360,23 +361,23 @@ end;
 
 procedure TFirstOrderLowShelfFilter.CalculateCoefficients;
 var
-  K, t : Double;
+  K : Double;
 begin
- raise Exception.Create('Yet todo!');
+// raise Exception.Create('Yet todo!');
 
- FFilterGain := FGainFactorSquared;
  K := FExpW0.Im / (1 + FExpW0.Re);
 
- t := 1 / (1 + K);
- FFilterGain := FFilterGain * t * K;
- FCoeff := (1 - K) * t;
+ FFilterGain := 1;
+ FCoeff := (FGainFactor * K - 1) / (FGainFactor * K + 1);
+ FAddCoeff := (K - FGainFactor) / (K + FGainFactor);
 end;
 
 function TFirstOrderLowShelfFilter.ProcessSample32(Input: Single): Single;
 {$IFDEF PUREPASCAL}
 begin
- Result := FFilterGain * Input + FState;
- FState := Input + FCoeff * (Input + FState);
+ Input := FFilterGain * Input;
+ Result := Input + FState;
+ FState := Input * FCoeff - Result * FAddCoeff;
 {$ELSE}
 asm
  fld Input.Single
@@ -385,13 +386,15 @@ asm
  {$ENDIF}
  fmul  [eax.FFilterGain].Double
  jz @End
-  fld st(0)
-  fadd [eax.FState].Double
-  fld st(0)
-  fmul [eax.FCoeff].Double
-  faddp st(2), st(0)
+  fld   st(0)
+  fadd  [eax.FState].Double
+  fld   st(0)
+  fmul  [eax.FAddCoeff].Double
+  fxch  st(2)
+  fmul  [eax.FCoeff].Double
+  fsubrp st(2), st(0)
   fxch
-  fstp [eax.FState].Double
+  fstp  [eax.FState].Double
  @End:
  {$ENDIF}
 end;
@@ -399,22 +402,24 @@ end;
 function TFirstOrderLowShelfFilter.ProcessSample64(Input: Double): Double;
 {$IFDEF PUREPASCAL}
 begin
- Result := FFilterGain * Input + FState;
- FState := Input + FCoeff * (Input + FState);
+ Input := FFilterGain * Input;
+ Result := Input + FState;
+ FState := Input * FCoeff - Result * FAddCoeff;
 {$ELSE}
 asm
  fld Input.Double
  {$IFDEF HandleDenormals}
  fadd CDenorm64
  {$ENDIF}
- fmul  [eax.FFilterGain].Double
- fld st(0)
- fadd [eax.FState].Double
- fld st(0)
- fmul [eax.FCoeff].Double
- faddp st(2), st(0)
- fxch
- fstp [eax.FState].Double
+  fld   st(0)
+  fadd  [eax.FState].Double
+  fld   st(0)
+  fmul  [eax.FAddCoeff].Double
+  fxch  st(2)
+  fmul  [eax.FCoeff].Double
+  fsubrp st(2), st(0)
+  fxch
+  fstp  [eax.FState].Double
  {$ENDIF}
 end;
 
