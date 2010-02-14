@@ -100,6 +100,11 @@ begin
    try
     ListBox.Clear;
 
+    // clear existing resources
+    while FSEModule.ResourceCount > 0
+     do FSEModule.DeleteResource(0);
+
+    // load file
     FSEModule.LoadFromFile(FileName);
 
     for i := 0 to FSEModule.ResourceCount - 1 do

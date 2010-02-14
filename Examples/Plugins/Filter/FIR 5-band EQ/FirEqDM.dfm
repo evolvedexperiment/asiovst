@@ -413,8 +413,8 @@ object FirEQDataModule: TFirEQDataModule
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange
-  Left = 286
-  Top = 81
+  Left = 558
+  Top = 122
   Height = 150
   Width = 215
 end

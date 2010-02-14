@@ -434,10 +434,10 @@ procedure TFirstOrderHighShelfFilter.CalculateCoefficients;
 var
   K : Double;
 begin
- K := FExpW0.Im / (1 + FExpW0.Re);
- FFilterGain := (K * FGainFactor + 1) / (K / FGainFactor + 1);
- FCoeff := (FGainFactor * K - 1) / (FGainFactor * K + 1);
- FAddCoeff := (K - FGainFactor) / (K + FGainFactor);
+ K  := FExpW0.Im / (1 + FExpW0.Re);
+ FFilterGain := ((K / FGainFactor + 1) / (K * FGainFactor + 1)) * FGainFactorSquared;
+ FCoeff := (K - FGainFactor) / (K + FGainFactor);
+ FAddCoeff := (K * FGainFactor - 1) / (K * FGainFactor + 1);
 end;
 
 function TFirstOrderHighShelfFilter.ProcessSample32(Input: Single): Single;

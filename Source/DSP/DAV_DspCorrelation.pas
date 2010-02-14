@@ -469,8 +469,10 @@ begin
    begin
     for Bin := 0 to FFFTSizeHalf do
      begin
-      FSignalFreq^[Bin] := Self.FSignalFreq^[Bin];
-      FCorrelationFreq^[Bin] := Self.FCorrelationFreq^[Bin];
+      FSignalFreq^[Bin].Re := Self.FSignalFreq^[Bin].Re;
+      FSignalFreq^[Bin].Im := Self.FSignalFreq^[Bin].Im;
+      FCorrelationFreq^[Bin].Re := Self.FCorrelationFreq^[Bin].Re;
+      FCorrelationFreq^[Bin].Im := Self.FCorrelationFreq^[Bin].Im;
      end;
    end;
 end;
@@ -569,8 +571,10 @@ begin
    begin
     for Bin := 0 to FFFTSizeHalf do
      begin
-      FSignalFreq^[Bin] := Self.FSignalFreq^[Bin];
-      FCorrelationFreq^[Bin] := Self.FCorrelationFreq^[Bin];
+      FSignalFreq^[Bin].Re := Self.FSignalFreq^[Bin].Re;
+      FSignalFreq^[Bin].Im := Self.FSignalFreq^[Bin].Im;
+      FCorrelationFreq^[Bin].Re := Self.FCorrelationFreq^[Bin].Re;
+      FCorrelationFreq^[Bin].Im := Self.FCorrelationFreq^[Bin].Im;
      end;
    end else
  if Dest is TCorrelation64 then

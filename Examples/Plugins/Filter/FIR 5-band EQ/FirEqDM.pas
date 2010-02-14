@@ -91,7 +91,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, DAV_Common, DAV_VSTModuleWithPrograms;
+  Math, DAV_Common, DAV_Math, DAV_VSTModuleWithPrograms;
 
 procedure TFirEQDataModule.VSTModuleCreate(Sender: TObject);
 begin
@@ -350,7 +350,8 @@ var
   Band    : Integer;
   n       : Double;
   Freq    : Double;
-  Cmplx   : TComplexDouble;
+  Scale   : Double;
+  Cmplx   : array [0..2] of TComplexDouble;
 begin
  // checks whether everything is set correctly
  for Band := 0 to Length(FFilterProtos) - 1 do
@@ -358,7 +359,6 @@ begin
 
  if (not Assigned(FFilterKernel)) or (not Assigned(FFilterFreq)) or
    (not Assigned(FFft)) then Exit;
-
 
  FCriticalSection.Enter;
  try
@@ -369,18 +369,42 @@ begin
   for Band := 1 to Length(FFilterProtos) - 1
    do FFilterFreq[0].Re := FFilterFreq[0].Re * FFilterProtos[Band].Complex32(0).Re;
 
+  Cmplx[2] := FFilterProtos[0].Complex64(0.5 * FSampleRate);
+  for Band := 1 to Length(FFilterProtos) - 1
+   do ComplexMultiplyInplace(Cmplx[2], FFilterProtos[Band].Complex64(0.5 * FSampleRate));
+
+  // compensate nyquist phase offset
+  GetSinCos(ArcTan2(-Cmplx[2].Im, Cmplx[2].Re) / h, Cmplx[0].Im, Cmplx[0].Re);
+  Cmplx[1].Re := 1;
+  Cmplx[1].Im := 0;
+
+  Scale := 1 / h * 0.5 * FSampleRate;
+
   for i := 1 to h - 1 do
    begin
-    Freq := i / h * 0.5 * FSampleRate;
-    FFilterFreq[i] := FFilterProtos[0].Complex32(Freq);
+    Freq := i * Scale;
+
+    // calculate complex frequency response
+    Cmplx[2] := FFilterProtos[0].Complex64(Freq);
     for Band := 1 to Length(FFilterProtos) - 1
-     do FFilterFreq[i] := ComplexMultiply(FFilterFreq[i],
-       FFilterProtos[Band].Complex32(Freq));
+     do ComplexMultiplyInplace(Cmplx[2], FFilterProtos[Band].Complex64(Freq));
+
+    // compensate nyquist phase offset
+    ComplexMultiplyInplace(Cmplx[2], Cmplx[1]);
+    ComplexMultiplyInplace(Cmplx[1], Cmplx[0]);
+
+    FFilterFreq[i].Re := Cmplx[2].Re;
+    FFilterFreq[i].Im := Cmplx[2].Im;
    end;
 
-  FFilterFreq[h] := FFilterProtos[0].Complex32(0.5 * FSampleRate);
+  // compensate nyquist phase offset
+  Cmplx[2] := FFilterProtos[0].Complex64(0.5 * FSampleRate);
   for Band := 1 to Length(FFilterProtos) - 1
-   do FFilterFreq[h].Re := FFilterFreq[h].Re * FFilterProtos[Band].Complex32(0.5 * FSampleRate).Re;
+   do ComplexMultiplyInplace(Cmplx[2], FFilterProtos[Band].Complex64(0.5 * FSampleRate));
+  ComplexMultiplyInplace(Cmplx[2], Cmplx[1]);
+
+  FFilterFreq[h].Re := Cmplx[2].Re;
+  FFilterFreq[h].Im := Cmplx[2].Im;
 
   // calculate frequency
   {$IFDEF Use_IPPS}
