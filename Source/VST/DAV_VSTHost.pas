@@ -71,12 +71,13 @@ const
 type
   {$IFDEF DELPHI10_UP} {$region 'General Types'} {$ENDIF}
   TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
-  TVstAutomateEvent = procedure(Sender: TObject; Index, IntValue: LongInt; ParamValue: Single) of object;
+  TVstAutomateEvent = procedure(Sender: TObject; Index: Integer; ParameterValue: Single) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; VstEvents: PVstEvents) of object;
   TVstAutomationNotifyEvent = procedure(Sender: TObject; ParameterIndex: Integer) of object;
   TVstSampleRateChangedEvent = procedure(Sender: TObject; SampleRate: Single) of object;
   TVstPinConnectedEvent = function(Sender: TObject; PinNr: Integer; isInput: Boolean): Boolean of object;
   TVstOfflineEvent = procedure(Sender: TObject; VstOfflineTaskPointer: PVstOfflineTaskRecord) of object;
+  TVSTGetTempoAtSamplePositionEvent = function(Sender: TObject; SamplePosition: Integer): Double of object;
   {$IFDEF VstHostGUI}
   TVstShowEditEvent = procedure(Sender: TObject; Control: TWinControl) of object;
   TGUIStyle = (gsDefault, gsOld, gsList);
@@ -201,8 +202,16 @@ type
     procedure EditClose;
     {$ENDIF}
     procedure AssignTo(Dest: TPersistent); override;
-    procedure IOChanged;
-    procedure NeedIdle;
+
+    procedure AudioMasterAutomate(Index: Integer; Value: Single); virtual;
+    procedure AudioMasterIdle; virtual;
+    function AudioMasterCurrentId: Integer;
+    function AudioMasterPinConnected(Index: Integer; PinConnected: Boolean): Boolean; virtual;
+    procedure AudioMasterWantMidi; virtual;
+    procedure AudioMasterProcessEvents(VstEvents: PVstEvents); virtual;
+    procedure AudioMasterIOChanged;
+    procedure AudioMasterNeedIdle;
+    function AudioMasterSizeWindow(Width, Height: Integer): Boolean;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -450,7 +459,7 @@ type
     procedure SetItem(Index: Integer; const Value: TVstPlugIn);
   protected
     property Items[Index: Integer]: TVstPlugIn read GetItem write SetItem; default;
-    property VstHost: TCustomVstHost read GetVSTHost; 
+    property VstHost: TCustomVstHost read GetVSTHost;
   public
     constructor Create(AOwner: TComponent);
     function Add: TVstPlugIn;
@@ -521,7 +530,7 @@ type
     FCheckStringLengths : Boolean;
     FInputLatency       : Integer;
     FLanguage           : TVstHostLanguage;
-    FnumAutomatable     : Integer;
+    FNumAutomatable     : Integer;
     FOutputLatency      : Integer;
     FParamQuan          : Integer;
     FPlugInDir          : string;
@@ -534,6 +543,7 @@ type
     FBlockSize          : Integer;
     FOnCreate           : TNotifyEvent;
     FOnDestroy          : TNotifyEvent;
+    FOnGetTempoAtSamplePosition: TVSTGetTempoAtSamplePositionEvent;
     function GetHostTempo: Single;
     function GetItem(Index: Integer): TCustomVstPlugIn;
     function GetPluginCount: Integer;
@@ -548,6 +558,14 @@ type
     procedure AssignTo(Dest: TPersistent); override;
     procedure BlockSizeChanged; virtual;
     procedure CreateVstPluginList; virtual;
+
+    function AudioMasterGetTime: PVstTimeInfo; virtual;
+    procedure AudioMasterSetTime(VstTimeInfo: PVstTimeInfo; Filter: TVstTimeInfoFlags); virtual;
+    function AudioMasterTempoAt(const SamplePosition: Integer): Integer; virtual;
+    function AudioMasterGetParameterQuantization(Index: Integer): Integer; virtual;
+    function AudioMasterGetNumAutomatableParameters: Integer; virtual;
+    function AudioMasterGetSampleRate: Single; virtual;
+
     property Items[Index: Integer]: TCustomVstPlugIn read GetItem; default;
   public
     constructor Create(AOwner: TComponent); override;
@@ -563,9 +581,10 @@ type
     property LatencyInput: Integer read FInputLatency write FInputLatency default 0;
     property LatencyOutput: Integer read FOutputLatency write FOutputLatency default 0;
     property ManageIdleAutomaticly : Boolean read FAutoIdle write FAutoIdle;
-    property NumAutomatableParameters : Integer read FnumAutomatable write FnumAutomatable default 0;
+    property NumAutomatableParameters : Integer read FNumAutomatable write FNumAutomatable default 0;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
+    property OnGetTempoAtSamplePosition: TVSTGetTempoAtSamplePositionEvent read FOnGetTempoAtSamplePosition write FOnGetTempoAtSamplePosition;
     property ParameterQuantization : Integer read FParamQuan write FParamQuan default MAXINT;
     property PlugInDir: string read FPlugInDir write FPlugInDir;
     property ProductString: string read FProductString write FProductString;
@@ -714,6 +733,49 @@ begin
  if Length(Result) > 2 then Result := Copy(Result, 0, Length(Result) - 2)
 end;
 
+function TimeInfoFlags2Integer(VstTimeInfoFlags: TVstTimeInfoFlags): Integer;
+begin
+ if vtiTransportChanged in VstTimeInfoFlags then Result := 1 else Result := 0;
+ if vtiTransportPlaying in VstTimeInfoFlags then Result := Result + 1 shl 1;
+ if vtiTransportCycleActive in VstTimeInfoFlags then Result := Result + 1 shl 2;
+ if vtiTransportRecording in VstTimeInfoFlags then Result := Result + 1 shl 3;
+
+ if vtiAutomationWriting in VstTimeInfoFlags then Result := Result + 1 shl 6;
+ if vtiAutomationReading in VstTimeInfoFlags then Result := Result + 1 shl 7;
+
+ if vtiNanosValid in VstTimeInfoFlags then Result := Result + 1 shl 8;
+ if vtiPpqPosValid in VstTimeInfoFlags then Result := Result + 1 shl 9;
+ if vtiTempoValid in VstTimeInfoFlags then Result := Result + 1 shl 10;
+ if vtiBarsValid in VstTimeInfoFlags then Result := Result + 1 shl 11;
+ if vtiCyclePosValid in VstTimeInfoFlags then Result := Result + 1 shl 12;
+ if vtiTimeSigValid in VstTimeInfoFlags then Result := Result + 1 shl 13;
+ if vtiSmpteValid in VstTimeInfoFlags then Result := Result + 1 shl 14;
+ if vtiClockValid in VstTimeInfoFlags then Result := Result + 1 shl 15;
+end;
+
+function Integer2TimeInfoFlags(Value: Integer): TVstTimeInfoFlags;
+begin
+ if (Value and 1) <> 0
+  then Result := [vtiTransportChanged]
+  else Result := [];
+
+ if (Value and (1 shl  1)) <> 0 then Result := Result + [vtiTransportPlaying];
+ if (Value and (1 shl  2)) <> 0 then Result := Result + [vtiTransportCycleActive];
+ if (Value and (1 shl  3)) <> 0 then Result := Result + [vtiTransportRecording];
+
+ if (Value and (1 shl  6)) <> 0 then Result := Result + [vtiAutomationWriting];
+ if (Value and (1 shl  7)) <> 0 then Result := Result + [vtiAutomationReading];
+
+ if (Value and (1 shl  8)) <> 0 then Result := Result + [vtiNanosValid];
+ if (Value and (1 shl  9)) <> 0 then Result := Result + [vtiPpqPosValid];
+ if (Value and (1 shl 10)) <> 0 then Result := Result + [vtiTempoValid];
+ if (Value and (1 shl 11)) <> 0 then Result := Result + [vtiBarsValid];
+ if (Value and (1 shl 12)) <> 0 then Result := Result + [vtiCyclePosValid];
+ if (Value and (1 shl 13)) <> 0 then Result := Result + [vtiTimeSigValid];
+ if (Value and (1 shl 14)) <> 0 then Result := Result + [vtiSmpteValid];
+ if (Value and (1 shl 15)) <> 0 then Result := Result + [vtiClockValid];
+end;
+
 procedure DontRaiseExceptionsAndSetFPUcodeword;
 {$IFDEF PUREPASCAL}
 begin
@@ -816,88 +878,47 @@ begin
 
   case TAudiomasterOpcode(opcode) of
    audioMasterAutomate                    : begin
-                                             if Assigned(Plugin) then
-                                              if Assigned(Plugin.FOnAMAutomate)
-                                               then Plugin.FOnAMAutomate(Plugin, Index, Value, opt);
+                                             if Assigned(Plugin)
+                                              then Plugin.AudioMasterAutomate(Index, Opt);
                                              Result := 0;
                                             end;
    audioMasterVersion                     : if Assigned(Host)
                                              then Result := Host.VSTVersion
                                              else Result := 2300;
-   audioMasterIdle                        : if Assigned(Plugin) then
-                                             begin
-                                              {$IFDEF VstHostGUI}
-                                              Plugin.FNeedIdle := True;
-                                              if Assigned(Plugin.FOnAMIdle)
-                                               then Plugin.FOnAMIdle(Plugin);
-                                              if Assigned(Host) and Host.FAutoIdle then
-                                               begin
-                                                if Plugin.EditVisible then Plugin.EditIdle;
-                                                for i := 0 to Host.VstPlugIns.Count - 1 do // Norm-Konform!
-                                                 if Host.VstPlugIns[i].EditVisible then Host.VstPlugIns[i].EditIdle;
-                                               end;
-                                              {$ENDIF}
-                                             end;
-   audioMasterCurrentId                   : if Plugin <> nil
-                                             then Plugin.Identify
-                                             else Result := 0; // returns the unique id of a plug that's currently loading
-   audioMasterPinConnected                : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMPinConnected)
-                                              then
-                                               begin
-                                                if Plugin.FOnAMPinConnected(Plugin, Index, value = 0)
-                                                 then Result := 0
-                                                 else Result := 1;
-                                               end
-                                              else Result := 0
+   audioMasterIdle                        : if Assigned(Plugin)
+                                             then Plugin.AudioMasterIdle;
+   audioMasterCurrentId                   : if Assigned(Plugin)
+                                             then Result := Plugin.AudioMasterCurrentId
                                              else Result := 0;
-   audioMasterWantMidi                    : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMWantMidi)
-                                              then Plugin.FOnAMWantMidi(Plugin);
+   audioMasterPinConnected                : if Assigned(Plugin)
+                                             then Result := Integer(Plugin.AudioMasterPinConnected(Index, Value = 0))
+                                             else Result := 0;
+   audioMasterWantMidi                    : if Assigned(Plugin)
+                                             then Plugin.AudioMasterWantMidi;
    audioMasterGetTime                     : if Assigned(Host)
-                                             then Result := LongInt(@Host.VstTimeInfo.FVstTimeInfo)
+                                             then Result := LongInt(AudioMasterGetTime)
                                              else Result := 0;
-   audioMasterProcessEvents               : if Assigned(Plugin.FOnProcessEvents)
-                                             then Plugin.FOnProcessEvents(Plugin, ptr);
-   audioMasterSetTime                     : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterSetTime, VstTimenfo* in <ptr>, filter in <value>, not supported') {$ENDIF Debug};
+   audioMasterProcessEvents               : if Assigned(Plugin)
+                                             then Plugin.AudioMasterProcessEvents(ptr);
+   audioMasterSetTime                     : if Assigned(Host)
+                                             then Host.AudioMasterSetTime(ptr, Integer2TimeInfoFlags(Value));
    audioMasterTempoAt                     : if Assigned(Host)
-                                             then Result := Round(Host.Tempo) * 10000
+                                             then Result := Host.AudioMasterTempoAt(Value)
                                              else Result := 1200000;
    audioMasterGetNumAutomatableParameters : if Assigned(Host)
-                                             then Result := Host.FnumAutomatable
+                                             then Result := Host.AudioMasterGetNumAutomatableParameters
                                              else Result := 0;
-   audioMasterGetParameterQuantization    : if Assigned(Host) then
-                                             if Value = -1
-                                              then Result := Host.FParamQuan
-                                              else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug}
-                                             // or 1 if full Single float precision is maintained
-                                             // in automation. parameter index in <value> (-1: all, any)
-                                            else Result := 0;
+   audioMasterGetParameterQuantization    : if Assigned(Host)
+                                             then Result := Host.AudioMasterGetParameterQuantization(Value)
+                                             else Result := 0;
    audioMasterIOChanged                   : if Assigned(Plugin)
-                                             then Plugin.IOChanged;
-   audioMasterNeedIdle                    : if Assigned(Plugin) then
-                                             begin
-                                              Plugin.NeedIdle;
-                                              if Assigned(Host) and Host.FAutoIdle
-                                               then Plugin.Idle;
-                                             end;
-   audioMasterSizeWindow                  : begin
-                                             {$IFDEF VstHostGUI}
-                                             if Assigned(Plugin) then
-                                              if pos('DASH', uppercase(Plugin.VendorString)) > 0
-                                               then Result := 0
-                                              else if pos('WUSIK', uppercase(Plugin.VendorString)) > 0
-                                               then Result := 0 else
-                                              if Assigned(Plugin.GUIControl) then
-                                               begin
-                                                Plugin.GUIControl.ClientWidth := index;
-                                                Plugin.GUIControl.ClientHeight := value;
-                                                Result := 1;
-                                               end;
-                                             {$ENDIF}
-                                            end;
+                                             then Plugin.AudioMasterIOChanged;
+   audioMasterNeedIdle                    : if Assigned(Plugin)
+                                             then Plugin.AudioMasterNeedIdle;
+   audioMasterSizeWindow                  : if Assigned(Plugin)
+                                              then Result := Integer(Plugin.AudioMasterSizeWindow(Index, Value));
    audioMasterGetSampleRate               : if Assigned(Host)
-                                             then Result := Round(Host.VstTimeInfo.SampleRate)
+                                             then Result := Round(Host.AudioMasterGetSampleRate)
                                              else Result := CDefaultSampleRate;
    audioMasterGetBlockSize                : if Assigned(Host)
                                              then Result := Host.BlockSize
@@ -913,9 +934,15 @@ begin
                                              {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
                                             end;
    audioMasterGetNextPlug                 : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
-   audioMasterWillReplaceOrAccumulate     : if Plugin <> nil then Result := Integer(Plugin.FReplaceOrAccumulate) else Result := 0;
-   audioMasterGetCurrentProcessLevel      : if Plugin <> nil then Result := Integer(Plugin.FProcessLevel) else Result := 0;
-   audioMasterGetAutomationState          : if Plugin <> nil then Result := Integer(Plugin.FAutomationState) else Result := 0;
+   audioMasterWillReplaceOrAccumulate     : if Assigned(Plugin)
+                                             then Result := Integer(Plugin.FReplaceOrAccumulate)
+                                             else Result := 0;
+   audioMasterGetCurrentProcessLevel      : if Assigned(Plugin)
+                                             then Result := Integer(Plugin.FProcessLevel)
+                                             else Result := 0;
+   audioMasterGetAutomationState          : if Assigned(Plugin)
+                                             then Result := Integer(Plugin.FAutomationState)
+                                             else Result := 0;
    audioMasterOfflineStart                : if Assigned(Plugin) then
                                              if Assigned(Plugin.FOnAMOfflineStart)
                                               then Plugin.FOnAMOfflineStart(Plugin); // audioMasterOfflineStart
@@ -1264,7 +1291,7 @@ begin
     FCheckStringLengths := Self.FCheckStringLengths;
     FInputLatency       := Self.FInputLatency;
     FLanguage           := Self.FLanguage;
-    FnumAutomatable     := Self.FnumAutomatable;
+    FNumAutomatable     := Self.FNumAutomatable;
     FOnCreate           := Self.FOnCreate;
     FOnDestroy          := Self.FOnDestroy;
     FOutputLatency      := Self.FOutputLatency;
@@ -1401,6 +1428,84 @@ begin
    FBlockSize := Value;
    BlockSizeChanged;
   end;
+end;
+
+function TCustomVstHost.AudioMasterGetNumAutomatableParameters: Integer;
+begin
+ Result := FNumAutomatable;
+end;
+
+function TCustomVstHost.AudioMasterGetParameterQuantization(
+  Index: Integer): Integer;
+begin
+ // returns the integer value for +1.0 representation or 1 if full single
+ // float precision is maintained in automation. Index = -1 for all parameters
+
+ if Index = -1
+  then Result := FParamQuan
+  else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug}
+end;
+
+function TCustomVstHost.AudioMasterGetSampleRate: Single;
+begin
+ Result := VstTimeInfo.SampleRate;
+end;
+
+function TCustomVstHost.AudioMasterGetTime: PVstTimeInfo;
+begin
+ Result := @VstTimeInfo.FVstTimeInfo;
+end;
+
+procedure TCustomVstHost.AudioMasterSetTime(VstTimeInfo: PVstTimeInfo;
+  Filter: TVstTimeInfoFlags);
+begin
+ // the flags below are not yet supported! (to do: read the SDK)
+ if vtiTransportChanged in Filter then ;
+ if vtiTransportPlaying in Filter then ;
+ if vtiTransportCycleActive in Filter then ;
+ if vtiTransportRecording in Filter then ;
+ if vtiAutomationWriting in Filter then ;
+ if vtiAutomationReading in Filter then ;
+
+ if vtiNanosValid in Filter
+  then Self.VstTimeInfo.NanoSeconds := VstTimeInfo.NanoSeconds;
+
+ if vtiPpqPosValid in Filter
+  then Self.VstTimeInfo.PpqPos := VstTimeInfo.PpqPos;
+
+ if vtiTempoValid in Filter
+  then Self.VstTimeInfo.Tempo := VstTimeInfo.Tempo;
+
+ if vtiBarsValid in Filter
+  then Self.VstTimeInfo.BarStartPos := VstTimeInfo.BarStartPos;
+
+ if vtiCyclePosValid in Filter then
+  begin
+   Self.VstTimeInfo.CycleStartPos := VstTimeInfo.CycleStartPos;
+   Self.VstTimeInfo.CycleEndPos := VstTimeInfo.CycleEndPos;
+  end;
+
+ if vtiTimeSigValid in Filter then
+  begin
+   Self.VstTimeInfo.TimeSigNumerator := VstTimeInfo.TimeSigNumerator;
+   Self.VstTimeInfo.TimeSigDenominator := VstTimeInfo.TimeSigDenominator;
+  end;
+
+ if vtiSmpteValid in Filter then
+  begin
+   Self.VstTimeInfo.SmpteOffset := VstTimeInfo.SmpteOffset;
+   Self.VstTimeInfo.SmpteFrameRate := VstTimeInfo.SmpteFrameRate;
+  end;
+
+ if vtiClockValid in Filter
+  then Self.VstTimeInfo.SamplesToNextClock := VstTimeInfo.SamplesToNextClock;
+end;
+
+function TCustomVstHost.AudioMasterTempoAt(const SamplePosition: Integer): Integer;
+begin
+ if Assigned(OnGetTempoAtSamplePosition)
+  then Result := Round(OnGetTempoAtSamplePosition(Self, SamplePosition) * 10000)
+  else Result := Round(Tempo * 10000);
 end;
 
 procedure TCustomVstHost.BlockSizeChanged;
@@ -1994,11 +2099,14 @@ begin
  VstDispatch(effMainsChanged, 0, Integer(IsOn));
 end;
 
-procedure TCustomVstPlugIn.NeedIdle;
+procedure TCustomVstPlugIn.AudioMasterNeedIdle;
 begin
  FNeedIdle := True;
  if Assigned(FOnAMNeedIdle)
   then FOnAMNeedIdle(Self);
+
+ if (Collection.Owner <> nil) and TCustomVSTHost(Collection.Owner).FAutoIdle
+  then Idle;
 end;
 
 function TCustomVstPlugIn.GetVu: Single;
@@ -2825,7 +2933,7 @@ begin
   else Result := 0;
 end;
 
-procedure TCustomVstPlugIn.IOchanged;
+procedure TCustomVstPlugIn.AudioMasterIOchanged;
 begin
  if Assigned(FOnAMIOChanged)
   then FOnAMIOChanged(Self);
@@ -3052,6 +3160,82 @@ begin
  // Gain in <opt>: for Linear : [1.0 => 0dB PanLaw], [~0.58 => -4.5dB], [0.5 => -6.02dB]
  i := Integer(PanLaw);
  if FActive then VstDispatch(effSetPanLaw, 0, i, nil, Gain);
+end;
+
+procedure TCustomVstPlugIn.AudioMasterAutomate(Index: Integer; Value: Single);
+begin
+ if Assigned(FOnAMAutomate)
+  then FOnAMAutomate(Self, Index, Value);
+end;
+
+function TCustomVstPlugIn.AudioMasterPinConnected(Index: Integer;
+  PinConnected: Boolean): Boolean;
+begin
+ if Assigned(FOnAMPinConnected)
+  then
+   begin
+    if FOnAMPinConnected(Self, Index, PinConnected)
+     then Result := False
+     else Result := True;
+   end
+  else Result := False;
+end;
+
+procedure TCustomVstPlugIn.AudioMasterProcessEvents(VstEvents: PVstEvents);
+begin
+ if Assigned(FOnProcessEvents)
+  then FOnProcessEvents(Self, VstEvents);
+end;
+
+function TCustomVstPlugIn.AudioMasterSizeWindow(Width, Height: Integer): Boolean;
+begin
+ {$IFDEF VstHostGUI}
+ if Pos('DASH', UpperCase(VendorString)) > 0
+  then Result := False else
+ if Pos('WUSIK', UpperCase(VendorString)) > 0
+  then Result := False else
+ if Assigned(GUIControl) then
+  begin
+   GUIControl.ClientWidth := Width;
+   GUIControl.ClientHeight := Height;
+   Result := True;
+  end;
+ {$ENDIF}
+end;
+
+procedure TCustomVstPlugIn.AudioMasterWantMidi;
+begin
+ if Assigned(FOnAMWantMidi)
+  then FOnAMWantMidi(Self);
+end;
+
+function TCustomVstPlugIn.AudioMasterCurrentId: Integer;
+begin
+ Result := Identify;
+end;
+
+procedure TCustomVstPlugIn.AudioMasterIdle;
+var
+  PluginIndex : Integer;
+begin
+ {$IFDEF VstHostGUI}
+ FNeedIdle := True;
+
+ if Assigned(FOnAMIdle)
+  then FOnAMIdle(Self);
+
+
+ if Collection.Owner <> nil then
+  with TCustomVstHost(Collection.Owner) do
+   if FAutoIdle then
+    begin
+     if EditVisible then EditIdle;
+
+     for PluginIndex := 0 to VstPlugIns.Count - 1 do
+      if VstPlugIns[PluginIndex].EditVisible
+       then VstPlugIns[PluginIndex].EditIdle;
+    end;
+ {$ENDIF}
 end;
 
 function TCustomVstPlugIn.BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;

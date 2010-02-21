@@ -25,7 +25,7 @@ unit AdvancedClipperDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,6 @@ type
     procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -108,6 +107,8 @@ begin
  for StageIndex := 0 to Length(FUpDownSampling) - 1 do
   for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1
    do FUpDownSampling[StageIndex, ChannelIndex] := TDAVUpDownsampling.Create;
+
+ EditorFormClass := TFmAdvancedClipper;
 
  Parameter[0] := -0.1;
  Parameter[1] := 4;
@@ -227,11 +228,6 @@ begin
  for StageIndex := 0 to Length(FUpDownSampling) - 1 do
   for ChannelIndex := 0 to Length(FUpDownSampling[StageIndex]) - 1
    do FreeAndNil(FUpDownSampling[StageIndex, ChannelIndex]);
-end;
-
-procedure TAdvancedClipperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmAdvancedClipper.Create(Self);
 end;
 
 procedure TAdvancedClipperDataModule.ParaOSFactor1Change(Sender: TObject; const Index: Integer; var Value: Single);

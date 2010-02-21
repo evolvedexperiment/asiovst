@@ -16,6 +16,7 @@ type
     property Flags;
     property About;
     property Version;
+    property EditorFormClass;
     property EffectName;
     property ProductName;
     property VendorName;

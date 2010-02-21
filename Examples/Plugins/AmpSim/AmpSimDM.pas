@@ -25,7 +25,7 @@ unit AmpSimDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,12 +44,11 @@ type
     mtMarshall4x12, mtScoopedOutMetal);
 
   TComboDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+    procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDoubleReplacing(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSuspend(Sender: TObject);
-    procedure VSTModuleOpen(Sender: TObject);
-    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamBiasChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDriveChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -97,6 +96,65 @@ implementation
 
 uses
   Math, Controls, DAV_VSTEffect, DAV_Common, AmpSimGUI;
+
+procedure TComboDataModule.VSTModuleOpen(Sender: TObject);
+begin
+ FBufferSize := 1024;
+ FBufferPosition := 0;
+ GetMem(FBuffer[0], FBufferSize * SizeOf(Single));
+ GetMem(FBuffer[1], FBufferSize * SizeOf(Single));
+ FHighPass[0] := TBasicHighpassFilter.Create;
+ FHighPass[1] := TBasicHighpassFilter.Create;
+
+ {$IFDEF UseGUI}
+ Flags := Flags + [effFlagsHasEditor];
+ EditorFormClass := TFmCombo;
+ {$ENDIF}
+
+ // parameter initialization
+ Parameter[0] := 0;
+ Parameter[1] := 0;
+ Parameter[2] := 0;
+ Parameter[3] := 0;
+ Parameter[4] := 0;
+ Parameter[5] := 100;
+ Parameter[6] := 0;
+ Parameter[7] := -75;
+
+ // default preset
+ with Programs[0] do
+  begin
+   Parameter[0] := 0;
+   Parameter[1] := 0;
+   Parameter[2] := 0;
+   Parameter[3] := 0;
+   Parameter[4] := 0;
+   Parameter[5] := 100;
+   Parameter[6] := 0;
+   Parameter[7] := -75;
+  end;
+
+ // preset 1
+ with Programs[1] do
+  begin
+   Parameter[0] := 3;
+   Parameter[1] := 43.5;
+   Parameter[2] := 41;
+   Parameter[3] := 3.9;
+   Parameter[4] := 0;
+   Parameter[5] := 565;
+   Parameter[6] := 9;
+   Parameter[7] := -75;
+  end;
+end;
+
+procedure TComboDataModule.VSTModuleClose(Sender: TObject);
+begin
+ Dispose(FBuffer[0]);
+ Dispose(FBuffer[1]);
+ FreeAndNil(FHighPass[0]);
+ FreeAndNil(FHighPass[1]);
+end;
 
 procedure TComboDataModule.ParamProcessChange(Sender: TObject; const Index: Integer; var Value: Single);
 begin
@@ -364,70 +422,6 @@ begin
  if Parameter[Index] > 0.5
   then PreDefined := 'STEREO'
   else PreDefined := 'MONO';
-end;
-
-procedure TComboDataModule.VSTModuleClose(Sender: TObject);
-begin
- Dispose(FBuffer[0]);
- Dispose(FBuffer[1]);
- FreeAndNil(FHighPass[0]);
- FreeAndNil(FHighPass[1]);
-end;
-
-procedure TComboDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
-  ParentWindow: Cardinal);
-begin
- GUI := TFmCombo.Create(Self);
-end;
-
-procedure TComboDataModule.VSTModuleOpen(Sender: TObject);
-begin
- FBufferSize := 1024;
- FBufferPosition := 0;
- GetMem(FBuffer[0], FBufferSize * SizeOf(Single));
- GetMem(FBuffer[1], FBufferSize * SizeOf(Single));
- FHighPass[0] := TBasicHighpassFilter.Create;
- FHighPass[1] := TBasicHighpassFilter.Create;
-
- {$IFDEF UseGUI}
- Flags := Flags + [effFlagsHasEditor];
- {$ENDIF}
-
- // parameter initialization
- Parameter[0] := 0;
- Parameter[1] := 0;
- Parameter[2] := 0;
- Parameter[3] := 0;
- Parameter[4] := 0;
- Parameter[5] := 100;
- Parameter[6] := 0;
- Parameter[7] := -75;
-
- // default preset
- with Programs[0] do
-  begin
-   Parameter[0] := 0;
-   Parameter[1] := 0;
-   Parameter[2] := 0;
-   Parameter[3] := 0;
-   Parameter[4] := 0;
-   Parameter[5] := 100;
-   Parameter[6] := 0;
-   Parameter[7] := -75;
-  end;
-
- // preset 1
- with Programs[1] do
-  begin
-   Parameter[0] := 3;
-   Parameter[1] := 43.5;
-   Parameter[2] := 41;
-   Parameter[3] := 3.9;
-   Parameter[4] := 0;
-   Parameter[5] := 565;
-   Parameter[6] := 9;
-   Parameter[7] := -75;
-  end;
 end;
 
 procedure TComboDataModule.VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);

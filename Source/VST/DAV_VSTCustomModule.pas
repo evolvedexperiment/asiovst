@@ -107,6 +107,7 @@ type
     FEditorForm             : TForm;
     FEditorNeedUpdate       : Boolean;
     FEditorRect             : ERect;
+    FEditorFormClass        : TFormClass;
     FEffectName             : string;
     FInitialDelay           : Integer;
     FNumCategories          : Integer;
@@ -238,6 +239,7 @@ type
     property BlockSize: Integer read FBlockSize write SetBlockSize default 1024;
     property CanDos: TVstCanDos read FCanDos write FCanDos default [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out];
     property EffectName: string read FEffectName write SetEffectName;
+    property EditorFormClass: TFormClass read FEditorFormClass write FEditorFormClass;
     property HostProduct: string read GetHostProduct stored False;
     property HostVendor: string read GetHostVendor stored False;
     property HostVersion: Integer read GetHostVendorVersion stored False;
@@ -319,7 +321,11 @@ begin
  FLog := TStringList.Create;
  FTmStmp := Now;
  FLog.Add('Create: ' + TimeToStr(FTmStmp));
- FLog.SaveToFile('Debug.log');
+ if not csDesigning in ComponentState then
+  try
+   FLog.SaveToFile('Debug.log');
+  except
+  end;
  {$ENDIF}
  Randomize;
  FVersion            := '1.0';
@@ -349,9 +355,9 @@ begin
  try
   if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   if Assigned(FVstShellPlugins) then FreeAndNil(FVstShellPlugins);
-  {$IFDEF Debug} if assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
+  {$IFDEF Debug} if Assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
  finally
-  {$IFDEF Debug} if assigned(FLog) then FLog.Free; {$ENDIF}
+  {$IFDEF Debug} if Assigned(FLog) then FLog.Free; {$ENDIF}
   inherited;
  end;
 end;
@@ -362,7 +368,8 @@ begin
  if Assigned(FLog) then
   try
    FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
-   FLog.SaveToFile('Debug.log');
+   if not csDesigning in ComponentState
+    then FLog.SaveToFile('Debug.log');
   except
   end;
 end;
@@ -575,10 +582,10 @@ function TCustomVSTModule.HostCallEditGetRect(const Index, Value: Integer; const
 begin
  {$IFDEF Debug} AddLogMessage('HostCallEditGetRect'); {$ENDIF}
  Result := 0;
- if assigned(ptr) then
+ if Assigned(ptr) then
   begin
    PPERect(ptr)^ := @FEditorRect;
-   if assigned(ptr) then
+   if Assigned(ptr) then
     begin
      FEditorRect.Top := 0;
      FEditorRect.Left := 0;
@@ -601,35 +608,43 @@ var
 begin
  {$IFDEF Debug} AddLogMessage('HostCallEditOpen'); {$ENDIF}
  Result := 0;
- if (effFlagsHasEditor in FEffect.EffectFlags) and assigned(ptr) then
+ if (effFlagsHasEditor in FEffect.EffectFlags) and Assigned(ptr) then
   begin
-   if Assigned(FOnEditOpen) then FOnEditOpen(Self, FEditorForm, THandle(ptr));
+   // if an editor form is assigned create the form and assign it
+   if Assigned(FEditorFormClass)
+    then FEditorForm := FEditorFormClass.Create(Self);
+
+   // the below code is about to be removed soon!
+   if Assigned(FOnEditOpen)
+    then FOnEditOpen(Self, FEditorForm, THandle(ptr));
+
+
    if Assigned(FEditorForm) then
-   try
-    Result := 1;
-    with FEditorForm do
-     begin
-      {$IFNDEF FPC}
-      ParentWindow := HWnd(ptr);
-      {$ELSE}
-        {$IFDEF Windows}
-        SetParent(Handle, HWnd(ptr));
-        {$ELSE}
-        {$IFDEF DARWIN}
-        HIViewGetRoot(WindowRef(ptr));
-        {$ELSE}
-        Handle := HWnd(ptr);
-        Parent := TWinControl.CreateParented(HWnd(ptr));
-        {$ENDIF}
-        {$ENDIF}
-      {$ENDIF}
-      Visible := True;
-      BorderStyle := bsNone;
-      SetBounds(0, 0, Width, Height);
-      Invalidate;
-     end;
-   except
-   end;
+    try
+     Result := 1;
+     with FEditorForm do
+      begin
+       {$IFNDEF FPC}
+       ParentWindow := HWnd(ptr);
+       {$ELSE}
+         {$IFDEF Windows}
+         SetParent(Handle, HWnd(ptr));
+         {$ELSE}
+         {$IFDEF DARWIN}
+         HIViewGetRoot(WindowRef(ptr));
+         {$ELSE}
+         Handle := HWnd(ptr);
+         Parent := TWinControl.CreateParented(HWnd(ptr));
+         {$ENDIF}
+         {$ENDIF}
+       {$ENDIF}
+       Visible := True;
+       BorderStyle := bsNone;
+       SetBounds(0, 0, Width, Height);
+       Invalidate;
+      end;
+    except
+    end;
   end;
 end;
 
@@ -1083,7 +1098,7 @@ end;
 function TCustomVSTModule.HostCallShellGetNextPlugin(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
- if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and assigned(Ptr) then
+ if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and Assigned(Ptr) then
   begin
    StrPCopy(Ptr, FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
    Result := Integer(FVstShellPlugins[FCurrentVstShellPlugin].UniqueID);
@@ -1401,7 +1416,7 @@ end;
 
 procedure TCustomVSTModule.SetSpeakerArrangement(const Input, Output: TVstSpeakerArrangement);
 begin
- if assigned(FOnSpeakerArrangementChanged)
+ if Assigned(FOnSpeakerArrangementChanged)
   then FOnSpeakerArrangementChanged(Self, Input, Output);
 end;
 
@@ -1409,7 +1424,7 @@ function TCustomVSTModule.HostCallSetSpeakerArrangement(const Index,
   Value: Integer; const ptr: pointer; const opt: Single): Integer;
 begin
  result := 0;
- if assigned(ptr) and (Value <> 0) then
+ if Assigned(ptr) and (Value <> 0) then
   begin
    SetSpeakerArrangement(PVstSpeakerArrangement(Value)^, PVstSpeakerArrangement(Ptr)^);
    result := 1;

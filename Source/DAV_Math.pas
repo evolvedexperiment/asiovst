@@ -39,6 +39,8 @@ interface
   {$DEFINE PUREPASCAL} // for OSX use pure pascal code
 {$ENDIF}
 
+uses
+  DAV_Types;
 
 { Compatibility }
 
@@ -89,6 +91,15 @@ function EvaluatePolynomial(Coefficients: array of Double; Input: Double): Doubl
 function EvaluateRational(Nominator, Denominator: array of Single; Input: Single): Double; overload;
 function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; overload;
 
+function EvaluatePolynomialRoot1(A, B : Single): Single; overload;
+function EvaluatePolynomialRoot1(A, B : Double): Double; overload;
+//procedure EvaluatePolynomialRoot2(Coef : PVector; Z : PCompVector); // overload;
+
+procedure Balance(A : PDAVSingleFixedMatrix; LowIndex, HighIndex : Integer;
+  out IndexLow, IndexHigh: Integer; Scale: PDAVSingleFixedArray); overload;
+procedure Balance(A : PDAVDoubleFixedMatrix; LowIndex, HighIndex : Integer;
+  out IndexLow, IndexHigh: Integer; Scale: PDAVDoubleFixedArray); overload;
+
 const
   CTwoMulTwo2Neg32   : Single = ((2.0 / $10000) / $10000);  // 2^-32
   CMinusOneSixteenth : Single = -0.0625;
@@ -100,7 +111,7 @@ var
 implementation
 
 uses
-  Math;
+  Math, SysUtils;
 
 { Compatibility }
 
@@ -507,6 +518,410 @@ end;
 function EvaluateRational(Nominator, Denominator: array of Double; Input: Double): Double; overload;
 begin
  Result := EvaluatePolynomial(Nominator, Input) / EvaluatePolynomial(Denominator, Input);
+end;
+
+function EvaluatePolynomialRoot1(A, B : Single): Single;
+begin
+ if B <> 0 then
+  if A <> 0
+   then Result := -A / B
+   else Result := 0
+ else
+  if A = 0
+   then raise Exception.Create('X is undetermined (A = B = 0)')
+   else raise Exception.Create('no solution (A <> 0, B = 0)');
+end;
+
+function EvaluatePolynomialRoot1(A, B : Double): Double;
+begin
+ if B <> 0 then
+  if A <> 0
+   then Result := -A / B
+   else Result := 0
+ else
+  if A = 0
+   then raise Exception.Create('X is undetermined (A = B = 0)')
+   else raise Exception.Create('no solution (A <> 0, B = 0)');
+end;
+
+(*
+function EvaluatePolynomialRoot2(Coef: PDAVSingleFixedArray; Z : PCompVector) : Integer;
+var
+  Delta, F, Q : Float;
+
+begin
+  Z^[1].X := 0.0; Z^[1].Y := 0.0;
+  Z^[2].X := 0.0; Z^[2].Y := 0.0;
+
+  if Coef^[2] = 0.0 then
+    begin
+      RootPol2 := RootPol1(Coef^[0], Coef^[1], Z^[1].X);
+      Exit;
+    end;
+
+  if Coef^[0] = 0.0 then
+    begin
+      { 0 is root. Eq. becomes linear }
+      if RootPol1(Coef^[1], Coef^[2], Z^[1].X) = 1 then
+        { Linear eq. has 1 solution }
+        RootPol2 := 2
+      else
+        { Linear eq. is undetermined or impossible }
+        RootPol2 := 1;
+      Exit;
+    end;
+
+  Delta := Sqr(Coef^[1]) - 4.0 * Coef^[0] * Coef^[2];
+
+  { 2 real roots }
+  if Delta > 0.0 then
+    begin
+      RootPol2 := 2;
+
+      { Algorithm for minimizing roundoff errors }
+      { See `Numerical Recipes'                  }
+      if Coef^[1] >= 0.0 then
+        Q := - 0.5 * (Coef^[1] + Sqrt(Delta))
+      else
+        Q := - 0.5 * (Coef^[1] - Sqrt(Delta));
+
+      Z^[1].X := Q / Coef^[2];
+      Z^[2].X := Coef^[0] / Q;
+
+      Exit;
+    end;
+
+  { Double real root }
+  if Delta = 0.0 then
+    begin
+      RootPol2 := 2;
+      Z^[1].X := - 0.5 * Coef^[1] / Coef^[2];
+      Z^[2].X := Z^[1].X;
+      Exit;
+    end;
+
+  { 2 complex roots }
+  RootPol2 := 0;
+  F := 0.5 / Coef^[2];
+  Z^[1].X := - F * Coef^[1];
+  Z^[1].Y := Abs(F) * Sqrt(- Delta);
+  Z^[2].X := Z^[1].X;
+  Z^[2].Y := - Z^[1].Y;
+end;
+*)
+
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  The procedures below balances a real matrix and isolates eigenvalues      //
+//  whenever possible.                                                        //
+//                                                                            //
+//  On input:                                                                 //
+//                                                                            //
+//    A contains the input matrix to be balanced.                             //
+//                                                                            //
+//    LowIndex, HighIndex are the lowest and highest indices of the elements  //
+//    of A.                                                                   //
+//                                                                            //
+//  On output:                                                                //
+//                                                                            //
+//    A contains the balanced matrix.                                         //
+//                                                                            //
+//    IndexLow and IndexHigh are two integers such that A[i,j] is equal to    //
+//    zero if                                                                 //
+//      (1) i is greater than j and                                           //
+//      (2) j=LowIndex,...,IndexLow-1 or i=IndexHigh+1,...,HighIndex.         //
+//                                                                            //
+//    Scale contains information determining the permutations and scaling     //
+//    factors used.                                                           //
+//                                                                            //
+//    Suppose that the principal submatrix in rows IndexLow through IndexHigh //
+//    has been balanced, that P[j] denotes the index interchanged             //
+//    with j during the permutation step, and that the elements               //
+//    of the diagonal matrix used are denoted by D[i,j].  then                //
+//        Scale[j] = P[j],    for j = LowIndex,...,IndexLow-1                 //
+//                 = D[j,j],      j = IndexLow,...,IndexHigh                  //
+//                 = P[j]         j = IndexHigh+1,...,HighIndex.              //
+//    the order in which the interchanges are made is                         //
+//    HighIndex to IndexHigh+1, then LowIndex to IndexLow-1.                  //
+//                                                                            //
+//    Note that LowIndex is returned for IndexHigh if IndexHigh is < LowIndex //
+//    formally                                                                //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+procedure Balance(A : PDAVSingleFixedMatrix; LowIndex, HighIndex : Integer;
+  out IndexLow, IndexHigh: Integer; Scale: PDAVSingleFixedArray);
+
+const
+  CRadix = 2;  // Base used in floating number representation
+
+var
+  I, J, M           : Integer;
+  C, F, G, R, S, B2 : Single;
+  Flag, Found, Conv : Boolean;
+
+  procedure Exchange;
+  // Row and column exchange
+  var
+    I : Integer;
+  begin
+    Scale^[M] := J;
+    if J = M then Exit;
+
+    for I := LowIndex to IndexHigh do
+     begin
+      F := A^[I, J];
+      A^[I, J] := A^[I, M];
+      A^[I, M] := F;
+     end;
+
+    for I := IndexLow to HighIndex do
+     begin
+      F := A^[J, I];
+      A^[J, I] := A^[M, I];
+      A^[M, I] := F;
+     end;
+  end;
+
+begin
+ B2 := Sqr(CRadix);
+ IndexLow := LowIndex;
+ IndexHigh := HighIndex;
+
+ // Search for rows isolating an eigenvalue and push them down
+ repeat
+  J := IndexHigh;
+  repeat
+   I := LowIndex;
+   repeat
+    Flag := (I <> J) and (A^[J, I] <> 0.0);
+    I := I + 1;
+   until Flag or (I > IndexHigh);
+   Found := not Flag;
+   if Found then
+    begin
+     M := IndexHigh;
+     Exchange;
+     IndexHigh := IndexHigh - 1;
+    end;
+   J := J - 1;
+  until Found or (J < LowIndex);
+ until (not Found) or (IndexHigh < LowIndex);
+
+ if IndexHigh < LowIndex then IndexHigh := LowIndex;
+ if IndexHigh = LowIndex then Exit;
+
+ // Search for columns isolating an eigenvalue and push them left
+ repeat
+  J := IndexLow;
+  repeat
+   I := IndexLow;
+   repeat
+    Flag := (I <> J) and (A^[I, J] <> 0.0);
+    I := I + 1;
+   until Flag or (I > IndexHigh);
+   Found := not Flag;
+   if Found then
+    begin
+     M := IndexLow;
+     Exchange;
+     IndexLow := IndexLow + 1;
+    end;
+   J := J + 1;
+  until Found or (J > IndexHigh);
+ until (not Found);
+
+ // Now balance the submatrix in rows IndexLow to IndexHigh
+ for I := IndexLow to IndexHigh
+  do Scale^[I] := 1.0;
+
+ // Iterative loop for norm reduction
+ repeat
+  Conv := True;
+
+  for I := IndexLow to IndexHigh do
+   begin
+    C := 0.0;
+    R := 0.0;
+
+    for J := IndexLow to IndexHigh do
+     if J <> I then
+      begin
+       C := C + Abs(A^[J, I]);
+       R := R + Abs(A^[I, J]);
+     end;
+
+    // Guard against zero C or R due to underflow
+    if (C <> 0.0) and (R <> 0.0) then
+     begin
+      G := R / CRadix;
+      F := 1.0;
+      S := C + R;
+
+      while C < G do
+       begin
+        F := F * CRadix;
+        C := C * B2;
+       end;
+
+      G := R * CRadix;
+
+      while C >= G do
+       begin
+        F := F / CRadix;
+        C := C / B2;
+       end;
+
+      // Now balance
+      if (C + R) / F < 0.95 * S then
+       begin
+        G := 1.0 / F;
+        Scale^[I] := Scale^[I] * F;
+        Conv := False;
+        for J := IndexLow to HighIndex do A^[I, J] := A^[I, J] * G;
+        for J := LowIndex to IndexHigh do A^[J, I] := A^[J, I] * F;
+       end;
+     end;
+   end;
+ until Conv;
+end;
+
+procedure Balance(A : PDAVDoubleFixedMatrix; LowIndex, HighIndex : Integer;
+  out IndexLow, IndexHigh: Integer; Scale: PDAVDoubleFixedArray);
+
+const
+  CRadix = 2;  // Base used in floating number representation
+
+var
+  I, J, M           : Integer;
+  C, F, G, R, S, B2 : Double;
+  Flag, Found, Conv : Boolean;
+
+  procedure Exchange;
+  // Row and column exchange
+  var
+    I : Integer;
+  begin
+    Scale^[M] := J;
+    if J = M then Exit;
+
+    for I := LowIndex to IndexHigh do
+     begin
+      F := A^[I, J];
+      A^[I, J] := A^[I, M];
+      A^[I, M] := F;
+     end;
+
+    for I := IndexLow to HighIndex do
+     begin
+      F := A^[J, I];
+      A^[J, I] := A^[M, I];
+      A^[M, I] := F;
+     end;
+  end;
+
+begin
+ B2 := Sqr(CRadix);
+ IndexLow := LowIndex;
+ IndexHigh := HighIndex;
+
+ // Search for rows isolating an eigenvalue and push them down
+ repeat
+  J := IndexHigh;
+  repeat
+   I := LowIndex;
+   repeat
+    Flag := (I <> J) and (A^[J, I] <> 0.0);
+    I := I + 1;
+   until Flag or (I > IndexHigh);
+   Found := not Flag;
+   if Found then
+    begin
+     M := IndexHigh;
+     Exchange;
+     IndexHigh := IndexHigh - 1;
+    end;
+   J := J - 1;
+  until Found or (J < LowIndex);
+ until (not Found) or (IndexHigh < LowIndex);
+
+ if IndexHigh < LowIndex then IndexHigh := LowIndex;
+ if IndexHigh = LowIndex then Exit;
+
+ // Search for columns isolating an eigenvalue and push them left
+ repeat
+  J := IndexLow;
+  repeat
+   I := IndexLow;
+   repeat
+    Flag := (I <> J) and (A^[I, J] <> 0.0);
+    I := I + 1;
+   until Flag or (I > IndexHigh);
+   Found := not Flag;
+   if Found then
+    begin
+     M := IndexLow;
+     Exchange;
+     IndexLow := IndexLow + 1;
+    end;
+   J := J + 1;
+  until Found or (J > IndexHigh);
+ until (not Found);
+
+ // Now balance the submatrix in rows IndexLow to IndexHigh
+ for I := IndexLow to IndexHigh
+  do Scale^[I] := 1.0;
+
+ // Iterative loop for norm reduction
+ repeat
+  Conv := True;
+
+  for I := IndexLow to IndexHigh do
+   begin
+    C := 0.0;
+    R := 0.0;
+
+    for J := IndexLow to IndexHigh do
+     if J <> I then
+      begin
+       C := C + Abs(A^[J, I]);
+       R := R + Abs(A^[I, J]);
+     end;
+
+    // Guard against zero C or R due to underflow
+    if (C <> 0.0) and (R <> 0.0) then
+     begin
+      G := R / CRadix;
+      F := 1.0;
+      S := C + R;
+
+      while C < G do
+       begin
+        F := F * CRadix;
+        C := C * B2;
+       end;
+
+      G := R * CRadix;
+
+      while C >= G do
+       begin
+        F := F / CRadix;
+        C := C / B2;
+       end;
+
+      // Now balance
+      if (C + R) / F < 0.95 * S then
+       begin
+        G := 1.0 / F;
+        Scale^[I] := Scale^[I] * F;
+        Conv := False;
+        for J := IndexLow to HighIndex do A^[I, J] := A^[I, J] * G;
+        for J := LowIndex to IndexHigh do A^[J, I] := A^[J, I] * F;
+       end;
+     end;
+   end;
+ until Conv;
 end;
 
 procedure InitConstants;

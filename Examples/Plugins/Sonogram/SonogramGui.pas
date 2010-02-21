@@ -25,7 +25,7 @@ unit SonogramGui;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, ExtCtrls, Graphics,
-  DAV_Types, DAV_VSTModule, StdCtrls, Menus;
+  StdCtrls, Menus, DAV_Types, DAV_VSTModule;
 
 type
   TFmSonogram = class(TForm)
@@ -59,16 +59,16 @@ type
     MiOverlapOrder5: TMenuItem;
     MiOverlapOrder6: TMenuItem;
     MiOverlapOrder7: TMenuItem;
-    procedure TimerTimer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
     procedure MiOrderClick(Sender: TObject);
     procedure MiOverlapOrderClick(Sender: TObject);
-    procedure FormShow(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
-    FRotatedSonogram : TBitmap;
+    FBackgroundBitmap : TBitmap;
+    FRotatedSonogram  : TBitmap;
     procedure RotateImage(const Source, Destination: TBitmap);
   end;
 
@@ -88,8 +88,8 @@ var
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackgroundBitmap := TBitmap.Create;
+ with FBackgroundBitmap do
   begin
    PixelFormat := pf24bit;
    Width := Self.Width;
@@ -121,7 +121,7 @@ end;
 
 procedure TFmSonogram.FormDestroy(Sender: TObject);
 begin
- FreeAndNil(FBackgrounBitmap);
+ FreeAndNil(FBackgroundBitmap);
  FreeAndNil(FRotatedSonogram);
 end;
 
@@ -132,7 +132,7 @@ end;
 
 procedure TFmSonogram.FormPaint(Sender: TObject);
 begin
- with TSonogramDataModule(Owner), FBackgrounBitmap.Canvas do
+ with TSonogramDataModule(Owner), FBackgroundBitmap.Canvas do
   begin
    if False then
     begin
@@ -154,7 +154,7 @@ begin
    Brush.Style := bsClear;
    RoundRect(7, 7, 265, 265, 2, 2);
   end;
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgroundBitmap);
 end;
 
 procedure TFmSonogram.FormShow(Sender: TObject);

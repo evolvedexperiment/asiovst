@@ -33,7 +33,6 @@ unit DAV_Sonogram;
 interface
 
 {$I DAV_Compiler.inc}
-{$DEFINE Use_IPPS}
 
 uses
   Classes, Graphics, DAV_Types, DAV_Classes, DAV_Complex, DAV_GuiCommon,

@@ -108,6 +108,42 @@ type
     property Sample[Index: Integer]: Double read GetSample;
   end;
 
+  TBufferFloatType = (ft16, ft32, ft64);
+
+  TDelayLineSamples = class(TCustomDelayLineSamples, IDspProcessor64)
+  private
+    FBufferFloatType: TBufferFloatType;
+    FBytesPerSample: Integer;
+    function GetSample(Index: Integer): Double;
+    procedure SetBufferFloatType(const Value: TBufferFloatType);
+  protected
+    FBuffer : Pointer;
+    procedure AssignTo(Dest: TPersistent); override;
+    procedure BufferSizeChanged; override;
+    procedure BufferFloatTypeChanged; virtual;
+  public
+    constructor Create(const BufferSize: Integer = 0); override;
+    destructor Destroy; override;
+
+    procedure ClearBuffer; override;
+    procedure Reset; override;
+
+    procedure ProcessBlock32(const Data: PDAVSingleFixedArray; SampleCount: Integer);
+    procedure ProcessBlock64(const Data: PDAVDoubleFixedArray; SampleCount: Integer);
+    function ProcessSample32(Input: Single): Double;
+    function ProcessSample64(Input: Double): Double;
+
+    function GetAbsMax: Double;
+    function GetMaximum: Double;
+    function GetMinimum: Double;
+
+    property Sample[Index: Integer]: Double read GetSample;
+  published
+    property BufferSize;
+    property BufferFloatType: TBufferFloatType read FBufferFloatType write SetBufferFloatType;
+    property BytesPerSample: Integer read FBytesPerSample; 
+  end;
+
   TDelayLineSamples32 = class(TCustomDelayLineSamples32)
   published
     property BufferSize;
@@ -210,7 +246,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_DspInterpolation;
+  SysUtils, Math, DAV_HalfFloat, DAV_DspInterpolation;
 
 resourcestring
   RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
@@ -271,7 +307,7 @@ function TCustomDelayLineSamples32.GetAbsMax: Single;
 var
   Pos: Integer;
 begin
- assert(FBufferSize > 0);
+ Assert(FBufferSize > 0);
 
  Result := abs(FBuffer^[0]);
 
@@ -283,7 +319,7 @@ function TCustomDelayLineSamples32.GetMaximum: Single;
 var
   Pos: Integer;
 begin
- assert(FBufferSize > 0);
+ Assert(FBufferSize > 0);
 
  Result := FBuffer^[0];
 
@@ -295,7 +331,7 @@ function TCustomDelayLineSamples32.GetMinimum: Single;
 var
   Pos: Integer;
 begin
- assert(FBufferSize > 0);
+ Assert(FBufferSize > 0);
 
  Result := FBuffer^[0];
 
@@ -344,7 +380,7 @@ end;
 
 procedure TCustomDelayLineSamples32.AssignTo(Dest: TPersistent);
 var
-  SampleNo : Integer;
+  SampleIndex : Integer;
 begin
  if Dest is TCustomDelayLineSamples32 then
   with TCustomDelayLineSamples32(Dest) do
@@ -358,8 +394,8 @@ begin
    begin
     inherited;
     Assert(FBufferSize = Self.FBufferSize);
-    for SampleNo := 0 to FBufferSize - 1
-     do Self.FBuffer^[SampleNo] := FBuffer^[SampleNo];
+    for SampleIndex := 0 to FBufferSize - 1
+     do Self.FBuffer^[SampleIndex] := FBuffer^[SampleIndex];
    end
   else inherited;
 end;
@@ -412,15 +448,15 @@ end;
 
 procedure TCustomDelayLineSamples64.AssignTo(Dest: TPersistent);
 var
-  SampleNo : Integer;
+  SampleIndex : Integer;
 begin
  if Dest is TCustomDelayLineSamples32 then
   with TCustomDelayLineSamples32(Dest) do
    begin
     inherited;
     Assert(FBufferSize = Self.FBufferSize);
-    for SampleNo := 0 to FBufferSize - 1
-     do Self.FBuffer^[SampleNo] := FBuffer^[SampleNo];
+    for SampleIndex := 0 to FBufferSize - 1
+     do Self.FBuffer^[SampleIndex] := FBuffer^[SampleIndex];
    end else
  if Dest is TCustomDelayLineSamples64 then
   with TCustomDelayLineSamples64(Dest) do
@@ -435,7 +471,6 @@ end;
 procedure TCustomDelayLineSamples64.BufferSizeChanged;
 begin
  ReallocMem(FBuffer, FBufferSize * SizeOf(Double));
- // ClearBuffer;
 end;
 
 procedure TCustomDelayLineSamples64.ProcessBlock64(const Data: PDAVDoubleFixedArray;
@@ -471,7 +506,7 @@ function TCustomDelayLineSamples64.GetAbsMax: Double;
 var
   Pos: Integer;
 begin
- assert(FBufferSize > 0);
+ Assert(FBufferSize > 0);
 
  Result := abs(FBuffer^[0]);
 
@@ -484,7 +519,7 @@ function TCustomDelayLineSamples64.GetMaximum: Double;
 var
   Pos: Integer;
 begin
- assert(FBufferSize > 0);
+ Assert(FBufferSize > 0);
 
  Result := FBuffer^[0];
 
@@ -496,12 +531,268 @@ function TCustomDelayLineSamples64.GetMinimum: Double;
 var
   Pos: Integer;
 begin
- assert(FBufferSize > 0);
+ Assert(FBufferSize > 0);
 
  Result := FBuffer^[0];
 
  for Pos := 1 to FBufferSize - 1 do
   if FBuffer^[Pos] < Result then Result := FBuffer^[Pos];
+end;
+
+
+{ TDelayLineSamples }
+
+constructor TDelayLineSamples.Create(const BufferSize: Integer = 0);
+begin
+ inherited Create(BufferSize);
+ FBuffer := nil;
+ ClearBuffer;
+end;
+
+destructor TDelayLineSamples.Destroy;
+begin
+ Dispose(FBuffer);
+ inherited;
+end;
+
+function TDelayLineSamples.GetSample(Index: Integer): Double;
+var
+  Pos: Integer;
+begin
+ if (Index < 0) or (Index >= FBufferSize)
+  then raise Exception.CreateFmt('Index out of bounds(%d)', [Index]);
+
+ Pos := FBufferPos - Index;
+ if Pos < 0
+  then Inc(Pos, FBufferSize);
+
+ case FBufferFloatType of
+  ft16 : Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]);
+  ft32 : Result := PDAVSingleFixedArray(FBuffer)^[Pos];
+  ft64 : Result := PDAVDoubleFixedArray(FBuffer)^[Pos];
+ end;
+end;
+
+procedure TDelayLineSamples.AssignTo(Dest: TPersistent);
+var
+  SampleIndex : Integer;
+begin
+ if Dest is TDelayLineSamples32 then
+  with TDelayLineSamples32(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    case FBufferFloatType of
+     ft16 : for SampleIndex := 0 to FBufferSize - 1
+             do FBuffer^[SampleIndex] := HalfFloatToSingle(PDAVHalfFloatFixedArray(Self.FBuffer)^[SampleIndex]);
+     ft32 : Move(FBuffer^, Self.FBuffer^, Self.FBufferSize * FBytesPerSample);
+     ft64 : for SampleIndex := 0 to FBufferSize - 1
+             do FBuffer^[SampleIndex] := PDAVDoubleFixedArray(Self.FBuffer)^[SampleIndex];
+    end;
+   end else
+ if Dest is TDelayLineSamples64 then
+  with TDelayLineSamples64(Dest) do
+   begin
+    inherited;
+    Assert(FBufferSize = Self.FBufferSize);
+    case FBufferFloatType of
+     ft16 : for SampleIndex := 0 to FBufferSize - 1
+             do FBuffer^[SampleIndex] := HalfFloatToSingle(PDAVHalfFloatFixedArray(Self.FBuffer)^[SampleIndex]);
+     ft32 : for SampleIndex := 0 to FBufferSize - 1
+             do FBuffer^[SampleIndex] := PDAVSingleFixedArray(Self.FBuffer)^[SampleIndex];
+     ft64 : Move(FBuffer^, Self.FBuffer^, Self.FBufferSize * FBytesPerSample);
+    end;
+   end
+  else inherited;
+end;
+
+procedure TDelayLineSamples.BufferSizeChanged;
+begin
+ case FBufferFloatType of
+  ft16 : FBytesPerSample := SizeOf(THalfFloat);
+  ft32 : FBytesPerSample := SizeOf(Single);
+  ft64 : FBytesPerSample := SizeOf(Double);
+ end;
+
+ ReallocMem(FBuffer, FBufferSize * FBytesPerSample);
+end;
+
+procedure TDelayLineSamples.ProcessBlock32(const Data: PDAVSingleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample32(Data[Sample]);
+end;
+
+procedure TDelayLineSamples.ProcessBlock64(const Data: PDAVDoubleFixedArray;
+  SampleCount: Integer);
+var
+  Sample: Integer;
+begin
+ for Sample := 0 to SampleCount - 1
+  do Data[Sample] := ProcessSample64(Data[Sample]);
+end;
+
+function TDelayLineSamples.ProcessSample32(Input: Single): Double;
+begin
+ case FBufferFloatType of
+  ft16 : begin
+          Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[FBufferPos]);
+          PDAVHalfFloatFixedArray(FBuffer)^[FBufferPos] := SingleToHalfFloat(Input);
+         end;
+  ft32 : begin
+          Result := PDAVSingleFixedArray(FBuffer)^[FBufferPos];
+          PDAVSingleFixedArray(FBuffer)^[FBufferPos] := Input;
+         end;
+  ft64 : begin
+          Result := PDAVDoubleFixedArray(FBuffer)^[FBufferPos];
+          PDAVDoubleFixedArray(FBuffer)^[FBufferPos] := Input;
+         end;
+ end;
+
+ Inc(FBufferPos);
+ if FBufferPos >= FBufferSize
+  then FBufferPos := 0;
+end;
+
+function TDelayLineSamples.ProcessSample64(Input: Double): Double;
+begin
+ case FBufferFloatType of
+  ft16 : begin
+          Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[FBufferPos]);
+          PDAVHalfFloatFixedArray(FBuffer)^[FBufferPos] := SingleToHalfFloat(Input);
+         end;
+  ft32 : begin
+          Result := PDAVSingleFixedArray(FBuffer)^[FBufferPos];
+          PDAVSingleFixedArray(FBuffer)^[FBufferPos] := Input;
+         end;
+  ft64 : begin
+          Result := PDAVDoubleFixedArray(FBuffer)^[FBufferPos];
+          PDAVDoubleFixedArray(FBuffer)^[FBufferPos] := Input;
+         end;
+ end;
+
+ Inc(FBufferPos);
+ if FBufferPos >= FBufferSize
+  then FBufferPos := 0;
+end;
+
+procedure TDelayLineSamples.Reset;
+begin
+ inherited;
+ ClearBuffer;
+end;
+
+procedure TDelayLineSamples.SetBufferFloatType(const Value: TBufferFloatType);
+begin
+ if FBufferFloatType <> Value then
+  begin
+   FBufferFloatType := Value;
+   BufferFloatTypeChanged;
+  end;
+end;
+
+procedure TDelayLineSamples.BufferFloatTypeChanged;
+begin
+ case FBufferFloatType of
+  ft16 : FBytesPerSample := 2;
+  ft32 : FBytesPerSample := 4;
+  ft64 : FBytesPerSample := 8;
+ end;
+
+ BufferSizeChanged;
+ ClearBuffer;
+end;
+
+procedure TDelayLineSamples.ClearBuffer;
+begin
+ FillChar(FBuffer^, FBufferSize * FBytesPerSample, 0);
+end;
+
+function TDelayLineSamples.GetAbsMax: Double;
+var
+  Pos: Integer;
+begin
+ Assert(FBufferSize > 0);
+
+ case FBufferFloatType of
+  ft16 : begin
+          Result := Abs(HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[0]));
+          for Pos := 1 to FBufferSize - 1 do
+           if Abs(HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos])) > Result
+            then Result := Abs(HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]));
+         end;
+  ft32 : begin
+          Result := Abs(PDAVSingleFixedArray(FBuffer)^[0]);
+          for Pos := 1 to FBufferSize - 1 do
+           if Abs(PDAVSingleFixedArray(FBuffer)^[Pos]) > Result
+            then Result := Abs(PDAVSingleFixedArray(FBuffer)^[Pos]);
+         end;
+  ft64 : begin
+          Result := Abs(PDAVDoubleFixedArray(FBuffer)^[0]);
+          for Pos := 1 to FBufferSize - 1 do
+           if Abs(PDAVDoubleFixedArray(FBuffer)^[Pos]) > Result
+            then Result := Abs(PDAVDoubleFixedArray(FBuffer)^[Pos]);
+         end;
+ end;
+end;
+
+function TDelayLineSamples.GetMaximum: Double;
+var
+  Pos: Integer;
+begin
+ Assert(FBufferSize > 0);
+
+ case FBufferFloatType of
+  ft16 : begin
+          Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[0]);
+          for Pos := 1 to FBufferSize - 1 do
+           if HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]) > Result
+            then Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]);
+         end;
+  ft32 : begin
+          Result := PDAVSingleFixedArray(FBuffer)^[0];
+          for Pos := 1 to FBufferSize - 1 do
+           if PDAVSingleFixedArray(FBuffer)^[Pos] > Result
+            then Result := PDAVSingleFixedArray(FBuffer)^[Pos];
+         end;
+  ft64 : begin
+          Result := PDAVDoubleFixedArray(FBuffer)^[0];
+          for Pos := 1 to FBufferSize - 1 do
+           if PDAVDoubleFixedArray(FBuffer)^[Pos] > Result
+            then Result := PDAVDoubleFixedArray(FBuffer)^[Pos];
+         end;
+ end;
+end;
+
+function TDelayLineSamples.GetMinimum: Double;
+var
+  Pos: Integer;
+begin
+ Assert(FBufferSize > 0);
+
+ case FBufferFloatType of
+  ft16 : begin
+          Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[0]);
+          for Pos := 1 to FBufferSize - 1 do
+           if HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]) < Result
+            then Result := HalfFloatToSingle(PDAVHalfFloatFixedArray(FBuffer)^[Pos]);
+         end;
+  ft32 : begin
+          Result := PDAVSingleFixedArray(FBuffer)^[0];
+          for Pos := 1 to FBufferSize - 1 do
+           if PDAVSingleFixedArray(FBuffer)^[Pos] < Result
+            then Result := PDAVSingleFixedArray(FBuffer)^[Pos];
+         end;
+  ft64 : begin
+          Result := PDAVDoubleFixedArray(FBuffer)^[0];
+          for Pos := 1 to FBufferSize - 1 do
+           if PDAVDoubleFixedArray(FBuffer)^[Pos] < Result
+            then Result := PDAVDoubleFixedArray(FBuffer)^[Pos];
+         end;
+ end;
 end;
 
 
@@ -557,7 +848,7 @@ end;
 
 destructor TDelayLineFractional32.Destroy;
 begin
-// assert(FBuffer[BufferSize - 1] = 0);
+// Assert(FBuffer[BufferSize - 1] = 0);
  Dispose(FBuffer);
  inherited;
 end;
@@ -621,7 +912,7 @@ end;
 
 destructor TDelayLineFractional64.Destroy;
 begin
-// assert(FBuffer[BufferSize - 1] = 0);
+// Assert(FBuffer[BufferSize - 1] = 0);
  Dispose(FBuffer);
  inherited;
 end;

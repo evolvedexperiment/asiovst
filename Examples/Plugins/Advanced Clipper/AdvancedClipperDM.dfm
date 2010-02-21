@@ -1,5 +1,4 @@
 object AdvancedClipperDataModule: TAdvancedClipperDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -9,7 +8,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Default'
   IORatio = 1.000000000000000000
   UniqueID = 'AdCr'
@@ -53,7 +51,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Input Section'
       DisplayName = 'Input Gain'
@@ -72,7 +69,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnParameterChange = ParamInputGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage 1'
       DisplayName = 'Stage 1: Oversampling Factor'
@@ -92,7 +88,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage 1'
       DisplayName = 'Stage 1: Filter Order'
@@ -110,7 +105,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage 1'
       DisplayName = 'Stage 1: Transition Bandwidth'
@@ -126,7 +120,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnParameterChange = ParamBW1Change
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage 2'
       DisplayName = 'Stage 2: Oversampling Factor'
@@ -146,7 +139,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage 2'
       DisplayName = 'Stage 2: Filter Order'
@@ -164,7 +156,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnCustomParameterDisplay = ParamRoundDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Stage 2'
       DisplayName = 'Stage 2: Transition Bandwidth'
@@ -180,7 +171,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnParameterChange = ParamBW2Change
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Output Section'
       DisplayName = 'Output Gain'
@@ -199,7 +189,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
       OnParameterChange = ParamOutputGainChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       Category = 'Output Section'
       DisplayName = 'Hard Clip'
@@ -235,7 +224,6 @@ object AdvancedClipperDataModule: TAdvancedClipperDataModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDoubleReplacing
   OnProcessReplacing = VSTModuleProcess

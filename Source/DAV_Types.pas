@@ -77,6 +77,11 @@ type
   TDAVDoubleDynMatrix = TDAVArrayOfDoubleDynArray;
   PDAVDoubleDynMatrix = ^TDAVDoubleDynMatrix;
 
+  TDAVSingleFixedMatrix = array [0..0, 0..0] of Single;
+  PDAVSingleFixedMatrix = ^TDAVSingleDynMatrix;
+  TDAVDoubleFixedMatrix = array [0..0, 0..0] of Double;
+  PDAVDoubleFixedMatrix = ^TDAVDoubleDynMatrix;
+
   TDAV2SingleArray = Array [0..1] of Single;
   PDAV2SingleArray = ^TDAV2SingleArray;
   TDAV2DoubleArray = Array [0..1] of Double;

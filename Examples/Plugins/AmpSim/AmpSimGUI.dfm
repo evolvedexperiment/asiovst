@@ -62,6 +62,7 @@ object FmCombo: TFmCombo
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object GuiLED: TGuiLED
     Left = 271
@@ -71,6 +72,7 @@ object FmCombo: TFmCombo
     LineWidth = 2
     LEDColor = 192
     Brightness_Percent = 100.000000000000000000
+    BorderStrength_Percent = 100.000000000000000000
     Uniformity_Percent = 44.000000000000000000
     AntiAlias = gaaLinear4x
     LineColor = 192
@@ -92,6 +94,7 @@ object FmCombo: TFmCombo
     Font.Style = [fsBold]
     ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
     OnClick = LbStereoClick
   end
   object PnControls: TGuiPanel
@@ -193,6 +196,7 @@ object FmCombo: TFmCombo
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialBias: TGuiDial
       Left = 78
@@ -230,6 +234,7 @@ object FmCombo: TFmCombo
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOutput: TGuiDial
       Left = 148
@@ -308,6 +313,7 @@ object FmCombo: TFmCombo
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFrequency: TGuiLabel
       Left = 218
@@ -324,6 +330,7 @@ object FmCombo: TFmCombo
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbResonance: TGuiLabel
       Left = 288
@@ -340,6 +347,7 @@ object FmCombo: TFmCombo
       Font.Name = 'Trebuchet MS'
       Font.Style = [fsUnderline]
       ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object DIL: TGuiDialImageList

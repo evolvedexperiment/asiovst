@@ -165,7 +165,7 @@ type
 
 
   TAudioMasterOpcode = (
-    audioMasterAutomate,      //  0: index, Value, returns 0
+    audioMasterAutomate,      //  0: index, value, returns 0
     audioMasterVersion,       //  1: vst version, currently 2 (0 for older), 2400 for VST 2.4!
     audioMasterCurrentId,     //  2: returns the unique id of a plug that's currently loading
     audioMasterIdle,          //  3: call application idle routine (this will call effEditIdle for all open editors too)
@@ -186,8 +186,8 @@ type
 
     // parameters
     audioMasterGetNumAutomatableParameters, // 11: NOT USED IN 2.4
-    audioMasterGetParameterQuantization,    // 12: NOT USED IN 2.4 - returns the integer Value for +1.0 representation,
-                                            //     or 1 if full Single float precision is maintained in automation. parameter index in <Value> (-1: all, any) connections, configuration
+    audioMasterGetParameterQuantization,    // 12: NOT USED IN 2.4 - returns the integer value for +1.0 representation,
+                                            //     or 1 if full single float precision is maintained in automation. parameter index in <Value> (-1: all, any) connections, configuration
     audioMasterIOChanged,                   // 13: numInputs and/or numOutputs has changed
     audioMasterNeedIdle,                    // 14: NOT USED IN 2.4 - plug needs idle calls (outside its editor window)
     audioMasterSizeWindow,                  // 15: index: width, Value: height
