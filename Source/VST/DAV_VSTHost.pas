@@ -59,8 +59,7 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
-  {$IFDEF VstHostGUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,
-  {$IFDEF FlatSrcollBar}TFlatScrollbarUnit, {$ENDIF}{$ENDIF}
+  {$IFDEF VstHostGUI} Controls, Forms, StdCtrls, ComCtrls, Dialogs,{$ENDIF}
   DAV_Types, DAV_VSTEffect, DAV_VSTOfflineTask {$IFDEF MemDLL},
   DAV_DLLLoader{$ENDIF};
 
@@ -70,7 +69,7 @@ const
 
 type
   {$IFDEF DELPHI10_UP} {$region 'General Types'} {$ENDIF}
-  TVendorSpecificEvent = function(opcode : TAudioMasterOpcode; index, value: LongInt; ptr: Pointer; opt: Single): Integer of object;
+  TVendorSpecificEvent = function(Index, Value: LongInt; Ptr: Pointer; Opt: Single): Integer of object;
   TVstAutomateEvent = procedure(Sender: TObject; Index: Integer; ParameterValue: Single) of object;
   TVstProcessEventsEvent = procedure(Sender: TObject; VstEvents: PVstEvents) of object;
   TVstAutomationNotifyEvent = procedure(Sender: TObject; ParameterIndex: Integer) of object;
@@ -184,17 +183,15 @@ type
     {$IFDEF VstHostGUI}
     procedure SetGUIStyle(const Value: TGUIStyle);
     procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
+    procedure ListControlValueChange(Sender: TObject);
     procedure ListParamChange(Sender: TObject);
     procedure ParamChange(Sender: TObject);
     procedure EditActivateHandler(Sender: TObject);
     procedure EditDeactivateHandler(Sender: TObject);
-    {$IFDEF FlatSrcollBar}
-    procedure ScrollChange(Sender: TObject; ScrollPos: Integer);
-    {$ELSE}
     procedure TrackChange(Sender: TObject);
     {$ENDIF}
-    {$ENDIF}
     function GetVSTCanDos: TVstCanDos;
+    procedure UpdateParameterOnGui(ParameterIndex: Integer);
   protected
     {$IFDEF VstHostGUI}
     FGUIControl  : TWinControl;
@@ -209,9 +206,13 @@ type
     function AudioMasterPinConnected(Index: Integer; PinConnected: Boolean): Boolean; virtual;
     procedure AudioMasterWantMidi; virtual;
     procedure AudioMasterProcessEvents(VstEvents: PVstEvents); virtual;
-    procedure AudioMasterIOChanged;
-    procedure AudioMasterNeedIdle;
-    function AudioMasterSizeWindow(Width, Height: Integer): Boolean;
+    procedure AudioMasterIOChanged; virtual;
+    procedure AudioMasterNeedIdle; virtual;
+    function AudioMasterSizeWindow(Width, Height: Integer): Boolean; virtual;
+    function AudioMasterVendorSpecific(Index, Value: Integer; ptr: Pointer; opt: Single): Integer; virtual;
+    procedure AudioMasterUpdateDisplay; virtual;
+    procedure AudioMasterBeginEdit(ParameterIndex: Integer); virtual;
+    procedure AudioMasterEndEdit(ParameterIndex: Integer); virtual;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -241,8 +242,8 @@ type
     function GetParameter(index: Integer): Single; virtual;
     function GetParameterProperties(const Index: Integer;
       var ParameterProperties: TVstParameterPropertyRecord): Boolean;
-    function GetParamLabel(index: Integer): string;
-    function GetParamName(index: Integer): string;
+    function GetParamLabel(Index: Integer): string;
+    function GetParamName(Index: Integer): string;
     function GetPlugCategory: TVstPluginCategory;
     function GetProductString: string;
     function GetCurrentProgram: Integer;
@@ -565,6 +566,9 @@ type
     function AudioMasterGetParameterQuantization(Index: Integer): Integer; virtual;
     function AudioMasterGetNumAutomatableParameters: Integer; virtual;
     function AudioMasterGetSampleRate: Single; virtual;
+    function AudioMasterGetPreviousPlug(InputPin: Integer): PVstEffect;
+    function AudioMasterGetNextPlug(OutputPin: Integer): PVstEffect;
+    function AudioMasterCanDo(CanDo: PAnsiChar): Boolean;
 
     property Items[Index: Integer]: TCustomVstPlugIn read GetItem; default;
   public
@@ -929,11 +933,12 @@ begin
    audioMasterGetOutputLatency            : if Assigned(Host)
                                              then Result := Host.FOutputLatency
                                              else Result := 0;
-   audioMasterGetPreviousPlug             : begin
-//                                              if PlugIndex = 0 then Result := 0;
-                                             {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
-                                            end;
-   audioMasterGetNextPlug                 : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ENDIF Debug};
+   audioMasterGetPreviousPlug             : if Assigned(Host)
+                                             then Result := Integer(Host.AudioMasterGetPreviousPlug(Value))
+                                             else Result := 0;
+   audioMasterGetNextPlug                 : if Assigned(Host)
+                                             then Result := Integer(Host.AudioMasterGetNextPlug(Value))
+                                             else Result := 0;
    audioMasterWillReplaceOrAccumulate     : if Assigned(Plugin)
                                              then Result := Integer(Plugin.FReplaceOrAccumulate)
                                              else Result := 0;
@@ -987,36 +992,13 @@ begin
    audioMasterGetVendorVersion            : if Assigned(Host)
                                              then Result := Host.FVendorVersion
                                              else Result := 0;
-   audioMasterVendorSpecific              : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnVendorSpecific)
-                                              then Result := Plugin.FOnVendorSpecific(TAudiomasterOpcode(opcode), index, value, ptr, opt)
-                                              else Result := 0
+   audioMasterVendorSpecific              : if Assigned(Plugin)
+                                             then Plugin.AudioMasterVendorSpecific(index, value, ptr, opt)
                                              else Result := 0;
    audioMasterSetIcon                     : {$IFDEF Debug} ShowMessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
-   audioMasterCanDo                       : if assigned(Host) then
-                                             with Host do
-                                              begin
-                                               if not Assigned(ptr) then Result := 0 else
-                                               if      ShortString(PAnsiChar(ptr)) = 'sendVstEvents' then Result := Integer(hcdSendVstEvents in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'sendVstMidiEvent' then Result := Integer(hcdSendVstMidiEvent in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'sendVstTimeInfo' then Result := Integer(hcdSendVstTimeInfo in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'receiveVstEvents' then Result := Integer(hcdReceiveVstEvents in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'receiveVstMidiEvent' then Result := Integer(hcdReceiveVstMidiEvent in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'receiveVstTimeInfo' then Result := Integer(hcdReceiveVstTimeInfo in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'reportConnectionChanges' then Result := Integer(hcdReportConnectionChanges in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'acceptIOChanges' then Result := Integer(hcdAcceptIOChanges in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'sizeWindow' then Result := Integer(hcdSizeWindow in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'asyncProcessing' then Result := Integer(hcdAsyncProcessing in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'offline' then Result := Integer(hcdOffline in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'supplyIdle' then Result := Integer(hcdSupplyIdle in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'supportShell' then Result := Integer(hcdSupportShell in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'openFileSelector' then Result := Integer(hcdOpenFileSelector in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'closeFileSelector' then Result := Integer(hcdcloseFileSelector in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'editFile' then Result := Integer(hcdEditFile in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'shellCategory' then Result := Integer(hcdShellCategory in CanDos)
-                                               else if ShortString(PAnsiChar(ptr)) = 'startStopProcess' then Result := Integer(hcdStartStopProcess in CanDos)
-                                               else Result := 0;
-                                              end;
+   audioMasterCanDo                       : if Assigned(Host)
+                                             then Result := Integer(Host.AudioMasterCanDo(PAnsiChar(ptr)))
+                                             else Result := 0;
    audioMasterGetLanguage                 : if Assigned(Host)
                                              then Result := Integer(Host.FLanguage)
                                              else Result := Integer(hlUnknown);
@@ -1048,15 +1030,12 @@ begin
                                             end;
    audioMasterGetDirectory                : if Assigned(Host)
                                              then Result := LongInt(PAnsiChar(Host.FPlugInDir));
-   audioMasterUpdateDisplay               : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMUpdateDisplay)
-                                              then Plugin.FOnAMUpdateDisplay(Plugin);
-   audioMasterBeginEdit                   : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMBeginEdit)
-                                              then Plugin.FOnAMBeginEdit(Plugin,index);
-   audioMasterEndEdit                     : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMEndEdit)
-                                              then Plugin.FOnAMEndEdit(Plugin,index);
+   audioMasterUpdateDisplay               : if Assigned(Plugin)
+                                             then Plugin.AudioMasterUpdateDisplay;
+   audioMasterBeginEdit                   : if Assigned(Plugin)
+                                             then Plugin.AudioMasterBeginEdit(Index);
+   audioMasterEndEdit                     : if Assigned(Plugin)
+                                             then Plugin.AudioMasterEndEdit(Index);
    audioMasterOpenFileSelector            : begin
                                              {$IFDEF VstHostGUI}
                                              if (ptr <> nil) and not Assigned(GHostDialog) then
@@ -1443,7 +1422,44 @@ begin
 
  if Index = -1
   then Result := FParamQuan
-  else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ENDIF Debug}
+  else {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetParameterQuantization, returns the Integer value for +1.0 representation') {$ELSE} Result := 0 {$ENDIF Debug}
+end;
+
+function TCustomVstHost.AudioMasterGetPreviousPlug(
+  InputPin: Integer): PVstEffect;
+begin
+// if PlugIndex = 0 then Result := 0;
+ {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetPreviousPlug, input pin in <value> (-1: first to come), returns cEffect*') {$ELSE} Result := nil {$ENDIF Debug};
+end;
+
+function TCustomVstHost.AudioMasterCanDo(CanDo: PAnsiChar): Boolean;
+begin
+ Result := False;
+
+ if Assigned(CanDo) then
+  if      ShortString(CanDo) = 'sendVstEvents' then Result := hcdSendVstEvents in CanDos
+  else if ShortString(CanDo) = 'sendVstMidiEvent' then Result := hcdSendVstMidiEvent in CanDos
+  else if ShortString(CanDo) = 'sendVstTimeInfo' then Result := hcdSendVstTimeInfo in CanDos
+  else if ShortString(CanDo) = 'receiveVstEvents' then Result := hcdReceiveVstEvents in CanDos
+  else if ShortString(CanDo) = 'receiveVstMidiEvent' then Result := hcdReceiveVstMidiEvent in CanDos
+  else if ShortString(CanDo) = 'receiveVstTimeInfo' then Result := hcdReceiveVstTimeInfo in CanDos
+  else if ShortString(CanDo) = 'reportConnectionChanges' then Result := hcdReportConnectionChanges in CanDos
+  else if ShortString(CanDo) = 'acceptIOChanges' then Result := hcdAcceptIOChanges in CanDos
+  else if ShortString(CanDo) = 'sizeWindow' then Result := hcdSizeWindow in CanDos
+  else if ShortString(CanDo) = 'asyncProcessing' then Result := hcdAsyncProcessing in CanDos
+  else if ShortString(CanDo) = 'offline' then Result := hcdOffline in CanDos
+  else if ShortString(CanDo) = 'supplyIdle' then Result := hcdSupplyIdle in CanDos
+  else if ShortString(CanDo) = 'supportShell' then Result := hcdSupportShell in CanDos
+  else if ShortString(CanDo) = 'openFileSelector' then Result := hcdOpenFileSelector in CanDos
+  else if ShortString(CanDo) = 'closeFileSelector' then Result := hcdcloseFileSelector in CanDos
+  else if ShortString(CanDo) = 'editFile' then Result := hcdEditFile in CanDos
+  else if ShortString(CanDo) = 'shellCategory' then Result := hcdShellCategory in CanDos
+  else if ShortString(CanDo) = 'startStopProcess' then Result := hcdStartStopProcess in CanDos;
+end;
+
+function TCustomVstHost.AudioMasterGetNextPlug(OutputPin: Integer): PVstEffect;
+begin
+{$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetNextPlug, output pin in <value> (-1: first to come), returns cEffect*') {$ELSE} Result := nil {$ENDIF Debug};
 end;
 
 function TCustomVstHost.AudioMasterGetSampleRate: Single;
@@ -2250,18 +2266,6 @@ begin
    Name := 'LbL'; Parent := Control; Caption := '';
    Alignment := taCenter; Left := 10; Top := 64;
   end;
- {$IFDEF FlatSrcollBar}
- with TFlatScrollBar(FGUIElements[FGUIElements.Add(TFlatScrollBar.Create(Control))]) do
-  begin
-   Name := 'ParamBar'; ClientWidth := 560;
-   Anchors := [akLeft, akTop, akRight];
-   BevelInner := bvNone; BevelOuter := bvNone;
-   Color := clGray; Parent := Control; Align := alClient;
-   Left := 0; Top := 0; Width := 560;
-   VertScrollBar.Smooth := True; VertScrollBar.Tracking := True;
-   HorzScrollBar.Smooth := True; HorzScrollBar.Tracking := True;
-  end;
- {$ELSE}
  with TTrackBar(FGUIElements[FGUIElements.Add(TTrackBar.Create(Control))]) do
   begin
    Name := 'ParamBar'; Parent := Control;
@@ -2272,7 +2276,6 @@ begin
    TabOrder := 3; Min := 0; Max := 100; OnChange := TrackChange;
    TickMarks := tmBottomRight; TickStyle := tsNone;//Auto;
   end;
- {$ENDIF}
  with TComboBox(FGUIElements[FGUIElements.Add(TComboBox.Create(Control))]) do
   begin
    Name := 'ParamBox'; Parent := Control; param := '';
@@ -2331,13 +2334,13 @@ begin
    with TScrollBar(FGUIElements[j]) do
     begin
      Parent := Control; Anchors := [akLeft, akTop, akRight];
-     Kind := sbHorizontal; LargeChange := 10;
-     Height := 16; Top := 2 + i * Height; Tag := i;
+     Kind := sbHorizontal; LargeChange := 10; Tag := i;
+     Height := 16; Top := 2 + i * Height; Name := 'SB' + IntToStr(I);
      Left := MaxParamWidth + 2; Width := Control.Width - Left - 72;
      Min := 0; Max := 1000; TabOrder := 3 + i;
      Position := Round(1000 * Parameter[i]);
-     OnChange := ListParamChange;
-     ListParamChange(FGUIElements[j]);
+     OnChange := ListControlValueChange;
+     ListControlValueChange(FGUIElements[j]);
     end;
   end;
  GUIControl.Visible := True;
@@ -2345,40 +2348,94 @@ begin
  FEditOpen := True;
 end;
 
-procedure TCustomVstPlugIn.ListParamChange(Sender: TObject);
+procedure TCustomVstPlugIn.ListControlValueChange(Sender: TObject);
 var
-  lb  : TLabel;
-  str : string;
-  i   : Integer;
+  Lbl    : TLabel;
+  Str    : string;
+  ChrPos : Integer;
 begin
- assert(Sender is TScrollBar);
+ // ensure sender is TScrollBar
+ Assert(Sender is TScrollBar);
+
  with TScrollBar(Sender) do
   try
+   // convert integer position to float
    Parameter[Tag] := Position * 0.001;
-   lb := TLabel(GUIControl.FindComponent('LbV' + IntToStr(Tag)));
-   if Assigned(lb) then
+
+   // locate value label
+   Lbl := TLabel(GUIControl.FindComponent('LbV' + IntToStr(Tag)));
+   if Assigned(Lbl) then
     begin
+     // eventually add parameter label
      if GetParamLabel(Tag) <> ''
-      then str := GetParamDisplay(Tag) + ' ' + GetParamLabel(Tag)
-      else str := GetParamDisplay(Tag);
-     if Length(str) < 9
-      then lb.Caption := str
+      then Str := GetParamDisplay(Tag) + ' ' + GetParamLabel(Tag)
+      else Str := GetParamDisplay(Tag);
+
+     if Length(Str) < 9
+      then Lbl.Caption := Str
       else
        begin
-        str := GetParamDisplay(Tag);
-        if Pos('.', str) > 0 then
+        Str := GetParamDisplay(Tag);
+        if Pos('.', Str) > 0 then
          begin
-          i := Length(str) - 1;
-          while str[i] = '0' do
+          ChrPos := Length(Str) - 1;
+          while Str[ChrPos] = '0' do
            begin
-            Delete(str, i, 1);
-            Dec(i);
+            Delete(Str, ChrPos, 1);
+            Dec(ChrPos);
            end;
          end;
         if GetParamLabel(Tag) <> ''
-         then lb.Caption := str + ' ' + GetParamLabel(Tag)
-         else lb.Caption := str;
-        if Length(lb.Caption) > 9 then lb.Caption := str
+         then Lbl.Caption := Str + ' ' + GetParamLabel(Tag)
+         else Lbl.Caption := Str;
+        if Length(Lbl.Caption) > 9 then Lbl.Caption := Str
+       end;
+    end;
+  except
+  end;
+end;
+
+procedure TCustomVstPlugIn.ListParamChange(Sender: TObject);
+var
+  Lbl    : TLabel;
+  Str    : string;
+  ChrPos : Integer;
+begin
+ // ensure sender is TScrollBar
+ Assert(Sender is TScrollBar);
+
+ with TScrollBar(Sender) do
+  try
+   // convert integer position to float
+   Position := Round(Parameter[Tag] * 1000);
+
+   // locate value label
+   Lbl := TLabel(GUIControl.FindComponent('LbV' + IntToStr(Tag)));
+   if Assigned(Lbl) then
+    begin
+     // eventually add parameter label
+     if GetParamLabel(Tag) <> ''
+      then Str := GetParamDisplay(Tag) + ' ' + GetParamLabel(Tag)
+      else Str := GetParamDisplay(Tag);
+
+     if Length(Str) < 9
+      then Lbl.Caption := Str
+      else
+       begin
+        Str := GetParamDisplay(Tag);
+        if Pos('.', Str) > 0 then
+         begin
+          ChrPos := Length(Str) - 1;
+          while Str[ChrPos] = '0' do
+           begin
+            Delete(Str, ChrPos, 1);
+            Dec(ChrPos);
+           end;
+         end;
+        if GetParamLabel(Tag) <> ''
+         then Lbl.Caption := Str + ' ' + GetParamLabel(Tag)
+         else Lbl.Caption := Str;
+        if Length(Lbl.Caption) > 9 then Lbl.Caption := Str
        end;
     end;
   except
@@ -2416,48 +2473,33 @@ end;
 
 procedure TCustomVstPlugIn.ParamChange(Sender: TObject);
 var
-  nr : Integer;
-  wc : TComponent;
+  GuiControlIndex : Integer;
+  WindowControl   : TComponent;
 begin
- wc := GUIControl.FindComponent('ParamBar');
+ WindowControl := GUIControl.FindComponent('ParamBar');
 
- if wc <> nil then
-  with wc as {$IFDEF FlatSrcollBar}TFlatScrollBar{$ELSE}TTrackBar{$ENDIF} do
+ if WindowControl is TTrackBar then
+  with TTrackBar(WindowControl) do
    try
-    nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
-    if (nr >= 0) and (nr < numParams)
-     then Position := round(Parameter[nr] * 100);
+    GuiControlIndex := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
+    if (GuiControlIndex >= 0) and (GuiControlIndex < numParams)
+     then Position := Round(Parameter[GuiControlIndex] * 100);
    except
    end;
 end;
 
-{$IFDEF FlatSrcollBar}
-procedure TCustomVstPlugIn.ScrollChange(Sender: TObject; ScrollPos: Integer);
-var
-  nr: Integer;
-begin
- with (GUIControl.FindComponent('ParamBar') as TFlatScrollBar) do
-  begin
-   nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
-   Parameter[nr] := Position * 0.01;
-   (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
-     RStrValue + ': ' + GetParamDisplay(nr) + GetParamLabel(nr);
-  end;
-end;
-{$ELSE}
 procedure TCustomVstPlugIn.TrackChange(Sender: TObject);
 var
-  nr: Integer;
+  GuiControlIndex: Integer;
 begin
  with (GUIControl.FindComponent('ParamBar') as TTrackBar) do
   begin
-   nr := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
-   Parameter[nr] := Position * 0.01;
+   GuiControlIndex := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
+   Parameter[GuiControlIndex] := Position * 0.01;
    (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
-     RStrValue + ': ' + GetParamDisplay(nr) + GetParamLabel(nr);
+     RStrValue + ': ' + GetParamDisplay(GuiControlIndex) + GetParamLabel(GuiControlIndex);
   end;
 end;
-{$ENDIF}
 
 procedure TCustomVstPlugIn.EditClose;
 begin
@@ -3166,18 +3208,23 @@ procedure TCustomVstPlugIn.AudioMasterAutomate(Index: Integer; Value: Single);
 begin
  if Assigned(FOnAMAutomate)
   then FOnAMAutomate(Self, Index, Value);
+
+ // eventually update GUI 
+ if Assigned(FGUIElements)
+  then UpdateParameterOnGui(Index);
+end;
+
+procedure TCustomVstPlugIn.AudioMasterBeginEdit(ParameterIndex: Integer);
+begin
+ if Assigned(FOnAMBeginEdit)
+  then FOnAMBeginEdit(Self, ParameterIndex);
 end;
 
 function TCustomVstPlugIn.AudioMasterPinConnected(Index: Integer;
   PinConnected: Boolean): Boolean;
 begin
  if Assigned(FOnAMPinConnected)
-  then
-   begin
-    if FOnAMPinConnected(Self, Index, PinConnected)
-     then Result := False
-     else Result := True;
-   end
+  then Result := not FOnAMPinConnected(Self, Index, PinConnected)
   else Result := False;
 end;
 
@@ -3189,6 +3236,7 @@ end;
 
 function TCustomVstPlugIn.AudioMasterSizeWindow(Width, Height: Integer): Boolean;
 begin
+ Result := False;
  {$IFDEF VstHostGUI}
  if Pos('DASH', UpperCase(VendorString)) > 0
   then Result := False else
@@ -3203,6 +3251,24 @@ begin
  {$ENDIF}
 end;
 
+procedure TCustomVstPlugIn.AudioMasterUpdateDisplay;
+begin
+ if Assigned(FOnAMUpdateDisplay)
+  then FOnAMUpdateDisplay(Self);
+
+ // eventually update all GUI elements 
+ if Assigned(FGUIElements)
+  then UpdateParameterOnGui(-1);
+end;
+
+function TCustomVstPlugIn.AudioMasterVendorSpecific(Index, Value: Integer;
+  ptr: Pointer; opt: Single): Integer;
+begin
+ if Assigned(FOnVendorSpecific)
+  then Result := FOnVendorSpecific(index, value, ptr, opt)
+  else Result := 0;
+end;
+
 procedure TCustomVstPlugIn.AudioMasterWantMidi;
 begin
  if Assigned(FOnAMWantMidi)
@@ -3212,6 +3278,12 @@ end;
 function TCustomVstPlugIn.AudioMasterCurrentId: Integer;
 begin
  Result := Identify;
+end;
+
+procedure TCustomVstPlugIn.AudioMasterEndEdit(ParameterIndex: Integer);
+begin
+ if Assigned(FOnAMEndEdit)
+  then FOnAMEndEdit(Self, ParameterIndex);
 end;
 
 procedure TCustomVstPlugIn.AudioMasterIdle;
@@ -3236,6 +3308,24 @@ begin
        then VstPlugIns[PluginIndex].EditIdle;
     end;
  {$ENDIF}
+end;
+
+procedure TCustomVstPlugIn.UpdateParameterOnGui(ParameterIndex: Integer);
+var
+  ParamIndex : Integer;
+  SB         : TScrollBar;
+begin
+ case FGUIStyle of
+  gsDefault, gsList :
+   if ParameterIndex >= 0 then
+    begin
+     SB := TScrollBar(GUIControl.FindComponent('SB' + IntToStr(ParameterIndex)));
+     if Assigned(SB)
+      then ListParamChange(SB);
+    end else
+   for ParamIndex := 0 to numParams - 1
+    do UpdateParameterOnGui(ParamIndex);
+ end;
 end;
 
 function TCustomVstPlugIn.BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
