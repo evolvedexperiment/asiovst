@@ -79,7 +79,8 @@ type
   TVSTGetTempoAtSamplePositionEvent = function(Sender: TObject; SamplePosition: Integer): Double of object;
   {$IFDEF VstHostGUI}
   TVstShowEditEvent = procedure(Sender: TObject; Control: TWinControl) of object;
-  TGUIStyle = (gsDefault, gsOld, gsList);
+  TGUIStyle = (gsDefault, gsParameterList, gsParameterSelector,
+    gsCustom);
   {$ENDIF}
 
   // Reaper Extension Callbacks
@@ -95,7 +96,6 @@ type
   TOnStopButton = procedure;
   TIsInRealTimeAudio = function: Integer;
   TAudioIsRunning = function: Integer;
-
 
   THostCanDo = (hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo,
                 hcdReceiveVstEvents, hcdReceiveVstMidiEvent,
@@ -177,26 +177,31 @@ type
     function GetRealQualities: LongInt;
     function GetUniqueID: string;
     function GetVersion: Integer;
+    function GetVSTCanDos: TVstCanDos;
     procedure InitializeVstEffect;
     procedure SetActive(const Value: Boolean);
     procedure SetVstDllFileName(const Value: TFilename);
     {$IFDEF VstHostGUI}
-    procedure SetGUIStyle(const Value: TGUIStyle);
+    function CalculateGuiRectList: ERect;
+    function CalculateGuiRectSelector: ERect;
     procedure FormCloseHandler(Sender: TObject; var Action: TCloseAction);
-    procedure ListControlValueChange(Sender: TObject);
-    procedure ListParamChange(Sender: TObject);
-    procedure ParamChange(Sender: TObject);
+    procedure ControlChangeList(Sender: TObject);
+    procedure ControlChangeSelector(Sender: TObject);
+    procedure GuiParameterChangeList(Sender: TObject);
+    procedure GuiParameterChangeSelector(Sender: TObject);
     procedure EditActivateHandler(Sender: TObject);
     procedure EditDeactivateHandler(Sender: TObject);
-    procedure TrackChange(Sender: TObject);
-    {$ENDIF}
-    function GetVSTCanDos: TVstCanDos;
+    procedure SetGUIStyle(const Value: TGUIStyle);
     procedure UpdateParameterOnGui(ParameterIndex: Integer);
+    {$ENDIF}
   protected
     {$IFDEF VstHostGUI}
     FGUIControl  : TWinControl;
     FGUIElements : TObjectList;
     procedure EditClose;
+    procedure ShowHostGuiSelector(Control: TWinControl);
+    procedure ShowHostGuiList(Control: TWinControl);
+    procedure ShowHostGuiCustom(Control: TWinControl);
     {$ENDIF}
     procedure AssignTo(Dest: TPersistent); override;
 
@@ -331,8 +336,6 @@ type
     procedure RenderEditorToBitmap(Bitmap: TBitmap);
     procedure SetEditKnobMode(Mode : TKnobMode);
     procedure ShowEdit(Control: TWinControl); overload;
-    procedure ShowDefaultEditOld(Control: TWinControl);
-    procedure ShowDefaultEditList(Control: TWinControl);
     procedure ShowEdit; overload;
     {$ENDIF}
 
@@ -2146,9 +2149,16 @@ var
   theRect: ERect;
 begin
  {$IFDEF VstHostGUI}
- if (effFlagsHasEditor in FVstEffect.EffectFlags)
-  then theRect := EditGetRect
-  else theRect := Rect(0, 0, 320, 4 + numParams * 16);
+ case FGUIStyle of
+  gsDefault : if (effFlagsHasEditor in FVstEffect.EffectFlags)
+               then theRect := EditGetRect
+               else theRect := CalculateGuiRectList;
+  gsParameterList : theRect := CalculateGuiRectList;
+  gsParameterSelector : theRect := CalculateGuiRectSelector;
+  gsCustom : if Assigned(FGUIControl)
+              then theRect := Rect(0, 0, FGUIControl.Width, FGUIControl.Height)
+              else theRect := Rect(0, 0, 0, 0);
+ end;
  {$ELSE}
  theRect := Rect(0, 0, 0, 0);
  {$ENDIF}
@@ -2156,6 +2166,16 @@ begin
 end;
 
 {$IFDEF VstHostGUI}
+function TCustomVstPlugIn.CalculateGuiRectList: ERect;
+begin
+ Result := Rect(0, 0, 320, 4 + numParams * 16);
+end;
+
+function TCustomVstPlugIn.CalculateGuiRectSelector: ERect;
+begin
+ Result := Rect(0, 0, 256, 80);
+end;
+
 function TCustomVstPlugIn.EditGetRect: ERect;
 var
   temp: PPERect;
@@ -2243,15 +2263,16 @@ begin
     end;
 //  else raise Exception.Create('Editor is already open!');
   end
- else // Vst has no GUI
+ else // VST plugin has no GUI itself
   case FGUIStyle of
-   gsOld: ShowDefaultEditOld(Control);
-   gsDefault, gsList: ShowDefaultEditList(Control);
+   gsDefault, gsParameterList: ShowHostGuiList(Control);
+   gsParameterSelector: ShowHostGuiSelector(Control);
+   gsCustom: ShowHostGuiCustom(Control);
   end;
  if Assigned(FOnShowEdit) then FOnShowEdit(Self, GUIControl);
 end;
 
-procedure TCustomVstPlugIn.ShowDefaultEditOld(Control: TWinControl);
+procedure TCustomVstPlugIn.ShowHostGuiSelector(Control: TWinControl);
 var
   Param : string;
   i     : Integer;
@@ -2273,7 +2294,7 @@ begin
    Left := 5; Top := 33; Orientation := trHorizontal;
    Width := Control.Width - 4 * Left; Height := 32;
    Frequency := 1; Position := 0; {$IFNDEF FPC} SelEnd := 0; SelStart := 0; {$ENDIF}
-   TabOrder := 3; Min := 0; Max := 100; OnChange := TrackChange;
+   TabOrder := 3; Min := 0; Max := 1000; OnChange := ControlChangeSelector;
    TickMarks := tmBottomRight; TickStyle := tsNone;//Auto;
   end;
  with TComboBox(FGUIElements[FGUIElements.Add(TComboBox.Create(Control))]) do
@@ -2283,13 +2304,13 @@ begin
     do begin param := GetParamName(i); Items.Add(param); end;
    Anchors := [akLeft, akTop, akRight]; Left := 4; Top := 5;
    Width := Control.Width - 4 * Left; Height := 21; ItemHeight := 13;
-   TabOrder := 2; OnChange := ParamChange; Text := ''; ItemIndex := 0;
+   TabOrder := 2; OnChange := GuiParameterChangeSelector; Text := ''; ItemIndex := 0;
    Font.Color := clWindowText;
    OnChange(nil);
   end;
 end;
 
-procedure TCustomVstPlugIn.ShowDefaultEditList(Control: TWinControl);
+procedure TCustomVstPlugIn.ShowHostGuiList(Control: TWinControl);
 var
   i, j          : Integer;
   MaxParamWidth : Integer;
@@ -2325,7 +2346,7 @@ begin
     end;
    with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
     begin
-     Name := 'LbV' + IntToStr(I); Tag := i;
+     Name := 'LbV' + IntToStr(I); Tag := i; Anchors := [akTop, akRight];
      Parent  := Control; Alignment := taCenter; AutoSize := False;
      Height  := 16; Left := Control.Width - Left - 72;
      Alignment := taCenter; Width := 65; Top := 2 + i * Height;
@@ -2339,8 +2360,8 @@ begin
      Left := MaxParamWidth + 2; Width := Control.Width - Left - 72;
      Min := 0; Max := 1000; TabOrder := 3 + i;
      Position := Round(1000 * Parameter[i]);
-     OnChange := ListControlValueChange;
-     ListControlValueChange(FGUIElements[j]);
+     OnChange := ControlChangeList;
+     ControlChangeList(FGUIElements[j]);
     end;
   end;
  GUIControl.Visible := True;
@@ -2348,7 +2369,15 @@ begin
  FEditOpen := True;
 end;
 
-procedure TCustomVstPlugIn.ListControlValueChange(Sender: TObject);
+procedure TCustomVstPlugIn.ShowHostGuiCustom(Control: TWinControl);
+begin
+ FGUIControl := Control;
+ GUIControl.Visible := True;
+ GUIControl.Invalidate;
+ FEditOpen := True;
+end;
+
+procedure TCustomVstPlugIn.ControlChangeList(Sender: TObject);
 var
   Lbl    : TLabel;
   Str    : string;
@@ -2395,7 +2424,7 @@ begin
   end;
 end;
 
-procedure TCustomVstPlugIn.ListParamChange(Sender: TObject);
+procedure TCustomVstPlugIn.GuiParameterChangeList(Sender: TObject);
 var
   Lbl    : TLabel;
   Str    : string;
@@ -2471,7 +2500,7 @@ begin
  {$ENDIF}
 end;
 
-procedure TCustomVstPlugIn.ParamChange(Sender: TObject);
+procedure TCustomVstPlugIn.GuiParameterChangeSelector(Sender: TObject);
 var
   GuiControlIndex : Integer;
   WindowControl   : TComponent;
@@ -2483,22 +2512,32 @@ begin
    try
     GuiControlIndex := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
     if (GuiControlIndex >= 0) and (GuiControlIndex < numParams)
-     then Position := Round(Parameter[GuiControlIndex] * 100);
+     then Position := Round(Parameter[GuiControlIndex] * 1000);
+
+    // update parameter on GUI
+    UpdateParameterOnGui(GuiControlIndex);
    except
    end;
 end;
 
-procedure TCustomVstPlugIn.TrackChange(Sender: TObject);
+procedure TCustomVstPlugIn.ControlChangeSelector(Sender: TObject);
 var
-  GuiControlIndex: Integer;
+  GuiControlIndex : Integer;
+  WindowControl   : TComponent;
 begin
- with (GUIControl.FindComponent('ParamBar') as TTrackBar) do
-  begin
-   GuiControlIndex := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
-   Parameter[GuiControlIndex] := Position * 0.01;
-   (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
-     RStrValue + ': ' + GetParamDisplay(GuiControlIndex) + GetParamLabel(GuiControlIndex);
-  end;
+ WindowControl := GUIControl.FindComponent('ParamBar');
+
+ if WindowControl is TTrackBar then
+  with TTrackBar(WindowControl) do
+   try
+    GuiControlIndex := (GUIControl.FindComponent('ParamBox') as TComboBox).ItemIndex;
+
+    Parameter[GuiControlIndex] := Position * 0.001;
+
+    // update parameter on GUI
+    UpdateParameterOnGui(GuiControlIndex);
+   except
+   end;
 end;
 
 procedure TCustomVstPlugIn.EditClose;
@@ -3209,9 +3248,11 @@ begin
  if Assigned(FOnAMAutomate)
   then FOnAMAutomate(Self, Index, Value);
 
- // eventually update GUI 
+ {$IFDEF VstHostGUI}
+ // eventually update GUI
  if Assigned(FGUIElements)
   then UpdateParameterOnGui(Index);
+ {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.AudioMasterBeginEdit(ParameterIndex: Integer);
@@ -3256,9 +3297,11 @@ begin
  if Assigned(FOnAMUpdateDisplay)
   then FOnAMUpdateDisplay(Self);
 
- // eventually update all GUI elements 
+ {$IFDEF VstHostGUI}
+ // eventually update all GUI elements
  if Assigned(FGUIElements)
   then UpdateParameterOnGui(-1);
+ {$ENDIF}
 end;
 
 function TCustomVstPlugIn.AudioMasterVendorSpecific(Index, Value: Integer;
@@ -3310,23 +3353,31 @@ begin
  {$ENDIF}
 end;
 
+{$IFDEF VstHostGUI}
 procedure TCustomVstPlugIn.UpdateParameterOnGui(ParameterIndex: Integer);
 var
   ParamIndex : Integer;
   SB         : TScrollBar;
 begin
  case FGUIStyle of
-  gsDefault, gsList :
+  gsDefault, gsParameterList :
    if ParameterIndex >= 0 then
     begin
      SB := TScrollBar(GUIControl.FindComponent('SB' + IntToStr(ParameterIndex)));
      if Assigned(SB)
-      then ListParamChange(SB);
+      then GuiParameterChangeList(SB);
     end else
    for ParamIndex := 0 to numParams - 1
     do UpdateParameterOnGui(ParamIndex);
+  gsParameterSelector :
+   if ParameterIndex >= 0 then
+    begin
+     (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
+       RStrValue + ': ' + GetParamDisplay(ParameterIndex) + ' ' + GetParamLabel(ParameterIndex);
+    end;
  end;
 end;
+{$ENDIF}
 
 function TCustomVstPlugIn.BeginLoadBank(const PatchChunkInfo : PVstPatchChunkInfo): Integer;
 begin

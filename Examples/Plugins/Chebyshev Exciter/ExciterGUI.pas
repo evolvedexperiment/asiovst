@@ -25,7 +25,7 @@ unit ExciterGUI;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,15 +54,15 @@ type
     LbShape: TGuiLabel;
     LbShapeValue: TGuiLabel;
     PnControl: TGuiPanel;
+    procedure FormCreate(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure FormPaint(Sender: TObject);
     procedure DialTuneChange(Sender: TObject);
     procedure DialShapeChange(Sender: TObject);
     procedure DialMixChange(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure DialOrderChange(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
-    procedure FormPaint(Sender: TObject);
   private
-    FBackgrounBitmap : TBitmap;
+    FBackgroundBitmap : TBitmap;
   public
     procedure UpdateTune;
     procedure UpdateOrder;
@@ -89,8 +89,8 @@ var
 
 begin
  // Create Background Image
- FBackgrounBitmap := TBitmap.Create;
- with FBackgrounBitmap do
+ FBackgroundBitmap := TBitmap.Create;
+ with FBackgroundBitmap do
   begin
    PixelFormat := pf24bit;
    Width       := Self.Width;
@@ -133,7 +133,7 @@ end;
 
 procedure TFmExciter.FormPaint(Sender: TObject);
 begin
- Canvas.Draw(0, 0, FBackgrounBitmap);
+ Canvas.Draw(0, 0, FBackgroundBitmap);
 end;
 
 procedure TFmExciter.DialTuneChange(Sender: TObject);

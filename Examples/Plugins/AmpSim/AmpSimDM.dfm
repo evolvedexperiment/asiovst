@@ -63,6 +63,7 @@ object ComboDataModule: TComboDataModule
       ShortLabel = 'bias'
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
+      Units = '%'
       UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParamBiasChange

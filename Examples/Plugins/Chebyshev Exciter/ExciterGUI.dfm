@@ -74,6 +74,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbFreqValue: TGuiLabel
       Left = 16
@@ -89,6 +91,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialShape: TGuiDial
       Left = 156
@@ -126,6 +130,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbShapeValue: TGuiLabel
       Left = 156
@@ -141,6 +147,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbMix: TGuiLabel
       Left = 226
@@ -156,6 +164,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialMix: TGuiDial
       Left = 226
@@ -193,6 +203,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialOrder: TGuiDial
       Left = 86
@@ -232,6 +244,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbOrder: TGuiLabel
       Left = 86
@@ -247,6 +261,8 @@ object FmExciter: TFmExciter
       Font.Height = -13
       Font.Name = 'Trebuchet MS'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
 end
