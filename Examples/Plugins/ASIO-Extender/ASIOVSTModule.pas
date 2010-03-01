@@ -25,7 +25,7 @@ unit ASIOVSTModule;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2007-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2007-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +106,7 @@ begin
    Max := FASIOHost.DriverList.Count - 1;
   end;
 
+ EditorFormClass := TFmASIOVST;
  AHLatencyChanged(Self);
 
  if Assigned(FASIOHost)
@@ -123,13 +124,13 @@ end;
 procedure TASIOVSTModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm;
   ParentWindow: Cardinal);
 begin
- GUI := TFmASIOVST.Create(Self);
- with (GUI As TFmASIOVST) do
-  try
-   CbASIO.Items := FASIOHost.DriverList;
-   DisplayASIOInformation;
-  except
-  end;
+ if GUI is TFmASIOVST then
+  with TFmASIOVST(GUI) do
+   try
+    CbASIO.Items := FASIOHost.DriverList;
+    DisplayASIOInformation;
+   except
+   end;
 end;
 
 procedure TASIOVSTModule.VSTModuleBlockSizeChange(Sender: TObject;

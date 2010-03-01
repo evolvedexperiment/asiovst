@@ -25,7 +25,7 @@ unit ChebyshevWaveshaperDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,6 @@ type
     procedure VSTModuleCreate(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDouble(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParamVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -69,13 +68,13 @@ uses
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleCreate(Sender: TObject);
 var
-  i : Integer;
+  HarmIndex : Integer;
 begin
  FVolume := 1;
- for i := CHarmCount - 1 downto 0 do
+ for HarmIndex := CHarmCount - 1 downto 0 do
   with ParameterProperties.Insert(0) do
    begin
-    DisplayName       := 'Harmonic ' + IntToStr(i + 1);
+    DisplayName       := 'Harmonic ' + IntToStr(HarmIndex + 1);
     Min               := -1;
     Max               := 1;
     StepFloat         := 1;
@@ -83,17 +82,12 @@ begin
     SmallStepFloat    := 0.1;
     LargeStepFloat    := 10;
     LargeStepInteger  := 10;
-    ShortLabel        := 'H' + IntToStr(i + 1);
+    ShortLabel        := 'H' + IntToStr(HarmIndex + 1);
     Units             := 'dB';
     OnParameterChange := ParamHarmonicChange;
     OnCustomParameterDisplay := ParamHarmDisplay;
     OnCustomParameterLabel := ParamHarmLabel;
    end;
-end;
-
-procedure TChebyshevWaveshaperDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmChebyshevWaveshaper.Create(Self);
 end;
 
 procedure TChebyshevWaveshaperDataModule.VSTModuleOpen(Sender: TObject);
@@ -102,6 +96,9 @@ var
 begin
  FChebysheWaveshaper := TChebyshevWaveshaper.Create;
  FChebysheWaveshaper.Order := CHarmCount;
+
+ // set editor class
+ EditorFormClass := TFmChebyshevWaveshaper;
 
  // initial parameters
  Parameter[0] := 1;

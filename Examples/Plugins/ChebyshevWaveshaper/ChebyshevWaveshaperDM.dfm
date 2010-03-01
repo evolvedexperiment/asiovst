@@ -1,4 +1,5 @@
 object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
@@ -43,7 +44,6 @@ object ChebyshevWaveshaperDataModule: TChebyshevWaveshaperDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessDoubleReplacing = VSTModuleProcessDouble
   OnProcessReplacing = VSTModuleProcess

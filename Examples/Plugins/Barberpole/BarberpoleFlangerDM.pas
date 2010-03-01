@@ -25,7 +25,7 @@ unit BarberpoleFlangerDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,6 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure ParamSpeedChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamMixChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamDepthChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -91,11 +90,18 @@ begin
    FBarberpole[Channel] := TDspBarberpole32.Create;
    FBarberpole[Channel].SampleRate := SampleRate;
   end;
+
+ // register editor
+ EditorFormClass := TFmBarberpoleFlanger;
+
+ // default parameters
  Parameter[0] :=  2;
  Parameter[1] :=  0.2;
  Parameter[2] :=  5;
  Parameter[3] := 50;
  Parameter[4] :=  2;
+
+ // program parameters
  with Programs[0] do
   begin
    Parameter[0] :=  2;
@@ -134,11 +140,6 @@ procedure TBarberpoleFlangerModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FBarberpole[0]);
  FreeAndNil(FBarberpole[1]);
-end;
-
-procedure TBarberpoleFlangerModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmBarberpoleFlanger.Create(Self);
 end;
 
 function TBarberpoleFlangerModule.GetBarberpole(Index: Integer): TDspBarberpole32;

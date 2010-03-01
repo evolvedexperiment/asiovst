@@ -341,6 +341,7 @@ object FmBassExtender: TFmBassExtender
       DialImageIndex = -1
       LineColor = 1450277
       LineWidth = 2
+      Max = 100.000000000000000000
       Min = -80.000000000000000000
       NumGlyphs = 65
       OnChange = DialThresholdChange

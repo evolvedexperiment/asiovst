@@ -42,7 +42,6 @@ type
   TBassExtenderModule = class(TVSTModule)
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleProcess32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcess64(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessMS32(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -116,6 +115,10 @@ begin
    FOctaveDivider[ChannelIndex] := TOcatveDivider.Create;
   end;
 
+ // set editor class
+ EditorFormClass := TFmBassExtender;
+
+ // default parameters
  Parameter[ 0] := 70;    // Split Frequency [Hz]
  Parameter[ 1] := 3;     // Split Order
  Parameter[ 2] := 50;    // Divider [%]
@@ -189,11 +192,6 @@ begin
    FreeAndNil(FCompressor[ChannelIndex]);
    FreeAndNil(FOctaveDivider[ChannelIndex]);
   end;
-end;
-
-procedure TBassExtenderModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmBassExtender.Create(Self);
 end;
 
 procedure TBassExtenderModule.ParamOrderChange(Sender: TObject; const Index: Integer; var Value: Single);

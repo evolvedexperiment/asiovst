@@ -1,4 +1,5 @@
 object BassExtenderModule: TBassExtenderModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Bass Extender'
@@ -259,7 +260,6 @@ object BassExtenderModule: TBassExtenderModule
     end>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess32
   OnProcessDoubleReplacing = VSTModuleProcess64
   OnProcessReplacing = VSTModuleProcess32

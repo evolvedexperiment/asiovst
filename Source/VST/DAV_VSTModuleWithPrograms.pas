@@ -18,17 +18,19 @@ type
     function TranslateParameterNameToIndex(ParameterName: string): Integer;
     function TranslateProgramNameToIndex(ProgramName: string): Integer;
     function GetParameterByName(ParameterName: string): Single;
-    function GetVstProgramByName(ProgramName: string): TVstProgram;
     function GetParameterDisplay(Index: Integer): string;
     function GetParameterLabel(Index: Integer): string;
     function GetParameterName(Index: Integer): string;
     function GetParameterString(Index: Integer): string;
+    function GetVSTParameter(Index: Integer): Single;
+    function GetVstProgramByName(ProgramName: string): TVstProgram;
     procedure SetParameterByName(ParameterName: string; const Value: Single);
     procedure SetVstProgramByName(ProgramName: string; const Value: TVstProgram);
     procedure SetParameterProperties(const Value: TCustomVstParameterProperties);
     procedure SetParameterCategories(const Value: TCustomVstParameterCategories);
-    procedure SetVstPrograms(const Value: TCustomVstPrograms);
     procedure SetParameterString(Index: Integer; const Value: string);
+    procedure SetVSTParameter(Index: Integer; const Value: Single);
+    procedure SetVstPrograms(const Value: TCustomVstPrograms);
   protected
     FCurProgram             : Integer;
     FVstPrograms            : TCustomVstPrograms;
@@ -110,6 +112,7 @@ type
     property ParameterName[Index: Integer]: string read GetParameterName;
     property ParameterLabel[Index: Integer]: string read GetParameterLabel;
     property ParameterDisplay[Index: Integer]: string read GetParameterDisplay;
+    property VSTParameter[Index: Integer]: Single read GetVSTParameter write SetVSTParameter;
 
     property OnParameterChange: TParameterChangeEvent read FOnParameterChangeEvent write FOnParameterChangeEvent;
     property OnBeginSetProgram: TNotifyEvent read FOnBeginSetProgram write FOnBeginSetProgram;
@@ -778,7 +781,6 @@ begin
  SetLength(FParameter, Value);
 end;
 
-
 procedure TVSTModuleWithPrograms.SetVstProgramByName(ProgramName: string;
   const Value: TVstProgram);
 begin
@@ -798,7 +800,6 @@ end;
 procedure TVSTModuleWithPrograms.SetParameterString(Index: Integer;
   const Value: string);
 begin
-
 end;
 
 function TVSTModuleWithPrograms.Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
@@ -844,6 +845,20 @@ end;
 procedure TVSTModuleWithPrograms.SetParameterByName(ParameterName: string; const Value: Single);
 begin
  Parameter[TranslateParameterNameToIndex(ParameterName)] := Value;
+end;
+
+procedure TVSTModuleWithPrograms.SetVSTParameter(Index: Integer; const Value: Single);
+begin
+ // check parameter index is valid
+ if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
+  then Exit;
+
+ SetParameterDirect(Index, VSTParameter2Parameter(Value, Index));
+
+ if Assigned(FParameterProperties[Index]) then
+  with FParameterProperties[Index] do
+   if CanBeAutomated
+    then SetParameterAutomated(Index, Value);
 end;
 
 procedure TVSTModuleWithPrograms.SetParameter(Index: Integer; const Value: Single);
@@ -913,12 +928,16 @@ begin
    if numPrograms > 0
     then Result := Programs[FCurProgram].Parameter[Index]
     else Result := FParameter[Index];
-// ShowMessage('Parameter: ' + IntToStr(Index) + ': ' + FloatToStr(Result));   
 end;
 
 function TVSTModuleWithPrograms.GetParameterByName(ParameterName: string): Single;
 begin
  Result := Parameter[TranslateParameterNameToIndex(ParameterName)];
+end;
+
+function TVSTModuleWithPrograms.GetVSTParameter(Index: Integer): Single;
+begin
+ Result := Parameter2VSTParameter(GetParameter(Index), Index);
 end;
 
 function TVSTModuleWithPrograms.GetVstProgramByName(ProgramName: string): TVstProgram;

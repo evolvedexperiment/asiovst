@@ -1,4 +1,5 @@
 object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
+  OldCreateOrder = True
   Version = '1.0'
   EffectName = 'Audio to Midi Trigger'
   ProductName = 'DAV Effect Examples'
@@ -18,7 +19,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Threshold'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -37,7 +37,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       OnParameterChange = ParameterThresholdChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gain'
       Flags = [ppfParameterIsSwitch, ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -55,7 +54,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       VSTModule = Owner
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Interval'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -72,7 +70,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       OnParameterChange = ParameterIntervalChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'MidiNote'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -90,7 +87,6 @@ object Audio2MidiTriggerModule: TAudio2MidiTriggerModule
       OnCustomParameterDisplay = ParameterMidiNoteDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Velocity Shift'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]

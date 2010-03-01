@@ -1,4 +1,5 @@
 object BarberpoleFlangerModule: TBarberpoleFlangerModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -32,7 +33,6 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Stages'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -71,7 +71,6 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
       OnParameterChange = ParamSpeedChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Depth'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -89,7 +88,6 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
       OnParameterChange = ParamDepthChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Mix'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -105,7 +103,6 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
       OnParameterChange = ParamMixChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Algorithm'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep]
@@ -124,7 +121,6 @@ object BarberpoleFlangerModule: TBarberpoleFlangerModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
   OnSampleRateChange = VSTModuleSampleRateChange

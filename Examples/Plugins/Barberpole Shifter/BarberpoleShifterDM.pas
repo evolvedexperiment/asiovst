@@ -25,7 +25,7 @@ unit BarberpoleShifterDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,6 @@ uses
 
 type
   TBarberpoleShifterDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -78,10 +77,14 @@ begin
  for Channel := 0 to Length(FFreqShifter) - 1
   do FFreqShifter[Channel] := TBodeFrequencyShifter32.Create;
 
+ // register editor
+ EditorFormClass := TFmBarberpoleShifter;
+
+ // default parameters
  Parameter[0] := 0.2;
  Parameter[1] := 40;
  Parameter[2] := 16;
- Parameter[3] := 0.02; 
+ Parameter[3] := 0.02;
 
 (*
  Programs[0].Parameter[0] := 10;
@@ -150,11 +153,6 @@ begin
   else OnProcess := VSTModuleProcessMultiChannel;
  end;
  OnProcessReplacing := OnProcess;
-end;
-
-procedure TBarberpoleShifterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmBarberpoleShifter.Create(Self);
 end;
 
 procedure TBarberpoleShifterDataModule.VSTModuleProcessMono(const Inputs,

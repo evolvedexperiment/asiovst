@@ -1,4 +1,5 @@
 object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -91,7 +92,6 @@ object BodeFrequencyShifterDataModule: TBodeFrequencyShifterDataModule
   ParameterCategories = <>
   OnOpen = VSTModuleOpen
   OnClose = VSTModuleClose
-  OnEditOpen = VSTModuleEditOpen
   OnProcess = VSTModuleProcessMono
   OnProcessReplacing = VSTModuleProcessMono
   OnSampleRateChange = VSTModuleSampleRateChange

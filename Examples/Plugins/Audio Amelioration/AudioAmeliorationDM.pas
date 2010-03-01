@@ -25,7 +25,7 @@ unit AudioAmeliorationDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,15 +54,14 @@ type
   end;
 
   TAudioAmeliorationModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterSpeakerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
+    procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcessSpeaker(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessHeadphones(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessBypass(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure ParameterOnOffDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterSpeakerDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
     procedure Parameter3DSoundChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAmbienceActiveChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterAmbienceChange(Sender: TObject; const Index: Integer; var Value: Single);
@@ -183,6 +182,8 @@ begin
  FBandReserve := 0.25;
  UpdateFilters;
 
+ EditorFormClass := TFmAudioAmelioration;
+
  UseDownsampling := True;
  DownsamplingChanged;
 end;
@@ -211,11 +212,6 @@ begin
    FreeAndNil(FFilterArray[BandIndex].Lowpass);
    FreeAndNil(FFilterArray[BandIndex].Highpass);
   end;
-end;
-
-procedure TAudioAmeliorationModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmAudioAmelioration.Create(Self);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -16,7 +16,6 @@ uses
   ToolsAPI,
   {$IFDEF DELPHI6_UP}
   DesignIntf,    // DsgnIntf renamed to DesignIntf from Delphi 6
-//DesignEditors, // TCustomModule moved to DesignEditors from Delphi 6
   DMForm,
   {$ELSE}
   DsgnIntf,

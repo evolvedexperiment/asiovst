@@ -25,7 +25,7 @@ unit BodeFrequencyShifterDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,6 @@ uses
 
 type
   TBodeFrequencyShifterDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleProcessMono(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
@@ -121,10 +120,14 @@ begin
  for Channel := 0 to Length(FFreqShifter) - 1
   do FFreqShifter[Channel] := TBodeFrequencyShifter32.Create;
 
+ // set editor class
+ EditorFormClass := TFmBodeFrequencyShifter;
+
+ // default parameters
  Parameter[0] := 100;
  Parameter[1] := 100;
- Parameter[2] := 12; 
- Parameter[3] := 0.1; 
+ Parameter[2] := 12;
+ Parameter[3] := 0.1;
 
 (*
  Programs[0].Parameter[0] := 10;
@@ -139,11 +142,6 @@ var
 begin
  for Channel := 0 to Length(FFreqShifter) - 1
   do FreeAndNil(FFreqShifter[Channel]);
-end;
-
-procedure TBodeFrequencyShifterDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmBodeFrequencyShifter.Create(Self);
 end;
 
 procedure TBodeFrequencyShifterDataModule.ParameterFrequencyChange(

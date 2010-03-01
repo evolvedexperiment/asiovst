@@ -127,8 +127,8 @@ begin
         if NativeFormEditor.FormDesigner <> nil then
         begin
           DoCreateMethod(NativeFormEditor.FormDesigner,
-            NativeFormEditor.FormDesigner.GetRoot, 'EditOpen',
-            'VSTModuleEditOpen');
+            NativeFormEditor.FormDesigner.GetRoot, 'Open',
+            'VSTModuleOpen');
         end;
       end;
     end;
@@ -225,7 +225,7 @@ begin
   if FConfig.UseEditor then
   begin
     s := s +
-      '    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' +
+      '    procedure VSTModuleOpen(Sender: TObject);' +
       CRLF;
   end;
 
@@ -245,9 +245,9 @@ begin
       'uses' + CRLF +
       '  ' + FConfig.EditorUnitName + ';' + CRLF +
       CRLF +
-      'procedure T' + FormIdent + '.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);' + CRLF +
+      'procedure T' + FormIdent + '.VSTModuleOpen(Sender: TObject);' + CRLF +
       'begin' + CRLF +
-      '  GUI := T' + FConfig.EditorFormName + '.Create(Self);' + CRLF +
+      '  EditorFormClass := T' + FConfig.EditorFormName + ';' + CRLF +
       'end;' + CRLF +
       CRLF;
   end;

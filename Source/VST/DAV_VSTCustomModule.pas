@@ -87,6 +87,10 @@ type
     FLog                    : TStringList;
     FTmStmp                 : TDateTime;
     {$ENDIF}
+(*
+    function GetEditorFormClassName: string;
+    procedure SetEditorFormClassName(Value: string);
+*)
     procedure SetNumInputs(const Inputs: Integer);
     procedure SetNumOutputs(const Outputs: Integer);
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
@@ -229,21 +233,19 @@ type
     {$IFDEF Debug} property DebugLog: TStringList read fLog; {$ENDIF}
 
     // Properties
-    property EditorForm: TForm read FEditorForm;
-    property EditorNeedUpdate: Boolean read FEditorNeedUpdate write FEditorNeedUpdate;
-
-    property Flags: TEffFlags read GetPluginFlags write SetPluginFlags default [effFlagsCanReplacing];
-    property CanDo[canDo: string]: Integer read GetCanHostDo;
-
     property About: string read FAbout write ReadOnlyString stored False;
     property BlockSize: Integer read FBlockSize write SetBlockSize default 1024;
+    property CanDo[canDo: string]: Integer read GetCanHostDo;
     property CanDos: TVstCanDos read FCanDos write FCanDos default [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out];
-    property EffectName: string read FEffectName write SetEffectName;
+    property EditorForm: TForm read FEditorForm;
     property EditorFormClass: TFormClass read FEditorFormClass write FEditorFormClass;
+//    property EditorFormClassName: string read GetEditorFormClassName write SetEditorFormClassName;
+    property EditorNeedUpdate: Boolean read FEditorNeedUpdate write FEditorNeedUpdate;
+    property EffectName: string read FEffectName write SetEffectName;
+    property Flags: TEffFlags read GetPluginFlags write SetPluginFlags default [effFlagsCanReplacing];
     property HostProduct: string read GetHostProduct stored False;
     property HostVendor: string read GetHostVendor stored False;
     property HostVersion: Integer read GetHostVendorVersion stored False;
-    property TruncateStrings: Boolean read FTruncateStrings write FTruncateStrings default False;
     property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
     property IORatio: Single read FEffect.ioRatio write FEffect.ioRatio;
     property KeysRequired: Boolean read FKeysRequired write SetKeysRequired default False;
@@ -259,6 +261,7 @@ type
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
     property TailSize: Integer read FTailSize write FTailSize default 0;
     property Tempo: Single read fTempo;
+    property TruncateStrings: Boolean read FTruncateStrings write FTruncateStrings default False;
     property UniqueID: AnsiString read GetUniqueID write SetUniqueID;
     property VendorName: string read fVendorName write SetVendorName;
     property Version: string read FVersion write FVersion;
@@ -375,7 +378,12 @@ begin
 end;
 {$ENDIF}
 
-procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+(*
+function TCustomVSTModule.GetEditorFormClassName: string;
+begin Result := FEditorFormClass.ClassName;
+end;procedure TCustomVSTModule.SetEditorFormClassName(Value: string);
+begin FEditorFormClass :=
+end;*)procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
   Ins     : TDAVArrayOfSingleDynArray absolute Inputs;
   Outs    : TDAVArrayOfSingleDynArray absolute Outputs;

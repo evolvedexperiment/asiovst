@@ -25,7 +25,7 @@ unit BarberpoleTunerDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,6 @@ uses
 
 type
   TBarberpoleTunerDataModule = class(TVSTModule)
-    procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
@@ -78,6 +77,9 @@ begin
  FBarberpoleFilter := TBarberpoleFilter.Create;
  FBarberpoleFilter.SampleRate := SampleRate;
 
+ // register editor
+ EditorFormClass := TFmBarberpoleTuner;
+
  FDownSamplePos    := 0;
  FDownSampleCount  := 1 shl 8;
  GetMem(FLinearBuffer, 256 * SizeOf(Single));
@@ -89,11 +91,6 @@ procedure TBarberpoleTunerDataModule.VSTModuleClose(Sender: TObject);
 begin
  FreeAndNil(FBarberpoleFilter);
  FreeAndNil(FLowpass);
-end;
-
-procedure TBarberpoleTunerDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
- GUI := TFmBarberpoleTuner.Create(Self);
 end;
 
 procedure TBarberpoleTunerDataModule.ParameterGuitarStringChange(
@@ -116,7 +113,7 @@ begin
  end;
 
  // update GUI
- if assigned(FBarberpoleFilter)
+ if Assigned(FBarberpoleFilter)
   then FBarberpoleFilter.Frequency := CenterFrequency;
 end;
 

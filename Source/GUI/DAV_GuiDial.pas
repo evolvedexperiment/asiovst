@@ -1166,7 +1166,7 @@ begin
   begin
    Width := FImageList.Width;
    Height := FImageList.Height;
-   exit;
+   Exit;
   end;
  if FDialBitmap.Empty or (FNumGlyphs = 0) then Exit;
 
@@ -1324,8 +1324,8 @@ begin
 
 // apply inertia function
  if Difference < 0
-  then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
-  else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
+  then Difference := -Power(Abs(Difference), FInertiaExp) * FInertiaScale
+  else Difference :=  Power(Abs(Difference), FInertiaExp) * FInertiaScale;
  NormalizedPosition := UnMapValue(MapValue(NormalizedPosition) + Difference);
  Result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
 end;
@@ -1349,9 +1349,9 @@ begin
    Brush.Color := Self.Color;
 
    // draw circle
-   Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
    if Rad <= 0 then exit;
-   Steps := Round(2 / arcsin(1 / Rad)) + 1;
+   Steps := Round(2 / ArcSin(1 / Rad)) + 1;
    if Steps > 1 then
     begin
      SetLength(PtsArray, Steps);
@@ -1368,7 +1368,7 @@ begin
        PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
       end;
 
-     Pen.Width := OversamplingFactor * fLineWidth;
+     Pen.Width := OversamplingFactor * FLineWidth;
      Pen.Color := FLineColor;
      Brush.Color := FCircleColor;
      Polygon(PtsArray);
@@ -1400,8 +1400,8 @@ end;
 function TCustomGuiDial.UnmapValue(Value: Double): Double;
 begin
  if Value < 0
-  then Result := -Power(abs(Value), 1 / FCurveMappingExp)
-  else Result :=  Power(abs(Value), 1 / FCurveMappingExp)
+  then Result := -Power(Abs(Value), 1 / FCurveMappingExp)
+  else Result :=  Power(Abs(Value), 1 / FCurveMappingExp)
 end;
 
 procedure TCustomGuiDial.ReadMaxProperty(Reader: TReader);
@@ -1531,8 +1531,8 @@ end;
 function TCustomGuiDial.MapValue(Value: Double): Double;
 begin
  if Value < 0
-  then Result := -Power(abs(Value), FCurveMappingExp)
-  else Result :=  Power(abs(Value), FCurveMappingExp);
+  then Result := -Power(Abs(Value), FCurveMappingExp)
+  else Result :=  Power(Abs(Value), FCurveMappingExp);
 end;
 
 procedure TCustomGuiDial.MouseDown(Button: TMouseButton; Shift: TShiftState; X,
@@ -1559,8 +1559,8 @@ begin
 
  // apply inertia function
  if Difference < 0
-  then Difference := -Power(abs(Difference), FInertiaExp) * FInertiaScale
-  else Difference :=  Power(abs(Difference), FInertiaExp) * FInertiaScale;
+  then Difference := -Power(Abs(Difference), FInertiaExp) * FInertiaScale
+  else Difference :=  Power(Abs(Difference), FInertiaExp) * FInertiaScale;
 
  if ssShift in Shift
   then NewValue := MapValue(NormalizedPosition) + Difference * 0.1
@@ -1748,7 +1748,7 @@ begin
    FillRect(ClipRect);
 
    // draw circle
-   Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
    BW := 1 - OversamplingFactor / Rad; // border width = 1 pixel
    if Rad < 0 then exit;
 
@@ -1760,11 +1760,11 @@ begin
    {$IFNDEF FPC}
    for i := 0 to Round(2 * Rad) do
     begin
-     XStart := Sqrt(abs(Sqr(rad) - Sqr(Rad - i)));
+     XStart := Sqrt(Abs(Sqr(rad) - Sqr(Rad - i)));
      Line := ScanLine[Round(Center.Im - (Rad - i))];
      for Steps := Round(Center.Re - XStart) to Round(Center.Re + XStart) do
       begin
-       val := 2.9999 * abs(ArcTan2(Steps - Center.Re, (Rad - i)) / Pi);
+       val := 2.9999 * Abs(ArcTan2(Steps - Center.Re, (Rad - i)) / Pi);
        if Round(1.5 + val) mod 3 = 0
         then val := val * 50 - 99.5
         else val := -Round(99.5 + val * 50) mod 100;
@@ -1812,9 +1812,9 @@ begin
    {$IFNDEF FPC}if FTransparent then CopyParentImage(Self, FBuffer.Canvas) else{$ENDIF}
    FillRect(ClipRect);
 
-   Rad := 0.45 * Math.Min(Width, Height) - fLineWidth div 2;
+   Rad := 0.45 * Math.Min(Width, Height) - FLineWidth div 2;
    if Rad < 0 then exit;
-   Steps := Round(2 / arcsin(1 / Rad)) + 1;
+   Steps := Round(2 / ArcSin(1 / Rad)) + 1;
    if Steps > 1 then
     begin
      SetLength(PtsArray, Steps);
@@ -1831,7 +1831,7 @@ begin
        PtsArray[i] := Point(Round(0.5 * Width + Val.Re), Round(0.5 * Height + Val.Im));
       end;
 
-     Pen.Width := fLineWidth;
+     Pen.Width := FLineWidth;
      Pen.Color := FLineColor;
      Brush.Color := FCircleColor;
      Polygon(PtsArray);
@@ -2004,7 +2004,7 @@ end;
 
 procedure TGuiDialImageCollectionItem.SetHeight(const Value: Integer);
 begin
- if Value < 0 then exit;
+ if Value < 0 then Exit;
  FDialBitmap.Height := Value;
 end;
 

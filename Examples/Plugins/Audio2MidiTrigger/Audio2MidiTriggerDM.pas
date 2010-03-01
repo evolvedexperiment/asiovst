@@ -25,7 +25,7 @@ unit Audio2MidiTriggerDM;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2009             //
+//  Portions created by Christian-W. Budde are Copyright (C) 2009-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ begin
  SendVstEventsToHost(FMidiEvent);
 end;
 
-{$IFNDEF FPC}
+{$IFDEF FPC}
 initialization
   {$I Audio2MidiTriggerDM.lrs}
 {$ENDIF}
