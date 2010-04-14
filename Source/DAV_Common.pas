@@ -38,14 +38,17 @@ interface
 {$IFDEF FPC}
 uses LCLIntf, DAV_Types; {$DEFINE PUREPASCAL}
 {$ELSE}
-uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF}, DAV_Types;
+uses
+  {$IFDEF MSWINDOWS} Windows, {$ENDIF}
+  {$IFDEF UseNativeTypes}Types, {$ENDIF}
+  DAV_Types;
 {$ENDIF}
 
 { Byte Ordering }
 
-function SWAP_16(value: SmallInt): SmallInt;
-function SWAP_32(value: LongInt): LongInt;
-function SWAP_64(value: Int64): Int64;
+function Swap_16(Value: SmallInt): SmallInt;
+function Swap_32(Value: LongInt): LongInt;
+function Swap_64(Value: Int64): Int64;
 
 function SwapLong(var Value): LongInt;
 procedure FlipWord(var Value); overload;
@@ -145,19 +148,24 @@ function unDenormalize(const Value: Single): Single;
 { String Stuff & Messages }
 
 {$IFNDEF FPC}
+{$IFDEF MSWINDOWS}
 function GetApplicationFilename: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function GetApplicationDirectory: string; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+{$ENDIF}
 
 {$IFNDEF DELPHI12_UP}
 type
   TSysCharSet = set of AnsiChar;
 
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
+{$IFDEF MSWINDOWS}
 procedure Msg(b: Boolean); overload;
 procedure Msg(m: string; m2: string = ''); overload;
 procedure Msg(i: Integer); overload;
 procedure Msg(s: Single); overload;
 procedure Msg(m: string; i: Integer); overload;
+{$ENDIF}
 {$ENDIF}
 
 function FloatWithUnit(const Value: Double):string;
@@ -1118,6 +1126,7 @@ end;
 { String Functions }
 
 {$IFNDEF FPC}
+{$IFDEF MSWINDOWS}
 function GetApplicationFilename: string;
 var
   s : {$IFDEF DELPHI12_UP}PWideChar; {$ELSE} PChar; {$ENDIF}
@@ -1137,6 +1146,7 @@ begin
  Result := StrPas(s);
  Result := ExtractFileDir(Result);
 end;
+{$ENDIF}
 
 {$IFNDEF DELPHI12_UP}
 function CharInSet(C: AnsiChar; const CharSet: TSysCharSet): Boolean;
@@ -1144,6 +1154,7 @@ begin
  Result := C in CharSet;
 end;
 
+{$IFDEF MSWINDOWS}
 procedure Msg(b: Boolean);
 begin if b then Msg('TRUE') else Msg('FALSE');end;
 procedure Msg(m: string; m2: string = '');
@@ -1154,6 +1165,7 @@ procedure Msg(s: Single);
 begin Msg(FloatToStrF(s, ffFixed, 3, 3)); end;
 procedure Msg(m: string; i:Integer);
 begin MessageBox(0, PAnsiChar(m + ' ' + IntToStr(i)), '', MB_OK); end;
+{$ENDIF}
 {$ENDIF}
 {$WARNINGS ON}
 

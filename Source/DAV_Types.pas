@@ -34,10 +34,9 @@ interface
 
 {$I DAV_Compiler.inc}
 
-{$IFDEF FPC}
-uses LCLIntf; {$DEFINE PUREPASCAL}
-{$ELSE}
-uses Windows {$IFDEF UseNativeTypes}, Types{$ENDIF};
+{$IFDEF UseNativeTypes}
+uses
+  Types;
 {$ENDIF}
 
 type

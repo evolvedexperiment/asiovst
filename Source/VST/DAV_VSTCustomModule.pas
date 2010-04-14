@@ -324,7 +324,7 @@ begin
  FLog := TStringList.Create;
  FTmStmp := Now;
  FLog.Add('Create: ' + TimeToStr(FTmStmp));
- if not csDesigning in ComponentState then
+ if not (csDesigning in ComponentState) then
   try
    FLog.SaveToFile('Debug.log');
   except
@@ -371,7 +371,7 @@ begin
  if Assigned(FLog) then
   try
    FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
-   if not csDesigning in ComponentState
+   if not (csDesigning in ComponentState)
     then FLog.SaveToFile('Debug.log');
   except
   end;
@@ -380,10 +380,18 @@ end;
 
 (*
 function TCustomVSTModule.GetEditorFormClassName: string;
-begin Result := FEditorFormClass.ClassName;
-end;procedure TCustomVSTModule.SetEditorFormClassName(Value: string);
-begin FEditorFormClass :=
-end;*)procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+begin
+ Result := FEditorFormClass.ClassName;
+end;
+
+procedure TCustomVSTModule.SetEditorFormClassName(Value: string);
+begin
+
+ FEditorFormClass :=
+end;
+*)
+
+procedure TCustomVSTModule.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
   Ins     : TDAVArrayOfSingleDynArray absolute Inputs;
   Outs    : TDAVArrayOfSingleDynArray absolute Outputs;
@@ -632,20 +640,7 @@ begin
      Result := 1;
      with FEditorForm do
       begin
-       {$IFNDEF FPC}
        ParentWindow := HWnd(ptr);
-       {$ELSE}
-         {$IFDEF Windows}
-         SetParent(Handle, HWnd(ptr));
-         {$ELSE}
-         {$IFDEF DARWIN}
-         HIViewGetRoot(WindowRef(ptr));
-         {$ELSE}
-         Handle := HWnd(ptr);
-         Parent := TWinControl.CreateParented(HWnd(ptr));
-         {$ENDIF}
-         {$ENDIF}
-       {$ENDIF}
        Visible := True;
        BorderStyle := bsNone;
        SetBounds(0, 0, Width, Height);
@@ -1532,4 +1527,4 @@ begin
   else FEffect.version := (FVersionMajor shl 16) + (FVersionMinor shl 8) + FVersionRelease;
 end;
 
-end.
+end.

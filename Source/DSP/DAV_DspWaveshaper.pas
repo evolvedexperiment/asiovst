@@ -123,8 +123,8 @@ begin
   else
    begin
     if Input > 0
-     then Result :=   Parameter + (1 - Parameter) * tanh(( Input - Parameter) / (1 - Parameter))
-     else Result := -(Parameter + (1 - Parameter) * tanh((-Input - Parameter) / (1 - Parameter)));
+     then Result :=   Parameter + (1 - Parameter) * DAV_Math.Tanh(( Input - Parameter) / (1 - Parameter))
+     else Result := -(Parameter + (1 - Parameter) * DAV_Math.Tanh((-Input - Parameter) / (1 - Parameter)));
    end;
 end;
 
@@ -135,8 +135,8 @@ begin
   else
    begin
     if Input > 0
-     then Result :=   Parameter + (1 - Parameter) * tanh(( Input - Parameter) / (1 - Parameter))
-     else Result := -(Parameter + (1 - Parameter) * tanh((-Input - Parameter) / (1 - Parameter)));
+     then Result :=   Parameter + (1 - Parameter) * DAV_Math.Tanh(( Input - Parameter) / (1 - Parameter))
+     else Result := -(Parameter + (1 - Parameter) * DAV_Math.Tanh((-Input - Parameter) / (1 - Parameter)));
    end;
 end;
 

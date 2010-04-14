@@ -1553,7 +1553,7 @@ begin
   begin
    ai   := 0.25 * (1.0-m);
    b    := cosh(u);
-   t    := tanh(u);
+   t    := DAV_Math.tanh(u);
    phi  := 1.0 / b;
    twon := b * sinh(u);
    sn   := t + ai * (twon - u)/(b*b);
