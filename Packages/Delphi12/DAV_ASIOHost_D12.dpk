@@ -1,4 +1,4 @@
-package HostASIO_D12;
+package DAV_ASIOHost_D12;
 
 {$ALIGN 8}
 {$ASSERTIONS ON}

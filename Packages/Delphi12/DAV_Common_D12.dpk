@@ -57,12 +57,17 @@ contains
   DAV_HalfFloat in '..\..\Source\DAV_HalfFloat.pas',
   DAV_Huffman in '..\..\Source\DAV_Huffman.pas',
   DAV_InvMDCT in '..\..\Source\DAV_InvMDCT.pas',
+  DAV_Math in '..\..\Source\DAV_Math.pas',
   DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
   DAV_MpegAudio in '..\..\Source\FileFormats\DAV_MpegAudio.pas',
   DAV_MpegAudioLayer3 in '..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas',
   DAV_ProcessingComponent in '..\..\Source\DAV_ProcessingComponent.pas',
+  DAV_SampleRateSource in '..\..\Source\DAV_SampleRateSource.pas',
   DAV_StereoBuffer in '..\..\Source\DAV_StereoBuffer.pas',
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
+  DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
+  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas';
+
 end.
