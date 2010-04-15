@@ -27,6 +27,7 @@ package HostASIO_D12;
 requires
   vcl,
   rtl,
+  designide,
   DAV_Common_D12;
 
 contains
