@@ -355,6 +355,8 @@ type
     FSampleFrames  : Cardinal;
     FExternalData  : Boolean;
     FOnDataChanged : TNotifyEvent;
+    function GetPeak: Double;
+    function GetSum: Double;
     function GetChannelCount: Integer;
     procedure SetChannelCount(const Value: Integer);
     procedure SetSampleFrames(const Value: Cardinal);
@@ -389,6 +391,9 @@ type
     procedure RemoveDC; virtual;
     procedure Normalize; virtual;
 
+    property Sum: Double read GetSum;
+    property Peak: Double read GetPeak;
+
     // File I/O
     procedure LoadFromFile(const FileName: TFileName); virtual;
     procedure SaveToFile(const FileName: TFileName); virtual;
@@ -420,6 +425,7 @@ type
     property ChannelList[index: Integer]: TAudioChannel32 read GetAudioChannel; default;
   public
     constructor Create(AOwner: TComponent; AChannels: Integer; ASampleFrames: Int64; DataPtr: Pointer = nil); override;
+
     property ChannelDataPointer[Channel: Integer]: PDAVSingleFixedArray read GetChannelDataPointerList;
     property ChannelDataPointerList: Pointer read GetChannelDataPointerListPointer;
   end;
@@ -1301,6 +1307,45 @@ begin
  if Assigned(FChannels)
   then Result := FChannels.Count
   else Result := 0;
+end;
+
+function TCustomAudioDataCollection.GetPeak: Double;
+var
+  ChannelIndex : Integer;
+  Peak         : Double;
+begin
+ if FChannels.Count = 0 then
+  begin
+   Result := 0;
+   Exit;
+  end;
+
+ Result := TCustomAudioChannel(FChannels[0]).Peak;
+
+ for ChannelIndex := 0 to FChannels.Count - 1 do
+  begin
+   Peak := TCustomAudioChannel(FChannels.Items[ChannelIndex ]).Peak;
+   if Peak > Result
+    then Result := Peak;
+  end;
+end;
+
+function TCustomAudioDataCollection.GetSum: Double;
+var
+  ChannelIndex : Integer;
+begin
+ if FChannels.Count = 0 then
+  begin
+   Result := 0;
+   Exit;
+  end;
+
+ Result := TCustomAudioChannel(FChannels[0]).Peak;
+
+ for ChannelIndex := 0 to FChannels.Count - 1 do
+  begin
+   Result := Result + TCustomAudioChannel(FChannels.Items[ChannelIndex ]).Peak;
+  end;
 end;
 
 procedure TCustomAudioDataCollection.SampleFramesChanged;

@@ -52,6 +52,7 @@ type
     FAudioDataCollection  : TCustomAudioDataCollection;
     FBuffer               : TBitmap;
     FDisplayedChannel     : Integer;
+    FDisplayChannels      : TDisplayChannels;
     FHalfHeight           : Integer;
     FLineColor            : TColor;
     FLineWidth            : Integer;
@@ -59,12 +60,13 @@ type
     FSolidColor           : TColor;
     FTransparent          : Boolean;
     FWaveDrawMode         : TGuiWaveDrawMode;
+    FNormalize            : Boolean;
+    FScaleFactor          : Single;
     FCursor               : TGuiAudioDataDisplayCursor;
     FXAxis                : TGuiAudioDataDisplayXAxis;
-    FDisplayChannels      : TDisplayChannels;
 
-    function  GetChannelCount: Integer;
-    function  GetSampleFrames: Integer;
+    function GetChannelCount: Integer;
+    function GetSampleFrames: Integer;
     procedure AxisChangedHandler(Sender: TObject);
     procedure CursorChangedHandler(Sender: TObject);
     procedure DisplayChannelsChangedHandler(Sender: TObject);
@@ -77,6 +79,7 @@ type
     procedure SetDisplayedChannel(Value: Integer);
     procedure SetLineColor(const Value: TColor);
     procedure SetLineWidth(const Value: Integer);
+    procedure SetNormalize(const Value: Boolean);
     procedure SetSolidColor(const Value: TColor);
     procedure SetTransparent(const Value: Boolean);
     procedure SetWaveDrawMode(Value: TGuiWaveDrawMode);
@@ -88,6 +91,7 @@ type
     {$IFNDEF FPC}
     procedure DrawParentImage(Dest: TCanvas); virtual;
     {$ENDIF}
+    procedure CalculateScaleFactor;
   protected
     procedure Resize; override;
 //    procedure RedrawBuffer(doBufferFlip: Boolean = False); override;
@@ -97,6 +101,11 @@ type
     procedure AntiAliasChanged; virtual;
     procedure AudioDataChanged; virtual;
     procedure AudioDataCollectionChanged; virtual;
+    procedure NormalizeChanged; virtual;
+    procedure LineColorChanged; virtual;
+    procedure LineWidthChanged; virtual;
+    procedure TransparentChanged; virtual;
+    procedure WaveDrawModeChanged; virtual;
 
     property SampleFrames: Integer read GetSampleFrames;
     property ChannelCount: Integer read GetChannelCount;
@@ -115,6 +124,7 @@ type
 
     property LineWidth: Integer read FLineWidth write SetLineWidth default 1;
     property LineColor: TColor read FLineColor write SetLineColor default clBlack;
+    property Normalize: Boolean read FNormalize write SetNormalize default True;
     {$IFNDEF FPC}
     property Transparent: Boolean read FTransparent write SetTransparent default False;
     {$ENDIF}
@@ -142,6 +152,7 @@ type
     property PopupMenu;
     property LineColor;
     property LineWidth;
+    property Normalize;
     property ShowHint;
     property Visible;
     property WaveDrawMode;
@@ -189,7 +200,7 @@ procedure TDisplayChannels.Update(Item: TCollectionItem);
 {$ENDIF}
 begin
  inherited;
- if assigned(OnChanged)
+ if Assigned(OnChanged)
   then OnChanged(Self);
 end;
 
@@ -249,6 +260,7 @@ begin
   FSolidColor         := clRed;
   FDisplayedChannel   := -1;
   FOSFactor           := 1;
+  FScaleFactor        := 1;
   FWaveDrawMode       := wdmLine;
   FBuffer             := TBitmap.Create;
   FBuffer.PixelFormat := pf24bit;
@@ -308,7 +320,7 @@ end;
 
 function TCustomGuiAudioDataDisplay.GetSampleFrames: Integer;
 begin
- if assigned(FAudioDataCollection)
+ if Assigned(FAudioDataCollection)
   then result := FAudioDataCollection.SampleFrames
   else result := 0;
 end;
@@ -323,9 +335,9 @@ end;
 
 function TCustomGuiAudioDataDisplay.GetChannelCount: Integer;
 begin
- if assigned(FAudioDataCollection)
+ if Assigned(FAudioDataCollection)
   then Result := FAudioDataCollection.Channels.Count else
- if assigned(FAudioData)
+ if Assigned(FAudioData)
   then Result := 1
   else Result := 0;
 end;
@@ -372,20 +384,47 @@ end;
 
 procedure TCustomGuiAudioDataDisplay.AudioDataChanged;
 begin
- if assigned(FAudioData) then
+ if Assigned(FAudioData) then
   begin
    FXAxis.SetBounds(0, FAudioData.SampleCount - 1);
-  end;
+   CalculateScaleFactor;
+  end
+ else FScaleFactor := 1;
  Invalidate;
 end;
 
 procedure TCustomGuiAudioDataDisplay.AudioDataCollectionChanged;
 begin
- if assigned(FAudioDataCollection) then
+ if Assigned(FAudioDataCollection) then
   begin
    FXAxis.SetBounds(0, FAudioDataCollection.SampleFrames - 1);
-  end;
+   CalculateScaleFactor;
+  end
+ else FScaleFactor := 1;
  Invalidate;
+end;
+
+procedure TCustomGuiAudioDataDisplay.CalculateScaleFactor;
+var
+  Peak : Single;
+begin
+ if FNormalize then
+  begin
+   if Assigned(FAudioData) then
+    begin
+     Peak := FAudioData.Peak;
+     if Peak > 0
+      then FScaleFactor := 1 / Peak;
+    end else
+   if Assigned(FAudioDataCollection) then
+    begin
+     Peak := FAudioDataCollection.Peak;
+     if Peak > 0
+      then FScaleFactor := 1 / Peak;
+    end
+   else FScaleFactor := 1;
+  end
+ else FScaleFactor := 1;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetCursor(const Value: TGuiAudioDataDisplayCursor);
@@ -423,7 +462,7 @@ begin
  if FLineColor <> Value then
   begin
    FLineColor := Value;
-   Invalidate;
+   LineColorChanged;
   end;
 end;
 
@@ -432,7 +471,16 @@ begin
  if FLineWidth <> Value then
   begin
    FLineWidth := Value;
-   Invalidate;
+   LineWidthChanged;
+  end;
+end;
+
+procedure TCustomGuiAudioDataDisplay.SetNormalize(const Value: Boolean);
+begin
+ if FNormalize <> Value then
+  begin
+   FNormalize := Value;
+   NormalizeChanged;
   end;
 end;
 
@@ -441,7 +489,7 @@ begin
  if FTransparent <> Value then
   begin
    FTransparent := Value;
-   Invalidate;
+   TransparentChanged;
   end;
 end;
 
@@ -450,8 +498,34 @@ begin
  if FWaveDrawMode <> Value then
   begin
    FWaveDrawMode := Value;
-   Invalidate;
+   WaveDrawModeChanged;
   end;
+end;
+
+procedure TCustomGuiAudioDataDisplay.LineColorChanged;
+begin
+ Changed;
+end;
+
+procedure TCustomGuiAudioDataDisplay.LineWidthChanged;
+begin
+ Changed;
+end;
+
+procedure TCustomGuiAudioDataDisplay.NormalizeChanged;
+begin
+ Changed;
+ CalculateScaleFactor;
+end;
+
+procedure TCustomGuiAudioDataDisplay.WaveDrawModeChanged;
+begin
+ Changed;
+end;
+
+procedure TCustomGuiAudioDataDisplay.TransparentChanged;
+begin
+ Changed;
 end;
 
 procedure TCustomGuiAudioDataDisplay.SetXAxis(
@@ -625,7 +699,7 @@ begin
       MinVal := ChannelDataPointer^[Sample];
       MaxVal := MinVal;
 
-      MoveTo(0, Round((1 - MinVal) * HlfHght));
+      MoveTo(0, Round((1 - FScaleFactor * MinVal) * HlfHght));
       XPixelPosAsInt    := 0;
       XPixelPosAsSingle := 0;
       inc(Sample);
@@ -642,7 +716,7 @@ begin
           XPixelPosAsInt := Round(XPixelPosAsSingle + 0.5);
           if MinVal = MaxVal then
            begin
-            LineTo(XPixelPosAsInt, HlfHght * Round((1 - MinVal)));
+            LineTo(XPixelPosAsInt, HlfHght * Round((1 - FScaleFactor * MinVal)));
            end
           else
            begin
@@ -650,13 +724,13 @@ begin
             if abs(o - MinVal * HlfHght) > abs(o - MaxVal * HlfHght)
              then
               begin
-               LineTo(XPixelPosAsInt, Round((1 - MinVal) * HlfHght));
-               LineTo(XPixelPosAsInt, Round((1 - MaxVal) * HlfHght));
+               LineTo(XPixelPosAsInt, Round((1 - FScaleFactor * MinVal) * HlfHght));
+               LineTo(XPixelPosAsInt, Round((1 - FScaleFactor * MaxVal) * HlfHght));
               end
              else
               begin
-               LineTo(XPixelPosAsInt, Round((1 - MaxVal) * HlfHght));
-               LineTo(XPixelPosAsInt, Round((1 - MinVal) * HlfHght));
+               LineTo(XPixelPosAsInt, Round((1 - FScaleFactor * MaxVal) * HlfHght));
+               LineTo(XPixelPosAsInt, Round((1 - FScaleFactor * MinVal) * HlfHght));
               end;
            end;
           MinVal := ChannelDataPointer^[Sample];
