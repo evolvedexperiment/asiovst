@@ -7,13 +7,15 @@
       <Flags>
         <MainUnitHasCreateFormStatements Value="False"/>
         <MainUnitHasTitleStatement Value="False"/>
-        <Runnable Value="False"/>
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
       <TargetFileExt Value=".exe"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveEditorIndexAtStart Value="7"/>
     </General>
+    <VersionInfo>
+      <StringTable Comments="" CompanyName="" FileDescription="" FileVersion="0.0.0.0" InternalName="" LegalCopyright="" LegalTrademarks="" OriginalFilename="" ProductName="" ProductVersion="0.0.0.0"/>
+    </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
       <IgnoreBinaries Value="False"/>
@@ -36,13 +38,13 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="56">
+    <Units Count="62">
       <Unit0>
         <Filename Value="OpAmp.lpr"/>
         <IsPartOfProject Value="True"/>
         <CursorPos X="48" Y="23"/>
         <TopLine Value="1"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="49"/>
       </Unit0>
       <Unit1>
         <Filename Value="OpAmpModule.pas"/>
@@ -51,10 +53,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="OpAmpModule"/>
-        <CursorPos X="40" Y="114"/>
-        <TopLine Value="92"/>
+        <CursorPos X="66" Y="39"/>
+        <TopLine Value="16"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="49"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
@@ -64,10 +66,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="OpAmpGUI"/>
-        <CursorPos X="31" Y="15"/>
-        <TopLine Value="1"/>
+        <CursorPos X="39" Y="35"/>
+        <TopLine Value="12"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="49"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -134,8 +136,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTModuleWithDsp"/>
-        <CursorPos X="55" Y="8"/>
-        <TopLine Value="1"/>
+        <CursorPos X="86" Y="25"/>
+        <TopLine Value="23"/>
         <UsageCount Value="10"/>
       </Unit11>
       <Unit12>
@@ -164,19 +166,23 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <CursorPos X="44" Y="20"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="22"/>
+        <CursorPos X="36" Y="649"/>
+        <TopLine Value="627"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
       </Unit14>
       <Unit15>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\controls.pp"/>
+        <Filename Value="C:\Lazarus\lcl\controls.pp"/>
         <UnitName Value="Controls"/>
-        <CursorPos X="15" Y="1681"/>
-        <TopLine Value="1663"/>
-        <UsageCount Value="10"/>
+        <CursorPos X="16" Y="1692"/>
+        <TopLine Value="1675"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="11"/>
+        <Loaded Value="True"/>
       </Unit15>
       <Unit16>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\forms.pp"/>
+        <Filename Value="C:\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
         <CursorPos X="5" Y="1043"/>
         <TopLine Value="1025"/>
@@ -190,7 +196,7 @@
         <UsageCount Value="8"/>
       </Unit17>
       <Unit18>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lcltype.pp"/>
+        <Filename Value="C:\Lazarus\lcl\lcltype.pp"/>
         <UnitName Value="LCLType"/>
         <CursorPos X="7" Y="100"/>
         <TopLine Value="81"/>
@@ -204,7 +210,7 @@
         <UsageCount Value="8"/>
       </Unit19>
       <Unit20>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\ideintf\checklistboxeditordlg.pas"/>
+        <Filename Value="C:\Lazarus\ideintf\checklistboxeditordlg.pas"/>
         <ComponentName Value="CheckListBoxEditorDlg"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
@@ -214,13 +220,13 @@
         <UsageCount Value="8"/>
       </Unit20>
       <Unit21>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\finddialog.inc"/>
+        <Filename Value="C:\Lazarus\lcl\include\finddialog.inc"/>
         <CursorPos X="40" Y="177"/>
         <TopLine Value="160"/>
         <UsageCount Value="8"/>
       </Unit21>
       <Unit22>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lclstrconsts.pas"/>
+        <Filename Value="C:\Lazarus\lcl\lclstrconsts.pas"/>
         <UnitName Value="LCLStrConsts"/>
         <CursorPos X="35" Y="268"/>
         <TopLine Value="266"/>
@@ -244,9 +250,9 @@
         <UsageCount Value="10"/>
       </Unit24>
       <Unit25>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\wincontrol.inc"/>
-        <CursorPos X="10" Y="6609"/>
-        <TopLine Value="6573"/>
+        <Filename Value="C:\Lazarus\lcl\include\wincontrol.inc"/>
+        <CursorPos X="21" Y="3975"/>
+        <TopLine Value="3962"/>
         <UsageCount Value="10"/>
       </Unit25>
       <Unit26>
@@ -257,14 +263,14 @@
         <UsageCount Value="9"/>
       </Unit26>
       <Unit27>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\widgetset\wscontrols.pp"/>
+        <Filename Value="C:\Lazarus\lcl\widgetset\wscontrols.pp"/>
         <UnitName Value="WSControls"/>
         <CursorPos X="1" Y="154"/>
         <TopLine Value="152"/>
         <UsageCount Value="8"/>
       </Unit27>
       <Unit28>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\control.inc"/>
+        <Filename Value="C:\Lazarus\lcl\include\control.inc"/>
         <CursorPos X="32" Y="4053"/>
         <TopLine Value="4044"/>
         <UsageCount Value="8"/>
@@ -276,20 +282,20 @@
         <UsageCount Value="8"/>
       </Unit29>
       <Unit30>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\include\customform.inc"/>
+        <Filename Value="C:\Lazarus\lcl\include\customform.inc"/>
         <CursorPos X="22" Y="2376"/>
         <TopLine Value="2352"/>
         <UsageCount Value="8"/>
       </Unit30>
       <Unit31>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Layers.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32_Layers.pas"/>
         <UnitName Value="GR32_Layers"/>
         <CursorPos X="43" Y="340"/>
         <TopLine Value="320"/>
         <UsageCount Value="9"/>
       </Unit31>
       <Unit32>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Image.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32_Image.pas"/>
         <UnitName Value="GR32_Image"/>
         <CursorPos X="21" Y="603"/>
         <TopLine Value="583"/>
@@ -303,41 +309,41 @@
         <UsageCount Value="9"/>
       </Unit33>
       <Unit34>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Polygons.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32_Polygons.pas"/>
         <UnitName Value="GR32_Polygons"/>
         <CursorPos X="3" Y="247"/>
         <TopLine Value="227"/>
         <UsageCount Value="9"/>
       </Unit34>
       <Unit35>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_System.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32_System.pas"/>
         <UnitName Value="GR32_System"/>
         <CursorPos X="26" Y="309"/>
         <TopLine Value="289"/>
         <UsageCount Value="9"/>
       </Unit35>
       <Unit36>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32.pas"/>
         <UnitName Value="GR32"/>
         <CursorPos X="16" Y="177"/>
         <TopLine Value="157"/>
         <UsageCount Value="9"/>
       </Unit36>
       <Unit37>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\fpc\2.2.5\source\rtl\objpas\sysutils\sysutilh.inc"/>
+        <Filename Value="C:\Lazarus\fpc\2.2.5\source\rtl\objpas\sysutils\sysutilh.inc"/>
         <CursorPos X="4" Y="57"/>
         <TopLine Value="37"/>
         <UsageCount Value="9"/>
       </Unit37>
       <Unit38>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Math.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32_Math.pas"/>
         <UnitName Value="GR32_Math"/>
         <CursorPos X="3" Y="93"/>
         <TopLine Value="73"/>
         <UsageCount Value="9"/>
       </Unit38>
       <Unit39>
-        <Filename Value="..\..\..\..\..\..\..\Program Files\Borland\Library\GR32\GR32_Blend.pas"/>
+        <Filename Value="C:\Program Files\Borland\Library\GR32\GR32_Blend.pas"/>
         <UnitName Value="GR32_Blend"/>
         <CursorPos X="34" Y="1113"/>
         <TopLine Value="1084"/>
@@ -379,21 +385,21 @@
         <UsageCount Value="8"/>
       </Unit44>
       <Unit45>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\components\synedit\syneditmousecmds.pp"/>
+        <Filename Value="C:\Lazarus\components\synedit\syneditmousecmds.pp"/>
         <UnitName Value="SynEditMouseCmds"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="8"/>
       </Unit45>
       <Unit46>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\components\synedit\synedit.pp"/>
+        <Filename Value="C:\Lazarus\components\synedit\synedit.pp"/>
         <UnitName Value="SynEdit"/>
         <CursorPos X="38" Y="6480"/>
         <TopLine Value="6469"/>
         <UsageCount Value="8"/>
       </Unit46>
       <Unit47>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\examples\exploremenu\exploreidemenu.pas"/>
+        <Filename Value="C:\Lazarus\examples\exploremenu\exploreidemenu.pas"/>
         <UnitName Value="exploreidemenu"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
@@ -414,28 +420,28 @@
         <UsageCount Value="17"/>
       </Unit49>
       <Unit50>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lclclasses.pp"/>
+        <Filename Value="C:\Lazarus\lcl\lclclasses.pp"/>
         <UnitName Value="LCLClasses"/>
         <CursorPos X="50" Y="32"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit50>
       <Unit51>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\fpc\2.2.5\source\rtl\win32\classes.pp"/>
+        <Filename Value="C:\Lazarus\fpc\2.2.5\source\rtl\win32\classes.pp"/>
         <UnitName Value="Classes"/>
         <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit51>
       <Unit52>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\lcl\lclproc.pas"/>
+        <Filename Value="C:\Lazarus\lcl\lclproc.pas"/>
         <UnitName Value="LCLProc"/>
         <CursorPos X="41" Y="173"/>
         <TopLine Value="155"/>
         <UsageCount Value="10"/>
       </Unit52>
       <Unit53>
-        <Filename Value="..\..\..\..\..\..\..\Lazarus\fpc\2.2.5\source\rtl\objpas\types.pp"/>
+        <Filename Value="C:\Lazarus\fpc\2.2.5\source\rtl\objpas\types.pp"/>
         <UnitName Value="types"/>
         <CursorPos X="81" Y="3"/>
         <TopLine Value="1"/>
@@ -455,8 +461,111 @@
         <TopLine Value="1"/>
         <UsageCount Value="10"/>
       </Unit55>
+      <Unit56>
+        <Filename Value="C:\Lazarus\lcl\include\winapih.inc"/>
+        <CursorPos X="10" Y="239"/>
+        <TopLine Value="222"/>
+        <UsageCount Value="10"/>
+      </Unit56>
+      <Unit57>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Component.pas"/>
+        <UnitName Value="PT_Component"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <UsageCount Value="10"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit57>
+      <Unit58>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Interpreter.pas"/>
+        <UnitName Value="PT_Interpreter"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit58>
+      <Unit59>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_TablesOpenTypeFeatures.pas"/>
+        <UnitName Value="PT_TablesOpenTypeFeatures"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit59>
+      <Unit60>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_TablesOpenType.pas"/>
+        <UnitName Value="PT_TablesOpenType"/>
+        <CursorPos X="1" Y="1"/>
+        <TopLine Value="8"/>
+        <EditorIndex Value="6"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit60>
+      <Unit61>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Types.pas"/>
+        <UnitName Value="PT_Types"/>
+        <CursorPos X="1" Y="561"/>
+        <TopLine Value="541"/>
+        <EditorIndex Value="7"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <SyntaxHighlighter Value="Delphi"/>
+      </Unit61>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
+    <JumpHistory Count="12" HistoryIndex="11">
+      <Position1>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="114" Column="40" TopLine="92"/>
+      </Position1>
+      <Position2>
+        <Filename Value="OpAmpModule.pas"/>
+        <Caret Line="39" Column="66" TopLine="16"/>
+      </Position2>
+      <Position3>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="529" Column="37" TopLine="503"/>
+      </Position3>
+      <Position4>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="34" Column="80" TopLine="1"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="136" Column="15" TopLine="118"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="646" Column="12" TopLine="627"/>
+      </Position7>
+      <Position8>
+        <Filename Value="C:\Lazarus\lcl\controls.pp"/>
+        <Caret Line="1896" Column="62" TopLine="1879"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Types.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Types.pas"/>
+        <Caret Line="543" Column="12" TopLine="526"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Types.pas"/>
+        <Caret Line="541" Column="50" TopLine="525"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\..\..\Pascal Type\Source\PT_Types.pas"/>
+        <Caret Line="75" Column="1" TopLine="57"/>
+      </Position12>
+    </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
@@ -499,7 +608,7 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="5">
+    <BreakPoints Count="6">
       <Item1>
         <Source Value="..\..\..\..\..\Programme\Lazarus\components\ASIOVST\Source\DVSTModule.pas"/>
         <Line Value="2155"/>
@@ -520,6 +629,10 @@
         <Source Value="OpAmpModule.pas"/>
         <Line Value="85"/>
       </Item5>
+      <Item6>
+        <Source Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Line Value="643"/>
+      </Item6>
     </BreakPoints>
     <Exceptions Count="2">
       <Item1>

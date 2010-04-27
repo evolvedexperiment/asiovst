@@ -815,6 +815,13 @@ end;
 
 procedure ConvolveIR_X87(InOutBuffer, IRBuffer: PDAVDoubleFixedArray; SampleFrames: Integer;
   Current: Double);
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleFrames - 1
+  do InOutBuffer[SampleIndex] := InOutBuffer[SampleIndex] + IRBuffer[SampleIndex] * Current;
+{$ELSE}
 asm
   fld   Current.Double
   @SmallLoop:
@@ -830,10 +837,18 @@ asm
 
   @EndSmallLoop:
   ffree st(0)
+{$ENDIF}
 end;
 
 procedure ConvolveIR_X87large(InOutBuffer, IRBuffer: PDAVDoubleFixedArray;
   SampleFrames: Integer; Current: Double);
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleFrames - 1
+  do InOutBuffer[SampleIndex] := InOutBuffer[SampleIndex] + IRBuffer[SampleIndex] * Current;
+{$ELSE}
 asm
   fld   Current.Double
 
@@ -884,6 +899,7 @@ asm
 
   @EndSmallLoop:
   ffree st(0)
+{$ENDIF}
 end;
 
 function TCustomFIRFilter.ProcessSample32(Input: Single): Single;

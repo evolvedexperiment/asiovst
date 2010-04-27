@@ -276,6 +276,13 @@ end;
 
 procedure TFftReal2Complex.ConvertSingleToDouble(Singles: PSingle;
   Doubles: PDouble);
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to FFftSize - 1
+  do PDAVDoubleFixedArray(Doubles)^[SampleIndex] := PDAVSingleFixedArray(Singles)^[SampleIndex];
+{$ELSE}
 asm
   push ebx
   mov ebx, Doubles
@@ -286,10 +293,18 @@ asm
   fstp [ebx + ecx * 8 - 8].Double
   loop @MarioLand
   pop ebx
+{$ENDIF}
 end;
 
 procedure TFftReal2Complex.ConvertDoubleToSingle(Doubles: PDouble;
   Singles: PSingle);
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to FFftSize - 1
+  do PDAVSingleFixedArray(Singles)^[SampleIndex] := PDAVDoubleFixedArray(Doubles)^[SampleIndex];
+{$ELSE}
 asm
   push ebx
   mov ebx, Singles
@@ -300,6 +315,7 @@ asm
   fstp [ebx + ecx * 4 - 4].Single
   loop @MarioLand
   pop ebx
+{$ENDIF}
 end;
 
 procedure TFftReal2Complex.SetFFTSize(Value: Integer);
