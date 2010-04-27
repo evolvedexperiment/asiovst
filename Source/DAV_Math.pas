@@ -62,12 +62,16 @@ function Factorial(const Order: Single): Single; overload; {$IFDEF SUPPORTS_INLI
 function Factorial(const Order: Double): Double; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 function Factorial(const Order: Integer): Int64; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
+{$IFNDEF FPC}
 function Tanh(const X: Extended): Extended; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+{$ENDIF}
 function Tanh(const X: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Tanh(const X: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double); overload;
+{$IFNDEF FPC}
 procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue : Extended); overload;
+{$ENDIF}
+procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double); overload;
 procedure GetSinCos(const Frequency: Single; out SinValue, CosValue : Single); overload;
 
 function IsPowerOf2(const Value: Integer): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -238,6 +242,7 @@ begin
   do Result := Result * i;
 end;
 
+{$IFNDEF FPC}
 function Tanh(const X: Extended): Extended;
 var
   ep : Extended;
@@ -245,6 +250,7 @@ begin
  ep := Exp(2 * X);
  Result := (ep - 1) / (ep + 1);
 end;
+{$ENDIF}
 
 function Tanh(const X: Double): Double;
 var
@@ -262,6 +268,7 @@ begin
  Result := (ep - 1) / (ep + 1);
 end;
 
+{$IFNDEF FPC}
 procedure GetSinCos(const Frequency: Extended; out SinValue, CosValue : Extended);
 {$IFDEF PUREPASCAL}
 begin
@@ -275,6 +282,7 @@ asm
   fstp    tbyte ptr [edx]    // Cos
   fstp    tbyte ptr [eax]    // Sin
 end;
+{$ENDIF}
 {$ENDIF}
 
 procedure GetSinCos(const Frequency: Double; out SinValue, CosValue : Double);

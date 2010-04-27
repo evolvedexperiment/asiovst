@@ -57,7 +57,6 @@ object FmASIOMP3: TFmASIOMP3
     Top = 7
     Width = 273
     Height = 21
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -77,7 +76,6 @@ object FmASIOMP3: TFmASIOMP3
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -117,7 +115,7 @@ object FmASIOMP3: TFmASIOMP3
     OnBufferSwitch32 = ASIOHostBufferSwitch32
     OnSampleRateChanged = ASIOHostSampleRateChanged
     Left = 130
-    Top = 23
+    Top = 24
   end
   object OpenDialog: TOpenDialog
     DefaultExt = 'mp3'
@@ -126,6 +124,7 @@ object FmASIOMP3: TFmASIOMP3
     Top = 24
   end
   object Timer: TTimer
+    Enabled = False
     Interval = 200
     OnTimer = TimerTimer
     Left = 192

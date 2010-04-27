@@ -177,6 +177,17 @@ var
 
 
 procedure ClipDigital_x86(Data: PSingle; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex: Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Data^ := 0.5 * (Abs(Data^ + 1) - Abs(Data^ - 1));
+   Inc(Data);
+  end;
+end;
+{$ELSE}
 const
   c1a : Single = 1;
 asm
@@ -194,6 +205,7 @@ asm
  add  eax, 4
  loop @Start
 end;
+{$ENDIF}
 
 procedure ClipDigital_x86(Data: PDouble; SampleCount: Integer); overload;
 {$IFDEF PUREPASCAL}

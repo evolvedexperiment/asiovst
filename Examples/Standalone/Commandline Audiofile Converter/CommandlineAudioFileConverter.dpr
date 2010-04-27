@@ -11,7 +11,8 @@ uses
   DAV_AudioFileAiff,
   DAV_AudioFileAu,
   DAV_ChannelDataCoder,
-  SysUtils, Math;
+  SysUtils,
+  Math;
 
 resourcestring
   RCStrUnknownFileFormat = 'Unknown file format!';
@@ -107,7 +108,7 @@ begin
         then SampleFrames := Min(SampleFrames, FMaxLength);
        if FMakePowerOf2
         then SampleFrames := TruncToPowerOf2(SampleFrames);
-       
+
        while Sample < SampleFrames do
         begin
          AudioFile[0].Decode(Sample, CBlockSize);

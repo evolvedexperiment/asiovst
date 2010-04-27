@@ -239,10 +239,23 @@ type
 const
   CZeroPad: Integer = 0;
 
+function CompareChunkNames(ChunkNameA, ChunkNameB: TChunkName): Boolean;
+
 implementation
 
 uses
   DAV_Common;
+
+function CompareChunkNames(ChunkNameA, ChunkNameB: TChunkName): Boolean;
+begin
+ Result := False;
+ if ChunkNameA[0] <> ChunkNameB[0] then Exit;
+ if ChunkNameA[1] <> ChunkNameB[1] then Exit;
+ if ChunkNameA[2] <> ChunkNameB[2] then Exit;
+ if ChunkNameA[3] <> ChunkNameB[3] then Exit;
+ Result := True;
+end;
+
 
 { TCustomChunk }
 
@@ -780,7 +793,7 @@ var
 begin
  Result := TUnknownChunk;
  for i := 0 to Length(FRegisteredChunks) - 1 do
-  if FRegisteredChunks[i].GetClassChunkName = ChunkName then
+  if CompareChunkNames(GetClassChunkName, ChunkName) then
    begin
     Result := FRegisteredChunks[i];
     Exit;

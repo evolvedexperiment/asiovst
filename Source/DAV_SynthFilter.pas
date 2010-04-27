@@ -477,7 +477,7 @@ var
 const
   C2048 = 2048;  
 begin
- if not assigned(FOnNewPCMSample) then exit;
+ if not Assigned(FOnNewPCMSample) then exit;
 
  vp := FActualVector;
  case FActualWritePos of
@@ -494,8 +494,8 @@ begin
                       (vp[ 4] * Coefficient[12]) + (vp[ 3] * Coefficient[13]) +
                       (vp[ 2] * Coefficient[14]) + (vp[ 1] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -512,8 +512,8 @@ begin
                       (vp[ 5] * Coefficient[12]) + (vp[ 4] * Coefficient[13]) +
                       (vp[ 3] * Coefficient[14]) + (vp[ 2] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -531,8 +531,8 @@ begin
                       (vp[ 4] * Coefficient[14]) + (vp[ 3] * Coefficient[15])
                 );
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -549,8 +549,8 @@ begin
                       (vp[ 7] * Coefficient[12]) + (vp[ 6] * Coefficient[13]) +
                       (vp[ 5] * Coefficient[14]) + (vp[ 4] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -567,8 +567,8 @@ begin
                       (vp[ 8] * Coefficient[12]) + (vp[ 7] * Coefficient[13]) +
                       (vp[ 6] * Coefficient[14]) + (vp[ 5] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -585,8 +585,8 @@ begin
                       (vp[ 9] * Coefficient[12]) + (vp[ 8] * Coefficient[13]) +
                       (vp[ 7] * Coefficient[14]) + (vp[ 6] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -603,8 +603,8 @@ begin
                       (vp[10] * Coefficient[12]) + (vp[ 9] * Coefficient[13]) +
                       (vp[ 8] * Coefficient[14]) + (vp[ 7] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -621,8 +621,8 @@ begin
                       (vp[11] * Coefficient[12]) + (vp[10] * Coefficient[13]) +
                       (vp[ 9] * Coefficient[14]) + (vp[ 8] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -639,8 +639,8 @@ begin
                       (vp[12] * Coefficient[12]) + (vp[11] * Coefficient[13]) +
                       (vp[10] * Coefficient[14]) + (vp[ 9] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -657,8 +657,8 @@ begin
                       (vp[13] * Coefficient[12]) + (vp[12] * Coefficient[13]) +
                       (vp[11] * Coefficient[14]) + (vp[10] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -675,8 +675,8 @@ begin
                       (vp[14] * Coefficient[12]) + (vp[13] * Coefficient[13]) +
                       (vp[12] * Coefficient[14]) + (vp[11] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -693,8 +693,8 @@ begin
                       (vp[15] * Coefficient[12]) + (vp[14] * Coefficient[13]) +
                       (vp[13] * Coefficient[14]) + (vp[12] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -711,8 +711,8 @@ begin
                       (vp[ 0] * Coefficient[12]) + (vp[15] * Coefficient[13]) +
                       (vp[14] * Coefficient[14]) + (vp[13] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
     end;
 
@@ -729,8 +729,8 @@ begin
                       (vp[ 1] * Coefficient[12]) + (vp[ 0] * Coefficient[13]) +
                       (vp[15] * Coefficient[14]) + (vp[14] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -747,8 +747,8 @@ begin
                       (vp[ 2] * Coefficient[12]) + (vp[ 1] * Coefficient[13]) +
                       (vp[ 0] * Coefficient[14]) + (vp[15] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
 
@@ -765,8 +765,8 @@ begin
                       (vp[ 3] * Coefficient[12]) + (vp[ 2] * Coefficient[13]) +
                       (vp[ 1] * Coefficient[14]) + (vp[ 0] * Coefficient[15]));
         FOnNewPCMSample(Self, PcmSample);
-        Inc(Cardinal(Coefficient), 64);
-        Inc(Cardinal(vp), 64);
+        Coefficient := @Coefficient[16];
+        vp := @vp[16];
        end;
      end;
   end;

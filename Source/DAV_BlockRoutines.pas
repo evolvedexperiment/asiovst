@@ -37,6 +37,7 @@ interface
 uses
   DAV_Types, DAV_Complex;
 
+{$IFNDEF PUREPASCAL}
 procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
 procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
 
@@ -44,6 +45,7 @@ procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexSingleFixedArray
 procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
 procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer); overload;
 procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexDoubleFixedArray); overload;
+{$ENDIF}
 
 function FindMaximum(Data: PSingle; SampleCount: Integer): Integer; overload;
 function FindMaximum(Data: PDouble; SampleCount: Integer): Integer; overload;
@@ -68,6 +70,7 @@ procedure ReorderPositions(Data: PDAVDoubleFixedArray; StartSample, EndSample: I
 
 implementation
 
+{$IFNDEF PUREPASCAL}
 procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
 asm
 @Start:
@@ -280,6 +283,7 @@ asm
 
  pop ebx
 end;
+{$ENDIF}
 
 procedure DCSubstract(Data: PSingle; SampleCount: Integer);
 {$IFDEF PUREPASCAL}

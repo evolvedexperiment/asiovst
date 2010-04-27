@@ -93,6 +93,9 @@ begin
   finally
    Free;
   end;
+
+ // enable timer
+ Timer.Enabled := True;
 end;
 
 procedure TFmASIOMP3.FormDestroy(Sender: TObject);

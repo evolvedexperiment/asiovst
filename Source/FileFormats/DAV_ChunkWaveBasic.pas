@@ -832,7 +832,7 @@ var
 begin
  Result := nil;
  for X := 0 to Length(WaveChunkClasses) - 1 do
-  if CompareText(WaveChunkClasses[X].GetClassChunkName, Value) = 0 then
+  if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, Value) then
    begin
     Result := WaveChunkClasses[X];
     Break;
@@ -1641,7 +1641,7 @@ var
 begin
  Result := TUnknownChunk;
  for X := 0 to Length(WaveChunkClasses) - 1 do
-  if CompareText(WaveChunkClasses[X].GetClassChunkName, ChunkName) = 0 then
+  if CompareChunkNames(WaveChunkClasses[X].GetClassChunkName, ChunkName) then
    begin
     Result := WaveChunkClasses[X];
     Break;

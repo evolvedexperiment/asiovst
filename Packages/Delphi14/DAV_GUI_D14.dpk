@@ -28,6 +28,7 @@ requires
   rtl,
   vcl,
   DAV_Common_D14,
+  DAV_DSP_D14,
   DAV_VSTPlugin_D14;
 
 contains
