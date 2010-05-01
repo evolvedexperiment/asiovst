@@ -128,9 +128,24 @@ begin
 end;
 
 procedure TestTConvolution32.TestProcessBlock;
+var
+  Input, Output : TDAVSingleDynArray;
+const
+  CDataSize        : Cardinal = 32;
+  CImpulseResponse : array [0..3] of Single = (1, 0.1, -0.1, -0.1);
 begin
- // Check if no SampleFrame is handed well
+ // check if no SampleFrame is handed well
  FConvolution32.ProcessBlock(nil, nil, 0);
+
+ // load constant impulse response
+ FConvolution32.LoadImpulseResponse(@CImpulseResponse, 4);
+
+ // create data arrays
+ SetLength(Input, CDataSize);
+ SetLength(Output, CDataSize);
+
+ // check if data is processed
+ FConvolution32.ProcessBlock(@Input[0], @Output[0], CDataSize);
 end;
 
 procedure TestTConvolution32.TestLoadImpulseResponse;
@@ -138,18 +153,28 @@ var
   Data       : TDAVSingleDynArray;
   DataFrames : Integer;
 begin
-  // Check if no data handled correctly
+  // check if no data handled correctly
   FConvolution32.LoadImpulseResponse(nil, 0);
 
+  // load increasing impulse responses
   for DataFrames := 0 to 16 do
    begin
     SetLength(Data, DataFrames * 111);
 
-    // Check if dyn array handled correctly
+    // check if dyn array handled correctly
     FConvolution32.LoadImpulseResponse(Data);
 
-    // Check if pointer input handled correctly
+    // check if pointer input handled correctly
     FConvolution32.LoadImpulseResponse(@Data[0], Length(Data));
+   end;
+
+  // load random impulse responses
+  for DataFrames := 0 to 16 do
+   begin
+    SetLength(Data, 1 + Random(8192));
+
+    // check if dyn array handled correctly
+    FConvolution32.LoadImpulseResponse(Data);
    end;
 end;
 
@@ -167,9 +192,24 @@ begin
 end;
 
 procedure TestTConvolution64.TestProcessBlock;
+var
+  Input, Output : TDAVSingleDynArray;
+const
+  CDataSize        : Cardinal = 32;
+  CImpulseResponse : array [0..3] of Single = (1, 0.1, -0.1, -0.1);
 begin
- // Check if no SampleFrame is handed well
+ // load constant impulse response
+ FConvolution64.LoadImpulseResponse(@CImpulseResponse, 4);
+
+ // check if no SampleFrame is handed well
  FConvolution64.ProcessBlock(nil, nil, 0);
+
+ // create data arrays
+ SetLength(Input, CDataSize);
+ SetLength(Output, CDataSize);
+
+ // check if data is processed
+ FConvolution64.ProcessBlock(@Input[0], @Output[0], CDataSize);
 end;
 
 procedure TestTConvolution64.TestLoadImpulseResponse;
@@ -180,6 +220,7 @@ begin
   // Check if no data handled correctly
   FConvolution64.LoadImpulseResponse(nil, 0);
 
+  // load increasing impulse responses
   for DataFrames := 0 to 16 do
    begin
     SetLength(Data, DataFrames * 111);
@@ -189,6 +230,15 @@ begin
 
     // Check if pointer input handled correctly
     FConvolution64.LoadImpulseResponse(@Data[0], Length(Data));
+   end;
+
+  // load random impulse responses
+  for DataFrames := 0 to 16 do
+   begin
+    SetLength(Data, 1 + Random(8192));
+
+    // Check if dyn array handled correctly
+    FConvolution64.LoadImpulseResponse(Data);
    end;
 end;
 

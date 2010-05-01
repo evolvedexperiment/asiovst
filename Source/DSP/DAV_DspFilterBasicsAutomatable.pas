@@ -50,7 +50,9 @@ type
   public
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
+    {$IFNDEF PUREPASCAL}
     function ProcessSampleASM: Double; override;
+    {$ENDIF}
   end;
 
   TAutomatablePeakFilter = class(TCustomAutomatable)
@@ -160,10 +162,12 @@ begin
  result := Input * FGainFactorSquared;
 end;
 
+{$IFNDEF PUREPASCAL}
 function TAutomatableGainFilter.ProcessSampleASM: Double;
 asm
  fmul [eax.FGainFactorSquared].Double
 end;
+{$ENDIF}
 
 { TAutomatablePeakFilter }
 

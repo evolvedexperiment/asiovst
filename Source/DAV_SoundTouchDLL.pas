@@ -79,7 +79,7 @@ type
   TSoundTouchDestroyInstance = procedure (Handle: TSoundTouchHandle); stdcall;
 
   // Get SoundTouch library version string
-  TSoundTouchGetVersionString = function : PChar; stdcall;
+  TSoundTouchGetVersionString = function : PAnsiChar; stdcall;
 
   // Get SoundTouch library version Id
   TSoundTouchGetVersionId = function : Cardinal; stdcall;
@@ -299,42 +299,42 @@ end;
 
 function TSoundTouch.GetIsEmpty: Integer;
 begin
- result := SoundTouchIsEmpty(FHandle);
+ Result := SoundTouchIsEmpty(FHandle);
 end;
 
 function TSoundTouch.GetNumSamples: Cardinal;
 begin
- result := SoundTouchNumSamples(FHandle);
+ Result := SoundTouchNumSamples(FHandle);
 end;
 
 function TSoundTouch.GetNumUnprocessedSamples: Cardinal;
 begin
- result := SoundTouchNumUnprocessedSamples(FHandle);
+ Result := SoundTouchNumUnprocessedSamples(FHandle);
 end;
 
 function TSoundTouch.GetPitchChange: Single;
 begin
- result := 100 * (FPitch - 1.0);
+ Result := 100 * (FPitch - 1.0);
 end;
 
 function TSoundTouch.GetRateChange: Single;
 begin
- result := 100 * (FRate - 1.0);
+ Result := 100 * (FRate - 1.0);
 end;
 
 function TSoundTouch.GetTempoChange: Single;
 begin
- result := 100 * (FTempo - 1.0);
+ Result := 100 * (FTempo - 1.0);
 end;
 
 class function TSoundTouch.GetVersionId: Cardinal;
 begin
- result := SoundTouchGetVersionId;
+ Result := SoundTouchGetVersionId;
 end;
 
 class function TSoundTouch.GetVersionString: string;
 begin
- result := StrPas(SoundTouchGetVersionString);
+ Result := StrPas(SoundTouchGetVersionString);
 end;
 
 procedure TSoundTouch.SetChannels(const Value: Cardinal);
@@ -433,13 +433,13 @@ end;
 
 function TSoundTouch.GetSetting(const SettingId: Integer): Integer;
 begin
- result := SoundTouchGetSetting(FHandle, SettingId);
+ Result := SoundTouchGetSetting(FHandle, SettingId);
 end;
 
 function TSoundTouch.SetSetting(const SettingId: Integer;
   const Value: Integer): Boolean;
 begin
- result := SoundTouchSetSetting(FHandle, SettingId, Value);
+ Result := SoundTouchSetSetting(FHandle, SettingId, Value);
 end;
 
 procedure TSoundTouch.TempoChanged;
@@ -453,7 +453,7 @@ var
 
 procedure InitDLL;
 begin
- SoundTouchLibHandle := LoadLibrary(SoundTouchDLL);
+ SoundTouchLibHandle := LoadLibraryA(SoundTouchDLL);
  if SoundTouchLibHandle <> 0 then
   try
    SoundTouchCreateInstance        := GetProcAddress(SoundTouchLibHandle, PAnsiChar( 2)); //'soundtouch_createInstance');

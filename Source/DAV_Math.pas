@@ -84,6 +84,7 @@ function TruncLog2(Value : Extended): Integer; overload;
 function TruncLog2(Value : Integer): Integer; overload;
 function CeilLog2(Value : Extended): Integer; overload;
 function CeilLog2(Value : Integer): Integer; overload;
+function Power2(const X: Extended): Extended;
 
 function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -442,6 +443,26 @@ asm
  inc result
 end;
 {$ENDIF}
+
+function Power2(const X: Extended): Extended;
+{$IFDEF PUREPASCAL}
+begin
+ Result := Power(2, X);
+{$ELSE}
+asm
+ FLD     X
+ FLD     ST(0)       { i := round(y);     }
+ FRNDINT
+ FSUB    ST(1), ST   { f := y - i;        }
+ FXCH    ST(1)       { z := 2**f          }
+ F2XM1
+ FLD1
+ FADD
+ FSCALE              { Result := z * 2**i }
+ FSTP    ST(1)
+ {$ENDIF}
+end;
+
 
 // SINC Function
 function Sinc(const Input: Double): Double;

@@ -44,7 +44,9 @@ type
     procedure CalculateCoefficients; override;
   public
     function ProcessSample64(Input: Double): Double; override;
+    {$IFNDEF PUREPASCAL}
     function ProcessSampleASM: Double; override;
+    {$ENDIF}
   end;
 
   TBasicPeakFilter = class(TBiquadIIRFilter, IDspProcessor32,
@@ -171,10 +173,12 @@ begin
  Result := Input * Sqr(FGainFactor);
 end;
 
+{$IFNDEF PUREPASCAL}
 function TBasicGainFilter.ProcessSampleASM: Double;
 asm
  fmul [eax.FGainFactor].Double
 end;
+{$ENDIF}
 
 
 { TBasicPeakFilter }

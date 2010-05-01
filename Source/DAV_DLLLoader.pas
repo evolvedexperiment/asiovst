@@ -579,7 +579,7 @@ var
        begin
         Result := Pointer(LongWord((RVA - LongWord(FSections[I].RVA)) +
           LongWord(FSections[I].Base)));
-        exit;
+        Exit;
        end;
   end;
 
@@ -937,7 +937,7 @@ var
 
 begin
   Result := False;
-  if assigned(Stream) then
+  if Assigned(Stream) then
    begin
     Stream.Seek(0, soFromBeginning);
     if Stream.Size > 0 then

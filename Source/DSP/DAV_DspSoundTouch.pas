@@ -128,42 +128,42 @@ end;
 
 function TDspSoundTouch.GetIsEmpty: Integer;
 begin
- result := SoundTouchIsEmpty(FHandle);
+ Result := SoundTouchIsEmpty(FHandle);
 end;
 
 function TDspSoundTouch.GetNumSamples: Cardinal;
 begin
- result := SoundTouchNumSamples(FHandle);
+ Result := SoundTouchNumSamples(FHandle);
 end;
 
 function TDspSoundTouch.GetNumUnprocessedSamples: Cardinal;
 begin
- result := SoundTouchNumUnprocessedSamples(FHandle);
+ Result := SoundTouchNumUnprocessedSamples(FHandle);
 end;
 
 function TDspSoundTouch.GetPitchChange: Single;
 begin
- result := 100 * (FPitch - 1.0);
+ Result := 100 * (FPitch - 1.0);
 end;
 
 function TDspSoundTouch.GetRateChange: Single;
 begin
- result := 100 * (FRate - 1.0);
+ Result := 100 * (FRate - 1.0);
 end;
 
 function TDspSoundTouch.GetTempoChange: Single;
 begin
- result := 100 * (FTempo - 1.0);
+ Result := 100 * (FTempo - 1.0);
 end;
 
 class function TDspSoundTouch.GetVersionId: Cardinal;
 begin
- result := SoundTouchGetVersionId;
+ Result := SoundTouchGetVersionId;
 end;
 
 class function TDspSoundTouch.GetVersionString: string;
 begin
- result := StrPas(SoundTouchGetVersionString);
+ Result := StrPas(SoundTouchGetVersionString);
 end;
 
 procedure TDspSoundTouch.SetChannels(const Value: Cardinal);
@@ -253,13 +253,13 @@ end;
 
 function TDspSoundTouch.GetSetting(const SettingId: Integer): Integer;
 begin
- result := SoundTouchGetSetting(FHandle, SettingId);
+ Result := SoundTouchGetSetting(FHandle, SettingId);
 end;
 
 function TDspSoundTouch.SetSetting(const SettingId: Integer;
   const Value: Integer): Boolean;
 begin
- result := SoundTouchSetSetting(FHandle, SettingId, Value);
+ Result := SoundTouchSetSetting(FHandle, SettingId, Value);
 end;
 
 procedure TDspSoundTouch.TempoChanged;

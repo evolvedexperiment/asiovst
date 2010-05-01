@@ -37,15 +37,20 @@ interface
 uses
   DAV_Types, DAV_Complex;
 
-{$IFNDEF PUREPASCAL}
-procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
-procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
+procedure MixBuffers32(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer);
+procedure MixBuffers64(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer);
 
-procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
-procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
-procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer); overload;
-procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexDoubleFixedArray); overload;
-{$ENDIF}
+procedure ComplexMultiplyBlock32(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
+procedure ComplexMultiplyBlock32(const InBuffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
+procedure ComplexMultiplyBlock64(const Buffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer); overload;
+procedure ComplexMultiplyBlock64(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexDoubleFixedArray); overload;
+
+procedure ComplexMultiplyConjugated32(const InplaceBuffer, Signal: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
+procedure ComplexMultiplyConjugated32(const InBuffer, Signal: PDAVComplexSingleFixedArray; const SampleFrames: Integer;
+  const OutBuffer: PDAVComplexSingleFixedArray); overload;
+procedure ComplexMultiplyConjugated64(const InplaceBuffer, Signal: PDAVComplexDoubleFixedArray; const SampleFrames: Integer); overload;
+procedure ComplexMultiplyConjugated64(const InBuffer, Signal: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
+  const OutBuffer: PDAVComplexDoubleFixedArray); overload;
 
 function FindMaximum(Data: PSingle; SampleCount: Integer): Integer; overload;
 function FindMaximum(Data: PDouble; SampleCount: Integer): Integer; overload;
@@ -70,26 +75,59 @@ procedure ReorderPositions(Data: PDAVDoubleFixedArray; StartSample, EndSample: I
 
 implementation
 
-{$IFNDEF PUREPASCAL}
-procedure MixBuffers_FPU(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
+procedure MixBuffers32(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   MixBuffer^ := MixBuffer^ + Data^;
+   Inc(MixBuffer);
+   Inc(Data);
+  end;
+{$ELSE}
 asm
 @Start:
   fld   [eax + 4 * ecx - 4].Single
   fadd  [edx + 4 * ecx - 4].Single
   fstp  [edx + 4 * ecx - 4].Single
   loop @Start
+{$ENDIF}
 end;
 
-procedure MixBuffers_FPU(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
+procedure MixBuffers64(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   MixBuffer^ := MixBuffer^ + Data^;
+   Inc(MixBuffer);
+   Inc(Data);
+  end;
+{$ELSE}
 asm
 @Start:
   fld   [eax + 8 * ecx - 8].Double
   fadd  [edx + 8 * ecx - 8].Double
   fstp  [edx + 8 * ecx - 8].Double
   loop @Start
+{$ENDIF}
 end;
 
-procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
+procedure ComplexMultiplyBlock32(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ Buffer^[0].Re := Buffer^[0].Re * Filter^[0].Re;
+ Buffer^[0].Im := Buffer^[0].Im * Filter^[0].Im;
+
+ for SampleIndex := 1 to SampleCount - 1
+  do ComplexMultiplyInplace(Buffer^[SampleIndex], Filter^[SampleIndex]);
+{$ELSE}
 asm
  // DC
  fld   [eax].Single
@@ -131,10 +169,21 @@ asm
  fld   [eax].Single
  fmul  [edx].Single
  fstp  [eax].Single
+{$ENDIF}
 end;
 
-procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexSingleFixedArray;
+procedure ComplexMultiplyBlock32(const InBuffer, Filter: PDAVComplexSingleFixedArray;
   const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ InBuffer^[0].Re := InBuffer^[0].Re * Filter^[0].Re;
+ InBuffer^[0].Im := InBuffer^[0].Im * Filter^[0].Im;
+
+ for SampleIndex := 1 to SampleCount - 1
+  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], Filter^[SampleIndex]);
+{$ELSE}
 asm
  push ebx
  mov ebx, OutBuffer
@@ -184,10 +233,21 @@ asm
  fstp  [ebx].Single
 
  pop ebx
+{$ENDIF}
 end;
 
-procedure ComplexMultiplyBlock(const Buffer, Filter: PDAVComplexDoubleFixedArray;
+procedure ComplexMultiplyBlock64(const Buffer, Filter: PDAVComplexDoubleFixedArray;
   const SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ Buffer^[0].Re := Buffer^[0].Re * Filter^[0].Re;
+ Buffer^[0].Im := Buffer^[0].Im * Filter^[0].Im;
+
+ for SampleIndex := 1 to SampleCount - 1
+  do ComplexMultiplyInplace(Buffer^[SampleIndex], Filter^[SampleIndex]);
+{$ELSE}
 asm
  // DC
  fld   [eax].Double
@@ -229,10 +289,21 @@ asm
  fld   [eax].Double
  fmul  [edx].Double
  fstp  [eax].Double
+{$ENDIF}
 end;
 
-procedure ComplexMultiplyBlock(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer;
+procedure ComplexMultiplyBlock64(const InBuffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer;
   const OutBuffer: PDAVComplexDoubleFixedArray); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ InBuffer^[0].Re := InBuffer^[0].Re * Filter^[0].Re;
+ InBuffer^[0].Im := InBuffer^[0].Im * Filter^[0].Im;
+
+ for SampleIndex := 1 to SampleCount - 1
+  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], Filter^[SampleIndex]);
+{$ELSE}
 asm
  push ebx
  mov ebx, OutBuffer
@@ -282,8 +353,247 @@ asm
  fstp  [ebx].Double
 
  pop ebx
-end;
 {$ENDIF}
+end;
+
+procedure ComplexMultiplyConjugated32(const InplaceBuffer, Signal: PDAVComplexSingleFixedArray; const SampleFrames: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ InplaceBuffer^[0].Re := InplaceBuffer^[0].Re * Signal^[0].Re;
+ InplaceBuffer^[0].Im := InplaceBuffer^[0].Im * Signal^[0].Im;
+
+ for SampleIndex := 1 to SampleFrames - 1
+  do ComplexMultiplyInplace(InplaceBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+{$ELSE}
+asm
+ // DC
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [eax].Single
+ add eax, 4
+ add edx, 4
+
+ // Nyquist
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [eax].Single
+ add eax, 4
+ add edx, 4
+
+ dec ecx
+@Start:
+  fld [eax    ].Single  // A.Re
+  fld [eax + 4].Single  // A.Im, A.Re
+  fld [edx    ].Single  // B.Re, A.Im, A.Re
+  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fstp [eax    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
+  fmulp                 // A.Im * B.Re, B.Im, A.Re
+  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
+  fmulp                 // B.Im * A.Re, A.Im * B.Re
+  fsubp                 // A.Im * B.Re - A.Re * B.Im
+  fstp [eax + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+  add eax, 8
+  add edx, 8
+ loop @Start
+
+ // Nyquist
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [eax].Single
+ {$ENDIF}
+end;
+
+procedure ComplexMultiplyConjugated32(const InBuffer, Signal: PDAVComplexSingleFixedArray; const SampleFrames: Integer;
+  const OutBuffer: PDAVComplexSingleFixedArray); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ InBuffer^[0].Re := InBuffer^[0].Re * Signal^[0].Re;
+ InBuffer^[0].Im := InBuffer^[0].Im * Signal^[0].Im;
+
+ for SampleIndex := 1 to SampleFrames - 1
+  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+{$ELSE}
+asm
+ push ebx
+ mov ebx, OutBuffer
+
+ // DC
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [ebx].Single
+ add eax, 4
+ add ebx, 4
+ add edx, 4
+
+ // Nyquist
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [ebx].Single
+ add eax, 4
+ add ebx, 4
+ add edx, 4
+
+ dec ecx
+@Start:
+  fld [eax    ].Single  // A.Re
+  fld [eax + 4].Single  // A.Im, A.Re
+  fld [edx    ].Single  // B.Re, A.Im, A.Re
+  fld [edx + 4].Single  // B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fstp [ebx    ].Single // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
+  fmulp                 // A.Im * B.Re, B.Im, A.Re
+  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
+  fmulp                 // B.Im * A.Re, A.Im * B.Re
+  fsubp                 // A.Im * B.Re + A.Re * B.Im
+  fstp [ebx + 4].Single // A.Im := A.Im * B.Re + A.Re * B.Im
+  add eax, 8
+  add ebx, 8
+  add edx, 8
+ loop @Start
+
+ // Nyquist
+ fld   [eax].Single
+ fmul  [edx].Single
+ fstp  [ebx].Single
+
+ pop ebx
+ {$ENDIF}
+end;
+
+procedure ComplexMultiplyConjugated64(const InplaceBuffer, Signal: PDAVComplexDoubleFixedArray; const SampleFrames: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ InplaceBuffer^[0].Re := InplaceBuffer^[0].Re * Signal^[0].Re;
+ InplaceBuffer^[0].Im := InplaceBuffer^[0].Im * Signal^[0].Im;
+
+ for SampleIndex := 1 to SampleFrames - 1
+  do ComplexMultiplyInplace(InplaceBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+{$ELSE}
+asm
+ // DC
+ fld   [eax].Double
+ fmul  [edx].Double
+ fstp  [eax].Double
+ add eax, 8
+ add edx, 8
+
+ // Nyquist
+ fld   [eax].Double
+ fmul  [edx].Double
+ fstp  [eax].Double
+ add eax, 8
+ add edx, 8
+
+ dec ecx
+@Start:
+  fld [eax    ].Double  // A.Re
+  fld [eax + 8].Double  // A.Im, A.Re
+  fld [edx    ].Double  // B.Re, A.Im, A.Re
+  fld [edx + 8].Double  // B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fstp [eax    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
+  fmulp                 // A.Im * B.Re, B.Im, A.Re
+  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
+  fmulp                 // B.Im * A.Re, A.Im * B.Re
+  fsubp                 // A.Im * B.Re + A.Re * B.Im
+  fstp [eax + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+  add eax, 16
+  add edx, 16
+ loop @Start
+
+ // Nyquist
+ fld   [eax].Double
+ fmul  [edx].Double
+ fstp  [eax].Double
+ {$ENDIF}
+end;
+
+procedure ComplexMultiplyConjugated64(const InBuffer, Signal: PDAVComplexDoubleFixedArray; const SampleFrames: Integer;
+  const OutBuffer: PDAVComplexDoubleFixedArray); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ InBuffer^[0].Re := InBuffer^[0].Re * Signal^[0].Re;
+ InBuffer^[0].Im := InBuffer^[0].Im * Signal^[0].Im;
+
+ for SampleIndex := 1 to SampleFrames - 1
+  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+{$ELSE}
+asm
+ push ebx
+ mov ebx, OutBuffer
+
+ // DC
+ fld   [eax].Double
+ fmul  [edx].Double
+ fstp  [ebx].Double
+ add eax, 8
+ add ebx, 8
+ add edx, 8
+
+ // Nyquist
+ fld   [eax].Double
+ fmul  [edx].Double
+ fstp  [ebx].Double
+ add eax, 8
+ add ebx, 8
+ add edx, 8
+
+ dec ecx
+@Start:
+  fld [eax    ].Double  // A.Re
+  fld [eax + 8].Double  // A.Im, A.Re
+  fld [edx    ].Double  // B.Re, A.Im, A.Re
+  fld [edx + 8].Double  // B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fld st(3)             // A.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  fmul st(0), st(2)     // A.Im * B.Im, A.Re * B.Re, B.Im, B.Re, A.Im, A.Re
+  faddp                 // A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fstp [ebx    ].Double // A.Re = A.Re * B.Re - A.Im * B.Im, B.Im, B.Re, A.Im, A.Re
+  fxch st(2)            // A.Im, B.Re, B.Im, A.Re
+  fmulp                 // A.Im * B.Re, B.Im, A.Re
+  fxch st(2)            // B.Im, A.Re, A.Im * B.Re
+  fmulp                 // B.Im * A.Re, A.Im * B.Re
+  fsubp                 // A.Im * B.Re + A.Re * B.Im
+  fstp [ebx + 8].Double // A.Im := A.Im * B.Re + A.Re * B.Im
+  add eax, 16
+  add ebx, 16
+  add edx, 16
+ loop @Start
+
+ // Nyquist
+ fld   [eax].Double
+ fmul  [edx].Double
+ fstp  [ebx].Double
+
+ pop ebx
+ {$ENDIF}
+end;
+
 
 procedure DCSubstract(Data: PSingle; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
@@ -413,7 +723,7 @@ var i : Integer;
     d : Double;
 begin
  result := 0;
- assert(SampleCount > 0);
+ Assert(SampleCount > 0);
  d := abs(Data^);
  for i:=1 to SampleCount-1 do
   begin
@@ -467,8 +777,8 @@ var
   i : Integer;
   d : Double;
 begin
- result := 0;
- assert(SampleCount > 0);
+ Result := 0;
+ Assert(SampleCount > 0);
  d := abs(Data^);
  for i := 1 to SampleCount - 1 do
   begin
@@ -519,7 +829,7 @@ procedure CalcMinMax(Data: PSingle; SampleCount: Integer; var MinMax: TDAVMinMax
 var
   i : Integer;
 begin
- assert(SampleCount > 0);
+ Assert(SampleCount > 0);
  MinMax.min := Data^;
  MinMax.max := Data^;
  for i := 1 to SampleCount - 1 do
@@ -534,7 +844,7 @@ procedure CalcMinMax(Data: PDouble; SampleCount: Integer; var MinMax: TDAVMinMax
 var
   i : Integer;
 begin
- assert(SampleCount > 0);
+ Assert(SampleCount > 0);
  MinMax.min := Data^;
  MinMax.max := Data^;
  for i := 1 to SampleCount - 1 do

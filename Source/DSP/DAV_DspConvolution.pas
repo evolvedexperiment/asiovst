@@ -628,13 +628,12 @@ begin
    // make a copy of the frequency respose
    Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexSingle));
 
-   ComplexMultiplyBlock(PDAVComplexSingleFixedArray(@FConvolved^[0]),
-     PDAVComplexSingleFixedArray(@FFilterFreqs[Block]^[0]), Half);
+   ComplexMultiplyBlock32(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
 
    FFft.PerformIFFT(PDAVComplexSingleFixedArray(@FConvolved^[0]), FConvolvedTime);
 
    // copy and combine
-   MixBuffers_FPU(PSingle(@FConvolvedTime^[0]), PSingle(@SignalOut^[Block * Half]), Half);
+   MixBuffers32(@FConvolvedTime^[0], @SignalOut^[Block * Half], Half);
   end;
 end;
 
@@ -910,13 +909,12 @@ begin
    // make a copy of the frequency respose
    Move(FSignalFreq^[0], FConvolved^[0], (FFFTSizeHalf + 1) * SizeOf(TComplexDouble));
 
-   ComplexMultiplyBlock(PDAVComplexDoubleFixedArray(@FConvolved^[0]),
-     PDAVComplexDoubleFixedArray(@FFilterFreqs[Block]^[0]), Half);
+   ComplexMultiplyBlock64(@FConvolved^[0], @FFilterFreqs[Block]^[0], Half);
 
    FFft.PerformIFFT(PDAVComplexDoubleFixedArray(FConvolved), FConvolvedTime);
 
    // copy and combine
-   MixBuffers_FPU(PDouble(@FConvolvedTime^[Half]), PDouble(@SignalOut^[Block * Half]), Half);
+   MixBuffers64(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
   end;
 end;
 
@@ -1127,14 +1125,13 @@ begin
    for Block := 0 to Length(FIRSpectrums) - 1 do
     begin
      // complex multiply with frequency response
-     ComplexMultiplyBlock(PDAVComplexSingleFixedArray(@FSignalFreq^[0]),
-       PDAVComplexSingleFixedArray(@FIRSpectrums[Block]^[0]), Half, Dest);
+     ComplexMultiplyBlock32(@FSignalFreq^[0], @FIRSpectrums[Block]^[0], Half, Dest);
 
      // transfer to frequency domain
      FFft.PerformIFFT(Dest, FConvolvedTime);
 
      // copy and combine
-     MixBuffers_FPU(PSingle(@FConvolvedTime^[0]), PSingle(@SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half]), Half);
+     MixBuffers32(@FConvolvedTime^[0], @SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half], Half);
     end;
   end;
 
@@ -1680,14 +1677,13 @@ begin
    for Block := 0 to Length(FIRSpectrums) - 1 do
     begin
      // complex multiply with frequency response
-     ComplexMultiplyBlock(PDAVComplexDoubleFixedArray(@FSignalFreq^[0]),
-       PDAVComplexDoubleFixedArray(@FIRSpectrums[Block]^[0]), Half, Dest);
+     ComplexMultiplyBlock64(@FSignalFreq^[0], @FIRSpectrums[Block]^[0], Half, Dest);
 
      // transfer to frequency domain
      FFft.PerformIFFT(Dest, FConvolvedTime);
 
      // copy and combine
-     MixBuffers_FPU(PDouble(@FConvolvedTime^[0]), PDouble(@SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half]), Half);
+     MixBuffers64(@FConvolvedTime^[0], @SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half], Half);
     end;
   end;
 

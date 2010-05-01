@@ -610,7 +610,7 @@ end;
 procedure TFftReal2ComplexNativeFloat32.SetFFTFunctionPointers;
 begin
   ReallocMem(FBuffer, FFTSize * SizeOf(Single));
-  case fOrder of
+  case FOrder of
     0 :
      begin
       FPerformFFTPackedReIm  := PerformFFTZero32;
@@ -647,7 +647,7 @@ begin
       FPerformIFFTPackedComplex := PerformIFFTFour32;
      end
   else
-    if fOrder and 1 <> 0 then
+    if FOrder and 1 <> 0 then
      begin
       FPerformFFTPackedReIm  := PerformFFTOdd32;
       FPerformIFFTPackedReIm := PerformIFFTOdd32;
@@ -710,7 +710,7 @@ end;
 
 procedure TFftReal2ComplexNativeFloat32.CalculateTrigoLUT;
 begin
-  DoTrigoLUT(fOrder);
+  DoTrigoLUT(FOrder);
 end;
 
 procedure TFftReal2ComplexNativeFloat32.Rescale(const Data: PDAVSingleFixedArray);
@@ -988,7 +988,7 @@ begin
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -1094,7 +1094,7 @@ begin
   TempBuffer[0] := @FreqDomain[0];
   TempBuffer[1] := @FBuffer[0];
 
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
   ci       := 2 * NbrCoef;
 
@@ -1182,7 +1182,7 @@ begin
   // next pass
   TempBuffer[0] := @FBuffer[0];
   TempBuffer[1] := @FreqDomain[0];
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -1223,7 +1223,7 @@ begin
    end;
 
   // next pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -1339,7 +1339,7 @@ begin
   until (ci >= fFFTSize);
 
   // next pass
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -1380,7 +1380,7 @@ begin
    end;
 
   // last pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -1484,7 +1484,7 @@ begin
   TempBuffer[0] := @FreqDomain[0];
   TempBuffer[1] := @FBuffer[0];
 
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -1525,7 +1525,7 @@ begin
     TempBuffer[1] := TempBuffer[2];
    end;
 
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
@@ -1629,7 +1629,7 @@ begin
   until (ci >= fFFTSize);
 
   // next pass
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -1638,10 +1638,10 @@ begin
 
     repeat
       // Extreme coefficients are always real
-      TempBuffer[0][0                 ] := TempBuffer[1][0] + TempBuffer[1][NbrCoef];
-      TempBuffer[0][NbrCoef           ] := TempBuffer[1][0] - TempBuffer[1][NbrCoef];
-      TempBuffer[0][          NbrCoefH] := TempBuffer[1][          NbrCoefH];
-      TempBuffer[0][NbrCoef + NbrCoefH] := TempBuffer[1][NbrCoef + NbrCoefH];
+      TempBuffer[0, 0                 ] := TempBuffer[1, 0] + TempBuffer[1][NbrCoef];
+      TempBuffer[0, NbrCoef           ] := TempBuffer[1, 0] - TempBuffer[1][NbrCoef];
+      TempBuffer[0,           NbrCoefH] := TempBuffer[1,           NbrCoefH];
+      TempBuffer[0, NbrCoef + NbrCoefH] := TempBuffer[1, NbrCoef + NbrCoefH];
 
       // Others are conjugate complex numbers
       for i := 1 to NbrCoefH - 1 do
@@ -1672,7 +1672,7 @@ begin
    end;
 
   // last pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -1968,7 +1968,7 @@ begin
   // Do the transformation in several passes
 
   // first pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
   NbrCoefD := NbrCoef shl 1;
 
@@ -2056,7 +2056,7 @@ begin
   // Do the transformation in several passes
 
   // first pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
@@ -2169,7 +2169,7 @@ begin
   // Do the transformation in several passes
 
   // first pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
   NbrCoefD := NbrCoef shl 1;
 
@@ -2229,7 +2229,7 @@ begin
   TempBuffer[1] := @FBuffer[0];
 
   // first pass
-  for Pass := fOrder - 2 downto 3 do
+  for Pass := FOrder - 2 downto 3 do
    begin
     ci := 0;
     NbrCoef := 1 shl Pass;
@@ -2332,7 +2332,7 @@ begin
   // Do the transformation in several passes
 
   // first pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
@@ -2388,7 +2388,7 @@ begin
   TempBuffer[1] := @FBuffer[0];
 
   // second pass
-  for Pass := fOrder - 2 downto 3 do
+  for Pass := FOrder - 2 downto 3 do
    begin
     ci := 0;
     NbrCoef := 1 shl Pass;
@@ -2552,7 +2552,7 @@ begin
   TempBuffer[1] := @TimeDomain[0];
 
   // second pass
-  for Pass := fOrder - 2 downto 3 do
+  for Pass := FOrder - 2 downto 3 do
    begin
     ci := 0;
     NbrCoef := 1 shl Pass;
@@ -2586,7 +2586,7 @@ begin
     until (ci >= fFFTSize);
 
     // prepare to the next pass
-    if (Pass < fOrder - 1) then
+    if (Pass < FOrder - 1) then
      begin
       TempBuffer[2] := TempBuffer[0];
       TempBuffer[0] := TempBuffer[1];
@@ -2660,7 +2660,7 @@ var
   TempBuffer   : Array [0..2] of PDAVSingleFixedArray;
 begin
   // first pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideInvByN, astDivideBySqrtN] then
@@ -2716,7 +2716,7 @@ begin
   TempBuffer[1] := @TimeDomain[0];
 
   // first pass
-  for Pass := fOrder - 2 downto 3 do
+  for Pass := FOrder - 2 downto 3 do
    begin
     ci := 0;
     NbrCoef := 1 shl Pass;
@@ -2822,7 +2822,7 @@ end;
 procedure TFftReal2ComplexNativeFloat64.SetFFTFunctionPointers;
 begin
  ReallocMem(FBuffer, FFTSize * SizeOf(Double));
- case fOrder of
+ case FOrder of
    0: begin
        FPerformFFTPackedReIm := PerformFFTZero64;
        FPerformIFFTPackedReIm := PerformIFFTZero64;
@@ -2855,7 +2855,7 @@ begin
       end;
   else
    begin
-    if fOrder and 1 <> 0 then
+    if FOrder and 1 <> 0 then
      begin
       FPerformFFTPackedReIm  := PerformFFTOdd64;
       FPerformIFFTPackedReIm := PerformIFFTOdd64;
@@ -2917,7 +2917,7 @@ end;
 
 procedure TFftReal2ComplexNativeFloat64.CalculateTrigoLUT;
 begin
- DoTrigoLUT(fOrder);
+ DoTrigoLUT(FOrder);
 end;
 
 procedure TFftReal2ComplexNativeFloat64.PerformFFT(const FrequencyDomain, TimeDomain : Pointer);
@@ -3179,7 +3179,7 @@ begin
     Inc(ci, 8);
   until (ci >= fFFTSize);
 
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
@@ -3281,7 +3281,7 @@ begin
   until (ci >= fFFTSize);
 
   // last pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -3402,7 +3402,7 @@ begin
   // next pass
   TempBuffer[0] := @FBuffer[0];
   TempBuffer[1] := @FreqDomain[0];
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -3443,7 +3443,7 @@ begin
    end;
 
   // next pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -3559,7 +3559,7 @@ begin
   until (ci >= fFFTSize);
 
   // next pass
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -3600,7 +3600,7 @@ begin
    end;
 
   // last pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -3704,7 +3704,7 @@ begin
   TempBuffer[0] := @FreqDomain[0];
   TempBuffer[1] := @FBuffer[0];
 
-  for Pass := 3 to fOrder - 1 do
+  for Pass := 3 to FOrder - 1 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -3745,7 +3745,7 @@ begin
     TempBuffer[1] := TempBuffer[2];
    end;
 
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
    begin
@@ -3849,7 +3849,7 @@ begin
   until (ci >= fFFTSize);
 
   // next pass
-  for Pass := 3 to fOrder - 2 do
+  for Pass := 3 to FOrder - 2 do
    begin
     NbrCoef := 1 shl Pass;
     NbrCoefH := NbrCoef shr 1;
@@ -3892,7 +3892,7 @@ begin
    end;
 
   // last pass
-  NbrCoef := 1 shl (fOrder - 1);
+  NbrCoef := 1 shl (FOrder - 1);
   NbrCoefH := NbrCoef shr 1;
 
   if FAutoScaleType in [astDivideFwdByN, astDivideBySqrtN] then
@@ -4180,7 +4180,7 @@ begin
  // Do the transformation in several Pass
 
  // First Pass
- for Pass := fOrder - 1 downto 3 do
+ for Pass := FOrder - 1 downto 3 do
   begin
    ci := 0;
    NbrCoef := 1 shl Pass;
@@ -4217,7 +4217,7 @@ begin
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
-   if (Pass < fOrder - 1) then
+   if (Pass < FOrder - 1) then
     begin
      TempBuffer[2] := TempBuffer[0];
      TempBuffer[0] := TempBuffer[1];
@@ -4297,7 +4297,7 @@ begin
  // Do the transformation in several Pass
 
  // First Pass
- for Pass := fOrder - 1 downto 3 do
+ for Pass := FOrder - 1 downto 3 do
   begin
    ci := 0;
    NbrCoef := 1 shl Pass;
@@ -4334,7 +4334,7 @@ begin
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
-   if (Pass < fOrder - 1) then
+   if (Pass < FOrder - 1) then
     begin
      TempBuffer[2] := TempBuffer[0];
      TempBuffer[0] := TempBuffer[1];
@@ -4414,7 +4414,7 @@ begin
  // do the transformation in several pass
 
  // first pass
- for Pass := fOrder - 1 downto 3 do
+ for Pass := FOrder - 1 downto 3 do
   begin
    ci := 0;
    NbrCoef  := 1 shl Pass;
@@ -4451,7 +4451,7 @@ begin
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
-   if (Pass < fOrder - 1) then
+   if (Pass < FOrder - 1) then
     begin
      TempBuffer[2] := TempBuffer[0];
      TempBuffer[0] := TempBuffer[1];
@@ -4530,7 +4530,7 @@ begin
  // Do the transformation in several Pass
 
  // First Pass
- for Pass := fOrder - 1 downto 3 do
+ for Pass := FOrder - 1 downto 3 do
   begin
    ci := 0;
    NbrCoef := 1 shl Pass;
@@ -4567,7 +4567,7 @@ begin
    until (ci >= fFFTSize);
 
    // Prepare to the next Pass
-   if (Pass < fOrder - 1) then
+   if (Pass < FOrder - 1) then
     begin
      TempBuffer[2] := TempBuffer[0];
      TempBuffer[0] := TempBuffer[1];

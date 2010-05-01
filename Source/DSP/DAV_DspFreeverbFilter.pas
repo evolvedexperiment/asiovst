@@ -299,7 +299,7 @@ end;
 function TFreeverbCombFilter.ProcessSample32(Input: Single): Single;
 asm
   mov   ecx, [eax].FBuffer                        // FBuffer start in ecx
-  mov   edx, [eax].FBufferPos                   // FBuffer index in edx
+  mov   edx, [eax].FBufferPos                     // FBuffer index in edx
 
   // This checks for very small values that can cause a Processor
   // to switch in extra precision mode, which is expensive.

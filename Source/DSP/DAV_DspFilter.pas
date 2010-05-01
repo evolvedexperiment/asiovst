@@ -49,7 +49,9 @@ type
     property SampleRateReciprocal: Double read FSRR;
   public
     constructor Create; override;
+    {$IFNDEF PUREPASCAL}
     function ProcessSampleASM: Double; virtual;
+    {$ENDIF}
     function ProcessSample32(Input: Single): Single; virtual;
     function ProcessSample64(Input: Double): Double; overload; virtual; abstract;
     function ProcessSample64(Input: Int64): Int64; overload; virtual; abstract;
@@ -231,7 +233,9 @@ type
     function ProcessSample32(Input: Single): Single; override;
     function ProcessSample64(Input: Double): Double; override;
     function ProcessSample64(Input: Int64): Int64; override;
+    {$IFNDEF PUREPASCAL}
     function ProcessSampleASM: Double; override;
+    {$ENDIF}
     function MagnitudeSquared(const Frequency: Double): Double; override;
     function MagnitudeLog10(const Frequency: Double) :Double; override;
     function Phase(const Frequency: Double): Double; override;
@@ -395,12 +399,8 @@ begin
  Result := ProcessSample64(Input);
 end;
 
+{$IFNDEF PUREPASCAL}
 function TCustomFilter.ProcessSampleASM: Double;
-{$IFDEF PUREPASCAL}
-begin
- raise Exception.Create('not defined');
-end;
-{$ELSE}
 asm
  push eax
  push ecx
@@ -1234,11 +1234,8 @@ begin
  PInt64(@FState[1])^ := Round(FNominator[2] * Input) - Round(FDenominator[2] * Result);
 end;
 
+{$IFNDEF PUREPASCAL}
 function TCustomBiquadIIRFilter.ProcessSampleASM: Double;
-{$IFDEF PUREPASCAL}
-begin
-end;
-{$ELSE}
 asm
  fld st(0)                           // s, s
  fmul [self.FNominator].Double       // a0*s, s

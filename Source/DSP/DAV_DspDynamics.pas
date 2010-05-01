@@ -856,7 +856,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Common, DAV_Approximations;
+  SysUtils, Math, DAV_Common, DAV_Math, DAV_Approximations;
 
 var
   CHalf64        : Double;
@@ -1796,21 +1796,6 @@ begin
 end;
 
 function TSimpleSoftKneeLimiter.ProcessSample32(Input: Single): Single;
-
- function Power2(const X: Extended): Extended;
- asm
-  FLD     X
-  FLD     ST(0)       { i := round(y);     }
-  FRNDINT
-  FSUB    ST(1), ST   { f := y - i;        }
-  FXCH    ST(1)       { z := 2**f          }
-  F2XM1
-  FLD1
-  FADD
-  FSCALE              { Result := z * 2**i }
-  FSTP    ST(1)
- end;
-
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -1820,21 +1805,6 @@ begin
 end;
 
 function TSimpleSoftKneeLimiter.ProcessSample64(Input: Double): Double;
-
- function Power2(const X: Extended): Extended;
- asm
-  FLD     X
-  FLD     ST(0)       { i := round(y);     }
-  FRNDINT
-  FSUB    ST(1), ST   { f := y - i;        }
-  FXCH    ST(1)       { z := 2**f          }
-  F2XM1
-  FLD1
-  FADD
-  FSCALE              { Result := z * 2**i }
-  FSTP    ST(1)
- end;
-
 begin
  if abs(Input) > FPeak
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
@@ -3019,4 +2989,4 @@ initialization
     TSimpleCompressor, TSoftKneeCompressor, TSimpleFeedbackCompressor,
     TSoftKneeFeedbackCompressor, TSimpleRMSCompressor, TCompressor]);
 
-end.
+end.
