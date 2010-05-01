@@ -172,7 +172,7 @@ function TFreeverbAllpass.ProcessSample32(Input: Single): Single;
 begin
  FBuffer^[FBufferPos] := ((FBuffer^[FBufferPos] - Input) * FFeedback) + Input;
  if FBufferPos < FBufferSize
-  then inc(FBufferPos)
+  then Inc(FBufferPos)
   else FBufferPos := 0;
 end;
 {$ELSE}
@@ -209,6 +209,7 @@ asm
                                           // hence the fxch
 end;
 {$ENDIF}
+
 
 { TFreeverbCombFilter }
 
@@ -297,9 +298,13 @@ begin
 end;
 
 function TFreeverbCombFilter.ProcessSample32(Input: Single): Single;
+{$IFDEF PUREPASCAL}
+begin
+ // yet todo!!!
+{$ELSE}
 asm
-  mov   ecx, [eax].FBuffer                        // FBuffer start in ecx
-  mov   edx, [eax].FBufferPos                     // FBuffer index in edx
+  mov   ecx, [eax].FBuffer                       // FBuffer start in ecx
+  mov   edx, [eax].FBufferPos                    // FBuffer index in edx
 
   // This checks for very small values that can cause a Processor
   // to switch in extra precision mode, which is expensive.
@@ -335,9 +340,10 @@ asm
   jb    @OK
   xor   edx, edx                                 // if so, reset Buffer index
 @OK:
-  mov  [eax].FBufferPos, edx                   // and store new index.
+  mov  [eax].FBufferPos, edx                     // and store new index.
                                                  // result already in st(0),
                                                  // hence duplicate
+ {$ENDIF}
 end;
 
 initialization

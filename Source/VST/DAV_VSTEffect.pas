@@ -11,6 +11,11 @@ const
   CEffectMagic = 'VstP';
 
 type
+  {$IFDEF CPUx86_64}
+  TVstIntPtr = Int64;
+  {$ELSE}
+  TVstIntPtr = Integer;
+  {$ENDIF}
   PPSingle = ^PSingle;
   PPDouble = ^PDouble;
   PVSTEffect = ^TVSTEffect;

@@ -410,7 +410,7 @@ end;
 
 procedure TSpectralNoiseCut32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 procedure TSpectralNoiseCut32.SetThreshold(const Value: Double);
@@ -537,7 +537,7 @@ end;
 
 procedure TSpectralNoiseGate32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 procedure TSpectralNoiseGate32.SetAttack(const Value: Double);
@@ -780,7 +780,7 @@ end;
 
 procedure TNoiseReduction32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 procedure TNoiseReduction32.SetAttack(const Value: Double);
@@ -1034,7 +1034,7 @@ end;
 
 procedure TSpectralNoiseCut64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 procedure TSpectralNoiseCut64.SetThreshold(const Value: Double);
@@ -1161,7 +1161,7 @@ end;
 
 procedure TSpectralNoiseGate64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 procedure TSpectralNoiseGate64.SetAttack(const Value: Double);

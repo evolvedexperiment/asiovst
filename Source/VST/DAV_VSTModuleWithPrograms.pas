@@ -56,7 +56,7 @@ type
     function  GetParameter(Index: Integer): Single; virtual;
     function  Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
     function  VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
-    function  HostCallVendorSpecific(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function  HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
     procedure CurrentProgramChanged; virtual;
     procedure SetCurrentProgramName(AName: string); virtual;
     procedure SetNumParams(const Value: Integer); virtual;
@@ -69,25 +69,25 @@ type
     function  HostCallGetParameter(const Index: Integer): Single; override;
     procedure HostCallSetParameter(const Index: Integer; const Value: Single); override;
 
-    function HostCallEditOpen                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallSetProgram              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetProgram              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallSetProgramName          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetProgramName          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetParamLabel           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetParamDisplay         (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetParamName            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetChunk                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallSetChunk                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallCanBeAutomated          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallString2Parameter        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetNumProgramCategories (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetProgramNameIndexed   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetParameterProperties  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallBeginSetProgram         (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallEndSetProgram           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallBeginLoadBank           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallBeginLoadProgram        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallEditOpen                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetProgram              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetProgram              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetProgramName          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetProgramName          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetParamLabel           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetParamDisplay         (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetParamName            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetChunk                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallSetChunk                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallCanBeAutomated          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallString2Parameter        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetNumProgramCategories (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetProgramNameIndexed   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetParameterProperties  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallBeginSetProgram         (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallEndSetProgram           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallBeginLoadBank           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallBeginLoadProgram        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -249,19 +249,19 @@ begin
   else SetParameterDirect(Index, VSTParameter2Parameter(Value, Index));
 end;
 
-function TVSTModuleWithPrograms.HostCallSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallSetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if (Value >= 0) or (Value < numPrograms)
   then CurrentProgram := Value;
  Result := 0;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := FCurProgram;
 end;
 
-function TVSTModuleWithPrograms.HostCallSetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallSetProgramName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
  if Assigned(ptr) then
@@ -271,7 +271,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetProgramName(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetProgramName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   Str : string;
 begin
@@ -288,7 +288,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParamLabel(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParamLabel(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   Str : string;
 begin
@@ -302,7 +302,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParamDisplay(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParamDisplay(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   Str : string;
 begin
@@ -316,7 +316,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetParamName(const Index, Value: Integer; const Ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParamName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   Str : string;
 begin
@@ -330,7 +330,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallEditOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallEditOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   i, pr : Integer;
   tmp   : Single;
@@ -355,7 +355,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetChunk(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetChunk(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   i, j : Integer;
   tmps : TMemoryStream;
@@ -391,7 +391,7 @@ begin
    end;
 end;
 
-function TVSTModuleWithPrograms.HostCallSetChunk(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallSetChunk(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   i  : Integer;
   pi : pInteger;
@@ -432,7 +432,7 @@ begin
  FEditorNeedUpdate := True;
 end;
 
-function TVSTModuleWithPrograms.HostCallCanBeAutomated(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallCanBeAutomated(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if Index < ParameterProperties.Count
   then Result := Integer(ParameterProperties[Index].CanBeAutomated)
@@ -505,15 +505,15 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallString2Parameter(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallString2Parameter(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if Assigned(Ptr)
   then Result := Integer(StringToParameter(Index, StrPas(PChar(ptr))))
   else Result := 0;
 end;
 
-function TVSTModuleWithPrograms.HostCallVendorSpecific(const Index, Value: Integer;
-  const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr;
+  const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   ParamStr  : string;
   ParamUnit : string;
@@ -554,12 +554,12 @@ begin
  FParameterCategories.CheckParametersInUse;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetNumProgramCategories(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetNumProgramCategories(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := FNumCategories;
 end;
 
-function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   str : string;
 begin
@@ -575,7 +575,7 @@ begin
 end;
 
 
-function TVSTModuleWithPrograms.HostCallGetParameterProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallGetParameterProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   str : string;
 begin
@@ -648,7 +648,7 @@ begin
    end;
 end;
 
-function TVSTModuleWithPrograms.HostCallBeginSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallBeginSetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if Assigned(FOnBeginSetProgram) then
   begin
@@ -658,7 +658,7 @@ begin
  else Result := 0;
 end;
 
-function TVSTModuleWithPrograms.HostCallEndSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallEndSetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if Assigned(FOnEndSetProgram) then
   begin
@@ -669,7 +669,7 @@ begin
 end;
 
 
-function TVSTModuleWithPrograms.HostCallBeginLoadBank(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallBeginLoadBank(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
  if Assigned(ptr) then
@@ -683,7 +683,7 @@ begin
   end;
 end;
 
-function TVSTModuleWithPrograms.HostCallBeginLoadProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithPrograms.HostCallBeginLoadProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
  if Assigned(ptr) then

@@ -274,7 +274,7 @@ end;
 
 procedure TCustomSpectralFilter32.PerformSpectralEffect(Spectrum: PDAVComplexSingleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock32(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 
@@ -585,7 +585,7 @@ end;
 
 procedure TSpectralFilter64.PerformSpectralEffect(Spectrum: PDAVComplexDoubleFixedArray);
 begin
- ComplexMultiplyBlock(Spectrum, FFilter, FFFTSizeHalf);
+ ComplexMultiplyBlock64(Spectrum, FFilter, FFFTSizeHalf);
 end;
 
 procedure TSpectralFilter64.SetThreshold(const Value: Double);

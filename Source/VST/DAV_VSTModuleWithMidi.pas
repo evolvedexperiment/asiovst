@@ -32,8 +32,8 @@ type
     procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
-    function HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
-    function HostCallGetCurrentMidiProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; override;
+    function HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
+    function HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
 
     procedure MidiOut(const b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
     procedure MidiSendSysEx(const Data: array of Byte; const Offset: Integer = 0);
@@ -89,7 +89,7 @@ begin
  end;
 end;
 
-function TVSTModuleWithMidi.HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithMidi.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  {$IFDEF Debug} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
  Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
@@ -127,7 +127,7 @@ begin
  if Assigned(FOnProcessMidiSysEx) then FOnProcessMidiSysEx(Self, MidiSysExEvent);
 end;
 
-function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TVSTModuleWithMidi.HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
   Result := -1;
 end;

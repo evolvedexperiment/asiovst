@@ -156,12 +156,12 @@ var
     v32 : procedure(Data:PSingle; SampleCount: Integer; CurrentFak, FacInc: Double);
     v64 : procedure(Data:PDouble; SampleCount: Integer; CurrentFak, FacInc: Double);
   end;
-  
+
   Trigger : record
     v32 : function(Data: PSingle; SampleCount: Integer; TriggerFaktor: Double): Integer;
     v64 : function(Data: PDouble; SampleCount: Integer; TriggerFaktor: Double): Integer;
   end;
-  
+
   ClipDigital   : TClipBuffer;
   ClipAnalog    : TClipBuffer;
   EnableSSE     : Boolean;
@@ -169,7 +169,7 @@ var
 implementation
 
 uses
-  Math;
+  Math {$IFDEF PUREPASCAL}, DAV_Approximations {$ENDIF};
 
 var
   RandSeed : LongInt;
@@ -242,6 +242,16 @@ end;
 {$ENDIF}
 
 procedure ClipAnalog_FPU(Data: PSingle; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Data^ := 2 * FastTanh2Like3Term(Data^);
+   Inc(Data);
+  end;
+{$ELSE}
 const
   c3: Single = 3;
   c6: Single = 6;
@@ -272,9 +282,20 @@ asm
  fstp st(0)
  fstp st(0)
  fstp st(0)
+{$ENDIF}
 end;
 
 procedure ClipAnalog_FPU(Data: PDouble; SampleCount: Integer); overload;
+{$IFDEF PUREPASCAL}
+var
+  SampleIndex : Integer;
+begin
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Data^ := 2 * FastTanh2Like3Term(Data^);
+   Inc(Data);
+  end;
+{$ELSE}
 const
   c3: Single = 3;
   c6: Single = 6;
@@ -307,6 +328,7 @@ asm
  fstp st(0)
  fstp st(0)
  fstp st(0)
+{$ENDIF}
 end;
 
 procedure FadeInLinear_FPU(Data: PSingle; SampleCount: Integer); overload;
@@ -1605,9 +1627,9 @@ procedure SingleToInt16LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: Lo
 asm
   fld      CMaxSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
-  fld      [eax+4*ecx-4].Single
+  fld      [eax + 4 * ecx - 4].Single
   fmul     st(0), st(1)
-  fistp    word ptr [edx+2*ecx-2]
+  fistp    word ptr [edx + 2 * ecx - 2]
   loop     @start
   ffree    st(0)       // free after loop has finished
 end;
@@ -1630,7 +1652,7 @@ asm
   fmul  st(0), st(3)
   faddp
 
-  fistp word ptr [edx+2*ecx-2]
+  fistp word ptr [edx + 2 * ecx - 2]
  loop   @start
  ffree  st(0)                // free after loop has finished
  ffree  st(1)                // free after loop has finished
@@ -1645,7 +1667,7 @@ asm
  fld    CScaler                // move to register for speed
  fld    CMaxSmall              // move to register for speed
  @Start:                       // Samplecount already in ecx!
-  fld   [eax+4*ecx-4].Single
+  fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
 
   imul  ebx, RandSeed, $08088405
@@ -1685,7 +1707,7 @@ asm
  fld    Scaler                 // move to register for speed
  fld    CMaxSmall               // move to register for speed
  @Start:                       // Samplecount already in ecx!
-  fld      [eax+8*ecx-8].Double
+  fld      [eax + 8 * ecx - 8].Double
   fmul     st(0), st(1)
 
   imul  ebx, RandSeed, $08088405
@@ -1695,7 +1717,7 @@ asm
   fmul st(0), st(3)
   faddp
 
-  fistp    word ptr [edx+2*ecx-2]
+  fistp    word ptr [edx + 2 * ecx - 2]
  loop     @start
  fstp     st(0)                // free after loop has finished
  fstp     st(0)                // free after loop has finished

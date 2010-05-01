@@ -147,92 +147,92 @@ type
 
     // HostCalls, protected methods that can be overwritten, but shall remain
     // hidden, since the user should not be able to call them directly!
-    function HostCallOpen                      (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallClose                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetProgram                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetProgram                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetProgramName            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetProgramName            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetParamLabel             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetParamDisplay           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetParamName              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetVu                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetSampleRate             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetBlockSize              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallMainsChanged              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditGetRect               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditOpen                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditClose                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditDraw                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditMouse                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditKey                   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditIdle                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditTop                   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditSleep                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallIdentify                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetChunk                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetChunk                  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallProcessEvents             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallCanBeAutomated            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallString2Parameter          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetNumProgramCategories   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetProgramNameIndexed     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallCopyProgram               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallConnectInput              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallConnectOutput             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetInputProperties        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetOutputProperties       (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetPlugCategory           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetCurrentPosition        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetDestinationBuffer      (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallOfflineNotify             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallOfflinePrepare            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallOfflineRun                (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallProcessVarIo              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetSpeakerArrangement     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetBlockSizeAndSampleRate (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetBypass                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetEffectName             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetErrorText              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetVendorString           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetProductString          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetVendorVersion          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallVendorSpecific            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallCanDo                     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetTailSize               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallIdle                      (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetIcon                   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetViewPosition           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetParameterProperties    (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallKeysRequired              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetVstVersion             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditKeyDown               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEditKeyUp                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetEditKnobMode           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetMidiProgramName        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetCurrentMidiProgram     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetMidiProgramCategory    (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallHasMidiProgramsChanged    (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetMidiKeyName            (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallBeginSetProgram           (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallEndSetProgram             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetSpeakerArrangement     (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallShellGetNextPlugin        (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallStartProcess              (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallStopProcess               (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetTotalSampleToProcess   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetPanLaw                 (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallBeginLoadBank             (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallBeginLoadProgram          (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallSetProcessPrecision       (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetNumMidiInputChannels   (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
-    function HostCallGetNumMidiOutputChannels  (const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
+    function HostCallOpen                      (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallClose                     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetProgram                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetProgram                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetProgramName            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetProgramName            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetParamLabel             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetParamDisplay           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetParamName              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetVu                     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetSampleRate             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetBlockSize              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallMainsChanged              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditGetRect               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditOpen                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditClose                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditDraw                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditMouse                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditKey                   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditIdle                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditTop                   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditSleep                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallIdentify                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetChunk                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetChunk                  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallProcessEvents             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallCanBeAutomated            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallString2Parameter          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetNumProgramCategories   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetProgramNameIndexed     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallCopyProgram               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallConnectInput              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallConnectOutput             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetInputProperties        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetOutputProperties       (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetPlugCategory           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetCurrentPosition        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetDestinationBuffer      (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallOfflineNotify             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallOfflinePrepare            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallOfflineRun                (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallProcessVarIo              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetSpeakerArrangement     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetBlockSizeAndSampleRate (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetBypass                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetEffectName             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetErrorText              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetVendorString           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetProductString          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetVendorVersion          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallVendorSpecific            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallCanDo                     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetTailSize               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallIdle                      (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetIcon                   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetViewPosition           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetParameterProperties    (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallKeysRequired              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetVstVersion             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditKeyDown               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEditKeyUp                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetEditKnobMode           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetMidiProgramName        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetCurrentMidiProgram     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetMidiProgramCategory    (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallHasMidiProgramsChanged    (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetMidiKeyName            (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallBeginSetProgram           (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallEndSetProgram             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetSpeakerArrangement     (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallShellGetNextPlugin        (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallStartProcess              (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallStopProcess               (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetTotalSampleToProcess   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetPanLaw                 (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallBeginLoadBank             (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallBeginLoadProgram          (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallSetProcessPrecision       (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetNumMidiInputChannels   (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
+    function HostCallGetNumMidiOutputChannels  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
 
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
     procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
     procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
 
-    function  HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; virtual;
+    function  HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
     function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
     procedure HostCallSetParameter(const Index: Integer; const Value: Single); virtual; abstract;
 
@@ -258,8 +258,8 @@ type
   EVstError = class(Exception);
 
 function DispatchEffectFuncAudioEffectPtr(Effect: PVSTEffect; OpCode : TDispatcherOpCode;
-  const Index, Value: Integer; const ptr: pointer;
-  const opt: Single): Integer; cdecl;
+  const Index: Integer; const Value: TVstIntPtr; const ptr: pointer;
+  const opt: Single): TVstIntPtr; cdecl;
 function GetParameterFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Index: Integer): Single; cdecl;
 procedure SetParameterFuncAudioEffectPtr(const Effect: PVSTEffect; const Index: Integer;
@@ -267,8 +267,8 @@ procedure SetParameterFuncAudioEffectPtr(const Effect: PVSTEffect; const Index: 
 
 {$IFNDEF UseAudioEffectPtr}
 function DispatchEffectFuncUserPtr(Effect: PVSTEffect; OpCode : TDispatcherOpCode;
-  const Index, Value: Integer; const ptr: pointer;
-  const opt: Single): Integer; cdecl;
+  const Index: Integer; const Value: TVstIntPtr; const ptr: pointer;
+  const opt: Single): TVstIntPtr; cdecl;
 function GetParameterFuncUserPtr(const Effect: PVSTEffect;
   const Index: Integer): Single; cdecl;
 procedure SetParameterFuncUserPtr(const Effect: PVSTEffect; const Index: Integer;
@@ -1044,7 +1044,7 @@ end;
 // Calls from the host
 // ------------------------------------------------------------------
 
-function TBasicVSTModule.HostCallOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
  {$IFNDEF UseAudioEffectPtr}
@@ -1068,7 +1068,7 @@ begin
  {$ENDIF}
 end;
 
-function TBasicVSTModule.HostCallClose(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallClose(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  try
   Effect^.GetParameter := @GetParameterFuncDummy;
@@ -1094,67 +1094,67 @@ begin
  end;
 end;
 
-function TBasicVSTModule.HostCallSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetProgramName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetProgramName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetParamLabel(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetParamLabel(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetParamDisplay(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetParamDisplay(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetParamName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetParamName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetVu(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetVu(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetSampleRate(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetBlockSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetBlockSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallMainsChanged(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallMainsChanged(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditGetRect(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditGetRect(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditOpen(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditClose(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditClose(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditDraw(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditDraw(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditMouse(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditMouse(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditKey(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditKey(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditIdle(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditIdle(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditTop(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditTop(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditSleep(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditSleep(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallIdentify(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallIdentify(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
   ChunkName : TChunkName;
 begin
@@ -1162,31 +1162,31 @@ begin
  Result := Integer(ChunkName);
 end;
 
-function TBasicVSTModule.HostCallGetChunk(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetChunk(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetChunk(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetChunk(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallProcessEvents(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallCanBeAutomated(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallCanBeAutomated(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallString2Parameter(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallString2Parameter(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetNumProgramCategories(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetNumProgramCategories(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetProgramNameIndexed(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetProgramNameIndexed(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallCopyProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallCopyProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  case OpCode of
   effOpen:                      Result := HostCallOpen(Index, Value, ptr, opt);
@@ -1278,158 +1278,158 @@ begin
   end;
 end;
 
-function TBasicVSTModule.HostCallConnectInput(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallConnectInput(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallConnectOutput(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallConnectOutput(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetInputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetInputProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetOutputProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetOutputProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetPlugCategory(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetPlugCategory(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetCurrentPosition(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetCurrentPosition(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetDestinationBuffer(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetDestinationBuffer(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallOfflineNotify(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallOfflineNotify(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallOfflinePrepare(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallOfflinePrepare(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallOfflineRun(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallOfflineRun(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallProcessVarIo(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallProcessVarIo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetSpeakerArrangement(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetBlockSizeAndSampleRate(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetBlockSizeAndSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetBypass(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetBypass(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetEffectName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetEffectName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetErrorText(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetErrorText(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetVendorString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetVendorString(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetProductString(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetProductString(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetVendorVersion(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetVendorVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallVendorSpecific(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallCanDo(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetTailSize(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetTailSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallIdle(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallIdle(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetIcon(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetIcon(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetViewPosition(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetViewPosition(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetParameterProperties(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetParameterProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallKeysRequired(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallKeysRequired(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetVstVersion(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetVstVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditKeyDown(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditKeyDown(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEditKeyUp(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEditKeyUp(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetEditKnobMode(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetEditKnobMode(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetMidiProgramName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetMidiProgramName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetCurrentMidiProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetMidiProgramCategory(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetMidiProgramCategory(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallHasMidiProgramsChanged(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallHasMidiProgramsChanged(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetMidiKeyName(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetMidiKeyName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallBeginSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallBeginSetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallEndSetProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallEndSetProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetSpeakerArrangement(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallShellGetNextPlugin(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallShellGetNextPlugin(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallStartProcess(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallStartProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallStopProcess(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallStopProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetTotalSampleToProcess(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetTotalSampleToProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetPanLaw(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetPanLaw(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallBeginLoadBank(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallBeginLoadBank(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallBeginLoadProgram(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallBeginLoadProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallSetProcessPrecision(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallSetProcessPrecision(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetNumMidiInputChannels(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetNumMidiInputChannels(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
-function TBasicVSTModule.HostCallGetNumMidiOutputChannels(const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer;
+function TBasicVSTModule.HostCallGetNumMidiOutputChannels(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin Result := 0; end;
 
 
 
 // effect functions
 
-function DispatchEffectFuncAudioEffectPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
+function DispatchEffectFuncAudioEffectPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; cdecl;
 begin
  if Assigned(Effect) and (TObject(Effect^.AudioEffectPtr) is TBasicVSTModule)
    then Result := TBasicVSTModule(Effect^.AudioEffectPtr).HostCallDispatchEffect(OpCode, Index, Value, ptr, opt)
@@ -1452,7 +1452,7 @@ begin
 end;
 
 {$IFNDEF UseAudioEffectPtr}
-function DispatchEffectFuncUserPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index, Value: Integer; const ptr: pointer; const opt: Single): Integer; cdecl;
+function DispatchEffectFuncUserPtr(Effect: PVSTEffect; OpCode: TDispatcherOpCode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; cdecl;
 begin
  if Assigned(Effect) and
   (TObject(Effect^.User) is TBasicVSTModule)
