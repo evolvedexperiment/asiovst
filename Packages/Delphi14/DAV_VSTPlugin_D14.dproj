@@ -22,7 +22,7 @@
 		<PropertyGroup Condition="'$(Base)'!=''">
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;..\..\Source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\DAV_VSTPlugin_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_VSTPlugin_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00560000</DCC_ImageBase>
 			<DesignOnlyPackage>true</DesignOnlyPackage>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

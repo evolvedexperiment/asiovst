@@ -458,7 +458,7 @@ begin
   AsioDriverList := ASIOHost.DriverList;
  except
   AsioDriverList := nil;
-  MessageDlg('ASIO driver list could not be received! Application Terminated!', mtError, [mbOK], 0);
+  MessageDlg('ERROR: ASIO driver list could not be received! Application Terminated!', mtError, [mbOK], 0);
   Application.Terminate;
  end;
 
@@ -475,7 +475,7 @@ begin
 
  if AsioDriverList.Count = 0 then
  begin
-  MessageDlg('No ASIO Driver present! Application Terminated!', mtError, [mbOK], 0);
+  MessageDlg('ERROR: No ASIO Driver present! Application Terminated!', mtError, [mbOK], 0);
   Application.Terminate;
  end;
 
@@ -884,9 +884,7 @@ begin
  try
   VSTHost[0].Active := True;
  except
-  {$IFNDEF FPC}
-  Msg(VSTDll + ' is not a valid VST plugin!');
-  {$ENDIF}
+  MessageDlg('ERROR: ' + VSTDll + ' is not a valid VST plugin!', mtError, [mbOK], 0);
   VSTHost[0].Active := False;
   VSTHost[0].DLLFilename := '';
   FPanel.Height := 0;
@@ -1280,11 +1278,9 @@ begin
    try
     VSTHost[0].LoadPreset(Files[i]);
    except
- {$IFNDEF FPC}
-    msg('Preset file not for this plugin (or file is corrupted)!');
- {$ENDIF}
+    MessageDlg('ERROR: Preset file not for this plugin (or file is corrupted)!', mtError, [mbOK], 0);
     WaveTimer.Enabled := True;
-    exit;
+    Exit;
    end;
    k := VSTHost[0].CurrentProgram;
    s := IntToStr(k);
@@ -1347,9 +1343,7 @@ begin
      try
       VSTHost[0].LoadBank(Filename);
      except
-{$IFNDEF FPC}
-      msg('Bank file not for this plugin (or file is corrupted)!');
-{$ENDIF}
+      MessageDlg('ERROR: Bank file not for this plugin (or file is corrupted)!', mtError, [mbOK], 0);
       WaveTimer.Enabled := True;
      end;
      BuildPresetList;
@@ -1682,9 +1676,7 @@ begin
   try
    VSTHost[0].LoadPreset(s);
   except
-{$IFNDEF FPC}
-   DAV_Common.msg('Preset file not for this plugin (or file is corrupted)!');
-{$ENDIF}
+   MessageDlg('ERROR: Preset file not for this plugin (or file is corrupted)!', mtError, [mbOK], 0);
    Exit;
   end;
  end else
@@ -1693,10 +1685,8 @@ begin
   try
    VSTHost[0].LoadBank(s);
   except
-{$IFNDEF FPC}
-   DAV_Common.msg('Bank file not for this plugin (or file is corrupted)!');
-{$ENDIF}
-   exit;
+   MessageDlg('ERROR: Bank file not for this plugin (or file is corrupted)!', mtError, [mbOK], 0);
+   Exit;
   end;
  end else
   if (fn = '.DLL') then LoadPlugin(s)
@@ -2242,7 +2232,7 @@ begin
  if not FileExists(FileName) then Exit;
  j := -1;
  for i := 0 to Player.MidiBox.Items.Count - 1 do
-  if PShortstr(Player.MidiBox.Items.Objects[i])^ = FileName
+  if PShortStr(Player.MidiBox.Items.Objects[i])^ = FileName
    then j := 0;
  if j = 0 then Exit;
  GetMem(ms, SizeOf(shortstr));

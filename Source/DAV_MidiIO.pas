@@ -245,7 +245,7 @@ implementation
 
 { TMidiBase }
 type
-  TSysExBuffer = array[0..CSysExBufferSize] of Char;
+  TSysExBuffer = array [0..CSysExBufferSize] of AnsiChar;
 
   TSysExData = class
   private

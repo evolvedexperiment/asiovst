@@ -23,7 +23,7 @@
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\ASIO;..\..\Source\DSP;..\..\Source\Math;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_DependencyCheckOutputName>..\..\..\..\..\Public\Documents\RAD Studio\7.0\Bpl\DAV_ASIOHost_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_ASIOHost_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00540000</DCC_ImageBase>
 			<DCC_WriteableConstants>true</DCC_WriteableConstants>
 			<GenPackage>true</GenPackage>

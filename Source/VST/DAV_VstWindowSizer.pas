@@ -59,7 +59,8 @@ interface
 
 uses
   {$IFDEF FPC}LCLIntf, LCLType, LMessages, {$IFDEF Windows} Windows, {$ENDIF}
-  {$ELSE} Windows, Messages, {$ENDIF} Messages, Controls, Types, Contnrs, DAV_VSTCustomModule;
+  {$ELSE} Windows, Messages, {$ENDIF} Controls, Types, Contnrs,
+  DAV_VSTCustomModule;
 
 type
   TResizeFlag = (rfTrackParentSize, rfSimulateDragEdge,
@@ -578,7 +579,7 @@ begin
         if TwindowInfo(GEditors.Items[idx]).hWindow = hWindow then
          begin
           GEditors.Delete(idx);
-          break;
+          Break;
          end;
 
       // Ensure we do a re-initialize the next time around
@@ -593,7 +594,7 @@ begin
           (TWindowInfo(GFramesTrack.items[idx]).prevProc <> nil)
          then SetWindowLong(hWindow, GWL_WNDPROC, Integer(TWindowInfo(GFramesTrack.items[idx]).prevProc));
         GFramesTrack.Delete(idx);
-        break;
+        Break;
        end;
    end;
 end;
@@ -756,7 +757,7 @@ end;
 //----------------------------------------------------------------------
 procedure TVstWindowSizer.DetectHost;
 var
-  szProductName : array[0..255] of Char;
+  szProductName : array[0..255] of AnsiChar;
   ProductName   : string;
   curHwnd       : HWND;
   curParent     : HWND;
@@ -799,19 +800,19 @@ begin
            if pos('Fruity', ProductName) > 0 then
             begin
              FHostApp := haFruityLoops;
-             break;
+             Break;
             end;
 
            if pos('Project5', ProductName) > 0 then
             begin
              FHostApp := haProject5;
-             break;
+             Break;
             end;
 
            if pos('SONAR', ProductName) > 0 then
             begin
              FHostApp := haSONAR;
-             break;
+             Break;
             end;
           end;
        curHwnd := curParent;

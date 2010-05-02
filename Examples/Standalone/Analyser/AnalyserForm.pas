@@ -67,7 +67,7 @@ implementation
 {$ENDIF}
 
 uses
-  Inifiles;
+  Inifiles, DAV_Common;
 
 { TFmAnalyser }
 

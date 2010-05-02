@@ -51,7 +51,6 @@ object FmASIO: TFmASIO
     Width = 105
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end

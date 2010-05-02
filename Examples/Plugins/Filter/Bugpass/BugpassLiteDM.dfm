@@ -1,4 +1,5 @@
 object BugpassLiteDataModule: TBugpassLiteDataModule
+  OldCreateOrder = True
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]

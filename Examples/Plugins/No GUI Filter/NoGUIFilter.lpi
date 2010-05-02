@@ -13,10 +13,10 @@
       <MainUnit Value="0"/>
       <TargetFileExt Value=".dll"/>
       <Title Value="NoGUI Filter"/>
-      <ActiveEditorIndexAtStart Value="1"/>
+      <ActiveWindowIndexAtStart Value="0"/>
     </General>
     <VersionInfo>
-      <ProjectVersion Value=""/>
+      <StringTable Comments="" CompanyName="" FileDescription="" FileVersion="0.0.0.0" InternalName="" LegalCopyright="" LegalTrademarks="" OriginalFilename="" ProductName="" ProductVersion=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -41,17 +41,19 @@
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <CursorPos X="21" Y="3"/>
-        <TopLine Value="1"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="78"/>
+        <CursorPos X="38" Y="115"/>
         <UsageCount Value="53"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="..\..\..\Source\DVSTEffect.pas"/>
         <UnitName Value="DVSTEffect"/>
-        <CursorPos X="42" Y="92"/>
         <TopLine Value="70"/>
+        <CursorPos X="42" Y="92"/>
         <UsageCount Value="12"/>
       </Unit1>
       <Unit2>
@@ -59,8 +61,8 @@
         <ComponentName Value="VSTModule"/>
         <HasResources Value="True"/>
         <UnitName Value="DVSTModule"/>
-        <CursorPos X="3" Y="3339"/>
         <TopLine Value="3337"/>
+        <CursorPos X="3" Y="3339"/>
         <UsageCount Value="18"/>
         <Bookmarks Count="4">
           <Item0 X="23" Y="993" ID="1"/>
@@ -72,22 +74,22 @@
       <Unit3>
         <Filename Value="..\..\..\Source\DAVDCommon.pas"/>
         <UnitName Value="DAVDCommon"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit3>
       <Unit4>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\forms.pp"/>
         <UnitName Value="Forms"/>
-        <CursorPos X="1" Y="1785"/>
         <TopLine Value="1751"/>
+        <CursorPos X="1" Y="1785"/>
         <UsageCount Value="9"/>
       </Unit4>
       <Unit5>
         <Filename Value="..\..\..\..\..\..\Programme\Borland\Library\Bitmap\Graphics32\GR32_Blend.pas"/>
         <UnitName Value="GR32_Blend"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit5>
       <Unit6>
@@ -95,242 +97,246 @@
         <ComponentName Value="VSTFilter"/>
         <HasResources Value="True"/>
         <UnitName Value="FilterModule"/>
-        <CursorPos X="13" Y="59"/>
-        <TopLine Value="1"/>
         <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="20"/>
+        <CursorPos X="13" Y="59"/>
         <UsageCount Value="17"/>
         <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="FilterModule.lfm"/>
-        <CursorPos X="1" Y="7"/>
         <TopLine Value="1"/>
-        <UsageCount Value="9"/>
+        <CursorPos X="1" Y="7"/>
         <SyntaxHighlighter Value="LFM"/>
+        <UsageCount Value="9"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lclintf.pas"/>
         <UnitName Value="LCLIntf"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="53"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit8>
       <Unit9>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\interfaces.pp"/>
         <UnitName Value="Interfaces"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="11"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\interfaces\win32\win32int.pp"/>
         <UnitName Value="Win32Int"/>
-        <CursorPos X="31" Y="316"/>
         <TopLine Value="294"/>
+        <CursorPos X="31" Y="316"/>
         <UsageCount Value="9"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\compproc.inc"/>
-        <CursorPos X="25" Y="439"/>
         <TopLine Value="420"/>
+        <CursorPos X="25" Y="439"/>
         <UsageCount Value="10"/>
       </Unit11>
       <Unit12>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.1\source\rtl\inc\system.inc"/>
-        <CursorPos X="3" Y="661"/>
         <TopLine Value="657"/>
+        <CursorPos X="3" Y="661"/>
         <UsageCount Value="9"/>
       </Unit12>
       <Unit13>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\lazarus.pp"/>
         <UnitName Value="Lazarus"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit13>
       <Unit14>
         <Filename Value="..\..\..\..\Components\Audio Chart\AudioChartsL.pas"/>
         <UnitName Value="AudioChartsL"/>
-        <CursorPos X="3" Y="10"/>
         <TopLine Value="1"/>
+        <CursorPos X="3" Y="10"/>
         <UsageCount Value="9"/>
       </Unit14>
       <Unit15>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\ide\main.pp"/>
         <UnitName Value="Main"/>
-        <CursorPos X="35" Y="1103"/>
         <TopLine Value="1086"/>
+        <CursorPos X="35" Y="1103"/>
         <UsageCount Value="9"/>
       </Unit15>
       <Unit16>
         <Filename Value="..\..\..\Source\DVSTHost.pas"/>
         <UnitName Value="DVSTHost"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit16>
       <Unit17>
         <Filename Value="..\..\..\Lazarus\HostVSTLaz.pas"/>
         <UnitName Value="HostVSTLaz"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit17>
       <Unit18>
         <Filename Value="..\..\..\Source\DASIOHost.pas"/>
         <UnitName Value="DASIOHost"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit18>
       <Unit19>
         <Filename Value="..\..\..\Source\DGuiBarChart.pas"/>
         <UnitName Value="DGuiBarChart"/>
-        <CursorPos X="1" Y="9"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="9"/>
         <UsageCount Value="9"/>
       </Unit19>
       <Unit20>
         <Filename Value="..\..\..\Source\DGuiMidiKeys.pas"/>
         <UnitName Value="DGuiMidiKeys"/>
-        <CursorPos X="1" Y="5"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="5"/>
         <UsageCount Value="9"/>
       </Unit20>
       <Unit21>
         <Filename Value="..\..\..\Source\DGuiStaticWaveform.pas"/>
         <UnitName Value="DGuiStaticWaveform"/>
-        <CursorPos X="1" Y="4"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="4"/>
         <UsageCount Value="9"/>
       </Unit21>
       <Unit22>
         <Filename Value="..\..\..\Source\DGuiADSRGraph.pas"/>
         <UnitName Value="DGuiADSRGraph"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit22>
       <Unit23>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\alllclunits.pp"/>
         <UnitName Value="AllLCLUnits"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit23>
       <Unit24>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\FPC\2.1.3\source\rtl\objpas\rtlconsts.pp"/>
         <UnitName Value="RtlConsts"/>
-        <CursorPos X="8" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="8" Y="1"/>
         <UsageCount Value="9"/>
       </Unit24>
       <Unit25>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\FPC\2.1.3\source\rtl\objpas\rtlconst.inc"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="231"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit25>
       <Unit26>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\FPC\2.1.3\source\rtl\objpas\classes\classesh.inc"/>
-        <CursorPos X="11" Y="1747"/>
         <TopLine Value="1726"/>
+        <CursorPos X="11" Y="1747"/>
         <UsageCount Value="9"/>
       </Unit26>
       <Unit27>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lclclasses.pp"/>
         <UnitName Value="LCLClasses"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="9"/>
       </Unit27>
       <Unit28>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\FPC\2.1.3\source\rtl\inc\mathh.inc"/>
-        <CursorPos X="52" Y="1"/>
         <TopLine Value="21"/>
+        <CursorPos X="52" Y="1"/>
         <UsageCount Value="9"/>
       </Unit28>
       <Unit29>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lresources.pp"/>
         <UnitName Value="LResources"/>
-        <CursorPos X="42" Y="2621"/>
         <TopLine Value="2615"/>
+        <CursorPos X="42" Y="2621"/>
         <UsageCount Value="11"/>
       </Unit29>
       <Unit30>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\classesh.inc"/>
-        <CursorPos X="12" Y="1655"/>
         <TopLine Value="1638"/>
+        <CursorPos X="12" Y="1655"/>
         <UsageCount Value="11"/>
       </Unit30>
       <Unit31>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\collect.inc"/>
-        <CursorPos X="3" Y="345"/>
         <TopLine Value="324"/>
+        <CursorPos X="3" Y="345"/>
         <UsageCount Value="10"/>
       </Unit31>
       <Unit32>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\fpcadds.pas"/>
         <UnitName Value="FPCAdds"/>
-        <CursorPos X="1" Y="1"/>
         <TopLine Value="74"/>
+        <CursorPos X="1" Y="1"/>
         <UsageCount Value="10"/>
       </Unit32>
       <Unit33>
         <Filename Value="..\..\..\Source\ASIOVST.inc"/>
-        <CursorPos X="17" Y="360"/>
         <TopLine Value="343"/>
+        <CursorPos X="17" Y="360"/>
         <UsageCount Value="10"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\fpc\2.1.5\source\rtl\objpas\classes\classes.inc"/>
-        <CursorPos X="1" Y="541"/>
         <TopLine Value="535"/>
+        <CursorPos X="1" Y="541"/>
         <UsageCount Value="11"/>
       </Unit34>
       <Unit35>
         <Filename Value="..\..\..\Source\VST\DAV_VSTOfflineTask.pas"/>
         <UnitName Value="DAV_VSTOfflineTask"/>
-        <CursorPos X="50" Y="23"/>
         <TopLine Value="1"/>
+        <CursorPos X="50" Y="23"/>
         <UsageCount Value="10"/>
       </Unit35>
       <Unit36>
         <Filename Value="..\..\..\Source\VST\DAV_VSTParameters.pas"/>
         <UnitName Value="DAV_VSTParameters"/>
-        <CursorPos X="23" Y="1"/>
         <TopLine Value="1"/>
+        <CursorPos X="23" Y="1"/>
         <UsageCount Value="10"/>
       </Unit36>
       <Unit37>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
         <UnitName Value="DAV_VSTModule"/>
-        <CursorPos X="66" Y="8"/>
-        <TopLine Value="1"/>
         <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="66" Y="8"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
         <UnitName Value="DAV_VSTModuleWithDsp"/>
-        <CursorPos X="38" Y="9"/>
-        <TopLine Value="1"/>
         <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="38" Y="9"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit38>
       <Unit39>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <CursorPos X="117" Y="15"/>
-        <TopLine Value="1"/>
         <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="117" Y="15"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit39>
     </Units>
-    <JumpHistory Count="21" HistoryIndex="20">
+    <JumpHistory Count="23" HistoryIndex="22">
       <Position1>
         <Filename Value="NoGUIFilter.lpr"/>
         <Caret Line="16" Column="15" TopLine="1"/>
@@ -415,6 +421,14 @@
         <Filename Value="FilterModule.pas"/>
         <Caret Line="59" Column="12" TopLine="42"/>
       </Position21>
+      <Position22>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="22" Column="31" TopLine="1"/>
+      </Position22>
+      <Position23>
+        <Filename Value="NoGUIFilter.lpr"/>
+        <Caret Line="115" Column="38" TopLine="79"/>
+      </Position23>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>

@@ -23,7 +23,7 @@
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;..\..\Source\Modular;..\..\Source\GUI;..\..\Source\VST;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_DependencyCheckOutputName>..\..\..\..\..\Public\Documents\RAD Studio\7.0\Bpl\DAV_GUI_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_GUI_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00520000</DCC_ImageBase>
 			<GenPackage>true</GenPackage>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>

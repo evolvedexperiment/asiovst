@@ -503,6 +503,7 @@ begin
     FExternalLibraryArray[Result].LibraryName := LibraryName;
     FExternalLibraryArray[Result].LibraryHandle :=
       LoadLibrary(PChar(LibraryName));
+//    Assert(FExternalLibraryArray[Result].LibraryHandle <> 0);
    end;
 end;
 
@@ -515,7 +516,7 @@ begin
     if FExternalLibraryArray[I].LibraryName = LibraryName then
      begin
       Result := FExternalLibraryArray[I].LibraryHandle;
-      exit;
+      Exit;
      end;
 end;
 
@@ -659,7 +660,7 @@ var
 
   function ProcessRelocations: Boolean;
   var
-    Relocations: PChar;
+    Relocations: PAnsiChar;
     Position: LongWord;
     BaseRelocation: PImageBaseRelocation;
     Base: Pointer;
@@ -726,7 +727,7 @@ var
   var
     ImportDescriptor: PImageImportDescriptor;
     ThunkData: PLongWord;
-    Name: PChar;
+    Name: PAnsiChar;
     DLLImport: PDLLImport;
     DLLFunctionImport: PDLLFunctionImport;
     FunctionPointer: Pointer;
@@ -774,16 +775,6 @@ var
               DLLFunctionImport^.NameOrID := niName;
               DLLFunctionImport^.ID := 0;
               DLLFunctionImport^.Name := Name;
-
-(*
-              if Name = 'LoadResource'
-               then FunctionPointer := @LoadResource else
-              if Name = 'SizeofResource'
-               then FunctionPointer := @SizeofResource else
-              if Name = 'GetProcAddress'
-               then FunctionPointer := @GetInternalProcAddress else
-*)
-
               if Name = 'GetModuleFileNameA'
                then FunctionPointer := @GetModuleFileNameA else
               if Name = 'GetModuleFileNameW'
@@ -854,7 +845,7 @@ var
     ExportDirectory        : PImageExportDirectory;
     ExportDirectorySize    : LongWord;
     FunctionNamePointer    : Pointer;
-    FunctionName           : PChar;
+    FunctionName           : PAnsiChar;
     FunctionIndexPointer   : Pointer;
     FunctionIndex          : LongWord;
     FunctionPointer        : Pointer;
@@ -888,7 +879,7 @@ var
       ExportDirectory := ConvertPointer(
         ImageNTHeaders.OptionalHeader.DataDirectory[
         IMAGE_DIRECTORY_ENTRY_EXPORT].VirtualAddress);
-      if assigned(ExportDirectory) then
+      if Assigned(ExportDirectory) then
        begin
         ExportDirectorySize :=
           ImageNTHeaders.OptionalHeader.DataDirectory[

@@ -3,7 +3,6 @@ program VSTPluginScanner;
 uses
   FastMM4,
   FastMove,
-  RTLVCLOptimize,
   madExcept,
   madLinkDisAsm,
   madListProcesses,

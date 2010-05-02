@@ -65,7 +65,7 @@ type
     FPosition  : TComplexDouble;
     FVolume    : Single;
     FBeatPos   : Integer;
-    FIniFile   : TIniFile;
+    FIniFile   : TFileName;
     procedure CalculateSineAngles;
   public
     FSamplesPerBeat : Single;

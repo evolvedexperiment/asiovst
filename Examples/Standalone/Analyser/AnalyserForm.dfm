@@ -61,7 +61,6 @@ object FmAnalyser: TFmAnalyser
     Width = 273
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -81,7 +80,6 @@ object FmAnalyser: TFmAnalyser
     Width = 233
     Height = 21
     Style = csDropDownList
-    ItemHeight = 13
     TabOrder = 2
   end
   object Bt_Analyse: TButton
@@ -116,18 +114,16 @@ object FmAnalyser: TFmAnalyser
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnDblClick = AnalyserChartDblClick
     object BarSeries: TBarSeries
-      Marks.ArrowLength = 20
+      Marks.Arrow.Visible = True
+      Marks.Callout.Brush.Color = clBlack
+      Marks.Callout.Arrow.Visible = True
       Marks.Visible = False
-      SeriesColor = clRed
       ShowInLegend = False
+      Gradient.Direction = gdTopBottom
       MultiBar = mbNone
-      XValues.DateTime = False
       XValues.Name = 'X'
-      XValues.Multiplier = 1.000000000000000000
       XValues.Order = loAscending
-      YValues.DateTime = False
       YValues.Name = 'Balken'
-      YValues.Multiplier = 1.000000000000000000
       YValues.Order = loNone
     end
   end

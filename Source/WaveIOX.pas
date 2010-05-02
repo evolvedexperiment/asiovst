@@ -288,7 +288,7 @@ begin
     raise EWaveIOError.Create('Error 15: Abnormal ''fmt'' size!');
 
   // Read the 'fmt ' chunk into <pcmWaveFormat>.*/
-  if (mmioRead(FMM, PChar(@FormatTmp), 16) <> 16) then
+  if (mmioRead(FMM, PAnsiChar(@FormatTmp), 16) <> 16) then
     raise EWaveIOError.Create('Error 16: Cannot read ''fmt'' chunk!');
 
   // Ok, allocate the waveformatex, but if its not PCM
@@ -305,7 +305,7 @@ begin
   CopyMemory(FFormat, @FormatTmp, SizeOf(FFormat^));
   FFormat^.cbSize := ExtraAlloc;
   if (ExtraAlloc <> 0) then
-   if (mmioRead(FMM, PChar(FFormat) + SizeOf(FFormat^), ExtraAlloc) <> ExtraAlloc)
+   if (mmioRead(FMM, PAnsiChar(FFormat) + SizeOf(FFormat^), ExtraAlloc) <> ExtraAlloc)
     then raise EWaveIOError.Create('Error 18: Cannot read ''waveformatex''!');
 
   if (FFormat^.wFormatTag = cMPEGLayer3)

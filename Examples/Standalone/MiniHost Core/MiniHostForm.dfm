@@ -1,6 +1,6 @@
 object FmMiniHost: TFmMiniHost
-  Left = 267
-  Top = 206
+  Left = 680
+  Top = 391
   AlphaBlendValue = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -1930,7 +1930,6 @@ object FmMiniHost: TFmMiniHost
       Font.Height = -11
       Font.Name = 'Arial'
       Font.Style = [fsBold]
-      ItemHeight = 16
       ItemIndex = 0
       ParentCtl3D = False
       ParentFont = False

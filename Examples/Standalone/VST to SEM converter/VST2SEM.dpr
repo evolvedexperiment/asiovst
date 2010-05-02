@@ -10,7 +10,6 @@ uses
   madListHardware,
   madListProcesses,
   madListModules,
-  RtlVCLOptimize,
   Forms,
   V2Smain in 'V2Smain.pas' {FmVST2SEM};
 

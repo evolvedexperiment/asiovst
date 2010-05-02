@@ -221,7 +221,7 @@ begin
    10 : OnProcess := VSTModuleProcessOldOne;
   end;
 
- OnProcess := VSTModuleProcess;
+ OnProcessReplacing := OnProcess;
 
  // update GUI
  if Assigned(EditorForm)

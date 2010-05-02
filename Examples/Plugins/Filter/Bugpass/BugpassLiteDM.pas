@@ -42,6 +42,7 @@ uses
 type
   TBugpassLiteDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -49,7 +50,6 @@ type
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFreqLowChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamFreqHighChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure VSTModuleDestroy(Sender: TObject);
   private
     FFilterKernel    : PDAVSingleFixedArray;
     FSignalPadded    : PDAVSingleFixedArray;

@@ -1,4 +1,5 @@
 object ButterworthHPModule: TButterworthHPModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Butterworth Lowpass Filter'

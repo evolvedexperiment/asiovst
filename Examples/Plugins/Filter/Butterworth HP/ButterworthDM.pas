@@ -177,13 +177,23 @@ begin
 
  Indxes[0] := 1;
  while (Indxes[0] <= Length(Str)) and
-  (not (Str[Indxes[0]] in ['0'..'9', ',', '.'])) do Inc(Indxes[0]);
+  {$IFDEF DELPHI14_UP}
+  (not CharInSet(Str[Indxes[0]], ['0'..'9']))
+  {$ELSE}
+  (not (Str[Indxes[0]] in ['0'..'9']))
+  {$ENDIF}
+  do Inc(Indxes[0]);
 
- if (Indxes[0] >= Length(Str)) then Exit;
+ if (Indxes[0] > Length(Str)) then Exit;
 
  Indxes[1] := Indxes[0] + 1;
  while (Indxes[1] <= Length(Str)) and
-  (Str[Indxes[1]] in ['0'..'9', ',', '.']) do Inc(Indxes[1]);
+  {$IFDEF DELPHI14_UP}
+  CharInSet(Str[Indxes[1]], ['0'..'9'])
+  {$ELSE}
+  (Str[Indxes[1]] in ['0'..'9'])
+  {$ENDIF}
+  do Inc(Indxes[1]);
 
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
 
@@ -204,13 +214,23 @@ begin
 
  Indxes[0] := 1;
  while (Indxes[0] <= Length(Str)) and
-  (not (Str[Indxes[0]] in ['0'..'9'])) do Inc(Indxes[0]);
+  {$IFDEF DELPHI14_UP}
+  (not CharInSet(Str[Indxes[0]], ['0'..'9']))
+  {$ELSE}
+  (not (Str[Indxes[0]] in ['0'..'9']))
+  {$ENDIF}
+  do Inc(Indxes[0]);
 
  if (Indxes[0] > Length(Str)) then Exit;
 
  Indxes[1] := Indxes[0] + 1;
  while (Indxes[1] <= Length(Str)) and
-  (Str[Indxes[1]] in ['0'..'9']) do Inc(Indxes[1]);
+  {$IFDEF DELPHI14_UP}
+  CharInSet(Str[Indxes[1]], ['0'..'9'])
+  {$ELSE}
+  (Str[Indxes[1]] in ['0'..'9'])
+  {$ENDIF}
+  do Inc(Indxes[1]);
 
  Str := Copy(Str, Indxes[0], Indxes[1] - Indxes[0]);
 

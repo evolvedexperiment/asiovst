@@ -3475,7 +3475,7 @@ begin
 
  try
   DontRaiseExceptionsAndSetFPUcodeword;
-  FVstDllHandle := SafeLoadLibrary(PAnsiChar(DLLFileName), 7);
+  FVstDllHandle := SafeLoadLibrary(DLLFileName, 7);
  // FVstDllHandle := LoadLibraryEx(PAnsiChar(DLLFileName), 0, DONT_RESOLVE_DLL_REFERENCES);
 
   if FVstDllHandle = 0 then

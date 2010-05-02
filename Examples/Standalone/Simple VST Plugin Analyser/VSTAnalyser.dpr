@@ -3,7 +3,6 @@ program VSTAnalyser;
 uses
   FastMM4,
   FastMove,
-  RTLVCLOptimize,
   Forms,
   VAMain in 'VAMain.pas' {FmVSTEditor},
   VAPlotIR in 'VAPlotIR.pas' {FmPlotIR};
