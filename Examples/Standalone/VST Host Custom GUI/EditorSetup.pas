@@ -92,15 +92,15 @@ begin
     for i := 0 to (InputChannelCount div 2) - 1 do
      begin
       CBInput.Items.Add(
-        InputChannelInfos[2 * i].name + ' / ' +
-        InputChannelInfos[2 * i + 1].name);
+        string(InputChannelInfos[2 * i].name) + ' / ' +
+        string(InputChannelInfos[2 * i + 1].name));
      end;
     CBOutput.Clear;
     for i := 0 to (OutputChannelCount div 2) - 1 do
      begin
       CBOutput.Items.Add(
-        OutputChannelInfos[2 * i].name + ' / ' +
-        OutputChannelInfos[2 * i + 1].name);
+        string(OutputChannelInfos[2 * i].name) + ' / ' +
+        string(OutputChannelInfos[2 * i + 1].name));
      end;
     CBInput.ItemIndex := 0;
     CBOutput.ItemIndex := 0;

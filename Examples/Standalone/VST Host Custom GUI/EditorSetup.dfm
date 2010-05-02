@@ -55,7 +55,6 @@ object FmSetup: TFmSetup
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CBDriversChange
   end
@@ -67,7 +66,6 @@ object FmSetup: TFmSetup
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
-    ItemHeight = 13
     TabOrder = 1
     OnChange = CBInputChange
   end
@@ -79,7 +77,6 @@ object FmSetup: TFmSetup
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
     Color = clBtnFace
-    ItemHeight = 13
     TabOrder = 2
     OnChange = CBOutputChange
   end

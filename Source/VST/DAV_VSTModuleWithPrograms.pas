@@ -15,20 +15,20 @@ type
 
   TVSTModuleWithPrograms = class(TVSTModuleWithMidi)
   private
-    function TranslateParameterNameToIndex(ParameterName: string): Integer;
-    function TranslateProgramNameToIndex(ProgramName: string): Integer;
-    function GetParameterByName(ParameterName: string): Single;
-    function GetParameterDisplay(Index: Integer): string;
-    function GetParameterLabel(Index: Integer): string;
-    function GetParameterName(Index: Integer): string;
-    function GetParameterString(Index: Integer): string;
+    function TranslateParameterNameToIndex(ParameterName: AnsiString): Integer;
+    function TranslateProgramNameToIndex(ProgramName: AnsiString): Integer;
+    function GetParameterByName(ParameterName: AnsiString): Single;
+    function GetParameterDisplay(Index: Integer): AnsiString;
+    function GetParameterLabel(Index: Integer): AnsiString;
+    function GetParameterName(Index: Integer): AnsiString;
+    function GetParameterString(Index: Integer): AnsiString;
     function GetVSTParameter(Index: Integer): Single;
-    function GetVstProgramByName(ProgramName: string): TVstProgram;
-    procedure SetParameterByName(ParameterName: string; const Value: Single);
-    procedure SetVstProgramByName(ProgramName: string; const Value: TVstProgram);
+    function GetVstProgramByName(ProgramName: AnsiString): TVstProgram;
+    procedure SetParameterByName(ParameterName: AnsiString; const Value: Single);
+    procedure SetVstProgramByName(ProgramName: AnsiString; const Value: TVstProgram);
     procedure SetParameterProperties(const Value: TCustomVstParameterProperties);
     procedure SetParameterCategories(const Value: TCustomVstParameterCategories);
-    procedure SetParameterString(Index: Integer; const Value: string);
+    procedure SetParameterString(Index: Integer; const Value: AnsiString);
     procedure SetVSTParameter(Index: Integer; const Value: Single);
     procedure SetVstPrograms(const Value: TCustomVstPrograms);
   protected
@@ -52,13 +52,13 @@ type
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
-    function  GetCurrentProgramName:string; virtual;
+    function  GetCurrentProgramName: AnsiString; virtual;
     function  GetParameter(Index: Integer): Single; virtual;
     function  Parameter2VSTParameter(const Value: Single; Index : Integer): Single;
     function  VSTParameter2Parameter(const Value: Single; Index : Integer): Single;
     function  HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
     procedure CurrentProgramChanged; virtual;
-    procedure SetCurrentProgramName(AName: string); virtual;
+    procedure SetCurrentProgramName(AName: AnsiString); virtual;
     procedure SetNumParams(const Value: Integer); virtual;
     procedure SetNumPrograms(const Value: Integer); virtual;
     procedure SetParameterDirect(const Index: Integer; Value: Single); virtual;
@@ -94,24 +94,24 @@ type
 
     procedure SetProgramParameters(const ProgramIndex: Integer; Parameters: TDAVSingleDynArray); virtual;
     procedure SetParameterCount(const Value: Integer);
-    function StringToParameter(const Index: Integer; Text: string): Boolean;
+    function StringToParameter(const Index: Integer; Text: AnsiString): Boolean;
 
     property numParams: Integer read FEffect.numParams write SetNumParams stored false;
     property numPrograms: Integer read FEffect.numPrograms write SetNumPrograms stored false;
     property CurrentProgram: Integer read FCurProgram write SetProgram default 0;
-    property CurrentProgramName: string read GetCurrentProgramName write SetCurrentProgramName;
+    property CurrentProgramName: AnsiString read GetCurrentProgramName write SetCurrentProgramName;
     property Chunk: TMemoryStream read FChunkData;
     property Programs: TVstPrograms read FVstPrograms write SetVstPrograms;
-    property ProgramByName[ProgramName: string]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
+    property ProgramByName[ProgramName: AnsiString]: TVstProgram read GetVstProgramByName write SetVstProgramByName;
     property ParameterProperties: TCustomVstParameterProperties read FParameterProperties write SetParameterProperties;
     property ParameterCategories: TCustomVstParameterCategories read FParameterCategories write SetParameterCategories;
     property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
-    property ParameterString[Index: Integer]: string read GetParameterString write SetParameterString;
-    property ParameterByName[ParameterName: string]: Single read GetParameterByName write SetParameterByName;
+    property ParameterString[Index: Integer]: AnsiString read GetParameterString write SetParameterString;
+    property ParameterByName[ParameterName: AnsiString]: Single read GetParameterByName write SetParameterByName;
 
-    property ParameterName[Index: Integer]: string read GetParameterName;
-    property ParameterLabel[Index: Integer]: string read GetParameterLabel;
-    property ParameterDisplay[Index: Integer]: string read GetParameterDisplay;
+    property ParameterName[Index: Integer]: AnsiString read GetParameterName;
+    property ParameterLabel[Index: Integer]: AnsiString read GetParameterLabel;
+    property ParameterDisplay[Index: Integer]: AnsiString read GetParameterDisplay;
     property VSTParameter[Index: Integer]: Single read GetVSTParameter write SetVSTParameter;
 
     property OnParameterChange: TParameterChangeEvent read FOnParameterChangeEvent write FOnParameterChangeEvent;
@@ -128,7 +128,8 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_VSTCustomModule, DAV_VSTBasicModule;
+  {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
+  DAV_VSTCustomModule, DAV_VSTBasicModule;
 
 resourcestring
   RStrUndefined = 'undefined';
@@ -184,17 +185,17 @@ begin
 end;
 {$ENDIF}
 
-function TVSTModuleWithPrograms.GetParameterDisplay(Index: Integer): string;
+function TVSTModuleWithPrograms.GetParameterDisplay(Index: Integer): AnsiString;
 begin
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
-  then Result := RStrUndefined
+  then Result := AnsiString(RStrUndefined)
   else
    begin
     if (effFlagsProgramChunks in FEffect.EffectFlags)
-     then Result := FloatToStr(FOnGetChunkParamEvent(Self, Index))
+     then Result := AnsiString(FloatToStr(FOnGetChunkParamEvent(Self, Index)))
      else if (numPrograms > 0)
-      then Result := FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4)
-      else Result := FloatToStrF(FParameter[Index], ffGeneral, 4, 4);
+      then Result := AnsiString(FloatToStrF(Programs[FCurProgram].Parameter[Index], ffGeneral, 4, 4))
+      else Result := AnsiString(FloatToStrF(FParameter[Index], ffGeneral, 4, 4));
 
     with FParameterProperties[Index] do
      if Assigned(OnCustomParameterDisplay)
@@ -205,10 +206,10 @@ begin
   then SetLength(Result, 8);
 end;
 
-function TVSTModuleWithPrograms.GetParameterLabel(Index: Integer): string;
+function TVSTModuleWithPrograms.GetParameterLabel(Index: Integer): AnsiString;
 begin
  if not (Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count))
-  then Result := RStrUndefined
+  then Result := AnsiString(RStrUndefined)
   else
    begin
     Result := FParameterProperties[Index].Units;
@@ -219,17 +220,17 @@ begin
   then SetLength(Result, 8);
 end;
 
-function TVSTModuleWithPrograms.GetParameterName(Index: Integer): string;
+function TVSTModuleWithPrograms.GetParameterName(Index: Integer): AnsiString;
 begin
  if Assigned(FParameterProperties) and (Index >= 0) and (Index < FParameterProperties.Count)
-  then Result := FParameterProperties[Index].DisplayName
-  else Result := RStrUndefined;
+  then Result := AnsiString(FParameterProperties[Index].DisplayName)
+  else Result := AnsiString(RStrUndefined);
 
  if FTruncateStrings and (Length(Result) > 8)
   then SetLength(Result, 8);
 end;
 
-function TVSTModuleWithPrograms.GetParameterString(Index: Integer): string;
+function TVSTModuleWithPrograms.GetParameterString(Index: Integer): AnsiString;
 begin
  Result := ParameterDisplay[Index] + ' ' + ParameterLabel[Index];  
 end;
@@ -273,14 +274,14 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  Str : string;
+  Str : AnsiString;
 begin
  Result := 0;
 
  if Assigned(Ptr) then
   begin
    if numPrograms > 0
-    then Str := Programs[FCurProgram].DisplayName
+    then Str := AnsiString(Programs[FCurProgram].DisplayName)
     else Str := '';
    if FTruncateStrings and (Length(Str) > 24)
     then SetLength(Str, 24);
@@ -290,7 +291,7 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetParamLabel(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  Str : string;
+  Str : AnsiString;
 begin
  Result := 0;
  if Assigned(Ptr) then
@@ -304,7 +305,7 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetParamDisplay(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  Str : string;
+  Str : AnsiString;
 begin
  Result := 0;
  if Assigned(Ptr) then
@@ -318,7 +319,7 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetParamName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  Str : string;
+  Str : AnsiString;
 begin
  Result := 0;
  if Assigned(Ptr) then
@@ -439,9 +440,9 @@ begin
   else Result := 1;
 end;
 
-function TVSTModuleWithPrograms.StringToParameter(const Index: Integer; Text: string): Boolean;
+function TVSTModuleWithPrograms.StringToParameter(const Index: Integer; Text: AnsiString): Boolean;
 var
-  ProcStr : string;
+  ProcStr : AnsiString;
   CurrVal : Single;
   Indxes  : array [0..1] of Integer;
   Mult    : Single;
@@ -456,9 +457,14 @@ begin
    CurrVal := Parameter[Index];
    if UseDefaultString2ParameterHandler then
     try
+     {$IFDEF DELPHI14_UP}
+     ProcStr := AnsiStrings.Trim(Text);
+     Indxes[0] := AnsiStrings.AnsiPos(Units, ProcStr);
+     {$ELSE}
      ProcStr := Trim(Text);
-
      Indxes[0] := Pos(Units, ProcStr);
+     {$ENDIF}
+
      if Indxes[0] > 0
       then Delete(ProcStr, Indxes[0], Length(Units));
 
@@ -483,6 +489,15 @@ begin
        {$ENDIF}
 
        // process unit extensions
+       {$IFDEF DELPHI14_UP}
+       if AnsiStrings.AnsiPos('k', ProcStr) >= Indxes[1] then Mult := 1E3 else
+       if AnsiStrings.AnsiPos('K', ProcStr) >= Indxes[1] then Mult := 1024 else
+       if AnsiStrings.AnsiPos('G', ProcStr) >= Indxes[1] then Mult := 1048576 else
+       if AnsiStrings.AnsiPos('m', ProcStr) >= Indxes[1] then Mult := 1E-3 else
+       if AnsiStrings.AnsiPos('µ', ProcStr) >= Indxes[1] then Mult := 1E-6 else
+       if AnsiStrings.AnsiPos('c', ProcStr) >= Indxes[1] then Mult := 1E-2
+        else Mult := 1;
+       {$ELSE}
        if Pos('k', ProcStr) >= Indxes[1] then Mult := 1E3 else
        if Pos('K', ProcStr) >= Indxes[1] then Mult := 1024 else
        if Pos('G', ProcStr) >= Indxes[1] then Mult := 1048576 else
@@ -490,10 +505,11 @@ begin
        if Pos('µ', ProcStr) >= Indxes[1] then Mult := 1E-6 else
        if Pos('c', ProcStr) >= Indxes[1] then Mult := 1E-2
         else Mult := 1;
+       {$ENDIF}
 
        ProcStr := Copy(ProcStr, Indxes[0], Indxes[1] - Indxes[0]);
 
-       CurrVal := Mult * StrToFloat(ProcStr);
+       CurrVal := Mult * StrToFloat(string(ProcStr));
       end;
     except
     end;
@@ -508,15 +524,15 @@ end;
 function TVSTModuleWithPrograms.HostCallString2Parameter(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  if Assigned(Ptr)
-  then Result := Integer(StringToParameter(Index, StrPas(PChar(ptr))))
+  then Result := Integer(StringToParameter(Index, StrPas(PAnsiChar(ptr))))
   else Result := 0;
 end;
 
 function TVSTModuleWithPrograms.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr;
   const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  ParamStr  : string;
-  ParamUnit : string;
+  ParamStr  : AnsiString;
+  ParamUnit : AnsiString;
 begin
  Result := inherited HostCallVendorSpecific(Index, Value, ptr, opt);
  if (vcdCockosExtension in CanDos) then
@@ -524,7 +540,7 @@ begin
    if (Index = Integer(effGetParamDisplay)) and
       Assigned(ptr) and (Value >= 0) and (Value < numParams) then
     begin
-     ParamStr := FloatToStrF(Opt, ffGeneral, 5, 5);
+     ParamStr := AnsiString(FloatToStrF(Opt, ffGeneral, 5, 5));
      with ParameterProperties[Value] do
       begin
        if Assigned(OnCustomParameterDisplay)
@@ -535,7 +551,7 @@ begin
        ParamStr := ParamStr + ParamUnit;
       end;
      ParamStr := ParamStr + #0;
-     StrCopy(ptr, PChar(ParamStr));
+     StrPCopy(ptr, ParamStr);
      Result := $BEEF;
     end else
    if (Index = Integer($DEADBEF0)) and Assigned(Ptr) and
@@ -561,12 +577,12 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetProgramNameIndexed(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  str : string;
+  str : AnsiString;
 begin
  Result := 0;
  if (Index >= 0) and (Index < Programs.Count) and Assigned(Ptr) {and (Value = -1)} then
   begin
-   str := Programs[Index].DisplayName;
+   str := AnsiString(Programs[Index].DisplayName);
    if FTruncateStrings and (Length(str) > 24)
     then SetLength(str, 24);
    StrPCopy(ptr, str);
@@ -577,7 +593,7 @@ end;
 
 function TVSTModuleWithPrograms.HostCallGetParameterProperties(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 var
-  str : string;
+  str : AnsiString;
 begin
  if (Index < 0) or (Index >= ParameterProperties.Count) then
   begin
@@ -590,7 +606,7 @@ begin
   with PVstParameterPropertyRecord(ptr)^ do
    begin
     // copy display name
-    str := ParameterProperties[Index].DisplayName + #0;
+    str := AnsiString(ParameterProperties[Index].DisplayName) + #0;
     FillChar(Caption, SizeOf(Caption), 0);
     if Length(Str) > 64 then SetLength(str, 64);
     StrPCopy(@Caption[0], str);
@@ -753,20 +769,20 @@ begin
    do Programs[ProgramIndex].Parameter[i] := Parameters[i];
 end;
 
-procedure TVSTModuleWithPrograms.SetCurrentProgramName(AName: string);
+procedure TVSTModuleWithPrograms.SetCurrentProgramName(AName: AnsiString);
 begin
  if (FCurProgram < numPrograms) and (numPrograms > 0) then
   begin
-   Programs[FCurProgram].DisplayName := AName;
+   Programs[FCurProgram].DisplayName := string(AName);
    FEditorNeedUpdate := True;
   end;
  updateDisplay;
 end;
 
-function TVSTModuleWithPrograms.GetCurrentProgramName: string;
+function TVSTModuleWithPrograms.GetCurrentProgramName: AnsiString;
 begin
  if (FCurProgram < numPrograms) and (numPrograms > 0) and (FCurProgram >= 0)
-  then Result := Programs[FCurProgram].DisplayName
+  then Result := AnsiString(Programs[FCurProgram].DisplayName)
   else Result := '';
 end;
 
@@ -781,7 +797,7 @@ begin
  SetLength(FParameter, Value);
 end;
 
-procedure TVSTModuleWithPrograms.SetVstProgramByName(ProgramName: string;
+procedure TVSTModuleWithPrograms.SetVstProgramByName(ProgramName: AnsiString;
   const Value: TVstProgram);
 begin
  Programs[TranslateProgramNameToIndex(ProgramName)] := Value;
@@ -798,7 +814,7 @@ begin
 end;
 
 procedure TVSTModuleWithPrograms.SetParameterString(Index: Integer;
-  const Value: string);
+  const Value: AnsiString);
 begin
 end;
 
@@ -816,33 +832,33 @@ begin
   then Result := FParameterProperties[Index].VSTParameter2Parameter(Value);
 end;
 
-function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: string): Integer;
+function TVSTModuleWithPrograms.TranslateParameterNameToIndex(ParameterName: AnsiString): Integer;
 begin
  if not Assigned(FParameterProperties) or (FParameterProperties.Count = 0)
   then raise Exception.Create(RStrNoParameterAvailable);
  Result := 0;
  while Result < FParameterProperties.Count do
-  if ParameterName = FParameterProperties[Result].DisplayName
-   then break
-   else inc(Result);
+  if string(ParameterName) = FParameterProperties[Result].DisplayName
+   then Break
+   else Inc(Result);
  if Result = FParameterProperties.Count
-  then raise Exception.Create(RStrUnknownParameterName + ': ' + ParameterName);
+  then raise Exception.Create(RStrUnknownParameterName + ': ' + string(ParameterName));
 end;
 
-function TVSTModuleWithPrograms.TranslateProgramNameToIndex(ProgramName: string): Integer;
+function TVSTModuleWithPrograms.TranslateProgramNameToIndex(ProgramName: AnsiString): Integer;
 begin
  if FVstPrograms.Count = 0
   then raise Exception.Create(RStrNoProgramAvailable);
  Result := 0;
  while Result < FVstPrograms.Count do
-  if ProgramName = FVstPrograms[Result].DisplayName
-   then break
-   else inc(Result);
+  if string(ProgramName) = FVstPrograms[Result].DisplayName
+   then Break
+   else Inc(Result);
  if Result = FVstPrograms.Count
   then raise Exception.Create(RStrUnknownProgramName);
 end;
 
-procedure TVSTModuleWithPrograms.SetParameterByName(ParameterName: string; const Value: Single);
+procedure TVSTModuleWithPrograms.SetParameterByName(ParameterName: AnsiString; const Value: Single);
 begin
  Parameter[TranslateParameterNameToIndex(ParameterName)] := Value;
 end;
@@ -930,7 +946,7 @@ begin
     else Result := FParameter[Index];
 end;
 
-function TVSTModuleWithPrograms.GetParameterByName(ParameterName: string): Single;
+function TVSTModuleWithPrograms.GetParameterByName(ParameterName: AnsiString): Single;
 begin
  Result := Parameter[TranslateParameterNameToIndex(ParameterName)];
 end;
@@ -940,7 +956,7 @@ begin
  Result := Parameter2VSTParameter(GetParameter(Index), Index);
 end;
 
-function TVSTModuleWithPrograms.GetVstProgramByName(ProgramName: string): TVstProgram;
+function TVSTModuleWithPrograms.GetVstProgramByName(ProgramName: AnsiString): TVstProgram;
 begin
  Result := Programs[TranslateProgramNameToIndex(ProgramName)];
 end;

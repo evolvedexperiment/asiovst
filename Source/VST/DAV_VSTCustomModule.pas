@@ -32,7 +32,7 @@ type
   TOnSetPanLawEvent        = procedure(Sender: TObject; const LawType: TVstPanLawType; const Value: Single) of object;
   TGetEditorEvent          = procedure(Sender: TObject; var GUI: TForm; ParentWindow : THandle) of object;
   TOnVendorSpecificEvent   = function(Sender: TObject; const Index: Integer; const Value: TVstIntPtr; const Ptr: pointer; const Float: Single): Integer of object;
-  TOnCanDoEvent            = function(Sender: TObject; const CanDoText: string): Integer of object;
+  TOnCanDoEvent            = function(Sender: TObject; const CanDoText: AnsiString): Integer of object;
   TOnCheckKey              = function(Sender: TObject; Key: Char): Boolean of object;
   TOnEditClose             = procedure(Sender: TObject; var DestroyForm: Boolean) of object;
 
@@ -41,7 +41,7 @@ type
   TCustomVSTModule = class(TBasicVSTModule)
   private
     FAbout                  : string;
-    FVersion                : string;
+    FVersion                : AnsiString;
 
     FOnEditClose            : TOnEditClose;
     FOnEditIdle             : TNotifyEvent;
@@ -112,7 +112,7 @@ type
     FEditorNeedUpdate       : Boolean;
     FEditorRect             : ERect;
     FEditorFormClass        : TFormClass;
-    FEffectName             : string;
+    FEffectName             : AnsiString;
     FInitialDelay           : Integer;
     FNumCategories          : Integer;
     FOnClose                : TNotifyEvent;
@@ -121,14 +121,14 @@ type
     FOnProcessDoublesEx     : TProcessDoubleEvent;
     FOnProcessEx            : TProcessAudioEvent;
     FOnProcessReplacingEx   : TProcessAudioEvent;
-    FProductName            : string;
+    FProductName            : AnsiString;
     FSampleRate             : Single;
 
-    FHostProduct            : string;
-    FHostVendor             : string;
+    FHostProduct            : AnsiString;
+    FHostVendor             : AnsiString;
     FTruncateStrings        : Boolean;
 
-    FVendorName             : string;
+    FVendorName             : AnsiString;
     FVersionMajor           : Integer;
     FVersionMinor           : Integer;
     FVersionRelease         : Integer;
@@ -145,11 +145,11 @@ type
     {$IFDEF UseDelphi}
     procedure ReadState(Reader: TReader); override;
     {$ENDIF}
-    function GetHostProduct: string;
-    function GetHostVendor: string;
-    procedure SetEffectName(const Value: string);
-    procedure SetProductName(const Value: string);
-    procedure SetVendorName(const Value: string);
+    function GetHostProduct: AnsiString;
+    function GetHostVendor: AnsiString;
+    procedure SetEffectName(const Value: AnsiString);
+    procedure SetProductName(const Value: AnsiString);
+    procedure SetVendorName(const Value: AnsiString);
     procedure SetVersionMajor(Value: Integer);
     procedure SetVersionMinor(Value: Integer);
     procedure SetVersionRelease(Value: Integer);
@@ -241,10 +241,10 @@ type
     property EditorFormClass: TFormClass read FEditorFormClass write FEditorFormClass;
 //    property EditorFormClassName: string read GetEditorFormClassName write SetEditorFormClassName;
     property EditorNeedUpdate: Boolean read FEditorNeedUpdate write FEditorNeedUpdate;
-    property EffectName: string read FEffectName write SetEffectName;
+    property EffectName: AnsiString read FEffectName write SetEffectName;
     property Flags: TEffFlags read GetPluginFlags write SetPluginFlags default [effFlagsCanReplacing];
-    property HostProduct: string read GetHostProduct stored False;
-    property HostVendor: string read GetHostVendor stored False;
+    property HostProduct: AnsiString read GetHostProduct stored False;
+    property HostVendor: AnsiString read GetHostVendor stored False;
     property HostVersion: Integer read GetHostVendorVersion stored False;
     property InitialDelay: Integer read FEffect.initialDelay write SetInitialDelay default 0;
     property IORatio: Single read FEffect.ioRatio write FEffect.ioRatio;
@@ -255,7 +255,7 @@ type
     property OffQualities: Integer read FEffect.offQualities write FEffect.offQualities default 0;
     property PlugCategory: TVstPluginCategory read fPlugCategory write fPlugCategory default vpcUnknown;
     property ProcessPrecisition: TProcessPrecision read FProcessPrecisition write FProcessPrecisition default pp32;
-    property ProductName: string read fProductName write SetProductName;
+    property ProductName: AnsiString read FProductName write SetProductName;
     property RealQualities: Integer read FEffect.realQualities write FEffect.realQualities default 0;
     property SampleRate: Single read FSampleRate write SetSampleRate;
     property ShellPlugins: TCustomVstShellPlugins read FVstShellPlugins write SetVstShellPlugins;
@@ -263,8 +263,8 @@ type
     property Tempo: Single read fTempo;
     property TruncateStrings: Boolean read FTruncateStrings write FTruncateStrings default False;
     property UniqueID: AnsiString read GetUniqueID write SetUniqueID;
-    property VendorName: string read fVendorName write SetVendorName;
-    property Version: string read FVersion write FVersion;
+    property VendorName: AnsiString read FVendorName write SetVendorName;
+    property Version: AnsiString read FVersion write FVersion;
     property VersionMajor: Integer read FVersionMajor write SetVersionMajor default 1;
     property VersionMinor: Integer read FVersionMinor write SetVersionMinor default 0;
     property VersionRelease: Integer read FVersionRelease write SetVersionRelease default 0;
@@ -314,7 +314,7 @@ implementation
 {$IFDEF FPC} {$DEFINE PUREPASCAL} {$ENDIF}
 
 uses
-  SysUtils, Math,
+  {$IFDEF DELPHI14_UP}AnsiStrings, {$ENDIF} SysUtils, Math,
   {$IFDEF PUREPASCAL}DAV_BufferMathPascal{$ELSE}DAV_BufferMathAsm{$ENDIF};
 
 constructor TCustomVSTModule.Create(AOwner: TComponent);
@@ -431,7 +431,7 @@ begin
  if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
 end;
 
-function TCustomVSTModule.GetHostProduct: string;
+function TCustomVSTModule.GetHostProduct: AnsiString;
 var
   Text : PAnsiChar;
 begin
@@ -443,7 +443,7 @@ begin
    FillChar(Text^, 256, 0);
    try
     if GetHostProductString(Text)
-     then Result := string(StrPas(Text))
+     then Result := StrPas(Text)
      else Result := 'Unknown';
     if TruncateStrings and (Length(Result) > 64)
      then SetLength(Result, 64);
@@ -456,7 +456,7 @@ begin
  else Result := FHostProduct;
 end;
 
-function TCustomVSTModule.GetHostVendor: string;
+function TCustomVSTModule.GetHostVendor: AnsiString;
 var
   Text : PAnsiChar;
 begin
@@ -468,7 +468,7 @@ begin
    FillChar(Text^, 256, 0);
    try
     if GetHostVendorString(Text)
-     then Result := string(StrPas(Text))
+     then Result := StrPas(Text)
      else Result := 'Unknown';
     if TruncateStrings and (Length(Result) > 64)
      then SetLength(Result, 64);
@@ -488,7 +488,12 @@ var
   hv   : Boolean;
 begin
  inherited;
+ {$IFDEF DELPHI14_UP}
+ hv := (AnsiStrings.AnsiPos('WaveLab', HostProduct) < 0) {or (shortstring(temp) <> 'energyXT')};
+ {$ELSE}
  hv := (Pos('WaveLab', HostProduct) < 0) {or (shortstring(temp) <> 'energyXT')};
+ {$ENDIF}
+
  if hv then hv := (CanDo['shellCategory'] = 1);
 
  if (PlugCategory = vpcShell) and hv then
@@ -967,7 +972,7 @@ begin
   if vcdCockosExtension in FCanDos
    then Result := Integer($BEEF0000)
    else Result := 0;
- if Assigned(FOnCanDo) then FOnCanDo(Self, string(PAnsiChar(ptr)));
+ if Assigned(FOnCanDo) then FOnCanDo(Self, PAnsiChar(ptr));
 end;
 
 function TCustomVSTModule.HostCallGetTailSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
@@ -1300,10 +1305,12 @@ procedure TCustomVSTModule.InitialDelayChanged;
 begin
  FEffect.InitialDelay := FInitialDelay;
 
- if Pos('WaveLab', HostProduct) > 0 then
-  begin
-   IOChanged;
-  end else
+ {$IFDEF DELPHI14_UP}
+ if AnsiStrings.AnsiPos('WaveLab', HostProduct) > 0
+ {$ELSE}
+ if Pos('WaveLab', HostProduct) > 0
+ {$ENDIF}
+  then IOChanged else
  if HostProduct <> 'energyXT' then IOChanged;
 end;
 
@@ -1457,21 +1464,21 @@ begin
  updateDisplay;
 end;
 
-procedure TCustomVSTModule.SetEffectName(const Value: string);
+procedure TCustomVSTModule.SetEffectName(const Value: AnsiString);
 begin
  FEffectName := Value;
  if FTruncateStrings and (Length(FEffectName) > 32)
   then SetLength(FEffectName, 32);
 end;
 
-procedure TCustomVSTModule.SetVendorName(const Value: string);
+procedure TCustomVSTModule.SetVendorName(const Value: AnsiString);
 begin
  FVendorName := Value;
  if FTruncateStrings and (Length(FVendorName) > 64)
   then SetLength(FVendorName, 64);
 end;
 
-procedure TCustomVSTModule.SetProductName(const Value: string);
+procedure TCustomVSTModule.SetProductName(const Value: AnsiString);
 begin
  FProductName := Value;
  if FTruncateStrings and (Length(FProductName) > 64)

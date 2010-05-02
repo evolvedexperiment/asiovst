@@ -175,7 +175,7 @@ type
     function GetOffQualities: LongInt;
     function GetPreset(const ProgramNo: Integer): TFXPreset;
     function GetRealQualities: LongInt;
-    function GetUniqueID: string;
+    function GetUniqueID: AnsiString;
     function GetVersion: Integer;
     function GetVSTCanDos: TVstCanDos;
     procedure InitializeVstEffect;
@@ -233,9 +233,9 @@ type
     function GetCurrentPosition: Integer;
     function GetDestinationBuffer: Integer;
     function GetDisplayName: string; override;
-    function GetEffectName: string;
-    function GetErrorText: string;
-    function GetFriendlyNameString(const StringLength: Integer): string;
+    function GetEffectName: AnsiString;
+    function GetErrorText: AnsiString;
+    function GetFriendlyNameString(const StringLength: Integer): AnsiString;
     function GetIcon: Integer;
     function GetInputProperties(const InputNr: Integer): TVstPinProperties;
     function GetMidiKeyName(var MidiKeyName: TMidiKeyName; const Channel: Integer = 0): Integer;
@@ -243,21 +243,21 @@ type
     function GetMidiProgramName(var MidiProgramName: TMidiProgramName): Integer;
     function GetNumProgramCategories: Integer;
     function GetOutputProperties(const OutputNr: Integer): TVstPinProperties;
-    function GetParamDisplay(index: Integer): string;
-    function GetParameter(index: Integer): Single; virtual;
+    function GetParamDisplay(index: Integer): AnsiString;
+    function GetParameter(index: Integer): Single;
     function GetParameterProperties(const Index: Integer;
       var ParameterProperties: TVstParameterPropertyRecord): Boolean;
-    function GetParamLabel(Index: Integer): string;
-    function GetParamName(Index: Integer): string;
+    function GetParamLabel(Index: Integer): AnsiString;
+    function GetParamName(Index: Integer): AnsiString;
     function GetPlugCategory: TVstPluginCategory;
-    function GetProductString: string;
+    function GetProductString: AnsiString;
     function GetCurrentProgram: Integer;
-    function GetProgramName: string;
-    function GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: string): Integer;
+    function GetProgramName: AnsiString;
+    function GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: AnsiString): Integer;
     function GetRect: TRect;
     function GetSpeakerArrangement(const SpeakerIn, SpeakerOut: PVstSpeakerArrangement): Integer;
     function GetTailSize: Integer;
-    function GetVendorString: string;
+    function GetVendorString: AnsiString;
     function GetVendorVersion: Integer;
     function GetVstVersion: Integer;
     function GetVu: Single;
@@ -279,11 +279,11 @@ type
     function SetInputSpeakerArrangement(const PluginInput: TVstSpeakerArrangement): Boolean;
     function SetOutputSpeakerArrangement(const PluginOutput: TVstSpeakerArrangement): Boolean;
     function SetSpeakerArrangement(const PluginInput, PluginOutput: TVstSpeakerArrangement): Boolean;
-    function ShellGetNextPlugin(var PluginName: string): Integer;
-    function String2Parameter(const Index: Integer; ValueString: string): Boolean;
+    function ShellGetNextPlugin(var PluginName: AnsiString): Integer;
+    function String2Parameter(const Index: Integer; ValueString: AnsiString): Boolean;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
-    function VstCanDo(const CanDoString: string): Integer;
-    function VstDispatch(const opCode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
+    function VstCanDo(const CanDoString: AnsiString): Integer;
+    function VstDispatch(const Opcode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
 
     // load plugin
     function CheckValidPlugin(const FileName: TFilename): Boolean;
@@ -317,7 +317,7 @@ type
     procedure SetPanLaw(const PanLaw: TVstPanLawType; const Gain: Single);
     procedure SetParameter(index: Integer; parameter: Single); virtual;
     procedure SetCurrentProgram(const lValue: Integer);
-    procedure SetProgramName(const newName: string);
+    procedure SetProgramName(const newName: AnsiString);
     procedure SetSampleRate(const Value: Single);
     procedure SetTotalSampleToProcess;
     procedure SetViewPosition(const x, y: Integer);
@@ -340,9 +340,9 @@ type
     {$ENDIF}
 
     property Parameter[Index: Integer]: Single read GetParameter write SetParameter;
-    property ParameterName[Index: Integer]: string read GetParamName;
-    property ParameterDisplay[Index: Integer]: string read GetParamDisplay;
-    property ParameterLabel[Index: Integer]: string read GetParamLabel;
+    property ParameterName[Index: Integer]: AnsiString read GetParamName;
+    property ParameterDisplay[Index: Integer]: AnsiString read GetParamDisplay;
+    property ParameterLabel[Index: Integer]: AnsiString read GetParamLabel;
     property VstOfflineTasks: TOwnedCollection read FVstOfflineTasks write FVstOfflineTasks;
 
     // properties based on TVSTEffect
@@ -355,7 +355,7 @@ type
     property RealQualities: LongInt read GetRealQualities stored False;
     property OffQualities: LongInt read GetOffQualities stored False;
     property IORatio: Single read GetIORatio stored False;
-    property UniqueID: string read GetUniqueID stored False;
+    property UniqueID: AnsiString read GetUniqueID stored False;
     property Version: Integer read GetVersion stored False default -1;
 
     property Active: Boolean read FActive write SetActive default False;
@@ -364,7 +364,7 @@ type
     property DisplayName: string read GetDisplayName write FDisplayName;
     property DLLFileName: TFileName read FVstDllFileName write SetVstDllFileName;
     property EditVisible: Boolean read FEditOpen;
-    property EffectName: string read GetEffectName;
+    property EffectName: AnsiString read GetEffectName;
     {$IFDEF VstHostGUI}
     property GUIControl: TWinControl read FGUIControl;
     property GUIStyle : TGUIStyle read FGUIStyle write SetGUIStyle default gsDefault;
@@ -372,11 +372,11 @@ type
     property Loaded: Boolean read FLoaded stored False;
     property PlugCategory: TVstPluginCategory read FPlugCategory stored False;
     property PluginVstVersion: Integer read FVstVersion stored False default -1;
-    property ProductString: string read GetProductString stored False;
-    property ProgramName: string read GetProgramName write SetProgramName;
+    property ProductString: AnsiString read GetProductString stored False;
+    property ProgramName: AnsiString read GetProgramName write SetProgramName;
     property CurrentProgram: Integer read GetCurrentProgram write SetCurrentProgram default -1;
     property ReplaceOrAccumulate: TReplaceOrAccumulate read FReplaceOrAccumulate write FReplaceOrAccumulate default roa0NotSupported;
-    property VendorString: string read GetVendorString stored False;
+    property VendorString: AnsiString read GetVendorString stored False;
     property VendorVersion: Integer read GetVendorVersion stored False default -1;
     property VSTCanDos: TVstCanDos read GetVSTCanDos stored False;
     property VstEffectPointer: PVstEffect read FVstEffect;
@@ -538,8 +538,8 @@ type
     FOutputLatency      : Integer;
     FParamQuan          : Integer;
     FPlugInDir          : string;
-    FProductString      : string;
-    FVendorString       : string;
+    FProductString      : AnsiString;
+    FVendorString       : AnsiString;
     FVendorVersion      : Integer;
     FHostVersion        : Integer;
     FHostCanDos         : THostCanDos;
@@ -594,9 +594,9 @@ type
     property OnGetTempoAtSamplePosition: TVSTGetTempoAtSamplePositionEvent read FOnGetTempoAtSamplePosition write FOnGetTempoAtSamplePosition;
     property ParameterQuantization : Integer read FParamQuan write FParamQuan default MAXINT;
     property PlugInDir: string read FPlugInDir write FPlugInDir;
-    property ProductString: string read FProductString write FProductString;
+    property ProductString: AnsiString read FProductString write FProductString;
     property Tempo: Single read GetHostTempo write SetHostTempo;
-    property VendorString: string read FVendorString write FVendorString;
+    property VendorString: AnsiString read FVendorString write FVendorString;
     property VendorVersion: Integer read FVendorVersion write FVendorVersion;
     property VstPlugIns: TVstPlugIns read FVstPlugIns write SetVstPlugIns;
     property VstTimeInfo: TVstTimeInformation read FVTI write FVTI;
@@ -630,8 +630,8 @@ var
   AudioMaster : TAudioMasterCallbackFunc;
 
 function String2Language(LanguageString: string): TVstHostLanguage;
-function PlugCategory2String(Category: TVstPluginCategory):string;
-function EffOptions2String(EffOpts: TEffFlags):string;
+function PlugCategory2String(Category: TVstPluginCategory): string;
+function EffOptions2String(EffOpts: TEffFlags): string;
 function CheckValidVstPlugin(const FileName: TFilename): Boolean;
 
 implementation
@@ -800,9 +800,9 @@ var
   VstDllHandle : THandle;
 begin
  Result := False;
- if not FileExists(FileName) then exit; 
+ if not FileExists(FileName) then exit;
  DontRaiseExceptionsAndSetFPUcodeword;
- VstDllHandle := SafeLoadLibrary(PAnsiChar(FileName), 7);
+ VstDllHandle := SafeLoadLibrary(FileName, 7);
  if VstDllHandle <> 0 then
   try
    Result := GetProcAddress(VstDllHandle, 'main') <> nil;
@@ -883,7 +883,7 @@ begin
 
   DontRaiseExceptionsAndSetFPUcodeword;
 
-  case TAudiomasterOpcode(opcode) of
+  case TAudiomasterOpcode(Opcode) of
    audioMasterAutomate                    : begin
                                              if Assigned(Plugin)
                                               then Plugin.AudioMasterAutomate(Index, Opt);
@@ -977,14 +977,14 @@ begin
    audioMasterGetOutputspeakerArrangement : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
    audioMasterGetVendorString             : begin
                                              if Assigned(Host)
-                                              then StrCopy(PAnsiChar(ptr), PAnsiChar(Host.VendorString))
-                                              else StrCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
+                                              then StrPCopy(PAnsiChar(ptr), Host.VendorString)
+                                              else StrPCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
                                              Result := 1;
                                             end;
    audioMasterGetProductString            : try
                                              Result := 1;
                                              if Assigned(Host)
-                                              then StrCopy(PAnsiChar(ptr), PAnsiChar(Host.ProductString))
+                                              then StrPCopy(PAnsiChar(ptr), Host.ProductString)
                                               else
                                                if Assigned(ptr)
                                                 then StrCopy(PAnsiChar(ptr), 'Delphi VST Host')
@@ -1010,7 +1010,7 @@ begin
                                              {$IFDEF VstHostGUI}
                                               with (GHostWindows.Items[GHostWindows.Add(TForm.Create(Host))] as TForm) do
                                                begin
-                                                Caption := PVstWindow(ptr).title;
+                                                Caption := string(PVstWindow(ptr).title);
                                                 Left    := PVstWindow(ptr).xPos;
                                                 Top     := PVstWindow(ptr).xPos;
                                                 Width   := PVstWindow(ptr).Width;
@@ -1032,7 +1032,7 @@ begin
                                              {$ENDIF Debug};
                                             end;
    audioMasterGetDirectory                : if Assigned(Host)
-                                             then Result := LongInt(PAnsiChar(Host.FPlugInDir));
+                                             then Result := LongInt(PAnsiChar(AnsiString(Host.FPlugInDir)));
    audioMasterUpdateDisplay               : if Assigned(Plugin)
                                              then Plugin.AudioMasterUpdateDisplay;
    audioMasterBeginEdit                   : if Assigned(Plugin)
@@ -1049,12 +1049,13 @@ begin
                                                   GHostDialog := TOpenDialog.Create(Host);
                                                   with TOpenDialog(GHostDialog) do
                                                    begin
-                                                    Title := PVstFileSelect(ptr).title;
-                                                    InitialDir := PVstFileSelect(ptr).initialPath;
+                                                    Title := string(PVstFileSelect(ptr).Title);
+                                                    InitialDir := string(PVstFileSelect(ptr).initialPath);
                                                     for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1
-                                                     do Filter := Filter + ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name) +
-                                                                    ' (*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType +
-                                                                    ')|*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType + '|';
+                                                     do Filter := Filter +
+                                                       string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
+                                                       ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
+                                                       ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
                                                     if Execute then
                                                      begin
 //                                                      PVstFileSelect(ptr).returnPath := PAnsiChar(TOpenDialog(GHostDialog).FileName);
@@ -1068,16 +1069,16 @@ begin
                                                   GHostDialog := TSaveDialog.Create(Host);
                                                   with TSaveDialog(GHostDialog) do
                                                    begin
-                                                    Title := PVstFileSelect(ptr).title;
-                                                    InitialDir := PVstFileSelect(ptr).initialPath;
+                                                    Title := string(PVstFileSelect(ptr).title);
+                                                    InitialDir := string(PVstFileSelect(ptr).initialPath);
                                                     for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1
                                                      do Filter := Filter +
-                                                      ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name) +
-                                                      ' (*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType +
-                                                      ')|*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType + '|';
+                                                      string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
+                                                      ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
+                                                      ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
                                                     if Execute then
                                                     begin
-                                                     PVstFileSelect(ptr).returnPath := PAnsiChar(FileName);
+                                                     PVstFileSelect(ptr).returnPath := PAnsiChar(AnsiString(FileName));
                                                      PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
                                                     end;
                                                    end;
@@ -1087,17 +1088,17 @@ begin
                                                  GHostDialog := TOpenDialog.Create(Host);
                                                  with TOpenDialog(GHostDialog) do
                                                   begin
-                                                   Title := PVstFileSelect(ptr).title;
-                                                   InitialDir := PVstFileSelect(ptr).initialPath;
+                                                   Title := string(PVstFileSelect(ptr).title);
+                                                   InitialDir := string(PVstFileSelect(ptr).initialPath);
                                                    for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1 do
                                                     Filter := Filter +
-                                                    ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name) +
-                                                    ' (*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType +
-                                                    ')|*.' + PVstFileType(PVstFileSelect(ptr).fileTypes).dosType + '|';
+                                                      string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
+                                                      ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
+                                                      ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
                                                     if TOpenDialog(GHostDialog).Execute
                                                      then
                                                       begin
-                                                       PVstFileSelect(ptr).returnPath := PAnsiChar(FileName);
+                                                       PVstFileSelect(ptr).returnPath := PAnsiChar(AnsiString(FileName));
                                                        PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
                                                       end;
                                                   end;
@@ -1115,13 +1116,13 @@ begin
                                              if Assigned(GHostDialog) then
                                               case PVstFileSelect(ptr).Command of
                                                kVstFileLoad:
-                                                if TOpenDialog(GHostDialog).Title = PVstFileSelect(ptr).title
+                                                if TOpenDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
                                                  then FreeAndNil(GHostDialog);
                                                kVstFileSave:
-                                                if TSaveDialog(GHostDialog).Title = PVstFileSelect(ptr).title
+                                                if TSaveDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
                                                  then FreeAndNil(GHostDialog);
                                                kVstMultipleFilesLoad:
-                                                if TOpenDialog(GHostDialog).Title = PVstFileSelect(ptr).title
+                                                if TOpenDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
                                                  then FreeAndNil(GHostDialog);
                                                kVstDirectorySelect:
                                                 begin
@@ -1135,7 +1136,7 @@ begin
     audioMasterGetChunkFile               : {$IFDEF Debug} raise Exception.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
    else
     try
-      raise Exception.Create('Check: ' + IntToStr(Integer(opcode)) + ' - ' +
+      raise Exception.Create('Check: ' + IntToStr(Integer(Opcode)) + ' - ' +
                                          IntToStr(index) + ' - ' +
                                          IntToStr(value) + ' - ' +
                                          FloatToStr(opt));
@@ -1833,7 +1834,7 @@ end;
 
 procedure TCustomVstPlugIn.Open;
 var
-  tmp : string;
+  tmp : AnsiString;
 begin
  if not FLoaded then exit;
  if FActive then Close;
@@ -1846,7 +1847,7 @@ begin
  if (Integer(FVstEffect.uniqueID) = 0) then
   with TStringList.Create do
    try
-    while ShellGetNextPlugin(tmp) <> 0 do Add(tmp);
+    while ShellGetNextPlugin(tmp) <> 0 do Add(string(tmp));
    finally
     Free;
    end;
@@ -1922,20 +1923,20 @@ begin
  FPlugCategory := vpcUnknown;
 end;
 
-function TCustomVstPlugIn.VstDispatch(const opCode : TDispatcherOpcode; const Index, Value: Integer; const Pntr: Pointer; const opt: Single): Integer;
+function TCustomVstPlugIn.VstDispatch(const Opcode : TDispatcherOpcode; const Index, Value: Integer; const Pntr: Pointer; const opt: Single): Integer;
 begin
  {$IFDEF VstHostExceptionHandling}
  try
   DontRaiseExceptionsAndSetFPUcodeword;
   if not Assigned(FVstEffect)
    then Result := 0
-   else Result := FVstEffect.Dispatcher(FVstEffect, opCode, Index, Value, Pntr, opt);
+   else Result := FVstEffect.Dispatcher(FVstEffect, Opcode, Index, Value, Pntr, opt);
  except
   Result := 0;
  end;
  {$ELSE}
  DontRaiseExceptionsAndSetFPUcodeword;
- Result := FVstEffect.Dispatcher(FVstEffect, opCode, index, value, pntr, opt);
+ Result := FVstEffect.Dispatcher(FVstEffect, Opcode, index, value, pntr, opt);
  {$ENDIF}
 end;
 
@@ -1987,13 +1988,13 @@ begin
  FProgramNr := Result;
 end;
 
-procedure TCustomVstPlugIn.SetProgramName(const NewName: string);
+procedure TCustomVstPlugIn.SetProgramName(const NewName: AnsiString);
 begin
  if FActive
   then VstDispatch(effSetProgramName, 0, 0, PAnsiChar(NewName));
 end;
 
-function TCustomVstPlugIn.GetProgramName: string;
+function TCustomVstPlugIn.GetProgramName: AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2019,7 +2020,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetParamLabel(index: Integer): string;
+function TCustomVstPlugIn.GetParamLabel(index: Integer): AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2047,7 +2048,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetParamDisplay(index: Integer): string;
+function TCustomVstPlugIn.GetParamDisplay(index: Integer): AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2075,7 +2076,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetParamName(Index: Integer): string;
+function TCustomVstPlugIn.GetParamName(Index: Integer): AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2225,14 +2226,14 @@ begin
    FGUIControl := TForm.Create(nil);
    with TForm(FGUIControl) do
     begin
-     Caption := VendorString + ' - ' + ProductString;
+     Caption := string(VendorString) + ' - ' + string(ProductString);
      BorderStyle := bsToolWindow;
      Position := poDesktopCenter;
      Visible := True;
      OnClose := FormCloseHandler;
      OnActivate := EditActivateHandler;
      OnDeActivate := EditDeactivateHandler;
-     if Caption = ' - ' then Caption := GetEffectName;
+     if Caption = ' - ' then Caption := string(GetEffectName);
     end;
    FGUIControlCreated := True;
    ShowEdit(GUIControl);
@@ -2301,7 +2302,7 @@ begin
   begin
    Name := 'ParamBox'; Parent := Control; param := '';
    for i := 0 to numParams - 1
-    do begin param := GetParamName(i); Items.Add(param); end;
+    do begin param := string(GetParamName(i)); Items.Add(param); end;
    Anchors := [akLeft, akTop, akRight]; Left := 4; Top := 5;
    Width := Control.Width - 4 * Left; Height := 21; ItemHeight := 13;
    TabOrder := 2; OnChange := GuiParameterChangeSelector; Text := ''; ItemIndex := 0;
@@ -2331,8 +2332,8 @@ begin
    Parent := Control;
    Alignment := taCenter;
    for i := 0 to numParams - 1 do
-    if Canvas.TextWidth(GetParamName(i) + ':_') > MaxParamWidth
-     then MaxParamWidth := Canvas.TextWidth(GetParamName(i) + ':_');
+    if Canvas.TextWidth(string(GetParamName(i)) + ':_') > MaxParamWidth
+     then MaxParamWidth := Canvas.TextWidth(string(GetParamName(i)) + ':_');
   finally
    Free;
   end;
@@ -2341,7 +2342,7 @@ begin
   begin
    with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
     begin
-     Parent := Control; Caption := GetParamName(i) + ':'; Tag := i;
+     Parent := Control; Caption := string(GetParamName(i)) + ':'; Tag := i;
      Height := 16; Alignment := taCenter; Left := 2; Top := 2 + i * Height;
     end;
    with TLabel(FGUIElements[FGUIElements.Add(TLabel.Create(Control))]) do
@@ -2380,7 +2381,7 @@ end;
 procedure TCustomVstPlugIn.ControlChangeList(Sender: TObject);
 var
   Lbl    : TLabel;
-  Str    : string;
+  Str    : AnsiString;
   ChrPos : Integer;
 begin
  // ensure sender is TScrollBar
@@ -2401,11 +2402,11 @@ begin
       else Str := GetParamDisplay(Tag);
 
      if Length(Str) < 9
-      then Lbl.Caption := Str
+      then Lbl.Caption := string(Str)
       else
        begin
         Str := GetParamDisplay(Tag);
-        if Pos('.', Str) > 0 then
+        if Pos('.', string(Str)) > 0 then
          begin
           ChrPos := Length(Str) - 1;
           while Str[ChrPos] = '0' do
@@ -2415,9 +2416,9 @@ begin
            end;
          end;
         if GetParamLabel(Tag) <> ''
-         then Lbl.Caption := Str + ' ' + GetParamLabel(Tag)
-         else Lbl.Caption := Str;
-        if Length(Lbl.Caption) > 9 then Lbl.Caption := Str
+         then Lbl.Caption := string(Str) + ' ' + string(GetParamLabel(Tag))
+         else Lbl.Caption := string(Str);
+        if Length(Lbl.Caption) > 9 then Lbl.Caption := string(Str)
        end;
     end;
   except
@@ -2427,7 +2428,7 @@ end;
 procedure TCustomVstPlugIn.GuiParameterChangeList(Sender: TObject);
 var
   Lbl    : TLabel;
-  Str    : string;
+  Str    : AnsiString;
   ChrPos : Integer;
 begin
  // ensure sender is TScrollBar
@@ -2448,11 +2449,11 @@ begin
       else Str := GetParamDisplay(Tag);
 
      if Length(Str) < 9
-      then Lbl.Caption := Str
+      then Lbl.Caption := string(Str)
       else
        begin
         Str := GetParamDisplay(Tag);
-        if Pos('.', Str) > 0 then
+        if Pos('.', string(Str)) > 0 then
          begin
           ChrPos := Length(Str) - 1;
           while Str[ChrPos] = '0' do
@@ -2462,9 +2463,9 @@ begin
            end;
          end;
         if GetParamLabel(Tag) <> ''
-         then Lbl.Caption := Str + ' ' + GetParamLabel(Tag)
-         else Lbl.Caption := Str;
-        if Length(Lbl.Caption) > 9 then Lbl.Caption := Str
+         then Lbl.Caption := string(Str) + ' ' + string(GetParamLabel(Tag))
+         else Lbl.Caption := string(Str);
+        if Length(Lbl.Caption) > 9 then Lbl.Caption := string(Str)
        end;
     end;
   except
@@ -2629,7 +2630,7 @@ begin
  Result := CheckValidVstPlugin(FileName);
 end;
 
-function TCustomVstPlugIn.String2Parameter(const Index: Integer; ValueString: string): Boolean;
+function TCustomVstPlugIn.String2Parameter(const Index: Integer; ValueString: AnsiString): Boolean;
 var
   Temp : PAnsiChar;
 const
@@ -2672,7 +2673,7 @@ begin
   else Result := 0;
 end;
 
-function TCustomVstPlugIn.GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: string): Integer;
+function TCustomVstPlugIn.GetProgramNameIndexed(const Category, Index: Integer; var ProgramName: AnsiString): Integer;
 var
   Temp : PAnsiChar;
 const
@@ -2804,7 +2805,7 @@ begin
  Result := VstDispatch(effSetBypass, 0, Integer(Value));
 end;
 
-function TCustomVstPlugIn.GetEffectName: string;
+function TCustomVstPlugIn.GetEffectName: AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2830,7 +2831,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetErrorText: string;
+function TCustomVstPlugIn.GetErrorText: AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2856,9 +2857,9 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetFriendlyNameString(const StringLength: Integer): string;
+function TCustomVstPlugIn.GetFriendlyNameString(const StringLength: Integer): AnsiString;
 var
-  Variations : array [0..6] of string;
+  Variations : array [0..6] of AnsiString;
   i, j, v    : Integer;
 begin
  Variations[0] := GetEffectName;
@@ -2879,10 +2880,10 @@ begin
    end;
  Result := Variations[v];
  if Result = ''
-  then Result := DisplayName;
+  then Result := AnsiString(DisplayName);
 end;
 
-function TCustomVstPlugIn.GetVendorString: string;
+function TCustomVstPlugIn.GetVendorString: AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2908,7 +2909,7 @@ begin
  end;
 end;
 
-function TCustomVstPlugIn.GetProductString: string;
+function TCustomVstPlugIn.GetProductString: AnsiString;
 var
   Temp : PAnsiChar;
 const
@@ -2989,7 +2990,7 @@ begin
  Result := VstDispatch(effVendorSpecific, index, value, pntr, opt);
 end;
 
-function TCustomVstPlugIn.VstCanDo(const CanDoString: string): Integer;
+function TCustomVstPlugIn.VstCanDo(const CanDoString: AnsiString): Integer;
 begin
  Result := VstDispatch(effCanDo, 0, 0, PAnsiChar(CanDoString));
 end;
@@ -2999,7 +3000,7 @@ begin
  if FActive then Result := VstDispatch(effGetTailSize) else Result := -1;
 end;
 
-function TCustomVstPlugIn.GetUniqueID: string;
+function TCustomVstPlugIn.GetUniqueID: AnsiString;
 begin
  if Assigned(FVstEffect) then
   with FVstEffect^
@@ -3184,7 +3185,7 @@ begin
   then VstDispatch(effGetSpeakerArrangement, 0, Integer(@SpeakerOut), @SpeakerOut);
 end;
 
-function TCustomVstPlugIn.ShellGetNextPlugin(var PluginName: string): Integer;
+function TCustomVstPlugIn.ShellGetNextPlugin(var PluginName: AnsiString): Integer;
 var
   Temp : PAnsiChar;
 const
@@ -3279,9 +3280,9 @@ function TCustomVstPlugIn.AudioMasterSizeWindow(Width, Height: Integer): Boolean
 begin
  Result := False;
  {$IFDEF VstHostGUI}
- if Pos('DASH', UpperCase(VendorString)) > 0
+ if Pos('DASH', UpperCase(string(VendorString))) > 0
   then Result := False else
- if Pos('WUSIK', UpperCase(VendorString)) > 0
+ if Pos('WUSIK', UpperCase(string(VendorString))) > 0
   then Result := False else
  if Assigned(GUIControl) then
   begin
@@ -3373,7 +3374,8 @@ begin
    if ParameterIndex >= 0 then
     begin
      (GUIControl.FindComponent('LbL') as TLabel).Caption  :=
-       RStrValue + ': ' + GetParamDisplay(ParameterIndex) + ' ' + GetParamLabel(ParameterIndex);
+       RStrValue + ': ' + string(GetParamDisplay(ParameterIndex)) + ' ' +
+       string(GetParamLabel(ParameterIndex));
     end;
  end;
 end;
@@ -3590,7 +3592,7 @@ end;
 
 function TCustomVstPlugIn.GetPreset(const ProgramNo: Integer): TFXPreset;
 var
-  str : string;
+  str : AnsiString;
   i   : Integer;
 begin
  SetCurrentProgram(ProgramNo);
@@ -3651,7 +3653,7 @@ end;
 procedure TCustomVstPlugIn.SavePreset(Stream: TStream);
 var
   FXChunkSet : TFXChunkSet;
-  str        : string;
+  str        : AnsiString;
   IntChkSize : Integer;
   ChunkData  : Pointer;
   FXPreset   : TFXPreset;

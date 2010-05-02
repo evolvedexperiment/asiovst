@@ -745,10 +745,10 @@ var
          begin
           Name := ConvertPointer(ImportDescriptor^.Name);
           SetLength(FImportArray, Length(FImportArray) + 1);
-          LoadExternalLibrary(Name);
+          LoadExternalLibrary(string(Name));
           DLLImport := @FImportArray[Length(FImportArray) - 1];
-          DLLImport^.LibraryName := Name;
-          DLLImport^.LibraryHandle := GetExternalLibraryHandle(Name);
+          DLLImport^.LibraryName := string(Name);
+          DLLImport^.LibraryHandle := GetExternalLibraryHandle(string(Name));
           DLLImport^.Entries := nil;
           if ImportDescriptor^.TimeDateStamp = 0
            then ThunkData := ConvertPointer(ImportDescriptor^.FirstThunk)
@@ -774,7 +774,7 @@ var
                 IMPORTED_NAME_OFFSET);
               DLLFunctionImport^.NameOrID := niName;
               DLLFunctionImport^.ID := 0;
-              DLLFunctionImport^.Name := Name;
+              DLLFunctionImport^.Name := string(Name);
               if Name = 'GetModuleFileNameA'
                then FunctionPointer := @GetModuleFileNameA else
               if Name = 'GetModuleFileNameW'
@@ -894,7 +894,7 @@ var
           FunctionIndex := PWordArray(FunctionIndexPointer)^[I];
           FunctionPointer := ConvertPointer(LongWord(ExportDirectory^.AddressOfFunctions));
           FunctionPointer := ConvertPointer(PLongWordArray(FunctionPointer)^[FunctionIndex]);
-          FExportArray[I].Name := FunctionName;
+          FExportArray[I].Name := string(FunctionName);
           FExportArray[I].Index := FunctionIndex;
           if (LongWord(ExportDirectory) < LongWord(FunctionPointer)) and
             (LongWord(FunctionPointer) <

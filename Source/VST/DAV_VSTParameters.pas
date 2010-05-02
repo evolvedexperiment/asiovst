@@ -41,8 +41,8 @@ type
   public
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
-    function CategoryExists(const Value: string): Boolean;
-    function CategoryIndex(const Value: string): Integer;
+    function CategoryExists(const Value: AnsiString): Boolean;
+    function CategoryIndex(const Value: AnsiString): Integer;
     function Add: TCustomVstParameterCategory;
     function Insert(const Index: Integer): TCustomVstParameterCategory;
     procedure CheckParametersInUse;
@@ -54,9 +54,9 @@ type
   TCurveType = (ctLinear, ctLogarithmic, ctExponential, ctFrequencyScale);
 
   TParameterChangeEvent        = procedure(Sender: TObject; const Index: Integer; var Value: Single) of object;
-  TCustomParameterLabelEvent   = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
-  TCustomParameterDisplayEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: string) of object;
-  TString2ParameterEvent       = procedure(Sender: TObject; const Index: Integer; const ParameterString: string; var Value: Single) of object;
+  TCustomParameterLabelEvent   = procedure(Sender: TObject; const Index: Integer; var PreDefined: AnsiString) of object;
+  TCustomParameterDisplayEvent = procedure(Sender: TObject; const Index: Integer; var PreDefined: AnsiString) of object;
+  TString2ParameterEvent       = procedure(Sender: TObject; const Index: Integer; const ParameterString: AnsiString; var Value: Single) of object;
 
   TCustomVstParameterProperty = class(TCollectionItem)
   private
@@ -66,7 +66,7 @@ type
     FCurveFactor         : Single;
     FInvCurveFactor      : Single;
     FDisplayName         : string;
-    FUnits               : string;
+    FUnits               : AnsiString;
     FSmoothingFactor     : Single;
     FCanBeAutomated      : Boolean;
     FV2Properties        : Boolean;
@@ -79,8 +79,8 @@ type
     FStepInteger         : Integer;
     FLargeStepInteger    : Integer;
     FCC                  : Integer;
-    FShortLabel          : string;
-    FCategoryString      : string;
+    FShortLabel          : AnsiString;
+    FCategoryString      : AnsiString;
     FUseDefaultStr2Param : Boolean;
 
     FVSTModule        : TBasicVSTModule;
@@ -90,14 +90,14 @@ type
     FOnStr2Param      : TString2ParameterEvent;
 
     function GetCategoryIndex: Integer;
-    procedure SetShortLabel(const Value: string);
+    procedure SetShortLabel(const Value: AnsiString);
     procedure SetCurve(const Value: TCurveType);
     procedure SetCurveFactor(const Value: Single);
     procedure SetMax(const Value: Single);
     procedure SetMin(const Value: Single);
-    procedure SetUnits(AUnits: string);
+    procedure SetUnits(AUnits: AnsiString);
     procedure SetSmoothingFactor(const Value: Single);
-    procedure SetCategoryString(const Value: string);
+    procedure SetCategoryString(const Value: AnsiString);
     procedure SetCategoryIndex(const Value: Integer);
 
     procedure ReadMaxProperty(Reader: TReader);
@@ -136,7 +136,7 @@ type
     property CC: Integer read FCC write FCC default -1;
     property Curve: TCurveType read FCurve write SetCurve default ctLinear;
     property CurveFactor: Single read FCurveFactor write SetCurveFactor;
-    property Category: string read FCategoryString write SetCategoryString;
+    property Category: AnsiString read FCategoryString write SetCategoryString;
     property CategoryIndex: Integer read GetCategoryIndex write SetCategoryIndex stored false;
     property DisplayName{$IFNDEF FPC}: string read FDisplayName write SetDisplayName{$ENDIF};
     property Flags: TVstParameterPropertiesFlags read FFlags write FFlags default [];
@@ -147,12 +147,12 @@ type
     property Min: Single read FMin write SetMin;
     property MinInteger: Integer read FMinInteger write FMinInteger default 0;
     property ReportVST2Properties: Boolean read FV2Properties write FV2Properties default false;
-    property ShortLabel: string read FShortLabel write SetShortLabel;
+    property ShortLabel: AnsiString read FShortLabel write SetShortLabel;
     property SmallStepFloat: Single read FSmallStepFloat write FSmallStepFloat;
     property SmoothingFactor: Single read FSmoothingFactor write SetSmoothingFactor;
     property StepFloat: Single read FStepFloat write FStepFloat;
     property StepInteger: Integer read FStepInteger write FStepInteger default 1;
-    property Units: string read FUnits write SetUnits;
+    property Units: AnsiString read FUnits write SetUnits;
     property UseDefaultString2ParameterHandler: Boolean read FUseDefaultStr2Param write FUseDefaultStr2Param default False;
     property VSTModule: TBasicVSTModule read FVSTModule write FVSTModule;
     property OnParameterChange: TParameterChangeEvent read FOnParamChange write FOnParamChange;
@@ -275,7 +275,7 @@ begin
    if Assigned(ParameterProperties) then
     begin
      for i := 0 to ParameterProperties.Count - 1 do
-      if ParameterProperties[i].Category = Items[Index].DisplayName
+      if string(ParameterProperties[i].Category) = Items[Index].DisplayName
        then ParameterProperties[i].Category := '';
     end;
  inherited Delete(Index);
@@ -286,26 +286,26 @@ begin
   inherited SetItem(Index, Value);
 end;
 
-function TCustomVstParameterCategories.CategoryExists(const Value: string): Boolean;
+function TCustomVstParameterCategories.CategoryExists(const Value: AnsiString): Boolean;
 var
   i : Integer;
 begin
  Result := False;
  for i := 0 to Count - 1 do
-  if Items[i].DisplayName = Value then
+  if Items[i].DisplayName = string(Value) then
    begin
     Result := True;
     exit;
    end;
 end;
 
-function TCustomVstParameterCategories.CategoryIndex(const Value: string): Integer;
+function TCustomVstParameterCategories.CategoryIndex(const Value: AnsiString): Integer;
 var
   i : Integer;
 begin
  Result := -1;
  for i := 0 to Count - 1 do
-  if Items[i].DisplayName = Value then
+  if Items[i].DisplayName = string(Value) then
    begin
     Result := i;
     exit;
@@ -323,7 +323,7 @@ begin
      begin
       Items[c].FParamsInCat := 0;
       for p := 0 to ParameterProperties.Count - 1 do
-       if ParameterProperties[p].Category = Items[c].DisplayName
+       if string(ParameterProperties[p].Category) = Items[c].DisplayName
         then Inc(Items[c].FParamsInCat);
      end;
 end;
@@ -541,11 +541,11 @@ begin
   with TVSTModuleWithPrograms(VSTModule) do
    if Assigned(ParameterCategories) then
     if (Value > 0) and (Value <= ParameterCategories.Count)
-     then Category := ParameterCategories[Value - 1].DisplayName
+     then Category := AnsiString(ParameterCategories[Value - 1].DisplayName)
      else Category := '';
 end;
 
-procedure TCustomVstParameterProperty.SetCategoryString(const Value: string);
+procedure TCustomVstParameterProperty.SetCategoryString(const Value: AnsiString);
 var
   catndx : Integer;
 begin
@@ -575,7 +575,7 @@ begin
          if catndx < 0 then
           with Add do
            begin
-            DisplayName := FCategoryString;
+            DisplayName := string(FCategoryString);
             Inc(FParamsInCat);
            end else
          if (catndx >= 0) and (catndx < Count - 1)
@@ -622,8 +622,8 @@ begin
  NewDisplayName := Copy(AValue, 1, Math.Min(64, Length(AValue)));
  if NewDisplayName <> FDisplayName then
   begin
-   if (ShortLabel = '') or (ShortLabel = FDisplayName)
-    then ShortLabel := NewDisplayName;
+   if (ShortLabel = '') or (string(ShortLabel) = FDisplayName)
+    then ShortLabel := AnsiString(NewDisplayName);
    FDisplayName := NewDisplayName;
   end;
 end;
@@ -671,7 +671,7 @@ begin
   Result := FDisplayName;
 end;
 
-procedure TCustomVstParameterProperty.SetUnits(AUnits: string);
+procedure TCustomVstParameterProperty.SetUnits(AUnits: AnsiString);
 begin
  if FUnits <> AUnits then
   begin
@@ -685,7 +685,7 @@ begin
  // nothing todo yet;
 end;
 
-procedure TCustomVstParameterProperty.SetShortLabel(const Value: string);
+procedure TCustomVstParameterProperty.SetShortLabel(const Value: AnsiString);
 begin
  if FShortLabel <> Value then
   begin
@@ -736,21 +736,22 @@ end;
 procedure TCustomVstParameterProperties.WriteVSTXML;
 {$IFNDEF FPC}
 var
-  s : string;
-  b : PChar;
+  s : AnsiString;
+  b : PAnsiChar;
 {$ENDIF}
 begin
   {$IFNDEF FPC}
   GetMem(b, 255);
-  GetModuleFileName(Application.Handle, b, 255);
+  GetModuleFileNameA(Application.Handle, b, 255);
   FreeMem(b);
   s := b;
-  WriteVSTXML(Copy(s, 1, Pos('.dll', s) - 1) + '.VSTXML');
+  WriteVSTXML(Copy(string(s), 1, Pos('.dll', string(s)) - 1) + '.VSTXML');
   {$ENDIF}
 end;
 
 procedure TCustomVstParameterProperties.WriteVSTXML(FileName: TFileName);
-var i : Integer;
+var
+  i : Integer;
 begin
   with TStringlist.Create do
   try
@@ -766,8 +767,8 @@ begin
     Add(#9 + #9 + '<!--  Create Global Params================================== -->');
     for i := 0 to Count-1 do
     begin
-      Add(#9 + #9 + '<Param name="' + Items[i].FDisplayName + '"' + #9 +
-                    'shortName="' + Items[i].FShortLabel + '"' + #9 +
+      Add(#9 + #9 + '<Param name="' + string(Items[i].FDisplayName) + '"' + #9 +
+                    'shortName="' + string(Items[i].FShortLabel) + '"' + #9 +
                     'id="' + IntToStr(i)+'"/>');
     end;
     Add(#9 + '</VSTParametersStructure>');

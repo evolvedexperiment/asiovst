@@ -123,7 +123,7 @@ procedure TFmVSTEditor.FormCreate(Sender: TObject);
 var
   theRect             : TRect;
   i                   : Integer;
-  s, p                : string;
+  s, p                : AnsiString;
   MenuItem            : TMenuItem;
   ContainedVSTPlugins : TStringList;
   RS                  : TResourceStream;
@@ -180,7 +180,7 @@ begin
    ShowEdit(PnPlugin);
    Idle;
    EditIdle;
-   Caption :=  GetVendorString + ' ' + GetEffectName;
+   Caption := string(GetVendorString) + ' ' + string(GetEffectName);
   end;
  while MiProgram.Count > 3
   do MiProgram.Delete(3);
@@ -188,13 +188,13 @@ begin
  for i := 0 to Min(64, VstHost[0].numPrograms) - 1 do
   begin
    VstHost[0].GetProgramNameIndexed(-1, i, p);
-   s := IntToStr(i);
+   s := AnsiString(IntToStr(i));
    if i < 10 then s := '0' + s;
    s := s + ' - ' + p;
    MenuItem := TMenuItem.Create(MiProgram);
    with MenuItem do
     begin
-     Caption := s;
+     Caption := string(s);
      RadioItem := True;
      Tag := i;
      OnClick := MiPresetClick;
@@ -384,8 +384,8 @@ begin
       Parent := Control;
       Alignment := taCenter;
       for i := 0 to numParams - 1 do
-       if Canvas.TextWidth(ParameterName[i] + ':_') > MaxParamWidth
-        then MaxParamWidth := Canvas.TextWidth(ParameterName[i] + ':_');
+       if Canvas.TextWidth(string(ParameterName[i]) + ':_') > MaxParamWidth
+        then MaxParamWidth := Canvas.TextWidth(string(ParameterName[i]) + ':_');
      finally
       Free;
      end;
@@ -394,7 +394,7 @@ begin
      begin
       with TGuiLabel(FGUIElements[FGUIElements.Add(TGuiLabel.Create(Control))]) do
        begin
-        Parent := Control; Caption := ParameterName[i] + ':'; Tag := i;
+        Parent := Control; Caption := string(ParameterName[i]) + ':'; Tag := i;
         Width := Canvas.TextWidth(Caption); Alignment := taCenter; Left := 4;
         Height := 16; Top := 8 + i * (4 + Height); AntiAlias := gaaLinear3x;
         Transparent := True;
@@ -431,7 +431,7 @@ end;
 procedure TFmVSTEditor.ControlChangeList(Sender: TObject);
 var
   Lbl    : TGuiLabel;
-  Str    : string;
+  Str    : AnsiString;
   ChrPos : Integer;
 begin
  // ensure sender is TGuiSlider
@@ -452,11 +452,11 @@ begin
       else Str := VstHost[0].ParameterDisplay[Tag];
 
      if Length(Str) < 9
-      then Lbl.Caption := Str
+      then Lbl.Caption := string(Str)
       else
        begin
         Str := VstHost[0].ParameterDisplay[Tag];
-        if Pos('.', Str) > 0 then
+        if Pos('.', string(Str)) > 0 then
          begin
           ChrPos := Length(Str) - 1;
           while Str[ChrPos] = '0' do
@@ -466,9 +466,9 @@ begin
            end;
          end;
         if VstHost[0].ParameterLabel[Tag] <> ''
-         then Lbl.Caption := Str + ' ' + VstHost[0].ParameterLabel[Tag]
-         else Lbl.Caption := Str;
-        if Length(Lbl.Caption) > 9 then Lbl.Caption := Str
+         then Lbl.Caption := string(Str) + ' ' + string(VstHost[0].ParameterLabel[Tag])
+         else Lbl.Caption := string(Str);
+        if Length(Lbl.Caption) > 9 then Lbl.Caption := string(Str)
        end;
     end;
   except

@@ -107,7 +107,11 @@ var
   s      : array[0..1] of Single;
   h, hr  : Single;
   Line   : PRGB24Array;
+  {$IFDEF DELPHI14_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
+  {$ENDIF}
 
 begin
  // Create Background Image
@@ -136,7 +140,11 @@ begin
     end;
   end;
 
+ {$IFDEF DELPHI14_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
   try

@@ -128,7 +128,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Classes, DAV_Math, DAV_Approximations;
+  Math, SysUtils, DAV_Classes, DAV_Common, DAV_Math, DAV_Approximations;
 
 const
   CHalf32 : Single = 0.5;
