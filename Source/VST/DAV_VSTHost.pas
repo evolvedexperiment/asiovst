@@ -151,7 +151,7 @@ type
     FOnAMOfflineStart              : TNotifyEvent;
     FOnAMOfflineWrite              : TVstOfflineEvent;
     FOnAMPinConnected              : TVstPinConnectedEvent;
-    FOnAMSetOutputsampleRate       : TVstSampleRateChangedEvent;
+    FOnAMSetOutputSampleRate       : TVstSampleRateChangedEvent;
     FOnAMUpdateDisplay             : TNotifyEvent;
     FOnAMWantMidi                  : TNotifyEvent;
     FOnProcessEvents               : TVstProcessEventsEvent;
@@ -394,7 +394,7 @@ type
     property OnAudioMasterOfflineStart: TNotifyEvent read FOnAMOfflineStart write FOnAMOfflineStart;
     property OnAudioMasterOfflineWrite: TVstOfflineEvent read FOnAMOfflineWrite write FOnAMOfflineWrite;
     property OnAudioMasterPinConnected: TVstPinConnectedEvent read FOnAMPinConnected write FOnAMPinConnected;
-    property OnAudioMasterSetOutputsampleRate: TVstSampleRateChangedEvent read FOnAMSetOutputsampleRate write FOnAMSetOutputsampleRate;
+    property OnAudioMasterSetOutputSampleRate: TVstSampleRateChangedEvent read FOnAMSetOutputsampleRate write FOnAMSetOutputsampleRate;
     property OnAudioMasterUpdateDisplay: TNotifyEvent read FOnAMUpdateDisplay write FOnAMUpdateDisplay;
     property OnAudioMasterWantMidi: TNotifyEvent read FOnAMWantMidi write FOnAMWantMidi;
     property OnProcessEvents: TVstProcessEventsEvent read FOnProcessEvents write FOnProcessEvents;
@@ -1857,7 +1857,7 @@ begin
   {$IFDEF VstHostCubase4}
   VstDispatch(effSetProcessPrecision);
   VstDispatch(effSetBlockSize, 0, 1024);
-  VstDispatch(effSetSampleRate, 0, 0, nil, FSampleRate);
+  VstDispatch(effSetSampleRate, 0, 0, nil, CDefaultSampleRate);
   {$ENDIF}
 
   VstDispatch(effOpen);
@@ -1875,13 +1875,13 @@ begin
   VstDispatch(effMainsChanged, 0, 0);
 
   if VstCanDo('receiveVstMidiEvent') <> 0
-   then FVSTCanDos := FVSTCanDos + [vcdReceiveVstMidiEvent]
+   then FVSTCanDos := FVSTCanDos + [vcdReceiveVstMidiEvent];
 
   if VstCanDo('sendVstMidiEvent') <> 0
-   then FVSTCanDos := FVSTCanDos + [vcdSendVstMidiEvent]
+   then FVSTCanDos := FVSTCanDos + [vcdSendVstMidiEvent];
 
   if VstCanDo('midiProgramNames') <> 0
-   then FVSTCanDos := FVSTCanDos + [vcdMidiProgramNames]
+   then FVSTCanDos := FVSTCanDos + [vcdMidiProgramNames];
 
   VstDispatch(effSetEditKnobMode, 0, 2);
   {$ENDIF}

@@ -3,8 +3,8 @@ program MiniHost;
 {.$R 'EmbeddedPlugin.res' 'EmbeddedPlugin.rc'}
 
 uses
-  FastMM4,
-  FastMove,
+//  FastMM4,
+//  FastMove,
   Forms,
   MiniHostForm in 'MiniHostForm.pas' {FmMiniHost},
   OptionsForm in 'OptionsForm.pas' {FmOptions},

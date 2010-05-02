@@ -2356,32 +2356,26 @@ begin
 
  ChOfs := FCurrentOutputChannel * 2;
  if FCurrentInputChannel = 0 then
-  begin
-   for i := 0 to bs - 1 do
-    begin
-     FInBufL[i] := 0;
-     FInBufR[i] := 0;
-    end;
-  end
+  for i := 0 to bs - 1 do
+   begin
+    FInBufL[i] := 0;
+    FInBufR[i] := 0;
+   end
  else
-  begin
-   for i := 0 to bs - 1 do
-    begin
-     FInBufL[i] := InputVol * InBuffer[(FCurrentInputChannel - 1) * 2, i];
-     FInBufR[i] := InputVol * InBuffer[(FCurrentInputChannel - 1) * 2 + 1, i];
-    end;
-  end;
+  for i := 0 to bs - 1 do
+   begin
+    FInBufL[i] := InputVol * InBuffer[(FCurrentInputChannel - 1) * 2, i];
+    FInBufR[i] := InputVol * InBuffer[(FCurrentInputChannel - 1) * 2 + 1, i];
+   end;
 
  // fill WavBufL and WavBufR
  if Wavefile.FPMode = wpmPlay then
-  begin
-   for i := 0 to bs - 1 do
-    WaveFile.Process(FWavBufL[i], FWavBufR[i]);
-  end
+  for i := 0 to bs - 1
+   do WaveFile.Process(FWavBufL[i], FWavBufR[i])
  else
   begin
-   assert(Length(FWavBufL) >= bs);
-   assert(Length(FWavBufR) >= bs);
+   Assert(Length(FWavBufL) >= bs);
+   Assert(Length(FWavBufR) >= bs);
    FillChar(FWavBufL[0], bs * SizeOf(Single), 0);
    FillChar(FWavBufR[0], bs * SizeOf(Single), 0);
   end;
