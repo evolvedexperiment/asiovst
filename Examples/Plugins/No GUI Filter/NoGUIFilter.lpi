@@ -37,16 +37,15 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="40">
+    <Units Count="43">
       <Unit0>
         <Filename Value="NoGUIFilter.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
         <TopLine Value="78"/>
-        <CursorPos X="38" Y="115"/>
-        <UsageCount Value="53"/>
+        <CursorPos X="78" Y="112"/>
+        <UsageCount Value="54"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -97,19 +96,17 @@
         <ComponentName Value="VSTFilter"/>
         <HasResources Value="True"/>
         <UnitName Value="FilterModule"/>
-        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
         <TopLine Value="20"/>
         <CursorPos X="13" Y="59"/>
         <UsageCount Value="17"/>
-        <Loaded Value="True"/>
       </Unit6>
       <Unit7>
         <Filename Value="FilterModule.lfm"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="7"/>
-        <SyntaxHighlighter Value="LFM"/>
         <UsageCount Value="9"/>
+        <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit7>
       <Unit8>
         <Filename Value="..\..\..\..\..\..\Programme\Lazarus\lcl\lclintf.pas"/>
@@ -308,134 +305,194 @@
       <Unit37>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
         <UnitName Value="DAV_VSTModule"/>
-        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="66" Y="8"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit37>
       <Unit38>
         <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
         <UnitName Value="DAV_VSTModuleWithDsp"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="38" Y="9"/>
         <UsageCount Value="10"/>
-        <Loaded Value="True"/>
       </Unit38>
       <Unit39>
         <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
         <UnitName Value="DAV_VSTCustomModule"/>
-        <EditorIndex Value="4"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="117" Y="15"/>
+        <TopLine Value="405"/>
+        <CursorPos X="57" Y="431"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit39>
+      <Unit40>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <ComponentName Value="BasicVSTModule"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="DataModule"/>
+        <UnitName Value="DAV_VSTBasicModule"/>
+        <EditorIndex Value="1"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1769"/>
+        <CursorPos X="87" Y="1793"/>
+        <SyntaxHighlighter Value="FreePascal"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Text"/>
+      </Unit40>
+      <Unit41>
+        <Filename Value="..\..\..\Source\DAV_Types.pas"/>
+        <UnitName Value="DAV_Types"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="113"/>
+        <CursorPos X="3" Y="133"/>
+        <SyntaxHighlighter Value="FreePascal"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Text"/>
+      </Unit41>
+      <Unit42>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTEffect.pas"/>
+        <UnitName Value="DAV_VSTEffect"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="286"/>
+        <CursorPos X="19" Y="296"/>
+        <SyntaxHighlighter Value="FreePascal"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+        <DefaultSyntaxHighlighter Value="Text"/>
+      </Unit42>
     </Units>
-    <JumpHistory Count="23" HistoryIndex="22">
+    <JumpHistory Count="29" HistoryIndex="28">
       <Position1>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="16" Column="15" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <Caret Line="1621" Column="87" TopLine="1599"/>
       </Position1>
       <Position2>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="17" Column="29" TopLine="2"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <Caret Line="1623" Column="87" TopLine="1599"/>
       </Position2>
       <Position3>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="7" Column="20" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <Caret Line="1745" Column="29" TopLine="1725"/>
       </Position3>
       <Position4>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="23" Column="54" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <Caret Line="1753" Column="64" TopLine="1725"/>
       </Position4>
       <Position5>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="37" Column="3" TopLine="20"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <Caret Line="1789" Column="37" TopLine="1769"/>
       </Position5>
       <Position6>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="64" Column="22" TopLine="55"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTBasicModule.pas"/>
+        <Caret Line="1791" Column="87" TopLine="1769"/>
       </Position6>
       <Position7>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="64" Column="22" TopLine="55"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="3" Column="30" TopLine="1"/>
       </Position7>
       <Position8>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="93" Column="27" TopLine="73"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="168" Column="15" TopLine="149"/>
       </Position8>
       <Position9>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="38" Column="5" TopLine="16"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="171" Column="32" TopLine="149"/>
       </Position9>
       <Position10>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="307" Column="111" TopLine="287"/>
       </Position10>
       <Position11>
-        <Filename Value="FilterModule.pas"/>
-        <Caret Line="38" Column="28" TopLine="22"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="404" Column="41" TopLine="384"/>
       </Position11>
       <Position12>
-        <Filename Value="FilterModule.pas"/>
-        <Caret Line="8" Column="23" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="408" Column="26" TopLine="384"/>
       </Position12>
       <Position13>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModule.pas"/>
-        <Caret Line="8" Column="66" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="415" Column="54" TopLine="384"/>
       </Position13>
       <Position14>
-        <Filename Value="..\..\..\Source\VST\DAV_VSTModuleWithDsp.pas"/>
-        <Caret Line="9" Column="38" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="420" Column="58" TopLine="384"/>
       </Position14>
       <Position15>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="14" Column="6" TopLine="3"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="421" Column="35" TopLine="384"/>
       </Position15>
       <Position16>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="102" Column="49" TopLine="72"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="422" Column="29" TopLine="384"/>
       </Position16>
       <Position17>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="107" Column="15" TopLine="89"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1244" Column="51" TopLine="1224"/>
       </Position17>
       <Position18>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1247" Column="27" TopLine="1224"/>
       </Position18>
       <Position19>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="107" Column="8" TopLine="98"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1249" Column="25" TopLine="1224"/>
       </Position19>
       <Position20>
-        <Filename Value="FilterModule.pas"/>
-        <Caret Line="62" Column="3" TopLine="50"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1250" Column="24" TopLine="1224"/>
       </Position20>
       <Position21>
-        <Filename Value="FilterModule.pas"/>
-        <Caret Line="59" Column="12" TopLine="42"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1274" Column="48" TopLine="1253"/>
       </Position21>
       <Position22>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="22" Column="31" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position22>
       <Position23>
-        <Filename Value="NoGUIFilter.lpr"/>
-        <Caret Line="115" Column="38" TopLine="79"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="101" Column="38" TopLine="81"/>
       </Position23>
+      <Position24>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="123" Column="26" TopLine="103"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="164" Column="35" TopLine="144"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="307" Column="23" TopLine="287"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="309" Column="38" TopLine="288"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTCustomModule.pas"/>
+        <Caret Line="425" Column="54" TopLine="405"/>
+      </Position29>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="8"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="NoGUIFilter"/>
+      <Filename Value="NoGUIFilter.x64.dll"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="..\..\..\Source\"/>

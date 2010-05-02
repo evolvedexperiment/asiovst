@@ -311,8 +311,8 @@ type
     procedure MainsChanged(const IsOn: Boolean);
     procedure Process(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure ProcessAudio(Inputs, Outputs: PPSingle; SampleFrames: Integer);
-    procedure ProcessDoubleReplacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
-    procedure ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
+    procedure Process64Replacing(Inputs, Outputs: ppDouble; SampleFrames: Integer); virtual;
+    procedure Process32Replacing(Inputs, Outputs: PPSingle; SampleFrames: Integer); virtual;
     procedure SaveBank(FileName: TFileName); overload;
     procedure SaveBank(Stream: TStream); overload;
     procedure SavePreset(FileName: TFileName); overload;
@@ -1971,16 +1971,16 @@ begin
   then FVstEffect.Process(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVstPlugIn.ProcessReplacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
+procedure TCustomVstPlugIn.Process32Replacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 begin
  if FVstEffect <> nil
-  then FVstEffect.ProcessReplacing(FVstEffect, Inputs, Outputs, SampleFrames);
+  then FVstEffect.Process32Replacing(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
-procedure TCustomVstPlugIn.ProcessDoubleReplacing(Inputs, Outputs: ppDouble; SampleFrames: Integer);
+procedure TCustomVstPlugIn.Process64Replacing(Inputs, Outputs: ppDouble; SampleFrames: Integer);
 begin
  if FVstEffect <> nil
-  then FVstEffect.ProcessDoubleReplacing(FVstEffect, Inputs, Outputs, SampleFrames);
+  then FVstEffect.Process64Replacing(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
 procedure TCustomVstPlugIn.SetParameter(Index:Integer; Parameter: Single);
@@ -4014,7 +4014,7 @@ begin
  if FVstEffect <> nil then
   with FVstEffect^ do
    if effFlagsCanReplacing in EffectFlags
-    then ProcessReplacing(FVstEffect, Inputs, Outputs, SampleFrames)
+    then Process32Replacing(FVstEffect, Inputs, Outputs, SampleFrames)
     else Process(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 

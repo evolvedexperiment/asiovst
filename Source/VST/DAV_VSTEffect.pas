@@ -293,29 +293,29 @@ type
   TVstCanDos = set of TVstCanDo;
 
   TVSTEffect = record
-    Magic            : TChunkName;           // must be CEffectMagic ('VstP')
-    Dispatcher       : TDispatcherFunc;
-    Process          : TProcessProc;         // Not used since 2.4, use ProcessReplacing instead!
-    SetParameter     : TSetParameterProc;
-    GetParameter     : TGetParameterFunc;
-    numPrograms      : LongInt;
-    numParams        : LongInt;              // all programs are assumed to have numParams parameters
-    numInputs        : LongInt;              //
-    numOutputs       : LongInt;              //
-    EffectFlags      : TEffFlags;            // see constants
-    ReservedForHost  : Pointer;              // reserved for Host, must be 0 (Dont use it)
-    Resvd2           : Pointer;              // reserved for Host, must be 0 (Dont use it)
-    InitialDelay     : LongInt;              // for algorithms which need input in the first place
-    RealQualities    : LongInt;              // number of realtime qualities (0: realtime)
-    OffQualities     : LongInt;              // number of offline qualities (0: realtime only)
-    IORatio          : Single;               // input samplerate to output samplerate ratio, not used yet
-    AudioEffectPtr   : Pointer;              // for class access (see AudioEffect.hpp), MUST be 0 else!
-    User             : Pointer;              // user access
-    UniqueID         : TChunkName;           // pls choose 4 character as unique as possible. This is used to identify an effect for save+load
-    Version          : LongInt;              // (example 1100 for version 1.1.0.0)
-    ProcessReplacing : TProcessProc;
-    ProcessDoubleReplacing: TProcessDoubleProc;
-    Future           : array[0..55] of Byte; // pls zero
+    Magic              : TChunkName;           // must be CEffectMagic ('VstP')
+    Dispatcher         : TDispatcherFunc;
+    Process            : TProcessProc;         // Not used since 2.4, use ProcessReplacing instead!
+    SetParameter       : TSetParameterProc;
+    GetParameter       : TGetParameterFunc;
+    numPrograms        : LongInt;
+    numParams          : LongInt;              // all programs are assumed to have numParams parameters
+    numInputs          : LongInt;              //
+    numOutputs         : LongInt;              //
+    EffectFlags        : TEffFlags;            // see constants
+    ReservedForHost    : Pointer;              // reserved for Host, must be 0 (Dont use it)
+    Resvd2             : Pointer;              // reserved for Host, must be 0 (Dont use it)
+    InitialDelay       : LongInt;              // for algorithms which need input in the first place
+    RealQualities      : LongInt;              // number of realtime qualities (0: realtime)
+    OffQualities       : LongInt;              // number of offline qualities (0: realtime only)
+    IORatio            : Single;               // input samplerate to output samplerate ratio, not used yet
+    AudioEffectPtr     : Pointer;              // for class access (see AudioEffect.hpp), MUST be 0 else!
+    User               : Pointer;              // user access
+    UniqueID           : TChunkName;           // pls choose 4 character as unique as possible. This is used to identify an effect for save+load
+    Version            : LongInt;              // (example 1100 for version 1.1.0.0)
+    Process32Replacing : TProcessProc;
+    Process64Replacing : TProcessDoubleProc;
+    Future             : array[0..55] of Byte; // pls zero
   end;
 
   TVSTEventType = ( etNone,

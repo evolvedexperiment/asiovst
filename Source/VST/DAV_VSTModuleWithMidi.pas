@@ -29,8 +29,8 @@ type
     destructor Destroy; override;
 
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
-    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
-    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
     function HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
     function HostCallGetCurrentMidiProgram(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
@@ -144,24 +144,24 @@ begin
   end;
 end;
 
-procedure TVSTModuleWithMidi.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 begin
  inherited;
  if FMidiEvent.numEvents > 0 then
   begin
-   {$IFDEF Debug} AddLogMessage('HostCallProcessReplacing - MIDI Processing'); {$ENDIF}
+   {$IFDEF Debug} AddLogMessage('HostCallProcess32Replacing - MIDI Processing'); {$ENDIF}
    SendVstEventsToHost(FMidiEvent);
    FMidiEvent.numEvents := 0;
   end;
 end;
 
-procedure TVSTModuleWithMidi.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+procedure TVSTModuleWithMidi.HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
 var
   Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
  inherited;
- {$IFDEF Debug} AddLogMessage('HostCallProcessDoubleReplacing - MIDI Processing'); {$ENDIF}
+ {$IFDEF Debug} AddLogMessage('HostCallProcess64Replacing - MIDI Processing'); {$ENDIF}
  if FMidiEvent.numEvents > 0 then
   begin
    SendVstEventsToHost(FMidiEvent);

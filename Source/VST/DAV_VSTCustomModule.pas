@@ -96,9 +96,9 @@ type
     procedure SetVstShellPlugins(const Value: TCustomVstShellPlugins);
     procedure SetKeysRequired(const Value: Boolean);
     procedure ReadOnlyString(s: string); virtual;
-    procedure SetOnProcessDoublesEx(const Value: TProcessDoubleEvent);
     procedure SetOnProcessEx(const Value: TProcessAudioEvent);
-    procedure SetOnProcessReplacingEx(const Value: TProcessAudioEvent);
+    procedure SetOnProcess32ReplacingEx(const Value: TProcessAudioEvent);
+    procedure SetOnProcess64ReplacingEx(const Value: TProcessDoubleEvent);
     procedure SetSampleRate(const Value: Single);
     procedure SetPluginFlags(newFlags : TEffFlags);
     procedure SetInitialDelay(const Delay: Integer);
@@ -118,9 +118,9 @@ type
     FOnClose                : TNotifyEvent;
     FOnEditOpen             : TGetEditorEvent;
     FOnOpen                 : TNotifyEvent;
-    FOnProcessDoublesEx     : TProcessDoubleEvent;
+    FOnProcess64ReplacingEx     : TProcessDoubleEvent;
     FOnProcessEx            : TProcessAudioEvent;
-    FOnProcessReplacingEx   : TProcessAudioEvent;
+    FOnProcess32ReplacingEx   : TProcessAudioEvent;
     FProductName            : AnsiString;
     FSampleRate             : Single;
 
@@ -159,15 +159,15 @@ type
     procedure NumInputsChanged; virtual;
     procedure NumOutputsChanged; virtual;
     procedure EffectFlagsChanged; virtual;
-    procedure OnProcessDoublesExChanged; virtual;
+    procedure OnProcess64ReplacingExChanged; virtual;
     procedure OnProcessExChanged; virtual;
-    procedure OnProcessReplacingExChanged; virtual;
+    procedure OnProcess32ReplacingExChanged; virtual;
     procedure InitialDelayChanged; virtual;
 
     function HostCallDispatchEffect(const opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; override;
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
-    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
-    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); override;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); override;
 
     // HostCalls, protected methods that can be overwritten, but shall remain
     // hidden, since the user should not be able to call them directly!
@@ -304,8 +304,8 @@ type
     property OnOutputProperties: TOnGetChannelPropertiesEvent read FOnGetOutputProperties write FOnGetOutputProperties;
 
     property OnProcess: TProcessAudioEvent read FOnProcessEx write SetOnProcessEx;
-    property OnProcessReplacing: TProcessAudioEvent read FOnProcessReplacingEx write SetOnProcessReplacingEx;
-    property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcessDoublesEx write SetOnProcessDoublesEx;
+    property OnProcessReplacing: TProcessAudioEvent read FOnProcess32ReplacingEx write SetOnProcess32ReplacingEx;
+    property OnProcessDoubleReplacing: TProcessDoubleEvent read FOnProcess64ReplacingEx write SetOnProcess64ReplacingEx;
   end;
 
 
@@ -401,34 +401,34 @@ begin
  {$IFDEF Debug} AddLogMessage('HostCallProcess'); {$ENDIF}
  if Assigned(FOnProcessEx)
   then FOnProcessEx(Ins, Outs, SampleFrames)
-  else if Assigned(FOnProcessReplacingEx) then
+  else if Assigned(FOnProcess32ReplacingEx) then
    begin
     SetLength(OutsTmp, FEffect.NumOutputs, SampleFrames);
     ClearArrays(OutsTmp, FEffect.NumOutputs, SampleFrames);
-    FOnProcessReplacingEx(Ins, OutsTmp, SampleFrames);
+    FOnProcess32ReplacingEx(Ins, OutsTmp, SampleFrames);
     for i := 0 to FEffect.NumOutputs - 1 do
      for j := 0 to SampleFrames - 1
       do Outs[i, j] := Outs[i, j] + OutsTmp[i, j];
    end;
 end;
 
-procedure TCustomVSTModule.HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 var
   Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
   Outs : TDAVArrayOfSingleDynArray absolute Outputs;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcessReplacing'); {$ENDIF}
- if Assigned(FOnProcessReplacingEx)
-  then FOnProcessReplacingEx(Ins, Outs, SampleFrames);
+ {$IFDEF Debug} AddLogMessage('HostCallProcess32Replacing'); {$ENDIF}
+ if Assigned(FOnProcess32ReplacingEx)
+  then FOnProcess32ReplacingEx(Ins, Outs, SampleFrames);
 end;
 
-procedure TCustomVSTModule.HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
+procedure TCustomVSTModule.HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer);
 var
   Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcessDoubleReplacing'); {$ENDIF}
- if Assigned(FOnProcessDoublesEx) then FOnProcessDoublesEx(Ins, Outs,SampleFrames);
+ {$IFDEF Debug} AddLogMessage('HostCallProcess64Replacing'); {$ENDIF}
+ if Assigned(FOnProcess64ReplacingEx) then FOnProcess64ReplacingEx(Ins, Outs,SampleFrames);
 end;
 
 function TCustomVSTModule.GetHostProduct: AnsiString;
@@ -1222,13 +1222,13 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.SetOnProcessDoublesEx(
+procedure TCustomVSTModule.SetOnProcess64ReplacingEx(
   const Value: TProcessDoubleEvent);
 begin
- if @FOnProcessDoublesEx <> @Value then
+ if @FOnProcess64ReplacingEx <> @Value then
   begin
-   FOnProcessDoublesEx := Value;
-   OnProcessDoublesExChanged;
+   FOnProcess64ReplacingEx := Value;
+   OnProcess64ReplacingExChanged;
   end;
 end;
 
@@ -1241,13 +1241,13 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.SetOnProcessReplacingEx(
+procedure TCustomVSTModule.SetOnProcess32ReplacingEx(
   const Value: TProcessAudioEvent);
 begin
- if @FOnProcessReplacingEx <> @Value then
+ if @FOnProcess32ReplacingEx <> @Value then
   begin
-   FOnProcessReplacingEx := Value;
-   OnProcessReplacingExChanged;
+   FOnProcess32ReplacingEx := Value;
+   OnProcess32ReplacingExChanged;
   end;
 end;
 
@@ -1260,7 +1260,7 @@ begin
   end;
 end;
 
-procedure TCustomVSTModule.OnProcessDoublesExChanged;
+procedure TCustomVSTModule.OnProcess64ReplacingExChanged;
 begin
  // nothing todo here
 end;
@@ -1270,7 +1270,7 @@ begin
  // nothing todo here
 end;
 
-procedure TCustomVSTModule.OnProcessReplacingExChanged;
+procedure TCustomVSTModule.OnProcess32ReplacingExChanged;
 begin
  // nothing todo here
 end;

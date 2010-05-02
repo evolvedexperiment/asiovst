@@ -542,7 +542,7 @@ begin
     end;
 
    // process
-   VSTHost[0].ProcessReplacing(@FVSTInBuffer[0],
+   VSTHost[0].Process32Replacing(@FVSTInBuffer[0],
      @FVSTOutBuffer[0], ASIOHost.BufferSize);
 
    // copy output data

@@ -50,8 +50,8 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleProcessDouble(const Inputs, Outputs: TDAVArrayOfDoubleDynArray; const SampleFrames: Integer);
     procedure ParamVolumeChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParamHarmDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParamHarmLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParamHarmDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParamHarmLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FChebysheWaveshaper : TChebyshevWaveshaper;
     FVolume             : Single;
@@ -123,7 +123,7 @@ begin
 end;
 
 procedure TChebyshevWaveshaperDataModule.ParamHarmLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] > 0 then PreDefined := 'dB (+)' else
  if Parameter[Index] < 0
@@ -132,7 +132,7 @@ begin
 end;
 
 procedure TChebyshevWaveshaperDataModule.ParamHarmDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 var
   Val : Single;
 begin

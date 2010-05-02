@@ -229,8 +229,8 @@ type
     function HostCallGetNumMidiOutputChannels  (const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
 
     procedure HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcessReplacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
-    procedure HostCallProcessDoubleReplacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess32Replacing(const Inputs, Outputs: PPSingle; const SampleFrames: Integer); virtual; abstract;
+    procedure HostCallProcess64Replacing(const Inputs, Outputs: PPDouble; const SampleFrames: Integer); virtual; abstract;
 
     function  HostCallDispatchEffect(const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr; virtual;
     function  HostCallGetParameter(const Index: Integer): Single; virtual; abstract;
@@ -278,24 +278,24 @@ procedure SetParameterFuncUserPtr(const Effect: PVSTEffect; const Index: Integer
 // checks (just in case)
 procedure ProcessFuncCheck(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessReplacingFuncCheck(const Effect: PVSTEffect;
+procedure Process32ReplacingFuncCheck(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessDoubleReplacingFuncCheck(const Effect: PVSTEffect;
+procedure Process64ReplacingFuncCheck(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 
 procedure ProcessFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
+procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessDoubleReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
+procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 
 {$IFNDEF UseAudioEffectPtr}
 procedure ProcessFuncUserPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessReplacingFuncUserPtr(const Effect: PVSTEffect;
+procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
-procedure ProcessDoubleReplacingFuncUserPtr(const Effect: PVSTEffect;
+procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 {$ENDIF}
 
@@ -413,17 +413,17 @@ begin
    numOutputs      := 2;
 
    {$IFNDEF UseAudioEffectPtr}
-   Dispatcher             := @DispatchEffectFuncUserPtr;
-   SetParameter           := @SetParameterFuncUserPtr;
-   GetParameter           := @GetParameterFuncUserPtr;
+   Dispatcher         := @DispatchEffectFuncUserPtr;
+   SetParameter       := @SetParameterFuncUserPtr;
+   GetParameter       := @GetParameterFuncUserPtr;
    {$ELSE}
-   Dispatcher             := @DispatchEffectFuncAudioEffectPtr;
-   SetParameter           := @SetParameterFuncAudioEffectPtr;
-   GetParameter           := @GetParameterFuncAudioEffectPtr;
+   Dispatcher         := @DispatchEffectFuncAudioEffectPtr;
+   SetParameter       := @SetParameterFuncAudioEffectPtr;
+   GetParameter       := @GetParameterFuncAudioEffectPtr;
    {$ENDIF}
-   Process                := @ProcessFuncCheck;
-   ProcessReplacing       := @ProcessReplacingFuncCheck;
-   ProcessDoubleReplacing := @ProcessDoubleReplacingFuncCheck;
+   Process            := @ProcessFuncCheck;
+   Process32Replacing := @Process32ReplacingFuncCheck;
+   Process64Replacing := @Process64ReplacingFuncCheck;
   end;
 
  FWinAmpDspModule    := nil;
@@ -461,7 +461,7 @@ var
 {$ENDIF}  
 begin
  FAudioMaster := AM;
- if FAudioMaster(nil, audioMasterVersion, 0, 0, nil, 0) = 0 then
+ if FAudioMaster(nil, amVersion, 0, 0, nil, 0) = 0 then
    raise EVstError.Create('AudioMaster Error');
 
  {$IFNDEF UseAudioEffectPtr}
@@ -499,7 +499,7 @@ begin
  Vers := 1;
  if Assigned(FAudioMaster) then
   begin
-   Vers := FAudioMaster(@FEffect, audioMasterVersion, 0, 0, nil, 0);
+   Vers := FAudioMaster(@FEffect, amVersion, 0, 0, nil, 0);
    if Vers = 0 then Vers := 1;
   end;
 
@@ -509,13 +509,13 @@ end;
 function TBasicVSTModule.GetCurrentUniqueId: TChunkName;
 begin
  if Assigned(FAudioMaster)
-  then Result := TChunkName(FAudioMaster(@FEffect, audioMasterCurrentId, 0, 0, nil, 0))
+  then Result := TChunkName(Integer(FAudioMaster(@FEffect, amCurrentId, 0, 0, nil, 0)))
   else Result := #0#0#0#0;
 end;
 
 procedure TBasicVSTModule.MasterIdle;
 begin
- if Assigned(FAudioMaster) then FAudioMaster(@FEffect, audioMasterIdle, 0, 0, nil, 0);
+ if Assigned(FAudioMaster) then FAudioMaster(@FEffect, amIdle, 0, 0, nil, 0);
 end;
 
 function TBasicVSTModule.IsInputConnected(const Input: Integer): Boolean;
@@ -524,7 +524,7 @@ var
 begin
  Ret := 0;
  if Assigned(FAudioMaster)
-  then Ret := FAudioMaster(@FEffect, audioMasterPinConnected, Input, 0, nil, 0);
+  then Ret := FAudioMaster(@FEffect, amPinConnected, Input, 0, nil, 0);
 
  Result := (Ret = 0);
 end;
@@ -535,7 +535,7 @@ var
 begin
  Ret := 0;
  if Assigned(FAudioMaster)
-  then Ret := FAudioMaster(@FEffect, audioMasterPinConnected, Output, 1, nil, 0);
+  then Ret := FAudioMaster(@FEffect, amPinConnected, Output, 1, nil, 0);
 
  Result := (Ret = 0);
 end;
@@ -543,74 +543,74 @@ end;
 procedure TBasicVSTModule.WantEvents(const Filter: Integer);
 begin
  if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, audioMasterWantMidi, 0, filter, nil, 0);
+  then FAudioMaster(@FEffect, amWantMidi, 0, filter, nil, 0);
 end;
 
 function TBasicVSTModule.GetTimeInfo(const Filter: Integer): PVstTimeInfo;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVstTimeInfo(FAudioMaster (@FEffect, audioMasterGetTime, 0, filter, nil, 0))
+  then Result := PVstTimeInfo(FAudioMaster (@FEffect, amGetTime, 0, filter, nil, 0))
   else Result := nil;
 end;
 
 procedure TBasicVSTModule.SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo);
 begin
  if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, audioMasterSetTime, 0, Filter, @VstTimeInfo, 0);
+  then FAudioMaster(@FEffect, amSetTime, 0, Filter, @VstTimeInfo, 0);
 end;
 
 function TBasicVSTModule.TempoAt(const Pos: Integer): Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterTempoAt, 0, pos, nil, 0)
+  then Result := FAudioMaster(@FEffect, amTempoAt, 0, pos, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.SendVstEventsToHost(var Events: TVstEvents): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterProcessEvents, 0, 0, @Events, 0) = 1
+  then Result := FAudioMaster(@FEffect, amProcessEvents, 0, 0, @Events, 0) = 1
   else Result := False;
 end;
 
 function TBasicVSTModule.GetNumAutomatableParameters: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetNumAutomatableParameters, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetNumAutomatableParameters, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer; const Value: Single);
 begin
  if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, audioMasterAutomate, Index, 0, nil, Value);
+  then FAudioMaster(@FEffect, amAutomate, Index, 0, nil, Value);
 end;
 
 function TBasicVSTModule.GetParameterQuantization: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetParameterQuantization, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetParameterQuantization, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.GetInputLatency: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetInputLatency, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetInputLatency, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.GetOutputLatency: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetOutputLatency, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetOutputLatency, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.GetPreviousPlug(const Input: Integer): PVSTEffect;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetPreviousPlug, 0, Input, nil, 0))
+  then Result := PVSTEffect(FAudioMaster(@FEffect, amGetPreviousPlug, 0, Input, nil, 0))
   else Result := nil;
 end;
 
@@ -622,90 +622,90 @@ end;
 function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVSTEffect(FAudioMaster(@FEffect, audioMasterGetNextPlug, 0, Output, nil, 0))
+  then Result := PVSTEffect(FAudioMaster(@FEffect, amGetNextPlug, 0, Output, nil, 0))
   else Result := nil;
 end;
 
 function TBasicVSTModule.WillProcessReplacing: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterWillReplaceOrAccumulate, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amWillReplaceOrAccumulate, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.GetCurrentProcessLevel: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetCurrentProcessLevel, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetCurrentProcessLevel, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.GetAutomationState: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetAutomationState, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetAutomationState, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterOfflineRead, Integer(ReadSource), Integer(Option), @Offline, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amOfflineRead, Integer(ReadSource), Integer(Option), @Offline, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterOfflineWrite, 0, Integer(Option), @Offline, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amOfflineWrite, 0, Integer(Option), @Offline, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles, numNewAudioFiles: Integer): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.OfflineGetCurrentPass: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := Integer(FAudioMaster(@FEffect, audioMasterOfflineGetCurrentPass, 0, 0, nil, 0) <> 0)
+  then Result := Integer(FAudioMaster(@FEffect, amOfflineGetCurrentPass, 0, 0, nil, 0) <> 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.OfflineGetCurrentMetaPass: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := Integer(FAudioMaster(@FEffect, audioMasterOfflineGetCurrentMetaPass, 0, 0, nil, 0) <> 0)
+  then Result := Integer(FAudioMaster(@FEffect, amOfflineGetCurrentMetaPass, 0, 0, nil, 0) <> 0)
   else Result := 0;
 end;
 
 procedure TBasicVSTModule.SetOutputSampleRate(const SampleRate: Single);
 begin
  if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, audioMasterSetOutputSampleRate, 0, 0, nil, SampleRate);
+  then FAudioMaster(@FEffect, amSetOutputSampleRate, 0, 0, nil, SampleRate);
 end;
 
 function TBasicVSTModule.GetHostVendorString(const Text: PAnsiChar): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterGetVendorString, 0, 0, Text, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amGetVendorString, 0, 0, Text, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.GetHostProductString(const Text: PAnsiChar): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterGetProductString, 0, 0, Text, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amGetProductString, 0, 0, Text, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.GetHostVendorVersion: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetVendorVersion, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetVendorVersion, 0, 0, nil, 0)
   else Result := 0;
 end;
 
@@ -713,104 +713,104 @@ function TBasicVSTModule.HostVendorSpecific(const Arg1, Arg2: Integer; const ptr
 begin
  Result := 0;
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
+  then Result := FAudioMaster(@FEffect, amVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
 end;
 
 function TBasicVSTModule.GetCanHostDo(Text: string): Integer;
 begin
  Result := 0;
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterCanDo, 0, 0, PChar(Text), 0);
+  then Result := FAudioMaster(@FEffect, amCanDo, 0, 0, PChar(Text), 0);
 end;
 
 function TBasicVSTModule.GetHostLanguage: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetLanguage, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetLanguage, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.OpenWindow(const aWindow: PVstWindow): Pointer;
 begin
  if Assigned(FAudioMaster)
-  then Result := Pointer(FAudioMaster(@FEffect, audioMasterOpenWindow, 0, 0, aWindow, 0))
+  then Result := Pointer(FAudioMaster(@FEffect, amOpenWindow, 0, 0, aWindow, 0))
   else Result := nil;
 end;
 
 function TBasicVSTModule.CloseWindow(const aWindow: PVstWindow): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterCloseWindow, 0, 0, aWindow, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amCloseWindow, 0, 0, aWindow, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.GetDirectory: Pointer;
 begin
  if Assigned(FAudioMaster)
-  then Result := Pointer(FAudioMaster(@FEffect, audioMasterGetDirectory, 0, 0, nil, 0))
+  then Result := Pointer(FAudioMaster(@FEffect, amGetDirectory, 0, 0, nil, 0))
   else Result := nil;
 end;
 
 function TBasicVSTModule.UpdateDisplay: Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterUpdateDisplay, 0, 0, nil, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amUpdateDisplay, 0, 0, nil, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.IOChanged: Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterIOChanged, 0, 0, nil, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amIOChanged, 0, 0, nil, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.NeedIdle: Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterNeedIdle, 0, 0, nil, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amNeedIdle, 0, 0, nil, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.SizeWindow(const Width, Height: Integer): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterSizeWindow, Width, Height, nil, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amSizeWindow, Width, Height, nil, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.BeginEdit(const Index: Integer): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterBeginEdit, Index, 0, nil, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amBeginEdit, Index, 0, nil, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.EndEdit(const Index: Integer): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterEndEdit, Index, 0, nil, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amEndEdit, Index, 0, nil, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.OpenFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterOpenFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amOpenFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.CloseFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
 begin
  if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, audioMasterCloseFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amCloseFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
   else Result := False;
 end;
 
 function TBasicVSTModule.GetChunkFile(const NativePath: Pointer): Boolean;
 begin
  if Assigned(FAudioMaster) and (nativePath <> nil)
-  then Result := (FAudioMaster(@FEffect, audioMasterGetChunkFile, 0, 0, NativePath, 0) <> 0)
+  then Result := (FAudioMaster(@FEffect, amGetChunkFile, 0, 0, NativePath, 0) <> 0)
   else Result := False;
 end;
 
@@ -818,28 +818,28 @@ end;
 function TBasicVSTModule.UpdateSampleRate: Double;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetSampleRate, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetSampleRate, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.UpdateBlockSize: Integer;
 begin
  if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, audioMasterGetBlockSize, 0, 0, nil, 0)
+  then Result := FAudioMaster(@FEffect, amGetBlockSize, 0, 0, nil, 0)
   else Result := 0;
 end;
 
 function TBasicVSTModule.GetInputSpeakerArrangement: PVstSpeakerArrangement;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, audioMasterGetInputSpeakerArrangement, 0, 0, nil, 0))
+  then Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, amGetInputSpeakerArrangement, 0, 0, nil, 0))
   else Result := nil;
 end;
 
 function TBasicVSTModule.GetOutputSpeakerArrangement: PVstSpeakerArrangement;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, audioMasterGetOutputSpeakerArrangement, 0, 0, nil, 0))
+  then Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, amGetOutputSpeakerArrangement, 0, 0, nil, 0))
   else Result := nil;
 end;
 
@@ -900,7 +900,7 @@ begin
  FWinAmpConvertIn(Samples, ChannelCount, SampleFrames);
 
  // process VST plugin
- FEffect.ProcessReplacing(@FEffect, @FWinAmpInputBuffer[0],
+ FEffect.Process32Replacing(@FEffect, @FWinAmpInputBuffer[0],
    @FWinAmpOutputBuffer[0], SampleFrames);
 
  // convert float to interleaved data
@@ -1050,20 +1050,20 @@ begin
  {$IFNDEF UseAudioEffectPtr}
  if not FUseAudioEffectPtr then
   begin
-   Effect^.GetParameter           := @GetParameterFuncUserPtr;
-   Effect^.SetParameter           := @SetParameterFuncUserPtr;
-   Effect^.Process                := @ProcessFuncUserPtr;
-   Effect^.ProcessReplacing       := @ProcessReplacingFuncUserPtr;
-   Effect^.ProcessDoubleReplacing := @ProcessDoubleReplacingFuncUserPtr;
+   Effect^.GetParameter       := @GetParameterFuncUserPtr;
+   Effect^.SetParameter       := @SetParameterFuncUserPtr;
+   Effect^.Process            := @ProcessFuncUserPtr;
+   Effect^.Process32Replacing := @Process32ReplacingFuncUserPtr;
+   Effect^.Process64Replacing := @Process64ReplacingFuncUserPtr;
   end
  else
  {$ELSE}
   begin
-   Effect^.GetParameter           := @GetParameterFuncAudioEffectPtr;
-   Effect^.SetParameter           := @SetParameterFuncAudioEffectPtr;
-   Effect^.Process                := @ProcessFuncAudioEffectPtr;
-   Effect^.ProcessReplacing       := @ProcessReplacingFuncAudioEffectPtr;
-   Effect^.ProcessDoubleReplacing := @ProcessDoubleReplacingFuncAudioEffectPtr;
+   Effect^.GetParameter       := @GetParameterFuncAudioEffectPtr;
+   Effect^.SetParameter       := @SetParameterFuncAudioEffectPtr;
+   Effect^.Process            := @ProcessFuncAudioEffectPtr;
+   Effect^.Process32Replacing := @Process32ReplacingFuncAudioEffectPtr;
+   Effect^.Process64Replacing := @Process64ReplacingFuncAudioEffectPtr;
   end;
  {$ENDIF}
 end;
@@ -1074,8 +1074,8 @@ begin
   Effect^.GetParameter := @GetParameterFuncDummy;
   Effect^.SetParameter := @SetParameterFuncDummy;
   Effect^.Process := @ProcessFuncDummy;
-  Effect^.ProcessReplacing := @ProcessFuncDummy;
-  Effect^.ProcessDoubleReplacing := @ProcessFuncDummy;
+  Effect^.Process32Replacing := @ProcessFuncDummy;
+  Effect^.Process64Replacing := @ProcessFuncDummy;
   {$IFDEF UseAudioEffectPtr}
   Effect^.AudioEffectPtr := nil;
   {$ELSE}
@@ -1492,27 +1492,27 @@ begin
   {$ENDIF}
 end;
 
-procedure ProcessReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 begin
  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
-  if Addr(Effect^.ProcessReplacing) = Addr(ProcessReplacingFuncAudioEffectPtr)
-   then ProcessReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
+  if Addr(Effect^.Process32Replacing) = Addr(Process32ReplacingFuncAudioEffectPtr)
+   then Process32ReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ELSE}
-  if Addr(Effect^.ProcessReplacing) = Addr(ProcessReplacingFuncUserPtr)
-   then ProcessReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
+  if Addr(Effect^.Process32Replacing) = Addr(Process32ReplacingFuncUserPtr)
+   then Process32ReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ENDIF}
 end;
 
-procedure ProcessDoubleReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+procedure Process64ReplacingFuncCheck(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 begin
  if Assigned(Effect) then
   {$IFDEF UseAudioEffectPtr}
-  if Addr(Effect^.ProcessDoubleReplacing) = Addr(ProcessDoubleReplacingFuncAudioEffectPtr)
-   then ProcessDoubleReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
+  if Addr(Effect^.Process64Replacing) = Addr(Process64ReplacingFuncAudioEffectPtr)
+   then Process64ReplacingFuncAudioEffectPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ELSE}
-  if Addr(Effect^.ProcessDoubleReplacing) = Addr(ProcessDoubleReplacingFuncUserPtr)
-   then ProcessDoubleReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
+  if Addr(Effect^.Process64Replacing) = Addr(Process64ReplacingFuncUserPtr)
+   then Process64ReplacingFuncUserPtr(Effect, Inputs, Outputs, SampleFrames);
   {$ENDIF}
 end;
 
@@ -1572,7 +1572,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ProcessReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1616,11 +1616,11 @@ asm
   mov eax, ebx
   mov ebx, [eax]
 
-  // call HostCallProcessReplacing (damn hack!!!)
+  // call HostCallProcess32Replacing (damn hack!!!)
   {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
   {$ELSE}
-  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
   {$ENDIF}
 
  @end:
@@ -1628,7 +1628,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ProcessDoubleReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
+procedure Process64ReplacingFuncAudioEffectPtr(const Effect: PVSTEffect;
   const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
@@ -1637,7 +1637,7 @@ begin
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess64Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1673,11 +1673,11 @@ asm
   mov eax, ebx
   mov ebx, [eax]
 
-  // call HostCallProcessDoubleReplacing (damn hack!!!)
+  // call HostCallProcess64Replacing (damn hack!!!)
   {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
   {$ELSE}
-  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
   {$ENDIF}
 
  @end:
@@ -1742,7 +1742,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ProcessReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
+procedure Process32ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1750,7 +1750,7 @@ begin
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.User).HostCallProcessReplacing(Inputs, Outputs, SampleFrames);
+  then TBasicVSTModule(Effect^.User).HostCallProcess32Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1786,11 +1786,11 @@ asm
   mov eax, ebx
   mov ebx, [eax]
 
-  // call HostCallProcessReplacing (damn hack!!!)
+  // call HostCallProcess32Replacing (damn hack!!!)
   {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
   {$ELSE}
-  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcessReplacing]
+  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
   {$ENDIF}
 
  @end:
@@ -1798,7 +1798,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ProcessDoubleReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
+procedure Process64ReplacingFuncUserPtr(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const SampleFrames: Integer); cdecl;
 {$IFDEF PUREPASCAL}
 begin
  // check consistency
@@ -1806,7 +1806,7 @@ begin
   then Exit;
 
  if TObject(Effect^.User) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.User).HostCallProcessDoubleReplacing(Inputs, Outputs, SampleFrames);
+  then TBasicVSTModule(Effect^.User).HostCallProcess64Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1842,11 +1842,11 @@ asm
   mov eax, ebx
   mov ebx, [eax]
 
-  // call HostCallProcessDoubleReplacing (damn hack!!!)
+  // call HostCallProcess64Replacing (damn hack!!!)
   {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
   {$ELSE}
-  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcessDoubleReplacing]
+  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
   {$ENDIF}
 
  @end:
@@ -1952,4 +1952,4 @@ initialization
 finalization
   FreeAndNil(GVstInstanceList);
 
-end.
+end.
