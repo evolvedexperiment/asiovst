@@ -130,6 +130,10 @@ type
     FInternalDllLoader             : TDLLLoader;
     {$ENDIF}
     FMainFunction                  : TMainProc;
+    {$IFDEF jBridge}
+    FJBridgeMainFunction           : TJBridgeMainProc;
+    FJBridgeDLL                    : AnsiString;
+    {$ENDIF}
     FVstEffect                     : PVstEffect;
     FNeedIdle                      : Boolean;
     {$IFDEF VstHostGUI}
@@ -813,6 +817,25 @@ begin
   end;
 end;
 
+{$IFDEF jBridge}
+//Check if it’s a plugin_name.xx.dll
+function CheckIsBootStrapDll(const FileName: TFilename): Boolean;
+var
+  VstDllHandle : THandle;
+begin
+ Result := False;
+ if not FileExists(FileName) then Exit;
+ DontRaiseExceptionsAndSetFPUcodeword;
+ VstDllHandle := SafeLoadLibrary(FileName, 7);
+ if VstDllHandle <> 0 then
+  try
+   Result := GetProcAddress(VstDllHandle, 'JBridgeBootstrap') <> nil;
+  finally
+   FreeLibrary(VstDllHandle);
+  end;
+end;
+{$ENDIF}
+
 function AudioMasterCallback(const Effect: PVstEffect; const Opcode : TAudioMasterOpcode; const Index, Value: LongInt; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
 var
   Plugin    : TCustomVstPlugIn;
@@ -884,256 +907,256 @@ begin
   DontRaiseExceptionsAndSetFPUcodeword;
 
   case TAudiomasterOpcode(Opcode) of
-   audioMasterAutomate                    : begin
-                                             if Assigned(Plugin)
-                                              then Plugin.AudioMasterAutomate(Index, Opt);
-                                             Result := 0;
-                                            end;
-   audioMasterVersion                     : if Assigned(Host)
-                                             then Result := Host.VSTVersion
-                                             else Result := 2300;
-   audioMasterIdle                        : if Assigned(Plugin)
-                                             then Plugin.AudioMasterIdle;
-   audioMasterCurrentId                   : if Assigned(Plugin)
-                                             then Result := Plugin.AudioMasterCurrentId
-                                             else Result := 0;
-   audioMasterPinConnected                : if Assigned(Plugin)
-                                             then Result := Integer(Plugin.AudioMasterPinConnected(Index, Value = 0))
-                                             else Result := 0;
-   audioMasterWantMidi                    : if Assigned(Plugin)
-                                             then Plugin.AudioMasterWantMidi;
-   audioMasterGetTime                     : if Assigned(Host)
-                                             then Result := LongInt(AudioMasterGetTime)
-                                             else Result := 0;
-   audioMasterProcessEvents               : if Assigned(Plugin)
-                                             then Plugin.AudioMasterProcessEvents(ptr);
-   audioMasterSetTime                     : if Assigned(Host)
-                                             then Host.AudioMasterSetTime(ptr, Integer2TimeInfoFlags(Value));
-   audioMasterTempoAt                     : if Assigned(Host)
-                                             then Result := Host.AudioMasterTempoAt(Value)
-                                             else Result := 1200000;
-   audioMasterGetNumAutomatableParameters : if Assigned(Host)
-                                             then Result := Host.AudioMasterGetNumAutomatableParameters
-                                             else Result := 0;
-   audioMasterGetParameterQuantization    : if Assigned(Host)
-                                             then Result := Host.AudioMasterGetParameterQuantization(Value)
-                                             else Result := 0;
-   audioMasterIOChanged                   : if Assigned(Plugin)
-                                             then Plugin.AudioMasterIOChanged;
-   audioMasterNeedIdle                    : if Assigned(Plugin)
-                                             then Plugin.AudioMasterNeedIdle;
-   audioMasterSizeWindow                  : if Assigned(Plugin)
-                                              then Result := Integer(Plugin.AudioMasterSizeWindow(Index, Value));
-   audioMasterGetSampleRate               : if Assigned(Host)
-                                             then Result := Round(Host.AudioMasterGetSampleRate)
-                                             else Result := CDefaultSampleRate;
-   audioMasterGetBlockSize                : if Assigned(Host)
-                                             then Result := Host.BlockSize
-                                             else Result := CDefaultBlockSize;
-   audioMasterGetInputLatency             : if Assigned(Host)
-                                             then Result := Host.FInputLatency
-                                             else Result := 0;
-   audioMasterGetOutputLatency            : if Assigned(Host)
-                                             then Result := Host.FOutputLatency
-                                             else Result := 0;
-   audioMasterGetPreviousPlug             : if Assigned(Host)
-                                             then Result := Integer(Host.AudioMasterGetPreviousPlug(Value))
-                                             else Result := 0;
-   audioMasterGetNextPlug                 : if Assigned(Host)
-                                             then Result := Integer(Host.AudioMasterGetNextPlug(Value))
-                                             else Result := 0;
-   audioMasterWillReplaceOrAccumulate     : if Assigned(Plugin)
-                                             then Result := Integer(Plugin.FReplaceOrAccumulate)
-                                             else Result := 0;
-   audioMasterGetCurrentProcessLevel      : if Assigned(Plugin)
-                                             then Result := Integer(Plugin.FProcessLevel)
-                                             else Result := 0;
-   audioMasterGetAutomationState          : if Assigned(Plugin)
-                                             then Result := Integer(Plugin.FAutomationState)
-                                             else Result := 0;
-   audioMasterOfflineStart                : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMOfflineStart)
-                                              then Plugin.FOnAMOfflineStart(Plugin); // audioMasterOfflineStart
-   audioMasterOfflineRead                 : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMOfflineRead)
-                                              then Plugin.FOnAMOfflineRead(Plugin,ptr); // audioMasterOfflineRead, ptr points to offline structure, see below. return 0: error, 1 ok
-   audioMasterOfflineWrite                : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMOfflineWrite)
-                                              then Plugin.FOnAMOfflineWrite(Plugin,ptr); // audioMasterOfflineWrite, same as read
-   audioMasterOfflineGetCurrentPass       : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMOfflineGetCurrentPass)
-                                              then Plugin.FOnAMOfflineGetCurrentPass(Plugin); // audioMasterOfflineGetCurrentPass
-   audioMasterOfflineGetCurrentMetaPass   : if Assigned(Plugin) then
-                                             if Assigned(Plugin.FOnAMOfflineGetCurrentMetaPass)
-                                              then Plugin.FOnAMOfflineGetCurrentMetaPass(Plugin); // audioMasterOfflineGetCurrentMetaPass
-   audioMasterSetOutputSampleRate         : begin
-                                             if Assigned(Plugin) then
-                                              if Assigned(Plugin.FOnAMSetOutputSampleRate)
-                                               then Plugin.FOnAMSetOutputSampleRate(Plugin,opt);
-                                             if Assigned(Host)
-                                              then Host.VstTimeInfo.SampleRate := Opt;
-                                             // raise Exception.Create('audioMasterSetOutputSampleRate, for variable i/o, sample rate in <opt>');
-                                            end;
-   audioMasterGetOutputspeakerArrangement : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
-   audioMasterGetVendorString             : begin
-                                             if Assigned(Host)
-                                              then StrPCopy(PAnsiChar(ptr), Host.VendorString)
-                                              else StrPCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
-                                             Result := 1;
-                                            end;
-   audioMasterGetProductString            : try
-                                             Result := 1;
-                                             if Assigned(Host)
-                                              then StrPCopy(PAnsiChar(ptr), Host.ProductString)
-                                              else
-                                               if Assigned(ptr)
-                                                then StrCopy(PAnsiChar(ptr), 'Delphi VST Host')
-                                                else Result := 0;
-                                            except
-                                             Result := 0;
-                                            end;
-   audioMasterGetVendorVersion            : if Assigned(Host)
-                                             then Result := Host.FVendorVersion
-                                             else Result := 0;
-   audioMasterVendorSpecific              : if Assigned(Plugin)
-                                             then Plugin.AudioMasterVendorSpecific(index, value, ptr, opt)
-                                             else Result := 0;
-   audioMasterSetIcon                     : {$IFDEF Debug} ShowMessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
-   audioMasterCanDo                       : if Assigned(Host)
-                                             then Result := Integer(Host.AudioMasterCanDo(PAnsiChar(ptr)))
-                                             else Result := 0;
-   audioMasterGetLanguage                 : if Assigned(Host)
-                                             then Result := Integer(Host.FLanguage)
-                                             else Result := Integer(hlUnknown);
-   audioMasterOpenWindow                  : if Assigned(ptr) then
-                                             begin
-                                             {$IFDEF VstHostGUI}
-                                              with (GHostWindows.Items[GHostWindows.Add(TForm.Create(Host))] as TForm) do
-                                               begin
-                                                Caption := string(PVstWindow(ptr).title);
-                                                Left    := PVstWindow(ptr).xPos;
-                                                Top     := PVstWindow(ptr).xPos;
-                                                Width   := PVstWindow(ptr).Width;
-                                                Height  := PVstWindow(ptr).Height;
-                                                case PVstWindow(ptr).Style of
-                                                 0: BorderStyle := bsSizeToolWin;
-                                                 1: BorderStyle := bsNone;
-                                                end;
-                                                Parent := PVstWindow(ptr).Parent;
-                                               end;
-                                              ShowMessage('Please contact me if this happens: Christian@Aixcoustic.com');
+   amAutomate                    : begin
+                                    if Assigned(Plugin)
+                                     then Plugin.AudioMasterAutomate(Index, Opt);
+                                    Result := 0;
+                                   end;
+   amVersion                     : if Assigned(Host)
+                                    then Result := Host.VSTVersion
+                                    else Result := 2300;
+   amIdle                        : if Assigned(Plugin)
+                                    then Plugin.AudioMasterIdle;
+   amCurrentId                   : if Assigned(Plugin)
+                                    then Result := Plugin.AudioMasterCurrentId
+                                    else Result := 0;
+   amPinConnected                : if Assigned(Plugin)
+                                    then Result := Integer(Plugin.AudioMasterPinConnected(Index, Value = 0))
+                                    else Result := 0;
+   amWantMidi                    : if Assigned(Plugin)
+                                    then Plugin.AudioMasterWantMidi;
+   amGetTime                     : if Assigned(Host)
+                                    then Result := LongInt(Host.AudioMasterGetTime)
+                                    else Result := 0;
+   amProcessEvents               : if Assigned(Plugin)
+                                    then Plugin.AudioMasterProcessEvents(ptr);
+   amSetTime                     : if Assigned(Host)
+                                    then Host.AudioMasterSetTime(ptr, Integer2TimeInfoFlags(Value));
+   amTempoAt                     : if Assigned(Host)
+                                    then Result := Host.AudioMasterTempoAt(Value)
+                                    else Result := 1200000;
+   amGetNumAutomatableParameters : if Assigned(Host)
+                                    then Result := Host.AudioMasterGetNumAutomatableParameters
+                                    else Result := 0;
+   amGetParameterQuantization    : if Assigned(Host)
+                                    then Result := Host.AudioMasterGetParameterQuantization(Value)
+                                    else Result := 0;
+   amIOChanged                   : if Assigned(Plugin)
+                                    then Plugin.AudioMasterIOChanged;
+   amNeedIdle                    : if Assigned(Plugin)
+                                    then Plugin.AudioMasterNeedIdle;
+   amSizeWindow                  : if Assigned(Plugin)
+                                    then Result := Integer(Plugin.AudioMasterSizeWindow(Index, Value));
+   amGetSampleRate               : if Assigned(Host)
+                                    then Result := Round(Host.AudioMasterGetSampleRate)
+                                    else Result := CDefaultSampleRate;
+   amGetBlockSize                : if Assigned(Host)
+                                    then Result := Host.BlockSize
+                                    else Result := CDefaultBlockSize;
+   amGetInputLatency             : if Assigned(Host)
+                                    then Result := Host.FInputLatency
+                                    else Result := 0;
+   amGetOutputLatency            : if Assigned(Host)
+                                    then Result := Host.FOutputLatency
+                                    else Result := 0;
+   amGetPreviousPlug             : if Assigned(Host)
+                                    then Result := Integer(Host.AudioMasterGetPreviousPlug(Value))
+                                    else Result := 0;
+   amGetNextPlug                 : if Assigned(Host)
+                                    then Result := Integer(Host.AudioMasterGetNextPlug(Value))
+                                    else Result := 0;
+   amWillReplaceOrAccumulate     : if Assigned(Plugin)
+                                    then Result := Integer(Plugin.FReplaceOrAccumulate)
+                                    else Result := 0;
+   amGetCurrentProcessLevel      : if Assigned(Plugin)
+                                    then Result := Integer(Plugin.FProcessLevel)
+                                    else Result := 0;
+   amGetAutomationState          : if Assigned(Plugin)
+                                    then Result := Integer(Plugin.FAutomationState)
+                                    else Result := 0;
+   amOfflineStart                : if Assigned(Plugin) then
+                                    if Assigned(Plugin.FOnAMOfflineStart)
+                                     then Plugin.FOnAMOfflineStart(Plugin); // audioMasterOfflineStart
+   amOfflineRead                 : if Assigned(Plugin) then
+                                    if Assigned(Plugin.FOnAMOfflineRead)
+                                     then Plugin.FOnAMOfflineRead(Plugin,ptr); // audioMasterOfflineRead, ptr points to offline structure, see below. return 0: error, 1 ok
+   amOfflineWrite                : if Assigned(Plugin) then
+                                    if Assigned(Plugin.FOnAMOfflineWrite)
+                                     then Plugin.FOnAMOfflineWrite(Plugin,ptr); // audioMasterOfflineWrite, same as read
+   amOfflineGetCurrentPass       : if Assigned(Plugin) then
+                                    if Assigned(Plugin.FOnAMOfflineGetCurrentPass)
+                                     then Plugin.FOnAMOfflineGetCurrentPass(Plugin); // audioMasterOfflineGetCurrentPass
+   amOfflineGetCurrentMetaPass   : if Assigned(Plugin) then
+                                    if Assigned(Plugin.FOnAMOfflineGetCurrentMetaPass)
+                                     then Plugin.FOnAMOfflineGetCurrentMetaPass(Plugin); // audioMasterOfflineGetCurrentMetaPass
+   amSetOutputSampleRate         : begin
+                                    if Assigned(Plugin) then
+                                     if Assigned(Plugin.FOnAMSetOutputSampleRate)
+                                      then Plugin.FOnAMSetOutputSampleRate(Plugin,opt);
+                                     if Assigned(Host)
+                                      then Host.VstTimeInfo.SampleRate := Opt;
+                                     // raise Exception.Create('audioMasterSetOutputSampleRate, for variable i/o, sample rate in <opt>');
+                                   end;
+   amGetOutputspeakerArrangement : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
+   amGetVendorString             : begin
+                                    if Assigned(Host)
+                                     then StrPCopy(PAnsiChar(ptr), Host.VendorString)
+                                     else StrPCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
+                                    Result := 1;
+                                   end;
+   amGetProductString            : try
+                                    Result := 1;
+                                    if Assigned(Host)
+                                     then StrPCopy(PAnsiChar(ptr), Host.ProductString)
+                                     else
+                                      if Assigned(ptr)
+                                       then StrCopy(PAnsiChar(ptr), 'Delphi VST Host')
+                                       else Result := 0;
+                                   except
+                                    Result := 0;
+                                   end;
+   amGetVendorVersion            : if Assigned(Host)
+                                    then Result := Host.FVendorVersion
+                                    else Result := 0;
+   amVendorSpecific              : if Assigned(Plugin)
+                                    then Plugin.AudioMasterVendorSpecific(index, value, ptr, opt)
+                                    else Result := 0;
+   amSetIcon                     : {$IFDEF Debug} ShowMessage('TODO: audioMasterSetIcon, void* in <ptr>, format not defined yet, Could be a CBitmap .') {$ENDIF Debug};
+   amCanDo                       : if Assigned(Host)
+                                    then Result := Integer(Host.AudioMasterCanDo(PAnsiChar(ptr)))
+                                    else Result := 0;
+   amGetLanguage                 : if Assigned(Host)
+                                    then Result := Integer(Host.FLanguage)
+                                    else Result := Integer(hlUnknown);
+   amOpenWindow                  : if Assigned(ptr) then
+                                    begin
+                                    {$IFDEF VstHostGUI}
+                                     with (GHostWindows.Items[GHostWindows.Add(TForm.Create(Host))] as TForm) do
+                                      begin
+                                       Caption := string(PVstWindow(ptr).title);
+                                       Left    := PVstWindow(ptr).xPos;
+                                       Top     := PVstWindow(ptr).xPos;
+                                       Width   := PVstWindow(ptr).Width;
+                                       Height  := PVstWindow(ptr).Height;
+                                       case PVstWindow(ptr).Style of
+                                        0: BorderStyle := bsSizeToolWin;
+                                        1: BorderStyle := bsNone;
+                                       end;
+                                       Parent := PVstWindow(ptr).Parent;
+                                      end;
+                                     ShowMessage('Please contact me if this happens: Christian@Aixcoustic.com');
 //                                               PVstWindow(ptr).winHandle := (GHostWindows.Items[i] as TForm).Handle;
-                                              {$ENDIF}
-                                             end;
-   audioMasterCloseWindow                 : begin
-                                             {$IFDEF Debug}
-                                             ShowMessage('TODO: audioMasterCloseWindow, ' +
-                                             'close window, platform specific handle in <ptr>')
-                                             {$ENDIF Debug};
-                                            end;
-   audioMasterGetDirectory                : if Assigned(Host)
-                                             then Result := LongInt(PAnsiChar(AnsiString(Host.FPlugInDir)));
-   audioMasterUpdateDisplay               : if Assigned(Plugin)
-                                             then Plugin.AudioMasterUpdateDisplay;
-   audioMasterBeginEdit                   : if Assigned(Plugin)
-                                             then Plugin.AudioMasterBeginEdit(Index);
-   audioMasterEndEdit                     : if Assigned(Plugin)
-                                             then Plugin.AudioMasterEndEdit(Index);
-   audioMasterOpenFileSelector            : begin
-                                             {$IFDEF VstHostGUI}
-                                             if (ptr <> nil) and not Assigned(GHostDialog) then
-                                              begin
-                                               case PVstFileSelect(ptr).Command of
-                                                kVstFileLoad:
-                                                 begin
-                                                  GHostDialog := TOpenDialog.Create(Host);
-                                                  with TOpenDialog(GHostDialog) do
-                                                   begin
-                                                    Title := string(PVstFileSelect(ptr).Title);
-                                                    InitialDir := string(PVstFileSelect(ptr).initialPath);
-                                                    for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1
-                                                     do Filter := Filter +
-                                                       string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
-                                                       ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
-                                                       ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
-                                                    if Execute then
-                                                     begin
+                                     {$ENDIF}
+                                    end;
+   amCloseWindow                 : begin
+                                    {$IFDEF Debug}
+                                    ShowMessage('TODO: audioMasterCloseWindow, ' +
+                                      'close window, platform specific handle in <ptr>')
+                                    {$ENDIF Debug};
+                                   end;
+   amGetDirectory                : if Assigned(Host)
+                                    then Result := LongInt(PAnsiChar(AnsiString(Host.FPlugInDir)));
+   amUpdateDisplay               : if Assigned(Plugin)
+                                    then Plugin.AudioMasterUpdateDisplay;
+   amBeginEdit                   : if Assigned(Plugin)
+                                    then Plugin.AudioMasterBeginEdit(Index);
+   amEndEdit                     : if Assigned(Plugin)
+                                    then Plugin.AudioMasterEndEdit(Index);
+   amOpenFileSelector            : begin
+                                    {$IFDEF VstHostGUI}
+                                    if (ptr <> nil) and not Assigned(GHostDialog) then
+                                     begin
+                                      case PVstFileSelect(ptr).Command of
+                                       kVstFileLoad:
+                                        begin
+                                         GHostDialog := TOpenDialog.Create(Host);
+                                         with TOpenDialog(GHostDialog) do
+                                          begin
+                                           Title := string(PVstFileSelect(ptr).Title);
+                                           InitialDir := string(PVstFileSelect(ptr).initialPath);
+                                           for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1
+                                            do Filter := Filter +
+                                              string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
+                                              ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
+                                              ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
+                                           if Execute then
+                                            begin
 //                                                      PVstFileSelect(ptr).returnPath := PAnsiChar(TOpenDialog(GHostDialog).FileName);
 //                                                      StrCopy(PVstFileSelect(ptr).returnPath,PAnsiChar(TOpenDialog(GHostDialog).FileName));
-                                                      PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
-                                                     end;
-                                                   end;
-                                                 end;
-                                                kVstFileSave:
-                                                 begin
-                                                  GHostDialog := TSaveDialog.Create(Host);
-                                                  with TSaveDialog(GHostDialog) do
-                                                   begin
-                                                    Title := string(PVstFileSelect(ptr).title);
-                                                    InitialDir := string(PVstFileSelect(ptr).initialPath);
-                                                    for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1
-                                                     do Filter := Filter +
-                                                      string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
-                                                      ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
-                                                      ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
-                                                    if Execute then
-                                                    begin
-                                                     PVstFileSelect(ptr).returnPath := PAnsiChar(AnsiString(FileName));
-                                                     PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
-                                                    end;
-                                                   end;
-                                                 end;
-                                                kVstMultipleFilesLoad:
-                                                begin
-                                                 GHostDialog := TOpenDialog.Create(Host);
-                                                 with TOpenDialog(GHostDialog) do
-                                                  begin
-                                                   Title := string(PVstFileSelect(ptr).title);
-                                                   InitialDir := string(PVstFileSelect(ptr).initialPath);
-                                                   for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1 do
-                                                    Filter := Filter +
-                                                      string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
-                                                      ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
-                                                      ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
-                                                    if TOpenDialog(GHostDialog).Execute
-                                                     then
-                                                      begin
-                                                       PVstFileSelect(ptr).returnPath := PAnsiChar(AnsiString(FileName));
-                                                       PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
-                                                      end;
-                                                  end;
-                                                 end;
-                                                kVstDirectorySelect: {$IFDEF Debug} ShowMessage('TODO: Not implemented!') {$ENDIF Debug};
-                                               end;
-                                               if PVstFileSelect(ptr).returnPath = nil
-                                                then FreeAndNil(GHostDialog);
-                                               Result := Integer(True);
-                                              end;
-                                             {$ENDIF}
+                                             PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
                                             end;
-   audioMasterCloseFileSelector           : begin
-                                             {$IFDEF VstHostGUI}
-                                             if Assigned(GHostDialog) then
-                                              case PVstFileSelect(ptr).Command of
-                                               kVstFileLoad:
-                                                if TOpenDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
-                                                 then FreeAndNil(GHostDialog);
-                                               kVstFileSave:
-                                                if TSaveDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
-                                                 then FreeAndNil(GHostDialog);
-                                               kVstMultipleFilesLoad:
-                                                if TOpenDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
-                                                 then FreeAndNil(GHostDialog);
-                                               kVstDirectorySelect:
-                                                begin
-                                                end;
-                                               else
-                                                {$IFDEF Debug} raise Exception.Create('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
-                                              end;
-                                             {$ENDIF}
-                                            end;
-    audioMasterEditFile                   : {$IFDEF Debug} raise Exception.Create('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
-    audioMasterGetChunkFile               : {$IFDEF Debug} raise Exception.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
+                                          end;
+                                        end;
+                                       kVstFileSave:
+                                        begin
+                                         GHostDialog := TSaveDialog.Create(Host);
+                                         with TSaveDialog(GHostDialog) do
+                                          begin
+                                           Title := string(PVstFileSelect(ptr).title);
+                                           InitialDir := string(PVstFileSelect(ptr).initialPath);
+                                           for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1
+                                            do Filter := Filter +
+                                             string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
+                                             ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
+                                             ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
+                                           if Execute then
+                                           begin
+                                            PVstFileSelect(ptr).returnPath := PAnsiChar(AnsiString(FileName));
+                                            PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
+                                           end;
+                                          end;
+                                        end;
+                                       kVstMultipleFilesLoad:
+                                       begin
+                                        GHostDialog := TOpenDialog.Create(Host);
+                                        with TOpenDialog(GHostDialog) do
+                                         begin
+                                          Title := string(PVstFileSelect(ptr).title);
+                                          InitialDir := string(PVstFileSelect(ptr).initialPath);
+                                          for i := 0 to PVstFileSelect(ptr).nbFileTypes - 1 do
+                                           Filter := Filter +
+                                             string(ShortString(PVstFileType(PVstFileSelect(ptr).fileTypes).name)) +
+                                             ' (*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) +
+                                             ')|*.' + string(PVstFileType(PVstFileSelect(ptr).fileTypes).dosType) + '|';
+                                           if TOpenDialog(GHostDialog).Execute
+                                            then
+                                             begin
+                                              PVstFileSelect(ptr).returnPath := PAnsiChar(AnsiString(FileName));
+                                              PVstFileSelect(ptr).sizeReturnPath := Length(FileName);
+                                             end;
+                                         end;
+                                        end;
+                                       kVstDirectorySelect: {$IFDEF Debug} ShowMessage('TODO: Not implemented!') {$ENDIF Debug};
+                                      end;
+                                      if PVstFileSelect(ptr).returnPath = nil
+                                       then FreeAndNil(GHostDialog);
+                                      Result := Integer(True);
+                                     end;
+                                    {$ENDIF}
+                                   end;
+   amCloseFileSelector           : begin
+                                    {$IFDEF VstHostGUI}
+                                    if Assigned(GHostDialog) then
+                                     case PVstFileSelect(ptr).Command of
+                                      kVstFileLoad:
+                                       if TOpenDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
+                                        then FreeAndNil(GHostDialog);
+                                      kVstFileSave:
+                                       if TSaveDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
+                                        then FreeAndNil(GHostDialog);
+                                      kVstMultipleFilesLoad:
+                                       if TOpenDialog(GHostDialog).Title = string(PVstFileSelect(ptr).Title)
+                                        then FreeAndNil(GHostDialog);
+                                      kVstDirectorySelect:
+                                       begin
+                                       end;
+                                      else
+                                       {$IFDEF Debug} raise Exception.Create('TODO: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !') {$ENDIF Debug};
+                                     end;
+                                    {$ENDIF}
+                                   end;
+    amEditFile                   : {$IFDEF Debug} raise Exception.Create('TODO: open an editor for audio (defined by XML text in ptr') {$ENDIF Debug};
+    amGetChunkFile               : {$IFDEF Debug} raise Exception.Create('TODO: get the native path of currently loading bank or project') {$ENDIF Debug};
    else
     try
       raise Exception.Create('Check: ' + IntToStr(Integer(Opcode)) + ' - ' +
@@ -1473,7 +1496,9 @@ end;
 
 function TCustomVstHost.AudioMasterGetTime: PVstTimeInfo;
 begin
- Result := @VstTimeInfo.FVstTimeInfo;
+ if Assigned(VstTimeInfo)
+  then Result := @VstTimeInfo.FVstTimeInfo
+  else Result := nil;
 end;
 
 procedure TCustomVstHost.AudioMasterSetTime(VstTimeInfo: PVstTimeInfo;
@@ -3407,7 +3432,12 @@ begin
 
  // run VST plugin main function to create the VstEffect pointer
  if Assigned(FMainFunction)
-  then FVstEffect := FMainFunction(@audioMaster);
+  then FVstEffect := FMainFunction(@audioMaster)
+ {$IFDEF jBridge}
+  else
+ if Assigned(FJBridgeMainFunction)
+  then FVstEffect := FJBridgeMainFunction(@audioMaster, @FJBridgeDLL[1])
+ {$ENDIF};
 
  // clear temporary host pointer
  GTempPlugin := nil;
@@ -3462,9 +3492,19 @@ end;
 procedure TCustomVstPlugIn.LoadFromFile(const FileName: TFilename);
 {$IFNDEF FPC}
 var
-  Buf : array[0..255] of Char;
+  Buf : array [0..255] of AnsiChar;
   LE  : Integer;
   str : string;
+{$ENDIF}
+
+{$IFDEF jBridge}
+const
+  PROXY_REGKEY = 'Software\JBridge';
+  {$IFDEF Win64}
+  PROXY_REGVAL = 'Proxy64'; // use this for x64 builds
+  {$ELSE}
+  PROXY_REGVAL = 'Proxy32'; // use this for x86 builds
+  {$ENDIF}
 {$ENDIF}
 begin
  if not FileExists(FileName)
@@ -3484,12 +3524,45 @@ begin
    begin
     {$IFNDEF FPC}
     LE := GetLastError;
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, LE, 0, @Buf[0], SizeOf(Buf), nil);
-    if Buf = '' then
+
+    {$IFDEF jBridge}
+    if LE = 193 then
      begin
-      str := IntToStr(LE) + StrPas(Buf);
-      raise Exception.Create(str);
-     end else raise Exception.Create(StrPas(Buf));
+      // check if the DLL is a jBridge boot strap DLL and eventually raise exception
+      if CheckIsBootStrapDll(Filename)
+       then raise Exception.Create('Error: This is a jBridge bootstrap dll!');
+
+      with TRegistry.Create do
+       try
+        RootKey := HKEY_LOCAL_MACHINE;
+        if OpenKeyReadOnly(PROXY_REGKEY)
+         then str := GetDataAsString(PROXY_REGVAL)
+         else raise Exception.Create('Error: jBridge not found!');
+       finally
+        Free;
+       end;
+
+      if str = ''
+       then raise Exception.Create('Error: Unable to locate proxy DLL');
+
+      FVstDllHandle := SafeLoadLibrary(str, 7);
+      if (FVstDllHandle = 0)
+       then raise Exception.Create('Failed to load proxy');
+
+      @FMainFunction := nil;
+      @FJBridgeMainFunction := GetProcAddress(FVstDllHandle, 'BridgeMain');
+      FJBridgeDLL := AnsiString(DLLFileName) + #0;
+     end
+    else
+    {$ENDIF}
+     begin
+      FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, nil, LE, 0, @Buf[0], SizeOf(Buf), nil);
+      if Buf = '' then
+       begin
+        str := IntToStr(LE) + string(StrPas(Buf));
+        raise Exception.Create(str);
+       end else raise Exception.Create(string(StrPas(Buf)));
+     end;
     {$ENDIF}
    end
   else

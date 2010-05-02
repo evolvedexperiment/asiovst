@@ -170,82 +170,82 @@ type
 
 
   TAudioMasterOpcode = (
-    audioMasterAutomate,      //  0: index, value, returns 0
-    audioMasterVersion,       //  1: vst version, currently 2 (0 for older), 2400 for VST 2.4!
-    audioMasterCurrentId,     //  2: returns the unique id of a plug that's currently loading
-    audioMasterIdle,          //  3: call application idle routine (this will call effEditIdle for all open editors too)
-    audioMasterPinConnected,  //  4: inquire if an input or output is beeing connected;
+    amAutomate,      //  0: index, value, returns 0
+    amVersion,       //  1: vst version, currently 2 (0 for older), 2400 for VST 2.4!
+    amCurrentId,     //  2: returns the unique id of a plug that's currently loading
+    amIdle,          //  3: call application idle routine (this will call effEditIdle for all open editors too)
+    amPinConnected,  //  4: inquire if an input or output is beeing connected;
                               //     index enumerates input or output counting from zero,
                               //     Value is 0 for input and != 0 otherwise. note: the
                               //     return Value is 0 for <true> such that older versions
-    audioMasterUnused,        //  5: placeholder
+    amUnused,        //  5: placeholder
 
     // VstEvents + VstTimeInfo
-    audioMasterWantMidi,      //  6: <Value> is a filter which is currently ignored
-    audioMasterGetTime,       //  7: returns const VstTimeInfo* (or 0 if not supported)
+    amWantMidi,      //  6: <Value> is a filter which is currently ignored
+    amGetTime,       //  7: returns const VstTimeInfo* (or 0 if not supported)
                               //     <Value> should contain a mask indicating which fields are required
                               //     (see valid masks above), as some items may require extensive conversions
-    audioMasterProcessEvents, //  8: VstEvents* in <ptr>
-    audioMasterSetTime,       //  9: NOT USED IN 2.4 - VstTimenfo* in <ptr>, filter in <Value>, not supported
-    audioMasterTempoAt,       // 10: NOT USED IN 2.4 - returns tempo (in bpm * 10000) at sample frame location passed in <Value>
+    amProcessEvents, //  8: VstEvents* in <ptr>
+    amSetTime,       //  9: NOT USED IN 2.4 - VstTimenfo* in <ptr>, filter in <Value>, not supported
+    amTempoAt,       // 10: NOT USED IN 2.4 - returns tempo (in bpm * 10000) at sample frame location passed in <Value>
 
     // parameters
-    audioMasterGetNumAutomatableParameters, // 11: NOT USED IN 2.4
-    audioMasterGetParameterQuantization,    // 12: NOT USED IN 2.4 - returns the integer value for +1.0 representation,
+    amGetNumAutomatableParameters, // 11: NOT USED IN 2.4
+    amGetParameterQuantization,    // 12: NOT USED IN 2.4 - returns the integer value for +1.0 representation,
                                             //     or 1 if full single float precision is maintained in automation. parameter index in <Value> (-1: all, any) connections, configuration
-    audioMasterIOChanged,                   // 13: numInputs and/or numOutputs has changed
-    audioMasterNeedIdle,                    // 14: NOT USED IN 2.4 - plug needs idle calls (outside its editor window)
-    audioMasterSizeWindow,                  // 15: index: width, Value: height
-    audioMasterGetSampleRate,
-    audioMasterGetBlockSize,
-    audioMasterGetInputLatency,
-    audioMasterGetOutputLatency,
-    audioMasterGetPreviousPlug,             // 20: NOT USED IN 2.4 - input pin in <Value> (-1: first to come), returns cEffect*
-    audioMasterGetNextPlug,                 // 21: NOT USED IN 2.4 - output pin in <Value> (-1: first to come), returns cEffect*
+    amIOChanged,                   // 13: numInputs and/or numOutputs has changed
+    amNeedIdle,                    // 14: NOT USED IN 2.4 - plug needs idle calls (outside its editor window)
+    amSizeWindow,                  // 15: index: width, Value: height
+    amGetSampleRate,
+    amGetBlockSize,
+    amGetInputLatency,
+    amGetOutputLatency,
+    amGetPreviousPlug,             // 20: NOT USED IN 2.4 - input pin in <Value> (-1: first to come), returns cEffect*
+    amGetNextPlug,                 // 21: NOT USED IN 2.4 - output pin in <Value> (-1: first to come), returns cEffect*
 
     // realtime info
-    audioMasterWillReplaceOrAccumulate,     // 22: NOT USED IN 2.4 - returns: 0: not supported, 1: replace, 2: accumulate
-    audioMasterGetCurrentProcessLevel,      // 23: returns: 0: not supported,
+    amWillReplaceOrAccumulate,     // 22: NOT USED IN 2.4 - returns: 0: not supported, 1: replace, 2: accumulate
+    amGetCurrentProcessLevel,      // 23: returns: 0: not supported,
                                             //         1: currently in user thread (gui)
                                             //         2: currently in audio thread (where process is called)
                                             //         3: currently in 'sequencer' thread (midi, timer etc)
                                             //         4: currently offline processing and thus in user thread
                                             //     other: not defined, but probably pre-empting user thread.
-    audioMasterGetAutomationState,          // 24: returns 0: not supported, 1: off, 2:read, 3:write, 4:read/write
+    amGetAutomationState,          // 24: returns 0: not supported, 1: off, 2:read, 3:write, 4:read/write
 
     // offline
-    audioMasterOfflineStart,
-    audioMasterOfflineRead,                 // 26: ptr points to offline structure, see below. return 0: error, 1 ok
-    audioMasterOfflineWrite,                // 27: same as read
-    audioMasterOfflineGetCurrentPass,
-    audioMasterOfflineGetCurrentMetaPass,
+    amOfflineStart,
+    amOfflineRead,                 // 26: ptr points to offline structure, see below. return 0: error, 1 ok
+    amOfflineWrite,                // 27: same as read
+    amOfflineGetCurrentPass,
+    amOfflineGetCurrentMetaPass,
 
     // other
-    audioMasterSetOutputSampleRate,         // 30: NOT USED IN 2.4 - for variable i/o, sample rate in <opt>
-    audioMasterGetOutputSpeakerArrangement, // 31: NOT USED IN 2.4 - result in ret
-    audioMasterGetVendorString,             // 32: fills <ptr> with a string identifying the vendor (max 64 char)
-    audioMasterGetProductString,            // 33: fills <ptr> with a string with product name (max 64 char)
-    audioMasterGetVendorVersion,            // 34: returns vendor-specific version
-    audioMasterVendorSpecific,              // 35: no definition, vendor specific handling
-    audioMasterSetIcon,                     // 36: NOT USED IN 2.4 - void* in <ptr>, format not defined yet
-    audioMasterCanDo,                       // 37: string in ptr, see below
-    audioMasterGetLanguage,                 // 38: see enum
-    audioMasterOpenWindow,                  // 39: NOT USED IN 2.4 - returns platform specific ptr
-    audioMasterCloseWindow,                 // 40: NOT USED IN 2.4 - close window, platform specific handle in <ptr>
-    audioMasterGetDirectory,                // 41: get plug directory, FSSpec on MAC, else char*
-    audioMasterUpdateDisplay,               // 42: something has changed, update 'multi-fx' display
+    amSetOutputSampleRate,         // 30: NOT USED IN 2.4 - for variable i/o, sample rate in <opt>
+    amGetOutputSpeakerArrangement, // 31: NOT USED IN 2.4 - result in ret
+    amGetVendorString,             // 32: fills <ptr> with a string identifying the vendor (max 64 char)
+    amGetProductString,            // 33: fills <ptr> with a string with product name (max 64 char)
+    amGetVendorVersion,            // 34: returns vendor-specific version
+    amVendorSpecific,              // 35: no definition, vendor specific handling
+    amSetIcon,                     // 36: NOT USED IN 2.4 - void* in <ptr>, format not defined yet
+    amCanDo,                       // 37: string in ptr, see below
+    amGetLanguage,                 // 38: see enum
+    amOpenWindow,                  // 39: NOT USED IN 2.4 - returns platform specific ptr
+    amCloseWindow,                 // 40: NOT USED IN 2.4 - close window, platform specific handle in <ptr>
+    amGetDirectory,                // 41: get plug directory, FSSpec on MAC, else char*
+    amUpdateDisplay,               // 42: something has changed, update 'multi-fx' display
 
     //---from here VST 2.1 extension opcodes------------------------------------------------------
-    audioMasterBeginEdit,                   // 43: begin of automation session (when mouse down), parameter index in <index>
-    audioMasterEndEdit,                     // 44: end of automation session (when mouse up),     parameter index in <index>
-    audioMasterOpenFileSelector,            // 45: open a fileselector window with VstFileSelect* in <ptr>
+    amBeginEdit,                   // 43: begin of automation session (when mouse down), parameter index in <index>
+    amEndEdit,                     // 44: end of automation session (when mouse up),     parameter index in <index>
+    amOpenFileSelector,            // 45: open a fileselector window with VstFileSelect* in <ptr>
 
     //---from here VST 2.2 extension opcodes------------------------------------------------------
-    audioMasterCloseFileSelector,           // 46: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !
-    audioMasterEditFile,                    // 47: NOT USED IN 2.4 - open an editor for audio (defined by XML text in ptr)
-    audioMasterGetChunkFile,                // 48: NOT USED IN 2.4 - get the native path of currently loading bank or project
+    amCloseFileSelector,           // 46: close a fileselector operation with VstFileSelect* in <ptr>: Must be always called after an open !
+    amEditFile,                    // 47: NOT USED IN 2.4 - open an editor for audio (defined by XML text in ptr)
+    amGetChunkFile,                // 48: NOT USED IN 2.4 - get the native path of currently loading bank or project
                                             //     (called from writeChunk) void* in <ptr> (char[2048], or sizeof(FSSpec))
-    audioMasterGetInputSpeakerArrangement); // 49: NOT USED IN 2.4 - result a VstSpeakerArrangement in ret
+    amGetInputSpeakerArrangement); // 49: NOT USED IN 2.4 - result a VstSpeakerArrangement in ret
                                             //     will always return true.
 
   TAudioMasterCallbackFunc = function(const Effect: PVSTEffect; const Opcode: TAudioMasterOpcode; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
@@ -255,7 +255,10 @@ type
   TSetParameterProc = procedure(const Effect: PVSTEffect; const Index: Longint; const Parameter: Single); cdecl;
   TGetParameterFunc = function(const Effect: PVSTEffect; const Index: LongInt): Single; cdecl;
 
-  TMainProc = function(const audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl;
+  TMainProc = function(const AudioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl;
+  {$IFDEF jBridge}
+  TJBridgeMainProc = function(const AudioMaster: TAudioMasterCallbackFunc; FileName: PAnsiChar): PVSTEffect; cdecl;
+  {$ENDIF}
 
   TEffFlag = (
     effFlagsHasEditor,           // if set, is expected to react to editor messages
@@ -374,7 +377,7 @@ type
 
 // VstTimeInfo ///////////////////////////////////////////////////////////////
 //
-// VstTimeInfo as requested via audioMasterGetTime (getTimeInfo())
+// VstTimeInfo as requested via amGetTime (getTimeInfo())
 // refers to the current time slice. note the new slice is
 // already started when processEvents() is called
 
@@ -825,7 +828,7 @@ type
     Modifier  : Byte;     // see enum TVstModifierKey
   end;
 
-// Used by member virt of VstKeyCode /////////////////////////////////////////
+  // Used by member virt of VstKeyCode
   TVstVirtualKey = LongInt;
 
 const
@@ -897,8 +900,7 @@ type
   TVstModifierKey = (mkShift, mkAlternate, mkCommand, mkControl);
   TVstModifierKeys = set of TVstModifierKey;
 
-// Used by audioMasterOpenFileSelector ///////////////////////////////////////
-type
+  // Used by amOpenFileSelector
   PVstFileType = ^TVstFileType;
   TVstFileType = packed record
     name      : array[0..127] of AnsiChar;

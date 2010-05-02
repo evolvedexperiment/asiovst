@@ -94,6 +94,11 @@
   The default is disable.}
 {.$DEFINE VstHostCubase4}
 
+{ Enable this option if the jBridge should be used to bridge 64bit plugins if
+  available. jBridge is available at: http://jstuff.wordpress.com/jbridge
+  The default is disable.}
+{-$DEFINE jBridge}
+
 { Enable this option if the VST host should use FlatScrollBars instead of the
   3-D like scrollbars. It is disabled by default, because it hasn't been tested
   in detail.
