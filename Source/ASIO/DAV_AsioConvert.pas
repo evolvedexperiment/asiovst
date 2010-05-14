@@ -12,7 +12,7 @@ interface
 {$ENDIF}
 
 uses
-  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common;
+  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common, DAV_CPUDetectionTool;
 
 const
   CMaxShort   : Single = $7F;
@@ -4172,42 +4172,12 @@ end;
 
 initialization
  Use_FPU;
- {$IFNDEF FPC}
- try
-  ProcessorType := ptFPU;
-  asm
-   mov eax, 1
-   db $0F, $A2
-   test edx, 2000000h
-   jnz @SSEFound
-   mov ProcessorType, 0
-   jmp @END_SSE
-  @SSEFound:
-   mov ProcessorType, 1
-  @END_SSE:
-  end;
- except
-  ProcessorType := ptFPU;
- end;
 
- if ProcessorType = ptSSE then Use_SSE;
- asm
-  mov eax, 80000000h
-  db $0F, $A2
-  cmp eax, 80000000h
-  jbe @NO_EXTENDED
-  mov eax, 80000001h
-  db $0F, $A2
-  test edx, 80000000h
-  jz @NO_3DNow
-  mov ProcessorType, 2
-  jmp @END_3DNow
- @NO_EXTENDED:
- @NO_3DNow:
-  jmp @END_3DNow
- @END_3DNow:
- end;
- if ProcessorType = pt3DNow then Use_3DNow;
+ {$IFNDEF FPC}
+ if ssSSE in ProcessorInfo.SupportsSSE
+  then Use_SSE;
+ if ProcessorInfo.Has3DNow
+  then Use_3DNow;
  {$ENDIF}
 
 end.
