@@ -12,7 +12,7 @@ interface
 {$ENDIF}
 
 uses
-  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common, DAV_CPUDetectionTool;
+  {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common, DAV_ProcessorInfo;
 
 const
   CMaxShort   : Single = $7F;

@@ -51,7 +51,7 @@ contains
   DAV_Classes in '..\..\Source\DAV_Classes.pas',
   DAV_Complex in '..\..\Source\DAV_Complex.pas',
   DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas',
-  DAV_CPUDetectionTool in '..\..\Source\DAV_CPUDetectionTool.pas',
+  DAV_ProcessorInfo in '..\..\Source\DAV_ProcessorInfo.pas',
   DAV_CRC in '..\..\Source\DAV_CRC.pas',
   DAV_DLLLoader in '..\..\Source\DAV_DLLLoader.pas',
   DAV_EllipticFunctions in '..\..\Source\DAV_EllipticFunctions.pas',
@@ -69,6 +69,8 @@ contains
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
   DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
-  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas';
+  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas',
+  DAV_ProcessorInfoComponent in '..\..\Source\DAV_ProcessorInfoComponent.pas',
+  DAV_Bindings in '..\..\Source\DAV_Bindings.pas';
 
 end.
