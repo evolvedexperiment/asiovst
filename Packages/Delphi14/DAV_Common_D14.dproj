@@ -63,7 +63,7 @@
 			<DCCReference Include="..\..\Source\DAV_AudioMemory.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BitReserve.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Bindings.pas"/>
-			<DCCReference Include="..\..\Source\DAV_BlockRoutines.pas"/>
+			<DCCReference Include="..\..\Source\DAV_BlockProcessing.pas"/>
 			<DCCReference Include="..\..\Source\Math\DAV_BufferMathAsm.pas"/>
 			<DCCReference Include="..\..\Source\Math\DAV_BufferMathPascal.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_ChannelDataCoder.pas"/>
@@ -146,7 +146,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-05-16 01:23</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-05-16 01:31</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

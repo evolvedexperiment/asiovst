@@ -1,4 +1,4 @@
-unit DAV_BlockRoutines;
+unit DAV_BlockProcessing;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -25,7 +25,7 @@ unit DAV_BlockRoutines;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  DAV_Types, DAV_Complex;
+  DAV_Types, DAV_Complex, DAV_Bindings;
 
 procedure MixBuffers32(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer);
 procedure MixBuffers64(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer);
@@ -1064,5 +1064,13 @@ begin
    StartSample := I;
   until I >= EndSample;
 end;
+
+procedure BindFunctions;
+begin
+
+end;
+
+initialization
+  BindFunctions;
 
 end.

@@ -39,7 +39,7 @@ contains
   DAV_AudioMemory in '..\..\Source\DAV_AudioMemory.pas',
   DAV_BitReserve in '..\..\Source\DAV_BitReserve.pas',
   DAV_Bindings in '..\..\Source\DAV_Bindings.pas',
-  DAV_BlockRoutines in '..\..\Source\DAV_BlockRoutines.pas',
+  DAV_BlockProcessing in '..\..\Source\DAV_BlockProcessing.pas',
   DAV_BufferMathAsm in '..\..\Source\Math\DAV_BufferMathAsm.pas',
   DAV_BufferMathPascal in '..\..\Source\Math\DAV_BufferMathPascal.pas',
   DAV_ChannelDataCoder in '..\..\Source\FileFormats\DAV_ChannelDataCoder.pas',
