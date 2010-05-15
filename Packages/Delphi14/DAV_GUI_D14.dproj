@@ -59,6 +59,7 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiAudioDataDisplay.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiAudioDataDisplayAxis.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiAudioDataDisplayCursor.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiBackgrounds.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiBaseControl.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiButton.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiCommon.pas"/>
@@ -68,22 +69,22 @@
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDialDesign.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiDynamicWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiEQGraph.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiEQSlide.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiGraphXY.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiGraphXYDesign.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiGroup.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiLabel.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiLED.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiLevelMeter.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiMediaButton.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeys.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiMidiKeyZones.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiModular.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiPanel.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiSelectBox.pas"/>
+			<DCCReference Include="..\..\Source\GUI\DAV_GuiSlider.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiStaticWaveform.pas"/>
 			<DCCReference Include="..\..\Source\GUI\DAV_GuiVUMeter.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiBackgrounds.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiEQSlide.pas"/>
-			<DCCReference Include="..\..\Source\GUI\DAV_GuiSlider.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>

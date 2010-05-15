@@ -26,14 +26,14 @@ type
     EditorUnitName : string;
     EditorFormName : string;
     UseEditor      : Boolean;
-    UniqueID       : string;
-    EffectName     : string;
+    UniqueID       : AnsiString;
+    EffectName     : AnsiString;
     IsSynth        : Boolean;
     VersionMajor   : Integer;
     VersionMinor   : Integer;
     VersionRelease : Integer;
-    VendorName     : string;
-    ProductName    : string;
+    VendorName     : AnsiString;
+    ProductName    : AnsiString;
     SaveWhenDone   : Boolean;
     constructor Create;
   end;

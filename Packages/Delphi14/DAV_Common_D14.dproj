@@ -60,7 +60,9 @@
 			<DCCReference Include="..\..\Source\FileFormats\DAV_AudioFileAIFF.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_AudioFileAU.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_AudioFileWAV.pas"/>
+			<DCCReference Include="..\..\Source\DAV_AudioMemory.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BitReserve.pas"/>
+			<DCCReference Include="..\..\Source\DAV_Bindings.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BlockRoutines.pas"/>
 			<DCCReference Include="..\..\Source\Math\DAV_BufferMathAsm.pas"/>
 			<DCCReference Include="..\..\Source\Math\DAV_BufferMathPascal.pas"/>
@@ -72,7 +74,6 @@
 			<DCCReference Include="..\..\Source\DAV_Classes.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Complex.pas"/>
 			<DCCReference Include="..\..\Source\DAV_ComplexData.pas"/>
-			<DCCReference Include="..\..\Source\DAV_ProcessorInfo.pas"/>
 			<DCCReference Include="..\..\Source\DAV_CRC.pas"/>
 			<DCCReference Include="..\..\Source\DAV_DLLLoader.pas"/>
 			<DCCReference Include="..\..\Source\DAV_EllipticFunctions.pas"/>
@@ -83,16 +84,16 @@
 			<DCCReference Include="..\..\Source\DAV_MidiFile.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_MpegAudio.pas"/>
 			<DCCReference Include="..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas"/>
+			<DCCReference Include="..\..\Source\DAV_OpenToolsUtils.pas"/>
 			<DCCReference Include="..\..\Source\DAV_ProcessingComponent.pas"/>
+			<DCCReference Include="..\..\Source\DAV_ProcessorInfo.pas"/>
+			<DCCReference Include="..\..\Source\DAV_ProcessorInfoComponent.pas"/>
 			<DCCReference Include="..\..\Source\DAV_SampleRateSource.pas"/>
 			<DCCReference Include="..\..\Source\DAV_StereoBuffer.pas"/>
 			<DCCReference Include="..\..\Source\DAV_SynthFilter.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Types.pas"/>
 			<DCCReference Include="..\..\Source\DAV_VectorMath.pas"/>
 			<DCCReference Include="..\..\Source\DAV_WaveFileTypes.pas"/>
-			<DCCReference Include="..\..\Source\DAV_OpenToolsUtils.pas"/>
-			<DCCReference Include="..\..\Source\DAV_ProcessorInfoComponent.pas"/>
-			<DCCReference Include="..\..\Source\DAV_Bindings.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -145,7 +146,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-05-15 03:39</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-05-16 01:23</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

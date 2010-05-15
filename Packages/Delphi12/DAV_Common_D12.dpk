@@ -38,7 +38,9 @@ contains
   DAV_AudioFileAIFF in '..\..\Source\FileFormats\DAV_AudioFileAIFF.pas',
   DAV_AudioFileAU in '..\..\Source\FileFormats\DAV_AudioFileAU.pas',
   DAV_AudioFileWAV in '..\..\Source\FileFormats\DAV_AudioFileWAV.pas',
+  DAV_AudioMemory in '..\..\Source\DAV_AudioMemory.pas',
   DAV_BitReserve in '..\..\Source\DAV_BitReserve.pas',
+  DAV_Bindings in '..\..\Source\DAV_Bindings.pas',
   DAV_BlockRoutines in '..\..\Source\DAV_BlockRoutines.pas',
   DAV_BufferMathAsm in '..\..\Source\Math\DAV_BufferMathAsm.pas',
   DAV_BufferMathPascal in '..\..\Source\Math\DAV_BufferMathPascal.pas',
@@ -50,7 +52,6 @@ contains
   DAV_Classes in '..\..\Source\DAV_Classes.pas',
   DAV_Complex in '..\..\Source\DAV_Complex.pas',
   DAV_ComplexData in '..\..\Source\DAV_ComplexData.pas',
-  DAV_CPUDetectionTool in '..\..\Source\DAV_CPUDetectionTool.pas',
   DAV_CRC in '..\..\Source\DAV_CRC.pas',
   DAV_DLLLoader in '..\..\Source\DAV_DLLLoader.pas',
   DAV_EllipticFunctions in '..\..\Source\DAV_EllipticFunctions.pas',
@@ -61,13 +62,15 @@ contains
   DAV_MidiFile in '..\..\Source\DAV_MidiFile.pas',
   DAV_MpegAudio in '..\..\Source\FileFormats\DAV_MpegAudio.pas',
   DAV_MpegAudioLayer3 in '..\..\Source\FileFormats\DAV_MpegAudioLayer3.pas',
+  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas',
   DAV_ProcessingComponent in '..\..\Source\DAV_ProcessingComponent.pas',
+  DAV_ProcessorInfo in '..\..\Source\DAV_ProcessorInfo.pas',
+  DAV_ProcessorInfoComponent in '..\..\Source\DAV_ProcessorInfoComponent.pas',
   DAV_SampleRateSource in '..\..\Source\DAV_SampleRateSource.pas',
   DAV_StereoBuffer in '..\..\Source\DAV_StereoBuffer.pas',
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
-  DAV_OpenToolsUtils in '..\..\Source\DAV_OpenToolsUtils.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
 
 end.

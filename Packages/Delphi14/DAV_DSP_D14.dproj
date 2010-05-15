@@ -23,7 +23,7 @@
 			<DCC_DcuOutput>..\..\Precompiles</DCC_DcuOutput>
 			<DesignOnlyPackage>false</DesignOnlyPackage>
 			<DCC_UnitSearchPath>..\..\Source;..\..\Source\DSP;..\..\Source\Math;..\..\Source\FileFormats;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-			<DCC_DependencyCheckOutputName>C:\Users\Public\Documents\RAD Studio\7.0\Bpl\DAV_DSP_D14.bpl</DCC_DependencyCheckOutputName>
+			<DCC_DependencyCheckOutputName>..\..\..\..\Documents\RAD Studio\7.0\Bpl\DAV_DSP_D14.bpl</DCC_DependencyCheckOutputName>
 			<DCC_ImageBase>00510000</DCC_ImageBase>
 			<GenPackage>true</GenPackage>
 			<DCC_UnitAlias>WinTypes=Windows;WinProcs=Windows;$(DCC_UnitAlias)</DCC_UnitAlias>
@@ -55,6 +55,7 @@
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspRegister.pas"/>
 			<DCCReference Include="..\..\Source\DAV_ClassesFft.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspAmbience.pas"/>
+			<DCCReference Include="..\..\Source\DSP\DAV_DspAnalogueFilterPrototypes.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspAudioToMidiTrigger.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspBarberpole.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspBarberpoleTuner.pas"/>
@@ -130,6 +131,8 @@
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspRemez.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspRingModulator.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspSimpleOscillator.pas"/>
+			<DCCReference Include="..\..\Source\DSP\DAV_DspSpectralEffects.pas"/>
+			<DCCReference Include="..\..\Source\DSP\DAV_DspSpectralFilters.pas"/>
 			<DCCReference Include="..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas"/>
 			<DCCReference Include="..\..\Source\DSP\DAV_DspSpectrumInterpolation.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspStateVariableFilter.pas"/>
@@ -144,8 +147,6 @@
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspWaveshaper.pas"/>
 			<DCCReference Include="..\..\Source\DSP\DAV_DspWindowFunctions.pas"/>
 			<DCCReference Include="..\..\Source\Dsp\DAV_DspWindowing.pas"/>
-			<DCCReference Include="..\..\Source\DSP\DAV_DspSpectralEffects.pas"/>
-			<DCCReference Include="..\..\Source\DSP\DAV_DspSpectralFilters.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -198,6 +199,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
+						<VersionInfoKeys Name="Last Compile">2010-05-16 01:23</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

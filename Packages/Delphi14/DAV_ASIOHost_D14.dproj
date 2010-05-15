@@ -54,22 +54,24 @@
 			<DCCReference Include="designide.dcp"/>
 			<DCCReference Include="DAV_Common_D14.dcp"/>
 			<DCCReference Include="..\..\Source\Asio\DAV_Asio.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioInterface.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_OpenAsio.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioHost.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioConvert.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioGenerator.pas"/>
 			<DCCReference Include="..\..\Source\Asio\DAV_AsioChannelStrip.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioMixer.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioRegister.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverWizardReg.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverWizardFrm.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverWizard.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioConvert.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriver.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverConfig.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverControlPanelCreator.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverModule.pas"/>
 			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverModuleCreator.pas"/>
 			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverProjectCreator.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverControlPanelCreator.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverConfig.pas"/>
-			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriver.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverWizard.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverWizardFrm.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioDriverWizardReg.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioGenerator.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioHost.pas"/>
+			<DCCReference Include="..\..\Source\ASIO\DAV_ASIOHostAudioData.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioInterface.pas"/>
+			<DCCReference Include="..\..\Source\ASIO\DAV_AsioList.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioMixer.pas"/>
+			<DCCReference Include="..\..\Source\Asio\DAV_AsioRegister.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -122,7 +124,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-05-14 23:58</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-05-16 01:23</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

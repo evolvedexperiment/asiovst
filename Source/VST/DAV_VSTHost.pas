@@ -836,7 +836,9 @@ begin
 end;
 {$ENDIF}
 
-function AudioMasterCallback(const Effect: PVstEffect; const Opcode : TAudioMasterOpcode; const Index, Value: LongInt; const Ptr: Pointer; const Opt: Single): LongInt; cdecl;
+function AudioMasterCallback(const Effect: PVstEffect;
+  const Opcode : TAudioMasterOpcode; const Index: LongInt;
+  const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
 var
   Plugin    : TCustomVstPlugIn;
   Host      : TCustomVstHost;
@@ -4054,4 +4056,4 @@ finalization
   FreeAndNil(GHostList);
   {$ENDIF}
 
-end.
+end.

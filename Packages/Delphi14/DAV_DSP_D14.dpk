@@ -1,5 +1,6 @@
 package DAV_DSP_D14;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -33,6 +34,7 @@ contains
   DAV_DspRegister in '..\..\Source\Dsp\DAV_DspRegister.pas',
   DAV_ClassesFft in '..\..\Source\DAV_ClassesFft.pas',
   DAV_DspAmbience in '..\..\Source\Dsp\DAV_DspAmbience.pas',
+  DAV_DspAnalogueFilterPrototypes in '..\..\Source\DSP\DAV_DspAnalogueFilterPrototypes.pas',
   DAV_DspAudioToMidiTrigger in '..\..\Source\Dsp\DAV_DspAudioToMidiTrigger.pas',
   DAV_DspBarberpole in '..\..\Source\Dsp\DAV_DspBarberpole.pas',
   DAV_DspBarberpoleTuner in '..\..\Source\Dsp\DAV_DspBarberpoleTuner.pas',
@@ -108,6 +110,8 @@ contains
   DAV_DspRemez in '..\..\Source\Dsp\DAV_DspRemez.pas',
   DAV_DspRingModulator in '..\..\Source\Dsp\DAV_DspRingModulator.pas',
   DAV_DspSimpleOscillator in '..\..\Source\Dsp\DAV_DspSimpleOscillator.pas',
+  DAV_DspSpectralEffects in '..\..\Source\DSP\DAV_DspSpectralEffects.pas',
+  DAV_DspSpectralFilters in '..\..\Source\DSP\DAV_DspSpectralFilters.pas',
   DAV_DspSpectralNoiseReduction in '..\..\Source\DSP\DAV_DspSpectralNoiseReduction.pas',
   DAV_DspSpectrumInterpolation in '..\..\Source\DSP\DAV_DspSpectrumInterpolation.pas',
   DAV_DspStateVariableFilter in '..\..\Source\Dsp\DAV_DspStateVariableFilter.pas',
@@ -121,8 +125,6 @@ contains
   DAV_DspVoiceSynth in '..\..\Source\Dsp\DAV_DspVoiceSynth.pas',
   DAV_DspWaveshaper in '..\..\Source\Dsp\DAV_DspWaveshaper.pas',
   DAV_DspWindowFunctions in '..\..\Source\DSP\DAV_DspWindowFunctions.pas',
-  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas',
-  DAV_DspSpectralEffects in '..\..\Source\DSP\DAV_DspSpectralEffects.pas',
-  DAV_DspSpectralFilters in '..\..\Source\DSP\DAV_DspSpectralFilters.pas';
+  DAV_DspWindowing in '..\..\Source\Dsp\DAV_DspWindowing.pas';
 
 end.

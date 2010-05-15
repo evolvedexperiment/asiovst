@@ -1,5 +1,35 @@
 unit DAV_AsioConvert;
 
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Christian-W. Budde                  //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2010        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
 interface
 
 {$I ..\DAV_Compiler.inc}
@@ -11,27 +41,14 @@ interface
 {$DEFINE PUREPASCAL}
 {$ENDIF}
 
+{-$DEFINE PUREPASCAL}
+
 uses
   {$IFDEF FPC}LCLIntf{$ELSE}Windows{$ENDIF}, DAV_Common, DAV_ProcessorInfo;
 
-const
-  CMaxShort   : Single = $7F;
-  CMinShort   : Single = 1/$7F;
-  CMaxSmall   : Single = $7FFF;
-  CMinSmall   : Single = 1/$7FFF;
-  CMax18      : Double = $1FFFF;
-  CMin18      : Double = 1/$1FFFF;
-  CMax20      : Double = $7FFFF;
-  CMin20      : Double = 1/$7FFFF;
-  CMax24      : Double = $7FFFFF;
-  CMin24      : Double = 1/$7FFFFF;
-  CMaxLong    : Double = $7FFFFFFF;
-  CMinLong    : Double = 1/$7FFFFFFF;
-  CMaxLongMMX : array[0..3] of Single = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
-  CMinLongMMX : array[0..3] of Single = (1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF, 1/$7FFFFFFF);
-
 type
   TProcessorType = (ptFPU, ptSSE, pt3DNow);
+
   TInConverter = record
                   ic32 : procedure(Source: Pointer; Target: PSingle; SampleCount: LongInt);
                   ic64 : procedure(Source: Pointer; Target: PDouble; SampleCount: LongInt);
@@ -47,20 +64,6 @@ type
 
   TClipCheckFunction = function (Source: Pointer; SampleCount: LongInt): Boolean;
 
-{$IFNDEF FPU}
-type
-  TBtArray   = Array[0..0] of Byte;
-  PBtArray   = ^TBtArray;
-  TWrdArray  = Array[0..0] of SmallInt;
-  PWrdArray  = ^TWrdArray;
-  TDblArray  = Array[0..0] of Double;
-  PDblArray  = ^TDblArray;
-  TntgrArray = Array[0..0] of Integer;
-  PntgrArray = ^TntgrArray;
-  TSnglArray = Array[0..0] of Single;
-  PSnglArray = ^TSnglArray;
-{$ENDIF}
-
 procedure Use_FPU;
 procedure Use_SSE;
 procedure Use_3DNow;
@@ -69,6 +72,7 @@ procedure Use_FPU_TDF;
 
 var
   ProcessorType       : TProcessorType;
+
   FromInt16MSB        : TInConverter;
   FromInt24MSB        : TInConverter;  // used for 20 bits as well
   FromInt32MSB        : TInConverter;
@@ -128,8 +132,8 @@ var
 
 var
   MixBuffers : record
-    mb32 : procedure(Data: PSingle; MixBuffer:PSingle; SampleCount: Integer);
-    mb64 : procedure(Data: PDouble; MixBuffer:PDouble; SampleCount: Integer);
+    mb32 : procedure(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer);
+    mb64 : procedure(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer);
   end;
 
   Volume : record
@@ -148,13 +152,13 @@ var
   end;
 
   FadeLinear : record
-    v32 : procedure(Data:PSingle; SampleCount: Integer; CurrentFak, FacInc: Double);
-    v64 : procedure(Data:PDouble; SampleCount: Integer; CurrentFak, FacInc: Double);
+    v32 : procedure(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single);
+    v64 : procedure(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double);
   end;
 
   FadeExponential : record
-    v32 : procedure(Data:PSingle; SampleCount: Integer; CurrentFak, FacInc: Double);
-    v64 : procedure(Data:PDouble; SampleCount: Integer; CurrentFak, FacInc: Double);
+    v32 : procedure(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single);
+    v64 : procedure(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double);
   end;
 
   Trigger : record
@@ -170,6 +174,36 @@ implementation
 
 uses
   Math {$IFDEF PUREPASCAL}, DAV_Approximations {$ENDIF};
+
+{$IFNDEF FPU}
+type
+  TWrdArray  = Array[0..0] of SmallInt;
+  PWrdArray  = ^TWrdArray;
+  TDblArray  = Array[0..0] of Double;
+  PDblArray  = ^TDblArray;
+  TntgrArray = Array[0..0] of Integer;
+  PntgrArray = ^TntgrArray;
+  TSnglArray = Array[0..0] of Single;
+  PSnglArray = ^TSnglArray;
+{$ENDIF}
+
+const
+  CFloatToShort : Single = $7F;
+  CShortToFloat : Single = 1 / $7F;
+  CFloatToSmall : Single = $7FFF;
+  CSmallToFloat : Single = 1 / $7FFF;
+  CFloatToInt18 : Double = $1FFFF;
+  CInt18ToFloat : Double = 1 / $1FFFF;
+  CFloatToInt20 : Double = $7FFFF;
+  CInt20ToFloat : Double = 1 / $7FFFF;
+  CFloatToInt24 : Double = $7FFFFF;
+  CInt24ToFloat : Double = 1 / $7FFFFF;
+  CFloatToInt   : Double = $7FFFFFFF;
+  CIntToFloat   : Double = 1 / $7FFFFFFF;
+  CFloatToInt4  : array[0..3] of Single = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF,
+    $7FFFFFFF);
+  CIntToFloat4  : array[0..3] of Single = (1 / $7FFFFFFF, 1 / $7FFFFFFF,
+    1 / $7FFFFFFF, 1 / $7FFFFFFF);
 
 var
   RandSeed : LongInt;
@@ -463,16 +497,16 @@ asm
 end;
 {$ENDIF}
 
-procedure FadeExponential_FPU(Data: PSingle; SampleCount: Integer; CurrentFadeFak, FadeMul : Double); overload;
+procedure FadeExponential_FPU(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single); overload;
 {-$IFDEF PUREPASCAL}
 var
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1 do
   begin
-   Data^ := Data^ * CurrentFadeFak;
-   CurrentFadeFak := CurrentFadeFak * FadeMul;
-   if CurrentFadeFak > 1 then Exit;
+   Data^ := Data^ * ScaleFactor;
+   ScaleFactor := ScaleFactor * Gradient;
+   if ScaleFactor > 1 then Exit;
    Inc(Data);
   end;
 (*
@@ -482,20 +516,20 @@ asm
  use unless you rewrite the code! 
 
  fld1
- fld FadeMul.Double
- fld CurrentFadeFak.Double
+ fld Gradient.Double
+ fld ScaleFactor.Double
  mov ecx, eax
 
  @FadeLoop:
-   fld  [ecx + 4 * edx - 4].Single  // Value, CurrentFadeFak, FadeMul, 1
-   fmul st(0), st(1)                // Value * CurrentFadeFak, CurrentFadeFak, FadeMul, 1
-   fstp [ecx + 4 * edx - 4].Single  // CurrentFadeFak, FadeMul, 1
-   fmul st(0), st(1)                // CurrentFadeFak * FadeMul = CurrentFadeFak, FadeMul, 1
+   fld  [ecx + 4 * edx - 4].Single  // Value, ScaleFactor, Gradient, 1
+   fmul st(0), st(1)                // Value * ScaleFactor, ScaleFactor, Gradient, 1
+   fstp [ecx + 4 * edx - 4].Single  // ScaleFactor, Gradient, 1
+   fmul st(0), st(1)                // ScaleFactor * Gradient = ScaleFactor, Gradient, 1
 
-   fcomi st(0), st(2)               // CurrentFadeFak <-> 1 ?
+   fcomi st(0), st(2)               // ScaleFactor <-> 1 ?
    fstsw ax                         // ax = FPU Status Word
    sahf                             // ax -> EFLAGS register
-   jb @FadeLoopEnd                  // if CurrentFadeFak > 1 then exit!
+   jb @FadeLoopEnd                  // if ScaleFactor > 1 then exit!
 
    dec edx
  jnz @FadeLoop
@@ -508,16 +542,16 @@ asm
 *)
 end;
 
-procedure FadeExponential_FPU(Data: PDouble; SampleCount: Integer; CurrentFadeFak, FadeMul : Double); overload;
+procedure FadeExponential_FPU(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient : Double); overload;
 {-$IFDEF PUREPASCAL}
 var
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1 do
   begin
-   Data^ := Data^ * CurrentFadeFak;
-   CurrentFadeFak := CurrentFadeFak * FadeMul;
-   if CurrentFadeFak > 1 then Exit;
+   Data^ := Data^ * ScaleFactor;
+   ScaleFactor := ScaleFactor * Gradient;
+   if ScaleFactor > 1 then Exit;
    Inc(Data);
   end;
 (*
@@ -527,20 +561,20 @@ asm
  use unless you rewrite the code! 
 
  fld1                                // 1
- fld FadeMul.Double                  // FadeMul, 1
- fld CurrentFadeFak.Double           // CurrentFadeFak, FadeMul, 1
+ fld Gradient.Double                  // Gradient, 1
+ fld ScaleFactor.Double           // ScaleFactor, Gradient, 1
  mov ecx, eax                        // ecx = eax
 
  @FadeLoop:
-   fld  [ecx + 8 * edx - 8].Double   // Value, CurrentFadeFak, FadeMul, 1
-   fmul st(0), st(1)                 // Value * CurrentFadeFak, CurrentFadeFak, ...
+   fld  [ecx + 8 * edx - 8].Double   // Value, ScaleFactor, Gradient, 1
+   fmul st(0), st(1)                 // Value * ScaleFactor, ScaleFactor, ...
    fstp [ecx + 8 * edx - 8].Double   // write back
-   fmul st(0), st(1)                 // FadeMul * CurrentFadeFak, FadeMul, 1
+   fmul st(0), st(1)                 // Gradient * ScaleFactor, Gradient, 1
 
-   fcomi st(0), st(2)                // CurrentFadeFak <-> 1 ?
+   fcomi st(0), st(2)                // ScaleFactor <-> 1 ?
    fstsw ax                          // ax = FPU Status Word
    sahf                              // ax -> EFLAGS register
-   jb @FadeLoopEnd                   // if CurrentFadeFak > 1 then Exit!
+   jb @FadeLoopEnd                   // if ScaleFactor > 1 then Exit!
 
    dec edx
  jnz @FadeLoop
@@ -553,35 +587,35 @@ asm
 *)
 end;
 
-procedure FadeLinear_FPU(Data: PSingle; SampleCount: Integer; CurrentFadeFak, FadeAddInc : Double); overload;
+procedure FadeLinear_FPU(Data: PSingle; SampleCount: Integer; ScaleFactor, Gradient: Single); overload;
 {$IFDEF PUREPASCAL}
 var
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1 do
   begin
-   Data^ := Data^ * CurrentFadeFak;
-   CurrentFadeFak := CurrentFadeFak + FadeAddInc;
-   if CurrentFadeFak > 1 then Exit;
+   Data^ := Data^ * ScaleFactor;
+   ScaleFactor := ScaleFactor + Gradient;
+   if ScaleFactor > 1 then Exit;
    Inc(Data);
   end;
 {$ELSE}
 asm
  fld1
- fld FadeAddInc.Double
- fld CurrentFadeFak.Double
+ fld Gradient.Double
+ fld ScaleFactor.Double
  mov ecx, eax                        // ecx = eax
 
  @FadeLoop:
-   fld  [ecx + 4 * edx - 4].Single   // Value, CurrentFadeFak
-   fmul st(0), st(1)                 // Value * CurrentFadeFak, CurrentFadeFak
+   fld  [ecx + 4 * edx - 4].Single   // Value, ScaleFactor
+   fmul st(0), st(1)                 // Value * ScaleFactor, ScaleFactor
    fstp [ecx + 4 * edx - 4].Single   // write back
-   fadd st(0), st(1)                 // CurrentFadeFak + FadeAddInc
+   fadd st(0), st(1)                 // ScaleFactor + Gradient
 
-   fcomi st(0), st(2)                // CurrentFadeFak <-> 1 ?
+   fcomi st(0), st(2)                // ScaleFactor <-> 1 ?
    fstsw ax                          // ax = FPU Status Word
    sahf                              // ax -> EFLAGS register
-   jb @FadeLoopEnd                   // if CurrentFadeFak > 1 then exit!
+   jb @FadeLoopEnd                   // if ScaleFactor > 1 then exit!
 
    dec edx
  jnz @FadeLoop
@@ -593,35 +627,35 @@ asm
 {$ENDIF}
 end;
 
-procedure FadeLinear_FPU(Data: PDouble; SampleCount: Integer; CurrentFadeFak, FadeAddInc : Double); overload;
+procedure FadeLinear_FPU(Data: PDouble; SampleCount: Integer; ScaleFactor, Gradient: Double); overload;
 {$IFDEF PUREPASCAL}
 var
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1 do
   begin
-   Data^ := Data^ * CurrentFadeFak;
-   CurrentFadeFak := CurrentFadeFak + FadeAddInc;
-   if CurrentFadeFak > 1 then exit;
+   Data^ := Data^ * ScaleFactor;
+   ScaleFactor := ScaleFactor + Gradient;
+   if ScaleFactor > 1 then exit;
    Inc(Data);
   end;
 {$ELSE}
 asm
  fld1
- fld FadeAddInc.Double
- fld CurrentFadeFak.Double
+ fld Gradient.Double
+ fld ScaleFactor.Double
  mov ecx, eax                      // ecx = eax
 
  @FadeLoop:
-   fld  [ecx + 8 * edx - 8].Double // Value, CurrentFadeFak
-   fmul st(0), st(1)                // Value * CurrentFadeFak, CurrentFadeFak
+   fld  [ecx + 8 * edx - 8].Double // Value, ScaleFactor
+   fmul st(0), st(1)                // Value * ScaleFactor, ScaleFactor
    fstp [ecx + 8 * edx - 8].Double // write back
-   fmul st(0), st(1)                // CurrentFadeFak + FadeAddInc
+   fmul st(0), st(1)                // ScaleFactor + Gradient
 
-   fcomi st(0), st(2)              // CurrentFadeFak <-> 1 ?
+   fcomi st(0), st(2)              // ScaleFactor <-> 1 ?
    fstsw ax                        // ax = FPU Status Word
    sahf                            // ax -> EFLAGS register
-   jb @FadeLoopEnd                 // if CurrentFadeFak > 1 then exit!
+   jb @FadeLoopEnd                 // if ScaleFactor > 1 then exit!
 
    dec edx
  jnz @FadeLoop
@@ -824,19 +858,22 @@ end;
 /////////////////////////////////// FPU ////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-procedure Int16LSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt); overload;
+procedure Int16LSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 {$IFDEF PUREPASCAL}
 var
-  SourceArray : PWrdArray absolute Source;
-  TargetArray : PSnglArray absolute Target;
+  WordSource  : PWord absolute Source;
   SampleIndex : Integer;
 begin
- for SampleIndex := 0 to SampleCount - 1
-  do TargetArray[SampleIndex] := SourceArray[SampleIndex]*CMinSmall;
+ for SampleIndex := 0 to SampleCount - 1 do
+  begin
+   Target^ := WordSource^ * CSmallToFloat;
+   Inc(WordSource);
+   Inc(Target);
+  end;
 end;
 {$ELSE}
 asm
-  fld   CMinSmall //for speed
+  fld   CSmallToFloat //for speed
  @Start:
   fild  [eax + 2 * ecx - 2].word
   fmul  st(0), st(1)
@@ -846,7 +883,7 @@ asm
 end;
 {$ENDIF}
 
-procedure Int16LSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: LongInt); overload;
+procedure Int16LSBToDouble_FPU(Source: Pointer; Target: PDouble; SampleCount: LongInt);
 {$IFDEF PUREPASCAL}
 var
   SourceArray : PWrdArray absolute Source;
@@ -854,11 +891,11 @@ var
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1
-  do TargetArray[SampleIndex] := SourceArray[SampleIndex] * CMinSmall;
+  do TargetArray[SampleIndex] := SourceArray[SampleIndex] * CSmallToFloat;
 end;
 {$ELSE}
 asm
-  fld   CMinSmall        //for speed
+  fld   CSmallToFloat        //for speed
  @Start:
   fild  [eax + 2 * ecx - 2].Word
   fmul  st(0), st(1)
@@ -868,7 +905,7 @@ asm
 end;
 {$ENDIF}
 
-procedure Int24LSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt); overload;
+procedure Int24LSBToSingle_FPU(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 {$IFDEF PUREPASCAL}
 var
   SourceInt   : PInteger absolute Source;
@@ -884,13 +921,13 @@ var
 begin
  for SampleIndex := 0 to SampleCount - 1 do
   begin
-   TargetArray[SampleIndex] := (SourceInt^ and $FFFFFF00) * CMinLong;
+   TargetArray[SampleIndex] := (SourceInt^ and $FFFFFF00) * CIntToFloat;
    Inc(SourceByte, 3);
   end;
 end;
 {$ELSE}
 asm
- fld   CMinLong
+ fld   CIntToFloat
  push  ebx
  mov   ecx, SampleCount
 
@@ -922,13 +959,13 @@ var
 begin
  for SampleIndex := 0 to SampleCount - 1 do
   begin
-   TargetArray[SampleIndex] := (SourceInt^ shr 8) * CMin24;
+   TargetArray[SampleIndex] := (SourceInt^ shr 8) * CInt24ToFloat;
    Inc(SourceByte, 3);
   end;
 end;
 {$ELSE}
 asm
- fld   CMinLong
+ fld   CIntToFloat
  push  ebx
  mov   ecx, SampleCount
 
@@ -956,11 +993,11 @@ var
   SampleIndex : Integer;
 begin
  for SampleIndex := 0 to SampleCount - 1
-  do TargetArray[SampleIndex] := SourceArray[SampleIndex]*CMinLong;
+  do TargetArray[SampleIndex] := SourceArray[SampleIndex]*CIntToFloat;
 end;
 {$ELSE}
 asm
-  fld   CMinLong         //for speed
+  fld   CIntToFloat         //for speed
  @Start:
   dec   ecx
   fild  [eax + 4 * ecx].DWord
@@ -979,11 +1016,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i] * CMinLong;
+  do TargetArray[i] := SourceArray[i] * CIntToFloat;
 end;
 {$ELSE}
 asm
-  fld   CMinLong         //for speed
+  fld   CIntToFloat         //for speed
  @Start:
   dec ecx
   fild  [eax + 4 * ecx].DWord
@@ -1052,11 +1089,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i]*CMinSmall;
+  do TargetArray[i] := SourceArray[i]*CSmallToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMinSmall
+  fld      CSmallToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1074,11 +1111,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i]*CMinSmall;
+  do TargetArray[i] := SourceArray[i]*CSmallToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMinSmall
+  fld      CSmallToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1096,11 +1133,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i]*CMin18;
+  do TargetArray[i] := SourceArray[i]*CInt18ToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMin18
+  fld      CInt18ToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1118,11 +1155,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i]*CMin18;
+  do TargetArray[i] := SourceArray[i]*CInt18ToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMin18
+  fld      CInt18ToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1140,11 +1177,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i]*CMin20;
+  do TargetArray[i] := SourceArray[i]*CInt20ToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMin20
+  fld      CInt20ToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1162,11 +1199,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i]*CMin20;
+  do TargetArray[i] := SourceArray[i]*CInt20ToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMin20
+  fld      CInt20ToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1184,11 +1221,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i] * CMin24;
+  do TargetArray[i] := SourceArray[i] * CInt24ToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMin24
+  fld      CInt24ToFloat
 @Start:
   fild     [eax + 4 * ecx - 4].DWord;
   fmul     st(0), st(1)
@@ -1206,11 +1243,11 @@ var
   i           : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i] * CMin24;
+  do TargetArray[i] := SourceArray[i] * CInt24ToFloat;
 end;
 {$ELSE}
 asm
-  fld      CMin24
+  fld      CInt24ToFloat
 @Start:
   fild     [eax+4*ecx-4].DWord
   fmul     st(0), st(1)
@@ -1229,12 +1266,12 @@ var
 begin
  ReverseEndian4(Source, SampleCount div 2);
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i] * CMinSmall;
+  do TargetArray[i] := SourceArray[i] * CSmallToFloat;
 end;
 {$ELSE}
 asm
   push ebx
-  fld   CMinSmall
+  fld   CSmallToFloat
  @Start:
   mov bx, [eax + 2 * ecx - 2]
   rol bx, $8
@@ -1257,12 +1294,12 @@ var
 begin
  ReverseEndian4(Source, SampleCount div 2);
  for i := 0 to SampleCount - 1
-  do TargetArray[i] := SourceArray[i] * CMinSmall;
+  do TargetArray[i] := SourceArray[i] * CSmallToFloat;
 end;
 {$ELSE}
 asm
   push ebx
-  fld   CMinSmall
+  fld   CSmallToFloat
  @Start:
   mov bx, [eax+2*ecx-2]
   rol bx, $8
@@ -1284,7 +1321,7 @@ begin
 end;
 {$ELSE}
 asm
- fld CMin24
+ fld CInt24ToFloat
  push ebx
 @Start:
  xor ebx, ebx
@@ -1316,7 +1353,7 @@ begin
 end;
 {$ELSE}
 asm
- fld CMin24
+ fld CInt24ToFloat
  push ebx
 @Start:
  xor ebx, ebx
@@ -1349,7 +1386,7 @@ end;
 {$ELSE}
 asm
  push   ebx
- fld    CMinLong
+ fld    CIntToFloat
 @Start:
  mov    ebx, [eax+4*ecx-4]
  bswap  ebx
@@ -1372,7 +1409,7 @@ end;
 {$ELSE}
 asm
  push   ebx
- fld    CMinLong
+ fld    CIntToFloat
 @Start:
  mov    ebx, [eax+4*ecx-4]
  bswap  ebx
@@ -1446,7 +1483,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMinSmall
+  fld      CSmallToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1469,7 +1506,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMinSmall
+  fld      CSmallToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1492,7 +1529,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMin18
+  fld      CInt18ToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1515,7 +1552,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMin18
+  fld      CInt18ToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1538,7 +1575,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMin20
+  fld      CInt20ToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1561,7 +1598,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMin20
+  fld      CInt20ToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1584,7 +1621,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMin24
+  fld      CInt24ToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1607,7 +1644,7 @@ end;
 {$ELSE}
 asm
   push     ebx
-  fld      CMin24
+  fld      CInt24ToFloat
 @Start:
   mov      ebx, [eax+4*ecx-4]
   bswap    ebx
@@ -1625,7 +1662,7 @@ end;
 
 procedure SingleToInt16LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld      CMaxSmall    // move to register for speed
+  fld      CFloatToSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
   fld      [eax + 4 * ecx - 4].Single
   fmul     st(0), st(1)
@@ -1640,7 +1677,7 @@ const
 asm
  push   ebx
  fld    CScaler                // move to register for speed
- fld    CMaxSmall              // move to register for speed
+ fld    CFloatToSmall              // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -1665,7 +1702,7 @@ const
 asm
  push   ebx
  fld    CScaler                // move to register for speed
- fld    CMaxSmall              // move to register for speed
+ fld    CFloatToSmall              // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -1691,7 +1728,7 @@ end;
 
 procedure DoubleToInt16LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld      CMaxSmall    // move to register for speed
+  fld      CFloatToSmall    // move to register for speed
 @Start:                // Samplecount already in ecx!
   fld      [eax + 8 * ecx - 8].Double
   fmul     st(0), st(1)
@@ -1705,7 +1742,7 @@ const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMaxSmall               // move to register for speed
+ fld    CFloatToSmall               // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld      [eax + 8 * ecx - 8].Double
   fmul     st(0), st(1)
@@ -1729,7 +1766,7 @@ const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld       Scaler              // move to register for speed
- fld       CMaxSmall            // move to register for speed
+ fld       CFloatToSmall            // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld      [eax + 8 * ecx - 8].Double
   fmul     st(0), st(1)
@@ -1764,14 +1801,14 @@ var
 begin
  for i := 0 to SampleCount - 1 do
   begin
-   PInteger(TargetInt)^ := Round(SourceArray^[i] * CMax24);
+   PInteger(TargetInt)^ := Round(SourceArray^[i] * CFloatToInt24);
    Inc(TargetInt, 3);
   end;
 end;
 {$ELSE}
 asm
   push ebx
-  fld   CMax24         //for speed
+  fld   CFloatToInt24         //for speed
  @Start:
   fld   [eax].Single
   fmul  st(0), st(1)
@@ -1795,7 +1832,7 @@ const
 asm
   push  ebx
   fld   CScaler                // move to register for speed
-  fld   CMax24                 // for speed
+  fld   CFloatToInt24                 // for speed
  @Start:
   fld   [eax].DWord
   fmul  st(0), st(1)
@@ -1827,7 +1864,7 @@ const
 asm
   push  ebx
   fld   CScaler                 // move to register for speed
-  fld   CMax24                  //for speed
+  fld   CFloatToInt24                  //for speed
  @Start:
   fld   [eax].Single
   fmul  st(0), st(1)
@@ -1860,7 +1897,7 @@ end;
 procedure DoubleToInt24LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push  ebx
-  fld   CMax24         //for speed
+  fld   CFloatToInt24         //for speed
  @Start:
   fld   [eax].Double
   fmul  st(0), st(1)
@@ -1882,7 +1919,7 @@ const
 asm
   push  ebx
   fld   CScaler               // move to register for speed
-  fld   CMax24                // for speed
+  fld   CFloatToInt24                // for speed
  @Start:
   fld   [eax].Double
   fmul  st(0), st(1)
@@ -1913,7 +1950,7 @@ const
 asm
   push  ebx
   fld   CScaler                 // move to register for speed
-  fld   CMax24                  //for speed
+  fld   CFloatToInt24                  //for speed
  @Start:
   fld   [eax].Double
   fmul  st(0), st(1)
@@ -1945,7 +1982,7 @@ end;
 
 procedure SingleToInt32LSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMaxLong         //for speed
+  fld   CFloatToInt         //for speed
  @Start:
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -1956,7 +1993,7 @@ end;
 
 procedure DoubleToInt32LSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMaxLong         //for speed
+  fld   CFloatToInt         //for speed
  @Start:
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -1993,7 +2030,7 @@ end;
 
 procedure SingleToInt32LSB16_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld      CMaxSmall
+  fld      CFloatToSmall
 @Start:
   fld      [eax + 4 * ecx - 4].Single
   fmul     st(0), st(1)
@@ -2008,7 +2045,7 @@ const
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMaxSmall               // move to register for speed
+ fld    CFloatToSmall               // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld     [eax + 4 * ecx - 4].Single
   fmul    st(0), st(1)
@@ -2032,7 +2069,7 @@ const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push   ebx
  fld    Scaler                 // move to register for speed
- fld    CMaxSmall               // move to register for speed
+ fld    CFloatToSmall               // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2058,7 +2095,7 @@ end;
 
 procedure DoubleToInt32LSB16_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMaxSmall
+  fld   CFloatToSmall
 @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2073,7 +2110,7 @@ const
 asm
  push   ebx
  fld    CScaler                 // move to register for speed
- fld    CMaxSmall               // move to register for speed
+ fld    CFloatToSmall               // move to register for speed
  @Start:                        // Samplecount already in ecx!
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -2098,7 +2135,7 @@ const
 asm
  push   ebx
  fld    CScaler                 // move to register for speed
- fld    CMaxSmall               // move to register for speed
+ fld    CFloatToSmall               // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -2124,7 +2161,7 @@ end;
 
 procedure SingleToInt32LSB18_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMax18
+  fld   CFloatToInt18
  @Start:
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2139,7 +2176,7 @@ const
 asm
  push   ebx
  fld    CScaler                 // move to register for speed
- fld    CMax18                  // move to register for speed
+ fld    CFloatToInt18                  // move to register for speed
  @Start:                        // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2164,7 +2201,7 @@ const
 asm
  push   ebx
  fld    CScaler                // move to register for speed
- fld    CMax18                 // move to register for speed
+ fld    CFloatToInt18                 // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2190,7 +2227,7 @@ end;
 
 procedure DoubleToInt32LSB18_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMax18
+  fld   CFloatToInt18
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2204,7 +2241,7 @@ const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push   ebx
  fld    Scaler                 // move to register for speed
- fld    CMax18                  // move to register for speed
+ fld    CFloatToInt18                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -2229,7 +2266,7 @@ const
 asm
  push   ebx
  fld    CScaler                 // move to register for speed
- fld    CMax18                  // move to register for speed
+ fld    CFloatToInt18                  // move to register for speed
  @Start:                        // Samplecount already in ecx!
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -2255,7 +2292,7 @@ end;
 
 procedure SingleToInt32LSB20_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMax20
+  fld   CFloatToInt20
  @Start:
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2270,7 +2307,7 @@ const
 asm
  push   ebx
  fld    CScaler                // move to register for speed
- fld    CMax20                  // move to register for speed
+ fld    CFloatToInt20                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2295,7 +2332,7 @@ const
 asm
  push   ebx
  fld    CScaler                // move to register for speed
- fld    CMax20                 // move to register for speed
+ fld    CFloatToInt20                 // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2321,7 +2358,7 @@ end;
 
 procedure DoubleToInt32LSB20_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMax20
+  fld   CFloatToInt20
  @Start:
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -2336,7 +2373,7 @@ const
 asm
  push   ebx
  fld    CScaler                // move to register for speed
- fld    CMax20                 // move to register for speed
+ fld    CFloatToInt20                 // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -2360,7 +2397,7 @@ const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMax20                  // move to register for speed
+ fld    CFloatToInt20                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld      [eax+8*ecx-8].Double
   fmul     st(0), st(1)
@@ -2386,7 +2423,7 @@ end;
 
 procedure SingleToInt32LSB24_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMax24
+  fld   CFloatToInt24
  @Start:
   fld   [eax+4*ecx-4].Single
   fmul  st(0), st(1)
@@ -2400,7 +2437,7 @@ const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMax24                  // move to register for speed
+ fld    CFloatToInt24                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld      [eax+4*ecx-4].Single
   fmul     st(0), st(1)
@@ -2424,7 +2461,7 @@ const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMax24                  // move to register for speed
+ fld    CFloatToInt24                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld      [eax+4*ecx-4].Single
   fmul     st(0), st(1)
@@ -2450,7 +2487,7 @@ end;
 
 procedure DoubleToInt32LSB24_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
-  fld   CMax24
+  fld   CFloatToInt24
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2464,7 +2501,7 @@ const Scaler: Double = ((1.0/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMax24                  // move to register for speed
+ fld    CFloatToInt24                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld      [eax+8*ecx-8].Double
   fmul     st(0), st(1)
@@ -2488,7 +2525,7 @@ const Scaler: Double = ((0.5/$10000) / $10000);  // 2^-32
 asm
  push ebx
  fld    Scaler                 // move to register for speed
- fld    CMax24                  // move to register for speed
+ fld    CFloatToInt24                  // move to register for speed
  @Start:                       // Samplecount already in ecx!
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2515,7 +2552,7 @@ end;
 procedure SingleToInt16MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
    push ebx
-   fld      CMaxSmall
+   fld      CFloatToSmall
  @Start:
    fld      [eax+4*ecx-4].Single
    fmul     st(0), st(1)
@@ -2531,7 +2568,7 @@ end;
 procedure DoubleToInt16MSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
    push ebx
-   fld      CMaxSmall
+   fld      CFloatToSmall
  @Start:
    fld      [eax+8*ecx-8].Double
    fmul     st(0), st(1)
@@ -2559,7 +2596,7 @@ end;
 procedure SingleToInt32MSB_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMaxLong         //for speed
+  fld   CFloatToInt         //for speed
  @Start:
   fld   [eax+4*ecx-4].Single
   fmul  st(0), st(1)
@@ -2575,7 +2612,7 @@ end;
 procedure DoubleToInt32MSB_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMaxLong         //for speed
+  fld   CFloatToInt         //for speed
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2629,7 +2666,7 @@ end;
 procedure SingleToInt32MSB16_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMaxSmall
+  fld   CFloatToSmall
  @Start:
   fld   [eax+4*ecx-4].Single
   fmul  st(0), st(1)
@@ -2645,7 +2682,7 @@ end;
 procedure DoubleToInt32MSB16_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMaxSmall
+  fld   CFloatToSmall
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2661,7 +2698,7 @@ end;
 procedure SingleToInt32MSB18_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMax18
+  fld   CFloatToInt18
  @Start:
   fld   [eax+4*ecx-4].Single
   fmul  st(0), st(1)
@@ -2677,7 +2714,7 @@ end;
 procedure DoubleToInt32MSB18_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMax18
+  fld   CFloatToInt18
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2693,7 +2730,7 @@ end;
 procedure SingleToInt32MSB20_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMax20
+  fld   CFloatToInt20
  @Start:
   fld   [eax+4*ecx-4].Single
   fmul  st(0), st(1)
@@ -2709,7 +2746,7 @@ end;
 procedure DoubleToInt32MSB20_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push ebx
-  fld   CMax20
+  fld   CFloatToInt20
  @Start:
   fld   [eax+8*ecx-8].Double
   fmul  st(0), st(1)
@@ -2725,7 +2762,7 @@ end;
 procedure SingleToInt32MSB24_FPU(Source: PSingle; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push  ebx
-  fld   CMax24
+  fld   CFloatToInt24
  @Start:
   fld   [eax + 4 * ecx - 4].Single
   fmul  st(0), st(1)
@@ -2741,7 +2778,7 @@ end;
 procedure DoubleToInt32MSB24_FPU(Source: PDouble; Target: Pointer; SampleCount: LongInt); overload;
 asm
   push  ebx
-  fld   CMax24
+  fld   CFloatToInt24
  @Start:
   fld   [eax + 8 * ecx - 8].Double
   fmul  st(0), st(1)
@@ -3317,7 +3354,7 @@ end;
 
 procedure SingleToInt32LSB_SSE(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 asm
- movups xmm7, CMaxLongMMX
+ movups xmm7, CFloatToInt4
 
  push ecx
  shr ecx, 4  // number of large iterations = number of elements / 16
@@ -4170,7 +4207,8 @@ begin
  {$ENDIF}
 end;
 
-initialization
+procedure BindFunctions;
+begin
  Use_FPU;
 
  {$IFNDEF FPC}
@@ -4179,5 +4217,9 @@ initialization
  if ProcessorInfo.Has3DNow
   then Use_3DNow;
  {$ENDIF}
+end;
+
+initialization
+  BindFunctions;
 
 end.

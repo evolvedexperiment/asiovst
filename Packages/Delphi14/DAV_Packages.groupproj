@@ -27,6 +27,9 @@
 			<Projects Include="DAV_GUI_D14.dproj">
 				<Dependencies>DAV_Common_D14.dproj;DAV_DSP_D14.dproj</Dependencies>
 			</Projects>
+			<Projects Include="DAV_VSTCloner_D14.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -107,14 +110,23 @@
 		<Target DependsOnTargets="DAV_Common_D14:Make;DAV_DSP_D14:Make" Name="DAV_GUI_D14:Make">
 			<MSBuild Targets="Make" Projects="DAV_GUI_D14.dproj"/>
 		</Target>
+		<Target Name="DAV_VSTCloner_D14">
+			<MSBuild Projects="DAV_VSTCloner_D14.dproj"/>
+		</Target>
+		<Target Name="DAV_VSTCloner_D14:Clean">
+			<MSBuild Targets="Clean" Projects="DAV_VSTCloner_D14.dproj"/>
+		</Target>
+		<Target Name="DAV_VSTCloner_D14:Make">
+			<MSBuild Targets="Make" Projects="DAV_VSTCloner_D14.dproj"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="DAV_Common_D14;DAV_DSP_D14;DAV_ASIOHost_D14;DAV_SEHost_D14;DAV_VSTPlugin_D14;DAV_VSTHost_D14;DAV_Modular_D14;DAV_GUI_D14"/>
+			<CallTarget Targets="DAV_Common_D14;DAV_DSP_D14;DAV_ASIOHost_D14;DAV_SEHost_D14;DAV_VSTPlugin_D14;DAV_VSTHost_D14;DAV_Modular_D14;DAV_GUI_D14;DAV_VSTCloner_D14"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="DAV_Common_D14:Clean;DAV_DSP_D14:Clean;DAV_ASIOHost_D14:Clean;DAV_SEHost_D14:Clean;DAV_VSTPlugin_D14:Clean;DAV_VSTHost_D14:Clean;DAV_Modular_D14:Clean;DAV_GUI_D14:Clean"/>
+			<CallTarget Targets="DAV_Common_D14:Clean;DAV_DSP_D14:Clean;DAV_ASIOHost_D14:Clean;DAV_SEHost_D14:Clean;DAV_VSTPlugin_D14:Clean;DAV_VSTHost_D14:Clean;DAV_Modular_D14:Clean;DAV_GUI_D14:Clean;DAV_VSTCloner_D14:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="DAV_Common_D14:Make;DAV_DSP_D14:Make;DAV_ASIOHost_D14:Make;DAV_SEHost_D14:Make;DAV_VSTPlugin_D14:Make;DAV_VSTHost_D14:Make;DAV_Modular_D14:Make;DAV_GUI_D14:Make"/>
+			<CallTarget Targets="DAV_Common_D14:Make;DAV_DSP_D14:Make;DAV_ASIOHost_D14:Make;DAV_SEHost_D14:Make;DAV_VSTPlugin_D14:Make;DAV_VSTHost_D14:Make;DAV_Modular_D14:Make;DAV_GUI_D14:Make;DAV_VSTCloner_D14:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

@@ -50,11 +50,11 @@ type
     FChunkName  : TChunkName;
     FChunkSize  : Cardinal;
     FChunkFlags : TChunkFlags;
-    function GetChunkName: string; virtual;
+    function GetChunkName: AnsiString; virtual;
     function GetChunkSize: Cardinal; virtual;
     function CalculateZeroPad: Integer;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure SetChunkName(const Value: string); virtual;
+    procedure SetChunkName(const Value: AnsiString); virtual;
     procedure CheckAddZeroPad(Stream: TStream);
   public
     constructor Create; virtual;
@@ -62,7 +62,7 @@ type
     procedure SaveToStream(Stream : TStream); virtual;
     procedure LoadFromFile(FileName : TFileName); virtual;
     procedure SaveToFile(FileName : TFileName); virtual;
-    property ChunkName: string read GetChunkName write SetChunkName;
+    property ChunkName: AnsiString read GetChunkName write SetChunkName;
     property ChunkSize: Cardinal read GetChunkSize;
     property ChunkFlags: TChunkFlags read FChunkFlags write FChunkFlags default [];
   end;
@@ -95,7 +95,7 @@ type
   TDefinedChunk = class(TCustomChunk)
   protected
     FFilePosition : Cardinal;
-    procedure SetChunkName(const Value: string); override;
+    procedure SetChunkName(const Value: AnsiString); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
@@ -287,9 +287,9 @@ begin
  else inherited;
 end;
 
-function TCustomChunk.GetChunkName: string;
+function TCustomChunk.GetChunkName: AnsiString;
 begin
- Result := string(FChunkName);
+ Result := AnsiString(FChunkName);
 end;
 
 function TCustomChunk.GetChunkSize: Cardinal;
@@ -372,7 +372,7 @@ begin
    end;
 end;
 
-procedure TCustomChunk.SetChunkName(const Value: string);
+procedure TCustomChunk.SetChunkName(const Value: AnsiString);
 var
   ChunkNameSize : Integer;
 begin
@@ -533,12 +533,12 @@ begin
   end;
 end;
 
-procedure TDefinedChunk.SetChunkName(const Value: string);
+procedure TDefinedChunk.SetChunkName(const Value: AnsiString);
 begin
  inherited;
  if Value <> FChunkName
   then raise Exception.Create('Chunk name must always be ''' +
-    string(FChunkName) + '''');
+    string(AnsiString(FChunkName)) + '''');
 end;
 
 { TFixedDefinedChunk }

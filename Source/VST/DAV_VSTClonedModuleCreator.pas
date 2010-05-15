@@ -49,7 +49,8 @@ type
 implementation
 
 uses
-  SysUtils, Classes, DAV_VSTEffect, DAV_OpenToolsUtils, DAV_VSTParameters;
+  SysUtils, Classes, {$IFDEF DELPHI10_UP} AnsiStrings,{$ENDIF} DAV_VSTEffect,
+  DAV_OpenToolsUtils, DAV_VSTParameters;
 
 const
   CRLF          = #13#10;
@@ -114,14 +115,14 @@ begin
    if VSTPlugin.Version < 10 then
     begin
      VersionRelease := VSTPlugin.Version;
-     Version := IntToStr(VSTPlugin.Version);
+     Version := AnsiString(IntToStr(VSTPlugin.Version));
     end
    else
     begin
      VersionMajor   := VSTPlugin.Version div 1000;
      VersionMinor   := (VSTPlugin.Version - VersionMajor * 1000) div 100;
      VersionRelease := (VSTPlugin.Version - VersionMajor * 1000 - VersionMinor * 100);
-     Version        := IntToStr(VersionMajor) + '.' + IntToStr(VersionMinor);
+     Version        := AnsiString(IntToStr(VersionMajor) + '.' + IntToStr(VersionMinor));
     end;
    VendorName     := VSTPlugin.VendorString;
    ProductName    := VSTPlugin.ProductString;
@@ -139,7 +140,7 @@ begin
    for i := 0 to VSTPlugin.numParams - 1 do
     with ParameterProperties.Add do
      begin
-      DisplayName := VSTPlugin.ParameterName[i];
+      DisplayName := string(VSTPlugin.ParameterName[i]);
       Units := VSTPlugin.ParameterLabel[i];
 
       try
@@ -165,7 +166,7 @@ begin
       // check parameter minimum
       try
        Parameter[i] := 0;
-       MinParam := StrToFloat(VSTPlugin.ParameterDisplay[i]);
+       MinParam := StrToFloat(string(VSTPlugin.ParameterDisplay[i]));
       except
        MinParam := 0;
       end;
@@ -173,7 +174,7 @@ begin
       // check parameter maximum
       try
        Parameter[i] := 1;
-       MaxParam := StrToFloat(VSTPlugin.ParameterDisplay[i]);
+       MaxParam := StrToFloat(string(VSTPlugin.ParameterDisplay[i]));
       except
        MaxParam := 1;
       end;
@@ -182,7 +183,7 @@ begin
       if MinParam < MaxParam then
        try
         Parameter[i] := 0.5;
-        CurrentValue := StrToFloat(VSTPlugin.ParameterDisplay[i]);
+        CurrentValue := StrToFloat(string(VSTPlugin.ParameterDisplay[i]));
         if (CurrentValue > MinParam) and (CurrentValue < MaxParam) then
          begin
           Min := MinParam;
@@ -202,7 +203,7 @@ begin
     with Programs.Add do
      begin
       VSTPlugin.CurrentProgram := i;
-      DisplayName := VSTPlugin.ProgramName;
+      DisplayName := string(VSTPlugin.ProgramName);
      end;
   end;
 end;
@@ -341,9 +342,9 @@ begin
       for j := 0 to FConfig.VSTPlugin.numParams - 1 do
        begin
         try
-         if TryStrToFloat(FConfig.VSTPlugin.ParameterDisplay[j], flt)
+         if TryStrToFloat(string(FConfig.VSTPlugin.ParameterDisplay[j]), flt)
           then s := s + '   Parameter[' + IntToStr(j) + '] := ' +
-            FConfig.VSTPlugin.ParameterDisplay[j] + ';' + CRLF;
+            string(FConfig.VSTPlugin.ParameterDisplay[j]) + ';' + CRLF;
         except
         end;
        end;
