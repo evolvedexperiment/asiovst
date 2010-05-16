@@ -255,7 +255,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_Common, DAV_BlockRoutines, DAV_Approximations;
+  SysUtils, DAV_Common, DAV_BlockProcessing, DAV_Approximations;
 
 { TCustomNoiseReduction32 }
 

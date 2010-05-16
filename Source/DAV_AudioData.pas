@@ -471,7 +471,7 @@ type
 implementation
 
 uses
-  Math, DAV_BlockRoutines;
+  Math, DAV_BlockProcessing;
 
 resourcestring
   RCStrNoAudioFileFormat = 'No audio file format registered';

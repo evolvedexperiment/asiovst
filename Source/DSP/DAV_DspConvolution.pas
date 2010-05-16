@@ -379,7 +379,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_Math, DAV_BlockRoutines;
+  Math, SysUtils, DAV_Math, DAV_BlockArithmetrics, DAV_BlockProcessing;
 
 resourcestring
   RCStrIRBlockOrderError = 'Maximum IR block order must be larger or equal ' +
@@ -633,7 +633,7 @@ begin
    FFft.PerformIFFT(PDAVComplexSingleFixedArray(@FConvolved^[0]), FConvolvedTime);
 
    // copy and combine
-   MixBuffers32(@FConvolvedTime^[0], @SignalOut^[Block * Half], Half);
+   BlockAdditionInplace32(@SignalOut^[Block * Half], @FConvolvedTime^[0], Half);
   end;
 end;
 
@@ -914,7 +914,7 @@ begin
    FFft.PerformIFFT(PDAVComplexDoubleFixedArray(FConvolved), FConvolvedTime);
 
    // copy and combine
-   MixBuffers64(@FConvolvedTime^[Half], @SignalOut^[Block * Half], Half);
+   BlockAdditionInplace64(@SignalOut^[Block * Half], @FConvolvedTime^[Half], Half);
   end;
 end;
 
@@ -1131,7 +1131,7 @@ begin
      FFft.PerformIFFT(Dest, FConvolvedTime);
 
      // copy and combine
-     MixBuffers32(@FConvolvedTime^[0], @SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half], Half);
+     BlockAdditionInplace32(@SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half], @FConvolvedTime^[0], Half);
     end;
   end;
 
@@ -1683,7 +1683,7 @@ begin
      FFft.PerformIFFT(Dest, FConvolvedTime);
 
      // copy and combine
-     MixBuffers64(@FConvolvedTime^[0], @SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half], Half);
+     BlockAdditionInplace64(@SignalOut^[FOutputPos + FLatency - FFFTSizeHalf + Block * Half], @FConvolvedTime^[0], Half);
     end;
   end;
 

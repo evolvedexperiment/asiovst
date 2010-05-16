@@ -37,9 +37,6 @@ interface
 uses
   DAV_Types, DAV_Complex, DAV_Bindings;
 
-procedure MixBuffers32(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer);
-procedure MixBuffers64(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer);
-
 procedure ComplexMultiplyBlock32(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
 procedure ComplexMultiplyBlock32(const InBuffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer; const OutBuffer: PDAVComplexSingleFixedArray); overload;
 procedure ComplexMultiplyBlock64(const Buffer, Filter: PDAVComplexDoubleFixedArray; const SampleCount: Integer); overload;
@@ -58,7 +55,7 @@ procedure CalcMinMax(Data: PSingle; SampleCount: Integer; var MinMax : TDAVMinMa
 procedure CalcMinMax(Data: PDouble; SampleCount: Integer; var MinMax : TDAVMinMaxDouble); overload;
 procedure DCSubstract(Data: PSingle; SampleCount: Integer); overload;
 procedure DCSubstract(Data: PDouble; SampleCount: Integer); overload;
-procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleCount: Integer);
+procedure ConvertSingleToDouble(Input: PDAVSingleFixedArray; Output: PDAVDoubleFixedArray; SampleCount: Integer);
 procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleCount: Integer);
 
 procedure FillWithZeroes(StartAdr: PDAVSingleFixedArray; StartPos, EndPos, SampleCount: Integer); overload;
@@ -74,48 +71,6 @@ procedure ReorderPositions(Data: PDAVSingleFixedArray; StartSample, EndSample: I
 procedure ReorderPositions(Data: PDAVDoubleFixedArray; StartSample, EndSample: Integer; Positions: PIntegerArray); overload;
 
 implementation
-
-procedure MixBuffers32(Data: PSingle; MixBuffer: PSingle; SampleCount: Integer); overload;
-{$IFDEF PUREPASCAL}
-var
-  SampleIndex : Integer;
-begin
- for SampleIndex := 0 to SampleCount - 1 do
-  begin
-   MixBuffer^ := MixBuffer^ + Data^;
-   Inc(MixBuffer);
-   Inc(Data);
-  end;
-{$ELSE}
-asm
-@Start:
-  fld   [eax + 4 * ecx - 4].Single
-  fadd  [edx + 4 * ecx - 4].Single
-  fstp  [edx + 4 * ecx - 4].Single
-  loop @Start
-{$ENDIF}
-end;
-
-procedure MixBuffers64(Data: PDouble; MixBuffer: PDouble; SampleCount: Integer); overload;
-{$IFDEF PUREPASCAL}
-var
-  SampleIndex : Integer;
-begin
- for SampleIndex := 0 to SampleCount - 1 do
-  begin
-   MixBuffer^ := MixBuffer^ + Data^;
-   Inc(MixBuffer);
-   Inc(Data);
-  end;
-{$ELSE}
-asm
-@Start:
-  fld   [eax + 8 * ecx - 8].Double
-  fadd  [edx + 8 * ecx - 8].Double
-  fstp  [edx + 8 * ecx - 8].Double
-  loop @Start
-{$ENDIF}
-end;
 
 procedure ComplexMultiplyBlock32(const Buffer, Filter: PDAVComplexSingleFixedArray; const SampleCount: Integer); overload;
 {$IFDEF PUREPASCAL}
@@ -683,37 +638,37 @@ asm
 end;
 {$ENDIF}
 
-procedure ConvertSingleToDouble(Singles: PDAVSingleFixedArray; Doubles: PDAVDoubleFixedArray; SampleCount: Integer);
+procedure ConvertSingleToDouble(Input: PDAVSingleFixedArray; Output: PDAVDoubleFixedArray; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do Doubles^[i] := Singles^[i];
+  do Output^[i] := Input^[i];
 end;
 {$ELSE}
 asm
-@MarioLand:
+@Start:
  fld  [eax + ecx * 4 - 4].Single
  fstp [edx + ecx * 8 - 8].Double
- loop @MarioLand
+ loop @Start
 end;
 {$ENDIF}
 
-procedure ConvertDoubleToSingle(Doubles: PDAVDoubleFixedArray; Singles: PDAVSingleFixedArray; SampleCount: Integer);
+procedure ConvertDoubleToSingle(Input: PDAVDoubleFixedArray; Output: PDAVSingleFixedArray; SampleCount: Integer);
 {$IFDEF PUREPASCAL}
 var
   i : Integer;
 begin
  for i := 0 to SampleCount - 1
-  do Singles^[i] := Doubles^[i];
+  do Output^[i] := Input^[i];
 end;
 {$ELSE}
 asm
-@MarioLand:
+@Start:
  fld [eax + ecx * 8 - 8].Double
  fstp [edx + ecx * 4 - 4].Single
- loop @MarioLand
+ loop @Start
 end;
 {$ENDIF}
 

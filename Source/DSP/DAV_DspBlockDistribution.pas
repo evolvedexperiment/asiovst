@@ -101,7 +101,7 @@ type
 implementation
 
 uses
-  SysUtils, DAV_BlockRoutines;
+  SysUtils, DAV_BlockProcessing;
 
 { TCustomBlockDistribution32 }
 

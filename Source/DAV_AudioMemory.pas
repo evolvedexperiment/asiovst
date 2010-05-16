@@ -96,7 +96,7 @@ type
 implementation
 
 uses
-  DAV_BlockRoutines;
+  DAV_BlockProcessing;
 
 { TCustomAudioMemory }
 

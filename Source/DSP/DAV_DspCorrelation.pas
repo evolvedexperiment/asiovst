@@ -128,7 +128,7 @@ type
 implementation
 
 uses
-  Math, SysUtils, DAV_BlockRoutines;
+  Math, SysUtils, DAV_BlockProcessing;
 
 resourcestring
   RCStrIRBlockOrderError = 'Maximum IR block order must be larger or equal ' +
