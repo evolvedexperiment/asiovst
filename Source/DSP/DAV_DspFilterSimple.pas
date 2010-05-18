@@ -567,7 +567,7 @@ end;
 procedure TFirstOrderHighcutFilter.Complex(const Frequency: Double; out Real, Imaginary: Double);
 var
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -578,7 +578,7 @@ begin
  A.Im := -Cmplx.Im;
  B.Re := -Cmplx.Re * FCoeff + 1;
  B.Im :=  Cmplx.Im * FCoeff;
- R := ComplexMultiply(R, ComplexDivide(A, B));
+ R := ComplexMultiply64(R, ComplexDivide64(A, B));
 
  Real := R.Re;
  Imaginary := R.Im;
@@ -612,7 +612,7 @@ procedure TFirstOrderLowcutFilter.Complex(const Frequency: Double; out Real,
   Imaginary: Double);
 var
   Cmplx : TComplexDouble;
-  A, R  : TComplexSingle;
+  A, R  : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -621,11 +621,11 @@ begin
 
  A.Re :=  Cmplx.Re - 1;
  A.Im := -Cmplx.Im;
- R := ComplexMultiply(R, A);
+ R := ComplexMultiply64(R, A);
 
  A.Re := -Cmplx.Re * FCoeff + 1;
  A.Im :=  Cmplx.Im * FCoeff;
- R := ComplexDivide(R, A);
+ R := ComplexDivide64(R, A);
 
  Real := R.Re;
  Imaginary := R.Im;

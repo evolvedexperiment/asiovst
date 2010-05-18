@@ -49,7 +49,7 @@ type
     FGainBuffer       : PDAVSingleFixedArray;
     FStaticCount      : Integer;
     FLookaheadSamples : Integer;
-    FLookaheadLimiter : TDspLookaheadLimiter32;
+    FLookaheadLimiter : TDspFeedforwardLookaheadLimiter32;
     procedure Open; override;
     function GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean; override;
     procedure ChooseProcess;
@@ -105,7 +105,7 @@ constructor TCustomLookaheadLimiterSEModule.Create(
   AudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(AudioMaster, Reserved);
- FLookaheadLimiter := TDspLookaheadLimiter32.Create;
+ FLookaheadLimiter := TDspFeedforwardLookaheadLimiter32.Create;
 end;
 
 destructor TCustomLookaheadLimiterSEModule.Destroy;

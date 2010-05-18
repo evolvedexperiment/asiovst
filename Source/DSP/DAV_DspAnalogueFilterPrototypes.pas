@@ -983,7 +983,7 @@ begin
  Cmplex.Re := (FDenominator[1] * FDenominator[2] - Sqr(Omega)) * Divisor;
  Cmplex.Im := -Omega * (FDenominator[1] + FDenominator[2]) * Divisor;
 
- ComplexMultiplyInplace(Result, Cmplex);
+ ComplexMultiplyInplace64(Result, Cmplex);
 end;
 
 
@@ -1025,13 +1025,13 @@ begin
  Cmplex.Re := (Sqr(FDenominator[2]) - Sqr(Omega)) * Divisor;
  Cmplex.Im := -2 * Omega * FDenominator[2] * Divisor;
 
- ComplexMultiplyInplace(Result, Cmplex);
+ ComplexMultiplyInplace64(Result, Cmplex);
 
  Divisor  := FGainFactor / (Sqr(FDenominator[1]) + Sqr(Omega));
  Result.Re := Sqr(Omega) * Divisor;
  Result.Im := Omega * FDenominator[1] * Divisor;
 
- ComplexMultiplyInplace(Result, Cmplex);
+ ComplexMultiplyInplace64(Result, Cmplex);
 end;
 
 function TAnalogueBWeightingFilterPrototype.GetOrder: Integer;
@@ -1083,7 +1083,7 @@ begin
  Cmplex.Re := (Sqr(FDenominator[1]) - Sqr(Omega)) * Divisor;
  Cmplex.Im := -2 * Omega * FDenominator[1] * Divisor;
 
- ComplexMultiplyInplace(Result, Cmplex);
+ ComplexMultiplyInplace64(Result, Cmplex);
 end;
 
 
@@ -1128,7 +1128,7 @@ begin
  Cmplex.Re := Sqr(Omega) * (FDenominator[2] + FDenominator[3]) * Divisor;
  Cmplex.Im := Omega * (FDenominator[2] * FDenominator[3] - Sqr(Omega)) * Divisor;
 
- ComplexMultiplyInplace(Result, Cmplex);
+ ComplexMultiplyInplace64(Result, Cmplex);
 end;
 
 function TAnalogueDWeightingFilterPrototype.GetOrder: Integer;

@@ -160,7 +160,7 @@ begin
   then FLevel := FLevel + (abs(Input) - FLevel) * FAttackFactor
   else FLevel := abs(Input) + (FLevel - abs(Input)) * FReleaseFactor;
 
- ComplexMultiplyInplace(FCurrentPosition, FComplexAngle);
+ ComplexMultiplyInplace32(FCurrentPosition, FComplexAngle);
  result := FLevel * FCurrentPosition.Re;
 end;
 

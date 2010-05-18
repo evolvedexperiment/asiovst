@@ -332,7 +332,7 @@ begin
  while i < Integer(FOrder) - 1 do
   begin
    a := 2 * Cmplx.Im * K; // 2 * sin((i + 1) * FPiHalfOrderInv) * K;
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t * K2;
    FCoeffs[i    ] := 2 * (1 - K2) * t;
@@ -378,7 +378,7 @@ begin
  Cmplx[1].Im := 0; Cmplx[1].Re := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   ComplexMultiplyInplace(Cmplx[1].Re, Cmplx[1].Im,
+   ComplexMultiplyInplace64(Cmplx[1].Re, Cmplx[1].Im,
      (Cmplx[0].Re * (1 - FCoeffs[2 * i + 1] - FCoeffs[2 * i] + Cmplx[0].Re * (1 - FCoeffs[2 * i + 1])) - FCoeffs[2 * i]),
      (Cmplx[0].Im * (1 + FCoeffs[2 * i + 1]) * (Cmplx[0].Re + 1)));
   end;
@@ -390,7 +390,7 @@ procedure TCustomButterworthLowPassFilter.Complex(const Frequency: Double; out R
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -404,7 +404,7 @@ begin
    A.Im := -2 * Cmplx.Im * (Cmplx.Re + 1);
    B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -414,7 +414,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
    B.Im :=  Cmplx.Im * FCoeffs[2 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;
@@ -591,7 +591,7 @@ begin
  while i < Integer(FOrder) - 1 do
   begin
    a := 2 * K * Cmplx.Im;
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
 
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;
@@ -642,14 +642,14 @@ begin
  Nom := 0; Den := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   ComplexMultiplyInplace(Den, Nom,
+   ComplexMultiplyInplace64(Den, Nom,
      (cw * (FCoeffs[2 * i + 1] - FCoeffs[2 * i] - 1 + cw * (1 - FCoeffs[2 * i + 1])) + FCoeffs[2 * i]),
      (sw * (FCoeffs[2 * i + 1] + 1) * (cw - 1)));
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   ComplexMultiplyInplace(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - cw),
+   ComplexMultiplyInplace64(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - cw),
      sw * (FCoeffs[2 * i] - 1));
   end;
  Result := ArcTan2(Nom, Den);
@@ -660,7 +660,7 @@ procedure TCustomButterworthHighPassFilter.Complex(const Frequency: Double; out 
 var
   i     : Cardinal;
   Cmplx : TComplexDouble;
-  A, R  : TComplexSingle;
+  A, R  : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -672,11 +672,11 @@ begin
   begin
    A.Re :=  2 * Cmplx.Re * (Cmplx.Re - 1);
    A.Im := -2 * Cmplx.Im * (Cmplx.Re - 1);
-   R := ComplexMultiply(R, A);
+   R := ComplexMultiply64(R, A);
 
    A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
-   R := ComplexDivide(R, A);
+   R := ComplexDivide64(R, A);
 
    inc(i);
   end;
@@ -685,11 +685,11 @@ begin
   begin
    A.Re :=  Cmplx.Re - 1;
    A.Im := -Cmplx.Im;
-   R := ComplexMultiply(R, A);
+   R := ComplexMultiply64(R, A);
 
    A.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
    A.Im :=  Cmplx.Im * FCoeffs[2 * i];
-   R := ComplexDivide(R, A);
+   R := ComplexDivide64(R, A);
   end;
 
  Real := R.Re;
@@ -899,7 +899,7 @@ begin
  while i < Integer(FOrder) - 1 do
   begin
    a := 2 * Cmplx.Im * K;
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
    t := 1 / (K2 + a + 1);
    FFilterGain := FFilterGain * t;
    FCoeffs[i    ] := 2 * (1 - K2) * t;
@@ -927,7 +927,7 @@ procedure TCustomButterworthSplitBandFilter.Complex(const Frequency: Double;
 var
   i     : Cardinal;
   Cmplx : TComplexDouble;
-  A, R  : TComplexSingle;
+  A, R  : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -942,15 +942,15 @@ begin
  i := 0;
  while i < (FOrder div 2) do
   begin
-   ComplexMultiplyInplace(Real, Imaginary, Cmplx.Re, -Cmplx.Im);
-   ComplexMultiplyInplace(R.Re, R.Im, Cmplx.Re, -Cmplx.Im);
+   ComplexMultiplyInplace64(Real, Imaginary, Cmplx.Re, -Cmplx.Im);
+   ComplexMultiplyInplace64(R.Re, R.Im, Cmplx.Re, -Cmplx.Im);
    inc(i);
   end;
 
  if FOrder mod 2 = 1 then
   begin
-   ComplexMultiplyInplace(R.Re, R.Im, Cmplx.Re - 1, -Cmplx.Im);
-   ComplexMultiplyInplace(Real, Imaginary, Cmplx.Re + 1, -Cmplx.Im);
+   ComplexMultiplyInplace64(R.Re, R.Im, Cmplx.Re - 1, -Cmplx.Im);
+   ComplexMultiplyInplace64(Real, Imaginary, Cmplx.Re + 1, -Cmplx.Im);
   end;
 
  Real := R.Re + Real;
@@ -962,7 +962,7 @@ begin
   begin
    A.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * Sqr(Cmplx.Re) - 1);
    A.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
-   ComplexDivideInplace(Real, Imaginary, A.Re, A.Im);
+   ComplexDivideInplace64(Real, Imaginary, A.Re, A.Im);
    inc(i);
   end;
 
@@ -970,7 +970,7 @@ begin
   begin
    A.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
    A.Im :=  Cmplx.Im * FCoeffs[2 * i];
-   ComplexDivideInplace(Real, Imaginary, A.Re, A.Im);
+   ComplexDivideInplace64(Real, Imaginary, A.Re, A.Im);
   end;
 end;
 

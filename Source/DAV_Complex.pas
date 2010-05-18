@@ -78,196 +78,203 @@ type
   PDAV4ComplexDoubleArray = ^TDAV4ComplexDoubleArray;
   TDAV4ComplexDoubleArray = array [0..3] of TComplexDouble;
 
-function Complex(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function Complex(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function Complex32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function Complex64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-function ComplexPolar(const Magnitude, Angle: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexPolar(const Magnitude, Angle: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexPolar32(const Magnitude, Angle: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function ComplexPolar64(const Magnitude, Angle: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
 
-function ComplexSign(const Z: TComplexSingle): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSign(const Z: TComplexDouble): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSign(const Re, Im: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSign(const Re, Im: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSign32(const Z: TComplexSingle): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSign64(const Z: TComplexDouble): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSign32(const Re, Im: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSign64(const Re, Im: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexConjugate(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexConjugate(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexConjugate(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexConjugate(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexConjugate32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexConjugate64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexConjugate32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexConjugate64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexInvert(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexInvert(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexInvert(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexInvert(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexInvert32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexInvert64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexInvert32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexInvert64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexMagnitude(const Re, Im: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexMagnitude(const Re, Im: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexMagnitude(const Complex: TComplexDouble): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexMagnitude(const Complex: TComplexSingle): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexMagnitude32(const Re, Im: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexMagnitude64(const Re, Im: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexMagnitude32(const Complex: TComplexSingle): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexMagnitude64(const Complex: TComplexDouble): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexArgument(const Re, Im: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArgument(const Re, Im: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArgument(const Complex: TComplexDouble): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArgument(const Complex: TComplexSingle): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArgument32(const Re, Im: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArgument64(const Re, Im: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArgument32(const Complex: TComplexSingle): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArgument64(const Complex: TComplexDouble): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexAdd(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexAdd(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexAdd(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexAdd(const ARe, AIm, BRe, BIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexAdd32(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexAdd64(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexAdd32(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexAdd64(const ARe, AIm, BRe, BIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure ComplexAddInplace(var A: TComplexSingle; const B: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexAddInplace(var A: TComplexDouble; const B: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexAddInplace(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexAddInplace(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexAddInplace32(var A: TComplexSingle; const B: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexAddInplace64(var A: TComplexDouble; const B: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexAddInplace32(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexAddInplace64(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexSubtract(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSubtract(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSubtract(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSubtract(const ARe, AIm, BRe, BIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSubtract32(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSubtract64(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSubtract32(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSubtract64(const ARe, AIm, BRe, BIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure ComplexSubtractInplace(var A: TComplexSingle; const B: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexSubtractInplace(var A: TComplexDouble; const B: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexSubtractInplace(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexSubtractInplace(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexSubtractInplace32(var A: TComplexSingle; const B: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexSubtractInplace64(var A: TComplexDouble; const B: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexSubtractInplace32(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexSubtractInplace64(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexMultiply(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexMultiply(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexMultiply(const ARe, AIm, BRe, BIm: Single): TComplexSingle; overload;
-function ComplexMultiply(const ARe, AIm, BRe, BIm: Double): TComplexDouble; overload;
+function ComplexMultiply32(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexMultiply64(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexMultiply32(const ARe, AIm, BRe, BIm: Single): TComplexSingle; overload;
+function ComplexMultiply64(const ARe, AIm, BRe, BIm: Double): TComplexDouble; overload;
 
-procedure ComplexMultiplyInplace(var A: TComplexSingle; const B: TComplexSingle); overload;
-procedure ComplexMultiplyInplace(var A: TComplexDouble; const B: TComplexDouble); overload;
-procedure ComplexMultiplyInplace(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexMultiplyInplace(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexMultiplyInplace32(var A: TComplexSingle; const B: TComplexSingle); overload;
+procedure ComplexMultiplyInplace64(var A: TComplexDouble; const B: TComplexDouble); overload;
+procedure ComplexMultiplyInplace32(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexMultiplyInplace64(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure ComplexMultiply2Inplace(var A: TComplexSingle; const B: TComplexSingle); overload;
-procedure ComplexMultiply2Inplace(var A: TComplexDouble; const B: TComplexDouble); overload;
+procedure ComplexMultiply2Inplace32(var A: TComplexSingle; const B: TComplexSingle);
+procedure ComplexMultiply2Inplace64(var A: TComplexDouble; const B: TComplexDouble);
 
-function ComplexDivide(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexDivide(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexDivide(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexDivide(const ARe, AIm, BRe, BIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexDivide32(const A, B: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexDivide64(const A, B: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexDivide32(const ARe, AIm, BRe, BIm: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexDivide64(const ARe, AIm, BRe, BIm: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure ComplexDivideInplace(var A: TComplexSingle; const B: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexDivideInplace(var A: TComplexDouble; const B: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexDivideInplace(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexDivideInplace(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexDivideInplace32(var A: TComplexSingle; const B: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexDivideInplace64(var A: TComplexDouble; const B: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexDivideInplace32(var ARe, AIm: Single; const BRe, BIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexDivideInplace64(var ARe, AIm: Double; const BRe, BIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexReciprocal(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexReciprocal(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexReciprocal(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexReciprocal(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexReciprocal64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-procedure ComplexReciprocalInplace(var Z: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexReciprocalInplace(var Z: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexReciprocalInplace(var ZRe, ZIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-procedure ComplexReciprocalInplace(var ZRe, ZIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace32(var Z: TComplexSingle); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace64(var Z: TComplexDouble); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace32(var ZRe, ZIm: Single); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+procedure ComplexReciprocalInplace64(var ZRe, ZIm: Double); {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexSqr(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSqr(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSqr(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSqr(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSqr32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSqr64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSqr32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSqr64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexSqrt(const Re, Im: Single): TComplexSingle; overload;
-function ComplexSqrt(const Re, Im: Double): TComplexDouble; overload;
-function ComplexSqrt(const Z: TComplexSingle): TComplexSingle; overload;
-function ComplexSqrt(const Z: TComplexDouble): TComplexDouble; overload;
+function ComplexSqrt32(const Re, Im: Single): TComplexSingle; overload;
+function ComplexSqrt64(const Re, Im: Double): TComplexDouble; overload;
+function ComplexSqrt32(const Z: TComplexSingle): TComplexSingle; overload;
+function ComplexSqrt64(const Z: TComplexDouble): TComplexDouble; overload;
 
-function ComplexLog10(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexLog10(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexLog10(const Complex: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexLog10(const Complex: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLog1032(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLog1064(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLog1032(const Complex: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLog1064(const Complex: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexExp(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexExp(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexExp(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexExp(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexExp32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexExp64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexExp32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexExp64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexLn(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexLn(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexLn(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexLn(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLn32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLn64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLn32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexLn64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexSin(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSin(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSin(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSin(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSin32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSin64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSin32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSin64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexCos(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexCos(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexCos(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexCos(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCos32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCos64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCos32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCos64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexTan(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexTan(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexTan(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexTan(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTan32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTan64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTan32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTan64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexSinh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSinh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSinh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexSinh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexSinh64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexCosh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexCosh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexCosh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexCosh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexCosh64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexTanh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexTanh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexTanh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexTanh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTanh32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTanh64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTanh32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexTanh64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexArcSin(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcSin(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcSin(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcSin(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcSin32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcSin64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcSin32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcSin64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexArcCos(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcCos(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcCos(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcCos(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcCos32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcCos64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcCos32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcCos64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexArcTan(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcTan(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcTan(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcTan(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTan32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTan64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTan32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTan64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
-function ComplexArcTanh(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcTanh(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcTanh(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
-function ComplexArcTanh(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTanh32(const Re, Im: Single): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTanh64(const Re, Im: Double): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTanh32(const Z: TComplexSingle): TComplexSingle; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
+function ComplexArcTanh64(const Z: TComplexDouble): TComplexDouble; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 
 implementation
 
 uses
   Math, DAV_Math;
 
-function Complex(const Re, Im: Double): TComplexDouble;
+{ Build Complex Record }
+
+function Complex32(const Re, Im: Single): TComplexSingle;
 begin
   Result.Re := Re;
   Result.Im := Im;
 end;
 
-function Complex(const Re, Im: Single): TComplexSingle;
+function Complex64(const Re, Im: Double): TComplexDouble;
 begin
   Result.Re := Re;
   Result.Im := Im;
 end;
 
 
-function ComplexPolar(const Magnitude, Angle: Single): TComplexSingle;
+{ Build Complex Record from Magnitude & Angle }
+
+function ComplexPolar32(const Magnitude, Angle: Single): TComplexSingle;
 begin
   Result.Re := Magnitude * Cos(Angle);
   Result.Im := Magnitude * Sin(Angle);
 end;
 
-function ComplexPolar(const Magnitude, Angle: Double): TComplexDouble;
+function ComplexPolar64(const Magnitude, Angle: Double): TComplexDouble;
 begin
   Result.Re := Magnitude * Cos(Angle);
   Result.Im := Magnitude * Sin(Angle);
 end;
 
-function ComplexSign(const Z: TComplexSingle): Single;
+
+{ Complex Sign Function }
+
+function ComplexSign32(const Z: TComplexSingle): Single;
 begin
  if (Z.Re >= 0) and (Z.Im > 0)
   then Result := 1 else
@@ -276,7 +283,7 @@ begin
   else Result := Sign(Z.Re);
 end;
 
-function ComplexSign(const Z: TComplexDouble): Double;
+function ComplexSign64(const Z: TComplexDouble): Double;
 begin
  if (Z.Re >= 0) and (Z.Im > 0)
   then Result := 1
@@ -286,7 +293,7 @@ begin
   else Result := sign(Z.Re);
 end;
 
-function ComplexSign(const Re, Im: Single): Single;
+function ComplexSign32(const Re, Im: Single): Single;
 begin
   if (Re >= 0) and (Im > 0) then
     Result := 1
@@ -297,7 +304,7 @@ begin
     Result := sign(Re);
 end;
 
-function ComplexSign(const Re, Im: Double): Double;
+function ComplexSign64(const Re, Im: Double): Double;
 begin
   if (Re >= 0) and (Im > 0) then
     Result := 1
@@ -311,26 +318,25 @@ end;
 
 { ComplexConjugate }
 
-function ComplexConjugate(const Re, Im: Double): TComplexDouble;
+function ComplexConjugate32(const Re, Im: Single): TComplexSingle;
 begin
   Result.Re :=  Re;
   Result.Im := -Im;
 end;
 
-function ComplexConjugate(const Re, Im: Single): TComplexSingle;
+function ComplexConjugate64(const Re, Im: Double): TComplexDouble;
 begin
   Result.Re :=  Re;
   Result.Im := -Im;
 end;
 
-
-function ComplexConjugate(const Z: TComplexSingle): TComplexSingle;
+function ComplexConjugate32(const Z: TComplexSingle): TComplexSingle;
 begin
   Result.Re :=  Z.Re;
   Result.Im := -Z.Im;
 end;
 
-function ComplexConjugate(const Z: TComplexDouble): TComplexDouble;
+function ComplexConjugate64(const Z: TComplexDouble): TComplexDouble;
 begin
   Result.Re :=  Z.Re;
   Result.Im := -Z.Im;
@@ -339,25 +345,25 @@ end;
 
 { ComplexInvert }
 
-function ComplexInvert(const Re, Im: Double): TComplexDouble;
+function ComplexInvert32(const Re, Im: Single): TComplexSingle;
 begin
   Result.Re := -Re;
   Result.Im := -Im;
 end;
 
-function ComplexInvert(const Re, Im: Single): TComplexSingle;
+function ComplexInvert64(const Re, Im: Double): TComplexDouble;
 begin
   Result.Re := -Re;
   Result.Im := -Im;
 end;
 
-function ComplexInvert(const Z: TComplexSingle): TComplexSingle;
+function ComplexInvert32(const Z: TComplexSingle): TComplexSingle;
 begin
   Result.Re := -Z.Re;
   Result.Im := -Z.Im;
 end;
 
-function ComplexInvert(const Z: TComplexDouble): TComplexDouble;
+function ComplexInvert64(const Z: TComplexDouble): TComplexDouble;
 begin
   Result.Re := -Z.Re;
   Result.Im := -Z.Im;
@@ -366,170 +372,188 @@ end;
 
 { ComplexMagnitude }
 
-function ComplexMagnitude(const Re, Im: Single): Single;
+function ComplexMagnitude32(const Re, Im: Single): Single;
 begin
   Result := hypot(Re, Im);
 end;
 
-function ComplexMagnitude(const Re, Im: Double): Double;
+function ComplexMagnitude64(const Re, Im: Double): Double;
 begin
   Result := hypot(Re, Im);
 end;
 
-function ComplexMagnitude(const Complex: TComplexDouble): Double;
+function ComplexMagnitude32(const Complex: TComplexSingle): Single;
 begin
   Result := hypot(Complex.Re, Complex.Im);
 end;
 
-function ComplexMagnitude(const Complex: TComplexSingle): Single;
+function ComplexMagnitude64(const Complex: TComplexDouble): Double;
 begin
   Result := hypot(Complex.Re, Complex.Im);
 end;
 
-function ComplexArgument(const Re, Im: Single): Single;
+
+{ ComplexArgument }
+
+function ComplexArgument32(const Re, Im: Single): Single;
 begin
   Result := ArcTan2(Im, Re);
 end;
 
-function ComplexArgument(const Re, Im: Double): Double;
+function ComplexArgument64(const Re, Im: Double): Double;
 begin
   Result := ArcTan2(Im, Re);
 end;
 
-function ComplexArgument(const Complex: TComplexDouble): Double;
+function ComplexArgument32(const Complex: TComplexSingle): Single;
 begin
   Result := ArcTan2(Complex.Im, Complex.Re);
 end;
 
-function ComplexArgument(const Complex: TComplexSingle): Single;
+function ComplexArgument64(const Complex: TComplexDouble): Double;
 begin
   Result := ArcTan2(Complex.Im, Complex.Re);
 end;
 
 
-function ComplexAdd(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
+{ ComplexAdd }
+
+function ComplexAdd32(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
 begin
   Result.Re := ARe + BRe;
   Result.Im := AIm + BIm;
 end;
 
-function ComplexAdd(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
+function ComplexAdd64(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
 begin
   Result.Re := ARe + BRe;
   Result.Im := AIm + BIm;
 end;
 
-function ComplexAdd(const A, B: TComplexSingle): TComplexSingle;
+function ComplexAdd32(const A, B: TComplexSingle): TComplexSingle;
 begin
   Result.Re := A.Re + B.Re;
   Result.Im := A.Im + B.Im;
 end;
 
-function ComplexAdd(const A, B: TComplexDouble): TComplexDouble;
+function ComplexAdd64(const A, B: TComplexDouble): TComplexDouble;
 begin
   Result.Re := A.Re + B.Re;
   Result.Im := A.Im + B.Im;
 end;
 
-procedure ComplexAddInplace(var A: TComplexSingle; const B: TComplexSingle);
+
+{ ComplexAddInplace }
+
+procedure ComplexAddInplace32(var A: TComplexSingle; const B: TComplexSingle);
 begin
   A.Re := A.Re + B.Re;
   A.Im := A.Im + B.Im;
 end;
 
-procedure ComplexAddInplace(var A: TComplexDouble; const B: TComplexDouble);
+procedure ComplexAddInplace64(var A: TComplexDouble; const B: TComplexDouble);
 begin
   A.Re := A.Re + B.Re;
   A.Im := A.Im + B.Im;
 end;
 
-procedure ComplexAddInplace(var ARe, AIm: Single; const BRe, BIm: Single);
+procedure ComplexAddInplace32(var ARe, AIm: Single; const BRe, BIm: Single);
 begin
   ARe := ARe + BRe;
   AIm := AIm + BIm;
 end;
 
-procedure ComplexAddInplace(var ARe, AIm: Double; const BRe, BIm: Double);
+procedure ComplexAddInplace64(var ARe, AIm: Double; const BRe, BIm: Double);
 begin
   ARe := ARe + BRe;
   AIm := AIm + BIm;
 end;
 
 
-function ComplexSubtract(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
+{ ComplexSubtract }
+
+function ComplexSubtract32(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
 begin
   Result.Re := ARe - BRe;
   Result.Im := AIm - BIm;
 end;
 
-function ComplexSubtract(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
+function ComplexSubtract64(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
 begin
   Result.Re := ARe - BRe;
   Result.Im := AIm - BIm;
 end;
 
-function ComplexSubtract(const A, B: TComplexSingle): TComplexSingle;
+function ComplexSubtract32(const A, B: TComplexSingle): TComplexSingle;
 begin
   Result.Re := A.Re - B.Re;
   Result.Im := A.Im - B.Im;
 end;
 
-function ComplexSubtract(const A, B: TComplexDouble): TComplexDouble;
+function ComplexSubtract64(const A, B: TComplexDouble): TComplexDouble;
 begin
   Result.Re := A.Re - B.Re;
   Result.Im := A.Im - B.Im;
 end;
 
-procedure ComplexSubtractInplace(var A: TComplexSingle; const B: TComplexSingle);
+
+{ ComplexSubtractInplace }
+
+procedure ComplexSubtractInplace32(var A: TComplexSingle; const B: TComplexSingle);
 begin
   A.Re := A.Re - B.Re;
   A.Im := A.Im - B.Im;
 end;
 
-procedure ComplexSubtractInplace(var A: TComplexDouble; const B: TComplexDouble);
+procedure ComplexSubtractInplace64(var A: TComplexDouble; const B: TComplexDouble);
 begin
   A.Re := A.Re - B.Re;
   A.Im := A.Im - B.Im;
 end;
 
-procedure ComplexSubtractInplace(var ARe, AIm: Single; const BRe, BIm: Single);
+procedure ComplexSubtractInplace32(var ARe, AIm: Single; const BRe, BIm: Single);
 begin
   ARe := ARe - BRe;
   AIm := AIm - BIm;
 end;
 
-procedure ComplexSubtractInplace(var ARe, AIm: Double; const BRe, BIm: Double);
+procedure ComplexSubtractInplace64(var ARe, AIm: Double; const BRe, BIm: Double);
 begin
   ARe := ARe - BRe;
   AIm := AIm - BIm;
 end;
 
 
-function ComplexMultiply(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
+{ ComplexMultiply }
+
+function ComplexMultiply32(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
 begin
   Result.Re := ARe * BRe - AIm * BIm;
   Result.Im := AIm * BRe + ARe * BIm;
 end;
 
-function ComplexMultiply(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
+function ComplexMultiply64(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
 begin
   Result.Re := ARe * BRe - AIm * BIm;
   Result.Im := AIm * BRe + ARe * BIm;
 end;
 
-function ComplexMultiply(const A, B: TComplexSingle): TComplexSingle;
+function ComplexMultiply32(const A, B: TComplexSingle): TComplexSingle;
 begin
   Result.Re := A.Re * B.Re - A.Im * B.Im;
   Result.Im := A.Im * B.Re + A.Re * B.Im;
 end;
 
-function ComplexMultiply(const A, B: TComplexDouble): TComplexDouble;
+function ComplexMultiply64(const A, B: TComplexDouble): TComplexDouble;
 begin
   Result.Re := A.Re * B.Re - A.Im * B.Im;
   Result.Im := A.Im * B.Re + A.Re * B.Im;
 end;
 
-procedure ComplexMultiplyInplace(var A: TComplexSingle;
+
+{ ComplexMultiplyInplace }
+
+procedure ComplexMultiplyInplace32(var A: TComplexSingle;
   const B: TComplexSingle);
 {$IFDEF PUREPASCAL}
 var
@@ -560,7 +584,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ComplexMultiplyInplace(var A: TComplexDouble;
+procedure ComplexMultiplyInplace64(var A: TComplexDouble;
   const B: TComplexDouble);
 {$IFDEF PUREPASCAL}
 var
@@ -591,7 +615,30 @@ asm
 end;
 {$ENDIF}
 
-procedure ComplexMultiply2Inplace(var A: TComplexSingle;
+procedure ComplexMultiplyInplace32(var ARe, AIm: Single;
+  const BRe, BIm: Single);
+var
+  Tmp: Single;
+begin
+  Tmp := ARe;
+  ARe := ARe * BRe - AIm * BIm;
+  AIm := AIm * BRe + Tmp * BIm;
+end;
+
+procedure ComplexMultiplyInplace64(var ARe, AIm: Double;
+  const BRe, BIm: Double);
+var
+  Tmp: Double;
+begin
+  Tmp := ARe;
+  ARe := ARe * BRe - AIm * BIm;
+  AIm := AIm * BRe + Tmp * BIm;
+end;
+
+
+{ ComplexMultiply2Inplace32 }
+
+procedure ComplexMultiply2Inplace32(var A: TComplexSingle;
   const B: TComplexSingle);
 {$IFDEF PUREPASCAL}
 var
@@ -630,7 +677,7 @@ asm
 end;
 {$ENDIF}
 
-procedure ComplexMultiply2Inplace(var A: TComplexDouble;
+procedure ComplexMultiply2Inplace64(var A: TComplexDouble;
   const B: TComplexDouble);
 {$IFDEF PUREPASCAL}
 var
@@ -666,32 +713,14 @@ asm
  fmul A.Im          // A.Im * B', A.Re * B'', New A.Re
  faddp              // A.Im * B' + A.Re * B'' := New A.Im, New A.Re
  fstp A.Im          // New A.Re
- fstp A.Re       
+ fstp A.Re
 end;
 {$ENDIF}
 
-procedure ComplexMultiplyInplace(var ARe, AIm: Single;
-  const BRe, BIm: Single);
-var
-  Tmp: Single;
-begin
-  Tmp := ARe;
-  ARe := ARe * BRe - AIm * BIm;
-  AIm := AIm * BRe + Tmp * BIm;
-end;
 
-procedure ComplexMultiplyInplace(var ARe, AIm: Double;
-  const BRe, BIm: Double);
-var
-  Tmp: Double;
-begin
-  Tmp := ARe;
-  ARe := ARe * BRe - AIm * BIm;
-  AIm := AIm * BRe + Tmp * BIm;
-end;
+{ ComplexDivide }
 
-
-function ComplexDivide(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
+function ComplexDivide32(const ARe, AIm, BRe, BIm: Single): TComplexSingle;
 var
   Divisor: Double;
 begin
@@ -700,7 +729,7 @@ begin
   Result.Im := (AIm * BRe - ARe * BIm) * Divisor;
 end;
 
-function ComplexDivide(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
+function ComplexDivide64(const ARe, AIm, BRe, BIm: Double): TComplexDouble;
 var
   Divisor: Double;
 begin
@@ -709,7 +738,7 @@ begin
   Result.Im := (AIm * BRe - ARe * BIm) * Divisor;
 end;
 
-function ComplexDivide(const A, B: TComplexSingle): TComplexSingle;
+function ComplexDivide32(const A, B: TComplexSingle): TComplexSingle;
 var
   Divisor: Double;
 begin
@@ -718,7 +747,7 @@ begin
   Result.Im := (A.Im * B.Re - A.Re * B.Im) * Divisor;
 end;
 
-function ComplexDivide(const A, B: TComplexDouble): TComplexDouble;
+function ComplexDivide64(const A, B: TComplexDouble): TComplexDouble;
 var
   Divisor: Double;
 begin
@@ -727,9 +756,10 @@ begin
   Result.Im := (A.Im * B.Re - A.Re * B.Im) * Divisor;
 end;
 
-////////////////////////////////////////////////////////////////////////////////
 
-procedure ComplexDivideInplace(var A: TComplexSingle; const B: TComplexSingle);
+{ ComplexDivideInplace }
+
+procedure ComplexDivideInplace32(var A: TComplexSingle; const B: TComplexSingle);
 var
   Divisor, Temp: Double;
 begin
@@ -739,7 +769,7 @@ begin
   A.Im := (A.Im * B.Re - Temp * B.Im) * Divisor;
 end;
 
-procedure ComplexDivideInplace(var A: TComplexDouble; const B: TComplexDouble);
+procedure ComplexDivideInplace64(var A: TComplexDouble; const B: TComplexDouble);
 var
   Divisor, Temp: Double;
 begin
@@ -749,7 +779,7 @@ begin
   A.Im := (A.Im * B.Re - Temp * B.Im) * Divisor;
 end;
 
-procedure ComplexDivideInplace(var ARe, AIm: Single; const BRe, BIm: Single);
+procedure ComplexDivideInplace32(var ARe, AIm: Single; const BRe, BIm: Single);
 var
   Divisor, Temp: Double;
 begin
@@ -759,7 +789,7 @@ begin
   AIm := (AIm * BRe - Temp * BIm) * Divisor;
 end;
 
-procedure ComplexDivideInplace(var ARe, AIm: Double; const BRe, BIm: Double);
+procedure ComplexDivideInplace64(var ARe, AIm: Double; const BRe, BIm: Double);
 var
   Divisor, Temp: Double;
 begin
@@ -772,7 +802,7 @@ end;
 
 { ComplexReciprocal }
 
-function ComplexReciprocal(const Z: TComplexSingle): TComplexSingle;
+function ComplexReciprocal32(const Z: TComplexSingle): TComplexSingle;
 var
   Divisor: Double;
 begin
@@ -781,7 +811,7 @@ begin
   Result.Im := Z.Im * Divisor;
 end;
 
-function ComplexReciprocal(const Z: TComplexDouble): TComplexDouble;
+function ComplexReciprocal64(const Z: TComplexDouble): TComplexDouble;
 var
   Divisor: Double;
 begin
@@ -790,7 +820,7 @@ begin
   Result.Im := Z.Im * Divisor;
 end;
 
-function ComplexReciprocal(const Re, Im: Single): TComplexSingle;
+function ComplexReciprocal32(const Re, Im: Single): TComplexSingle;
 var
   Divisor: Double;
 begin
@@ -799,7 +829,7 @@ begin
   Result.Im := Im * Divisor;
 end;
 
-function ComplexReciprocal(const Re, Im: Double): TComplexDouble;
+function ComplexReciprocal64(const Re, Im: Double): TComplexDouble;
 var
   Divisor: Double;
 begin
@@ -811,7 +841,7 @@ end;
 
 { ComplexReciprocalInplace }
 
-procedure ComplexReciprocalInplace(var Z: TComplexSingle);
+procedure ComplexReciprocalInplace32(var Z: TComplexSingle);
 var
   Divisor: Double;
 begin
@@ -820,7 +850,7 @@ begin
   Z.Im := Z.Im * Divisor;
 end;
 
-procedure ComplexReciprocalInplace(var Z: TComplexDouble);
+procedure ComplexReciprocalInplace64(var Z: TComplexDouble);
 var
   Divisor: Double;
 begin
@@ -829,7 +859,7 @@ begin
   Z.Im := Z.Im * Divisor;
 end;
 
-procedure ComplexReciprocalInplace(var ZRe, ZIm: Single);
+procedure ComplexReciprocalInplace32(var ZRe, ZIm: Single);
 var
   Divisor: Double;
 begin
@@ -838,7 +868,7 @@ begin
   ZIm := ZIm * Divisor;
 end;
 
-procedure ComplexReciprocalInplace(var ZRe, ZIm: Double);
+procedure ComplexReciprocalInplace64(var ZRe, ZIm: Double);
 var
   Divisor: Double;
 begin
@@ -850,25 +880,25 @@ end;
 
 { ComplexSqr }
 
-function ComplexSqr(const Re, Im: Single): TComplexSingle;
+function ComplexSqr32(const Re, Im: Single): TComplexSingle;
 begin
   Result.Re := Sqr(Re) - Sqr(Im);
   Result.Im := 2 * Re * Im;
 end;
 
-function ComplexSqr(const Re, Im: Double): TComplexDouble;
+function ComplexSqr64(const Re, Im: Double): TComplexDouble;
 begin
   Result.Re := Sqr(Re) - Sqr(Im);
   Result.Im := 2 * Re * Im;
 end;
 
-function ComplexSqr(const Z: TComplexSingle): TComplexSingle;
+function ComplexSqr32(const Z: TComplexSingle): TComplexSingle;
 begin
   Result.Re := Sqr(Z.Re) - Sqr(Z.Im);
   Result.Im := 2 * Z.Re * Z.Im;
 end;
 
-function ComplexSqr(const Z: TComplexDouble): TComplexDouble;
+function ComplexSqr64(const Z: TComplexDouble): TComplexDouble;
 begin
   Result.Re := Sqr(Z.Re) - Sqr(Z.Im);
   Result.Im := 2 * Z.Re * Z.Im;
@@ -877,9 +907,9 @@ end;
 
 { ComplexSqrt }
 
-function ComplexSqrt(const Re, Im: Single): TComplexSingle;
+function ComplexSqrt32(const Re, Im: Single): TComplexSingle;
 
-  function FSqrt(x: Single): Double;
+  function FastSqrt(x: Single): Double;
   begin
     if x > 0 then
       Result := Sqrt(x)
@@ -890,16 +920,16 @@ function ComplexSqrt(const Re, Im: Single): TComplexSingle;
 var
   Mag: Single;
 begin
-  Mag := ComplexMagnitude(Re, Im);
-  Result.Re := FSqrt(0.5 * (Mag + Re));
-  Result.Im := FSqrt(0.5 * (Mag - Re));
+  Mag := ComplexMagnitude32(Re, Im);
+  Result.Re := FastSqrt(0.5 * (Mag + Re));
+  Result.Im := FastSqrt(0.5 * (Mag - Re));
   if (Im < 0.0) then
     Result.Im := -Result.Im;
 end;
 
-function ComplexSqrt(const Re, Im: Double): TComplexDouble;
+function ComplexSqrt64(const Re, Im: Double): TComplexDouble;
 
-  function FSqrt(x: Double): Double;
+  function FastSqrt(x: Double): Double;
   begin
     if x > 0 then
       Result := Sqrt(x)
@@ -910,16 +940,16 @@ function ComplexSqrt(const Re, Im: Double): TComplexDouble;
 var
   Mag: Double;
 begin
-  Mag := ComplexMagnitude(Re, Im);
-  Result.Re := FSqrt(0.5 * (Mag + Re));
-  Result.Im := FSqrt(0.5 * (Mag - Re));
+  Mag := ComplexMagnitude64(Re, Im);
+  Result.Re := FastSqrt(0.5 * (Mag + Re));
+  Result.Im := FastSqrt(0.5 * (Mag - Re));
   if (Im < 0.0) then
     Result.Im := -Result.Im;
 end;
 
-function ComplexSqrt(const Z: TComplexSingle): TComplexSingle;
+function ComplexSqrt32(const Z: TComplexSingle): TComplexSingle;
 
-  function FSqrt(x: Single): Double;
+  function FastSqrt(x: Single): Double;
   begin
     if x > 0 then
       Result := Sqrt(x)
@@ -930,15 +960,15 @@ function ComplexSqrt(const Z: TComplexSingle): TComplexSingle;
 var
   Mag: Single;
 begin
-  Mag := ComplexMagnitude(Z);
-  Result.Re := FSqrt(0.5 * (Mag + Z.Re));
-  Result.Im := FSqrt(0.5 * (Mag - Z.Re));
+  Mag := ComplexMagnitude32(Z);
+  Result.Re := FastSqrt(0.5 * (Mag + Z.Re));
+  Result.Im := FastSqrt(0.5 * (Mag - Z.Re));
   if (Z.Im < 0.0) then Result.Im := -Result.Im;
 end;
 
-function ComplexSqrt(const Z: TComplexDouble): TComplexDouble;
+function ComplexSqrt64(const Z: TComplexDouble): TComplexDouble;
 
-  function FSqrt(x: Double): Double;
+  function FastSqrt(x: Double): Double;
   begin
     if x > 0
      then Result := Sqrt(x)
@@ -948,34 +978,34 @@ function ComplexSqrt(const Z: TComplexDouble): TComplexDouble;
 var
   Mag: Double;
 begin
-  Mag := ComplexMagnitude(Z);
-  Result.Re := FSqrt(0.5 * (Mag + Z.Re));
-  Result.Im := FSqrt(0.5 * (Mag - Z.Re));
+  Mag := ComplexMagnitude64(Z);
+  Result.Re := FastSqrt(0.5 * (Mag + Z.Re));
+  Result.Im := FastSqrt(0.5 * (Mag - Z.Re));
   if (Z.Im < 0.0) then Result.Im := -Result.Im;
 end;
 
 
 { ComplexLog10 }
 
-function ComplexLog10(const Re, Im: Single): TComplexSingle;
+function ComplexLog1032(const Re, Im: Single): TComplexSingle;
 begin
   Result.Re := 0.5 * Log10((Sqr(Re) + Sqr(Im)));
   Result.Im := ArcTan2(Im, Re);
 end;
 
-function ComplexLog10(const Re, Im: Double): TComplexDouble;
+function ComplexLog1064(const Re, Im: Double): TComplexDouble;
 begin
   Result.Re := 0.5 * Log10((Sqr(Re) + Sqr(Im)));
   Result.Im := ArcTan2(Im, Re);
 end;
 
-function ComplexLog10(const Complex: TComplexSingle): TComplexSingle;
+function ComplexLog1032(const Complex: TComplexSingle): TComplexSingle;
 begin
   Result.Re := 0.5 * Log10((Sqr(Complex.Re) + Sqr(Complex.Im)));
   Result.Im := ArcTan2(Complex.Im, Complex.Re);
 end;
 
-function ComplexLog10(const Complex: TComplexDouble): TComplexDouble;
+function ComplexLog1064(const Complex: TComplexDouble): TComplexDouble;
 begin
   Result.Re := 0.5 * Log10((Sqr(Complex.Re) + Sqr(Complex.Im)));
   Result.Im := ArcTan2(Complex.Im, Complex.Re);
@@ -984,28 +1014,28 @@ end;
 
 { ComplexExp }
 
-function ComplexExp(const Re, Im: Single): TComplexSingle;
+function ComplexExp32(const Re, Im: Single): TComplexSingle;
 begin
  Result.Im := Exp(Re);
  Result.Re := Result.Im * Cos(Im);
  Result.Im := Result.Im * Sin(Im);
 end;
 
-function ComplexExp(const Re, Im: Double): TComplexDouble;
+function ComplexExp64(const Re, Im: Double): TComplexDouble;
 begin
  Result.Im := Exp(Re);
  Result.Re := Result.Im * Cos(Im);
  Result.Im := Result.Im * Sin(Im);
 end;
 
-function ComplexExp(const Z: TComplexSingle): TComplexSingle;
+function ComplexExp32(const Z: TComplexSingle): TComplexSingle;
 begin
  Result.Im := Exp(Z.Re);
  Result.Re := Result.Im * Cos(Z.Im);
  Result.Im := Result.Im * Sin(Z.Im);
 end;
 
-function ComplexExp(const Z: TComplexDouble): TComplexDouble;
+function ComplexExp64(const Z: TComplexDouble): TComplexDouble;
 begin
  Result.Im := Exp(Z.Re);
  Result.Re := Result.Im * Cos(Z.Im);
@@ -1015,25 +1045,25 @@ end;
 
 { ComplexLn }
 
-function ComplexLn(const Re, Im: Single): TComplexSingle;
+function ComplexLn32(const Re, Im: Single): TComplexSingle;
 begin
  Result.Re := ln(hypot(Re, Im));
  Result.Im := ArcTan2(Im, Re);
 end;
 
-function ComplexLn(const Re, Im: Double): TComplexDouble;
+function ComplexLn64(const Re, Im: Double): TComplexDouble;
 begin
  Result.Re := ln(hypot(Re, Im));
  Result.Im := ArcTan2(Im, Re);
 end;
 
-function ComplexLn(const Z: TComplexSingle): TComplexSingle;
+function ComplexLn32(const Z: TComplexSingle): TComplexSingle;
 begin
  Result.Re := ln(hypot(Z.Re, Z.Im));
  Result.Im := ArcTan2(Z.Im, Z.Re);
 end;
 
-function ComplexLn(const Z: TComplexDouble): TComplexDouble;
+function ComplexLn64(const Z: TComplexDouble): TComplexDouble;
 begin
  Result.Re := ln(hypot(Z.Re, Z.Im));
  Result.Im := ArcTan2(Z.Im, Z.Re);
@@ -1042,28 +1072,28 @@ end;
 
 { ComplexSin }
 
-function ComplexSin(const Re, Im: Single): TComplexSingle;
+function ComplexSin32(const Re, Im: Single): TComplexSingle;
 begin
  Result.Re := Exp(-Im);
  Result.Im := 0.5 * Cos(Re) * (1 / Result.Re - Result.Re);
  Result.Re := 0.5 * Sin(Re) * (1 / Result.Re + Result.Re);
 end;
 
-function ComplexSin(const Re, Im: Double): TComplexDouble;
+function ComplexSin64(const Re, Im: Double): TComplexDouble;
 begin
  Result.Re := Exp(-Im);
  Result.Im := 0.5 * Cos(Re) * (1 / Result.Re - Result.Re);
  Result.Re := 0.5 * Sin(Re) * (1 / Result.Re + Result.Re);
 end;
 
-function ComplexSin(const Z: TComplexSingle): TComplexSingle;
+function ComplexSin32(const Z: TComplexSingle): TComplexSingle;
 begin
  Result.Re := Exp(-Z.Im);
  Result.Im := 0.5 * Cos(Z.Re) * (1 / Result.Re - Result.Re);
  Result.Re := 0.5 * Sin(Z.Re) * (1 / Result.Re + Result.Re);
 end;
 
-function ComplexSin(const Z: TComplexDouble): TComplexDouble;
+function ComplexSin64(const Z: TComplexDouble): TComplexDouble;
 begin
  Result.Re := Exp(-Z.Im);
  Result.Im := 0.5 * Cos(Z.Re) * (1 / Result.Re - Result.Re);
@@ -1073,28 +1103,28 @@ end;
 
 { ComplexCos }
 
-function ComplexCos(const Re, Im: Single): TComplexSingle;
+function ComplexCos32(const Re, Im: Single): TComplexSingle;
 begin
  Result.Im := Exp(Im);
  Result.Re := 0.5 * Cos(Re) * (1 / Result.Im + Result.Im);
  Result.Im := 0.5 * Sin(Re) * (1 / Result.Im - Result.Im);
 end;
 
-function ComplexCos(const Re, Im: Double): TComplexDouble;
+function ComplexCos64(const Re, Im: Double): TComplexDouble;
 begin
  Result.Im := Exp(Im);
  Result.Re := 0.5 * Cos(Re) * (1 / Result.Im + Result.Im);
  Result.Im := 0.5 * Sin(Re) * (1 / Result.Im - Result.Im);
 end;
 
-function ComplexCos(const Z: TComplexSingle): TComplexSingle;
+function ComplexCos32(const Z: TComplexSingle): TComplexSingle;
 begin
  Result.Im := Exp(Z.Im);
  Result.Re := 0.5 * Cos(Z.Re) * (1 / Result.Im + Result.Im);
  Result.Im := 0.5 * Sin(Z.Re) * (1 / Result.Im - Result.Im);
 end;
 
-function ComplexCos(const Z: TComplexDouble): TComplexDouble;
+function ComplexCos64(const Z: TComplexDouble): TComplexDouble;
 begin
  Result.Im := Exp(Z.Im);
  Result.Re := 0.5 * Cos(Z.Re) * (1 / Result.Im + Result.Im);
@@ -1104,7 +1134,7 @@ end;
 
 { ComplexTan }
 
-function ComplexTan(const Re, Im: Single): TComplexSingle;
+function ComplexTan32(const Re, Im: Single): TComplexSingle;
 var
  ExpIm   : Single;
  ExpRe   : TComplexSingle;
@@ -1118,7 +1148,7 @@ begin
  Result.Im := (Sqr(ExpRe.Re) * (Sqr(Sqr(ExpIm)) - 1) + Sqr(ExpRe.Im) * (Sqr(Sqr(ExpIm)) - 1)) * Divisor;
 end;
 
-function ComplexTan(const Re, Im: Double): TComplexDouble;
+function ComplexTan64(const Re, Im: Double): TComplexDouble;
 var
  ExpIm   : Double;
  ExpRe   : TComplexDouble;
@@ -1132,20 +1162,20 @@ begin
  Result.Im := (Sqr(ExpRe.Re) * (Sqr(Sqr(ExpIm)) - 1) + Sqr(ExpRe.Im) * (Sqr(Sqr(ExpIm)) - 1)) * Divisor;
 end;
 
-function ComplexTan(const Z: TComplexSingle): TComplexSingle;
+function ComplexTan32(const Z: TComplexSingle): TComplexSingle;
 var
   Value : array [0..1] of TComplexSingle;
 begin
- Value[0] := ComplexExp( Z.Im, -Z.Re);
- Value[1] := ComplexExp(-Z.Im,  Z.Re);
- Value[0] := ComplexDivide(ComplexSubtract(Value[0], Value[1]),
-   ComplexAdd(Value[0], Value[1]));
+ Value[0] := ComplexExp32( Z.Im, -Z.Re);
+ Value[1] := ComplexExp32(-Z.Im,  Z.Re);
+ Value[0] := ComplexDivide32(ComplexSubtract32(Value[0], Value[1]),
+   ComplexAdd32(Value[0], Value[1]));
 
  Result.Re := -Value[0].Im;
  Result.Im :=  Value[0].Re;
 end;
 
-function ComplexTan(const Z: TComplexDouble): TComplexDouble;
+function ComplexTan64(const Z: TComplexDouble): TComplexDouble;
 var
  ExpIm   : Double;
  ExpRe   : TComplexDouble;
@@ -1162,28 +1192,28 @@ end;
 
 { ComplexSinh }
 
-function ComplexSinh(const Re, Im: Single): TComplexSingle;
+function ComplexSinh32(const Re, Im: Single): TComplexSingle;
 begin
  Result.Im := Exp(Re);
  Result.Re := 0.5 * Cos(Im) * (1 / Result.Im - Result.Im);
  Result.Im := 0.5 * Sin(Im) * (1 / Result.Im + Result.Im);
 end;
 
-function ComplexSinh(const Re, Im: Double): TComplexDouble;
+function ComplexSinh64(const Re, Im: Double): TComplexDouble;
 begin
  Result.Im := Exp(Re);
  Result.Re := 0.5 * Cos(Im) * (1 / Result.Im - Result.Im);
  Result.Im := 0.5 * Sin(Im) * (1 / Result.Im + Result.Im);
 end;
 
-function ComplexSinh(const Z: TComplexSingle): TComplexSingle;
+function ComplexSinh32(const Z: TComplexSingle): TComplexSingle;
 begin
  Result.Im := Exp(Z.Re);
  Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im - Result.Im);
  Result.Im := 0.5 * Sin(Z.Im) * (1 / Result.Im + Result.Im);
 end;
 
-function ComplexSinh(const Z: TComplexDouble): TComplexDouble;
+function ComplexSinh64(const Z: TComplexDouble): TComplexDouble;
 begin
  Result.Im := Exp(Z.Re);
  Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im - Result.Im);
@@ -1193,28 +1223,28 @@ end;
 
 { ComplexCosh }
 
-function ComplexCosh(const Re, Im: Single): TComplexSingle;
+function ComplexCosh32(const Re, Im: Single): TComplexSingle;
 begin
  Result.Im := Exp(Re);
  Result.Re := 0.5 * Cos(Im) * (1 / Result.Im + Result.Im);
  Result.Im := 0.5 * Sin(Im) * (1 / Result.Im - Result.Im);
 end;
 
-function ComplexCosh(const Re, Im: Double): TComplexDouble;
+function ComplexCosh64(const Re, Im: Double): TComplexDouble;
 begin
  Result.Im := Exp(Re);
  Result.Re := 0.5 * Cos(Im) * (1 / Result.Im + Result.Im);
  Result.Im := 0.5 * Sin(Im) * (1 / Result.Im - Result.Im);
 end;
 
-function ComplexCosh(const Z: TComplexSingle): TComplexSingle;
+function ComplexCosh32(const Z: TComplexSingle): TComplexSingle;
 begin
  Result.Im := Exp(Z.Re);
  Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im + Result.Im);
  Result.Im := 0.5 * Sin(Z.Im) * (1 / Result.Im - Result.Im);
 end;
 
-function ComplexCosh(const Z: TComplexDouble): TComplexDouble;
+function ComplexCosh64(const Z: TComplexDouble): TComplexDouble;
 begin
  Result.Im := Exp(Z.Re);
  Result.Re := 0.5 * Cos(Z.Im) * (1 / Result.Im + Result.Im);
@@ -1224,7 +1254,7 @@ end;
 
 { ComplexTanh }
 
-function ComplexTanh(const Re, Im: Single): TComplexSingle;
+function ComplexTanh32(const Re, Im: Single): TComplexSingle;
 var
   ExpRe : Single;
   ExpIm : TComplexSingle;
@@ -1239,10 +1269,10 @@ begin
  Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
  Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
 
- Result := ComplexDivide(Temp, Result);
+ Result := ComplexDivide32(Temp, Result);
 end;
 
-function ComplexTanh(const Re, Im: Double): TComplexDouble;
+function ComplexTanh64(const Re, Im: Double): TComplexDouble;
 var
   ExpRe : Double;
   ExpIm : TComplexDouble;
@@ -1257,10 +1287,10 @@ begin
  Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
  Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
 
- Result := ComplexDivide(Temp, Result);
+ Result := ComplexDivide64(Temp, Result);
 end;
 
-function ComplexTanh(const Z: TComplexSingle): TComplexSingle;
+function ComplexTanh32(const Z: TComplexSingle): TComplexSingle;
 var
   ExpRe : Single;
   ExpIm : TComplexSingle;
@@ -1275,10 +1305,10 @@ begin
  Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
  Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
 
- Result := ComplexDivide(Temp, Result);
+ Result := ComplexDivide32(Temp, Result);
 end;
 
-function ComplexTanh(const Z: TComplexDouble): TComplexDouble;
+function ComplexTanh64(const Z: TComplexDouble): TComplexDouble;
 var
   ExpRe : Double;
   ExpIm : TComplexDouble;
@@ -1293,13 +1323,13 @@ begin
  Result.Re := ExpIm.Re * (ExpRe + 1 / ExpRe);
  Result.Im := ExpIm.Im * (ExpRe - 1 / ExpRe);
 
- Result := ComplexDivide(Temp, Result);
+ Result := ComplexDivide64(Temp, Result);
 end;
 
 
 { ComplexArcSin }
 
-function ComplexArcSin(const Re, Im: Single): TComplexSingle;
+function ComplexArcSin32(const Re, Im: Single): TComplexSingle;
 var
   SqrMag : Single;
 begin
@@ -1308,7 +1338,7 @@ begin
  Result.Im := 0.5 * Sign(Im) * ArcCos(Sqrt((SqrMag - 1) + Sqr(2 * Im)) + SqrMag);
 end;
 
-function ComplexArcSin(const Re, Im: Double): TComplexDouble;
+function ComplexArcSin64(const Re, Im: Double): TComplexDouble;
 var
   SqrMag : Double;
 begin
@@ -1317,7 +1347,7 @@ begin
  Result.Im := 0.5 * Sign(Im) * ArcCos(Sqrt((SqrMag - 1) + Sqr(2 * Im)) + SqrMag);
 end;
 
-function ComplexArcSin(const Z: TComplexSingle): TComplexSingle;
+function ComplexArcSin32(const Z: TComplexSingle): TComplexSingle;
 var
   SqrMag : Single;
 begin
@@ -1326,7 +1356,7 @@ begin
  Result.Im := 0.5 * Sign(Z.Im) * ArcCos(Sqrt((SqrMag - 1) + Sqr(2 * Z.Im)) + SqrMag);
 end;
 
-function ComplexArcSin(const Z: TComplexDouble): TComplexDouble;
+function ComplexArcSin64(const Z: TComplexDouble): TComplexDouble;
 var
   SqrMag : Double;
 begin
@@ -1338,7 +1368,7 @@ end;
 
 { ComplexArcCos }
 
-function ComplexArcCos(const Re, Im: Single): TComplexSingle;
+function ComplexArcCos32(const Re, Im: Single): TComplexSingle;
 var
   SqrMag : Single;
 begin
@@ -1347,7 +1377,7 @@ begin
  Result.Im := -0.5 * Sign(Im) * ArcCos(Sqrt((SqrMag - 1) + Sqr(2 * Im)) + SqrMag);
 end;
 
-function ComplexArcCos(const Re, Im: Double): TComplexDouble;
+function ComplexArcCos64(const Re, Im: Double): TComplexDouble;
 var
   SqrMag : Double;
 begin
@@ -1356,7 +1386,7 @@ begin
  Result.Im := -0.5 * Sign(Im) * ArcCos(Sqrt((SqrMag - 1) + Sqr(2 * Im)) + SqrMag);
 end;
 
-function ComplexArcCos(const Z: TComplexSingle): TComplexSingle;
+function ComplexArcCos32(const Z: TComplexSingle): TComplexSingle;
 var
   SqrMag : Single;
 begin
@@ -1365,7 +1395,7 @@ begin
  Result.Im := -0.5 * Sign(Z.Im) * ArcCos(Sqrt((SqrMag - 1) + Sqr(2 * Z.Im)) + SqrMag);
 end;
 
-function ComplexArcCos(const Z: TComplexDouble): TComplexDouble;
+function ComplexArcCos64(const Z: TComplexDouble): TComplexDouble;
 var
   SqrMag : Double;
 begin
@@ -1377,55 +1407,55 @@ end;
 
 { ComplexArcTan }
 
-function ComplexArcTan(const Re, Im: Single): TComplexSingle;
+function ComplexArcTan32(const Re, Im: Single): TComplexSingle;
 begin
- Result.Re := 0.5 * (ComplexArgument(1 + Im, Re) - ComplexArgument(1 - Im, Re));
- Result.Im := 0.5 * (Ln(ComplexMagnitude(1 - Im, Re)) - ln(ComplexMagnitude(1 + Im, Re)));
+ Result.Re := 0.5 * (ComplexArgument32(1 + Im, Re) - ComplexArgument32(1 - Im, Re));
+ Result.Im := 0.5 * (Ln(ComplexMagnitude32(1 - Im, Re)) - ln(ComplexMagnitude32(1 + Im, Re)));
 end;
 
-function ComplexArcTan(const Re, Im: Double): TComplexDouble;
+function ComplexArcTan64(const Re, Im: Double): TComplexDouble;
 begin
- Result.Re := 0.5 * (ComplexArgument(1 + Im, Re) - ComplexArgument(1 - Im, Re));
- Result.Im := 0.5 * (ln(ComplexMagnitude(1 - Im, Re)) - ln(ComplexMagnitude(1 + Im, Re)));
+ Result.Re := 0.5 * (ComplexArgument64(1 + Im, Re) - ComplexArgument64(1 - Im, Re));
+ Result.Im := 0.5 * (ln(ComplexMagnitude64(1 - Im, Re)) - ln(ComplexMagnitude64(1 + Im, Re)));
 end;
 
-function ComplexArcTan(const Z: TComplexSingle): TComplexSingle;
+function ComplexArcTan32(const Z: TComplexSingle): TComplexSingle;
 begin
- Result.Re := 0.5 * (ComplexArgument(1 + Z.Im, Z.Re) - ComplexArgument(1 - Z.Im, Z.Re));
- Result.Im := 0.5 * (ln(ComplexMagnitude(1 - Z.Im, Z.Re)) - ln(ComplexMagnitude(1 + Z.Im, Z.Re)));
+ Result.Re := 0.5 * (ComplexArgument32(1 + Z.Im, Z.Re) - ComplexArgument32(1 - Z.Im, Z.Re));
+ Result.Im := 0.5 * (ln(ComplexMagnitude32(1 - Z.Im, Z.Re)) - ln(ComplexMagnitude32(1 + Z.Im, Z.Re)));
 end;
 
-function ComplexArcTan(const Z: TComplexDouble): TComplexDouble;
+function ComplexArcTan64(const Z: TComplexDouble): TComplexDouble;
 begin
- Result.Re := 0.5 * (ComplexArgument(1 + Z.Im, Z.Re) - ComplexArgument(1 - Z.Im, Z.Re));
- Result.Im := 0.5 * (ln(ComplexMagnitude(1 - Z.Im, Z.Re)) - ln(ComplexMagnitude(1 + Z.Im, Z.Re)));
+ Result.Re := 0.5 * (ComplexArgument64(1 + Z.Im, Z.Re) - ComplexArgument64(1 - Z.Im, Z.Re));
+ Result.Im := 0.5 * (ln(ComplexMagnitude64(1 - Z.Im, Z.Re)) - ln(ComplexMagnitude64(1 + Z.Im, Z.Re)));
 end;
 
 
 { ComplexArcTanh }
 
-function ComplexArcTanh(const Re, Im: Single): TComplexSingle;
+function ComplexArcTanh32(const Re, Im: Single): TComplexSingle;
 begin
- Result.Re := 0.5 * (ln(ComplexMagnitude(1 + Re, Im)) - ln(ComplexMagnitude(1 - Re, Im)));
- Result.Im := 0.5 * (ComplexArgument(1 + Re, Im) - ComplexArgument(1 - Re, Im));
+ Result.Re := 0.5 * (ln(ComplexMagnitude32(1 + Re, Im)) - ln(ComplexMagnitude32(1 - Re, Im)));
+ Result.Im := 0.5 * (ComplexArgument32(1 + Re, Im) - ComplexArgument32(1 - Re, Im));
 end;
 
-function ComplexArcTanh(const Re, Im: Double): TComplexDouble;
+function ComplexArcTanh64(const Re, Im: Double): TComplexDouble;
 begin
- Result.Re := 0.5 * (ln(ComplexMagnitude(1 + Re, Im)) - ln(ComplexMagnitude(1 - Re, Im)));
- Result.Im := 0.5 * (ComplexArgument(1 + Re, Im) - ComplexArgument(1 - Re, Im));
+ Result.Re := 0.5 * (ln(ComplexMagnitude64(1 + Re, Im)) - ln(ComplexMagnitude64(1 - Re, Im)));
+ Result.Im := 0.5 * (ComplexArgument64(1 + Re, Im) - ComplexArgument64(1 - Re, Im));
 end;
 
-function ComplexArcTanh(const Z: TComplexSingle): TComplexSingle;
+function ComplexArcTanh32(const Z: TComplexSingle): TComplexSingle;
 begin
- Result.Re := 0.5 * (ln(ComplexMagnitude(1 + Z.Re, Z.Im)) - ln(ComplexMagnitude(1 - Z.Re, Z.Im)));
- Result.Im := 0.5 * (ComplexArgument(1 + Z.Re, Z.Im) - ComplexArgument(1 - Z.Re, Z.Im));
+ Result.Re := 0.5 * (ln(ComplexMagnitude32(1 + Z.Re, Z.Im)) - ln(ComplexMagnitude32(1 - Z.Re, Z.Im)));
+ Result.Im := 0.5 * (ComplexArgument32(1 + Z.Re, Z.Im) - ComplexArgument32(1 - Z.Re, Z.Im));
 end;
 
-function ComplexArcTanh(const Z: TComplexDouble): TComplexDouble;
+function ComplexArcTanh64(const Z: TComplexDouble): TComplexDouble;
 begin
- Result.Re := 0.5 * (ln(ComplexMagnitude(1 + Z.Re, Z.Im)) - ln(ComplexMagnitude(1 - Z.Re, Z.Im)));
- Result.Im := 0.5 * (ComplexArgument(1 + Z.Re, Z.Im) - ComplexArgument(1 - Z.Re, Z.Im));
+ Result.Re := 0.5 * (ln(ComplexMagnitude64(1 + Z.Re, Z.Im)) - ln(ComplexMagnitude64(1 - Z.Re, Z.Im)));
+ Result.Im := 0.5 * (ComplexArgument64(1 + Z.Re, Z.Im) - ComplexArgument64(1 - Z.Re, Z.Im));
 end;
 
 end.

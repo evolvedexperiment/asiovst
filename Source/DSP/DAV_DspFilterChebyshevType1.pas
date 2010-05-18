@@ -255,7 +255,7 @@ procedure TCustomChebyshev1LowpassFilter.Complex(const Frequency: Double;
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -269,7 +269,7 @@ begin
    A.Im := -2 * Cmplx.Im * (Cmplx.Re + 1);
    B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -279,7 +279,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
    B.Im :=  Cmplx.Im * FCoeffs[2 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;
@@ -298,7 +298,7 @@ begin
  Cmplx[1].Im := 0; Cmplx[1].Re := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   ComplexMultiplyInplace(Cmplx[1].Re, Cmplx[1].Im,
+   ComplexMultiplyInplace64(Cmplx[1].Re, Cmplx[1].Im,
      (Cmplx[0].Re * (1 - FCoeffs[2 * i + 1] - FCoeffs[2 * i] + Cmplx[0].Re * (1 - FCoeffs[2 * i + 1])) - FCoeffs[2 * i]),
      (Cmplx[0].Im * (1 + FCoeffs[2 * i + 1]) * (Cmplx[0].Re + 1)));
   end;
@@ -397,7 +397,7 @@ begin
    t[1] := 1 / (1 + t[0]);
    FFilterGain := FRippleGain * FFilterGain * t[1] * t[0];
    FCoeffs[FOrder - 1] := (1 - t[0]) * t[1];
-   ComplexMultiplyInplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiplyInplace64(Cmplx, FExpOrdPiHalf);
   end;
 
  for i := 0 to (FOrder div 2) - 1 do
@@ -410,7 +410,7 @@ begin
    FCoeffs[2 * i    ] := 2 * (       t[0] - K2) * t[2];
    FCoeffs[2 * i + 1] :=     (t[1] - t[0] - K2) * t[2];
 
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
   end;
 {$ELSE}
 asm
@@ -580,7 +580,7 @@ procedure TCustomChebyshev1HighpassFilter.Complex(const Frequency: Double;
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -594,7 +594,7 @@ begin
    A.Im := -2 * Cmplx.Im * (Cmplx.Re - 1);
    B.Re :=  1 - FCoeffs[2 * i] * Cmplx.Re - FCoeffs[2 * i + 1] * (2 * sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[2 * i] + 2 * Cmplx.Re * FCoeffs[2 * i + 1]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -604,7 +604,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re := -Cmplx.Re * FCoeffs[2 * i] + 1;
    B.Im :=  Cmplx.Im * FCoeffs[2 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;
@@ -621,14 +621,14 @@ begin
  Nom := 0; Den := 1;
  for i := 0 to (FOrder div 2) - 1 do
   begin
-   ComplexMultiplyInplace(Den, Nom,
+   ComplexMultiplyInplace64(Den, Nom,
      (Cmplx.Re * (FCoeffs[2 * i + 1] - FCoeffs[2 * i] - 1 + Cmplx.Re * (1 - FCoeffs[2 * i + 1])) + FCoeffs[2 * i]),
      (Cmplx.Im * (FCoeffs[2 * i + 1] + 1) * (Cmplx.Re - 1)));
   end;
  if (FOrder mod 2) = 1 then
   begin
    i := ((FOrder + 1) div 2) - 1;
-   ComplexMultiplyInplace(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - Cmplx.Re),
+   ComplexMultiplyInplace64(Den, Nom, (1 + FCoeffs[2 * i]) * (1 - Cmplx.Re),
      Cmplx.Im * (FCoeffs[2 * i] - 1));
   end;
  Result := ArcTan2(Nom, Den);
@@ -737,7 +737,7 @@ begin
    t  := 1 / (t1 + K);
    FFilterGain := FRippleGain * FFilterGain * t * K;
    FCoeffs[FOrder - 1] := (t1 - K) * t;
-   ComplexMultiplyInplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiplyInplace64(Cmplx, FExpOrdPiHalf);
   end;
 
  for i := 0 to (FOrder div 2) - 1 do
@@ -749,7 +749,7 @@ begin
    FCoeffs[2 * i    ] := 2 * (     t1 - K2) * t;
    FCoeffs[2 * i + 1] :=     (t2 - t1 - K2) * t;
 
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
   end;
 end;
 
@@ -833,7 +833,7 @@ begin
    t[1] := 1 / (1 + t[0]);
    FFilterGain := FRippleGain * FFilterGain * t[1];
    FCoeffs[FOrder - 1] := (1 - t[0]) * t[1];
-   ComplexMultiplyInplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiplyInplace64(Cmplx, FExpOrdPiHalf);
   end;
 
  for i := 0 to (FOrder div 2) - 1 do
@@ -846,7 +846,7 @@ begin
    FCoeffs[2 * i    ] := 2 * (       1 - t[0] * K2) * t[2];
    FCoeffs[2 * i + 1] :=     (t[1] - 1 - t[0] * K2) * t[2];
 
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
   end;
 {$ELSE}
 asm
@@ -1027,7 +1027,7 @@ begin
  for i := (FOrder div 2) - 1 downto 0 do
   begin
    t  := Cmplx.Re;
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
    t1 := 1 / (FHypFactors[0] - sqr(t));
    t2 := 2 * t * t1 * K * FHypFactors[1];
    t  := 1 / (t2 + 1 + t1 * K2);

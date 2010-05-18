@@ -60,7 +60,7 @@ begin
   // Calculate Log Of Absolute Value
   for i := 0 to sz - 1 do
    begin
-    realFreq[i] := log10(ComplexMagnitude(realFreq[i], imagFreq[i]));
+    realFreq[i] := Log10(ComplexMagnitude32(realFreq[i], imagFreq[i]));
     imagFreq[i] := 0;
    end;
 

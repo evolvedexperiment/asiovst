@@ -95,7 +95,7 @@ type
 implementation
 
 uses
-  DAV_Common, DAV_DspInterpolation;
+  DAV_Common, DAV_Math, DAV_Approximations, DAV_DspInterpolation;
 
 {$IFDEF UseEmbedding}
 function EnumNamesFunc(hModule: THandle; lpType, lpName: PChar; lParam: DWORD): Boolean; stdcall;
@@ -360,7 +360,7 @@ begin
 
      if FIsPlaying then
       begin
-       Offset := FastTrunc(FPosition);
+       Offset := Trunc(FPosition);
        if Offset + 1 >= FAudioData[0].SampleCount then
         begin
          Ratio := FPosition - Offset;
@@ -385,16 +385,16 @@ begin
         else
          begin
           // wrap around
-          Offset := FastTrunc(FPosition) + 1;
+          Offset := Trunc(FPosition) + 1;
           while Offset >= FAudioData[0].SampleCount do
            begin
             FPosition := FPosition - FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
           while Offset < 0 do
            begin
             FPosition := FPosition + FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
          end;
       end
@@ -424,7 +424,7 @@ begin
 
      if FIsPlaying then
       begin
-       Offset := FastTrunc(FPosition);
+       Offset := Trunc(FPosition);
        if Offset + 1 >= FAudioData[0].SampleCount then
         begin
          Ratio := FPosition - Offset;
@@ -459,16 +459,16 @@ begin
         else
          begin
           // wrap around
-          Offset := FastTrunc(FPosition) + 1;
+          Offset := Trunc(FPosition) + 1;
           while Offset >= FAudioData[0].SampleCount do
            begin
             FPosition := FPosition - FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
           while Offset < 0 do
            begin
             FPosition := FPosition + FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
          end;
       end
@@ -505,7 +505,7 @@ begin
 
      if FIsPlaying then
       begin
-       Offset := FastTrunc(FPosition);
+       Offset := Trunc(FPosition);
        if Offset + 3 >= FAudioData[0].SampleCount then
         begin
          Ratio := FPosition - Offset;
@@ -541,16 +541,16 @@ begin
         else
          begin
           // wrap around
-          Offset := FastTrunc(FPosition) + 1;
+          Offset := Trunc(FPosition) + 1;
           while Offset >= FAudioData[0].SampleCount do
            begin
             FPosition := FPosition - FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
           while Offset < 0 do
            begin
             FPosition := FPosition + FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
          end;
       end
@@ -581,7 +581,7 @@ begin
 
      if FIsPlaying then
       begin
-       Offset := FastTrunc(FPosition);
+       Offset := Trunc(FPosition);
        if Offset + 1 >= FAudioData[0].SampleCount then
         begin
          Ratio := FPosition - Offset;
@@ -621,16 +621,16 @@ begin
         else
          begin
           // wrap around
-          Offset := FastTrunc(FPosition) + 1;
+          Offset := Trunc(FPosition) + 1;
           while Offset >= FAudioData[0].SampleCount do
            begin
             FPosition := FPosition - FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
           while Offset < 0 do
            begin
             FPosition := FPosition + FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
          end;
       end
@@ -666,7 +666,7 @@ begin
 
      if FIsPlaying then
       begin
-       Offset := FastTrunc(FPosition);
+       Offset := Trunc(FPosition);
        if Offset + 3 >= FAudioData[0].SampleCount then
         begin
          Ratio := FPosition - Offset;
@@ -702,16 +702,16 @@ begin
         else
          begin
           // wrap around
-          Offset := FastTrunc(FPosition) + 1;
+          Offset := Trunc(FPosition) + 1;
           while Offset >= FAudioData[0].SampleCount do
            begin
             FPosition := FPosition - FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
           while Offset < 0 do
            begin
             FPosition := FPosition + FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
          end;
       end
@@ -742,7 +742,7 @@ begin
 
      if FIsPlaying then
       begin
-       Offset := FastTrunc(FPosition);
+       Offset := Trunc(FPosition);
        if Offset + 1 >= FAudioData[0].SampleCount then
         begin
          Ratio := FPosition - Offset;
@@ -782,16 +782,16 @@ begin
         else
          begin
           // wrap around
-          Offset := FastTrunc(FPosition) + 1;
+          Offset := Trunc(FPosition) + 1;
           while Offset >= FAudioData[0].SampleCount do
            begin
             FPosition := FPosition - FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
           while Offset < 0 do
            begin
             FPosition := FPosition + FAudioData[0].SampleCount;
-            Offset := FastTrunc(FPosition) + 1;
+            Offset := Trunc(FPosition) + 1;
            end;
          end;
       end

@@ -774,7 +774,6 @@ object FmASIO: TFmASIO
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 0
     OnChange = DriverComboChange
   end
@@ -796,7 +795,6 @@ object FmASIO: TFmASIO
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 2
     OnChange = ChannelBoxChange
   end
@@ -1590,6 +1588,15 @@ object FmASIO: TFmASIO
     Caption = 'Link Channels'
     Enabled = False
     TabOrder = 69
+  end
+  object BtExport: TButton
+    Left = 573
+    Top = 476
+    Width = 63
+    Height = 21
+    Caption = 'E&xport...'
+    TabOrder = 70
+    OnClick = BtExportClick
   end
   object ASIOHost: TAsioHost
     AsioTime.Speed = 1.000000000000000000

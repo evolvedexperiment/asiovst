@@ -63,6 +63,7 @@
 			<DCCReference Include="..\..\Source\DAV_AudioMemory.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BitReserve.pas"/>
 			<DCCReference Include="..\..\Source\DAV_Bindings.pas"/>
+			<DCCReference Include="..\..\Source\DAV_BlockArithmetrics.pas"/>
 			<DCCReference Include="..\..\Source\DAV_BlockProcessing.pas"/>
 			<DCCReference Include="..\..\Source\Math\DAV_BufferMathAsm.pas"/>
 			<DCCReference Include="..\..\Source\Math\DAV_BufferMathPascal.pas"/>
@@ -94,7 +95,6 @@
 			<DCCReference Include="..\..\Source\DAV_Types.pas"/>
 			<DCCReference Include="..\..\Source\DAV_VectorMath.pas"/>
 			<DCCReference Include="..\..\Source\DAV_WaveFileTypes.pas"/>
-			<DCCReference Include="..\..\Source\DAV_BlockArithmetrics.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>

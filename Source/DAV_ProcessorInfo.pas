@@ -84,6 +84,8 @@ type
     FL1CodeCache : TCacheUnitInformation;
     FL2Cache     : TCacheUnitInformation;
   public
+    destructor Destroy; override;
+
     property L1DataCache: TCacheUnitInformation read FL1DataCache;
     property L1InstructionCache: TCacheUnitInformation read FL1CodeCache;
     property L2Cache: TCacheUnitInformation read FL2Cache;
@@ -91,8 +93,10 @@ type
 
   TCustomL3CacheInformation = class(TCustomL1L2CacheInformation)
   protected
-    FL3Cache     : TCacheUnitInformation;
+    FL3Cache : TCacheUnitInformation;
   public
+    destructor Destroy; override;
+
     property L3Cache: TCacheUnitInformation read FL3Cache;
   end;
 
@@ -183,6 +187,7 @@ type
     class function GetManufacturer: string; virtual; abstract;
   public
     constructor Create(FeatureID: Cardinal); virtual;
+    destructor Destroy; override;
 
     property CPUName: string read GetCPUName;
     property CPUType: TCPUType read FCPUType;
@@ -331,6 +336,7 @@ type
     function GetHasConditionalMove: Boolean;
   public
     constructor Create;
+    destructor Destroy; override;
 
     property VendorString: string read FVendorString;
 
@@ -688,6 +694,12 @@ begin
   end;
 end;
 
+destructor TProcessorInfo.Destroy;
+begin
+ FreeAndNil(FFeatures);
+ inherited;
+end;
+
 function TProcessorInfo.GetAPICID: Byte;
 begin
  Result := FFeatures.APICID;
@@ -852,6 +864,12 @@ begin
   end;
 end;
 
+destructor TCustomProcessorFeatures.Destroy;
+begin
+ FreeAndNil(FCacheInfo);
+ inherited;
+end;
+
 function TCustomProcessorFeatures.GetCPUName: string;
 begin
  Result := string(FCPUName);
@@ -883,6 +901,26 @@ end;
 function TCustomProcessorExtendedFeatures.GetHasMMX: Boolean;
 begin
  Result := (FFeatures and $00800000) <> 0;
+end;
+
+
+{ TCustomL1L2CacheInformation }
+
+destructor TCustomL1L2CacheInformation.Destroy;
+begin
+ FreeAndNil(FL1DataCache);
+ FreeAndNil(FL1CodeCache);
+ FreeAndNil(FL2Cache);
+ inherited;
+end;
+
+
+{ TCustomL3CacheInformation }
+
+destructor TCustomL3CacheInformation.Destroy;
+begin
+ FreeAndNil(FL3Cache);
+ inherited;
 end;
 
 
@@ -1505,5 +1543,8 @@ end;
 
 initialization
   ProcessorInfo := TProcessorInfo.Create;
+
+finalization
+  ProcessorInfo.Free;
 
 end.

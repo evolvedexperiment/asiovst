@@ -417,91 +417,91 @@ begin
   end;
 
  // Block Inplace Addition Binding (64 bit)
- with TFunctionBinding.Create(@BlockAdditionInplace64, @BlockAdditionInplace64Native) do
+ with TFunctionBinding.Create(@@BlockAdditionInplace64, @BlockAdditionInplace64Native) do
   begin
    Add(@BlockAdditionInplace64Native);
   end;
 
  // Block Inplace Subtraction Binding (32 bit)
- with TFunctionBinding.Create(@BlockSubtractInplace32, @BlockSubtractInplace32Native) do
+ with TFunctionBinding.Create(@@BlockSubtractInplace32, @BlockSubtractInplace32Native) do
   begin
    Add(@BlockSubtractInplace32Native);
   end;
 
  // Block Inplace Subtraction Binding (64 bit)
- with TFunctionBinding.Create(@BlockSubtractInplace64, @BlockSubtractInplace64Native) do
+ with TFunctionBinding.Create(@@BlockSubtractInplace64, @BlockSubtractInplace64Native) do
   begin
    Add(@BlockSubtractInplace64Native);
   end;
 
  // Block Inplace Reverse Subtraction Binding (32 bit)
- with TFunctionBinding.Create(@BlockReverseSubtractInplace32, @BlockReverseSubtractInplace32Native) do
+ with TFunctionBinding.Create(@@BlockReverseSubtractInplace32, @BlockReverseSubtractInplace32Native) do
   begin
    Add(@BlockReverseSubtractInplace32Native);
   end;
 
  // Block Inplace Reverse Subtraction Binding (64 bit)
- with TFunctionBinding.Create(@BlockReverseSubtractInplace64, @BlockReverseSubtractInplace64Native) do
+ with TFunctionBinding.Create(@@BlockReverseSubtractInplace64, @BlockReverseSubtractInplace64Native) do
   begin
    Add(@BlockReverseSubtractInplace64Native);
   end;
 
  // Block Inplace Offset Binding (32 bit)
- with TFunctionBinding.Create(@BlockOffsetInplace32, @BlockOffsetInplace32Native) do
+ with TFunctionBinding.Create(@@BlockOffsetInplace32, @BlockOffsetInplace32Native) do
   begin
    Add(@BlockOffsetInplace32Native);
   end;
 
  // Block Inplace Offset Binding (64 bit)
- with TFunctionBinding.Create(@BlockOffsetInplace64, @BlockOffsetInplace64Native) do
+ with TFunctionBinding.Create(@@BlockOffsetInplace64, @BlockOffsetInplace64Native) do
   begin
    Add(@BlockOffsetInplace64Native);
   end;
 
  // Block Inplace Multiply Binding (32 bit)
- with TFunctionBinding.Create(@BlockMultiplyInplace32, @BlockMultiplyInplace32Native) do
+ with TFunctionBinding.Create(@@BlockMultiplyInplace32, @BlockMultiplyInplace32Native) do
   begin
    Add(@BlockMultiplyInplace32Native);
   end;
 
  // Block Inplace Multiply Binding (64 bit)
- with TFunctionBinding.Create(@BlockMultiplyInplace64, @BlockMultiplyInplace64Native) do
+ with TFunctionBinding.Create(@@BlockMultiplyInplace64, @BlockMultiplyInplace64Native) do
   begin
    Add(@BlockMultiplyInplace64Native);
   end;
 
  // Block Inplace Divide Binding (32 bit)
- with TFunctionBinding.Create(@BlockDivideInplace32, @BlockDivideInplace32Native) do
+ with TFunctionBinding.Create(@@BlockDivideInplace32, @BlockDivideInplace32Native) do
   begin
    Add(@BlockDivideInplace32Native);
   end;
 
  // Block Inplace Divide Binding (64 bit)
- with TFunctionBinding.Create(@BlockDivideInplace64, @BlockDivideInplace64Native) do
+ with TFunctionBinding.Create(@@BlockDivideInplace64, @BlockDivideInplace64Native) do
   begin
    Add(@BlockDivideInplace64Native);
   end;
 
  // Block Inplace Reverse Divide Binding (32 bit)
- with TFunctionBinding.Create(@BlockReverseDivideInplace32, @BlockReverseDivideInplace32Native) do
+ with TFunctionBinding.Create(@@BlockReverseDivideInplace32, @BlockReverseDivideInplace32Native) do
   begin
    Add(@BlockReverseDivideInplace32Native);
   end;
 
  // Block Inplace Reverse Divide Binding (64 bit)
- with TFunctionBinding.Create(@BlockReverseDivideInplace64, @BlockReverseDivideInplace64Native) do
+ with TFunctionBinding.Create(@@BlockReverseDivideInplace64, @BlockReverseDivideInplace64Native) do
   begin
    Add(@BlockReverseDivideInplace64Native);
   end;
 
  // Block Inplace Scale Binding (32 bit)
- with TFunctionBinding.Create(@BlockScaleInplace32, @BlockScaleInplace32Native) do
+ with TFunctionBinding.Create(@@BlockScaleInplace32, @BlockScaleInplace32Native) do
   begin
    Add(@BlockScaleInplace32Native);
   end;
 
  // Block Inplace Scale Binding (64 bit)
- with TFunctionBinding.Create(@BlockScaleInplace64, @BlockScaleInplace64Native) do
+ with TFunctionBinding.Create(@@BlockScaleInplace64, @BlockScaleInplace64Native) do
   begin
    Add(@BlockScaleInplace64Native);
   end;

@@ -804,67 +804,67 @@ begin
  Position.Im := 0;
  GetSinCos(Pi * COne64th, Offset.Im, Offset.Re);
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[30] := 0.5 / Position.Re;
  GCosTable[15] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[14] := 0.5 / Position.Re;
  GCosTable[ 7] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[29] := 0.5 / Position.Re;
  GCosTable[16] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[ 6] := 0.5 / Position.Re;
  GCosTable[ 3] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[28] := 0.5 / Position.Re;
  GCosTable[17] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[13] := 0.5 / Position.Re;
  GCosTable[ 8] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[27] := 0.5 / Position.Re;
  GCosTable[18] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[ 2] := 0.5 / Position.Re;
  GCosTable[ 1] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[26] := 0.5 / Position.Re;
  GCosTable[19] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[12] := 0.5 / Position.Re;
  GCosTable[ 9] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[25] := 0.5 / Position.Re;
  GCosTable[20] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[ 5] := 0.5 / Position.Re;
  GCosTable[ 4] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[24] := 0.5 / Position.Re;
  GCosTable[21] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[11] := 0.5 / Position.Re;
  GCosTable[10] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[23] := 0.5 / Position.Re;
  GCosTable[22] := 0.5 / Position.Im;
 
- ComplexMultiplyInplace(Position, Offset);
+ ComplexMultiplyInplace64(Position, Offset);
  GCosTable[0] := 0.5 / Position.Re;
 
 {$ELSE}

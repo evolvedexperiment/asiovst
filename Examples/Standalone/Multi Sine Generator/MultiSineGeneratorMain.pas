@@ -37,9 +37,9 @@ interface
 
 uses
   {$IFDEF FPC} LCLType, LResources, Buttons, {$ELSE} Windows, {$ENDIF}
-  Forms, Classes, Controls, StdCtrls, DAV_Complex, DAV_Types, DAV_ASIOHost,
-  ExtCtrls, DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_DspSimpleOscillator,
-  DAV_GuiLED;
+  Forms, Classes, Sysutils, Controls, StdCtrls, ExtCtrls, DAV_Complex,
+  DAV_Types, DAV_ASIOHost, DAV_GuiBaseControl, DAV_GuiLevelMeter,
+  DAV_DspSimpleOscillator, DAV_GuiLED;
 
 const
   CDefaultFrequencies : Array [0..30] of Single = (20, 25, 31.5, 40, 50, 63,
@@ -167,6 +167,7 @@ type
     SB8kL: TScrollBar;
     SB8kR: TScrollBar;
     ShBackText: TShape;
+    BtExport: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostSampleRateChanged(Sender: TObject);
@@ -185,13 +186,15 @@ type
     procedure LedClipLClick(Sender: TObject);
     procedure LedClipRClick(Sender: TObject);
     procedure LbFrequencyDblClick(Sender: TObject);
+    procedure BtExportClick(Sender: TObject);
   private
     procedure CalculatePeakDecay;
+    procedure ExportToFilename(Filename: TFilename);
   public
     FOscillators   : array [0..30] of TSimpleOscillator64;
     FVolume        : array [0..1, 0..30] of Double;
     FPeak          : array [0..1] of Double;
-    FPeakDecay      : Double; 
+    FPeakDecay      : Double;
     FChannelOffset : Byte;
   published
   end;
@@ -206,7 +209,8 @@ implementation
 {$ENDIF}
 
 uses
-  SysUtils, Inifiles, Dialogs, DAV_Approximations, DAV_Common, DAV_Math,
+  Inifiles, Dialogs, DAV_Approximations, DAV_Common, DAV_Math, DAV_AudioFile,
+  DAV_AudioData, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
   MultiSineGeneratorFrequency;
 
 procedure TFmASIO.FormCreate(Sender: TObject);
@@ -502,6 +506,57 @@ end;
 procedure TFmASIO.BtControlPanelClick(Sender: TObject);
 begin
  ASIOHost.ControlPanel;
+end;
+
+procedure TFmASIO.BtExportClick(Sender: TObject);
+begin
+ with TSaveDialog.Create(Self) do
+  try
+   Title := 'Export Audio File...';
+   Filter := 'Wave (*.wav)|*.wav|AIFF (*.aiff)|*.aiff|AU (*.au)|*.au';
+   DefaultExt := '.wav';
+   if Execute
+    then ExportToFilename(Filename);
+  finally
+   Free;
+  end;
+end;
+
+procedure TFmASIO.ExportToFilename(Filename: TFilename);
+var
+  SampleIndex  : Integer;
+  BandIndex    : Integer;
+  Data         : Double;
+begin
+ with TAudioDataCollection32.Create(nil) do
+  try
+   ChannelCount := 2;
+   SampleRate := ASIOHost.SampleRate;
+   SampleFrames := Round(20 * SampleRate);
+
+   for SampleIndex := 0 to SampleFrames - 1 do
+    begin
+     // left channel
+     Data := FVolume[0, 0] * FOscillators[0].Sine;
+     for BandIndex := 1 to Length(FOscillators) - 1
+      do Data := Data + FVolume[0, BandIndex] * FOscillators[BandIndex].Sine;
+     ChannelDataPointer[0]^[SampleIndex] := Data;
+
+     // right channel
+     Data := FVolume[1, 0] * FOscillators[0].Sine;
+     FOscillators[0].CalculateNextSample;
+     for BandIndex := 1 to Length(FOscillators) - 1 do
+      begin
+       Data := Data + FVolume[1, BandIndex] * FOscillators[BandIndex].Sine;
+       FOscillators[BandIndex].CalculateNextSample;
+      end;
+     ChannelDataPointer[1]^[SampleIndex] := Data;
+    end;
+
+   SaveToFile(Filename);
+  finally
+   Free;
+  end;
 end;
 
 procedure TFmASIO.BtMuteClick(Sender: TObject);

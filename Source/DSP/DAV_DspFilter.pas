@@ -487,7 +487,7 @@ begin
   begin
    Assert(Assigned(FFilterArray[i]));
    FFilterArray[i].Complex(Frequency, Tmp.Re, Tmp.Im);
-   ComplexMultiply(Real, Imaginary, Tmp.Re, Tmp.Im);
+   ComplexMultiply64(Real, Imaginary, Tmp.Re, Tmp.Im);
   end;
 end;
 

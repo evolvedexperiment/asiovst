@@ -214,7 +214,7 @@ begin
   begin
    // using the chebyshev polynom identity to get rid of the cos(2*x)
    Data^[Sample] := Data^[Sample] * (CBlackman[0] + Value.Re * (CBlackman[1] + CBlackman[2] * Value.Re));
-   ComplexMultiplyInplace(Value, Phase);
+   ComplexMultiplyInplace64(Value, Phase);
   end;
 end;
 

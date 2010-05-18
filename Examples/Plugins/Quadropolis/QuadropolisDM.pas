@@ -231,7 +231,7 @@ begin
     FOutputFreq[0]^[Half].Re := FOutputFreq[0]^[Half].Re + FFilterFreq[Channel, 0]^[Half].Re * FSignalFreq[Channel]^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do FOutputFreq[0]^[Bin] := ComplexAdd(FOutputFreq[0]^[Bin], ComplexMultiply(FSignalFreq[Channel]^[Bin], FFilterFreq[Channel, 0]^[Bin]));
+     do FOutputFreq[0]^[Bin] := ComplexAdd32(FOutputFreq[0]^[Bin], ComplexMultiply32(FSignalFreq[Channel]^[Bin], FFilterFreq[Channel, 0]^[Bin]));
 
     // DC & Nyquist
     FOutputFreq[1]^[0].Re := FOutputFreq[1]^[0].Re + FFilterFreq[Channel, 1]^[0].Re * FSignalFreq[Channel]^[0].Re;
@@ -239,7 +239,7 @@ begin
     FOutputFreq[1]^[Half].Re := FOutputFreq[1]^[Half].Re + FFilterFreq[Channel, 1]^[Half].Re * FSignalFreq[Channel]^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do FOutputFreq[1]^[Bin] := ComplexAdd(FOutputFreq[1]^[Bin], ComplexMultiply(FSignalFreq[Channel]^[Bin], FFilterFreq[Channel, 1]^[Bin]));
+     do FOutputFreq[1]^[Bin] := ComplexAdd32(FOutputFreq[1]^[Bin], ComplexMultiply32(FSignalFreq[Channel]^[Bin], FFilterFreq[Channel, 1]^[Bin]));
    end;
 
   for Channel := 0 to numOutputs - 1 do
@@ -261,7 +261,7 @@ begin
     FOutputFreq[0]^[Half].Re := FOutputFreq[0]^[Half].Re + FFilterFreq[Channel, 0]^[Half].Re * FSignalFreq[Channel]^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do FOutputFreq[0]^[Bin] := ComplexAdd(FOutputFreq[0]^[Bin], ComplexMultiply(FSignalFreq[Channel]^[Bin], FFilterFreq[Channel, 0]^[Bin]));
+     do FOutputFreq[0]^[Bin] := ComplexAdd32(FOutputFreq[0]^[Bin], ComplexMultiply(FSignalFreq[Channel]^[Bin], FFilterFreq[Channel, 0]^[Bin]));
 
     // DC & Nyquist
     FOutputFreq[1]^[0].Re := FOutputFreq[1]^[0].Re + FFilterFreq[Channel, 1]^[0].Re * FSignalFreq[Channel]^[0].Re;

@@ -321,7 +321,7 @@ begin
    t[1] := 1 / (t[0] + K);
    FFilterGain := FFilterGain * K * t[1];
    FCoeffs[(3 * FOrder div 2) - 1] := (t[0] - K) * t[1];
-   ComplexMultiplyInplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiplyInplace64(Cmplx, FExpOrdPiHalf);
   end;
 
  for i := 0 to (FOrder div 2) - 1 do
@@ -333,7 +333,7 @@ begin
    FCoeffs[3 * i    ] := 2 * (K2 - sqr(Cmplx.Im)) / (K2 + sqr(Cmplx.Im));
    FCoeffs[3 * i + 1] := 2 * (       t[0] - K2) * t[2];
    FCoeffs[3 * i + 2] :=     (t[1] - t[0] - K2) * t[2];
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
   end;
 end;
 
@@ -423,7 +423,7 @@ procedure TChebyshev2LowpassFilter.Complex(const Frequency: Double;
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -437,7 +437,7 @@ begin
    A.Im := -Cmplx.Im * (2 * Cmplx.Re + FCoeffs[3 * i]);
    B.Re :=  1 - FCoeffs[3 * i + 1] * Cmplx.Re - FCoeffs[3 * i + 2] * (2 * sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[3 * i + 1] + 2 * Cmplx.Re * FCoeffs[3 * i + 2]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -447,7 +447,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re := -Cmplx.Re * FCoeffs[3 * i] + 1;
    B.Im :=  Cmplx.Im * FCoeffs[3 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;
@@ -515,7 +515,7 @@ begin
    t[1] := 1 / (t[0] + K);
    FFilterGain := FFilterGain * t[1] * t[0];
    FCoeffs[(3 * FOrder div 2) - 1] := (t[0] - K) * t[1];
-   ComplexMultiplyInplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiplyInplace64(Cmplx, FExpOrdPiHalf);
   end;
 
  for i := 0 to (FOrder div 2) - 1 do
@@ -527,7 +527,7 @@ begin
    FCoeffs[3 * i    ] := 2 * (K2 * sqr(Cmplx.Im) - 1) / (K2 * sqr(Cmplx.Im) + 1);
    FCoeffs[3 * i + 1] := 2 * (       1 - t[0] * K2) * t[2];
    FCoeffs[3 * i + 2] :=     (t[1] - 1 - t[0] * K2) * t[2];
-   ComplexMultiply2Inplace(Cmplx, FExpOrdPiHalf);
+   ComplexMultiply2Inplace64(Cmplx, FExpOrdPiHalf);
   end;
 end;
 
@@ -624,7 +624,7 @@ procedure TChebyshev2HighpassFilter.Complex(const Frequency: Double; out Real,
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -638,7 +638,7 @@ begin
    A.Im := -Cmplx.Im * (2 * Cmplx.Re + FCoeffs[3 * i]);
    B.Re :=  1 - FCoeffs[3 * i + 1] * Cmplx.Re - FCoeffs[3 * i + 2] * (2 * sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[3 * i + 1] + 2 * Cmplx.Re * FCoeffs[3 * i + 2]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -648,7 +648,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re :=  Cmplx.Re * FCoeffs[3 * i] - 1;
    B.Im :=  Cmplx.Im * FCoeffs[3 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;
@@ -706,7 +706,7 @@ procedure TChebyshev2LowpassFilterAutomatable.Complex(const Frequency: Double;
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -720,7 +720,7 @@ begin
    A.Im := -Cmplx.Im * (2 * Cmplx.Re + FCoeffs[3 * i]);
    B.Re :=  1 - FCoeffs[3 * i + 1] * Cmplx.Re - FCoeffs[3 * i + 2] * (2 * sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[3 * i + 1] + 2 * Cmplx.Re * FCoeffs[3 * i + 2]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -730,7 +730,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re := -Cmplx.Re * FCoeffs[3 * i] + 1;
    B.Im :=  Cmplx.Im * FCoeffs[3 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;
@@ -807,7 +807,7 @@ procedure TChebyshev2HighpassFilterAutomatable.Complex(const Frequency: Double;
 var
   i       : Cardinal;
   Cmplx   : TComplexDouble;
-  A, B, R : TComplexSingle;
+  A, B, R : TComplexDouble;
 begin
  GetSinCos(2 * Pi * Frequency * FSRR, Cmplx.Im, Cmplx.Re);
 
@@ -821,7 +821,7 @@ begin
    A.Im := -Cmplx.Im * (2 * Cmplx.Re + FCoeffs[3 * i]);
    B.Re :=  1 - FCoeffs[3 * i + 1] * Cmplx.Re - FCoeffs[3 * i + 2] * (2 * sqr(Cmplx.Re) - 1);
    B.Im :=  Cmplx.Im * (FCoeffs[3 * i + 1] + 2 * Cmplx.Re * FCoeffs[3 * i + 2]);
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
    inc(i);
   end;
 
@@ -831,7 +831,7 @@ begin
    A.Im := -Cmplx.Im;
    B.Re :=  Cmplx.Re * FCoeffs[3 * i] - 1;
    B.Im :=  Cmplx.Im * FCoeffs[3 * i];
-   R := ComplexMultiply(R, ComplexDivide(A, B));
+   R := ComplexMultiply64(R, ComplexDivide64(A, B));
   end;
 
  Real := R.Re;

@@ -792,7 +792,7 @@ begin
    FNominator[2]   :=     G * (sqr(K) / V - FAlpha / A + 1) * t;
   end;
 
- CalcPolesZeros;
+ CalculatePoleZeroes;
 end;
 
 procedure TShapeFilter.SetShape(const Value: Double);

@@ -205,7 +205,7 @@ begin
   begin
    Result := Result + Scale / sqrt(1 - Sqr(k * Pos.Im));
 
-   ComplexMultiplyInplace(Pos, Cmplx);
+   ComplexMultiplyInplace64(Pos, Cmplx);
   end;
 
  Result := Phi * Result;
@@ -228,7 +228,7 @@ begin
   begin
    Result := Result + Scale * sqrt(1 - Sqr(k * Pos.Im));
 
-   ComplexMultiplyInplace(Pos, Cmplx);
+   ComplexMultiplyInplace64(Pos, Cmplx);
   end;
 
  Result := Phi * Result;
@@ -251,7 +251,7 @@ begin
   begin
    Result := Result + Scale / ((1 - n * Sqr(Pos.Im)) * sqrt(1 - Sqr(k * Pos.Im)));
 
-   ComplexMultiplyInplace(Pos, Cmplx);
+   ComplexMultiplyInplace64(Pos, Cmplx);
   end;
 
  Result := Phi * Result;
@@ -318,7 +318,7 @@ begin
  Result.Im := 0 + Factor * Temp.Im;
 
  // second step
- ComplexMultiplyInplace(Temp, k);
+ ComplexMultiplyInplace64(Temp, k);
  Factor    := 0.140625;
  Result.Re := Result.Re + Factor * Temp.Re;
  Result.Im := Result.Im + Factor * Temp.Im;
@@ -326,7 +326,7 @@ begin
  // n-th step
  for Step := 3 to 1000 do
   begin
-   ComplexMultiplyInplace(Temp, k);
+   ComplexMultiplyInplace64(Temp, k);
    Factor  := CalculateFactor(Step);
    Result.Re := Result.Re + Factor * Temp.Re;
    Result.Im := Result.Im + Factor * Temp.Im;
@@ -353,7 +353,7 @@ begin
   begin
    Result := Result + Scale * sqrt(1 - Sqr(k * Pos.Im));
 
-   ComplexMultiplyInplace(Pos, Cmplx);
+   ComplexMultiplyInplace64(Pos, Cmplx);
   end;
 
  Result := 0.5 * Pi * Result;
@@ -375,7 +375,7 @@ begin
   begin
    Result := Result + Scale / ((1 - n * Sqr(Pos.Im)) * sqrt(1 - Sqr(k * Pos.Im)));
 
-   ComplexMultiplyInplace(Pos, Cmplx);
+   ComplexMultiplyInplace64(Pos, Cmplx);
   end;
 
  Result := 0.5 * Pi * Result;
@@ -404,7 +404,7 @@ begin
 
  Result.Re := Pi * Result.Re;
  Result.Im := Pi * Result.Im;
- Result := ComplexExp(Result);
+ Result := ComplexExp64(Result);
 *)
 end;
 
@@ -582,7 +582,7 @@ begin
   Current.Re := Pi * (Sqr(Step) * q.Im);
   Current.Im := Pi * (Sqr(Step) * q.Re);
 
-  Current := ComplexExp(Current);
+  Current := ComplexExp64(Current);
 
   // evaluate epsilon
   Epsilon := max(Current.Re, Current.Im);
@@ -616,7 +616,7 @@ begin
  Result := Theta00(Temp, q);
  Temp.Im := Pi * (q.Im - 0.25 * Temp.Im);
  Temp.Re := Pi * (q.Re - 0.25 * Temp.Re);
- ComplexMultiplyInplace(Result, ComplexExp(Temp.Im, Temp.Re));
+ ComplexMultiplyInplace64(Result, ComplexExp64(Temp.Im, Temp.Re));
 end;
 
 function Theta11(q: TComplexDouble): TComplexDouble;
@@ -644,7 +644,7 @@ begin
   Current.Re := Pi * (Sqr(Step) * q.Im + 2 * Step * z.Im);
   Current.Im := Pi * (Sqr(Step) * q.Re + 2 * Step * z.Re);
 
-  Current := ComplexExp(Current);
+  Current := ComplexExp64(Current);
 
   // evaluate epsilon
   Epsilon := max(Current.Re, Current.Im);
@@ -673,7 +673,7 @@ begin
  Result := Theta00(z, q);
  z.Im := Pi * (q.Im - 0.25 * z.Im);
  z.Re := Pi * (q.Re - 0.25 * z.Re);
- ComplexMultiplyInplace(Result, ComplexExp(z.Im, z.Re));
+ ComplexMultiplyInplace64(Result, ComplexExp64(z.Im, z.Re));
 end;
 
 function Theta11(z, q:  TComplexDouble): TComplexDouble;
@@ -938,8 +938,8 @@ var
   Theta : TComplexDouble;
 begin
  Theta  := NomeQk(k);
- Result := ComplexDivide(ComplexMultiply(Theta00(Theta), Theta11(z, Theta)),
-   ComplexMultiply(Theta10(Theta), Theta01(z, Theta)));
+ Result := ComplexDivide64(ComplexMultiply64(Theta00(Theta), Theta11(z, Theta)),
+   ComplexMultiply64(Theta10(Theta), Theta01(z, Theta)));
  Result.Re := -Result.Re;
  Result.Im := -Result.Im;
 end;
@@ -949,8 +949,8 @@ var
   Theta : TComplexDouble;
 begin
  Theta  := NomeQk(k);
- Result := ComplexDivide(ComplexMultiply(Theta01(Theta), Theta10(z, Theta)),
-   ComplexMultiply(Theta10(Theta), Theta01(z, Theta)));
+ Result := ComplexDivide64(ComplexMultiply64(Theta01(Theta), Theta10(z, Theta)),
+   ComplexMultiply64(Theta10(Theta), Theta01(z, Theta)));
 end;
 
 function Dn(z, k: TComplexDouble): TComplexDouble; overload;
@@ -958,55 +958,55 @@ var
   Theta : TComplexDouble;
 begin
  Theta  := NomeQk(k);
- Result := ComplexDivide(ComplexMultiply(Theta01(Theta), Theta00(z, Theta)),
-   ComplexMultiply(Theta00(Theta), Theta01(z, Theta)));
+ Result := ComplexDivide64(ComplexMultiply64(Theta01(Theta), Theta00(z, Theta)),
+   ComplexMultiply64(Theta00(Theta), Theta01(z, Theta)));
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 function Ns(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexReciprocal(Dn(z, k));
+ Result := ComplexReciprocal64(Dn(z, k));
 end;
 
 function Nc(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexReciprocal(Dn(z, k));
+ Result := ComplexReciprocal64(Dn(z, k));
 end;
 
 function Nd(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexReciprocal(Dn(z, k));
+ Result := ComplexReciprocal64(Dn(z, k));
 end;
 
 function Sd(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexDivide(Sn(z, k), Dn(z, k));
+ Result := ComplexDivide64(Sn(z, k), Dn(z, k));
 end;
 
 function Sc(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexDivide(Sn(z, k), Cn(z, k));
+ Result := ComplexDivide64(Sn(z, k), Cn(z, k));
 end;
 
 function Cd(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexDivide(Cn(z, k), Dn(z, k));
+ Result := ComplexDivide64(Cn(z, k), Dn(z, k));
 end;
 
 function Cs(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexDivide(Cn(z, k), Sn(z, k));
+ Result := ComplexDivide64(Cn(z, k), Sn(z, k));
 end;
 
 function Dc(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexDivide(Dn(z, k), Cn(z, k));
+ Result := ComplexDivide64(Dn(z, k), Cn(z, k));
 end;
 
 function Ds(z, k: TComplexDouble): TComplexDouble;
 begin
- Result := ComplexDivide(Dn(z, k), Sn(z, k));
+ Result := ComplexDivide64(Dn(z, k), Sn(z, k));
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
