@@ -41,17 +41,65 @@ uses
 
 type
   {$A1}
+
+  { 32 bit ARGB color definitions }
+
+  TColor32ARGB = packed record
+  case Integer of
+    0: (
+       ARGB: Cardinal;
+       );
+    1: (
+         A, R, G, B: Byte;
+       );
+  end;
+  PColor32ARGB = ^TColor32ARGB;
+
+
+  { 32 bit ABGR color definitions }
+
+  TColor32ABGR = packed record
+  case Integer of
+    0: (
+       ABGR: Cardinal;
+       );
+    1: (
+         A, B, G, R: Byte;
+       );
+  end;
+  PColor32ABGR = ^TColor32ABGR;
+
+
+  { 24 bit RGB color definitions }
+
+  TColor24RGB = packed record
+  case Integer of
+    0: (
+       RGB: Cardinal;
+       );
+    1: (
+         R, G, B: Byte;
+       );
+  end;
+  PColor24BGR = ^TColor24RGB;
+
+  { Old definitions }
+
   TRGB32 = packed record
     B, G, R, A: Byte;
   end;
+  PRGB32 = ^TRGB32;
+
   TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
   PRGB32Array = ^TRGB32Array;
+  TArrayOfRGB32 = array of TRGB32;
 
   TRGB24 = packed record
     B, G, R: Byte;
   end;
   TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
+  TArrayOfRGB24 = array of TRGB24;
 
 (*
   TGuiPointFloat = packed record
