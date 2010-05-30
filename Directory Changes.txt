@@ -1,0 +1,6 @@
+Directory Changes
+-----------------
+
+The current repository has been entirely moved to the trunk subdirectory. The advantage of this is the fact that in the future tags can be extracted as snapshots for dedicated versions.
+
+Users who like to maintain the old (local) structure can simply relocate the source code repository to the trunk subdirectory (or checkout the trunk subdirectory separatly without all the other directories)
