@@ -1,0 +1,54 @@
+{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+
+LazarusResources.Add('TFmVSTEditor','FORMDATA',[
+  'TPF0'#12'TFmVSTEditor'#11'FmVSTEditor'#4'Left'#3''#1#6'Height'#3#132#0#3'To'
+  +'p'#3#242#0#5'Width'#3'@'#1#18'HorzScrollBar.Page'#3'?'#1#18'VertScrollBar.P'
+  +'age'#3#131#0#13'ActiveControl'#7#8'CBPreset'#11'BorderStyle'#7#12'bsToolWin'
+  +'dow'#7'Caption'#6#21'ITA VST Plugin Editor'#12'ClientHeight'#3#132#0#11'Cli'
+  +'entWidth'#3'@'#1#11'Font.Height'#2#243#9'Font.Name'#6#7'Verdana'#10'Font.St'
+  +'yle'#11#6'fsBold'#0#10'OnActivate'#7#12'FormActivate'#7'OnClose'#7#9'FormCl'
+  +'ose'#8'OnCreate'#7#10'FormCreate'#12'OnDeactivate'#7#14'FormDeactivate'#0#8
+  +'TToolBar'#7'ToolBar'#6'Height'#2#27#5'Width'#3'@'#1#12'ButtonHeight'#2#24#5
+  +'Color'#7#9'clBtnFace'#9'EdgeInner'#7#6'esNone'#9'EdgeOuter'#7#6'esNone'#11
+  +'ParentColor'#8#8'TabOrder'#2#0#0#6'TLabel'#8'LbPreset'#4'Left'#2#5#6'Height'
+  +#2#24#5'Width'#2'5'#8'AutoSize'#8#7'Caption'#6#8'Preset: '#5'Color'#7#6'clNo'
+  +'ne'#11'Font.Height'#2#243#9'Font.Name'#6#7'Verdana'#10'Font.Style'#11#6'fsB'
+  +'old'#0#6'Layout'#7#8'tlCenter'#11'ParentColor'#8#0#0#11'TToolButton'#11'Too'
+  +'lButton1'#4'Left'#2#1#5'Width'#2#4#7'Caption'#6#11'ToolButton1'#5'Style'#7
+  +#12'tbsSeparator'#0#0#11'TToolButton'#11'ToolButton2'#4'Left'#2':'#5'Width'#2
+  +#8#7'Caption'#6#11'ToolButton2'#10'ImageIndex'#2#0#5'Style'#7#12'tbsSeparato'
+  +'r'#0#0#9'TComboBox'#8'CBPreset'#4'Left'#2'B'#6'Height'#2#24#5'Width'#3#144#0
+  +#16'AutoCompleteText'#11#22'cbactEndOfLineComplete'#20'cbactSearchAscending'
+  +#0#5'Color'#7#9'clBtnFace'#10'ItemHeight'#2#13#9'MaxLength'#2#0#8'OnChange'#7
+  +#14'CBPresetChange'#5'Style'#7#14'csDropDownList'#8'TabOrder'#2#0#0#0#11'TTo'
+  +'olButton'#11'ToolButton3'#4'Left'#3#210#0#5'Width'#2#8#7'Caption'#6#11'Tool'
+  +'Button3'#10'ImageIndex'#2#1#5'Style'#7#12'tbsSeparator'#0#0#7'TButton'#7'Bt'
+  +'Setup'#4'Left'#3#218#0#6'Height'#2#24#5'Width'#2'3'#25'BorderSpacing.InnerB'
+  +'order'#2#4#7'Caption'#6#6'&Setup'#7'OnClick'#7#12'BtSetupClick'#8'TabOrder'
+  +#2#2#7'TabStop'#8#0#0#11'TToolButton'#11'ToolButton4'#4'Left'#3#13#1#5'Width'
+  +#2#8#7'Caption'#6#11'ToolButton4'#10'ImageIndex'#2#2#5'Style'#7#12'tbsSepara'
+  +'tor'#0#0#7'TButton'#6'BtExit'#4'Left'#3#21#1#6'Height'#2#24#5'Width'#2'%'#25
+  +'BorderSpacing.InnerBorder'#2#4#7'Caption'#6#5'E&xit'#7'OnClick'#7#11'BtExit'
+  +'Click'#8'TabOrder'#2#1#7'TabStop'#8#0#0#0#6'TPanel'#8'VSTPanel'#6'Height'#2
+  +'i'#3'Top'#2#27#5'Width'#3'@'#1#5'Align'#7#8'alClient'#10'BevelOuter'#7#6'bv'
+  +'None'#10'Font.Color'#4#17'*f'#0#11'Font.Height'#2#245#9'Font.Name'#6#7'Verd'
+  +'ana'#8'TabOrder'#2#1#0#0#8'TVstHost'#7'VstHost'#10'VstPlugIns'#14#1#11'Disp'
+  +'layName'#6#6'Plugin'#0#0#21'ParameterQuantization'#2#0#6'CanDos'#11#16'hcdS'
+  +'endVstEvents'#19'hcdSendVstMidiEvent'#18'hcdSendVstTimeInfo'#19'hcdReceiveV'
+  +'stEvents'#22'hcdReceiveVstMidiEvent'#21'hcdReceiveVstTimeInfo'#26'hcdReport'
+  +'ConnectionChanges'#18'hcdAcceptIOChanges'#13'hcdSizeWindow'#18'hcdAsyncProc'
+  +'essing'#10'hcdOffline'#13'hcdSupplyIdle'#19'hcdStartStopProcess'#0#5'Tempo'
+  +#5#0#0#0#0#0#0#0#240#5'@'#10'VstVersion'#3#252#8#9'PlugInDir'#6#30'C:\Progra'
+  +'mme\Audio\Plugins\VST'#22'VstTimeInfo.SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'
+  +#17'VstTimeInfo.Tempo'#5#0#0#0#0#0#0#0#240#5'@'#17'VstTimeInfo.Flags'#11#13
+  +'vtiNanosValid'#14'vtiPpqPosValid'#13'vtiTempoValid'#12'vtiBarsValid'#16'vti'
+  +'CyclePosValid'#15'vtiTimeSigValid'#13'vtiSmpteValid'#13'vtiClockValid'#0#4
+  +'left'#2'`'#3'top'#2'K'#0#0#9'TASIOHost'#8'ASIOHost'#15'PreventClipping'#7#8
+  +'pcAnalog'#20'ConvertOptimizations'#11#5'coSSE'#7'co3DNow'#0#10'SampleRate'#5
+  +#0#0#0#0#0#0'D'#172#14'@'#14'ASIOTime.Speed'#5#0#0#0#0#0#0#0#128#255'?'#19'A'
+  +'SIOTime.SampleRate'#5#0#0#0#0#0#0'D'#172#14'@'#14'ASIOTime.Flags'#11#17'atS'
+  +'ystemTimeValid'#21'atSamplePositionValid'#17'atSampleRateValid'#12'atSpeedV'
+  +'alid'#0#7'OnReset'#7#13'ASIOHostReset'#16'OnLatencyChanged'#7#13'ASIOHostRe'
+  +'set'#16'OnBufferSwitch32'#7#22'ASIOHostBufferSwitch32'#4'left'#2'|'#3'top'#2
+  +'K'#0#0#0
+]);

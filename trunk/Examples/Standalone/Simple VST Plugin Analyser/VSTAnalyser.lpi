@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<CONFIG>
+  <ProjectOptions>
+    <PathDelim Value="/"/>
+    <Version Value="5"/>
+    <General>
+      <MainUnit Value="0"/>
+      <IconPath Value="./"/>
+      <TargetFileExt Value=".exe"/>
+      <Title Value="Simple VST Analyser"/>
+      <ActiveEditorIndexAtStart Value="2"/>
+    </General>
+    <VersionInfo>
+      <ProjectVersion Value=""/>
+    </VersionInfo>
+    <PublishOptions>
+      <Version Value="2"/>
+      <IgnoreBinaries Value="False"/>
+      <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
+      <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="2">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="HostVSTLaz"/>
+        <MinVersion Minor="2" Valid="True"/>
+      </Item2>
+    </RequiredPackages>
+    <Units Count="7">
+      <Unit0>
+        <Filename Value="VSTAnalyser.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <CursorPos X="1" Y="13"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="VAMain.pas"/>
+        <ComponentName Value="FmVSTAnalyser"/>
+        <HasResources Value="True"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="VAMain.lrs"/>
+        <UnitName Value="VAMain"/>
+        <CursorPos X="25" Y="10"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="0"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="VAPlotIR.pas"/>
+        <ComponentName Value="FmPlotIR"/>
+        <HasResources Value="True"/>
+        <ResourceFilename Value="VAPlotIR.lrs"/>
+        <UnitName Value="VAPlotIR"/>
+        <CursorPos X="53" Y="7"/>
+        <TopLine Value="1"/>
+        <EditorIndex Value="3"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="../../../Source/DGuiStaticWaveform.pas"/>
+        <UnitName Value="DGuiStaticWaveform"/>
+        <CursorPos X="40" Y="166"/>
+        <TopLine Value="145"/>
+        <EditorIndex Value="5"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="../../../Source/ASIOVST.inc"/>
+        <CursorPos X="21" Y="364"/>
+        <TopLine Value="350"/>
+        <EditorIndex Value="4"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="/usr/local/share/lazarus/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <CursorPos X="14" Y="1029"/>
+        <TopLine Value="836"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../../../Source/DVSTHost.pas"/>
+        <UnitName Value="DVSTHost"/>
+        <CursorPos X="29" Y="97"/>
+        <TopLine Value="84"/>
+        <EditorIndex Value="1"/>
+        <UsageCount Value="10"/>
+        <Bookmarks Count="1">
+          <Item0 X="2" Y="830" ID="1"/>
+        </Bookmarks>
+        <Loaded Value="True"/>
+      </Unit6>
+    </Units>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="5"/>
+    <Target>
+      <Filename Value="VSTAnalyser"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="../../../Lazarus/;../../../Source/"/>
+      <OtherUnitFiles Value="../../../Source/;../../../Lazarus/"/>
+      <LCLWidgetType Value="carbon"/>
+      <SrcPath Value="../../../Source/"/>
+    </SearchPaths>
+    <CodeGeneration>
+      <Generate Value="Faster"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="Darwin"/>
+    </CodeGeneration>
+    <Linking>
+      <Options>
+        <PassLinkerOptions Value="True"/>
+        <LinkerOptions Value="-framework carbon"/>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+    <Other>
+      <CompilerPath Value="$(CompPath)"/>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="2">
+      <Item1>
+        <Name Value="ECodetoolError"/>
+      </Item1>
+      <Item2>
+        <Name Value="EFOpenError"/>
+      </Item2>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
