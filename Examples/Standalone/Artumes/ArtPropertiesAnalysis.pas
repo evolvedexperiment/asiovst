@@ -1,4 +1,4 @@
-unit ArtItemAnalysis;
+unit ArtPropertiesAnalysis;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -37,45 +37,71 @@ interface
 {$I Artumes.inc}
 
 uses
-  Classes, SysUtils;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, ArtItemAnalysis, ArtFrameAnalysisThirdOctave;
 
 type
-  TCustomAnalysis = class
-  public
-    constructor Create; virtual; abstract;
-  end;
-
-  TAnalysisBandSeparation = (bsFilter, bsFFT);
-
-  TCustomAnalysisFractionalOctave = class(TCustomAnalysis)
+  TFmAnalysisProperties = class(TForm)
+    PnProperties: TPanel;
+    BtOK: TButton;
+    BtCancel: TButton;
+    BtApply: TButton;
+    procedure BtOKClick(Sender: TObject);
+    procedure BtCancelClick(Sender: TObject);
   private
-    FBandSeparation: TAnalysisBandSeparation;
-    procedure SetBandSeparation(const Value: TAnalysisBandSeparation);
+    FAnalysis : TCustomAnalysis;
+    FFrame    : TFrame;
+    procedure SetAnalysis(const Value: TCustomAnalysis);
+  protected
+    procedure AnalysisChanged; virtual;
   public
-    constructor Create; override;
-
-    property BandSeparation: TAnalysisBandSeparation read FBandSeparation write SetBandSeparation;
+    property Analysis: TCustomAnalysis read FAnalysis write SetAnalysis;
   end;
 
-  TAnalysisOctave = class(TCustomAnalysisFractionalOctave);
-
-  TAnalysisThirdOctave = class(TCustomAnalysisFractionalOctave);
+var
+  FmAnalysisProperties: TFmAnalysisProperties;
 
 implementation
 
-{ TCustomAnalysisFractionalOctave }
+{$R *.dfm}
 
-constructor TCustomAnalysisFractionalOctave.Create;
+{ TFmAnalysisProperties }
+
+procedure TFmAnalysisProperties.AnalysisChanged;
 begin
- // nothing here yet
+ if Assigned(FFrame)
+  then FreeAndNil(FFrame);
+
+ if FAnalysis is TCustomAnalysisFractionalOctave then
+  begin
+   FFrame := TFrAnalysisThirdOctave.Create(PnProperties);
+   FFrame.Align := alClient;
+   FFrame.Parent := PnProperties;
+
+   with TCustomAnalysisFractionalOctave(FAnalysis), TFrAnalysisThirdOctave(FFrame) do
+    begin
+     RbFilter.Checked := BandSeparation = bsFilter;
+     RbFFT.Checked := BandSeparation = bsFFT;
+    end;
+  end;
 end;
 
-procedure TCustomAnalysisFractionalOctave.SetBandSeparation(
-  const Value: TAnalysisBandSeparation);
+procedure TFmAnalysisProperties.BtCancelClick(Sender: TObject);
 begin
- if FBandSeparation <> Value then
+ Close;
+end;
+
+procedure TFmAnalysisProperties.BtOKClick(Sender: TObject);
+begin
+ Close;
+end;
+
+procedure TFmAnalysisProperties.SetAnalysis(const Value: TCustomAnalysis);
+begin
+ if FAnalysis <> Value then
   begin
-   FBandSeparation := Value;
+   FAnalysis := Value;
+   AnalysisChanged;
   end;
 end;
 

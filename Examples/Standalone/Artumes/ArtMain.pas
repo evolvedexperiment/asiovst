@@ -68,6 +68,7 @@ type
     procedure AcFileOpenExecute(Sender: TObject);
     procedure AcHelpAboutExecute(Sender: TObject);
     procedure AcFileExitExecute(Sender: TObject);
+    procedure AcCalculateExecute(Sender: TObject);
   private
     procedure LoadFromFile(const FileName: TFileName);
   end;
@@ -107,6 +108,14 @@ end;
 procedure TFmArtumes.AcHelpAboutExecute(Sender: TObject);
 begin
  FmAbout.ShowModal;
+end;
+
+procedure TFmArtumes.AcCalculateExecute(Sender: TObject);
+begin
+ if ActiveMDIChild is TFmProject then
+  begin
+   TFmProject(ActiveMDIChild).Calculate;
+  end;
 end;
 
 procedure TFmArtumes.AcFileExitExecute(Sender: TObject);

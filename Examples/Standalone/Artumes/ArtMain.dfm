@@ -2,7 +2,7 @@ object FmArtumes: TFmArtumes
   Left = 386
   Top = 174
   Caption = 'Artumes'
-  ClientHeight = 544
+  ClientHeight = 563
   ClientWidth = 713
   Color = clAppWorkSpace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object FmArtumes: TFmArtumes
   TextHeight = 13
   object StatusBar: TStatusBar
     Left = 0
-    Top = 525
+    Top = 544
     Width = 713
     Height = 19
     Margins.Left = 2
@@ -297,13 +297,14 @@ object FmArtumes: TFmArtumes
       Category = 'Calculate'
       Caption = '&Calculate'
       ImageIndex = 18
+      OnExecute = AcCalculateExecute
     end
   end
   object ImageList: TImageList
     Left = 208
     Top = 40
     Bitmap = {
-      494C010113006800680010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010113006C006C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000005000000001002000000000000050
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

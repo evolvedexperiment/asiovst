@@ -116,6 +116,7 @@ procedure RegisterFileFormat(AClass: TAudioFileClass);
 function ExtensionToFileFormat(Extension: string): TAudioFileClass;
 function FileNameToFormat(FileName: TFileName): TAudioFileClass;
 function StreamToFormat(Stream: TStream): TAudioFileClass;
+function GetSimpleFileFilter: string;
 
 implementation
 
@@ -153,16 +154,16 @@ function FileNameToFormat(FileName: TFileName): TAudioFileClass;
 var
   i : Integer;
 begin
- result := nil;
+ Result := nil;
  if not FileExists(FileName) then
   begin
-   result := ExtensionToFileFormat(Lowercase(ExtractFileExt(FileName)));
+   Result := ExtensionToFileFormat(Lowercase(ExtractFileExt(FileName)));
    Exit;
   end;
 
  for i := 0 to Length(GAudioFileFormats) - 1 do
   if GAudioFileFormats[i].CanLoad(FileName)
-   then result := GAudioFileFormats[i];
+   then Result := GAudioFileFormats[i];
 end;
 
 function StreamToFormat(Stream: TStream): TAudioFileClass;
@@ -174,7 +175,20 @@ begin
 
  for i := 0 to Length(GAudioFileFormats) - 1 do
   if GAudioFileFormats[i].CanLoad(Stream)
-   then result := GAudioFileFormats[i];
+   then Result := GAudioFileFormats[i];
+end;
+
+function GetSimpleFileFilter: string;
+var
+  i : Integer;
+begin
+ Result := '';
+ for i := 0 to Length(GAudioFileFormats) - 1 do
+  with GAudioFileFormats[i]
+   do Result := DefaultExtension + '|' + DefaultExtension + '|';
+
+ // remove last separator
+ if Result <> '' then SetLength(Result, Length(Result) - 1);
 end;
 
 { TCustomAudioFile }
@@ -248,7 +262,7 @@ end;
 
 function TCustomAudioFile.GetTotalTime: Double;
 begin
- result := SampleFrames / SampleRate;
+ Result := SampleFrames / SampleRate;
 end;
 
 procedure TCustomAudioFile.LoadFromFile(const FileName: TFileName);

@@ -38,7 +38,8 @@ interface
 
 uses
   Windows, Classes, SysUtils, Graphics, Forms, Controls, StdCtrls, ExtCtrls,
-  ComCtrls, Menus, Dialogs, ArtItemSource, ArtItemAnalysis, ArtItemDestination;
+  ComCtrls, Menus, Dialogs, ArtItemSource, ArtItemAnalysis, ArtItemDestination,
+  DAV_AudioData;
 
 type
   TFmProject = class(TForm)
@@ -62,6 +63,26 @@ type
     TvFilter: TTreeView;
     TvSource: TTreeView;
     TvStatistic: TTreeView;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    MiSourceAddFolder: TMenuItem;
+    N3: TMenuItem;
+    MiAnalysisDelete: TMenuItem;
+    MiDestinationDelete: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    MiAnalysisAddFolder: TMenuItem;
+    N6: TMenuItem;
+    MiDestinationAddFolder: TMenuItem;
+    MiSourceRename: TMenuItem;
+    MiAnalysisRename: TMenuItem;
+    MiDestinationRename: TMenuItem;
+    N7: TMenuItem;
+    MiSourceProperties: TMenuItem;
+    N8: TMenuItem;
+    MiAnalysisProperties: TMenuItem;
+    N9: TMenuItem;
+    MiDestinationProperties: TMenuItem;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SplitterCanResize(Sender: TObject; var NewSize: Integer;
       var Accept: Boolean);
@@ -71,6 +92,19 @@ type
     procedure MiDestinationExcelClick(Sender: TObject);
     procedure MiDestinationCSVClick(Sender: TObject);
     procedure MiDestinationWAVClick(Sender: TObject);
+    procedure MiSourceDeleteClick(Sender: TObject);
+    procedure MiAnalysisDeleteClick(Sender: TObject);
+    procedure MiDestinationDeleteClick(Sender: TObject);
+    procedure MiSourceAddFolderClick(Sender: TObject);
+    procedure MiAnalysisAddFolderClick(Sender: TObject);
+    procedure MiDestinationAddFolderClick(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormDeactivate(Sender: TObject);
+    procedure MiSourceRenameClick(Sender: TObject);
+    procedure MiAnalysisRenameClick(Sender: TObject);
+    procedure MiDestinationRenameClick(Sender: TObject);
+    procedure MiAnalysisPropertiesClick(Sender: TObject);
+    procedure TvAnalysisChange(Sender: TObject; Node: TTreeNode);
   private
     FWidthRatios : array [0..4] of Single;
     procedure ValidateNewWidthRatios;
@@ -79,6 +113,8 @@ type
     procedure AddAnalysisThirdOctave;
     procedure AddDestinationCSV;
     procedure AddDestinationWAV;
+    procedure SelectAnalysisProperties(Node: TTreeNode);
+    procedure ProcessAudioChannel(AudioChannel: TAudioChannel32);
     {$IFDEF Excel}
     procedure AddDestinationExcel;
     {$ENDIF}
@@ -95,7 +131,8 @@ type
 implementation
 
 uses
-  Math, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU;
+  Math, DAV_AudioFile, DAV_AudioFileWAV, DAV_AudioFileAIFF, DAV_AudioFileAU,
+  ArtMain, ArtPropertiesAnalysis;
 
 {$R *.dfm}
 
@@ -114,17 +151,197 @@ end;
 
 procedure TFmProject.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Action := caFree;
+ Action := caFree;
+end;
+
+procedure TFmProject.FormActivate(Sender: TObject);
+begin
+ FmArtumes.AcCalculate.Enabled := True;
+end;
+
+procedure TFmProject.FormDeactivate(Sender: TObject);
+begin
+ FmArtumes.AcCalculate.Enabled := False;
 end;
 
 procedure TFmProject.Calculate;
+var
+  Source    : Integer;
+  Channel   : Integer;
+  AudioData : TAudioDataCollection32;
 begin
- // nothing in here yet
+ for Source := 0 to TvSource.Items.Count - 1 do
+  begin
+   if TObject(TvSource.Items[Source].Data) is TSourceFile then
+    with TSourceFile(TvSource.Items[Source].Data) do
+     begin
+      AudioData := TAudioDataCollection32.Create(Self);
+      AudioData.LoadFromFile(FileName);
+      for Channel := 0 to AudioData.ChannelCount - 1
+       do ProcessAudioChannel(TAudioChannel32(AudioData.Channels[Channel]));
+     end;
+  end;
+end;
+
+procedure TFmProject.ProcessAudioChannel(AudioChannel: TAudioChannel32);
+var
+  Analysis : Integer;
+begin
+ with AudioChannel do
+  for Analysis := 0 to TvAnalysis.Items.Count - 1 do
+   begin
+
+
+   end;
 end;
 
 procedure TFmProject.LoadFromFile(const FileName: TFileName);
 begin
  raise Exception.Create('not implemented yet');
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TFmProject.MiAnalysisDeleteClick(Sender: TObject);
+begin
+ with TvAnalysis do
+  if (Selected <> nil) and (Selected <> Items[0]) then
+   begin
+    // delete selected item object
+    if Selected.Data <> nil
+     then TObject(Selected.Data).Free;
+
+    // delete selected item
+    Items.Delete(Selected);
+   end;
+end;
+
+procedure TFmProject.MiDestinationDeleteClick(Sender: TObject);
+begin
+ with TvDestination do
+  if (Selected <> nil) and (Selected <> Items[0]) then
+   begin
+    // delete selected item object
+    if Selected.Data <> nil
+     then TObject(Selected.Data).Free;
+
+    // delete selected item
+    Items.Delete(Selected);
+   end;
+end;
+
+procedure TFmProject.MiSourceDeleteClick(Sender: TObject);
+begin
+ with TvSource do
+  if (Selected <> nil) and (Selected <> Items[0]) then
+   begin
+    // delete selected item object
+    if Selected.Data <> nil
+     then TObject(Selected.Data).Free;
+
+    // delete selected item
+    Items.Delete(Selected);
+   end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TFmProject.MiAnalysisPropertiesClick(Sender: TObject);
+begin
+ with TvAnalysis do
+  if (Selected <> nil) and (Selected.Data <> nil) then
+   begin
+    // set parent
+    FmAnalysisProperties.Parent := FmArtumes;
+
+    FmAnalysisProperties.Show;
+    SelectAnalysisProperties(Selected);
+   end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TFmProject.MiSourceRenameClick(Sender: TObject);
+begin
+ with TvSource do
+  begin
+   if (Selected <> nil) and (Selected <> Items[0]) then
+    if Selected.EditText
+     then // todo
+  end;
+end;
+
+procedure TFmProject.MiAnalysisRenameClick(Sender: TObject);
+begin
+ with TvAnalysis do
+  begin
+   if (Selected <> nil) and (Selected <> Items[0]) then
+    if Selected.EditText
+     then // todo
+  end;
+end;
+
+procedure TFmProject.MiDestinationRenameClick(Sender: TObject);
+begin
+ with TvDestination do
+  begin
+   if (Selected <> nil) and (Selected <> Items[0]) then
+    if Selected.EditText
+     then // todo
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TFmProject.MiAnalysisAddFolderClick(Sender: TObject);
+var
+  Node : TTreeNode;
+begin
+ with TvAnalysis do
+  begin
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'Folder')
+    else Node := Items.AddChild(Items[0], 'Folder');
+
+   Node.Parent.Expand(True);
+  end;
+end;
+
+procedure TFmProject.MiSourceAddFolderClick(Sender: TObject);
+var
+  Node : TTreeNode;
+begin
+ with TvSource do
+  begin
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'Folder')
+    else Node := Items.AddChild(Items[0], 'Folder');
+
+   Node.Parent.Expand(True);
+  end;
+end;
+
+procedure TFmProject.MiDestinationAddFolderClick(Sender: TObject);
+var
+  Node : TTreeNode;
+begin
+ with TvDestination do
+  begin
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'Folder')
+    else Node := Items.AddChild(Items[0], 'Folder');
+
+   Node.Parent.Expand(True);
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+
+procedure TFmProject.MiSourceAddFileClick(Sender: TObject);
+begin
+ with OpenDialog do
+  if Execute
+   then AddSourceFile(OpenDialog.FileName)
 end;
 
 procedure TFmProject.MiDestinationCSVClick(Sender: TObject);
@@ -152,32 +369,37 @@ begin
  AddAnalysisOctave;
 end;
 
-procedure TFmProject.MiSourceAddFileClick(Sender: TObject);
-begin
- with OpenDialog do
-  if Execute
-   then AddSourceFile(OpenDialog.FileName)
-end;
-
 procedure TFmProject.MiThirdOctaveClick(Sender: TObject);
 begin
  AddAnalysisThirdOctave;
 end;
 
+////////////////////////////////////////////////////////////////////////////////
+
 procedure TFmProject.AddSourceFile(Filename: TFilename);
 var
-  Node : TTreeNode;
-  SF   : TSourceFile;
+  Node       : TTreeNode;
+  SF         : TSourceFile;
+  AudioClass : TAudioFileClass;
 begin
  with TvSource do
   begin
-   Node := Items.AddChild(Items[0], ExtractFileName(Filename));
+   AudioClass := FileNameToFormat(Filename);
 
-   // create source file
-   SF := TSourceFile.Create;
-   SF.FileName := Filename;
+   if Assigned(AudioClass) and AudioClass.CanLoad(Filename) then
+    begin
+     if Selected <> nil
+      then Node := Items.AddChild(Selected, ExtractFileName(Filename))
+      else Node := Items.AddChild(Items[0], ExtractFileName(Filename));
 
-   Node.Data := SF;
+     Node.Parent.Expand(True);
+
+     // create source file
+     SF := TSourceFile.Create;
+     SF.FileName := Filename;
+
+     Node.Data := SF;
+    end;
   end;
 end;
 
@@ -186,9 +408,12 @@ var
   Node : TTreeNode;
   Ana  : TCustomAnalysis;
 begin
- with TvSource do
+ with TvAnalysis do
   begin
-   Node := Items.AddChild(Items[0], 'Octave');
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'Octave')
+    else Node := Items.AddChild(Items[0], 'Octave');
+   Node.Parent.Expand(True);
 
    // create analysis
    Ana := TAnalysisOctave.Create;
@@ -202,9 +427,12 @@ var
   Node : TTreeNode;
   Ana  : TCustomAnalysis;
 begin
- with TvSource do
+ with TvAnalysis do
   begin
-   Node := Items.AddChild(Items[0], 'Third Octave');
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'Third Octave')
+    else Node := Items.AddChild(Items[0], 'Third Octave');
+   Node.Parent.Expand(True);
 
    // create analysis
    Ana := TAnalysisThirdOctave.Create;
@@ -218,9 +446,12 @@ var
   Node : TTreeNode;
   Dest : TCustomDestination;
 begin
- with TvSource do
+ with TvDestination do
   begin
-   Node := Items.AddChild(Items[0], 'CSV');
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'CSV')
+    else Node := Items.AddChild(Items[0], 'CSV');
+   Node.Parent.Expand(True);
 
    // create destination
    Dest := TDestinationCSV.Create;
@@ -234,9 +465,12 @@ var
   Node : TTreeNode;
   Dest : TCustomDestination;
 begin
- with TvSource do
+ with TvDestination do
   begin
-   Node := Items.AddChild(Items[0], 'WAV');
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'WAV')
+    else Node := Items.AddChild(Items[0], 'WAV');
+   Node.Parent.Expand(True);
 
    // create destination
    Dest := TDestinationWAV.Create;
@@ -251,9 +485,12 @@ var
   Node : TTreeNode;
   Dest : TCustomDestination;
 begin
- with TvSource do
+ with TvDestination do
   begin
-   Node := Items.AddChild(Items[0], 'Excel');
+   if Selected <> nil
+    then Node := Items.AddChild(Selected, 'Excel')
+    else Node := Items.AddChild(Items[0], 'Excel');
+   Node.Parent.Expand(True);
 
    // create destination
    Dest := TDestinationExcel.Create;
@@ -276,6 +513,22 @@ begin
     FWidthRatios[Tag + 1] := Max(0.05, Sum - FWidthRatios[Tag]);
     ValidateNewWidthRatios;
    end;
+end;
+
+procedure TFmProject.TvAnalysisChange(Sender: TObject; Node: TTreeNode);
+begin
+ if FmAnalysisProperties.Visible then
+  begin
+   SelectAnalysisProperties(Node);
+  end;
+end;
+
+procedure TFmProject.SelectAnalysisProperties(Node: TTreeNode);
+begin
+ if Assigned(Node) and Assigned(Node.Data) and
+   (TObject(Node.Data) is TCustomAnalysis)
+  then FmAnalysisProperties.Analysis := TCustomAnalysis(Node.Data)
+  else FmAnalysisProperties.Analysis := nil;
 end;
 
 procedure TFmProject.ValidateNewWidthRatios;

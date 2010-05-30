@@ -37,7 +37,7 @@ interface
 {$I Artumes.inc}
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, DAV_AudioData;
 
 type
   TCustomSourceFile = class
@@ -54,6 +54,15 @@ type
     property FileName: TFilename read FFileName write FFileName;
   end;
 
+  TSourceData = class(TCustomSourceFile)
+  private
+    FAudioData : TAudioData32;
+  public
+    constructor Create; override;
+
+    property AudioData : TAudioData32 read FAudioData;
+  end;
+
 implementation
 
 { TSourceFile }
@@ -63,5 +72,12 @@ begin
  // nothing in here yet
 end;
 
+
+{ TSourceData }
+
+constructor TSourceData.Create;
+begin
+ // nothing in here yet
+end;
 
 end.

@@ -1,4 +1,4 @@
-unit ArtItemAnalysis;
+unit ArtPropertiesDestination;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -37,46 +37,21 @@ interface
 {$I Artumes.inc}
 
 uses
-  Classes, SysUtils;
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs;
 
 type
-  TCustomAnalysis = class
-  public
-    constructor Create; virtual; abstract;
-  end;
-
-  TAnalysisBandSeparation = (bsFilter, bsFFT);
-
-  TCustomAnalysisFractionalOctave = class(TCustomAnalysis)
+  TFmDestinationProperties = class(TForm)
   private
-    FBandSeparation: TAnalysisBandSeparation;
-    procedure SetBandSeparation(const Value: TAnalysisBandSeparation);
+    { Private-Deklarationen }
   public
-    constructor Create; override;
-
-    property BandSeparation: TAnalysisBandSeparation read FBandSeparation write SetBandSeparation;
+    { Public-Deklarationen }
   end;
 
-  TAnalysisOctave = class(TCustomAnalysisFractionalOctave);
-
-  TAnalysisThirdOctave = class(TCustomAnalysisFractionalOctave);
+var
+  FmDestinationProperties: TFmDestinationProperties;
 
 implementation
 
-{ TCustomAnalysisFractionalOctave }
-
-constructor TCustomAnalysisFractionalOctave.Create;
-begin
- // nothing here yet
-end;
-
-procedure TCustomAnalysisFractionalOctave.SetBandSeparation(
-  const Value: TAnalysisBandSeparation);
-begin
- if FBandSeparation <> Value then
-  begin
-   FBandSeparation := Value;
-  end;
-end;
+{$R *.dfm}
 
 end.

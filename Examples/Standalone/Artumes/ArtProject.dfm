@@ -10,7 +10,9 @@ object FmProject: TFmProject
   OldCreateOrder = False
   Position = poDefault
   Visible = True
+  OnActivate = FormActivate
   OnClose = FormClose
+  OnDeactivate = FormDeactivate
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
@@ -74,6 +76,7 @@ object FmProject: TFmProject
     Indent = 19
     PopupMenu = PuAnalysis
     TabOrder = 2
+    OnChange = TvAnalysisChange
     Items.NodeData = {
       03010000002E0000000000000000000000FFFFFFFFFFFFFFFF00000000000000
       0000000000010841006E0061006C007900730069007300}
@@ -107,13 +110,35 @@ object FmProject: TFmProject
     Left = 48
     Top = 32
     object MiSourceAddFile: TMenuItem
-      Caption = 'Add File...'
+      Caption = '&Add File...'
       ShortCut = 187
       OnClick = MiSourceAddFileClick
     end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object MiSourceAddFolder: TMenuItem
+      Caption = 'Add &Folder'
+      OnClick = MiSourceAddFolderClick
+    end
+    object N1: TMenuItem
+      Caption = '-'
+    end
+    object MiSourceRename: TMenuItem
+      Caption = '&Rename'
+      ShortCut = 113
+      OnClick = MiSourceRenameClick
+    end
     object MiSourceDelete: TMenuItem
-      Caption = 'Delete'
+      Caption = '&Delete'
       ShortCut = 8238
+      OnClick = MiSourceDeleteClick
+    end
+    object N7: TMenuItem
+      Caption = '-'
+    end
+    object MiSourceProperties: TMenuItem
+      Caption = '&Properties'
     end
   end
   object OpenDialog: TOpenDialog
@@ -127,12 +152,42 @@ object FmProject: TFmProject
     Left = 296
     Top = 32
     object MiThirdOctave: TMenuItem
-      Caption = '&Third Octave '
+      Caption = 'Add &Third Octave '
+      SubMenuImages = FmArtumes.ImageList
+      ShortCut = 16435
       OnClick = MiThirdOctaveClick
     end
     object MiOctave: TMenuItem
-      Caption = '&Octave'
+      Caption = 'Add &Octave'
+      ShortCut = 16440
       OnClick = MiOctaveClick
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object MiAnalysisAddFolder: TMenuItem
+      Caption = 'Add &Folder'
+      OnClick = MiAnalysisAddFolderClick
+    end
+    object N3: TMenuItem
+      Caption = '-'
+    end
+    object MiAnalysisRename: TMenuItem
+      Caption = '&Rename'
+      ShortCut = 113
+      OnClick = MiAnalysisRenameClick
+    end
+    object MiAnalysisDelete: TMenuItem
+      Caption = '&Delete'
+      ShortCut = 8238
+      OnClick = MiAnalysisDeleteClick
+    end
+    object N8: TMenuItem
+      Caption = '-'
+    end
+    object MiAnalysisProperties: TMenuItem
+      Caption = '&Properties'
+      OnClick = MiAnalysisPropertiesClick
     end
   end
   object PuDestination: TPopupMenu
@@ -147,8 +202,34 @@ object FmProject: TFmProject
       OnClick = MiDestinationExcelClick
     end
     object MiDestinationWAV: TMenuItem
-      Caption = 'WAV'
+      Caption = '&WAV'
       OnClick = MiDestinationWAVClick
+    end
+    object N6: TMenuItem
+      Caption = '-'
+    end
+    object MiDestinationAddFolder: TMenuItem
+      Caption = 'Add &Folder'
+      OnClick = MiDestinationAddFolderClick
+    end
+    object N4: TMenuItem
+      Caption = '-'
+    end
+    object MiDestinationRename: TMenuItem
+      Caption = '&Rename'
+      ShortCut = 113
+      OnClick = MiDestinationRenameClick
+    end
+    object MiDestinationDelete: TMenuItem
+      Caption = '&Delete'
+      ShortCut = 8238
+      OnClick = MiDestinationDeleteClick
+    end
+    object N9: TMenuItem
+      Caption = '-'
+    end
+    object MiDestinationProperties: TMenuItem
+      Caption = '&Properties'
     end
   end
 end
