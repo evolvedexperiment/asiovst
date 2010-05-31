@@ -386,28 +386,28 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Name: string read FText write FText;
+    property Name: AnsiString read FText write FText;
   end;
 
   TAIFFAuthorChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Author: string read FText write FText;
+    property Author: AnsiString read FText write FText;
   end;
 
   TAIFFCopyrightChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Copyright: string read FText write FText;
+    property Copyright: AnsiString read FText write FText;
   end;
 
   TAIFFAnnotationChunk = class(TAIFFTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Annotation: string read FText write FText;
+    property Annotation: AnsiString read FText write FText;
   end;
 
 

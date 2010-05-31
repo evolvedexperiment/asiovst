@@ -157,49 +157,49 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property SoftwareName: string read FText write FText;
+    property SoftwareName: AnsiString read FText write FText;
   end;
 
   TInfoCommentChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Comment: string read FText write FText;
+    property Comment: AnsiString read FText write FText;
   end;
 
   TInfoCreationDateChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property CreationDate: string read FText write FText;
+    property CreationDate: AnsiString read FText write FText;
   end;
 
   TInfoCopyrightChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Copyright: string read FText write FText;
+    property Copyright: AnsiString read FText write FText;
   end;
 
   TInfoSubjectChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Subject: string read FText write FText;
+    property Subject: AnsiString read FText write FText;
   end;
 
   TInfoArtistChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Artist: string read FText write FText;
+    property Artist: AnsiString read FText write FText;
   end;
 
   TInfoTitleChunk = class(TWavChunkText)
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Title: string read FText write FText;
+    property Title: AnsiString read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////

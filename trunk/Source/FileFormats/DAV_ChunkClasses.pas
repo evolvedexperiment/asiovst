@@ -208,10 +208,10 @@ type
 
   TCustomTextChunk = class(TDefinedChunk)
   protected
-    FText  : string;
-    procedure SetText(const Value: string);
+    FText  : AnsiString;
+    procedure SetText(const Value: AnsiString);
     procedure AssignTo(Dest: TPersistent); override;
-    property Text: string read FText write SetText;
+    property Text: AnsiString read FText write SetText;
   public
     procedure LoadFromStream(Stream : TStream); override;
     procedure SaveToStream(Stream : TStream); override;
@@ -1091,7 +1091,7 @@ begin
   then Stream.Position := Stream.Position + CalculateZeroPad;
 end;
 
-procedure TCustomTextChunk.SetText(const Value: string);
+procedure TCustomTextChunk.SetText(const Value: AnsiString);
 begin
  if FText <> Value then
   begin

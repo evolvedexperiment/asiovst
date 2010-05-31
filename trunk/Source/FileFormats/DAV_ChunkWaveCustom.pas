@@ -105,29 +105,29 @@ type
     fw2           : Word;
     Bq            : Pointer;
     fw3           : Word;
-    FltBW         : Single;      // 0: nix, 1.0: Oktave, 3.0: Terzen
-    FltSta        : ShortInt;    // Startindex bezogen auf 1 kHz
-    FltEnd        : ShortInt;    // Endindex   bezogen auf 1 kHz
+    FltBW         : Single;                    // 0: nix, 1.0: Oktave, 3.0: Terzen
+    FltSta        : ShortInt;                  // Startindex bezogen auf 1 kHz
+    FltEnd        : ShortInt;                  // Endindex   bezogen auf 1 kHz
     Modus         : Byte;
 
-    Hun           : Byte;        // Hundertstel
+    Hun           : Byte;                      // Hundertstel
     Sec           : Byte;
     Min           : Byte;
-    Hour          : Byte;        // Entstehungszeit des Signals
+    Hour          : Byte;                      // Entstehungszeit des Signals
     Day           : Byte;
     Month         : Byte;
-    Year          : Word;        // Entstehungsdatum des Signals
-    Start         : Integer;     // (Nr-1) des ersten Wertes in Datei
-    xAxUnit       : string [3];  // Einheit an der X-Achse
-    yAxUnit       : string [3];  // Einheit an der Y-Achse
-    Rand          : TLRInteger;  //  dargestellter X-Bereich
-    Cursor        : TLRInteger;  // Position der Cursorlinien
-    MainDelay     : Double;      //  [s]
-    dBBlock       : TdBblock;    // bestehend aus folgenden 3 Werten...
-    LcursOld      : Word;        // alt, für Signale bis Länge 65535
-    RcursOld      : Word;        // alt, für Signale bis Länge 65535
-    ADDAident     : String [20]; // Quantisierung als ASCII-String
-    Comment       : String [71]; // Beliebiges Blabla
+    Year          : Word;                      // Entstehungsdatum des Signals
+    Start         : Integer;                   // (Nr-1) des ersten Wertes in Datei
+    xAxUnit       : array [0..2] of AnsiChar;  // Einheit an der X-Achse
+    yAxUnit       : array [0..2] of AnsiChar;  // Einheit an der Y-Achse
+    Rand          : TLRInteger;                //  dargestellter X-Bereich
+    Cursor        : TLRInteger;                // Position der Cursorlinien
+    MainDelay     : Double;                    //  [s]
+    dBBlock       : TdBblock;                  // bestehend aus folgenden 3 Werten...
+    LcursOld      : Word;                      // alt, für Signale bis Länge 65535
+    RcursOld      : Word;                      // alt, für Signale bis Länge 65535
+    ADDAident     : array [0..19] of AnsiChar; // Quantisierung als ASCII-String
+    Comment       : array [0..70] of AnsiChar; // Beliebiges Blabla
   end;
 
   TWavItaHeaderChunk = class(TWavFixedDefinedChunk)
@@ -149,7 +149,7 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property Text: string read FText write FText;
+    property Text: AnsiString read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property XMLData: string read FText write FText;
+    property XMLData: AnsiString read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -175,7 +175,7 @@ type
   public
     class function GetClassChunkName: TChunkName; override;
   published
-    property XMLData: string read FText write FText;
+    property XMLData: AnsiString read FText write FText;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ type
 
   TWavDisplayChunk = class(TWavDefinedChunk)
   private
-    FData   : string;
+    FData   : AnsiString;
   protected
     FTypeID : Cardinal;
     procedure AssignTo(Dest: TPersistent); override;
@@ -196,7 +196,7 @@ type
     procedure SaveToStream(Stream : TStream); override;
   published
     property TypeID: Cardinal read FTypeID write FTypeID;
-    property Data: string read FData write FData;
+    property Data: AnsiString read FData write FData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////

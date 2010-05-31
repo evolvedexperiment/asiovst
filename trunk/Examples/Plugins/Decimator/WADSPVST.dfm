@@ -46,20 +46,21 @@ object FmWinAmpVST: TFmWinAmpVST
     TabOrder = 0
   end
   object VstHost: TVstHost
+    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdEditFile, hcdStartStopProcess]
+    ManageIdleAutomaticly = False
+    ParameterQuantization = 0
+    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
+    Tempo = 120.000000000000000000
+    VendorVersion = 0
     VstPlugIns = <
       item
         DisplayName = 'TVstPlugIn'
+        VstOfflineTasks = <>
       end>
-    ParameterQuantization = 0
-    CanDos = [hcdSendVstEvents, hcdSendVstMidiEvent, hcdSendVstTimeInfo, hcdReceiveVstEvents, hcdReceiveVstMidiEvent, hcdReceiveVstTimeInfo, hcdSizeWindow, hcdAsyncProcessing, hcdOffline, hcdSupplyIdle, hcdEditFile, hcdStartStopProcess]
-    ManageIdleAutomaticly = False
-    Tempo = 120.000000000000000000
-    VstVersion = 2400
-    VendorVersion = 0
-    PlugInDir = 'C:\Programme\Audio\Plugins\VST'
     VstTimeInfo.SampleRate = 44100.000000000000000000
     VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
+    VstVersion = 2400
     Left = 32
     Top = 48
   end

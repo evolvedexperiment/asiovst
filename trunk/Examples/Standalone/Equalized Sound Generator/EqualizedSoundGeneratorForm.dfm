@@ -669,10 +669,10 @@ object FmASIO: TFmASIO
     TabOrder = 26
     OnClick = BtSelectClick
   end
-  object ASIOHost: TASIOHost
-    ASIOTime.Speed = 1.000000000000000000
-    ASIOTime.SampleRate = 44100.000000000000000000
-    ASIOTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
     PreventClipping = pcDigital
     SampleRate = 44100.000000000000000000
     OnBufferSwitch32 = ASIOHostBufferSwitch32
