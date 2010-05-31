@@ -55,6 +55,7 @@ procedure CalcMinMax(Data: PSingle; SampleCount: Integer; var MinMax : TDAVMinMa
 procedure CalcMinMax(Data: PDouble; SampleCount: Integer; var MinMax : TDAVMinMaxDouble); overload;
 procedure DCSubstract(Data: PSingle; SampleCount: Integer); overload;
 procedure DCSubstract(Data: PDouble; SampleCount: Integer); overload;
+
 procedure ConvertSingleToDouble(Input: PDAVSingleFixedArray; Output: PDAVDoubleFixedArray; SampleCount: Integer);
 procedure ConvertDoubleToSingle(Input: PDAVDoubleFixedArray; Output: PDAVSingleFixedArray; SampleCount: Integer);
 
