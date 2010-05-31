@@ -35,36 +35,48 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  {$IFDEF FPC}LCLIntf, {$ELSE}Windows, {$ENDIF} Classes, SysUtils,
-  DAV_Classes, DAV_Types;
+  Classes, SysUtils, DAV_Classes, DAV_Types;
 
 type
   TCustomAudioMemory = class(TPersistent)
   private
-    FSampleCount : Cardinal;
+    FSampleCount  : Cardinal;
+    FExternalData : Boolean;
     procedure SetSampleCount(const Value: Cardinal);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure SampleCountChanged(NewSampleCount: Cardinal); virtual;
   public
-    constructor Create(SampleCount: Cardinal = 0); virtual;
+    constructor Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil); virtual;
     procedure Clear; virtual; abstract;
+
+    // some simple signal processing functions
+    procedure Scale32(Value: Single); virtual; abstract;
+    procedure Scale64(Value: Double); virtual; abstract;
+    procedure Offset32(Value: Single); virtual; abstract;
+    procedure Offset64(Value: Double); virtual; abstract;
 
     property SampleCount: Cardinal read FSampleCount write SetSampleCount;
   end;
 
   TAudioMemory32 = class(TCustomAudioMemory)
   private
-    FData : PDAVSingleFixedArray;
+    FData: PDAVSingleFixedArray;
     function GetData(Sample: Cardinal): Single;
     procedure SetData(Sample: Cardinal; const Value: Single);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure SampleCountChanged(NewSampleCount: Cardinal); override;
   public
-    constructor Create(SampleCount: Cardinal = 0); override;
+    constructor Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil); override;
     destructor Destroy; override;
     procedure Clear; override;
+
+    // some signal processing functions
+    procedure Scale32(Value: Single); override;
+    procedure Scale64(Value: Double); override;
+    procedure Offset32(Value: Single); override;
+    procedure Offset64(Value: Double); override;
 
     // data access properties
     property Data[Sample: Cardinal]: Single read GetData write SetData;
@@ -75,16 +87,22 @@ type
 
   TAudioMemory64 = class(TCustomAudioMemory)
   private
-    FData  : PDAVDoubleFixedArray;
+    FData: PDAVDoubleFixedArray;
     function GetData(Sample: Cardinal): Double;
     procedure SetData(Sample: Cardinal; const Value: Double);
   protected
     procedure SampleCountChanged(NewSampleCount: Cardinal); override;
     procedure AssignTo(Dest: TPersistent); override;
   public
-    constructor Create(SampleCount: Cardinal = 0); override;
+    constructor Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil); override;
     destructor Destroy; override;
     procedure Clear; override;
+
+    // some signal processing functions
+    procedure Scale32(Value: Single); override;
+    procedure Scale64(Value: Double); override;
+    procedure Offset32(Value: Single); override;
+    procedure Offset64(Value: Double); override;
 
     // data access properties
     property Data[Sample: Cardinal]: Double read GetData write SetData;
@@ -96,13 +114,18 @@ type
 implementation
 
 uses
-  DAV_BlockProcessing;
+  DAV_BlockConvert, DAV_BlockArithmetrics;
+
+resourcestring
+  RCStrExternalDataSampleCount = 'Sample count can not be changed for external data!';
+  RCStrSampleOutOfRange = 'Sample out of range';
 
 { TCustomAudioMemory }
 
-constructor TCustomAudioMemory.Create(SampleCount: Cardinal = 0);
+constructor TCustomAudioMemory.Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil);
 begin
  inherited Create;
+ FExternalData := DataPointer <> nil;
  FSampleCount := SampleCount;
 end;
 
@@ -110,13 +133,13 @@ procedure TCustomAudioMemory.AssignTo(Dest: TPersistent);
 begin
  inherited;
  if Dest is TCustomAudioMemory then
-  begin
-   TCustomAudioMemory(Dest).FSampleCount  := FSampleCount;
-  end;
+  with TCustomAudioMemory(Dest)
+   do SampleCount := Self.SampleCount;
 end;
 
 procedure TCustomAudioMemory.SampleCountChanged(NewSampleCount: Cardinal);
 begin
+ // store new sample count
  FSampleCount := NewSampleCount;
 end;
 
@@ -124,21 +147,30 @@ procedure TCustomAudioMemory.SetSampleCount(const Value: Cardinal);
 begin
  if (FSampleCount <> Value) then
   begin
+   // check if data is external data (fixed sample count)
+   if FExternalData
+    then raise Exception.Create(RCStrExternalDataSampleCount);
+
+   // actually change sample count
    SampleCountChanged(Value);
   end;
 end;
 
+
 { TAudioMemory32 }
 
-constructor TAudioMemory32.Create(SampleCount: Cardinal = 0);
+constructor TAudioMemory32.Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil);
 begin
- FData := nil;
- inherited Create(SampleCount);
+ FData := DataPointer;
+ inherited Create(SampleCount, DataPointer);
 end;
 
 destructor TAudioMemory32.Destroy;
 begin
- Dispose(FData);
+ // eventually dispose allocated memory
+ if not FExternalData
+  then Dispose(FData);
+
  FData := nil;
  inherited;
 end;
@@ -150,18 +182,40 @@ begin
   then Move(FData, TAudioMemory32(Dest).FData, FSampleCount * SizeOf(Single))
   else
  if Dest is TAudioMemory64
-  then ConvertSingleToDouble(FData, TAudioMemory64(Dest).FData, FSampleCount);
+  then BlockConvert32To64(PDouble(TAudioMemory64(Dest).FData), PSingle(FData),
+    FSampleCount);
 end;
 
 function TAudioMemory32.GetData(Sample: Cardinal): Single;
 begin
  if (Sample < SampleCount)
   then Result := FData[Sample]
-  else raise Exception.CreateFmt('Sample out of range', [Sample]);
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
+end;
+
+procedure TAudioMemory32.Offset32(Value: Single);
+begin
+ BlockOffsetInplace32(PSingle(FData), Value, FSampleCount);
+end;
+
+procedure TAudioMemory32.Offset64(Value: Double);
+begin
+ BlockOffsetInplace32(PSingle(FData), Value, FSampleCount);
+end;
+
+procedure TAudioMemory32.Scale32(Value: Single);
+begin
+ BlockScaleInplace32(PSingle(FData), Value, FSampleCount);
+end;
+
+procedure TAudioMemory32.Scale64(Value: Double);
+begin
+ BlockScaleInplace32(PSingle(FData), Value, FSampleCount);
 end;
 
 procedure TAudioMemory32.SampleCountChanged(NewSampleCount: Cardinal);
 begin
+ Assert(not FExternalData);
  ReallocMem(FData, SampleCount * SizeOf(Single));
 
  // check if new length is longer than the old length and fill with zeroes if necessary
@@ -175,7 +229,7 @@ procedure TAudioMemory32.SetData(Sample: Cardinal; const Value: Single);
 begin
  if (Sample < SampleCount)
   then FData[Sample] := Value
-  else raise Exception.CreateFmt('Sample out of range', [Sample]);
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
 
 procedure TAudioMemory32.Clear;
@@ -183,17 +237,21 @@ begin
  FillChar(FData^, SampleCount * SizeOf(Single), 0);
 end;
 
+
 { TAudioMemory64 }
 
-constructor TAudioMemory64.Create(SampleCount: Cardinal = 0);
+constructor TAudioMemory64.Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil);
 begin
- FData := nil;
- inherited Create(SampleCount);
+ FData := DataPointer;
+ inherited Create(SampleCount, DataPointer);
 end;
 
 destructor TAudioMemory64.Destroy;
 begin
- Dispose(FData);
+ // eventually dispose allocated memory
+ if not FExternalData
+  then Dispose(FData);
+
  FData := nil;
  inherited;
 end;
@@ -205,18 +263,40 @@ begin
   then Move(FData, TAudioMemory64(Dest).FData, FSampleCount * SizeOf(Double))
   else
  if Dest is TAudioMemory32
-  then ConvertDoubleToSingle(FData, TAudioMemory32(Dest).FData, FSampleCount);
+  then BlockConvert64To32(PSingle(TAudioMemory32(Dest).FData), PDouble(FData),
+    FSampleCount);
 end;
 
 function TAudioMemory64.GetData(Sample: Cardinal): Double;
 begin
  if (Sample < SampleCount)
   then Result := FData[Sample]
-  else raise Exception.CreateFmt('Sample out of range', [Sample]);
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
+end;
+
+procedure TAudioMemory64.Offset32(Value: Single);
+begin
+ BlockOffsetInplace64(PDouble(FData), Value, FSampleCount);
+end;
+
+procedure TAudioMemory64.Offset64(Value: Double);
+begin
+ BlockOffsetInplace64(PDouble(FData), Value, FSampleCount);
+end;
+
+procedure TAudioMemory64.Scale32(Value: Single);
+begin
+ BlockScaleInplace64(PDouble(FData), Value, FSampleCount);
+end;
+
+procedure TAudioMemory64.Scale64(Value: Double);
+begin
+ BlockScaleInplace64(PDouble(FData), Value, FSampleCount);
 end;
 
 procedure TAudioMemory64.SampleCountChanged(NewSampleCount: Cardinal);
 begin
+ Assert(not FExternalData);
  ReallocMem(FData, SampleCount * SizeOf(Double));
 
  // check if new length is longer than the old length and fill with zeroes if necessary
@@ -230,7 +310,7 @@ procedure TAudioMemory64.SetData(Sample: Cardinal; const Value: Double);
 begin
  if (Sample < SampleCount)
   then FData[Sample] := Value
-  else raise Exception.CreateFmt('Sample out of range', [Sample]);
+  else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
 
 procedure TAudioMemory64.Clear;
