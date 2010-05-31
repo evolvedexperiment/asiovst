@@ -23,7 +23,6 @@ object VSTGUI: TVSTGUI
     Top = 0
     Width = 307
     Height = 284
-    OnMouseWheel = FormMouseWheel
     Camera = GLCamera
     Buffer.FogEnvironment.FogStart = 10.000000000000000000
     Buffer.FogEnvironment.FogEnd = 10.000000000000000000
@@ -33,6 +32,7 @@ object VSTGUI: TVSTGUI
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
+    OnMouseWheel = FormMouseWheel
   end
   object GLScene: TGLScene
     Left = 16
