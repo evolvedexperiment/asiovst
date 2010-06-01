@@ -25,7 +25,7 @@ unit DAV_AudioMemory;
 //                                                                            //
 //  The initial developer of this code is Christian-W. Budde                  //
 //                                                                            //
-//  Portions created by Christian-W. Budde are Copyright (C) 2008-2009        //
+//  Portions created by Christian-W. Budde are Copyright (C) 2008-2010        //
 //  by Christian-W. Budde. All Rights Reserved.                               //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,9 +43,11 @@ type
     FSampleCount  : Cardinal;
     FExternalData : Boolean;
     procedure SetSampleCount(const Value: Cardinal);
+    procedure SetExternalData(const Value: Boolean);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure SampleCountChanged(NewSampleCount: Cardinal); virtual;
+    procedure ExternalDataChanged; virtual; abstract;
   public
     constructor Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil); virtual;
     procedure Clear; virtual; abstract;
@@ -57,6 +59,7 @@ type
     procedure Offset64(Value: Double); virtual; abstract;
 
     property SampleCount: Cardinal read FSampleCount write SetSampleCount;
+    property ExternalData: Boolean read FExternalData write SetExternalData;
   end;
 
   TAudioMemory32 = class(TCustomAudioMemory)
@@ -64,9 +67,11 @@ type
     FData: PDAVSingleFixedArray;
     function GetData(Sample: Cardinal): Single;
     procedure SetData(Sample: Cardinal; const Value: Single);
+    procedure SetDataPointer(const Value: PDAVSingleFixedArray);
   protected
     procedure AssignTo(Dest: TPersistent); override;
     procedure SampleCountChanged(NewSampleCount: Cardinal); override;
+    procedure ExternalDataChanged; override;
   public
     constructor Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil); override;
     destructor Destroy; override;
@@ -80,7 +85,7 @@ type
 
     // data access properties
     property Data[Sample: Cardinal]: Single read GetData write SetData;
-    property DataPointer: PDAVSingleFixedArray read FData;
+    property DataPointer: PDAVSingleFixedArray read FData write SetDataPointer;
   published
     property SampleCount;
   end;
@@ -90,9 +95,11 @@ type
     FData: PDAVDoubleFixedArray;
     function GetData(Sample: Cardinal): Double;
     procedure SetData(Sample: Cardinal; const Value: Double);
+    procedure SetDataPointer(const Value: PDAVDoubleFixedArray);
   protected
     procedure SampleCountChanged(NewSampleCount: Cardinal); override;
     procedure AssignTo(Dest: TPersistent); override;
+    procedure ExternalDataChanged; override;
   public
     constructor Create(SampleCount: Cardinal = 0; DataPointer: Pointer = nil); override;
     destructor Destroy; override;
@@ -106,7 +113,7 @@ type
 
     // data access properties
     property Data[Sample: Cardinal]: Double read GetData write SetData;
-    property DataPointer: PDAVDoubleFixedArray read FData;
+    property DataPointer: PDAVDoubleFixedArray read FData write SetDataPointer;
   published
     property SampleCount;
   end;
@@ -126,7 +133,9 @@ constructor TCustomAudioMemory.Create(SampleCount: Cardinal = 0; DataPointer: Po
 begin
  inherited Create;
  FExternalData := DataPointer <> nil;
- FSampleCount := SampleCount;
+ if (SampleCount > 0) and (not FExternalData)
+  then SampleCountChanged(SampleCount)
+  else FSampleCount := SampleCount;
 end;
 
 procedure TCustomAudioMemory.AssignTo(Dest: TPersistent);
@@ -135,6 +144,15 @@ begin
  if Dest is TCustomAudioMemory then
   with TCustomAudioMemory(Dest)
    do SampleCount := Self.SampleCount;
+end;
+
+procedure TCustomAudioMemory.SetExternalData(const Value: Boolean);
+begin
+ if FExternalData <> Value then
+  begin
+   FExternalData := Value;
+   ExternalDataChanged;
+  end;
 end;
 
 procedure TCustomAudioMemory.SampleCountChanged(NewSampleCount: Cardinal);
@@ -147,10 +165,6 @@ procedure TCustomAudioMemory.SetSampleCount(const Value: Cardinal);
 begin
  if (FSampleCount <> Value) then
   begin
-   // check if data is external data (fixed sample count)
-   if FExternalData
-    then raise Exception.Create(RCStrExternalDataSampleCount);
-
    // actually change sample count
    SampleCountChanged(Value);
   end;
@@ -173,6 +187,23 @@ begin
 
  FData := nil;
  inherited;
+end;
+
+procedure TAudioMemory32.ExternalDataChanged;
+var
+  OldData : PSingle;
+begin
+ if not FExternalData then
+  begin
+   // store old data pointer
+   OldData := PSingle(FData);
+
+   // allocate internal memory
+   GetMem(FData, FSampleCount * SizeOf(Single));
+
+   // copy old data to new internal data
+   Move(OldData^, FData^, FSampleCount * SizeOf(Single));
+  end;
 end;
 
 procedure TAudioMemory32.AssignTo(Dest: TPersistent);
@@ -215,12 +246,14 @@ end;
 
 procedure TAudioMemory32.SampleCountChanged(NewSampleCount: Cardinal);
 begin
- Assert(not FExternalData);
- ReallocMem(FData, SampleCount * SizeOf(Single));
+ if not FExternalData then
+  begin
+   ReallocMem(FData, NewSampleCount * SizeOf(Single));
 
- // check if new length is longer than the old length and fill with zeroes if necessary
- if SampleCount > Self.SampleCount
-  then FillChar(FData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Single), 0);
+   // check if new length is longer than the old length and fill with zeroes if necessary
+   if SampleCount > Self.SampleCount
+    then FillChar(FData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Single), 0);
+  end;
 
  inherited;
 end;
@@ -234,7 +267,20 @@ end;
 
 procedure TAudioMemory32.Clear;
 begin
- FillChar(FData^, SampleCount * SizeOf(Single), 0);
+ if (SampleCount > 0) and Assigned(FData)
+  then FillChar(FData^, SampleCount * SizeOf(Single), 0);
+end;
+
+procedure TAudioMemory32.SetDataPointer(const Value: PDAVSingleFixedArray);
+begin
+ if FExternalData
+  then FData := Value
+  else
+   begin
+    Dispose(FData);
+    FData := Value;
+    FExternalData := True;
+   end;
 end;
 
 
@@ -254,6 +300,23 @@ begin
 
  FData := nil;
  inherited;
+end;
+
+procedure TAudioMemory64.ExternalDataChanged;
+var
+  OldData : PDouble;
+begin
+ if not FExternalData then
+  begin
+   // store old data pointer
+   OldData := PDouble(FData);
+
+   // allocate internal memory
+   GetMem(FData, FSampleCount * SizeOf(Double));
+
+   // copy old data to new internal data
+   Move(OldData^, FData^, FSampleCount * SizeOf(Double));
+  end;
 end;
 
 procedure TAudioMemory64.AssignTo(Dest: TPersistent);
@@ -296,12 +359,14 @@ end;
 
 procedure TAudioMemory64.SampleCountChanged(NewSampleCount: Cardinal);
 begin
- Assert(not FExternalData);
- ReallocMem(FData, SampleCount * SizeOf(Double));
+ if not FExternalData then
+  begin
+   ReallocMem(FData, NewSampleCount * SizeOf(Double));
 
- // check if new length is longer than the old length and fill with zeroes if necessary
- if SampleCount > Self.SampleCount
-  then FillChar(FData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Double), 0);
+   // check if new length is longer than the old length and fill with zeroes if necessary
+   if SampleCount > Self.SampleCount
+    then FillChar(FData^[Self.SampleCount], (SampleCount - Self.SampleCount) * SizeOf(Double), 0);
+  end;
 
  inherited;
 end;
@@ -311,6 +376,18 @@ begin
  if (Sample < SampleCount)
   then FData[Sample] := Value
   else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
+end;
+
+procedure TAudioMemory64.SetDataPointer(const Value: PDAVDoubleFixedArray);
+begin
+ if FExternalData
+  then FData := Value
+  else
+   begin
+    Dispose(FData);
+    FData := Value;
+    FExternalData := True;
+   end;
 end;
 
 procedure TAudioMemory64.Clear;
