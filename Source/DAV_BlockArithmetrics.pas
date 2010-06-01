@@ -161,11 +161,16 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
+
  @start:
-   FLD  [Source      + 4 * ecx - 4].Single
-   FSUB [Destination + 4 * ecx - 4].Single
-   FSTP [Destination + 4 * ecx - 4].Single
- LOOP @start
+ FLD    [Source      + 4 * ecx - 4].Single
+ FSUB   [Destination + 4 * ecx - 4].Single
+ FSTP   [Destination + 4 * ecx - 4].Single
+ LOOP   @start
+
+ @done:
 {$ENDIF}
 end;
 
@@ -182,12 +187,17 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
+
  @start:
-   FLD   [Source      + 8 * ecx - 8].Double
-   FSUB  [Destination + 8 * ecx - 8].Double
-   FSTP  [Destination + 8 * ecx - 8].Double
+ FLD     [Source      + 8 * ecx - 8].Double
+ FSUB    [Destination + 8 * ecx - 8].Double
+ FSTP    [Destination + 8 * ecx - 8].Double
  LOOP    @start
-{$ENDIF}
+
+ @done:
+ {$ENDIF}
 end;
 
 procedure BlockOffsetInplace32Native(Destination: PSingle; Value: Single; Count: Integer);
@@ -203,13 +213,18 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
  FLD     Value.Single
+
  @start:
-   FLD   [Destination + 4 * ecx - 4].Single
-   FADD  ST(0), ST(1)
-   FSTP  [Destination + 4 * ecx - 4].Single
+ FLD     [Destination + 4 * ecx - 4].Single
+ FADD    ST(0), ST(1)
+ FSTP    [Destination + 4 * ecx - 4].Single
  LOOP    @start
+
  FSTP    ST(0)
+ @done:
 {$ENDIF}
 end;
 
@@ -226,13 +241,18 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
  FLD     Value.Double
+
  @start:
-   FLD   [Destination + 8 * ecx - 8].Double
-   FADD  ST(0), ST(1)
-   FSTP  [Destination + 8 * ecx - 8].Double
+ FLD     [Destination + 8 * ecx - 8].Double
+ FADD    ST(0), ST(1)
+ FSTP    [Destination + 8 * ecx - 8].Double
  LOOP    @start
+
  FSTP    ST(0)
+ @done:
 {$ENDIF}
 end;
 
@@ -249,11 +269,16 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
+
  @start:
-   FLD  [Destination + 4 * ecx - 4].Single
-   FMUL [Source      + 4 * ecx - 4].Single
-   FSTP [Destination + 4 * ecx - 4].Single
- LOOP @start
+ FLD     [Destination + 4 * ecx - 4].Single
+ FMUL    [Source      + 4 * ecx - 4].Single
+ FSTP    [Destination + 4 * ecx - 4].Single
+ LOOP    @start
+
+ @done:
 {$ENDIF}
 end;
 
@@ -270,11 +295,16 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
+
  @start:
-   FLD  [Destination + 8 * ecx - 8].Double
-   FMUL [Source      + 8 * ecx - 8].Double
-   FSTP [Destination + 8 * ecx - 8].Double
- LOOP @start
+ FLD     [Destination + 8 * ecx - 8].Double
+ FMUL    [Source      + 8 * ecx - 8].Double
+ FSTP    [Destination + 8 * ecx - 8].Double
+ LOOP    @start
+
+ @done:
 {$ENDIF}
 end;
 
@@ -291,11 +321,16 @@ begin
   end;
 {$ELSE}
 asm
+ AND     ECX, ECX
+ JZ      @done
+
  @start:
-   FLD  [Destination + 4 * ecx - 4].Single
-   FDIV [Source      + 4 * ecx - 4].Single
-   FSTP [Destination + 4 * ecx - 4].Single
- LOOP @start
+ FLD     [Destination + 4 * ecx - 4].Single
+ FDIV    [Source      + 4 * ecx - 4].Single
+ FSTP    [Destination + 4 * ecx - 4].Single
+ LOOP    @start
+
+ @done:
 {$ENDIF}
 end;
 
@@ -375,6 +410,8 @@ begin
   end;
 {$ELSE}
 asm
+ AND    ECX, ECX
+ JZ     @done
  FLD     Value.Double
  @start:
    FLD   [Destination + 4 * ecx - 4].Single
@@ -382,6 +419,7 @@ asm
    FSTP  [Destination + 4 * ecx - 4].Single
  LOOP    @start
  FSTP    ST(0)
+ @done:
 {$ENDIF}
 end;
 
@@ -398,6 +436,8 @@ begin
   end;
 {$ELSE}
 asm
+ AND    ECX, ECX
+ JZ     @done
  FLD     Value.Double
  @start:
    FLD   [Destination + 8 * ecx - 8].Double
@@ -405,6 +445,7 @@ asm
    FSTP  [Destination + 8 * ecx - 8].Double
  LOOP    @start
  FSTP    ST(0)
+ @done:
 {$ENDIF}
 end;
 

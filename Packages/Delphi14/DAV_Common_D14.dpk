@@ -1,5 +1,6 @@
 package DAV_Common_D14;
 
+{$R *.res}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
@@ -72,6 +73,7 @@ contains
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
+  DAV_BlockConvert in '..\..\Source\DAV_BlockConvert.pas';
 
 end.
