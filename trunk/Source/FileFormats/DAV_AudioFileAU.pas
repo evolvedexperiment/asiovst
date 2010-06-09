@@ -314,12 +314,12 @@ begin
    // Write Header
    with FlippedHeader do
     begin
-     FlipLong(Magic);
-     FlipLong(Offset);
-     FlipLong(DataSize);
-     FlipLong(Encoding);
-     FlipLong(SampleRate);
-     FlipLong(Channels);
+     Flip32(Magic);
+     Flip32(Offset);
+     Flip32(DataSize);
+     Flip32(Encoding);
+     Flip32(SampleRate);
+     Flip32(Channels);
     end;
    Write(FlippedHeader, SizeOf(TAUHeader));
 
@@ -347,11 +347,11 @@ begin
    Read(FAUHeader, SizeOf(TAUHeader));
    with FAUHeader do
     begin
-     FlipLong(Offset);
-     FlipLong(DataSize);
-     FlipLong(Encoding);
-     FlipLong(SampleRate);
-     FlipLong(Channels);
+     Flip32(Offset);
+     Flip32(DataSize);
+     Flip32(Encoding);
+     Flip32(SampleRate);
+     Flip32(Channels);
 
      // some checks
      assert(SampleRate > 0);

@@ -213,8 +213,8 @@ begin
   then Move(FData, TAudioMemory32(Dest).FData, FSampleCount * SizeOf(Single))
   else
  if Dest is TAudioMemory64
-  then BlockConvert32To64(PDouble(TAudioMemory64(Dest).FData), PSingle(FData),
-    FSampleCount);
+  then BlockConvertFloat32ToFloat64(PDouble(TAudioMemory64(Dest).FData),
+    PSingle(FData), FSampleCount);
 end;
 
 function TAudioMemory32.GetData(Sample: Cardinal): Single;
@@ -326,8 +326,8 @@ begin
   then Move(FData, TAudioMemory64(Dest).FData, FSampleCount * SizeOf(Double))
   else
  if Dest is TAudioMemory32
-  then BlockConvert64To32(PSingle(TAudioMemory32(Dest).FData), PDouble(FData),
-    FSampleCount);
+  then BlockConvertFloat64ToFloat32(PSingle(TAudioMemory32(Dest).FData),
+    PDouble(FData), FSampleCount);
 end;
 
 function TAudioMemory64.GetData(Sample: Cardinal): Double;
@@ -378,6 +378,12 @@ begin
   else raise Exception.CreateFmt(RCStrSampleOutOfRange, [Sample]);
 end;
 
+procedure TAudioMemory64.Clear;
+begin
+ if (SampleCount > 0) and Assigned(FData)
+  then FillChar(FData^, SampleCount * SizeOf(Double), 0);
+end;
+
 procedure TAudioMemory64.SetDataPointer(const Value: PDAVDoubleFixedArray);
 begin
  if FExternalData
@@ -388,11 +394,6 @@ begin
     FData := Value;
     FExternalData := True;
    end;
-end;
-
-procedure TAudioMemory64.Clear;
-begin
- FillChar(FData^, SampleCount * SizeOf(Single), 0);
 end;
 
 end.

@@ -237,7 +237,7 @@ begin
 
    // check whether the real file size match the filesize stored inside the RIFF chunk
    Read(ChunkSize, 4);
-   FlipLong(ChunkSize);
+   Flip32(ChunkSize);
    if (ChunkSize > ((Size + 1) shr 1) shl 1 - Position) and not (ChunkSize = $FFFFFFFF)
     then Exit;
 
@@ -429,7 +429,7 @@ begin
 
    // check whether the real file size match the filesize stored inside the RIFF chunk
    Read(FChunkSize, 4);
-   FlipLong(FChunkSize);
+   Flip32(FChunkSize);
    if (FChunkSize > ((Size + 1) shr 1) shl 1 - Position) and not (FChunkSize = $FFFFFFFF)
     then raise EAIFFError.Create(RCStrFORMSizeMismatch);
 
@@ -534,7 +534,7 @@ begin
 
    // read data size
    Read(DataSize, 4);
-   FlipLong(DataSize);
+   Flip32(DataSize);
 
    // apply padding
    DataSize := ((DataSize + 1) shr 1) shl 1;
@@ -759,7 +759,7 @@ begin
    ChunkSize := Position - (ChunkStart + 8);
    Position  := ChunkStart + 4;
    TempSize  := ChunkSize;
-   FlipLong(TempSize);
+   Flip32(TempSize);
    Write(TempSize, 4);
 
    // Reset Position to end of Stream;
@@ -890,11 +890,11 @@ begin
 
    // read offset
    Read(Offset, 4);
-   FlipLong(Offset);
+   Flip32(Offset);
 
    // read block align (even if it is not used here)
    Read(BlockAlign, 4);
-   FlipLong(BlockAlign);
+   Flip32(BlockAlign);
 
    // advance offset
    Position := Position + Offset;
@@ -943,7 +943,7 @@ begin
      Position := FAudioDataPosition + 4;
      ChunkSize := 8 + DataSize;
 
-     FlipLong(ChunkSize);
+     Flip32(ChunkSize);
      Write(ChunkSize, 4);
 
      Write(CZero, 4); // offset
@@ -952,7 +952,7 @@ begin
 
    // finally write filesize
    ChunkSize := Size - 8;
-   FlipLong(ChunkSize);
+   Flip32(ChunkSize);
    Seek(4, soFromBeginning);
    Write(ChunkSize, 4);
    Position := OldPosition;
@@ -974,7 +974,7 @@ begin
 
    // write chunk size
    ChunkSize := 8 + DataSize;
-   FlipLong(ChunkSize);
+   Flip32(ChunkSize);
    Write(ChunkSize, 4);
 
    Write(CZero, 4); // offset

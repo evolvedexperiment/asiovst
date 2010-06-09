@@ -3687,17 +3687,17 @@ begin
    for i := 0 to numParams - 1 do
     begin
      PDAVSingleFixedArray(params)^[i] := Parameter[i];
-     SwapLong(PDAVSingleFixedArray(params)^[i]);
+     Flip32(PDAVSingleFixedArray(params)^[i]);
     end;
    // set bytesize excl. ChunkMagic, ByteSize & Params (not part of the spec)
    Result.ByteSize := SizeOf(Result) - SizeOf(LongInt) * 3 + numParams * SizeOf(Single);
 
    // swap
-   SwapLong(ByteSize);
-   SwapLong(Version);
-   SwapLong(FXID);
-   SwapLong(FXVersion);
-   SwapLong(NumParams);
+   Flip32(ByteSize);
+   Flip32(Version);
+   Flip32(FXID);
+   Flip32(FXVersion);
+   Flip32(NumParams);
   end;
 end;
 
@@ -3753,12 +3753,12 @@ begin
     ByteSize := SizeOf(FXChunkSet) - SizeOf(LongInt) * 2 + chunkSize - 8;
 
     // swap-o-matic
-    SwapLong(version);
-    SwapLong(fxID);
-    SwapLong(fxVersion);
-    SwapLong(numPrograms);
-    SwapLong(ByteSize);
-    SwapLong(chunkSize);
+    Flip32(version);
+    Flip32(fxID);
+    Flip32(fxVersion);
+    Flip32(numPrograms);
+    Flip32(ByteSize);
+    Flip32(chunkSize);
 
     // write data to stream 
     Stream.WriteBuffer(FXChunkSet, SizeOf(FXChunkSet) - SizeOf(Pointer));
@@ -3798,7 +3798,7 @@ begin
 
  // check stream size
  Stream.Read(ChunkDataSize, 4);
- SwapLong(ChunkDataSize);
+ Flip32(ChunkDataSize);
  assert(ChunkDataSize <= Stream.Size);
 
  // read fx magic
@@ -3815,7 +3815,7 @@ begin
    assert(FXChunkBank.fxMagic = 'FBCh');
 
    // swap unique ID
-   SwapLong(FXChunkBank.fxId);
+   Flip32(FXChunkBank.fxId);
    if FXChunkBank.fxId <> FVstEffect^.UniqueID
     then raise Exception.Create(RStrBankFileNotForThisPlugin);
 
@@ -3837,7 +3837,7 @@ begin
    assert(FXSet.fxMagic = 'FxBk');
 
    // swap
-   SwapLong(FXSet.fxId);
+   Flip32(FXSet.fxId);
    if FXSet.fxId <> FVstEffect^.UniqueID
     then raise Exception.Create(RStrBankFileNotForThisPlugin);
 
@@ -3850,17 +3850,17 @@ begin
      BeginLoadBank(@PatchChunkInfo);
     end;
 
-   SwapLong(FXSet.numPrograms);
+   Flip32(FXSet.numPrograms);
    for i := 0 to FXSet.numPrograms - 1 do
     begin
      Stream.Read(FXPreset, SizeOf(TFXPreset) - SizeOf(Pointer));
      SetCurrentProgram(i);
      SetProgramName(FXPreset.prgName);
-     SwapLong(FXPreset.numParams);
+     Flip32(FXPreset.numParams);
      for j := 0 to FXPreset.numParams - 1 do
       begin
        Stream.Read(Param, SizeOf(Single));
-       SwapLong(Param);
+       Flip32(Param);
        SetParameter(j, Param);
       end;
     end;
@@ -3894,7 +3894,7 @@ begin
    Stream.Read(FXChunkset, SizeOf(TFXChunkset) - SizeOf(Pointer));
 
    // check unique ID
-   SwapLong(FXChunkset.fxId);
+   Flip32(FXChunkset.fxId);
    if FVstEffect^.UniqueID <> FXChunkset.fxId
     then raise Exception.Create(RStrPresetFileNotForThisPlugin);
 
@@ -3917,7 +3917,7 @@ begin
    Stream.Read(FXPreset, SizeOf(TFXPreset) - SizeOf(Pointer));
 
    // check unique ID
-   SwapLong(FXPreset.fxId);
+   Flip32(FXPreset.fxId);
    if FVstEffect^.UniqueID <> FXPreset.fxId
     then raise Exception.Create(RStrPresetFileNotForThisPlugin);
 
@@ -3931,11 +3931,11 @@ begin
    BeginLoadProgram(@PatchChunkInfo);
 
    SetProgramName(FXPreset.prgName);
-   SwapLong(FXPreset.numParams);
+   Flip32(FXPreset.numParams);
    for ParamNo := 0 to FXPreset.numParams - 1 do
     begin
      Stream.Read(Param, SizeOf(Single));
-     SwapLong(Param);
+     Flip32(Param);
      SetParameter(ParamNo, Param);
     end;
   end;
@@ -3967,12 +3967,12 @@ begin
     ByteSize      := SizeOf(FXChunkBank) - SizeOf(LongInt) * 3 + chunkSize + 8;
 
     // swap-o-matic
-    SwapLong(version);
-    SwapLong(fxID);
-    SwapLong(fxVersion);
-    SwapLong(numPrograms);
-    SwapLong(ByteSize);
-    SwapLong(chunkSize);
+    Flip32(version);
+    Flip32(fxID);
+    Flip32(fxVersion);
+    Flip32(numPrograms);
+    Flip32(ByteSize);
+    Flip32(chunkSize);
 
     // write data to stream
     Stream.WriteBuffer(FXChunkBank, SizeOf(FXChunkBank) - SizeOf(Pointer));
@@ -3990,11 +3990,11 @@ begin
     ByteSize      := SizeOf(FXSet) - SizeOf(LongInt) + (SizeOf(TFXPreset) + (numParams - 1) * SizeOf(Single)) * numPrograms - 8;
 
     // swap-o-matic
-    SwapLong(version);
-    SwapLong(fxID);
-    SwapLong(fxVersion);
-    SwapLong(numPrograms);
-    SwapLong(ByteSize);
+    Flip32(version);
+    Flip32(fxID);
+    Flip32(fxVersion);
+    Flip32(numPrograms);
+    Flip32(ByteSize);
 
     Stream.WriteBuffer(FXSet, SizeOf(FXSet) - SizeOf(Single));
     for PrgNo := 0 to Self.numPrograms - 1 do

@@ -502,10 +502,10 @@ begin
    // flip header
    with AIFFCommonRecord do
     begin
-     FlipWord(Channels);
-     FlipLong(SampleFrames);
-     FlipWord(SampleSize);
-     FlipExtended(SampleRate);
+     Flip16(Channels);
+     Flip32(SampleFrames);
+     Flip16(SampleSize);
+     Flip80(SampleRate);
     end;
 
    // exit if no addition information are available
@@ -556,10 +556,10 @@ begin
    FlippedAIFFCommonRecord := AIFFCommonRecord;
    with FlippedAIFFCommonRecord do
     begin
-     FlipWord(Channels);
-     FlipLong(SampleFrames);
-     FlipWord(SampleSize);
-     FlipExtended(SampleRate);
+     Flip16(Channels);
+     Flip32(SampleFrames);
+     Flip16(SampleSize);
+     Flip80(SampleRate);
     end;
    Write(FlippedAIFFCommonRecord, SizeOf(TAIFFCommonRecord));
 
@@ -751,8 +751,8 @@ begin
    // flip header
    with AIFFSoundDataRecord do
     begin
-     FlipLong(Offset);
-     FlipLong(BlockSize);
+     Flip32(Offset);
+     Flip32(BlockSize);
     end;
 
    // set position to end of chunk
@@ -772,8 +772,8 @@ begin
    FlippedAIFFSoundDataRecord := AIFFSoundDataRecord;
    with FlippedAIFFSoundDataRecord do
     begin
-     FlipLong(Offset);
-     FlipLong(BlockSize);
+     Flip32(Offset);
+     Flip32(BlockSize);
     end;
    Write(FlippedAIFFSoundDataRecord, SizeOf(TAIFFSoundDataRecord));
 
@@ -822,8 +822,8 @@ begin
    // read marker header
    Read(MarkerRecord, SizeOf(TAIFFMarkerRecord));
 
-   FlipWord(MarkerRecord.MarkerID);
-   FlipWord(MarkerRecord.Position);
+   Flip16(MarkerRecord.MarkerID);
+   Flip16(MarkerRecord.Position);
 
    // now read the marker string
    Read(StringSize, SizeOf(Byte));
@@ -919,8 +919,8 @@ begin
   begin
    // load number of markers
    Read(MarkerCount, SizeOf(Word));
-   FlipWord(MarkerCount);
-   assert(MarkerCount < (FChunkSize div SizeOf(TAIFFMarkerRecord)));
+   Flip16(MarkerCount);
+   Assert(MarkerCount < (FChunkSize div SizeOf(TAIFFMarkerRecord)));
 
    // clear existing markers
    FMarkers.Clear;

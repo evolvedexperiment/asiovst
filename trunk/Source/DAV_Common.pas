@@ -46,14 +46,15 @@ uses
 
 { Byte Ordering }
 
-function Swap_16(Value: SmallInt): SmallInt;
-function Swap_32(Value: LongInt): LongInt;
-function Swap_64(Value: Int64): Int64;
+function Swap16(Value: SmallInt): SmallInt;
+function Swap32(Value: LongInt): LongInt;
+function Swap64(Value: Int64): Int64;
+function Swap80(Value: Extended): Extended;
 
-function SwapLong(var Value): LongInt;
-procedure FlipWord(var Value); overload;
-procedure FlipLong(var Value); overload;
-procedure FlipExtended(var Value : Extended); overload;
+procedure Flip16(var Value);
+procedure Flip32(var Value);
+procedure Flip64(var Value);
+procedure Flip80(var Value);
 
 
 { Convert }
@@ -173,6 +174,11 @@ function SplitString(S: String; Delimiter: AnsiChar): TStrArray;
 function MakeGoodFileName(s: string): string;
 {$ENDIF}
 
+{$IFDEF CPU386}
+function MethodToProcedure(Self: TObject; MethodAddr: Pointer): Pointer; overload;
+function MethodToProcedure(Method: TMethod): Pointer; overload;
+{$ENDIF}
+
 const
   CDenorm32          : Single = 1E-24;
   CTwoPI32           : Single = 2 * Pi;
@@ -205,124 +211,184 @@ implementation
 uses
   Math, SysUtils;
 
+
 { Byte Ordering }
 
 type
   T16Bit = record
-    case integer of
+    case Integer of
       0 :  (v: SmallInt);
-      1 :  (b: array[0..1] of byte);
+      1 :  (b: array[0..1] of Byte);
   end;
 
   T32Bit = record
-    case integer of
+    case Integer of
       0 :  (v: LongInt);
-      1 :  (b: array[0..3] of byte);
+      1 :  (b: array[0..3] of Byte);
   end;
 
   T64Bit = record
-    case integer of
+    case Integer of
       0 :  (v: Int64);
-      1 :  (b: array[0..7] of byte);
+      1 :  (b: array[0..7] of Byte);
   end;
 
-function SWAP_16(Value: SmallInt): SmallInt;
-var
-  t: byte;
-begin
-  with T16Bit(value) do
-   begin
-    t := b[0];
-    b[0] := b[1];
-    b[1] := t;
-    Result := v;
-   end;
-end;
+  T80Bit = record
+    case Integer of
+      0 :  (v: Extended);
+      1 :  (b: array[0..9] of Byte);
+  end;
 
-function SWAP_32(Value: LongInt): LongInt;
+function Swap16(Value: SmallInt): SmallInt;
 var
-  t: byte;
+  t: Byte;
 begin
- with T32Bit(value) do
+ with T16Bit(Value) do
   begin
    t := b[0];
+   b[0] := b[1];
+   b[1] := t;
+   Result := v;
+  end;
+end;
+
+function Swap32(Value: LongInt): LongInt;
+var
+  Temp: Byte;
+begin
+ with T32Bit(Value) do
+  begin
+   Temp := b[0];
    b[0] := b[3];
-   b[3] := t;
-   t := b[1];
+   b[3] := Temp;
+   Temp := b[1];
    b[1] := b[2];
-   b[2] := t;
+   b[2] := Temp;
    Result := v;
   end;
 end;
 
-function SWAP_64(Value: Int64): Int64;
+function Swap64(Value: Int64): Int64;
 var
-   t: byte;
+  Temp: Byte;
 begin
- with T64Bit(value) do
+ with T64Bit(Value) do
+  begin
+   Temp := b[0];
+   b[0] := b[7];
+   b[7] := Temp;
+   Temp := b[1];
+   b[1] := b[6];
+   b[6] := Temp;
+   Temp := b[2];
+   b[2] := b[5];
+   b[5] := Temp;
+   Temp := b[3];
+   b[3] := b[4];
+   b[4] := Temp;
+   Result := v;
+  end;
+end;
+
+function Swap80(Value: Extended): Extended;
+var
+  Temp: Byte;
+  T80B: T80Bit absolute Value;
+begin
+ with T80B do
+  begin
+   Temp := b[0];
+   b[0] := b[9];
+   b[9] := Temp;
+   Temp := b[1];
+   b[1] := b[8];
+   b[8] := Temp;
+   Temp := b[2];
+   b[2] := b[7];
+   b[7] := Temp;
+   Temp := b[3];
+   b[3] := b[6];
+   b[6] := Temp;
+   Temp := b[4];
+   b[4] := b[5];
+   b[5] := Temp;
+   Result := V;
+  end;
+end;
+
+procedure Flip16(var Value);
+var
+  t: Byte;
+begin
+ with T16Bit(Value) do
   begin
    t := b[0];
-   b[0] := b[7];
-   b[7] := t;
-   t := b[1];
-   b[1] := b[6];
-   b[6] := t;
-   t := b[2];
-   b[2] := b[5];
-   b[5] := t;
-   t := b[3];
-   b[3] := b[4];
-   b[4] := t;
-   Result := v;
+   b[0] := b[1];
+   b[1] := t;
   end;
 end;
 
-function SwapLong(var Value): LongInt;
+procedure Flip32(var Value);
 var
-  t : Integer;
-type
-  X = array [0..1] of word;
+  Temp: Byte;
 begin
- T := Swap(X(Value)[1]);
- X(Value)[1] := Swap(X(Value)[0]);
- X(Value)[0] := T;
- Result := t;
+ with T32Bit(Value) do
+  begin
+   Temp := b[0];
+   b[0] := b[3];
+   b[3] := Temp;
+   Temp := b[1];
+   b[1] := b[2];
+   b[2] := Temp;
+  end;
 end;
 
-procedure FlipLong(var Value); overload;
+procedure Flip64(var Value);
 var
-  VA   : array [0..3] of Byte absolute Value;
-  temp : Byte;
+  Temp: Byte;
 begin
-  temp  := VA[0];
-  VA[0] := VA[3];
-  VA[3] := temp;
-  temp  := VA[1];
-  VA[1] := VA[2];
-  VA[2] := temp;
+ with T64Bit(Value) do
+  begin
+   Temp := b[0];
+   b[0] := b[7];
+   b[7] := Temp;
+   Temp := b[1];
+   b[1] := b[6];
+   b[6] := Temp;
+   Temp := b[2];
+   b[2] := b[5];
+   b[5] := Temp;
+   Temp := b[3];
+   b[3] := b[4];
+   b[4] := Temp;
+  end;
 end;
 
-procedure FlipWord(var Value);
+procedure Flip80(var Value);
 var
-  VA   : array [0..1] of Byte absolute Value;
-  temp : Byte;
+  Temp: Byte;
+  T80B: T80Bit absolute Value;
 begin
-  temp  := VA[0];
-  VA[0] := VA[1];
-  VA[1] := temp;
+ with T80B do
+  begin
+   Temp := b[0];
+   b[0] := b[9];
+   b[9] := Temp;
+   Temp := b[1];
+   b[1] := b[8];
+   b[8] := Temp;
+   Temp := b[2];
+   b[2] := b[7];
+   b[7] := Temp;
+   Temp := b[3];
+   b[3] := b[6];
+   b[6] := Temp;
+   Temp := b[4];
+   b[4] := b[5];
+   b[5] := Temp;
+  end;
 end;
 
-procedure FlipExtended(var Value : Extended); overload;
-var
-  VA   : array [0..9] of Byte absolute Value;
-  temp : Byte;
-begin
- temp := VA[0]; VA[0] := VA[9]; VA[9] := temp;
- temp := VA[1]; VA[1] := VA[8]; VA[8] := temp;
- temp := VA[2]; VA[2] := VA[7]; VA[7] := temp;
- temp := VA[3]; VA[3] := VA[6]; VA[6] := temp;
- temp := VA[4]; VA[4] := VA[5]; VA[5] := temp;
-end;
 
 { Convert }
 
@@ -1245,6 +1311,49 @@ asm
  fcmovnb st(0), st(1)
  ffree   st(1)
 end;
+{$ENDIF}
+
+{ Object oriented code conversions }
+
+{$IFDEF CPU386}
+function MethodToProcedure(Self: TObject; MethodAddr: Pointer): Pointer;
+type
+  TMethodToProcedure = packed record
+    PopEax    : Byte;
+    PushSelf  : record
+      Opcode  : Byte;
+      Self    : Pointer;
+    end;
+    PushEax   : Byte;
+    Jump      : record
+      Opcode  : Byte;
+      ModRm   : Byte;
+      PTarget : ^Pointer;
+      Target  : Pointer;
+    end;
+  end;
+var
+  MTP : ^TMethodToProcedure absolute Result;
+begin
+ MTP := VirtualAlloc(nil, SizeOf(MTP^), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+ with MTP^ do
+  begin
+   PopEax          := $58;
+   PushSelf.Opcode := $68;
+   PushSelf.Self   := Self;
+   PushEax         := $50;
+   Jump.Opcode     := $FF;
+   Jump.ModRm      := $25;
+   Jump.PTarget    := @jump.Target;
+   Jump.Target     := MethodAddr;
+  end;
+end;
+
+function MethodToProcedure(Method: TMethod): Pointer;
+begin
+ Result := MethodToProcedure(TObject(Method.data), Method.code);
+end;
+
 {$ENDIF}
 
 end.
