@@ -344,7 +344,7 @@ begin
 
  // eventually flip bytes
  if cfReversedByteOrder in ChunkFlags
-  then FlipLong(FChunkSize);
+  then Flip32(FChunkSize);
 end;
 
 procedure TCustomChunk.SaveToStream(Stream: TStream);
@@ -355,7 +355,7 @@ begin
 
  // eventually flip bytes
  if cfReversedByteOrder in ChunkFlags
-  then FlipLong(TempSize);
+  then Flip32(TempSize);
 
  with Stream do
   if cfSizeFirst in ChunkFlags then
@@ -881,7 +881,7 @@ begin
 
    // eventually reverse byte order
    if cfReversedByteOrder in ChunkFlags
-    then FlipLong(TempSize);
+    then Flip32(TempSize);
 
    // eventually skip padded zeroes
    if cfPadSize in ChunkFlags
@@ -977,7 +977,7 @@ begin
 
    // eventually reverse byte order
    if cfReversedByteOrder in ChunkFlags
-    then FlipLong(TempSize);
+    then Flip32(TempSize);
 
    // eventually skip padded zeroes
    if cfPadSize in ChunkFlags
