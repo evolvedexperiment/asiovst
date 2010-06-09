@@ -40,7 +40,6 @@ object FmLunchBox: TFmLunchBox
     Top = 0
     Width = 429
     Height = 24
-    ButtonHeight = 13
     Caption = 'ToolBar'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -61,7 +60,7 @@ object FmLunchBox: TFmLunchBox
       Left = 8
       Top = 0
       Width = 19
-      Height = 13
+      Height = 22
       Caption = 'kit:'
       Layout = tlCenter
     end
@@ -71,7 +70,6 @@ object FmLunchBox: TFmLunchBox
       Width = 84
       Height = 21
       Style = csDropDownList
-      ItemHeight = 13
       ItemIndex = 0
       TabOrder = 0
       Text = 'Acoustic'
@@ -97,7 +95,7 @@ object FmLunchBox: TFmLunchBox
       Left = 119
       Top = 0
       Width = 29
-      Height = 13
+      Height = 22
       Caption = 'BPM:'
       Layout = tlCenter
     end
@@ -126,7 +124,7 @@ object FmLunchBox: TFmLunchBox
       Left = 208
       Top = 0
       Width = 25
-      Height = 13
+      Height = 22
       Caption = 'Bar:'
       Layout = tlCenter
     end
@@ -155,7 +153,7 @@ object FmLunchBox: TFmLunchBox
       Left = 282
       Top = 0
       Width = 34
-      Height = 13
+      Height = 22
       Caption = 'Style:'
       Layout = tlCenter
     end
@@ -166,7 +164,6 @@ object FmLunchBox: TFmLunchBox
       Height = 21
       Style = csDropDownList
       Enabled = False
-      ItemHeight = 13
       ItemIndex = 1
       TabOrder = 3
       Text = 'Flat'
@@ -454,7 +451,6 @@ object FmLunchBox: TFmLunchBox
     Font.Height = -13
     Font.Name = 'Verdana'
     Font.Style = []
-    ItemHeight = 16
     ItemIndex = 3
     ParentFont = False
     TabOrder = 18

@@ -123,7 +123,7 @@ begin
    begin
     VSTInBuffer[0, 0] := 1;
     FillChar(VSTInBuffer[0, 1], (VstHost.BlockSize - 1) * SizeOf(Single), 0);
-    ProcessReplacing(@VSTInBuffer[0], @VSTOutBuffer[0], VstHost.BlockSize);
+    Process32Replacing(@VSTInBuffer[0], @VSTOutBuffer[0], VstHost.BlockSize);
 
     FmPlotIR.Waveform.SetWaveForm(VSTOutBuffer, True);
    end;
@@ -161,7 +161,7 @@ procedure TFmVSTAnalyser.LoadVSTPlugin(DLLName : TFileName);
 var
   i        : integer;
   s        : string;
-  temp     : string;
+  temp     : AnsiString;
   MenuItem : TMenuItem;
 begin
   with VstHost[0] do
@@ -176,8 +176,8 @@ begin
     Caption :=  GetVendorString + ' ' + GetEffectName;
     SetLength(VSTInBuffer,numInputs);
     SetLength(VSTOutBuffer,numOutputs);
-    for i := 0 to numInputs-1 do SetLength(VSTInBuffer[i],VSTHost.BlockSize);
-    for i := 0 to numOutputs-1 do SetLength(VSTOutBuffer[i],VSTHost.BlockSize);
+    for i := 0 to numInputs  - 1 do SetLength(VSTInBuffer[i], VSTHost.BlockSize);
+    for i := 0 to numOutputs - 1 do SetLength(VSTOutBuffer[i], VSTHost.BlockSize);
    end;
 
  while MIPrograms.Count > 3 do MIPrograms.Delete(3);

@@ -698,7 +698,7 @@ begin
     Index := 0;
     AssociatedChannel := -1;
     AssociatedGroup := -1;
-    IsCurrentSource := ASIOTrue;
+    IsCurrentSource := CAsioTrue;
     StrCopy(Name, 'Internal');
   end;
   NumSources := 1;  
@@ -727,9 +727,9 @@ begin
     Exit;
   end;
 
-  Info.SampleType := ASIOSTFloat32LSB;
+  Info.SampleType := CAsioSTFloat32LSB;
   Info.ChannelGroup := 0;
-  Info.IsActive := ASIOFalse;
+  Info.IsActive := CAsioFalse;
   StrPCopy(Info.Name, 'Default channel');
 
   Result := ASE_OK;

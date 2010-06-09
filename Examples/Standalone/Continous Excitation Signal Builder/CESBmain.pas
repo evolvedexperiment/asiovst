@@ -550,7 +550,7 @@ var
   Channel  : Integer;
   Sample   : Integer;
   Temp     : Double;
-  Peak     : Double;
+  TempPeak : Double;
   IRSize   : Integer;
   LowPass  : TChebyshev1LowpassFilter;
   Highpass : TChebyshev1HighpassFilter;
@@ -578,16 +578,16 @@ begin
     end;
 
    // calculate IR size
-   Peak := 0;
+   TempPeak := 0;
    IRSize := 0;
    Highpass.ProcessSample64(Lowpass.ProcessSample64(1.0));
    repeat
     Temp := Highpass.ProcessSample64(Lowpass.ProcessSample64(0.0));
-    if Abs(Temp) > Peak
-     then Peak := Abs(Temp)
-     else Peak := 0.9999 * Peak;
+    if Abs(Temp) > TempPeak
+     then TempPeak := Abs(Temp)
+     else TempPeak := 0.9999 * TempPeak;
     Inc(IRSize);
-   until (Peak < 1E-7) and (IRSize > Lowpass.Order * Highpass.Order);
+   until (TempPeak < 1E-7) and (IRSize > Lowpass.Order * Highpass.Order);
 
    with TFastPinkNoiseGenerator.Create do
     try
@@ -599,7 +599,7 @@ begin
      for Sample := 0 to 2 * IRSize - 1
       do Highpass.ProcessSample64(LowPass.ProcessSample64(ProcessSample64));
 
-     Peak := 0;
+     TempPeak := 0;
 
      // generate samples
      for Channel := 0 to ChannelCount - 1 do
@@ -608,11 +608,11 @@ begin
         do ChannelDataPointer[Channel]^[Sample] := Lowpass.ProcessSample64(
           Highpass.ProcessSample64(ProcessSample64));
        Temp := TAudioChannel32(Channels[Channel]).Peak;
-       if Temp > Peak then Peak := Temp;
+       if Temp > TempPeak then TempPeak := Temp;
       end;
 
      // normalize samples
-     Multiply(1 / Peak);
+     Multiply(1 / TempPeak);
     finally
      Free;
     end;
@@ -626,7 +626,7 @@ var
   Channel  : Integer;
   Sample   : Integer;
   Temp     : Double;
-  Peak     : Double;
+  TempPeak : Double;
   IRSize   : Integer;
   LowPass  : TChebyshev1LowpassFilter;
   Highpass : TChebyshev1HighpassFilter;
@@ -654,16 +654,16 @@ begin
     end;
 
    // calculate IR size
-   Peak := 0;
+   TempPeak := 0;
    IRSize := 0;
    Highpass.ProcessSample64(Lowpass.ProcessSample64(1.0));
    repeat
     Temp := Highpass.ProcessSample64(Lowpass.ProcessSample64(0.0));
-    if Abs(Temp) > Peak
-     then Peak := Abs(Temp)
-     else Peak := 0.9999 * Peak;
+    if Abs(Temp) > TempPeak
+     then TempPeak := Abs(Temp)
+     else TempPeak := 0.9999 * TempPeak;
     Inc(IRSize);
-   until (Peak < 1E-7) and (IRSize > Lowpass.Order * Highpass.Order);
+   until (TempPeak < 1E-7) and (IRSize > Lowpass.Order * Highpass.Order);
 
    with TFastPinkNoiseGenerator.Create do
     try
@@ -682,7 +682,7 @@ begin
         do ChannelDataPointer[Channel]^[Sample] := Lowpass.ProcessSample64(
           Highpass.ProcessSample64(ProcessSample64));
 
-      Peak := 0;
+      TempPeak := 0;
       Temp := 4 / SampleFrames;
       for Sample := 0 to SampleFrames div 4 - 1 do
        begin
@@ -704,11 +704,11 @@ begin
 *)
        end;
       Temp := TAudioChannel32(Channels[Channel]).Peak;
-      if Temp > Peak then Peak := Temp;
+      if Temp > TempPeak then TempPeak := Temp;
      end;
 
      // normalize samples
-     Multiply(1 / Peak);
+     Multiply(1 / TempPeak);
     finally
      Free;
     end;
@@ -763,8 +763,8 @@ begin
 
       for Bin := 1 to FFT.BinCount - 2 do
        if (Bin >= BinBorder[0]) and (Bin <= BinBorder[1])
-        then FreqDom[Bin] := ComplexPolar(1 / Bin, Pi * FastRandom)
-        else FreqDom[Bin] := ComplexPolar(0, 0);
+        then FreqDom[Bin] := ComplexPolar32(1 / Bin, Pi * FastRandom)
+        else FreqDom[Bin] := ComplexPolar32(0, 0);
 
       FreqDom[FFT.BinCount - 1].Re := 0;
       FreqDom[FFT.BinCount - 1].Im := 0;
@@ -836,8 +836,8 @@ begin
 
       for Bin := 1 to FFT.BinCount - 2 do
        if (Bin >= BinBorder[0]) and (Bin <= BinBorder[1])
-        then FreqDom[Bin] := ComplexPolar(1 / Bin, Pi * FastRandom)
-        else FreqDom[Bin] := ComplexPolar(0, 0);
+        then FreqDom[Bin] := ComplexPolar32(1 / Bin, Pi * FastRandom)
+        else FreqDom[Bin] := ComplexPolar32(0, 0);
 
       FreqDom[FFT.BinCount - 1].Re := 0;
       FreqDom[FFT.BinCount - 1].Im := 0;
@@ -938,8 +938,8 @@ begin
 
       for Bin := 1 to FFT.BinCount - 2 do
        if (Bin >= BinBorder[0]) and (Bin <= BinBorder[1])
-        then FreqDom[Bin] := ComplexPolar(1 / Bin, Pi * FastRandom)
-        else FreqDom[Bin] := ComplexPolar(0, 0);
+        then FreqDom[Bin] := ComplexPolar32(1 / Bin, Pi * FastRandom)
+        else FreqDom[Bin] := ComplexPolar32(0, 0);
 
       FreqDom[FFT.BinCount - 1].Re := 0;
       FreqDom[FFT.BinCount - 1].Im := 0;

@@ -5,12 +5,15 @@ program CommonFunctionTest;
 {$ENDIF}
 
 uses
+  FastMM4,
   Forms,
   TestFramework,
   GUITestRunner,
   TextTestRunner,
   TestDAV_AudioMemory in 'TestDAV_AudioMemory.pas',
-  DAV_AudioMemory in '..\..\Source\DAV_AudioMemory.pas';
+  TestDAV_BlockConvert in 'TestDAV_BlockConvert.pas',
+  DAV_AudioMemory in '..\..\Source\DAV_AudioMemory.pas',
+  DAV_BlockConvert in '..\..\Source\DAV_BlockConvert.pas';
 
 {$R *.RES}
 

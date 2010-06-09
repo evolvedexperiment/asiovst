@@ -128,7 +128,7 @@ begin
 
   try
    VstHost[0].Active := True;
-   VstHost[0].ProcessReplacing(@Input[0], @Output[0], CFixedSize);
+   VstHost[0].Process32Replacing(@Input[0], @Output[0], CFixedSize);
 
    FSonogram.ProcessBlock32(Output[0], CFixedSize);
   finally

@@ -72,6 +72,10 @@
 			<DCCReference Include="..\..\Source\ASIO\DAV_AsioList.pas"/>
 			<DCCReference Include="..\..\Source\Asio\DAV_AsioMixer.pas"/>
 			<DCCReference Include="..\..\Source\Asio\DAV_AsioRegister.pas"/>
+			<DCCReference Include="..\..\Source\ASIO\DAV_AsioHostNew.pas"/>
+			<DCCReference Include="..\..\Source\ASIO\DAV_AsioHostCore.pas"/>
+			<DCCReference Include="..\..\Source\ASIO\DAV_AsioResourceStrings.pas"/>
+			<DCCReference Include="..\..\Source\ASIO\DAV_AsioCore32.pas"/>
 			<BuildConfiguration Include="Basis">
 				<Key>Base</Key>
 			</BuildConfiguration>
@@ -124,7 +128,7 @@
 						<VersionInfoKeys Name="ProductName"/>
 						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
 						<VersionInfoKeys Name="Comments"/>
-						<VersionInfoKeys Name="Last Compile">2010-05-18 15:54</VersionInfoKeys>
+						<VersionInfoKeys Name="Last Compile">2010-06-09 15:06</VersionInfoKeys>
 					</VersionInfoKeys>
 				</Delphi.Personality>
 			</BorlandProject>

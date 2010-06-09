@@ -1,6 +1,6 @@
 object FmMiniHost: TFmMiniHost
-  Left = 480
-  Top = 266
+  Left = 680
+  Top = 391
   AlphaBlendValue = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle

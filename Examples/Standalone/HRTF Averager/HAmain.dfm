@@ -70,6 +70,7 @@ object FmHrtfAverager: TFmHrtfAverager
     DisplayedChannel = 0
     DisplayChannels = <>
     LineWidth = 0
+    Normalize = False
     XAxis.SampleUpper = 511
     XAxis.FractionalLower = -0.500000000000000000
     XAxis.FractionalUpper = 0.500000000000000000
@@ -84,6 +85,7 @@ object FmHrtfAverager: TFmHrtfAverager
     DisplayedChannel = 1
     DisplayChannels = <>
     LineWidth = 0
+    Normalize = False
     XAxis.SampleUpper = 511
     XAxis.FractionalLower = -0.500000000000000000
     XAxis.FractionalUpper = 0.500000000000000000

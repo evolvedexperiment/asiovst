@@ -39,7 +39,7 @@ uses
   Menus, ToolWin, ComCtrls, ExtCtrls, StdCtrls, Buttons, DAV_Types,
   DAV_GuiStaticWaveform, DAV_GuiBaseControl, DAV_GuiLevelMeter, DAV_AudioFile,
   DAV_AudioData, DAV_AudioFileWav, DAV_AudioFileAIFF, DAV_AudioFileAU,
-  DAV_ASIOHost, DAV_VSTHost, DAV_GuiAudioDataDisplay;
+  DAV_ASIOHost, DAV_VSTHost, DAV_GuiAudioDataDisplay, DAV_Classes;
 
 type
   TFmAudioEditor = class(TForm)
@@ -192,24 +192,26 @@ end;
 
 procedure TFmAudioEditor.MIRemoveDCClick(Sender: TObject);
 var
-  ch, i   : Integer;
-  Sum, DC : Double;
-  chdata  : PDAVSingleFixedArray;
+  ChannelIndex : Integer;
+  SampleIndex  : Integer;
+  TempSum      : Double;
+  TempDC       : Double;
+  ChannelData  : PDAVSingleFixedArray;
 begin
  with AudioDataCollection32 do
   begin
-   for ch := 0 to ChannelCount - 1 do
+   for ChannelIndex := 0 to ChannelCount - 1 do
     begin
-     chdata := ChannelDataPointer[ch];
+     ChannelData := ChannelDataPointer[ChannelIndex];
 
-     // build sum of
-     Sum := 0;
-     for i := 0 to SampleFrames - 1
-      do Sum := Sum + chdata^[i];
+     // build TempSum of
+     TempSum := 0;
+     for SampleIndex := 0 to SampleFrames - 1
+      do TempSum := TempSum + ChannelData^[SampleIndex];
 
-     DC := Sum / SampleFrames;
-     for i := 0 to SampleFrames - 1
-      do chdata^[i] := chdata^[i] - DC;
+     TempDC := TempSum / SampleFrames;
+     for SampleIndex := 0 to SampleFrames - 1
+      do ChannelData^[SampleIndex] := ChannelData^[SampleIndex] - TempDC;
     end;
 
    GuiAudioDataDisplay.Invalidate;

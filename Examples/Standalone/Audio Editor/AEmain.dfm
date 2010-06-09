@@ -42,6 +42,7 @@ object FmAudioEditor: TFmAudioEditor
     DisplayChannels = <>
     LineColor = clMaroon
     LineWidth = 0
+    Normalize = False
     XAxis.SampleUpper = 8191
     XAxis.FractionalLower = -0.500000000000000000
     XAxis.FractionalUpper = 0.500000000000000000

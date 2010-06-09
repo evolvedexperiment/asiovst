@@ -70,7 +70,6 @@ object FmVSTEditor: TFmVSTEditor
       BevelOuter = bvNone
       Style = csDropDownList
       Color = clBtnFace
-      ItemHeight = 16
       PopupMenu = PUPreset
       TabOrder = 0
       OnChange = CBPresetChange
