@@ -1,13 +1,50 @@
 unit DAV_AsioInterface;
 
-// Several different ASIO interface wrappers are contained in this unit
-// The IStdCallAsio has been written and contributed as IBEROASIO interface
-// as an ASIO interface wrapper for Delphi & FreePascal by Benjamin Rosseaux
-// see http://bero.0ok.de/ Copyright (C) 2005-2006,
-// The IStdCallAsio is basically identical to this (except for the name).
-//
-// Furthermore an IDelphiAsio interface has been developed to simplify the
-// interface for an ASIO driver written in Delphi
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  Version: MPL 1.1 or LGPL 2.1 with linking exception                       //
+//                                                                            //
+//  The contents of this file are subject to the Mozilla Public License       //
+//  Version 1.1 (the "License"); you may not use this file except in          //
+//  compliance with the License. You may obtain a copy of the License at      //
+//  http://www.mozilla.org/MPL/                                               //
+//                                                                            //
+//  Software distributed under the License is distributed on an "AS IS"       //
+//  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the   //
+//  License for the specific language governing rights and limitations under  //
+//  the License.                                                              //
+//                                                                            //
+//  Alternatively, the contents of this file may be used under the terms of   //
+//  the Free Pascal modified version of the GNU Lesser General Public         //
+//  License Version 2.1 (the "FPC modified LGPL License"), in which case the  //
+//  provisions of this license are applicable instead of those above.         //
+//  Please see the file LICENSE.txt for additional information concerning     //
+//  this license.                                                             //
+//                                                                            //
+//  The code is part of the Delphi ASIO & VST Project                         //
+//                                                                            //
+//  The initial developer of this code is Tobias Fleischer and                //
+//  Christian-W. Budde, based on a code snipped by Frederic Vanmol            //
+//                                                                            //
+//  Portions created by Christian-W. Budde are Copyright (C) 2003-2010        //
+//  by Christian-W. Budde. All Rights Reserved.                               //
+//                                                                            //
+//  Contributor(s):                                                           //
+//    Martin Fay (original Delphi ASIO interface, author of OpenAsio)         //
+//    Benjamin Rosseaux (author of the stdcall interface)                     //
+//    Maik Menz (various refactorings)                                        //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//  The IStdCallAsio has been written and contributed as IBEROASIO interface  //
+//  as an ASIO interface wrapper for Delphi & FreePascal by Benjamin Rosseaux //
+//  see http://bero.0ok.de/ Copyright (C) 2005-2006,                          //
+//  The IStdCallAsio is basically identical to this (except for the name).    //
+//                                                                            //
+//  Furthermore an IDelphiAsio interface has been developed to simplify the   //
+//  interface for an ASIO driver written in Delphi                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 
 interface
 
@@ -47,7 +84,7 @@ type
   private
     ASIODriverInterface: IStdCallAsio;
   public
-    constructor Create(AsioCLSID: TClsID; var Okay: Boolean);
+    constructor Create(AsioCLSID: TClsID; var Success: Boolean);
     destructor Destroy; override;
     function Init(SysHandle: HWND): TASIOBool; stdcall;
     function CanSampleRate(SampleRate: TASIOSampleRate): TASIOError; stdcall;
@@ -105,12 +142,12 @@ const
   baFuture            = 88;
   baOutputReady       = 92;
 
-constructor TStdCallAsio.Create(AsioCLSID: TClsID; var Okay: Boolean);
+constructor TStdCallAsio.Create(AsioCLSID: TClsID; var Success: Boolean);
 begin
  inherited Create;
  CoInitialize(nil);
  CoCreateInstance(AsioCLSID, nil, CLSCTX_INPROC_SERVER, AsioCLSID, ASIODriverInterface);
- Okay := Assigned(ASIODriverInterface);
+ Success := Assigned(ASIODriverInterface);
 end;
 
 destructor TStdCallAsio.Destroy;

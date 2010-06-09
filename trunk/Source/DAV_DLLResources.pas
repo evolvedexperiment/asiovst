@@ -278,9 +278,9 @@ type
   EPEException = class(Exception);
 
   // Global function definitions
-  function ResourceWideCharToStr(var wstr: PWideChar; codePage: Integer): string;
+  function ResourceWideCharToStr(var wstr: PWideChar; codePage: Integer): AnsiString;
   function ResourceWideCharToWideStr(var wstr: PWideChar): WideString;
-  procedure ResourceStrToWideChar(const s: string; var p: PWideChar; codePage: Integer);
+  procedure ResourceStrToWideChar(const s: AnsiString; var p: PWideChar; codePage: Integer);
   procedure ResourceWideStrToWideChar(const s: WideString; var p: PWideChar);
   function ResourceNameToInt(const s: string): Integer;
   function WideResourceNameToInt(const s: WideString): Integer;
@@ -291,14 +291,14 @@ implementation
 {$IFDEF DELPHI10_UP} {$region 'Local Declarations and Functions'} {$ENDIF}
 
 resourcestring
-  rstNoBaseType = 'Can''t register resource details class with no base type';
-  rstNoStreaming = 'Module doesn''t support streaming';
-  rstInvalidDOSSignature = 'Invalid DOS signature';
-  rstInvalidCOFFSignature = 'Invalid COFF signature';
-  rstInvalidOptionalHeader = 'Invalid Windows Image';
-  rstBadDictionaryIndex = 'Index exceeds data dictionary count';
-  rstBadLangID = 'Unsupported non-integer language ID in resource';
-  rstEncode = 'Error encoding module';
+  RCStrNoBaseType = 'Can''t register resource details class with no base type';
+  RCStrNoStreaming = 'Module doesn''t support streaming';
+  RCStrInvalidDOSSignature = 'Invalid DOS signature';
+  RCStrInvalidCOFFSignature = 'Invalid COFF signature';
+  RCStrInvalidOptionalHeader = 'Invalid Windows Image';
+  RCStrBadDictionaryIndex = 'Index exceeds data dictionary count';
+  RCStrBadLangID = 'Unsupported non-integer language ID in resource';
+  RCStrEncode = 'Error encoding module';
 
 type
   TResourceNode = class
@@ -334,14 +334,14 @@ type
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-function ResourceWideCharToStr(var wstr: PWideChar; codePage: Integer): string;
+function ResourceWideCharToStr(var wstr: PWideChar; codePage: Integer): AnsiString;
 var
   Len: word;
 begin
   Len := word(wstr^);
   SetLength(Result, Len);
   Inc(wstr);
-  WideCharToMultiByte(codePage, 0, WStr, Len, PChar(Result),
+  WideCharToMultiByte(codePage, 0, WStr, Len, PAnsiChar(Result),
     Len + 1, nil, nil);
   Inc(wstr, Len);
   Result := PChar(Result);
@@ -384,7 +384,7 @@ end;
 //   codePage : Integer        Code page to use in conversion                 //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-procedure ResourceStrToWideChar(const s: string; var p: PWideChar;
+procedure ResourceStrToWideChar(const s: AnsiString; var p: PWideChar;
   codePage: Integer);
 var
   Buffer: PWideChar;
@@ -394,7 +394,7 @@ begin
   Size := (Length(s) + 1) * SizeOf(WideChar);
   GetMem(Buffer, Size);
    try
-    MultiByteToWideChar(codePage, 0, PChar(s), -1, Buffer, Size);
+    MultiByteToWideChar(codePage, 0, PAnsiChar(s), -1, Buffer, Size);
     p^ := WideChar(Len);
     Inc(p);
     Move(Buffer^, p^, Len * SizeOf(WideChar));
@@ -878,7 +878,7 @@ end;
 
 procedure TResourceModule.LoadFromStream(stream: TStream);
 begin
- raise Exception.Create(rstNoStreaming);
+ raise Exception.Create(RCStrNoStreaming);
 end;
 
 
@@ -942,7 +942,7 @@ end;
 
 procedure TResourceModule.SaveToStream(Stream: TStream);
 begin
-  raise Exception.Create(rstNoStreaming);
+  raise Exception.Create(RCStrNoStreaming);
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
@@ -986,7 +986,7 @@ begin
 
                                 // Check it's really a PE file.
   if PWORD(Memory)^ <> IMAGE_DOS_SIGNATURE then
-    raise EPEException.Create(rstInvalidDOSSignature);
+    raise EPEException.Create(RCStrInvalidDOSSignature);
 
                                 // Load the DOS header
   FDOSHeader := PImageDosHeader(Memory)^;
@@ -997,7 +997,7 @@ begin
 
                                 // Check the COFF signature
   if PDWORD(PChar(Memory) + Offset)^ <> IMAGE_NT_SIGNATURE then
-    raise EPEException.Create(rstInvalidCOFFSignature);
+    raise EPEException.Create(RCStrInvalidCOFFSignature);
 
                                 // Load the COFF header
   Inc(Offset, SizeOf(DWORD));
@@ -1009,7 +1009,7 @@ begin
                                 // the optional header is compulsory for
                                 // 32 bit windows modules!
   if PWORD(PChar(Memory) + Offset)^ <> IMAGE_NT_OPTIONAL_HDR_MAGIC then
-    raise EPEException.Create(rstInvalidOptionalHeader);
+    raise EPEException.Create(RCStrInvalidOptionalHeader);
 
                                 // Save the 'optional' header
   ReallocMem(FOptionalHeader, FCOFFHeader.SizeOfOptionalHeader);
@@ -1279,7 +1279,7 @@ begin
     Result := p
    end
   else
-    raise ERangeError.Create(rstBadDictionaryIndex);
+    raise ERangeError.Create(RCStrBadDictionaryIndex);
 end;
 
 
@@ -1868,7 +1868,7 @@ var
         2 :
          begin
           if not IdOrName then
-            raise EPEException.Create(rstBadLangID);
+            raise EPEException.Create(RCStrBadLangID);
 
           lang := Entry^.Name
          end

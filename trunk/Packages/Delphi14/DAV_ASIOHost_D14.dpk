@@ -50,6 +50,10 @@ contains
   DAV_AsioInterface in '..\..\Source\Asio\DAV_AsioInterface.pas',
   DAV_AsioList in '..\..\Source\ASIO\DAV_AsioList.pas',
   DAV_AsioMixer in '..\..\Source\Asio\DAV_AsioMixer.pas',
-  DAV_AsioRegister in '..\..\Source\Asio\DAV_AsioRegister.pas';
+  DAV_AsioRegister in '..\..\Source\Asio\DAV_AsioRegister.pas',
+  DAV_AsioHostNew in '..\..\Source\ASIO\DAV_AsioHostNew.pas',
+  DAV_AsioHostCore in '..\..\Source\ASIO\DAV_AsioHostCore.pas',
+  DAV_AsioResourceStrings in '..\..\Source\ASIO\DAV_AsioResourceStrings.pas',
+  DAV_AsioCore32 in '..\..\Source\ASIO\DAV_AsioCore32.pas';
 
 end.

@@ -71,7 +71,6 @@ object FmASIO: TFmASIO
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     TabOrder = 0
     OnChange = CbDriverChange
   end
@@ -131,7 +130,6 @@ object FmASIO: TFmASIO
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 5
     Text = 'Sine'
@@ -148,7 +146,6 @@ object FmASIO: TFmASIO
     Height = 21
     Style = csDropDownList
     Anchors = [akLeft, akTop, akRight]
-    ItemHeight = 13
     ItemIndex = 1
     TabOrder = 6
     Text = 'Triangular'

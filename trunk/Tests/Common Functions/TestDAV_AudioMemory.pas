@@ -211,7 +211,7 @@ end;
 procedure TestTAudioMemory64.SetUp;
 begin
  FAudioMemory64 := TAudioMemory64.Create;
-// FAudioMemory64.SampleCount := CTestSampleCount;
+ FAudioMemory64.SampleCount := CTestSampleCount;
 end;
 
 procedure TestTAudioMemory64.TearDown;

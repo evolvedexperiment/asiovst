@@ -3190,9 +3190,10 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure ClipDigital_SSE(Data: PSingle; SampleCount: Integer);
-const c1a : Single = 1;
-      mm1pos : array[0..3] of Single = (1, 1, 1, 1);
-      mm1neg : array[0..3] of Single = (-1, -1, -1, -1);
+const
+  c1a : Single = 1;
+  mm1pos : array[0..3] of Single = (1, 1, 1, 1);
+  mm1neg : array[0..3] of Single = (-1, -1, -1, -1);
 asm
  mov ecx, edx
  push ecx
@@ -3242,12 +3243,13 @@ asm
 end;
 
 procedure ClipAnalog_SSE(Data: PSingle; SampleCount: Integer);
-const c3:Single = 3;
-      c6:Single = 6;
-      mm1sgn : array[0..3] of Integer = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
-      mmc2   : array[0..3] of Single = (2, 2, 2, 2);
-      mmc3   : array[0..3] of Single = (3, 3, 3, 3);
-      mmc6   : array[0..3] of Single = (6, 6, 6, 6);
+const
+  c3: Single = 3;
+  c6: Single = 6;
+  mm1sgn : array[0..3] of Integer = ($7FFFFFFF, $7FFFFFFF, $7FFFFFFF, $7FFFFFFF);
+  mmc2   : array[0..3] of Single = (2, 2, 2, 2);
+  mmc3   : array[0..3] of Single = (3, 3, 3, 3);
+  mmc6   : array[0..3] of Single = (6, 6, 6, 6);
 // a := abs(x); b := 3+a; Result := (x*b)/(a*b+6);
 asm
  mov ecx, edx
@@ -3532,26 +3534,42 @@ end;
 /////////////////////////////////// 3DNow //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const mmInt      : array[0..1] of Integer = ($30000000, $30000000);
-      mmDivInt   : array[0..1] of Integer = ($4F000000, $4F000000);
-      mmInt16    : array[0..1] of Single  = (1/32767, 1/32767);
-      mmDivInt16 : array[0..1] of Single  = (32767, 32767);
-      mmInt18    : array[0..1] of Single  = (1/131071, 1/131071);
-      mmDivInt18 : array[0..1] of Single  = (131071, 131071);
-      mmInt20    : array[0..1] of Single  = (1/524287, 1/524287);
-      mmDivInt20 : array[0..1] of Single  = (524287, 524287);
-      mmInt24    : array[0..1] of Single  = (1/8388607, 1/8388607);
-      mmDivInt24 : array[0..1] of Single  = (8388607, 8388607);
-      mmSmall    : array[0..1] of Integer = ($30000000, $30000000);
-      mmDivSmall : array[0..1] of Integer = ($4F000000, $4F000000);
+const
+(*
+  C2FloatToShort : array[0..1] of Single = $7F;
+  C2ShortToFloat : array[0..1] of Single = 1 / $7F;
+  C2FloatToSmall : array[0..1] of Single = $7FFF;
+  C2SmallToFloat : Single = 1 / $7FFF;
+  C2FloatToInt18 : Double = $1FFFF;
+  C2Int18ToFloat : Double = 1 / $1FFFF;
+  C2FloatToInt20 : Double = $7FFFF;
+  C2Int20ToFloat : Double = 1 / $7FFFF;
+  C2FloatToInt24 : Double = $7FFFFF;
+  C2Int24ToFloat : Double = 1 / $7FFFFF;
+  C2FloatToInt   : Double = $7FFFFFFF;
+  C2IntToFloat   : Double = 1 / $7FFFFFFF;
+*)
+  mmInt      : array[0..1] of Integer = ($30000000, $30000000);
+  mmDivInt   : array[0..1] of Integer = ($4F000000, $4F000000);
+  mmInt16    : array[0..1] of Single  = (1 / $7FFF, 1 / $7FFF);
+  mmDivInt16 : array[0..1] of Single  = ($7FFF, $7FFF);
+  mmInt18    : array[0..1] of Single  = (1/131071, 1/131071);
+  mmDivInt18 : array[0..1] of Single  = (131071, 131071);
+  mmInt20    : array[0..1] of Single  = (1/524287, 1/524287);
+  mmDivInt20 : array[0..1] of Single  = (524287, 524287);
+  mmInt24    : array[0..1] of Single  = (1/8388607, 1/8388607);
+  mmDivInt24 : array[0..1] of Single  = (8388607, 8388607);
+  mmSmall    : array[0..1] of Integer = ($30000000, $30000000);
+  mmDivSmall : array[0..1] of Integer = ($4F000000, $4F000000);
 
 procedure SingleToInt16LSB_3DNow(Source: PSingle; Target: Pointer; SampleCount: LongInt);
-var temp64 : array[0..3] of Word;
+var
+  temp64 : array[0..1] of Integer;
 asm
   femms                     // Fast MMX Enter/Leave
   shr       ecx, 3          // Unroll the loop by 8
   movq      mm4, mmDivSmall // use mm1 as 1/high(Integer) divider
-  prefetch [eax]            // Holds the total mmx0..7 line in cache
+  prefetch  [eax]           // Holds the total mmx0..7 line in cache
                             // until modified and written
   @Loop2:
   movq      mm0, [eax]      // Spl1 | Spl2
@@ -3771,7 +3789,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure ToInt32LSB_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+procedure Int32LSBToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
   femms                    // Fast MMX Enter/Leave
   shr       ecx, 3         // unroll the loop by 8
@@ -3803,7 +3821,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure ToInt32LSB16_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+procedure Int32LSB16ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
   femms                    // Fast MMX Enter/Leave
   shr       ecx, 3         // unroll the loop by 8
@@ -3835,7 +3853,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure ToInt32LSB18_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+procedure Int32LSB18ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
   femms                    // Fast MMX Enter/Leave
   shr       ecx, 3         // unroll the loop by 8
@@ -3867,7 +3885,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure ToInt32LSB20_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+procedure Int32LSB20ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
   femms                    // Fast MMX Enter/Leave
   shr       ecx, 3         // unroll the loop by 8
@@ -3899,7 +3917,7 @@ asm
   femms                    // Fast MMX Enter/Leave
 end;
 
-procedure ToInt32LSB24_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+procedure Int32LSB24ToSingle_3DNow(Source: Pointer; Target: PSingle; SampleCount: LongInt);
 asm
   femms                    // Fast MMX Enter/Leave
   shr       ecx, 3         // unroll the loop by 8
@@ -4193,15 +4211,15 @@ begin
  FromInt24LSB := ToInt24LSB_3DNow;
 }
  ToInt32LSB.oc32     := SingleToInt32LSB_3DNow;
- FromInt32LSB.ic32   := ToInt32LSB_3DNow;
+ FromInt32LSB.ic32   := Int32LSBToSingle_3DNow;
  ToInt32LSB16.oc32   := SingleToInt32LSB16_3DNow;
- FromInt32LSB16.ic32 := ToInt32LSB16_3DNow;
+ FromInt32LSB16.ic32 := Int32LSB16ToSingle_3DNow;
  ToInt32LSB18.oc32   := SingleToInt32LSB18_3DNow;
- FromInt32LSB18.ic32 := ToInt32LSB18_3DNow;
+ FromInt32LSB18.ic32 := Int32LSB18ToSingle_3DNow;
  ToInt32LSB20.oc32   := SingleToInt32LSB20_3DNow;
- FromInt32LSB20.ic32 := ToInt32LSB20_3DNow;
+ FromInt32LSB20.ic32 := Int32LSB20ToSingle_3DNow;
  ToInt32LSB24.oc32   := SingleToInt32LSB24_3DNow;
- FromInt32LSB24.ic32 := ToInt32LSB24_3DNow;
+ FromInt32LSB24.ic32 := Int32LSB24ToSingle_3DNow;
  MixBuffers.mb32     := MixBuffers_3DNow;
  Volume.v32          := Volume_3DNow;
  {$ENDIF}

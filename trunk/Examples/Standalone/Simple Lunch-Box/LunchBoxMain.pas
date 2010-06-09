@@ -659,9 +659,9 @@ begin
   end;
 
  if VSTHost[0].Active and FRealtimeVST
-  then VSTHost[0].ProcessReplacing(ADC.ChannelDataPointerList, ADC.ChannelDataPointerList, ADC.SampleFrames);
+  then VSTHost[0].Process32Replacing(ADC.ChannelDataPointerList, ADC.ChannelDataPointerList, ADC.SampleFrames);
  if VSTHost[1].Active
-  then VSTHost[1].ProcessReplacing(ADC.ChannelDataPointerList, ADC.ChannelDataPointerList, ADC.SampleFrames);
+  then VSTHost[1].Process32Replacing(ADC.ChannelDataPointerList, ADC.ChannelDataPointerList, ADC.SampleFrames);
 
  // Apply Metronome
  if Loop then

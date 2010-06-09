@@ -34,12 +34,9 @@ interface
 
 {$I ..\DAV_Compiler.inc}
 
-{$DEFINE AllowMultipleHosts}
-
 uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
-  SysUtils, Classes, Controls, DAV_AsioInterface, DAV_Types, DAV_Asio,
-  DAV_AsioConvert;
+  SysUtils, Classes, Controls, DAV_AsioInterface, DAV_Types, DAV_Asio;
 
 const
   {$IFDEF DELPHI10_UP} {$region 'Message constants'} {$ENDIF}
@@ -110,7 +107,7 @@ type
   {$IFDEF DELPHI10_UP} {$endregion 'TAsioTimeSub'} {$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'TAsioChannel'} {$ENDIF}
-  TCustomAsioChannel = class
+  TCustomAsioChannel = class(TObject)
   private
     FDriver       : IStdCallAsio;
     FChannel      : LongInt;
@@ -138,28 +135,21 @@ type
   end;
 
   TAsioChannelInput = class(TCustomAsioChannel)
-  private
-    FConverter    : TInConverter;
   protected
     function GetMeter: Integer; override;
     procedure SetGain(const Value: Integer); override;
   public
-    procedure UpdateChannelInfo; override;
     procedure InputMonitor(OutputChannel: Integer; Gain: Integer;
       Active: Boolean; Pan: Integer); virtual;
-    property Converter: TInConverter read FConverter;
   end;
+  TAsioChannelInputClass = class of TAsioChannelInput;
 
   TAsioChannelOutput = class(TCustomAsioChannel)
-  private
-    FConverter    : TOutConverter;
   protected
     function GetMeter: Integer; override;
     procedure SetGain(const Value: Integer); override;
-  public
-    procedure UpdateChannelInfo; override;
-    property Converter: TOutConverter read FConverter;
   end;
+  TAsioChannelOutputClass = class of TAsioChannelOutput;
   {$IFDEF DELPHI10_UP} {$endregion 'TAsioChannel'} {$ENDIF}
 
   TAsioHostCore = class(TObject)
@@ -167,7 +157,7 @@ type
     FDriver              : IStdCallAsio;
     FCallbacks           : TAsioCallbacks;
     FHandle              : THandle;
-    {$IFDEF AllowMultipleHosts}
+    {$IFDEF AllowMultipleAsioHosts}
     FAsioDriverIndex     : Integer;
     {$ENDIF}
     FSampleRate          : Double;
@@ -204,6 +194,8 @@ type
     procedure SetSampleRate(Value: Double);
     procedure PostAsioMessage(AsioMessage: TAsioMessage; Value: Integer = 0);
   protected
+    class function GetInputChannelClass: TAsioChannelInputClass;
+    class function GetOutputChannelClass: TAsioChannelOutputClass;
     {$IFDEF FPC}
     procedure WndProc(var Msg: TLMessage);
     procedure PMAsio(var Message: TLMessage); message PM_Asio;
@@ -216,31 +208,32 @@ type
     procedure PMBufferSwitchTimeInfo(var Message: TMessage); message PM_BufferSwitchTimeInfo;
     {$ENDIF}
 
-    procedure AquireCanDos;
-    procedure AquireClockSources;
-    procedure AquireDriverName;
-    procedure AquireDriverVersion;
-    procedure AquireSampleRate;
-    procedure BufferSizeChange;
-    procedure BufferSwitch(Index: Integer);
-    procedure BufferSwitchTimeInfo(Index: Integer; const Params: TAsioTime);
-    procedure ClearBuffers;
-    procedure DetermineBuffersize;
-    procedure InitializeCallbacks;
-    procedure InitializeDriver;
-    procedure LatencyChanged;
-    procedure Reset;
-    procedure ResyncRequest;
-    procedure SampleRateChanged;
+    procedure AquireCanDos; virtual;
+    procedure AquireClockSources; virtual;
+    procedure AquireDriverName; virtual;
+    procedure AquireDriverVersion; virtual;
+    procedure AquireSampleRate; virtual;
+    procedure BufferSizeChange; virtual;
+    procedure BufferSwitch(Index: Integer); virtual;
+    procedure BufferSwitchTimeInfo(Index: Integer; const Params: TAsioTime); virtual;
+    procedure ClearBuffers; virtual;
+    procedure DetermineBuffersize; virtual;
+    procedure InitializeCallbacks; virtual;
+    procedure InitializeDriver; virtual;
+    procedure LatencyChanged; virtual;
+    procedure Reset; virtual;
+    procedure ResyncRequest; virtual;
+    procedure SampleRateChanged; virtual;
 
     procedure InternalBufferSwitch(DoubleBufferIndex: Integer;
-      DirectProcess: TAsioBool);
+      DirectProcess: TAsioBool); virtual;
     function InternalBufferSwitchTimeInfo(var Params: TAsioTime;
-      DoubleBufferIndex: Integer; DirectProcess: TAsioBool): PAsioTime;
-    procedure InternalSampleRateDidChange(SampleRate: TAsioSampleRate);
+      DoubleBufferIndex: Integer; DirectProcess: TAsioBool): PAsioTime; virtual;
+    procedure InternalSampleRateDidChange(SampleRate: TAsioSampleRate); virtual;
     function MessageHandler(Selector, Value: LongInt;
-      MessagePointer: Pointer; Optional: PDouble): LongInt;
+      MessagePointer: Pointer; Optional: PDouble): LongInt; virtual;
 
+    // protected properties
     property BuffersCreated: Boolean read GetBuffersCreated;
   public
     constructor Create(ID: TGUID); virtual;
@@ -282,8 +275,8 @@ type
   end;
 
 var
-  {$IFNDEF AllowMultipleHosts}
-  GAsioDriver    : TAsioHostDriver;
+  {$IFNDEF AllowMultipleAsioHosts}
+  GAsioDriver    : TAsioHostCore;
   {$ELSE}
   GAsioDriver    : array [0..3] of TAsioHostCore;
   {$ENDIF}
@@ -294,7 +287,7 @@ function ChannelTypeToString(ChannelType: TAsioSampleType): string;
 implementation
 
 uses
-  DAV_AsioResourceStrings;
+  DAV_AsioConvert, DAV_AsioResourceStrings;
 
 {$IFDEF DELPHI10_UP} {$region 'Global functions'} {$ENDIF}
 function ChannelTypeToString(ChannelType: TAsioSampleType): string;
@@ -383,7 +376,7 @@ end;
 {$IFDEF DELPHI10_UP} {$region 'Asio callback functions'} {$ENDIF}
 procedure DefaultBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TAsioBool); cdecl;
 begin
- {$IFDEF AllowMultipleHosts}
+ {$IFDEF AllowMultipleAsioHosts}
  if Assigned(GAsioDriver[0])
   then GAsioDriver[0].InternalBufferSwitch(DoubleBufferIndex, DirectProcess);
  {$ELSE}
@@ -395,7 +388,7 @@ end;
 function DefaultBufferSwitchTimeInfo(var Params: TAsioTime;
   DoubleBufferIndex: Integer; DirectProcess: TAsioBool): PAsioTime; cdecl;
 begin
- {$IFDEF AllowMultipleHosts}
+ {$IFDEF AllowMultipleAsioHosts}
  if Assigned(GAsioDriver[0])
   then Result := GAsioDriver[0].InternalBufferSwitchTimeInfo(Params, DoubleBufferIndex, DirectProcess)
   else Result := nil;
@@ -408,7 +401,7 @@ end;
 
 procedure DefaultSampleRateDidChange(SampleRate: TAsioSampleRate); cdecl;
 begin
- {$IFDEF AllowMultipleHosts}
+ {$IFDEF AllowMultipleAsioHosts}
  if Assigned(GAsioDriver[0])
   then GAsioDriver[0].InternalSampleRateDidChange(SampleRate);
  {$ELSE}
@@ -420,7 +413,7 @@ end;
 function DefaultMessageHandler(Selector, Value: Integer; MessagePointer: Pointer;
   Opt: PDouble): Integer; cdecl;
 begin
- {$IFDEF AllowMultipleHosts}
+ {$IFDEF AllowMultipleAsioHosts}
  if Assigned(GAsioDriver[0])
   then Result := GAsioDriver[0].MessageHandler(Selector, Value, MessagePointer, Opt)
   else Result := 0;
@@ -431,7 +424,7 @@ begin
  {$ENDIF}
 end;
 
-{$IFDEF AllowMultipleHosts}
+{$IFDEF AllowMultipleAsioHosts}
 procedure BufferSwitch1(DoubleBufferIndex: Integer; DirectProcess: TAsioBool); cdecl;
 begin
  if Assigned(GAsioDriver[1])
@@ -719,12 +712,6 @@ begin
   end;
 end;
 
-procedure TAsioChannelInput.UpdateChannelInfo;
-begin
- inherited;
- FConverter := GetInputConverter(SampleType);
-end;
-
 
 { TAsioChannelOutput }
 
@@ -756,12 +743,6 @@ begin
 
    FDriver.Future(kAsioCanOutputGain, @ACC);
   end;
-end;
-
-procedure TAsioChannelOutput.UpdateChannelInfo;
-begin
- inherited;
- FConverter := GetOutputConverter(SampleType);
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion 'TAsioChannel implementation'} {$ENDIF}
@@ -813,7 +794,7 @@ end;
 
 procedure TAsioHostCore.InitializeCallbacks;
 begin
- {$IFDEF AllowMultipleHosts}
+ {$IFDEF AllowMultipleAsioHosts}
  if GAsioDriver[0] = nil then
   begin
    FAsioDriverIndex := 0;
@@ -952,7 +933,7 @@ begin
  FDriver.GetChannels(ChannelCount[0], ChannelCount[1]);
 
  // allocate memory for input and output buffers
- GetMem(FUnalignedBuffer, SizeOf(TAsioBufferInfo) * (ChannelCount[0] + ChannelCount[0]) + 16);
+ GetMem(FUnalignedBuffer, SizeOf(TAsioBufferInfo) * (ChannelCount[0] + ChannelCount[1]) + 16);
  Buffer := PAsioBufferInfos((Integer(FUnalignedBuffer) + 15) and (not $F));
 
  // setup input channel info and converter
@@ -968,7 +949,7 @@ begin
 
  // eventually create missing channels
  for Channel := 0 to ChannelCount[0] - 1 do
-  if not Assigned(FInputChannels)
+  if not Assigned(FInputChannels[Channel])
    then FInputChannels[Channel] := TAsioChannelInput.Create(FDriver, Channel);
 
  // update channel info and buffers
@@ -987,19 +968,19 @@ begin
  FOutputBuffers := Buffer;
 
  // eventually free unused channels
- for Channel := ChannelCount[0] to Length(FOutputChannels) - 1 do
+ for Channel := ChannelCount[1] to Length(FOutputChannels) - 1 do
   if Assigned(FOutputChannels)
    then FreeAndNil(FOutputChannels);
 
  // update Output channel array
- SetLength(FOutputChannels, ChannelCount[0]);
+ SetLength(FOutputChannels, ChannelCount[1]);
 
  // eventually create missing channels
- for Channel := 0 to ChannelCount[0] - 1 do
-  if not Assigned(FOutputChannels)
+ for Channel := 0 to ChannelCount[1] - 1 do
+  if not Assigned(FOutputChannels[Channel])
    then FOutputChannels[Channel] := TAsioChannelOutput.Create(FDriver, Channel);
 
- for Channel := 0 to ChannelCount[0] - 1 do
+ for Channel := 0 to ChannelCount[1] - 1 do
   begin
    FOutputChannels[Channel].UpdateChannelInfo;
 
@@ -1052,6 +1033,16 @@ end;
 function TAsioHostCore.GetBuffersCreated: Boolean;
 begin
  Result := FUnalignedBuffer <> nil;
+end;
+
+class function TAsioHostCore.GetInputChannelClass: TAsioChannelInputClass;
+begin
+ Result := TAsioChannelInput;
+end;
+
+class function TAsioHostCore.GetOutputChannelClass: TAsioChannelOutputClass;
+begin
+ Result := TAsioChannelOutput;
 end;
 
 function TAsioHostCore.GetInputChannel(Index: Integer): TAsioChannelInput;

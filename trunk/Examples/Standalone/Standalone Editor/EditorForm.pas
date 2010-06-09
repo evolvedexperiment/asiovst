@@ -105,7 +105,7 @@ procedure TFmVSTEditor.FormCreate(Sender: TObject);
 var
   theRect             : TRect;
   i                   : Integer;
-  s, p                : string;
+  s, p                : AnsiString;
   ContainedVSTPlugins : TStringList;
   RS                  : TResourceStream;
 begin
@@ -266,9 +266,9 @@ procedure TFmVSTEditor.ASIOHostBufferSwitch32(Sender: TObject; const InBuffer,
   OutBuffer: TDAVArrayOfSingleFixedArray);
 begin
  if VSTHost[0].Active
-  then VSTHost[0].ProcessReplacing(@InBuffer[InputChannelOffset],
-                                   @OutBuffer[OutputChannelOffset],
-                                   ASIOHost.BufferSize);
+  then VSTHost[0].Process32Replacing(@InBuffer[InputChannelOffset],
+                                     @OutBuffer[OutputChannelOffset],
+                                     ASIOHost.BufferSize);
 end;
 
 procedure TFmVSTEditor.ASIOHostReset(Sender: TObject);

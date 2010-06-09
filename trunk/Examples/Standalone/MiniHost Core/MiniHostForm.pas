@@ -837,7 +837,7 @@ procedure TFmMiniHost.BuildPresetList;
 var
   m    : TMenuItem;
   n, i : Integer;
-  s    : string;
+  s    : AnsiString;
 begin
  PresetBox.clear;
  n := VSTHost[0].numPrograms;
@@ -2397,7 +2397,7 @@ begin
    if FProcessing then
     begin
      if effFlagsCanReplacing in VSTHost[0].EffectOptions
-      then VSTHost[0].ProcessReplacing(@FVSTBufIn[0], @FVSTBufOut[0], bs)
+      then VSTHost[0].Process32Replacing(@FVSTBufIn[0], @FVSTBufOut[0], bs)
       else VSTHost[0].Process(@FVSTBufIn[0], @FVSTBufOut[0], bs);
      if FDownMix then
       for i := 0 to bs - 1 do

@@ -320,7 +320,7 @@ procedure TFmVstPresetDesigner.LoadVSTPlugin(DLLName : TFileName);
 var
   i        : Integer;
   s        : string;
-  temp     : string;
+  temp     : AnsiString;
   MenuItem : TMenuItem;
 begin
   with VstHost[0] do

@@ -44,13 +44,13 @@ uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, LResources,
   {$ELSE}Windows, Messages,{$ENDIF}
   {$IFDEF OpenASIO} DAV_OpenAsio {$ELSE} DAV_AsioInterface {$ENDIF},
-  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAVASIOMixer,{$ENDIF}
+  {$IFDEF ASIOMixer} Forms, ComCtrls, Graphics, StdCtrls, DAV_ASIOMixer,{$ENDIF}
   {$IFDEF DELPHI5} Forms, DsgnIntf, {$ENDIF}
   SysUtils, Classes, Controls, DAV_Types, DAV_Asio, DAV_AsioList,
   DAV_AsioConvert, DAV_AsioGenerator;
 
 const
-  {$IFDEF DELPHI10_UP} {$region 'Message constants'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$region 'Message constants'} {$ENDIF}
   // private message
   PM_Asio = WM_User + 1652;        // unique we hope
 
@@ -64,10 +64,10 @@ const
   PM_BufferSwitch         = PM_Asio + 2;
   PM_BufferSwitchTimeInfo = PM_Asio + 3;
   PM_Reset                = PM_Asio + 4;
-  {$IFDEF DELPHI10_UP} {$endregion 'Message constants'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$endregion 'Message constants'} {$ENDIF}
 
 type
-  {$IFDEF DELPHI10_UP} {$region 'Basic types'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$region 'Basic types'} {$ENDIF}
   TAsioBufferList = array [0..0] of TAsioBufferInfo;
   PAsioBufferList = ^TAsioBufferList;
 
@@ -85,7 +85,6 @@ type
   TConvertOptimizations = set of TConvertOptimization;
 
   TSamplePositionUpdateEvent = procedure(Sender: TObject; SamplePosition: Int64) of object;
-  TSample2Event = procedure(Sender: TObject; Sample: array of Single) of object;
   TBufferSwitchEvent32 = procedure(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray) of object;
   TBufferSwitchEvent64 = procedure(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfDoubleFixedArray) of object;
   TBufferSwitchEventNative = procedure(Sender: TObject; const BufferInfo: PAsioBufferList; const BufferIndex : Integer) of object;
@@ -95,9 +94,9 @@ type
 
   TCustomAudioDevice = class(TComponent);
 
-  {$IFDEF DELPHI10_UP} {$endregion 'Basic types'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$endregion 'Basic types'} {$ENDIF}
 
-  {$IFDEF DELPHI10_UP} {$region 'TAsioTimeSub'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$region 'TAsioTimeSub'} {$ENDIF}
   TATFlag = (atSystemTimeValid, atSamplePositionValid, atSampleRateValid,
              atSpeedValid, atSampleRateChanged, atClockSourceChanged);
   TATFlags = set of TATFlag;
@@ -124,9 +123,9 @@ type
     property SampleRate: Double Index 1 read GetATdouble write SetATdouble;
     property Flags : TATFlags read GetATFlags Write SetATFlags;
   end;
-  {$IFDEF DELPHI10_UP} {$endregion 'TAsioTimeSub'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$endregion 'TAsioTimeSub'} {$ENDIF}
 
-  {$IFDEF DELPHI10_UP} {$region 'Delphi5 Control panel'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$region 'Delphi5 Control panel'} {$ENDIF}
   {$IFDEF D5CP}
   TAsioControlPanel = class(TComponentEditor)
   public
@@ -136,9 +135,9 @@ type
     function GetVerbCount: Integer; override;
   end;
   {$ENDIF}
-  {$IFDEF DELPHI10_UP} {$endregion 'Delphi5 Control panel'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$endregion 'Delphi5 Control panel'} {$ENDIF}
 
-  {$IFDEF DELPHI10_UP} {$region 'TAsioHostBasic'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$region 'TAsioHostBasic'} {$ENDIF}
   TCustomAsioHostBasic = class(TCustomAudioDevice)
   private
     FMin, FMax            : Integer;
@@ -205,7 +204,7 @@ type
     procedure PMBufferSwitchTimeInfo(var Message: TLMessage); message PM_BufferSwitchTimeInfo;
     {$ELSE}
     procedure WndProc(var Msg: TMessage);
-    procedure PMAsio(var Message: TMessage); message PM_Asio;   
+    procedure PMAsio(var Message: TMessage); message PM_Asio;
     procedure PMReset(var Message: TMessage); message PM_Reset;
     procedure PMUpdateSamplePos(var Message: TMessage); message PM_UpdateSamplePos;
     procedure PMBufferSwitch(var Message: TMessage); message PM_BufferSwitch;
@@ -306,16 +305,14 @@ type
     property OnSampleRateChanged;
     property OnUpdateSamplePos;
   end;
-  {$IFDEF DELPHI10_UP} {$endregion 'TAsioHostBasic'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$endregion 'TAsioHostBasic'} {$ENDIF}
 
-  {$IFDEF DELPHI10_UP} {$region 'TAsioHost'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$region 'TAsioHost'} {$ENDIF}
   TCustomAsioHost = class(TCustomAsioHostBasic)
   private
     FPreventClipping      : TPreventClipping;
     FInBufferPreFill      : TBufferPreFill;
     FOutBufferPreFill     : TBufferPreFill;
-    FOnSample2Output      : TSample2Event;
-    FOnInput2Sample       : TSample2Event;
     FOnBufferSwitch32     : TBufferSwitchEvent32;
     FOnBufferSwitch64     : TBufferSwitchEvent64;
     FOnBufferSwitchNative : TBufferSwitchEventNative;
@@ -368,8 +365,6 @@ type
     property OnBufferSwitch32: TBufferSwitchEvent32 read FOnBufferSwitch32 write SetOnBufferSwitch32;
     property OnBufferSwitch64: TBufferSwitchEvent64 read FOnBufferSwitch64 write SetOnBufferSwitch64;
     property OnBufferSwitchNative: TBufferSwitchEventNative read FOnBufferSwitchNative write FOnBufferSwitchNative;
-    property OnInput2Sample: TSample2Event read FOnInput2Sample write FOnInput2Sample;
-    property OnSample2Output: TSample2Event read FOnSample2Output write FOnSample2Output;
     property OutputDither: TAsioOutputDither read FOutputDither write SetOutputDither default odNone;
     property PreFillInBuffer: TBufferPreFill read FInBufferPreFill write FInBufferPreFill default bpfNone;
     property PreFillOutBuffer: TBufferPreFill read FOutBufferPreFill write FOutBufferPreFill default bpfNone;
@@ -412,28 +407,19 @@ type
     property OnCreate;
     property OnDestroy;
     property OnDriverChanged;
-    property OnInput2Sample;
     property OnLatencyChanged;
     property OnReset;
-    property OnSample2Output;
     property OnSampleRateChanged;
     property OnUpdateSamplePos;
   end;
-  {$IFDEF DELPHI10_UP} {$endregion 'TAsioHost'} {$ENDIF}
+  {$IFDEF SUPPORTS_REGION} {$endregion 'TAsioHost'} {$ENDIF}
 
 var
   GAsioHost           : TCustomAsioHostBasic;
-  {$IFDEF FPC}
-  PMUpdSamplePos      : TLMessage;
-  PMBufSwitch         : TLMessage;
-  PMBufSwitchTimeInfo : TLMessage;
-  PMReset             : TLMessage;
-  {$ELSE}
-  PMUpdSamplePos      : TMessage;
-  PMBufSwitch         : TMessage;
-  PMBufSwitchTimeInfo : TMessage;
-  PMReset             : TMessage;
-  {$ENDIF}
+  PMUpdSamplePos      : {$IFDEF FPC} TLMessage; {$ELSE} TMessage; {$ENDIF}
+  PMBufSwitch         : {$IFDEF FPC} TLMessage; {$ELSE} TMessage; {$ENDIF}
+  PMBufSwitchTimeInfo : {$IFDEF FPC} TLMessage; {$ELSE} TMessage; {$ENDIF}
+  PMReset             : {$IFDEF FPC} TLMessage; {$ELSE} TMessage; {$ENDIF}
 
 function ChannelTypeToString(vType: TAsioSampleType): string;
 
@@ -462,7 +448,7 @@ const
   CAsioPath     = 'software\asio';
   CComClsId     = 'clsid';
 
-{$IFDEF DELPHI10_UP} {$region 'Delphi5 Control panel implementation'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$region 'Delphi5 Control panel implementation'} {$ENDIF}
 {$IFDEF DELPHI5}
 {$IFDEF D5CP}
 procedure TAsioControlPanel.Edit;
@@ -491,9 +477,9 @@ begin
 end;
 {$ENDIF}
 {$ENDIF}
-{$IFDEF DELPHI10_UP} {$endregion 'Delphi5 Control panel implementation'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$endregion 'Delphi5 Control panel implementation'} {$ENDIF}
 
-{$IFDEF DELPHI10_UP} {$region 'TAsioTimeSub implementation'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$region 'TAsioTimeSub implementation'} {$ENDIF}
 constructor TAsioTimeSub.Create;
 begin
  with FBufferTime.timeInfo do
@@ -601,50 +587,50 @@ begin
        end;
  end;
 end;
-{$IFDEF DELPHI10_UP} {$endregion 'TAsioTimeSub implementation'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$endregion 'TAsioTimeSub implementation'} {$ENDIF}
 
 
-{$IFDEF DELPHI10_UP} {$region 'Global functions'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$region 'Global functions'} {$ENDIF}
 function ChannelTypeToString(vType: TAsioSampleType): string;
 begin
  Result := '';
  case vType of
-  AsioSTInt16MSB   : Result := 'Int16MSB';
-  AsioSTInt24MSB   : Result := 'Int24MSB';
-  AsioSTInt32MSB   : Result := 'Int32MSB';
-  AsioSTFloat32MSB : Result := 'Float32MSB';
-  AsioSTFloat64MSB : Result := 'Float64MSB';
+  CAsioSTInt16MSB   : Result := 'Int16MSB';
+  CAsioSTInt24MSB   : Result := 'Int24MSB';
+  CAsioSTInt32MSB   : Result := 'Int32MSB';
+  CAsioSTFloat32MSB : Result := 'Float32MSB';
+  CAsioSTFloat64MSB : Result := 'Float64MSB';
 
   // these are used for 32 bit data buffer, with different alignment of the data inside
   // 32 bit PCI bus systems can be more easily used with these
-  AsioSTInt32MSB16 : Result := 'Int32MSB16';
-  AsioSTInt32MSB18 : Result := 'Int32MSB18';
-  AsioSTInt32MSB20 : Result := 'Int32MSB20';
-  AsioSTInt32MSB24 : Result := 'Int32MSB24';
+  CAsioSTInt32MSB16 : Result := 'Int32MSB16';
+  CAsioSTInt32MSB18 : Result := 'Int32MSB18';
+  CAsioSTInt32MSB20 : Result := 'Int32MSB20';
+  CAsioSTInt32MSB24 : Result := 'Int32MSB24';
 
-  AsioSTInt16LSB   : Result := 'Int16LSB';
-  AsioSTInt24LSB   : Result := 'Int24LSB';
-  AsioSTInt32LSB   : Result := 'Int32LSB';
-  AsioSTFloat32LSB : Result := 'Float32LSB';
-  AsioSTFloat64LSB : Result := 'Float64LSB';
+  CAsioSTInt16LSB   : Result := 'Int16LSB';
+  CAsioSTInt24LSB   : Result := 'Int24LSB';
+  CAsioSTInt32LSB   : Result := 'Int32LSB';
+  CAsioSTFloat32LSB : Result := 'Float32LSB';
+  CAsioSTFloat64LSB : Result := 'Float64LSB';
 
   // these are used for 32 bit data buffer, with different alignment of the data inside
   // 32 bit PCI bus systems can more easily used with these
-  AsioSTInt32LSB16 : Result := 'Int32LSB16';
-  AsioSTInt32LSB18 : Result := 'Int32LSB18';
-  AsioSTInt32LSB20 : Result := 'Int32LSB20';
-  AsioSTInt32LSB24 : Result := 'Int32LSB24';
+  CAsioSTInt32LSB16 : Result := 'Int32LSB16';
+  CAsioSTInt32LSB18 : Result := 'Int32LSB18';
+  CAsioSTInt32LSB20 : Result := 'Int32LSB20';
+  CAsioSTInt32LSB24 : Result := 'Int32LSB24';
  end;
 end;
-{$IFDEF DELPHI10_UP} {$endregion 'Global functions'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$endregion 'Global functions'} {$ENDIF}
 
-{$IFDEF DELPHI10_UP} {$region 'Asio callback functions'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$region 'Asio callback functions'} {$ENDIF}
 procedure AsioBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TAsioBool); cdecl;
 begin
  if Assigned(GAsioHost) then
   case DirectProcess of
-   AsioFalse: PostMessage(GAsioHost.FHandle, PMBufSwitch.Msg, AM_BufferSwitch, DoubleBufferIndex);
-   AsioTrue : GAsioHost.BufferSwitch(DoubleBufferIndex);
+   CAsioFalse: PostMessage(GAsioHost.FHandle, PMBufSwitch.Msg, AM_BufferSwitch, DoubleBufferIndex);
+   CAsioTrue : GAsioHost.BufferSwitch(DoubleBufferIndex);
   end;
 end;
 
@@ -653,12 +639,12 @@ function AsioBufferSwitchTimeInfo(var Params: TAsioTime;
 begin
  if Assigned(GAsioHost) then
   case DirectProcess of
-   AsioFalse :
-   begin
-    GAsioHost.AsioTime.FBufferTime := Params;
-    PostMessage(GAsioHost.FHandle, PMBufSwitchTimeInfo.Msg, AM_BufferSwitchTimeInfo, DoubleBufferIndex);
-   end;
-   AsioTrue : GAsioHost.BufferSwitchTimeInfo(DoubleBufferIndex, params);
+   CAsioFalse :
+    begin
+     GAsioHost.AsioTime.FBufferTime := Params;
+     PostMessage(GAsioHost.FHandle, PMBufSwitchTimeInfo.Msg, AM_BufferSwitchTimeInfo, DoubleBufferIndex);
+    end;
+   CAsioTrue : GAsioHost.BufferSwitchTimeInfo(DoubleBufferIndex, params);
   end;
  Result := nil;
 end;
@@ -677,7 +663,7 @@ function AsioMessageHandler(Selector, Value: Integer; message: Pointer; Opt: PDo
 begin
  Result := 0;
  case Selector of
-  kAsioSelectorSupported : Result := AsioTrue; // return 1 if a selector is supported
+  kAsioSelectorSupported : Result := CAsioTrue; // return 1 if a selector is supported
   kAsioEngineVersion :
    if Assigned(GAsioHost)
     then Result := GAsioHost.FEngineVersion
@@ -720,13 +706,13 @@ begin
      else Result := 1;
  end;
 end;
-{$IFDEF DELPHI10_UP} {$endregion 'Asio callback functions'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$endregion 'Asio callback functions'} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////// TCustomAsioHostBasic /////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-{$IFDEF DELPHI10_UP} {$region 'TCustomAsioHostBasic implementation'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$region 'TCustomAsioHostBasic implementation'} {$ENDIF}
 
 { TCustomAsioHostBasic }
 
@@ -802,7 +788,7 @@ end;
 
 procedure TCustomAsioHostBasic.WndProc(var Msg: TMessage);
 begin
-  with Msg do dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+  with Msg do Dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 
 {$ELSE}
@@ -815,7 +801,7 @@ end;
 
 procedure TCustomAsioHostBasic.WndProc(var Msg: TLMessage);
 begin
- with Msg do dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
+ with Msg do Dispatch(Msg);//Result := DefWindowProc(FHandle, Msg, wParam, lParam);
 end;
 {$ENDIF}
 
@@ -978,24 +964,24 @@ end;
 function TCustomAsioHostBasic.GetInConverter(ConverterType: TAsioSampleType): TInConverter;
 begin
  case ConverterType of
-  AsioSTInt16MSB   : Result := FromInt16MSB;
-  AsioSTInt24MSB   : Result := FromInt24MSB;
-  AsioSTInt32MSB   : Result := FromInt32MSB;
-  AsioSTFloat32MSB : Result := FromSingleMSB;
-  AsioSTFloat64MSB : Result := FromDoubleMSB;
-  AsioSTInt32MSB16 : Result := FromInt32MSB16;
-  AsioSTInt32MSB18 : Result := FromInt32MSB18;
-  AsioSTInt32MSB20 : Result := FromInt32MSB20;
-  AsioSTInt32MSB24 : Result := FromInt32MSB24;
-  AsioSTInt16LSB   : Result := FromInt16LSB;
-  AsioSTInt24LSB   : Result := FromInt24LSB;
-  AsioSTInt32LSB   : Result := FromInt32LSB;
-  AsioSTFloat32LSB : Result := FromSingleLSB;
-  AsioSTFloat64LSB : Result := FromDoubleLSB;
-  AsioSTInt32LSB16 : Result := FromInt32LSB16;
-  AsioSTInt32LSB18 : Result := FromInt32LSB18;
-  AsioSTInt32LSB20 : Result := FromInt32LSB20;
-  AsioSTInt32LSB24 : Result := FromInt32LSB24;
+  CAsioSTInt16MSB   : Result := FromInt16MSB;
+  CAsioSTInt24MSB   : Result := FromInt24MSB;
+  CAsioSTInt32MSB   : Result := FromInt32MSB;
+  CAsioSTFloat32MSB : Result := FromSingleMSB;
+  CAsioSTFloat64MSB : Result := FromDoubleMSB;
+  CAsioSTInt32MSB16 : Result := FromInt32MSB16;
+  CAsioSTInt32MSB18 : Result := FromInt32MSB18;
+  CAsioSTInt32MSB20 : Result := FromInt32MSB20;
+  CAsioSTInt32MSB24 : Result := FromInt32MSB24;
+  CAsioSTInt16LSB   : Result := FromInt16LSB;
+  CAsioSTInt24LSB   : Result := FromInt24LSB;
+  CAsioSTInt32LSB   : Result := FromInt32LSB;
+  CAsioSTFloat32LSB : Result := FromSingleLSB;
+  CAsioSTFloat64LSB : Result := FromDoubleLSB;
+  CAsioSTInt32LSB16 : Result := FromInt32LSB16;
+  CAsioSTInt32LSB18 : Result := FromInt32LSB18;
+  CAsioSTInt32LSB20 : Result := FromInt32LSB20;
+  CAsioSTInt32LSB24 : Result := FromInt32LSB24;
   else raise Exception.Create(RStrConverterTypeUnknown);
  end;
 end;
@@ -1003,24 +989,24 @@ end;
 function TCustomAsioHostBasic.GetOutConverter(ConverterType: TAsioSampleType): TOutConverter;
 begin
  case ConverterType of
-  AsioSTInt16MSB   : Result := ToInt16MSB;
-  AsioSTInt24MSB   : Result := ToInt24MSB;
-  AsioSTInt32MSB   : Result := ToInt32MSB;
-  AsioSTFloat32MSB : Result := ToSingleMSB;
-  AsioSTFloat64MSB : Result := ToDoubleMSB;
-  AsioSTInt32MSB16 : Result := ToInt32MSB16;
-  AsioSTInt32MSB18 : Result := ToInt32MSB18;
-  AsioSTInt32MSB20 : Result := ToInt32MSB20;
-  AsioSTInt32MSB24 : Result := ToInt32MSB24;
-  AsioSTInt16LSB   : Result := ToInt16LSB;
-  AsioSTInt24LSB   : Result := ToInt24LSB;
-  AsioSTInt32LSB   : Result := ToInt32LSB;
-  AsioSTFloat32LSB : Result := ToSingleLSB;
-  AsioSTFloat64LSB : Result := ToDoubleLSB;
-  AsioSTInt32LSB16 : Result := ToInt32LSB16;
-  AsioSTInt32LSB18 : Result := ToInt32LSB18;
-  AsioSTInt32LSB20 : Result := ToInt32LSB20;
-  AsioSTInt32LSB24 : Result := ToInt32LSB24;
+  CAsioSTInt16MSB   : Result := ToInt16MSB;
+  CAsioSTInt24MSB   : Result := ToInt24MSB;
+  CAsioSTInt32MSB   : Result := ToInt32MSB;
+  CAsioSTFloat32MSB : Result := ToSingleMSB;
+  CAsioSTFloat64MSB : Result := ToDoubleMSB;
+  CAsioSTInt32MSB16 : Result := ToInt32MSB16;
+  CAsioSTInt32MSB18 : Result := ToInt32MSB18;
+  CAsioSTInt32MSB20 : Result := ToInt32MSB20;
+  CAsioSTInt32MSB24 : Result := ToInt32MSB24;
+  CAsioSTInt16LSB   : Result := ToInt16LSB;
+  CAsioSTInt24LSB   : Result := ToInt24LSB;
+  CAsioSTInt32LSB   : Result := ToInt32LSB;
+  CAsioSTFloat32LSB : Result := ToSingleLSB;
+  CAsioSTFloat64LSB : Result := ToDoubleLSB;
+  CAsioSTInt32LSB16 : Result := ToInt32LSB16;
+  CAsioSTInt32LSB18 : Result := ToInt32LSB18;
+  CAsioSTInt32LSB20 : Result := ToInt32LSB20;
+  CAsioSTInt32LSB24 : Result := ToInt32LSB24;
   else raise Exception.Create(RStrConverterTypeUnknown);
  end;
 end;
@@ -1056,11 +1042,11 @@ begin
  for Channel := 0 to FInputChannelCount - 1 do
   begin
    FInputChannelInfos[Channel].Channel := Channel;
-   FInputChannelInfos[Channel].IsInput := AsioTrue;
+   FInputChannelInfos[Channel].IsInput := CAsioTrue;
    FDriver.GetChannelInfo(FInputChannelInfos[Channel]);
    FInConverters[Channel] := GetInConverter(FInputChannelInfos[Channel].SampleType);
 
-   Buffer^[0].IsInput := AsioTrue;
+   Buffer^[0].IsInput := CAsioTrue;
    Buffer^[0].ChannelNum := Channel;
    Buffer^[0].Buffers[0] := nil;
    Buffer^[0].Buffers[1] := nil;
@@ -1074,11 +1060,11 @@ begin
  for Channel := 0 to FOutputChannelCount - 1 do
   begin
    FOutputChannelInfos[Channel].Channel := Channel;
-   FOutputChannelInfos[Channel].IsInput := AsioFalse;   //  output
+   FOutputChannelInfos[Channel].IsInput := CAsioFalse;   //  output
    FDriver.GetChannelInfo(FOutputChannelInfos[Channel]);
    FOutConverters[Channel] := GetOutConverter(FOutputChannelInfos[Channel].SampleType);
 
-   Buffer^[0].IsInput := AsioFalse;
+   Buffer^[0].IsInput := CAsioFalse;
    Buffer^[0].ChannelNum := Channel;
    Buffer^[0].Buffers[0] := nil;
    Buffer^[0].Buffers[1] := nil;
@@ -1265,7 +1251,8 @@ procedure TCustomAsioHostBasic.PMUpdateSamplePos(var Message: TLMessage);
 {$ELSE}
 procedure TCustomAsioHostBasic.PMUpdateSamplePos(var Message: TMessage);
 {$ENDIF}
-var Samples: TAsioSamples;
+var
+  Samples: TAsioSamples;
 begin
  Samples.hi := Message.wParam;
  Samples.lo := Message.LParam;
@@ -1364,14 +1351,14 @@ begin
     with FOutputChannelInfos[Channel] do
      begin
       // determine sample size
-      if SampleType in [AsioSTInt16MSB, AsioSTInt16LSB]     then SampleSize := SizeOf(Word) else
-      if SampleType in [AsioSTInt24MSB, AsioSTInt24LSB]     then SampleSize := 3 else
-      if SampleType in [AsioSTFloat32LSB, AsioSTFloat32MSB] then SampleSize := SizeOf(Single) else
-      if SampleType in [AsioSTFloat64LSB, AsioSTFloat64MSB] then SampleSize := SizeOf(Double)
+      if SampleType in [CAsioSTInt16MSB, CAsioSTInt16LSB]     then SampleSize := SizeOf(Word) else
+      if SampleType in [CAsioSTInt24MSB, CAsioSTInt24LSB]     then SampleSize := 3 else
+      if SampleType in [CAsioSTFloat32LSB, CAsioSTFloat32MSB] then SampleSize := SizeOf(Single) else
+      if SampleType in [CAsioSTFloat64LSB, CAsioSTFloat64MSB] then SampleSize := SizeOf(Double)
        else SampleSize := SizeOf(Integer);
 
       // finally clear buffer
-      assert(Assigned(Buffer));
+      Assert(Assigned(Buffer));
       with Buffer^[0] do
        begin
         if Assigned(Buffers[0]) then FillChar(Buffers[0]^, FBufferSize * SampleSize, 0);
@@ -1387,14 +1374,14 @@ begin
     with FInputChannelInfos[Channel] do
      begin
       // determine sample size
-      if SampleType in [AsioSTInt16MSB, AsioSTInt16LSB]     then SampleSize := SizeOf(Word) else
-      if SampleType in [AsioSTInt24MSB, AsioSTInt24LSB]     then SampleSize := 3 else
-      if SampleType in [AsioSTFloat32LSB, AsioSTFloat32MSB] then SampleSize := SizeOf(Single) else
-      if SampleType in [AsioSTFloat64LSB, AsioSTFloat64MSB] then SampleSize := SizeOf(Double)
+      if SampleType in [CAsioSTInt16MSB, CAsioSTInt16LSB]     then SampleSize := SizeOf(Word) else
+      if SampleType in [CAsioSTInt24MSB, CAsioSTInt24LSB]     then SampleSize := 3 else
+      if SampleType in [CAsioSTFloat32LSB, CAsioSTFloat32MSB] then SampleSize := SizeOf(Single) else
+      if SampleType in [CAsioSTFloat64LSB, CAsioSTFloat64MSB] then SampleSize := SizeOf(Double)
        else SampleSize := SizeOf(Integer);
 
       // finally clear buffer
-      assert(Assigned(Buffer));
+      Assert(Assigned(Buffer));
       with Buffer^[0] do
        begin
         if Assigned(Buffers[0]) then FillChar(Buffers[0]^, FBufferSize * SampleSize, 0);
@@ -1511,13 +1498,13 @@ begin
  FDriver.Future(kAsioSetOutputGain, @ACC);
 end;
 
-{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$endregion} {$ENDIF}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// TCustomAsioHost ////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-{$IFDEF DELPHI10_UP} {$region 'TCustomAsioHost implementation'} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$region 'TCustomAsioHost implementation'} {$ENDIF}
 
 constructor TCustomAsioHost.Create(AOwner: TComponent);
 begin
@@ -1851,9 +1838,9 @@ begin
      for Channel := 0 to FInputChannelCount - 1 do
       begin
        ChannelData := CurrentBuffer^[0].Buffers[Index];
-       assert(Assigned(FDoubleInBuffer[Channel]));
-       assert(Length(FInConverters) > Channel);
-       assert(Assigned(FInConverters[Channel].ic64));
+       Assert(Assigned(FDoubleInBuffer[Channel]));
+       Assert(Length(FInConverters) > Channel);
+       Assert(Assigned(FInConverters[Channel].ic64));
        if Assigned(ChannelData)
         then FInConverters[Channel].ic64(ChannelData, @FDoubleInBuffer[Channel, 0], FBufferSize);
        inc(CurrentBuffer);
@@ -1909,10 +1896,10 @@ begin
       for Channel := 0 to FInputChannelCount - 1 do
        begin
         ChannelData := CurrentBuffer^[0].Buffers[Index];
-        assert(ChannelData <> nil);
-        assert(Assigned(FSingleInBuffer[Channel]));
-        assert(Length(FInConverters) > Channel);
-        assert(Assigned(FInConverters[Channel].ic32));
+        Assert(ChannelData <> nil);
+        Assert(Assigned(FSingleInBuffer[Channel]));
+        Assert(Length(FInConverters) > Channel);
+        Assert(Assigned(FInConverters[Channel].ic32));
         if Assigned(ChannelData)
          then FInConverters[Channel].ic32(ChannelData, @FSingleInBuffer[Channel, 0], FBufferSize);
         inc(CurrentBuffer);
@@ -1927,12 +1914,12 @@ begin
    case FOutBufferPreFill of
     bpfZero : for Channel := 0 to FOutputChannelCount - 1 do
                begin
-                assert(FSingleOutBuffer[Channel] <> nil);
+                Assert(FSingleOutBuffer[Channel] <> nil);
                 FillChar(FSingleOutBuffer[Channel, 0], FBufferSize * SizeOf(Single), 0);
                end;
     bpfNoise: for Channel := 0 to FOutputChannelCount - 1 do
                begin
-                assert(FSingleOutBuffer[Channel] <> nil);
+                Assert(FSingleOutBuffer[Channel] <> nil);
                 for Sample := 0 to FBufferSize - 1
                  do FSingleOutBuffer[Channel, Sample] := 2 * Random - 1;
                end;
@@ -1986,7 +1973,7 @@ begin
   end;
 end;
 
-{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
+{$IFDEF SUPPORTS_REGION} {$endregion} {$ENDIF}
 
 initialization
  PMUpdSamplePos.Msg := PM_UpdateSamplePos;

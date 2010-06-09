@@ -53,6 +53,7 @@ const
   CAsioComClsId     = 'clsid';
   CAsioDescription  = 'description';
 
+
 { TDAVIntAsioDriverDesc }
 
 constructor TDAVAsioDriverDesc.Create(nGuid: TGUID; nName: string; nFilename: string);
@@ -88,32 +89,36 @@ end;
 
 destructor TDAVAsioDriverList.Destroy;
 begin
-  ClearList;
-  FreeAndNil(FList);
-  FreeAndNil(FNameList);
-  inherited;
+ ClearList;
+ FreeAndNil(FList);
+ FreeAndNil(FNameList);
+ inherited;
 end;
 
-procedure TDAVAsioDriverList.SetIgnoredDriver(ignore: TGuid);
+procedure TDAVAsioDriverList.SetIgnoredDriver(Ignore: TGuid);
 begin
- FIgnoreGuid := Ignore;
- FHasIgnoreGuid := True;
+ if (FIgnoreGuid.D1 <> Ignore.D1) and (FIgnoreGuid.D2 <> Ignore.D2) and
+    (FIgnoreGuid.D3 <> Ignore.D3) then
+  begin
+   FIgnoreGuid := Ignore;
+   FHasIgnoreGuid := True;
+  end;
 end;
 
 procedure TDAVAsioDriverList.ClearList;
 var
   DriverIndex : Integer;
 begin
-  for DriverIndex := Count - 1 downto 0
-   do Items[DriverIndex].Free;
+ for DriverIndex := Count - 1 downto 0
+  do Items[DriverIndex].Free;
 
-  FNameList.Clear;
-  FList.Clear;
+ FNameList.Clear;
+ FList.Clear;
 end;
 
 function TDAVAsioDriverList.GetCount: Integer;
 begin
-  Result := FList.Count;
+ Result := FList.Count;
 end;
 
 function TDAVAsioDriverList.GetDriverFileName(DrvGuidStr: string): string;

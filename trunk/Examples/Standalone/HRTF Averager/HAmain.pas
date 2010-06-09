@@ -39,7 +39,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, Menus, StdCtrls, Spin, DAV_GuiAudioDataDisplay, ComCtrls,
   DAV_DspHrtf, DAV_AudioData, DAV_DspFftReal2Complex
-  {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS{$ENDIF}
+  {$IFDEF Use_IPPS}, DAV_DspFftReal2ComplexIPPS, DAV_Classes{$ENDIF}
   {$IFDEF Use_CUDA}, DAV_DspFftReal2ComplexCUDA{$ENDIF};
 
 type
@@ -261,19 +261,19 @@ begin
 
                for Sample := 1 to (ADHRIR.SampleFrames div 2) - 1 do
                 begin
-                 CurArg := ComplexArgument(FreqDom[0]^[Sample]);
+                 CurArg := ComplexArgument32(FreqDom[0]^[Sample]);
                  while CurArg + Pi < Phase[0] do CurArg := CurArg + 2 * Pi;
                  while CurArg - Pi > Phase[0] do CurArg := CurArg - 2 * Pi;
                  Phase[0] := CurArg;
 
-                 CurArg := ComplexArgument(FreqDom[0]^[Sample]);
+                 CurArg := ComplexArgument32(FreqDom[0]^[Sample]);
                  while CurArg + Pi < Phase[1] do CurArg := CurArg + 2 * Pi;
                  while CurArg - Pi > Phase[1] do CurArg := CurArg - 2 * Pi;
                  Phase[1] := CurArg;
 
-                 FreqDom[1]^[Sample] := ComplexPolar(
-                   Scale[0] * ComplexMagnitude(FreqDom[0]^[Sample]) +
-                   Scale[1] * ComplexMagnitude(FreqDom[1]^[Sample]),
+                 FreqDom[1]^[Sample] := ComplexPolar32(
+                   Scale[0] * ComplexMagnitude32(FreqDom[0]^[Sample]) +
+                   Scale[1] * ComplexMagnitude32(FreqDom[1]^[Sample]),
                    Scale[0] * CurArg + Scale[1] * CurArg);
                 end;
 

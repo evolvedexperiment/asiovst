@@ -76,6 +76,7 @@ object FmSonogram: TFmSonogram
         VstOfflineTasks = <>
       end>
     VstTimeInfo.SampleRate = 44100.000000000000000000
+    VstTimeInfo.Tempo = 120.000000000000000000
     VstTimeInfo.Flags = [vtiNanosValid, vtiPpqPosValid, vtiTempoValid, vtiBarsValid, vtiCyclePosValid, vtiTimeSigValid, vtiSmpteValid, vtiClockValid]
     VstVersion = 2300
     Left = 208
