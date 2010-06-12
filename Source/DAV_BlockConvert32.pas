@@ -1,4 +1,4 @@
-unit DAV_BlockConvert;
+unit DAV_BlockConvert32;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -46,19 +46,15 @@ interface
 uses
   DAV_Bindings;
 
-{ Prototypes }
+{ Prototype }
 
 type
   TBlockConvertToFloat32 = procedure(Destination: PSingle; Source: Pointer; Count: LongInt);
-  TBlockConvertToFloat64 = procedure(Destination: PDouble; Source: Pointer; Count: LongInt);
 
 
 { Function Pointers }
 
 var
-  BlockConvertFloat32ToFloat64    : procedure(Destination: PDouble; Source: PSingle; Count: Integer);
-  BlockConvertFloat64ToFloat32    : procedure(Destination: PSingle; Source: PDouble; Count: Integer);
-
   BlockConvertInt16LSBToFloat32   : TBlockConvertToFloat32;
   BlockConvertInt24LSBToFloat32   : TBlockConvertToFloat32;
   BlockConvertInt32LSBToFloat32   : TBlockConvertToFloat32;
@@ -74,26 +70,10 @@ var
   BlockConvertInt32MSB20ToFloat32 : TBlockConvertToFloat32;
   BlockConvertInt32MSB24ToFloat32 : TBlockConvertToFloat32;
 
-  BlockConvertInt16LSBToFloat64   : TBlockConvertToFloat64;
-  BlockConvertInt24LSBToFloat64   : TBlockConvertToFloat64;
-  BlockConvertInt32LSBToFloat64   : TBlockConvertToFloat64;
-  BlockConvertInt32LSB16ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt32LSB18ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt32LSB20ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt32LSB24ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt16MSBToFloat64   : TBlockConvertToFloat64;
-  BlockConvertInt24MSBToFloat64   : TBlockConvertToFloat64;
-  BlockConvertInt32MSBToFloat64   : TBlockConvertToFloat64;
-  BlockConvertInt32MSB16ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt32MSB18ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt32MSB20ToFloat64 : TBlockConvertToFloat64;
-  BlockConvertInt32MSB24ToFloat64 : TBlockConvertToFloat64;
-
 
 { Binding Function Pointers }
 
 var
-  BindingBlockConvertToFloat32ToFloat64  : TFunctionBinding;
   BindingBlockConvertToFloat64ToFloat32  : TFunctionBinding;
   BindingBlockConvertInt16LSBToFloat32   : TFunctionBinding;
   BindingBlockConvertInt24LSBToFloat32   : TFunctionBinding;
@@ -110,23 +90,7 @@ var
   BindingBlockConvertInt32MSB20ToFloat32 : TFunctionBinding;
   BindingBlockConvertInt32MSB24ToFloat32 : TFunctionBinding;
 
-  BindingBlockConvertInt16LSBToFloat64   : TFunctionBinding;
-  BindingBlockConvertInt24LSBToFloat64   : TFunctionBinding;
-  BindingBlockConvertInt32LSBToFloat64   : TFunctionBinding;
-  BindingBlockConvertInt32LSB16ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt32LSB18ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt32LSB20ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt32LSB24ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt16MSBToFloat64   : TFunctionBinding;
-  BindingBlockConvertInt24MSBToFloat64   : TFunctionBinding;
-  BindingBlockConvertInt32MSBToFloat64   : TFunctionBinding;
-  BindingBlockConvertInt32MSB16ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt32MSB18ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt32MSB20ToFloat64 : TFunctionBinding;
-  BindingBlockConvertInt32MSB24ToFloat64 : TFunctionBinding;
-
   BindingBlockConvertToFloat32 : TFunctionBindingList;
-  BindingBlockConvertToFloat64 : TFunctionBindingList;
 
 implementation
 
@@ -166,64 +130,6 @@ const
     1 / $7FFFF, 1 / $7FFFF);
   C4Int24ToSingle : array [0..3] of Single = (1 / $7FFFFF, 1 / $7FFFFF,
     1 / $7FFFFF, 1 / $7FFFFF);
-
-procedure BlockConvertFloat32ToFloat64Native(Destination: PDouble;
-  Source: PSingle; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  Index : Integer;
-begin
- for Index := Count - 1 downto 0 do
-  begin
-   Destination^ := Source^;
-   Inc(Destination);
-   Inc(Source);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-@Start:
- FLD     [EDX + ECX * 4].Single
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertFloat64ToFloat32Native(Destination: PSingle;
-  Source: PDouble; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  Index : Integer;
-begin
- for Index := Count - 1 downto 0 do
-  begin
-   Destination^ := Source^;
-   Inc(Destination);
-   Inc(Source);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 8
- NEG     ECX
- JNL     @Done
-@Start:
- FLD     [EDX + ECX * 8].Double
- FSTP    [EAX + ECX * 4].Single
- ADD     ECX, 1
- JS      @Start
-
-@Done:
-end;
-{$ENDIF}
 
 procedure BlockConvertInt16LSBToFloat32Native(Destination: PSingle;
   Source: Pointer; Count: Integer);
@@ -783,570 +689,64 @@ asm
 end;
 {$ENDIF}
 
-{ ...ToFloat64 }
-
-procedure BlockConvertInt16LSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceWord : PWord absolute Source;
-  Index      : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := SourceWord^ * CSmallToFloat;
-   Inc(SourceWord);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 2
- NEG     ECX
- JNL     @Done
-
- FLD     CSmallToFloat
-
-@Start:
- FILD    [EDX + ECX * 2].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt24LSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt  : PInteger absolute Source;
-  SourceByte : PByte absolute Source;
-  Index      : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := (SourceInt^ and $FFFFFF00) * CInt32ToFloat;
-   Inc(SourceByte, 3);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- NEG     ECX
- JNL     @Done
-
- FLD     CInt32ToFloat
- PUSH    EBX
-
-@Start:
- MOV     EBX, [EDX].DWord
- SHL     EBX, 8
- AND     EBX, $FFFFFF00
-
- MOV     [ESP - 4], EBX
- FILD    [ESP - 4].Single
- FMUL    ST(0), ST(1)
-
- FSTP    [EAX + ECX * 8].Double
- ADD     EDX, 3
- ADD     ECX, 1
- JS      @Start
-
- POP     EBX
- FFREE   ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32LSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := SourceInt^ * CInt32ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- FLD     CInt32ToFloat
-
-@Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32LSB16ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := SourceInt^ * CSmallToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- FLD     CSmallToFloat
-
-@Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32LSB18ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := SourceInt^ * CInt18ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- FLD      CInt18ToFloat
-
-@Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32LSB20ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := SourceInt^ * CInt20ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- FLD     CInt20ToFloat
-
-@Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32LSB24ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := SourceInt^ * CInt24ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- FLD     CInt24ToFloat
-
-@Start:
- FILD    [EDX + ECX * 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt16MSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceWord : PWord absolute Source;
-  Index      : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := Swap(SourceWord^) * CSmallToFloat;
-   Inc(SourceWord);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 2
- NEG     ECX
- JNL     @Done
-
- PUSH    EBX
- FLD     CSmallToFloat
-
-@Start:
- MOV     BX, [EDX + 2 * ECX]
- XCHG    BH, BL
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
- POP     EBX
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt24MSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-type
-  TByte3Array = Array [0..2] of Byte;
-  PByte3Array = ^TByte3Array;
-var
-  SourceBytes : PByte3Array absolute Source;
-  Index       : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := ((SourceBytes^[0] shl 32) + (SourceBytes^[1] shl 24) +
-     (SourceBytes^[2] shl 16)) * CInt32ToFloat;
-   Inc(SourceBytes, 3);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- NEG     ECX
- JNL     @Done
-
- FLD     CInt24ToFloat
- PUSH    EBX
-
-@Start:
- XOR     EBX, EBX
-
- MOV     BL, [EDX + 2]
- MOV     BH, [EDX + 1]
- ROR     EBX, 8
- MOV     BH, [EAX]
- ROL     EBX, 8
-
- MOV     [ESP - 4], EBX
- FILD    [ESP - 4].Single
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     EDX, 3
- ADD     ECX, 1
- JS      @Start
-
- POP     EBX
- FFREE   ST(0)
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32MSBToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := Swap32(SourceInt^) * CInt32ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- PUSH    EBX
- FLD     CInt32ToFloat
-
-@Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
- POP     EBX
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32MSB16ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := Swap32(SourceInt^) * CSmallToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- PUSH    EBX
- FLD     CSmallToFloat
-
-@Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
- POP     EBX
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32MSB18ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := Swap32(SourceInt^) * CInt18ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- PUSH    EBX
- FLD     CInt18ToFloat
-
-@Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
- POP     EBX
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32MSB20ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := Swap32(SourceInt^) * CInt20ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- PUSH    EBX
- FLD     CInt20ToFloat
-
-@Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
- POP     EBX
-
-@Done:
-end;
-{$ENDIF}
-
-procedure BlockConvertInt32MSB24ToFloat64Native(Destination: PDouble;
-  Source: Pointer; Count: Integer);
-{$IFDEF PUREPASCAL}
-var
-  SourceInt : PInteger absolute Source;
-  Index     : Integer;
-begin
- for Index := 0 to Count - 1 do
-  begin
-   Destination^ := Swap32(SourceInt^) * CInt24ToFloat;
-   Inc(SourceInt);
-   Inc(Destination);
-  end;
-end;
-{$ELSE}
-asm
- LEA     EAX, EAX + ECX * 8
- LEA     EDX, EDX + ECX * 4
- NEG     ECX
- JNL     @Done
-
- PUSH    EBX
- FLD     CInt24ToFloat
-
-@Start:
- MOV     EBX, [EDX + ECX * 4]
- BSWAP   EBX
- MOV     [ESP - 4], BX
- FILD    [ESP - 4].Word
- FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 8].Double
- ADD     ECX, 1
- JS      @Start
-
- FFREE   ST(0)
- POP     EBX
-
-@Done:
-end;
-{$ENDIF}
-
 
 {$IFNDEF PUREPASCAL}
 
 { SSE optimizations }
+
+procedure BlockConvertInt16LSBToFloat32SSE2(Destination: PSingle;
+  Source: Pointer; Count: Integer);
+asm
+ PUSH     EBX
+
+ MOV      EBX, EAX
+ AND      EBX, $F
+ JNZ      @Fallback
+
+ MOV      EBX, EDX
+ AND      EBX, $F
+ JNZ      @Fallback
+
+ MOVUPS   XMM0, C4SmallToSingle
+
+ SUB      ECX, 4
+ LEA      EAX, EAX + ECX * 4
+ LEA      EDX, EDX + ECX * 2
+ NEG      ECX
+ JG       @Reminder
+
+@MainAlgorithm:
+ XORPS    XMM1, XMM1
+ PINSRW   XMM1, [EDX + ECX * 2    ], 0
+ PINSRW   XMM1, [EDX + ECX * 2 + 2], 2
+ PINSRW   XMM1, [EDX + ECX * 2 + 4], 4
+ PINSRW   XMM1, [EDX + ECX * 2 + 6], 6
+ CVTDQ2PS XMM1, XMM1
+ MULPS    XMM1, XMM0
+ MOVAPS   [EAX + ECX * 4], XMM1
+ ADD      ECX, 4
+ JLE      @MainAlgorithm
+
+@Reminder:
+ SUB      ECX, 4
+ JNS      @Done
+
+@ReminderLoop:
+ XORPS    XMM1, XMM1
+ PINSRW   XMM1, [EDX + ECX * 2 + 8], 0
+ CVTDQ2PS XMM1, XMM1
+ MULPS    XMM1, XMM0
+ MOVUPS   [EAX + ECX * 4], XMM1
+ ADD      ECX, 1
+ JS       @ReminderLoop
+ JMP      @Done
+
+@Fallback:
+ CALL     BlockConvertInt16LSBToFloat32Native
+
+@Done:
+ POP      EBX
+end;
 
 procedure BlockConvertInt32LSBToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
@@ -1381,8 +781,9 @@ asm
  JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM1, [EDX + ECX * 4 + 16]
- CVTSI2SS XMM1, [EAX + ECX * 4 + 16]
+ CVTDQ2PS XMM1, [EDX + ECX * 4 + 16]
+ MULPS    XMM1, XMM0
+ MOVUPS   [EAX + ECX * 4 + 16], XMM1
  ADD      ECX, 1
  JS       @ReminderLoop
  JMP      @Done
@@ -1427,19 +828,19 @@ asm
  JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM1, [EDX + ECX * 4 + 16]
- CVTSI2SS XMM1, [EAX + ECX * 4 + 16]
+ CVTDQ2PS XMM1, [EDX + ECX * 4 + 16]
+ MULPS    XMM1, XMM0
+ MOVUPS   [EAX + ECX * 4 + 16], XMM1
  ADD      ECX, 1
  JS       @ReminderLoop
  JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSBToFloat32Native
+ CALL     BlockConvertInt32LSB16ToFloat32Native
 
 @Done:
  POP      EBX
 end;
-
 
 procedure BlockConvertInt32LSB18ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
@@ -1474,14 +875,15 @@ asm
  JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM1, [EDX + ECX * 4 + 16]
- CVTSI2SS XMM1, [EAX + ECX * 4 + 16]
+ CVTDQ2PS XMM1, [EDX + ECX * 4 + 16]
+ MULPS    XMM1, XMM0
+ MOVUPS   [EAX + ECX * 4 + 16], XMM1
  ADD      ECX, 1
  JS       @ReminderLoop
  JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSBToFloat32Native
+ CALL     BlockConvertInt32LSB18ToFloat32Native
 
 @Done:
  POP      EBX
@@ -1520,19 +922,19 @@ asm
  JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM1, [EDX + ECX * 4 + 16]
- CVTSI2SS XMM1, [EAX + ECX * 4 + 16]
+ CVTDQ2PS XMM1, [EDX + ECX * 4 + 16]
+ MULPS    XMM1, XMM0
+ MOVUPS   [EAX + ECX * 4 + 16], XMM1
  ADD      ECX, 1
  JS       @ReminderLoop
  JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSBToFloat32Native
+ CALL     BlockConvertInt32LSB20ToFloat32Native
 
 @Done:
  POP      EBX
 end;
-
 
 procedure BlockConvertInt32LSB24ToFloat32SSE2(Destination: PSingle;
   Source: Pointer; Count: Integer);
@@ -1567,14 +969,15 @@ asm
  JNS      @Done
 
 @ReminderLoop:
- MOVSS    XMM1, [EDX + ECX * 4 + 16]
- CVTSI2SS XMM1, [EAX + ECX * 4 + 16]
+ CVTDQ2PS XMM1, [EDX + ECX * 4 + 16]
+ MULPS    XMM1, XMM0
+ MOVUPS   [EAX + ECX * 4 + 16], XMM1
  ADD      ECX, 1
  JS       @ReminderLoop
  JMP      @Done
 
 @Fallback:
- CALL     BlockConvertInt32LSBToFloat32Native
+ CALL     BlockConvertInt32LSB24ToFloat32Native
 
 @Done:
  POP      EBX
@@ -1626,24 +1029,6 @@ begin
  // create function binding list for 32-bit float conversions
  BindingBlockConvertToFloat32 := TFunctionBindingList.Create;
 
- // create function binding for 32-bit to 64-bit float conversion
- BindingBlockConvertToFloat32ToFloat64 := TFunctionBinding.Create(
-   @@BlockConvertFloat32ToFloat64, @BlockConvertFloat32ToFloat64Native);
- BindingBlockConvertToFloat32.AddBinding(BindingBlockConvertToFloat32ToFloat64);
- with BindingBlockConvertToFloat32ToFloat64 do
-  begin
-   Add(@BlockConvertFloat32ToFloat64Native);
-  end;
-
- // create function binding for 64-bit to 32-bit float conversion
- BindingBlockConvertToFloat64ToFloat32 := TFunctionBinding.Create(
-   @@BlockConvertFloat64ToFloat32, @BlockConvertFloat64ToFloat32Native);
- BindingBlockConvertToFloat32.AddBinding(BindingBlockConvertToFloat64ToFloat32);
- with BindingBlockConvertToFloat64ToFloat32 do
-  begin
-   Add(@BlockConvertFloat64ToFloat32Native);
-  end;
-
  // create function binding for 16-bit integer to 32-bit float conversion
  BindingBlockConvertInt16LSBToFloat32 := TFunctionBinding.Create(
    @@BlockConvertInt16LSBToFloat32, @BlockConvertInt16LSBToFloat32Native);
@@ -1651,6 +1036,10 @@ begin
  with BindingBlockConvertInt16LSBToFloat32 do
   begin
    Add(@BlockConvertInt16LSBToFloat32Native);
+   {$IFNDEF PUREPASCAL}
+   Add(@BlockConvertInt16LSBToFloat32SSE2, [pfSSE, pfSSE2], $F);
+   {$ENDIF}
+   RebindProcessorSpecific;
   end;
 
  // create function binding for 24-bit integer to 32-bit float conversion
@@ -1792,101 +1181,12 @@ begin
 
  // processor specific rebind
  BindingBlockConvertToFloat32.RebindProcessorSpecific;
-
- // create function binding list for 64-bit float conversions
- BindingBlockConvertToFloat64 := TFunctionBindingList.Create;
-
- with TFunctionBinding.Create(@@BlockConvertInt16LSBToFloat64,
-   @BlockConvertInt16LSBToFloat64Native) do
-  begin
-   Add(@BlockConvertInt16LSBToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt24LSBToFloat64,
-   @BlockConvertInt24LSBToFloat64Native) do
-  begin
-   Add(@BlockConvertInt24LSBToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32LSBToFloat64,
-   @BlockConvertInt32LSBToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32LSBToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32LSB16ToFloat64,
-   @BlockConvertInt32LSB16ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32LSB16ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32LSB18ToFloat64,
-   @BlockConvertInt32LSB18ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32LSB18ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32LSB20ToFloat64,
-   @BlockConvertInt32LSB20ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32LSB20ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32LSB24ToFloat64,
-   @BlockConvertInt32LSB24ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32LSB24ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt16MSBToFloat64,
-   @BlockConvertInt16MSBToFloat64Native) do
-  begin
-   Add(@BlockConvertInt16MSBToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt24MSBToFloat64,
-   @BlockConvertInt24MSBToFloat64Native) do
-  begin
-   Add(@BlockConvertInt24MSBToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32MSBToFloat64,
-   @BlockConvertInt32MSBToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32MSBToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32MSB16ToFloat64,
-   @BlockConvertInt32MSB16ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32MSB16ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32MSB18ToFloat64,
-   @BlockConvertInt32MSB18ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32MSB18ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32MSB20ToFloat64,
-   @BlockConvertInt32MSB20ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32MSB20ToFloat64Native);
-  end;
-
- with TFunctionBinding.Create(@@BlockConvertInt32MSB24ToFloat64,
-   @BlockConvertInt32MSB24ToFloat64Native) do
-  begin
-   Add(@BlockConvertInt32MSB24ToFloat64Native);
-  end;
 end;
 
 procedure UnbindFunctions;
 begin
  BindingBlockConvertToFloat32.Free;
- BindingBlockConvertToFloat64.Free;
  BindingBlockConvertToFloat32 := nil;
- BindingBlockConvertToFloat64 := nil;
 end;
 
 initialization
