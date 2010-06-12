@@ -37,10 +37,10 @@ interface
 uses
   {$IFDEF FPC}LCLIntf, LclType, LMessages, {$ELSE} Windows, Messages, {$ENDIF}
   SysUtils, Classes, Controls, DAV_AsioInterface, DAV_Types, DAV_Asio,
-  DAV_AsioConvert, DAV_AsioHostCore, DAV_BlockConvert;
+  DAV_AsioConvert, DAV_AsioHostCore, DAV_BlockConvert32;
 
 type
-  TAsioInputConverter32 = procedure(Source: Pointer; Target: PSingle; SampleCount: LongInt);
+  TAsioInputConverter32  = procedure(Source: Pointer; Target: PSingle; SampleCount: LongInt);
   TAsioOutputConverter32 = procedure(Source: PSingle; Target: Pointer; SampleCount: LongInt);
 
   {$IFDEF SUPPORTS_REGION} {$region 'TAsioChannel'} {$ENDIF}

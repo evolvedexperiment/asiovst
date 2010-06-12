@@ -43,6 +43,9 @@ contains
   DAV_BitReserve in '..\..\Source\DAV_BitReserve.pas',
   DAV_Bindings in '..\..\Source\DAV_Bindings.pas',
   DAV_BlockArithmetrics in '..\..\Source\DAV_BlockArithmetrics.pas',
+  DAV_BlockConvert in '..\..\Source\DAV_BlockConvert.pas',
+  DAV_BlockConvert32 in '..\..\Source\DAV_BlockConvert32.pas',
+  DAV_BlockConvert64 in '..\..\Source\DAV_BlockConvert64.pas',
   DAV_BlockProcessing in '..\..\Source\DAV_BlockProcessing.pas',
   DAV_BufferMathAsm in '..\..\Source\Math\DAV_BufferMathAsm.pas',
   DAV_BufferMathPascal in '..\..\Source\Math\DAV_BufferMathPascal.pas',
@@ -73,7 +76,6 @@ contains
   DAV_SynthFilter in '..\..\Source\DAV_SynthFilter.pas',
   DAV_Types in '..\..\Source\DAV_Types.pas',
   DAV_VectorMath in '..\..\Source\DAV_VectorMath.pas',
-  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas',
-  DAV_BlockConvert in '..\..\Source\DAV_BlockConvert.pas';
+  DAV_WaveFileTypes in '..\..\Source\DAV_WaveFileTypes.pas';
 
 end.
