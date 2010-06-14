@@ -81,6 +81,7 @@ type
   TFunctionBindingList = class(TObject)
   private
     FList : TList;
+    function GetBindingCount: Integer;
   public
     constructor Create; virtual;
     destructor Destroy; override;
@@ -91,6 +92,8 @@ type
     function GetBindingByPointer(Binding: Pointer): TFunctionBinding;
     procedure Rebind(AvailableFeatures: TProcessorFeatures = []);
     procedure RebindProcessorSpecific;
+
+    property BindingCount: Integer read GetBindingCount;
   end;
 
 function GetBinding(Binding: Pointer): TFunctionBinding;
@@ -269,6 +272,11 @@ begin
     end;
   end;
  Result := nil;
+end;
+
+function TFunctionBindingList.GetBindingCount: Integer;
+begin
+ Result := FList.Count;
 end;
 
 function TFunctionBindingList.HasBinding(Binding: TFunctionBinding): Boolean;
