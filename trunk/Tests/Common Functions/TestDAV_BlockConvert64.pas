@@ -268,7 +268,7 @@ begin
  TestFunction := Pointer(FFunctionBinding.Prototype^);
 
  // check if a sample count of 0 can be passed
- TestFunction(PSingle(FAudioMemory64.DataPointer), FData, 0);
+ TestFunction(PDouble(FAudioMemory64.DataPointer), FData, 0);
 
  PerformSimpleTest;
 end;
@@ -284,7 +284,7 @@ begin
  TestFunction := Pointer(FFunctionBinding.Prototype^);
 
  // check if a sample count of 0 can be passed
- TestFunction(PSingle(FAudioMemory64.DataPointer), FData, 0);
+ TestFunction(PDouble(FAudioMemory64.DataPointer), FData, 0);
 
  PerformSimpleTest;
 end;
@@ -293,7 +293,7 @@ procedure TCustomTestConvertInt16ToFloat64.UnalignedBufferTest;
 var
   SampleIndex  : Integer;
   DataPointer  : PWord;
-  FloatPointer : PSingle;
+  FloatPointer : PDouble;
   TestFunction : TTestFunction;
 begin
  // use processor specific binding
@@ -305,7 +305,7 @@ begin
  // get unaligned pointers
  DataPointer := FData;
  Inc(DataPointer);
- FloatPointer := PSingle(FAudioMemory64.DataPointer);
+ FloatPointer := PDouble(FAudioMemory64.DataPointer);
  Inc(FloatPointer);
 
  // assign function under test
@@ -342,7 +342,7 @@ begin
 
  // process a sequence of block converts
  for LoopIndex := 1 to CSpeedTestCount
-  do TestFunction(PSingle(FAudioMemory64.DataPointer), FData,
+  do TestFunction(PDouble(FAudioMemory64.DataPointer), FData,
        FAudioMemory64.SampleCount);
 
  // check if data has been converted correctly
@@ -364,7 +364,7 @@ begin
 
  // process a sequence of block converts
  for LoopIndex := 1 to CSpeedTestCount
-  do TestFunction(PSingle(FAudioMemory64.DataPointer), FData,
+  do TestFunction(PDouble(FAudioMemory64.DataPointer), FData,
        FAudioMemory64.SampleCount);
 
  // check if data has been converted correctly
@@ -448,13 +448,17 @@ end;
 
 procedure TCustomTestConvertInt24LSBToFloat64.PerformSimpleTest;
 var
-  SampleIndex : Integer;
+  SampleIndex  : Integer;
+  TestFunction : TTestFunction;
 begin
  // clear audio memory
  FAudioMemory64.Clear;
 
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
+
  // convert integer data to float
- BlockConvertInt24LSBToFloat64(PDouble(FAudioMemory64.DataPointer), FData,
+ TestFunction(PDouble(FAudioMemory64.DataPointer), FData,
    FAudioMemory64.SampleCount);
 
  // check if data has been converted correctly
@@ -463,25 +467,33 @@ begin
 end;
 
 procedure TCustomTestConvertInt24LSBToFloat64.BasicTest;
+var
+  TestFunction : TTestFunction;
 begin
  // use processor specific binding
- BindingBlockConvertInt24LSBToFloat64.RebindProcessorSpecific;
+ FFunctionBinding.RebindProcessorSpecific;
+
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
 
  // check if a sample count of 0 can be passed
- BlockConvertInt24LSBToFloat64(PDouble(FAudioMemory64.DataPointer), FData,
-   0);
+ TestFunction(PDouble(FAudioMemory64.DataPointer), FData, 0);
 
  PerformSimpleTest;
 end;
 
 procedure TCustomTestConvertInt24LSBToFloat64.NativeTest;
+var
+  TestFunction : TTestFunction;
 begin
  // use processor specific binding
- BindingBlockConvertInt24LSBToFloat64.RebindProcessorSpecific;
+ FFunctionBinding.RebindProcessorSpecific;
+
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
 
  // check if a sample count of 0 can be passed
- BlockConvertInt24LSBToFloat64(PDouble(FAudioMemory64.DataPointer), FData,
-   0);
+ TestFunction(PDouble(FAudioMemory64.DataPointer), FData, 0);
 
  PerformSimpleTest;
 end;
@@ -491,9 +503,10 @@ var
   SampleIndex  : Integer;
   DataPointer  : PByte;
   FloatPointer : PDouble;
+  TestFunction : TTestFunction;
 begin
  // use processor specific binding
- BindingBlockConvertInt24LSBToFloat64.RebindProcessorSpecific;
+ FFunctionBinding.RebindProcessorSpecific;
 
  // clear audio memory
  FAudioMemory64.Clear;
@@ -504,8 +517,11 @@ begin
  FloatPointer := PDouble(FAudioMemory64.DataPointer);
  Inc(FloatPointer);
 
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
+
  // convert integer data to float
- BlockConvertInt24LSBToFloat64(FloatPointer, DataPointer, 1);
+ TestFunction(FloatPointer, DataPointer, 1);
 
  // check if sample has been converted correctly
  CheckEquals(1 / $7FFFFF, FAudioMemory64.Data[1], 1E-9);
@@ -513,7 +529,7 @@ begin
  Inc(DataPointer, 3);
 
  // convert integer data to float
- BlockConvertInt24LSBToFloat64(FloatPointer, DataPointer,
+ TestFunction(FloatPointer, DataPointer,
    FAudioMemory64.SampleCount - 17);
 
  // check if data has been converted correctly
@@ -523,27 +539,35 @@ end;
 
 procedure TCustomTestConvertInt24LSBToFloat64.SpeedTestNative;
 var
-  LoopIndex : Integer;
+  LoopIndex    : Integer;
+  TestFunction : TTestFunction;
 begin
  // use compatibility binding
- BindingBlockConvertInt24LSBToFloat64.Rebind([]);
+ FFunctionBinding.Rebind([]);
+
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
 
  // process a sequence of block converts
  for LoopIndex := 1 to CSpeedTestCount
-  do BlockConvertInt24LSBToFloat64(PDouble(FAudioMemory64.DataPointer),
+  do TestFunction(PDouble(FAudioMemory64.DataPointer),
        FData, FAudioMemory64.SampleCount);
 end;
 
 procedure TCustomTestConvertInt24LSBToFloat64.SpeedTestSSE2;
 var
-  LoopIndex : Integer;
+  LoopIndex    : Integer;
+  TestFunction : TTestFunction;
 begin
  // use SSE/SSE2 binding
- BindingBlockConvertInt24LSBToFloat64.Rebind([pfSSE, pfSSE2]);
+ FFunctionBinding.Rebind([pfSSE, pfSSE2]);
+
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
 
  // process a sequence of block converts
  for LoopIndex := 1 to CSpeedTestCount
-  do BlockConvertInt24LSBToFloat64(PDouble(FAudioMemory64.DataPointer),
+  do TestFunction(PDouble(FAudioMemory64.DataPointer),
        FData, FAudioMemory64.SampleCount);
 end;
 
@@ -928,24 +952,39 @@ begin
 end;
 
 
+procedure RegisterTests;
+var
+  TestSuiteFloat: TTestSuite;
+begin
+  TestSuiteFloat := TTestSuite.Create('Float 64-bit (LSB)');
+  with TestSuiteFloat do
+   begin
+    AddTest(TTestConvertInt16LSBToFloat64.Suite);
+    AddTest(TTestConvertInt24LSBToFloat64.Suite);
+    AddTest(TTestConvertInt32LSBToFloat64.Suite);
+    AddTest(TTestConvertInt32LSB16ToFloat64.Suite);
+    AddTest(TTestConvertInt32LSB18ToFloat64.Suite);
+    AddTest(TTestConvertInt32LSB20ToFloat64.Suite);
+    AddTest(TTestConvertInt32LSB24ToFloat64.Suite);
+   end;
+  RegisterTest(TestSuiteFloat);
+
+  TestSuiteFloat := TTestSuite.Create('Float 64-bit (MSB)');
+  with TestSuiteFloat do
+   begin
+    AddTest(TTestConvertInt16MSBToFloat64.Suite);
+    AddTest(TTestConvertInt24MSBToFloat64.Suite);
+    AddTest(TTestConvertInt32MSBToFloat64.Suite);
+    AddTest(TTestConvertInt32MSB16ToFloat64.Suite);
+    AddTest(TTestConvertInt32MSB18ToFloat64.Suite);
+    AddTest(TTestConvertInt32MSB20ToFloat64.Suite);
+    AddTest(TTestConvertInt32MSB24ToFloat64.Suite);
+   end;
+  RegisterTest(TestSuiteFloat);
+end;
+
+
 initialization
-  // LSB
-  RegisterTest(TTestConvertInt16LSBToFloat64.Suite);
-  RegisterTest(TTestConvertInt24LSBToFloat64.Suite);
-  RegisterTest(TTestConvertInt32LSBToFloat64.Suite);
-  RegisterTest(TTestConvertInt32LSB16ToFloat64.Suite);
-  RegisterTest(TTestConvertInt32LSB18ToFloat64.Suite);
-  RegisterTest(TTestConvertInt32LSB20ToFloat64.Suite);
-  RegisterTest(TTestConvertInt32LSB24ToFloat64.Suite);
-
-  // MSB
-  RegisterTest(TTestConvertInt16MSBToFloat64.Suite);
-  RegisterTest(TTestConvertInt24MSBToFloat64.Suite);
-  RegisterTest(TTestConvertInt32MSBToFloat64.Suite);
-  RegisterTest(TTestConvertInt32MSB16ToFloat64.Suite);
-  RegisterTest(TTestConvertInt32MSB18ToFloat64.Suite);
-  RegisterTest(TTestConvertInt32MSB20ToFloat64.Suite);
-  RegisterTest(TTestConvertInt32MSB24ToFloat64.Suite);
-
+  RegisterTests;
 
 end.
