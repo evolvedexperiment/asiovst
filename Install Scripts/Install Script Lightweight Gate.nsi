@@ -87,6 +87,7 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -94,10 +95,9 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Lightweight Gate VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\LightweightGate.dll" "..\Bin\Lightweight Gate.dll"'  
@@ -127,7 +127,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Gate.exe"
 SectionEnd
 
-Section "Lightweight Gate Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...

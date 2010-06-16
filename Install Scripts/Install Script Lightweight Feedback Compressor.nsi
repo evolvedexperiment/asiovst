@@ -87,6 +87,7 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -94,10 +95,9 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Lightweight Feedback Compressor VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\LightweightFeedbackCompressor.dll" "..\Bin\Lightweight Feedback Compressor.dll"'  
@@ -130,7 +130,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Compressor.exe"
 SectionEnd
 
-Section "Lightweight Feedback Compressor Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...

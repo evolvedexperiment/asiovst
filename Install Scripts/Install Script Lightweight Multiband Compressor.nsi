@@ -111,13 +111,13 @@ Section "VST-Plugin" SecVSTPlugin
   SetOutPath $TEMP                      ; create temp directory
   File "madExcept Patch.dll"            ; copy dll there
   
-  StrCpy $0 "$INSTDIR\Adhesive.dll" 
+  StrCpy $0 "$INSTDIR\Lightweight Multiband Compressor.dll" 
   System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
   System::Free 0
   Delete "madExcept Patch.dll"
   
   IntCmp $1 0 SkipDLLCall
-  DetailPrint  "Bug Report DLL Patch applied"
+  DetailPrint "Bug Report DLL Patch applied"
 SkipDLLCall:
 
   ;Store installation folder
@@ -141,6 +141,7 @@ Section "Manual" SecManual
 SectionEnd
 
 ;--------------------- Install VST Plugin --------------------
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
