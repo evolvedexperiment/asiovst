@@ -87,6 +87,7 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -94,10 +95,9 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Lightweight Series VST-Plugin" SecVSTPlugin
+Section "VST-Plugins" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\LightweightLimiter.dll" "..\Bin\Lightweight Limiter.dll"'  
@@ -151,7 +151,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Series.exe"
 SectionEnd
 
-Section "Lightweight Series Manual" SecManual
+Section "Manuals" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...

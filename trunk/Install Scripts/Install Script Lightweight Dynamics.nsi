@@ -87,6 +87,7 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -94,10 +95,9 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Lightweight Dynamics VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\LightweightDynamics.dll" "..\Bin\Lightweight Dynamics.dll"'  
@@ -127,7 +127,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Dynamics.exe"
 SectionEnd
 
-Section "Lightweight Dynamics Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -139,9 +139,6 @@ Section "Lightweight Dynamics Manual" SecManual
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Dynamics.exe"
 SectionEnd
-
-;--------------------------------
-;Installer Functions
 
 ;--------------------------------
 ;Installer Functions

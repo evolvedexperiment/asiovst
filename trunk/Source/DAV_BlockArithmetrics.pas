@@ -188,15 +188,15 @@ begin
 {$ELSE}
 asm
  AND     ECX, ECX
- JZ      @done
+ JZ      @Done
 
- @start:
+ @Start:
  FLD     [Source      + 8 * ecx - 8].Double
  FSUB    [Destination + 8 * ecx - 8].Double
  FSTP    [Destination + 8 * ecx - 8].Double
- LOOP    @start
+ LOOP    @Start
 
- @done:
+ @Done:
  {$ENDIF}
 end;
 
@@ -209,22 +209,21 @@ begin
   begin
    Destination^ := Destination^ + Value;
    Inc(Destination);
-   Inc(Source);
   end;
 {$ELSE}
 asm
  AND     ECX, ECX
- JZ      @done
+ JZ      @Done
  FLD     Value.Single
 
- @start:
+ @Start:
  FLD     [Destination + 4 * ecx - 4].Single
  FADD    ST(0), ST(1)
  FSTP    [Destination + 4 * ecx - 4].Single
- LOOP    @start
+ LOOP    @Start
 
  FSTP    ST(0)
- @done:
+ @Done:
 {$ENDIF}
 end;
 
@@ -237,12 +236,11 @@ begin
   begin
    Destination^ := Destination^ + Value;
    Inc(Destination);
-   Inc(Source);
   end;
 {$ELSE}
 asm
  AND     ECX, ECX
- JZ      @done
+ JZ      @Done
  FLD     Value.Double
 
  @start:
@@ -252,7 +250,7 @@ asm
  LOOP    @start
 
  FSTP    ST(0)
- @done:
+ @Done:
 {$ENDIF}
 end;
 
@@ -406,7 +404,6 @@ begin
   begin
    Destination^ := Destination^ * Value;
    Inc(Destination);
-   Inc(Source);
   end;
 {$ELSE}
 asm
@@ -432,7 +429,6 @@ begin
   begin
    Destination^ := Destination^ * Value;
    Inc(Destination);
-   Inc(Source);
   end;
 {$ELSE}
 asm

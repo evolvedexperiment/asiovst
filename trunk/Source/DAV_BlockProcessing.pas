@@ -82,7 +82,7 @@ begin
  Buffer^[0].Im := Buffer^[0].Im * Filter^[0].Im;
 
  for SampleIndex := 1 to SampleCount - 1
-  do ComplexMultiplyInplace(Buffer^[SampleIndex], Filter^[SampleIndex]);
+  do ComplexMultiplyInplace32(Buffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
  // DC
@@ -138,7 +138,7 @@ begin
  InBuffer^[0].Im := InBuffer^[0].Im * Filter^[0].Im;
 
  for SampleIndex := 1 to SampleCount - 1
-  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], Filter^[SampleIndex]);
+  do OutBuffer^[SampleIndex] := ComplexMultiply32(InBuffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
  push ebx
@@ -202,7 +202,7 @@ begin
  Buffer^[0].Im := Buffer^[0].Im * Filter^[0].Im;
 
  for SampleIndex := 1 to SampleCount - 1
-  do ComplexMultiplyInplace(Buffer^[SampleIndex], Filter^[SampleIndex]);
+  do ComplexMultiplyInplace64(Buffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
  // DC
@@ -258,7 +258,7 @@ begin
  InBuffer^[0].Im := InBuffer^[0].Im * Filter^[0].Im;
 
  for SampleIndex := 1 to SampleCount - 1
-  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], Filter^[SampleIndex]);
+  do OutBuffer^[SampleIndex] := ComplexMultiply64(InBuffer^[SampleIndex], Filter^[SampleIndex]);
 {$ELSE}
 asm
  push ebx
@@ -321,7 +321,7 @@ begin
  InplaceBuffer^[0].Im := InplaceBuffer^[0].Im * Signal^[0].Im;
 
  for SampleIndex := 1 to SampleFrames - 1
-  do ComplexMultiplyInplace(InplaceBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+  do ComplexMultiplyInplace32(InplaceBuffer^[SampleIndex], ComplexConjugate32(Signal^[SampleIndex]));
 {$ELSE}
 asm
  // DC
@@ -377,7 +377,7 @@ begin
  InBuffer^[0].Im := InBuffer^[0].Im * Signal^[0].Im;
 
  for SampleIndex := 1 to SampleFrames - 1
-  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+  do OutBuffer^[SampleIndex] := ComplexMultiply32(InBuffer^[SampleIndex], ComplexConjugate32(Signal^[SampleIndex]));
 {$ELSE}
 asm
  push ebx
@@ -440,7 +440,7 @@ begin
  InplaceBuffer^[0].Im := InplaceBuffer^[0].Im * Signal^[0].Im;
 
  for SampleIndex := 1 to SampleFrames - 1
-  do ComplexMultiplyInplace(InplaceBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+  do ComplexMultiplyInplace64(InplaceBuffer^[SampleIndex], ComplexConjugate64(Signal^[SampleIndex]));
 {$ELSE}
 asm
  // DC
@@ -496,7 +496,7 @@ begin
  InBuffer^[0].Im := InBuffer^[0].Im * Signal^[0].Im;
 
  for SampleIndex := 1 to SampleFrames - 1
-  do OutBuffer^[SampleIndex] := ComplexMultiply(InBuffer^[SampleIndex], ComplexConjugate(Signal^[SampleIndex]));
+  do OutBuffer^[SampleIndex] := ComplexMultiply64(InBuffer^[SampleIndex], ComplexConjugate64(Signal^[SampleIndex]));
 {$ELSE}
 asm
  push ebx
