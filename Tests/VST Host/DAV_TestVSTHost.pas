@@ -120,7 +120,7 @@ type
     procedure TestDenormals;
     procedure TestHandleNANs;
     procedure TestProcess;
-    procedure TestProcessDoubleReplacing;
+    procedure TestProcess64Replacing;
     procedure TestSmallBlocksizes;
     procedure TestSampleRateDependency;
 
@@ -274,7 +274,7 @@ begin
 
     // call correct ProcessReplacing
     StartProcess;
-    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    Process32Replacing(@Input[0], @Output[0], CBlockSize);
     StopProcess;
    finally
     for Channel := 0 to numInputs  - 1 do Dispose(Input[Channel]);
@@ -416,7 +416,9 @@ end;
 constructor TVstPluginBasicTests.Create(MethodName: string);
 begin
  inherited;
+ {$IFDEF DELPHI2010_UP}
  FailsOnMemoryLeak := True;
+ {$ENDIF}
 end;
 
 procedure TVstPluginBasicTests.TestActiveBlocksizeChanges;
@@ -789,7 +791,7 @@ begin
    try
     // call process replacing before activating the plugin
     StartProcess;
-    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    Process32Replacing(@Input[0], @Output[0], CBlockSize);
     StopProcess;
 
     Active := True;
@@ -797,14 +799,14 @@ begin
     SetBlockSize(CBlockSize);
 
     // call correct ProcessReplacing
-    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    Process32Replacing(@Input[0], @Output[0], CBlockSize);
 
     // start processing
     StartProcess;
     Active := False;
 
     // call processing
-    ProcessReplacing(@Input[0], @Output[0], CBlockSize);
+    Process32Replacing(@Input[0], @Output[0], CBlockSize);
    finally
     for Channel := 0 to numInputs  - 1 do Dispose(Input[Channel]);
     for Channel := 0 to numOutputs - 1 do Dispose(Output[Channel]);
@@ -2968,7 +2970,7 @@ begin
     IsDen := False;
     for Count := 0 to 8 do
      begin
-      ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
+      Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
       for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := 0;
       for Channel := 0 to Length(FOutput) - 1 do
        begin
@@ -3000,7 +3002,7 @@ begin
 
    for BlockSizeDecimation := 10 downto 2 do
     begin
-     ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize div BlockSizeDecimation);
+     Process32Replacing(@FInput[0], @FOutput[0], FBlocksize div BlockSizeDecimation);
      for Channel := 0 to Length(FOutput) - 1 do
       for Sample := FBlocksize div 10 to FBlocksize - 1
        do CheckTrue(FOutput[Channel, Sample] = 0, 'Data was processed beyond blocksize');
@@ -3018,7 +3020,7 @@ begin
   begin
    assert(assigned(VstEffectPointer));
 
-   if not assigned(VstEffectPointer.ProcessDoubleReplacing)
+   if not Assigned(VstEffectPointer.Process64Replacing)
     then Fail('Process() does not exists');
 
    // empty process call
@@ -3035,20 +3037,20 @@ begin
   end;
 end;
 
-procedure TVstPluginIOTests.TestProcessDoubleReplacing;
+procedure TVstPluginIOTests.TestProcess64Replacing;
 begin
  with FVstHost[0] do
   begin
    assert(assigned(VstEffectPointer));
 
-   if not assigned(VstEffectPointer.ProcessDoubleReplacing)
-    then Fail('ProcessDoubleReplacing() does not exists');
+   if not assigned(VstEffectPointer.Process64Replacing)
+    then Fail('Process64Replacing(() does not exists');
 
    // empty process call
-   ProcessDoubleReplacing(nil, nil, 0);
+   Process64Replacing(nil, nil, 0);
 
    // process data
-   ProcessDoubleReplacing(@FInput[0], @FOutput[0], BlockSize div 2);
+   Process64Replacing(@FInput[0], @FOutput[0], BlockSize div 2);
   end;
 end;
 
@@ -3063,7 +3065,7 @@ begin
    for Channel := 0 to Length(FInput) - 1 do FInput[Channel, 0] := NaN;
 
    // search and test for NAN
-   ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
+   Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
    for Channel := 0 to numOutputs - 1 do
     begin
      for Sample := 1 to FBlocksize - 1 do
@@ -3131,7 +3133,7 @@ begin
        StartProcess;
        for Cnt := 0 to 7 do
         begin
-         ProcessReplacing(@FInput[0], @FOutput[0], BlockSize);
+         Process32Replacing(@FInput[0], @FOutput[0], BlockSize);
 
          // find peak delta
          Delta[Ndx] := 0;
@@ -3194,11 +3196,11 @@ begin
  with FVstHost[0] do
   begin
    BlockSize := 5;
-   ProcessReplacing(@FInput[0], @FOutput[0], 1);
-   ProcessReplacing(@FInput[0], @FOutput[0], 2);
-   ProcessReplacing(@FInput[0], @FOutput[0], 3);
-   ProcessReplacing(@FInput[0], @FOutput[0], 4);
-   ProcessReplacing(@FInput[0], @FOutput[0], 5);
+   Process32Replacing(@FInput[0], @FOutput[0], 1);
+   Process32Replacing(@FInput[0], @FOutput[0], 2);
+   Process32Replacing(@FInput[0], @FOutput[0], 3);
+   Process32Replacing(@FInput[0], @FOutput[0], 4);
+   Process32Replacing(@FInput[0], @FOutput[0], 5);
   end;
 end;
 
@@ -3226,7 +3228,7 @@ end;
 procedure TVSTProcessThread.Execute;
 begin
  repeat
-  FVSTPlugin.ProcessReplacing(@FInput[0], @FOutput[0], FBlocksize);
+  FVSTPlugin.Process32Replacing(@FInput[0], @FOutput[0], FBlocksize);
   inc(FProcessedBlocks)
  until Terminated;
 end;
