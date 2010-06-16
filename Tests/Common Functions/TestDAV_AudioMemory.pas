@@ -234,10 +234,10 @@ end;
 
 procedure TestTAudioMemory64.TestExternal;
 var
-  Data        : PDAVSingleFixedArray;
+  Data        : PDAVDoubleFixedArray;
   SampleIndex : Integer;
 begin
- GetMem(Data, CTestSampleCount * SizeOf(Single));
+ GetMem(Data, CTestSampleCount * SizeOf(Double));
  try
   FAudioMemory64.DataPointer := @Data^[0];
 

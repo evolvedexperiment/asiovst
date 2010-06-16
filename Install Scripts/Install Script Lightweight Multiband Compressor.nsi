@@ -81,11 +81,13 @@ FunctionEnd
   !insertmacro MUI_PAGE_LICENSE "..\Bin\License.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
+  Page custom BugReportPatch
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -93,14 +95,30 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "Lightweight Multiband Compressor VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
+  !system 'copy "..\Bin\LightweightMultibandCompressor.dll" "..\Bin\Lightweight Multiband Compressor.dll"'  
+
   ;ADD YOUR OWN FILES HERE...
-  File "..\Bin\LightweightMultibandCompressor.dll"
+  File "..\Bin\Lightweight Multiband Compressor.dll"
+
+  !insertmacro MUI_INSTALLOPTIONS_READ $BugReportState "ioBugReport.ini" "Field 1" "State"  
+  IntCmp $BugReportState 0 SkipDLLCall
+    
+  SetOutPath $TEMP                      ; create temp directory
+  File "madExcept Patch.dll"            ; copy dll there
+  
+  StrCpy $0 "$INSTDIR\Adhesive.dll" 
+  System::Call 'madExcept Patch::PatchMadExceptDLL(t) i (r0).r1'
+  System::Free 0
+  Delete "madExcept Patch.dll"
+  
+  IntCmp $1 0 SkipDLLCall
+  DetailPrint  "Bug Report DLL Patch applied"
+SkipDLLCall:
 
   ;Store installation folder
   WriteRegStr HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}" "" $INSTDIR
@@ -109,7 +127,7 @@ Section "Lightweight Multiband Compressor VST-Plugin" SecVSTPlugin
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Multiband_Compressor.exe"
 SectionEnd
 
-Section "Lightweight Multiband Compressor Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -121,6 +139,20 @@ Section "Lightweight Multiband Compressor Manual" SecManual
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Multiband_Compressor.exe"
 SectionEnd
+
+;--------------------- Install VST Plugin --------------------
+Function BugReportPatch
+  ${If} ${SectionIsSelected} ${SecVSTPlugin}
+  Goto IsVST
+  ${EndIf}
+  Goto NoVST
+
+  IsVST:
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "ioBugReport.ini"
+
+  NoVST:
+FunctionEnd
 
 ;--------------------------------
 ;Installer Functions
@@ -147,7 +179,7 @@ SectionEnd
 Section "Uninstall"
 
   ;ADD YOUR OWN FILES HERE...
-  Delete "$INSTDIR\LightweightMultibandCompressor.dll"
+  Delete "$INSTDIR\Lightweight Multiband Compressor.dll"
   Delete "$INSTDIR\Lightweight Multiband Compressor Manual.pdf"
   DeleteRegKey HKLM "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
 
