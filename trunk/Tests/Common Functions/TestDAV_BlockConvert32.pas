@@ -92,7 +92,7 @@ type
     procedure SetUp; override;
   end;
 
-  TCustomTestConvertInt24LSBToFloat32 = class(TCustomTestConvertToFloat32)
+  TCustomTestConvertInt24ToFloat32 = class(TCustomTestConvertToFloat32)
   protected
     procedure PerformSimpleTest; override;
     procedure PerformSpeedTest; override;
@@ -107,14 +107,14 @@ type
     procedure SpeedTestSSE2;
   end;
 
-  TTestConvertInt24LSBToFloat32 = class(TCustomTestConvertInt24LSBToFloat32)
+  TTestConvertInt24LSBToFloat32 = class(TCustomTestConvertInt24ToFloat32)
   protected
     procedure FillData; override;
   public
     procedure SetUp; override;
   end;
 
-  TTestConvertInt24MSBToFloat32 = class(TCustomTestConvertInt24LSBToFloat32)
+  TTestConvertInt24MSBToFloat32 = class(TCustomTestConvertInt24ToFloat32)
   protected
     procedure FillData; override;
   public
@@ -202,12 +202,13 @@ type
   TCustomTestConvertFromFloat32 = class(TCustomTestConvertFloat32)
   protected
     procedure FillData; override;
-    procedure PerformZeroTest; virtual;
+    procedure PerformZeroTest; override;
   end;
 
   TCustomTestConvertInt16FromFloat32 = class(TCustomTestConvertFromFloat32)
   protected
     procedure PerformSimpleTest; override;
+    function DataPostProcessing(Data: Word): Word; virtual; abstract;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -220,11 +221,15 @@ type
   end;
 
   TTestConvertInt16LSBFromFloat32 = class(TCustomTestConvertInt16FromFloat32)
+  protected
+    function DataPostProcessing(Data: Word): Word; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt16MSBFromFloat32 = class(TCustomTestConvertInt16FromFloat32)
+  protected
+    function DataPostProcessing(Data: Word): Word; override;
   public
     procedure SetUp; override;
   end;
@@ -256,6 +261,7 @@ type
   TCustomTestConvertInt32FromFloat32 = class(TCustomTestConvertFromFloat32)
   protected
     procedure PerformSimpleTest; override;
+    function DataPostProcessing(Data: Integer): Integer; virtual; abstract;
   public
     procedure SetUp; override;
     procedure TearDown; override;
@@ -268,51 +274,71 @@ type
   end;
 
   TTestConvertInt32LSBFromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32LSB16FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32LSB18FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32LSB20FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32LSB24FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32MSBFromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32MSB16FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32MSB18FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
   TTestConvertInt32MSB20FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
 
-  TTestConvertInt32MSB24FromFloat32 = class(TCustomTestConvertInt32MSBToFloat32)
+  TTestConvertInt32MSB24FromFloat32 = class(TCustomTestConvertInt32FromFloat32)
+  protected
+    function DataPostProcessing(Data: Integer): Integer; override;
   public
     procedure SetUp; override;
   end;
@@ -576,9 +602,9 @@ begin
 end;
 
 
-{ TCustomTestConvertInt24LSBToFloat32 }
+{ TCustomTestConvertInt24ToFloat32 }
 
-procedure TCustomTestConvertInt24LSBToFloat32.SetUp;
+procedure TCustomTestConvertInt24ToFloat32.SetUp;
 begin
  // set maximum integer
  FMaxIntValue := $7FFFFF;
@@ -595,13 +621,13 @@ begin
  FillData;
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.TearDown;
+procedure TCustomTestConvertInt24ToFloat32.TearDown;
 begin
  Dispose(FData);
  inherited;
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.PerformSimpleTest;
+procedure TCustomTestConvertInt24ToFloat32.PerformSimpleTest;
 var
   SampleIndex  : Integer;
   TestFunction : TTestFunction;
@@ -621,7 +647,7 @@ begin
   do CheckEquals((SampleIndex * FScale), FAudioMemory32.DataPointer^[SampleIndex], 1E-7);
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.PerformSpeedTest;
+procedure TCustomTestConvertInt24ToFloat32.PerformSpeedTest;
 var
   LoopIndex : Integer;
 begin
@@ -631,7 +657,7 @@ begin
        FData, FAudioMemory32.SampleCount);
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.BasicTest;
+procedure TCustomTestConvertInt24ToFloat32.BasicTest;
 begin
  // use processor specific binding
  FFunctionBinding.RebindProcessorSpecific;
@@ -643,7 +669,7 @@ begin
  PerformSimpleTest;
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.NativeTest;
+procedure TCustomTestConvertInt24ToFloat32.NativeTest;
 begin
  // use processor specific binding
  FFunctionBinding.RebindProcessorSpecific;
@@ -655,7 +681,7 @@ begin
  PerformSimpleTest;
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.UnalignedBufferTest;
+procedure TCustomTestConvertInt24ToFloat32.UnalignedBufferTest;
 var
   SampleIndex  : Integer;
   DataPointer  : PByte;
@@ -676,7 +702,7 @@ begin
 
  // check if data has been converted correctly
  for SampleIndex := 0 to 2
-  do CheckEquals((SampleIndex * FScale), FAudioMemory32.DataPointer^[SampleIndex], 1E-7);
+  do CheckEquals(SampleIndex * FScale, FAudioMemory32.DataPointer^[SampleIndex], FDelta);
 
  // get unaligned pointers
  DataPointer := FData;
@@ -688,7 +714,7 @@ begin
  TestFunction(FloatPointer, DataPointer, 1);
 
  // check if sample has been converted correctly
- CheckEquals((1 * FScale), FAudioMemory32.Data[1], 1E-7);
+ CheckEquals(FScale, FAudioMemory32.Data[1], FDelta);
 
  Inc(DataPointer, 3);
 
@@ -698,10 +724,10 @@ begin
 
  // check if data has been converted correctly
  for SampleIndex := 1 to FAudioMemory32.SampleCount - 17
-  do CheckEquals(((SampleIndex + 1) * FScale), FAudioMemory32.DataPointer^[SampleIndex], 1E-7);
+  do CheckEquals(((SampleIndex + 1) * FScale), FAudioMemory32.DataPointer^[SampleIndex], FDelta);
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.SpeedTestNative;
+procedure TCustomTestConvertInt24ToFloat32.SpeedTestNative;
 begin
  // use compatibility binding
  FFunctionBinding.Rebind([]);
@@ -710,7 +736,7 @@ begin
  PerformSpeedTest;
 end;
 
-procedure TCustomTestConvertInt24LSBToFloat32.SpeedTestSSE2;
+procedure TCustomTestConvertInt24ToFloat32.SpeedTestSSE2;
 begin
  // use SSE/SSE2 binding
  FFunctionBinding.Rebind([pfSSE, pfSSE2]);
@@ -1167,14 +1193,12 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   CheckEquals(SampleIndex, DataPtr^, FDelta);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPtr^), FDelta);
    Inc(DataPtr);
   end;
 end;
 
 procedure TCustomTestConvertInt16FromFloat32.BasicTest;
-var
-  TestFunction : TTestFunction;
 begin
  // use processor specific binding
  FFunctionBinding.RebindProcessorSpecific;
@@ -1187,8 +1211,6 @@ begin
 end;
 
 procedure TCustomTestConvertInt16FromFloat32.NativeTest;
-var
-  TestFunction : TTestFunction;
 begin
  // use processor specific binding
  FFunctionBinding.RebindProcessorSpecific;
@@ -1222,7 +1244,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to 2 do
   begin
-   CheckEquals(SampleIndex, DataPointer^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPointer^), FDelta);
    Inc(DataPointer);
   end;
 
@@ -1236,18 +1258,17 @@ begin
  TestFunction(DataPointer, FloatPointer, 1);
 
  // check if sample has been converted correctly
- CheckEquals(1, DataPointer^, 1E-7);
+ CheckEquals(1, DataPostProcessing(DataPointer^), FDelta);
 
  Inc(DataPointer);
 
  // convert integer data to float
- TestFunction(DataPointer, FloatPointer,
-   FAudioMemory32.SampleCount - 17);
+ TestFunction(DataPointer, FloatPointer, FAudioMemory32.SampleCount - 17);
 
  // check if data has been converted correctly
  for SampleIndex := 1 to FAudioMemory32.SampleCount - 17 do
   begin
-   CheckEquals(SampleIndex, DataPointer^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPointer^), FDelta);
    Inc(DataPointer);
   end;
 end;
@@ -1276,7 +1297,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   CheckEquals(SampleIndex, DataPtr^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPtr^), FDelta);
    Inc(DataPtr);
   end;
 end;
@@ -1305,13 +1326,19 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   CheckEquals(SampleIndex, DataPtr^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPtr^), FDelta);
    Inc(DataPtr);
   end;
 end;
 
 
 { TTestConvertInt16LSBFromFloat32 }
+
+function TTestConvertInt16LSBFromFloat32.DataPostProcessing(
+  Data: Word): Word;
+begin
+ Result := Data;
+end;
 
 procedure TTestConvertInt16LSBFromFloat32.SetUp;
 begin
@@ -1322,6 +1349,12 @@ end;
 
 
 { TTestConvertInt16MSBFromFloat32 }
+
+function TTestConvertInt16MSBFromFloat32.DataPostProcessing(
+  Data: Word): Word;
+begin
+ Result := Swap16(Data);
+end;
 
 procedure TTestConvertInt16MSBFromFloat32.SetUp;
 begin
@@ -1366,7 +1399,7 @@ begin
  // assign function under test
  TestFunction := Pointer(FFunctionBinding.Prototype^);
 
- // convert integer data to float
+ // convert float data to integer
  TestFunction(FData, PSingle(FAudioMemory32.DataPointer),
    FAudioMemory32.SampleCount);
 
@@ -1376,9 +1409,9 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   DataValue := DataPtr^ shl 16;            Inc(DataPtr);
-   DataValue := DataValue + DataPtr^ shl 8; Inc(DataPtr);
-   DataValue := DataValue + DataPtr^;       Inc(DataPtr);
+   DataValue := DataPtr^;                    Inc(DataPtr);
+   DataValue := DataValue + DataPtr^ shl  8; Inc(DataPtr);
+   DataValue := DataValue + DataPtr^ shl 16; Inc(DataPtr);
    CheckEquals(SampleIndex, DataValue, 1E-7);
   end;
 end;
@@ -1413,23 +1446,29 @@ var
   DataPointer  : PByte;
   FloatPointer : PSingle;
   TestFunction : TTestFunction;
+  DataValue    : Integer;
 begin
  // use processor specific binding
  FFunctionBinding.RebindProcessorSpecific;
 
- // clear audio memory
- FAudioMemory32.Clear;
-
  // assign function under test
  TestFunction := Pointer(FFunctionBinding.Prototype^);
 
- // convert float data to integer
- TestFunction(FData, PSingle(FAudioMemory32.DataPointer),
-   FAudioMemory32.SampleCount - 1);
+ // convert integer data to float
+ TestFunction(FData, PSingle(FAudioMemory32.DataPointer), 3);
+
+ // assign data pointer
+ DataPointer := FData;
 
  // check if data has been converted correctly
- for SampleIndex := 0 to FAudioMemory32.SampleCount - 2
-  do CheckEquals((SampleIndex / $7FFFFF), FAudioMemory32.DataPointer^[SampleIndex], 1E-7);
+ for SampleIndex := 0 to 2 do
+  begin
+   DataValue := DataPointer^;                    Inc(DataPointer);
+   DataValue := DataValue + DataPointer^ shl  8; Inc(DataPointer);
+   DataValue := DataValue + DataPointer^ shl 16; Inc(DataPointer);
+
+   CheckEquals(SampleIndex, DataValue, FDelta);
+  end;
 
  // get unaligned pointers
  DataPointer := FData;
@@ -1440,17 +1479,25 @@ begin
  // convert integer data to float
  TestFunction(DataPointer, FloatPointer, 1);
 
- // check if sample has been converted correctly
- CheckEquals(1 / $7FFFFF, FAudioMemory32.Data[1], 1E-9);
+ DataValue := DataPointer^;                    Inc(DataPointer);
+ DataValue := DataValue + DataPointer^ shl  8; Inc(DataPointer);
+ DataValue := DataValue + DataPointer^ shl 16; Inc(DataPointer);
 
- Inc(DataPointer, 3);
+ // check if sample has been converted correctly
+ CheckEquals(1, DataValue, FDelta);
 
  // convert integer data to float
  TestFunction(DataPointer, FloatPointer, FAudioMemory32.SampleCount - 17);
 
  // check if data has been converted correctly
- for SampleIndex := 1 to FAudioMemory32.SampleCount - 17
-  do CheckEquals(((SampleIndex + 1) / $7FFFFF), FAudioMemory32.DataPointer^[SampleIndex], 1E-7);
+ for SampleIndex := 1 to FAudioMemory32.SampleCount - 17 do
+  begin
+   DataValue := DataPointer^;                    Inc(DataPointer);
+   DataValue := DataValue + DataPointer^ shl  8; Inc(DataPointer);
+   DataValue := DataValue + DataPointer^ shl 16; Inc(DataPointer);
+
+   CheckEquals(SampleIndex, DataValue, FDelta);
+  end;
 end;
 
 procedure TCustomTestConvertInt24LSBFromFloat32.SpeedTestNative;
@@ -1464,6 +1511,9 @@ begin
  // use compatibility binding
  FFunctionBinding.Rebind([]);
 
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
+
  // process a sequence of block converts
  for LoopIndex := 1 to CSpeedTestCount
   do TestFunction(FData, PSingle(FAudioMemory32.DataPointer),
@@ -1475,9 +1525,9 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   DataValue := DataPtr^ shl 16;            Inc(DataPtr);
-   DataValue := DataValue + DataPtr^ shl 8; Inc(DataPtr);
-   DataValue := DataValue + DataPtr^;       Inc(DataPtr);
+   DataValue := DataPtr^;                    Inc(DataPtr);
+   DataValue := DataValue + DataPtr^ shl  8; Inc(DataPtr);
+   DataValue := DataValue + DataPtr^ shl 16; Inc(DataPtr);
    CheckEquals(SampleIndex, DataValue, 1E-7);
   end;
 end;
@@ -1493,6 +1543,9 @@ begin
  // use SSE/SSE2 binding
  FFunctionBinding.Rebind([pfSSE, pfSSE2]);
 
+ // assign function under test
+ TestFunction := Pointer(FFunctionBinding.Prototype^);
+
  // process a sequence of block converts
  for LoopIndex := 1 to CSpeedTestCount
   do TestFunction(FData, PSingle(FAudioMemory32.DataPointer),
@@ -1504,9 +1557,9 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   DataValue := DataPtr^ shl 16;            Inc(DataPtr);
-   DataValue := DataValue + DataPtr^ shl 8; Inc(DataPtr);
-   DataValue := DataValue + DataPtr^;       Inc(DataPtr);
+   DataValue := DataPtr^;                    Inc(DataPtr);
+   DataValue := DataValue + DataPtr^ shl  8; Inc(DataPtr);
+   DataValue := DataValue + DataPtr^ shl 16; Inc(DataPtr);
    CheckEquals(SampleIndex, DataValue, 1E-7);
   end;
 end;
@@ -1536,9 +1589,6 @@ end;
 
 procedure TCustomTestConvertInt32FromFloat32.SetUp;
 begin
- // set maximum integer
- FMaxIntValue := $7FFFFFFF;
-
  inherited;
 
  // define test delta
@@ -1576,7 +1626,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   CheckEquals(SampleIndex, DataPtr^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPtr^), 1E-7);
    Inc(DataPtr);
   end;
 end;
@@ -1635,7 +1685,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to 2 do
   begin
-   CheckEquals(SampleIndex, DataPointer^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPointer^), 1E-7);
    Inc(DataPointer);
   end;
 
@@ -1649,7 +1699,7 @@ begin
  TestFunction(DataPointer, FloatPointer, 1);
 
  // check if sample has been converted correctly
- CheckEquals(1, DataPointer^, 1E-7);
+ CheckEquals(1, DataPostProcessing(DataPointer^), 1E-7);
 
  Inc(DataPointer);
 
@@ -1660,7 +1710,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 1 to FAudioMemory32.SampleCount - 17 do
   begin
-   CheckEquals(SampleIndex, DataPointer^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPointer^), 1E-7);
    Inc(DataPointer);
   end;
 end;
@@ -1689,7 +1739,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   CheckEquals(SampleIndex, DataPtr^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPtr^), 1E-7);
    Inc(DataPtr);
   end;
 end;
@@ -1718,7 +1768,7 @@ begin
  // check if data has been converted correctly
  for SampleIndex := 0 to FAudioMemory32.SampleCount - 1 do
   begin
-   CheckEquals(SampleIndex, DataPtr^, 1E-7);
+   CheckEquals(SampleIndex, DataPostProcessing(DataPtr^), 1E-7);
    Inc(DataPtr);
   end;
 end;
@@ -1726,19 +1776,38 @@ end;
 
 { TTestConvertInt32LSBFromFloat32 }
 
+function TTestConvertInt32LSBFromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Data;
+end;
+
 procedure TTestConvertInt32LSBFromFloat32.SetUp;
 begin
+ // set function binding
  FFunctionBinding := BindingBlockConvertInt32LSBFromFloat32;
- FMaxIntValue     := $7FFFFFFF;
+
+ // set maximum integer
+ FMaxIntValue := $7FFFFFFF;
+
  inherited;
 end;
 
 
 { TTestConvertInt32LSB16FromFloat32 }
 
+function TTestConvertInt32LSB16FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Data;
+end;
+
 procedure TTestConvertInt32LSB16FromFloat32.SetUp;
 begin
+ // set function binding
  FFunctionBinding := BindingBlockConvertInt32LSB16FromFloat32;
+
+ // set maximum integer
  FMaxIntValue     := $7FFF;
 
  inherited;
@@ -1749,6 +1818,12 @@ end;
 
 
 { TTestConvertInt32LSB18FromFloat32 }
+
+function TTestConvertInt32LSB18FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Data;
+end;
 
 procedure TTestConvertInt32LSB18FromFloat32.SetUp;
 begin
@@ -1764,6 +1839,12 @@ end;
 
 { TTestConvertInt32LSB20FromFloat32 }
 
+function TTestConvertInt32LSB20FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Data;
+end;
+
 procedure TTestConvertInt32LSB20FromFloat32.SetUp;
 begin
  FFunctionBinding := BindingBlockConvertInt32LSB20FromFloat32;
@@ -1777,6 +1858,12 @@ end;
 
 
 { TTestConvertInt32LSB24FromFloat32 }
+
+function TTestConvertInt32LSB24FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Data;
+end;
 
 procedure TTestConvertInt32LSB24FromFloat32.SetUp;
 begin
@@ -1792,6 +1879,12 @@ end;
 
 { TTestConvertInt32MSBFromFloat32 }
 
+function TTestConvertInt32MSBFromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Swap32(Data);
+end;
+
 procedure TTestConvertInt32MSBFromFloat32.SetUp;
 begin
  FFunctionBinding := BindingBlockConvertInt32MSBFromFloat32;
@@ -1801,6 +1894,12 @@ end;
 
 
 { TTestConvertInt32MSB16FromFloat32 }
+
+function TTestConvertInt32MSB16FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Swap32(Data);
+end;
 
 procedure TTestConvertInt32MSB16FromFloat32.SetUp;
 begin
@@ -1816,6 +1915,12 @@ end;
 
 { TTestConvertInt32MSB18FromFloat32 }
 
+function TTestConvertInt32MSB18FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Swap32(Data);
+end;
+
 procedure TTestConvertInt32MSB18FromFloat32.SetUp;
 begin
  FFunctionBinding := BindingBlockConvertInt32MSB18FromFloat32;
@@ -1830,6 +1935,12 @@ end;
 
 { TTestConvertInt32MSB20FromFloat32 }
 
+function TTestConvertInt32MSB20FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Swap32(Data);
+end;
+
 procedure TTestConvertInt32MSB20FromFloat32.SetUp;
 begin
  FFunctionBinding := BindingBlockConvertInt32MSB20FromFloat32;
@@ -1843,6 +1954,12 @@ end;
 
 
 { TTestConvertInt32MSB24FromFloat32 }
+
+function TTestConvertInt32MSB24FromFloat32.DataPostProcessing(
+  Data: Integer): Integer;
+begin
+ Result := Swap32(Data);
+end;
 
 procedure TTestConvertInt32MSB24FromFloat32.SetUp;
 begin

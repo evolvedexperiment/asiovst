@@ -119,6 +119,10 @@ var
   BindingBlockConvertInt32MSB20FromFloat32 : TFunctionBinding;
   BindingBlockConvertInt32MSB24FromFloat32 : TFunctionBinding;
 
+
+{ Binding List }
+
+var
   BindingBlockConvertToFloat32   : TFunctionBindingList;
   BindingBlockConvertFromFloat32 : TFunctionBindingList;
 
@@ -497,7 +501,7 @@ asm
  MOV     BL, [EDX + 2]
  MOV     BH, [EDX + 1]
  ROR     EBX, 8
- MOV     BH, [EAX]
+ MOV     BH, [EDX]
  ROL     EBX, 8
 
  MOV     [ESP - 4], EBX
@@ -792,9 +796,9 @@ asm
 
  MOV     EBX, [ESP - 4]
  AND     EBX, $FFFFFF
- MOV     [EDX].DWord, EBX
+ MOV     [EAX].DWord, EBX
 
- ADD     EDX, 3
+ ADD     EAX, 3
  ADD     ECX, 1
  JS      @Start
 
@@ -1002,8 +1006,8 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
- LEA     EDX, EDX + ECX * 2
+ LEA     EAX, EAX + ECX * 2
+ LEA     EDX, EDX + ECX * 4
  NEG     ECX
  JNL     @Done
 
@@ -1047,7 +1051,7 @@ begin
 end;
 {$ELSE}
 asm
- LEA     EAX, EAX + ECX * 4
+ LEA     EDX, EDX + ECX * 4
  NEG     ECX
  JNL     @Done
 
@@ -1055,19 +1059,16 @@ asm
  PUSH    EBX
 
 @Start:
- XOR     EBX, EBX
-
- MOV     BL, [EDX + 2]
- MOV     BH, [EDX + 1]
- ROR     EBX, 8
- MOV     BH, [EAX]
- ROL     EBX, 8
-
- MOV     [ESP-4], EBX
- FILD    [ESP-4].Single
+ FLD     [EDX + ECX * 4].Single
  FMUL    ST(0), ST(1)
- FSTP    [EAX + ECX * 4].Single
- ADD     EDX, 3
+ FISTP   [ESP - 4].Single
+ MOV     EBX, [ESP - 4]
+ MOV     [EAX], BL
+ MOV     [EAX + 1], BH
+ ROR     EBX, 8
+ MOV     [EAX + 2], BH
+
+ ADD     EAX, 3
  ADD     ECX, 1
  JS      @Start
 

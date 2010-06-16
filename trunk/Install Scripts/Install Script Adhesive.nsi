@@ -94,7 +94,6 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
 Section "Adhesive VST-Plugin" SecVstPlugin
