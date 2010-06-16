@@ -3538,7 +3538,11 @@ begin
        try
         RootKey := HKEY_LOCAL_MACHINE;
         if OpenKeyReadOnly(PROXY_REGKEY)
+         {$IFDEF DELPHI2010_UP}
          then str := GetDataAsString(PROXY_REGVAL)
+         {$ELSE}
+         then str := ReadString(PROXY_REGVAL)
+         {$ENDIF}
          else raise Exception.Create('Error: jBridge not found!');
        finally
         Free;
