@@ -87,6 +87,7 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -97,7 +98,7 @@ FunctionEnd
 
 ;Installer Sections
 
-Section "VstOpcodeLogger VST-Plugin" SecVstPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\VstOpcodeLogger.dll" "..\Bin\Vst Opcode Logger.dll"'  
@@ -144,13 +145,16 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Descriptions
+;Language strings
 
-  ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VstOpcodeLogger VST Plugin"
 
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "VstOpcodeLogger VST Plugin"
+
+
+;--------------------------------
+;Descriptions
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

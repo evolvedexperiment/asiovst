@@ -97,7 +97,7 @@ FunctionEnd
 ;--------------------------------
 ;Installer Sections
 
-Section "Exciter VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\ChebyshevExciter.dll" "..\Bin\Chebyshev Exciter.dll"'
@@ -127,7 +127,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Exciter.exe"
 SectionEnd
 
-Section "Exciter Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -140,7 +140,9 @@ Section "Exciter Manual" SecManual
   WriteUninstaller "$INSTDIR\Uninstall_Exciter.exe"
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -155,7 +157,7 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Installer Functions
+;Language Strings
 
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Exciter VST Plugin"

@@ -96,14 +96,16 @@ Section "Manual" SecManual
 SectionEnd
 
 ;--------------------------------
-;Descriptions
+;Language strings
 
-  ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VST Plugin Screenshot Tool Program Files"
 
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "VST Plugin Screenshot Tool Program Files"
   LangString DESC_SecManual ${LANG_ENGLISH} "VST Plugin Screenshot Tool Manual"
+
+;--------------------------------
+;Descriptions
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
