@@ -87,6 +87,7 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
@@ -94,10 +95,9 @@ FunctionEnd
 ;  !insertmacro MUI_LANGUAGE "German"
 
 ;--------------------------------
-
 ;Installer Sections
 
-Section "VSTPascalScript VST-Plugin" SecVstPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -142,13 +142,15 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Descriptions
+;Language strings
 
-  ;Language strings
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VSTPascalScript VST Plugin"
 
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "VSTPascalScript VST Plugin"
+
+;--------------------------------
+;Descriptions
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
