@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -27,10 +28,12 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
+
 ;--------------------------------
 ;Variables
 
   Var BugReportState
+
 
 ;--------------------------------
 ;Interface Settings
@@ -44,6 +47,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -51,6 +55,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT HKLM 
   !define MUI_LANGDLL_REGISTRY_KEY PRODUCT_DIR_REGKEY
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
 
 ;--------------------------------
 ;Reserve Files
@@ -64,6 +69,8 @@ SetCompressor lzma
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
+
+;--------------------------------
 ;Installer Functions
 
 Function .onInit
@@ -72,6 +79,7 @@ Function .onInit
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
+
 
 ;--------------------------------
 ;Pages
@@ -87,16 +95,18 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
 
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
+
 ;--------------------------------
 ;Installer Sections
 
-Section "Adhesive VST-Plugin" SecVstPlugin
+Section "VST-Plugin" SecVstPlugin
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -124,7 +134,10 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Adhesive.exe"
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -138,22 +151,21 @@ Function BugReportPatch
   NoVST:
 FunctionEnd
 
-;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Adhesive VST Plugin"
 
 ;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Adhesive VST Plugin"
+
   LangString DESC_SecVstPlugin ${LANG_ENGLISH} "Adhesive VST Plugin"
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVstPlugin} $(DESC_SecVstPlugin)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section

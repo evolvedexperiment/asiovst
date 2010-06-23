@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -27,10 +28,12 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
+
 ;--------------------------------
 ;Variables
 
   Var BugReportState
+
 
 ;--------------------------------
 ;Interface Settings
@@ -45,6 +48,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -52,6 +56,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
 
 ;--------------------------------
 ;Reserve Files
@@ -65,6 +70,8 @@ SetCompressor lzma
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
+
+;--------------------------------
 ;Installer Functions
 
 Function .onInit
@@ -73,6 +80,7 @@ Function .onInit
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
+
 
 ;--------------------------------
 ;Pages
@@ -88,16 +96,18 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
 
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
+
 ;--------------------------------
 ;Installer Sections
 
-Section "Clipper VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\AdvancedClipper.dll" "..\Bin\Advanced Clipper.dll"'  
@@ -127,7 +137,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Advanced_Clipper.exe"
 SectionEnd
 
-Section "Clipper Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -140,7 +150,10 @@ Section "Clipper Manual" SecManual
   WriteUninstaller "$INSTDIR\Uninstall_Advanced_Clipper.exe"
 SectionEnd
 
-;--------------------- Install VST Plugin --------------------
+
+;--------------------------------
+;Installer Functions
+
 Function BugReportPatch
   ${If} ${SectionIsSelected} ${SecVSTPlugin}
   Goto IsVST
@@ -155,15 +168,12 @@ Function BugReportPatch
 FunctionEnd
 
 ;--------------------------------
-;Installer Functions
-
-  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
-  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Advanced Clipper VST Plugin"
-
-;--------------------------------
 ;Descriptions
 
   ;Language strings
+  LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
+  LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Advanced Clipper VST Plugin"
+
   LangString DESC_SecVSTPlugin ${LANG_ENGLISH} "Advanced Clipper VST Plugin"
   LangString DESC_SecManual ${LANG_ENGLISH} "Advanced Clipper Manual"
 
@@ -172,6 +182,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section

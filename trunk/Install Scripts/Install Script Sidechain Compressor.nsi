@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -27,10 +28,12 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
+
 ;--------------------------------
 ;Variables
 
   Var BugReportState
+
 
 ;--------------------------------
 ;Interface Settings
@@ -45,6 +48,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -52,6 +56,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
 
 ;--------------------------------
 ;Reserve Files
@@ -65,6 +70,8 @@ SetCompressor lzma
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
+
+;--------------------------------
 ;Installer Functions
 
 Function .onInit
@@ -73,6 +80,7 @@ Function .onInit
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
+
 
 ;--------------------------------
 ;Pages
@@ -87,17 +95,19 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
-;--------------------------------
 
+;--------------------------------
 ;Installer Sections
 
-Section "Sidechain Compressor VST-Plugin" SecVSTPlugin
+Section "VST-Plugin" SecVSTPlugin
   SetOutPath "$INSTDIR"
   
   !system 'copy "..\Bin\SidechainCompressor.dll" "..\Bin\Sidechain Compressor.dll"'  
@@ -127,7 +137,7 @@ SkipDLLCall:
   WriteUninstaller "$INSTDIR\Uninstall_Sidechain_Compressor.exe"
 SectionEnd
 
-Section "Sidechain Compressor Manual" SecManual
+Section "Manual" SecManual
   SetOutPath "$INSTDIR"
   
   ;ADD YOUR OWN FILES HERE...
@@ -139,6 +149,7 @@ Section "Sidechain Compressor Manual" SecManual
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall_Sidechain_Compressor.exe"
 SectionEnd
+
 
 ;--------------------------------
 ;Installer Functions
@@ -156,6 +167,7 @@ Function BugReportPatch
   NoVST:
 FunctionEnd
 
+
 ;--------------------------------
 ;Descriptions
 
@@ -171,6 +183,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section

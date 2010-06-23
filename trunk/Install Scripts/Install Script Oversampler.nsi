@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -27,10 +28,12 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
+
 ;--------------------------------
 ;Variables
 
   Var BugReportState
+
 
 ;--------------------------------
 ;Interface Settings
@@ -43,6 +46,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -50,6 +54,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
   !define MUI_LANGDLL_REGISTRY_KEY "Software\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
 
 ;--------------------------------
 ;Reserve Files
@@ -63,6 +68,8 @@ SetCompressor lzma
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
+
+;--------------------------------
 ;Installer Functions
 
 Function .onInit
@@ -71,6 +78,7 @@ Function .onInit
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
+
 
 ;--------------------------------
 ;Pages
@@ -85,12 +93,15 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
 
 ;--------------------------------
 ;Installer Sections
@@ -151,6 +162,7 @@ SkipDLLCall:
 
 SectionEnd
 
+
 ;--------------------------------
 ;Installer Functions
 
@@ -166,6 +178,7 @@ Function BugReportPatch
 
   NoExecutable:
 FunctionEnd
+
 
 ;--------------------------------
 ;Descriptions
@@ -184,6 +197,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecExecutable} $(DESC_SecExecutable)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecShellExtension} $(DESC_SecShellExtension)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section
