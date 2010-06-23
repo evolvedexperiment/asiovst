@@ -194,8 +194,8 @@ type
     procedure SetSampleRate(Value: Double);
     procedure PostAsioMessage(AsioMessage: TAsioMessage; Value: Integer = 0);
   protected
-    class function GetInputChannelClass: TAsioChannelInputClass;
-    class function GetOutputChannelClass: TAsioChannelOutputClass;
+    class function GetInputChannelClass: TAsioChannelInputClass; virtual;
+    class function GetOutputChannelClass: TAsioChannelOutputClass; virtual;
     {$IFDEF FPC}
     procedure WndProc(var Msg: TLMessage);
     procedure PMAsio(var Message: TLMessage); message PM_Asio;
@@ -323,6 +323,7 @@ begin
 end;
 {$IFDEF DELPHI10_UP} {$endregion 'Global functions'} {$ENDIF}
 
+(*
 function GetInputConverter(ConverterType: TAsioSampleType): TInConverter;
 begin
  case ConverterType of
@@ -372,6 +373,7 @@ begin
   else raise EAsioHost.Create(RStrConverterTypeUnknown);
  end;
 end;
+*)
 
 {$IFDEF DELPHI10_UP} {$region 'Asio callback functions'} {$ENDIF}
 procedure DefaultBufferSwitch(DoubleBufferIndex: Integer; DirectProcess: TAsioBool); cdecl;

@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -27,8 +28,6 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
-;--------------------------------
-;Variables
 
 ;--------------------------------
 ;Interface Settings
@@ -41,6 +40,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_KEY "Software\Delphi ASIO & VST Packages\Uninstall\${PRODUCT_NAME}"
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -50,6 +50,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
   !define MUI_FINISHPAGE_NOAUTOCLOSE
 
+
 ;--------------------------------
 ;Reserve Files
   
@@ -58,6 +59,7 @@ SetCompressor lzma
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
 
 ;--------------------------------
 ;Pages
@@ -69,12 +71,15 @@ SetCompressor lzma
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
+
 
 ;--------------------------------
 ;Installer Sections
@@ -92,6 +97,7 @@ Section "ASIO-Host Driver" SecAsioHostDriver
 
 SectionEnd
 
+
 ;--------------------------------
 ;Descriptions
 
@@ -105,6 +111,7 @@ SectionEnd
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${SecAsioHostDriver} $(DESC_SecAsioHostDriver)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section

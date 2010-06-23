@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -24,6 +25,7 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
+
 ;--------------------------------
 ;Interface Settings
 
@@ -37,6 +39,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -44,6 +47,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_ROOT "HKLM" 
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
+
 
 ;--------------------------------
 ;Pages
@@ -57,14 +61,16 @@ SetCompressor lzma
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
-;--------------------------------
 
+;--------------------------------
 ;Installer Sections
 
 Section "Program Files" SecProgramFiles
@@ -95,6 +101,7 @@ Section "Manual" SecManual
   WriteUninstaller "$INSTDIR\Uninstall_Equalized_Noise_Generator.exe"
 SectionEnd
 
+
 ;--------------------------------
 ;Descriptions
 
@@ -110,6 +117,7 @@ SectionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecProgramFiles} $(DESC_SecProgramFiles)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section

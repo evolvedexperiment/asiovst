@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -26,6 +27,7 @@ SetCompressor lzma
 
   ; Turn on the xp style of drawing
   XPStyle ON
+
 
 ;--------------------------------
 ;Interface Settings
@@ -48,6 +50,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
+
 ;--------------------------------
 ;Pages
 
@@ -60,14 +63,15 @@ SetCompressor lzma
   !insertmacro MUI_UNPAGE_WELCOME
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
-;--------------------------------
 
+;--------------------------------
 ;Installer Sections
 
 Section "VST-Plugin Scanner" SecProgramFiles
@@ -85,14 +89,18 @@ Section "VST-Plugin Scanner" SecProgramFiles
   WriteUninstaller "$INSTDIR\Uninstall_VST-Plugin_Scanner.exe"
 SectionEnd
 
-;--------------------------------
-;Descriptions
 
-  ;Language strings
+;--------------------------------
+;Language strings
+
   LangString TEXT_IO_TITLE ${LANG_ENGLISH} "InstallOptions page"
   LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "VST-Plugin Scanner"
 
   LangString DESC_SecProgramFiles ${LANG_ENGLISH} "VST-Plugin Scanner"
+
+
+;--------------------------------
+;Descriptions
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN

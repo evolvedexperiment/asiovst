@@ -9,6 +9,7 @@ SetCompressor lzma
 ;  !include "Sections.nsh"
   !include "MUI.nsh"
 
+
 ;--------------------------------
 ;General
 
@@ -27,10 +28,12 @@ SetCompressor lzma
   ; Turn on the xp style of drawing
   XPStyle ON
 
+
 ;--------------------------------
 ;Variables
 
   Var BugReportState
+
 
 ;--------------------------------
 ;Interface Settings
@@ -45,6 +48,7 @@ SetCompressor lzma
   !define PRODUCT_UNINST_ROOT_KEY "HKLM"
   !define MUI_ABORTWARNING
 
+
 ;--------------------------------
 ;Language Selection Dialog Settings
 
@@ -53,6 +57,7 @@ SetCompressor lzma
   !define MUI_LANGDLL_REGISTRY_KEY "SOFTWARE\Delphi ASIO & VST Packages\${PRODUCT_NAME}"
   !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
+
 ;--------------------------------
 ;Reserve Files
   
@@ -60,11 +65,13 @@ SetCompressor lzma
   ;Keep these lines before any File command
   ;Only for solid compression (by default, solid compression is enabled for BZIP2 and LZMA)
   
-    ReserveFile "madExcept Patch.dll"
-    ReserveFile "ioBugReport.ini"
+  ReserveFile "madExcept Patch.dll"
+  ReserveFile "ioBugReport.ini"
   !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
 ;  !insertmacro MUI_RESERVEFILE_LANGDLL
 
+
+;--------------------------------
 ;Installer Functions
 
 Function .onInit
@@ -73,6 +80,7 @@ Function .onInit
   !insertmacro MUI_INSTALLOPTIONS_EXTRACT "ioBugReport.ini"
 
 FunctionEnd
+
 
 ;--------------------------------
 ;Pages
@@ -88,11 +96,13 @@ FunctionEnd
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
 
+
 ;--------------------------------
 ;Languages
  
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
+
 
 ;--------------------------------
 ;Installer Sections
@@ -143,6 +153,7 @@ Section "Manual" SecManual
   WriteUninstaller "$INSTDIR\Uninstall_Lightweight_Compressor.exe"
 SectionEnd
 
+
 ;--------------------------------
 ;Installer Functions
 
@@ -159,6 +170,7 @@ Function BugReportPatch
   NoVST:
 FunctionEnd
 
+
 ;--------------------------------
 ;Descriptions
 
@@ -174,6 +186,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecVSTPlugin} $(DESC_SecVSTPlugin)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecManual} $(DESC_SecManual)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 
 ;--------------------------------
 ;Uninstaller Section

@@ -164,21 +164,21 @@ var
   temp     : AnsiString;
   MenuItem : TMenuItem;
 begin
-  with VstHost[0] do
-   begin
-    Active := False;
-    DLLFileName := DLLName;
-    Active := True;
-    Idle;
-    ShowEdit(TForm(VSTPanel));
-    Idle;
-    EditIdle;
-    Caption :=  GetVendorString + ' ' + GetEffectName;
-    SetLength(VSTInBuffer,numInputs);
-    SetLength(VSTOutBuffer,numOutputs);
-    for i := 0 to numInputs  - 1 do SetLength(VSTInBuffer[i], VSTHost.BlockSize);
-    for i := 0 to numOutputs - 1 do SetLength(VSTOutBuffer[i], VSTHost.BlockSize);
-   end;
+ with VstHost[0] do
+  begin
+   Active := False;
+   DLLFileName := DLLName;
+   Active := True;
+   Idle;
+   ShowEdit(TForm(VSTPanel));
+   Idle;
+   EditIdle;
+   Caption :=  GetVendorString + ' ' + GetEffectName;
+   SetLength(VSTInBuffer,numInputs);
+   SetLength(VSTOutBuffer,numOutputs);
+   for i := 0 to numInputs  - 1 do SetLength(VSTInBuffer[i], VSTHost.BlockSize);
+   for i := 0 to numOutputs - 1 do SetLength(VSTOutBuffer[i], VSTHost.BlockSize);
+  end;
 
  while MIPrograms.Count > 3 do MIPrograms.Delete(3);
  for i := 0 to VstHost[0].numPrograms - 1 do
