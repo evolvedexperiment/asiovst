@@ -106,23 +106,33 @@ end;
 procedure TFmChunkDemo.FormCreate(Sender: TObject);
 var
   RS       : TResourceStream;
+{$IFDEF DELPHI2010_UP}
+  PngBmp   : TPngImage;
+{$ELSE}
   PngBmp   : TPngObject;
+{$ENDIF}
 (*
   x, y     : Integer;
   ScanLine : array [0..1] of PByteArray;
   b        : Byte;
 *)
 begin
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'ChunkDemoKnob', 'PNG');
   try
-
+   PngBmp.TransparentColor := Self.Color;
    PngBmp.LoadFromStream(RS);
 
    with DIL.DialImages.Add do
     begin
-     DialBitmap.Assign(PngBmp);
+     DialBitmap.Width := PngBmp.Width;
+     DialBitmap.Height := PngBmp.Height;
+     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
      NumGlyphs := 65;
     end;
 

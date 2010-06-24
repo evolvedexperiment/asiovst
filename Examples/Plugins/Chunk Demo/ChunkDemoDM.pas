@@ -49,12 +49,12 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
+    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
+    function VSTModuleGetChunkParameter(Sender: TObject; const Index: Integer): Single;
     procedure ParameterAlphaChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterBetaChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterGammaChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterDeltaChange(Sender: TObject; const Index: Integer; var Value: Single);
-    function VSTModuleGetChunkParameter(Sender: TObject; const Index: Integer): Single;
-    procedure VSTModuleParameterChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FPitchShifter : array [0..CNumChannels - 1] of TDspGranularPitchShifter32;
     FCrossover    : array [0..CNumChannels - 1] of TLinkwitzRiley;
@@ -119,10 +119,28 @@ begin
   end;
 end;
 
+procedure TChunkDemoDataModule.VSTModuleClose(Sender: TObject);
+var
+  Channel : Integer;
+begin
+ FreeAndNil(FCompressor);
+ for Channel := 0 to CNumChannels - 1 do
+  begin
+   FreeAndNil(FPitchShifter[Channel]);
+   FreeAndNil(FCrossover[Channel]);
+   FreeAndNil(FAliasFilter[Channel]);
+  end;
+end;
+
+procedure TChunkDemoDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
+begin
+  GUI := TFmChunkDemo.Create(Self);
+end;
+
 procedure TChunkDemoDataModule.ParameterBetaChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 begin
- if assigned(FCompressor) then
+ if Assigned(FCompressor) then
   with FCompressor do
    begin
     Ratio        := 2 + sqr(0.01 * Value) * 98;
@@ -174,7 +192,7 @@ var
   Channel : Integer;
 begin
  for Channel := 0 to CNumChannels - 1 do
-  if assigned(FCrossover[Channel])
+  if Assigned(FCrossover[Channel])
    then FCrossover[Channel].Frequency := sqr(sqr(0.01 * Value)) * 20000;
 
  Chunk.Position := Index * SizeOf(Single);
@@ -185,29 +203,11 @@ begin
    do UpdateAlpha;
 end;
 
-procedure TChunkDemoDataModule.VSTModuleClose(Sender: TObject);
-var
-  Channel : Integer;
-begin
- FreeAndNil(FCompressor);
- for Channel := 0 to CNumChannels - 1 do
-  begin
-   FreeAndNil(FPitchShifter[Channel]);
-   FreeAndNil(FCrossover[Channel]);
-   FreeAndNil(FAliasFilter[Channel]);
-  end;
-end;
-
-procedure TChunkDemoDataModule.VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
-begin
-  GUI := TFmChunkDemo.Create(Self);
-end;
-
 function TChunkDemoDataModule.VSTModuleGetChunkParameter(Sender: TObject;
   const Index: Integer): Single;
 begin
  Chunk.Position := Index * SizeOf(Single);
- Chunk.Read(result, SizeOf(Single));
+ Chunk.Read(Result, SizeOf(Single));
 end;
 
 procedure TChunkDemoDataModule.VSTModuleParameterChange(Sender: TObject;
@@ -222,7 +222,7 @@ var
   Sample    : Integer;
   Low, High : array [0..1] of Single;
 begin
- assert(CNumChannels = 2);
+ Assert(CNumChannels = 2);
  for Sample := 0 to SampleFrames - 1 do
   begin
    FCrossover[0].ProcessSample(Inputs[0, Sample], Low[0], High[0]);

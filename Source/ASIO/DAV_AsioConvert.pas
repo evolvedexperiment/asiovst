@@ -4230,10 +4230,13 @@ begin
  Use_FPU;
 
  {$IFNDEF FPC}
- if ssSSE in ProcessorInfo.SupportsSSE
-  then Use_SSE;
- if ProcessorInfo.Has3DNow
-  then Use_3DNow;
+ if Assigned(ProcessorInfo) then
+  begin
+   if ssSSE in ProcessorInfo.SupportsSSE
+    then Use_SSE;
+   if ProcessorInfo.Has3DNow
+    then Use_3DNow;
+  end;
  {$ENDIF}
 end;
 

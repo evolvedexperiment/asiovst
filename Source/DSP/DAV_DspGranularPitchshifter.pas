@@ -432,7 +432,6 @@ begin
  inc(FBufferPos);
  if FBufferPos >= FBufferSize then FBufferPos := 0;
 
- i := 0;
  for i := 0 to Stages - 1 do
   with FPitchShifterStage[i] do
    begin
@@ -543,7 +542,6 @@ begin
  inc(FBufferPos);
  if FBufferPos >= FBufferSize then FBufferPos := 0;
 
- i := 0;
  for i := 0 to Stages - 1 do
   with FPitchShifterStage[i] do
    begin

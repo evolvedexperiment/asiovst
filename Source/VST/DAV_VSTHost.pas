@@ -1368,7 +1368,7 @@ begin
    end;
   if Assigned(FVTI) then FreeAndNil(FVTI);
   {$IFDEF SearchPluginAndHost}
-  assert(Assigned(GHostList));
+  Assert(Assigned(GHostList));
   GHostList.Remove(Self);
   {$ENDIF}
  finally
@@ -1394,13 +1394,13 @@ end;
 
 function TCustomVstHost.GetPluginCount: Integer;
 begin
- assert(Assigned(FVstPlugIns));
+ Assert(Assigned(FVstPlugIns));
  Result := FVstPlugIns.Count;
 end;
 
 procedure TCustomVstHost.SetVstPlugIns(const Value: TVstPlugIns);
 begin
- assert(Assigned(FVstPlugIns));
+ Assert(Assigned(FVstPlugIns));
  FVstPlugIns.Assign(Value);
 end;
 
@@ -2018,7 +2018,7 @@ end;
 procedure TCustomVstPlugIn.SetProgramName(const NewName: AnsiString);
 begin
  if FActive
-  then VstDispatch(effSetProgramName, 0, 0, PAnsiChar(NewName));
+  then VstDispatch(effSetProgramName, 0, 0, PAnsiChar(NewName[1]));
 end;
 
 function TCustomVstPlugIn.GetProgramName: AnsiString;
@@ -2851,7 +2851,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(Result) <= 32);
+    then Assert(Length(Result) <= 32);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2877,7 +2877,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(Result) <= 256);
+    then Assert(Length(Result) <= 256);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2929,7 +2929,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(Result) <= 64);
+    then Assert(Length(Result) <= 64);
  finally
   // dispose memory
   Dispose(Temp);
@@ -2955,7 +2955,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(Result) <= 64);
+    then Assert(Length(Result) <= 64);
  finally
   // dispose memory
   Dispose(Temp);
@@ -3235,7 +3235,7 @@ begin
   // check whether the Result string accords to the specs
   if Assigned(Collection) and Assigned(TVSTPlugins(Collection).VSTHost) then
    if TVSTPlugins(Collection).VSTHost.CheckStringLengths
-    then assert(Length(PluginName) <= 64);
+    then Assert(Length(PluginName) <= 64);
  finally
   // dispose memory
   Dispose(Temp);
@@ -3738,7 +3738,7 @@ var
   FXPreset   : TFXPreset;
 begin
  Stream.Seek(0, 0);
- if not Assigned(FVstEffect) then exit;
+ if not Assigned(FVstEffect) then Exit;
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkSet do
    begin
@@ -3798,12 +3798,12 @@ begin
 
  // read chunk magic
  Stream.Read(ChunkName, 4);
- assert(ChunkName = 'CcnK');
+ Assert(ChunkName = 'CcnK');
 
  // check stream size
  Stream.Read(ChunkDataSize, 4);
  Flip32(ChunkDataSize);
- assert(ChunkDataSize <= Stream.Size);
+ Assert(ChunkDataSize <= Stream.Size);
 
  // read fx magic
  Stream.Read(ChunkName, 4);
@@ -3813,10 +3813,10 @@ begin
 
  if UseChunk then
   begin
-   assert(effFlagsProgramChunks in EffectOptions);
+   Assert(effFlagsProgramChunks in EffectOptions);
    Stream.Read(FXChunkBank, SizeOf(TFXChunkBank) - SizeOf(Pointer));
-   assert(FXChunkBank.chunkMagic = 'CcnK');
-   assert(FXChunkBank.fxMagic = 'FBCh');
+   Assert(FXChunkBank.chunkMagic = 'CcnK');
+   Assert(FXChunkBank.fxMagic = 'FBCh');
 
    // swap unique ID
    Flip32(FXChunkBank.fxId);
@@ -3837,8 +3837,8 @@ begin
  else
   begin
    Stream.Read(FXSet, SizeOf(TFXSet) - SizeOf(Pointer));
-   assert(FXSet.chunkMagic = 'CcnK');
-   assert(FXSet.fxMagic = 'FxBk');
+   Assert(FXSet.chunkMagic = 'CcnK');
+   Assert(FXSet.fxMagic = 'FxBk');
 
    // swap
    Flip32(FXSet.fxId);
@@ -3894,7 +3894,7 @@ begin
 // if eoProgramChunks in EffectOptions then
  if UseChunk then
   begin
-   assert(effFlagsProgramChunks in EffectOptions);
+   Assert(effFlagsProgramChunks in EffectOptions);
    Stream.Read(FXChunkset, SizeOf(TFXChunkset) - SizeOf(Pointer));
 
    // check unique ID
@@ -4045,6 +4045,7 @@ end;
 
 initialization
   audioMaster := AudioMasterCallback;
+
   {$IFDEF SearchPluginAndHost}
   GHostList    := TObjectList.Create(False);
   {$ENDIF}

@@ -49,6 +49,8 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbBeta: TGuiLabel
     Left = 79
@@ -63,6 +65,8 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbGamma: TGuiLabel
     Left = 150
@@ -77,6 +81,8 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbDelta: TGuiLabel
     Left = 221
@@ -91,6 +97,8 @@ object FmChunkDemo: TFmChunkDemo
     Font.Height = -37
     Font.Name = 'Symbol'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialBeta: TGuiDial
     Left = 79

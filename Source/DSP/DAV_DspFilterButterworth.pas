@@ -109,6 +109,7 @@ type
     procedure CalculateCoefficients; override;
     procedure ProcessSample(Input: Single; out Lowpass, Highpass: Single); reintroduce; overload;
     procedure ProcessSample(Input: Double; out Lowpass, Highpass: Double); reintroduce; overload;
+    function ProcessSample64(Input: Double): Double; override;
     function MagnitudeSquared(const Frequency: Double): Double; override;
     procedure Complex(const Frequency: Double; out Real, Imaginary: Double); override;
   end;
@@ -1243,6 +1244,13 @@ asm
  fstp [Highpass].Double
  {$ENDIF}
 end;
+
+function TCustomButterworthSplitBandFilter.ProcessSample64(
+  Input: Double): Double;
+begin
+ raise Exception.Create('Please use the function ProcessSample!');
+end;
+
 
 { TButterworthLowPassFilterAutomatable }
 

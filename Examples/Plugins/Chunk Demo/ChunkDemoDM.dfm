@@ -1,5 +1,4 @@
 object ChunkDemoDataModule: TChunkDemoDataModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsProgramChunks]
   Version = '1.0'
   EffectName = 'ChunkDemo'
@@ -7,7 +6,6 @@ object ChunkDemoDataModule: TChunkDemoDataModule
   VendorName = 'Delphi ASIO & VST Project'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Preset 1 '
   IORatio = 1.000000000000000000
   UniqueID = 'Chnk'
@@ -23,7 +21,6 @@ object ChunkDemoDataModule: TChunkDemoDataModule
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Alpha'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -38,7 +35,6 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       OnParameterChange = ParameterAlphaChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Beta'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -53,7 +49,6 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       OnParameterChange = ParameterBetaChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Gamma'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]
@@ -68,7 +63,6 @@ object ChunkDemoDataModule: TChunkDemoDataModule
       OnParameterChange = ParameterGammaChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Delta'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex, ppfParameterSupportsDisplayCategory]

@@ -1,8 +1,8 @@
 program SimpleMp3Player;
 
 uses
-  FastMM4,
-  FastMove,
+  FastMM4, // either download the library or comment if there is an error here
+  FastMove, // either download the library or comment if there is an error here
   Forms,
   SmpMain in 'SmpMain.pas' {FmSimpleMp3Player},
   SmpSetup in 'SmpSetup.pas' {FmSetup};
