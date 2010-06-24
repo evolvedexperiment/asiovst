@@ -859,14 +859,18 @@ uses
   SysUtils, Math, DAV_Common, DAV_Math, DAV_Approximations;
 
 var
+(*
   CHalf64        : Double;
   CQuarter64     : Double;
-  CHalf32        : Single;
-  CQuarter32     : Single;
+*)
 {$IFDEF HandleDenormals}
   CDenorm64      : Double;
   CDenorm32      : Single;
 {$ENDIF}
+(*
+  CHalf32        : Single;
+  CQuarter32     : Single;
+*)
 
 const
   CSoftKnee : array [0..7] of Single = (-8.21343513178931783E-2,
@@ -1801,7 +1805,7 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- Result := Input * Power2(-FSoftKnee[0] * log2(1 + Power2(FSoftKnee[1] * log2(CDenorm32 + FPeak * FThresholdReciprocal))));
+ Result := Input * Power2(-FSoftKnee[0] * Log2(1 + Power2(FSoftKnee[1] * Log2(CDenorm32 + FPeak * FThresholdReciprocal))));
 end;
 
 function TSimpleSoftKneeLimiter.ProcessSample64(Input: Double): Double;
@@ -1810,7 +1814,7 @@ begin
   then FPeak := FPeak + (abs(Input) - FPeak) * FAttackFactor
   else FPeak := abs(Input) + (FPeak - abs(Input)) * FReleaseFactor;
 
- Result := Input * Power2(-FSoftKnee[0] * log2(1 + Power2(FSoftKnee[1] * log2(CDenorm32 + FPeak * FThresholdReciprocal))));
+ Result := Input * Power2(-FSoftKnee[0] * Log2(1 + Power2(FSoftKnee[1] * Log2(CDenorm64 + FPeak * FThresholdReciprocal))));
 end;
 
 function TSimpleSoftKneeLimiter.TranslatePeakToGain(const PeakLevel: Double): Double;
@@ -2966,10 +2970,12 @@ end;
 *)
 
 initialization
+(*
   CHalf32    := DAV_Common.CHalf32;
   CHalf64    := DAV_Common.CHalf64;
   CQuarter32 := DAV_Common.CQuarter32;
   CQuarter64 := DAV_Common.CQuarter64;
+*)
 {$IFDEF HandleDenormals}
   CDenorm32  := DAV_Common.CDenorm32;
   CDenorm64  := DAV_Common.CDenorm64;

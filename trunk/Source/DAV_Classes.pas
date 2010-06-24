@@ -5,7 +5,7 @@ interface
 {$I DAV_Compiler.inc}
 
 uses
-  Classes, DAV_Types, DAV_SampleRateSource;
+  Classes, SysUtils, DAV_Types, DAV_SampleRateSource;
 
 const
   CGUIDDspSink32 : TGUID = '{BF61746A-29F6-445C-A051-1FC0F75F9F3F}';
@@ -16,6 +16,8 @@ const
   CGUIDDspGenerator64 : TGUID = '{4701B987-CE0F-4E7A-BE9D-BA3899114EC0}';
 
 type
+  EDAV = Exception;
+
   // TNotifiablePersistent
   TNotifiablePersistent = class(TInterfacedPersistent)
   private
@@ -169,9 +171,6 @@ var
   GDspProcessors64 : array of TDspPersistentClass;
 
 implementation
-
-uses
-  SysUtils;
 
 resourcestring
   RCStrInvalidSamplerate = 'Invalid Samplerate!';

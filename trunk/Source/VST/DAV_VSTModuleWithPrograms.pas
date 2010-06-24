@@ -268,7 +268,7 @@ begin
  if Assigned(ptr) then
   begin
    if numPrograms > 0
-    then Programs[FCurProgram].DisplayName := StrPas(PChar(ptr));
+    then Programs[FCurProgram].DisplayName := StrPas(PAnsiChar(ptr));
   end;
 end;
 
@@ -371,7 +371,7 @@ begin
     if Assigned(OnStoreChunk)
      then OnStoreChunk(Programs[FCurProgram], FCurProgram, True);
 
-    pointer(ptr^) := Chunk.Memory;
+    Pointer(ptr^) := Chunk.Memory;
     Result := Chunk.Size;
    end
   else
@@ -387,7 +387,7 @@ begin
       tmps.Write(j, 4);
       tmps.Write(Programs[i].Chunk.Memory^, Programs[i].Chunk.Size);
      end;
-    pointer(ptr^) := tmps.Memory;
+    Pointer(ptr^) := tmps.Memory;
     Result := tmps.Size;
    end;
 end;

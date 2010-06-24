@@ -208,7 +208,7 @@ type
 
   TCustomTextChunk = class(TDefinedChunk)
   protected
-    FText  : AnsiString;
+    FText : AnsiString;
     procedure SetText(const Value: AnsiString);
     procedure AssignTo(Dest: TPersistent); override;
     property Text: AnsiString read FText write SetText;

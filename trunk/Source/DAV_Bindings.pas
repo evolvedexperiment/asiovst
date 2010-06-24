@@ -319,9 +319,12 @@ end;
 
 procedure SetProcessorFeatures;
 begin
+ GProcessorFeatures := [];
+ if not Assigned(ProcessorInfo)
+  then Exit;
+
  if ProcessorInfo.HasMMX
-  then GProcessorFeatures := [pfMMX]
-  else GProcessorFeatures := [];
+  then GProcessorFeatures := [pfMMX];
 
  if ProcessorInfo.HasExMMX
   then GProcessorFeatures := GProcessorFeatures + [pfEMMX];
