@@ -327,7 +327,7 @@ procedure TCustomChunk.LoadFromStream(Stream: TStream);
 begin
  with Stream do
   begin
-   assert(Position <= Size + 8);
+   Assert(Position <= Size + 8);
    if cfSizeFirst in ChunkFlags then
     begin
      // order known from PNG
@@ -450,8 +450,8 @@ begin
  with Stream do
   begin
    inherited;
-   assert(FChunkSize <= Size);
-   assert(FChunkName <> #0#0#0#0);
+   Assert(FChunkSize <= Size);
+   Assert(FChunkName <> #0#0#0#0);
    FDataStream.Clear;
    FDataStream.Size := FChunkSize;
    FDataStream.Position := 0;
@@ -519,14 +519,14 @@ begin
      // Assume chunk name fits the defined one
      Position := Position + 4;
      Read(TempChunkName, 4);
-     assert(TempChunkName = FChunkName);
+     Assert(TempChunkName = FChunkName);
      Position := Position - 8;
     end
    else
     begin
      // Assume chunk name fits the defined one
      Read(TempChunkName, 4);
-     assert(TempChunkName = FChunkName);
+     Assert(TempChunkName = FChunkName);
      Position := Position - 4;
     end;
    inherited;
@@ -587,7 +587,7 @@ begin
     else
      begin
       BytesReaded := Read(FStartAddresses[0]^, GetClassChunkSize);
-      assert(BytesReaded = GetClassChunkSize);
+      Assert(BytesReaded = GetClassChunkSize);
       Position := Position + FChunkSize - GetClassChunkSize;
      end;
    if cfPadSize in ChunkFlags
@@ -608,7 +608,7 @@ begin
   // check and eventually add zero pad
   CheckAddZeroPad(Stream);
  except
-  raise Exception.Create('Wrong Start Addess of Chunk: ' + ChunkName);
+  raise Exception.Create('Wrong Start Addess of Chunk: ' + string(ChunkName));
  end;
 end;
 
@@ -717,7 +717,7 @@ begin
  with Stream do
   begin
    ChunkEnd := Position + FChunkSize;
-   assert(ChunkEnd <= Stream.Size);
+   Assert(ChunkEnd <= Stream.Size);
    while Position < ChunkEnd do
     begin
      if cfSizeFirst in ChunkFlags then
@@ -1026,7 +1026,7 @@ begin
 
      // read checksum
      FDataStream.Read(CheckSum, 4);
-     assert(Checksum = SubChunk.CalculateChecksum);
+     Assert(Checksum = SubChunk.CalculateChecksum);
     end;
   end;
 end;

@@ -268,7 +268,7 @@ begin
  if Assigned(ptr) then
   begin
    if numPrograms > 0
-    then Programs[FCurProgram].DisplayName := StrPas(PAnsiChar(ptr));
+    then Programs[FCurProgram].DisplayName := string(StrPas(PAnsiChar(ptr)));
   end;
 end;
 

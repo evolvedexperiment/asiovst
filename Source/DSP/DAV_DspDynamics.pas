@@ -858,16 +858,16 @@ implementation
 uses
   SysUtils, Math, DAV_Common, DAV_Math, DAV_Approximations;
 
-var
-(*
-  CHalf64        : Double;
-  CQuarter64     : Double;
-*)
 {$IFDEF HandleDenormals}
+var
   CDenorm64      : Double;
   CDenorm32      : Single;
 {$ENDIF}
+
 (*
+var
+  CHalf64        : Double;
+  CQuarter64     : Double;
   CHalf32        : Single;
   CQuarter32     : Single;
 *)

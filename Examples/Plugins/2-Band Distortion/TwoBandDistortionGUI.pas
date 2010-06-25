@@ -98,7 +98,11 @@ var
   PngBmp : TPNGImage;
   {$ELSE}
   RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
+  {$ENDIF}
   {$ENDIF}
 
 begin
@@ -147,7 +151,11 @@ begin
     end;
   end;
 
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'TwoBandKnob', 'PNG');
   try
@@ -155,7 +163,12 @@ begin
    with DIL.DialImages.Add do
     begin
      DialBitmap.Canvas.Brush.Color := $696969;
+     {$IFDEF DELPHI2010_UP}
+     DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
+     {$ELSE}
      DialBitmap.Assign(PngBmp);
+     {$ENDIF}
      NumGlyphs := 65;
     end;
    DialFreq.DialImageIndex := 0;

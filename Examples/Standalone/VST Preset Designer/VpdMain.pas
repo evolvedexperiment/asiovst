@@ -32,7 +32,7 @@ unit VpdMain;
 
 interface
 
-{$I ..\DAV_Compiler.inc}
+{$I DAV_Compiler.inc}
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
@@ -332,7 +332,7 @@ begin
     ShowEdit(TForm(VSTPanel));
     Idle;
     EditIdle;
-    Caption :=  GetVendorString + ' ' + GetEffectName;
+    Caption :=  string(GetVendorString + ' ' + GetEffectName);
 
     FBufferSize := 8192;
     SetLength(FInBuffer,  numInputs);
@@ -347,7 +347,7 @@ begin
    s := IntToStr(i);
    if i < 10 then s := '00' + s else
    if i < 100 then s := '0' + s;
-   s := s + ' - ' + temp;
+   s := s + ' - ' + string(temp);
    MenuItem := TMenuItem.Create(MIPrograms);
    with MenuItem do
     begin

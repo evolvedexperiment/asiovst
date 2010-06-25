@@ -8,9 +8,9 @@ uses
 {$IFNDEF FPC}
   PngImage, 
 {$ELSE}
-  Interfaces, LazPng, imagesforlazarus,
+  LazPng, imagesforlazarus,
 {$ENDIF}
-  Windows, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl,
+  Windows, Classes, Controls, Forms, Graphics, SysUtils, FileCtrl, Interfaces,
   DAV_VstHost;
 
 resourcestring
