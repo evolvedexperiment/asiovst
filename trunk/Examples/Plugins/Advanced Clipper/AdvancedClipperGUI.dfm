@@ -45,6 +45,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 48
       CircleColor = 3226174
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 15659506
       LineWidth = 2
@@ -66,6 +67,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 48
       CircleColor = 3226174
       DefaultPosition = 1.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 15659506
       LineWidth = 2
@@ -89,6 +91,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       CircleColor = 3226174
       CurveMapping = -1.000000000000000000
       DefaultPosition = 1.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 15659506
       LineWidth = 2
@@ -212,6 +215,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Height = 48
       CircleColor = 3226174
       DefaultPosition = 1.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 15659506
       LineWidth = 2
@@ -267,6 +271,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       CircleColor = 3226174
       CurveMapping = -1.000000000000000000
       DefaultPosition = 1.000000000000000000
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 15659506
       LineWidth = 2
@@ -287,6 +292,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       Width = 48
       Height = 48
       CircleColor = 3226174
+      DialImageList = DIL
       DialImageIndex = -1
       LineColor = 15659506
       LineWidth = 2
@@ -478,5 +484,10 @@ object FmAdvancedClipper: TFmAdvancedClipper
     OnTimer = TimerTimer
     Left = 128
     Top = 240
+  end
+  object DIL: TGuiDialImageList
+    DialImages = <>
+    Left = 56
+    Top = 24
   end
 end

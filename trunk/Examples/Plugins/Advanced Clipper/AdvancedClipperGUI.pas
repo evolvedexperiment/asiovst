@@ -68,6 +68,7 @@ type
     LEDHardClip: TGuiLED;
     PnDisplay: TGuiPanel;
     Timer: TTimer;
+    DIL: TGuiDialImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormPaint(Sender: TObject);
@@ -98,19 +99,24 @@ implementation
 {$R *.DFM}
 
 uses
-  Math, PNGImage, DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
+  Math, {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
+  DAV_Common, DAV_GuiCommon, AdvancedClipperDM;
 
 procedure TFmAdvancedClipper.FormCreate(Sender: TObject);
 var
-  RS     : TResourceStream;
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
   Line   : PRGB24Array;
-  {$IFDEF DELPHI14_UP}
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
+  RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
   PngBmp : TPngImage;
   {$ELSE}
   PngBmp : TPngObject;
+  {$ENDIF}
   {$ENDIF}
 
 begin
@@ -140,7 +146,18 @@ begin
     end;
   end;
 
- {$IFDEF DELPHI14_UP}
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
+
+  // yet todo!
+
+ finally
+  FreeAndNil(PngBmp);
+ end;
+ {$ELSE}
+ {$IFDEF DELPHI2010_UP}
  PngBmp := TPngImage.Create;
  {$ELSE}
  PngBmp := TPngObject.Create;
@@ -149,18 +166,30 @@ begin
   RS := TResourceStream.Create(hInstance, 'ClipperKnob', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
-   DialInputGain.DialBitmap.Assign(PngBmp);
-   DialOutputGain.DialBitmap.Assign(PngBmp);
-   DialOSFactor1.DialBitmap.Assign(PngBmp);
-   DialOSFactor2.DialBitmap.Assign(PngBmp);
-   DialFilterOrder1.DialBitmap.Assign(PngBmp);
-   DialFilterOrder2.DialBitmap.Assign(PngBmp);
+   with DIL.DialImages.Add do
+    begin
+     DialBitmap.Canvas.Brush.Color := $70848D;
+     {$IFDEF DELPHI2010_UP}
+     DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
+     {$ELSE}
+     DialBitmap.Assign(PngBmp);
+     {$ENDIF}
+     NumGlyphs := 65;
+    end;
+   DialFilterOrder1.DialImageIndex := 0;
+   DialFilterOrder2.DialImageIndex := 0;
+   DialInputGain.DialImageIndex := 0;
+   DialOSFactor1.DialImageIndex := 0;
+   DialOSFactor2.DialImageIndex := 0;
+   DialOutputGain.DialImageIndex := 0;
   finally
    RS.Free;
   end;
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmAdvancedClipper.FormDestroy(Sender: TObject);
