@@ -37,15 +37,15 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="10">
       <Unit0>
         <Filename Value="VstPresetDesigner.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="0"/>
+        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="77" Y="16"/>
-        <UsageCount Value="20"/>
+        <CursorPos X="13" Y="3"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
@@ -55,52 +55,207 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="VpdMain"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="13"/>
-        <CursorPos X="61" Y="39"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="20"/>
+        <CursorPos X="63" Y="39"/>
+        <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="..\..\..\Packages\Lazarus\DAV_VSTHost_Lazarus.pas"/>
         <UnitName Value="DAV_VSTHost_Lazarus"/>
-        <EditorIndex Value="3"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
-        <CursorPos X="34" Y="22"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <CursorPos X="22" Y="5"/>
+        <UsageCount Value="12"/>
       </Unit2>
       <Unit3>
         <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
         <UnitName Value="DAV_VSTHost"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="112"/>
-        <CursorPos X="31" Y="112"/>
-        <UsageCount Value="10"/>
+        <TopLine Value="49"/>
+        <CursorPos X="3" Y="59"/>
+        <UsageCount Value="13"/>
+        <Bookmarks Count="1">
+          <Item0 X="1" Y="2055" ID="2"/>
+        </Bookmarks>
         <Loaded Value="True"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTEffect.pas"/>
+        <UnitName Value="DAV_VSTEffect"/>
+        <EditorIndex Value="2"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="31"/>
+        <CursorPos X="36" Y="50"/>
+        <UsageCount Value="13"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="..\..\..\Source\DAV_Types.pas"/>
+        <UnitName Value="DAV_Types"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="10"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="C:\Lazarus\fpc\2.4.1\source\rtl\objpas\sysutils\syspchh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="27" Y="46"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="C:\Lazarus\fpc\2.4.1\source\rtl\objpas\sysutils\sysstrh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="78"/>
+        <CursorPos X="17" Y="101"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
+        <EditorIndex Value="4"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="20" Y="10"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="..\..\..\Source\DAV_CompilerSwitches.inc"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="102"/>
+        <CursorPos X="11" Y="104"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit9>
     </Units>
-    <JumpHistory Count="4" HistoryIndex="3">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="VpdMain.pas"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="1046" Column="59" TopLine="1036"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Packages\Lazarus\DAV_VSTHost_Lazarus.pas"/>
-        <Caret Line="11" Column="26" TopLine="1"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="1045" Column="138" TopLine="1040"/>
       </Position2>
       <Position3>
-        <Filename Value="VpdMain.pas"/>
-        <Caret Line="152" Column="16" TopLine="170"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="VpdMain.pas"/>
-        <Caret Line="39" Column="61" TopLine="13"/>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="223" Column="34" TopLine="206"/>
       </Position4>
+      <Position5>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="410" Column="35" TopLine="393"/>
+      </Position5>
+      <Position6>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="459" Column="35" TopLine="442"/>
+      </Position6>
+      <Position7>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="964" Column="1" TopLine="948"/>
+      </Position7>
+      <Position8>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position8>
+      <Position9>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="223" Column="34" TopLine="206"/>
+      </Position9>
+      <Position10>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="410" Column="35" TopLine="393"/>
+      </Position10>
+      <Position11>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="459" Column="35" TopLine="442"/>
+      </Position11>
+      <Position12>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="964" Column="68" TopLine="947"/>
+      </Position12>
+      <Position13>
+        <Filename Value="VstPresetDesigner.lpr"/>
+        <Caret Line="3" Column="13" TopLine="1"/>
+      </Position13>
+      <Position14>
+        <Filename Value="..\..\..\Source\DAV_Compiler.inc"/>
+        <Caret Line="10" Column="20" TopLine="1"/>
+      </Position14>
+      <Position15>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="3400" Column="1" TopLine="3382"/>
+      </Position15>
+      <Position16>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="2" Column="1" TopLine="1"/>
+      </Position16>
+      <Position17>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="40" Column="16" TopLine="23"/>
+      </Position17>
+      <Position18>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="77" Column="14" TopLine="60"/>
+      </Position18>
+      <Position19>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="110" Column="67" TopLine="89"/>
+      </Position19>
+      <Position20>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="128" Column="18" TopLine="97"/>
+      </Position20>
+      <Position21>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="177" Column="15" TopLine="150"/>
+      </Position21>
+      <Position22>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="235" Column="33" TopLine="207"/>
+      </Position22>
+      <Position23>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="297" Column="21" TopLine="268"/>
+      </Position23>
+      <Position24>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="2039" Column="1" TopLine="2037"/>
+      </Position24>
+      <Position25>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
+      </Position25>
+      <Position26>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="60" Column="17" TopLine="43"/>
+      </Position26>
+      <Position27>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="692" Column="18" TopLine="675"/>
+      </Position27>
+      <Position28>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="705" Column="16" TopLine="675"/>
+      </Position28>
+      <Position29>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="711" Column="33" TopLine="694"/>
+      </Position29>
+      <Position30>
+        <Filename Value="..\..\..\Source\VST\DAV_VSTHost.pas"/>
+        <Caret Line="2007" Column="60" TopLine="2000"/>
+      </Position30>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -117,7 +272,15 @@
         <UseAnsiStrings Value="True"/>
       </SyntaxOptions>
     </Parsing>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+    </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseLineInfoUnit Value="False"/>
+        <StripSymbols Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

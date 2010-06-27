@@ -41,33 +41,34 @@ uses
 
 type
   TFmVstPresetDesigner = class(TForm)
-    VstHost: TVstHost;
     MainMenu: TMainMenu;
-    MIVstPlugin: TMenuItem;
-    MiOpen: TMenuItem;
-    N1: TMenuItem;
-    MiExit: TMenuItem;
-    ToolBar: TToolBar;
-    MiSave: TMenuItem;
-    OpenDialog: TOpenDialog;
-    SaveDialog: TSaveDialog;
-    VSTPanel: TPanel;
-    MiPrograms: TMenuItem;
-    N2: TMenuItem;
-    MiLoad: TMenuItem;
-    N3: TMenuItem;
-    MiRandomize: TMenuItem;
-    N4: TMenuItem;
-    MIShuffle: TMenuItem;
-    MiPreview: TMenuItem;
-    MiOpenAudio: TMenuItem;
-    OpenAudio: TOpenDialog;
-    MiOpenMIDI: TMenuItem;
-    N5: TMenuItem;
-    OpenMidi: TOpenDialog;
-    MiPlayPreview: TMenuItem;
     MiDesign: TMenuItem;
+    MiExit: TMenuItem;
+    MiLoad: TMenuItem;
+    MiOpen: TMenuItem;
+    MiOpenAudio: TMenuItem;
+    MiOpenMIDI: TMenuItem;
+    MiPlayPreview: TMenuItem;
+    MiPreview: TMenuItem;
+    MiPrograms: TMenuItem;
+    MiRandomize: TMenuItem;
+    MiSave: TMenuItem;
+    MIShuffle: TMenuItem;
+    MIVstPlugin: TMenuItem;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    OpenAudio: TOpenDialog;
+    OpenDialog: TOpenDialog;
+    OpenMidi: TOpenDialog;
+    SaveDialog: TSaveDialog;
+    ToolBar: TToolBar;
+    VstHost: TVstHost;
+    VSTPanel: TPanel;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure MiExitClick(Sender: TObject);
     procedure MiOpenClick(Sender: TObject);
     procedure MIPresetClick(Sender: TObject);
@@ -77,7 +78,6 @@ type
     procedure MiOpenAudioClick(Sender: TObject);
     procedure MiOpenMIDIClick(Sender: TObject);
     procedure MiDesignClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
   private
     FIniFile   : TFileName;
     FMidiFile  : TMidiFile;

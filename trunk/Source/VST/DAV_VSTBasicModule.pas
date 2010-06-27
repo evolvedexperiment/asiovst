@@ -44,6 +44,9 @@ uses
 
 type
   TBasicVSTModuleClass = class of TBasicVSTModule;
+
+  { TBasicVSTModule }
+
   TBasicVSTModule = class({$IFDEF UseDelphi}TDataModule{$ELSE}TComponent{$ENDIF})
   private
     procedure ConvertDummy(const Data: Pointer; const ChannelCount, SampleFrames: Integer);
@@ -81,9 +84,18 @@ type
     FWinAmpConvertIn    : TWinAmpConvert;
     FWinAmpConvertOut   : TWinAmpConvert;
 
+    {$IFDEF DebugLog}
+    FLog                    : TStringList;
+    FTmStmp                 : TDateTime;
+    procedure AddLogMessage(const Text: string);
+    {$ENDIF}
+
     function GetEffect: PVSTEffect; virtual;
 
     procedure SetAudioMaster(const AM: TAudioMasterCallbackFunc); virtual;
+    function CallAudioMaster(const Opcode: TAudioMasterOpcode;
+      const Index: Integer = 0; const Value: TVstIntPtr = 0;
+      const Ptr: Pointer = nil; const Opt: Single = 0): TVstIntPtr; virtual;
 
     procedure WinAmpConfig; virtual;
     procedure WinAmpQuit; virtual;
@@ -253,6 +265,8 @@ type
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
     property OnCreate: TNotifyEvent read FOnCreate write FOnCreate;
     {$ENDIF}
+
+    {$IFDEF DebugLog} property DebugLog: TStringList read fLog; {$ENDIF}
   end;
 
   EVstError = class(Exception);
@@ -331,6 +345,19 @@ uses
 var
   GVstInstanceList : TObjectList;
 
+{$IFNDEF PUREPASCAL}
+const
+  {$IFDEF UseDelphi}
+  CHostCallProcessOffset = $00000234;
+  CHostCallProcess32ReplacingOffset = $00000238;
+  CHostCallProcess64ReplacingOffset = $0000023C;
+  {$ELSE}
+  CHostCallProcessOffset = $00000228;
+  CHostCallProcess32ReplacingOffset = $0000022C;
+  CHostCallProcess64ReplacingOffset = $00000230;
+  {$ENDIF}
+{$ENDIF}
+
 function VstModuleMain(AudioMasterCallback: TAudioMasterCallbackFunc;
   const BasicVSTModuleClass: TBasicVSTModuleClass): PVSTEffect;
 var
@@ -391,6 +418,17 @@ end;
 
 constructor TBasicVSTModule.Create(AOwner: TComponent);
 begin
+ {$IFDEF DebugLog}
+ FLog := TStringList.Create;
+ FTmStmp := Now;
+ FLog.Add('Create: ' + TimeToStr(FTmStmp));
+ if not (csDesigning in ComponentState) then
+  try
+   FLog.SaveToFile('Debug.log');
+  except
+  end;
+ {$ENDIF}
+
  {$IFDEF UseDelphi} inherited CreateNew(AOwner); {$ENDIF}
  with FEffect do
   begin
@@ -442,12 +480,27 @@ var
   i : Integer;
 begin
  try
+  {$IFDEF DebugLog} if Assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
   for i := 0 to Length(FWinAmpInputBuffer)  - 1 do Dispose(FWinAmpInputBuffer[i]);
   for i := 0 to Length(FWinAmpOutputBuffer) - 1 do Dispose(FWinAmpOutputBuffer[i]);
  finally
+  {$IFDEF DebugLog} if Assigned(FLog) then FLog.Free; {$ENDIF}
   inherited;
  end;
 end;
+
+{$IFDEF DebugLog}
+procedure TBasicVSTModule.AddLogMessage(const Text: string);
+begin
+ if Assigned(FLog) then
+  try
+   FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
+   if not (csDesigning in ComponentState)
+    then FLog.SaveToFile('Debug.log');
+  except
+  end;
+end;
+{$ENDIF}
 
 function TBasicVSTModule.GetEffect: PVSTEffect;
 begin
@@ -460,9 +513,13 @@ var
   HostProduct : PAnsiChar;
 {$ENDIF}  
 begin
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.SetAudioMaster'); {$ENDIF}
+
  FAudioMaster := AM;
- if FAudioMaster(nil, amVersion, 0, 0, nil, 0) = 0 then
-   raise EVstError.Create('AudioMaster Error');
+ if CallAudioMaster(amVersion) = 0
+  then raise EVstError.Create('AudioMaster Error');
+
+ {$IFDEF DebugLog} AddLogMessage('After check audiomaster version'); {$ENDIF}
 
  {$IFNDEF UseAudioEffectPtr}
  GetMem(HostProduct, 256);
@@ -471,6 +528,8 @@ begin
   GetHostProductString(HostProduct);
   FUseAudioEffectPtr := (StrPos('energyXT', HostProduct) <> nil) or
     (StrPos('Sound Forge Pro 10.0', HostProduct) <> nil);
+
+  {$IFDEF DebugLog} AddLogMessage('Get Host Product String'); {$ENDIF}
 
   if FUseAudioEffectPtr then
    with FEffect do
@@ -487,360 +546,282 @@ begin
  {$ENDIF}
 end;
 
-
-
-// ------------------------------------------------------------------
-// Calls to the Host
-// ------------------------------------------------------------------
-function TBasicVSTModule.GetMasterVersion: Integer;
-var
-  Vers: Integer;
+function TBasicVSTModule.CallAudioMaster(const Opcode: TAudioMasterOpcode;
+  const Index: Integer = 0; const Value: TVstIntPtr = 0;
+  const Ptr: Pointer = nil; const Opt: Single = 0): TVstIntPtr;
 begin
- Vers := 1;
- if Assigned(FAudioMaster) then
-  begin
-   Vers := FAudioMaster(@FEffect, amVersion, 0, 0, nil, 0);
-   if Vers = 0 then Vers := 1;
-  end;
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster, Opcode:' + IntToStr(Integer(Opcode))); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(PVstEffect)' + IntToStr(SizeOf(PVstEffect))); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(TAudioMasterOpcode)' + IntToStr(SizeOf(TAudioMasterOpcode))); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Index)' + IntToStr(SizeOf(Index))); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Value)' + IntToStr(SizeOf(Value))); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Ptr)' + IntToStr(SizeOf(Ptr))); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.CallAudioMaster: SizeOf(Result)' + IntToStr(SizeOf(Result))); {$ENDIF}
 
- Result := Vers;
-end;
-
-function TBasicVSTModule.GetCurrentUniqueId: TChunkName;
-begin
  if Assigned(FAudioMaster)
-  then Result := TChunkName(Integer(FAudioMaster(@FEffect, amCurrentId, 0, 0, nil, 0)))
-  else Result := #0#0#0#0;
-end;
-
-procedure TBasicVSTModule.MasterIdle;
-begin
- if Assigned(FAudioMaster) then FAudioMaster(@FEffect, amIdle, 0, 0, nil, 0);
-end;
-
-function TBasicVSTModule.IsInputConnected(const Input: Integer): Boolean;
-var
-  Ret: Integer;
-begin
- Ret := 0;
- if Assigned(FAudioMaster)
-  then Ret := FAudioMaster(@FEffect, amPinConnected, Input, 0, nil, 0);
-
- Result := (Ret = 0);
-end;
-
-function TBasicVSTModule.IsOutputConnected(const Output: Integer): Boolean;
-var
-  Ret: Integer;
-begin
- Ret := 0;
- if Assigned(FAudioMaster)
-  then Ret := FAudioMaster(@FEffect, amPinConnected, Output, 1, nil, 0);
-
- Result := (Ret = 0);
-end;
-
-procedure TBasicVSTModule.WantEvents(const Filter: Integer);
-begin
- if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, amWantMidi, 0, filter, nil, 0);
-end;
-
-function TBasicVSTModule.GetTimeInfo(const Filter: Integer): PVstTimeInfo;
-begin
- if Assigned(FAudioMaster)
-  then Result := PVstTimeInfo(FAudioMaster (@FEffect, amGetTime, 0, filter, nil, 0))
-  else Result := nil;
-end;
-
-procedure TBasicVSTModule.SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo);
-begin
- if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, amSetTime, 0, Filter, @VstTimeInfo, 0);
-end;
-
-function TBasicVSTModule.TempoAt(const Pos: Integer): Integer;
-begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amTempoAt, 0, pos, nil, 0)
+  then Result := FAudioMaster(@FEffect, Opcode, Index, Value, Ptr, Opt)
   else Result := 0;
 end;
 
-function TBasicVSTModule.SendVstEventsToHost(var Events: TVstEvents): Boolean;
-begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amProcessEvents, 0, 0, @Events, 0) = 1
-  else Result := False;
-end;
-
-function TBasicVSTModule.GetNumAutomatableParameters: Integer;
-begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetNumAutomatableParameters, 0, 0, nil, 0)
-  else Result := 0;
-end;
-
-procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer; const Value: Single);
-begin
- if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, amAutomate, Index, 0, nil, Value);
-end;
-
-function TBasicVSTModule.GetParameterQuantization: Integer;
-begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetParameterQuantization, 0, 0, nil, 0)
-  else Result := 0;
-end;
-
-function TBasicVSTModule.GetInputLatency: Integer;
-begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetInputLatency, 0, 0, nil, 0)
-  else Result := 0;
-end;
-
-function TBasicVSTModule.GetOutputLatency: Integer;
-begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetOutputLatency, 0, 0, nil, 0)
-  else Result := 0;
-end;
-
-function TBasicVSTModule.GetPreviousPlug(const Input: Integer): PVSTEffect;
-begin
- if Assigned(FAudioMaster)
-  then Result := PVSTEffect(FAudioMaster(@FEffect, amGetPreviousPlug, 0, Input, nil, 0))
-  else Result := nil;
-end;
 
 class function TBasicVSTModule.GetStaticDescription: string;
 begin
  Result := 'Delphi ASIO & VST Package Plugin';
 end;
 
-function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
+
+// ------------------------------------------------------------------
+// Calls to the Host
+// ------------------------------------------------------------------
+
+function TBasicVSTModule.GetMasterVersion: Integer;
+begin
+ Result := CallAudioMaster(amVersion);
+ if Result = 0 then Result := 1;
+end;
+
+function TBasicVSTModule.GetCurrentUniqueId: TChunkName;
 begin
  if Assigned(FAudioMaster)
-  then Result := PVSTEffect(FAudioMaster(@FEffect, amGetNextPlug, 0, Output, nil, 0))
-  else Result := nil;
+  then Result := TChunkName(Integer(CallAudioMaster(amCurrentId)))
+  else Result := #0#0#0#0;
+end;
+
+procedure TBasicVSTModule.MasterIdle;
+begin
+ CallAudioMaster(amIdle);
+end;
+
+function TBasicVSTModule.IsInputConnected(const Input: Integer): Boolean;
+begin
+ Result := (CallAudioMaster(amPinConnected, Input) = 0);
+end;
+
+function TBasicVSTModule.IsOutputConnected(const Output: Integer): Boolean;
+begin
+ Result := (CallAudioMaster(amPinConnected, Output, 1) = 0);
+end;
+
+procedure TBasicVSTModule.WantEvents(const Filter: Integer);
+begin
+ CallAudioMaster(amWantMidi, 0, Filter);
+end;
+
+function TBasicVSTModule.GetTimeInfo(const Filter: Integer): PVstTimeInfo;
+begin
+ Result := PVstTimeInfo(CallAudioMaster(amGetTime, 0, Filter));
+end;
+
+procedure TBasicVSTModule.SetTimeInfo(const Filter: Integer; var VstTimeInfo: PVstTimeInfo);
+begin
+ CallAudioMaster(amSetTime, 0, Filter, @VstTimeInfo);
+end;
+
+function TBasicVSTModule.TempoAt(const Pos: Integer): Integer;
+begin
+ CallAudioMaster(amTempoAt, 0, Pos);
+end;
+
+function TBasicVSTModule.SendVstEventsToHost(var Events: TVstEvents): Boolean;
+begin
+ Result := CallAudioMaster(amProcessEvents, 0, 0, @Events) = 1;
+end;
+
+function TBasicVSTModule.GetNumAutomatableParameters: Integer;
+begin
+ Result := CallAudioMaster(amGetNumAutomatableParameters);
+end;
+
+procedure TBasicVSTModule.SetParameterAutomated(const Index: Integer; const Value: Single);
+begin
+ CallAudioMaster(amGetNumAutomatableParameters, Index, 0, nil, Value);
+end;
+
+function TBasicVSTModule.GetParameterQuantization: Integer;
+begin
+ Result := CallAudioMaster(amGetParameterQuantization);
+end;
+
+function TBasicVSTModule.GetInputLatency: Integer;
+begin
+ Result := CallAudioMaster(amGetInputLatency);
+end;
+
+function TBasicVSTModule.GetOutputLatency: Integer;
+begin
+ Result := CallAudioMaster(amGetOutputLatency);
+end;
+
+function TBasicVSTModule.GetPreviousPlug(const Input: Integer): PVSTEffect;
+begin
+ Result := PVSTEffect(CallAudioMaster(amGetPreviousPlug, 0, Input));
+end;
+
+function TBasicVSTModule.GetNextPlug(const Output: Integer): PVSTEffect;
+begin
+ Result := PVSTEffect(CallAudioMaster(amGetNextPlug, 0, Output));
 end;
 
 function TBasicVSTModule.WillProcessReplacing: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amWillReplaceOrAccumulate, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amWillReplaceOrAccumulate);
 end;
 
 function TBasicVSTModule.GetCurrentProcessLevel: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetCurrentProcessLevel, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amGetCurrentProcessLevel);
 end;
 
 function TBasicVSTModule.GetAutomationState: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetAutomationState, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amGetAutomationState);
 end;
 
 function TBasicVSTModule.OfflineRead(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption; const ReadSource: Boolean): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amOfflineRead, Integer(ReadSource), Integer(Option), @Offline, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amOfflineRead, Integer(ReadSource), Integer(Option), @Offline) <> 0;
 end;
 
 function TBasicVSTModule.OfflineWrite(var Offline: TVstOfflineTaskRecord; const Option: TVstOfflineOption): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amOfflineWrite, 0, Integer(Option), @Offline, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amOfflineWrite, 0, Integer(Option), @Offline) <> 0;
 end;
 
 function TBasicVSTModule.OfflineStart(var AudioFile: TVstAudioFile; const numAudioFiles, numNewAudioFiles: Integer): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amOfflineStart, numNewAudioFiles, numAudioFiles, @AudioFile) <> 0;
 end;
 
 function TBasicVSTModule.OfflineGetCurrentPass: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := Integer(FAudioMaster(@FEffect, amOfflineGetCurrentPass, 0, 0, nil, 0) <> 0)
-  else Result := 0;
+ Result := CallAudioMaster(amOfflineGetCurrentPass);
 end;
 
 function TBasicVSTModule.OfflineGetCurrentMetaPass: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := Integer(FAudioMaster(@FEffect, amOfflineGetCurrentMetaPass, 0, 0, nil, 0) <> 0)
-  else Result := 0;
+ Result := CallAudioMaster(amOfflineGetCurrentMetaPass);
 end;
 
 procedure TBasicVSTModule.SetOutputSampleRate(const SampleRate: Single);
 begin
- if Assigned(FAudioMaster)
-  then FAudioMaster(@FEffect, amSetOutputSampleRate, 0, 0, nil, SampleRate);
+ CallAudioMaster(amSetOutputSampleRate, 0, 0, nil, SampleRate);
 end;
 
 function TBasicVSTModule.GetHostVendorString(const Text: PAnsiChar): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amGetVendorString, 0, 0, Text, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amGetVendorString, 0, 0, Text) <> 0;
 end;
 
 function TBasicVSTModule.GetHostProductString(const Text: PAnsiChar): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amGetProductString, 0, 0, Text, 0) <> 0)
-  else Result := False;
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.GetHostProductString: Before AudioMaster Call'); {$ENDIF}
+
+ Result := CallAudioMaster(amGetProductString, 0, 0, Text) <> 0;
+
+ {$IFDEF DebugLog} AddLogMessage('TBasicVSTModule.GetHostProductString: After AudioMaster Call'); {$ENDIF}
 end;
 
 function TBasicVSTModule.GetHostVendorVersion: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetVendorVersion, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amGetVendorVersion);
 end;
 
 function TBasicVSTModule.HostVendorSpecific(const Arg1, Arg2: Integer; const ptrArg: Pointer; const floatArg: Single): Integer;
 begin
- Result := 0;
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
+ Result := CallAudioMaster(amVendorSpecific, Arg1, Arg2, ptrArg, floatArg);
 end;
 
 function TBasicVSTModule.GetCanHostDo(Text: string): Integer;
+var
+  str : AnsiString;
 begin
- Result := 0;
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amCanDo, 0, 0, PChar(Text), 0);
+ str := AnsiString(Text);
+ Result := CallAudioMaster(amCanDo, 0, 0, PAnsiChar(str));
 end;
 
 function TBasicVSTModule.GetHostLanguage: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetLanguage, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amGetLanguage);
 end;
 
 function TBasicVSTModule.OpenWindow(const aWindow: PVstWindow): Pointer;
 begin
- if Assigned(FAudioMaster)
-  then Result := Pointer(FAudioMaster(@FEffect, amOpenWindow, 0, 0, aWindow, 0))
-  else Result := nil;
+ Result := Pointer(CallAudioMaster(amOpenWindow, 0, 0, aWindow));
 end;
 
 function TBasicVSTModule.CloseWindow(const aWindow: PVstWindow): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amCloseWindow, 0, 0, aWindow, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amCloseWindow, 0, 0, aWindow) <> 0;
 end;
 
 function TBasicVSTModule.GetDirectory: Pointer;
 begin
- if Assigned(FAudioMaster)
-  then Result := Pointer(FAudioMaster(@FEffect, amGetDirectory, 0, 0, nil, 0))
-  else Result := nil;
+ Result := Pointer(CallAudioMaster(amGetDirectory));
 end;
 
 function TBasicVSTModule.UpdateDisplay: Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amUpdateDisplay, 0, 0, nil, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amUpdateDisplay) <> 0;
 end;
 
 function TBasicVSTModule.IOChanged: Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amIOChanged, 0, 0, nil, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amIOChanged) <> 0;
 end;
 
 function TBasicVSTModule.NeedIdle: Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amNeedIdle, 0, 0, nil, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amNeedIdle) <> 0;
 end;
 
 function TBasicVSTModule.SizeWindow(const Width, Height: Integer): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amSizeWindow, Width, Height, nil, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amSizeWindow, Width, Height) <> 0;
 end;
 
 function TBasicVSTModule.BeginEdit(const Index: Integer): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amBeginEdit, Index, 0, nil, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amBeginEdit, Index) <> 0;
 end;
 
 function TBasicVSTModule.EndEdit(const Index: Integer): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amEndEdit, Index, 0, nil, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amEndEdit, Index) <> 0;
 end;
 
 function TBasicVSTModule.OpenFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amOpenFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amOpenFileSelector, 0, 0, @VstFileSelect) <> 0;
 end;
 
 function TBasicVSTModule.CloseFileSelector(var VstFileSelect: TVstFileSelect): Boolean;
 begin
- if Assigned(FAudioMaster)
-  then Result := (FAudioMaster(@FEffect, amCloseFileSelector, 0, 0, @VstFileSelect, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amCloseFileSelector, 0, 0, @VstFileSelect) <> 0;
 end;
 
 function TBasicVSTModule.GetChunkFile(const NativePath: Pointer): Boolean;
 begin
- if Assigned(FAudioMaster) and (nativePath <> nil)
-  then Result := (FAudioMaster(@FEffect, amGetChunkFile, 0, 0, NativePath, 0) <> 0)
-  else Result := False;
+ Result := CallAudioMaster(amGetChunkFile, 0, 0, NativePath) <> 0;
 end;
-
 
 function TBasicVSTModule.UpdateSampleRate: Double;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetSampleRate, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amGetSampleRate);
 end;
 
 function TBasicVSTModule.UpdateBlockSize: Integer;
 begin
- if Assigned(FAudioMaster)
-  then Result := FAudioMaster(@FEffect, amGetBlockSize, 0, 0, nil, 0)
-  else Result := 0;
+ Result := CallAudioMaster(amGetBlockSize);
 end;
 
 function TBasicVSTModule.GetInputSpeakerArrangement: PVstSpeakerArrangement;
 begin
- if Assigned(FAudioMaster)
-  then Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, amGetInputSpeakerArrangement, 0, 0, nil, 0))
-  else Result := nil;
+ Result := PVstSpeakerArrangement(CallAudioMaster(amGetInputSpeakerArrangement));
 end;
 
 function TBasicVSTModule.GetOutputSpeakerArrangement: PVstSpeakerArrangement;
 begin
- if Assigned(FAudioMaster)
-  then Result := PVstSpeakerArrangement(FAudioMaster(@FEffect, amGetOutputSpeakerArrangement, 0, 0, nil, 0))
-  else Result := nil;
+ Result := PVstSpeakerArrangement(CallAudioMaster(amGetOutputSpeakerArrangement));
 end;
 
 function TBasicVSTModule.WinAmpModifySamples(const Samples: Pointer;
@@ -1561,11 +1542,7 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcess
-  {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000230] // [TBasicVSTModule(ebx).HostCallProcess]
-  {$ELSE}
-  call dword ptr [ebx + $00000224] // [TBasicVSTModule(ebx).HostCallProcess]
-  {$ENDIF}
+  call dword ptr [ebx + CHostCallProcessOffset] // [TBasicVSTModule(ebx).HostCallProcess]
 
  @end:
   pop ebx
@@ -1580,7 +1557,7 @@ begin
   then Exit;
 
  if TObject(Effect^.AudioEffectPtr) is TBasicVSTModule
-  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess(Inputs, Outputs, SampleFrames);
+  then TBasicVSTModule(Effect^.AudioEffectPtr).HostCallProcess32Replacing(Inputs, Outputs, SampleFrames);
 end;
 {$ELSE}
 asm
@@ -1617,11 +1594,7 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcess32Replacing (damn hack!!!)
-  {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
-  {$ELSE}
-  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
-  {$ENDIF}
+  call dword ptr [ebx + CHostCallProcess32ReplacingOffset] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
 
  @end:
   pop ebx
@@ -1674,11 +1647,7 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcess64Replacing (damn hack!!!)
-  {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
-  {$ELSE}
-  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
-  {$ENDIF}
+  call dword ptr [ebx + CHostCallProcess64ReplacingOffset] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
 
  @end:
   pop ebx
@@ -1731,11 +1700,7 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcess
-  {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000230] // [TBasicVSTModule(ebx).HostCallProcess]
-  {$ELSE}
-  call dword ptr [ebx + $00000224] // [TBasicVSTModule(ebx).HostCallProcess]
-  {$ENDIF}
+  call dword ptr [ebx + CHostCallProcessOffset] // [TBasicVSTModule(ebx).HostCallProcess]
 
  @end:
   pop ebx
@@ -1786,12 +1751,7 @@ asm
   mov eax, ebx
   mov ebx, [eax]
 
-  // call HostCallProcess32Replacing (damn hack!!!)
-  {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000234] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
-  {$ELSE}
-  call dword ptr [ebx + $00000228] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
-  {$ENDIF}
+  call dword ptr [ebx + CHostCallProcess32ReplacingOffset] // [TBasicVSTModule(ebx).HostCallProcess32Replacing]
 
  @end:
   pop ebx
@@ -1843,11 +1803,7 @@ asm
   mov ebx, [eax]
 
   // call HostCallProcess64Replacing (damn hack!!!)
-  {$IFDEF UseDelphi}
-  call dword ptr [ebx + $00000238] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
-  {$ELSE}
-  call dword ptr [ebx + $0000022C] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
-  {$ENDIF}
+  call dword ptr [ebx + CHostCallProcess64ReplacingOffset] // [TBasicVSTModule(ebx).HostCallProcess64Replacing]
 
  @end:
   pop ebx
