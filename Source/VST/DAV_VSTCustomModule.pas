@@ -83,10 +83,6 @@ type
     FVstShellPlugins        : TCustomVstShellPlugins;
     FCurrentVstShellPlugin  : Integer;
     FOnSpeakerArrangementChanged: TSpeakerArrangementEvent;
-    {$IFDEF Debug}
-    FLog                    : TStringList;
-    FTmStmp                 : TDateTime;
-    {$ENDIF}
 (*
     function GetEditorFormClassName: string;
     procedure SetEditorFormClassName(Value: string);
@@ -133,9 +129,6 @@ type
     FVersionMinor           : Integer;
     FVersionRelease         : Integer;
 //    FParentWindowProxy      : TWinControl;
-    {$IFDEF Debug}
-    procedure AddLogMessage(const Text: string);
-    {$ENDIF}
     function GetPluginFlags: TEffFlags; virtual;
     function GetUniqueID: AnsiString; virtual;
     function OfflinePrepare(OfflineTaskStartPointer: PVstOfflineTaskRecord; Count: Integer): Integer; virtual;
@@ -230,8 +223,6 @@ type
     function UpdateSampleRate: Double; override;
     function UpdateBlockSize: Integer; override;
 
-    {$IFDEF Debug} property DebugLog: TStringList read fLog; {$ENDIF}
-
     // Properties
     property About: string read FAbout write ReadOnlyString stored False;
     property BlockSize: Integer read FBlockSize write SetBlockSize default 1024;
@@ -320,16 +311,6 @@ uses
 constructor TCustomVSTModule.Create(AOwner: TComponent);
 begin
  inherited;
- {$IFDEF Debug}
- FLog := TStringList.Create;
- FTmStmp := Now;
- FLog.Add('Create: ' + TimeToStr(FTmStmp));
- if not (csDesigning in ComponentState) then
-  try
-   FLog.SaveToFile('Debug.log');
-  except
-  end;
- {$ENDIF}
  Randomize;
  FVersion            := '1.0';
  FAbout              := 'VST Plugin Template by Christian Budde, Tobybear & MyCo';
@@ -348,6 +329,8 @@ begin
  FCanDos             := [vcdPlugAsChannelInsert, vcdPlugAsSend, vcd2in2out];
  UpdateVersion;
 
+ {$IFDEF DebugLog} AddLogMessage('After Update Version'); {$ENDIF}
+
  FVstShellPlugins := TCustomVstShellPlugins.Create(Self);
  FCurrentVstShellPlugin := 0;
  FNumCategories := 1;
@@ -358,25 +341,10 @@ begin
  try
   if Assigned(FEditorForm) then FreeAndNil(FEditorForm);
   if Assigned(FVstShellPlugins) then FreeAndNil(FVstShellPlugins);
-  {$IFDEF Debug} if Assigned(FLog) then FLog.SaveToFile('Debug.log'); {$ENDIF}
  finally
-  {$IFDEF Debug} if Assigned(FLog) then FLog.Free; {$ENDIF}
   inherited;
  end;
 end;
-
-{$IFDEF Debug}
-procedure TCustomVSTModule.AddLogMessage(const Text: string);
-begin
- if Assigned(FLog) then
-  try
-   FLog.Add(TimeToStr(Now - FTmStmp) + ' | ' + Text);
-   if not (csDesigning in ComponentState)
-    then FLog.SaveToFile('Debug.log');
-  except
-  end;
-end;
-{$ENDIF}
 
 (*
 function TCustomVSTModule.GetEditorFormClassName: string;
@@ -398,7 +366,7 @@ var
   OutsTmp : TDAVArrayOfSingleDynArray;
   i, j    : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcess'); {$ENDIF}
  if Assigned(FOnProcessEx)
   then FOnProcessEx(Ins, Outs, SampleFrames)
   else if Assigned(FOnProcess32ReplacingEx) then
@@ -417,7 +385,7 @@ var
   Ins  : TDAVArrayOfSingleDynArray absolute Inputs;
   Outs : TDAVArrayOfSingleDynArray absolute Outputs;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcess32Replacing'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcess32Replacing'); {$ENDIF}
  if Assigned(FOnProcess32ReplacingEx)
   then FOnProcess32ReplacingEx(Ins, Outs, SampleFrames);
 end;
@@ -427,7 +395,7 @@ var
   Ins  : TDAVArrayOfDoubleDynArray absolute Inputs;
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcess64Replacing'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcess64Replacing'); {$ENDIF}
  if Assigned(FOnProcess64ReplacingEx) then FOnProcess64ReplacingEx(Ins, Outs,SampleFrames);
 end;
 
@@ -487,18 +455,26 @@ var
   i    : Integer;
   hv   : Boolean;
 begin
+ {$IFDEF DebugLog} AddLogMessage('TCustomVSTModule.SetAudioMaster'); {$ENDIF}
+
  inherited;
+
  {$IFDEF DELPHI14_UP}
  hv := (AnsiStrings.AnsiPos('WaveLab', HostProduct) < 0) {or (shortstring(temp) <> 'energyXT')};
  {$ELSE}
  hv := (Pos('WaveLab', HostProduct) < 0) {or (shortstring(temp) <> 'energyXT')};
  {$ENDIF}
 
+ {$IFDEF DebugLog} AddLogMessage('After check for Wavelab in HostProduct'); {$ENDIF}
+
  if hv then hv := (CanDo['shellCategory'] = 1);
 
  if (PlugCategory = vpcShell) and hv then
   begin
    rUID := getCurrentUniqueId;
+
+   {$IFDEF DebugLog} AddLogMessage('After get current ID'); {$ENDIF}
+
    if (Integer(rUID) > 0) then
     begin
      for i := 0 to ShellPlugins.Count - 1 do
@@ -532,7 +508,7 @@ begin
  Result := inherited HostCallDispatchEffect(Opcode, Index, Value, ptr, opt);
  if Assigned(FOnDispatcher) then FOnDispatcher(Self, Opcode);
 
- {$IFDEF Debug}
+ {$IFDEF DebugLog}
  if not (Opcode in [effIdle, effEditIdle])
   then AddLogMessage(' Opcode: ' + Opcode2String(Opcode) +
                      ' Index: ' + IntToStr(Index) +
@@ -545,14 +521,14 @@ procedure TCustomVSTModule.ReadOnlyString(s: string); begin end;
 
 function TCustomVSTModule.HostCallOpen(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallOpen'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallOpen'); {$ENDIF}
  Result := inherited HostCallOpen(Index, Value, ptr, opt);
  if Assigned(FOnOpen) then FOnOpen(Self);
 end;
 
 function TCustomVSTModule.HostCallClose(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallClose'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallClose'); {$ENDIF}
  if Assigned(FOnClose) then FOnClose(Self);
  Result := inherited HostCallClose(Index, Value, ptr, opt);
 end;
@@ -561,7 +537,7 @@ function TCustomVSTModule.HostCallGetVu(const Index: Integer; const Value: TVstI
 var
   s: Single;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetVu'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetVu'); {$ENDIF}
  if Assigned(FOnGetVUEvent) then
   begin
    s := 0;
@@ -572,21 +548,21 @@ end;
 
 function TCustomVSTModule.HostCallSetSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetSampleRate (' + FloatToStr(Opt) + ')'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetSampleRate (' + FloatToStr(Opt) + ')'); {$ENDIF}
  SetSampleRate(opt);
  Result := 1;
 end;
 
 function TCustomVSTModule.HostCallSetBlockSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetBlockSize (' + IntToStr(Value) + ')'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetBlockSize (' + IntToStr(Value) + ')'); {$ENDIF}
  setBlockSize(Value);
  Result := 0;
 end;
 
 function TCustomVSTModule.HostCallMainsChanged(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallMainsChanged (' + IntToStr(Value) + ')'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallMainsChanged (' + IntToStr(Value) + ')'); {$ENDIF}
  if (Value = 0) then
   if Assigned(FOnSuspend)
    then FOnSuspend(Self)
@@ -601,7 +577,7 @@ end;
 
 function TCustomVSTModule.HostCallEditGetRect(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallEditGetRect'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditGetRect'); {$ENDIF}
  Result := 0;
  if Assigned(ptr) then
   begin
@@ -627,7 +603,7 @@ var
   ViewRef : HIViewRef;
 {$ENDIF}
 begin
- {$IFDEF Debug} AddLogMessage('HostCallEditOpen'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditOpen'); {$ENDIF}
  Result := 0;
  if (effFlagsHasEditor in FEffect.EffectFlags) and Assigned(ptr) then
   begin
@@ -660,7 +636,7 @@ function TCustomVSTModule.HostCallEditClose(const Index: Integer; const Value: T
 var
   DestroyForm: Boolean;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallEditClose'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditClose'); {$ENDIF}
  if (effFlagsHasEditor in FEffect.EffectFlags) then
   begin
    DestroyForm := True;
@@ -684,34 +660,34 @@ end;
 
 function TCustomVSTModule.HostCallEditTop(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallEditTop'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditTop'); {$ENDIF}
  if Assigned(FOnEditTop) then FOnEditTop(Self);
  Result := 0;
 end;
 
 function TCustomVSTModule.HostCallEditSleep(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallEditSleep'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditSleep'); {$ENDIF}
  if Assigned(FOnEditSleep) then FOnEditSleep(Self);
  Result := 0;
 end;
 
 function TCustomVSTModule.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
  Result := 1;
 end;
 
 function TCustomVSTModule.HostCallConnectInput(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallConnectInput'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallConnectInput'); {$ENDIF}
  if Assigned(FOnInConnected) then FOnInConnected(Self, Index, (Value <> 0));
  Result := 1;
 end;
 
 function TCustomVSTModule.HostCallConnectOutput(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallConnectOutput'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallConnectOutput'); {$ENDIF}
  if Assigned(FOnOutConnected) then FOnOutConnected(Self, Index, (Value <> 0));
  Result := 1;
 end;
@@ -722,7 +698,7 @@ var
   str : string;
 begin
  Result := 0;
- {$IFDEF Debug} AddLogMessage('HostCallGetInputProperties'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetInputProperties'); {$ENDIF}
  if (Index < FEffect.numInputs) then
   with PVstPinProperties(ptr)^ do
    begin
@@ -755,7 +731,7 @@ var
   str : string;
 begin
  Result := 0;
- {$IFDEF Debug} AddLogMessage('HostCallGetOutputProperties'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetOutputProperties'); {$ENDIF}
  if (Index < FEffect.numOutputs) then
   with PVstPinProperties(ptr)^ do
    begin
@@ -784,13 +760,13 @@ end;
 
 function TCustomVSTModule.HostCallGetPlugCategory(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetPlugCategory'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetPlugCategory'); {$ENDIF}
  Result := Integer(FPlugCategory);
 end;
 
 function TCustomVSTModule.HostCallOfflineNotify(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallOfflineNotify'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallOfflineNotify'); {$ENDIF}
  if Assigned(FOnOfflineNotify) then
   begin
    FOnOfflineNotify(Self, PVstAudioFile(ptr)^, Value, (Index <> 0));
@@ -838,19 +814,19 @@ end;
 
 function TCustomVSTModule.HostCallOfflinePrepare(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallOfflinePrepare'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallOfflinePrepare'); {$ENDIF}
  Result := OfflinePrepare(PVstOfflineTaskRecord(ptr), Value);
 end;
 
 function TCustomVSTModule.HostCallOfflineRun(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallOfflineRun'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallOfflineRun'); {$ENDIF}
  Result := OfflineRun(PVstOfflineTaskRecord(ptr), Value);
 end;
 
 function TCustomVSTModule.HostCallProcessVarIo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcessVarIo'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcessVarIo'); {$ENDIF}
  if Assigned(FOnProcessVarIO) then
   begin
    FOnProcessVarIO(Self, PVstVariableIo(ptr)^);
@@ -860,7 +836,7 @@ end;
 
 function TCustomVSTModule.HostCallSetBlockSizeAndSampleRate(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetBlockSizeAndSampleRate: Blocksize ' + IntToStr(Value) + ' Samplerate ' + FloatToStr(opt)); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetBlockSizeAndSampleRate: Blocksize ' + IntToStr(Value) + ' Samplerate ' + FloatToStr(opt)); {$ENDIF}
  if FSampleRate <> opt then
   begin
    FSampleRate := opt;
@@ -876,7 +852,7 @@ end;
 
 function TCustomVSTModule.HostCallSetBypass(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
-  {$IFDEF Debug}
+  {$IFDEF DebugLog}
   if Value <> 0
    then AddLogMessage('HostCallSetBypass: On')
    else AddLogMessage('HostCallSetBypass: Off');
@@ -890,7 +866,7 @@ end;
 
 function TCustomVSTModule.HostCallGetEffectName(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetEffectName'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetEffectName'); {$ENDIF}
  Result := 0;
  if Assigned(ptr) then
   begin
@@ -901,7 +877,7 @@ end;
 
 function TCustomVSTModule.HostCallGetVendorString(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetVendorString'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetVendorString'); {$ENDIF}
  Result := 0;
  if Assigned(ptr) then
   begin
@@ -912,7 +888,7 @@ end;
 
 function TCustomVSTModule.HostCallGetProductString(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetProductString'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetProductString'); {$ENDIF}
  Result := 0;
  if Assigned(ptr) then
   begin
@@ -925,13 +901,13 @@ end;
 
 function TCustomVSTModule.HostCallGetVendorVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetVendorVersion'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetVendorVersion'); {$ENDIF}
  Result := FEffect.Version;
 end;
 
 function TCustomVSTModule.HostCallVendorSpecific(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallVendorSpecific'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallVendorSpecific'); {$ENDIF}
  if Assigned(FOnVendorSpecific)
   then Result := FOnVendorSpecific(Self, Index, Value, ptr, opt)
   else Result := 0;
@@ -940,7 +916,7 @@ end;
 function TCustomVSTModule.HostCallCanDo(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 0;
- {$IFDEF Debug} AddLogMessage('HostCallCanDo (' + StrPas(PChar(ptr)) + ')'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallCanDo (' + StrPas(PChar(ptr)) + ')'); {$ENDIF}
  if StrComp(ptr, 'receiveVstEvents')      = 0 then Result := 2 * Integer(vcdReceiveVstEvents      in FCanDos) - 1 else
  if StrComp(ptr, 'receiveVstMidiEvent')   = 0 then Result := 2 * Integer(vcdReceiveVstMidiEvent   in FCanDos) - 1 else
  if StrComp(ptr, 'receiveVstTimeInfo')    = 0 then Result := 2 * Integer(vcdReceiveVstTimeInfo    in FCanDos) - 1 else
@@ -977,19 +953,19 @@ end;
 
 function TCustomVSTModule.HostCallGetTailSize(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetTailSize'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetTailSize'); {$ENDIF}
  Result := FTailSize;
 end;
 
 function TCustomVSTModule.HostCallKeysRequired(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallKeysRequired'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallKeysRequired'); {$ENDIF}
  Result := Integer(not FKeysRequired); // reversed to keep v1 compatibility
 end;
 
 function TCustomVSTModule.HostCallGetVstVersion(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetVstVersion'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetVstVersion'); {$ENDIF}
  Result := 2400;
 end;
 
@@ -1000,7 +976,7 @@ var
   Hndl    : THandle;
 begin
  Result := 0;
- {$IFDEF Debug} AddLogMessage('HostCallEditKeyDown'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditKeyDown'); {$ENDIF}
  if fKeysRequired then
   try
    keyCode.character := Index;
@@ -1047,7 +1023,7 @@ var
   Hndl    : THandle;
 begin
  Result := 0;
- {$IFDEF Debug} AddLogMessage('HostCallEditKeyDown'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallEditKeyDown'); {$ENDIF}
  if fKeysRequired then
   try
    keyCode.character := Index;
@@ -1089,7 +1065,7 @@ end;
 
 function TCustomVSTModule.HostCallSetEditKnobMode(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetEditKnobMode (' + IntToStr(Value) + ')'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetEditKnobMode (' + IntToStr(Value) + ')'); {$ENDIF}
  if Assigned(FOnSetKnobMode) then
   begin
    FOnSetKnobMode(Self, Value);
@@ -1099,13 +1075,13 @@ end;
 
 function TCustomVSTModule.HostCallGetSpeakerArrangement(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallGetSpeakerArrangement'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallGetSpeakerArrangement'); {$ENDIF}
  Result := Integer(GetSpeakerArrangement(PVstSpeakerArrangement(Pointer(Value)^), PVstSpeakerArrangement(ptr^)));
 end;
 
 function TCustomVSTModule.HostCallShellGetNextPlugin(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallShellGetNextPlugin'); {$ENDIF}
  if (FCurrentVstShellPlugin < FVstShellPlugins.Count) and Assigned(Ptr) then
   begin
    StrPCopy(Ptr, FVstShellPlugins[FCurrentVstShellPlugin].DisplayName);
@@ -1122,7 +1098,7 @@ end;
 function TCustomVSTModule.HostCallStartProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 1;
- {$IFDEF Debug} AddLogMessage('HostCallStartProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallStartProcess'); {$ENDIF}
  if Assigned(FOnStartProcess)
   then FOnStartProcess(Self)
   else Result := 0;
@@ -1131,7 +1107,7 @@ end;
 function TCustomVSTModule.HostCallStopProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 1;
- {$IFDEF Debug} AddLogMessage('HostCallStopProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallStopProcess'); {$ENDIF}
  if Assigned(FOnStopProcess)
   then FOnStopProcess(Self)
   else Result := 0;
@@ -1139,14 +1115,14 @@ end;
 
 function TCustomVSTModule.HostCallSetTotalSampleToProcess(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetTotalSampleToProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetTotalSampleToProcess'); {$ENDIF}
  Result := Value;
 end;
 
 function TCustomVSTModule.HostCallSetPanLaw(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
  Result := 1;
- {$IFDEF Debug} AddLogMessage('HostCallSetPanLaw'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetPanLaw'); {$ENDIF}
  if Assigned(FOnSetPanLaw)
   then FOnSetPanLaw(Self, TVstPanLawType(Value), Opt)
   else Result := 0;
@@ -1154,7 +1130,7 @@ end;
 
 function TCustomVSTModule.HostCallSetProcessPrecision(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallSetProcessPrecision'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallSetProcessPrecision'); {$ENDIF}
  Result := Integer(fProcessPrecisition); // [value]: @see VstProcessPrecision  @see AudioEffectX::setProcessPrecision
 end;
 
@@ -1288,7 +1264,7 @@ end;
 function TCustomVSTModule.GetSpeakerArrangement(var InputArrangement,
   OutputArrangement: PVstSpeakerArrangement): Boolean;
 begin
- {$IFDEF Debug} AddLogMessage('GetSpeakerArrangement'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('GetSpeakerArrangement'); {$ENDIF}
  result := False;
 end;
 
@@ -1322,18 +1298,18 @@ end;
 {$IFDEF UseDelphi}
 procedure TCustomVSTModule.ReadState(Reader: TReader);
 begin
- {$IFDEF Debug} AddLogMessage('Before ReadState'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('Before ReadState'); {$ENDIF}
  inherited;
- {$IFDEF Debug} AddLogMessage('After ReadState'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('After ReadState'); {$ENDIF}
 
  if Assigned(FOnInitialize) then FOnInitialize(Self);
- {$IFDEF Debug} AddLogMessage('End ReadState'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('End ReadState'); {$ENDIF}
 end;
 {$ENDIF}
 
 function TCustomVSTModule.UpdateSampleRate: Double;
 begin
-  {$IFDEF Debug} AddLogMessage('Update Samplerate'); {$ENDIF}
+  {$IFDEF DebugLog} AddLogMessage('Update Samplerate'); {$ENDIF}
 
   Result := inherited UpdateSampleRate;
   if (Result>0) and (Result<>FSampleRate) then
@@ -1345,7 +1321,7 @@ end;
 
 function TCustomVSTModule.UpdateBlockSize: Integer;
 begin
- {$IFDEF Debug} AddLogMessage('UpdateBlockSize'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('UpdateBlockSize'); {$ENDIF}
  Result := inherited UpdateBlockSize;
  if (Result > 0) and (Result <> FBlockSize) then
   begin

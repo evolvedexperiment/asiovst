@@ -91,7 +91,7 @@ end;
 
 function TVSTModuleWithMidi.HostCallProcessEvents(const Index: Integer; const Value: TVstIntPtr; const ptr: pointer; const opt: Single): TVstIntPtr;
 begin
- {$IFDEF Debug} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcessEvents'); {$ENDIF}
  Result:= inherited HostCallProcessEvents(Index, Value, ptr, opt);
  if assigned(ptr)
   then ProcessEvents(PVstEvents(ptr)^);
@@ -101,7 +101,7 @@ procedure TVSTModuleWithMidi.ProcessEvents(const Events: TVstEvents);
 var
   Event: Integer;
 begin
- {$IFDEF Debug} AddLogMessage('ProcessEvents'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('ProcessEvents'); {$ENDIF}
  if Assigned(FOnProcessEvents) then FOnProcessEvents(Self, Events);
  with Events do
   for Event := 0 to numEvents - 1 do
@@ -136,7 +136,7 @@ end;
 procedure TVSTModuleWithMidi.HostCallProcess(const Inputs, Outputs: PPSingle; const SampleFrames: Integer);
 begin
  inherited;
- {$IFDEF Debug} AddLogMessage('HostCallProcess - MIDI Processing'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcess - MIDI Processing'); {$ENDIF}
  if FMidiEvent.numEvents > 0 then
   begin
    SendVstEventsToHost(FMidiEvent);
@@ -149,7 +149,7 @@ begin
  inherited;
  if FMidiEvent.numEvents > 0 then
   begin
-   {$IFDEF Debug} AddLogMessage('HostCallProcess32Replacing - MIDI Processing'); {$ENDIF}
+   {$IFDEF DebugLog} AddLogMessage('HostCallProcess32Replacing - MIDI Processing'); {$ENDIF}
    SendVstEventsToHost(FMidiEvent);
    FMidiEvent.numEvents := 0;
   end;
@@ -161,7 +161,7 @@ var
   Outs : TDAVArrayOfDoubleDynArray absolute Outputs;
 begin
  inherited;
- {$IFDEF Debug} AddLogMessage('HostCallProcess64Replacing - MIDI Processing'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('HostCallProcess64Replacing - MIDI Processing'); {$ENDIF}
  if FMidiEvent.numEvents > 0 then
   begin
    SendVstEventsToHost(FMidiEvent);
@@ -171,7 +171,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiOut(const b1, b2, b3: Byte; b4: Byte = 0; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiOut'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiOut'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -186,7 +186,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiCC(const Channel, Number, Value: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiCC'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiCC'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -200,7 +200,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiChannelAftertouch(const Channel, Value: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiChannelAftertouch'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiChannelAftertouch'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -214,7 +214,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiNoteOff(const Channel, Note, Value: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiNoteOff'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiNoteOff'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -228,7 +228,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiNoteOn(const Channel, Note, Value: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiNoteOn'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiNoteOn'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -245,7 +245,7 @@ procedure TVSTModuleWithMidi.MidiPitchBend(ch, val: Integer; const Offset: Integ
 var
   a, b: Integer;
 begin
- {$IFDEF Debug} AddLogMessage('MidiPitchBend'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiPitchBend'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -262,7 +262,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiPitchBend2(const Channel, x1, x2: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiPitchBend2'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiPitchBend2'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -276,7 +276,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiPolyAftertouch(const Channel, Note, Value: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiPolyAftertouch'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiPolyAftertouch'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -290,7 +290,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiProgramChange(const Channel, Value: Integer; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiProgramChange'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiProgramChange'); {$ENDIF}
  with PVstMidiEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    EventType := etMidi;
@@ -305,7 +305,7 @@ end;
 
 procedure TVSTModuleWithMidi.MidiSendSysEx(const Data: array of Byte; const Offset: Integer = 0);
 begin
- {$IFDEF Debug} AddLogMessage('MidiSendSysEx'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('MidiSendSysEx'); {$ENDIF}
  with PVstMidiSysexEvent(FMidiEvent.Events[FMidiEvent.numEvents])^ do
   begin
    dumpBytes := Length(Data);

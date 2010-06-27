@@ -4,19 +4,68 @@ library NoGUIFilter;
 
 uses
   Interfaces,
+  Classes,
   DAV_VSTEffect,
   DAV_VSTModule,
   DAV_VSTParameters,
   FilterModule in 'FilterModule.pas';
 
+{$DEFINE DEBUG64}
+{$IFDEF DEBUG64}
+var
+  GDebug : TStringList;
+
+procedure AddDebugMessage(Text: string);
+begin
+ GDebug.Add(Text);
+ GDebug.SaveToFile('Debug64.log');
+end;
+{$ENDIF}
+
 function VSTPluginMain(audioMaster: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 var
   VSTFilterModule : TVSTFilter;
 begin
+  {$IFDEF DEBUG64}
+  AddDebugMessage('Jetzt geht''s los!');
+  {$ENDIF}
+
   VSTFilterModule := TVSTFilter.Create(nil);
-  VSTFilterModule.Effect^.user := VSTFilterModule;
+
+  {$IFDEF DEBUG64}
+  AddDebugMessage('After Create Filter');
+  {$ENDIF}
+
+  // check if Effect has been assigned
+  Result := nil;
+  if (not Assigned(VSTFilterModule)) or (not Assigned(VSTFilterModule.Effect))
+   then Exit;
+
+  {$IFDEF DEBUG64}
+  AddDebugMessage('After Check');
+  {$ENDIF}
+
+  {$IFDEF UseAudioEffectPtr}
+  VSTFilterModule.Effect^.AudioEffectPtr := VSTFilterModule;
+  {$ELSE}
+  VSTFilterModule.Effect^.User := VSTFilterModule;
+  {$ENDIF}
+
+  {$IFDEF DEBUG64}
+  AddDebugMessage('After assign user pointer');
+  {$ENDIF}
+
   VSTFilterModule.AudioMaster := audioMaster;
+
+  {$IFDEF DEBUG64}
+  AddDebugMessage('After assign audio master');
+  {$ENDIF}
+
   Result := VSTFilterModule.Effect;
+
+  {$IFDEF DEBUG64}
+  AddDebugMessage('After Assign Filter');
+  {$ENDIF}
 
   with VSTFilterModule do
   try
@@ -102,6 +151,10 @@ begin
     if Assigned(OnInitialize) then OnInitialize(VSTFilterModule);
   except
   end;
+
+  {$IFDEF DEBUG64}
+  AddDebugMessage('Feddich');
+  {$ENDIF}
 end;
 
 exports
@@ -116,4 +169,7 @@ exports
 {$ENDIF}
 
 begin
+ {$IFDEF DEBUG64}
+ GDebug := TStringList.Create;
+ {$ENDIF}
 end.

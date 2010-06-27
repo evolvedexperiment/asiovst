@@ -4,7 +4,7 @@ program VstPresetDesigner;
 
 uses
   Forms, Interfaces,
-  VpdMain in 'VpdMain.pas', DAV_VSTHost_Lazarus {FmVstPresetDesigner};
+  VpdMain in 'VpdMain.pas' {FmVstPresetDesigner};
 
 {$R *.res}
 

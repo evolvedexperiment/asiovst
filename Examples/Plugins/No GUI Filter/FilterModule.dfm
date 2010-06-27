@@ -1,12 +1,10 @@
 object VSTFilter: TVSTFilter
-  OldCreateOrder = False
   Version = '1.0'
   EffectName = 'Delphi VST Filter'
   ProductName = 'Delphi VST Filter'
   VendorName = 'Delphi VST'
   PlugCategory = vpcEffect
   SampleRate = 44100.000000000000000000
-  CurrentProgram = 0
   CurrentProgramName = 'Preset 1'
   IORatio = 1.000000000000000000
   UniqueID = 'Filt'
@@ -26,7 +24,6 @@ object VSTFilter: TVSTFilter
     end>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Cutoff Frequency'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]
@@ -46,7 +43,6 @@ object VSTFilter: TVSTFilter
       OnParameterChange = VSTFilterParameterChange
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Resonance'
       Flags = [ppfParameterUsesFloatStep, ppfParameterSupportsDisplayIndex]

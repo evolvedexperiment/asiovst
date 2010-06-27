@@ -96,6 +96,7 @@ begin
   FBlockModeOverlap := 0;
   FDspDirectProcessItem := nil;
   FDspQueueList := TDAVProcessingComponentList.Create;
+  {$IFDEF DebugLog} AddLogMessage('After TDspVSTModule Create'); {$ENDIF}
 end;
 
 destructor TDspVSTModule.Destroy;
@@ -210,7 +211,7 @@ procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfSingleDy
 var
   Channel : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoProcessCopy'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoProcessCopy'); {$ENDIF}
  for Channel := 0 to min(FEffect.numInputs, FEffect.numOutputs) - 1
   do Move(Inputs[Channel, 0], PSingle(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single));
 end;
@@ -219,7 +220,7 @@ procedure TDspVSTModule.DoProcessCopy(const Inputs, Outputs: TDAVArrayOfDoubleDy
 var
   Channel : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoProcessCopy'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoProcessCopy'); {$ENDIF}
  for Channel := 0 to min(FEffect.numInputs, FEffect.numOutputs) - 1
   do Move(Inputs[Channel, 0], PDouble(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Double));
 end;
@@ -228,7 +229,7 @@ procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfSingleDy
 var
   Channel : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoProcessMute'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoProcessMute'); {$ENDIF}
  for Channel := 0 to FEffect.numOutputs - 1
   do FillChar(PSingle(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
@@ -237,7 +238,7 @@ procedure TDspVSTModule.DoProcessMute(const Inputs, Outputs: TDAVArrayOfDoubleDy
 var
   Channel : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoProcessMute'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoProcessMute'); {$ENDIF}
  for Channel := 0 to FEffect.numOutputs - 1
   do FillChar(PDouble(@Outputs[Channel, 0])^, SampleFrames * SizeOf(Single), 0);
 end;
@@ -247,7 +248,7 @@ var
   CurrentPosition : Integer;
   Channel         : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoBlockSaveProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoBlockSaveProcess'); {$ENDIF}
  CurrentPosition := 0;
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
@@ -278,7 +279,7 @@ var
   CurrentPosition : Integer;
   Channel         : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoBlockSaveProcess'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoBlockSaveProcess'); {$ENDIF}
  CurrentPosition := 0;
 
  repeat
@@ -310,7 +311,7 @@ var
   CurrentPosition : Integer;
   Channel         : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoBlockSaveProcess32Replacing'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoBlockSaveProcess32Replacing'); {$ENDIF}
  CurrentPosition := 0;
 
  repeat
@@ -343,7 +344,7 @@ var
   CurrentPosition : Integer;
   Channel         : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoBlockSaveProcess32Replacing'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoBlockSaveProcess32Replacing'); {$ENDIF}
  CurrentPosition := 0;
  repeat
   if FBlockPosition + (SampleFrames - CurrentPosition) < FBlockModeSize then
@@ -374,7 +375,7 @@ var
   ProcessBuffer : TDAVArrayOfSingleDynArray;
   Channel       : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
  for Channel := 0 to numInputs - 1 do Move(Inputs[Channel, 0], ProcessBuffer[Channel, 0], SampleFrames * SizeOf(Single));
   if assigned(FDspDirectProcessItem) then
@@ -387,7 +388,7 @@ var
   ProcessBuffer : TDAVArrayOfDoubleDynArray;
   Channel       : Integer;
 begin
- {$IFDEF Debug} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('DoProcessDspQueue'); {$ENDIF}
  SetLength(ProcessBuffer, max(numOutputs, numInputs), SampleFrames);
  for Channel := 0 to numInputs - 1 do Move(Inputs[Channel, 0], ProcessBuffer[Channel, 0], SampleFrames * SizeOf(Double));
  if assigned(FDspDirectProcessItem) then

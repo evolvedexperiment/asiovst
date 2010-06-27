@@ -67,7 +67,7 @@
 { To identify VST Plugin datamodules a reference pointer ist stored into the
   basic TVSTEffect record. The reference an either be stored as 'AudioEffectPtr'
   or as 'User' pointer. While the original 'AudioEffectPtr' is reserved to
-  store an AudioEffect class instance, the user can be anything.
+  store an AudioEffect class instance, the user pointer can be anything.
   By default the user pointer is used.}
 {.$DEFINE UseAudioEffectPtr}
 
@@ -76,7 +76,7 @@
   hosts that do not allow any debuggers. The "debug.log" contains information
   about the dispatcher and some internal states.
   The default is disabled.}
-{.$DEFINE Debug}
+{.$DEFINE DebugLog}
 
 
 //////////////////////////////////
@@ -97,7 +97,7 @@
 { Enable this option if the jBridge should be used to bridge 64bit plugins if
   available. jBridge is available at: http://jstuff.wordpress.com/jbridge
   The default is disable.}
-{$DEFINE jBridge}
+{.$DEFINE jBridge}
 
 { Enable this option if the VST host should use FlatScrollBars instead of the
   3-D like scrollbars. It is disabled by default, because it hasn't been tested

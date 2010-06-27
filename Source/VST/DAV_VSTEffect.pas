@@ -11,17 +11,21 @@ const
   CEffectMagic = 'VstP';
 
 type
+  {$ALIGN ON}
   {$IFDEF CPUx86_64}
   TVstIntPtr = Int64;
+  {$IFDEF FPC}
+  {$Z4}
+  {$PackRecords 8}
+  {$ENDIF}
   {$ELSE}
   TVstIntPtr = Integer;
+  {$Z4}
   {$ENDIF}
   PPSingle = ^PSingle;
   PPDouble = ^PDouble;
   PVSTEffect = ^TVSTEffect;
 
-  {$ALIGN ON}
-  {$Z4}
   TDispatcherOpcode = (
     effOpen,                  //  0: initialise
     effClose,                 //  1: exit, release all memory and other resources!
@@ -163,12 +167,6 @@ type
     effGetNumMidiOutputChannels   // 79: return number of used MIDI output channels (1-15)  @see AudioEffectX::getNumMidiOutputChannels
   );
 
-  TProcessPrecision = (
-    pp32, //< single precision float (32bits)
-    pp64  //< double precision (64bits)
-  );
-
-
   TAudioMasterOpcode = (
     amAutomate,      //  0: index, value, returns 0
     amVersion,       //  1: vst version, currently 2 (0 for older), 2400 for VST 2.4!
@@ -249,7 +247,7 @@ type
                                             //     will always return true.
 
   TAudioMasterCallbackFunc = function(const Effect: PVSTEffect; const Opcode: TAudioMasterOpcode; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
-  TDispatcherFunc = function(const Effect: PVSTEffect; const Opcode : TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
+  TDispatcherFunc = function(const Effect: PVSTEffect; const Opcode: TDispatcherOpcode; const Index: Integer; const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
   TProcessProc = procedure(const Effect: PVSTEffect; const Inputs, Outputs: PPSingle; const Sampleframes: Integer); cdecl;
   TProcessDoubleProc = procedure(const Effect: PVSTEffect; const Inputs, Outputs: PPDouble; const Sampleframes: Integer); cdecl;
   TSetParameterProc = procedure(const Effect: PVSTEffect; const Index: Longint; const Parameter: Single); cdecl;
@@ -318,6 +316,11 @@ type
     Future             : array[0..55] of Byte; // pls zero
   end;
 
+  TProcessPrecision = (
+    pp32, //< single precision float (32bits)
+    pp64  //< double precision (64bits)
+  );
+
   TVSTEventType = ( etNone,
     etMidi,      // 1: midi event, can be cast as VstMidiEvent (see below)
     etAudio,     // 2: audio
@@ -339,7 +342,7 @@ type
   PVstEvents = ^TVstEvents;
   TVstEvents = record  // a block of events for the current audio block
     NumEvents : LongInt;
-    Reserved  : LongInt;                     // zero
+    Reserved  : TVstIntPtr;                  // zero
     Events    : array[0..2047] of PVstEvent; // variable
   end;
 
@@ -370,9 +373,9 @@ type
     DeltaFrames     : LongInt;              // sample frames related to the current block start sample position
     Flags           : LongInt;              // not defined yet
     DumpBytes       : LongInt;              // byte size of sysexDump
-    Reserved1       : Pointer;              // zero (Reserved for future use)
+    Reserved1       : TVstIntPtr;           // zero (Reserved for future use)
     SysExDump       : PAnsiChar;            // sysex dump
-    Reserved2       : Pointer;              // zero (Reserved for future use)
+    Reserved2       : TVstIntPtr;           // zero (Reserved for future use)
   end;
 
 // VstTimeInfo ///////////////////////////////////////////////////////////////
@@ -936,7 +939,7 @@ type
     ReturnMultiplePaths  : ^PAnsiChar; // use with kVstMultipleFilesLoad
                                        // the host allocates this array. The plugin should then called closeOpenFileSelector for freeing memory
     nbReturnPath         : LongInt;    // number of selected paths
-    Reserved             : LongInt;    // reserved for host application
+    Reserved             : TVstIntPtr; // reserved for host application
     Future               : array[0..115] of Byte;   // future use
   end;
 

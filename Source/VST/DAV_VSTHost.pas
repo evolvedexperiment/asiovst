@@ -56,6 +56,8 @@ interface
 
 {$IFNDEF FPC}{$DEFINE MemDLL}{$ENDIF}
 
+{-$DEFINE Debug64}
+
 uses
   {$IFDEF FPC} LCLIntf, LResources, Dynlibs, {$ELSE} Windows, Messages, {$ENDIF}
   {$IFDEF MSWINDOWS} Registry, {$ENDIF} Contnrs, SysUtils, Classes, Graphics,
@@ -117,6 +119,9 @@ type
   {$IFDEF DELPHI10_UP} {$endregion 'General Types'} {$ENDIF}
 
   {$IFDEF DELPHI10_UP} {$region 'TVstPlugIn'} {$ENDIF}
+
+  { TCustomVstPlugIn }
+
   TCustomVstPlugIn = class(TCollectionItem)
   private
     FActive                        : Boolean;
@@ -169,6 +174,7 @@ type
     FWantMidi                      : Boolean;
     FVSTCanDos                     : TVstCanDos;
     FVSTCanDosScannedComplete      : Boolean;
+
     function GetEffOptions: TEffFlags;
     function GetInitialDelay: Integer;
     function GetIORatio: Single;
@@ -287,7 +293,7 @@ type
     function String2Parameter(const Index: Integer; ValueString: AnsiString): Boolean;
     function VendorSpecific(const Index, Value: Integer; const Pntr: Pointer; const Opt: Single): Integer;
     function VstCanDo(const CanDoString: AnsiString): Integer;
-    function VstDispatch(const Opcode : TDispatcherOpcode; const Index: Integer = 0; const value: Integer = 0; const pntr: Pointer = nil; const opt: Single = 0): Integer; {overload;} //virtual;
+    function VstDispatch(const Opcode: TDispatcherOpcode; const Index: Integer = 0; const Value: TVstIntPtr = 0; const pntr: Pointer = nil; const opt: Single = 0): TVstIntPtr; {overload;} //virtual;
 
     // load plugin
     function CheckValidPlugin(const FileName: TFilename): Boolean;
@@ -682,6 +688,11 @@ var
   GHostWindows : TObjectList;
   {$ENDIF}
 
+  {$IFDEF Debug64}
+  GDebugLog    : TStringList;
+  {$ENDIF}
+
+
 const
   SCRound8087CW     : Word = $133F; // round FPU codeword, with exceptions disabled
   SCChop8087CW      : Word = $1F3F; // Trunc (chop) FPU codeword, with exceptions disabled
@@ -689,6 +700,17 @@ const
   SCRoundUp8087CW   : Word = $1B3F; // exceptions disabled
 
 ///////////////////////////////////////////////////////////////////////////////
+
+{$IFDEF Debug64}
+procedure AddDebugMessage(Text: string);
+begin
+ if Assigned(GDebugLog) then
+  begin
+   GDebugLog.Add(Text);
+   GDebugLog.SaveToFile('Debug64.log');
+  end;
+end;
+{$ENDIF}
 
 {$IFDEF DELPHI10_UP} {$region 'General Functions'} {$ENDIF}
 
@@ -837,7 +859,7 @@ end;
 {$ENDIF}
 
 function AudioMasterCallback(const Effect: PVstEffect;
-  const Opcode : TAudioMasterOpcode; const Index: LongInt;
+  const Opcode: TAudioMasterOpcode; const Index: LongInt;
   const Value: TVstIntPtr; const Ptr: Pointer; const Opt: Single): TVstIntPtr; cdecl;
 var
   Plugin    : TCustomVstPlugIn;
@@ -848,6 +870,13 @@ var
   {$ENDIF}
 begin
  Result := 0;
+
+ {$IFDEF Debug64}
+ AddDebugMessage('AudioMasterCallback: Opcode = ' + IntToStr(Integer(Opcode)) + '; ' +
+   'Index = ' + IntToStr(Index) + '; ' +
+   'Value = ' + IntToStr(Value) + '; ');
+ {$ENDIF}
+
  {$IFDEF VstHostExceptionHandling}
  try
  {$ENDIF}
@@ -857,12 +886,17 @@ begin
     {$IFDEF DELPHI6_UP}
     Host := Effect.Resvd2;
     {$ELSE}
-    Host := TCustomVstHost(Plugin.Collection.Owner);
+    if Assigned(Plugin) and Assigned(Plugin.Collection) and Assigned(Plugin.Collection.Owner)
+     then Host := TCustomVstHost(Plugin.Collection.Owner);
     {$ENDIF}
+
     if (Host = nil) then
      begin
       Plugin := GTempPlugin;
-      Host := TCustomVstHost(Plugin.Collection.Owner);
+      if Assigned(Plugin.Collection) and Assigned(Plugin.Collection.Owner) then
+       begin
+        Host := TCustomVstHost(Plugin.Collection.Owner);
+       end;
      end;
    end
   else
@@ -1000,20 +1034,34 @@ begin
                                      // raise Exception.Create('audioMasterSetOutputSampleRate, for variable i/o, sample rate in <opt>');
                                    end;
    amGetOutputspeakerArrangement : {$IFDEF Debug} raise Exception.Create('TODO: audioMasterGetSpeakerArrangement, (long)input in <value>, output in <ptr>') {$ENDIF Debug};
-   amGetVendorString             : begin
+   amGetVendorString             : try
+                                    Result := 1;
+                                    {$IFDEF FPC}
+                                    if Assigned(Host)
+                                     then Move(Host.VendorString[1], ptr^, Length(Host.VendorString))
+                                     else Result := 0;
+                                    {$ELSE}
                                     if Assigned(Host)
                                      then StrPCopy(PAnsiChar(ptr), Host.VendorString)
                                      else StrPCopy(PAnsiChar(ptr), 'Delphi ASIO & VST Project');
-                                    Result := 1;
+                                    {$ENDIF}
+                                   except
+                                    Result := 0;
                                    end;
    amGetProductString            : try
                                     Result := 1;
+                                    {$IFDEF FPC}
+                                    if Assigned(Host)
+                                     then Move(Host.ProductString[1], ptr^, Length(Host.ProductString))
+                                     else Result := 0;
+                                    {$ELSE}
                                     if Assigned(Host)
                                      then StrPCopy(PAnsiChar(ptr), Host.ProductString)
                                      else
                                       if Assigned(ptr)
-                                       then StrCopy(PAnsiChar(ptr), 'Delphi VST Host')
+                                       then StrPCopy(PAnsiChar(ptr), 'Delphi VST Host')
                                        else Result := 0;
+                                    {$ENDIF}
                                    except
                                     Result := 0;
                                    end;
@@ -1171,12 +1219,16 @@ begin
   end;
  {$IFDEF VstHostExceptionHandling}
  except
-  Result := 0;
   {$IFDEF Debug}
   raise;
   {$ENDIF}
  end;
  {$ENDIF}
+
+ {$IFDEF Debug64}
+ AddDebugMessage('Done Audiomaster');
+ {$ENDIF}
+
 end;
 {$IFDEF DELPHI10_UP} {$endregion 'General Functions'} {$ENDIF}
 
@@ -1871,14 +1923,6 @@ begin
  FNeedIdle := False;
  FWantMidi := False;
 
- if (Integer(FVstEffect.uniqueID) = 0) then
-  with TStringList.Create do
-   try
-    while ShellGetNextPlugin(tmp) <> 0 do Add(string(tmp));
-   finally
-    Free;
-   end;
-
  {$IFDEF VstHostExceptionHandling}
  try
  {$ENDIF}
@@ -1930,10 +1974,20 @@ begin
   if vcdBypass in FVSTCanDos
    then SetBypass(False);
 
-  FVstVersion   := GetVstVersion;
   FPlugCategory := GetPlugCategory;
+  FVstVersion   := GetVstVersion;
+
+  if (Integer(FVstEffect.uniqueID) = 0) and (PlugCategory = vpcShell) then
+   with TStringList.Create do
+    try
+     while ShellGetNextPlugin(tmp) <> 0 do Add(string(tmp));
+    finally
+     Free;
+    end;
+
   MainsChanged(True);
- {$IFDEF VstHostExceptionHandling}
+
+  {$IFDEF VstHostExceptionHandling}
  except
   FActive := False;
  end;
@@ -1950,8 +2004,12 @@ begin
  FPlugCategory := vpcUnknown;
 end;
 
-function TCustomVstPlugIn.VstDispatch(const Opcode : TDispatcherOpcode; const Index, Value: Integer; const Pntr: Pointer; const opt: Single): Integer;
+function TCustomVstPlugIn.VstDispatch(const Opcode: TDispatcherOpcode; const Index: Integer = 0; const Value: TVstIntPtr = 0; const pntr: Pointer = nil; const opt: Single = 0): TVstIntPtr;
 begin
+ {$IFDEF Debug64}
+ AddDebugMessage('VstDispatch: Begin - Opcode: ' + IntToStr(Integer(Opcode)));
+ {$ENDIF}
+
  {$IFDEF VstHostExceptionHandling}
  try
   DontRaiseExceptionsAndSetFPUcodeword;
@@ -1959,40 +2017,65 @@ begin
    then Result := 0
    else Result := FVstEffect.Dispatcher(FVstEffect, Opcode, Index, Value, Pntr, opt);
  except
+  AddDebugMessage('Dispatcher Exception');
   Result := 0;
  end;
  {$ELSE}
  DontRaiseExceptionsAndSetFPUcodeword;
  Result := FVstEffect.Dispatcher(FVstEffect, Opcode, index, value, pntr, opt);
  {$ENDIF}
+
+ {$IFDEF Debug64}
+ AddDebugMessage('VstDispatch: End');
+ {$ENDIF}
 end;
 
 procedure TCustomVstPlugIn.Process(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 begin
+ {$IFDEF Debug64}
+ AddDebugMessage('Process');
+ {$ENDIF}
+
  if FVstEffect <> nil
   then FVstEffect.Process(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
 procedure TCustomVstPlugIn.Process32Replacing(Inputs, Outputs: PPSingle; SampleFrames: Integer);
 begin
+ {$IFDEF Debug64}
+ AddDebugMessage('Process32Replacing');
+ {$ENDIF}
+
  if FVstEffect <> nil
   then FVstEffect.Process32Replacing(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
 procedure TCustomVstPlugIn.Process64Replacing(Inputs, Outputs: ppDouble; SampleFrames: Integer);
 begin
+ {$IFDEF Debug64}
+ AddDebugMessage('Process64Replacing');
+ {$ENDIF}
+
  if FVstEffect <> nil
   then FVstEffect.Process64Replacing(FVstEffect, Inputs, Outputs, SampleFrames);
 end;
 
 procedure TCustomVstPlugIn.SetParameter(Index:Integer; Parameter: Single);
 begin
+ {$IFDEF Debug64}
+ AddDebugMessage('Set Parameter');
+ {$ENDIF}
+
  if FVstEffect <> nil
   then FVstEffect.SetParameter(FVstEffect, Index, Parameter);
 end;
 
 function TCustomVstPlugIn.GetParameter(Index: Integer): Single;
 begin
+ {$IFDEF Debug64}
+ AddDebugMessage('Get Parameter');
+ {$ENDIF}
+
  if FVstEffect = nil
   then Result := 0
   else Result := FVstEffect.GetParameter(FVstEffect, Index);
@@ -4053,12 +4136,20 @@ initialization
   GHostWindows := TObjectList.Create;
   {$ENDIF}
 
+  {$IFDEF Debug64}
+  GDebugLog    := TStringList.Create;
+  {$ENDIF}
+
 finalization
   {$IFDEF VstHostGUI}
   FreeAndNil(GHostWindows);
   {$ENDIF}
   {$IFDEF SearchPluginAndHost}
   FreeAndNil(GHostList);
+  {$ENDIF}
+
+  {$IFDEF Debug64}
+  FreeAndNil(GDebugLog);
   {$ENDIF}
 
 end.
