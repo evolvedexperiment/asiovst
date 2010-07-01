@@ -153,7 +153,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEDitherNoiseshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEDitherNoiseshaperPins(index) of
   pinInput:
    with Properties^ do
@@ -173,7 +173,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -227,7 +227,7 @@ end;
 // describe the pins (plugs)
 function TSEDitherNoiseshaperStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEDitherNoiseshaperPins(index) of
   pinBitDepth:
    with Properties^ do

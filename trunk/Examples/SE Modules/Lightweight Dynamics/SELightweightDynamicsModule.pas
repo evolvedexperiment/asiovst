@@ -361,7 +361,7 @@ end;
 // describe the pins (plugs)
 function TCustomLightweightDynamicsSEModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   0: with Properties^ do
       begin
@@ -404,7 +404,7 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -484,7 +484,7 @@ end;
 function TLightweightGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -493,7 +493,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -502,7 +502,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -511,7 +511,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -520,7 +520,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -529,7 +529,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -590,7 +590,7 @@ end;
 function TLightweightGateParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5..9: with Properties^ do Direction := drIn;
  end;
@@ -612,7 +612,7 @@ end;
 function TLightweightGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -621,7 +621,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -630,7 +630,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -639,7 +639,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -648,7 +648,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -657,7 +657,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -792,7 +792,7 @@ end;
 function TLightweightLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -801,7 +801,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -810,7 +810,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -819,7 +819,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -828,7 +828,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -837,7 +837,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -898,7 +898,7 @@ end;
 function TLightweightLimiterParamStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5..9: with Properties^ do Direction := drIn;
  end;
@@ -920,7 +920,7 @@ end;
 function TLightweightLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -929,7 +929,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -938,7 +938,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -947,7 +947,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -956,7 +956,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -965,7 +965,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1045,7 +1045,7 @@ end;
 function TCustomLightweightCompressorSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   6: with Properties^ do
       begin
@@ -1054,7 +1054,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1127,7 +1127,7 @@ end;
 function TLightweightCompressorStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -1136,7 +1136,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -1145,7 +1145,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -1154,7 +1154,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -1163,7 +1163,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
  10: with Properties^ do
       begin
@@ -1172,7 +1172,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1233,7 +1233,7 @@ end;
 function TLightweightCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5..10: with Properties^ do Direction := drIn;
  end;
@@ -1255,7 +1255,7 @@ end;
 function TLightweightCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -1264,7 +1264,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -1273,7 +1273,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -1282,7 +1282,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -1291,7 +1291,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
  10: with Properties^ do
       begin
@@ -1300,7 +1300,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1383,7 +1383,7 @@ end;
 function TCustomLightweightFeedbackCompressorSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   6: with Properties^ do
       begin
@@ -1392,7 +1392,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1465,7 +1465,7 @@ end;
 function TLightweightFeedbackCompressorStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -1474,7 +1474,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -1483,7 +1483,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -1492,7 +1492,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -1501,7 +1501,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
  10: with Properties^ do
       begin
@@ -1510,7 +1510,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1571,7 +1571,7 @@ end;
 function TLightweightFeedbackCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5..10: with Properties^ do Direction := drIn;
  end;
@@ -1593,7 +1593,7 @@ end;
 function TLightweightFeedbackCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   5: with Properties^ do
       begin
@@ -1602,7 +1602,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -1611,7 +1611,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   8: with Properties^ do
       begin
@@ -1620,7 +1620,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   9: with Properties^ do
       begin
@@ -1629,7 +1629,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
  10: with Properties^ do
       begin
@@ -1638,7 +1638,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;

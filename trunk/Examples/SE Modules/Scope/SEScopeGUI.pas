@@ -51,7 +51,7 @@ begin
  CallHost(seGuiHostSetWindowType, 0); // 0 = Draw on SE's window (default), 1 = HWND based
 
 // CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE or HWF_NO_CUSTOM_GFX_ON_STRUCTURE));
- CallHost(seGuiHostSetWindowFlags, Integer(HWF_RESIZEABLE));
+ CallHost(seGuiHostSetWindowFlags, Integer(hwfResizable));
 end;
 
 destructor TSEScopeGui.Destroy;
@@ -71,7 +71,7 @@ var
   test : Integer;
 begin
  test := 9;
- result := True;
+ Result := True;
 end;
 *)
 
@@ -261,7 +261,7 @@ end;
 
 function TSEScopeGui.InvalidateControl: Integer;
 begin
- result := CallHost(seGuiHostRequestRepaint);
+ Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 end.

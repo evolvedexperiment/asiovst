@@ -291,7 +291,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEFiltersModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEFiltersPins(index) of
   // typical input plug (inputs are listed first)
   pinInput:
@@ -329,7 +329,7 @@ begin
      end;
   {$ENDIF}
 
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -339,7 +339,7 @@ end;
 function TCustomSEGainFrequencyModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEFiltersPins(Index) of
   pinFrequency:
     with Properties^ do
@@ -350,7 +350,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0.5';
-      result          := True;
+      Result          := True;
      end;
   pinGain:
     with Properties^ do
@@ -361,7 +361,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0';
-      result          := True;
+      Result          := True;
      end;
   pinBandwidth:
     with Properties^ do
@@ -372,7 +372,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0.5';
-      result          := True;
+      Result          := True;
      end;
  end;
 end;
@@ -767,7 +767,7 @@ end;
 function TSEBasicShapeModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEFiltersPins(Index) of
   pinShape:
     with Properties^ do
@@ -778,7 +778,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0';
-      result          := True;
+      Result          := True;
      end;
  end;
 end;
@@ -890,7 +890,7 @@ end;
 function TFilterCascadeModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case Index of
   0: with Properties^ do
       begin
@@ -923,7 +923,7 @@ begin
        Flags           := [iofAutoDuplicate, iofRename];
       end;
 
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

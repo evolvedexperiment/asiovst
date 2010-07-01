@@ -91,12 +91,12 @@ end;
 
 function TSECorrelationMeterGui.Handle: THandle;
 begin
- result := CallHost(seGuiHostGetHandle);
+ Result := CallHost(seGuiHostGetHandle);
 end;
 
 function TSECorrelationMeterGui.InvalidateControl: Integer;
 begin
- result := CallHost(seGuiHostRequestRepaint);
+ Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 end.

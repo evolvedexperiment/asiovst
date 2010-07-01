@@ -85,7 +85,7 @@ end;
 // describe the pins (plugs)
 function TSELabelModuleDSP.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -106,7 +106,7 @@ begin
        Datatype        := dtText;
        DefaultValue    := 'Label';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -145,7 +145,7 @@ end;
 // describe the pins (plugs)
 function TSELabelModuleGUI.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case Index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -209,7 +209,7 @@ begin
        Direction       := drIn;
        DatatypeExtra   := 'range -32,32';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

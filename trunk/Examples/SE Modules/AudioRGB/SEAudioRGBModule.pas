@@ -202,7 +202,7 @@ end;
 // describe the pins (plugs)
 function TSEAudioRGBModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEAudioRGBPins(index) of
   pinInput:
    with Properties^ do
@@ -256,7 +256,7 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -393,7 +393,7 @@ end;
 // describe the pins (plugs)
 function TSERGBToHSLModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   0:
    with Properties^ do
@@ -444,7 +444,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -490,7 +490,7 @@ end;
 // describe the pins (plugs)
 function TSEHSLToRGBModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   0:
    with Properties^ do
@@ -541,7 +541,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

@@ -287,7 +287,7 @@ end;
 
 function TSEFastSineApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -315,7 +315,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 3, 7';
       end;
-  else result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
  end;
 end;
 
@@ -354,7 +354,7 @@ end;
 
 function TSEFastSineApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -382,7 +382,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 3, 7';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -421,7 +421,7 @@ end;
 
 function TSEFastCosineApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -449,7 +449,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 3, 7';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -488,7 +488,7 @@ end;
 
 function TSEFastCosineApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -516,7 +516,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 3, 7';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -555,7 +555,7 @@ end;
 
 function TSEFastTangensApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -583,7 +583,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '2, 3, 4, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -621,7 +621,7 @@ end;
 
 function TSEFastTangensApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -649,7 +649,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '2, 3, 4, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -687,7 +687,7 @@ end;
 
 function TSEFastCotangensApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -715,7 +715,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '2, 3, 4, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -753,7 +753,7 @@ end;
 
 function TSEFastCotangensApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -781,7 +781,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '2, 3, 4, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -819,7 +819,7 @@ end;
 
 function TSEFastArcTanApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -847,7 +847,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '3, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -883,7 +883,7 @@ end;
 
 function TSEFastArcTanApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -911,7 +911,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '3, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -947,7 +947,7 @@ end;
 
 function TSEFastArcCotanApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -975,7 +975,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '3, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1011,7 +1011,7 @@ end;
 
 function TSEFastArcCotanApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -1039,7 +1039,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := '3, 6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1075,7 +1075,7 @@ end;
 
 function TSEFastLog2ApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -1103,7 +1103,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 2, 5';
       end;
-  else result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
  end;
 end;
 
@@ -1141,7 +1141,7 @@ end;
 
 function TSEFastLog2ApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -1169,7 +1169,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 2, 5';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1207,7 +1207,7 @@ end;
 
 function TSEFastPower2ApproximationsSingleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -1235,7 +1235,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 2, 5';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1273,7 +1273,7 @@ end;
 
 function TSEFastPower2ApproximationsDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -1301,7 +1301,7 @@ begin
        DefaultValue    := '3';
        DatatypeExtra   := 'range 2, 5';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

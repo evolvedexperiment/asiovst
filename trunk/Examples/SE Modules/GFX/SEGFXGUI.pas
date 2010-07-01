@@ -161,7 +161,7 @@ type
 implementation
 
 uses
-  SysUtils, Math, DAV_Types;
+  SysUtils, Math, DAV_Math, DAV_Types;
 
 (*
 var
@@ -551,7 +551,7 @@ var
 begin
   RGBToHue(GetRValue(Color1), GetGValue(Color1), GetBValue(Color1), h1);
   RGBToHue(GetRValue(Color2), GetGValue(Color2), GetBValue(Color2), h2);
-  result := round((h2 - h1) * 255);
+  Result := round((h2 - h1) * 255);
 end;
 
 function PixelHue(Color: TColor; Amount: Byte; Dither: Boolean): TColor;
@@ -1181,7 +1181,7 @@ var
   const
     Pia: Single = pi / 510;
   begin
-   result := round(sin(a * Pia) * 255);
+   Result := round(sin(a * Pia) * 255);
   end;
 
 begin

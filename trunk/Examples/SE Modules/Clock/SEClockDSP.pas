@@ -75,12 +75,12 @@ end;
 
 function TSmartOutput.GetValue: Single;
 begin
- result := FCurrentOutputValue;
+ Result := FCurrentOutputValue;
 end;
 
 function TSmartOutput.PointerAddress: PDAVArrayOfSingleFixedArray;
 begin
- result := @FOutputBuffer;
+ Result := @FOutputBuffer;
 end;
 
 procedure TSmartOutput.process(BufferPosition, SampleFrames: Integer);
@@ -317,7 +317,7 @@ end;
 // describe the pins (plugs)
 function TSEClockModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEClockPins(index) of
   // typical input plug (inputs are listed first)
   pinClockOut:
@@ -362,7 +362,7 @@ begin
      Direction       := drIn;
      Datatype        := dtEnum;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

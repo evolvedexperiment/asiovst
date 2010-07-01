@@ -114,7 +114,7 @@ end;
 // describe the pins (plugs)
 function TCustomSERingModulatorModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSERingModulatorPins(index) of
   pinInput:
    with Properties^ do
@@ -134,7 +134,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -188,7 +188,7 @@ end;
 // describe the pins (plugs)
 function TSERingModulatorStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSERingModulatorPins(index) of
   pinFrequency:
    with Properties^ do
@@ -235,7 +235,7 @@ end;
 function TSERingModulatorControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSERingModulatorPins(index) in [pinFrequency]
   then with Properties^ do Direction := drIn;
 end;

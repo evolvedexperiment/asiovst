@@ -225,7 +225,7 @@ end;
 // describe the pins (plugs)
 function TSEFloatToIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -244,7 +244,7 @@ begin
        Datatype        := dtInteger;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -280,7 +280,7 @@ end;
 // describe the pins (plugs)
 function TSEIntToFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -299,7 +299,7 @@ begin
        Datatype        := dtSingle;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -336,7 +336,7 @@ end;
 // describe the pins (plugs)
 function TSEDoubleToIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -355,7 +355,7 @@ begin
        Datatype        := dtInteger;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -391,7 +391,7 @@ end;
 // describe the pins (plugs)
 function TSEIntToDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -410,7 +410,7 @@ begin
        Datatype        := dtDouble;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -447,7 +447,7 @@ end;
 // describe the pins (plugs)
 function TSEFloatToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -466,7 +466,7 @@ begin
        Datatype        := dtText;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -502,7 +502,7 @@ end;
 // describe the pins (plugs)
 function TSEDoubleToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -521,7 +521,7 @@ begin
        Datatype        := dtText;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -557,7 +557,7 @@ end;
 // describe the pins (plugs)
 function TSEIntToTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -576,7 +576,7 @@ begin
        Datatype        := dtText;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -615,7 +615,7 @@ end;
 // describe the pins (plugs)
 function TSETextToGuiTextModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   0: with Properties^ do
       begin
@@ -651,7 +651,7 @@ begin
        Datatype        := dtText;
        DefaultValue    := 'Text';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -687,7 +687,7 @@ end;
 // describe the pins (plugs)
 function TSEIntToGuiIntModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -707,7 +707,7 @@ begin
        Datatype        := dtInteger;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -743,7 +743,7 @@ end;
 // describe the pins (plugs)
 function TSEFloatToGuiFloatModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -763,7 +763,7 @@ begin
        Datatype        := dtSingle;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -799,7 +799,7 @@ end;
 // describe the pins (plugs)
 function TSEDoubleToGuiDoubleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -819,7 +819,7 @@ begin
        Datatype        := dtDouble;
        DefaultValue    := '100';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -855,7 +855,7 @@ end;
 // describe the pins (plugs)
 function TSEBooleanToGuiBooleanModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -873,7 +873,7 @@ begin
        Direction       := drOut;
        Datatype        := dtBoolean;
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -912,7 +912,7 @@ end;
 function TSESampleToFloatModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -946,7 +946,7 @@ begin
        Datatype        := dtSingle;
        DefaultValue    := '0';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1014,7 +1014,7 @@ end;
 function TSESampleToDoubleModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -1048,7 +1048,7 @@ begin
        Datatype        := dtSingle;
        DefaultValue    := '0';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

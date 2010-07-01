@@ -124,7 +124,7 @@ end;
 
 function TSEWaveshaperGui.GetValueS: TSeSdkString;
 begin
- result := Pin[pinShape].ValueAsString;
+ Result := Pin[pinShape].ValueAsString;
 end;
 
 procedure TSEWaveshaperGui.SetValueS(AString: TSeSdkString);
@@ -134,7 +134,7 @@ end;
 
 function TSEWaveshaperGui.DefaultValue: TSeSdkString;
 begin
-// result := CDefaultValue;
+// Result := CDefaultValue;
 end;
 
 procedure TSEWaveshaperGui.DrawScale(hDC: HDC; wi: PSEWndInfo);
@@ -513,12 +513,12 @@ end;
 
 function TSEWaveshaperGui.Handle: THandle;
 begin
- result := CallHost(seGuiHostGetHandle);
+ Result := CallHost(seGuiHostGetHandle);
 end;
 
 function TSEWaveshaperGui.InvalidateControl: Integer;
 begin
- result := CallHost(seGuiHostRequestRepaint);
+ Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 end.

@@ -165,7 +165,7 @@ end;
 // describe the pins (plugs)
 function TSERealverbStereoModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSERealverbPins(index) of
   pinInputLeft:
     with Properties^ do
@@ -231,7 +231,7 @@ begin
       Direction       := drOut;
       DataType        := dtInteger;
      end;
-  else result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
  end;;
 end;
 

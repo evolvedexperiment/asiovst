@@ -169,7 +169,7 @@ end;
 // describe the pins (plugs)
 function TSELinkwitzRileyModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSELinkwitzRileyPins(index) of
   // typical input plug (inputs are listed first)
   pinInput: with Properties^ do
@@ -210,7 +210,7 @@ begin
               DefaultValue    := '4';
               DatatypeExtra   := 'range 0,64';
              end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -258,7 +258,7 @@ end;
 function TSELinkwitzRileyStaticModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSELinkwitzRileyPins(index) of
   pinFrequency: with Properties^ do
                  begin
@@ -267,7 +267,7 @@ begin
                   Direction       := drParameter;
                   DataType        := dtSingle;
                   DefaultValue    := '1000';
-                  result          := True;
+                  Result          := True;
                  end;
   pinOrder: with Properties^ do
              begin
@@ -277,7 +277,7 @@ begin
               DataType        := dtEnum;
               DefaultValue    := '4';
               DatatypeExtra   := 'range 0,64';
-              result          := True;
+              Result          := True;
              end;
  end;
 end;
@@ -340,7 +340,7 @@ end;
 function TSELinkwitzRileyControlableModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSELinkwitzRileyPins(index) of
   pinFrequency : with Properties^ do Direction := drIn;
       pinOrder : with Properties^ do Direction := drIn;
@@ -370,7 +370,7 @@ end;
 function TSELinkwitzRileyAutomatableModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSELinkwitzRileyPins(index) of
   pinFrequency: with Properties^ do
                  begin
@@ -378,7 +378,7 @@ begin
                   VariableAddress := @FFreqBuffer;
                   Direction       := drIn;
                   DataType        := dtFSample;
-                  result          := True;
+                  Result          := True;
                  end;
   pinOrder: with Properties^ do
              begin
@@ -388,7 +388,7 @@ begin
               DataType        := dtEnum;
               DefaultValue    := '4';
               DatatypeExtra   := 'range 0,64';
-              result          := True;
+              Result          := True;
              end;
  end;;
 end;

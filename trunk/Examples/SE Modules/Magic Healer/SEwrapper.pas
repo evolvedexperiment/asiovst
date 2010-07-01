@@ -54,10 +54,10 @@ function getModuleProperties(Index: Integer; Properties: PSEModuleProperties): B
 var
   GMP : TSEGetModuleProperties;
 begin
- if Length(DLLLoader) = 0 then result := False else
+ if Length(DLLLoader) = 0 then Result := False else
   begin
    GMP := DLLLoader[0].FindExport('getModuleProperties');
-   result := GMP(Index, Properties);
+   Result := GMP(Index, Properties);
   end;
 end;
 
@@ -65,10 +65,10 @@ function makeModule(Index: Integer; ProcessType: Integer; SEAudioMaster: TSE2Aud
 var
   MM : TSEMakeModule;
 begin
- if Length(DLLLoader) = 0 then result := nil else
+ if Length(DLLLoader) = 0 then Result := nil else
   begin
    MM := DLLLoader[0].FindExport('makeModule');
-   result := MM(Index, ProcessType, SEAudioMaster, Reserved);
+   Result := MM(Index, ProcessType, SEAudioMaster, Reserved);
    if assigned(result) then
     with PSE2ModStructBase(result)^ do
      begin

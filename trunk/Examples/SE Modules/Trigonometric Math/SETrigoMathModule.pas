@@ -3,7 +3,7 @@ unit SETrigoMathModule;
 interface
 
 uses
-  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspSineLFO;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspLFO;
 
 type
   TSETrigoMathModuleClass = class of TCustomSETrigoMathModule;
@@ -391,7 +391,7 @@ end;
 function TCustomSETrigoMathTwoArgumentsFloatModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -410,13 +410,13 @@ begin
        Datatype        := dtSingle;
        DefaultValue    := '0';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
 class function TCustomSETrigoMathTwoArgumentsFloatModule.PrecisionText: string;
 begin
- result := 'Float';
+ Result := 'Float';
 end;
 
 
@@ -426,7 +426,7 @@ end;
 function TCustomSETrigoMathTwoArgumentsDoubleModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -445,13 +445,13 @@ begin
        Datatype        := dtDouble;
        DefaultValue    := '0';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
 class function TCustomSETrigoMathTwoArgumentsDoubleModule.PrecisionText: string;
 begin
- result := 'Double';
+ Result := 'Double';
 end;
 
 
@@ -459,7 +459,7 @@ end;
 
 class function TSEArcCosFloatModule.MathFuncText: string;
 begin
- result := 'ArcCos';
+ Result := 'ArcCos';
 end;
 
 procedure TSEArcCosFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -474,7 +474,7 @@ end;
 
 class function TSEArcCosDoubleModule.MathFuncText: string;
 begin
- result := 'ArcCos';
+ Result := 'ArcCos';
 end;
 
 procedure TSEArcCosDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -489,7 +489,7 @@ end;
 
 class function TSEArcSinFloatModule.MathFuncText: string;
 begin
- result := 'ArcSin';
+ Result := 'ArcSin';
 end;
 
 procedure TSEArcSinFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -503,7 +503,7 @@ end;
 
 class function TSEArcSinDoubleModule.MathFuncText: string;
 begin
- result := 'ArcSin';
+ Result := 'ArcSin';
 end;
 
 procedure TSEArcSinDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -517,7 +517,7 @@ end;
 
 class function TSESinFloatModule.MathFuncText: string;
 begin
- result := 'Sin';
+ Result := 'Sin';
 end;
 
 procedure TSESinFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -531,7 +531,7 @@ end;
 
 class function TSESinDoubleModule.MathFuncText: string;
 begin
- result := 'Sin';
+ Result := 'Sin';
 end;
 
 procedure TSESinDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -545,7 +545,7 @@ end;
 
 class function TSECosFloatModule.MathFuncText: string;
 begin
- result := 'Cos';
+ Result := 'Cos';
 end;
 
 procedure TSECosFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -559,7 +559,7 @@ end;
 
 class function TSECosDoubleModule.MathFuncText: string;
 begin
- result := 'Cos';
+ Result := 'Cos';
 end;
 
 procedure TSECosDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -573,7 +573,7 @@ end;
 
 class function TSETanFloatModule.MathFuncText: string;
 begin
- result := 'Tan';
+ Result := 'Tan';
 end;
 
 procedure TSETanFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -587,7 +587,7 @@ end;
 
 class function TSETanDoubleModule.MathFuncText: string;
 begin
- result := 'Tan';
+ Result := 'Tan';
 end;
 
 procedure TSETanDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -601,7 +601,7 @@ end;
 
 class function TSECotanFloatModule.MathFuncText: string;
 begin
- result := 'Cotan';
+ Result := 'Cotan';
 end;
 
 procedure TSECotanFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -615,7 +615,7 @@ end;
 
 class function TSECotanDoubleModule.MathFuncText: string;
 begin
- result := 'Cotan';
+ Result := 'Cotan';
 end;
 
 procedure TSECotanDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -629,7 +629,7 @@ end;
 
 class function TSESecantFloatModule.MathFuncText: string;
 begin
- result := 'Secant';
+ Result := 'Secant';
 end;
 
 procedure TSESecantFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -643,7 +643,7 @@ end;
 
 class function TSESecantDoubleModule.MathFuncText: string;
 begin
- result := 'Secant';
+ Result := 'Secant';
 end;
 
 procedure TSESecantDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -657,7 +657,7 @@ end;
 
 class function TSECosecantFloatModule.MathFuncText: string;
 begin
- result := 'Cosecant';
+ Result := 'Cosecant';
 end;
 
 procedure TSECosecantFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -671,7 +671,7 @@ end;
 
 class function TSECosecantDoubleModule.MathFuncText: string;
 begin
- result := 'Cosecant';
+ Result := 'Cosecant';
 end;
 
 procedure TSECosecantDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -685,7 +685,7 @@ end;
 
 class function TSESinhFloatModule.MathFuncText: string;
 begin
- result := 'Sinh';
+ Result := 'Sinh';
 end;
 
 procedure TSESinhFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -699,7 +699,7 @@ end;
 
 class function TSESinhDoubleModule.MathFuncText: string;
 begin
- result := 'Sinh';
+ Result := 'Sinh';
 end;
 
 procedure TSESinhDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -713,7 +713,7 @@ end;
 
 class function TSECoshFloatModule.MathFuncText: string;
 begin
- result := 'Cosh';
+ Result := 'Cosh';
 end;
 
 procedure TSECoshFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -727,7 +727,7 @@ end;
 
 class function TSECoshDoubleModule.MathFuncText: string;
 begin
- result := 'Cosh';
+ Result := 'Cosh';
 end;
 
 procedure TSECoshDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -741,7 +741,7 @@ end;
 
 class function TSETanhFloatModule.MathFuncText: string;
 begin
- result := 'Tanh';
+ Result := 'Tanh';
 end;
 
 procedure TSETanhFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -755,7 +755,7 @@ end;
 
 class function TSETanhDoubleModule.MathFuncText: string;
 begin
- result := 'Tanh';
+ Result := 'Tanh';
 end;
 
 procedure TSETanhDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -769,7 +769,7 @@ end;
 
 class function TSECotHFloatModule.MathFuncText: string;
 begin
- result := 'CotH';
+ Result := 'CotH';
 end;
 
 procedure TSECotHFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -783,7 +783,7 @@ end;
 
 class function TSECotHDoubleModule.MathFuncText: string;
 begin
- result := 'CotH';
+ Result := 'CotH';
 end;
 
 procedure TSECotHDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -797,7 +797,7 @@ end;
 
 class function TSESecHFloatModule.MathFuncText: string;
 begin
- result := 'SecH';
+ Result := 'SecH';
 end;
 
 procedure TSESecHFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -811,7 +811,7 @@ end;
 
 class function TSESecHDoubleModule.MathFuncText: string;
 begin
- result := 'SecH';
+ Result := 'SecH';
 end;
 
 procedure TSESecHDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -825,7 +825,7 @@ end;
 
 class function TSECscHFloatModule.MathFuncText: string;
 begin
- result := 'CscH';
+ Result := 'CscH';
 end;
 
 procedure TSECscHFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -839,7 +839,7 @@ end;
 
 class function TSECscHDoubleModule.MathFuncText: string;
 begin
- result := 'CscH';
+ Result := 'CscH';
 end;
 
 procedure TSECscHDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -853,7 +853,7 @@ end;
 
 class function TSEArcCotFloatModule.MathFuncText: string;
 begin
- result := 'ArcCot';
+ Result := 'ArcCot';
 end;
 
 procedure TSEArcCotFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -867,7 +867,7 @@ end;
 
 class function TSEArcCotDoubleModule.MathFuncText: string;
 begin
- result := 'ArcCot';
+ Result := 'ArcCot';
 end;
 
 procedure TSEArcCotDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -881,7 +881,7 @@ end;
 
 class function TSEArcSecFloatModule.MathFuncText: string;
 begin
- result := 'ArcSec';
+ Result := 'ArcSec';
 end;
 
 procedure TSEArcSecFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -895,7 +895,7 @@ end;
 
 class function TSEArcSecDoubleModule.MathFuncText: string;
 begin
- result := 'ArcSec';
+ Result := 'ArcSec';
 end;
 
 procedure TSEArcSecDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -909,7 +909,7 @@ end;
 
 class function TSEArcCscFloatModule.MathFuncText: string;
 begin
- result := 'ArcCsc';
+ Result := 'ArcCsc';
 end;
 
 procedure TSEArcCscFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -923,7 +923,7 @@ end;
 
 class function TSEArcCscDoubleModule.MathFuncText: string;
 begin
- result := 'ArcCsc';
+ Result := 'ArcCsc';
 end;
 
 procedure TSEArcCscDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -937,7 +937,7 @@ end;
 
 class function TSEArcCoshFloatModule.MathFuncText: string;
 begin
- result := 'ArcCosh';
+ Result := 'ArcCosh';
 end;
 
 procedure TSEArcCoshFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -951,7 +951,7 @@ end;
 
 class function TSEArcCoshDoubleModule.MathFuncText: string;
 begin
- result := 'ArcCosh';
+ Result := 'ArcCosh';
 end;
 
 procedure TSEArcCoshDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -965,7 +965,7 @@ end;
 
 class function TSEArcSinhFloatModule.MathFuncText: string;
 begin
- result := 'ArcSinh';
+ Result := 'ArcSinh';
 end;
 
 procedure TSEArcSinhFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -979,7 +979,7 @@ end;
 
 class function TSEArcSinhDoubleModule.MathFuncText: string;
 begin
- result := 'ArcSinh';
+ Result := 'ArcSinh';
 end;
 
 procedure TSEArcSinhDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -993,7 +993,7 @@ end;
 
 class function TSEArcTanhFloatModule.MathFuncText: string;
 begin
- result := 'ArcTanh';
+ Result := 'ArcTanh';
 end;
 
 procedure TSEArcTanhFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1007,7 +1007,7 @@ end;
 
 class function TSEArcTanhDoubleModule.MathFuncText: string;
 begin
- result := 'ArcTanh';
+ Result := 'ArcTanh';
 end;
 
 procedure TSEArcTanhDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1021,7 +1021,7 @@ end;
 
 class function TSEArcCotHFloatModule.MathFuncText: string;
 begin
- result := 'ArcCotH';
+ Result := 'ArcCotH';
 end;
 
 procedure TSEArcCotHFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1035,7 +1035,7 @@ end;
 
 class function TSEArcCotHDoubleModule.MathFuncText: string;
 begin
- result := 'ArcCotH';
+ Result := 'ArcCotH';
 end;
 
 procedure TSEArcCotHDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1049,7 +1049,7 @@ end;
 
 class function TSEArcSecHFloatModule.MathFuncText: string;
 begin
- result := 'ArcSecH';
+ Result := 'ArcSecH';
 end;
 
 procedure TSEArcSecHFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1063,7 +1063,7 @@ end;
 
 class function TSEArcSecHDoubleModule.MathFuncText: string;
 begin
- result := 'ArcSecH';
+ Result := 'ArcSecH';
 end;
 
 procedure TSEArcSecHDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1077,7 +1077,7 @@ end;
 
 class function TSEArcCscHFloatModule.MathFuncText: string;
 begin
- result := 'ArcCscH';
+ Result := 'ArcCscH';
 end;
 
 procedure TSEArcCscHFloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1091,7 +1091,7 @@ end;
 
 class function TSEArcCscHDoubleModule.MathFuncText: string;
 begin
- result := 'ArcCscH';
+ Result := 'ArcCscH';
 end;
 
 procedure TSEArcCscHDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1105,7 +1105,7 @@ end;
 
 class function TSELog10FloatModule.MathFuncText: string;
 begin
- result := 'Log10';
+ Result := 'Log10';
 end;
 
 procedure TSELog10FloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1119,7 +1119,7 @@ end;
 
 class function TSELog10HDoubleModule.MathFuncText: string;
 begin
- result := 'Log10';
+ Result := 'Log10';
 end;
 
 procedure TSELog10HDoubleModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1133,7 +1133,7 @@ end;
 
 class function TSELog2FloatModule.MathFuncText: string;
 begin
- result := 'Log2';
+ Result := 'Log2';
 end;
 
 procedure TSELog2FloatModule.PlugStateChange(const CurrentPin: TSEPin);
@@ -1147,7 +1147,7 @@ end;
 
 class function TSELog2HDoubleModule.MathFuncText: string;
 begin
- result := 'Log2';
+ Result := 'Log2';
 end;
 
 procedure TSELog2HDoubleModule.PlugStateChange(const CurrentPin: TSEPin);

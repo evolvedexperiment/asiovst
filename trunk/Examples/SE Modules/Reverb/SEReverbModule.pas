@@ -313,7 +313,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEFreeverbModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEFreeverbPins(index) of
   pinFvInput:
    with Properties^ do
@@ -333,7 +333,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -387,8 +387,8 @@ end;
 // describe the pins (plugs)
 function TSEFreeverbStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
- if not result then
+ Result := inherited GetPinProperties(Index, Properties);
+ if not Result then
   case TSEFreeverbPins(index) of
    pinRoomsize:
     with Properties^ do
@@ -398,7 +398,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
   pinDamp:
    with Properties^ do
@@ -408,7 +408,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
-     result          := True;
+     Result          := True;
     end;
   pinWet:
    with Properties^ do
@@ -418,7 +418,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '70';
-     result          := True;
+     Result          := True;
     end;
   pinDry:
    with Properties^ do
@@ -428,7 +428,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -468,7 +468,7 @@ end;
 function TSEFreeverbControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEStkReverbPins(index) in [pinT60..pinEffectMix]
   then with Properties^ do Direction := drIn;
 end;
@@ -536,7 +536,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEStkNReverbModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEStkReverbPins(index) of
   pinInput:
    with Properties^ do
@@ -556,7 +556,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -610,7 +610,7 @@ end;
 // describe the pins (plugs)
 function TSEStkNReverbStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEStkReverbPins(index) of
   pinT60:
    with Properties^ do
@@ -620,7 +620,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
   pinEffectMix:
    with Properties^ do
@@ -630,7 +630,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -668,7 +668,7 @@ end;
 function TSEStkNReverbControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEStkReverbPins(index) in [pinT60..pinEffectMix]
   then with Properties^ do Direction := drIn;
 end;
@@ -736,7 +736,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEStkJCReverbModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEStkReverbPins(index) of
   pinInput:
    with Properties^ do
@@ -756,7 +756,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -810,7 +810,7 @@ end;
 // describe the pins (plugs)
 function TSEStkJCReverbStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEStkReverbPins(index) of
   pinT60:
    with Properties^ do
@@ -820,7 +820,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
   pinEffectMix:
    with Properties^ do
@@ -830,7 +830,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -868,7 +868,7 @@ end;
 function TSEStkJCReverbControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEStkReverbPins(index) in [pinT60..pinEffectMix]
   then with Properties^ do Direction := drIn;
 end;
@@ -945,7 +945,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEStkNReverb2Module.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEStkReverb2Pins(Index) of
   pin2Input:
    with Properties^ do
@@ -973,7 +973,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1030,7 +1030,7 @@ end;
 // describe the pins (plugs)
 function TSEStkNReverb2StaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEStkReverb2Pins(index) of
   pin2T60:
    with Properties^ do
@@ -1040,7 +1040,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
   pin2EffectMix:
    with Properties^ do
@@ -1050,7 +1050,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -1088,7 +1088,7 @@ end;
 function TSEStkNReverb2ControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEStkReverb2Pins(index) in [pin2T60..pin2EffectMix]
   then with Properties^ do Direction := drIn;
 end;
@@ -1166,7 +1166,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEStkJCReverb2Module.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEStkReverb2Pins(index) of
   pin2Input:
    with Properties^ do
@@ -1194,7 +1194,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -1251,7 +1251,7 @@ end;
 // describe the pins (plugs)
 function TSEStkJCReverb2StaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEStkReverb2Pins(index) of
   pin2T60:
    with Properties^ do
@@ -1261,7 +1261,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
   pin2EffectMix:
    with Properties^ do
@@ -1271,7 +1271,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '30';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -1309,7 +1309,7 @@ end;
 function TSEStkJCReverb2ControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEStkReverb2Pins(index) in [pin2T60..pin2EffectMix]
   then with Properties^ do Direction := drIn;
 end;

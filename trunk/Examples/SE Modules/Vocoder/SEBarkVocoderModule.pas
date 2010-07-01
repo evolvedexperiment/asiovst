@@ -112,7 +112,7 @@ begin
  Carrier := PDAVSingleFixedArray(@FCarrierBuffer[BufferOffset]);
 
  for Sample := 0 to SampleFrames - 1
-  do Outp^[Sample] := FVocoder.Process(Inp^[Sample], Carrier^[Sample]);
+  do Outp^[Sample] := FVocoder.ProcessSample(Inp^[Sample], Carrier^[Sample]);
 end;
 
 procedure TCustomSEBarkVocoderModule.SubProcessStatic(const BufferOffset, SampleFrames: Integer);
@@ -154,7 +154,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEBarkVocoderModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEBarkVocoderPins(index) of
   pinInput:
    with Properties^ do
@@ -192,9 +192,9 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -233,7 +233,7 @@ end;
 // describe the pins (plugs)
 function TSEBarkVocoderStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEBarkVocoderPins(index) of
   pinAttack:
    with Properties^ do
@@ -243,7 +243,7 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
      DefaultValue    := '0.1';
-     result          := True;
+     Result          := True;
     end;
   pinRelease:
    with Properties^ do
@@ -253,7 +253,7 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -291,7 +291,7 @@ end;
 function TSEBarkVocoderControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEBarkVocoderPins(index) in [pinBandwidth..pinRelease]
   then with Properties^ do Direction := drIn;
 end;
@@ -318,7 +318,7 @@ end;
 function TSEBarkVocoderAutomatableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEBarkVocoderPins(index) of
   pinAttack:
    with Properties^ do
@@ -328,7 +328,7 @@ begin
      Direction       := drIn;
      Datatype        := dtFSample;
      DefaultValue    := '0.1';
-     result          := True;
+     Result          := True;
     end;
   pinRelease:
    with Properties^ do
@@ -338,7 +338,7 @@ begin
      Direction       := drIn;
      Datatype        := dtFSample;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -378,7 +378,7 @@ begin
    begin
     Attack  := Att^[Sample];
     Release := Rel^[Sample];
-    Outp^[Sample] := Process(Inp^[Sample], Carrier^[Sample]);
+    Outp^[Sample] := ProcessSample(Inp^[Sample], Carrier^[Sample]);
    end;
 end;
 

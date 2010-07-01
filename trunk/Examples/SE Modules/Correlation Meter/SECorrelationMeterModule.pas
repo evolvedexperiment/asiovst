@@ -62,7 +62,7 @@ end;
 // describe the pins (plugs)
 function TSECorrelationMeterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   0 : with Properties^ do
        begin
@@ -84,7 +84,7 @@ begin
         VariableAddress := @FCorrelation;
        end;
   // typical input plug (inputs are listed first)
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

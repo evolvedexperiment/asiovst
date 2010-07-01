@@ -206,7 +206,7 @@ end;
 
 function TSEBrushedMetalGui.InvalidateControl: Integer;
 begin
- result := CallHost(seGuiHostRequestRepaint);
+ Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 end.
