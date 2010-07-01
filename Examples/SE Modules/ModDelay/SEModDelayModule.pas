@@ -154,7 +154,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEModDelayModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEModDelayPins(index) of
   pinInput:
    with Properties^ do
@@ -174,7 +174,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -228,7 +228,7 @@ end;
 // describe the pins (plugs)
 function TSEModDelayStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEModDelayPins(index) of
   pinMix:
    with Properties^ do
@@ -238,7 +238,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '50';
-     result          := True;
+     Result          := True;
     end;
   pinDelay:
    with Properties^ do
@@ -248,7 +248,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '20';
-     result          := True;
+     Result          := True;
     end;
   pinDepth:
    with Properties^ do
@@ -258,7 +258,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '10';
-     result          := True;
+     Result          := True;
     end;
   pinFeedback:
    with Properties^ do
@@ -268,7 +268,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '10';
-     result          := True;
+     Result          := True;
     end;
   pinLowpassFrequency:
    with Properties^ do
@@ -278,7 +278,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '300';
-     result          := True;
+     Result          := True;
     end;
   pinRate:
    with Properties^ do
@@ -288,7 +288,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -330,7 +330,7 @@ end;
 function TSEModDelayControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEModDelayPins(index) in [pinDepth..pinRate]
   then with Properties^ do Direction := drIn;
 end;

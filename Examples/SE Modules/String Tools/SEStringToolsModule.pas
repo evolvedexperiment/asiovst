@@ -3,7 +3,7 @@ unit SEStringToolsModule;
 interface
 
 uses
-  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspSineLFO;
+  DAV_Types, DAV_Complex, DAV_SECommon, DAV_SEModule, DAV_DspLfo;
 
 type
   TSEStringToolsModule = class(TSEModuleBase)
@@ -79,7 +79,7 @@ end;
 // describe the pins (plugs)
 function TSEConcatStringModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -106,7 +106,7 @@ begin
        Datatype        := dtText;
        DefaultValue    := '';
       end;
-  else result := False;
+  else Result := False;
  end;
 end;
 

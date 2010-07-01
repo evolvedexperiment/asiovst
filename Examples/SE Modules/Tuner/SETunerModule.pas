@@ -171,7 +171,7 @@ end;
 // describe the pins (plugs)
 function TCustomSETunerModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSETunerPins(index) of
   pinInput:
    with Properties^ do
@@ -191,9 +191,9 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
      DefaultValue    := '0';
-     result          := True;
+     Result          := True;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -233,7 +233,7 @@ end;
 // describe the pins (plugs)
 function TSETunerStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSETunerPins(index) of
   pinMinimum:
    with Properties^ do
@@ -243,7 +243,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '100';
-     result          := True;
+     Result          := True;
     end;
   pinMaximum:
    with Properties^ do
@@ -253,7 +253,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '4000';
-     result          := True;
+     Result          := True;
     end;
   pinSmooth:
    with Properties^ do
@@ -263,7 +263,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '0.99';
-     result          := True;
+     Result          := True;
     end;
   pinOneCrossingOnly:
    with Properties^ do
@@ -273,7 +273,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtBoolean;
      DefaultValue    := 'True';
-     result          := True;
+     Result          := True;
     end;
   pinDSFilterOrder:
    with Properties^ do
@@ -284,7 +284,7 @@ begin
      Datatype        := dtEnum;
      DefaultValue    := '4';
      DatatypeExtra   := 'range 2,32';
-     result          := True;
+     Result          := True;
     end;
   pinDSBandwidth:
    with Properties^ do
@@ -294,7 +294,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '0.8';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -336,7 +336,7 @@ end;
 function TSETunerControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSETunerPins(index) in [pinMinimum..pinDSBandwidth]
   then with Properties^ do Direction := drIn;
 end;

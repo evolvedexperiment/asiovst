@@ -183,7 +183,7 @@ end;
 // describe the pins (plugs)
 function TSEButterworthModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEButterworthPins(index) of
   // typical input plug (inputs are listed first)
   pinInput:
@@ -214,7 +214,7 @@ begin
       Direction       := drOut;
       Datatype        := dtFSample;
      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -238,7 +238,7 @@ end;
 
 function TSEStaticButterworthSplitterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEButterworthPins(index) of
   pinFrequency:
     with Properties^ do
@@ -249,7 +249,7 @@ begin
       DataType        := dtSingle;
       Flags           := [iofLinearInput];
       DefaultValue    := '1000';
-      result          := True;
+      Result          := True;
      end;
   pinOrder:
     with Properties^ do
@@ -261,7 +261,7 @@ begin
       Flags           := [iofLinearInput];
       DefaultValue    := '4';
       DatatypeExtra   := 'range -0,64';
-      result          := True;
+      Result          := True;
      end;
  end;
 end;
@@ -288,7 +288,7 @@ end;
 function TSEControlableButterworthSplitterModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if index in [2..3] then Properties^.Direction := drIn;
 end;
 
@@ -330,7 +330,7 @@ end;
 function TSEAutomatableButterworthSplitterModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEButterworthPins(Index) of
   pinFrequency:
     with Properties^ do
@@ -340,7 +340,7 @@ begin
       Datatype        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '5';
-      result          := True;
+      Result          := True;
      end;
   pinOrder:
     with Properties^ do
@@ -348,7 +348,7 @@ begin
       Direction       := drIn;
       DataType        := dtEnum;
       Flags           := [iofLinearInput];
-      result          := True;
+      Result          := True;
      end;
  end;
 end;

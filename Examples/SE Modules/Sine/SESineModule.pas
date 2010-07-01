@@ -253,7 +253,7 @@ end;
 // describe the pins (plugs)
 function TSESineModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSESinePins(index) of
   // typical input plug (inputs are listed first)
   pinFrequency: with Properties^ do
@@ -274,7 +274,7 @@ begin
                Datatype        := dtFSample;
 // Spare Plug  Flags           := [iofAutoDuplicate, iofRename,  iofSetableOutput, iofCustomisable];
               end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -441,7 +441,7 @@ end;
 // describe the pins (plugs)
 function TSESineCosineModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -468,7 +468,7 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -650,7 +650,7 @@ end;
 // describe the pins (plugs)
 function TSESine2Module.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -677,7 +677,7 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

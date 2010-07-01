@@ -233,7 +233,7 @@ end;
 
 function TSEFilterPlotGui.InvalidateControl: Integer;
 begin
- result := CallHost(seGuiHostRequestRepaint);
+ Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 end.

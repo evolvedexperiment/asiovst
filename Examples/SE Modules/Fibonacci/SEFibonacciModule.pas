@@ -142,7 +142,7 @@ end;
 // describe the pins (plugs)
 function TSEFibonacciModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   // typical output plug
@@ -171,7 +171,7 @@ begin
        DefaultValue    := '1';
        DatatypeExtra   := 'range 1, 1024'
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

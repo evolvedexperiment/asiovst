@@ -877,7 +877,7 @@ function TSEAudioFileOscillatorModule.GetPinProperties(const Index: Integer; Pro
 var
   str : string;
 begin
- result := True;
+ Result := True;
  case TSEAudioFileOscillatorPins(index) of
        pinFileName : with Properties^ do
                       {$IFDEF UseEmbedding}
@@ -948,7 +948,7 @@ begin
 *)
   else
    begin
-    result := False;
+    Result := False;
     {$IFDEF UseEmbedding}
     if (FContainedData.Count = 1) then
      begin
@@ -961,7 +961,7 @@ begin
          VariableAddress := @FExtraOutputBuffers[Index - Integer(pinOutput) - 1];
          Direction       := drOut;
          Datatype        := dtFSample;
-         result          := True;
+         Result          := True;
         end;
      end;
     {$ENDIF}

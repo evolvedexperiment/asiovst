@@ -188,7 +188,7 @@ end;
 // describe the pins (plugs)
 function TCustomSESimpleVocoderModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSESimpleVocoderPins(index) of
   pinInput:
    with Properties^ do
@@ -226,9 +226,9 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -267,7 +267,7 @@ end;
 // describe the pins (plugs)
 function TSESimpleVocoderStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSESimpleVocoderPins(index) of
   pinAttack:
    with Properties^ do
@@ -277,7 +277,7 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
      DefaultValue    := '0.1';
-     result          := True;
+     Result          := True;
     end;
   pinRelease:
    with Properties^ do
@@ -287,7 +287,7 @@ begin
      Direction       := drIn;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -325,7 +325,7 @@ end;
 function TSESimpleVocoderControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSESimpleVocoderPins(index) in [pinBandwidth..pinRelease]
   then with Properties^ do Direction := drIn;
 end;
@@ -352,7 +352,7 @@ end;
 function TSESimpleVocoderAutomatableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSESimpleVocoderPins(index) of
   pinAttack:
    with Properties^ do
@@ -362,7 +362,7 @@ begin
      Direction       := drIn;
      Datatype        := dtFSample;
      DefaultValue    := '0.1';
-     result          := True;
+     Result          := True;
     end;
   pinRelease:
    with Properties^ do
@@ -372,7 +372,7 @@ begin
      Direction       := drIn;
      Datatype        := dtFSample;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;

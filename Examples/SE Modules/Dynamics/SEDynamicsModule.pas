@@ -892,7 +892,7 @@ end;
 // describe the pins (plugs)
 function TCustomDynamicsSEModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -914,7 +914,7 @@ begin
        Datatype        := dtFSample;
       end;
 
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -984,7 +984,7 @@ end;
 function TSimpleDirectGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -993,7 +993,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1042,7 +1042,7 @@ end;
 function TSimpleDirectGateParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do Direction := drIn;
  end;
@@ -1064,7 +1064,7 @@ end;
 function TSimpleDirectGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -1073,7 +1073,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1191,7 +1191,7 @@ end;
 function TSoftDirectGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -1200,7 +1200,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -1209,7 +1209,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1259,7 +1259,7 @@ end;
 function TSoftDirectGateParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..3: with Properties^ do Direction := drIn;
  end;
@@ -1281,7 +1281,7 @@ end;
 function TSoftDirectGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -1290,7 +1290,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -1299,7 +1299,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1372,7 +1372,7 @@ end;
 function TCustomBrickwallLimiterSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -1381,7 +1381,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1450,7 +1450,7 @@ end;
 function TBrickwallLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -1459,7 +1459,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1508,7 +1508,7 @@ end;
 function TBrickwallLimiterParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..3: with Properties^ do Direction := drIn;
  end;
@@ -1530,7 +1530,7 @@ end;
 function TBrickwallLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -1539,7 +1539,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1628,7 +1628,7 @@ end;
 function TBrickwallSoftLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -1637,7 +1637,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -1646,7 +1646,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1696,7 +1696,7 @@ end;
 function TBrickwallSoftLimiterParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..4: with Properties^ do Direction := drIn;
  end;
@@ -1718,7 +1718,7 @@ end;
 function TBrickwallSoftLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -1727,7 +1727,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -1736,7 +1736,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1828,7 +1828,7 @@ end;
 function TBrickwallSimpleSoftLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -1837,7 +1837,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -1846,7 +1846,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -1896,7 +1896,7 @@ end;
 function TBrickwallSimpleSoftLimiterParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..4: with Properties^ do Direction := drIn;
  end;
@@ -1918,7 +1918,7 @@ end;
 function TBrickwallSimpleSoftLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -1927,7 +1927,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -1936,7 +1936,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2058,7 +2058,7 @@ end;
 function TRangeGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2067,7 +2067,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -2076,7 +2076,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2085,7 +2085,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -2094,7 +2094,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2146,7 +2146,7 @@ end;
 function TRangeGateParamStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..5: with Properties^ do Direction := drIn;
  end;
@@ -2168,7 +2168,7 @@ end;
 function TRangeGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2177,7 +2177,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -2186,7 +2186,7 @@ begin
        Direction       := drParameter;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2195,7 +2195,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -2204,7 +2204,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2335,7 +2335,7 @@ end;
 function TClassicGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2344,7 +2344,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -2353,7 +2353,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2362,7 +2362,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2413,7 +2413,7 @@ end;
 function TClassicGateParamStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..4: with Properties^ do Direction := drIn;
  end;
@@ -2435,7 +2435,7 @@ end;
 function TClassicGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2444,7 +2444,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -2453,7 +2453,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2462,7 +2462,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2588,7 +2588,7 @@ end;
 function TSoftClassicGateStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2597,7 +2597,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -2606,7 +2606,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2615,7 +2615,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -2624,7 +2624,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2676,7 +2676,7 @@ end;
 function TSoftClassicGateParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..5: with Properties^ do Direction := drIn;
  end;
@@ -2698,7 +2698,7 @@ end;
 function TSoftClassicGateAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2707,7 +2707,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   3: with Properties^ do
       begin
@@ -2716,7 +2716,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2725,7 +2725,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -2734,7 +2734,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2799,7 +2799,7 @@ end;
 function TCustomLimiterSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -2808,7 +2808,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2879,7 +2879,7 @@ end;
 function TLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -2888,7 +2888,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2897,7 +2897,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -2906,7 +2906,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -2957,7 +2957,7 @@ end;
 function TLimiterParamStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..5: with Properties^ do Direction := drIn;
  end;
@@ -2979,7 +2979,7 @@ end;
 function TLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -2988,7 +2988,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -2997,7 +2997,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3006,7 +3006,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3089,7 +3089,7 @@ end;
 function TSoftLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3098,7 +3098,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3107,7 +3107,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3116,7 +3116,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3125,7 +3125,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3177,7 +3177,7 @@ end;
 function TSoftLimiterParamStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..6: with Properties^ do Direction := drIn;
  end;
@@ -3199,7 +3199,7 @@ end;
 function TSoftLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3208,7 +3208,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3217,7 +3217,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3226,7 +3226,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3235,7 +3235,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3323,7 +3323,7 @@ end;
 function TSimpleSoftLimiterStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3332,7 +3332,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3341,7 +3341,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3350,7 +3350,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3359,7 +3359,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3411,7 +3411,7 @@ end;
 function TSimpleSoftLimiterParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..6: with Properties^ do Direction := drIn;
  end;
@@ -3433,7 +3433,7 @@ end;
 function TSimpleSoftLimiterAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3442,7 +3442,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3451,7 +3451,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3460,7 +3460,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3469,7 +3469,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3534,7 +3534,7 @@ end;
 function TCustomCompressorSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do
       begin
@@ -3543,7 +3543,7 @@ begin
        Direction       := drParameter;
        DataType        := dtBoolean;
        DefaultValue    := '0';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3615,7 +3615,7 @@ end;
 function TSimpleCompressorStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3624,7 +3624,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3633,7 +3633,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '8';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3642,7 +3642,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3651,7 +3651,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3703,7 +3703,7 @@ end;
 function TSimpleCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..6: with Properties^ do Direction := drIn;
  end;
@@ -3725,7 +3725,7 @@ end;
 function TSimpleCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3734,7 +3734,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3743,7 +3743,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '8';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3752,7 +3752,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3761,7 +3761,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3846,7 +3846,7 @@ end;
 function TSoftKneeCompressorStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3855,7 +3855,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3864,7 +3864,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '8';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3873,7 +3873,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -3882,7 +3882,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -3891,7 +3891,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -3944,7 +3944,7 @@ end;
 function TSoftKneeCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..7: with Properties^ do Direction := drIn;
  end;
@@ -3966,7 +3966,7 @@ end;
 function TSoftKneeCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -3975,7 +3975,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -3984,7 +3984,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '8';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -3993,7 +3993,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -4002,7 +4002,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -4011,7 +4011,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -4100,7 +4100,7 @@ end;
 function TRMSCompressorStaticSEModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   3: with Properties^ do
       begin
@@ -4109,7 +4109,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -4118,7 +4118,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '8';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -4127,7 +4127,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -4136,7 +4136,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -4145,7 +4145,7 @@ begin
        Direction       := drParameter;
        DataType        := dtSingle;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;
@@ -4198,7 +4198,7 @@ end;
 function TRMSCompressorParamStaticSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2..7: with Properties^ do Direction := drIn;
  end;
@@ -4226,7 +4226,7 @@ end;
 function TRMSCompressorAutomatableSEModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case index of
   2: with Properties^ do Direction := drIn;
   3: with Properties^ do
@@ -4236,7 +4236,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '-10';
-       result          := True;
+       Result          := True;
       end;
   4: with Properties^ do
       begin
@@ -4245,7 +4245,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '8';
-       result          := True;
+       Result          := True;
       end;
   5: with Properties^ do
       begin
@@ -4254,7 +4254,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '1';
-       result          := True;
+       Result          := True;
       end;
   6: with Properties^ do
       begin
@@ -4263,7 +4263,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '10';
-       result          := True;
+       Result          := True;
       end;
   7: with Properties^ do
       begin
@@ -4272,7 +4272,7 @@ begin
        Direction       := drIn;
        DataType        := dtFSample;
        DefaultValue    := '100';
-       result          := True;
+       Result          := True;
       end;
  end;
 end;

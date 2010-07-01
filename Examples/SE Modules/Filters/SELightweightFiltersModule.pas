@@ -278,7 +278,7 @@ end;
 // describe the pins (plugs)
 function TCustomSELightweightFiltersModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSELightweightFiltersPins(index) of
   // typical input plug (inputs are listed first)
   pinInput:
@@ -314,7 +314,7 @@ begin
      end;
   {$ENDIF}
 
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -324,7 +324,7 @@ end;
 function TCustomSEGainFrequencyModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSELightweightFiltersPins(Index) of
   pinFrequency:
     with Properties^ do
@@ -335,7 +335,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0.5';
-      result          := True;
+      Result          := True;
      end;
   pinGain:
     with Properties^ do
@@ -346,7 +346,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0';
-      result          := True;
+      Result          := True;
      end;
   pinBandwidth:
     with Properties^ do
@@ -357,7 +357,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0.5';
-      result          := True;
+      Result          := True;
      end;
  end;
 end;
@@ -835,7 +835,7 @@ end;
 function TSELightweightShapeModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSELightweightFiltersPins(Index) of
   pinShape:
     with Properties^ do
@@ -846,7 +846,7 @@ begin
       DataType        := dtFSample;
       Flags           := [iofLinearInput];
       DefaultValue    := '0';
-      result          := True;
+      Result          := True;
      end;
  end;
 end;

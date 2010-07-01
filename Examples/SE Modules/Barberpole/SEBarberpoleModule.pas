@@ -158,7 +158,7 @@ end;
 // describe the pins (plugs)
 function TSEBarberpoleModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEBarberpolePins(index) of
   pinInput:
    with Properties^ do
@@ -215,7 +215,7 @@ begin
      Datatype        := dtSingle;
      DefaultValue    := '0.5';
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

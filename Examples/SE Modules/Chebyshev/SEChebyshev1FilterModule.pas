@@ -209,7 +209,7 @@ end;
 // describe the pins (plugs)
 function TSECustomChebyshev1FilterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEChebyshev1FilterPins(index) of
   // typical input plug (inputs are listed first)
   pinInput: with Properties^ do
@@ -232,7 +232,7 @@ begin
   pinFrequency: with Properties^ do Name := 'Frequency [kHz]';
   pinOrder: with Properties^ do Name := 'Order';
   pinRipple: with Properties^ do Name := 'Ripple [dB]';
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -268,7 +268,7 @@ end;
 function TSEStaticChebyshev1FilterModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev1FilterPins(index) of
   pinFrequency: with Properties^ do
                  begin
@@ -344,7 +344,7 @@ end;
 
 class function TSEStaticChebyshev1FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Lowpass (static)';
+ Result := 'Chebyshev I Lowpass (static)';
 end;
 
 { TSEStaticChebyshev1FilterHPModule }
@@ -359,20 +359,20 @@ end;
 
 class function TSEStaticChebyshev1FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Highpass (static)';
+ Result := 'Chebyshev I Highpass (static)';
 end;
 
 { TSEControlableChebyshev1FilterLPModule }
 
 class function TSEControlableChebyshev1FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Lowpass';
+ Result := 'Chebyshev I Lowpass';
 end;
 
 function TSEControlableChebyshev1FilterLPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev1FilterPins(index) of
   pinFrequency..pinRipple : with Properties^ do Direction := drIn;
  end;
@@ -382,13 +382,13 @@ end;
 
 class function TSEControlableChebyshev1FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Highpass';
+ Result := 'Chebyshev I Highpass';
 end;
 
 function TSEControlableChebyshev1FilterHPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev1FilterPins(index) of
   pinFrequency..pinRipple : with Properties^ do Direction := drIn;
  end;
@@ -406,7 +406,7 @@ end;
 function TSEAutomatebleChebyshev1FilterModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev1FilterPins(index) of
   pinFrequency: with Properties^ do
                  begin
@@ -502,7 +502,7 @@ end;
 
 class function TSEAutomatebleChebyshev1FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Lowpass (automatable)';
+ Result := 'Chebyshev I Lowpass (automatable)';
 end;
 
 { TSEAutomatebleChebyshev1FilterHPModule }
@@ -518,7 +518,7 @@ end;
 
 class function TSEAutomatebleChebyshev1FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Highpass (automatable)';
+ Result := 'Chebyshev I Highpass (automatable)';
 end;
 
 { TSEAutomatebleXChebyshev1FilterModule }
@@ -562,7 +562,7 @@ end;
 
 class function TSEAutomatebleXChebyshev1FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Lowpass (automatable+)';
+ Result := 'Chebyshev I Lowpass (automatable+)';
 end;
 
 { TSEAutomatebleXChebyshev1FilterHPModule }
@@ -578,7 +578,7 @@ end;
 
 class function TSEAutomatebleXChebyshev1FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev I Highpass (automatable+)';
+ Result := 'Chebyshev I Highpass (automatable+)';
 end;
 
 end.

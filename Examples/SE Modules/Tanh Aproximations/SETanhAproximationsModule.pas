@@ -211,7 +211,7 @@ end;
 function TSETanhAproximationsModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -241,7 +241,7 @@ begin
        Datatype        := dtEnum;
        DatatypeExtra   := 'range 3,7';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -287,7 +287,7 @@ end;
 function TSETanhAproxModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -317,7 +317,7 @@ begin
        Datatype        := dtEnum;
        DatatypeExtra   := 'range 3,6';
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -419,7 +419,7 @@ end;
 function TSETanhModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin  
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -439,7 +439,7 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 

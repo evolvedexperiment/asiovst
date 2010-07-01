@@ -139,7 +139,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEVibratoModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEVibratoPins(index) of
   pinInput:
    with Properties^ do
@@ -177,7 +177,7 @@ begin
      Datatype        := dtSingle;
      DefaultValue    := '0.2';
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -219,7 +219,7 @@ end;
 function TSEVibratoStaticModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEVibratoPins(index) of
   pinDepth:
    with Properties^ do
@@ -290,7 +290,7 @@ end;
 function TSEVibratoControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEVibratoPins(index) of
   pinDepth: with Properties^ do Direction := drIn;
   pinSpeed: with Properties^ do Direction := drIn;

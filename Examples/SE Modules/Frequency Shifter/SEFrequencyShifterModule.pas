@@ -152,7 +152,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEFrequencyShifterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEFrequencyShifterPins(index) of
   pinInput:
    with Properties^ do
@@ -180,7 +180,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -235,7 +235,7 @@ end;
 // describe the pins (plugs)
 function TSEFrequencyShifterStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEFrequencyShifterPins(index) of
   pinFrequency:
    with Properties^ do
@@ -304,7 +304,7 @@ end;
 function TSEFrequencyShifterControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEFrequencyShifterPins(index) in [pinFrequency]
   then with Properties^ do Direction := drIn;
 end;

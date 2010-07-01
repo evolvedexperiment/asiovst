@@ -239,7 +239,7 @@ function TSEConvolutionModule.GetPinProperties(const Index: Integer; Properties:
 var
   str : string;
 begin
- result := True;
+ Result := True;
  case TSEConvolutionPins(index) of
   // typical input plug (inputs are listed first)
   pinInput:
@@ -312,7 +312,7 @@ begin
       Direction       := drOut;
       DataType        := dtInteger;
      end;
-  else result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
  end;;
 end;
 

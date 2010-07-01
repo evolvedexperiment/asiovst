@@ -125,12 +125,12 @@ end;
 
 function TSEOpenGLGui.GetWindowHandle: THandle;
 begin
- result := HWND(CallHost(seGuiHostGetWindowHandle, CallHost(seGuiHostGetHandle)));
+ Result := HWND(CallHost(seGuiHostGetWindowHandle, CallHost(seGuiHostGetHandle)));
 end;
 
 function TSEOpenGLGui.InvalidateControl: Integer;
 begin
- result := CallHost(seGuiHostRequestRepaint);
+ Result := CallHost(seGuiHostRequestRepaint);
 end;
 
 procedure TSEOpenGLGui.SetFileName(const Value: TFileName);

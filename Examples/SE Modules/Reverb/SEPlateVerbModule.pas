@@ -167,7 +167,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEPlateReverbModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEPlateVerbPins(index) of
   pinInput:
    with Properties^ do
@@ -195,7 +195,7 @@ begin
      Direction       := drOut;
      Datatype        := dtFSample;
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -260,8 +260,8 @@ end;
 // describe the pins (plugs)
 function TSEPlateReverbStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
- if not result then
+ Result := inherited GetPinProperties(Index, Properties);
+ if not Result then
   case TSEPlateVerbPins(index) of
    pinPreDelay:
     with Properties^ do
@@ -271,7 +271,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '10';
-      result          := True;
+      Result          := True;
      end;
    pinDecay:
     with Properties^ do
@@ -281,7 +281,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '1';
-      result          := True;
+      Result          := True;
      end;
    pinDamping:
     with Properties^ do
@@ -291,7 +291,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '10';
-      result          := True;
+      Result          := True;
      end;
    pinInputDiffusion:
     with Properties^ do
@@ -301,7 +301,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '70';
-      result          := True;
+      Result          := True;
      end;
    pinDecayDiffusion:
     with Properties^ do
@@ -311,7 +311,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '30';
-      result          := True;
+      Result          := True;
      end;
    pinModulation:
     with Properties^ do
@@ -321,7 +321,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '30';
-      result          := True;
+      Result          := True;
      end;
    pinEffectMix:
     with Properties^ do
@@ -331,7 +331,7 @@ begin
       Direction       := drParameter;
       Datatype        := dtSingle;
       DefaultValue    := '50';
-      result          := True;
+      Result          := True;
      end;
   end;
 end;
@@ -373,7 +373,7 @@ end;
 function TSEPlateReverbControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEPlateVerbPins(index) in [pinPreDelay..pinEffectMix]
   then with Properties^ do Direction := drIn;
 end;

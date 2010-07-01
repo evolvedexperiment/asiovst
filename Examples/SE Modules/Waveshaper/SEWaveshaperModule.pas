@@ -120,7 +120,7 @@ end;
 
 function TSEWaveshaperModule.GetHandle: THandle;
 begin
-  result := CallHost(SEAudioMasterGetModuleHandle);
+  Result := CallHost(SEAudioMasterGetModuleHandle);
 end;
 
 procedure TSEWaveshaperModule.SetupLookupTable;
@@ -241,7 +241,7 @@ end;
 function TSEWaveshaperModule.CreateSharedLookup(ATableName: PChar;
   ATablePointer: Pointer; ASampleRate: Single; ASize: Integer): boolean;
 begin
- result := CallHost(SEAudioMasterCreateSharedLookup, Integer(ATablePointer), ASize, ATableName, ASampleRate) <> 0;
+ Result := CallHost(SEAudioMasterCreateSharedLookup, Integer(ATablePointer), ASize, ATableName, ASampleRate) <> 0;
 end;
 
 procedure TSEWaveshaperModule.FillLookupTable;
@@ -314,7 +314,7 @@ end;
 // describe the pins (plugs)
 function TSEWaveshaperModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case Index of                // !!TODO!! list your in / out plugs
   0: with Properties^ do
       begin
@@ -340,7 +340,7 @@ begin
        Direction       := drOut;
        Datatype        := dtFSample;
       end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

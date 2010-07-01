@@ -211,7 +211,7 @@ end;
 // describe the pins (plugs)
 function TSECustomChebyshev2FilterModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEChebyshev2FilterPins(index) of
   // typical input plug (inputs are listed first)
   pinInput: with Properties^ do
@@ -235,7 +235,7 @@ begin
   pinOrder: with Properties^ do Name := 'Order';
   pinCorrectFrequency: with Properties^ do Name := 'Correct Frequency';
   pinStopband: with Properties^ do Name := 'Stopband [dB]';
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;;
 end;
 
@@ -271,7 +271,7 @@ end;
 function TSEStaticChebyshev2FilterModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev2FilterPins(index) of
   pinFrequency: with Properties^ do
                  begin
@@ -355,7 +355,7 @@ end;
 
 class function TSEStaticChebyshev2FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Lowpass (static)';
+ Result := 'Chebyshev II Lowpass (static)';
 end;
 
 { TSEStaticChebyshev2FilterHPModule }
@@ -370,20 +370,20 @@ end;
 
 class function TSEStaticChebyshev2FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Highpass (static)';
+ Result := 'Chebyshev II Highpass (static)';
 end;
 
 { TSEControlableChebyshev2FilterLPModule }
 
 class function TSEControlableChebyshev2FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Lowpass';
+ Result := 'Chebyshev II Lowpass';
 end;
 
 function TSEControlableChebyshev2FilterLPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev2FilterPins(index) of
   pinFrequency..pinStopband : with Properties^ do Direction := drIn;
  end;
@@ -393,13 +393,13 @@ end;
 
 class function TSEControlableChebyshev2FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Highpass';
+ Result := 'Chebyshev II Highpass';
 end;
 
 function TSEControlableChebyshev2FilterHPModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev2FilterPins(index) of
   pinFrequency..pinStopband : with Properties^ do Direction := drIn;
  end;
@@ -417,7 +417,7 @@ end;
 function TSEAutomatebleChebyshev2FilterModule.GetPinProperties(
   const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEChebyshev2FilterPins(index) of
   pinFrequency: with Properties^ do
                  begin
@@ -521,7 +521,7 @@ end;
 
 class function TSEAutomatebleChebyshev2FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Lowpass (automatable)';
+ Result := 'Chebyshev II Lowpass (automatable)';
 end;
 
 { TSEAutomatebleChebyshev2FilterHPModule }
@@ -537,7 +537,7 @@ end;
 
 class function TSEAutomatebleChebyshev2FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Highpass (automatable)';
+ Result := 'Chebyshev II Highpass (automatable)';
 end;
 
 { TSEAutomatebleXChebyshev2FilterModule }
@@ -581,7 +581,7 @@ end;
 
 class function TSEAutomatebleXChebyshev2FilterLPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Lowpass (automatable+)';
+ Result := 'Chebyshev II Lowpass (automatable+)';
 end;
 
 { TSEAutomatebleXChebyshev2FilterHPModule }
@@ -597,7 +597,7 @@ end;
 
 class function TSEAutomatebleXChebyshev2FilterHPModule.GetModueName: string;
 begin
- result := 'Chebyshev II Highpass (automatable+)';
+ Result := 'Chebyshev II Highpass (automatable+)';
 end;
 
 end.

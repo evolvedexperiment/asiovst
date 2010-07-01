@@ -242,7 +242,7 @@ function TSELowLatencyConvolutionModule.GetPinProperties(const Index: Integer; P
 var
   str : String;
 begin
- result := True;
+ Result := True;
  case TSELowLatencyConvolutionPins(index) of
   pinInput:
     with Properties^ do
@@ -313,7 +313,7 @@ begin
       Direction       := drOut;
       DataType        := dtInteger;
      end;
-  else result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0, 1, 2, 3 etc. return false to signal when done
  end;;
 end;
 

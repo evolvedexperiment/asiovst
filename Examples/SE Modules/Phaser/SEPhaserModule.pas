@@ -154,7 +154,7 @@ end;
 // describe the pins (plugs)
 function TCustomSEPhaserModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEPhaserPins(index) of
   pinInput:
    with Properties^ do
@@ -184,7 +184,7 @@ begin
      DatatypeExtra   := 'range 1,16';
      DefaultValue    := '2';
     end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -239,7 +239,7 @@ end;
 // describe the pins (plugs)
 function TSEPhaserStaticModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case TSEPhaserPins(index) of
   pinDepth:
    with Properties^ do
@@ -249,7 +249,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '10';
-     result          := True;
+     Result          := True;
     end;
   pinFeedback:
    with Properties^ do
@@ -259,7 +259,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '10';
-     result          := True;
+     Result          := True;
     end;
   pinMinimum:
    with Properties^ do
@@ -269,7 +269,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '300';
-     result          := True;
+     Result          := True;
     end;
   pinMaximum:
    with Properties^ do
@@ -279,7 +279,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1000';
-     result          := True;
+     Result          := True;
     end;
   pinRate:
    with Properties^ do
@@ -289,7 +289,7 @@ begin
      Direction       := drParameter;
      Datatype        := dtSingle;
      DefaultValue    := '1';
-     result          := True;
+     Result          := True;
     end;
  end;
 end;
@@ -330,7 +330,7 @@ end;
 function TSEPhaserControllableModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  if TSEPhaserPins(index) in [pinDepth..pinRate]
   then with Properties^ do Direction := drIn;
 end;

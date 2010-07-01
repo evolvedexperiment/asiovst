@@ -124,7 +124,7 @@ end;
 // describe the pins (plugs)
 function TSEDelayModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEDelayPins(index) of
   // typical input plug (inputs are listed first)
   pinInput1: with Properties^ do
@@ -160,7 +160,7 @@ begin
                   DataType        := dtSingle;
                   DefaultValue    := '1000';
                  end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

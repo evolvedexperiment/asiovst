@@ -83,7 +83,7 @@ end;
 // describe the pins (plugs)
 function TSEWhiteNoiseModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEWhiteNoisePins(index) of
   pinDistribution : with Properties^ do
                      begin
@@ -100,7 +100,7 @@ begin
                       Direction       := drOut;
                       Datatype        := dtFSample;
                      end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

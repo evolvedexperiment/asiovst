@@ -84,7 +84,7 @@ end;
 // describe the pins (plugs)
 function TSEPinkNoiseModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case TSEPinkNoisePins(index) of
   // typical output plug
   pinOutput: with Properties^ do
@@ -95,7 +95,7 @@ begin
                Datatype        := dtFSample;
 //               Flags           := [iofAutoDuplicate, iofRename, iofCustomisable];
               end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 

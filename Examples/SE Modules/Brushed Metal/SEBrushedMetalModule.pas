@@ -38,6 +38,9 @@ type
 
 implementation
 
+uses
+  DAV_Common;
+
 constructor TSEBrushedMetalModule.Create(SEAudioMaster: TSE2AudioMasterCallback; Reserved: Pointer);
 begin
  inherited Create(SEAudioMaster, Reserved);
@@ -98,7 +101,7 @@ end;
 // describe the pins (plugs)
 function TSEBrushedMetalModule.GetPinProperties(const Index: Integer; Properties: PSEPinProperties): Boolean;
 begin
- result := True;
+ Result := True;
  case index of
   // typical input plug (inputs are listed first)
   0: with Properties^ do
@@ -146,7 +149,7 @@ begin
                Flags           := [iofHideWhenLocked, iofUICommunication, iofPatchStore];
                DefaultValue    := '0.6';
               end;
-  else result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
+  else Result := False; // host will ask for plugs 0,1,2,3 etc. return false to signal when done
  end;
 end;
 
@@ -215,7 +218,7 @@ end;
 function TSEBrushedMetalExModule.GetPinProperties(const Index: Integer;
   Properties: PSEPinProperties): Boolean;
 begin
- result := inherited GetPinProperties(Index, Properties);
+ Result := inherited GetPinProperties(Index, Properties);
  case Index of
   0: with Properties^ do
       begin
