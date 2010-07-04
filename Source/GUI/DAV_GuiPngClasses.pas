@@ -1,4 +1,4 @@
-unit DAV_TestGuiPng;
+unit DAV_GuiPngClasses;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -32,80 +32,76 @@ unit DAV_TestGuiPng;
 
 interface
 
+{$I DAV_Compiler.inc}
+
 uses
-  TestFramework, Classes, Contnrs, SysUtils, DAV_Common, DAV_ChunkClasses,
-  DAV_GuiCommon, DAV_GuiPng, DAV_GuiPngTypes, DAV_GuiPngClasses,
-  DAV_GuiPngChunks;
+  Classes, SysUtils;
 
 type
-  // Test methods for class TAudioFileWav
-  TTestGuiPng = class(TTestCase)
-  strict private
-    FPngFile : TPortableNetworkGraphic;
-  public
-    procedure SetUp; override;
-    procedure TearDown; override;
-  published
-    procedure TestScanning;
-    procedure TestBasicWriting;
-  end;
+  EPngError = class(Exception);
+
+function ReadSwappedWord(Stream: TStream): Word;
+function ReadSwappedSmallInt(Stream: TStream): SmallInt;
+function ReadSwappedCardinal(Stream: TStream): Cardinal;
+procedure WriteSwappedWord(Stream: TStream; Value: Word);
+procedure WriteSwappedSmallInt(Stream: TStream; Value: SmallInt);
+procedure WriteSwappedCardinal(Stream: TStream; Value: Cardinal);
 
 implementation
 
 uses
-  Dialogs;
+  DAV_Common;
 
-procedure TTestGuiPng.SetUp;
+function ReadSwappedWord(Stream: TStream): Word;
 begin
- FPngFile := TPortableNetworkGraphic.Create;
+ {$IFDEF ValidateEveryReadOperation}
+ if Stream.Read(Result, SizeOf(Word)) <> SizeOf(Word)
+  then raise EPascalTypeStremReadError.Create(RCStrStreamReadError);
+ {$ELSE}
+ Stream.Read(Result, SizeOf(Word));
+ {$ENDIF}
+ Result := Swap16(Result);
 end;
 
-procedure TTestGuiPng.TearDown;
+function ReadSwappedSmallInt(Stream: TStream): SmallInt;
 begin
- FreeAndNil(FPngFile);
+ {$IFDEF ValidateEveryReadOperation}
+ if Stream.Read(Result, SizeOf(SmallInt)) <> SizeOf(SmallInt)
+  then raise EPascalTypeStremReadError.Create(RCStrStreamReadError);
+ {$ELSE}
+ Stream.Read(Result, SizeOf(SmallInt));
+ {$ENDIF}
+ Result := Swap16(Result);
 end;
 
-procedure TTestGuiPng.TestScanning;
-var
-  SR      : TSearchRec;
-  Succeed : Boolean;
+function ReadSwappedCardinal(Stream: TStream): Cardinal;
 begin
- if FindFirst('*.png*', faAnyFile, SR) = 0 then
-  try
-   repeat
-    Succeed := True;
-    try
-     FPngFile.LoadFromFile(SR.Name)
-    except
-     on e: EPngError do MessageDlg(SR.Name + ': ' + e.Message, mtError, [mbOK], 0);
-     else Succeed := False;
-    end;
-    Check(Succeed, 'Error loading file: ' + SR.Name);
-   until FindNext(SR) <> 0;
-  finally
-   // Must free up resources used by these successful finds
-   FindClose(SR);
-  end;
+ {$IFDEF ValidateEveryReadOperation}
+ if Stream.Read(Result, SizeOf(Cardinal)) <> SizeOf(Cardinal)
+  then raise EPascalTypeStremReadError.Create(RCStrStreamReadError);
+ {$ELSE}
+ Stream.Read(Result, SizeOf(Cardinal));
+ {$ENDIF}
+ Result := Swap32(Result);
 end;
 
-procedure TTestGuiPng.TestBasicWriting;
-var
-  TempStream : TMemoryStream;
-  Chunk      : TCustomChunk;
-  I          : Integer;
+procedure WriteSwappedWord(Stream: TStream; Value: Word);
 begin
- TempStream := TMemoryStream.Create;
- with TempStream do
-  try
-   with FPngFile do
-    begin
-    end;
-  finally
-   Free;
-  end;
+ Value := Swap16(Value);
+ Stream.Write(Value, SizeOf(Word));
 end;
 
-initialization
-  RegisterTest(TTestGuiPng.Suite);
+procedure WriteSwappedSmallInt(Stream: TStream; Value: SmallInt);
+begin
+ Value := Swap16(Value);
+ Stream.Write(Value, SizeOf(SmallInt));
+end;
+
+procedure WriteSwappedCardinal(Stream: TStream; Value: Cardinal);
+begin
+ Value := Swap32(Value);
+ Stream.Write(Value, SizeOf(Cardinal));
+end;
+
 
 end.

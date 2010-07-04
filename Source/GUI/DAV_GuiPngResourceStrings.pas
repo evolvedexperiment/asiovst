@@ -1,4 +1,4 @@
-unit DAV_TestGuiPng;
+unit DAV_GuiPngResourceStrings;
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -32,80 +32,26 @@ unit DAV_TestGuiPng;
 
 interface
 
-uses
-  TestFramework, Classes, Contnrs, SysUtils, DAV_Common, DAV_ChunkClasses,
-  DAV_GuiCommon, DAV_GuiPng, DAV_GuiPngTypes, DAV_GuiPngClasses,
-  DAV_GuiPngChunks;
+{$I DAV_Compiler.inc}
 
-type
-  // Test methods for class TAudioFileWav
-  TTestGuiPng = class(TTestCase)
-  strict private
-    FPngFile : TPortableNetworkGraphic;
-  public
-    procedure SetUp; override;
-    procedure TearDown; override;
-  published
-    procedure TestScanning;
-    procedure TestBasicWriting;
-  end;
+resourcestring
+  RCStrNotAValidPNGFile = 'Not a valid PNG file';
+  RCStrWrongBitdepth = 'Wrong Bitdepth';
+  RCStrUnsupportedCompressMethod = 'Unsupported compression method';
+  RCStrUnsupportedFilterMethod = 'Unsupported filter method';
+  RCStrUnsupportedInterlaceMethod = 'Unsupported interlace method';
+  RCStrChunkSizeTooSmall = 'Chunk size too small!';
+  {$IFDEF CheckCRC}
+  RCStrCRCError = 'CRC Error';
+  {$ENDIF}
+  RCStrNotYetImplemented = 'Not yet implemented';
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
+  RCStrIncompletePalette = 'Palette is incomplete';
+  RCStrEmptyChunkList = 'Chunk list is empty';
+  RCStrSeveralPaletteChunks = 'Palette chunk defined twice!';
+  RCStrWrongTransparencyFormat = 'Wrong transparency format';
 
 implementation
 
-uses
-  Dialogs;
-
-procedure TTestGuiPng.SetUp;
-begin
- FPngFile := TPortableNetworkGraphic.Create;
-end;
-
-procedure TTestGuiPng.TearDown;
-begin
- FreeAndNil(FPngFile);
-end;
-
-procedure TTestGuiPng.TestScanning;
-var
-  SR      : TSearchRec;
-  Succeed : Boolean;
-begin
- if FindFirst('*.png*', faAnyFile, SR) = 0 then
-  try
-   repeat
-    Succeed := True;
-    try
-     FPngFile.LoadFromFile(SR.Name)
-    except
-     on e: EPngError do MessageDlg(SR.Name + ': ' + e.Message, mtError, [mbOK], 0);
-     else Succeed := False;
-    end;
-    Check(Succeed, 'Error loading file: ' + SR.Name);
-   until FindNext(SR) <> 0;
-  finally
-   // Must free up resources used by these successful finds
-   FindClose(SR);
-  end;
-end;
-
-procedure TTestGuiPng.TestBasicWriting;
-var
-  TempStream : TMemoryStream;
-  Chunk      : TCustomChunk;
-  I          : Integer;
-begin
- TempStream := TMemoryStream.Create;
- with TempStream do
-  try
-   with FPngFile do
-    begin
-    end;
-  finally
-   Free;
-  end;
-end;
-
-initialization
-  RegisterTest(TTestGuiPng.Suite);
-
 end.
+
