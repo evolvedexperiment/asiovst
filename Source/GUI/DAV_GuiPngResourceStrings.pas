@@ -35,21 +35,24 @@ interface
 {$I DAV_Compiler.inc}
 
 resourcestring
+  RCStrAncillaryUnknownChunk = 'Unknown chunk is marked as ancillary';
+  RCStrChunkSizeTooSmall = 'Chunk size too small!';
+  RCStrEmptyChunkList = 'Chunk list is empty';
+  RCStrIncompletePalette = 'Palette is incomplete';
+  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
   RCStrNotAValidPNGFile = 'Not a valid PNG file';
-  RCStrWrongBitdepth = 'Wrong Bitdepth';
+  RCStrNotYetImplemented = 'Not yet implemented';
+  RCStrSeveralPaletteChunks = 'Palette chunk defined twice!';
+  RCStrSeveralGammaChunks = 'Gamma chunk defined twice!';
   RCStrUnsupportedCompressMethod = 'Unsupported compression method';
   RCStrUnsupportedFilterMethod = 'Unsupported filter method';
   RCStrUnsupportedInterlaceMethod = 'Unsupported interlace method';
-  RCStrChunkSizeTooSmall = 'Chunk size too small!';
+  RCStrWrongBitdepth = 'Wrong Bitdepth';
+  RCStrWrongTransparencyFormat = 'Wrong transparency format';
   {$IFDEF CheckCRC}
   RCStrCRCError = 'CRC Error';
   {$ENDIF}
-  RCStrNotYetImplemented = 'Not yet implemented';
-  RCStrIndexOutOfBounds = 'Index out of bounds (%d)';
-  RCStrIncompletePalette = 'Palette is incomplete';
-  RCStrEmptyChunkList = 'Chunk list is empty';
-  RCStrSeveralPaletteChunks = 'Palette chunk defined twice!';
-  RCStrWrongTransparencyFormat = 'Wrong transparency format';
+
 
 implementation
 

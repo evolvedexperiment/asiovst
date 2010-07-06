@@ -35,7 +35,7 @@ interface
 uses
   TestFramework, Classes, Contnrs, SysUtils, DAV_Common, DAV_ChunkClasses,
   DAV_GuiCommon, DAV_GuiPng, DAV_GuiPngTypes, DAV_GuiPngClasses,
-  DAV_GuiPngChunks;
+  DAV_GuiPngChunks, DAV_TestGuiPngDisplay;
 
 type
   // Test methods for class TAudioFileWav
@@ -48,12 +48,13 @@ type
   published
     procedure TestScanning;
     procedure TestBasicWriting;
+    procedure TestDrawing;
   end;
 
 implementation
 
 uses
-  Dialogs;
+  Dialogs, Controls;
 
 procedure TTestGuiPng.SetUp;
 begin
@@ -100,6 +101,27 @@ begin
    with FPngFile do
     begin
     end;
+  finally
+   Free;
+  end;
+end;
+
+procedure TTestGuiPng.TestDrawing;
+begin
+ if not FileExists('Test.png')
+  then Fail('The test png file ''Test.png'' could not be found!');
+
+ FPngFile.LoadFromFile('Test.png');
+
+ with TFmDisplay.Create(nil) do
+  try
+   ClientWidth := FPngFile.Width + 16;
+   ClientHeight := FPngFile.Height + BtYes.Height + 20;
+
+   Image.Canvas.Draw(0, 0, FPngFile);
+
+   if ShowModal <> mrYes
+    then Fail('PNG was not displayed correctly!');
   finally
    Free;
   end;
