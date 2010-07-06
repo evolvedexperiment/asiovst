@@ -52,7 +52,9 @@ type
     FColourType        : TColourType;
     FCompressionMethod : Byte;
     FFilterMethod      : Byte;
-    FInterlaceMethod   : Byte;
+    FInterlaceMethod   : TInterlaceMethod;
+    function GetHasPalette: Boolean;
+    function GetBytesPerRow: Integer;
   public
     constructor Create; override;
     class function GetClassChunkName: TChunkName; override;
@@ -66,7 +68,9 @@ type
     property ColourType: TColourType read FColourType write FColourType;
     property CompressionMethod: Byte read FCompressionMethod write FCompressionMethod;
     property FilterMethod: Byte read FFilterMethod write FFilterMethod;
-    property InterlaceMethod: Byte read FInterlaceMethod write FInterlaceMethod;
+    property InterlaceMethod: TInterlaceMethod read FInterlaceMethod write FInterlaceMethod;
+    property HasPalette: Boolean read GetHasPalette;
+    property BytesPerRow: Integer read GetBytesPerRow;
   end;
 
   TCustomChunkPngWithHeader = class(TCustomChunkPng)
@@ -75,6 +79,8 @@ type
   public
     constructor Create(Header: TChunkPngImageHeader); reintroduce; virtual;
     procedure HeaderChanged; virtual;
+
+    property Header: TChunkPngImageHeader read FHeader;
   end;
   TCustomChunkPngWithHeaderClass = class of TCustomChunkPngWithHeader;
 
@@ -94,10 +100,15 @@ type
   TChunkPngPalette = class(TCustomChunkPngWithHeader)
   private
     FPaletteEntries : array of TRGB24;
+    function GetPaletteEntry(Index: Integer): TRGB24;
+    function GetCount: Integer;
   public
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    property PaletteEntry[Index: Integer]: TRGB24 read GetPaletteEntry;
+    property Count: Integer read GetCount;
   end;
 
   TChunkPngGamma = class(TCustomChunkPngWithHeader)
@@ -121,6 +132,8 @@ type
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    property RenderingIntent: Byte read FRenderingIntent write FRenderingIntent;
   end;
 
   TChunkPngPrimaryChromaticities = class(TCustomChunkPngWithHeader)
@@ -233,7 +246,7 @@ type
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    property ChunkSize: Integer read GetChunkSize;
+    property GreySampleValue: Word read FGreySampleValue write FGreySampleValue;
   end;
 
   TPngBackgroundColourFormat26 = class(TCustomPngBackgroundColour)
@@ -246,6 +259,10 @@ type
   public
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    property RedSampleValue: Word read FRedSampleValue write FRedSampleValue;
+    property BlueSampleValue: Word read FBlueSampleValue write FBlueSampleValue;
+    property GreenSampleValue: Word read FGreenSampleValue write FGreenSampleValue;
   end;
 
   TPngBackgroundColourFormat3 = class(TCustomPngBackgroundColour)
@@ -266,9 +283,12 @@ type
     constructor Create(Header: TChunkPngImageHeader); override;
     destructor Destroy; override;
     class function GetClassChunkName: TChunkName; override;
+
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
     procedure HeaderChanged; override;
+
+    property Background: TCustomPngBackgroundColour read FBackground;
   end;
 
   TChunkPngImageHistogram = class(TCustomChunkPngWithHeader)
@@ -304,7 +324,7 @@ type
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    property ChunkSize: Integer read GetChunkSize;
+    property GreySampleValue: Word read FGreySampleValue write FGreySampleValue;
   end;
 
   TPngTransparencyFormat2 = class(TCustomPngTransparency)
@@ -317,6 +337,10 @@ type
   public
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    property RedSampleValue: Word read FRedSampleValue write FRedSampleValue;
+    property BlueSampleValue: Word read FBlueSampleValue write FBlueSampleValue;
+    property GreenSampleValue: Word read FGreenSampleValue write FGreenSampleValue;
   end;
 
   TPngTransparencyFormat3 = class(TCustomPngTransparency)
@@ -340,9 +364,12 @@ type
   public
     constructor Create(Header: TChunkPngImageHeader); override;
     class function GetClassChunkName: TChunkName; override;
+
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
     procedure HeaderChanged; override;
+
+    property Transparency: TCustomPngTransparency read FTransparency;
   end;
 
   TChunkPngPhysicalPixelDimensions = class(TCustomChunkPngWithHeader)
@@ -370,9 +397,9 @@ type
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    property UnitSpecifier: Byte read FUnitSpecifier;
-    property UnitsPerPixelX: Single read FUnitsPerPixelX;
-    property UnitsPerPixelY: Single read FUnitsPerPixelY;
+    property UnitSpecifier: Byte read FUnitSpecifier write FUnitSpecifier;
+    property UnitsPerPixelX: Single read FUnitsPerPixelX write FUnitsPerPixelX;
+    property UnitsPerPixelY: Single read FUnitsPerPixelY write FUnitsPerPixelY;
   end;
 
   TChunkPngImageOffset = class(TCustomChunkPngWithHeader)
@@ -384,6 +411,10 @@ type
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    property UnitSpecifier: Byte read FUnitSpecifier write FUnitSpecifier;
+    property ImagePositionX: Integer read FImagePositionX write FImagePositionX;
+    property ImagePositionY: Integer read FImagePositionY write FImagePositionY;
   end;
 
   TChunkPngPixelCalibrator = class(TCustomChunkPngWithHeader)
@@ -397,6 +428,12 @@ type
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+
+    property CalibratorName: AnsiString read FCalibratorName write FCalibratorName;
+    property OriginalZeroMin: Integer read FOriginalZeroes[0] write FOriginalZeroes[0];
+    property OriginalZeroMax: Integer read FOriginalZeroes[1] write FOriginalZeroes[1];
+    property EquationType: Byte read FEquationType write FEquationType;
+    property NumberOfParams: Byte read FNumberOfParams write FNumberOfParams;
   end;
 
   TCustomChunkPngTextChunk = class(TCustomChunkPngWithHeader)
@@ -521,9 +558,25 @@ begin
  ResetToDefault;
 end;
 
+function TChunkPngImageHeader.GetBytesPerRow: Integer;
+begin
+ case FColourType of
+  ctGreyscale,
+  ctIndexedColour,
+  ctGreyscaleAlpha  : Result := FWidth;
+  ctTrueColour      : Result := 3 * FWidth;
+  ctTrueColourAlpha : Result := 4 * FWidth;
+ end;
+end;
+
 class function TChunkPngImageHeader.GetClassChunkName: TChunkName;
 begin
  Result := 'IHDR';
+end;
+
+function TChunkPngImageHeader.GetHasPalette: Boolean;
+begin
+ Result := FColourType in [ctGreyscale, ctIndexedColour, ctGreyscaleAlpha];
 end;
 
 procedure TChunkPngImageHeader.LoadFromStream(Stream: TStream);
@@ -577,7 +630,7 @@ begin
    Read(FInterlaceMethod, 1);
 
    // check for interlace method
-   if not (FInterlaceMethod in [0, 1])
+   if not (FInterlaceMethod in [imNone, imAdam7])
     then raise EPngError.Create(RCStrUnsupportedInterlaceMethod);
   end;
 end;
@@ -590,7 +643,7 @@ begin
  FColourType        := ctTrueColour;
  FCompressionMethod := 0;
  FFilterMethod      := 0;
- FInterlaceMethod   := 0;
+ FInterlaceMethod   := imNone;
 end;
 
 procedure TChunkPngImageHeader.SaveToStream(Stream: TStream);
@@ -642,6 +695,18 @@ end;
 class function TChunkPngPalette.GetClassChunkName: TChunkName;
 begin
  Result := 'PLTE';
+end;
+
+function TChunkPngPalette.GetPaletteEntry(Index: Integer): TRGB24;
+begin
+ if (Index >= 0) and (Index < Count)
+  then Result := FPaletteEntries[Index]
+  else raise EPngError.Create(RCStrIndexOutOfBounds);
+end;
+
+function TChunkPngPalette.GetCount: Integer;
+begin
+ Result := Length(FPaletteEntries);
 end;
 
 procedure TChunkPngPalette.LoadFromStream(Stream: TStream);

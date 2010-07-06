@@ -43,6 +43,10 @@ type
     ctGreyscaleAlpha = 4,
     ctTrueColourAlpha = 6
   );
+  TInterlaceMethod = (
+    imNone = 0,
+    imAdam7 = 1
+  );
 
 implementation
 
