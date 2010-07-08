@@ -90,6 +90,11 @@ type
   end;
   PRGB32 = ^TRGB32;
 
+  TRGB32Word = packed record
+    B, G, R, A: Word;
+  end;
+  PRGB32Word = ^TRGB32Word;
+
   TRGB32Array = packed array[0..MaxInt div SizeOf(TRGB32) - 1] of TRGB32;
   PRGB32Array = ^TRGB32Array;
   TArrayOfRGB32 = array of TRGB32;
@@ -97,9 +102,24 @@ type
   TRGB24 = packed record
     B, G, R: Byte;
   end;
+  PRGB24 = ^TRGB24;
+
   TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
   TArrayOfRGB24 = array of TRGB24;
+
+  TRGB24Word = packed record
+    B, G, R: Word;
+  end;
+  PRGB24Word = ^TRGB24Word;
+
+  TRGB24WordArray = packed array[0..MaxInt div SizeOf(TRGB24Word) - 1] of TRGB24Word;
+  PRGB24WordArray = ^TRGB24WordArray;
+  TArrayOfRGB24Word = array of TRGB24Word;
+
+  TRGB32WordArray = packed array[0..MaxInt div SizeOf(TRGB32Word) - 1] of TRGB32Word;
+  PRGB32WordArray = ^TRGB32WordArray;
+  TArrayOfRGB32Word = array of TRGB32Word;
 
 (*
   TGuiPointFloat = packed record

@@ -136,6 +136,7 @@ constructor TFunctionBinding.Create(Prototype: Pointer;
   DefaultProc: Pointer = nil);
 begin
  FPrototype := Prototype;
+ FDefaultProc := DefaultProc;
  Pointer(FPrototype^) := DefaultProc;
  FFunctions := TList.Create;
  GBindings.Add(Self);

@@ -35,26 +35,34 @@ interface
 uses
   TestFramework, Classes, Contnrs, SysUtils, DAV_Common, DAV_ChunkClasses,
   DAV_GuiCommon, DAV_GuiPng, DAV_GuiPngTypes, DAV_GuiPngClasses,
-  DAV_GuiPngChunks, DAV_TestGuiPngDisplay;
+  DAV_GuiPngChunks, DAV_TestGuiPngDisplay, pngimage;
 
 type
   // Test methods for class TAudioFileWav
   TTestGuiPng = class(TTestCase)
   strict private
     FPngFile : TPortableNetworkGraphic;
+  private
+    procedure InternalTestDrawing(FileName: TFileName);
   public
     procedure SetUp; override;
     procedure TearDown; override;
   published
     procedure TestScanning;
     procedure TestBasicWriting;
-    procedure TestDrawing;
+    procedure TestDrawingBasic;
+    procedure TestDrawingIndex;
+    procedure TestDrawingAdam7;
   end;
 
 implementation
 
 uses
   Dialogs, Controls;
+
+resourcestring
+  RCStrWrongDisplay = 'PNG was not displayed correctly!';
+  RCStrTestFileNotFound = 'The test png file %s could not be found!';
 
 procedure TTestGuiPng.SetUp;
 begin
@@ -92,8 +100,6 @@ end;
 procedure TTestGuiPng.TestBasicWriting;
 var
   TempStream : TMemoryStream;
-  Chunk      : TCustomChunk;
-  I          : Integer;
 begin
  TempStream := TMemoryStream.Create;
  with TempStream do
@@ -106,25 +112,50 @@ begin
   end;
 end;
 
-procedure TTestGuiPng.TestDrawing;
+procedure TTestGuiPng.InternalTestDrawing(FileName: TFileName);
 begin
- if not FileExists('Test.png')
-  then Fail('The test png file ''Test.png'' could not be found!');
-
- FPngFile.LoadFromFile('Test.png');
+ if not FileExists(FileName)
+  then Fail(Format(RCStrTestFileNotFound, [FileName]));
 
  with TFmDisplay.Create(nil) do
   try
+   with TPngImage.Create do
+    try
+     LoadFromFile(FileName);
+     AssignTo(Reference);
+    finally
+     Free;
+    end;
+
+   FPngFile.LoadFromFile(FileName);
+
    ClientWidth := FPngFile.Width + 16;
    ClientHeight := FPngFile.Height + BtYes.Height + 20;
 
-   Image.Canvas.Draw(0, 0, FPngFile);
+   Internal.Width := FPngFile.Width;
+   Internal.Height := FPngFile.Height;
+   Internal.Canvas.Draw(0, 0, FPngFile);
 
    if ShowModal <> mrYes
-    then Fail('PNG was not displayed correctly!');
+    then Fail(RCStrWrongDisplay);
   finally
    Free;
   end;
+end;
+
+procedure TTestGuiPng.TestDrawingBasic;
+begin
+ InternalTestDrawing('Test.png');
+end;
+
+procedure TTestGuiPng.TestDrawingIndex;
+begin
+ InternalTestDrawing('TestIndex.png');
+end;
+
+procedure TTestGuiPng.TestDrawingAdam7;
+begin
+ InternalTestDrawing('TestAdam7.png');
 end;
 
 initialization
