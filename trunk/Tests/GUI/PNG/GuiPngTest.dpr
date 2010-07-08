@@ -12,10 +12,12 @@ uses
   GUITestRunner,
   TextTestRunner,
   DAV_GuiPng in '..\..\..\Source\GUI\DAV_GuiPng.pas',
-  DAV_TestGuiPng in 'DAV_TestGuiPng.pas',
   DAV_GuiPngChunks in '..\..\..\Source\GUI\DAV_GuiPngChunks.pas',
   DAV_GuiPngClasses in '..\..\..\Source\GUI\DAV_GuiPngClasses.pas',
+  DAV_GuiPngConvert in '..\..\..\Source\GUI\DAV_GuiPngConvert.pas',
+  DAV_GuiPngTypes in '..\..\..\Source\GUI\DAV_GuiPngTypes.pas',
   DAV_GuiPngResourceStrings in '..\..\..\Source\GUI\DAV_GuiPngResourceStrings.pas',
+  DAV_TestGuiPng in 'DAV_TestGuiPng.pas',
   DAV_TestGuiPngDisplay in 'DAV_TestGuiPngDisplay.pas' {FmDisplay};
 
 {$R *.RES}

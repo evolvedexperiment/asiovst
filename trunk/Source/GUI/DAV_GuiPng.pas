@@ -58,6 +58,9 @@ type
     property Chunks[Index: Integer]: TCustomChunk read GetChunk; default;
   end;
 
+  TTransferNonInterlaced = procedure (Source, Destination, Alpha: Pointer) of object;
+  TTransferAdam7 = procedure (const Pass: Byte; Source, Destination, Alpha: Pointer) of object;
+
   TPortableNetworkGraphic = class(TGraphic)
   private
     FGammaTable        : array [Byte] of Byte;
@@ -72,6 +75,42 @@ type
 
     procedure CopyPaletteToDIB(Palette: HPalette);
     procedure DisposeImageData;
+    procedure DecodeInterlacedAdam7(Stream: TMemoryStream);
+    procedure DecodeNonInterlaced(Stream: TMemoryStream);
+
+    procedure DecodeImageData;
+
+    procedure TransferNonInterlacedGrayscale2(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedGrayscale16(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedTrueColor8(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedTrueColor16(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedDirect(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedPalette2(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedGrayscaleAlpha8(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedGrayscaleAlpha16(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedTrueColorAlpha8(Source, Destination, Alpha: Pointer);
+    procedure TransferNonInterlacedTrueColorAlpha16(Source, Destination, Alpha: Pointer);
+
+    procedure TransferAdam7Grayscale2(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7Grayscale16(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7TrueColor8(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7TrueColor16(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7Palette(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7Palette2(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7GrayscaleAlpha8(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7GrayscaleAlpha16(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7TrueColorAlpha8(const Pass: Byte; Source, Destination, Alpha: Pointer);
+    procedure TransferAdam7TrueColorAlpha16(const Pass: Byte; Source, Destination, Alpha: Pointer);
+
+    procedure FilterSub(CurrentRow, PreviousRow: PByteArray; BytesPerRow,
+      PixelByteSize: Integer);
+    procedure FilterUp(CurrentRow, PreviousRow: PByteArray; BytesPerRow,
+      PixelByteSize: Integer);
+    procedure FilterAverage(CurrentRow, PreviousRow: PByteArray; BytesPerRow,
+      PixelByteSize: Integer);
+    procedure FilterPaeth(CurrentRow, PreviousRow: PByteArray; BytesPerRow,
+      PixelByteSize: Integer);
+    procedure TransferPalette;
   protected
     FImageHeader         : TChunkPngImageHeader;
     FPaletteChunk        : TChunkPngPalette;
@@ -82,10 +121,12 @@ type
     FDeviceContext       : HDC;
     FHandle              : HBITMAP;
     FPalette             : HPALETTE;
-    FBitmapInfo          : TBitmapInfo;
+    FBitmapInfo          : PBitmapInfo;
+    FBytesPerRow         : Integer;
 
     FCanvas              : TCanvas;
     FImageData           : Pointer;
+    FImageAlpha          : Pointer;
 
     function GetEmpty: Boolean; override;
     function GetHeight: Integer; override;
@@ -123,7 +164,12 @@ type
 implementation
 
 uses
-  Math, DAV_Common, DAV_GuiPngResourceStrings;
+  Math, DAV_Common, DAV_GuiPngCoding, DAV_GuiPngResourceStrings;
+
+resourcestring
+  RCStrUnsupportedFilter = 'Unsupported Filter';
+  RCStrUnsupportedFormat = 'Unsupported Format';
+  RCStrPaletteMissing = 'Required palette is missing';
 
 type
   TCrcTable = array [0..255] of Cardinal;
@@ -134,6 +180,11 @@ var
 
 const
   CPngMagic = #$0D#$0A#$1A#$0A;
+
+  CRowStart        : array[0..6] of Integer = (0, 0, 4, 0, 2, 0, 1);
+  CColumnStart     : array[0..6] of Integer = (0, 4, 0, 2, 0, 1, 0);
+  CRowIncrement    : array[0..6] of Integer = (8, 8, 8, 4, 4, 2, 2);
+  CColumnIncrement : array[0..6] of Integer = (8, 8, 4, 4, 2, 2, 1);
 
 
 { TChunkList }
@@ -203,12 +254,15 @@ begin
  FDataChunkList       := TChunkList.Create;
  FAdditionalChunkList := TChunkList.Create;
  FCanvas              := TCanvas.Create;
+ FBytesPerRow         := 0;
 
- with FBitmapInfo do
+ // allocate bitmap info
+ GetMem(FBitmapInfo, SizeOf(TBitmapInfoHeader));
+ with FBitmapInfo^ do
   begin
    bmiHeader.biSize := SizeOf(TBitmapInfoHeader);
    bmiHeader.biPlanes := 1;
-   bmiHeader.biBitCount := 32;
+   bmiHeader.biBitCount := 24;
    bmiHeader.biCompression := BI_RGB;
    bmiHeader.biSizeImage := 0;
    bmiHeader.biClrUsed := 0;
@@ -227,6 +281,15 @@ begin
  FreeAndNil(FCanvas);
 
  DisposeImageData;
+ Dispose(FBitmapInfo);
+
+ // free palette chunk
+ if Assigned(FPaletteChunk)
+  then FreeAndNil(FPaletteChunk);
+
+ // free gamma chunk
+ if Assigned(FGammaChunk)
+  then FreeAndNil(FGammaChunk);
 
  inherited;
 end;
@@ -236,15 +299,22 @@ begin
  if FHandle <> 0  then DeleteObject(FHandle);
  if FDeviceContext <> 0  then DeleteDC(FDeviceContext);
  if FPalette <> 0 then DeleteObject(FPalette);
+ if Assigned(FImageAlpha) then Dispose(FImageAlpha);
 
  FHandle := 0;
  FDeviceContext := 0;
  FPalette := 0;
+ FImageAlpha := nil;
 end;
 
 procedure TPortableNetworkGraphic.Draw(ACanvas: TCanvas; const Rect: TRect);
 begin
  if Empty then Exit;
+
+ SetStretchBltMode(ACanvas.Handle, COLORONCOLOR);
+ StretchDiBits(ACanvas.Handle, Rect.Left, Rect.Top, Rect.Right - Rect.Left,
+   Rect.Bottom - Rect.Top, 0, 0, Width, Height, FImageData,
+   FBitmapInfo^, DIB_RGB_COLORS, SRCCOPY);
 
  // not implemented yet
 end;
@@ -301,15 +371,280 @@ begin
   end;
 end;
 
+
+
+
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedGrayscale16(Source,
+  Destination, Alpha: Pointer);
+var
+  Index   : Integer;
+  SrcPtr  : PWord absolute Source;
+  DestPtr : PByte absolute Destination;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^ := SrcPtr^ shr 8;
+   Inc(DestPtr);
+   Inc(SrcPtr, 2);
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedGrayscale2(Source,
+  Destination, Alpha: Pointer);
+var
+  Index   : Integer;
+  SrcPtr  : PByte absolute Source;
+  DestPtr : PByte absolute Destination;
+begin
+ for Index := 0 to FImageHeader.BytesPerRow - 1 do
+  begin
+   DestPtr^ := ((SrcPtr^ shr 2) and $F) or ( SrcPtr^        and $F0); Inc(DestPtr);
+   DestPtr^ := ((SrcPtr^ shl 2) and $F) or ((SrcPtr^ shl 4) and $F0); Inc(DestPtr);
+   Inc(SrcPtr);
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedTrueColor8(Source,
+  Destination, Alpha: Pointer);
+var
+  Index   : Integer;
+  SrcPtr  : PRGB24Array absolute Source;
+  DestPtr : PRGB24Array absolute Destination;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^[Index].B := FGammaTable[SrcPtr^[Index].R shr 8];
+   DestPtr^[Index].G := FGammaTable[SrcPtr^[Index].G shr 8];
+   DestPtr^[Index].R := FGammaTable[SrcPtr^[Index].B shr 8];
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedTrueColor16(Source,
+  Destination, Alpha: Pointer);
+var
+  Index     : Integer;
+  SourcePtr : PRGB24WordArray absolute Source;
+  DestPtr   : PRGB24Array absolute Destination;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^[Index].B := FGammaTable[SourcePtr^[Index].R shr 8];
+   DestPtr^[Index].G := FGammaTable[SourcePtr^[Index].G shr 8];
+   DestPtr^[Index].R := FGammaTable[SourcePtr^[Index].B shr 8];
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedDirect(Source,
+  Destination, Alpha: Pointer);
+begin
+ // data needs no further transformation
+ Move(Source^, Destination^, FImageHeader.BytesPerRow);
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedPalette2(Source,
+  Destination, Alpha: Pointer);
+var
+  Index   : Integer;
+  SrcPtr  : PByte absolute Source;
+  DestPtr : PByte absolute Destination;
+begin
+ for Index := 0 to FImageHeader.BytesPerRow - 1 do
+  begin
+   DestPtr^ := ((SrcPtr^ shr 4) and $3) or ((SrcPtr^ shr 2) and $30); Inc(DestPtr);
+   DestPtr^ := ( SrcPtr^        and $3) or ((SrcPtr^ shl 2) and $30); Inc(DestPtr);
+   Inc(SrcPtr);
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedGrayscaleAlpha8(Source,
+  Destination, Alpha: Pointer);
+var
+  Index    : Integer;
+  SrcPtr   : PByte absolute Source;
+  DestPtr  : PByte absolute Destination;
+  AlphaPtr : PByte absolute Alpha;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^  := SrcPtr^;  Inc(SrcPtr);
+   AlphaPtr^ := SrcPtr^;  Inc(SrcPtr);
+   Inc(DestPtr);
+   Inc(AlphaPtr);
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedGrayscaleAlpha16(Source,
+  Destination, Alpha: Pointer);
+var
+  Index    : Integer;
+  SrcPtr   : PByte absolute Source;
+  DestPtr  : PByte absolute Destination;
+  AlphaPtr : PByte absolute Alpha;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^  := SrcPtr^; Inc(SrcPtr, 2);
+   AlphaPtr^ := SrcPtr^; Inc(SrcPtr, 2);
+   Inc(DestPtr);
+   Inc(AlphaPtr);
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedTrueColorAlpha8(Source,
+  Destination, Alpha: Pointer);
+var
+  Index    : Integer;
+  SrcPtr   : PRGB32Array absolute Source;
+  DestPtr  : PRGB24Array absolute Destination;
+  AlphaPtr : PByteArray absolute Alpha;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^[Index].B := FGammaTable[SrcPtr^[Index].R];
+   DestPtr^[Index].G := FGammaTable[SrcPtr^[Index].G];
+   DestPtr^[Index].R := FGammaTable[SrcPtr^[Index].B];
+   AlphaPtr^[Index] := SrcPtr^[Index].A;
+  end;
+end;
+
+procedure TPortableNetworkGraphic.TransferNonInterlacedTrueColorAlpha16(Source,
+  Destination, Alpha: Pointer);
+var
+  Index    : Integer;
+  SrcPtr   : PRGB32WordArray absolute Source;
+  DestPtr  : PRGB24Array absolute Destination;
+  AlphaPtr : PByteArray absolute Alpha;
+begin
+ for Index := 0 to Width - 1 do
+  begin
+   DestPtr^[Index].B := FGammaTable[SrcPtr^[Index].R shr 8];
+   DestPtr^[Index].G := FGammaTable[SrcPtr^[Index].G shr 8];
+   DestPtr^[Index].R := FGammaTable[SrcPtr^[Index].B shr 8];
+   AlphaPtr^[Index] := SrcPtr^[Index].A;
+  end;
+end;
+
+
+
+
+
+
+
+procedure TPortableNetworkGraphic.TransferAdam7Grayscale2(const Pass: Byte;
+  Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7Grayscale16(
+  const Pass: Byte; Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7TrueColor8(const Pass: Byte;
+  Source, Destination, Alpha: Pointer);
+var
+  Index   : Integer;
+  SrcPtr  : PRGB24 absolute Source;
+  DestPtr : PByte absolute Destination;
+begin
+ Index := CColumnStart[Pass];
+ Inc(DestPtr, Index * 3);
+ repeat
+  DestPtr^ := FGammaTable[SrcPtr^.B]; Inc(DestPtr);
+  DestPtr^ := FGammaTable[SrcPtr^.G]; Inc(DestPtr);
+  DestPtr^ := FGammaTable[SrcPtr^.R]; Inc(DestPtr);
+
+  Inc(SrcPtr);
+  Inc(DestPtr, CColumnIncrement[Pass] * 3 - 3);
+  Inc(Index, CColumnIncrement[Pass]);
+ until Index >= Width;
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7TrueColor16(
+  const Pass: Byte; Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7Palette(const Pass: Byte;
+  Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7Palette2(const Pass: Byte;
+  Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7GrayscaleAlpha8(
+  const Pass: Byte; Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7GrayscaleAlpha16(
+  const Pass: Byte; Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7TrueColorAlpha8(
+  const Pass: Byte; Source, Destination, Alpha: Pointer);
+var
+  Index    : Integer;
+  SrcPtr   : PRGB32 absolute Source;
+  DestPtr  : PByte absolute Destination;
+  AlphaPtr : PByte absolute Alpha;
+begin
+ Index := CColumnStart[Pass];
+ Inc(DestPtr, Index * 3);
+ repeat
+  DestPtr^ := FGammaTable[SrcPtr^.R]; Inc(DestPtr);
+  DestPtr^ := FGammaTable[SrcPtr^.G]; Inc(DestPtr);
+  DestPtr^ := FGammaTable[SrcPtr^.B]; Inc(DestPtr);
+  AlphaPtr^ := SrcPtr^.A;
+
+  Inc(SrcPtr);
+  Inc(AlphaPtr);
+  Inc(DestPtr, CColumnIncrement[Pass] * 3 - 3);
+  Inc(Index, CColumnIncrement[Pass]);
+ until Index >= Width;
+end;
+
+procedure TPortableNetworkGraphic.TransferAdam7TrueColorAlpha16(
+  const Pass: Byte; Source, Destination, Alpha: Pointer);
+begin
+
+end;
+
+
+
+
+
+
+
 procedure TPortableNetworkGraphic.CopyPaletteToDIB(Palette: HPalette);
 var
-  Index         : Integer;
-  MaxLogPalette : TMaxLogPalette;
+  Index, Entries : Integer;
+  MaxLogPalette  : TMaxLogPalette;
 begin
  FillChar(MaxLogPalette, SizeOf(MaxLogPalette), 0);
- with FBitmapInfo do
+
+ // get number of entries
+ Entries := GetPaletteEntries(Palette, 0, 256, MaxLogPalette.palPalEntry[0]);
+
+ // reallocate bitmap info
+ ReallocMem(FBitmapInfo, SizeOf(TBitmapInfo) + Entries * SizeOf(TRGBQuad));
+
+ with FBitmapInfo^ do
   begin
-   bmiHeader.biClrUsed := GetPaletteEntries(Palette, 0, 256, MaxLogPalette.palPalEntry[0]);
+   bmiHeader.biClrUsed := Entries;
+
    for Index := 0 to bmiHeader.biClrUsed - 1 do
     begin
      bmiColors[Index].rgbBlue  := MaxLogPalette.palPalEntry[Index].peBlue;
@@ -351,13 +686,38 @@ begin
  FDeviceContext := CreateCompatibleDC(0);
  Canvas.Handle := FDeviceContext;
 
+ // allocate alpha image data
+ with FImageHeader do
+  if ColorType in [ctTrueColorAlpha, ctGrayscaleAlpha] then
+   begin
+    GetMem(FImageAlpha, Integer(FImageHeader.Width) * Integer(Height));
+    FillChar(FImageAlpha^, Integer(Width) * Integer(Height), 0);
+   end;
+
+ with FBitmapInfo^.bmiHeader do
+  begin
+   biWidth := FImageHeader.Width;
+   biHeight := -FImageHeader.Height;
+   case FImageHeader.ColorType of
+    ctGrayscale, ctIndexedColor, ctGrayscaleAlpha :
+      case FImageHeader.BitDepth of
+        1, 4, 8 : biBitCount := FImageHeader.BitDepth;
+        2       : biBitCount := 4;
+        16      : biBitCount := 8;
+      end;
+    ctTrueColor, ctTrueColorAlpha: biBitCount := 24;
+   end;
+
+   FBytesPerRow := ((FImageHeader.Width * biBitCount + $1F) and not $1F) shr 3;
+  end;
+
  if FImageHeader.HasPalette then
   begin
-   if FImageHeader.ColourType = ctIndexedColour
+   if FImageHeader.ColorType = ctIndexedColor
     then FPalette := CreateHalfTonePalette(FDeviceContext)
     else FPalette := CreateGrayscalePalette(FImageHeader.BitDepth);
 
-   with FBitmapInfo do
+   with FBitmapInfo^ do
     begin
      ResizePalette(FPalette, 1 shl bmiHeader.biBitCount);
      bmiHeader.biClrUsed := 1 shl bmiHeader.biBitCount;
@@ -366,19 +726,13 @@ begin
    RealizePalette(FDeviceContext);
    CopyPaletteToDIB(FPalette);
   end
- else FBitmapInfo.bmiHeader.biClrUsed := 0;
+ else FBitmapInfo^.bmiHeader.biClrUsed := 0;
 
- with FBitmapInfo.bmiHeader do
-  begin
-   biWidth := FImageHeader.Width;
-   biHeight := FImageHeader.Height;
-  end;
-
- FHandle := CreateDIBSection(FDeviceContext, PBitmapInfo(@FBitmapInfo)^,
-   DIB_RGB_COLORS, FImageData, 0, 0);
+ FHandle := CreateDIBSection(FDeviceContext, FBitmapInfo^, DIB_RGB_COLORS,
+   FImageData, 0, 0);
  SelectObject(FDeviceContext, FHandle);
 
- FillChar(FImageData^, FImageHeader.BytesPerRow * Integer(Height), 0);
+ FillChar(FImageData^, FBytesPerRow * Integer(Height), 0);
 end;
 
 procedure TPortableNetworkGraphic.HeightChanged;
@@ -695,40 +1049,348 @@ begin
 end;
 
 procedure TPortableNetworkGraphic.InterpreteChunks;
-var
-  DataIndex  : Integer;
-  DataStream : TMemoryStream;
-  ZStream    : TDecompressionStream;
 begin
  BitmapSizeChanged;
  BuildGammaTable;
+ if FImageHeader.HasPalette
+  then TransferPalette;
+ DecodeImageData;
+end;
 
+procedure TPortableNetworkGraphic.TransferPalette;
+var
+  Index         : Integer;
+  PaletteEntry  : TRGB24;
+  MaxLogPalette : TMaxLogPalette;
+  OldPalette    : HPALETTE;
+begin
+ if not Assigned(FPaletteChunk)
+  then raise EPngError.Create(RCStrPaletteMissing);
+
+ FillChar(MaxLogPalette, SizeOf(TMaxLogPalette), 0);
+ MaxLogPalette.palVersion := $300;
+ MaxLogPalette.palNumEntries := FPaletteChunk.Count;
+
+ for Index := 0 to FPaletteChunk.Count - 1 do
+  with MaxLogPalette.palPalEntry[Index] do
+   begin
+    PaletteEntry := FPaletteChunk.PaletteEntry[Index];
+    peRed  :=  FGammaTable[PaletteEntry.B];
+    peGreen := FGammaTable[PaletteEntry.G];
+    peBlue :=  FGammaTable[PaletteEntry.R];
+    peFlags := 0;
+   end;
+
+ OldPalette := FPalette;
+ FPalette := CreatePalette(PLogPalette(@MaxLogPalette)^);
+
+ CopyPaletteToDIB(FPalette);
+
+ SelectPalette(FDeviceContext, FPalette, False);
+ RealizePalette(FDeviceContext);
+ DeleteObject(OldPalette);
+end;
+
+procedure TPortableNetworkGraphic.DecodeImageData;
+var
+  DataIndex   : Integer;
+  DataStream  : TMemoryStream;
+  ZStream     : TDecompressionStream;
+  DecodedData : TMemoryStream;
+begin
  DataStream := TMemoryStream.Create;
+ DecodedData := nil;
  try
+  // combine all data chunks first
   for DataIndex := 0 to FDataChunkList.Count - 1 do
    begin
+    // make sure the chunk is inded an image data chunk
     Assert(FDataChunkList[DataIndex] is TChunkPngImageData);
 
+    // concat current chunk to data stream
     with TChunkPngImageData(FDataChunkList[DataIndex]) do
      begin
       Data.Seek(0, soFromBeginning);
       DataStream.CopyFrom(Data, Data.Size);
      end;
-
-    ZStream := TZDecompressionStream.Create(DataStream);
-    try
-     case FImageHeader.InterlaceMethod of
-      imNone  : ;
-      imAdam7 : ;
-     end;
-
-//     DeinterlaceStream(ZStream);
-    finally
-     FreeAndNil(ZStream);
-    end;
    end;
+
+  // check whether compression method is supported
+  if FImageHeader.CompressionMethod <> 0
+   then raise EPngError.Create(RCStrUnsupportedCompressionMethod);
+
+  // reset data stream position to zero
+  DataStream.Seek(0, soFromBeginning);
+
+  // create z decompression stream on data stream
+  ZStream := TZDecompressionStream.Create(DataStream);
+  try
+   // create raw data buffer
+   DecodedData := TMemoryStream.Create;
+
+   // decode z-stream data to decoded data stream
+   DecodedData.CopyFrom(ZStream, ZStream.Size);
+  finally
+   FreeAndNil(ZStream);
+  end;
+
+  // reset decoded data position
+  DecodedData.Seek(0, soFromBeginning);
+
+  // decode the data further, depending on the interlace method
+  case FImageHeader.InterlaceMethod of
+   imNone  : DecodeNonInterlaced(DecodedData);
+   imAdam7 : DecodeInterlacedAdam7(DecodedData);
+  end;
+
  finally
   FreeAndNil(DataStream);
+  if Assigned(DecodedData)
+   then FreeAndNil(DecodedData);
+ end;
+end;
+
+procedure TPortableNetworkGraphic.FilterSub(CurrentRow, PreviousRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ for Index := PixelByteSize + 1 to BytesPerRow
+  do CurrentRow[Index] := (CurrentRow[Index] + CurrentRow[Index - PixelByteSize]) and $FF;
+end;
+
+procedure TPortableNetworkGraphic.FilterUp(CurrentRow, PreviousRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 1 to BytesPerRow
+  do CurrentRow[Index] := (CurrentRow[Index] + PreviousRow[Index]) and $FF;
+end;
+
+procedure TPortableNetworkGraphic.FilterAverage(CurrentRow, PreviousRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 1 to PixelByteSize
+  do CurrentRow[Index] := (CurrentRow[Index] + PreviousRow[Index] shr 1) and $FF;
+
+ for Index := PixelByteSize + 1 to BytesPerRow
+  do CurrentRow[Index] := (CurrentRow[Index] + (CurrentRow[Index - PixelByteSize] + PreviousRow[Index]) shr 1) and $FF;
+end;
+
+function PaethPredictor(a, b, c: Byte): Byte;
+var
+  DistA, DistB, DistC: Integer;
+begin
+ DistA := Abs(b - c);
+ DistB := Abs(a - c);
+ DistC := Abs(a + b - c * 2);
+
+ if (DistA <= DistB) and (DistA <= DistC) then Result := a else
+ if DistB <= DistC
+  then Result := b
+  else Result := c;
+end;
+
+procedure TPortableNetworkGraphic.FilterPaeth(CurrentRow, PreviousRow: PByteArray;
+  BytesPerRow, PixelByteSize: Integer);
+var
+  Index : Integer;
+begin
+ for Index := 1 to PixelByteSize
+  do CurrentRow[Index] := (CurrentRow[Index] +
+       PaethPredictor(0, PreviousRow[Index], 0)) and $FF;
+
+ for Index := PixelByteSize + 1 to BytesPerRow
+  do CurrentRow[Index] := (CurrentRow[Index] +
+       PaethPredictor(CurrentRow[Index - PixelByteSize], PreviousRow[Index],
+         PreviousRow[Index - PixelByteSize])) and $FF;
+end;
+
+procedure TPortableNetworkGraphic.DecodeNonInterlaced(Stream: TMemoryStream);
+var
+  Index         : Integer;
+  ImageDataPtr  : PByte;
+  RowBuffer     : array [0..1] of PByteArray;
+  RowUsed       : Integer;
+  RowByteSize   : Integer;
+  BytesPerRow   : Integer;
+  PixelByteSize : Integer;
+  TransferProc  : TTransferNonInterlaced;
+begin
+ // assign transfer procedure
+ case FImageHeader.ColorType of
+  ctGrayscale  :
+   case FImageHeader.BitDepth of
+    1, 4, 8: TransferProc := TransferNonInterlacedDirect;
+    2      : TransferProc := TransferNonInterlacedGrayscale2;
+    16     : TransferProc := TransferNonInterlacedGrayscale16;
+   end;
+  ctTrueColor :
+   case FImageHeader.BitDepth of
+     8 : TransferProc := TransferNonInterlacedTrueColor8;
+    16 : TransferProc := TransferNonInterlacedTrueColor16;
+   end;
+  ctIndexedColor :
+   case FImageHeader.BitDepth of
+    1, 4, 8: TransferProc := TransferNonInterlacedDirect;
+    2      : TransferProc := TransferNonInterlacedPalette2
+   end;
+  ctGrayscaleAlpha :
+    case FImageHeader.BitDepth of
+      8  : TransferProc := TransferNonInterlacedGrayscaleAlpha8;
+     16  : TransferProc := TransferNonInterlacedGrayscaleAlpha16;
+    end;
+  ctTrueColorAlpha :
+    case FImageHeader.BitDepth of
+      8  : TransferProc := TransferNonInterlacedTrueColorAlpha8;
+     16  : TransferProc := TransferNonInterlacedTrueColorAlpha16;
+    end;
+ end;
+
+ // check whether a transfer function has been assigned
+ if not Assigned(TransferProc)
+  then raise EPngError.Create(RCStrUnsupportedFormat);
+
+ // initialize variables
+ RowUsed := 0;
+ ImageDataPtr := FImageData;
+ BytesPerRow := FImageHeader.BytesPerRow;
+ RowByteSize := BytesPerRow + 1;
+ PixelByteSize := FImageHeader.PixelByteSize;
+
+ try
+  GetMem(RowBuffer[0], RowByteSize);
+  GetMem(RowBuffer[1], RowByteSize);
+  FillChar(RowBuffer[1 - RowUsed]^[0], RowByteSize, 0);
+
+  for Index := 0 to Height - 1 do
+   begin
+    if Stream.Read(RowBuffer[RowUsed][0], RowByteSize) <> RowByteSize
+     then raise EPngError.Create('Data not complete');
+
+    case TAdaptiveFilterMethod(RowBuffer[RowUsed]^[0]) of
+     afmNone    : ; // do nothing
+     afmSub     : FilterSub(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], BytesPerRow, PixelByteSize);
+     afmUp      : FilterUp(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], BytesPerRow, PixelByteSize);
+     afmAverage : FilterAverage(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], BytesPerRow, PixelByteSize);
+     afmPaeth   : FilterPaeth(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], BytesPerRow, PixelByteSize);
+     else raise EPngError.Create(RCStrUnsupportedFilter);
+    end;
+
+    TransferProc(@RowBuffer[RowUsed][1], ImageDataPtr, FImageAlpha);
+
+    Inc(ImageDataPtr, FBytesPerRow);
+    RowUsed := 1 - RowUsed;
+   end;
+ finally
+  if Assigned(RowBuffer[0]) then Dispose(RowBuffer[0]);
+  if Assigned(RowBuffer[1]) then Dispose(RowBuffer[1]);
+ end;
+end;
+
+procedure TPortableNetworkGraphic.DecodeInterlacedAdam7(Stream: TMemoryStream);
+var
+  ImageDataPtr  : PByte;
+  ImageAlphaPtr : PByte;
+  RowBuffer     : array [0..1] of PByteArray;
+  RowUsed       : Integer;
+  RowByteSize   : Integer;
+  PixelPerRow   : Integer;
+  PixelByteSize : Integer;
+  CurrentPass   : Integer;
+  CurrentRow    : Integer;
+  TransferProc  : TTransferAdam7;
+begin
+ // assign transfer procedure
+ case FImageHeader.ColorType of
+  ctGrayscale  :
+   case FImageHeader.BitDepth of
+    1, 4, 8: TransferProc := TransferAdam7Palette;
+    2      : TransferProc := TransferAdam7Grayscale2;
+    16     : TransferProc := TransferAdam7Grayscale16;
+   end;
+  ctTrueColor :
+   case FImageHeader.BitDepth of
+     8 : TransferProc := TransferAdam7TrueColor8;
+    16 : TransferProc := TransferAdam7TrueColor16;
+   end;
+  ctIndexedColor :
+   case FImageHeader.BitDepth of
+    1, 4, 8: TransferProc := TransferAdam7Palette;
+    2      : TransferProc := TransferAdam7Palette2
+   end;
+  ctGrayscaleAlpha :
+    case FImageHeader.BitDepth of
+      8  : TransferProc := TransferAdam7GrayscaleAlpha8;
+     16  : TransferProc := TransferAdam7GrayscaleAlpha16;
+    end;
+  ctTrueColorAlpha :
+    case FImageHeader.BitDepth of
+      8  : TransferProc := TransferAdam7TrueColorAlpha8;
+     16  : TransferProc := TransferAdam7TrueColorAlpha16;
+    end;
+ end;
+
+ // check whether a transfer function has been assigned
+ if not Assigned(TransferProc)
+  then raise EPngError.Create(RCStrUnsupportedFormat);
+
+ // initialize variables
+ RowUsed := 0;
+ PixelByteSize := FImageHeader.PixelByteSize;
+
+ try
+  // allocate row buffer memory
+  GetMem(RowBuffer[0], FImageHeader.BytesPerRow + 1);
+  GetMem(RowBuffer[1], FImageHeader.BytesPerRow + 1);
+
+  // The Adam7 interlacer uses 7 passes to create the complete image
+  for CurrentPass := 0 to 6 do
+   begin
+    // calculate some intermediate variables
+    PixelPerRow := (Width - CColumnStart[CurrentPass] + CColumnIncrement[CurrentPass] - 1) div CColumnIncrement[CurrentPass];
+    RowByteSize := PixelByteSize * PixelPerRow;
+    CurrentRow := CRowStart[CurrentPass];
+    ImageDataPtr := FImageData;
+    Inc(ImageDataPtr, CurrentRow * FBytesPerRow);
+    ImageAlphaPtr := Ptr(Longint(FImageAlpha) + Width * CurrentRow);
+
+    // clear previous row
+    FillChar(RowBuffer[1 - RowUsed]^[0], RowByteSize, 0);
+
+    // check whether there are any bytes to process in this pass.
+    if RowByteSize > 0 then
+     while CurrentRow < Height do
+      begin
+       // get interlaced row data
+       if Stream.Read(RowBuffer[RowUsed][0], RowByteSize + 1) <> (RowByteSize + 1)
+        then raise EPngError.Create('Data not complete');
+
+       // apply filter
+       case TAdaptiveFilterMethod(RowBuffer[RowUsed]^[0]) of
+        afmNone    : ; // do nothing
+        afmSub     : FilterSub(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], RowByteSize, PixelByteSize);
+        afmUp      : FilterUp(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], RowByteSize, PixelByteSize);
+        afmAverage : FilterAverage(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], RowByteSize, PixelByteSize);
+        afmPaeth   : FilterPaeth(RowBuffer[RowUsed], RowBuffer[1 - RowUsed], RowByteSize, PixelByteSize);
+        else raise EPngError.Create(RCStrUnsupportedFilter);
+       end;
+
+       // transfer and deinterlace image data
+       TransferProc(CurrentPass, @RowBuffer[RowUsed][1], ImageDataPtr, FImageAlpha);
+
+       // prepare for the next pass
+       Inc(ImageDataPtr, CRowIncrement[CurrentPass] * FBytesPerRow);
+       Inc(CurrentRow, CRowIncrement[CurrentPass]);
+       RowUsed := 1 - RowUsed;
+      end;
+   end;
+ finally
+  if Assigned(RowBuffer[0]) then Dispose(RowBuffer[0]);
+  if Assigned(RowBuffer[1]) then Dispose(RowBuffer[1]);
  end;
 end;
 
@@ -755,7 +1417,10 @@ var
   c    : Cardinal;
   n, k : Integer;
 begin
+ // allocate CRC table memory
  GetMem(GCrcTable, 256 * SizeOf(Cardinal));
+
+ // fill CRC table
  for n := 0 to 255 do
   begin
    c := n;

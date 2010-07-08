@@ -49,12 +49,13 @@ type
     FWidth             : Integer;
     FHeight            : Integer;
     FBitDepth          : Byte;
-    FColourType        : TColourType;
+    FColorType         : TColorType;
     FCompressionMethod : Byte;
-    FFilterMethod      : Byte;
+    FFilterMethod      : TFilterMethod;
     FInterlaceMethod   : TInterlaceMethod;
     function GetHasPalette: Boolean;
     function GetBytesPerRow: Integer;
+    function GetPixelByteSize: Integer;
   public
     constructor Create; override;
     class function GetClassChunkName: TChunkName; override;
@@ -65,12 +66,14 @@ type
     property Width: Integer read FWidth write FWidth;
     property Height: Integer read FHeight write FHeight;
     property BitDepth: Byte read FBitDepth write FBitDepth;
-    property ColourType: TColourType read FColourType write FColourType;
+    property ColorType: TColorType read FColorType write FColorType;
     property CompressionMethod: Byte read FCompressionMethod write FCompressionMethod;
-    property FilterMethod: Byte read FFilterMethod write FFilterMethod;
+    property FilterMethod: TFilterMethod read FFilterMethod write FFilterMethod;
     property InterlaceMethod: TInterlaceMethod read FInterlaceMethod write FInterlaceMethod;
     property HasPalette: Boolean read GetHasPalette;
+
     property BytesPerRow: Integer read GetBytesPerRow;
+    property PixelByteSize: Integer read GetPixelByteSize;
   end;
 
   TCustomChunkPngWithHeader = class(TCustomChunkPng)
@@ -125,7 +128,7 @@ type
     property GammaAsSingle: Single read GetGammaAsSingle write SetGammaAsSingle;
   end;
 
-  TChunkPngStandardColourSpaceRGB = class(TCustomChunkPngWithHeader)
+  TChunkPngStandardColorSpaceRGB = class(TCustomChunkPngWithHeader)
   private
     FRenderingIntent : Byte;
   public
@@ -227,7 +230,7 @@ type
     procedure SaveToStream(Stream: TStream); override;
   end;
 
-  TCustomPngBackgroundColour = class(TPersistent)
+  TCustomPngBackgroundColor = class(TPersistent)
   protected
     class function GetChunkSize: Integer; virtual; abstract;
   public
@@ -237,19 +240,19 @@ type
     property ChunkSize: Integer read GetChunkSize;
   end;
 
-  TPngBackgroundColourFormat04 = class(TCustomPngBackgroundColour)
+  TPngBackgroundColorFormat04 = class(TCustomPngBackgroundColor)
   private
-    FGreySampleValue : Word;
+    FGraySampleValue : Word;
   protected
     class function GetChunkSize: Integer; override;
   public
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    property GreySampleValue: Word read FGreySampleValue write FGreySampleValue;
+    property GraySampleValue: Word read FGraySampleValue write FGraySampleValue;
   end;
 
-  TPngBackgroundColourFormat26 = class(TCustomPngBackgroundColour)
+  TPngBackgroundColorFormat26 = class(TCustomPngBackgroundColor)
   private
     FRedSampleValue : Word;
     FBlueSampleValue : Word;
@@ -265,7 +268,7 @@ type
     property GreenSampleValue: Word read FGreenSampleValue write FGreenSampleValue;
   end;
 
-  TPngBackgroundColourFormat3 = class(TCustomPngBackgroundColour)
+  TPngBackgroundColorFormat3 = class(TCustomPngBackgroundColor)
   protected
     FIndex : Byte;
     class function GetChunkSize: Integer; override;
@@ -278,7 +281,7 @@ type
 
   TChunkPngBackgroundColor = class(TCustomChunkPngWithHeader)
   protected
-    FBackground : TCustomPngBackgroundColour;
+    FBackground : TCustomPngBackgroundColor;
   public
     constructor Create(Header: TChunkPngImageHeader); override;
     destructor Destroy; override;
@@ -288,7 +291,7 @@ type
     procedure SaveToStream(Stream: TStream); override;
     procedure HeaderChanged; override;
 
-    property Background: TCustomPngBackgroundColour read FBackground;
+    property Background: TCustomPngBackgroundColor read FBackground;
   end;
 
   TChunkPngImageHistogram = class(TCustomChunkPngWithHeader)
@@ -317,14 +320,14 @@ type
 
   TPngTransparencyFormat0 = class(TCustomPngTransparency)
   private
-    FGreySampleValue : Word;
+    FGraySampleValue : Word;
   protected
     function GetChunkSize: Integer; override;
   public
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    property GreySampleValue: Word read FGreySampleValue write FGreySampleValue;
+    property GraySampleValue: Word read FGraySampleValue write FGraySampleValue;
   end;
 
   TPngTransparencyFormat2 = class(TCustomPngTransparency)
@@ -560,12 +563,13 @@ end;
 
 function TChunkPngImageHeader.GetBytesPerRow: Integer;
 begin
- case FColourType of
-  ctGreyscale,
-  ctIndexedColour,
-  ctGreyscaleAlpha  : Result := FWidth;
-  ctTrueColour      : Result := 3 * FWidth;
-  ctTrueColourAlpha : Result := 4 * FWidth;
+ case FColorType of
+  ctGrayscale,
+  ctIndexedColor,
+  ctGrayscaleAlpha : Result := FWidth;
+  ctTrueColor      : Result := 3 * FWidth;
+  ctTrueColorAlpha : Result := 4 * FWidth;
+  else raise EPngError.Create(RCStrUnknownColorType);
  end;
 end;
 
@@ -574,9 +578,24 @@ begin
  Result := 'IHDR';
 end;
 
+function TChunkPngImageHeader.GetPixelByteSize: Integer;
+begin
+ case ColorType of
+  ctGrayscale :
+   if FBitDepth = 16
+    then Result := 2
+    else Result := 1;
+  ctTrueColor : Result := 3 * FBitDepth div 8;
+  ctIndexedColor : Result := 1;
+  ctGrayscaleAlpha : Result := 2 * FBitDepth div 8;
+  ctTrueColorAlpha : Result := 4 * FBitDepth div 8;
+  else Result := 0;
+ end;
+end;
+
 function TChunkPngImageHeader.GetHasPalette: Boolean;
 begin
- Result := FColourType in [ctGreyscale, ctIndexedColour, ctGreyscaleAlpha];
+ Result := FColorType in [ctGrayscale, ctIndexedColor, ctGrayscaleAlpha];
 end;
 
 procedure TChunkPngImageHeader.LoadFromStream(Stream: TStream);
@@ -597,18 +616,18 @@ begin
    // read bit depth
    Read(FBitDepth, 1);
 
-   // read colour type
-   Read(FColourType, 1);
+   // read Color type
+   Read(FColorType, 1);
 
-   // check consistency between colour type and bit depth
-   case FColourType of
-    ctGreyscale :
+   // check consistency between Color type and bit depth
+   case FColorType of
+    ctGrayscale :
       if not (FBitDepth in [1, 2, 4, 8, 16]) then raise EPngError.Create(RCStrWrongBitdepth);
-    ctTrueColour,
-    ctGreyscaleAlpha,
-    ctTrueColourAlpha :
+    ctTrueColor,
+    ctGrayscaleAlpha,
+    ctTrueColorAlpha :
       if not (FBitDepth in [8, 16]) then raise EPngError.Create(RCStrWrongBitdepth);
-    ctIndexedColour :
+    ctIndexedColor :
       if not (FBitDepth in [1, 2, 4, 8]) then raise EPngError.Create(RCStrWrongBitdepth);
    end;
 
@@ -623,7 +642,7 @@ begin
    Read(FFilterMethod, 1);
 
    // check for filter method
-   if FFilterMethod <> 0
+   if FFilterMethod <> fmAdaptiveFilter
     then raise EPngError.Create(RCStrUnsupportedFilterMethod);
 
    // read interlace method
@@ -640,9 +659,9 @@ begin
  FWidth             := 0;
  FHeight            := 0;
  FBitDepth          := 8;
- FColourType        := ctTrueColour;
+ FColorType         := ctTrueColor;
  FCompressionMethod := 0;
- FFilterMethod      := 0;
+ FFilterMethod      := fmAdaptiveFilter;
  FInterlaceMethod   := imNone;
 end;
 
@@ -661,8 +680,8 @@ begin
    // write bit depth
    Write(FBitDepth, 1);
 
-   // write colour type
-   Write(FColourType, 1);
+   // write Color type
+   Write(FColorType, 1);
 
    // write compression method
    Write(FCompressionMethod, 1);
@@ -740,10 +759,10 @@ end;
 constructor TChunkPngTransparency.Create(Header: TChunkPngImageHeader);
 begin
  inherited;
- case Header.ColourType of
-  ctGreyscale     : FTransparency := TPngTransparencyFormat0.Create;
-  ctTrueColour    : FTransparency := TPngTransparencyFormat2.Create;
-  ctIndexedColour : FTransparency := TPngTransparencyFormat3.Create;
+ case Header.ColorType of
+  ctGrayscale    : FTransparency := TPngTransparencyFormat0.Create;
+  ctTrueColor    : FTransparency := TPngTransparencyFormat2.Create;
+  ctIndexedColor : FTransparency := TPngTransparencyFormat3.Create;
  end;
 end;
 
@@ -762,8 +781,8 @@ begin
  OldTransparency := FTransparency;
 
  // change transparency object class
- case FHeader.ColourType of
-  ctGreyscale     : if not (FTransparency is TPngTransparencyFormat0) then
+ case FHeader.ColorType of
+  ctGrayscale     : if not (FTransparency is TPngTransparencyFormat0) then
                      begin
                       FTransparency := TPngTransparencyFormat0.Create;
                       if Assigned(OldTransparency) then
@@ -772,7 +791,7 @@ begin
                         FreeAndNil(OldTransparency);
                        end;
                      end;
-  ctTrueColour    : if not (FTransparency is TPngTransparencyFormat2) then
+  ctTrueColor     : if not (FTransparency is TPngTransparencyFormat2) then
                      begin
                       FTransparency := TPngTransparencyFormat2.Create;
                       if Assigned(OldTransparency) then
@@ -781,7 +800,7 @@ begin
                         FreeAndNil(OldTransparency);
                        end;
                      end;
-  ctIndexedColour : if not (FTransparency is TPngTransparencyFormat3) then
+  ctIndexedColor  : if not (FTransparency is TPngTransparencyFormat3) then
                      begin
                       FTransparency := TPngTransparencyFormat3.Create;
                       if Assigned(OldTransparency) then
@@ -812,13 +831,13 @@ begin
  inherited;
 
  // check consistency
- case FHeader.ColourType of
-  ctGreyscale     : if not (FTransparency is TPngTransparencyFormat0)
-                     then raise EPngError.Create(RCStrWrongTransparencyFormat);
-  ctTrueColour    : if not (FTransparency is TPngTransparencyFormat2)
-                     then raise EPngError.Create(RCStrWrongTransparencyFormat);
-  ctIndexedColour : if not (FTransparency is TPngTransparencyFormat3)
-                     then raise EPngError.Create(RCStrWrongTransparencyFormat);
+ case FHeader.ColorType of
+  ctGrayscale    : if not (FTransparency is TPngTransparencyFormat0)
+                    then raise EPngError.Create(RCStrWrongTransparencyFormat);
+  ctTrueColor    : if not (FTransparency is TPngTransparencyFormat2)
+                    then raise EPngError.Create(RCStrWrongTransparencyFormat);
+  ctIndexedColor : if not (FTransparency is TPngTransparencyFormat3)
+                    then raise EPngError.Create(RCStrWrongTransparencyFormat);
  end;
 
  if Assigned(FTransparency)
@@ -837,14 +856,14 @@ procedure TPngTransparencyFormat0.LoadFromStream(Stream: TStream);
 begin
  inherited;
 
- FGreySampleValue := ReadSwappedWord(Stream);
+ FGraySampleValue := ReadSwappedWord(Stream);
 end;
 
 procedure TPngTransparencyFormat0.SaveToStream(Stream: TStream);
 begin
  inherited;
 
- WriteSwappedWord(Stream, FGreySampleValue);
+ WriteSwappedWord(Stream, FGraySampleValue);
 end;
 
 
@@ -1523,14 +1542,14 @@ begin
 end;
 
 
-{ TChunkPngStandardColourSpaceRGB }
+{ TChunkPngStandardColorSpaceRGB }
 
-class function TChunkPngStandardColourSpaceRGB.GetClassChunkName: TChunkName;
+class function TChunkPngStandardColorSpaceRGB.GetClassChunkName: TChunkName;
 begin
  Result := 'sRGB';
 end;
 
-procedure TChunkPngStandardColourSpaceRGB.LoadFromStream(Stream: TStream);
+procedure TChunkPngStandardColorSpaceRGB.LoadFromStream(Stream: TStream);
 begin
  inherited;
 
@@ -1544,7 +1563,7 @@ begin
   end;
 end;
 
-procedure TChunkPngStandardColourSpaceRGB.SaveToStream(Stream: TStream);
+procedure TChunkPngStandardColorSpaceRGB.SaveToStream(Stream: TStream);
 begin
  FChunkSize := 1;
 
@@ -1739,39 +1758,39 @@ begin
 end;
 
 
-{ TPngBackgroundColourFormat04 }
+{ TPngBackgroundColorFormat04 }
 
-class function TPngBackgroundColourFormat04.GetChunkSize: Integer;
+class function TPngBackgroundColorFormat04.GetChunkSize: Integer;
 begin
  Result := 2;
 end;
 
-procedure TPngBackgroundColourFormat04.LoadFromStream(Stream: TStream);
+procedure TPngBackgroundColorFormat04.LoadFromStream(Stream: TStream);
 begin
- FGreySampleValue := ReadSwappedWord(Stream);
+ FGraySampleValue := ReadSwappedWord(Stream);
 end;
 
-procedure TPngBackgroundColourFormat04.SaveToStream(Stream: TStream);
+procedure TPngBackgroundColorFormat04.SaveToStream(Stream: TStream);
 begin
- WriteSwappedWord(Stream, FGreySampleValue);
+ WriteSwappedWord(Stream, FGraySampleValue);
 end;
 
 
-{ TPngBackgroundColourFormat26 }
+{ TPngBackgroundColorFormat26 }
 
-class function TPngBackgroundColourFormat26.GetChunkSize: Integer;
+class function TPngBackgroundColorFormat26.GetChunkSize: Integer;
 begin
  Result := 6;
 end;
 
-procedure TPngBackgroundColourFormat26.LoadFromStream(Stream: TStream);
+procedure TPngBackgroundColorFormat26.LoadFromStream(Stream: TStream);
 begin
  FRedSampleValue := ReadSwappedWord(Stream);
  FGreenSampleValue := ReadSwappedWord(Stream);
  FBlueSampleValue := ReadSwappedWord(Stream);
 end;
 
-procedure TPngBackgroundColourFormat26.SaveToStream(Stream: TStream);
+procedure TPngBackgroundColorFormat26.SaveToStream(Stream: TStream);
 begin
  WriteSwappedWord(Stream, FRedSampleValue);
  WriteSwappedWord(Stream, FGreenSampleValue);
@@ -1779,19 +1798,19 @@ begin
 end;
 
 
-{ TPngBackgroundColourFormat3 }
+{ TPngBackgroundColorFormat3 }
 
-class function TPngBackgroundColourFormat3.GetChunkSize: Integer;
+class function TPngBackgroundColorFormat3.GetChunkSize: Integer;
 begin
  Result := 1;
 end;
 
-procedure TPngBackgroundColourFormat3.LoadFromStream(Stream: TStream);
+procedure TPngBackgroundColorFormat3.LoadFromStream(Stream: TStream);
 begin
  Stream.Read(FIndex, 1);
 end;
 
-procedure TPngBackgroundColourFormat3.SaveToStream(Stream: TStream);
+procedure TPngBackgroundColorFormat3.SaveToStream(Stream: TStream);
 begin
  Stream.Write(FIndex, 1);
 end;
@@ -1803,10 +1822,10 @@ constructor TChunkPngBackgroundColor.Create(Header: TChunkPngImageHeader);
 begin
  inherited;
 
- case Header.ColourType of
-  ctGreyscale, ctGreyscaleAlpha : FBackground := TPngBackgroundColourFormat04.Create;
-  ctTrueColour, ctTrueColourAlpha: FBackground := TPngBackgroundColourFormat26.Create;
-  ctIndexedColour: FBackground := TPngBackgroundColourFormat3.Create;
+ case Header.ColorType of
+  ctGrayscale, ctGrayscaleAlpha : FBackground := TPngBackgroundColorFormat04.Create;
+  ctTrueColor, ctTrueColorAlpha: FBackground := TPngBackgroundColorFormat26.Create;
+  ctIndexedColor: FBackground := TPngBackgroundColorFormat3.Create;
  end;
 end;
 
@@ -1824,7 +1843,7 @@ end;
 
 procedure TChunkPngBackgroundColor.HeaderChanged;
 var
-  OldBackground : TCustomPngBackgroundColour;
+  OldBackground : TCustomPngBackgroundColor;
 begin
  inherited;
 
@@ -1832,31 +1851,31 @@ begin
  OldBackground := FBackground;
 
  // change Background object class
- case FHeader.ColourType of
-  ctGreyscale, ctGreyscaleAlpha :
-   if not (FBackground is TPngBackgroundColourFormat04) then
+ case FHeader.ColorType of
+  ctGrayscale, ctGrayscaleAlpha :
+   if not (FBackground is TPngBackgroundColorFormat04) then
     begin
-     FBackground := TPngBackgroundColourFormat04.Create;
+     FBackground := TPngBackgroundColorFormat04.Create;
      if Assigned(OldBackground) then
       begin
        FBackground.Assign(OldBackground);
        FreeAndNil(OldBackground);
       end;
     end;
-  ctTrueColour, ctTrueColourAlpha :
-   if not (FBackground is TPngBackgroundColourFormat26) then
+  ctTrueColor, ctTrueColorAlpha :
+   if not (FBackground is TPngBackgroundColorFormat26) then
     begin
-     FBackground := TPngBackgroundColourFormat26.Create;
+     FBackground := TPngBackgroundColorFormat26.Create;
      if Assigned(OldBackground) then
       begin
        FBackground.Assign(OldBackground);
        FreeAndNil(OldBackground);
       end;
     end;
-  ctIndexedColour :
-   if not (FBackground is TPngBackgroundColourFormat3) then
+  ctIndexedColor :
+   if not (FBackground is TPngBackgroundColorFormat3) then
     begin
-     FBackground := TPngBackgroundColourFormat3.Create;
+     FBackground := TPngBackgroundColorFormat3.Create;
      if Assigned(OldBackground) then
       begin
        FBackground.Assign(OldBackground);
@@ -1945,7 +1964,7 @@ end;
 
 initialization
   RegisterPngChunks([TChunkPngImageData, TChunkPngPalette, TChunkPngGamma,
-    TChunkPngStandardColourSpaceRGB, TChunkPngPrimaryChromaticities,
+    TChunkPngStandardColorSpaceRGB, TChunkPngPrimaryChromaticities,
     TChunkPngTime, TChunkPngTransparency, TChunkPngEmbeddedIccProfile,
     TChunkPngPhysicalPixelDimensions, TChunkPngTextChunk,
     TChunkPngCompressedTextChunk, TChunkPngInternationalTextChunk,

@@ -36,13 +36,26 @@ interface
 
 type
   {$A1}
-  TColourType = (
-    ctGreyscale = 0,
-    ctTrueColour = 2,
-    ctIndexedColour = 3,
-    ctGreyscaleAlpha = 4,
-    ctTrueColourAlpha = 6
+  TColorType = (
+    ctGrayscale = 0,
+    ctTrueColor = 2,
+    ctIndexedColor = 3,
+    ctGrayscaleAlpha = 4,
+    ctTrueColorAlpha = 6
   );
+
+  TFilterMethod = (
+    fmAdaptiveFilter = 0
+  );
+
+  TAdaptiveFilterMethod = (
+    afmNone = 0,
+    afmSub = 1,
+    afmUp = 2,
+    afmAverage = 3,
+    afmPaeth = 4
+  );
+
   TInterlaceMethod = (
     imNone = 0,
     imAdam7 = 1

@@ -47,6 +47,8 @@ resourcestring
   RCStrUnsupportedCompressMethod = 'Unsupported compression method';
   RCStrUnsupportedFilterMethod = 'Unsupported filter method';
   RCStrUnsupportedInterlaceMethod = 'Unsupported interlace method';
+  RCStrUnsupportedCompressionMethod = 'Compression method not supported!';
+  RCStrUnknownColorType = 'Unknown color type!';
   RCStrWrongBitdepth = 'Wrong Bitdepth';
   RCStrWrongTransparencyFormat = 'Wrong transparency format';
   {$IFDEF CheckCRC}
