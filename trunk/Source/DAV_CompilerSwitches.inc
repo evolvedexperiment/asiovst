@@ -26,6 +26,10 @@
   used if this is checked}
 {.$DEFINE PUREPASCAL}
 
+{ Misc. undocumented compiler switches}
+{$DEFINE CheckCRC}
+{-$DEFINE ValidateEveryReadOperation}
+
 
 //////////////////////////////
 //  ASIO Compiler Switches  //

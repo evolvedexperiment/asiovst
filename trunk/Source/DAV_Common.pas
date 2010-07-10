@@ -476,7 +476,7 @@ end;
 
 function GermaniumDiode(Voltage: Double): Double;
 begin
- Result := 0.085 * (Voltage + abs(Voltage)) * sqr(Voltage) * Voltage
+ Result := 0.085 * (Voltage + Abs(Voltage)) * sqr(Voltage) * Voltage
 end;
 
 function SiliconDiode(Voltage: Double): Double;
@@ -750,36 +750,36 @@ end;
 
 function BranchlessClip(const Value, Lower, Upper: Single): Single;
 begin
- Result := (abs(Value - Lower) + (Lower + Upper) - abs(Value - Upper)) * 0.5;
+ Result := (Abs(Value - Lower) + (Lower + Upper) - Abs(Value - Upper)) * 0.5;
 end;
 
 function BranchlessClip(const Value, Lower, Upper: Double): Double;
 begin
- Result := (abs(Value - Lower) + (Lower + Upper) - abs(Value - Upper)) * 0.5;
+ Result := (Abs(Value - Lower) + (Lower + Upper) - Abs(Value - Upper)) * 0.5;
 end;
 
 function BranchlessClipLower(Value: Single; const Lower: Single): Single;
 begin
  Value := Value - Lower;
- Result := (Value + abs(Value)) * 0.5 + Lower;
+ Result := (Value + Abs(Value)) * 0.5 + Lower;
 end;
 
 function BranchlessClipLower(Value: Double; const Lower: Double): Double;
 begin
  Value := Value - Lower;
- Result := (Value + abs(Value)) * 0.5 + Lower;
+ Result := (Value + Abs(Value)) * 0.5 + Lower;
 end;
 
 function BranchlessClipUpper(Value: Single; const Upper: Single): Single;
 begin
  Value := Upper - Value;
- Result := Upper -(Value + abs(Value)) * 0.5;
+ Result := Upper -(Value + Abs(Value)) * 0.5;
 end;
 
 function BranchlessClipUpper(Value: Double; const Upper: Double): Double;
 begin
  Value := Upper - Value;
- Result := Upper -(Value + abs(Value)) * 0.5;
+ Result := Upper -(Value + Abs(Value)) * 0.5;
 end;
 
 procedure WrapInt(var Value: Integer; Upper: Integer; Lower: Integer = 0);
@@ -1179,14 +1179,16 @@ begin
  Result := 1 - ((Intcast shr 31) shl 1);
 end;
 
-function OnOff(const value: Single): Boolean;
-begin Result := value > 0.5 end;
+function OnOff(const Value: Single): Boolean;
+begin
+ Result := Value > 0.5
+end;
 
 function UnDenormalize(const Value : Single) : Single;
 begin
- if (abs(value) < 1.0e-20)
+ if (Abs(value) < 1.0E-20)
   then Result := 0.0
-  else Result := value;
+  else Result := Value;
 end;
 
 { String Functions }
@@ -1195,22 +1197,20 @@ end;
 {$IFDEF MSWINDOWS}
 function GetApplicationFilename: string;
 var
-  s : {$IFDEF DELPHI12_UP}PWideChar; {$ELSE} PChar; {$ENDIF}
+  s : PAnsiChar;
 begin
  GetMem(s, $7FF);
- GetModuleFilename(hInstance, s, SizeOf(s));
- Result := StrPas(s);
- Result := ExtractFilename(Result);
+ GetModuleFileNameA(hInstance, s, SizeOf(s));
+ Result := ExtractFilename(string(StrPas(s)));
 end;
 
 function GetApplicationDirectory: string;
 var
-  s : {$IFDEF DELPHI12_UP}PWideChar; {$ELSE} PChar; {$ENDIF}
+  s : PAnsiChar;
 begin
  GetMem(s, $7FF);
- GetModuleFilename(hInstance, s, SizeOf(s));
- Result := StrPas(s);
- Result := ExtractFileDir(Result);
+ GetModuleFilenameA(hInstance, s, SizeOf(s));
+ Result := ExtractFileDir(string(StrPas(s)));
 end;
 {$ENDIF}
 
