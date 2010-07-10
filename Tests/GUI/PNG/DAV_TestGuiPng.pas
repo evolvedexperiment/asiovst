@@ -38,7 +38,7 @@ uses
   DAV_GuiPngChunks, DAV_TestGuiPngDisplay, pngimage;
 
 type
-  // Test methods for class TAudioFileWav
+  // Test methods for class TPortableNetworkGraphic
   TTestGuiPng = class(TTestCase)
   strict private
     FPngFile : TPortableNetworkGraphic;

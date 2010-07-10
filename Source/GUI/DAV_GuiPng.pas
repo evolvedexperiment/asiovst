@@ -533,8 +533,23 @@ end;
 
 procedure TPortableNetworkGraphic.TransferAdam7Grayscale2(const Pass: Byte;
   Source, Destination, Alpha: Pointer);
+var
+  CurBit, Col: Integer;
+  SrcPtr : PByte absolute Source;
+  Dest2  : PByte;
 begin
+ Col := CColumnStart[Pass];
+ repeat
+  CurBit := 6;
+  repeat
+   Dest2 := PByte(Longint(Destination) + Col div 2);
+   PByte(Dest2)^ := Byte(Dest2^) or (((SrcPtr^ shr CurBit) and $3) shl (4 - (4 * Col) mod 8));
+   Inc(Col, CColumnIncrement[Pass]);
+   Dec(CurBit, 2);
+  until CurBit < 0;
 
+  Inc(SrcPtr);
+ until Col >= Width;
 end;
 
 procedure TPortableNetworkGraphic.TransferAdam7Grayscale16(
