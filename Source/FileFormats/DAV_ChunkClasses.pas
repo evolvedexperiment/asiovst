@@ -381,6 +381,7 @@ begin
  Move(Value[1], FChunkName[0], ChunkNameSize);
 end;
 
+
 { TDummyChunk }
 
 procedure TDummyChunk.LoadFromStream(Stream: TStream);
@@ -393,6 +394,7 @@ begin
     then Position := Position + CalculateZeroPad;
   end;
 end;
+
 
 { TUnknownChunk }
 
@@ -492,6 +494,7 @@ begin
   else raise Exception.CreateFmt('Index out of bounds (%d)', [index]);
 end;
 
+
 { TDefinedChunk }
 
 constructor TDefinedChunk.Create;
@@ -540,6 +543,7 @@ begin
   then raise Exception.Create('Chunk name must always be ''' +
     string(AnsiString(FChunkName)) + '''');
 end;
+
 
 { TFixedDefinedChunk }
 

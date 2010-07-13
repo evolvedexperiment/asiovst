@@ -944,7 +944,7 @@ begin
 
  with Stream do
   begin
-   if Size < 13
+   if Size < 9
     then raise EPngError.Create(RCStrChunkSizeTooSmall);
 
    // read pixels per unit, X axis
@@ -960,15 +960,12 @@ end;
 
 procedure TChunkPngPhysicalPixelDimensions.SaveToStream(Stream: TStream);
 begin
- FChunkSize := 13;
+ FChunkSize := 9;
 
  inherited;
 
  with Stream do
   begin
-   if Size < 13
-    then raise EPngError.Create(RCStrChunkSizeTooSmall);
-
    // write pixels per unit, X axis
    WriteSwappedCardinal(Stream, FPixelsPerUnitX);
 

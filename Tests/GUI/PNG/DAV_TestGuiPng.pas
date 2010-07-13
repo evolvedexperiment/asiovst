@@ -41,7 +41,7 @@ type
   // Test methods for class TPortableNetworkGraphic
   TTestGuiPng = class(TTestCase)
   strict private
-    FPngFile : TPortableNetworkGraphic;
+    FPngBitmap : TPngBitmap;
   private
     procedure InternalTestDrawing(FileName: TFileName);
   public
@@ -66,12 +66,12 @@ resourcestring
 
 procedure TTestGuiPng.SetUp;
 begin
- FPngFile := TPortableNetworkGraphic.Create;
+ FPngBitmap := TPngBitmap.Create;
 end;
 
 procedure TTestGuiPng.TearDown;
 begin
- FreeAndNil(FPngFile);
+ FreeAndNil(FPngBitmap);
 end;
 
 procedure TTestGuiPng.TestScanning;
@@ -84,7 +84,7 @@ begin
    repeat
     Succeed := True;
     try
-     FPngFile.LoadFromFile(SR.Name)
+     FPngBitmap.LoadFromFile(SR.Name)
     except
      on e: EPngError do MessageDlg(SR.Name + ': ' + e.Message, mtError, [mbOK], 0);
      else Succeed := False;
@@ -104,8 +104,11 @@ begin
  TempStream := TMemoryStream.Create;
  with TempStream do
   try
-   with FPngFile do
+   with FPngBitmap do
     begin
+     SaveToStream(TempStream);
+     TempStream.Seek(0, soFromBeginning);
+     LoadFromStream(TempStream);
     end;
   finally
    Free;
@@ -127,14 +130,14 @@ begin
      Free;
     end;
 
-   FPngFile.LoadFromFile(FileName);
+   FPngBitmap.LoadFromFile(FileName);
 
-   ClientWidth := FPngFile.Width + 16;
-   ClientHeight := FPngFile.Height + BtYes.Height + 20;
+   ClientWidth := FPngBitmap.Width + 16;
+   ClientHeight := FPngBitmap.Height + BtYes.Height + LbRenderer.Height + 24;
 
-   Internal.Width := FPngFile.Width;
-   Internal.Height := FPngFile.Height;
-   Internal.Canvas.Draw(0, 0, FPngFile);
+   Internal.Width := FPngBitmap.Width;
+   Internal.Height := FPngBitmap.Height;
+   Internal.Canvas.Draw(0, 0, FPngBitmap);
 
    if ShowModal <> mrYes
     then Fail(RCStrWrongDisplay);

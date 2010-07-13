@@ -8,22 +8,22 @@ uses
 
 type
   TFmDisplay = class(TForm)
-    Image: TImage;
     BtNo: TButton;
     BtYes: TButton;
+    Image: TImage;
     LbQuestion: TLabel;
-    RbPngImage: TRadioButton;
     LbRenderer: TLabel;
     RbInternal: TRadioButton;
+    RbPngImage: TRadioButton;
     procedure RbInternalClick(Sender: TObject);
     procedure RbPngImageClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     FReference : TBitmap;
     FInternal  : TBitmap;
   public
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
     property Reference: TBitmap read FReference write FReference;
     property Internal: TBitmap read FInternal write FInternal;
   end;
@@ -42,10 +42,11 @@ begin
  FReference := TBitmap.Create;
 end;
 
-procedure TFmDisplay.FormDestroy(Sender: TObject);
+destructor TFmDisplay.Destroy;
 begin
  FreeAndNil(FInternal);
  FreeAndNil(FReference);
+ inherited;
 end;
 
 procedure TFmDisplay.FormShow(Sender: TObject);

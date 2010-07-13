@@ -15,7 +15,6 @@ object FmDisplay: TFmDisplay
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnDestroy = FormDestroy
   OnShow = FormShow
   DesignSize = (
     355
@@ -42,7 +41,7 @@ object FmDisplay: TFmDisplay
     Left = 149
     Top = 9
     Width = 58
-    Height = 13
+    Height = 16
     Anchors = [akTop, akRight]
     Caption = 'Interpreter:'
   end
