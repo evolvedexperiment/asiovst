@@ -86,12 +86,12 @@ type
   { Old definitions }
 
   TRGB32 = packed record
-    B, G, R, A: Byte;
+    R, G, B, A: Byte;
   end;
   PRGB32 = ^TRGB32;
 
   TRGB32Word = packed record
-    B, G, R, A: Word;
+    R, G, B, A: Word;
   end;
   PRGB32Word = ^TRGB32Word;
 
@@ -100,16 +100,21 @@ type
   TArrayOfRGB32 = array of TRGB32;
 
   TRGB24 = packed record
-    B, G, R: Byte;
+    R, G, B: Byte;
   end;
   PRGB24 = ^TRGB24;
+
+  TBGR24 = packed record
+    B, G, R: Byte;
+  end;
+  PBGR24 = ^TBGR24;
 
   TRGB24Array = packed array[0..MaxInt div SizeOf(TRGB24) - 1] of TRGB24;
   PRGB24Array = ^TRGB24Array;
   TArrayOfRGB24 = array of TRGB24;
 
   TRGB24Word = packed record
-    B, G, R: Word;
+    R, G, B : Word;
   end;
   PRGB24Word = ^TRGB24Word;
 
