@@ -54,12 +54,12 @@ type
     VSTPanel: TPanel;
     VstHost: TVstHost;
     {$IFNDEF FPC}
-    XPManifest: TXPManifest;
-    PUPreset: TPopupMenu;
     MILoadPreset: TMenuItem;
     MISavePreset: TMenuItem;
     OD: TOpenDialog;
+    PUPreset: TPopupMenu;
     SD: TSaveDialog;
+    XPManifest: TXPManifest;
     {$ENDIF}
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -287,7 +287,7 @@ procedure TFmVSTEditor.FormClose(Sender: TObject;
 begin
  ASIOHost.Active := False;
  VSTHost[0].Active := False;
- sleep(10);
+ Sleep(10);
  Application.ProcessMessages;
  ASIOHOST.Active := False;
  with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do

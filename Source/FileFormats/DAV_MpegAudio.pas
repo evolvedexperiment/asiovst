@@ -3474,7 +3474,7 @@ begin
     FBuffer.Reset;
    end;
  until Result >= Size;
- assert(Result <= Size);
+ Assert(Result <= Size);
 end;
 
 procedure TCustomMpegAudio.ScanStream;

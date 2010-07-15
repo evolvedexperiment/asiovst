@@ -893,10 +893,8 @@ begin
     if (Host = nil) then
      begin
       Plugin := GTempPlugin;
-      if Assigned(Plugin.Collection) and Assigned(Plugin.Collection.Owner) then
-       begin
-        Host := TCustomVstHost(Plugin.Collection.Owner);
-       end;
+      if Assigned(Plugin.Collection) and (Plugin.Collection.Owner is TCustomVstHost)
+       then Host := TCustomVstHost(Plugin.Collection.Owner);
      end;
    end
   else
