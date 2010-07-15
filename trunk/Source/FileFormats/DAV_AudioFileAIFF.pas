@@ -58,14 +58,14 @@ type
     FVersionChunk        : TAIFFFormatVersionChunk;
     FAiffChunkScans      : TAiffChunkScans;
     FAudioDataPosition   : Cardinal;
-    function GetAESChannelStatusData: string;
-    function GetAIFFName: string;
-    function GetAuthor: string;
-    function GetCopyright: string;
-    procedure SetAESChannelStatusData(const Value: string);
-    procedure SetAIFFName(const Value: string);
-    procedure SetAuthor(const Value: string);
-    procedure SetCopyright(const Value: string);
+    function GetAESChannelStatusData: AnsiString;
+    function GetAIFFName: AnsiString;
+    function GetAuthor: AnsiString;
+    function GetCopyright: AnsiString;
+    procedure SetAESChannelStatusData(const Value: AnsiString);
+    procedure SetAIFFName(const Value: AnsiString);
+    procedure SetAuthor(const Value: AnsiString);
+    procedure SetCopyright(const Value: AnsiString);
     procedure WriteSSNDChunk(const Stream: TStream);
     function GetDataSize: Cardinal;
     function GetEmptyData: Boolean;
@@ -130,10 +130,10 @@ type
       FAiffChunkScans default [acsName, acsAuthor, acsCopyright, acsMarker,
       acsComment, acsInstrument];
 
-    property Name: string read GetAIFFName write SetAIFFName;
-    property Author: string read GetAuthor write SetAuthor;
-    property Copyright: string read GetCopyright write SetCopyright;
-    property AESChannelStatusData: string read GetAESChannelStatusData write SetAESChannelStatusData;
+    property Name: AnsiString read GetAIFFName write SetAIFFName;
+    property Author: AnsiString read GetAuthor write SetAuthor;
+    property Copyright: AnsiString read GetCopyright write SetCopyright;
+    property AESChannelStatusData: AnsiString read GetAESChannelStatusData write SetAESChannelStatusData;
   end;
 
   TAudioFileAIFF  = class(TCustomAudioFileAIFF)
@@ -189,14 +189,14 @@ end;
 destructor TCustomAudioFileAIFF.Destroy;
 begin
  FreeAndNil(FCommonChunk);
- if assigned(FCommentChunk)             then FreeAndNil(FCommentChunk);
- if assigned(FMarkerChunk)              then FreeAndNil(FMarkerChunk);
- if assigned(FInstrumentChunk)          then FreeAndNil(FInstrumentChunk);
- if assigned(FVersionChunk)             then FreeAndNil(FVersionChunk);
- if assigned(FNameChunk)                then FreeAndNil(FNameChunk);
- if assigned(FAuthorChunk)              then FreeAndNil(FAuthorChunk);
- if assigned(FCopyrightChunk)           then FreeAndNil(FCopyrightChunk);
- if assigned(FAudioRecordingChunk)      then FreeAndNil(FAudioRecordingChunk);
+ if Assigned(FCommentChunk)             then FreeAndNil(FCommentChunk);
+ if Assigned(FMarkerChunk)              then FreeAndNil(FMarkerChunk);
+ if Assigned(FInstrumentChunk)          then FreeAndNil(FInstrumentChunk);
+ if Assigned(FVersionChunk)             then FreeAndNil(FVersionChunk);
+ if Assigned(FNameChunk)                then FreeAndNil(FNameChunk);
+ if Assigned(FAuthorChunk)              then FreeAndNil(FAuthorChunk);
+ if Assigned(FCopyrightChunk)           then FreeAndNil(FCopyrightChunk);
+ if Assigned(FAudioRecordingChunk)      then FreeAndNil(FAudioRecordingChunk);
  inherited;
 end;
 
@@ -252,9 +252,9 @@ begin
   end;
 end;
 
-function TCustomAudioFileAIFF.GetAuthor: string;
+function TCustomAudioFileAIFF.GetAuthor: AnsiString;
 begin
- if assigned(FAuthorChunk)
+ if Assigned(FAuthorChunk)
   then Result := FAuthorChunk.Author
   else Result := '';
 end;
@@ -274,9 +274,9 @@ begin
  Result := FCommonChunk.Channels;
 end;
 
-function TCustomAudioFileAIFF.GetCopyright: string;
+function TCustomAudioFileAIFF.GetCopyright: AnsiString;
 begin
- if assigned(FCopyrightChunk)
+ if Assigned(FCopyrightChunk)
   then Result := FCopyrightChunk.Copyright
   else Result := '';
 end;
@@ -292,16 +292,16 @@ begin
  Result := aeInteger;
 end;
 
-function TCustomAudioFileAIFF.GetAESChannelStatusData: string;
+function TCustomAudioFileAIFF.GetAESChannelStatusData: AnsiString;
 begin
- if assigned(FAudioRecordingChunk)
+ if Assigned(FAudioRecordingChunk)
   then Result := FAudioRecordingChunk.AESChannelStatusData
   else Result := '';
 end;
 
-function TCustomAudioFileAIFF.GetAIFFName: string;
+function TCustomAudioFileAIFF.GetAIFFName: AnsiString;
 begin
- if assigned(FNameChunk)
+ if Assigned(FNameChunk)
   then Result := FNameChunk.Name
   else Result := '';
 end;
@@ -316,9 +316,9 @@ begin
  Result := FCommonChunk.SampleRate;
 end;
 
-procedure TCustomAudioFileAIFF.SetAuthor(const Value: string);
+procedure TCustomAudioFileAIFF.SetAuthor(const Value: AnsiString);
 begin
- if not assigned(FAuthorChunk)
+ if not Assigned(FAuthorChunk)
   then FAuthorChunk := TAIFFAuthorChunk.Create;
  FAuthorChunk.Author := Value; 
 end;
@@ -342,9 +342,9 @@ begin
    end;
 end;
 
-procedure TCustomAudioFileAIFF.SetCopyright(const Value: string);
+procedure TCustomAudioFileAIFF.SetCopyright(const Value: AnsiString);
 begin
- if not assigned(FCopyrightChunk)
+ if not Assigned(FCopyrightChunk)
   then FCopyrightChunk := TAIFFCopyrightChunk.Create;
  FCopyrightChunk.Copyright := Value;
 end;
@@ -375,16 +375,16 @@ begin
  end;
 end;
 
-procedure TCustomAudioFileAIFF.SetAESChannelStatusData(const Value: string);
+procedure TCustomAudioFileAIFF.SetAESChannelStatusData(const Value: AnsiString);
 begin
- if not assigned(FAudioRecordingChunk)
+ if not Assigned(FAudioRecordingChunk)
   then FAudioRecordingChunk := TAIFFAudioRecordingChunk.Create;
  FAudioRecordingChunk.AESChannelStatusData := Value;
 end;
 
-procedure TCustomAudioFileAIFF.SetAIFFName(const Value: string);
+procedure TCustomAudioFileAIFF.SetAIFFName(const Value: AnsiString);
 begin
- if not assigned(FNameChunk)
+ if not Assigned(FNameChunk)
   then FNameChunk := TAIFFNameChunk.Create;
  FNameChunk.Name := Value;
 end;
@@ -402,7 +402,7 @@ end;
 
 procedure TCustomAudioFileAIFF.SampleFramesChanged;
 begin
- if assigned(FStream)
+ if Assigned(FStream)
   then WriteTotalSampleFrames(FStream);
 end;
 
@@ -449,14 +449,14 @@ begin
  with Stream do
   begin
    // Remove existing optional chunk
-   if assigned(FCommentChunk)             then FreeAndNil(FCommentChunk);
-   if assigned(FMarkerChunk)              then FreeAndNil(FMarkerChunk);
-   if assigned(FInstrumentChunk)          then FreeAndNil(FInstrumentChunk);
-   if assigned(FVersionChunk)             then FreeAndNil(FVersionChunk);
-   if assigned(FNameChunk)                then FreeAndNil(FNameChunk);
-   if assigned(FAuthorChunk)              then FreeAndNil(FAuthorChunk);
-   if assigned(FCopyrightChunk)           then FreeAndNil(FCopyrightChunk);
-   if assigned(FAudioRecordingChunk)      then FreeAndNil(FAudioRecordingChunk);
+   if Assigned(FCommentChunk)             then FreeAndNil(FCommentChunk);
+   if Assigned(FMarkerChunk)              then FreeAndNil(FMarkerChunk);
+   if Assigned(FInstrumentChunk)          then FreeAndNil(FInstrumentChunk);
+   if Assigned(FVersionChunk)             then FreeAndNil(FVersionChunk);
+   if Assigned(FNameChunk)                then FreeAndNil(FNameChunk);
+   if Assigned(FAuthorChunk)              then FreeAndNil(FAuthorChunk);
+   if Assigned(FCopyrightChunk)           then FreeAndNil(FCopyrightChunk);
+   if Assigned(FAudioRecordingChunk)      then FreeAndNil(FAudioRecordingChunk);
 
    // reset current data positions
    FAudioDataPosition := 0;
@@ -501,7 +501,7 @@ procedure TCustomAudioFileAIFF.ReadFVERChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FVersionChunk)
+   if Assigned(FVersionChunk)
     then raise EAIFFError.Create(RCStrOneVersionChunkOnly);
 
    FVersionChunk := TAIFFFormatVersionChunk.Create;
@@ -547,7 +547,7 @@ procedure TCustomAudioFileAIFF.ReadCOMTChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FCommentChunk)
+   if Assigned(FCommentChunk)
     then raise EAIFFError.Create(RCStrOneCommentChunkOnly);
 
    if acsComment in FAiffChunkScans then
@@ -564,7 +564,7 @@ procedure TCustomAudioFileAIFF.ReadMARKChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FMarkerChunk)
+   if Assigned(FMarkerChunk)
     then raise EAIFFError.Create(RCStrOneMarkerChunkOnly);
 
    if acsMarker in FAiffChunkScans then
@@ -581,7 +581,7 @@ procedure TCustomAudioFileAIFF.ReadINSTChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FInstrumentChunk)
+   if Assigned(FInstrumentChunk)
     then raise EAIFFError.Create(RCStrOneInstrumentChunkOnly);
 
    if acsInstrument in FAiffChunkScans then
@@ -608,7 +608,7 @@ procedure TCustomAudioFileAIFF.ReadAESDChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FAudioRecordingChunk)
+   if Assigned(FAudioRecordingChunk)
     then raise EAIFFError.Create(RCStrOneAESChunkOnly);
 
    if acsAudioRecording in FAiffChunkScans then
@@ -635,7 +635,7 @@ procedure TCustomAudioFileAIFF.ReadNAMEChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FNameChunk)
+   if Assigned(FNameChunk)
     then raise EAIFFError.Create(RCStrOneNameChunkOnly);
 
    if acsName in FAiffChunkScans then
@@ -652,7 +652,7 @@ procedure TCustomAudioFileAIFF.ReadAUTHChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FAuthorChunk)
+   if Assigned(FAuthorChunk)
     then raise EAIFFError.Create(RCStrOneAuthorChunkOnly);
 
    if acsAuthor in FAiffChunkScans then
@@ -669,7 +669,7 @@ procedure TCustomAudioFileAIFF.ReadCOPYChunk(const Stream: TStream);
 begin
  with Stream do
   begin
-   if assigned(FCopyrightChunk)
+   if Assigned(FCopyrightChunk)
     then raise EAIFFError.Create(RCStrOneCopyrightChunkOnly);
 
    if acsCopyright in FAiffChunkScans then
@@ -748,10 +748,10 @@ begin
    // write format chunk
    FCommonChunk.SaveToStream(Stream);
 
-   if assigned(FNameChunk) then FNameChunk.SaveToStream(Stream);
-   if assigned(FAuthorChunk) then FAuthorChunk.SaveToStream(Stream);
-   if assigned(FCopyrightChunk) then FCopyrightChunk.SaveToStream(Stream);
-   if assigned(FAudioRecordingChunk) then FAudioRecordingChunk.SaveToStream(Stream);
+   if Assigned(FNameChunk) then FNameChunk.SaveToStream(Stream);
+   if Assigned(FAuthorChunk) then FAuthorChunk.SaveToStream(Stream);
+   if Assigned(FCopyrightChunk) then FCopyrightChunk.SaveToStream(Stream);
+   if Assigned(FAudioRecordingChunk) then FAudioRecordingChunk.SaveToStream(Stream);
 
    WriteAudioDataToStream(Stream);
 
@@ -783,7 +783,7 @@ begin
   else Result := nil;
  end;
 
- if assigned(Result) then
+ if Assigned(Result) then
   with Result do
    begin
     BlockSize := Self.FBlockSize;
@@ -807,9 +807,9 @@ begin
    Position := FAudioDataPosition + 8 + SamplePosition;
 
    DataDecoder := CreateDataCoder;
-   if not assigned(DataDecoder) then exit;
+   if not Assigned(DataDecoder) then exit;
 
-   if assigned(FOnBeginRead)
+   if Assigned(FOnBeginRead)
     then FOnBeginRead(Self);
 
    try
@@ -817,14 +817,14 @@ begin
     while Samples + DataDecoder.SampleFrames < SampleFrames do
      begin
       DataDecoder.LoadFromStream(FStream);
-      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+      if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
 
       Samples := Samples + DataDecoder.SampleFrames;
      end;
 
      DataDecoder.SampleFrames := SampleFrames - Samples;
      DataDecoder.LoadFromStream(FStream);
-     if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+     if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
    finally
     FreeAndNil(DataDecoder);
    end;
@@ -844,7 +844,7 @@ begin
  with FStream do
   begin
    DataEncoder := CreateDataCoder;
-   if not assigned(DataEncoder) then exit;
+   if not Assigned(DataEncoder) then exit;
 
    if EmptyData then
     begin
@@ -855,21 +855,21 @@ begin
 
    Position := FAudioDataPosition + 8 + DataEncoder.SampleToByte(SamplePosition);
 
-   if assigned(FOnBeginWrite)
+   if Assigned(FOnBeginWrite)
     then FOnBeginWrite(Self);
 
    try
     Samples := 0;
     while Samples + DataEncoder.SampleFrames < SampleFrames do
      begin
-      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
       DataEncoder.SaveToStream(FStream);
 
       Samples := Samples + DataEncoder.SampleFrames;
      end;
 
      DataEncoder.SampleFrames := SampleFrames - Samples;
-     if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+     if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
      DataEncoder.SaveToStream(FStream);
    finally
     FreeAndNil(DataEncoder);
@@ -899,11 +899,11 @@ begin
    // advance offset
    Position := Position + Offset;
 
-   if assigned(FOnBeginRead)
+   if Assigned(FOnBeginRead)
     then FOnBeginRead(Self);
 
    DataDecoder := CreateDataCoder;
-   if not assigned(DataDecoder) then exit;
+   if not Assigned(DataDecoder) then exit;
 
    with DataDecoder do
     try
@@ -911,13 +911,13 @@ begin
      while Samples + SampleFrames <= FCommonChunk.SampleFrames do
       begin
        LoadFromStream(Stream);
-       if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+       if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
        Samples := Samples + SampleFrames;
       end;
 
       SampleFrames := FCommonChunk.SampleFrames - Samples;
       LoadFromStream(Stream);
-      if assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
+      if Assigned(FOnDecode) then FOnDecode(Self, DataDecoder, Samples);
     finally
      FreeAndNil(DataDecoder);
     end;
@@ -1002,9 +1002,9 @@ begin
    ChunkEnd := Stream.Position + DataSize;
 
    DataEncoder := CreateDataCoder;
-   if not assigned(DataEncoder) then exit;
+   if not Assigned(DataEncoder) then exit;
 
-   if assigned(FOnBeginWrite)
+   if Assigned(FOnBeginWrite)
     then FOnBeginWrite(Self);
 
    with DataEncoder do
@@ -1012,14 +1012,14 @@ begin
      Samples   := 0;
      while Samples + SampleFrames < Self.SampleFrames do
       begin
-       if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+       if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
        SaveToStream(Stream);
 
        Samples := Samples + SampleFrames;
       end;
 
       SampleFrames := Self.SampleFrames - Samples;
-      if assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
+      if Assigned(FOnEncode) then FOnEncode(Self, DataEncoder, Samples);
       SaveToStream(Stream);
      finally
      FreeAndNil(DataEncoder);

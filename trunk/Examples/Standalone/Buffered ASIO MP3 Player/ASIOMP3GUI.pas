@@ -10,30 +10,30 @@ type
   TFmASIOMP3 = class(TForm)
     ASIOHost: TASIOHost;
     BtControlPanel: TButton;
-    BtStartStop: TButton;
     BtSelect: TButton;
+    BtStartStop: TButton;
     ChannelBox: TComboBox;
     DriverCombo: TComboBox;
     EdFile: TEdit;
-    LbMp3File: TLabel;
-    LbChannels: TLabel;
-    LbDrivername: TLabel;
-    OpenDialog: TOpenDialog;
     LbBuffer: TLabel;
     LbBufferValue: TLabel;
+    LbChannels: TLabel;
+    LbDrivername: TLabel;
+    LbMp3File: TLabel;
+    OpenDialog: TOpenDialog;
     Timer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ASIOHostBufferSwitch32(Sender: TObject; const InBuffer, OutBuffer: TDAVArrayOfSingleFixedArray);
+    procedure ASIOHostSampleRateChanged(Sender: TObject);
     procedure BtControlPanelClick(Sender: TObject);
-    procedure BtStartStopClick(Sender: TObject);
     procedure BtSelectClick(Sender: TObject);
+    procedure BtStartStopClick(Sender: TObject);
     procedure ChannelBoxChange(Sender: TObject);
     procedure DriverComboChange(Sender: TObject);
     procedure EdFileChange(Sender: TObject);
-    procedure ASIOHostSampleRateChanged(Sender: TObject);
-    procedure TimerTimer(Sender: TObject);
     procedure LbBufferClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     FIniFile        : TFileName;
     FVolumeFactor   : Single;
@@ -161,7 +161,7 @@ end;
 
 procedure TFmASIOMP3.ASIOHostSampleRateChanged(Sender: TObject);
 begin
- if assigned(FBufferedPlayer)
+ if Assigned(FBufferedPlayer)
   then FBufferedPlayer.SampleRate := ASIOHost.SampleRate;
 end;
 

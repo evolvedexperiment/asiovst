@@ -339,8 +339,8 @@ type
 
   TAIFFAudioRecordingChunk = class(TAIFFFixedDefinedChunk) // 'AESD'
   private
-    function GetAESChannelStatusData: string;
-    procedure SetAESChannelStatusData(const Value: string);
+    function GetAESChannelStatusData: AnsiString;
+    procedure SetAESChannelStatusData(const Value: AnsiString);
   protected
     procedure AssignTo(Dest: TPersistent); override;
   public
@@ -349,7 +349,7 @@ type
     class function GetClassChunkSize: Integer; override;
     class function GetClassChunkName : TChunkName; override;
   published
-    property AESChannelStatusData: string read GetAESChannelStatusData write SetAESChannelStatusData;
+    property AESChannelStatusData: AnsiString read GetAESChannelStatusData write SetAESChannelStatusData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -358,14 +358,14 @@ type
 
   TAIFFApplicationSpecificChunk = class(TAIFFDefinedChunk) // 'APPL'
   private
-    function GetApplicationSignature: string;
+    function GetApplicationSignature: AnsiString;
     function GetData(index: Integer): Byte;
     procedure CalculateChunkSize;
-    procedure SetApplicationSignature(const Value: string);
+    procedure SetApplicationSignature(const Value: AnsiString);
     procedure SetData(index: Integer; const Value: Byte);
   protected
     FApplicationSignature : TChunkName;
-    FApplicationData      : string;
+    FApplicationData      : AnsiString;
     procedure AssignTo(Dest: TPersistent); override;
   public
     constructor Create; override;
@@ -374,8 +374,8 @@ type
     class function GetClassChunkName: TChunkName; override;
     property ApplicationData[index : Integer]: Byte read GetData write SetData;
   published
-    property ApplicationSignature: string read GetApplicationSignature write SetApplicationSignature;
-    property ApplicationDataAsString: string read FApplicationData write FApplicationData;
+    property ApplicationSignature: AnsiString read GetApplicationSignature write SetApplicationSignature;
+    property ApplicationDataAsString: AnsiString read FApplicationData write FApplicationData;
   end;
 
   ////////////////////////////////////////////////////////////////////////////
@@ -421,6 +421,7 @@ begin
  FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
 end;
 
+
 { TAIFFFixedDefinedChunk }
 
 constructor TAIFFFixedDefinedChunk.Create;
@@ -428,6 +429,7 @@ begin
  inherited;
  FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
 end;
+
 
 { TAIFFUnknownChunk }
 
@@ -437,6 +439,7 @@ begin
  FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
 end;
 
+
 { TAIFFTextChunk }
 
 constructor TAIFFTextChunk.Create;
@@ -444,6 +447,7 @@ begin
  inherited;
  FChunkFlags := FChunkFlags + [cfReversedByteOrder, cfPadSize];
 end;
+
 
 { TAIFFCommonChunk }
 
@@ -647,6 +651,7 @@ begin
   end;
 end;
 
+
 { TAIFFFormChunk }
 
 constructor TAIFFFormChunk.Create;
@@ -691,6 +696,7 @@ begin
    else raise Exception.Create('Unknown form type');
 end;
 
+
 { TAIFFFormatVersionChunk }
 
 constructor TAIFFFormatVersionChunk.Create;
@@ -727,6 +733,7 @@ begin
  if Value <> AIFCVersion1
   then raise Exception.Create('Only one version from May 23, 1990, 2:40pm is supported yet');
 end;
+
 
 { TAIFFSoundDataChunk }
 
@@ -793,6 +800,7 @@ begin
    TAIFFSoundDataChunk(Dest).AIFFSoundDataRecord := AIFFSoundDataRecord;
   end;
 end;
+
 
 { TAIFFMarkerItem }
 
@@ -867,6 +875,7 @@ begin
     MarkerID := Value;
    end;
 end;
+
 
 { TAIFFMarkerChunk }
 
@@ -950,6 +959,7 @@ begin
   end;
 end;
 
+
 { TAIFFCommentItem }
 
 procedure TAIFFCommentItem.AssignTo(Dest: TPersistent);
@@ -1016,6 +1026,7 @@ begin
     MarkerID := Value;
    end;
 end;
+
 
 { TAIFFCommentChunk }
 
@@ -1097,6 +1108,7 @@ begin
     do TAIFFCommentItem(FComments.Items[i]).SaveToStream(Stream);
   end;
 end;
+
 
 { TAIFFInstrumentChunk }
 
@@ -1198,6 +1210,7 @@ begin
    end;
 end;
 
+
 { TAIFFMIDIChunk }
 
 procedure TAIFFMIDIChunk.AssignTo(Dest: TPersistent);
@@ -1248,6 +1261,7 @@ begin
   then FMIDIData[index] := Value;
 end;
 
+
 { TAIFFAudioRecordingChunk }
 
 constructor TAIFFAudioRecordingChunk.Create;
@@ -1266,7 +1280,7 @@ begin
   end;
 end;
 
-function TAIFFAudioRecordingChunk.GetAESChannelStatusData: string;
+function TAIFFAudioRecordingChunk.GetAESChannelStatusData: AnsiString;
 begin
  SetLength(Result, 24);
  Move(AudioRecordingRecord.AESChannelStatusData[0], Result[1], 24);
@@ -1282,10 +1296,11 @@ begin
  Result := SizeOf(TAIFFAudioRecordingRecord);
 end;
 
-procedure TAIFFAudioRecordingChunk.SetAESChannelStatusData(const Value: string);
+procedure TAIFFAudioRecordingChunk.SetAESChannelStatusData(const Value: AnsiString);
 begin
  Move(Value[1], AudioRecordingRecord.AESChannelStatusData[0], Length(Value));
 end;
+
 
 { TAIFFApplicationSpecificChunk }
 
@@ -1312,9 +1327,9 @@ begin
  FChunkSize := Length(FApplicationData) + SizeOf(TChunkName);
 end;
 
-function TAIFFApplicationSpecificChunk.GetApplicationSignature: string;
+function TAIFFApplicationSpecificChunk.GetApplicationSignature: AnsiString;
 begin
- Result := string(FApplicationSignature);
+ Result := AnsiString(FApplicationSignature);
 end;
 
 class function TAIFFApplicationSpecificChunk.GetClassChunkName: TChunkName;
@@ -1329,7 +1344,7 @@ begin
   else Result := 0;
 end;
 
-procedure TAIFFApplicationSpecificChunk.SetApplicationSignature(const Value: string);
+procedure TAIFFApplicationSpecificChunk.SetApplicationSignature(const Value: AnsiString);
 var
   ApplicationSignatureSize : Integer;
 begin
@@ -1338,10 +1353,10 @@ begin
  Move(Value[1], FApplicationSignature[0], ApplicationSignatureSize);
 end;
 
-procedure TAIFFApplicationSpecificChunk.SetData(index: Integer;
+procedure TAIFFApplicationSpecificChunk.SetData(Index: Integer;
   const Value: Byte);
 begin
- if (index >= 0) and (index < Length(FApplicationSignature))
+ if (Index >= 0) and (Index < Length(FApplicationSignature))
   then FApplicationSignature[index + 1] := AnsiChar(Value);
 end;
 
@@ -1373,12 +1388,14 @@ begin
   end;
 end;
 
+
 { TAIFFNameChunk }
 
 class function TAIFFNameChunk.GetClassChunkName: TChunkName;
 begin
   Result := 'NAME';
 end;
+
 
 { TAIFFAuthorChunk }
 
@@ -1387,12 +1404,14 @@ begin
  Result := 'AUTH';
 end;
 
+
 { TAIFFCopyrightChunk }
 
 class function TAIFFCopyrightChunk.GetClassChunkName: TChunkName;
 begin
  Result := '(c) ';
 end;
+
 
 { TAIFFAnnotationChunk }
 
