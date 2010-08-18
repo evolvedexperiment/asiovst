@@ -2015,7 +2015,9 @@ begin
    then Result := 0
    else Result := FVstEffect.Dispatcher(FVstEffect, Opcode, Index, Value, Pntr, opt);
  except
+  {$IFDEF Debug64}
   AddDebugMessage('Dispatcher Exception');
+  {$ENDIF}
   Result := 0;
  end;
  {$ELSE}
@@ -3724,30 +3726,30 @@ end;
 
 procedure TCustomVstPlugIn.LoadBank(FileName: TFileName);
 var
-  chnk: TFileStream;
+  FileStream: TFileStream;
 begin
  if not FileExists(FileName)
   then raise Exception.Create(RStrBankFileDoesNotExist);
- chnk := TFileStream.Create(FileName, fmOpenRead);
+ FileStream := TFileStream.Create(FileName, fmOpenRead);
  try
-  LoadBank(chnk);
+  LoadBank(FileStream);
  finally
-  chnk.Free;
- end; 
+  FileStream.Free;
+ end;
 end;
 
 procedure TCustomVstPlugIn.LoadPreset(FileName: TFileName);
 var
-  chnk: TFileStream;
+  FileStream: TFileStream;
 begin
  if not FileExists(FileName)
   then raise Exception.Create(StrPresetFileDoesNotExist);
- chnk := TFileStream.Create(FileName, fmOpenRead);
+ FileStream := TFileStream.Create(FileName, fmOpenRead);
  try
-  LoadPreset(chnk);
+  LoadPreset(FileStream);
  finally
-  chnk.Free;
- end; 
+  FileStream.Free;
+ end;
 end;
 
 function TCustomVstPlugIn.GetPreset(const ProgramNo: Integer): TFXPreset;
@@ -3764,7 +3766,7 @@ begin
    FXID       := FVstEffect^.UniqueID;
    FXVersion  := FVstEffect^.version;
    NumParams  := Self.numParams;
-   str        := GetProgramName + #0;
+   Str        := GetProgramName + #0;
    FillChar(prgName, 26, #0);
    StrLCopy(prgName, PAnsiChar(str), 26);
 
@@ -3788,32 +3790,32 @@ end;
 
 procedure TCustomVstPlugIn.SaveBank(FileName: TFileName);
 var
-  chnk: TFileStream;
+  FileStream: TFileStream;
 begin
- chnk := TFileStream.Create(FileName, fmCreate);
+ FileStream := TFileStream.Create(FileName, fmCreate);
  try
-  SaveBank(chnk);
+  SaveBank(FileStream);
  finally
-  chnk.Free;
+  FileStream.Free;
  end;
 end;
 
 procedure TCustomVstPlugIn.SavePreset(FileName: TFileName);
 var
-  chnk: TFileStream;
+  FileStream: TFileStream;
 begin
- chnk := TFileStream.Create(FileName, fmCreate);
+ FileStream := TFileStream.Create(FileName, fmCreate);
  try
-  SavePreset(chnk);
+  SavePreset(FileStream);
  finally
-  chnk.Free;
- end; 
+  FileStream.Free;
+ end;
 end;
 
 procedure TCustomVstPlugIn.SavePreset(Stream: TStream);
 var
   FXChunkSet : TFXChunkSet;
-  str        : AnsiString;
+  Str        : AnsiString;
   IntChkSize : Integer;
   ChunkData  : Pointer;
   FXPreset   : TFXPreset;
@@ -3830,7 +3832,9 @@ begin
     FXVersion   := FVstEffect^.version;
     NumPrograms := FVstEffect^.numPrograms;
 
-    str := GetProgramName + #0;
+    // copy program name
+    Str := GetProgramName + #0;
+    FillChar(prgName, 26, #0);
     StrLCopy(prgName, PAnsiChar(str), 26);
 
     IntChkSize := GetChunk(@ChunkData, True);
@@ -4036,7 +4040,7 @@ var
   FXPreset      : TFXPreset;
 begin
  if not Assigned(FVstEffect) then exit;
- Stream.Seek(0, 0);
+ Stream.Position := 0;
  if effFlagsProgramChunks in EffectOptions then
   with FXChunkBank do
    begin

@@ -1,10 +1,10 @@
 object FmRpeq: TFmRpeq
-  Left = 299
-  Top = 51
+  Left = 361
+  Top = 154
   BorderStyle = bsNone
-  Caption = 'FmRpeq'
-  ClientHeight = 480
-  ClientWidth = 801
+  Caption = 'Requantized Peak EQ Filter'
+  ClientHeight = 378
+  ClientWidth = 565
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

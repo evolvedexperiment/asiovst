@@ -47,7 +47,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialGateAttackChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -99,7 +99,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialGateReleaseChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -151,7 +151,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialGateThresholdChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -202,7 +202,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialGateRatioChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -253,7 +253,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineColor = 14277598
       LineWidth = 2
       Max = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialGateKneeChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -375,7 +375,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressorThresholdChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -426,7 +426,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressorAttackChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -478,7 +478,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressorReleaseChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -530,7 +530,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressorRatioChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -581,7 +581,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineColor = 14277598
       LineWidth = 2
       Max = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressorKneeChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -632,7 +632,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineColor = 14277598
       LineWidth = 2
       Max = 60.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressorMakeUpGainChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -780,7 +780,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLimiterAttackChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -832,7 +832,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 5000.000000000000000000
       Min = 0.100000001490116100
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLimiterReleaseChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -884,7 +884,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineWidth = 2
       Max = 10.000000000000000000
       Min = -90.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLimiterThresholdChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -934,7 +934,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
       LineColor = 14277598
       LineWidth = 2
       Max = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLimiterKneeChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -1170,7 +1170,7 @@ object FmLightweightDynamics: TFmLightweightDynamics
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 36
         Width = 36

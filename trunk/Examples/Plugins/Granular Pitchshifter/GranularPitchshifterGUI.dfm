@@ -28,7 +28,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     LineWidth = 2
     Max = 16.000000000000000000
     Min = 2.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialStagesChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -74,7 +74,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     LineWidth = 2
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialSemitonesChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -121,7 +121,7 @@ object FmGranularPitchShifter: TFmGranularPitchShifter
     LineWidth = 2
     Max = 1000.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGranularityChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270

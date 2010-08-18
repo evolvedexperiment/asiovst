@@ -157,7 +157,7 @@ begin
  {$ELSE}
  inherited Create(AOwner);
  {$ENDIF}
- {$IFDEF Debug} AddLogMessage('After TVSTModule Create'); {$ENDIF}
+ {$IFDEF DebugLog} AddLogMessage('After TVSTModule Create'); {$ENDIF}
 end;
 
 {$ENDIF}

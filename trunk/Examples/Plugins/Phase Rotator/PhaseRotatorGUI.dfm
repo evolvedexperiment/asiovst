@@ -32,7 +32,7 @@ object FmPhaseRotator: TFmPhaseRotator
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFrequencyChange
     OnDblClick = DialFrequencyDblClick
     PointerAngles.Start = 225
@@ -54,7 +54,7 @@ object FmPhaseRotator: TFmPhaseRotator
     LineColor = 12632777
     LineWidth = 2
     Max = 4.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialStagesChange
     OnDblClick = DialStagesDblClick
     PointerAngles.Start = 225
@@ -78,7 +78,7 @@ object FmPhaseRotator: TFmPhaseRotator
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBandwidthChange
     OnDblClick = DialBandwidthDblClick
     PointerAngles.Start = 225

@@ -85,7 +85,7 @@ type
     procedure DoAutoSize;
     procedure SetAutoSize(const Value: Boolean); reintroduce;
     procedure SetDialBitmap(const Value: TBitmap);
-    procedure SetNumGlyphs(const Value: Integer);
+    procedure SetGlyphCount(const Value: Integer);
     procedure SetStitchKind(const Value: TGuiStitchKind);
     procedure SetImageList(const Value: TImageList);
     procedure SetDialImageIndex(Value: Integer);
@@ -97,7 +97,7 @@ type
     FDialBitmap    : TBitmap;
     FDialAlpha     : TBitmap;
     FImageList     : TImageList;
-    FNumGlyphs     : Integer;
+    FGlyphCount     : Integer;
     FOnChange      : TNotifyEvent;
     FStitchKind    : TGuiStitchKind;
     FDialImageList : TGuiDialImageList;
@@ -105,11 +105,11 @@ type
 
     function GetGlyphNr: Integer; virtual; abstract;
     procedure SettingsChanged(Sender: TObject); virtual;
-    procedure NumGlyphsChanged; virtual;
+    procedure GlyphCountChanged; virtual;
     procedure UpdateBuffer; override;
     procedure RenderBitmap(const Bitmap: TBitmap); virtual; abstract;
 
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
+    property GlyphCount: Integer read FGlyphCount write SetGlyphCount default 1;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -214,7 +214,7 @@ type
     function GetGlyphNr: Integer; override;
     procedure RenderBitmap(const Bitmap: TBitmap); override;
     procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
-    procedure NumGlyphsChanged; override;
+    procedure GlyphCountChanged; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -267,7 +267,7 @@ type
     property LineWidth;
     property Max;
     property Min;
-    property NumGlyphs;
+    property GlyphCount;
     property OnChange;
     property OnDblClick;
     property OnMouseWheelUp;
@@ -309,7 +309,7 @@ type
     property LineWidth;
     property Max;
     property Min;
-    property NumGlyphs;
+    property GlyphCount;
     property OnChange;
     property ParentColor;
     property PointerAngles;
@@ -342,7 +342,7 @@ type
     property LineWidth;
     property Max;
     property Min;
-    property NumGlyphs;
+    property GlyphCount;
     property OnChange;
     property ParentColor;
     property PointerAngles;
@@ -371,7 +371,7 @@ type
     property ImageList;
     property LineColor;
     property LineWidth;
-    property NumGlyphs;
+    property GlyphCount;
     property OnChange;
     property ParentColor;
     property ReadOnly;
@@ -404,13 +404,13 @@ type
   TGuiDialImageCollectionItem = class(TCollectionItem)
   private
     FDialBitmap  : TBitmap;
-    FNumGlyphs   : Integer;
+    FGlyphCount   : Integer;
     FOnChange    : TNotifyEvent;
     FStitchKind  : TGuiStitchKind;
     FLinkedDials : TObjectList;
     FDisplayName : string;
     procedure SetDialBitmap(const Value: TBitmap);
-    procedure SetNumGlyphs(const Value: Integer);
+    procedure SetGlyphCount(const Value: Integer);
     procedure SetStitchKind(const Value: TGuiStitchKind);
     procedure SettingsChanged(Sender: TObject);
     function GetHeight: Integer;
@@ -418,7 +418,7 @@ type
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
   protected
-    procedure NumGlyphsChanged; virtual;
+    procedure GlyphCountChanged; virtual;
     procedure StitchKindChanged; virtual;
     function GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
@@ -430,7 +430,7 @@ type
   published
     property DisplayName: string read GetDisplayName write SetDisplayName;
     property DialBitmap: TBitmap read FDialBitmap write SetDialBitmap;
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
+    property GlyphCount: Integer read FGlyphCount write SetGlyphCount default 1;
     property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property Height: Integer read GetHeight write SetHeight;
@@ -454,465 +454,6 @@ type
 
   {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
 
-  {$IFDEF DELPHI10_UP} {$region 'Dial Renderer'} {$ENDIF}
-
-  ////////////////////
-  //  Dial Renderer //
-  ////////////////////
-
-  // Custom Primitives
-
-  TCustomGuiDialPrimitiveClass = class of TCustomGuiDialPrimitive;
-  TCustomGuiDialPrimitive = class(TPersistent)
-  private
-    FZoom     : Single;
-    FTag      : Integer;
-    FVisible  : Boolean;
-    FOnChange : TNotifyEvent;
-    procedure SetZoom(const Value: Single);
-    procedure SetVisible(const Value: Boolean);
-  protected
-    procedure Changed;
-//    procedure PaintToGraph(const GraphXY: TCustomGuiGraphXY; const Bitmap: TBitmap); virtual; abstract;
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    constructor Create; virtual;
-    property Zoom: Single read FZoom write SetZoom;
-    property Visible: Boolean read FVisible write SetVisible default True;
-    property Tag: Longint read FTag write FTag default 0;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
-  end;
-
-  TCustomGuiDialPrimitiveBasic = class(TCustomGuiDialPrimitive)
-  private
-    FColor    : TColor;
-    FDiffuse  : Single;
-    FSpecular : Single;
-    procedure SetColor(const Value: TColor);
-    procedure SetDiffuse(const Value: Single);
-    procedure SetSpecular(const Value: Single);
-  protected
-    procedure AssignTo(Dest: TPersistent); override;
-  public
-    constructor Create; override;
-    property Color: TColor read FColor write SetColor;
-    property Diffuse: Single read FDiffuse write SetDiffuse;
-    property Specular: Single read FSpecular write SetSpecular;
-  end;
-
-  TCustomGuiDialPrimitiveLine = class(TCustomGuiDialPrimitiveBasic)
-  private
-    FLengh: Single;
-    FWidth: Single;
-    procedure SetLength(const Value: Single);
-    procedure SetWidth(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Width: Single read FWidth write SetWidth;
-    property Length: Single read FLengh write SetLength;
-  end;
-
-  TCustomGuiDialPrimitiveAspectLine = class(TCustomGuiDialPrimitiveLine)
-  private
-    FAspect: Single;
-    procedure SetAspect(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Aspect: Single read FAspect write SetAspect;
-  end;
-
-  TCustomGuiDialPrimitiveFrame = class(TCustomGuiDialPrimitiveBasic)
-  private
-    FAspect     : Single;
-    FFramwWidth : Single;
-    procedure SetAspect(const Value: Single);
-    procedure SetFramwWidth(const Value: Single);
-  public
-    constructor Create; override;
-    property Aspect: Single read FAspect write SetAspect;
-    property FramwWidth: Single read FFramwWidth write SetFramwWidth;
-  end;
-
-  TCustomGuiDialPrimitiveFill = class(TCustomGuiDialPrimitiveBasic)
-  private
-    FAspect        : Single;
-    FTexture       : TBitmap;
-    FTextureDepth  : Single;
-    FTextureZoom   : Single;
-    procedure SetAspect(const Value: Single);
-    procedure SetTexture(const Value: TBitmap);
-    procedure SetTextureDepth(const Value: Single);
-    procedure SetTextureZoom(const Value: Single);
-  public
-    constructor Create; override;
-
-    property Aspect: Single read FAspect write SetAspect;
-    property Texture: TBitmap read FTexture write SetTexture;
-    property TextureDepth: Single read FTextureDepth write SetTextureDepth;
-    property TextureZoom: Single read FTextureZoom write SetTextureZoom;
-  end;
-
-  TCustomGuiDialPrimitiveEmbossFill = class(TCustomGuiDialPrimitiveFill)
-  private
-    FEmboss        : Single;
-    FEmbossDiffuse : Single;
-    procedure SetEmboss(const Value: Single);
-    procedure SetEmbossDiffuse(const Value: Single);
-  public
-    constructor Create; override;
-
-    property Emboss: Single read FEmboss write SetEmboss;
-    property EmbossDiffuse: Single read FEmbossDiffuse write SetEmbossDiffuse;
-  end;
-
-
-
-  // Primitives
-
-  TGuiDialPrimitiveNone = class(TCustomGuiDialPrimitive)
-  published
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveImageTransparency = (itAlphaLayer, itOpaque, itFirstPixel);
-  TGuiDialPrimitiveImage = class(TCustomGuiDialPrimitive)
-  private
-    FBitmap           : TBitmap;
-    FTransparency     : TGuiDialPrimitiveImageTransparency;
-    FIntelligentAlpha : Byte;
-    FAutoFitToRect    : Boolean;
-    FNumGlyphs        : Integer;
-    FStitchKind       : TGuiStitchKind;
-    procedure SetAutoFitToRect(const Value: Boolean);
-    procedure SetBitmap(const Value: TBitmap);
-    procedure SetIntelligentAlpha(const Value: Byte);
-    procedure SetNumGlyphs(const Value: Integer);
-    procedure SetStitchKind(const Value: TGuiStitchKind);
-    procedure SetTransparency(const Value: TGuiDialPrimitiveImageTransparency);
-  public
-    constructor Create; override;
-  published
-    property Bitmap: TBitmap read FBitmap write SetBitmap;
-    property Transparency: TGuiDialPrimitiveImageTransparency read FTransparency write SetTransparency default itAlphaLayer;
-    property IntelligentAlpha: Byte read FIntelligentAlpha write SetIntelligentAlpha default 1;
-    property AutoFitToRect: Boolean read FAutoFitToRect write SetAutoFitToRect default False;
-    property NumGlyphs: Integer read FNumGlyphs write SetNumGlyphs default 1;
-    property StitchKind: TGuiStitchKind read FStitchKind write SetStitchKind default skHorizontal;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveFrameCircle = class(TCustomGuiDialPrimitiveFrame)
-  published
-    property Aspect;
-    property Diffuse;
-    property FramwWidth;
-    property Specular;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveFillCircle = class(TCustomGuiDialPrimitiveEmbossFill)
-  published
-    property Aspect;
-    property Diffuse;
-    property Emboss;
-    property EmbossDiffuse;
-    property Specular;
-    property Texture;
-    property TextureDepth;
-    property TextureZoom;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveMetalCircle = class(TCustomGuiDialPrimitiveEmbossFill)
-  private
-    FAmbient : Single;
-    procedure SetAmbient(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Ambient: Single read FAmbient write SetAmbient;
-    property Aspect;
-    property Diffuse;
-    property Emboss;
-    property EmbossDiffuse;
-    property Specular;
-    property Texture;
-    property TextureDepth;
-    property TextureZoom;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveFillWave = class(TCustomGuiDialPrimitiveFill)
-  private
-    FAngleStep : Single;
-    FDepth     : Single;
-    procedure SetDepth(const Value: Single);
-    procedure SetAngleStep(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property AngleStep: Single read FAngleStep write SetAngleStep;
-    property Depth: Single read FDepth write SetDepth;
-
-    property Aspect;
-    property Diffuse;
-    property Specular;
-    property Texture;
-    property TextureDepth;
-    property TextureZoom;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveFillSphere = class(TCustomGuiDialPrimitiveEmbossFill)
-  private
-    FAmbient        : Single;
-    FSpecularWidth  : Single;
-    FLightDirection : Single;
-    procedure SetAmbient(const Value: Single);
-    procedure SetSpecularWidth(const Value: Single);
-    procedure SetLightDirection(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Ambient: Single read FAmbient write SetAmbient;
-    property SpecularWidth: Single read FSpecularWidth write SetSpecularWidth;
-    property LightDirection: Single read FLightDirection write SetLightDirection;
-
-    property Aspect;
-    property Diffuse;
-    property Emboss;
-    property EmbossDiffuse;
-    property Specular;
-    property Texture;
-    property TextureDepth;
-    property TextureZoom;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveFrameRect = class(TCustomGuiDialPrimitiveFrame)
-  private
-    FRound : Single;
-    procedure SetRound(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Round: Single read FRound write SetRound;
-
-    property Aspect;
-    property Diffuse;
-    property FramwWidth;
-    property Specular;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveFillRect = class(TCustomGuiDialPrimitiveEmbossFill)
-  private
-    FRound : Single;
-    procedure SetRound(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Round: Single read FRound write SetRound;
-
-    property Aspect;
-    property Diffuse;
-    property Emboss;
-    property EmbossDiffuse;
-    property Specular;
-    property Texture;
-    property TextureDepth;
-    property TextureZoom;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveTriangle = class(TCustomGuiDialPrimitiveLine)
-  private
-    FTexture       : TBitmap;
-    FTextureDepth  : Single;
-    FTextureZoom   : Single;
-    procedure SetTexture(const Value: TBitmap);
-    procedure SetTextureDepth(const Value: Single);
-    procedure SetTextureZoom(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Texture: TBitmap read FTexture write SetTexture;
-    property TextureDepth: Single read FTextureDepth write SetTextureDepth;
-    property TextureZoom: Single read FTextureZoom write SetTextureZoom;
-    property Diffuse;
-    property Length;
-    property Specular;
-    property Tag;
-    property Visible;
-    property Width;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveLine = class(TCustomGuiDialPrimitiveLine)
-  published
-    property Diffuse;
-    property Length;
-    property Specular;
-    property Tag;
-    property Visible;
-    property Width;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveRadiateLine = class(TCustomGuiDialPrimitiveAspectLine)
-  private
-    FAngleStep: Single;
-    procedure SetAngleStep(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property AngleStep: Single read FAngleStep write SetAngleStep;
-
-    property Diffuse;
-    property Length;
-    property Specular;
-    property Tag;
-    property Visible;
-    property Width;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveStrippedLines = class(TCustomGuiDialPrimitiveAspectLine)
-  private
-    FStep: Single;
-    procedure SetStep(const Value: Single);
-  public
-    constructor Create; override;
-  published
-    property Step: Single read FStep write SetStep;
-
-    property Diffuse;
-    property Length;
-    property Specular;
-    property Tag;
-    property Visible;
-    property Width;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveText = class(TCustomGuiDialPrimitive)
-  private
-    FText             : string;
-    FFont             : TFont;
-    FAlignment        : TAlignment;
-    procedure SetAlignment(const Value: TAlignment);
-    procedure SetFont(const Value: TFont);
-    procedure SetText(const Value: string);
-  public
-    constructor Create; override;
-    destructor Destroy; override;
-  published
-    property Text: string read FText write SetText;
-    property Font: TFont read FFont write SetFont;
-    property Alignment: TAlignment read FAlignment write SetAlignment default taCenter;
-    property Tag;
-    property Visible;
-    property Zoom;
-  end;
-
-  TGuiDialPrimitiveShape = class(TCustomGuiDialPrimitiveFill)
-  private
-    FWidth: Single;
-    FShape: string;
-    FFill: Boolean;
-    procedure SetFill(const Value: Boolean);
-    procedure SetShape(const Value: string);
-    procedure SetWidth(const Value: Single);
-  public
-    constructor Create; override;
-
-    property Shape: string read FShape write SetShape;
-    property Width: Single read FWidth write SetWidth;
-    property Fill: Boolean read FFill write SetFill;
-  end;
-
-
-
-  TGuiDialLayerCollectionItem = class;
-
-  TGuiDialLayerCollection = class(TOwnedCollection)
-  protected
-    function GetItem(Index: Integer): TGuiDialLayerCollectionItem; virtual;
-    procedure SetItem(Index: Integer; const Value: TGuiDialLayerCollectionItem); virtual;
-    procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
-    property Items[Index: Integer]: TGuiDialLayerCollectionItem read GetItem write SetItem; default;
-  public
-    constructor Create(AOwner: TComponent);
-    function Add: TGuiDialLayerCollectionItem;
-    function Insert(Index: Integer): TGuiDialLayerCollectionItem;
-    procedure Delete(Index: Integer);
-    property Count;
-  end;
-
-  TGuiDialLayerCollectionItem = class(TCollectionItem)
-  private
-    FOnChange              : TNotifyEvent;
-    FDisplayName           : string;
-    FPrimitive             : TCustomGuiDialPrimitive;
-    FPrimitiveClassChanged : TNotifyEvent;
-    function GetPrimitiveClassName: string;
-    procedure SetPrimitive(const Value: TCustomGuiDialPrimitive);
-    procedure SetPrimitiveClassName(const Value: string);
-  protected
-    function GetDisplayName: string; override;
-    procedure SetDisplayName(const Value: string); override;
-  public
-    constructor Create(Collection: TCollection); override;
-    destructor Destroy; override;
-  published
-    property DisplayName;
-    property PrimitiveClassName: string read GetPrimitiveClassName write SetPrimitiveClassName;
-    property Primitive: TCustomGuiDialPrimitive read FPrimitive write SetPrimitive;
-    property PrimitiveClassChanged: TNotifyEvent read FPrimitiveClassChanged write FPrimitiveClassChanged;
-    property OnChange: TNotifyEvent read FOnChange write FOnChange;
-  end;
-
-
-  TGuiDialImageRenderer = class(TComponent)
-  private
-    FDialLayerCollection : TGuiDialLayerCollection;
-    function GetCount: Integer;
-    function GetItems(Index: Integer): TGuiDialLayerCollectionItem;
-  protected
-    property Items[Index: Integer]: TGuiDialLayerCollectionItem read GetItems; default;
-  public
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-  published
-    property Layers: TGuiDialLayerCollection read FDialLayerCollection write FDialLayerCollection;
-    property Count: Integer read GetCount;
-  end;
-
-  {$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
-
-var
-  PrimitiveClassList: TClassList;
-
 implementation
 
 uses
@@ -920,7 +461,7 @@ uses
   DAV_Complex, ImgList;
 
 resourcestring
-  RCStrNumGlyphsMustBePositive = 'NumGlyphs must be > 0!';
+  RCStrGlyphCountMustBePositive = 'GlyphCount must be > 0!';
   RCStrPointerAngleRange = 'Range must be 1..360';
   RCStrPointerRangeResolution = 'Resolution must be above 0 and less than %d';
   RCStrPointerAngleStart = 'Start must be 0..359';
@@ -1035,7 +576,7 @@ begin
  inherited Create(AOwner);
  FLineColor              := clRed;
  FLineWidth              := 2;
- FNumGlyphs              := 1;
+ FGlyphCount              := 1;
  FStitchKind             := skHorizontal;
  FDialBitmap             := TBitmap.Create;
  FDialBitmap.PixelFormat := pf24bit;
@@ -1117,7 +658,7 @@ begin
      FillRect(ClipRect);
 
      GlyphNr := GetGlyphNr;
-     if (GlyphNr >= FNumGlyphs) then GlyphNr := FNumGlyphs - 1 else
+     if (GlyphNr >= FGlyphCount) then GlyphNr := FGlyphCount - 1 else
      if (GlyphNr < 0) then GlyphNr := 0;
 
      if Assigned(FDialImageItem)
@@ -1130,13 +671,13 @@ begin
        theRect := ClientRect;
        if FStitchKind = skVertical then
         begin
-         theRect.Top    := Bmp.Height * GlyphNr div FNumGlyphs;
-         theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FNumGlyphs;
+         theRect.Top    := Bmp.Height * GlyphNr div FGlyphCount;
+         theRect.Bottom := Bmp.Height * (GlyphNr + 1) div FGlyphCount;
         end
        else
         begin
-         theRect.Left  := Bmp.Width * GlyphNr div FNumGlyphs;
-         theRect.Right := Bmp.Width * (GlyphNr + 1) div FNumGlyphs;
+         theRect.Left  := Bmp.Width * GlyphNr div FGlyphCount;
+         theRect.Right := Bmp.Width * (GlyphNr + 1) div FGlyphCount;
         end;
 
        with ClientRect do
@@ -1168,16 +709,16 @@ begin
    Height := FImageList.Height;
    Exit;
   end;
- if FDialBitmap.Empty or (FNumGlyphs = 0) then Exit;
+ if FDialBitmap.Empty or (FGlyphCount = 0) then Exit;
 
  if FStitchKind = skVertical then
   begin
    Width  := FDialBitmap.Width;
-   Height := FDialBitmap.Height div FNumGlyphs;
+   Height := FDialBitmap.Height div FGlyphCount;
   end
  else
   begin
-   Width  := FDialBitmap.Width div FNumGlyphs;
+   Width  := FDialBitmap.Width div FGlyphCount;
    Height := FDialBitmap.Height;
   end;
 end;
@@ -1191,17 +732,17 @@ begin
   end;
 end;
 
-procedure TCustomGuiStitchedControl.SetNumGlyphs(const Value: Integer);
+procedure TCustomGuiStitchedControl.SetGlyphCount(const Value: Integer);
 begin
  if assigned(FImageList) then exit;
- if FNumGlyphs <> Value then
+ if FGlyphCount <> Value then
   begin
-   FNumGlyphs := Value;
-   NumGlyphsChanged;
+   FGlyphCount := Value;
+   GlyphCountChanged;
   end;
 end;
 
-procedure TCustomGuiStitchedControl.NumGlyphsChanged;
+procedure TCustomGuiStitchedControl.GlyphCountChanged;
 begin
  DoAutoSize;
 end;
@@ -1256,7 +797,7 @@ begin
     begin
      Width := FImageList.Width;
      Height := FImageList.Height;
-     FNumGlyphs := FImageList.Count;
+     FGlyphCount := FImageList.Count;
     end;
    Invalidate;
   end;
@@ -1389,7 +930,7 @@ end;
 
 function TCustomGuiDial.GetGlyphNr: Integer;
 begin
- Result := Trunc(MapValue(NormalizedPosition) * FNumGlyphs);
+ Result := Trunc(MapValue(NormalizedPosition) * FGlyphCount);
 end;
 
 function TCustomGuiDial.GetMappedPosition: Single;
@@ -1654,22 +1195,22 @@ begin
  if not FReadOnly then
   begin
    if (Button = mbLeft) then
-    if FGlyphNr < FNumGlyphs - 1
+    if FGlyphNr < FGlyphCount - 1
      then GlyphNr := FGlyphNr + 1
      else GlyphNr := 0 else
    if (Button = mbRight) then
     if FGlyphNr > 0
      then GlyphNr := FGlyphNr - 1
-     else GlyphNr := FNumGlyphs - 1;
+     else GlyphNr := FGlyphCount - 1;
   end;
  inherited;
 end;
 
-procedure TCustomGuiSwitch.NumGlyphsChanged;
+procedure TCustomGuiSwitch.GlyphCountChanged;
 begin
  inherited;
- if FDefaultGlyphNr >= FNumGlyphs then DefaultGlyphNr := FNumGlyphs - 1;
- if FGlyphNr >= FNumGlyphs then GlyphNr := FNumGlyphs - 1;
+ if FDefaultGlyphNr >= FGlyphCount then DefaultGlyphNr := FGlyphCount - 1;
+ if FGlyphNr >= FGlyphCount then GlyphNr := FGlyphCount - 1;
 end;
 
 procedure TCustomGuiSwitch.RenderBitmap(const Bitmap: TBitmap);
@@ -1691,7 +1232,7 @@ end;
 procedure TCustomGuiSwitch.SetDefaultGlyphNr(Value: Integer);
 begin
  if Value < 0 then Value := 0 else
- if Value >= FNumGlyphs then Value := FNumGlyphs - 1;
+ if Value >= FGlyphCount then Value := FGlyphCount - 1;
  if Value <> FDefaultGlyphNr then
   begin
    FDefaultGlyphNr := Value;
@@ -1701,7 +1242,7 @@ end;
 procedure TCustomGuiSwitch.SetGlyphNr(Value: Integer);
 begin
  if Value < 0 then Value := 0 else
- if Value >= FNumGlyphs then Value := FNumGlyphs - 1;
+ if Value >= FGlyphCount then Value := FGlyphCount - 1;
  if Value <> FGlyphNr then
   begin
    FGlyphNr := Value;
@@ -1720,7 +1261,7 @@ procedure TCustomGuiSwitch.SetStringList(const Value: TStringList);
 begin
  FStringList.Assign(Value);
  if FDialBitmap.Empty
-  then NumGlyphs := Max(1, FStringList.Count);
+  then GlyphCount := Max(1, FStringList.Count);
  Invalidate;
 end;
 
@@ -1910,7 +1451,7 @@ end;
 constructor TGuiDialImageCollectionItem.Create(Collection: TCollection);
 begin
  inherited;
- FNumGlyphs           := 1;
+ FGlyphCount           := 1;
  FDialBitmap          := TBitmap.Create;
  FDialBitmap.OnChange := SettingsChanged;
  FLinkedDials         := TObjectList.Create(False);
@@ -1947,18 +1488,18 @@ begin
  if FLinkedDials.IndexOf(Dial) < 0 then
   begin
    FLinkedDials.Add(Dial);
-   Dial.NumGlyphs := NumGlyphs;
+   Dial.GlyphCount := GlyphCount;
    Dial.StitchKind := StitchKind;
    case StitchKind of
     skHorizontal :
      begin
-      Dial.Width  := Width div NumGlyphs;
+      Dial.Width  := Width div GlyphCount;
       Dial.Height := Height;
      end;
     skVertical :
      begin
       Dial.Width  := Width;
-      Dial.Height := Height div NumGlyphs;
+      Dial.Height := Height div GlyphCount;
      end;
    end;
   end;
@@ -1976,7 +1517,7 @@ begin
  for i := 0 to FLinkedDials.Count - 1 do
   with TCustomGuiDial(FLinkedDials[i]) do
    begin
-    NumGlyphs := Self.NumGlyphs;
+    GlyphCount := Self.GlyphCount;
     StitchKind := Self.StitchKind;
     Invalidate;
    end;
@@ -2008,12 +1549,12 @@ begin
  FDialBitmap.Height := Value;
 end;
 
-procedure TGuiDialImageCollectionItem.NumGlyphsChanged;
+procedure TGuiDialImageCollectionItem.GlyphCountChanged;
 var
   i : Integer;
 begin
  for i := 0 to FLinkedDials.Count - 1
-  do TCustomGuiDial(FLinkedDials[i]).NumGlyphs := NumGlyphs;
+  do TCustomGuiDial(FLinkedDials[i]).GlyphCount := GlyphCount;
 end;
 
 procedure TGuiDialImageCollectionItem.StitchKindChanged;
@@ -2024,15 +1565,15 @@ begin
   do TCustomGuiDial(FLinkedDials[i]).StitchKind := StitchKind;
 end;
 
-procedure TGuiDialImageCollectionItem.SetNumGlyphs(const Value: Integer);
+procedure TGuiDialImageCollectionItem.SetGlyphCount(const Value: Integer);
 begin
  if Value <= 0
-  then raise Exception.Create(RCStrNumGlyphsMustBePositive);
+  then raise Exception.Create(RCStrGlyphCountMustBePositive);
 
- if FNumGlyphs <> Value then
+ if FGlyphCount <> Value then
   begin
-   FNumGlyphs := Value;
-   NumGlyphsChanged;
+   FGlyphCount := Value;
+   GlyphCountChanged;
   end;
 end;
 
@@ -2072,744 +1613,5 @@ begin
 end;
 
 {$IFDEF DELPHI10_UP} {$endregion } {$ENDIF}
-
-{$IFDEF DELPHI10_UP} {$region 'Dial Renderer'} {$ENDIF}
-
-{ TGuiDialLayerCollection }
-
-constructor TGuiDialLayerCollection.Create(AOwner: TComponent);
-begin
- inherited Create(AOwner, TGuiDialLayerCollectionItem);
-end;
-
-function TGuiDialLayerCollection.Add: TGuiDialLayerCollectionItem;
-begin
- Result := TGuiDialLayerCollectionItem(inherited Add);
-end;
-
-procedure TGuiDialLayerCollection.Delete(Index: Integer);
-begin
- inherited Delete(Index);
-end;
-
-function TGuiDialLayerCollection.GetItem(Index: Integer): TGuiDialLayerCollectionItem;
-begin
- Result := TGuiDialLayerCollectionItem(inherited GetItem(Index));
-end;
-
-function TGuiDialLayerCollection.Insert(Index: Integer): TGuiDialLayerCollectionItem;
-begin
- Result:= TGuiDialLayerCollectionItem(inherited Insert(Index));
-end;
-
-procedure TGuiDialLayerCollection.Notify(Item: TCollectionItem;
-  Action: TCollectionNotification);
-begin
- inherited;
- // add things that depend on the order here!
-end;
-
-procedure TGuiDialLayerCollection.SetItem(Index: Integer;
-  const Value: TGuiDialLayerCollectionItem);
-begin
- inherited SetItem(Index, Value);
-end;
-
-
-{ TGuiDialLayerCollectionItem }
-
-constructor TGuiDialLayerCollectionItem.Create(Collection: TCollection);
-begin
- inherited;
- FPrimitive := TGuiDialPrimitiveNone.Create;
- FDisplayName := 'Layer ' + IntToStr(Index + 1);
-end;
-
-destructor TGuiDialLayerCollectionItem.Destroy;
-begin
- if assigned(FPrimitive) then FreeAndNil(FPrimitive);
- inherited;
-end;
-
-function TGuiDialLayerCollectionItem.GetDisplayName: string;
-begin
- Result := FDisplayName;
-end;
-
-function TGuiDialLayerCollectionItem.GetPrimitiveClassName: string;
-begin
- if assigned(FPrimitive)
-  then Result := FPrimitive.ClassName
-  else Result := '';
-end;
-
-procedure TGuiDialLayerCollectionItem.SetDisplayName(const Value: string);
-begin
- if FDisplayName <> Value then
-  begin
-   FDisplayName := Value;
-   inherited;
-  end;
-end;
-
-procedure TGuiDialLayerCollectionItem.SetPrimitive(const Value: TCustomGuiDialPrimitive);
-begin
- FPrimitive.Assign(Value);
-end;
-
-procedure TGuiDialLayerCollectionItem.SetPrimitiveClassName(const Value: string);
-var
-  PrimitiveClass: TCustomGuiDialPrimitiveClass;
-begin
- if (Value <> '') and (FPrimitive.ClassName <> Value) and Assigned(PrimitiveClassList) then
-  begin
-   PrimitiveClass := TCustomGuiDialPrimitiveClass(PrimitiveClassList.Find(Value));
-   if Assigned(PrimitiveClass) then
-    begin
-     FPrimitive.Free;
-     FPrimitive := PrimitiveClass.Create;
-//     Changed;
-    end;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitive }
-
-constructor TCustomGuiDialPrimitive.Create;
-begin
- FZoom := 100;
-end;
-
-procedure TCustomGuiDialPrimitive.AssignTo(Dest: TPersistent);
-begin
- if Dest is TCustomGuiDialPrimitive then
-  with TCustomGuiDialPrimitive(Dest) do
-   begin
-    FZoom    := Self.FZoom;
-    FVisible := Self.FVisible;
-    FTag     := Self.FTag;
-   end
- else inherited;
-end;
-
-procedure TCustomGuiDialPrimitive.Changed;
-begin
-
-end;
-
-procedure TCustomGuiDialPrimitive.SetVisible(const Value: Boolean);
-begin
- if FVisible <> Value then
-  begin
-   FVisible := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitive.SetZoom(const Value: Single);
-begin
- if FZoom <> Value then
-  begin
-   FZoom := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveImage }
-
-constructor TGuiDialPrimitiveImage.Create;
-begin
- inherited;
- FTransparency     := itAlphaLayer;
- FIntelligentAlpha := 1;
- FAutoFitToRect    := False;
- FNumGlyphs        := 1;
- FStitchKind       := skHorizontal;
-end;
-
-procedure TGuiDialPrimitiveImage.SetAutoFitToRect(const Value: Boolean);
-begin
- if FAutoFitToRect <> Value then
-  begin
-   FAutoFitToRect := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveImage.SetBitmap(const Value: TBitmap);
-begin
- if FBitmap <> Value then
-  begin
-   FBitmap := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveImage.SetIntelligentAlpha(const Value: Byte);
-begin
- if FIntelligentAlpha <> Value then
-  begin
-   FIntelligentAlpha := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveImage.SetNumGlyphs(const Value: Integer);
-begin
- if FNumGlyphs <> Value then
-  begin
-   FNumGlyphs := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveImage.SetStitchKind(const Value: TGuiStitchKind);
-begin
- if FStitchKind <> Value then
-  begin
-   FStitchKind := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveImage.SetTransparency(
-  const Value: TGuiDialPrimitiveImageTransparency);
-begin
- if FTransparency <> Value then
-  begin
-   FTransparency := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveText }
-
-constructor TGuiDialPrimitiveText.Create;
-begin
- inherited;
- FText := '(1:99)';
- FFont := TFont.Create;
- FAlignment := taCenter;
-end;
-
-destructor TGuiDialPrimitiveText.Destroy;
-begin
- FreeAndNil(FFont);
- inherited;
-end;
-
-procedure TGuiDialPrimitiveText.SetAlignment(const Value: TAlignment);
-begin
- if FAlignment <> Value then
-  begin
-   FAlignment := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveText.SetFont(const Value: TFont);
-begin
- if FFont <> Value then
-  begin
-   FFont.Assign(Value);
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveText.SetText(const Value: string);
-begin
- if FText <> Value then
-  begin
-   FText := Value;
-   Changed;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitiveBasic }
-
-constructor TCustomGuiDialPrimitiveBasic.Create;
-begin
- FColor := clRed;
-end;
-
-procedure TCustomGuiDialPrimitiveBasic.AssignTo(Dest: TPersistent);
-begin
- inherited;
- if Dest is TCustomGuiDialPrimitiveBasic then
-  with TCustomGuiDialPrimitiveBasic(Dest) do
-   begin
-    FColor := Self.Color;
-   end;
-end;
-
-procedure TCustomGuiDialPrimitiveBasic.SetColor(const Value: TColor);
-begin
- if FColor <> Value then
-  begin
-   FColor := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveBasic.SetDiffuse(const Value: Single);
-begin
- if FDiffuse <> Value then
-  begin
-   FDiffuse := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveBasic.SetSpecular(const Value: Single);
-begin
- if FSpecular <> Value then
-  begin
-   FSpecular := Value;
-   Changed;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitiveLine }
-
-constructor TCustomGuiDialPrimitiveLine.Create;
-begin
- inherited;
- FLengh := 50;
- FWidth := 10;
-end;
-
-procedure TCustomGuiDialPrimitiveLine.SetLength(const Value: Single);
-begin
- if FLengh <> Value then
-  begin
-   FLengh := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveLine.SetWidth(const Value: Single);
-begin
- if FWidth <> Value then
-  begin
-   FWidth := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveTriangle }
-
-constructor TGuiDialPrimitiveTriangle.Create;
-begin
- inherited;
- FTextureDepth := 0;
- FTextureZoom  := 100;
-end;
-
-procedure TGuiDialPrimitiveTriangle.SetTexture(const Value: TBitmap);
-begin
- if FTexture <> Value then
-  begin
-   FTexture := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveTriangle.SetTextureDepth(const Value: Single);
-begin
- if FTextureDepth <> Value then
-  begin
-   FTextureDepth := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveTriangle.SetTextureZoom(const Value: Single);
-begin
- if FTextureZoom <> Value then
-  begin
-   FTextureZoom := Value;
-   Changed;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitiveAspectLine }
-
-constructor TCustomGuiDialPrimitiveAspectLine.Create;
-begin
- inherited;
- FAspect := 0;
-end;
-
-procedure TCustomGuiDialPrimitiveAspectLine.SetAspect(const Value: Single);
-begin
- if FAspect <> Value then
-  begin
-   FAspect := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveRadiateLine }
-
-constructor TGuiDialPrimitiveRadiateLine.Create;
-begin
- inherited;
- FAngleStep := 45;
-end;
-
-procedure TGuiDialPrimitiveRadiateLine.SetAngleStep(const Value: Single);
-begin
- if FAngleStep <> Value then
-  begin
-   FAngleStep := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveStrippedLines }
-
-constructor TGuiDialPrimitiveStrippedLines.Create;
-begin
- inherited;
- FStep := 20;
-end;
-
-procedure TGuiDialPrimitiveStrippedLines.SetStep(const Value: Single);
-begin
- if FStep <> Value then
-  begin
-   FStep := Value;
-   Changed;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitiveFrame }
-
-constructor TCustomGuiDialPrimitiveFrame.Create;
-begin
- inherited;
- FAspect     := 0;
- FDiffuse    := 0;
- FFramwWidth := 0;
- FSpecular   := 0;
-end;
-
-procedure TCustomGuiDialPrimitiveFrame.SetAspect(const Value: Single);
-begin
- if FAspect <> Value then
-  begin
-   FAspect := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveFrame.SetFramwWidth(const Value: Single);
-begin
- if FFramwWidth <> Value then
-  begin
-   FFramwWidth := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveFrameRect }
-
-constructor TGuiDialPrimitiveFrameRect.Create;
-begin
- inherited;
- FRound := 0;
-end;
-
-procedure TGuiDialPrimitiveFrameRect.SetRound(const Value: Single);
-begin
- if FRound <> Value then
-  begin
-   FRound := Value;
-   Changed;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitiveFill }
-
-constructor TCustomGuiDialPrimitiveFill.Create;
-begin
- inherited;
- FAspect        := 0;
- FDiffuse       := 0;
- FSpecular      := 0;
- FTextureDepth  := 0;
- FTextureZoom   := 100;
-end;
-
-procedure TCustomGuiDialPrimitiveFill.SetAspect(const Value: Single);
-begin
- if FAspect <> Value then
-  begin
-   FAspect := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveFill.SetTexture(const Value: TBitmap);
-begin
- if FTexture <> Value then
-  begin
-   FTexture := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveFill.SetTextureDepth(const Value: Single);
-begin
- if FTextureDepth <> Value then
-  begin
-   FTextureDepth := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveFill.SetTextureZoom(const Value: Single);
-begin
- if FTextureZoom <> Value then
-  begin
-   FTextureZoom := Value;
-   Changed;
-  end;
-end;
-
-
-{ TCustomGuiDialPrimitiveEmbossFill }
-
-constructor TCustomGuiDialPrimitiveEmbossFill.Create;
-begin
- inherited;
- FEmboss        := 0;
- FEmbossDiffuse := 0;
-end;
-
-procedure TCustomGuiDialPrimitiveEmbossFill.SetEmboss(const Value: Single);
-begin
- if FEmboss <> Value then
-  begin
-   FEmboss := Value;
-   Changed;
-  end;
-end;
-
-procedure TCustomGuiDialPrimitiveEmbossFill.SetEmbossDiffuse(
-  const Value: Single);
-begin
- if FEmbossDiffuse <> Value then
-  begin
-   FEmbossDiffuse := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveFillSphere }
-
-constructor TGuiDialPrimitiveFillSphere.Create;
-begin
- inherited;
- FAmbient := 50; 
- FSpecularWidth := 50;
- FLightDirection := -50;
-end;
-
-procedure TGuiDialPrimitiveFillSphere.SetAmbient(const Value: Single);
-begin
- if FAmbient <> Value then
-  begin
-   FAmbient := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveFillSphere.SetLightDirection(const Value: Single);
-begin
- if FLightDirection <> Value then
-  begin
-   FLightDirection := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveFillSphere.SetSpecularWidth(const Value: Single);
-begin
- if FSpecularWidth <> Value then
-  begin
-   FSpecularWidth := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveMetalCircle }
-
-constructor TGuiDialPrimitiveMetalCircle.Create;
-begin
- inherited;
- FAmbient := 50;
-end;
-
-procedure TGuiDialPrimitiveMetalCircle.SetAmbient(const Value: Single);
-begin
- if FAmbient <> Value then
-  begin
-   FAmbient := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveFillRect }
-
-constructor TGuiDialPrimitiveFillRect.Create;
-begin
- inherited;
- FRound := 0;
-end;
-
-procedure TGuiDialPrimitiveFillRect.SetRound(const Value: Single);
-begin
- if FRound <> Value then
-  begin
-   FRound := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveFillWave }
-
-constructor TGuiDialPrimitiveFillWave.Create;
-begin
- inherited;
- FAngleStep := 45;
- FDepth     := 10;
-end;
-
-procedure TGuiDialPrimitiveFillWave.SetAngleStep(const Value: Single);
-begin
- if FAngleStep <> Value then
-  begin
-   FAngleStep := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveFillWave.SetDepth(const Value: Single);
-begin
- if FDepth <> Value then
-  begin
-   FDepth := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialPrimitiveShape }
-
-constructor TGuiDialPrimitiveShape.Create;
-begin
- inherited;
- FFill := True;
-end;
-
-procedure TGuiDialPrimitiveShape.SetFill(const Value: Boolean);
-begin
- if FFill <> Value then
-  begin
-   FFill := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveShape.SetShape(const Value: string);
-begin
- if FShape <> Value then
-  begin
-   FShape := Value;
-   Changed;
-  end;
-end;
-
-procedure TGuiDialPrimitiveShape.SetWidth(const Value: Single);
-begin
- if FWidth <> Value then
-  begin
-   FWidth := Value;
-   Changed;
-  end;
-end;
-
-
-{ TGuiDialImageRenderer }
-
-constructor TGuiDialImageRenderer.Create(AOwner: TComponent);
-begin
- inherited;
- FDialLayerCollection := TGuiDialLayerCollection.Create(Self);
-end;
-
-destructor TGuiDialImageRenderer.Destroy;
-begin
- FreeAndNil(FDialLayerCollection);
- inherited;
-end;
-
-function TGuiDialImageRenderer.GetCount: Integer;
-begin
- Result := FDialLayerCollection.Count;
-end;
-
-function TGuiDialImageRenderer.GetItems(
-  Index: Integer): TGuiDialLayerCollectionItem;
-begin
- if (Index >= 0) and (Index < FDialLayerCollection.Count)
-  then Result := FDialLayerCollection[Index]
-  else raise Exception.CreateFmt('Index out of bounds (%d)', [Index]);
-end;
-
-procedure RegisterPrimitiveClass(PrimitiveClass: TCustomGuiDialPrimitiveClass);
-begin
-  if not Assigned(PrimitiveClassList) then PrimitiveClassList := TClassList.Create;
-  PrimitiveClassList.Add(PrimitiveClass);
-end;
-
-{$IFDEF DELPHI10_UP} {$endregion} {$ENDIF}
-
-initialization
-  // register primitive classes
-  RegisterPrimitiveClass(TGuiDialPrimitiveNone);
-  RegisterPrimitiveClass(TGuiDialPrimitiveImage);
-  RegisterPrimitiveClass(TGuiDialPrimitiveFrameCircle);
-  RegisterPrimitiveClass(TGuiDialPrimitiveFrameRect);
-  RegisterPrimitiveClass(TGuiDialPrimitiveFillCircle);
-  RegisterPrimitiveClass(TGuiDialPrimitiveMetalCircle);
-  RegisterPrimitiveClass(TGuiDialPrimitiveFillSphere);
-  RegisterPrimitiveClass(TGuiDialPrimitiveFillWave);
-  RegisterPrimitiveClass(TGuiDialPrimitiveFillRect);
-  RegisterPrimitiveClass(TGuiDialPrimitiveLine);
-  RegisterPrimitiveClass(TGuiDialPrimitiveTriangle);
-  RegisterPrimitiveClass(TGuiDialPrimitiveRadiateLine);
-  RegisterPrimitiveClass(TGuiDialPrimitiveStrippedLines);
-  RegisterPrimitiveClass(TGuiDialPrimitiveText);
-
-finalization
-  PrimitiveClassList.Free;
 
 end.

@@ -49,7 +49,7 @@ object FmExciter: TFmExciter
       LineWidth = 2
       Max = 16000.000000000000000000
       Min = 1000.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialTuneChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -105,7 +105,7 @@ object FmExciter: TFmExciter
       LineColor = 116222
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialShapeChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -178,7 +178,7 @@ object FmExciter: TFmExciter
       LineColor = 116222
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialMixChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -219,7 +219,7 @@ object FmExciter: TFmExciter
       LineWidth = 2
       Max = 8.000000000000000000
       Min = 2.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOrderChange
       ParentColor = False
       PointerAngles.Start = 225

@@ -110,7 +110,7 @@ object FmSubBoost: TFmSubBoost
       LineColor = 13948116
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLevelChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -134,7 +134,7 @@ object FmSubBoost: TFmSubBoost
       LineWidth = 2
       Max = 400.000000000000000000
       Min = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialTuneChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -156,7 +156,7 @@ object FmSubBoost: TFmSubBoost
       LineColor = 13948116
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDryMixChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -178,7 +178,7 @@ object FmSubBoost: TFmSubBoost
       LineWidth = 2
       Max = 0.000000000100000001
       Min = -60.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialThresholdChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -267,7 +267,7 @@ object FmSubBoost: TFmSubBoost
       LineColor = 13948116
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialReleaseChange
       ParentColor = False
       PointerAngles.Start = 225
@@ -322,7 +322,7 @@ object FmSubBoost: TFmSubBoost
       LineWidth = 2
       Max = 400.000000000000000000
       Min = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       ParentColor = False
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -346,7 +346,7 @@ object FmSubBoost: TFmSubBoost
       LineWidth = 2
       Max = 64.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFilterOrderChange
       ParentColor = False
       PointerAngles.Start = 225

@@ -996,17 +996,17 @@ begin
   begin
    VSTHost[0].GetProgramNameIndexed(-1, i, s);
    m := TMenuItem.Create(Self);
-   m.Caption := s;
+   m.Caption := string(s);
    m.OnClick := SetPreset;
    m.Tag := i;
   {$IFNDEF FPC}
    if (i > 0) and (i mod 256 <> 0) and (i mod 32 = 0)
     then m.break := mbBarBreak;
   {$ENDIF}
-   s := IntToStr(i);
+   s := AnsiString(IntToStr(i));
    if i < 10 then s := '00' + s else
    if i < 100 then s := '0' + s;
-   PresetBox.AddItem(s + ': ' + M.caption, nil);
+   PresetBox.AddItem(s + ': ' + M.Caption, nil);
   end;
 
  if n >= 0 then PresetBox.ItemIndex := FCurProg;
@@ -1242,7 +1242,7 @@ begin
   if FMDataCnt > 2046 
    then Exit;
 
-  inc(FMDataCnt);
+  Inc(FMDataCnt);
   with PVstMidiSysexEvent(FMyEvents.events[FMDataCnt - 1])^ do
    begin
     EventType := etSysEx;
@@ -1251,8 +1251,8 @@ begin
     Flags := 0;
     dumpBytes := aStream.Size;
     sysexDump := aStream.Memory;
-    Reserved1 := nil;
-    Reserved2 := nil;
+    Reserved1 := 0;
+    Reserved2 := 0;
    end;
  finally
   FDataSection.Release;
@@ -2288,11 +2288,11 @@ begin
    if not FileExists(FileName) then Exit;
    j := -1;
    for i := 0 to Player.WavBox.Items.Count - 1 do
-    if PShortstr(Player.WavBox.Items.Objects[i])^ = FileName then
-     j := 0;
+    if string(PShortStr(Player.WavBox.Items.Objects[i])^) = FileName
+     then j := 0;
    if j = 0 then Exit;
    GetMem(ms, SizeOf(ShortStr));
-   ms^ := FileName;
+   ms^ := ShortStr(FileName);
    Player.WavBox.Items.AddObject(ExtractFilename(FileName), TObject(ms));
    Player.WavBox.ItemIndex := Player.WavBox.Items.Count - 1;
   end;

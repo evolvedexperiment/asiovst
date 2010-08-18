@@ -46,42 +46,27 @@ type
 
   TColor32ARGB = packed record
   case Integer of
-    0: (
-       ARGB: Cardinal;
-       );
-    1: (
-         A, R, G, B: Byte;
-       );
+   0: (ARGB: Cardinal);
+   1: (B, G, R, A: Byte);
   end;
   PColor32ARGB = ^TColor32ARGB;
 
+  TColor32ARGBArray = array [0..0] of TColor32ARGB;
+  PColor32ARGBArray = ^TColor32ARGBArray;
 
-  { 32 bit ABGR color definitions }
 
-  TColor32ABGR = packed record
+  { 32 bit Pixel (ARGB color) }
+
+  TPixel32 = packed record
   case Integer of
-    0: (
-       ABGR: Cardinal;
-       );
-    1: (
-         A, B, G, R: Byte;
-       );
+   0: (ARGB: Cardinal);
+   1: (B, G, R, A: Byte);
   end;
-  PColor32ABGR = ^TColor32ABGR;
+  PPixel32 = ^TPixel32;
 
+  TPixel32Array = array [0..0] of TPixel32;
+  PPixel32Array = ^TPixel32Array;
 
-  { 24 bit RGB color definitions }
-
-  TColor24RGB = packed record
-  case Integer of
-    0: (
-       RGB: Cardinal;
-       );
-    1: (
-         R, G, B: Byte;
-       );
-  end;
-  PColor24BGR = ^TColor24RGB;
 
   { Old definitions }
 
@@ -89,6 +74,11 @@ type
     R, G, B, A: Byte;
   end;
   PRGB32 = ^TRGB32;
+
+  TBGR32 = packed record
+    B, G, R, A: Byte;
+  end;
+  PBGR32 = ^TBGR32;
 
   TRGB32Word = packed record
     R, G, B, A: Word;

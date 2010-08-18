@@ -1,4 +1,5 @@
 object RpeqModule: TRpeqModule
+  OldCreateOrder = True
   Version = '1.0'
   EffectName = 'Requatized Peak EQ Filter'
   ProductName = 'DAV Effect Examples'
@@ -41,6 +42,7 @@ object RpeqModule: TRpeqModule
       SmallStepFloat = 0.500000000000000000
       StepFloat = 1.000000000000000000
       Units = 'dB'
+      UseDefaultString2ParameterHandler = True
       VSTModule = Owner
       OnParameterChange = ParameterGainChange
     end
@@ -82,8 +84,8 @@ object RpeqModule: TRpeqModule
   OnOpen = VSTModuleOpen
   OnProcess = VSTModuleProcess
   OnProcessReplacing = VSTModuleProcess
-  Left = 299
-  Top = 51
+  Left = 392
+  Top = 67
   Height = 150
   Width = 215
 end

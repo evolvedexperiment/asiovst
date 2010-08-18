@@ -30,7 +30,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     LineWidth = 2
     Max = 10.000000000000000000
     Min = -90.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialThresholdChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -78,7 +78,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     LineWidth = 2
     Max = 1000.000000000000000000
     Min = 0.009999999776482582
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialAttackChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -126,7 +126,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     LineWidth = 2
     Max = 5000.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialReleaseChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -174,7 +174,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     LineWidth = 2
     Max = 100.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialRatioChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -221,7 +221,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     LineColor = 14277598
     LineWidth = 2
     Max = 10.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialKneeChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -304,7 +304,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
     LineColor = 14277598
     LineWidth = 2
     Max = 60.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialMakeUpGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -626,7 +626,7 @@ object FmLightweightFeedbackLikeCompressor: TFmLightweightFeedbackLikeCompressor
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 36
         Width = 36

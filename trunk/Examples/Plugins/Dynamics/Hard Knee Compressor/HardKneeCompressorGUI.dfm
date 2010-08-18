@@ -27,7 +27,7 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     LineColor = 15652795
     LineWidth = 2
     Min = -96.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialThresholdChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -61,7 +61,7 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     LineColor = 15652795
     LineWidth = 2
     Max = 200.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialRatioChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -96,7 +96,7 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     LineWidth = 2
     Max = 300.000000000000000000
     Min = -200.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialAttackChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -131,7 +131,7 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     LineWidth = 2
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialReleaseChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270

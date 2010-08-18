@@ -1019,6 +1019,7 @@ type
 
     programs    : Pointer;    // variable no. of programs
   end;
+  PFXSet = ^TFXSet;
 
   //--------------------------------------------------------------------
   // For Bank (.fxb) with chunk (magic = 'FBCh')
@@ -1038,6 +1039,7 @@ type
     chunkSize   : LongInt;
     chunk       : Pointer;    // variable
   end;
+  PFXChunkBank = ^TFXChunkBank;
 
   PPERect = ^PERect;
   PERect = ^ERect;

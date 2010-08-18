@@ -2,7 +2,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
   Left = 392
   Top = 195
   BorderStyle = bsNone
-  Caption = 'FmTwoBandDistortion'
+  Caption = '2-band distortion'
   ClientHeight = 129
   ClientWidth = 319
   Color = 4144959
@@ -51,7 +51,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFreqChange
       ParentColor = False
       Position = 100.000000000000000000
@@ -104,7 +104,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       LineColor = 116222
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLowDistChange
       ParentColor = False
       Position = 50.000000000000000000
@@ -174,7 +174,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       LineColor = 116222
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialHighDistChange
       ParentColor = False
       Position = 50.000000000000000000
@@ -212,7 +212,7 @@ object FmTwoBandDistortion: TFmTwoBandDistortion
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 2.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOrderChange
       ParentColor = False
       Position = 2.000000000000000000

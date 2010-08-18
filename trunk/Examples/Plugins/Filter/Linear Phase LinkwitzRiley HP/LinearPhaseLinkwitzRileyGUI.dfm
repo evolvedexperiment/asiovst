@@ -30,7 +30,7 @@ object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFrequencyChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -81,7 +81,7 @@ object FmLinearPhaseLinkwitzRiley: TFmLinearPhaseLinkwitzRiley
     LineWidth = 2
     Max = 32.000000000000000000
     Min = 2.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialOrderChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270

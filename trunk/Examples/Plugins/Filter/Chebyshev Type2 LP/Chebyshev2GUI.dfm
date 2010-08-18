@@ -87,7 +87,7 @@ object FmChebyshev: TFmChebyshev
       LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFrequencyChange
       OnDblClick = DialFrequencyDblClick
       ParentColor = False
@@ -113,7 +113,7 @@ object FmChebyshev: TFmChebyshev
       LineWidth = 2
       Max = -0.009999999776482582
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialStopbandChange
       OnDblClick = DialStopbandDblClick
       ParentColor = False
@@ -172,7 +172,7 @@ object FmChebyshev: TFmChebyshev
       LineColor = 10526927
       LineWidth = 2
       Max = 16.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOrderChange
       OnDblClick = DialOrderDblClick
       ParentColor = False

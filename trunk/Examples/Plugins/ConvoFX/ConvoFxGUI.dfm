@@ -29,7 +29,7 @@ object FmConvoFX: TFmConvoFX
     LineWidth = 2
     Max = 40.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialIRChange
     PointerAngles.Start = 220
     PointerAngles.Range = 280
@@ -50,7 +50,7 @@ object FmConvoFX: TFmConvoFX
     LineWidth = 2
     Max = 6.000000000000000000
     Min = -60.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 220
     PointerAngles.Range = 280
@@ -129,7 +129,7 @@ object FmConvoFX: TFmConvoFX
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialDampChange
     PointerAngles.Start = 220
     PointerAngles.Range = 280

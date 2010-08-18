@@ -54,7 +54,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       LineWidth = 2
       Max = 10.000000000000000000
       Min = 0.009999999776482582
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFrequencyChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -137,7 +137,7 @@ object FmBarberpoleShifter: TFmBarberpoleShifter
       LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialMixChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270

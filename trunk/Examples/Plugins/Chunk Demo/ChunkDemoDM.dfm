@@ -1,4 +1,5 @@
 object ChunkDemoDataModule: TChunkDemoDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsProgramChunks]
   Version = '1.0'
   EffectName = 'ChunkDemo'

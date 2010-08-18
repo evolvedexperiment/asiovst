@@ -194,7 +194,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -219,7 +219,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -242,7 +242,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -266,7 +266,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -291,7 +291,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -314,7 +314,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -338,7 +338,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -363,7 +363,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -386,7 +386,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -410,7 +410,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -435,7 +435,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -458,7 +458,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -482,7 +482,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -507,7 +507,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -530,7 +530,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -554,7 +554,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -579,7 +579,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -602,7 +602,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -626,7 +626,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -651,7 +651,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -674,7 +674,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -698,7 +698,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFreqChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -723,7 +723,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.100000001490116100
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBWChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -746,7 +746,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGainChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -927,7 +927,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialInputChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -948,7 +948,7 @@ object FmParametriQLite: TFmParametriQLite
     LineWidth = 2
     Max = 15.000000000000000000
     Min = -15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialOutputChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -1762,7 +1762,7 @@ object FmParametriQLite: TFmParametriQLite
     Height = 40
     Color = 1447701
     GlyphIndex = 0
-    NumGlyphs = 65
+    GlyphCount = 65
     StitchKind = skHorizontal
   end
   object Switch: TGuiSwitch
@@ -1776,7 +1776,7 @@ object FmParametriQLite: TFmParametriQLite
     GlyphNr = 0
     LineColor = 9145737
     LineWidth = 2
-    NumGlyphs = 2
+    GlyphCount = 2
     ParentColor = False
     StitchKind = skHorizontal
   end
@@ -2305,7 +2305,7 @@ object FmParametriQLite: TFmParametriQLite
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 48
         Width = 48
@@ -2827,7 +2827,7 @@ object FmParametriQLite: TFmParametriQLite
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 64
         Width = 64
@@ -3989,7 +3989,7 @@ object FmParametriQLite: TFmParametriQLite
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 96
         Width = 96
@@ -4839,7 +4839,7 @@ object FmParametriQLite: TFmParametriQLite
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 40
         Width = 168

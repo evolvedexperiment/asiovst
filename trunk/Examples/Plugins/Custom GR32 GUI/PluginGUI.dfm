@@ -35,7 +35,7 @@ object FmCustomGr32Gui: TFmCustomGr32Gui
   end
   object PopupMenu: TPopupMenu
     OnPopup = PopupMenuPopup
-    Left = 40
+    Left = 120
     Top = 8
     object MiDesignMode: TMenuItem
       Caption = '&Design Mode'
@@ -82,7 +82,7 @@ object FmCustomGr32Gui: TFmCustomGr32Gui
     end
   end
   object OpenPictureDialog: TOpenPictureDialog
-    Left = 8
+    Left = 32
     Top = 8
   end
 end

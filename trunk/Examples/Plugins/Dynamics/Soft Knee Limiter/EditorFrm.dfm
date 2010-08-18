@@ -27,7 +27,7 @@ object EditorForm: TEditorForm
     DefaultPosition = -0.000000000100000001
     Max = -0.000000000100000001
     Min = -96.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -45,7 +45,7 @@ object EditorForm: TEditorForm
     CircleColor = clGray
     Max = 3.000000000000000000
     Min = -2.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -63,7 +63,7 @@ object EditorForm: TEditorForm
     DefaultPosition = 1.699000000953674000
     Max = 3.698999881744385000
     Min = 0.699000000953674300
-    NumGlyphs = 64
+    GlyphCount = 64
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -82,7 +82,7 @@ object EditorForm: TEditorForm
     DefaultPosition = 2.000000000000000000
     Max = 10.000000000000000000
     Min = 0.050000000745058060
-    NumGlyphs = 64
+    GlyphCount = 64
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -205,7 +205,7 @@ object EditorForm: TEditorForm
     LineColor = clSilver
     CircleColor = clGray
     Max = 20.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000

@@ -29,7 +29,7 @@ object FmChunkDemo: TFmChunkDemo
     LineColor = 3747121
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialAlphaChange
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
@@ -112,7 +112,7 @@ object FmChunkDemo: TFmChunkDemo
     LineColor = 3747121
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialBetaChange
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
@@ -131,7 +131,7 @@ object FmChunkDemo: TFmChunkDemo
     LineColor = 3747121
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialGammaChange
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
@@ -150,7 +150,7 @@ object FmChunkDemo: TFmChunkDemo
     LineColor = 3747121
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialDeltaChange
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000

@@ -51,7 +51,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       Max = 6.000000000000000000
       Min = -6.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialInputGainChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -73,7 +73,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOSFactor1Change
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -96,7 +96,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineColor = 15659506
       LineWidth = 2
       Max = 64.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFilterOrder1Change
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -221,7 +221,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOSFactor2Change
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -276,7 +276,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineColor = 15659506
       LineWidth = 2
       Max = 64.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFilterOrder2Change
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -298,7 +298,7 @@ object FmAdvancedClipper: TFmAdvancedClipper
       LineWidth = 2
       Max = 6.000000000000000000
       Min = -6.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOutputGainChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270

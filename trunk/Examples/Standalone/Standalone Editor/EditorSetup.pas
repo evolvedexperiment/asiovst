@@ -40,7 +40,7 @@ uses
 
 type
   TFmSetup = class(TForm)
-    LbPreset: TLabel;
+    LbAsioDriver: TLabel;
     LbInput: TLabel;
     LbOutput: TLabel;
     CBDrivers: TComboBox;
@@ -51,6 +51,7 @@ type
     procedure CBDriversChange(Sender: TObject);
     procedure CBInputChange(Sender: TObject);
     procedure CBOutputChange(Sender: TObject);
+    procedure LbAsioDriverClick(Sender: TObject);
   end;
 
 var
@@ -104,7 +105,7 @@ begin
      end;
     CBInput.ItemIndex := 0;
     CBOutput.ItemIndex := 0;
-    if assigned(OnReset)
+    if Assigned(OnReset)
      then OnReset(Self);
     Active := True;
    end;
@@ -122,7 +123,7 @@ end;
 
 procedure TFmSetup.FormDestroy(Sender: TObject);
 begin
- with TIniFile.Create(ExtractFilePath(ParamStr(0))+'VSTEditor.INI') do
+ with TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'VSTEditor.INI') do
   try
    WriteInteger('Layout', 'Setup Top', Top);
    WriteInteger('Layout', 'Setup Left', Left);
@@ -130,6 +131,11 @@ begin
   finally
    Free;
   end;
+end;
+
+procedure TFmSetup.LbAsioDriverClick(Sender: TObject);
+begin
+ FmVSTEditor.AsioHost.ControlPanel;
 end;
 
 {$IFDEF FPC}

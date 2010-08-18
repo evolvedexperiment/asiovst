@@ -53,7 +53,7 @@ object FmVT: TFmVT
     LineColor = 103128
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -69,7 +69,7 @@ object FmVT: TFmVT
     LineColor = 103128
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 270.000000000000000000
@@ -86,7 +86,7 @@ object FmVT: TFmVT
     DefaultPosition = 1.000000000000000000
     Max = 4.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 4
+    GlyphCount = 4
     PointerAngles.Start = 45
     PointerAngles.Range = 90
     PointerAngles.Resolution = 90.000000000000000000
@@ -102,7 +102,7 @@ object FmVT: TFmVT
     Height = 32
     LineColor = 103128
     Max = 1.000000000000000000
-    NumGlyphs = 2
+    GlyphCount = 2
     PointerAngles.Start = 180
     PointerAngles.Range = 180
     PointerAngles.Resolution = 180.000000000000000000
@@ -117,7 +117,7 @@ object FmVT: TFmVT
     Height = 32
     LineColor = 103128
     Max = 1.000000000000000000
-    NumGlyphs = 2
+    GlyphCount = 2
     PointerAngles.Start = 180
     PointerAngles.Range = 180
     PointerAngles.Resolution = 180.000000000000000000
@@ -329,7 +329,7 @@ object FmVT: TFmVT
       LineColor = 329145
       Max = 12.000000000000000000
       Min = -12.000000000000000000
-      NumGlyphs = 31
+      GlyphCount = 31
       PointerAngles.Start = 225
       PointerAngles.Range = 270
       PointerAngles.Resolution = 270.000000000000000000
@@ -347,7 +347,7 @@ object FmVT: TFmVT
       DefaultPosition = 1.000000000000000000
       Max = 2.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 2
+      GlyphCount = 2
       PointerAngles.Start = 180
       PointerAngles.Range = 180
       PointerAngles.Resolution = 180.000000000000000000

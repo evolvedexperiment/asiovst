@@ -38,7 +38,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
     GlyphNr = 0
     LineColor = 15133420
     LineWidth = 2
-    NumGlyphs = 2
+    GlyphCount = 2
     OnChange = SwEncodingChange
     StitchKind = skHorizontal
     StringList.Strings = (
@@ -71,7 +71,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 20.000000000000000000
       Min = -20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDetuneAChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -130,7 +130,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 80.000000000000000000
       Min = 0.001000000047497451
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDelayAChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -178,7 +178,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialMixAChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -227,7 +227,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLowpassAChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -280,7 +280,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 20.000000000000000000
       Min = -20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDetuneBChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -339,7 +339,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 80.000000000000000000
       Min = 0.001000000047497451
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDelayBChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -387,7 +387,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialMixBChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -442,7 +442,7 @@ object FmSplitHarmonizer: TFmSplitHarmonizer
       LineWidth = 3
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLowpassBChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270

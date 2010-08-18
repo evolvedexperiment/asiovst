@@ -13,15 +13,12 @@ type
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterThresholdChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterAttackChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterReleaseChange(
-      Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterThresholdChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterAttackChange(Sender: TObject; const Index: Integer; var Value: Single);
+    procedure ParameterReleaseChange(Sender: TObject; const Index: Integer; var Value: Single);
   private
     FLowpassFilter : array of TButterworthLowPassFilterAutomatable;
     FCompressor    : TLightweightSoftKneeLimiter;
@@ -70,7 +67,7 @@ begin
 end;
 
 procedure TPluginDataModule.ParameterFrequencyLabel(Sender: TObject;
-  const Index: Integer; var PreDefined: string);
+  const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := 'k' + PreDefined;
@@ -124,7 +121,7 @@ begin
 end;
 
 procedure TPluginDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 3, 3)

@@ -28,7 +28,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDryChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -49,7 +49,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialWetChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -70,7 +70,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialPreDelayChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -93,7 +93,7 @@ object FmPlateReverb: TFmPlateReverb
     LineWidth = 2
     Max = 13500.000000000000000000
     Min = 135.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDampingFrequencyChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -114,7 +114,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialInputDiffusionChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -134,7 +134,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDecayDiffusionChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -155,7 +155,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDecayChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -175,7 +175,7 @@ object FmPlateReverb: TFmPlateReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDecayDiffusionChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270

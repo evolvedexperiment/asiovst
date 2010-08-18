@@ -29,7 +29,7 @@ object FmNoiseReduction: TFmNoiseReduction
     LineColor = 12632777
     LineWidth = 2
     Max = 15.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialThresholdOffsetChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -52,7 +52,7 @@ object FmNoiseReduction: TFmNoiseReduction
     LineWidth = 2
     Max = 100.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialRatioChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -128,7 +128,7 @@ object FmNoiseReduction: TFmNoiseReduction
     LineColor = 12632777
     LineWidth = 2
     Max = 10.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialKneeChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -178,7 +178,7 @@ object FmNoiseReduction: TFmNoiseReduction
     LineWidth = 2
     Max = 100.000000000000000000
     Min = 0.009999999776482582
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialAttackChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -228,7 +228,7 @@ object FmNoiseReduction: TFmNoiseReduction
     LineWidth = 2
     Max = 300.000000000000000000
     Min = 0.500000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialReleaseChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
