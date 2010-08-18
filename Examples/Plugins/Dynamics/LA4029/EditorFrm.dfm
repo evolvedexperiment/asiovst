@@ -45,7 +45,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       Max = 1.301030039787292000
       Min = -0.699000000953674300
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialAttackChange
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
@@ -66,7 +66,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       Max = 2.698999881744385000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialReleaseChange
       ParentColor = False
       Position = 1.000000000000000000
@@ -200,7 +200,7 @@ object FmLA4029: TFmLA4029
       Height = 72
       Color = clBlack
       GlyphIndex = 0
-      NumGlyphs = 65
+      GlyphCount = 65
       StitchKind = skHorizontal
       PopupMenu = PopupVUMeterSpeed
     end
@@ -344,7 +344,7 @@ object FmLA4029: TFmLA4029
       LineColor = clSilver
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialMixChange
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
@@ -407,7 +407,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       Max = 24.000000000000000000
       Min = -24.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialInputChange
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
@@ -427,7 +427,7 @@ object FmLA4029: TFmLA4029
       LineWidth = 2
       Max = 24.000000000000000000
       Min = -24.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOutputChange
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
@@ -480,7 +480,7 @@ object FmLA4029: TFmLA4029
       LineColor = clSilver
       LineWidth = 2
       Max = 2.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialRatioChange
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000
@@ -516,7 +516,7 @@ object FmLA4029: TFmLA4029
       LineColor = clSilver
       LineWidth = 2
       Max = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialKneeChange
       ParentColor = False
       ScrollRange_Pixel = 400.000000000000000000

@@ -28,7 +28,7 @@ object FmDiracPitchShifter: TFmDiracPitchShifter
     LineWidth = 4
     Max = 12.000000000000000000
     Min = -12.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialSemitonesChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270

@@ -170,7 +170,7 @@ object FmCombo: TFmCombo
       LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDriveChange
       OnDblClick = DialDriveDblClick
       PointerAngles.Start = 225
@@ -209,7 +209,7 @@ object FmCombo: TFmCombo
       LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialBiasChange
       OnDblClick = DialBiasDblClick
       PointerAngles.Start = 225
@@ -247,7 +247,7 @@ object FmCombo: TFmCombo
       LineWidth = 2
       Max = 20.000000000000000000
       Min = -20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOutputChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -269,7 +269,7 @@ object FmCombo: TFmCombo
       LineWidth = 2
       Max = 10000.000000000000000000
       Min = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFreqChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -289,7 +289,7 @@ object FmCombo: TFmCombo
       LineColor = clMaroon
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialResoChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270

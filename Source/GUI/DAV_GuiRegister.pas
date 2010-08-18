@@ -28,8 +28,8 @@ uses
   DAV_GuiAudioDataDisplay, DAV_GuiLED, DAV_GuiPanel, DAV_GuiDial, DAV_GuiLabel,
   DAV_GuiButton, DAV_GuiMidiKeys, DAV_GuiSelectBox, DAV_GuiCorrelationMeter,
   DAV_GuiVUMeter, DAV_GuiGraphXY, DAV_GuiGraphXYDesign, DAV_GuiDialDesign,
-  {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds, {$ENDIF} DAV_GuiEQSlide,
-  DAV_GuiEQGraph, DAV_GuiSlider, DAV_GuiMediaButton;
+  DAV_GuiDialRenderer, {$IFNDEF FPC} DAV_GuiModular, DAV_GuiBackgrounds,
+  {$ENDIF} DAV_GuiEQGraph, DAV_GuiEQSlide, DAV_GuiSlider, DAV_GuiMediaButton;
 
 procedure Register;
 begin

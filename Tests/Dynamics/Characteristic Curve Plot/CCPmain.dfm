@@ -62,7 +62,7 @@ object FmDynamicCurvePlot: TFmDynamicCurvePlot
     CircleColor = clBtnFace
     AntiAlias = gaaLinear2x
     Min = -90.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 225.000000000000000000
@@ -83,7 +83,7 @@ object FmDynamicCurvePlot: TFmDynamicCurvePlot
     DefaultPosition = 8.000000000000000000
     Max = 100.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 225.000000000000000000
@@ -105,7 +105,7 @@ object FmDynamicCurvePlot: TFmDynamicCurvePlot
     DefaultPosition = 1.000000000000000000
     Max = 10.000000000000000000
     Min = 0.009999999776482582
-    NumGlyphs = 31
+    GlyphCount = 31
     PointerAngles.Start = 225
     PointerAngles.Range = 270
     PointerAngles.Resolution = 225.000000000000000000

@@ -86,7 +86,7 @@ object FmButterworth: TFmButterworth
       LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFrequencyChange
       OnDblClick = LbFrequencyValueDblClick
       ParentColor = False
@@ -121,7 +121,7 @@ object FmButterworth: TFmButterworth
       LineColor = 10526927
       LineWidth = 2
       Max = 16.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOrderChange
       OnDblClick = LbOrderValueDblClick
       ParentColor = False

@@ -10,13 +10,17 @@ uses
 type
   TFmAudioDataDisplay = class(TForm)
     ADC: TAudioDataCollection32;
+    PC: TPageControl;
+    TsBasic: TTabSheet;
     ADD1: TGuiAudioDataDisplay;
-    ADD2: TGuiAudioDataDisplay;
-    ADD3: TGuiAudioDataDisplay;
-    ADD4: TGuiAudioDataDisplay;
-    CbTransparent: TCheckBox;
     TbLineWidth: TTrackBar;
+    CbTransparent: TCheckBox;
+    ADD4: TGuiAudioDataDisplay;
+    ADD3: TGuiAudioDataDisplay;
+    ADD2: TGuiAudioDataDisplay;
     LbLineWidth: TLabel;
+    Axis: TTabSheet;
+    GuiAudioDataDisplay1: TGuiAudioDataDisplay;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);

@@ -26,7 +26,7 @@ object FmReverb: TFmReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 1.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDryChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
@@ -41,7 +41,7 @@ object FmReverb: TFmReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 1.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialWetChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
@@ -56,7 +56,7 @@ object FmReverb: TFmReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 1.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialWidthChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
@@ -71,7 +71,7 @@ object FmReverb: TFmReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 1.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialDampChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
@@ -86,7 +86,7 @@ object FmReverb: TFmReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 1.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialRoomSizeChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
@@ -101,7 +101,7 @@ object FmReverb: TFmReverb
     LineColor = clWhite
     LineWidth = 2
     Max = 1.000000000000000000
-    NumGlyphs = 64
+    GlyphCount = 64
     OnChange = DialStretchChange
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical

@@ -176,9 +176,10 @@ begin
     '  Result := WinampDSPModuleHeader(T' + FConfig.PluginFormName + ');' + CRLF +
     'end;' + CRLF +
     CRLF +
-    'exports VstPluginMain name ''main'';' + CRLF +
-    'exports VstPluginMain name ''VSTPluginMain'';' + CRLF +
-    'exports WinampDSPGetHeader name ''winampDSPGetHeader2'';' + CRLF +
+    'exports' + CRLF +
+    '  VstPluginMain name ''main'',' + CRLF +
+    '  VstPluginMain name ''VSTPluginMain'',' + CRLF +
+    '  WinampDSPGetHeader name ''winampDSPGetHeader2'';' + CRLF +
     CRLF +
     'begin' + CRLF +
     'end.';

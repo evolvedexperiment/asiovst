@@ -417,11 +417,11 @@ begin
     for i := 0 to NumPrograms - 1 do
      begin
       Programs[i].Chunk.Clear;
-      pi := pInteger(pb);
-      inc(pb, 4);
+      pi := PInteger(pb);
+      Inc(pb, 4);
       Programs[i].Chunk.Write(pb^, pi^);
       Programs[i].Chunk.Position := 0;
-      inc(pb, pi^);
+      Inc(pb, pi^);
 
       if Assigned(Programs[i].OnLoadChunk)
        then Programs[i].OnLoadChunk(Programs[i], i, False);

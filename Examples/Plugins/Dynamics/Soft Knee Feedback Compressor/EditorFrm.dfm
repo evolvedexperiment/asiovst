@@ -66,7 +66,7 @@ object EditorForm: TEditorForm
     LineWidth = 2
     Max = -0.000000000100000001
     Min = -96.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     OnChange = DialThresholdChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -86,7 +86,7 @@ object EditorForm: TEditorForm
     LineColor = clGray
     LineWidth = 2
     Max = 200.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     OnChange = DialRatioChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -106,7 +106,7 @@ object EditorForm: TEditorForm
     LineWidth = 2
     Max = 300.000000000000000000
     Min = -200.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     OnChange = DialAttackChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -127,7 +127,7 @@ object EditorForm: TEditorForm
     LineWidth = 2
     Max = 3699.000000000000000000
     Min = 699.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     OnChange = DialReleaseChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270
@@ -228,7 +228,7 @@ object EditorForm: TEditorForm
     LineColor = clGray
     LineWidth = 2
     Max = 40.000000000000000000
-    NumGlyphs = 31
+    GlyphCount = 31
     OnChange = DialMakeUpChange
     PointerAngles.Start = 235
     PointerAngles.Range = 270

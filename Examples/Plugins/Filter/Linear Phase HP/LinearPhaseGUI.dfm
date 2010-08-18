@@ -30,7 +30,7 @@ object FmLinearPhase: TFmLinearPhase
     LineWidth = 2
     Max = 20000.000000000000000000
     Min = 20.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFrequencyChange
     OnDblClick = DialFrequencyDblClick
     PointerAngles.Start = 225

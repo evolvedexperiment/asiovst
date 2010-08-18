@@ -72,7 +72,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLowpassFrequencyChange
       OnDblClick = DialDblClick
       OnMouseEnter = DialLowpassFrequencyMouseEnter
@@ -99,7 +99,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLowpassSlopeChange
       OnDblClick = DialDblClick
       OnMouseEnter = DialLowpassSlopeMouseEnter
@@ -161,7 +161,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialHighpassFrequencyChange
       OnDblClick = DialDblClick
       OnMouseEnter = DialHighpassFrequencyMouseEnter
@@ -188,7 +188,7 @@ object FmLinkwitzRiley: TFmLinkwitzRiley
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialHighpassSlopeChange
       OnDblClick = DialDblClick
       OnMouseEnter = DialHighpassSlopeMouseEnter

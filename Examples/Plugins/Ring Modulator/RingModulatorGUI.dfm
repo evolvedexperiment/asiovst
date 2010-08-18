@@ -51,7 +51,7 @@ object FmRingModulator: TFmRingModulator
       LineWidth = 2
       Max = 1000.000000000000000000
       Min = 0.009999999776482582
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFrequencyChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270

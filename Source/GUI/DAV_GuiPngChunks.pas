@@ -105,13 +105,17 @@ type
     FPaletteEntries : array of TRGB24;
     function GetPaletteEntry(Index: Integer): TRGB24;
     function GetCount: Integer;
+    procedure SetCount(const Value: Integer);
+    procedure SetPaletteEntry(Index: Integer; const Value: TRGB24);
+  protected
+    procedure PaletteEntriesChanged; virtual;
   public
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
 
-    property PaletteEntry[Index: Integer]: TRGB24 read GetPaletteEntry;
-    property Count: Integer read GetCount;
+    property PaletteEntry[Index: Integer]: TRGB24 read GetPaletteEntry write SetPaletteEntry; default;
+    property Count: Integer read GetCount write SetCount;
   end;
 
   TChunkPngGamma = class(TCustomChunkPngWithHeader)
@@ -197,6 +201,8 @@ type
     FHour   : Byte;
     FMinute : Byte;
     FSecond : Byte;
+    function GetModifiedDateTime: TDateTime;
+    procedure SetModifiedDateTime(const Value: TDateTime);
   public
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
@@ -208,6 +214,7 @@ type
     property Hour: Byte read FHour write FHour;
     property Minute: Byte read FMinute write FMinute;
     property Second: Byte read FSecond write FSecond;
+    property ModifiedDateTime: TDateTime read GetModifiedDateTime write SetModifiedDateTime;
   end;
 
   TChunkPngEmbeddedIccProfile = class(TCustomChunkPngWithHeader)
@@ -223,11 +230,88 @@ type
     property CompressionMethod: Byte read FCompressionMethod write FCompressionMethod;
   end;
 
-  TChunkPngSignificantBits = class(TCustomChunkPngWithHeader)
+  TCustomPngSignificantBits = class(TPersistent)
+  protected
+    class function GetChunkSize: Integer; virtual; abstract;
   public
+    procedure LoadFromStream(Stream: TStream); virtual; abstract;
+    procedure SaveToStream(Stream: TStream); virtual; abstract;
+
+    property ChunkSize: Integer read GetChunkSize;
+  end;
+
+  TPngSignificantBitsFormat0 = class(TCustomPngSignificantBits)
+  private
+    FGrayBits : Byte;
+  protected
+    class function GetChunkSize: Integer; override;
+  public
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
+
+    property GrayBits: Byte read FGrayBits write FGrayBits;
+  end;
+
+  TPngSignificantBitsFormat23 = class(TCustomPngSignificantBits)
+  private
+    FRedBits   : Byte;
+    FBlueBits  : Byte;
+    FGreenBits : Byte;
+  protected
+    class function GetChunkSize: Integer; override;
+  public
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
+
+    property RedBits: Byte read FRedBits write FRedBits;
+    property BlueBits: Byte read FBlueBits write FBlueBits;
+    property GreenBits: Byte read FGreenBits write FGreenBits;
+  end;
+
+  TPngSignificantBitsFormat4 = class(TCustomPngSignificantBits)
+  private
+    FGrayBits  : Byte;
+    FAlphaBits : Byte;
+  protected
+    class function GetChunkSize: Integer; override;
+  public
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
+
+    property GrayBits: Byte read FGrayBits write FGrayBits;
+    property AlphaBits: Byte read FAlphaBits write FAlphaBits;
+  end;
+
+  TPngSignificantBitsFormat6 = class(TCustomPngSignificantBits)
+  protected
+    FRedBits   : Byte;
+    FBlueBits  : Byte;
+    FGreenBits : Byte;
+    FAlphaBits : Byte;
+    class function GetChunkSize: Integer; override;
+  public
+    procedure LoadFromStream(Stream: TStream); override;
+    procedure SaveToStream(Stream: TStream); override;
+
+    property RedBits: Byte read FRedBits write FRedBits;
+    property BlueBits: Byte read FBlueBits write FBlueBits;
+    property GreenBits: Byte read FGreenBits write FGreenBits;
+    property AlphaBits: Byte read FAlphaBits write FAlphaBits;
+  end;
+
+  TChunkPngSignificantBits = class(TCustomChunkPngWithHeader)
+  private
+    FSignificantBits : TCustomPngSignificantBits;
+  public
+    constructor Create(Header: TChunkPngImageHeader); override;
+    destructor Destroy; override;
+
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
+    procedure HeaderChanged; override;
+
+    property SignificantBits: TCustomPngSignificantBits read FSignificantBits;
   end;
 
   TCustomPngBackgroundColor = class(TPersistent)
@@ -366,6 +450,8 @@ type
     FTransparency : TCustomPngTransparency;
   public
     constructor Create(Header: TChunkPngImageHeader); override;
+    destructor Destroy; override;
+
     class function GetClassChunkName: TChunkName; override;
 
     procedure LoadFromStream(Stream: TStream); override;
@@ -439,7 +525,7 @@ type
     property NumberOfParams: Byte read FNumberOfParams write FNumberOfParams;
   end;
 
-  TCustomChunkPngTextChunk = class(TCustomChunkPngWithHeader)
+  TCustomDefinedChunkTextChunk = class(TCustomChunkPngWithHeader)
   protected
     FKeyword : AnsiString;
     FText    : AnsiString;
@@ -448,14 +534,14 @@ type
     property Text: AnsiString read FText write FText;
   end;
 
-  TChunkPngTextChunk = class(TCustomChunkPngTextChunk)
+  TChunkPngTextChunk = class(TCustomDefinedChunkTextChunk)
   public
     class function GetClassChunkName: TChunkName; override;
     procedure LoadFromStream(Stream: TStream); override;
     procedure SaveToStream(Stream: TStream); override;
   end;
 
-  TChunkPngCompressedTextChunk = class(TCustomChunkPngTextChunk)
+  TChunkPngCompressedTextChunk = class(TCustomDefinedChunkTextChunk)
   private
     FCompressionMethod : Byte;
   public
@@ -466,7 +552,7 @@ type
     property CompressionMethod: Byte read FCompressionMethod write FCompressionMethod;
   end;
 
-  TChunkPngInternationalTextChunk = class(TCustomChunkPngTextChunk)
+  TChunkPngInternationalTextChunk = class(TCustomDefinedChunkTextChunk)
   private
     FCompressionMethod : Byte;
     FCompressionFlag   : Byte;
@@ -486,6 +572,25 @@ type
   TUnknownPngChunk = class(TUnknownChunk)
   public
     constructor Create; override;
+  end;
+
+  TChunkList = class(TObject)
+  private
+    FChunks : array of TCustomChunk;
+    function GetCount: Integer;
+  protected
+    function GetChunk(Index: Integer): TCustomChunk;
+  public
+    destructor Destroy; override;
+
+    procedure Add(Item: TCustomChunk);
+    procedure Clear; virtual;
+    procedure Delete(Index: Integer);
+    function IndexOf(Item: TCustomChunk): Integer;
+    procedure Remove(Item: TCustomChunk);
+
+    property Count: Integer read GetCount;
+    property Chunks[Index: Integer]: TCustomChunk read GetChunk; default;
   end;
 
 procedure RegisterPngChunk(ChunkClass: TCustomChunkPngWithHeaderClass);
@@ -723,6 +828,13 @@ begin
   else raise EPngError.Create(RCStrIndexOutOfBounds);
 end;
 
+procedure TChunkPngPalette.SetPaletteEntry(Index: Integer; const Value: TRGB24);
+begin
+ if (Index >= 0) and (Index < Count)
+  then FPaletteEntries[Index] := Value
+  else raise EPngError.Create(RCStrIndexOutOfBounds);
+end;
+
 function TChunkPngPalette.GetCount: Integer;
 begin
  Result := Length(FPaletteEntries);
@@ -743,6 +855,11 @@ begin
   end;
 end;
 
+procedure TChunkPngPalette.PaletteEntriesChanged;
+begin
+ // nothing todo here yet
+end;
+
 procedure TChunkPngPalette.SaveToStream(Stream: TStream);
 begin
  // determine chunk size
@@ -751,6 +868,18 @@ begin
  inherited;
 
  Stream.Write(FPaletteEntries[0], FChunkSize);
+end;
+
+procedure TChunkPngPalette.SetCount(const Value: Integer);
+begin
+ if Value > 256
+  then raise EPngError.Create(RCStrPaletteLimited);
+
+ if Value <> Length(FPaletteEntries) then
+  begin
+   SetLength(FPaletteEntries, Value);
+   PaletteEntriesChanged;
+  end;
 end;
 
 
@@ -764,6 +893,13 @@ begin
   ctTrueColor    : FTransparency := TPngTransparencyFormat2.Create;
   ctIndexedColor : FTransparency := TPngTransparencyFormat3.Create;
  end;
+end;
+
+destructor TChunkPngTransparency.Destroy;
+begin
+ if Assigned(FTransparency)
+  then FreeAndNil(FTransparency);
+ inherited;
 end;
 
 class function TChunkPngTransparency.GetClassChunkName: TChunkName;
@@ -1368,6 +1504,7 @@ begin
  FChunkSize := FData.Size;
  inherited;
 
+ FData.Seek(0, soFromBeginning);
  Stream.CopyFrom(FData, FChunkSize);
 end;
 
@@ -1377,6 +1514,11 @@ end;
 class function TChunkPngTime.GetClassChunkName: TChunkName;
 begin
  Result := 'tIME';
+end;
+
+function TChunkPngTime.GetModifiedDateTime: TDateTime;
+begin
+ Result := EncodeDate(Year, Month, Day) + EncodeTime(Hour, Minute, Second, 0);
 end;
 
 procedure TChunkPngTime.LoadFromStream(Stream: TStream);
@@ -1434,6 +1576,24 @@ begin
    // write second
    Write(FSecond, SizeOf(Byte));
   end;
+end;
+
+procedure TChunkPngTime.SetModifiedDateTime(const Value: TDateTime);
+var
+  mnth : Word;
+  day  : Word;
+  hour : Word;
+  min  : Word;
+  sec  : Word;
+  msec : Word;
+begin
+ DecodeDate(Value, FYear, mnth, day);
+ FMonth := mnth;
+ FDay := day;
+ DecodeTime(Value, hour, min, sec, msec);
+ FHour := hour;
+ FMinute := min;
+ FSecond := sec;
 end;
 
 
@@ -1505,12 +1665,12 @@ end;
 
 function TChunkPngGamma.GetGammaAsSingle: Single;
 begin
- Result := FGamma * 1E-6
+ Result := FGamma * 1E-5;
 end;
 
 procedure TChunkPngGamma.SetGammaAsSingle(const Value: Single);
 begin
- FGamma := Round(Value * 1E6);
+ FGamma := Round(Value * 1E5);
 end;
 
 procedure TChunkPngGamma.LoadFromStream(Stream: TStream);
@@ -1529,6 +1689,8 @@ end;
 
 procedure TChunkPngGamma.SaveToStream(Stream: TStream);
 begin
+ FChunkSize := 4;
+
  inherited;
 
  with Stream do
@@ -1732,26 +1894,197 @@ begin
 end;
 
 
+{ TPngSignificantBitsFormat0 }
+
+class function TPngSignificantBitsFormat0.GetChunkSize: Integer;
+begin
+ Result := 1;
+end;
+
+procedure TPngSignificantBitsFormat0.LoadFromStream(Stream: TStream);
+begin
+ Stream.Read(FGrayBits, 1);
+end;
+
+procedure TPngSignificantBitsFormat0.SaveToStream(Stream: TStream);
+begin
+ Stream.Write(FGrayBits, 1);
+end;
+
+
+{ TPngSignificantBitsFormat23 }
+
+class function TPngSignificantBitsFormat23.GetChunkSize: Integer;
+begin
+ Result := 3;
+end;
+
+procedure TPngSignificantBitsFormat23.LoadFromStream(Stream: TStream);
+begin
+ Stream.Read(FRedBits, 1);
+ Stream.Read(FGreenBits, 1);
+ Stream.Read(FBlueBits, 1);
+end;
+
+procedure TPngSignificantBitsFormat23.SaveToStream(Stream: TStream);
+begin
+ Stream.Write(FRedBits, 1);
+ Stream.Write(FGreenBits, 1);
+ Stream.Write(FBlueBits, 1);
+end;
+
+
+{ TPngSignificantBitsFormat4 }
+
+class function TPngSignificantBitsFormat4.GetChunkSize: Integer;
+begin
+ Result := 2;
+end;
+
+procedure TPngSignificantBitsFormat4.LoadFromStream(Stream: TStream);
+begin
+ Stream.Read(FGrayBits, 1);
+ Stream.Read(FAlphaBits, 1);
+end;
+
+procedure TPngSignificantBitsFormat4.SaveToStream(Stream: TStream);
+begin
+ Stream.Write(FGrayBits, 1);
+ Stream.Write(FAlphaBits, 1);
+end;
+
+
+{ TPngSignificantBitsFormat6 }
+
+class function TPngSignificantBitsFormat6.GetChunkSize: Integer;
+begin
+ Result := 4;
+end;
+
+procedure TPngSignificantBitsFormat6.LoadFromStream(Stream: TStream);
+begin
+ Stream.Read(FRedBits, 1);
+ Stream.Read(FGreenBits, 1);
+ Stream.Read(FBlueBits, 1);
+ Stream.Read(FAlphaBits, 1);
+end;
+
+procedure TPngSignificantBitsFormat6.SaveToStream(Stream: TStream);
+begin
+ Stream.Write(FRedBits, 1);
+ Stream.Write(FGreenBits, 1);
+ Stream.Write(FBlueBits, 1);
+ Stream.Write(FAlphaBits, 1);
+end;
+
+
 { TChunkPngSignificantBits }
+
+constructor TChunkPngSignificantBits.Create(Header: TChunkPngImageHeader);
+begin
+ inherited;
+
+ case Header.ColorType of
+  ctGrayscale      : FSignificantBits := TPngSignificantBitsFormat0.Create;
+  ctTrueColor,
+  ctIndexedColor   : FSignificantBits := TPngSignificantBitsFormat23.Create;
+  ctGrayscaleAlpha : FSignificantBits := TPngSignificantBitsFormat4.Create;
+  ctTrueColorAlpha : FSignificantBits := TPngSignificantBitsFormat6.Create;
+ end;
+end;
+
+destructor TChunkPngSignificantBits.Destroy;
+begin
+ if Assigned(FSignificantBits)
+  then FreeAndNil(FSignificantBits);
+
+ inherited;
+end;
 
 class function TChunkPngSignificantBits.GetClassChunkName: TChunkName;
 begin
  Result := 'sBIT';
 end;
 
+procedure TChunkPngSignificantBits.HeaderChanged;
+var
+  OldSignificantBits : TCustomPngSignificantBits;
+begin
+ inherited;
+
+ // store old SignificantBits object
+ OldSignificantBits := FSignificantBits;
+
+ // change SignificantBits object class
+ case FHeader.ColorType of
+  ctGrayscale :
+   if not (FSignificantBits is TPngSignificantBitsFormat0) then
+    begin
+     FSignificantBits := TPngSignificantBitsFormat0.Create;
+     if Assigned(OldSignificantBits) then
+      begin
+       FSignificantBits.Assign(OldSignificantBits);
+       FreeAndNil(OldSignificantBits);
+      end;
+    end;
+  ctTrueColor, ctIndexedColor :
+   if not (FSignificantBits is TPngSignificantBitsFormat23) then
+    begin
+     FSignificantBits := TPngSignificantBitsFormat23.Create;
+     if Assigned(OldSignificantBits) then
+      begin
+       FSignificantBits.Assign(OldSignificantBits);
+       FreeAndNil(OldSignificantBits);
+      end;
+    end;
+   ctTrueColorAlpha :
+   if not (FSignificantBits is TPngSignificantBitsFormat4) then
+    begin
+     FSignificantBits := TPngSignificantBitsFormat4.Create;
+     if Assigned(OldSignificantBits) then
+      begin
+       FSignificantBits.Assign(OldSignificantBits);
+       FreeAndNil(OldSignificantBits);
+      end;
+    end;
+  ctGrayscaleAlpha :
+   if not (FSignificantBits is TPngSignificantBitsFormat6) then
+    begin
+     FSignificantBits := TPngSignificantBitsFormat6.Create;
+     if Assigned(OldSignificantBits) then
+      begin
+       FSignificantBits.Assign(OldSignificantBits);
+       FreeAndNil(OldSignificantBits);
+      end;
+    end;
+  else if Assigned(FSignificantBits) then FreeAndNil(FSignificantBits);
+ end;
+end;
+
 procedure TChunkPngSignificantBits.LoadFromStream(Stream: TStream);
 begin
  inherited;
 
- // yet todo
+ if Assigned(FSignificantBits) then
+  begin
+   if Stream.Size < FSignificantBits.ChunkSize
+    then raise EPngError.Create(RCStrChunkSizeTooSmall);
+
+   FSignificantBits.LoadFromStream(Stream);
+  end;
 end;
 
 procedure TChunkPngSignificantBits.SaveToStream(Stream: TStream);
 begin
+ // determine chunk size
+ if Assigned(FSignificantBits)
+  then FChunkSize := FSignificantBits.GetChunkSize
+  else FChunkSize := 0;
+
  inherited;
 
- raise Exception.Create(RCStrNotYetImplemented);
- // yet todo
+ if Assigned(FSignificantBits)
+  then FSignificantBits.SaveToStream(Stream);
 end;
 
 
@@ -1844,10 +2177,10 @@ var
 begin
  inherited;
 
- // store old Background object
+ // store old background object
  OldBackground := FBackground;
 
- // change Background object class
+ // change background object class
  case FHeader.ColorType of
   ctGrayscale, ctGrayscaleAlpha :
    if not (FBackground is TPngBackgroundColorFormat04) then
@@ -1888,8 +2221,11 @@ procedure TChunkPngBackgroundColor.LoadFromStream(Stream: TStream);
 begin
  inherited;
 
- if Assigned(FBackground)
-  then FBackground.LoadFromStream(Stream);
+ if Assigned(FBackground) then
+  begin
+   if Stream.Size < FBackground.ChunkSize
+    then raise EPngError.Create(RCStrChunkSizeTooSmall);
+  end;
 end;
 
 procedure TChunkPngBackgroundColor.SaveToStream(Stream: TStream);
@@ -1956,6 +2292,65 @@ constructor TUnknownPngChunk.Create;
 begin
  inherited;
  ChunkFlags := [cfSizeFirst, cfReversedByteOrder];
+end;
+
+
+{ TChunkList }
+
+destructor TChunkList.Destroy;
+begin
+ Clear;
+ inherited;
+end;
+
+procedure TChunkList.Add(Item: TCustomChunk);
+begin
+ SetLength(FChunks, Length(FChunks) + 1);
+ FChunks[Length(FChunks) - 1] := Item;
+end;
+
+procedure TChunkList.Clear;
+var
+  Index : Integer;
+begin
+ for Index := 0 to Count - 1
+  do FreeAndNil(FChunks[Index]);
+ SetLength(FChunks, 0)
+end;
+
+procedure TChunkList.Delete(Index: Integer);
+begin
+ if (Index < 0) or (Index >= Count)
+  then raise EPngError.Create(RCStrEmptyChunkList);
+ FreeAndNil(FChunks[Index]);
+ if Index < Count
+  then System.Move(FChunks[Index + 1], FChunks[Index], (Count - Index) * SizeOf(Pointer));
+ SetLength(FChunks, Length(FChunks) - 1);
+end;
+
+function TChunkList.GetChunk(Index: Integer): TCustomChunk;
+begin
+ if Cardinal(Index) >= Cardinal(Count)
+  then raise EPngError.CreateFmt(RCStrIndexOutOfBounds, [Index])
+  else Result := FChunks[Index];
+end;
+
+function TChunkList.GetCount: Integer;
+begin
+ Result := Length(FChunks);
+end;
+
+function TChunkList.IndexOf(Item: TCustomChunk): Integer;
+begin
+ for Result := 0 to Count - 1 do
+  if FChunks[Result] = Item
+   then Exit;
+ Result := -1;
+end;
+
+procedure TChunkList.Remove(Item: TCustomChunk);
+begin
+ Delete(IndexOf(Item));
 end;
 
 

@@ -86,6 +86,7 @@ uses
   {$ELSE}
   PNGImage,
   {$ENDIF}
+  DAV_GuiPng,
   TwoBandDistortionDM;
 
 procedure TFmTwoBandDistortion.FormCreate(Sender: TObject);
@@ -103,6 +104,7 @@ var
   {$ELSE}
   PngBmp : TPngObject;
   {$ENDIF}
+//  PngBmp : TPngBitmap;
   {$ENDIF}
 
 begin
@@ -156,6 +158,8 @@ begin
  {$ELSE}
  PngBmp := TPngObject.Create;
  {$ENDIF}
+
+// PngBmp := TPngBitmap.Create;
  try
   RS := TResourceStream.Create(hInstance, 'TwoBandKnob', 'PNG');
   try
@@ -165,10 +169,13 @@ begin
      DialBitmap.Canvas.Brush.Color := $696969;
      {$IFDEF DELPHI2010_UP}
      DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
-     PngBmp.DrawUsingPixelInformation(DialBitmap.Canvas, Point(0, 0));
+     PngBmp.Draw(DialBitmap.Canvas, Rect(0, 0, DialBitmap.Width,
+       DialBitmap.Height));
      {$ELSE}
      DialBitmap.Assign(PngBmp);
      {$ENDIF}
+//     PngBmp.AssignTo(DialBitmap);
+//     DialBitmap.Assign(PngBmp);
      NumGlyphs := 65;
     end;
    DialFreq.DialImageIndex := 0;

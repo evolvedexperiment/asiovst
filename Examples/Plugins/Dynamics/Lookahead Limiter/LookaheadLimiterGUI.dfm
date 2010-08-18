@@ -32,7 +32,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     LineWidth = 2
     Max = 24.000000000000000000
     Min = -6.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialInputChange
     OnDblClick = DialInputDblClick
     PointerAngles.Start = 225
@@ -87,7 +87,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     LineWidth = 2
     Max = 6.000000000000000000
     Min = -24.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialOutputChange
     OnDblClick = DialOutputDblClick
     PointerAngles.Start = 225
@@ -141,7 +141,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
     LineWidth = 2
     Max = 3000.000000000000000000
     Min = 0.003000000026077032
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialReleaseChange
     OnDblClick = DialReleaseDblClick
     PointerAngles.Start = 225
@@ -468,7 +468,7 @@ object FmLookaheadLimiter: TFmLookaheadLimiter
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
           FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
-        NumGlyphs = 65
+        GlyphCount = 65
         StitchKind = skHorizontal
         Height = 36
         Width = 36

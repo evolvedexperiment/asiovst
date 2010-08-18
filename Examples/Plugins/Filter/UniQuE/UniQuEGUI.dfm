@@ -47,7 +47,7 @@ object FmUniQuE: TFmUniQuE
       LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialLowChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
@@ -63,7 +63,7 @@ object FmUniQuE: TFmUniQuE
       LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialMidChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
@@ -79,7 +79,7 @@ object FmUniQuE: TFmUniQuE
       LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialPresenceChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical
@@ -95,7 +95,7 @@ object FmUniQuE: TFmUniQuE
       LineWidth = 2
       Max = 15.000000000000000000
       Min = -15.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialHighChange
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skVertical

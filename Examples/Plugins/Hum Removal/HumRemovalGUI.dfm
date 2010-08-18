@@ -96,7 +96,7 @@ object FmHumRemoval: TFmHumRemoval
       LineWidth = 2
       Max = 200.000000000000000000
       Min = 2.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialHighpassFrequencyChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -169,7 +169,7 @@ object FmHumRemoval: TFmHumRemoval
       LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialHighpassOrderChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -253,7 +253,7 @@ object FmHumRemoval: TFmHumRemoval
       LineWidth = 2
       Max = 120.000000000000000000
       Min = 40.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFundamentalFrequencyChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270
@@ -291,7 +291,7 @@ object FmHumRemoval: TFmHumRemoval
       LineWidth = 2
       Max = 0.300000011920929000
       Min = 0.029999999329447750
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialNotchBandwidthChange
       PointerAngles.Start = 225
       PointerAngles.Range = 270

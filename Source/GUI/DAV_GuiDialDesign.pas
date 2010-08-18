@@ -7,7 +7,8 @@ interface
 uses
   {$IFDEF FPC} LCLIntf, LazIDEIntf, PropEdits,{$ELSE} {$IFDEF DELPHI6_UP}
   DesignIntf, DesignEditors, {$ELSE} DsgnIntf, {$ENDIF} {$ENDIF}
-  Classes, TypInfo, DAV_GuiBaseControl, DAV_GuiDesign, DAV_GuiDial;
+  Classes, TypInfo, DAV_GuiBaseControl, DAV_GuiDesign, DAV_GuiDial,
+  DAV_GuiDialRenderer;
 
 type
   TPrimitiveClassProperty = class(TCustomClassProperty)

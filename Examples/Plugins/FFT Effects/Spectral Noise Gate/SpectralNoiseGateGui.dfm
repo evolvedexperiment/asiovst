@@ -29,7 +29,7 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     LineWidth = 2
     Max = 6.000000000000000000
     Min = -96.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialThresholdChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -51,7 +51,7 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     LineWidth = 2
     Max = 13.000000000000000000
     Min = 6.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialFftOrderChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -74,7 +74,7 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     LineWidth = 2
     Max = 100.000000000000000000
     Min = 1.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialRatioChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -177,7 +177,7 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     LineColor = 12632777
     LineWidth = 2
     Max = 10.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialKneeChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -227,7 +227,7 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     LineWidth = 2
     Max = 100.000000000000000000
     Min = 0.009999999776482582
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialAttackChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -277,7 +277,7 @@ object FmSpectralNoiseGate: TFmSpectralNoiseGate
     LineWidth = 2
     Max = 300.000000000000000000
     Min = 0.500000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialReleaseChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270

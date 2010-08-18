@@ -29,7 +29,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     LineWidth = 2
     Max = 10.000000000000000000
     Min = 0.009999999776482582
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialSpeedChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -49,7 +49,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     LineColor = 14277598
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialDepthChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270
@@ -69,7 +69,7 @@ object FmSimpleFlanger: TFmSimpleFlanger
     LineColor = 14277598
     LineWidth = 2
     Max = 100.000000000000000000
-    NumGlyphs = 65
+    GlyphCount = 65
     OnChange = DialMixChange
     PointerAngles.Start = 225
     PointerAngles.Range = 270

@@ -42,6 +42,7 @@ uses
 type
   TTwoBandDistortionDataModule = class(TVSTModule)
     procedure VSTModuleCreate(Sender: TObject);
+    procedure VSTModuleDestroy(Sender: TObject);
     procedure VSTModuleOpen(Sender: TObject);
     procedure VSTModuleClose(Sender: TObject);
     procedure VSTModuleEditOpen(Sender: TObject; var GUI: TForm; ParentWindow: Cardinal);
@@ -51,9 +52,8 @@ type
     procedure ParamLowDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParamHighDistChange(Sender: TObject; const Index: Integer; var Value: Single);
     procedure ParameterOrderChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure VSTModuleDestroy(Sender: TObject);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FCriticalSection : TCriticalSection;
     FLinkwitzRiley   : array [0..1] of TLinkwitzRiley;
@@ -69,7 +69,7 @@ implementation
 {$ENDIF}
 
 uses
-  TwoBandDistortionGUI, DAV_Approximations;
+  AnsiStrings, TwoBandDistortionGUI, DAV_Approximations;
 
 procedure TTwoBandDistortionDataModule.VSTModuleOpen(Sender: TObject);
 var
@@ -181,18 +181,18 @@ begin
 end;
 
 procedure TTwoBandDistortionDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
   then PreDefined := 'kHz';
 end;
 
 procedure TTwoBandDistortionDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] >= 1000
-  then PreDefined := FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4)
-  else PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4);
+  then PreDefined := AnsiString(FloatToStrF(1E-3 * Parameter[Index], ffGeneral, 4, 4))
+  else PreDefined := AnsiString(FloatToStrF(Parameter[Index], ffGeneral, 4, 4));
 end;
 
 procedure TTwoBandDistortionDataModule.ParamHighDistChange(

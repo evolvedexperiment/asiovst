@@ -72,6 +72,7 @@ function Frequency2CriticalBandwidth(Frequency: Double): Double; overload; {$IFD
 
 function GermaniumDiode(Voltage: Double): Double;
 function SiliconDiode(Voltage: Double): Double;
+procedure Exchange(var ValueA, ValueB);
 
 // dB stuff
 function dB_to_Amp(const Value: Single): Single; overload; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
@@ -482,6 +483,15 @@ end;
 function SiliconDiode(Voltage: Double): Double;
 begin
  Result := 40.6728602E-9 * (exp(17.7493332 * (Voltage + 0.3)) - 1);
+end;
+
+procedure Exchange(var ValueA, ValueB);
+var
+  Temp : Integer;
+begin
+ Temp := Integer(ValueA);
+ Integer(ValueA) := Integer(ValueB);
+ Integer(ValueB) := Temp;
 end;
 
 

@@ -62,7 +62,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 160.000000000000000000
       Min = 16.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialFrequencyChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -136,7 +136,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 6.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialOrderChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -192,7 +192,7 @@ object FmBassExtender: TFmBassExtender
       LineColor = 1450277
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialDivideChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -248,7 +248,7 @@ object FmBassExtender: TFmBassExtender
       LineColor = 1450277
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialShapeChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -304,7 +304,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 100.000000000000000000
       Min = -100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialBalanceChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -343,7 +343,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 100.000000000000000000
       Min = -80.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialThresholdChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -416,7 +416,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 100.000000000000000000
       Min = 1.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialRatioChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -474,7 +474,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 100000.000000000000000000
       Min = 10.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialAttackChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -532,7 +532,7 @@ object FmBassExtender: TFmBassExtender
       LineWidth = 2
       Max = 800.000000000000000000
       Min = 20.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialReleaseChange
       ParentColor = False
       PointerAngles.Start = 220
@@ -588,7 +588,7 @@ object FmBassExtender: TFmBassExtender
       LineColor = 1450277
       LineWidth = 2
       Max = 100.000000000000000000
-      NumGlyphs = 65
+      GlyphCount = 65
       OnChange = DialCompressionChange
       ParentColor = False
       PointerAngles.Start = 220
