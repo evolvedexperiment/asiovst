@@ -33,8 +33,8 @@ begin
  Result^.UniqueID[0] := '1';
 end;
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
-begin
 end.

@@ -17,9 +17,9 @@ begin
  Result := WinampDSPModuleHeader(TmdaAmbienceDataModule);
 end;
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
-exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
 
-begin
 end.
