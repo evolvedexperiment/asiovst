@@ -86,6 +86,9 @@ function CeilLog2(Value : Extended): Integer; overload;
 function CeilLog2(Value : Integer): Integer; overload;
 function Power2(const X: Extended): Extended;
 
+function IsNan32(const Value: Single): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+function IsNan64(const Value: Double): Boolean; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF}
+
 function Sigmoid(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sigmoid(const Input: Double): Double; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
 function Sinc(const Input: Single): Single; {$IFDEF SUPPORTS_INLINE} inline; {$ENDIF} overload;
@@ -104,6 +107,13 @@ procedure Balance(A : PDAVSingleFixedMatrix; LowIndex, HighIndex : Integer;
   out IndexLow, IndexHigh: Integer; Scale: PDAVSingleFixedArray); overload;
 procedure Balance(A : PDAVDoubleFixedMatrix; LowIndex, HighIndex : Integer;
   out IndexLow, IndexHigh: Integer; Scale: PDAVDoubleFixedArray); overload;
+
+
+function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
+function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
+function SafeAngle(Angle: Single): Single;
+function SolveForX(X, Z: Longint): Longint;
+function SolveForY(Y, Z: Longint): Longint;
 
 const
   CTwoMulTwo2Neg32   : Single = ((2.0 / $10000) / $10000);  // 2^-32
@@ -461,6 +471,20 @@ asm
  FSCALE              { Result := z * 2**i }
  FSTP    ST(1)
  {$ENDIF}
+end;
+
+// IsNan
+
+function IsNan32(const Value: Single): Boolean;
+begin
+ Result := ((PCardinal(@Value)^ and $7F800000)  = $7F800000) and
+           ((PCardinal(@Value)^ and $007FFFFF) <> $00000000);
+end;
+
+function IsNan64(const Value: Double): Boolean;
+begin
+  Result := ((PInt64(@Value)^ and $7FF0000000000000)  = $7FF0000000000000) and
+            ((PInt64(@Value)^ and $000FFFFFFFFFFFFF) <> $0000000000000000);
 end;
 
 
@@ -952,6 +976,41 @@ begin
    end;
  until Conv;
 end;
+
+function RadToDeg(const Radians: Extended): Extended;
+// Degrees := Radians * 180 / PI
+const
+  DegPi : Double = (180 / PI);
+begin
+  Result := Radians * DegPi;
+end;
+
+function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
+const
+  MulFak = 180 / Pi;
+begin
+  Result := ArcTan2(X2 - X1, Y1 - Y2) * MulFak;
+end;
+
+function SafeAngle(Angle: Single): Single;
+begin
+  while Angle < 0 do Angle := Angle + 360;
+  while Angle >= 360 do Angle := Angle - 360;
+  Result := Angle;
+end;
+
+function SolveForX(X, Z: Longint): Longint;
+// This function solves for Re in the equation "x is y% of z".
+begin
+  Result := Round(Z * (X * 0.01));//tt
+end;
+
+function SolveForY(Y, Z: Longint): Longint;
+// This function solves for Im in the equation "x is y% of z".
+begin
+  if Z = 0 then Result := 0 else Result := Round((Y * 100.0) / Z); //t
+end;
+
 
 procedure InitConstants;
 begin

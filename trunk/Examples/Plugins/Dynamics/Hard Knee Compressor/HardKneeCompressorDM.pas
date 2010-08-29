@@ -84,12 +84,12 @@ end;
 procedure THardKneeCompressorDataModule.SLThresholdChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
  // update compressor parameter on all channels
- for ch := 0 to 1 do
-  if assigned(FSimpleCompressors[ch])
-   then FSimpleCompressors[ch].Threshold_dB := Value;
+ for ChannelIndex := 0 to 1 do
+  if Assigned(FSimpleCompressors[ChannelIndex])
+   then FSimpleCompressors[ChannelIndex].Threshold_dB := Value;
 
  // update GUI
  if EditorForm is TFmHardKneeCompressor then
@@ -100,12 +100,12 @@ end;
 procedure THardKneeCompressorDataModule.SLRatioChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
  // update compressor parameter on all channels
- for ch := 0 to 1 do
-  if assigned(FSimpleCompressors[ch])
-   then FSimpleCompressors[ch].Ratio := 1 / Value;
+ for ChannelIndex := 0 to 1 do
+  if Assigned(FSimpleCompressors[ChannelIndex])
+   then FSimpleCompressors[ChannelIndex].Ratio := 1 / Value;
 
  // update GUI
  if EditorForm is TFmHardKneeCompressor then
@@ -116,12 +116,12 @@ end;
 procedure THardKneeCompressorDataModule.SLReleaseChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
  // update compressor parameter on all channels
- for ch := 0 to 1 do
-  if assigned(FSimpleCompressors[ch])
-   then FSimpleCompressors[ch].Release := Value;
+ for ChannelIndex := 0 to 1 do
+  if Assigned(FSimpleCompressors[ChannelIndex])
+   then FSimpleCompressors[ChannelIndex].Release := Value;
 
  // update GUI
  if EditorForm is TFmHardKneeCompressor then
@@ -132,12 +132,12 @@ end;
 procedure THardKneeCompressorDataModule.SLAttackChange(
   Sender: TObject; const Index: Integer; var Value: Single);
 var
-  ch : Integer;
+  ChannelIndex : Integer;
 begin
  // update compressor parameter on all channels
- for ch := 0 to 1 do
-  if assigned(FSimpleCompressors[ch])
-   then FSimpleCompressors[ch].Attack := Value;
+ for ChannelIndex := 0 to 1 do
+  if Assigned(FSimpleCompressors[ChannelIndex])
+   then FSimpleCompressors[ChannelIndex].Attack := Value;
 
  // update GUI
  if EditorForm is TFmHardKneeCompressor then

@@ -84,7 +84,7 @@ begin
         Top      := 8 + (i div 6) * 72;
         DialBitmap.LoadFromStream(RS);
         RS.Position       := 0;
-        NumGlyphs         := 65;
+        GlyphCount         := 65;
         Min               := -1;
         Max               := 1;
         ScrollRange_Pixel := 200;

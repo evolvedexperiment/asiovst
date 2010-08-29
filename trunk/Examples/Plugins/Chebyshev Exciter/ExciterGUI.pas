@@ -75,17 +75,25 @@ implementation
 {$R *.DFM}
 
 uses
-  PNGImage, DAV_GUICommon, ExciterDM;
+  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF} DAV_GUICommon, ExciterDM;
 
 procedure TFmExciter.FormCreate(Sender: TObject);
 var
-  RS     : TResourceStream;
   x, y   : Integer;
   s      : array[0..1] of Single;
   b      : ShortInt;
   Line   : PRGB24Array;
   h, hr  : Single;
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
+  RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
+  {$ENDIF}
+  {$ENDIF}
 
 begin
  // Create Background Image
@@ -105,7 +113,7 @@ begin
      for x := 0 to Width - 1 do
       begin
        s[1] := 0.97 * s[0] + 0.03 * (2 * random - 1);
-       b := round($3F + $1A * (h + s[1]));
+       b := Round($3F + $1A * (h + s[1]));
        s[0] := s[1];
        Line[x].B := b;
        Line[x].G := b;
@@ -114,21 +122,48 @@ begin
     end;
   end;
 
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
+
+  // yet todo!
+
+ finally
+  FreeAndNil(PngBmp);
+ end;
+ {$ELSE}
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'ExciterKnob', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
+   {$IFDEF DELPHI2010_UP}
+   DialShape.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialShape.DialBitmap.Canvas, Point(0, 0));
+   DialMix.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialMix.DialBitmap.Canvas, Point(0, 0));
+   DialTune.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialTune.DialBitmap.Canvas, Point(0, 0));
+   DialOrder.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialOrder.DialBitmap.Canvas, Point(0, 0));
+   {$ELSE}
    PngBmp.AssignTo(DialTune.DialBitmap);
    PngBmp.AssignTo(DialOrder.DialBitmap);
    DialShape.DialBitmap.Assign(PngBmp);
    DialMix.DialBitmap.Assign(PngBmp);
+   {$ENDIF}
   finally
    RS.Free;
   end;
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmExciter.FormPaint(Sender: TObject);

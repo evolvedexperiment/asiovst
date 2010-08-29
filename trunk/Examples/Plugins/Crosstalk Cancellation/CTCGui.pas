@@ -36,8 +36,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, Controls, StdCtrls, ExtCtrls,
-  Graphics, DAV_Types, DAV_VSTModule, PngImage, DAV_GuiBaseControl,
-  DAV_GuiLabel;
+  Graphics, DAV_Types, DAV_VSTModule, DAV_GuiBaseControl, DAV_GuiLabel;
 
 type
   TFmCTC = class(TForm)
@@ -102,7 +101,7 @@ implementation
 {$R *.DFM}
 
 uses
-  CTCDM, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
+  PngImage, CTCDM, DAV_Common, DAV_GuiCommon, DAV_VSTModuleWithPrograms;
 
 procedure TFmCTC.FormCreate(Sender: TObject);
 var
@@ -110,7 +109,7 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
   PngBmp : TPngObject;
 begin
   // Create Background Image

@@ -94,7 +94,7 @@ uses
 constructor TDspHumRemoval.Create;
 begin
  inherited;
- FHighpassFilterType := TButterworthLowCut;
+ FHighpassFilterType := TButterworthLowCutFilter;
  FHighpassFilter := FHighpassFilterType.Create(2);
  FFundamentalFrequency := 50;
  FBandwidth := 0.1;

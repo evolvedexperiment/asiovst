@@ -1,4 +1,4 @@
-object HardKneeCompressorGUI: TFmHardKneeCompressor
+object FmHardKneeCompressor: TFmHardKneeCompressor
   Left = 355
   Top = 328
   BorderStyle = bsNone
@@ -26,6 +26,7 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     DialImageIndex = -1
     LineColor = 15652795
     LineWidth = 2
+    Max = 100.000000000000000000
     Min = -96.000000000000000000
     GlyphCount = 64
     OnChange = DialThresholdChange
@@ -50,6 +51,8 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRatio: TGuiDial
     Left = 72
@@ -85,6 +88,8 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialAttack: TGuiDial
     Left = 136
@@ -119,6 +124,8 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object DialRelease: TGuiDial
     Left = 200
@@ -155,6 +162,8 @@ object HardKneeCompressorGUI: TFmHardKneeCompressor
     Font.Height = -9
     Font.Name = 'Verdana'
     Font.Style = [fsBold]
+    ParentFont = False
+    Shadow.Color = clBlack
   end
   object LbAttackValue: TLabel
     Left = 136

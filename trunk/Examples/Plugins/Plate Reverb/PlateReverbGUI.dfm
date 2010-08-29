@@ -36,6 +36,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialWet: TGuiDial
     Left = 70
@@ -57,6 +58,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialPreDelay: TGuiDial
     Left = 124
@@ -78,6 +80,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 99.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialDampingFrequency: TGuiDial
     Left = 232
@@ -101,6 +104,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 1000.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialInputDiffusion: TGuiDial
     Left = 286
@@ -122,6 +126,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 30.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialDecayDiffusion: TGuiDial
     Left = 340
@@ -142,6 +147,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 30.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialDecay: TGuiDial
     Left = 178
@@ -163,6 +169,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 50.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object DialModulation: TGuiDial
     Left = 394
@@ -183,6 +190,7 @@ object FmPlateReverb: TFmPlateReverb
     Position = 30.000000000000000000
     ScrollRange_Pixel = 400.000000000000000000
     StitchKind = skVertical
+    WheelStep = 1.000000000000000000
   end
   object PnLabel: TGuiPanel
     Left = 12
@@ -213,6 +221,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbWet: TGuiLabel
       Left = 58
@@ -230,6 +240,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbPreDelay: TGuiLabel
       Left = 112
@@ -247,6 +259,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbInputDiffusion: TGuiLabel
       Left = 279
@@ -264,6 +278,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDecayDiffusion: TGuiLabel
       Left = 321
@@ -281,6 +297,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDampingFrequency: TGuiLabel
       Left = 220
@@ -298,6 +316,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbDecay: TGuiLabel
       Left = 166
@@ -315,6 +335,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbMod: TGuiLabel
       Left = 390
@@ -332,6 +354,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object CBFreeze: TCheckBox
@@ -351,7 +375,6 @@ object FmPlateReverb: TFmPlateReverb
     BevelOuter = bvNone
     Color = clWhite
     TabOrder = 1
-    ExplicitWidth = 353
     object SBPreset: TGuiSelectBox
       Left = 51
       Top = 2
@@ -387,6 +410,8 @@ object FmPlateReverb: TFmPlateReverb
       Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object BtAB: TGuiButton
       Left = 213
@@ -404,6 +429,7 @@ object FmPlateReverb: TFmPlateReverb
       LineColor = 5855577
       ButtonColor = 14803425
       Radius = 4
+      Shadow.Color = clBlack
     end
     object BtAbout: TGuiButton
       Left = 280
@@ -421,6 +447,7 @@ object FmPlateReverb: TFmPlateReverb
       LineColor = 5855577
       ButtonColor = 14803425
       Radius = 4
+      Shadow.Color = clBlack
       OnClick = BtAboutClick
     end
   end

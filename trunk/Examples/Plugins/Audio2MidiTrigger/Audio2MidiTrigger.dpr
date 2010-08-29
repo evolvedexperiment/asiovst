@@ -15,8 +15,9 @@ begin
   Result := VstModuleMain(AudioMasterCallback, TAudio2MidiTriggerModule);
 end;
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
+exports
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

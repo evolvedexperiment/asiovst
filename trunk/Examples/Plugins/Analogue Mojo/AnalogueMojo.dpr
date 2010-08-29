@@ -15,17 +15,18 @@ uses
 
 function VstPluginMain(AudioMasterCallback: TAudioMasterCallbackFunc): PVSTEffect; cdecl; export;
 begin
-  Result := VstModuleMain(AudioMasterCallback, TAnalogueMojoDM);
+ Result := VstModuleMain(AudioMasterCallback, TAnalogueMojoDM);
 end;
 
 function WinampDSPGetHeader: PWinAmpDSPHeader; cdecl; export;
 begin
-  Result := WinampDSPModuleHeader(TAnalogueMojoDM);
+ Result := WinampDSPModuleHeader(TAnalogueMojoDM);
 end;
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
-exports WinampDSPGetHeader name 'winampDSPGetHeader2';
+exports
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain',
+  WinampDSPGetHeader name 'winampDSPGetHeader2';
 
 begin
 end.

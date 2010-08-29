@@ -48,8 +48,8 @@ type
     procedure VSTModuleProcessMultiChannel(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParameterFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
-    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterFrequencyDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
+    procedure ParameterFrequencyLabel(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
   private
     FRingMod : array of TAutoRingModulator32;
     procedure ChooseProcess;
@@ -68,8 +68,8 @@ const
 
 procedure TRingModulatorDataModule.VSTModuleOpen(Sender: TObject);
 var
-  ChannelIndex   : Integer;
-  UpperFreq : Single;
+  ChannelIndex : Integer;
+  UpperFreq    : Single;
 begin
  assert(numInputs = numOutputs);
  assert(numInputs > 0);
@@ -141,7 +141,7 @@ begin
 end;
 
 procedure TRingModulatorDataModule.ParameterFrequencyDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := FloatToStrF(Parameter[Index], ffGeneral, 4, 4)
@@ -149,7 +149,7 @@ begin
 end;
 
 procedure TRingModulatorDataModule.ParameterFrequencyLabel(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  if Parameter[Index] < 1000
   then PreDefined := 'Hz'

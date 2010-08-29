@@ -230,7 +230,9 @@ object FmCTC: TFmCTC
     Font.Height = -27
     Font.Name = 'Tahoma'
     Font.Style = [fsBold]
+    ParentFont = False
     Transparent = True
+    Shadow.Color = clBlack
   end
   object LbSwitches: TLabel
     Left = 183

@@ -1,4 +1,5 @@
 object RingModulatorDataModule: TRingModulatorDataModule
+  OldCreateOrder = True
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'Ring Modulator'

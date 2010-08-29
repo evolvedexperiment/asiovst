@@ -856,7 +856,7 @@ begin
   begin
    Add(@BlendRegisterNative);
    {$IFNDEF PUREPASCAL}
-   Add(@BlendRegisterMMX, [pfMMX]);
+//   Add(@BlendRegisterMMX, [pfMMX]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;
@@ -869,7 +869,7 @@ begin
   begin
    Add(@BlendMemoryNative);
    {$IFNDEF PUREPASCAL}
-   Add(@BlendMemoryMMX, [pfMMX]);
+//   Add(@BlendMemoryMMX, [pfMMX]);
    {$ENDIF}
    RebindProcessorSpecific;
   end;

@@ -63,31 +63,59 @@ implementation
 {$ENDIF}
 
 uses
-  PngImage, DAV_GuiCommon, RingModulatorDM, DAV_VSTModuleWithPrograms,
-  DAV_VSTParameters;
+  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF} DAV_GuiCommon,
+  DAV_VSTModuleWithPrograms, DAV_VSTParameters, RingModulatorDM;
 
 procedure TFmRingModulator.FormCreate(Sender: TObject);
 var
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
   RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
-
+  {$ENDIF}
+  {$ENDIF}
 begin
  // Create BackgRound Image
  FBackgrounBitmap := TBitmap.Create;
  FBackgrounBitmap.PixelFormat := pf24bit;
 
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('RingModulator');
+
+  // yet todo!
+
+ finally
+  FreeAndNil(PngBmp);
+ end;
+ {$ELSE}
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'RingModulator', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
+   {$IFDEF DELPHI2010_UP}
+   DialFrequency.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialFrequency.DialBitmap.Canvas, Point(0, 0));
+   {$ELSE}
    DialFrequency.DialBitmap.Assign(PngBmp);
+   {$ENDIF}
   finally
    RS.Free;
   end;
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmRingModulator.FormShow(Sender: TObject);
@@ -149,7 +177,7 @@ begin
   begin
    if DialFrequency.Position <> Parameter[0]
     then DialFrequency.Position := Parameter[0];
-   LbDisplay.Caption := ParameterDisplay[0] + ' ' + ParameterLabel[0];
+   LbDisplay.Caption := string(ParameterDisplay[0] + ' ' + ParameterLabel[0]);
   end;
 end;
 

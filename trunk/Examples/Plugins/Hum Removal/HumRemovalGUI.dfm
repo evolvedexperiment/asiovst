@@ -23,26 +23,26 @@ object FmHumRemoval: TFmHumRemoval
     Width = 379
     Height = 169
     AntiAlias = gaaLinear4x
-    GraphColorDark = 7699334
-    GraphColorLight = 2829873
-    ColorChart = clBlack
+    BorderColor = 14277598
     BorderRadius = 7
     BorderWidth = 2
-    BorderColor = 14277598
+    ColorChart = clBlack
     FilterSeries = <
       item
         DisplayName = 'Mono'
         Color = 14277598
         OnGetFilterGain = GuiEQGraphGetFilterGain
       end>
+    GraphColorDark = 7699334
+    GraphColorLight = 2829873
+    XAxis.LabelPosition = xlpBottom
+    XAxis.UpperFrequency = 1600.000000000000000000
+    XAxis.LowerFrequency = 4.000000000000000000
     YAxis.LabelPosition = ylpLeft
     YAxis.LowerLevel = -36.000000000000000000
     YAxis.UpperLevel = 6.000000000000000000
     YAxis.Granularity = 20.000000000000000000
     YAxis.MaximumGridLines = 4
-    XAxis.LabelPosition = xlpBottom
-    XAxis.UpperFrequency = 1600.000000000000000000
-    XAxis.LowerFrequency = 4.000000000000000000
     Color = clBlack
     Font.Charset = DEFAULT_CHARSET
     Font.Color = 7699334
@@ -64,7 +64,8 @@ object FmHumRemoval: TFmHumRemoval
     Font.Name = 'Tahoma'
     Font.Style = []
     LineColor = 14277598
-    LineWidth = 3
+    OutlineWidth = 2
+    PanelColor = clBlack
     ParentFont = False
     Radius = 8
     TabOrder = 1
@@ -82,6 +83,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighpassFrequency: TGuiDial
       Left = 35
@@ -113,6 +115,7 @@ object FmHumRemoval: TFmHumRemoval
       Height = 16
       LEDColor = 14277598
       Brightness_Percent = 10.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 40.000000000000000000
       AntiAlias = gaaLinear3x
       LineColor = 14277598
@@ -155,6 +158,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialHighpassOrder: TGuiDial
       Left = 109
@@ -192,6 +196,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbHighpassOrderValue: TGuiLabel
       Left = 97
@@ -206,11 +211,12 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
   end
   object GbNotchFilters: TGuiGroup
-    Left = 186
-    Top = 183
+    Left = 187
+    Top = 182
     Width = 201
     Height = 160
     AntiAlias = gaaLinear4x
@@ -221,7 +227,8 @@ object FmHumRemoval: TFmHumRemoval
     Font.Name = 'Tahoma'
     Font.Style = []
     LineColor = 14277598
-    LineWidth = 3
+    OutlineWidth = 2
+    PanelColor = clBlack
     ParentFont = False
     Radius = 8
     TabOrder = 2
@@ -239,6 +246,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialFundamentalFrequency: TGuiDial
       Left = 35
@@ -277,6 +285,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialNotchBandwidth: TGuiDial
       Left = 130
@@ -290,7 +299,7 @@ object FmHumRemoval: TFmHumRemoval
       LineColor = 12632777
       LineWidth = 2
       Max = 0.300000011920929000
-      Min = 0.029999999329447750
+      Min = 0.029999999329447740
       GlyphCount = 65
       OnChange = DialNotchBandwidthChange
       PointerAngles.Start = 225
@@ -314,6 +323,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LbNotchBandwidthValue: TGuiLabel
       Left = 106
@@ -328,6 +338,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
     end
     object LedHumProfile: TGuiLED
       Left = 10
@@ -336,6 +347,7 @@ object FmHumRemoval: TFmHumRemoval
       Height = 16
       LEDColor = 14277598
       Brightness_Percent = 10.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
       Uniformity_Percent = 40.000000000000000000
       AntiAlias = gaaLinear3x
       LineColor = 14277598
@@ -354,6 +366,7 @@ object FmHumRemoval: TFmHumRemoval
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
+      Shadow.Color = clBlack
       OnClick = LedHumProfileClick
     end
   end

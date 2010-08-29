@@ -124,7 +124,6 @@ begin
  FUpsampler := TPolyphaseUpsampler64.Create;
  with FUpsampler do
   begin
-   SampleRate := Self.SampleRate;
    NumberOfCoefficients := 6;
    Transition := 0.49;
   end;
@@ -133,7 +132,6 @@ begin
  FDownsampler := TPolyphaseDownsampler64.Create;
  with FDownsampler do
   begin
-   SampleRate := Self.SampleRate;
    NumberOfCoefficients := 6;
    Transition := 0.24;
   end;

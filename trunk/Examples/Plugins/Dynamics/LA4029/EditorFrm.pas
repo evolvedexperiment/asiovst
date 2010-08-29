@@ -84,7 +84,7 @@ type
     PopupVUMeterSpeed: TPopupMenu;
     SpDivide1: TShape;
     SpDivide2: TShape;
-    Timer1: TTimer;
+    Timer: TTimer;
     VUMeter: TGuiVUMeter;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);

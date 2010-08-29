@@ -1,5 +1,4 @@
 object SonogramDataModule: TSonogramDataModule
-  OldCreateOrder = False
   OnCreate = VSTModuleCreate
   OnDestroy = VSTModuleDestroy
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
@@ -18,7 +17,6 @@ object SonogramDataModule: TSonogramDataModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'FFT Order'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]
@@ -56,7 +54,6 @@ object SonogramDataModule: TSonogramDataModule
       OnCustomParameterDisplay = ParameterIntegerDisplay
     end
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Window Type'
       Flags = [ppfParameterUsesIntegerMinMax, ppfParameterUsesIntStep, ppfParameterSupportsDisplayIndex]

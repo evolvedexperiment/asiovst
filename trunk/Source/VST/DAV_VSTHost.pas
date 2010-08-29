@@ -1788,7 +1788,7 @@ begin
      then FreeAndNil(FGUIControl);
     {$ENDIF}
    finally
-    FreeAndNil(FInternalDllLoader)
+    FreeAndNil(FInternalDllLoader);
    end;
   {$ENDIF}
  finally
@@ -2101,7 +2101,7 @@ end;
 procedure TCustomVstPlugIn.SetProgramName(const NewName: AnsiString);
 begin
  if FActive
-  then VstDispatch(effSetProgramName, 0, 0, PAnsiChar(NewName[1]));
+  then VstDispatch(effSetProgramName, 0, 0, PAnsiChar(@NewName[1]));
 end;
 
 function TCustomVstPlugIn.GetProgramName: AnsiString;

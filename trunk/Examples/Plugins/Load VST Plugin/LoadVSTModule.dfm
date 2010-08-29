@@ -1,5 +1,4 @@
 object PlugInPlugModule: TPlugInPlugModule
-  OldCreateOrder = False
   OnCreate = VST2ModuleCreate
   Flags = [effFlagsHasEditor, effFlagsCanReplacing, effFlagsCanDoubleReplacing]
   Version = '1.0'

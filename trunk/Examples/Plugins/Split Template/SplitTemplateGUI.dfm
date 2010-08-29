@@ -51,6 +51,8 @@ object FmSplitter: TFmSplitter
       CurveMapping = -2.099999904632568000
       DefaultPosition = 100.000000000000000000
       DialImageIndex = -1
+      LineColor = clRed
+      LineWidth = 2
       Max = 20000.000000000000000000
       Min = 20.000000000000000000
       OnChange = DialSplitFrequencyChange
@@ -60,6 +62,7 @@ object FmSplitter: TFmSplitter
       Position = 1000.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbSplitFrequency: TGuiLabel
       Left = 129
@@ -73,6 +76,8 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object DialSplitOrder: TGuiDial
       Left = 194
@@ -84,6 +89,8 @@ object FmSplitter: TFmSplitter
       CurveMapping = -1.250000000000000000
       DefaultPosition = 8.000000000000000000
       DialImageIndex = -1
+      LineColor = clRed
+      LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialSplitOrderChange
@@ -93,6 +100,7 @@ object FmSplitter: TFmSplitter
       Position = 8.000000000000000000
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
+      WheelStep = 1.000000000000000000
     end
     object LbSplitOrder: TGuiLabel
       Left = 219
@@ -106,15 +114,19 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
     end
     object GuiLEDOversampling: TGuiLED
       Left = 257
       Top = 9
       Width = 20
       Height = 20
-      Brightness_Percent = 20.000000000000000000
       LineWidth = 2
       LEDColor = clLime
+      Brightness_Percent = 20.000000000000000000
+      BorderStrength_Percent = 100.000000000000000000
+      Uniformity_Percent = 36.754447937011720000
       AntiAlias = gaaLinear4x
       LineColor = clLime
       OnClick = GuiLEDOversamplingClick
@@ -131,6 +143,8 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
+      Shadow.Color = clBlack
       OnClick = GuiLEDOversamplingClick
     end
     object LbOversamplingFactor: TGuiLabel
@@ -145,7 +159,9 @@ object FmSplitter: TFmSplitter
       Font.Height = -16
       Font.Name = 'Times New Roman'
       Font.Style = [fsBold]
+      ParentFont = False
       Visible = False
+      Shadow.Color = clBlack
     end
     object DialOversampling: TGuiDial
       Left = 386
@@ -157,6 +173,8 @@ object FmSplitter: TFmSplitter
       CurveMapping = -1.250000000000000000
       DefaultPosition = 4.000000000000000000
       DialImageIndex = -1
+      LineColor = clRed
+      LineWidth = 2
       Max = 16.000000000000000000
       Min = 1.000000000000000000
       OnChange = DialOversamplingChange
@@ -167,6 +185,7 @@ object FmSplitter: TFmSplitter
       ScrollRange_Pixel = 400.000000000000000000
       StitchKind = skHorizontal
       Visible = False
+      WheelStep = 1.000000000000000000
     end
     object BtLow: TGuiButton
       Left = 447
@@ -185,6 +204,7 @@ object FmSplitter: TFmSplitter
       LineWidth = 2
       ButtonColor = 1625885
       Radius = 4
+      Shadow.Color = clBlack
       OnClick = BtLowClick
     end
     object BtHigh: TGuiButton
@@ -204,6 +224,7 @@ object FmSplitter: TFmSplitter
       LineWidth = 2
       ButtonColor = 6450289
       Radius = 4
+      Shadow.Color = clBlack
       OnClick = BtHighClick
     end
     object SBMode: TGuiSelectBox

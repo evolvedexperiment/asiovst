@@ -16,8 +16,9 @@ begin
  Result := VstModuleMain(AudioMasterCallback, TVSTSSModule);
 end;
 
-exports VstPluginMain name 'main';
-exports VstPluginMain name 'VSTPluginMain';
+exports 
+  VstPluginMain name 'main',
+  VstPluginMain name 'VSTPluginMain';
 
 begin
 end.

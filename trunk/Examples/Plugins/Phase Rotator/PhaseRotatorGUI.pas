@@ -61,7 +61,7 @@ begin
   try
    with DIL.DialImages.Add do
     begin
-     NumGlyphs := 65;
+     GlyphCount := 65;
      PngBmp.LoadFromStream(RS);
      DialBitmap.Assign(PngBmp);
     end;

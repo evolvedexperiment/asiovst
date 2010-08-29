@@ -67,33 +67,64 @@ implementation
 {$R *.DFM}
 
 uses
-  PngImage, DAV_GuiCommon, DAV_VSTModuleWithPrograms, BodeFrequencyShifterDM;
+  {$IFDEF FPC} LazPNG, {$ELSE} PNGImage, {$ENDIF}
+  DAV_GuiCommon, DAV_VSTModuleWithPrograms, BodeFrequencyShifterDM;
 
 { TFmBodeFrequencyShifter }
 
 procedure TFmBodeFrequencyShifter.FormCreate(Sender: TObject);
 var
+  {$IFDEF FPC}
+  PngBmp : TPNGImage;
+  {$ELSE}
   RS     : TResourceStream;
+  {$IFDEF DELPHI2010_UP}
+  PngBmp : TPngImage;
+  {$ELSE}
   PngBmp : TPngObject;
-
+  {$ENDIF}
+  {$ENDIF}
 begin
- // Create Background Image
+ // Create BackgRound Image
  FBackgrounBitmap := TBitmap.Create;
  FBackgrounBitmap.PixelFormat := pf24bit;
 
+ {$IFDEF FPC}
+ PngBmp := TPNGImage.Create;
+ try
+  PngBmp.LoadFromLazarusResource('TwoBandDistortion');
+
+  // yet todo!
+
+ finally
+  FreeAndNil(PngBmp);
+ end;
+ {$ELSE}
+ {$IFDEF DELPHI2010_UP}
+ PngBmp := TPngImage.Create;
+ {$ELSE}
  PngBmp := TPngObject.Create;
+ {$ENDIF}
  try
   RS := TResourceStream.Create(hInstance, 'BodeFrequencyShifter', 'PNG');
   try
    PngBmp.LoadFromStream(RS);
+   {$IFDEF DELPHI2010_UP}
+   DialFrequency.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialFrequency.DialBitmap.Canvas, Point(0, 0));
+   DialMix.DialBitmap.SetSize(PngBmp.Width, PngBmp.Height);
+   PngBmp.DrawUsingPixelInformation(DialMix.DialBitmap.Canvas, Point(0, 0));
+   {$ELSE}
    DialFrequency.DialBitmap.Assign(PngBmp);
    DialMix.DialBitmap.Assign(PngBmp);
+   {$ENDIF}
   finally
    RS.Free;
   end;
  finally
   FreeAndNil(PngBmp);
  end;
+ {$ENDIF}
 end;
 
 procedure TFmBodeFrequencyShifter.FormResize(Sender: TObject);
@@ -101,7 +132,7 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
 begin
  with FBackgrounBitmap do
   begin
@@ -120,9 +151,9 @@ begin
        s[1] := 0.97 * s[0] + 0.03 * random;
        s[0] := s[1];
 
-       Line[x].B := round($70 - $34 * (s[1] - h));
-       Line[x].G := round($84 - $48 * (s[1] - h));
-       Line[x].R := round($8D - $50 * (s[1] - h));
+       Line[x].B := Round($70 - $34 * (s[1] - h));
+       Line[x].G := Round($84 - $48 * (s[1] - h));
+       Line[x].R := Round($8D - $50 * (s[1] - h));
       end;
     end;
   end;

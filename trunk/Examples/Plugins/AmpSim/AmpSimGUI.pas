@@ -107,14 +107,14 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
 
 begin
  RS := TResourceStream.Create(hInstance, 'AmpKnob', 'BMP');
  try
   with DIL.DialImages.Add do
    begin
-    NumGlyphs := 65;
+    GlyphCount := 65;
     DialBitmap.LoadFromStream(RS);
    end;
   DialDrive.DialImageIndex := 0;

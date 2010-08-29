@@ -348,9 +348,14 @@ var
 {$IFNDEF PUREPASCAL}
 const
   {$IFDEF UseDelphi}
+  CHostCallProcessOffset = $00000238;
+  CHostCallProcess32ReplacingOffset = $0000023C;
+  CHostCallProcess64ReplacingOffset = $00000240;
+(*
   CHostCallProcessOffset = $00000234;
   CHostCallProcess32ReplacingOffset = $00000238;
   CHostCallProcess64ReplacingOffset = $0000023C;
+*)
   {$ELSE}
   CHostCallProcessOffset = $00000228;
   CHostCallProcess32ReplacingOffset = $0000022C;
@@ -619,7 +624,7 @@ end;
 
 function TBasicVSTModule.TempoAt(const Pos: Integer): Integer;
 begin
- CallAudioMaster(amTempoAt, 0, Pos);
+ Result := CallAudioMaster(amTempoAt, 0, Pos);
 end;
 
 function TBasicVSTModule.SendVstEventsToHost(var Events: TVstEvents): Boolean;

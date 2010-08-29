@@ -1,6 +1,7 @@
 object FmVstPresetDesigner: TFmVstPresetDesigner
   Left = 218
   Top = 77
+  BorderIcons = [biSystemMenu]
   Caption = 'VST Preset Designer'
   ClientHeight = 116
   ClientWidth = 255
@@ -81,32 +82,72 @@ object FmVstPresetDesigner: TFmVstPresetDesigner
         OnClick = MiExitClick
       end
     end
-    object MiPrograms: TMenuItem
-      Caption = '&Programs'
-      object MiLoad: TMenuItem
+    object MiProgram: TMenuItem
+      Caption = '&Program'
+      object MiProgramLoad: TMenuItem
         Caption = '&Load...'
+        OnClick = MiProgramLoadClick
       end
-      object MiSave: TMenuItem
+      object MiProgramSave: TMenuItem
         Caption = '&Save...'
-        OnClick = MiSaveClick
+        OnClick = MiProgramSaveClick
+      end
+      object MiEmbed: TMenuItem
+        Caption = 'Embed'
+        Visible = False
+        OnClick = MiEmbedClick
       end
       object N2: TMenuItem
         Caption = '-'
       end
-      object MiRandomize: TMenuItem
-        Caption = '&Randomize!'
-        OnClick = MiRandomizeClick
+      object MiProgramRename: TMenuItem
+        Caption = 'Rename...'
+        OnClick = MiProgramRenameClick
       end
-      object MIShuffle: TMenuItem
-        Caption = 'S&huffle!'
-        OnClick = MIShuffleClick
-      end
-      object MiDesign: TMenuItem
-        Caption = 'Design...'
-        OnClick = MiDesignClick
-      end
-      object N3: TMenuItem
+      object N6: TMenuItem
         Caption = '-'
+      end
+      object MiProgramRandomize: TMenuItem
+        Caption = '&Randomize!'
+        OnClick = MiProgramRandomizeClick
+      end
+      object MiProgramShuffle: TMenuItem
+        Caption = 'S&huffle!'
+        OnClick = MiProgramShuffleClick
+      end
+      object MiProgramDesign: TMenuItem
+        Caption = 'Design...'
+        Visible = False
+        OnClick = MiProgramDesignClick
+      end
+      object MiProgramSplitter: TMenuItem
+        Caption = '-'
+      end
+    end
+    object MiBank: TMenuItem
+      Caption = '&Bank'
+      object MiBankLoad: TMenuItem
+        Caption = '&Load...'
+        OnClick = MiBankLoadClick
+      end
+      object MiBankSave: TMenuItem
+        Caption = '&Save...'
+        OnClick = MiBankSaveClick
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object MiBankRandomize: TMenuItem
+        Caption = '&Randomize!'
+        OnClick = MiBankRandomizeClick
+      end
+      object MiBankShuffle: TMenuItem
+        Caption = 'S&huffle!'
+        OnClick = MiBankShuffleClick
+      end
+      object MiBankDesign: TMenuItem
+        Caption = 'Design...'
+        Visible = False
       end
     end
     object MiPreview: TMenuItem
@@ -119,15 +160,29 @@ object FmVstPresetDesigner: TFmVstPresetDesigner
         Caption = '&Open Audio...'
         OnClick = MiOpenAudioClick
       end
+      object N3: TMenuItem
+        Caption = '-'
+      end
+      object MiASIO: TMenuItem
+        Caption = 'ASIO'
+        object MiAsioSplitter: TMenuItem
+          Caption = '-'
+        end
+        object MiAsioControlPanel: TMenuItem
+          Caption = '&Control Panel'
+          OnClick = MiAsioControlPanelClick
+        end
+      end
       object N5: TMenuItem
         Caption = '-'
       end
       object MiPlayPreview: TMenuItem
         Caption = 'Preview!'
+        OnClick = MiPlayPreviewClick
       end
     end
   end
-  object OpenDialog: TOpenDialog
+  object OpenVSTDialog: TOpenDialog
     DefaultExt = '.dll'
     Filter = 'VST Plugin (*.dll)|*.dll'
     Title = 'Select a VST Plugin'
@@ -138,15 +193,13 @@ object FmVstPresetDesigner: TFmVstPresetDesigner
     DefaultExt = '.fxb'
     Filter = 'VST Bank (*.fxb)|*.fxb|VST Preset (*.fxp)|*.fxp'
     Title = 'Save as preset/bank'
-    Left = 176
-    Top = 8
+    Left = 48
+    Top = 64
   end
   object OpenAudio: TOpenDialog
-    DefaultExt = '.wav'
-    Filter = 
-      'MP3 File (*.mp3)|*.mp3|Wave File (*.wav)|*.wav|AIFF File (*.aiff' +
-      ')|*.aiff|AU File (*.au)|*.au'
-    Title = 'Select an Audio  File'
+    DefaultExt = '.mp3'
+    Filter = 'MP3 File (*.mp3)|*.mp3'
+    Title = 'Select an MP3 File'
     Left = 112
     Top = 8
   end
@@ -156,5 +209,22 @@ object FmVstPresetDesigner: TFmVstPresetDesigner
     Title = 'Select a MIDI file'
     Left = 144
     Top = 8
+  end
+  object ASIOHost: TAsioHost
+    AsioTime.Speed = 1.000000000000000000
+    AsioTime.SampleRate = 44100.000000000000000000
+    AsioTime.Flags = [atSystemTimeValid, atSamplePositionValid, atSampleRateValid, atSpeedValid]
+    PreventClipping = pcDigital
+    SampleRate = 44100.000000000000000000
+    OnBufferSwitch32 = ASIOHostBufferSwitch32
+    Left = 176
+    Top = 8
+  end
+  object OpenDialog: TOpenDialog
+    DefaultExt = '.dll'
+    Filter = 'VST Bank (*.fxb)|*.fxb|VST Preset (*.fxp)|*.fxp'
+    Title = 'Select a VST Plugin'
+    Left = 16
+    Top = 64
   end
 end

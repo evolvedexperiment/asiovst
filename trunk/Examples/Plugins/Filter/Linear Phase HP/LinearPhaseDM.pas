@@ -49,10 +49,9 @@ type
     procedure VSTModuleProcess(const Inputs, Outputs: TDAVArrayOfSingleDynArray; const SampleFrames: Integer);
     procedure VSTModuleSampleRateChange(Sender: TObject; const SampleRate: Single);
     procedure ParamFrequencyChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: string);
+    procedure ParameterWindowFunctionsDisplay(Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
     procedure ParameterWindowFunctionsChange(Sender: TObject; const Index: Integer; var Value: Single);
-    procedure StringToWindowParameter(
-      Sender: TObject; const Index: Integer; const ParameterString: string;
+    procedure StringToWindowParameter(Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
       var Value: Single);
   private
     FFilterKernel   : PDAVSingleFixedArray;
@@ -151,13 +150,13 @@ begin
 end;
 
 procedure TLinearPhaseDataModule.ParameterWindowFunctionsDisplay(
-  Sender: TObject; const Index: Integer; var PreDefined: string);
+  Sender: TObject; const Index: Integer; var PreDefined: AnsiString);
 begin
  PreDefined := GWindowFunctions[Round(Parameter[Index])].GetWindowFunctionName;
 end;
 
 procedure TLinearPhaseDataModule.StringToWindowParameter(
-  Sender: TObject; const Index: Integer; const ParameterString: string;
+  Sender: TObject; const Index: Integer; const ParameterString: AnsiString;
   var Value: Single);
 var
   WindowIndex : Integer;
@@ -269,7 +268,7 @@ begin
     FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+     do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFTCCS(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 

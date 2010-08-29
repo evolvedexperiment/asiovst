@@ -101,43 +101,10 @@ type
 implementation
 
 uses
-  ExtCtrls, Math, DAV_Common, DAV_Complex, DAV_GuiCommon;
+  ExtCtrls, Math, DAV_Math, DAV_Common, DAV_Complex, DAV_GuiCommon;
 
 resourcestring
   RCStrWrongPixelFormat = 'Wrong pixel format!';
-
-function RadToDeg(const Radians: Extended): Extended;  { Degrees := Radians * 180 / PI }
-const
-  DegPi : Double = (180 / PI);
-begin
-  Result := Radians * DegPi;
-end;
-
-function RelativeAngle(X1, Y1, X2, Y2: Integer): Single;
-const
-  MulFak = 180 / Pi;
-begin
-  Result := ArcTan2(X2 - X1, Y1 - Y2) * MulFak;
-end;
-
-function SafeAngle(Angle: Single): Single;
-begin
-  while Angle < 0 do Angle := Angle + 360;
-  while Angle >= 360 do Angle := Angle - 360;
-  Result := Angle;
-end;
-
-{ This function solves for Re in the equation "x is y% of z". }
-function SolveForX(Im, Z: Longint): Longint;
-begin
-  Result := Round(Z * (Im * 0.01));//tt
-end;
-
-{ This function solves for Im in the equation "x is y% of z". }
-function SolveForY(Re, Z: Longint): Longint;
-begin
-  if Z = 0 then Result := 0 else Result := Round((Re * 100.0) / Z); //t
-end;
 
 
 constructor TCustomGuiLED.Create(AOwner: TComponent);
@@ -220,9 +187,9 @@ var
   ImgHandle     : HBitmap;
   ImgMaskHandle : HBitmap;
   {$ELSE}
-  Line          : PRGB24Array;
+  Line          : PBGR24Array;
   {$ENDIF}
-  LEDColor      : TRGB24;
+  LEDColor      : TBGR24;
   Scale         : Single;
   Bright        : Single;
 begin
@@ -315,9 +282,9 @@ var
   ImgHandle     : HBitmap;
   ImgMaskHandle : HBitmap;
   {$ELSE}
-  Line          : PRGB32Array;
+  Line          : PBGR32Array;
   {$ENDIF}
-  LEDColor      : TRGB32;
+  LEDColor      : TBGR32;
   Scale         : Single;
   Bright        : Single;
 begin

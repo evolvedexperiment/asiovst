@@ -233,7 +233,7 @@ begin
     FSignalFreq^[Half].Re := FFilterFreq^[Half].Re * FSignalFreq^[Half].Re;
 
     for Bin := 1 to Half - 1
-     do ComplexMultiplyInplace(FSignalFreq^[Bin], FFilterFreq^[Bin]);
+     do ComplexMultiplyInplace32(FSignalFreq^[Bin], FFilterFreq^[Bin]);
 
     FFft.PerformIFFT(PDAVComplexSingleFixedArray(FSignalFreq), @Outputs[Channel, 0]);
 

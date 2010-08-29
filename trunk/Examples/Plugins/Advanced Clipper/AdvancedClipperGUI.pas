@@ -107,7 +107,7 @@ var
   x, y   : Integer;
   s      : array[0..1] of Single;
   h, hr  : Single;
-  Line   : PRGB24Array;
+  Line   : PBGR24Array;
   {$IFDEF FPC}
   PngBmp : TPNGImage;
   {$ELSE}
@@ -175,7 +175,7 @@ begin
      {$ELSE}
      DialBitmap.Assign(PngBmp);
      {$ENDIF}
-     NumGlyphs := 65;
+     GlyphCount := 65;
     end;
    DialFilterOrder1.DialImageIndex := 0;
    DialFilterOrder2.DialImageIndex := 0;

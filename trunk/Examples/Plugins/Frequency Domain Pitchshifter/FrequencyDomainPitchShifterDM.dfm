@@ -1,5 +1,4 @@
 object FrequencyDomainPitchShifterModule: TFrequencyDomainPitchShifterModule
-  OldCreateOrder = False
   Flags = [effFlagsHasEditor, effFlagsCanReplacing]
   Version = '1.0'
   EffectName = 'FrequencyDomainPitchShifter'
@@ -14,7 +13,6 @@ object FrequencyDomainPitchShifterModule: TFrequencyDomainPitchShifterModule
   Programs = <>
   ParameterProperties = <
     item
-      Curve = ctLinear
       CurveFactor = 1.000000000000000000
       DisplayName = 'Semi Tones'
       LargeStepFloat = 2.000000000000000000
